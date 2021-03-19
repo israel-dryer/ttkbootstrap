@@ -66,9 +66,15 @@ def style_tk_widgets(style):
     style.master.option_add('*Menu.borderWidth', '0')
     style.master.option_add('*Menu.tearOff', '0')
 
+    # scrollbar
+
 
 def create_layouts(style):
-    pass
+
+    # Vertical scroll bar -- removing arrows from theme
+    style.layout('Vertical.TScrollbar', [
+        ('Vertical.Scrollbar.trough', {'sticky': 'ns', 'children': [
+        ('Vertical.Scrollbar.thumb', {'expand': '1', 'sticky': 'nswe'})]})])
 
 
 def create_elements(style):
@@ -80,6 +86,13 @@ def create_elements(style):
     style.element_create('Scale.trough', 'from', 'alt')
     style.element_create('Scale.slider', 'from', 'alt')
 
+    # Vertical scrollbar
+    style.element_create('Vertical.Scrollbar.trough', 'from', 'alt')
+    style.element_create('Vertical.Scrollbar.thumb', 'from', 'alt')
+    style.element_create('Vertical.Scrollbar.uparrow', 'from', 'alt')
+    style.element_create('Vertical.Scrollbar.downarrow', 'from', 'alt')
+
+    # Horizontal scrollbar
 
 def create_widget_styles(style):
     """Use the light and dark colors of the clam theme to create a highlight button effect for various states. For this
@@ -532,6 +545,17 @@ def create_widget_styles(style):
               darkcolor=[('!selected', COLORS['bg'])],
               bordercolor=[('!selected', COLORS['bg'])],
               foreground=[('!selected', COLORS['success'])])
+
+    # Scrollbar
+    style.configure('TScrollbar',
+                    troughrelief='flat',
+                    relief='flat',
+                    troughborderwidth=0,
+                    troughcolor=COLORS['light'],
+                    background=COLORS['active'])
+
+    # Spinbox
+    style
 
 
 def create_theme(style):

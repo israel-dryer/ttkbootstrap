@@ -2,16 +2,17 @@ import tkinter as tk
 from tkinter import ttk
 from superflat import Style, FONT_FAMILY
 
+
 variations = ['secondary', 'success', 'info', 'warning', 'danger']
 style = Style()
 style.theme_use('superflat')
-# style = ttk.Style()
-# style.theme_use('alt')
 window = style.master
 window.title('Theme Test')
 
 root = ttk.Frame(window, padding=25)
-root.pack(fill='both', expand='yes')
+root.pack(side='left', fill='both', expand='yes')
+
+ttk.Scrollbar(window).pack(side='right', fill='y')
 
 # solid buttons
 solid_buttons = ttk.Frame(root)
@@ -135,4 +136,7 @@ for x in range(3):
     nb.add(ttk.Frame(nb), text=f'Tab {x+2}')
 nb.pack(fill='x', expand='yes', pady=10)
 
-root.mainloop()
+# spinbox
+ttk.Spinbox(root, values=['red', 'yellow', 'orange']).pack()
+
+window.mainloop()

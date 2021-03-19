@@ -94,6 +94,7 @@ NOTEBOOK CLIENT [clam theme]
 Notebook.client
     ('background', 'bordercolor', 'lightcolor', 'darkcolor')
 
+
 NOTEBOOK TAB [clam theme]
 ------------------------------------------------------------------------------------------------------------------------
 Notebook.tab
@@ -105,4 +106,29 @@ Notebook.focus
 Notebook.label
     ('compound', 'space', 'text', 'font', 'foreground', 'underline', 'width', 'anchor', 'justify', 'wraplength', 'embossed', 'image', 'stipple', 'background')
 
+
+SCROLLBAR [alt theme]
+------------------------------------------------------------------------------------------------------------------------
+Scrollbar.trough
+    ('orient', 'troughborderwidth', 'troughcolor', 'troughrelief', 'groovewidth')
+Scrollbar.uparrow -- removed for my theme
+    ('arrowsize', 'background', 'bordercolor', 'relief', 'arrowcolor')
+Scrollbar.downarrow -- removed for my theme
+    ('arrowsize', 'background', 'bordercolor', 'relief', 'arrowcolor')
+Scrollbar.thumb
+    ('width', 'background', 'bordercolor', 'relief', 'orient')
+
+
+SPINBOX [clam theme]
+------------------------------------------------------------------------------------------------------------------------
+Spinbox.field
+    ('bordercolor', 'lightcolor', 'darkcolor', 'fieldbackground')
+spinbox.uparrow
+    ('orient', 'background', 'bordercolor', 'troughcolor', 'lightcolor', 'darkcolor', 'arrowcolor', 'arrowsize', 'gripcount', 'sliderlength')
+spinbox.downarrow
+    ('orient', 'background', 'bordercolor', 'troughcolor', 'lightcolor', 'darkcolor', 'arrowcolor', 'arrowsize', 'gripcount', 'sliderlength')
+spinbox.padding
+    ('padding', 'relief', 'shiftrelief')
+spinbox.textarea
+    ('font', 'width')
 
