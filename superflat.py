@@ -93,6 +93,18 @@ def create_elements(style):
     style.element_create('Vertical.Scrollbar.downarrow', 'from', 'alt')
 
     # Horizontal scrollbar
+    style.element_create('Horizontal.Scrollbar.trough', 'from', 'alt')
+    style.element_create('Horizontal.Scrollbar.thumb', 'from', 'alt')
+    style.element_create('Horizontal.Scrollbar.uparrow', 'from', 'alt')
+    style.element_create('Horizontal.Scrollbar.downarrow', 'from', 'alt')
+
+    # Spinbox
+    # style.element_create('Spinbox.field', 'from', 'default')
+    style.element_create('Spinbox.uparrow', 'from', 'default')
+    style.element_create('Spinbox.downarrow', 'from', 'default')
+
+
+
 
 def create_widget_styles(style):
     """Use the light and dark colors of the clam theme to create a highlight button effect for various states. For this
@@ -550,12 +562,20 @@ def create_widget_styles(style):
     style.configure('TScrollbar',
                     troughrelief='flat',
                     relief='flat',
-                    troughborderwidth=0,
+                    troughborderwidth=1,
                     troughcolor=COLORS['light'],
                     background=COLORS['active'])
 
     # Spinbox
-    style
+    style.configure('TSpinbox',
+                    bordercolor=COLORS['dark'],
+                    lightcolor=COLORS['bg'],
+                    darkcolor=COLORS['bg'],
+                    borderwidth=0,
+                    relief='flat',
+                    arrowcolor=COLORS['dark'],
+                    padding=(10, 5)
+                    )
 
 
 def create_theme(style):

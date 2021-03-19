@@ -6,6 +6,8 @@ from superflat import Style, FONT_FAMILY
 variations = ['secondary', 'success', 'info', 'warning', 'danger']
 style = Style()
 style.theme_use('superflat')
+# style = ttk.Style()
+# style.theme_use('default')
 window = style.master
 window.title('Theme Test')
 
@@ -137,6 +139,6 @@ for x in range(3):
 nb.pack(fill='x', expand='yes', pady=10)
 
 # spinbox
-ttk.Spinbox(root, values=['red', 'yellow', 'orange']).pack()
+ttk.Spinbox(root, values=['red', 'yellow', 'orange'], font=(FONT_FAMILY,)).pack()
 
 window.mainloop()
