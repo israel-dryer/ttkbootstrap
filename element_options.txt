@@ -119,16 +119,16 @@ Scrollbar.thumb
     ('width', 'background', 'bordercolor', 'relief', 'orient')
 
 
-SPINBOX [clam theme]
+SPINBOX [default / clam theme]
 ------------------------------------------------------------------------------------------------------------------------
-Spinbox.field
-    ('bordercolor', 'lightcolor', 'darkcolor', 'fieldbackground')
-spinbox.uparrow
-    ('orient', 'background', 'bordercolor', 'troughcolor', 'lightcolor', 'darkcolor', 'arrowcolor', 'arrowsize', 'gripcount', 'sliderlength')
-spinbox.downarrow
-    ('orient', 'background', 'bordercolor', 'troughcolor', 'lightcolor', 'darkcolor', 'arrowcolor', 'arrowsize', 'gripcount', 'sliderlength')
-spinbox.padding
+Spinbox.field [clam theme]
+    ('fieldbackground', 'borderwidth')
+spinbox.uparrow [alt theme]
+    ('background', 'relief', 'borderwidth', 'arrowcolor', 'arrowsize')
+spinbox.downarrow [alt theme]
+    ('background', 'relief', 'borderwidth', 'arrowcolor', 'arrowsize')
+spinbox.padding [clam theme]
     ('padding', 'relief', 'shiftrelief')
-spinbox.textarea
+spinbox.textarea [clam theme]
     ('font', 'width')
 
