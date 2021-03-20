@@ -599,8 +599,22 @@ def create_widget_styles(style):
               arrowcolor=[('pressed', COLORS['primary'])])
 
     # Treeview ---------------------------------------------------------------------------------------------------------
+    style.configure('Treeview',
+                    bordercolor=COLORS['dark'],
+                    lightcolor=COLORS['bg'],
+                    relief='sunken',
+                    padding=-1)
 
+    style.map('Treeview', background=[('selected', COLORS['light'])])
 
+    style.configure('Treeview.Heading',
+                    background=COLORS['primary'],
+                    foreground=COLORS['selectfg'],
+                    relief='flat',
+                    padding=5)
+
+    for v in variations:
+        style.configure(f'{v}.Treeview.Heading', background=COLORS[v])
 
 
 def create_theme(style):
