@@ -61,23 +61,24 @@ def style_tk_widgets(style):
     style.master.option_add('*activeForeground', COLORS['selectfg'])
     style.master.option_add('*selectBackground', COLORS['selectbg'])
     style.master.option_add('*selectForeground', COLORS['selectfg'])
+    style.master.option_add('*font', (FONT_FAMILY,))
 
     # menu
-    style.master.option_add('*Menu.borderWidth', '0')
-    style.master.option_add('*Menu.tearOff', '0')
-
-    # scrollbar
+    style.master.option_add('*Menu.tearOff', 0)
 
 
 def create_layouts(style):
-
-    # Vertical scroll bar -- removing arrows from theme
-    style.layout('Vertical.TScrollbar', [
-        ('Vertical.Scrollbar.trough', {'sticky': 'ns', 'children': [
-        ('Vertical.Scrollbar.thumb', {'expand': '1', 'sticky': 'nswe'})]})])
+    """Create custom layouts for ttk widgets"""
+    # Spinbox
+    """use spinbox field to get border that encompasses entire widget"""
+    style.layout('TCombobox', [('Spinbox.field', {'side': 'top', 'sticky': 'we', 'children': [
+        ('Combobox.downarrow', {'side': 'right', 'sticky': 'ns'}),
+        ('Combobox.padding', {'expand': '1', 'sticky': 'nswe', 'children': [
+            ('Combobox.textarea', {'sticky': 'nswe'})]})]})])
 
 
 def create_elements(style):
+    """Create custom elements for ttk widgets"""
     # Progressbar
     style.element_create('Progressbar.trough', 'from', 'default')
     style.element_create('Progressbar.pbar', 'from', 'default')
@@ -99,17 +100,26 @@ def create_elements(style):
     style.element_create('Horizontal.Scrollbar.downarrow', 'from', 'alt')
 
     # Spinbox
-    # style.element_create('Spinbox.field', 'from', 'default')
     style.element_create('Spinbox.uparrow', 'from', 'default')
     style.element_create('Spinbox.downarrow', 'from', 'default')
 
+    # Combobox
+    style.element_create('Combobox.downarrow', 'from', 'default')
+    style.element_create('Combobox.padding', 'from', 'clam')
+    style.element_create('Combobox.textarea', 'from', 'clam')
+
+    # Treeview
+    style.element_create('Treeitem.indicator', 'from', 'alt')
+    # style.element_create('Treeitem.padding', 'from', 'alt')
+    # style.element_create('Treeitem.image', 'from', 'alt')
+    # style.element_create('Treeitem.focus', 'from', 'alt')
+    # style.element_create('Treeitem.text', 'from', 'alt')
 
 
 
 def create_widget_styles(style):
     """Use the light and dark colors of the clam theme to create a highlight button effect for various states. For this
     theme, the light and dark colors should match the background color unless I'm specifically using them for effect"""
-
     variations = ['primary', 'secondary', 'success', 'info', 'warning', 'danger']
 
     # Application defaults ---------------------------------------------------------------------------------------------
@@ -140,6 +150,7 @@ def create_widget_styles(style):
                     bordercolor=COLORS['primary'],
                     darkcolor=COLORS['primary'],
                     lightcolor=COLORS['primary'],
+                    anchor='center',
                     relief='raised',
                     focusthickness=0,
                     focuscolor='',
@@ -255,7 +266,6 @@ def create_widget_styles(style):
         style.configure(f'{v}.Vertical.TProgressbar', background=COLORS[v])
 
     # Entry ------------------------------------------------------------------------------------------------------------
-    """Cannot change font with style, must be changed with widget options >> https://bugs.python.org/issue21341"""
     style.configure('TEntry',
                     bordercolor=COLORS['dark'],
                     lightcolor=COLORS['bg'],
@@ -275,8 +285,6 @@ def create_widget_styles(style):
                   darkcolor=[('focus', COLORS[v])])
 
     # Scale ------------------------------------------------------------------------------------------------------------
-    """I'm not sold on this setup, but it gives me the ability to use a built-in theme without adding
-    image elements. However, image elements would give this a nicer look"""
     style.configure('TScale',
                     sliderrelief='flat',
                     sliderthickness=18,
@@ -349,6 +357,11 @@ def create_widget_styles(style):
                             ('selected', COLORS[v]),
                             ('active !selected', brightness(COLORS['dark'], 0.3))])
 
+    # Label ------------------------------------------------------------------------------------------------------------
+    style.configure('TLabel', foreground=COLORS['primary'])
+    for v in variations:
+        style.configure(f'{v}.TLabel', foreground=COLORS[v])
+
     # Labelframe -------------------------------------------------------------------------------------------------------
     style.configure('TLabelframe',
                     padding=(10, 5),
@@ -402,8 +415,6 @@ def create_widget_styles(style):
                             ('active !selected', brightness(COLORS['dark'], 0.3))])
 
     # Solid menubutton -------------------------------------------------------------------------------------------------
-    """Some of the menu list settings are set with the root widget options on initialization. This will be styled
-    essentially like a regular button"""
     style.configure('TMenubutton',
                     foreground=COLORS['selectfg'],
                     background=COLORS['primary'],
@@ -490,8 +501,7 @@ def create_widget_styles(style):
                   ('hover', brightness(COLORS['primary'], -0.1))],
               arrowcolor=[
                   ('pressed', COLORS['bg']),
-                  ('hover', COLORS['bg'])
-              ])
+                  ('hover', COLORS['bg'])])
 
     for v in variations:
         style.configure(f'{v}.Outline.TMenubutton',
@@ -527,55 +537,70 @@ def create_widget_styles(style):
                       ('hover', COLORS['bg'])])
 
     # Combobox ---------------------------------------------------------------------------------------------------------
-    """For whatever reason, the font cannot be changed through style... it must be changed in the widget settings"""
     style.configure('TCombobox',
                     bordercolor=COLORS['dark'],
                     arrowcolor=COLORS['dark'],
                     foreground=COLORS['dark'],
+                    relief='flat',
                     padding=5,
                     arrowsize=16)
 
     style.map('TCombobox',
-              lightcolor=[('focus', COLORS['dark'])],
-              darkcolor=[('focus', COLORS['dark'])])
+              lightcolor=[
+                  ('focus', COLORS['dark']),
+                  ('pressed', COLORS['dark'])],
+              darkcolor=[
+                  ('focus', COLORS['dark']),
+                  ('pressed', COLORS['dark'])],
+              arrowcolor=[('pressed', COLORS['primary'])])
 
     # Notebook ---------------------------------------------------------------------------------------------------------
     """The notebook must be configure in two places... `client` and `tab"""
     style.configure('TNotebook',
                     bordercolor=COLORS['dark'])
+
     style.configure('TNotebook.Tab',
                     bordercolor=COLORS['dark'],
                     foreground=COLORS['dark'],
-                    relief='flat',
                     padding=(10, 5))
 
-    """TODO find a way to remove the border when not selected... the current solutions shows a small intersection of
-    white on the client border"""
     style.map('TNotebook.Tab',
-              background=[('!selected', COLORS['bg'])],
-              lightcolor=[('!selected', COLORS['bg'])],
-              darkcolor=[('!selected', COLORS['bg'])],
-              bordercolor=[('!selected', COLORS['bg'])],
+              background=[('!selected', COLORS['light'])],
+              lightcolor=[('!selected', COLORS['light'])],
+              darkcolor=[('!selected', COLORS['light'])],
+              bordercolor=[('!selected', COLORS['dark'])],
               foreground=[('!selected', COLORS['success'])])
 
-    # Scrollbar
+    # Scrollbar --------------------------------------------------------------------------------------------------------
     style.configure('TScrollbar',
                     troughrelief='flat',
                     relief='flat',
-                    troughborderwidth=1,
+                    troughborderwidth=2,
                     troughcolor=COLORS['light'],
-                    background=COLORS['active'])
+                    background=COLORS['active'],
+                    arrowsize=16,
+                    arrowcolor=COLORS['primary'])
 
-    # Spinbox
+    # Spinbox ----------------------------------------------------------------------------------------------------------
     style.configure('TSpinbox',
                     bordercolor=COLORS['dark'],
                     lightcolor=COLORS['bg'],
                     darkcolor=COLORS['bg'],
+                    foreground=COLORS['dark'],
                     borderwidth=0,
                     relief='flat',
                     arrowcolor=COLORS['dark'],
-                    padding=(10, 5)
-                    )
+                    arrowsize=16,
+                    padding=(10, 5))
+
+    style.map('TSpinbox',
+              lightcolor=[('focus', COLORS['dark'])],
+              darkcolor=[('focus', COLORS['dark'])],
+              arrowcolor=[('pressed', COLORS['primary'])])
+
+    # Treeview ---------------------------------------------------------------------------------------------------------
+
+
 
 
 def create_theme(style):
