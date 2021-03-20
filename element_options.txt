@@ -77,15 +77,15 @@ Menubutton.padding
 Menubutton.label
 
 
-COMBOBOX [clam theme]
+COMBOBOX [clam theme / default theme]
 ------------------------------------------------------------------------------------------------------------------------
-Combobox.downarrow
-    ('orient', 'background', 'bordercolor', 'troughcolor', 'lightcolor', 'darkcolor', 'arrowcolor', 'arrowsize', 'gripcount', 'sliderlength')
-Combobox.field
+Combobox.downarrow [default theme]
+    ('arrowsize', 'background', 'bordercolor', 'relief', 'arrowcolor')
+Combobox.field [clam theme]
     ('bordercolor', 'lightcolor', 'darkcolor', 'fieldbackground')
-Combobox.padding
+Combobox.padding [clam theme]
     ('padding', 'relief', 'shiftrelief')
-Combobox.textarea
+Combobox.textarea [clam theme]
     ('font', 'width')
 
 
@@ -119,16 +119,52 @@ Scrollbar.thumb
     ('width', 'background', 'bordercolor', 'relief', 'orient')
 
 
-SPINBOX [default / clam theme]
+SPINBOX [clam theme / default theme]
 ------------------------------------------------------------------------------------------------------------------------
 Spinbox.field [clam theme]
-    ('fieldbackground', 'borderwidth')
-spinbox.uparrow [alt theme]
+    ('bordercolor', 'lightcolor', 'darkcolor', 'fieldbackground')
+spinbox.uparrow [default theme]
     ('background', 'relief', 'borderwidth', 'arrowcolor', 'arrowsize')
-spinbox.downarrow [alt theme]
+spinbox.downarrow [default theme]
     ('background', 'relief', 'borderwidth', 'arrowcolor', 'arrowsize')
 spinbox.padding [clam theme]
     ('padding', 'relief', 'shiftrelief')
 spinbox.textarea [clam theme]
     ('font', 'width')
 
+
+TREEVIEW [clam theme]
+------------------------------------------------------------------------------------------------------------------------
+Treeview.field
+    ('bordercolor', 'lightcolor', 'darkcolor', 'fieldbackground')
+Treeview.padding
+    ('padding', 'relief', 'shiftrelief')
+Treeview.treearea
+
+
+TREEVIEW.ITEM [alt theme]
+------------------------------------------------------------------------------------------------------------------------
+Treeitem.padding
+    ('padding', 'relief', 'shiftrelief')
+Treeitem.indicator
+    ('foreground', 'diameter', 'indicatormargins')
+Treeitem.image
+    ('image', 'stipple', 'background')
+Treeitem.focus
+    ('focuscolor', 'focusthickness')
+Treeitem.text
+    ('text', 'font', 'foreground', 'underline', 'width', 'anchor', 'justify', 'wraplength', 'embossed')
+
+
+TREEVIEW.HEADING [clam theme]
+------------------------------------------------------------------------------------------------------------------------
+Treeheading.cell
+    ('background', 'rownumber')
+Treeheading.border
+    ('bordercolor', 'lightcolor', 'darkcolor', 'relief', 'borderwidth')
+Treeheading.padding
+    ('padding', 'relief', 'shiftrelief')
+Treeheading.image
+    ('image', 'stipple', 'background')
+Treeheading.text
+    ('text', 'font', 'foreground', 'underline', 'width', 'anchor', 'justify', 'wraplength', 'embossed')
