@@ -136,9 +136,9 @@ spinbox.textarea [clam theme]
 TREEVIEW [clam theme]
 ------------------------------------------------------------------------------------------------------------------------
 Treeview.field
-    ('bordercolor', 'lightcolor', 'darkcolor', 'fieldbackground')
+    ('bordercolor', 'lightcolor', 'darkcolor', 'fieldbackground') # relief & darkcolor do not appear to have any effect
 Treeview.padding
-    ('padding', 'relief', 'shiftrelief')
+    ('padding', 'relief', 'shiftrelief') # padding can be negative!
 Treeview.treearea
 
 

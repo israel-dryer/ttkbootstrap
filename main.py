@@ -157,7 +157,7 @@ tv.insert('finance', 'end', values=['John Quil', 'Associate'])
 tv.insert('marketing', 'end', values=['Teri Dactyl', 'Director'])
 tv.insert('marketing', 'end', values=['Olive Tree', 'Senior Manager'])
 tv.insert('marketing', 'end', values=['Aida Bugg', 'Intern'])
-tv.pack(fill='x')
+tv.pack(fill='x', pady=10)
 
 
 
