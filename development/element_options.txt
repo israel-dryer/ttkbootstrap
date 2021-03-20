@@ -52,6 +52,14 @@ Labelframe.border
     ('bordercolor', 'lightcolor', 'darkcolor', 'relief', 'borderwidth')
 
 
+LABELFRAME.LABEL
+------------------------------------------------------------------------------------------------------------------------
+Label.fill
+    ('background',)
+Label.text
+    ('text', 'font', 'foreground', 'underline', 'width', 'anchor', 'justify', 'wraplength', 'embossed')
+
+
 CHECKBUTTON [clam theme]
 ------------------------------------------------------------------------------------------------------------------------
 Checkbutton.padding
@@ -142,11 +150,11 @@ Treeview.padding
 Treeview.treearea
 
 
-TREEVIEW.ITEM [alt theme]
+TREEVIEW.ITEM [clam theme / alt theme]
 ------------------------------------------------------------------------------------------------------------------------
 Treeitem.padding
     ('padding', 'relief', 'shiftrelief')
-Treeitem.indicator
+Treeitem.indicator [alt theme]
     ('foreground', 'diameter', 'indicatormargins')
 Treeitem.image
     ('image', 'stipple', 'background')

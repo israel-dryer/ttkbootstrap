@@ -1,7 +1,6 @@
 import tkinter as tk
 from tkinter import ttk
-from superflat import Style, FONT_FAMILY
-
+from themes.superflat import Style
 
 variations = ['secondary', 'success', 'info', 'warning', 'danger']
 style = Style()

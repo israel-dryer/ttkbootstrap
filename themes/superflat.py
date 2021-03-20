@@ -369,6 +369,15 @@ def create_widget_styles(style):
                     relief='raised',
                     bordercolor=COLORS['dark'])
 
+    style.configure('TLabelframe.Label', foreground=COLORS['dark'])
+
+    for v in variations:
+        style.configure(f'{v}.TLabelframe',
+                        foreground=COLORS[v],
+                        bordercolor=COLORS[v])
+
+        style.configure(f'{v}.TLabelframe.Label', foreground=COLORS[v])
+
     # Checkbutton ------------------------------------------------------------------------------------------------------
     style.configure('TCheckbutton',
                     foreground=COLORS['dark'],
@@ -554,6 +563,17 @@ def create_widget_styles(style):
                   ('pressed', COLORS['dark'])],
               arrowcolor=[('pressed', COLORS['primary'])])
 
+    for v in variations:
+        style.map(f'{v}.TCombobox',
+                  lightcolor=[
+                      ('focus', COLORS[v]),
+                      ('pressed', COLORS[v])],
+                  darkcolor=[
+                      ('focus', COLORS[v]),
+                      ('pressed', COLORS[v])],
+                  arrowcolor=[('pressed', COLORS[v])])
+
+
     # Notebook ---------------------------------------------------------------------------------------------------------
     """The notebook must be configure in two places... `client` and `tab"""
     style.configure('TNotebook',
@@ -624,9 +644,3 @@ def create_theme(style):
     create_layouts(style)
     create_elements(style)
     create_widget_styles(style)
-
-
-class Style(ttk.Style):
-    def __init__(self):
-        super().__init__()
-        create_theme(self)
