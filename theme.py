@@ -32,7 +32,7 @@ from tkinter import ttk
 VARIATIONS = ['primary', 'secondary', 'success', 'info', 'warning', 'danger']
 
 Colors = namedtuple('Colors', ['primary', 'secondary', 'success', 'info', 'warning', 'danger',
-                               'bg', 'fg', 'selectbg', 'selectfg', 'light', 'dark', 'active'])
+                               'bg', 'fg', 'selectbg', 'selectfg', 'light', 'dark', 'active', 'border'])
 
 
 class Theme:
@@ -115,8 +115,8 @@ class Theme:
         """Setup the default ttk style settings"""
         self.style.configure('.',
                              background=self.colors.bg,
-                             darkcolor=self.colors.bg,
-                             lightcolor=self.colors.bg,
+                             darkcolor=self.colors.border,
+                             lightcolor=self.colors.border,
                              foreground=self.colors.fg,
                              troughcolor=self.colors.bg,
                              selectbg=self.colors.bg,
@@ -147,30 +147,44 @@ class Theme:
         self.style.element_create('Combobox.padding', 'from', 'clam')
         self.style.element_create('Combobox.textarea', 'from', 'clam')
         self.style.configure('TCombobox',
-                             bordercolor=self.colors.dark,
-                             arrowcolor=self.colors.dark,
+                             bordercolor=self.colors.border,
+                             darkcolor=self.colors.bg,
+                             lightcolor=self.colors.bg,
+                             arrowcolor=self.colors.border,
                              foreground=self.colors.dark,
                              relief='flat',
                              padding=5,
                              arrowsize=16)
         self.style.map('TCombobox',
+                       bordercolor=[
+                           ('focus', self.colors.primary),
+                           ('hover', self.colors.primary)],
                        lightcolor=[
-                           ('focus', self.colors.dark),
-                           ('pressed', self.colors.dark)],
+                           ('focus', self.colors.primary),
+                           ('pressed', self.colors.primary)],
                        darkcolor=[
-                           ('focus', self.colors.dark),
-                           ('pressed', self.colors.dark)],
-                       arrowcolor=[('pressed', self.colors.primary)])
+                           ('focus', self.colors.primary),
+                           ('pressed', self.colors.primary)],
+                       arrowcolor=[
+                           ('pressed', self.colors.dark),
+                           ('focus', self.colors.primary),
+                           ('hover', self.colors.primary)])
 
         for v in VARIATIONS:
             self.style.map(f'{v}.TCombobox',
+                           bordercolor=[
+                               ('focus', self.lookup_color(v)),
+                               ('hover', self.lookup_color(v))],
                            lightcolor=[
                                ('focus', self.lookup_color(v)),
                                ('pressed', self.lookup_color(v))],
                            darkcolor=[
                                ('focus', self.lookup_color(v)),
                                ('pressed', self.lookup_color(v))],
-                           arrowcolor=[('pressed', self.lookup_color(v))])
+                           arrowcolor=[
+                               ('pressed', self.colors.dark),
+                               ('focus', self.lookup_color(v)),
+                               ('hover', self.lookup_color(v))])
 
     def style_progressbar(self):
         """
@@ -186,7 +200,7 @@ class Theme:
         self.style.configure('TProgressbar',
                              thickness=20,
                              borderwidth=0,
-                             troughcolor=self.colors.light,
+                             troughcolor=self.brightness(self.colors.light, -0.05),
                              background=self.colors.primary)
 
         for v in VARIATIONS:
@@ -209,7 +223,7 @@ class Theme:
                              sliderthickness=18,
                              troughrelief='flat',
                              background=self.colors.primary,
-                             troughcolor=self.colors.light)
+                             troughcolor=self.brightness(self.colors.light, -0.05))
 
         self.style.map('TScale',
                        background=[
@@ -269,25 +283,41 @@ class Theme:
             - spinbox.padding: padding, relief, shiftrelief
             - spinbox.textarea: font, width
         """
-        # TODO add color variations
         self.style.element_create('Spinbox.uparrow', 'from', 'default')
         self.style.element_create('Spinbox.downarrow', 'from', 'default')
 
         self.style.configure('TSpinbox',
-                             bordercolor=self.colors.dark,
+                             bordercolor=self.colors.border,
                              lightcolor=self.colors.bg,
                              darkcolor=self.colors.bg,
                              foreground=self.colors.dark,
                              borderwidth=0,
                              relief='flat',
-                             arrowcolor=self.colors.dark,
+                             arrowcolor=self.colors.border,
                              arrowsize=16,
                              padding=(10, 5))
 
         self.style.map('TSpinbox',
-                       lightcolor=[('focus', self.colors.dark)],
-                       darkcolor=[('focus', self.colors.dark)],
-                       arrowcolor=[('pressed', self.colors.primary)])
+                       bordercolor=[
+                           ('focus', self.colors.primary),
+                           ('hover', self.colors.primary)],
+                       arrowcolor=[
+                           ('pressed', self.colors.dark),
+                           ('hover', self.colors.primary)],
+                       lightcolor=[('focus', self.colors.primary)],
+                       darkcolor=[('focus', self.colors.primary)])
+
+        # variation changes focus ring color
+        for v in VARIATIONS:
+            self.style.map(f'{v}.TSpinbox',
+                           bordercolor=[
+                               ('focus', self.lookup_color(v)),
+                               ('hover', self.lookup_color(v))],
+                           arrowcolor=[
+                               ('pressed', self.colors.dark),
+                               ('hover', self.lookup_color(v))],
+                           lightcolor=[('focus', self.lookup_color(v))],
+                           darkcolor=[('focus', self.lookup_color(v))])
 
     def style_treeview(self):
         """
@@ -311,12 +341,14 @@ class Theme:
         self.style.element_create('Treeitem.indicator', 'from', 'alt')
 
         self.style.configure('Treeview',
-                             bordercolor=self.colors.dark,
+                             bordercolor=self.colors.border,
                              lightcolor=self.colors.bg,
                              relief='sunken',
                              padding=-1)
 
-        self.style.map('Treeview', background=[('selected', self.colors.light)])
+        self.style.map('Treeview',
+                       background=[('selected', self.colors.light)],
+                       bordercolor=[('focus', self.colors.primary)])
 
         self.style.configure('Treeview.Heading',
                              background=self.colors.primary,
@@ -324,8 +356,10 @@ class Theme:
                              relief='flat',
                              padding=5)
 
+        # variations change header color and focus ring
         for v in VARIATIONS:
             self.style.configure(f'{v}.Treeview.Heading', background=self.lookup_color(v))
+            self.style.map(f'{v}.Treeview', bordercolor=[('focus', self.lookup_color(v))])
 
     def style_frame(self):
         """
@@ -334,7 +368,9 @@ class Theme:
         Element Options:
             - Frame.border: bordercolor, lightcolor, darkcolor, relief, borderwidth
         """
-        self.style.configure('TFrame', background=self.colors.bg)
+        self.style.configure('TFrame',
+                             background=self.colors.bg)
+
         for v in VARIATIONS:
             self.style.configure(f'{v}.TFrame', background=self.lookup_color(v))
 
@@ -477,15 +513,20 @@ class Theme:
             - Entry.textarea: font, width        
         """
         self.style.configure('TEntry',
-                             bordercolor=self.colors.dark,
+                             bordercolor=self.colors.border,
                              lightcolor=self.colors.bg,
                              darkcolor=self.colors.bg,
                              foreground=self.colors.dark,
                              padding=5)
 
         self.style.map('TEntry',
-                       lightcolor=[('focus', self.colors.dark)],
-                       darkcolor=[('focus', self.colors.dark)])
+                       bordercolor=[
+                           ('hover', self.colors.primary),
+                           ('focus', self.colors.primary)],
+                       lightcolor=[
+                           ('focus', self.colors.primary)],
+                       darkcolor=[
+                           ('focus', self.colors.primary)])
 
         # variation changes the focus ring color
         for v in VARIATIONS:
@@ -556,7 +597,7 @@ class Theme:
             - Label.padding: padding, relief, shiftrelief
             - Label.label: compound, space, text, font, foreground, underline, width, anchor, justify, wraplength, embossed, image, stipple, background
         """
-        self.style.configure('TLabel', foreground=self.colors.primary)
+        self.style.configure('TLabel', foreground=self.colors.dark)
         for v in VARIATIONS:
             self.style.configure(f'{v}.TLabel', foreground=self.lookup_color(v))
 
@@ -569,11 +610,14 @@ class Theme:
             - Label.fill: background
             - Label.text: text, font, foreground, underline, width, anchor, justify, wraplength, embossed
         """
+        # TODO find a way to set the labelframe color to activate based on hovering inside it's boundaries
         self.style.configure('TLabelframe',
                              padding=(10, 5),
                              foreground=self.colors.dark,
                              relief='raised',
-                             bordercolor=self.colors.dark)
+                             bordercolor=self.colors.border,
+                             darkcolor=self.colors.bg,
+                             lightcolor=self.colors.bg)
 
         self.style.configure('TLabelframe.Label', foreground=self.colors.dark)
 
@@ -792,10 +836,10 @@ class Theme:
             
         """
         self.style.configure('TNotebook',
-                             bordercolor=self.colors.dark)
+                             bordercolor=self.colors.border)
 
         self.style.configure('TNotebook.Tab',
-                             bordercolor=self.colors.dark,
+                             bordercolor=self.colors.border,
                              foreground=self.colors.dark,
                              padding=(10, 5))
 
@@ -803,5 +847,5 @@ class Theme:
                        background=[('!selected', self.colors.light)],
                        lightcolor=[('!selected', self.colors.light)],
                        darkcolor=[('!selected', self.colors.light)],
-                       bordercolor=[('!selected', self.colors.dark)],
-                       foreground=[('!selected', self.colors.success)])
+                       bordercolor=[('!selected', self.colors.border)],
+                       foreground=[('!selected', self.colors.fg)])

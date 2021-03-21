@@ -1,6 +1,7 @@
 from izzythemes import Style, ttk
 import tkinter as tk
 
+# minty, flatly, litera, cosmo, lumen, simplex
 
 def checked(btn):
     btn_text = "Unchecked" if btn['text'] == "Checked" else "Checked"
@@ -8,9 +9,9 @@ def checked(btn):
 
 
 style = Style()
-style.theme_use('flatly')
+style.theme_use('simplex')
 root = style.master
-root.title('IzzyThemes - flatly')
+root.title('IzzyThemes')
 root.geometry('500x500')
 
 # Scrollbar
@@ -43,7 +44,10 @@ def create_themed_tab(color=''):
         mb.menu.add_radiobutton(label=color)
 
     # Entry
-    ttk.Entry(frm2, style=f'{style_color}TEntry').pack(fill='x')
+    ttk.Entry(frm2, style=f'{style_color}TEntry').pack(side='left', fill='x')
+
+    # Spinbox
+    ttk.Spinbox(frm2, from_=1, to=25, style=f'{style_color}TSpinbox').pack(side='left', padx=(5, 0))
 
     # Button
     btn_frame = ttk.Frame(tab)
@@ -96,7 +100,6 @@ def create_themed_tab(color=''):
     ttk.Entry(scale_frame, textvariable=scale_var, width=4, style=f'{style_color}TEntry').pack(side='right')
 
     # Combobox
-
     cbo = ttk.Combobox(tab, values=colors, style=f'{style_color}TCombobox')
     cbo.current(0)
     cbo.pack(fill='x', pady=5)
