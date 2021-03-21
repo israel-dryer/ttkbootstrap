@@ -32,18 +32,22 @@ from tkinter import ttk
 VARIATIONS = ['primary', 'secondary', 'success', 'info', 'warning', 'danger']
 
 Colors = namedtuple('Colors', ['primary', 'secondary', 'success', 'info', 'warning', 'danger',
-                               'bg', 'fg', 'selectbg', 'selectfg', 'light', 'dark', 'active', 'border'])
+                               'bg', 'fg', 'selectbg', 'selectfg', 'light', 'dark', 'active', 'border', 'inputfg'])
 
 # TODO add color style for input font colors, which should be lighter
 
 class Theme:
-    """A ttk theme created with built-in elements and a supplied color scheme"""
+    """
+    A ttk theme created with built-in elements and a supplied color scheme. A theme type can be light or dark. This
+    changes the way that certain elements are created for the theme.
+    """
 
-    def __init__(self, style: ttk.Style, theme_name: str, colors: Colors, default_font: str):
+    def __init__(self, style: ttk.Style, theme_name: str, colors: Colors, default_font: str, theme_type='light'):
         self.name = theme_name
         self.style = style
         self.colors = colors
         self.font = default_font
+        self.theme_type = theme_type
         self.create_theme()
 
     def create_theme(self):
@@ -110,6 +114,9 @@ class Theme:
         self.style.master.option_add('*selectForeground', self.colors.selectfg)
         self.style.master.option_add('*font', (self.font,))
         self.style.master.option_add('*Menu.tearOff', 0)
+        self.style.master.option_add('*Listbox.background', 'white')
+        self.style.master.option_add('*Listbox.foreground', self.colors.inputfg)
+        # TODO set popdown list background to white
 
     def style_defaults(self):
         """Setup the default ttk style settings"""
@@ -123,7 +130,7 @@ class Theme:
                              selectfg=self.colors.selectfg,
                              selectforeground=self.colors.selectfg,
                              selectbackground=self.colors.selectbg,
-                             fieldbg=self.colors.bg,
+                             fieldbg='white',
                              font=(self.font,),
                              borderwidth=1,
                              focuscolor='')
@@ -143,6 +150,9 @@ class Theme:
             ('Combobox.padding', {'expand': '1', 'sticky': 'nswe', 'children': [
                 ('Combobox.textarea', {'sticky': 'nswe'})]})]})])
 
+        if self.theme_type == 'dark':
+            self.style.element_create('Spinbox.field', 'from', 'default')
+
         self.style.element_create('Combobox.downarrow', 'from', 'default')
         self.style.element_create('Combobox.padding', 'from', 'clam')
         self.style.element_create('Combobox.textarea', 'from', 'clam')
@@ -151,8 +161,11 @@ class Theme:
                              darkcolor=self.colors.bg,
                              lightcolor=self.colors.bg,
                              arrowcolor=self.colors.border,
-                             foreground=self.colors.dark,
+                             foreground=self.colors.inputfg,
+                             fieldbackground='white',
+                             background='white',
                              relief='flat',
+                             borderwidth=0,
                              padding=5,
                              arrowsize=16)
         self.style.map('TCombobox',
@@ -283,15 +296,26 @@ class Theme:
             - spinbox.padding: padding, relief, shiftrelief
             - spinbox.textarea: font, width
         """
+        self.style.layout('TSpinbox', [
+            ('custom.Spinbox.field', {'side': 'top', 'sticky': 'we', 'children': [
+                ('null', {'side': 'right', 'sticky': '', 'children': [
+                    ('Spinbox.uparrow', {'side': 'top', 'sticky': 'e'}),
+                    ('Spinbox.downarrow', {'side': 'bottom', 'sticky': 'e'})]}),
+                ('Spinbox.padding', {'sticky': 'nswe', 'children': [
+                    ('Spinbox.textarea', {'sticky': 'nswe'})]})]})])
+
         self.style.element_create('Spinbox.uparrow', 'from', 'default')
         self.style.element_create('Spinbox.downarrow', 'from', 'default')
+        if self.theme_type == 'dark':
+            self.style.element_create('custom.Spinbox.field', 'from', 'default')
 
         self.style.configure('TSpinbox',
                              bordercolor=self.colors.border,
                              lightcolor=self.colors.bg,
                              darkcolor=self.colors.bg,
-                             foreground=self.colors.dark,
+                             foreground=self.colors.inputfg,
                              borderwidth=0,
+                             background='white',
                              relief='flat',
                              arrowcolor=self.colors.border,
                              arrowsize=16,
@@ -340,15 +364,23 @@ class Theme:
         """
         self.style.element_create('Treeitem.indicator', 'from', 'alt')
 
+        self.style.layout('Treeview', [
+            ('Button.border', {'sticky': 'nswe', 'border': '1', 'children': [
+                ('Treeview.padding', {'sticky': 'nswe', 'children': [
+                    ('Treeview.treearea', {'sticky': 'nswe'})]})]})])
+
         self.style.configure('Treeview',
+                             background='white',
+                             foreground=self.colors.inputfg,
                              bordercolor=self.colors.border,
                              lightcolor=self.colors.bg,
-                             relief='sunken',
-                             padding=-1)
+                             darkcolor=self.colors.bg,
+                             relief='raised' if self.theme_type == 'light' else 'flat',
+                             padding=-1 if self.theme_type == 'light' else -2)
 
         self.style.map('Treeview',
                        background=[('selected', self.colors.light)],
-                       bordercolor=[('focus', self.colors.primary)])
+                       bordercolor=[('focus', self.colors.border)])
 
         self.style.configure('Treeview.Heading',
                              background=self.colors.primary,
@@ -516,7 +548,7 @@ class Theme:
                              bordercolor=self.colors.border,
                              lightcolor=self.colors.bg,
                              darkcolor=self.colors.bg,
-                             foreground=self.colors.dark,
+                             foreground=self.colors.inputfg,
                              padding=5)
 
         self.style.map('TEntry',
@@ -848,4 +880,4 @@ class Theme:
                        lightcolor=[('!selected', self.colors.light)],
                        darkcolor=[('!selected', self.colors.light)],
                        bordercolor=[('!selected', self.colors.border)],
-                       foreground=[('!selected', self.colors.fg)])
+                       foreground=[('!selected', self.colors.inputfg)])
