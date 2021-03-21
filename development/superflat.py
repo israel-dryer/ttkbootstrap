@@ -69,7 +69,7 @@ def style_tk_widgets(style):
 
 def create_layouts(style):
     """Create custom layouts for ttk widgets"""
-    # Spinbox
+    # Combobox
     """use spinbox field to get border that encompasses entire widget"""
     style.layout('TCombobox', [('Spinbox.field', {'side': 'top', 'sticky': 'we', 'children': [
         ('Combobox.downarrow', {'side': 'right', 'sticky': 'ns'}),

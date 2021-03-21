@@ -7,11 +7,10 @@ def checked(btn):
     btn.configure(text=btn_text)
 
 
-
 style = Style()
-style.theme_use('superflat')
+style.theme_use('flatly')
 root = style.master
-root.title('IzzyThemes - Superflat')
+root.title('IzzyThemes - flatly')
 root.geometry('500x500')
 
 # Scrollbar
@@ -64,7 +63,8 @@ def create_themed_tab(color=''):
     r1 = ttk.Radiobutton(radio_frame, value=1, text='Radio one', width=15, style=f'{style_color}TRadiobutton')
     r1.pack(side='left', fill='x')
     r1.invoke()
-    ttk.Radiobutton(radio_frame, value=2, text='Radio two', style=f'{style_color}TRadiobutton').pack(side='left', fill='x')
+    ttk.Radiobutton(radio_frame, value=2, text='Radio two', style=f'{style_color}TRadiobutton').pack(side='left',
+                                                                                                     fill='x')
 
     # Checkbutton
     check_frame = ttk.Frame(lf)
@@ -106,6 +106,7 @@ def create_themed_tab(color=''):
 
     return tab
 
+
 nb.add(create_themed_tab(''), text='Primary')
 nb.add(create_themed_tab('secondary'), text='Secondary')
 nb.add(create_themed_tab('info'), text='Info')
@@ -114,5 +115,3 @@ nb.add(create_themed_tab('warning'), text='Warning')
 nb.add(create_themed_tab('danger'), text='Danger')
 
 root.mainloop()
-
-
