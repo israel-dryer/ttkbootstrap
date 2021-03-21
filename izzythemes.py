@@ -14,6 +14,8 @@ class Style(ttk.Style):
         self.yeti = Theme(self, *YETI)
         self.pulse = Theme(self, *PULSE)
 
+        self.darkly = Theme(self, *DARKLY)
+
 
     def theme_use(self, themename=None):
         """If themename is None, returns the theme in use, otherwise, set
@@ -50,7 +52,8 @@ FLATLY = ('flatly',
               light='#ecf0f1',
               dark='#888888',
               active='#dadada',
-              border='#ced4da'
+              border='#ced4da',
+              inputfg='#2c3e50'
           ), 'Helvetica')
 
 MINTY = ('minty',
@@ -68,7 +71,8 @@ MINTY = ('minty',
              light='#f8f9fa',
              dark='#5a5a5a',
              active='#dadada',
-             border='#ced4da'
+             border='#ced4da',
+             inputfg='#5a5a5a'
          ), 'Helvetica')
 
 LITERA = ('litera',
@@ -86,7 +90,8 @@ LITERA = ('litera',
               light='#f8f9fa',
               dark='#343a40',
               active='#dadada',
-              border='#e5e5e5'
+              border='#e5e5e5',
+              inputfg='#343a40'
           ), 'Helvetica')
 
 COSMO = ('cosmo',
@@ -104,7 +109,8 @@ COSMO = ('cosmo',
              light='#fdfdfe',
              dark='#c7c8c8',
              active='#dadada',
-             border='#ced4da'
+             border='#ced4da',
+             inputfg='#c7c8c8'
          ), 'Helvetica')
 
 LUMEN = ('lumen',
@@ -122,7 +128,8 @@ LUMEN = ('lumen',
              light='#f6f6f6',
              dark='#555555',
              active='#dadada',
-             border='#ced4da'
+             border='#ced4da',
+             inputfg='#555555'
          ), 'Helvetica')
 
 SIMPLEX = ('simplex',
@@ -140,63 +147,82 @@ SIMPLEX = ('simplex',
                light='#ffffff',
                dark='#212529',
                active='#d8d8d8',
-               border='#bbbbbb'
+               border='#bbbbbb',
+               inputfg='#212529'
            ), 'Helvetica')
-
 
 SANDSTONE = ('sandstone',
-           Colors(
-               primary='#3e3f3a',
-               secondary='#8e8c84',
-               success='#93c54b',
-               info='#29abe0',
-               warning='#f47c3c',
-               danger='#d9534f',
-               bg='#ffffff',
-               fg='#3e3f3a',
-               selectbg='#29abe0',
-               selectfg='#ffffff',
-               light='#fdfcfb',
-               dark='#3e3f3a',
-               active='#d8d8d8',
-               border='#ced4da'
-           ), 'Helvetica')
-
+             Colors(
+                 primary='#3e3f3a',
+                 secondary='#8e8c84',
+                 success='#93c54b',
+                 info='#29abe0',
+                 warning='#f47c3c',
+                 danger='#d9534f',
+                 bg='#ffffff',
+                 fg='#3e3f3a',
+                 selectbg='#29abe0',
+                 selectfg='#ffffff',
+                 light='#fdfcfb',
+                 dark='#3e3f3a',
+                 active='#d8d8d8',
+                 border='#ced4da',
+                 inputfg='#3e3f3a'
+             ), 'Helvetica')
 
 YETI = ('yeti',
-           Colors(
-               primary='#008cba',
-               secondary='#333333',
-               success='#43ac6a',
-               info='#5bc0de',
-               warning='#e99002',
-               danger='#f04124',
-               bg='#ffffff',
-               fg='#222222',
-               selectbg='#5bc0de',
-               selectfg='#ffffff',
-               light='#eeeeee',
-               dark='#222222',
-               active='#dadada',
-               border='#cccccc'
-           ), 'Helvetica')
-
+        Colors(
+            primary='#008cba',
+            secondary='#333333',
+            success='#43ac6a',
+            info='#5bc0de',
+            warning='#e99002',
+            danger='#f04124',
+            bg='#ffffff',
+            fg='#222222',
+            selectbg='#5bc0de',
+            selectfg='#ffffff',
+            light='#eeeeee',
+            dark='#222222',
+            active='#dadada',
+            border='#cccccc',
+            inputfg='#222222'
+        ), 'Helvetica')
 
 PULSE = ('pulse',
-           Colors(
-               primary='#593196',
-               secondary='#17141f',
-               success='#13b955',
-               info='#009cdc',
-               warning='#efa31d',
-               danger='#fc3939',
-               bg='#ffffff',
-               fg='#444444',
-               selectbg='#009cdc',
-               selectfg='#ffffff',
-               light='#fdfdfe',
-               dark='#444444',
-               active='#dadada',
-               border='#cbc8d0'
-           ), 'Helvetica')
+         Colors(
+             primary='#593196',
+             secondary='#17141f',
+             success='#13b955',
+             info='#009cdc',
+             warning='#efa31d',
+             danger='#fc3939',
+             bg='#ffffff',
+             fg='#444444',
+             selectbg='#009cdc',
+             selectfg='#ffffff',
+             light='#fdfdfe',
+             dark='#444444',
+             active='#dadada',
+             border='#cbc8d0',
+             inputfg='#444444'
+         ), 'Helvetica')
 
+DARKLY = ('darkly',
+          Colors(
+              primary='#375a7f',
+              secondary='#444444',
+              success='#00bc8c',
+              info='#3498db',
+              warning='#f39c12',
+              danger='#e74c3c',
+              bg='#222222',
+              fg='#ffffff',
+              selectbg='#3498db',
+              selectfg='#ffffff',
+              light='#adb5bd',
+              dark='#ffffff',
+              active='#1d1d1d',
+              border='#222222',
+              inputfg='#444444'
+          ), 'Helvetica', 'dark')
