@@ -34,6 +34,7 @@ VARIATIONS = ['primary', 'secondary', 'success', 'info', 'warning', 'danger']
 Colors = namedtuple('Colors', ['primary', 'secondary', 'success', 'info', 'warning', 'danger',
                                'bg', 'fg', 'selectbg', 'selectfg', 'light', 'dark', 'active', 'border'])
 
+# TODO add color style for input font colors, which should be lighter
 
 class Theme:
     """A ttk theme created with built-in elements and a supplied color scheme"""
@@ -49,7 +50,6 @@ class Theme:
         """Create a new ttk theme"""
         self.style.theme_create(self.name, 'clam')
         self.style.theme_use(self.name)
-        self.apply_global_tk_styles()
         self.style_defaults()
         self.style_spinbox()
         self.style_scale()
@@ -119,10 +119,10 @@ class Theme:
                              lightcolor=self.colors.border,
                              foreground=self.colors.fg,
                              troughcolor=self.colors.bg,
-                             selectbg=self.colors.bg,
-                             selectfg=self.colors.fg,
-                             selectforeground=self.colors.fg,
-                             selectbackground=self.colors.bg,
+                             selectbg=self.colors.selectbg,
+                             selectfg=self.colors.selectfg,
+                             selectforeground=self.colors.selectfg,
+                             selectbackground=self.colors.selectbg,
                              fieldbg=self.colors.bg,
                              font=(self.font,),
                              borderwidth=1,
