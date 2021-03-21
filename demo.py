@@ -24,6 +24,7 @@ import tkinter as tk
 
 class Demo(Style):
     """An application class for demonstrating styles"""
+
     def __init__(self):
         super().__init__()
         self.theme_use('pulse')
@@ -72,7 +73,8 @@ class Demo(Style):
         # Available Colors
         color_frame = ttk.Labelframe(tab, text='Colors available in this theme', padding=15)
         for color in colors:
-            ttk.Button(color_frame, text=color.title(), style=f'{color.lower()}.TButton').pack(side='left', fill='x', expand='yes', padx=2)
+            ttk.Button(color_frame, text=color.title(), style=f'{color.lower()}.TButton').pack(side='left', fill='x',
+                                                                                               expand='yes', padx=2)
         color_frame.pack(side='top', fill='x', pady=5)
 
         # Widget examples
@@ -157,6 +159,5 @@ class Demo(Style):
 
 
 if __name__ == '__main__':
-
     demo = Demo()
     demo.run()
