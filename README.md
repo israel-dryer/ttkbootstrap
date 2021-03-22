@@ -17,6 +17,9 @@ ttk.Label(root, text='Hello world').pack()
 
 # create widget with other colors
 ttk.Label(root, text='Hello world', style='danger.TLabel').pack()
+
+# run the window
+root.mainloop()
 ```
 ## Applying Styles
 By default, the colors will be primary. Any other themed colors can be used by applying the color prefix to the ttk widget class.
