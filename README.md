@@ -22,9 +22,14 @@ ttk.Label(root, text='Hello world', style='danger.TLabel').pack()
 root.mainloop()
 ```
 ## Applying Styles
-By default, the colors will be primary. Any other themed colors can be used by applying the color prefix to the ttk widget class.
+By default, the primary color for the theme will be used on widgets (See images below for examples of theme color options). All other themed colors can be used by applying the color prefix to the ttk widget class.
   
-For example: `style = 'danger.TLabel'` or `style = 'success.TButton'` or `style = 'info.Outline.TButton'`
+```python
+ttk.Label(root, text='Hello World', style='info.TLabel')
+ttk.Button(root, text='Hello World', style='info.TButton')
+ttk.Button(root, text='Hello World', style='warning.Outline.TButton')
+ttk.Radiobutton(root, text='Hello World', style='danger.TRadiobutton')
+```
 
 ### Color prefixes
 - primary <i>(default)</i>
