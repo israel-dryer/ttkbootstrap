@@ -1,7 +1,8 @@
 # Izzy-Themes-TTK  (IN PROGRESS)
 A collection of modern themes for Tkinter TTK built using standard, cross-platform themes ('clam', 'alt', 'classic', 'default'). 
-   
-Most of these themes are adapted and or/inspired from the open source bootstrap themes published on https://bootswatch.com/
+Most of these themes are adapted and or/inspired from the open source bootstrap themes published on https://bootswatch.com/  
+
+This is a work-in-progress. Soon this will be published as a Python package. But, until then, you can clone the repo and use per below.
 
 ## Basic Usage
 ```python
