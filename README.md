@@ -22,7 +22,7 @@ By default, the colors will be primary. Any other themed colors can be used by a
   
 For example: `style = 'danger.TLabel'` or `style = 'success.TButton'` or `style = 'info.Outline.TButton'`
 
-### The following color prefixes are available for most widgets:
+### Color prefixes
 - primary (default)
 - secondary
 - success
@@ -30,7 +30,7 @@ For example: `style = 'danger.TLabel'` or `style = 'success.TButton'` or `style 
 - warning
 - danger
 
-### IzzyThemes defines and/or inherits the following ttk widget classes:
+### Defined ttk widget classes
 - TButton
 - Outline.TButton
 - TSpinbox
