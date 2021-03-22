@@ -24,9 +24,9 @@ By default, the colors will be primary. Secondary, etc... colors are available a
   
 To apply a theme color to a widget, use one of the following prefixes, followed by the widget class name.
 
-For example: `style = 'danger.TLabel'` or `style = style = 'danger.TButton'`
+For example: `style = 'danger.TLabel'` or `style = 'success.TButton'` or `style = 'info.Outline.TButton'`
 
-The following color prefixes are available for most widgets:
+### The following color prefixes are available for most widgets:
 - primary (default)
 - secondary
 - success
@@ -34,7 +34,7 @@ The following color prefixes are available for most widgets:
 - warning
 - danger
 
-IzzyThemes defines and/or inherits the following ttk widget classes:
+### IzzyThemes defines and/or inherits the following ttk widget classes:
 - TButton
 - Outline.TButton
 - TSpinbox
