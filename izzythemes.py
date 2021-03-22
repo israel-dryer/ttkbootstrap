@@ -13,8 +13,13 @@ class Style(ttk.Style):
         self.sandstone = Theme(self, *SANDSTONE)
         self.yeti = Theme(self, *YETI)
         self.pulse = Theme(self, *PULSE)
+        self.united = Theme(self, *UNITED)
+        self.journal = Theme(self, *JOURNAL)
 
         self.darkly = Theme(self, *DARKLY)
+        self.superhero = Theme(self, *SUPERHERO)
+        self.solar = Theme(self, *SOLAR)
+        self.cyborg = Theme(self, *CYBORG)
 
 
     def theme_use(self, themename=None):
@@ -46,14 +51,14 @@ FLATLY = ('flatly',
               warning='#f39c12',
               danger='#e74c3c',
               bg='#ffffff',
-              fg='#2c3e50',
+              fg='#212529',
               selectbg='#3498db',
               selectfg='#ffffff',
               light='#ecf0f1',
-              dark='#888888',
+              dark='#212529',
               active='#dadada',
               border='#ced4da',
-              inputfg='#2c3e50'
+              inputfg='#7b8a8b'
           ), 'Helvetica')
 
 MINTY = ('minty',
@@ -103,14 +108,14 @@ COSMO = ('cosmo',
              warning='#ff7518',
              danger='#ff0039',
              bg='#ffffff',
-             fg='#c7c8c8',
+             fg='#373a3c',
              selectbg='#3fb618',
              selectfg='#ffffff',
              light='#fdfdfe',
-             dark='#c7c8c8',
+             dark='#373a3c',
              active='#dadada',
              border='#ced4da',
-             inputfg='#c7c8c8'
+             inputfg='#49506a'
          ), 'Helvetica')
 
 LUMEN = ('lumen',
@@ -208,6 +213,44 @@ PULSE = ('pulse',
              inputfg='#444444'
          ), 'Helvetica')
 
+UNITED = ('united',
+         Colors(
+             primary='#e95420',
+             secondary='#aea79f',
+             success='#38b44a',
+             info='#17a2b8',
+             warning='#efb73e',
+             danger='#df382c',
+             bg='#ffffff',
+             fg='#333333',
+             selectbg='#17a2b8',
+             selectfg='#ffffff',
+             light='#f9fafb',
+             dark='#333333',
+             active='#dadada',
+             border='#ced4da',
+             inputfg='#333333'
+         ), 'Helvetica')
+
+JOURNAL = ('journal',
+         Colors(
+             primary='#eb6864',
+             secondary='#aaaaaa',
+             success='#22b24c',
+             info='#336699',
+             warning='#f5e625',
+             danger='#f57a00',
+             bg='#ffffff',
+             fg='#222222',
+             selectbg='#336699',
+             selectfg='#ffffff',
+             light='#f9fafb',
+             dark='#222222',
+             active='#dadada',
+             border='#ced4da',
+             inputfg='#222222'
+         ), 'Helvetica')
+
 DARKLY = ('darkly',
           Colors(
               primary='#375a7f',
@@ -225,4 +268,61 @@ DARKLY = ('darkly',
               active='#1d1d1d',
               border='#222222',
               inputfg='#444444'
+          ), 'Helvetica', 'dark')
+
+SUPERHERO = ('superhero',
+          Colors(
+              primary='#df691a',
+              secondary='#4e5d6c',
+              success='#5cb85c',
+              info='#5bc0de',
+              warning='#f0ad4e',
+              danger='#d9534f',
+              bg='#2b3e50',
+              fg='#ffffff',
+              selectbg='#5bc0de',
+              selectfg='#ffffff',
+              light='#adb5bd',
+              dark='#ffffff',
+              active='#4a5969',
+              border='#222222',
+              inputfg='#444444'
+          ), 'Helvetica', 'dark')
+
+SOLAR = ('solar',
+          Colors(
+              primary='#bc951a',
+              secondary='#94a2a4',
+              success='#44aca4',
+              info='#3f98d7',
+              warning='#d05e2f',
+              danger='#d95092',
+              bg='#002b36',
+              fg='#ffffff',
+              selectbg='#3f98d7',
+              selectfg='#ffffff',
+              light='#adb5bd',
+              dark='#ffffff',
+              active='#254a53',
+              border='#00252e',
+              inputfg='#495063'
+          ), 'Helvetica', 'dark')
+
+CYBORG = ('cyborg',
+          Colors(
+              primary='#2a9fd6',
+              secondary='#555555',
+              success='#77b300',
+              info='#9933cc',
+              warning='#ff8800',
+              danger='#cc0000',
+              bg='#060606',
+              fg='#ffffff',
+              selectbg='#9933cc',
+              selectfg='#ffffff',
+              light='#222222',
+              dark='#ffffff',
+              active='#2a2a2a',
+              border='#060606',
+              inputfg='#555555'
           ), 'Helvetica', 'dark')
