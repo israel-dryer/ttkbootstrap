@@ -34,7 +34,7 @@ VARIATIONS = ['primary', 'secondary', 'success', 'info', 'warning', 'danger']
 Colors = namedtuple('Colors', ['primary', 'secondary', 'success', 'info', 'warning', 'danger',
                                'bg', 'fg', 'selectbg', 'selectfg', 'light', 'dark', 'active', 'border', 'inputfg'])
 
-# TODO add color style for input font colors, which should be lighter
+# TODO fix the hover colors for dark themes on the radio and checkbuttons
 
 class Theme:
     """
@@ -581,7 +581,7 @@ class Theme:
                              indicatorsize=16,
                              indicatormargin=10,
                              indicatorforeground=self.colors.active,
-                             indicatorbackground=self.colors.active,
+                             indicatorbackground='white',
                              upperbordercolor=self.colors.active,
                              lowerbordercolor=self.colors.active)
 
@@ -589,7 +589,7 @@ class Theme:
                        indicatorbackground=[
                            ('active selected', self.brightness(self.colors.primary, -0.2)),
                            ('selected', self.colors.primary),
-                           ('active !selected', self.brightness(self.colors.dark, 0.3))],
+                           ('active !selected', self.colors.active)],
                        indicatorforeground=[
                            ('active selected', self.brightness(self.colors.primary, -0.2)),
                            ('selected', self.colors.primary)],
@@ -607,7 +607,7 @@ class Theme:
                            indicatorbackground=[
                                ('active selected', self.brightness(self.lookup_color(v), -0.2)),
                                ('selected', self.lookup_color(v)),
-                               ('active !selected', self.brightness(self.colors.dark, 0.3))],
+                               ('active !selected', self.colors.active)],
                            indicatorforeground=[
                                ('active selected', self.brightness(self.lookup_color(v), -0.2)),
                                ('selected', self.lookup_color(v))],
@@ -675,7 +675,7 @@ class Theme:
                              indicatorsize=16,
                              indicatormargin=10,
                              indicatorforeground=self.colors.active,
-                             indicatorbackground=self.colors.active,
+                             indicatorbackground='white',
                              upperbordercolor=self.colors.active,
                              lowerbordercolor=self.colors.active)
 
@@ -683,7 +683,7 @@ class Theme:
                        indicatorbackground=[
                            ('active selected', self.brightness(self.colors.primary, -0.2)),
                            ('selected', self.colors.primary),
-                           ('active !selected', self.brightness(self.colors.dark, 0.3))],
+                           ('active !selected', self.colors.active)],
                        indicatorforeground=[
                            ('active selected', self.brightness(self.colors.primary, -0.2)),
                            ('selected', self.colors.primary)],

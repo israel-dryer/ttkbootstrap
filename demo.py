@@ -30,7 +30,7 @@ class Demo(Style):
         self.theme_use('pulse')
         self.root = self.master
         self.root.title('Izzy Themes')
-        self.root.geometry('600x675')
+        self.root.geometry('590x650')
         self.theme_name = tk.StringVar()
         self.theme_name.set(self.theme_use())
         self.setup()
@@ -102,7 +102,7 @@ class Demo(Style):
         btn_frame = ttk.Frame(widget_frame)
         b1 = ttk.Button(btn_frame, text='Solid Button')
         b1.pack(side='left', fill='x', expand='yes', padx=(0, 5))
-        b2 = ttk.Button(btn_frame, text='Outline Button', style='info.Outline.TButton')
+        b2 = ttk.Button(btn_frame, text='Outline Button', style='Outline.TButton')
         b2.pack(side='left', fill='x', expand='yes')
         btn_frame.pack(fill='x', pady=5)
 
