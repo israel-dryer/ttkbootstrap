@@ -56,6 +56,33 @@ For example: `style = 'danger.TLabel'` or `style = 'success.TButton'` or `style 
 - TRadiobutton
 - Treeview
 
+## Create New Themes
+Creating a new theme is really easy... simply add a theme record to the `themes.json` file with the appropriate fields
+```json
+    {
+      "name": "cosmo",
+      "font": "Helvetica",
+      "type": "light",
+      "colors": {
+        "primary": "#2780e3",
+        "secondary": "#373a3c",
+        "success": "#3fb618",
+        "info": "#9954bb",
+        "warning": "#ff7518",
+        "danger": "#ff0039",
+        "bg": "#ffffff",
+        "fg": "#373a3c",
+        "selectbg": "#3fb618",
+        "selectfg": "#ffffff",
+        "light": "#fdfdfe",
+        "dark": "#373a3c",
+        "active": "#dadada",
+        "border": "#ced4da",
+        "inputfg": "#49506a"
+      }
+    }
+```
+
 ## Light Themes
 ![](examples/light_themes.png)
   
