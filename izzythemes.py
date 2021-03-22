@@ -782,7 +782,7 @@ class ThemeEngine:
                              bordercolor=self.colors.primary,
                              darkcolor=self.colors.primary,
                              lightcolor=self.colors.primary,
-                             arrowcolor=self.colors.bg,
+                             arrowcolor=self.colors.bg if self.type == 'light' else 'white',
                              arrowpadding=(0, 0, 15, 0),
                              relief='raised',
                              focusthickness=0,
@@ -855,8 +855,8 @@ class ThemeEngine:
 
         self.style.map('Outline.TMenubutton',
                        foreground=[
-                           ('pressed', self.colors.fg),
-                           ('hover', self.colors.fg)],
+                           ('pressed', self.colors.selectfg),
+                           ('hover', self.colors.selectfg)],
                        background=[
                            ('pressed', self.brightness(self.colors.primary, -0.2)),
                            ('hover', self.brightness(self.colors.primary, -0.1))],
@@ -870,8 +870,8 @@ class ThemeEngine:
                            ('pressed', self.brightness(self.colors.primary, -0.2)),
                            ('hover', self.brightness(self.colors.primary, -0.1))],
                        arrowcolor=[
-                           ('pressed', self.colors.bg),
-                           ('hover', self.colors.bg)])
+                           ('pressed', self.colors.selectfg),
+                           ('hover', self.colors.selectfg)])
 
         for v in VARIATIONS:
             self.style.configure(f'{v}.Outline.TMenubutton',
