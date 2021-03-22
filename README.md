@@ -6,19 +6,15 @@ Most of these themes are adapted and or/inspired from the open source bootstrap 
 ## Basic Usage
 ```python
 from izzythemes import Style, ttk
+
 style = Style()
 style.theme_use('flatly')
-```
-
-- Add styled widgets to your window with ttk. 
-- Use the `style` argument to set other available colors.
-```python
 root = style.master
 
-# primary colors
+# create widget with primary colors
 ttk.Label(root, text='Hello world').pack()
 
-# other colors
+# create widget with other colors
 ttk.Label(root, text='Hello world', style='danger.TLabel').pack()
 ```
 ## Applying Styles
