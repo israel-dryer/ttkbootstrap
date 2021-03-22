@@ -20,7 +20,7 @@ ttk.Label(root, text='Hello world').pack()
 ttk.Label(root, text='Hello world', style='danger.TLabel').pack()
 ```
 
-[Learn how to apply styles](Applying Styles)
+![Learn how to apply styles](Applying Styles)
 
 ## Light Themes
 ![](examples/light_themes.png)
