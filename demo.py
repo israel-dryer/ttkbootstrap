@@ -27,7 +27,7 @@ class Demo(Style):
 
     def __init__(self):
         super().__init__()
-        self.theme_use('pulse')
+        self.theme_use('cosmo')
         self.root = self.master
         self.root.title('Izzy Themes')
         self.root.geometry('590x650')
