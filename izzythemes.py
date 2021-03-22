@@ -273,6 +273,7 @@ class ThemeEngine:
         self.style.configure('TScale',
                              sliderrelief='flat',
                              sliderthickness=18,
+                             borderwidth=1,
                              troughrelief='flat',
                              background=self.colors.primary,
                              troughcolor=self.brightness(self.colors.light, -0.05))
@@ -615,14 +616,20 @@ class ThemeEngine:
             - Radiobutton.indicator: indicatorsize, indicatormargin, indicatorbackground, indicatorforeground, upperbordercolor, lowerbordercolor
             - Radiobutton.label: compound, space, text, font, foreground, underline, width, anchor, justify, wraplength, embossed, image, stipple, background
         """
+        # Use xpnative if available; the buttons look so much better
+        # TODO check for native options on Linux and MacOS
+        if 'xpnative' in self.style.theme_names():
+            self.style.element_create('Radiobutton.indicator', 'from', 'xpnative')
+
         self.style.configure('TRadiobutton',
                              foreground=self.colors.dark,
                              indicatorsize=16,
                              indicatormargin=10,
-                             indicatorforeground=self.colors.active,
+                             indicatorforeground=self.colors.primary,
                              indicatorbackground='white',
                              upperbordercolor=self.colors.active,
-                             lowerbordercolor=self.colors.active)
+                             lowerbordercolor=self.colors.active
+                             )
 
         self.style.map('TRadiobutton',
                        indicatorbackground=[
@@ -709,6 +716,11 @@ class ThemeEngine:
             - Checkbutton.focus: focuscolor, focusthickness
             - Checkbutton.label: compound, space, text, font, foreground, underline, width, anchor, justify, wraplength, embossed, image, stipple, background
         """
+        # Use xpnative if available; the buttons look so much better
+        # TODO check for native options on Linux and MacOS
+        if 'xpnative' in self.style.theme_names():
+            self.style.element_create('Checkbutton.indicator', 'from', 'xpnative')
+
         self.style.configure('TCheckbutton',
                              foreground=self.colors.dark,
                              indicatorsize=16,
