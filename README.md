@@ -7,36 +7,20 @@ A collection of modern themes for Tkinter TTK built using only built-in standard
 ## Dark Themes
 ![](examples/dark_themes.png)
 
-## Usage
-Exactly the same API as built-in ttk.
+## Basic Usage
 ```python
 from izzythemes import Style, ttk
-```
-create a style object
-```python
 style = Style()
-```
-
-set the theme
-```python
 style.theme_use('flatly')
 ```
 
-access the root window created by the style
+Add styled widgets to your window with ttk. Use the `style` argument to set other available colors.
 ```
 root = style.master
 
-# alternatively, you can create one directly from tkinter
-import tkinter as tk
-root = tk.Tk()
-```
-
-create a styled widget (primary color)
-```python
+# primary colors
 ttk.Label(root, text='Hello world').pack()
-```
 
-create a styled widget in another available color
-```python
+# other colors
 ttk.Label(root, text='Hello world', style='danger.TLabel').pack()
 ```
