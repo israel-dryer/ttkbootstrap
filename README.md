@@ -18,10 +18,8 @@ ttk.Label(root, text='Hello world').pack()
 ttk.Label(root, text='Hello world', style='danger.TLabel').pack()
 ```
 ## Applying Styles
-By default, the colors will be primary. Secondary, etc... colors are available as well, as represented in the images in this readme.
+By default, the colors will be primary. Any other themed colors can be used by applying the color prefix to the ttk widget class.
   
-To apply a theme color to a widget, use one of the following prefixes, followed by the widget class name.
-
 For example: `style = 'danger.TLabel'` or `style = 'success.TButton'` or `style = 'info.Outline.TButton'`
 
 ### The following color prefixes are available for most widgets:
