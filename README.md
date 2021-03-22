@@ -10,7 +10,7 @@ style.theme_use('flatly')
 
 - Add styled widgets to your window with ttk. 
 - Use the `style` argument to set other available colors.
-```
+```python
 root = style.master
 
 # primary colors
