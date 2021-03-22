@@ -19,15 +19,6 @@ ttk.Label(root, text='Hello world').pack()
 # other colors
 ttk.Label(root, text='Hello world', style='danger.TLabel').pack()
 ```
-
-![Learn how to apply styles](Applying Styles)
-
-## Light Themes
-![](examples/light_themes.png)
-  
-## Dark Themes
-![](examples/dark_themes.png)
-
 ## Applying Styles
 By default, the colors will be primary. Secondary, etc... colors are available as well, as represented in the images in this readme.
   
@@ -64,3 +55,11 @@ IzzyThemes defines and/or inherits the following ttk widget classes:
 - Vertical.TProgressbar
 - TRadiobutton
 - Treeview
+
+## Light Themes
+![](examples/light_themes.png)
+  
+## Dark Themes
+![](examples/dark_themes.png)
+
+
