@@ -23,7 +23,7 @@ By default, the colors will be primary. Any other themed colors can be used by a
 For example: `style = 'danger.TLabel'` or `style = 'success.TButton'` or `style = 'info.Outline.TButton'`
 
 ### Color prefixes
-- primary (default)
+- primary <i>(default)</i>
 - secondary
 - success
 - info
