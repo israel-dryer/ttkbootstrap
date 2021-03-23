@@ -620,16 +620,24 @@ class ThemeEngine:
         """
         if 'xpnative' in self.style.theme_names():
             self.style.element_create('Radiobutton.indicator', 'from', 'xpnative')
-        else:
-            self.style.element_create('Radiobutton.indicator', 'from', 'alt')
 
-        self.style.configure('TRadiobutton', indicatorcolor='white' if self.type == 'light' else self.colors.primary)
+        self.style.configure('TRadiobutton',
+                             indicatormargin=8,
+                             indicatorsize=12,
+                             upperbordercolor=self.colors.dark if self.type == 'light' else self.colors.light,
+                             lowerbordercolor=self.colors.dark if self.type == 'light' else self.colors.light,
+                             indicatorforeground=self.colors.dark if self.type == 'light' else self.colors.bg)
+
 
         self.style.map('TRadiobutton',
-                       foreground=[('active', self.colors.primary if (self.type == 'light') else 'white')])
+                       foreground=[('active', self.colors.primary if (self.type == 'light') else 'white')],
+                       indicatorforeground=[('active', self.colors.primary if (self.type == 'light') else 'black')])
 
+        # variations change the indicator color
         for v in VARIATIONS:
-            self.style.map(f'{v}.TRadiobutton', foreground=[('active', self.brightness(self.lookup_color(v), -0.2))])
+            self.style.map(f'{v}.TRadiobutton',
+                           foreground=[('active', self.brightness(self.lookup_color(v), -0.2))],
+                           indicatorforeground=[('active', self.brightness(self.lookup_color(v), -0.2))])
 
     def style_label(self):
         """
