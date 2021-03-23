@@ -10,14 +10,18 @@
 
 
     The purpose of this package is to provide a simple and easy to use api for creating modern ttk themes using
-    the themes that are already built into Tkinter and Python. It is possibly to customize these even further with
-    image-based layouts. But, they are time-consuming to create and not flexible for creating varieties of colors.
-    Fortunately, ttk is very flexible and allows the creating of brand new themes using the best parts of all the
-    existing themes.
+    the themes that are already built into Tkinter and Python.
 
     I've created several new widget layouts using the parts of existing themes. For example, the Combobox widget uses
     the field element from the Spinbox so that I could create the border effect I wanted.  Another example is the
     Treeview, which uses the indicator from the `alt` theme, because I just think it looks nicer.
+
+    For Windows, I'm using the checkbutton and radiobutton from the `xpnative` theme. For Linux and MacOS, it defaults
+    the the clam theme elements.
+
+    I decided to use PILLOW to draw the scale widget on the fly for each theme because the look was so much better than
+    the native looks. Hopefully this will not be a noticeable performance issue, and it does require you to pip install
+    pillow (PIL).
 
     I decided to use the clam theme as the base for much of this project because it provides a lot of flexibility when
     it comes to borders. Because the clam theme has an outer border and an inner border (light & dark), I am able to use
