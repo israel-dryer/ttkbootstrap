@@ -618,55 +618,18 @@ class ThemeEngine:
             - Radiobutton.indicator: indicatorsize, indicatormargin, indicatorbackground, indicatorforeground, upperbordercolor, lowerbordercolor
             - Radiobutton.label: compound, space, text, font, foreground, underline, width, anchor, justify, wraplength, embossed, image, stipple, background
         """
-        # Use xpnative if available; the buttons look so much better
-        # TODO check for native options on Linux and MacOS
         if 'xpnative' in self.style.theme_names():
             self.style.element_create('Radiobutton.indicator', 'from', 'xpnative')
+        else:
+            self.style.element_create('Radiobutton.indicator', 'from', 'alt')
 
-        self.style.configure('TRadiobutton',
-                             foreground=self.colors.dark,
-                             indicatorsize=16,
-                             indicatormargin=10,
-                             indicatorforeground=self.colors.primary,
-                             indicatorbackground='white',
-                             upperbordercolor=self.colors.active,
-                             lowerbordercolor=self.colors.active
-                             )
+        self.style.configure('TRadiobutton', indicatorcolor='white' if self.type == 'light' else self.colors.primary)
 
         self.style.map('TRadiobutton',
-                       indicatorbackground=[
-                           ('active selected', self.brightness(self.colors.primary, -0.2)),
-                           ('selected', self.colors.primary),
-                           ('active !selected', self.colors.active)],
-                       indicatorforeground=[
-                           ('active selected', self.brightness(self.colors.primary, -0.2)),
-                           ('selected', self.colors.primary)],
-                       foreground=[('active', self.colors.primary)],
-                       upperbordercolor=[
-                           ('selected', self.colors.primary),
-                           ('active !selected', self.brightness(self.colors.dark, 0.3))],
-                       lowerbordercolor=[
-                           ('selected', self.colors.primary),
-                           ('active !selected', self.brightness(self.colors.dark, 0.3))])
+                       foreground=[('active', self.colors.primary if (self.type == 'light') else 'white')])
 
-        # variations change the indicator color
         for v in VARIATIONS:
-            self.style.map(f'{v}.TRadiobutton',
-                           indicatorbackground=[
-                               ('active selected', self.brightness(self.lookup_color(v), -0.2)),
-                               ('selected', self.lookup_color(v)),
-                               ('active !selected', self.colors.active)],
-                           indicatorforeground=[
-                               ('active selected', self.brightness(self.lookup_color(v), -0.2)),
-                               ('selected', self.lookup_color(v))],
-                           foreground=[
-                               ('active', self.brightness(self.lookup_color(v), -0.2))],
-                           upperbordercolor=[
-                               ('selected', self.lookup_color(v)),
-                               ('active !selected', self.brightness(self.colors.dark, 0.3))],
-                           lowerbordercolor=[
-                               ('selected', self.lookup_color(v)),
-                               ('active !selected', self.brightness(self.colors.dark, 0.3))])
+            self.style.map(f'{v}.TRadiobutton', foreground=[('active', self.brightness(self.lookup_color(v), -0.2))])
 
     def style_label(self):
         """
