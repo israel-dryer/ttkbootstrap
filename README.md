@@ -63,7 +63,7 @@ ttk.Radiobutton(root, text='Hello World', style='danger.TRadiobutton')
 
 ### Exceptions
 - The **Scale** widget is built with an image set in the primary theme color; this cannot be changed via styles.
-- The **Checkbutton** and **Radiobutton** colors are only changeable on Linux and MacOS. Windows uses the built-in "xpnative" themed lements to build the widgets.
+- The **Checkbutton** and **Radiobutton** colors are only changeable on Linux and MacOS. Windows uses the built-in "xpnative" themed elements to build the widgets.
 
 ## Create New Themes
 Creating a new theme is really easy... simply add a theme record to the `themes.json` file with the appropriate fields
