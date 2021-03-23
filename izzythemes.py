@@ -696,47 +696,29 @@ class ThemeEngine:
 
         self.style.configure('TCheckbutton',
                              foreground=self.colors.dark,
-                             indicatorsize=16,
+                             indicatorsize=10,
                              indicatormargin=10,
-                             indicatorforeground=self.colors.active,
-                             indicatorbackground='white',
-                             upperbordercolor=self.colors.active,
-                             lowerbordercolor=self.colors.active)
+                             indicatorforeground=self.colors.selectfg)
 
         self.style.map('TCheckbutton',
                        indicatorbackground=[
                            ('active selected', self.brightness(self.colors.primary, -0.2)),
-                           ('selected', self.colors.primary),
+                           ('selected', self.colors.dark),
                            ('active !selected', self.colors.active)],
-                       indicatorforeground=[
-                           ('active selected', self.brightness(self.colors.primary, -0.2)),
-                           ('selected', self.colors.primary)],
-                       foreground=[('active', self.colors.primary)],
-                       upperbordercolor=[
-                           ('selected', self.colors.primary),
-                           ('active !selected', self.brightness(self.colors.dark, 0.3))],
-                       lowerbordercolor=[
-                           ('selected', self.colors.primary),
-                           ('active !selected', self.brightness(self.colors.dark, 0.3))])
+                       foreground=[('active', self.colors.primary)])
 
         # variations change indicator color
         for v in VARIATIONS:
             self.style.map(f'{v}.TCheckbutton',
                            indicatorbackground=[
                                ('active selected', self.brightness(self.lookup_color(v), -0.2)),
-                               ('selected', self.lookup_color(v)),
-                               ('active !selected', self.brightness(self.colors.dark, 0.3))],
+                               ('selected', self.colors.dark),
+                               ('active !selected', self.colors.active)],
                            indicatorforeground=[
                                ('active selected', self.brightness(self.lookup_color(v), -0.2)),
                                ('selected', self.lookup_color(v))],
                            foreground=[
-                               ('active', self.brightness(self.lookup_color(v), -0.2))],
-                           upperbordercolor=[
-                               ('selected', self.lookup_color(v)),
-                               ('active !selected', self.brightness(self.colors.dark, 0.3))],
-                           lowerbordercolor=[
-                               ('selected', self.lookup_color(v)),
-                               ('active !selected', self.brightness(self.colors.dark, 0.3))])
+                               ('active', self.brightness(self.lookup_color(v), -0.2))])
 
     def style_solid_menubutton(self):
         """
