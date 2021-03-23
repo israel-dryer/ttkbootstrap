@@ -6,7 +6,7 @@
         Israel Dryer
 
     Modified
-        2021-03-21
+        2021-03-22
 
 
     The purpose of this package is to provide a simple and easy to use api for creating modern ttk themes using
@@ -28,6 +28,7 @@
 import json
 import colorsys
 from tkinter import ttk
+from PIL import ImageTk, Image, ImageDraw
 from collections import namedtuple
 
 VARIATIONS = ['primary', 'secondary', 'success', 'info', 'warning', 'danger']
@@ -259,6 +260,14 @@ class ThemeEngine:
             self.style.configure(f'{v}.Horizontal.TProgressbar', background=self.lookup_color(v))
             self.style.configure(f'{v}.Vertical.TProgressbar', background=self.lookup_color(v))
 
+    @staticmethod
+    def create_slider_image(color, size=18):
+        """Create a slider based on given size and color"""
+        im = Image.new('RGBA', (100, 100))
+        draw = ImageDraw.Draw(im)
+        draw.ellipse((0, 0, 95, 95), fill=color)
+        return ImageTk.PhotoImage(im.resize((size, size), Image.LANCZOS))
+
     def style_scale(self):
         """
         Create a scale widget style
@@ -267,35 +276,28 @@ class ThemeEngine:
             - Scale.trough: borderwidth, troughcolor, troughrelief
             - Scale.slider: sliderlength, sliderthickness, sliderrelief, borderwidth, background, bordercolor, orient
         """
-        self.style.element_create('Scale.trough', 'from', 'alt')
-        self.style.element_create('Scale.slider', 'from', 'alt')
+        self.style.layout('Horizontal.TScale', [
+            ('Scale.focus', {'expand': '1', 'sticky': 'nswe', 'children': [
+                ('Horizontal.Scale.track', {'sticky': 'we'}),
+                ('Horizontal.Scale.slider', {'side': 'left', 'sticky': ''})]})])
 
-        self.style.configure('TScale',
-                             sliderrelief='flat',
-                             sliderthickness=18,
-                             borderwidth=1,
-                             troughrelief='flat',
-                             background=self.colors.primary,
-                             troughcolor=self.brightness(self.colors.light, -0.05))
+        self.style.layout('Vertical.TScale', [
+            ('Scale.focus', {'expand': '1', 'sticky': 'nswe', 'children': [
+                ('Vertical.Scale.track', {'sticky': 'we'}),
+                ('Vertical.Scale.slider', {'side': 'left', 'sticky': ''})]})])
 
-        self.style.map('TScale',
-                       background=[
-                           ('pressed', self.brightness(self.colors.primary, -0.2)),
-                           ('hover', self.brightness(self.colors.primary, -0.1))])
+        # create widget images
+        self.scale_images = {}
+        self.scale_images['primary_regular'] = self.create_slider_image(self.colors.primary)
+        self.scale_images['primary_pressed'] = self.create_slider_image(self.brightness(self.colors.primary, -0.2))
+        self.scale_images['primary_hover'] = self.create_slider_image(self.brightness(self.colors.primary, -0.1))
+        self.scale_images['trough'] = ImageTk.PhotoImage(Image.new('RGB', (8, 8), self.brightness(self.colors.light, -0.05)))
 
-        for v in VARIATIONS:
-            self.style.configure(f'{v}.Horizontal.TScale', background=self.lookup_color(v))
-            self.style.configure(f'{v}.Vertical.TScale', background=self.lookup_color(v))
-
-            self.style.map(f'{v}.Horizontal.TScale',
-                           background=[
-                               ('pressed', self.brightness(self.lookup_color(v), -0.2)),
-                               ('hover', self.brightness(self.lookup_color(v), -0.1))])
-
-            self.style.map(f'{v}.Vertical.TScale',
-                           background=[
-                               ('pressed', self.brightness(self.lookup_color(v), -0.2)),
-                               ('hover', self.brightness(self.lookup_color(v), -0.1))])
+        # create new elements based on images
+        self.style.element_create('Scale.track', 'image', self.scale_images['trough'])
+        self.style.element_create('Scale.slider', 'image', self.scale_images['primary_regular'],
+                                  ('pressed', self.scale_images['primary_pressed']),
+                                  ('hover', self.scale_images['primary_hover']))
 
     def style_scrollbar(self):
         """
