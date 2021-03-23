@@ -93,9 +93,14 @@ Creating a new theme is really easy... simply add a theme record to the `themes.
 ```
 
 ## Light Themes
-![](examples/light_themes.png)
+<img src="examples/cosmo.png" width="45%"/> <img src="examples/flatly.png" width="45%"/>  
+<img src="examples/journal.png" width="45%"/> <img src="examples/litera.png" width="45%"/>  
+<img src="examples/lumen.png" width="45%"/> <img src="examples/minty.png" width="45%"/>  
+<img src="examples/pulse.png" width="45%"/> <img src="examples/sandstone.png" width="45%"/>  
+<img src="examples/united.png" width="45%"/> <img src="examples/yeti.png" width="45%"/>  
   
 ## Dark Themes
-![](examples/dark_themes.png)
+<img src="examples/darkly.png" width="45%"/> <img src="examples/cyborg.png" width="45%"/>
+<img src="examples/superhero.png" width="45%"/> <img src="examples/solar.png" width="45%"/>  
 
 
