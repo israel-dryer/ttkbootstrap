@@ -5,8 +5,9 @@ Most of these themes are adapted and or/inspired from the open source bootstrap 
 This is a work-in-progress. Soon this will be published as a Python package. But, until then, you can clone the repo and use per below.
 
 ## Basic Usage
+
 ```python
-from izzythemes import Style, ttk
+from src import Style, ttk
 
 style = Style()
 style.theme_use('flatly')
