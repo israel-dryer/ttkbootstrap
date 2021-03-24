@@ -5,29 +5,19 @@
         Israel Dryer
 
     Modfied:
-        March 21, 2021
-
-    Themes available:
-        - flatly
-        - minty
-        - litera
-        - cosmo
-        - lumen
-        - simplex
-        - sandstone
-        - yeti
-        - pulse
+        March 24, 2023
 """
-from izzythemes import Style, ttk
+from ttkbootstrap import BootStyle
+from tkinter import ttk
 import tkinter as tk
 
 
-class Demo(Style):
+class Demo(BootStyle):
     """An application class for demonstrating styles"""
 
     def __init__(self):
         super().__init__()
-        self.theme_use('cosmo')
+        self.apply_theme('superhero')
         self.root = self.master
         self.root.title('Izzy Themes')
         self.root.geometry('590x650')
@@ -39,13 +29,21 @@ class Demo(Style):
         ttk.Scrollbar(self.root).pack(side='right', fill='y')
         self.nb = ttk.Notebook(self.root)
         self.nb.pack(fill='both', expand='yes')
-        tab = self.create_themed_tab()
-        self.nb.add(tab, text='Tab 1')
+        self.tab = self.create_themed_tab()
+        self.nb.add(self.tab, text='Tab 1')
         self.nb.add(ttk.Frame(self.nb), text='Tab 2')
         self.nb.add(ttk.Frame(self.nb), text='Tab 3')
 
     def change_theme(self, new_theme):
-        self.theme_use(new_theme)
+        """Destroying the widget isn't strictly neccesary with pure TTK widgets. However, for this demo, I'm
+        explicily allowing the changing of colors, etc... and because I want the styles to be consistent on underlying
+        standard tk widgets, I've chosing to redraw all the widgets in the main tab. You can use other methods or
+        avoid this altogether if you're not switch between light and dark themes."""
+        self.tab.destroy()
+        self.apply_theme(new_theme)
+        self.tab = self.create_themed_tab()
+        self.nb.insert(0, self.tab, text='Tab 1')
+        self.nb.select(self.nb.tabs()[0])
         self.theme_name.set(new_theme)
 
     def checked(self, btn):
