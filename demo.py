@@ -7,9 +7,7 @@
     Modfied:
         March 24, 2023
 """
-from ttkbootstrap import BootStyle
-from tkinter import ttk
-import tkinter as tk
+from ttkbootstrap import BootStyle, tkinter, ttk
 
 
 class Demo(BootStyle):
@@ -17,11 +15,11 @@ class Demo(BootStyle):
 
     def __init__(self):
         super().__init__()
-        self.apply_theme('superhero')
+        self.theme_use('superhero')
         self.root = self.master
         self.root.title('Izzy Themes')
         self.root.geometry('590x650')
-        self.theme_name = tk.StringVar()
+        self.theme_name = tkinter.StringVar()
         self.theme_name.set(self.theme_use())
         self.setup()
 
@@ -35,12 +33,12 @@ class Demo(BootStyle):
         self.nb.add(ttk.Frame(self.nb), text='Tab 3')
 
     def change_theme(self, new_theme):
-        """Destroying the widget isn't strictly neccesary with pure TTK widgets. However, for this demo, I'm
+        """Destroying the widget isn't strictly neccessary with pure TTK widgets. However, for this demo, I'm
         explicily allowing the changing of colors, etc... and because I want the styles to be consistent on underlying
         standard tk widgets, I've chosing to redraw all the widgets in the main tab. You can use other methods or
         avoid this altogether if you're not switch between light and dark themes."""
         self.tab.destroy()
-        self.apply_theme(new_theme)
+        self.theme_use(new_theme)
         self.tab = self.create_themed_tab()
         self.nb.insert(0, self.tab, text='Tab 1')
         self.nb.select(self.nb.tabs()[0])
@@ -63,7 +61,7 @@ class Demo(BootStyle):
         # Menubutton (select a theme)
         mb = ttk.Menubutton(header_frame, text='Select a theme to preview')
         mb.pack(side='right', fill='x', padx=(0, 5), pady=5)
-        mb.menu = tk.Menu(mb)
+        mb.menu = tkinter.Menu(mb)
         mb['menu'] = mb.menu
         for t in self.theme_names():
             mb.menu.add_command(label=t, command=lambda theme_name=t: self.change_theme(theme_name))
@@ -71,8 +69,8 @@ class Demo(BootStyle):
         # Available Colors
         color_frame = ttk.Labelframe(tab, text='Colors available in this theme', padding=15)
         for color in colors:
-            ttk.Button(color_frame, text=color.title(), style=f'{color.lower()}.TButton').pack(side='left', fill='x',
-                                                                                               expand='yes', padx=2)
+            btn = ttk.Button(color_frame, text=color.title(), style=f'{color.lower()}.TButton')
+            btn.pack(side='left', fill='x', expand='yes', padx=2)
         color_frame.pack(side='top', fill='x', pady=5)
 
         # Widget examples
@@ -106,7 +104,7 @@ class Demo(BootStyle):
         btn_frame.pack(fill='x', pady=5)
 
         # Option Menu
-        om_var = tk.StringVar()
+        om_var = tkinter.StringVar()
         om = ttk.OptionMenu(btn_frame, om_var, 'Option Menu', *self.theme_names())
         om.pack(side='right', fill='x', padx=(5, 0), pady=5)
 
@@ -142,7 +140,7 @@ class Demo(BootStyle):
 
         # Scale
         scale_frame = ttk.Frame(widget_frame)
-        scale_var = tk.IntVar(value=25)
+        scale_var = tkinter.IntVar(value=25)
         scale = ttk.Scale(scale_frame, variable=scale_var, from_=1, to=100)
         scale.pack(side='left', fill='x', expand='yes', padx=(0, 2))
         scale_frame.pack(side='top', fill='x', pady=5)
