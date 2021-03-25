@@ -82,11 +82,9 @@ Creating a new theme is really easy... simply add a theme record to the `themes.
         "danger": "#ff0039",
         "bg": "#ffffff",
         "fg": "#373a3c",
-        "selectbg": "#3fb618",
+        "selectbg": "#373a3c",
         "selectfg": "#ffffff",
         "light": "#fdfdfe",
-        "dark": "#373a3c",
-        "active": "#dadada",
         "border": "#ced4da",
         "inputfg": "#49506a"
       }
