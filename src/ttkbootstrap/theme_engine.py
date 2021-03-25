@@ -35,8 +35,8 @@ def brightness(hex_color, pct_change):
 
 
 class BootStyle(ttk.Style):
-    def __init__(self):
-        super().__init__()
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
         self.themes = {}
         self.load_izzy_themes()
         self.settings = None
@@ -91,7 +91,7 @@ class ThemeSettings:
 
     def __init__(self, name='default', type='light', font='helvetica', colors=None):
         self.name = name
-        self.type = 'light'
+        self.type = type
         self.font = font
         self.colors = colors if colors else Colors()
 
@@ -170,6 +170,7 @@ class StylerTK:
 
     def style_window(self):
         """Apply global options to all matching tkinter widgets"""
+        self.master.configure(background=self.settings.colors.bg)
         self.set_option('*background', self.settings.colors.bg)
         self.set_option('*font', 'Helvetica')
         self.set_option('*borderWidth', 0)
@@ -341,13 +342,13 @@ class StylerTTK:
             - Combobox.padding: padding, relief, shiftrelief
             - Combobox.textarea: font, width
         """
-        self.style.layout('TCombobox', [('Spinbox.field', {'side': 'top', 'sticky': 'we', 'children': [
+        self.style.layout('TCombobox', [('combo.Spinbox.field', {'side': 'top', 'sticky': 'we', 'children': [
             ('Combobox.downarrow', {'side': 'right', 'sticky': 'ns'}),
             ('Combobox.padding', {'expand': '1', 'sticky': 'nswe', 'children': [
                 ('Combobox.textarea', {'sticky': 'nswe'})]})]})])
 
         if self.settings.type == 'dark':
-            self.style.element_create('Spinbox.field', 'from', 'default')
+            self.style.element_create('combo.Spinbox.field', 'from', 'default')
 
         self.style.element_create('Combobox.downarrow', 'from', 'default')
         self.style.element_create('Combobox.padding', 'from', 'clam')
@@ -367,13 +368,13 @@ class StylerTTK:
         self.style.map('TCombobox',
                        bordercolor=[
                            ('focus', self.settings.colors.primary),
-                           ('hover', self.settings.colors.primary)],
+                           ('hover', self.settings.colors.bg)],
                        lightcolor=[
                            ('focus', self.settings.colors.primary),
-                           ('pressed', self.settings.colors.primary)],
+                           ('hover', self.settings.colors.primary)],
                        darkcolor=[
                            ('focus', self.settings.colors.primary),
-                           ('pressed', self.settings.colors.primary)],
+                           ('hover', self.settings.colors.primary)],
                        arrowcolor=[
                            ('pressed', self.settings.colors.light),
                            ('focus', self.settings.colors.inputfg),
@@ -504,14 +505,15 @@ class StylerTTK:
         if self.settings.type == 'dark':
             self.style.element_create('custom.Spinbox.field', 'from', 'default')
 
+        # A light background is shining through on the corners of the dark view.
         self.style.configure('TSpinbox',
-                             bordercolor=self.settings.colors.border,
-                             lightcolor=self.settings.colors.bg,
-                             darkcolor=self.settings.colors.bg,
+                             fieldbackground=self.settings.colors.light,
+                             bordercolor=self.settings.colors.bg,
+                             lightcolor=self.settings.colors.border,
+                             darkcolor=self.settings.colors.border,
                              foreground=self.settings.colors.inputfg,
                              borderwidth=0,
                              background=self.settings.colors.light,
-                             fieldbackground=self.settings.colors.light,
                              relief='flat',
                              arrowcolor=self.settings.colors.inputfg,
                              arrowsize=16,
@@ -520,13 +522,17 @@ class StylerTTK:
         self.style.map('TSpinbox',
                        bordercolor=[
                            ('focus', self.settings.colors.primary),
+                           ('hover', self.settings.colors.bg)],
+                       lightcolor=[
+                           ('focus', self.settings.colors.primary),
+                           ('hover', self.settings.colors.primary)],
+                       darkcolor=[
+                           ('focus', self.settings.colors.primary),
                            ('hover', self.settings.colors.primary)],
                        arrowcolor=[
                            ('pressed', self.settings.colors.primary),
                            ('focus', self.settings.colors.inputfg),
-                           ('hover', self.settings.colors.inputfg)],
-                       lightcolor=[('focus', self.settings.colors.primary)],
-                       darkcolor=[('focus', self.settings.colors.primary)])
+                           ('hover', self.settings.colors.inputfg)])
 
         # variation changes focus ring color
         for color in self.settings.colors:
@@ -740,20 +746,22 @@ class StylerTTK:
         """
         self.style.configure('TEntry',
                              fieldbackground=self.settings.colors.light,
-                             bordercolor=self.settings.colors.border,
-                             lightcolor=self.settings.colors.bg,
-                             darkcolor=self.settings.colors.bg,
+                             bordercolor=self.settings.colors.bg,
+                             lightcolor=self.settings.colors.border,
+                             darkcolor=self.settings.colors.border,
                              foreground=self.settings.colors.inputfg,
                              padding=5)
 
         self.style.map('TEntry',
                        bordercolor=[
-                           ('hover', self.settings.colors.primary),
-                           ('focus', self.settings.colors.primary)],
+                           ('focus', self.settings.colors.primary),
+                           ('hover', self.settings.colors.bg)],
                        lightcolor=[
-                           ('focus', self.settings.colors.primary)],
+                           ('focus', self.settings.colors.primary),
+                           ('hover', self.settings.colors.primary)],
                        darkcolor=[
-                           ('focus', self.settings.colors.primary)])
+                           ('focus', self.settings.colors.primary),
+                           ('hover', self.settings.colors.primary)])
 
         # variation changes the focus ring color
         for color in self.settings.colors:
