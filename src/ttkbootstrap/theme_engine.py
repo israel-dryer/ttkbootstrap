@@ -38,11 +38,11 @@ class BootStyle(ttk.Style):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.themes = {}
-        self.load_izzy_themes()
+        self.load_themes()
         self.settings = None
 
-    def load_izzy_themes(self):
-        """Load all izzy defined themes"""
+    def load_themes(self):
+        """Load all ttkbootstrap defined themes"""
         json_data = importlib.resources.read_text('ttkbootstrap', 'themes.json')
         settings = json.loads(json_data)
         for theme in settings['themes']:
