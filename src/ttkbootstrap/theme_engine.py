@@ -1,73 +1,158 @@
-"""
-    Izzy-Themes
-        A package for creating modern ttk (tkinter) by customizing built-in ttk themes.
-
-    Author
-        Israel Dryer
-
-    Modified
-        2021-03-24
-
-
-    PURPOSE:
-        The purpose of this package is to provide a simple and easy to use api for creating modern ttk themes using
-        the themes that are already built into Tkinter and Python.
-
-    APPROACH:
-        I've created several new widget layouts using the parts of existing themes. For example, the Combobox widget
-        uses the field element from the Spinbox so that I could create the border effect I wanted.  Another example is
-        the Treeview, which uses the indicator from the `alt` theme, because I just think it looks nicer.
-
-        For Windows, I'm using the checkbutton and radiobutton from the `xpnative` theme. For Linux and MacOS, it defaults
-        the the clam theme elements.
-
-        I decided to use PILLOW to draw the scale widget on the fly for each theme because the look was so much better than
-        the native looks. Hopefully this will not be a noticeable performance issue, and it does require you to pip install
-        pillow (PIL).
-
-        I decided to use the clam theme as the base for much of this project because it provides a lot of flexibility when
-        it comes to borders. Because the clam theme has an outer border and an inner border (light & dark), I am able to use
-        the states to create a focus ring effect that is similar to what you would find with a CSS Boostrap theme. There
-        are many cool tricks and hacks that you can tease out of the existing set of themes,  so I hope you enjoy this
-        library as well as using the bones to create something of your own.
-
-    USING STANDARD TK WIDGETS (WARNING):
-        There are some widgets in TTK that borrow from standard TK widgets, such as the popdown list in the TTK
-        combobox, or the dropdown menu. To make sure the style for these legacy widgets is consistent, I've created
-        a StyleTK class that takes care of styling these widgets. However, because with TK the styling is
-        tightly-coupled with the widget creation, you cannot easily change the style of a widget that is built with
-        standard TK options --- unlike with TTK, which separates the style and structure of the elements. So, if you
-        plan to do anything fancy, like support light and dark changeable themes, you'll need to make sure you
-        create a mechanism for manually configuring the style of the standard TK widget. You can also destroy and then
-        re-create the window as I have done in the example (actually I'm building the entire inside frame and then
-        rebuilding when the style changes).
-"""
+import json
+import colorsys
+from pathlib import Path
+import importlib.resources
+from tkinter import ttk
 from PIL import ImageTk, Image, ImageDraw
-from collections import namedtuple
-from ._utils import brightness
 
-VARIATIONS = ['primary', 'secondary', 'success', 'info', 'warning', 'danger']
 
-ThemeSettings = namedtuple('ThemeSettings', ['name', 'type', 'font', 'primary', 'secondary', 'success', 'info',
-                                             'warning', 'danger', 'bg', 'fg', 'selectbg', 'selectfg', 'light',
-                                             'border', 'inputfg'])
+def hex_to_rgb(color):
+    """Convert hexadecimal to rgb color representation"""
+    r = round(int(color[1:3], 16) / 255, 2)
+    g = round(int(color[3:5], 16) / 255, 2)
+    b = round(int(color[5:], 16) / 255, 2)
+    return r, g, b
+
+
+def rgb_to_hex(r, g, b):
+    """Convert rgb to hexadecimal color representation"""
+    r_ = int(r * 255)
+    g_ = int(g * 255)
+    b_ = int(b * 255)
+    return '#{:02x}{:02x}{:02x}'.format(r_, g_, b_)
+
+
+def brightness(hex_color, pct_change):
+    """Adjust the value of a given hexadecimal color. The percent change is expected to be a float. Example: 0.15
+    is a 15 percent increase in brightness, whereas -0.15 is a 15 percent decrease in brightness"""
+    r, g, b = hex_to_rgb(hex_color)
+    h, s, v = colorsys.rgb_to_hsv(r, g, b)
+    v_ = (1 + pct_change) * v
+    v_max = max(0, v_)
+    v_min = min(1, v_max)
+    r_, g_, b_ = colorsys.hsv_to_rgb(h, s, v_min)
+    return rgb_to_hex(r_, g_, b_)
+
+
+class BootStyle(ttk.Style):
+    def __init__(self):
+        super().__init__()
+        self.themes = {}
+        self.load_izzy_themes()
+        self.settings = None
+
+    def load_izzy_themes(self):
+        """Load all izzy defined themes"""
+        json_data = importlib.resources.read_text('ttkbootstrap', 'themes.json')
+        settings = json.loads(json_data)
+        for theme in settings['themes']:
+            settings = ThemeSettings(
+                name=theme['name'],
+                type=theme['type'],
+                font=theme['font'],
+                colors=Colors(**theme['colors']))
+            self.themes[settings.name] = StylerTTK(self, settings)
+
+    def theme_use(self, themename=None):
+        """If themename is None, returns the theme in use, otherwise, set
+        the current theme to themename, refreshes all widgets and emits
+        a <<ThemeChanged>> event."""
+        if themename is None:
+            # Starting on Tk 8.6, checking this global is no longer needed
+            # since it allows doing self.tk.call(self._name, "theme", "use")
+            return self.tk.eval("return $ttk::currentTheme")
+
+        try:
+            current_theme = self.themes.get(themename)
+            current_theme.styler_tk.apply_style()
+            self.settings = current_theme.settings
+        except AttributeError:
+            pass
+
+        # using "ttk::setTheme" instead of "ttk::style theme use" causes
+        # the variable currentTheme to be updated, also, ttk::setTheme calls
+        # "ttk::style theme use" in order to change theme.
+        self.tk.call("ttk::setTheme", themename)
+
+    def theme_names(self):
+        """Return a sorted list of available themes"""
+        return sorted(super().theme_names())
+
+
+class ThemeSettings:
+    """Settings for a ttkbootstrap theme.
+
+    Attributes:
+        name: The name of the theme
+        type: 'light' or 'dark'
+        font: Default font to apply to theme. Helvetica is used by default.
+        colors: An instance of the `Colors` class.
+    """
+
+    def __init__(self, name='default', type='light', font='helvetica', colors=None):
+        self.name = name
+        self.type = 'light'
+        self.font = font
+        self.colors = colors if colors else Colors()
+
+    def __repr__(self):
+        return f'name={self.name}, type={self.type}, font={self.font}, colors={self.colors}'
+
+
+class Colors:
+    """A collection of colors used in a ttkbootstrap theme.
+
+    Attributes:
+        primary, secondary, success, info, warning, danger, bg, fg, selectfg, selectbg, light, border, inputfg
+    """
+
+    def __init__(self, **kwargs):
+        self.primary = kwargs.get('primary', 'gray10')
+        self.secondary = kwargs.get('secondary', 'gray60')
+        self.success = kwargs.get('success', 'DarkSlateGray3')
+        self.info = kwargs.get('info', 'SkyBlue1')
+        self.warning = kwargs.get('warning', 'Gold2')
+        self.danger = kwargs.get('danger', 'brown1')
+        self.bg = kwargs.get('bg', 'white')
+        self.fg = kwargs.get('fg', 'black')
+        self.selectbg = kwargs.get('selectbg', 'gray60')
+        self.selectfg = kwargs.get('selectfg', 'white')
+        self.light = kwargs.get('light', 'snow2')
+        self.border = kwargs.get('border', 'gray64')
+        self.inputfg = kwargs.get('inputfg', 'black')
+
+    def get(self, color):
+        """Accepts a color name and returns the color value"""
+        return self.__dict__.get(color)
+
+    def __iter__(self):
+        return iter(['primary', 'secondary', 'success', 'info', 'warning', 'danger'])
+
+    def __repr__(self):
+        return str((tuple(zip(self.__dict__.keys(), self.__dict__.values()))))
 
 
 class StylerTK:
-    """
-    A flat theme applied to standard tkinter widgets (THESE ARE NOT TTK WIDGETS). This can be used independent of the
-    Themed TTK widgets, but it is primary designed to supplement the few widgets that are used in conjunction with the
-    TTK widgets. So, please be aware that standard tkinter widgets may not have the desired look.
+    """A flat theme applied to standard tkinter widgets (THESE ARE NOT TTK WIDGETS).
+
+    This can be used independent of the Themed TTK widgets, but it is primary designed to supplement the few widgets
+    that are used in conjunction with the TTK widgets. So, please be aware that standard tkinter widgets may not have
+    the desired look.
+
+    Attributes:
+        parent: an instance of `StylerTTK`
     """
 
     def __init__(self, parent):
-        self.master=parent.style.master
-        self.settings=parent.settings
+        self.master = parent.style.master
+        self.settings = parent.settings
 
     def set_option(self, *args):
+        """A convenience method to shorten the call to `option_add`"""
         self.master.option_add(*args)
 
     def apply_style(self):
+        """A wrapper on all widget style methods. Applies current theme to all standard tkinter widgets (NOT TTK)"""
         self.style_window()
         self.style_button()
         self.style_label()
@@ -84,105 +169,121 @@ class StylerTK:
         self.style_optionmenu()
 
     def style_window(self):
-        self.set_option('*background', self.settings.bg)
+        """Apply global options to all matching tkinter widgets"""
+        self.set_option('*background', self.settings.colors.bg)
         self.set_option('*font', 'Helvetica')
         self.set_option('*borderWidth', 0)
         self.set_option('*relief', 'flat')
-        self.set_option('*activeBackground', self.settings.selectbg)
-        self.set_option('*activeForeground', self.settings.selectfg)
-        self.set_option('*selectBackground', self.settings.selectbg)
-        self.set_option('*selectForeground', self.settings.selectfg)
+        self.set_option('*activeBackground', self.settings.colors.selectbg)
+        self.set_option('*activeForeground', self.settings.colors.selectfg)
+        self.set_option('*selectBackground', self.settings.colors.selectbg)
+        self.set_option('*selectForeground', self.settings.colors.selectfg)
 
     def style_button(self):
-        self.set_option('*Button.foreground', self.settings.selectfg)
-        self.set_option('*Button.background', self.settings.primary)
+        """Apply style to tkinter button: `tkinter.Button`"""
+        self.set_option('*Button.foreground', self.settings.colors.selectfg)
+        self.set_option('*Button.background', self.settings.colors.primary)
 
     def style_label(self):
-        self.set_option('*Label.foreground', self.settings.fg)
-        self.set_option('*Label.background', self.settings.bg)
+        """Apply style to tkinter label: `tkinter.Label`"""
+        self.set_option('*Label.foreground', self.settings.colors.fg)
+        self.set_option('*Label.background', self.settings.colors.bg)
 
     def style_checkbutton(self):
-        self.set_option('*Checkbutton.background', self.settings.bg)
-        self.set_option('*Checkbutton.foreground', self.settings.fg)
+        """Apply style to tkinter checkbutton: `tkinter.Checkbutton`"""
+        self.set_option('*Checkbutton.background', self.settings.colors.bg)
+        self.set_option('*Checkbutton.foreground', self.settings.colors.fg)
         self.set_option('*Checkbutton.selectColor',
-                        self.settings.primary if self.settings.type == 'dark' else 'white')
+                        self.settings.colors.primary if self.settings.type == 'dark' else 'white')
 
     def style_radiobutton(self):
-        self.set_option('*Radiobutton.background', self.settings.bg)
-        self.set_option('*Radiobutton.foreground', self.settings.fg)
+        """Apply style to tkinter radiobutton: `tkinter.Radiobutton`"""
+        self.set_option('*Radiobutton.background', self.settings.colors.bg)
+        self.set_option('*Radiobutton.foreground', self.settings.colors.fg)
         self.set_option('*Radiobutton.selectColor',
-                        self.settings.primary if self.settings.type == 'dark' else 'white')
+                        self.settings.colors.primary if self.settings.type == 'dark' else 'white')
 
     def style_entry(self):
+        """Apply style to tkinter entry: `tkinter.Entry`"""
         self.set_option('*Entry.relief', 'flat')
         self.set_option('*Entry.background',
-                        (self.settings.light if self.settings.type == 'light' else
-                         brightness(self.settings.light, -0.1)))
-        self.set_option('*Entry.foreground', self.settings.fg)
+                        (self.settings.colors.light if self.settings.type == 'light' else
+                         brightness(self.settings.colors.light, -0.1)))
+        self.set_option('*Entry.foreground', self.settings.colors.fg)
         self.set_option('*Entry.highlightThickness', 1)
-        self.set_option('*Entry.highlightBackground', self.settings.border)
-        self.set_option('*Entry.highlightColor', self.settings.primary)
+        self.set_option('*Entry.highlightBackground', self.settings.colors.border)
+        self.set_option('*Entry.highlightColor', self.settings.colors.primary)
 
     def style_scale(self):
-        self.set_option('*Scale.background', self.settings.primary)
+        """Apply style to tkinter scale: `tkinter.Scale`"""
+        self.set_option('*Scale.background', self.settings.colors.primary)
         self.set_option('*Scale.showValue', False)
         self.set_option('*Scale.sliderRelief', 'flat')
         self.set_option('*Scale.highlightThickness', 1)
-        self.set_option('*Scale.highlightColor', self.settings.primary)
-        self.set_option('*Scale.highlightBackground', self.settings.border)
+        self.set_option('*Scale.highlightColor', self.settings.colors.primary)
+        self.set_option('*Scale.highlightBackground', self.settings.colors.border)
         self.set_option('*Scale.troughColor',
-                        (self.settings.light if self.settings.type == 'light' else
-                         brightness(self.settings.light, -0.1)))
+                        (self.settings.colors.light if self.settings.type == 'light' else
+                         brightness(self.settings.colors.light, -0.1)))
 
     def style_spinbox(self):
-        self.set_option('*Spinbox.foreground', self.settings.fg)
+        """Apply style to tkinter spinbox: `tkinter.Spinbox`"""
+        self.set_option('*Spinbox.foreground', self.settings.colors.fg)
         self.set_option('*Spinbox.background',
-                        (self.settings.light if self.settings.type == 'light' else
-                         brightness(self.settings.light, -0.1)))
+                        (self.settings.colors.light if self.settings.type == 'light' else
+                         brightness(self.settings.colors.light, -0.1)))
         self.set_option('*Spinbox.highlightThickness', 1)
-        self.set_option('*Spinbox.highlightColor', self.settings.primary)
-        self.set_option('*Spinbox.highlightBackground', self.settings.border)
+        self.set_option('*Spinbox.highlightColor', self.settings.colors.primary)
+        self.set_option('*Spinbox.highlightBackground', self.settings.colors.border)
 
     def style_listbox(self):
-        self.set_option('*Listbox.foreground', self.settings.fg)
+        """Apply style to tkinter listbox: `tkinter.Listbox`"""
+        self.set_option('*Listbox.foreground', self.settings.colors.fg)
         self.set_option('*Listbox.background',
-                        (self.settings.light if self.settings.type == 'light' else
-                         brightness(self.settings.light, -0.1)))
+                        (self.settings.colors.light if self.settings.type == 'light' else
+                         brightness(self.settings.colors.light, -0.1)))
         self.set_option('*Listbox.relief', 'flat')
         self.set_option('*Listbox.activeStyle', 'none')
         self.set_option('*Listbox.highlightThickness', 1)
-        self.set_option('*Listbox.highlightColor', self.settings.primary)
-        self.set_option('*Listbox.highlightBackground', self.settings.border)
+        self.set_option('*Listbox.highlightColor', self.settings.colors.primary)
+        self.set_option('*Listbox.highlightBackground', self.settings.colors.border)
 
     def style_menubutton(self):
-        self.set_option('*Menubutton.background', self.settings.primary)
-        self.set_option('*Menubutton.foreground', self.settings.selectfg)
+        """Apply style to tkinter menubutton: `tkinter.Menubutton`"""
+        self.set_option('*Menubutton.background', self.settings.colors.primary)
+        self.set_option('*Menubutton.foreground', self.settings.colors.selectfg)
 
     def style_menu(self):
+        """Apply style to tkinter menu: `tkinter.Menu`"""
         self.set_option('*Menu.tearOff', 0)
-        self.set_option('*Menu.foreground', self.settings.fg)
-        self.set_option('*Menu.selectColor', self.settings.primary)
+        self.set_option('*Menu.foreground', self.settings.colors.fg)
+        self.set_option('*Menu.selectColor', self.settings.colors.primary)
 
     def style_labelframe(self):
-        self.set_option('*Labelframe.foreground', self.settings.fg)
-        self.set_option('*Labelframe.highlightColor', self.settings.border)
-        self.set_option('*Labelframe.highlightBackground', self.settings.border)
+        """Apply style to tkinter labelframe: `tkinter.Labelframe`"""
+        self.set_option('*Labelframe.foreground', self.settings.colors.fg)
+        self.set_option('*Labelframe.highlightColor', self.settings.colors.border)
+        self.set_option('*Labelframe.highlightBackground', self.settings.colors.border)
         self.set_option('*Labelframe.highlightThickness', 1)
 
     def style_scrollbar(self):
+        """Apply style to tkinter scrollbar: `tkinter.Scrollbar`"""
         # It does not appear to be possible to style the scrollbar on windows
         pass
 
     def style_optionmenu(self):
-        """The widget constructor rejects all keyword arguments, so it cannot be set with options, only with
-        configuration after the widget has been created."""
+        """Apply style to tkinter option menu: `tkinter.OptionMenu`"""
+        # The widget constructor rejects all keyword arguments, so it cannot be set with options, only with
+        # configuration after the widget has been created.
         pass
 
 
 class StylerTTK:
-    """
-    A flat TTK theme created with built-in elements and a supplied color scheme. A theme type can be light or dark. This
-    changes the way that certain elements are created for the theme.
+    """A flat TTK theme created with built-in elements and a supplied color scheme.
+
+    Attributes:
+        style: An instance of the `ttk.Style` class
+        settings: An instance of the `ThemeSettings` class
     """
 
     def __init__(self, style, settings):
@@ -214,30 +315,25 @@ class StylerTTK:
         self.style_solid_menubutton()
         self.style_treeview()
 
-    def lookup_color(self, color: str):
-        """Lookup a color in the colors dictionary"""
-        return self.settings._asdict().get(color)
-
     def style_defaults(self):
         """Setup the default ttk style settings"""
         self.style.configure('.',
-                             background=self.settings.bg,
-                             darkcolor=self.settings.border,
-                             lightcolor=self.settings.border,
-                             foreground=self.settings.fg,
-                             troughcolor=self.settings.bg,
-                             selectbg=self.settings.selectbg,
-                             selectfg=self.settings.selectfg,
-                             selectforeground=self.settings.selectfg,
-                             selectbackground=self.settings.selectbg,
+                             background=self.settings.colors.bg,
+                             darkcolor=self.settings.colors.border,
+                             lightcolor=self.settings.colors.border,
+                             foreground=self.settings.colors.fg,
+                             troughcolor=self.settings.colors.bg,
+                             selectbg=self.settings.colors.selectbg,
+                             selectfg=self.settings.colors.selectfg,
+                             selectforeground=self.settings.colors.selectfg,
+                             selectbackground=self.settings.colors.selectbg,
                              fieldbg='white',
                              font=(self.settings.font,),
                              borderwidth=1,
                              focuscolor='')
 
     def style_combobox(self):
-        """
-        Create a combobox widget style
+        """Apply style to ttk combobox: `ttk.Combobox`
 
         Element Options:
             - Combobox.downarrow: arrowsize, background, bordercolor, relief, arrowcolor
@@ -257,51 +353,50 @@ class StylerTTK:
         self.style.element_create('Combobox.padding', 'from', 'clam')
         self.style.element_create('Combobox.textarea', 'from', 'clam')
         self.style.configure('TCombobox',
-                             bordercolor=self.settings.border,
-                             darkcolor=self.settings.bg,
-                             lightcolor=self.settings.bg,
-                             arrowcolor=self.settings.inputfg,
-                             foreground=self.settings.inputfg,
-                             fieldbackground=self.settings.light,
-                             background=self.settings.light,
+                             bordercolor=self.settings.colors.border,
+                             darkcolor=self.settings.colors.bg,
+                             lightcolor=self.settings.colors.bg,
+                             arrowcolor=self.settings.colors.inputfg,
+                             foreground=self.settings.colors.inputfg,
+                             fieldbackground=self.settings.colors.light,
+                             background=self.settings.colors.light,
                              relief='flat',
                              borderwidth=0,
                              padding=5,
                              arrowsize=16)
         self.style.map('TCombobox',
                        bordercolor=[
-                           ('focus', self.settings.primary),
-                           ('hover', self.settings.primary)],
+                           ('focus', self.settings.colors.primary),
+                           ('hover', self.settings.colors.primary)],
                        lightcolor=[
-                           ('focus', self.settings.primary),
-                           ('pressed', self.settings.primary)],
+                           ('focus', self.settings.colors.primary),
+                           ('pressed', self.settings.colors.primary)],
                        darkcolor=[
-                           ('focus', self.settings.primary),
-                           ('pressed', self.settings.primary)],
+                           ('focus', self.settings.colors.primary),
+                           ('pressed', self.settings.colors.primary)],
                        arrowcolor=[
-                           ('pressed', self.settings.light),
-                           ('focus', self.settings.inputfg),
-                           ('hover', self.settings.primary)])
+                           ('pressed', self.settings.colors.light),
+                           ('focus', self.settings.colors.inputfg),
+                           ('hover', self.settings.colors.primary)])
 
-        for v in VARIATIONS:
-            self.style.map(f'{v}.TCombobox',
+        for color in self.settings.colors:
+            self.style.map(f'{color}.TCombobox',
                            bordercolor=[
-                               ('focus', self.lookup_color(v)),
-                               ('hover', self.lookup_color(v))],
+                               ('focus', self.settings.colors.get(color)),
+                               ('hover', self.settings.colors.get(color))],
                            lightcolor=[
-                               ('focus', self.lookup_color(v)),
-                               ('pressed', self.lookup_color(v))],
+                               ('focus', self.settings.colors.get(color)),
+                               ('pressed', self.settings.colors.get(color))],
                            darkcolor=[
-                               ('focus', self.lookup_color(v)),
-                               ('pressed', self.lookup_color(v))],
+                               ('focus', self.settings.colors.get(color)),
+                               ('pressed', self.settings.colors.get(color))],
                            arrowcolor=[
-                               ('pressed', self.settings.light),
-                               ('focus', self.settings.inputfg),
-                               ('hover', self.settings.primary)])
+                               ('pressed', self.settings.colors.light),
+                               ('focus', self.settings.colors.inputfg),
+                               ('hover', self.settings.colors.primary)])
 
     def style_progressbar(self):
-        """
-        Create a progress bar widget style
+        """Apply style to ttk progressbar: `ttk.Progressbar`
 
         Element Options:
             - Progressbar.trough: borderwidth, troughcolor, troughrelief
@@ -313,12 +408,12 @@ class StylerTTK:
         self.style.configure('TProgressbar',
                              thickness=20,
                              borderwidth=0,
-                             troughcolor=brightness(self.settings.light, -0.05),
-                             background=self.settings.primary)
+                             troughcolor=brightness(self.settings.colors.light, -0.05),
+                             background=self.settings.colors.primary)
 
-        for v in VARIATIONS:
-            self.style.configure(f'{v}.Horizontal.TProgressbar', background=self.lookup_color(v))
-            self.style.configure(f'{v}.Vertical.TProgressbar', background=self.lookup_color(v))
+        for color in self.settings.colors:
+            self.style.configure(f'{color}.Horizontal.TProgressbar', background=self.settings.colors.get(color))
+            self.style.configure(f'{color}.Vertical.TProgressbar', background=self.settings.colors.get(color))
 
     @staticmethod
     def create_slider_image(color, size=18):
@@ -329,8 +424,7 @@ class StylerTTK:
         return ImageTk.PhotoImage(im.resize((size, size), Image.LANCZOS))
 
     def style_scale(self):
-        """
-        Create a scale widget style
+        """Apply style to ttk scale: `ttk.Scale`
 
         Element Options:
             - Scale.trough: borderwidth, troughcolor, troughrelief
@@ -348,11 +442,11 @@ class StylerTTK:
 
         # create widget images
         self.scale_images = {}
-        self.scale_images['primary_regular'] = self.create_slider_image(self.settings.primary)
-        self.scale_images['primary_pressed'] = self.create_slider_image(brightness(self.settings.primary, -0.2))
-        self.scale_images['primary_hover'] = self.create_slider_image(brightness(self.settings.primary, -0.1))
+        self.scale_images['primary_regular'] = self.create_slider_image(self.settings.colors.primary)
+        self.scale_images['primary_pressed'] = self.create_slider_image(brightness(self.settings.colors.primary, -0.2))
+        self.scale_images['primary_hover'] = self.create_slider_image(brightness(self.settings.colors.primary, -0.1))
         self.scale_images['trough'] = ImageTk.PhotoImage(
-            Image.new('RGB', (8, 8), brightness(self.settings.light, -0.05)))
+            Image.new('RGB', (8, 8), brightness(self.settings.colors.light, -0.05)))
 
         # create new elements based on images
         self.style.element_create('Scale.track', 'image', self.scale_images['trough'])
@@ -361,8 +455,7 @@ class StylerTTK:
                                   ('hover', self.scale_images['primary_hover']))
 
     def style_scrollbar(self):
-        """
-        Create a scrollbar widget style
+        """Apply style to ttk scrollbar: ttk.Scrollbar
 
         Element Options:
             - Scrollbar.trough: orient, troughborderwidth, troughcolor, troughrelief, groovewidth
@@ -383,14 +476,13 @@ class StylerTTK:
                              troughrelief='flat',
                              relief='flat',
                              troughborderwidth=2,
-                             troughcolor=self.settings.light,
-                             background=brightness(self.settings.light, -0.1),
+                             troughcolor=self.settings.colors.light,
+                             background=brightness(self.settings.colors.light, -0.1),
                              arrowsize=16,
-                             arrowcolor=self.settings.inputfg)
+                             arrowcolor=self.settings.colors.inputfg)
 
     def style_spinbox(self):
-        """
-        Create a spinbox widget style
+        """Apply style to ttk spinbox: `ttk.Spinbox`
 
         Element Options:
             - Spinbox.field: bordercolor, lightcolor, darkcolor, fieldbackground
@@ -413,45 +505,44 @@ class StylerTTK:
             self.style.element_create('custom.Spinbox.field', 'from', 'default')
 
         self.style.configure('TSpinbox',
-                             bordercolor=self.settings.border,
-                             lightcolor=self.settings.bg,
-                             darkcolor=self.settings.bg,
-                             foreground=self.settings.inputfg,
+                             bordercolor=self.settings.colors.border,
+                             lightcolor=self.settings.colors.bg,
+                             darkcolor=self.settings.colors.bg,
+                             foreground=self.settings.colors.inputfg,
                              borderwidth=0,
-                             background=self.settings.light,
-                             fieldbackground=self.settings.light,
+                             background=self.settings.colors.light,
+                             fieldbackground=self.settings.colors.light,
                              relief='flat',
-                             arrowcolor=self.settings.inputfg,
+                             arrowcolor=self.settings.colors.inputfg,
                              arrowsize=16,
                              padding=(10, 5))
 
         self.style.map('TSpinbox',
                        bordercolor=[
-                           ('focus', self.settings.primary),
-                           ('hover', self.settings.primary)],
+                           ('focus', self.settings.colors.primary),
+                           ('hover', self.settings.colors.primary)],
                        arrowcolor=[
-                           ('pressed', self.settings.primary),
-                           ('focus', self.settings.inputfg),
-                           ('hover', self.settings.inputfg)],
-                       lightcolor=[('focus', self.settings.primary)],
-                       darkcolor=[('focus', self.settings.primary)])
+                           ('pressed', self.settings.colors.primary),
+                           ('focus', self.settings.colors.inputfg),
+                           ('hover', self.settings.colors.inputfg)],
+                       lightcolor=[('focus', self.settings.colors.primary)],
+                       darkcolor=[('focus', self.settings.colors.primary)])
 
         # variation changes focus ring color
-        for v in VARIATIONS:
-            self.style.map(f'{v}.TSpinbox',
+        for color in self.settings.colors:
+            self.style.map(f'{color}.TSpinbox',
                            bordercolor=[
-                               ('focus', self.lookup_color(v)),
-                               ('hover', self.lookup_color(v))],
+                               ('focus', self.settings.colors.get(color)),
+                               ('hover', self.settings.colors.get(color))],
                            arrowcolor=[
-                               ('pressed', self.lookup_color(v)),
-                               ('pressed', self.settings.inputfg),
-                               ('hover', self.settings.inputfg)],
-                           lightcolor=[('focus', self.lookup_color(v))],
-                           darkcolor=[('focus', self.lookup_color(v))])
+                               ('pressed', self.settings.colors.get(color)),
+                               ('pressed', self.settings.colors.inputfg),
+                               ('hover', self.settings.colors.inputfg)],
+                           lightcolor=[('focus', self.settings.colors.get(color))],
+                           darkcolor=[('focus', self.settings.colors.get(color))])
 
     def style_treeview(self):
-        """
-        Create a treeview widget style
+        """Apply style to ttk treeview: `ttk.Treeview`
 
         Element Options:
             - Treeview.field: bordercolor, lightcolor, darkcolor, fieldbackground
@@ -476,46 +567,44 @@ class StylerTTK:
                     ('Treeview.treearea', {'sticky': 'nswe'})]})]})])
 
         self.style.configure('Treeview',
-                             background=self.settings.light,
-                             foreground=self.settings.inputfg,
-                             bordercolor=self.settings.border,
-                             lightcolor=self.settings.bg,
-                             darkcolor=self.settings.bg,
+                             background=self.settings.colors.light,
+                             foreground=self.settings.colors.inputfg,
+                             bordercolor=self.settings.colors.border,
+                             lightcolor=self.settings.colors.bg,
+                             darkcolor=self.settings.colors.bg,
                              relief='raised' if self.settings.type == 'light' else 'flat',
                              padding=-1 if self.settings.type == 'light' else -2)
 
         self.style.map('Treeview',
-                       background=[('selected', self.settings.selectbg)],
-                       foreground=[('selected', self.settings.selectfg)],
-                       bordercolor=[('focus', self.settings.border)])
+                       background=[('selected', self.settings.colors.selectbg)],
+                       foreground=[('selected', self.settings.colors.selectfg)],
+                       bordercolor=[('focus', self.settings.colors.border)])
 
         self.style.configure('Treeview.Heading',
-                             background=self.settings.primary,
-                             foreground=self.settings.selectfg,
+                             background=self.settings.colors.primary,
+                             foreground=self.settings.colors.selectfg,
                              relief='flat',
                              padding=5)
 
         # variations change header color and focus ring
-        for v in VARIATIONS:
-            self.style.configure(f'{v}.Treeview.Heading', background=self.lookup_color(v))
-            self.style.map(f'{v}.Treeview', bordercolor=[('focus', self.lookup_color(v))])
+        for color in self.settings.colors:
+            self.style.configure(f'{color}.Treeview.Heading', background=self.settings.colors.get(color))
+            self.style.map(f'{color}.Treeview', bordercolor=[('focus', self.settings.colors.get(color))])
 
     def style_frame(self):
-        """
-        Create a treeview widget style
+        """Apply style to ttk frame: `ttk.Frame`
 
         Element Options:
             - Frame.border: bordercolor, lightcolor, darkcolor, relief, borderwidth
         """
         self.style.configure('TFrame',
-                             background=self.settings.bg)
+                             background=self.settings.colors.bg)
 
-        for v in VARIATIONS:
-            self.style.configure(f'{v}.TFrame', background=self.lookup_color(v))
+        for color in self.settings.colors:
+            self.style.configure(f'{color}.TFrame', background=self.settings.colors.get(color))
 
     def style_solid_buttons(self):
-        """
-        Create a solid button widget style
+        """Apply a solid color style to ttk button: `ttk.Button`
 
         Element Options:
             - Button.border: bordercolor, lightcolor, darkcolor, relief, borderwidth
@@ -524,11 +613,11 @@ class StylerTTK:
             - Button.label: compound, space, text, font, foreground, underline, width, anchor, justify, wraplength, embossed, image, stipple, background
         """
         self.style.configure('TButton',
-                             foreground=self.settings.selectfg,
-                             background=self.settings.primary,
-                             bordercolor=self.settings.primary,
-                             darkcolor=self.settings.primary,
-                             lightcolor=self.settings.primary,
+                             foreground=self.settings.colors.selectfg,
+                             background=self.settings.colors.primary,
+                             bordercolor=self.settings.colors.primary,
+                             darkcolor=self.settings.colors.primary,
+                             lightcolor=self.settings.colors.primary,
                              anchor='center',
                              relief='raised',
                              focusthickness=0,
@@ -537,47 +626,46 @@ class StylerTTK:
 
         self.style.map('TButton',
                        background=[
-                           ('pressed', brightness(self.settings.primary, -0.2)),
-                           ('hover', brightness(self.settings.primary, -0.1))],
+                           ('pressed', brightness(self.settings.colors.primary, -0.2)),
+                           ('hover', brightness(self.settings.colors.primary, -0.1))],
                        bordercolor=[
-                           ('pressed', brightness(self.settings.primary, -0.2)),
-                           ('hover', brightness(self.settings.primary, -0.1))],
+                           ('pressed', brightness(self.settings.colors.primary, -0.2)),
+                           ('hover', brightness(self.settings.colors.primary, -0.1))],
                        darkcolor=[
-                           ('pressed', brightness(self.settings.primary, -0.2)),
-                           ('hover', brightness(self.settings.primary, -0.1))],
+                           ('pressed', brightness(self.settings.colors.primary, -0.2)),
+                           ('hover', brightness(self.settings.colors.primary, -0.1))],
                        lightcolor=[
-                           ('pressed', brightness(self.settings.primary, -0.2)),
-                           ('hover', brightness(self.settings.primary, -0.1))])
+                           ('pressed', brightness(self.settings.colors.primary, -0.2)),
+                           ('hover', brightness(self.settings.colors.primary, -0.1))])
 
-        for v in VARIATIONS:
-            self.style.configure(f'{v}.TButton',
-                                 foreground=self.settings.selectfg,
-                                 background=self.lookup_color(v),
-                                 bordercolor=self.lookup_color(v),
-                                 darkcolor=self.lookup_color(v),
-                                 lightcolor=self.lookup_color(v),
+        for color in self.settings.colors:
+            self.style.configure(f'{color}.TButton',
+                                 foreground=self.settings.colors.selectfg,
+                                 background=self.settings.colors.get(color),
+                                 bordercolor=self.settings.colors.get(color),
+                                 darkcolor=self.settings.colors.get(color),
+                                 lightcolor=self.settings.colors.get(color),
                                  relief='raised',
                                  focusthickness=0,
                                  focuscolor='',
                                  padding=(10, 5))
 
-            self.style.map(f'{v}.TButton',
+            self.style.map(f'{color}.TButton',
                            background=[
-                               ('pressed', brightness(self.lookup_color(v), -0.2)),
-                               ('hover', brightness(self.lookup_color(v), -0.1))],
+                               ('pressed', brightness(self.settings.colors.get(color), -0.2)),
+                               ('hover', brightness(self.settings.colors.get(color), -0.1))],
                            bordercolor=[
-                               ('pressed', brightness(self.lookup_color(v), -0.2)),
-                               ('hover', brightness(self.lookup_color(v), -0.1))],
+                               ('pressed', brightness(self.settings.colors.get(color), -0.2)),
+                               ('hover', brightness(self.settings.colors.get(color), -0.1))],
                            darkcolor=[
-                               ('pressed', brightness(self.lookup_color(v), -0.2)),
-                               ('hover', brightness(self.lookup_color(v), -0.1))],
+                               ('pressed', brightness(self.settings.colors.get(color), -0.2)),
+                               ('hover', brightness(self.settings.colors.get(color), -0.1))],
                            lightcolor=[
-                               ('pressed', brightness(self.lookup_color(v), -0.2)),
-                               ('hover', brightness(self.lookup_color(v), -0.1))])
+                               ('pressed', brightness(self.settings.colors.get(color), -0.2)),
+                               ('hover', brightness(self.settings.colors.get(color), -0.1))])
 
     def style_outline_buttons(self):
-        """
-        Create an outline button widget style
+        """Apply an outline style to ttk button: `ttk.Button`
 
         Element Options:
             - Button.border: bordercolor, lightcolor, darkcolor, relief, borderwidth
@@ -586,11 +674,11 @@ class StylerTTK:
             - Button.label: compound, space, text, font, foreground, underline, width, anchor, justify, wraplength, embossed, image, stipple, background
         """
         self.style.configure('Outline.TButton',
-                             foreground=self.settings.primary,
-                             background=self.settings.bg,
-                             bordercolor=self.settings.primary,
-                             darkcolor=self.settings.bg,
-                             lightcolor=self.settings.bg,
+                             foreground=self.settings.colors.primary,
+                             background=self.settings.colors.bg,
+                             bordercolor=self.settings.colors.primary,
+                             darkcolor=self.settings.colors.bg,
+                             lightcolor=self.settings.colors.bg,
                              relief='raised',
                              focusthickness=0,
                              focuscolor='',
@@ -598,53 +686,52 @@ class StylerTTK:
 
         self.style.map('Outline.TButton',
                        foreground=[
-                           ('pressed', self.settings.selectfg),
-                           ('hover', self.settings.selectfg)],
+                           ('pressed', self.settings.colors.selectfg),
+                           ('hover', self.settings.colors.selectfg)],
                        background=[
-                           ('pressed', brightness(self.settings.primary, -0.2)),
-                           ('hover', brightness(self.settings.primary, -0.1))],
+                           ('pressed', brightness(self.settings.colors.primary, -0.2)),
+                           ('hover', brightness(self.settings.colors.primary, -0.1))],
                        bordercolor=[
-                           ('pressed', brightness(self.settings.primary, -0.2)),
-                           ('hover', brightness(self.settings.primary, -0.1))],
+                           ('pressed', brightness(self.settings.colors.primary, -0.2)),
+                           ('hover', brightness(self.settings.colors.primary, -0.1))],
                        darkcolor=[
-                           ('pressed', brightness(self.settings.primary, -0.2)),
-                           ('hover', brightness(self.settings.primary, -0.1))],
+                           ('pressed', brightness(self.settings.colors.primary, -0.2)),
+                           ('hover', brightness(self.settings.colors.primary, -0.1))],
                        lightcolor=[
-                           ('pressed', brightness(self.settings.primary, -0.2)),
-                           ('hover', brightness(self.settings.primary, -0.1))])
+                           ('pressed', brightness(self.settings.colors.primary, -0.2)),
+                           ('hover', brightness(self.settings.colors.primary, -0.1))])
 
-        for v in VARIATIONS:
-            self.style.configure(f'{v}.Outline.TButton',
-                                 foreground=self.lookup_color(v),
-                                 background=self.settings.bg,
-                                 bordercolor=self.lookup_color(v),
-                                 darkcolor=self.settings.bg,
-                                 lightcolor=self.settings.bg,
+        for color in self.settings.colors:
+            self.style.configure(f'{color}.Outline.TButton',
+                                 foreground=self.settings.colors.get(color),
+                                 background=self.settings.colors.bg,
+                                 bordercolor=self.settings.colors.get(color),
+                                 darkcolor=self.settings.colors.bg,
+                                 lightcolor=self.settings.colors.bg,
                                  relief='raised',
                                  focusthickness=0,
                                  focuscolor='',
                                  padding=(10, 5))
 
-            self.style.map(f'{v}.Outline.TButton',
+            self.style.map(f'{color}.Outline.TButton',
                            foreground=[
-                               ('pressed', self.settings.selectfg),
-                               ('hover', self.settings.selectfg)],
+                               ('pressed', self.settings.colors.selectfg),
+                               ('hover', self.settings.colors.selectfg)],
                            background=[
-                               ('pressed', brightness(self.lookup_color(v), -0.2)),
-                               ('hover', brightness(self.lookup_color(v), -0.1))],
+                               ('pressed', brightness(self.settings.colors.get(color), -0.2)),
+                               ('hover', brightness(self.settings.colors.get(color), -0.1))],
                            bordercolor=[
-                               ('pressed', brightness(self.lookup_color(v), -0.2)),
-                               ('hover', brightness(self.lookup_color(v), -0.1))],
+                               ('pressed', brightness(self.settings.colors.get(color), -0.2)),
+                               ('hover', brightness(self.settings.colors.get(color), -0.1))],
                            darkcolor=[
-                               ('pressed', brightness(self.lookup_color(v), -0.2)),
-                               ('hover', brightness(self.lookup_color(v), -0.1))],
+                               ('pressed', brightness(self.settings.colors.get(color), -0.2)),
+                               ('hover', brightness(self.settings.colors.get(color), -0.1))],
                            lightcolor=[
-                               ('pressed', brightness(self.lookup_color(v), -0.2)),
-                               ('hover', brightness(self.lookup_color(v), -0.1))])
+                               ('pressed', brightness(self.settings.colors.get(color), -0.2)),
+                               ('hover', brightness(self.settings.colors.get(color), -0.1))])
 
     def style_entry(self):
-        """
-        Create an entry widget style
+        """Apply style to ttk entry: `ttk.Entry`
 
         Element Options:
             - Entry.field: bordercolor, lightcolor, darkcolor, fieldbackground
@@ -652,32 +739,35 @@ class StylerTTK:
             - Entry.textarea: font, width        
         """
         self.style.configure('TEntry',
-                             fieldbackground=self.settings.light,
-                             bordercolor=self.settings.border,
-                             lightcolor=self.settings.bg,
-                             darkcolor=self.settings.bg,
-                             foreground=self.settings.inputfg,
+                             fieldbackground=self.settings.colors.light,
+                             bordercolor=self.settings.colors.border,
+                             lightcolor=self.settings.colors.bg,
+                             darkcolor=self.settings.colors.bg,
+                             foreground=self.settings.colors.inputfg,
                              padding=5)
 
         self.style.map('TEntry',
                        bordercolor=[
-                           ('hover', self.settings.primary),
-                           ('focus', self.settings.primary)],
+                           ('hover', self.settings.colors.primary),
+                           ('focus', self.settings.colors.primary)],
                        lightcolor=[
-                           ('focus', self.settings.primary)],
+                           ('focus', self.settings.colors.primary)],
                        darkcolor=[
-                           ('focus', self.settings.primary)])
+                           ('focus', self.settings.colors.primary)])
 
         # variation changes the focus ring color
-        for v in VARIATIONS:
-            self.style.map(f'{v}.TEntry',
-                           bordercolor=[('focus', self.lookup_color(v))],
-                           lightcolor=[('focus', self.lookup_color(v))],
-                           darkcolor=[('focus', self.lookup_color(v))])
+        for color in self.settings.colors:
+            self.style.map(f'{color}.TEntry',
+                           bordercolor=[('focus', self.settings.colors.get(color))],
+                           lightcolor=[('focus', self.settings.colors.get(color))],
+                           darkcolor=[('focus', self.settings.colors.get(color))])
 
     def style_radiobutton(self):
-        """
-        Create a radiobutton widget style
+        """Apply style to ttk radiobutton: `ttk.Radiobutton`
+
+        Operating System:
+            WINDOWS: defaults to the 'xpnative' theme look. Styles will not change the look and feel.
+            LINUX / MAC OS: defaults to stylized 'clam' theme. You can use styles with this setup.
 
         Element Options:
             - Radiobutton.padding: padding, relief, shiftrelief
@@ -690,64 +780,61 @@ class StylerTTK:
         self.style.configure('TRadiobutton',
                              indicatormargin=8,
                              indicatorsize=12,
-                             upperbordercolor=self.settings.fg if self.settings.type == 'light' else self.settings.light,
-                             lowerbordercolor=self.settings.fg if self.settings.type == 'light' else self.settings.light,
-                             indicatorforeground=self.settings.fg if self.settings.type == 'light' else self.settings.bg)
+                             upperbordercolor=self.settings.colors.fg if self.settings.type == 'light' else self.settings.colors.light,
+                             lowerbordercolor=self.settings.colors.fg if self.settings.type == 'light' else self.settings.colors.light,
+                             indicatorforeground=self.settings.colors.fg if self.settings.type == 'light' else self.settings.colors.bg)
 
         self.style.map('TRadiobutton',
-                       foreground=[('active', self.settings.primary if (self.settings.type == 'light') else 'white')],
+                       foreground=[
+                           ('active', self.settings.colors.primary if (self.settings.type == 'light') else 'white')],
                        indicatorforeground=[
-                           ('active', self.settings.primary if (self.settings.type == 'light') else 'black')])
+                           ('active', self.settings.colors.primary if (self.settings.type == 'light') else 'black')])
 
         # variations change the indicator color
-        for v in VARIATIONS:
-            self.style.map(f'{v}.TRadiobutton',
-                           foreground=[('active', brightness(self.lookup_color(v), -0.2))],
-                           indicatorforeground=[('active', brightness(self.lookup_color(v), -0.2))])
+        for color in self.settings.colors:
+            self.style.map(f'{color}.TRadiobutton',
+                           foreground=[('active', brightness(self.settings.colors.get(color), -0.2))],
+                           indicatorforeground=[('active', brightness(self.settings.colors.get(color), -0.2))])
 
     def style_label(self):
-        """
-         Create a label widget style
+        """Apply style to ttk label: `ttk.Label`
 
         Element Options:
             - Label.border: bordercolor, lightcolor, darkcolor, relief, borderwidth
             - Label.padding: padding, relief, shiftrelief
             - Label.label: compound, space, text, font, foreground, underline, width, anchor, justify, wraplength, embossed, image, stipple, background
         """
-        self.style.configure('TLabel', foreground=self.settings.fg)
-        for v in VARIATIONS:
-            self.style.configure(f'{v}.TLabel', foreground=self.lookup_color(v))
+        self.style.configure('TLabel', foreground=self.settings.colors.fg)
+        for color in self.settings.colors:
+            self.style.configure(f'{color}.TLabel', foreground=self.settings.colors.get(color))
 
     def style_labelframe(self):
-        """
-         Create a labelframe widget style
+        """Apply style to ttk labelframe: `ttk.LabelFrame`
 
         Element Options:
             - Labelframe.border: bordercolor, lightcolor, darkcolor, relief, borderwidth
             - Label.fill: background
             - Label.text: text, font, foreground, underline, width, anchor, justify, wraplength, embossed
         """
-        # TODO find a way to set the labelframe color to activate based on hovering inside it's boundaries
         self.style.configure('TLabelframe',
                              padding=(10, 5),
-                             foreground=self.settings.fg,
+                             foreground=self.settings.colors.fg,
                              relief='raised',
-                             bordercolor=self.settings.border,
-                             darkcolor=self.settings.bg,
-                             lightcolor=self.settings.bg)
+                             bordercolor=self.settings.colors.border,
+                             darkcolor=self.settings.colors.bg,
+                             lightcolor=self.settings.colors.bg)
 
-        self.style.configure('TLabelframe.Label', foreground=self.settings.fg)
+        self.style.configure('TLabelframe.Label', foreground=self.settings.colors.fg)
 
-        for v in VARIATIONS:
-            self.style.configure(f'{v}.TLabelframe',
-                                 foreground=self.lookup_color(v),
-                                 bordercolor=self.lookup_color(v))
+        for color in self.settings.colors:
+            self.style.configure(f'{color}.TLabelframe',
+                                 foreground=self.settings.colors.get(color),
+                                 bordercolor=self.settings.colors.get(color))
 
-            self.style.configure(f'{v}.TLabelframe.Label', foreground=self.lookup_color(v))
+            self.style.configure(f'{color}.TLabelframe.Label', foreground=self.settings.colors.get(color))
 
     def style_checkbutton(self):
-        """
-         Create a checkbutton widget style
+        """Apply style to ttk checkbutton: `ttk.Checkbutton`
 
         Element Options:
             - Checkbutton.padding: padding, relief, shiftrelief
@@ -761,34 +848,33 @@ class StylerTTK:
             self.style.element_create('Checkbutton.indicator', 'from', 'xpnative')
 
         self.style.configure('TCheckbutton',
-                             foreground=self.settings.fg,
+                             foreground=self.settings.colors.fg,
                              indicatorsize=10,
                              indicatormargin=10,
-                             indicatorforeground=self.settings.selectfg)
+                             indicatorforeground=self.settings.colors.selectfg)
 
         self.style.map('TCheckbutton',
                        indicatorbackground=[
-                           ('active selected', brightness(self.settings.primary, -0.2)),
-                           ('selected', self.settings.fg),
-                           ('active !selected', self.settings.light)],
-                       foreground=[('active', self.settings.primary)])
+                           ('active selected', brightness(self.settings.colors.primary, -0.2)),
+                           ('selected', self.settings.colors.fg),
+                           ('active !selected', self.settings.colors.light)],
+                       foreground=[('active', self.settings.colors.primary)])
 
         # variations change indicator color
-        for v in VARIATIONS:
-            self.style.map(f'{v}.TCheckbutton',
+        for color in self.settings.colors:
+            self.style.map(f'{color}.TCheckbutton',
                            indicatorbackground=[
-                               ('active selected', brightness(self.lookup_color(v), -0.2)),
-                               ('selected', self.settings.fg),
-                               ('active !selected', self.settings.light)],
+                               ('active selected', brightness(self.settings.colors.get(color), -0.2)),
+                               ('selected', self.settings.colors.fg),
+                               ('active !selected', self.settings.colors.light)],
                            indicatorforeground=[
-                               ('active selected', brightness(self.lookup_color(v), -0.2)),
-                               ('selected', self.lookup_color(v))],
+                               ('active selected', brightness(self.settings.colors.get(color), -0.2)),
+                               ('selected', self.settings.colors.get(color))],
                            foreground=[
-                               ('active', brightness(self.lookup_color(v), -0.2))])
+                               ('active', brightness(self.settings.colors.get(color), -0.2))])
 
     def style_solid_menubutton(self):
-        """
-        Create a solid menubutton widget style
+        """Apply a solid color style to ttk menubutton: `ttk.Menubutton`
 
         Element Options:
             - Menubutton.border: bordercolor, lightcolor, darkcolor, relief, borderwidth
@@ -798,12 +884,12 @@ class StylerTTK:
             - Menubutton.label: 
         """
         self.style.configure('TMenubutton',
-                             foreground=self.settings.selectfg,
-                             background=self.settings.primary,
-                             bordercolor=self.settings.primary,
-                             darkcolor=self.settings.primary,
-                             lightcolor=self.settings.primary,
-                             arrowcolor=self.settings.bg if self.settings.type == 'light' else 'white',
+                             foreground=self.settings.colors.selectfg,
+                             background=self.settings.colors.primary,
+                             bordercolor=self.settings.colors.primary,
+                             darkcolor=self.settings.colors.primary,
+                             lightcolor=self.settings.colors.primary,
+                             arrowcolor=self.settings.colors.bg if self.settings.type == 'light' else 'white',
                              arrowpadding=(0, 0, 15, 0),
                              relief='raised',
                              focusthickness=0,
@@ -812,47 +898,46 @@ class StylerTTK:
 
         self.style.map('TMenubutton',
                        background=[
-                           ('pressed', brightness(self.settings.primary, -0.2)),
-                           ('hover', brightness(self.settings.primary, -0.1))],
+                           ('pressed', brightness(self.settings.colors.primary, -0.2)),
+                           ('hover', brightness(self.settings.colors.primary, -0.1))],
                        bordercolor=[
-                           ('pressed', brightness(self.settings.primary, -0.2)),
-                           ('hover', brightness(self.settings.primary, -0.1))],
+                           ('pressed', brightness(self.settings.colors.primary, -0.2)),
+                           ('hover', brightness(self.settings.colors.primary, -0.1))],
                        darkcolor=[
-                           ('pressed', brightness(self.settings.primary, -0.2)),
-                           ('hover', brightness(self.settings.primary, -0.1))],
+                           ('pressed', brightness(self.settings.colors.primary, -0.2)),
+                           ('hover', brightness(self.settings.colors.primary, -0.1))],
                        lightcolor=[
-                           ('pressed', brightness(self.settings.primary, -0.2)),
-                           ('hover', brightness(self.settings.primary, -0.1))])
+                           ('pressed', brightness(self.settings.colors.primary, -0.2)),
+                           ('hover', brightness(self.settings.colors.primary, -0.1))])
 
-        for v in VARIATIONS:
-            self.style.configure(f'{v}.TMenubutton',
-                                 foreground=self.settings.selectfg,
-                                 background=self.lookup_color(v),
-                                 bordercolor=self.lookup_color(v),
-                                 darkcolor=self.lookup_color(v),
-                                 lightcolor=self.lookup_color(v),
+        for color in self.settings.colors:
+            self.style.configure(f'{color}.TMenubutton',
+                                 foreground=self.settings.colors.selectfg,
+                                 background=self.settings.colors.get(color),
+                                 bordercolor=self.settings.colors.get(color),
+                                 darkcolor=self.settings.colors.get(color),
+                                 lightcolor=self.settings.colors.get(color),
                                  relief='raised',
                                  focusthickness=0,
                                  focuscolor='',
                                  padding=(10, 5))
 
-            self.style.map(f'{v}.TMenubutton',
+            self.style.map(f'{color}.TMenubutton',
                            background=[
-                               ('pressed', brightness(self.lookup_color(v), -0.2)),
-                               ('hover', brightness(self.lookup_color(v), -0.1))],
+                               ('pressed', brightness(self.settings.colors.get(color), -0.2)),
+                               ('hover', brightness(self.settings.colors.get(color), -0.1))],
                            bordercolor=[
-                               ('pressed', brightness(self.lookup_color(v), -0.2)),
-                               ('hover', brightness(self.lookup_color(v), -0.1))],
+                               ('pressed', brightness(self.settings.colors.get(color), -0.2)),
+                               ('hover', brightness(self.settings.colors.get(color), -0.1))],
                            darkcolor=[
-                               ('pressed', brightness(self.lookup_color(v), -0.2)),
-                               ('hover', brightness(self.lookup_color(v), -0.1))],
+                               ('pressed', brightness(self.settings.colors.get(color), -0.2)),
+                               ('hover', brightness(self.settings.colors.get(color), -0.1))],
                            lightcolor=[
-                               ('pressed', brightness(self.lookup_color(v), -0.2)),
-                               ('hover', brightness(self.lookup_color(v), -0.1))])
+                               ('pressed', brightness(self.settings.colors.get(color), -0.2)),
+                               ('hover', brightness(self.settings.colors.get(color), -0.1))])
 
     def style_outline_menubutton(self):
-        """
-        Create an outline menubutton widget style
+        """Apply and outline style to ttk menubutton: `ttk.Menubutton`
 
         Element Options:
             - Menubutton.border: bordercolor, lightcolor, darkcolor, relief, borderwidth
@@ -862,12 +947,12 @@ class StylerTTK:
             - Menubutton.label:
         """
         self.style.configure('Outline.TMenubutton',
-                             foreground=self.settings.primary,
-                             background=self.settings.bg,
-                             bordercolor=self.settings.primary,
-                             darkcolor=self.settings.bg,
-                             lightcolor=self.settings.bg,
-                             arrowcolor=self.settings.primary,
+                             foreground=self.settings.colors.primary,
+                             background=self.settings.colors.bg,
+                             bordercolor=self.settings.colors.primary,
+                             darkcolor=self.settings.colors.bg,
+                             lightcolor=self.settings.colors.bg,
+                             arrowcolor=self.settings.colors.primary,
                              arrowpadding=(0, 0, 15, 0),
                              relief='raised',
                              focusthickness=0,
@@ -876,60 +961,59 @@ class StylerTTK:
 
         self.style.map('Outline.TMenubutton',
                        foreground=[
-                           ('pressed', self.settings.selectfg),
-                           ('hover', self.settings.selectfg)],
+                           ('pressed', self.settings.colors.selectfg),
+                           ('hover', self.settings.colors.selectfg)],
                        background=[
-                           ('pressed', brightness(self.settings.primary, -0.2)),
-                           ('hover', brightness(self.settings.primary, -0.1))],
+                           ('pressed', brightness(self.settings.colors.primary, -0.2)),
+                           ('hover', brightness(self.settings.colors.primary, -0.1))],
                        bordercolor=[
-                           ('pressed', brightness(self.settings.primary, -0.2)),
-                           ('hover', brightness(self.settings.primary, -0.1))],
+                           ('pressed', brightness(self.settings.colors.primary, -0.2)),
+                           ('hover', brightness(self.settings.colors.primary, -0.1))],
                        darkcolor=[
-                           ('pressed', brightness(self.settings.primary, -0.2)),
-                           ('hover', brightness(self.settings.primary, -0.1))],
+                           ('pressed', brightness(self.settings.colors.primary, -0.2)),
+                           ('hover', brightness(self.settings.colors.primary, -0.1))],
                        lightcolor=[
-                           ('pressed', brightness(self.settings.primary, -0.2)),
-                           ('hover', brightness(self.settings.primary, -0.1))],
+                           ('pressed', brightness(self.settings.colors.primary, -0.2)),
+                           ('hover', brightness(self.settings.colors.primary, -0.1))],
                        arrowcolor=[
-                           ('pressed', self.settings.selectfg),
-                           ('hover', self.settings.selectfg)])
+                           ('pressed', self.settings.colors.selectfg),
+                           ('hover', self.settings.colors.selectfg)])
 
-        for v in VARIATIONS:
-            self.style.configure(f'{v}.Outline.TMenubutton',
-                                 foreground=self.lookup_color(v),
-                                 background=self.settings.bg,
-                                 bordercolor=self.lookup_color(v),
-                                 darkcolor=self.settings.bg,
-                                 lightcolor=self.settings.bg,
-                                 arrowcolor=self.lookup_color(v),
+        for color in self.settings.colors:
+            self.style.configure(f'{color}.Outline.TMenubutton',
+                                 foreground=self.settings.colors.get(color),
+                                 background=self.settings.colors.bg,
+                                 bordercolor=self.settings.colors.get(color),
+                                 darkcolor=self.settings.colors.bg,
+                                 lightcolor=self.settings.colors.bg,
+                                 arrowcolor=self.settings.colors.get(color),
                                  relief='raised',
                                  focusthickness=0,
                                  focuscolor='',
                                  padding=(10, 5))
 
-            self.style.map(f'{v}.Outline.TMenubutton',
+            self.style.map(f'{color}.Outline.TMenubutton',
                            foreground=[
-                               ('pressed', self.settings.fg),
-                               ('hover', self.settings.fg)],
+                               ('pressed', self.settings.colors.fg),
+                               ('hover', self.settings.colors.fg)],
                            background=[
-                               ('pressed', brightness(self.lookup_color(v), -0.2)),
-                               ('hover', brightness(self.lookup_color(v), -0.1))],
+                               ('pressed', brightness(self.settings.colors.get(color), -0.2)),
+                               ('hover', brightness(self.settings.colors.get(color), -0.1))],
                            bordercolor=[
-                               ('pressed', brightness(self.lookup_color(v), -0.2)),
-                               ('hover', brightness(self.lookup_color(v), -0.1))],
+                               ('pressed', brightness(self.settings.colors.get(color), -0.2)),
+                               ('hover', brightness(self.settings.colors.get(color), -0.1))],
                            darkcolor=[
-                               ('pressed', brightness(self.lookup_color(v), -0.2)),
-                               ('hover', brightness(self.lookup_color(v), -0.1))],
+                               ('pressed', brightness(self.settings.colors.get(color), -0.2)),
+                               ('hover', brightness(self.settings.colors.get(color), -0.1))],
                            lightcolor=[
-                               ('pressed', brightness(self.lookup_color(v), -0.2)),
-                               ('hover', brightness(self.lookup_color(v), -0.1))],
+                               ('pressed', brightness(self.settings.colors.get(color), -0.2)),
+                               ('hover', brightness(self.settings.colors.get(color), -0.1))],
                            arrowcolor=[
-                               ('pressed', self.settings.bg),
-                               ('hover', self.settings.bg)])
+                               ('pressed', self.settings.colors.bg),
+                               ('hover', self.settings.colors.bg)])
 
     def style_notebook(self):
-        """
-        Create a notebook widget style
+        """Apply style to ttk notebook: `ttk.Notebook`
 
         Element Options:
             - Notebook.client: background, bordercolor, lightcolor, darkcolor
@@ -940,17 +1024,17 @@ class StylerTTK:
             
         """
         self.style.configure('TNotebook',
-                             bordercolor=self.settings.border,
+                             bordercolor=self.settings.colors.border,
                              borderwidth=1)
 
         self.style.configure('TNotebook.Tab',
-                             bordercolor=self.settings.border,
-                             foreground=self.settings.fg,
+                             bordercolor=self.settings.colors.border,
+                             foreground=self.settings.colors.fg,
                              padding=(10, 5))
 
         self.style.map('TNotebook.Tab',
-                       background=[('!selected', self.settings.light)],
-                       lightcolor=[('!selected', self.settings.light)],
-                       darkcolor=[('!selected', self.settings.light)],
-                       bordercolor=[('!selected', self.settings.border)],
-                       foreground=[('!selected', self.settings.inputfg)])
+                       background=[('!selected', self.settings.colors.light)],
+                       lightcolor=[('!selected', self.settings.colors.light)],
+                       darkcolor=[('!selected', self.settings.colors.light)],
+                       bordercolor=[('!selected', self.settings.colors.border)],
+                       foreground=[('!selected', self.settings.colors.inputfg)])
