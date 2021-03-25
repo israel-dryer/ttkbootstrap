@@ -4,7 +4,7 @@
     Author:
         Israel Dryer
 
-    Modfied:
+    Modified:
         March 24, 2023
 """
 from ttkbootstrap import BootStyle, tkinter, ttk
@@ -33,9 +33,9 @@ class Demo(BootStyle):
         self.nb.add(ttk.Frame(self.nb), text='Tab 3')
 
     def change_theme(self, new_theme):
-        """Destroying the widget isn't strictly neccessary with pure TTK widgets. However, for this demo, I'm
-        explicily allowing the changing of colors, etc... and because I want the styles to be consistent on underlying
-        standard tk widgets, I've chosing to redraw all the widgets in the main tab. You can use other methods or
+        """Destroying the widget isn't strictly necessary with pure TTK widgets. However, for this demo, I'm
+        explicitly allowing the changing of colors, etc... and because I want the styles to be consistent on underlying
+        standard tk widgets, I've choosing to redraw all the widgets in the main tab. You can use other methods or
         avoid this altogether if you're not switch between light and dark themes."""
         self.tab.destroy()
         self.theme_use(new_theme)
