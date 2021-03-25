@@ -1,11 +1,11 @@
 from ttkbootstrap import BootStyle, tkinter, ttk
 
+root = tkinter.Tk()
 style = BootStyle()
 style.theme_use('superhero')
-root = style.master
 
 f1 = ttk.Frame(root, padding=5)
-f1.pack(fill='x')
+f1.pack(fill='x', padx=25, pady=25)
 for color in style.settings.colors:
     ttk.Button(f1, text=color.title(), style=f'{color}.TButton').pack(side='left', fill='x', expand='yes', padx=2)
 
