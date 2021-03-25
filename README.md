@@ -7,7 +7,7 @@ This is a work-in-progress. Soon this will be published as a Python package. But
 ## Basic Usage
 
 ```python
-from src import BootStyle, ttk
+from ttkbootstrap import BootStyle, ttk
 
 style = BootStyle()
 style.theme_use('flatly')
