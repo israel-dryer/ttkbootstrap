@@ -18,9 +18,9 @@ You check out the examples below in a live demonstration by executing the follow
 ## Basic Usage
 
 ```python
-from ttkbootstrap import BootStyle, ttk
+from ttkbootstrap import Style, ttk
 
-style = BootStyle()
+style = Style()
 style.theme_use('flatly')
 root = style.master
 

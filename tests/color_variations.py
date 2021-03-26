@@ -1,7 +1,7 @@
-from ttkbootstrap import BootStyle, tkinter, ttk
+from ttkbootstrap import Style, tkinter, ttk
 
 root = tkinter.Tk()
-style = BootStyle()
+style = Style()
 style.theme_use('superhero')
 
 f1 = ttk.Frame(root, padding=5)

@@ -42,7 +42,7 @@
         re-create the window as I have done in the example (actually I'm building the entire inside frame and then
         rebuilding when the style changes).
 """
-from .theme_engine import BootStyle
+from .theme_engine import Style
 from .demo import Demo
 import tkinter
 from tkinter import ttk
