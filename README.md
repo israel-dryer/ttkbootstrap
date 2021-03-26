@@ -1,8 +1,11 @@
-# Izzy-Themes-TTK
+# ttkbootstrap
 A collection of modern themes for Tkinter TTK built using standard, cross-platform themes ('clam', 'alt', 'classic', 'default'). 
 Most of these themes are adapted and or/inspired from the open source bootstrap themes published on https://bootswatch.com/  
 
-This is a work-in-progress. Soon this will be published as a Python package. But, until then, you can clone the repo and use per below.
+## Installation
+```python
+pip install ttkbootstrap
+```
 
 ## Basic Usage
 
@@ -67,7 +70,7 @@ ttk.Radiobutton(root, text='Hello World', style='danger.TRadiobutton')
 - The **Checkbutton** and **Radiobutton** colors are only changeable on Linux and MacOS. Windows uses the built-in "xpnative" themed elements to build the widgets.
 
 ## Create New Themes
-Creating a new theme is really easy... simply add a theme record to the `themes.json` file with the appropriate fields
+Creating a new theme is easy... simply add a theme record to the `themes.json` file with the appropriate fields
 ```json
     {
       "name": "cosmo",
@@ -92,14 +95,14 @@ Creating a new theme is really easy... simply add a theme record to the `themes.
 ```
 
 ## Light Themes
-<img src="examples/cosmo.png" width="45%"/> <img src="examples/flatly.png" width="45%"/>  
-<img src="examples/journal.png" width="45%"/> <img src="examples/litera.png" width="45%"/>  
-<img src="examples/lumen.png" width="45%"/> <img src="examples/minty.png" width="45%"/>  
-<img src="examples/pulse.png" width="45%"/> <img src="examples/sandstone.png" width="45%"/>  
-<img src="examples/united.png" width="45%"/> <img src="examples/yeti.png" width="45%"/>  
+<img src="https://github.com/israel-dryer/Izzy-Themes-TTK/tree/master/examples/cosmo.png" width="45%"/> <img src="https://github.com/israel-dryer/Izzy-Themes-TTK/tree/master/examples/flatly.png" width="45%"/>  
+<img src="https://github.com/israel-dryer/Izzy-Themes-TTK/tree/master/examples/journal.png" width="45%"/> <img src="https://github.com/israel-dryer/Izzy-Themes-TTK/tree/master/examples/litera.png" width="45%"/>  
+<img src="https://github.com/israel-dryer/Izzy-Themes-TTK/tree/master/examples/lumen.png" width="45%"/> <img src="https://github.com/israel-dryer/Izzy-Themes-TTK/tree/master/examples/minty.png" width="45%"/>  
+<img src="https://github.com/israel-dryer/Izzy-Themes-TTK/tree/master/examples/pulse.png" width="45%"/> <img src="https://github.com/israel-dryer/Izzy-Themes-TTK/tree/master/examples/sandstone.png" width="45%"/>  
+<img src="https://github.com/israel-dryer/Izzy-Themes-TTK/tree/master/examples/united.png" width="45%"/> <img src="https://github.com/israel-dryer/Izzy-Themes-TTK/tree/master/examples/yeti.png" width="45%"/>  
   
 ## Dark Themes
-<img src="examples/darkly.png" width="45%"/> <img src="examples/cyborg.png" width="45%"/>
-<img src="examples/superhero.png" width="45%"/> <img src="examples/solar.png" width="45%"/>  
+<img src="https://github.com/israel-dryer/Izzy-Themes-TTK/tree/master/examples/darkly.png" width="45%"/> <img src="https://github.com/israel-dryer/Izzy-Themes-TTK/tree/master/examples/cyborg.png" width="45%"/>
+<img src="https://github.com/israel-dryer/Izzy-Themes-TTK/tree/master/examples/superhero.png" width="45%"/> <img src="https://github.com/israel-dryer/Izzy-Themes-TTK/tree/master/examples/solar.png" width="45%"/>  
 
 

@@ -1,11 +1,16 @@
 import setuptools
 
+with open('README.md', 'r') as f:
+    long_description = f.read()
+
 setuptools.setup(
     name="ttkbootstrap",
     version="0.0.1",
     author="Israel Dryer",
     author_email="israel.dryer@gmail.com",
     description="A collection of ttk themes inspired by Bootstrap",
+    long_description=long_description,
+    long_description_content_type="text/markdown",
     classifiers=[
         "Programming Language :: Python :: 3",
         "License :: OSI Approved :: MIT License",
