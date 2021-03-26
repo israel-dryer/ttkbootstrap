@@ -43,5 +43,9 @@
         rebuilding when the style changes).
 """
 from .theme_engine import BootStyle
+from .demo import Demo
 import tkinter
 from tkinter import ttk
+
+if __name__ == '__main__':
+    Demo().run()
