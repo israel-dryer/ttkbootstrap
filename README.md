@@ -95,14 +95,14 @@ Creating a new theme is easy... simply add a theme record to the `themes.json` f
 ```
 
 ## Light Themes
-<img src="https://github.com/israel-dryer/Izzy-Themes-TTK/tree/master/examples/cosmo.png" width="45%"/> <img src="https://github.com/israel-dryer/Izzy-Themes-TTK/tree/master/examples/flatly.png" width="45%"/>  
-<img src="https://github.com/israel-dryer/Izzy-Themes-TTK/tree/master/examples/journal.png" width="45%"/> <img src="https://github.com/israel-dryer/Izzy-Themes-TTK/tree/master/examples/litera.png" width="45%"/>  
-<img src="https://github.com/israel-dryer/Izzy-Themes-TTK/tree/master/examples/lumen.png" width="45%"/> <img src="https://github.com/israel-dryer/Izzy-Themes-TTK/tree/master/examples/minty.png" width="45%"/>  
-<img src="https://github.com/israel-dryer/Izzy-Themes-TTK/tree/master/examples/pulse.png" width="45%"/> <img src="https://github.com/israel-dryer/Izzy-Themes-TTK/tree/master/examples/sandstone.png" width="45%"/>  
-<img src="https://github.com/israel-dryer/Izzy-Themes-TTK/tree/master/examples/united.png" width="45%"/> <img src="https://github.com/israel-dryer/Izzy-Themes-TTK/tree/master/examples/yeti.png" width="45%"/>  
+<img src="https://raw.githubusercontent.com/israel-dryer/Izzy-Themes-TTK/master/examples/cosmo.png" width="45%"/> <img src="https://raw.githubusercontent.com/israel-dryer/Izzy-Themes-TTK/master/examples/flatly.png" width="45%"/>  
+<img src="https://raw.githubusercontent.com/israel-dryer/Izzy-Themes-TTK/master/examples/journal.png" width="45%"/> <img src="https://raw.githubusercontent.com/israel-dryer/Izzy-Themes-TTK/master/examples/litera.png" width="45%"/>  
+<img src="https://raw.githubusercontent.com/israel-dryer/Izzy-Themes-TTK/master/examples/lumen.png" width="45%"/> <img src="https://raw.githubusercontent.com/israel-dryer/Izzy-Themes-TTK/master/examples/minty.png" width="45%"/>  
+<img src="https://raw.githubusercontent.com/israel-dryer/Izzy-Themes-TTK/master/examples/pulse.png" width="45%"/> <img src="https://raw.githubusercontent.com/israel-dryer/Izzy-Themes-TTK/master/examples/sandstone.png" width="45%"/>  
+<img src="https://raw.githubusercontent.com/israel-dryer/Izzy-Themes-TTK/master/examples/united.png" width="45%"/> <img src="https://raw.githubusercontent.com/israel-dryer/Izzy-Themes-TTK/master/examples/yeti.png" width="45%"/>  
   
 ## Dark Themes
-<img src="https://github.com/israel-dryer/Izzy-Themes-TTK/tree/master/examples/darkly.png" width="45%"/> <img src="https://github.com/israel-dryer/Izzy-Themes-TTK/tree/master/examples/cyborg.png" width="45%"/>
-<img src="https://github.com/israel-dryer/Izzy-Themes-TTK/tree/master/examples/superhero.png" width="45%"/> <img src="https://github.com/israel-dryer/Izzy-Themes-TTK/tree/master/examples/solar.png" width="45%"/>  
+<img src="https://raw.githubusercontent.com/israel-dryer/Izzy-Themes-TTK/master/examples/darkly.png" width="45%"/> <img src="https://raw.githubusercontent.com/israel-dryer/Izzy-Themes-TTK/master/examples/cyborg.png" width="45%"/>
+<img src="https://raw.githubusercontent.com/israel-dryer/Izzy-Themes-TTK/master/examples/superhero.png" width="45%"/> <img src="https://raw.githubusercontent.com/israel-dryer/Izzy-Themes-TTK/master/examples/solar.png" width="45%"/>  
 
 

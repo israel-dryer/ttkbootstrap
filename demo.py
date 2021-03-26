@@ -17,7 +17,7 @@ class Demo(BootStyle):
         super().__init__()
         self.theme_use('superhero')
         self.root = self.master
-        self.root.title('Izzy Themes')
+        self.root.title('TTK Bootstrap')
         self.root.geometry('590x650')
         self.theme_name = tkinter.StringVar()
         self.theme_name.set(self.theme_use())
