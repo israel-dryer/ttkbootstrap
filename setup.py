@@ -5,10 +5,10 @@ with open('README.md', 'r') as f:
 
 setuptools.setup(
     name="ttkbootstrap",
-    version="0.0.1",
+    version="0.0.5",
     author="Israel Dryer",
     author_email="israel.dryer@gmail.com",
-    description="A collection of ttk themes inspired by Bootstrap",
+    description="A collection of modern ttk themes inspired by Bootstrap",
     long_description=long_description,
     long_description_content_type="text/markdown",
     classifiers=[
@@ -18,7 +18,8 @@ setuptools.setup(
     ],
     package_dir={"": "src"},
     packages=setuptools.find_packages(where="src"),
-    package_data={"src": ["*.json"]},
+    package_data={"": ["*.json"]},
+    include_package_data=True,
     install_requires=["pillow"],
     python_requires=">=3.6",
 )
