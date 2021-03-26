@@ -1,11 +1,7 @@
 """
-    An application to demonstrate the available installed themes for TTK
-
-    Author:
-        Israel Dryer
-
-    Modified:
-        March 25, 2023
+Author: Israel Dryer
+License: MIT
+Copyright (c) 2021 Israel Dryer
 """
 from .theme_engine import Style
 import tkinter
@@ -13,7 +9,9 @@ from tkinter import ttk
 
 
 class Demo(Style):
-    """An application class for demonstrating styles"""
+    """
+    An application class for demonstrating styles
+    """
 
     def __init__(self):
         super().__init__()
@@ -56,7 +54,9 @@ class Demo(Style):
         btn.configure(text=btn_text)
 
     def create_themed_tab(self):
-        """Create a return a frame containing themed widgets"""
+        """
+        Create a return a frame containing themed widgets
+        """
         tab = ttk.Frame(self.nb, padding=20)
         colors = ['Primary', 'Secondary', 'Success', 'Info', 'Warning', 'Danger']
 
