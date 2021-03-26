@@ -16,6 +16,7 @@ setuptools.setup(
         "License :: OSI Approved :: MIT License",
         "Operating System :: OS Independent",
     ],
+    url="https://github.com/israel-dryer/ttkbootstrap",
     package_dir={"": "src"},
     packages=setuptools.find_packages(where="src"),
     package_data={"": ["*.json"]},
