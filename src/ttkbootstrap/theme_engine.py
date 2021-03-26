@@ -1,3 +1,8 @@
+"""
+Author: Israel Dryer
+License: MIT
+Copyright (c) 2021 Israel Dryer
+"""
 import json
 import colorsys
 from pathlib import Path
@@ -7,7 +12,12 @@ from PIL import ImageTk, Image, ImageDraw
 
 
 def hex_to_rgb(color):
-    """Convert hexadecimal to rgb color representation"""
+    """
+    Convert hexadecimal to rgb color representation
+
+    :param color: a hexadecimal color code (ex. #fafafa)
+    :returns: tuple of rgb color values (red, green, blue)
+    """
     r = round(int(color[1:3], 16) / 255, 2)
     g = round(int(color[3:5], 16) / 255, 2)
     b = round(int(color[5:], 16) / 255, 2)
@@ -15,7 +25,14 @@ def hex_to_rgb(color):
 
 
 def rgb_to_hex(r, g, b):
-    """Convert rgb to hexadecimal color representation"""
+    """
+    Convert rgb to hexadecimal color representation
+
+    :param r: red value
+    :param g: green value
+    :param b: blue value
+    :returns: a hexadecimal color value
+    """
     r_ = int(r * 255)
     g_ = int(g * 255)
     b_ = int(b * 255)
@@ -23,8 +40,14 @@ def rgb_to_hex(r, g, b):
 
 
 def brightness(hex_color, pct_change):
-    """Adjust the value of a given hexadecimal color. The percent change is expected to be a float. Example: 0.15
-    is a 15 percent increase in brightness, whereas -0.15 is a 15 percent decrease in brightness"""
+    """
+    Adjust the value of a given hexadecimal color. The percent change is expected to be a float. Example: 0.15 is a 15
+    percent increase in brightness, whereas -0.15 is a 15 percent decrease in brightness.
+
+    :param hex_color: a hexadecimal color value (ex. #fafafa)
+    :param pct_change: a floating value
+    :returns: result of rgb_to_hex() with altered color values
+    """
     r, g, b = hex_to_rgb(hex_color)
     h, s, v = colorsys.rgb_to_hsv(r, g, b)
     v_ = (1 + pct_change) * v
@@ -35,6 +58,11 @@ def brightness(hex_color, pct_change):
 
 
 class Style(ttk.Style):
+    """
+    A class that sets the theme for an instance of TK. This should be used as a replacement for the normal ttk.Style
+    class. It also supports the default themes provided.
+    """
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.themes = {}
@@ -43,7 +71,9 @@ class Style(ttk.Style):
         self.colors = None
 
     def load_themes(self):
-        """Load all ttkbootstrap defined themes"""
+        """
+        Load all ttkbootstrap defined themes
+        """
         json_data = importlib.resources.read_text('ttkbootstrap', 'themes.json')
         settings = json.loads(json_data)
         for theme in settings['themes']:
@@ -56,9 +86,12 @@ class Style(ttk.Style):
                 self.themes[settings.name] = StylerTTK(self, settings)
 
     def theme_use(self, themename=None):
-        """If themename is None, returns the theme in use, otherwise, set
-        the current theme to themename, refreshes all widgets and emits
-        a <<ThemeChanged>> event."""
+        """
+        If themename is None, returns the theme in use, otherwise, set the current theme to themename, refreshes all
+        widgets and emits a <<ThemeChanged>> event.
+
+        :param themename: the theme to apply when creating new widgets
+        """
         if themename is None:
             # Starting on Tk 8.6, checking this global is no longer needed
             # since it allows doing self.tk.call(self._name, "theme", "use")
@@ -77,14 +110,15 @@ class Style(ttk.Style):
         # "ttk::style theme use" in order to change theme.
         self.tk.call("ttk::setTheme", themename)
 
-class ThemeSettings:
-    """Settings for a ttkbootstrap theme.
 
-    Attributes:
-        name: The name of the theme
-        type: 'light' or 'dark'
-        font: Default font to apply to theme. Helvetica is used by default.
-        colors: An instance of the `Colors` class.
+class ThemeSettings:
+    """
+    A class to provide settings for a ttkbootstrap theme.
+
+    :param name: The name of the theme
+    :param type: type: 'light' or 'dark'
+    :param font: Default font to apply to theme. Helvetica is used by default.
+    :param colors: An instance of the `Colors` class.
     """
 
     def __init__(self, name='default', type='light', font='helvetica', colors=None):
@@ -98,10 +132,22 @@ class ThemeSettings:
 
 
 class Colors:
-    """A collection of colors used in a ttkbootstrap theme.
+    """
+    A collection of colors used in a ttkbootstrap theme.
 
-    Attributes:
-        primary, secondary, success, info, warning, danger, bg, fg, selectfg, selectbg, light, border, inputfg
+    :param primary: the primary theme color; is used as basis for all widgets.
+    :param secondary: an accent color; typically the same as `selectbg` in built-in themes,
+    :param success: an accent color; an orange hue in most themes.
+    :param info: an accent color; a blue hue in most themes.
+    :param warning: an accent color; an orange hue in most themes.
+    :param danger: an accent color; a red hue in most themes.
+    :param bg: background color; used for root window background.
+    :param fg: primary font color; used for labels and non-input related widgets.
+    :param selectfg: foreground color of selected text.
+    :param selectbg; background color of selected text background
+    :param light: a color used for input widget background and trough color
+    :param border: a color used on the border of several input widgets (combobox, entry, spinbox, etc...)
+    :param inputfg: a color used for input widgets; typically a reverse lightness of `fg`
     """
 
     def __init__(self, **kwargs):
@@ -120,7 +166,12 @@ class Colors:
         self.inputfg = kwargs.get('inputfg', 'black')
 
     def get(self, color):
-        """Accepts a color name and returns the color value"""
+        """
+        Lookup a color property
+
+        :param color: a color label corresponding to a class propery (primary, secondary, success, etc...)
+        :returns: a hexadecimal color value
+        """
         return self.__dict__.get(color)
 
     def __iter__(self):
@@ -131,158 +182,196 @@ class Colors:
 
 
 class StylerTK:
-    """A flat theme applied to standard tkinter widgets (THESE ARE NOT TTK WIDGETS).
+    """
+    A class that applies theme colors to standard Tkinter widgets (NOT TTK WIDGETS). Used as a mix-in for `StylerTTK`.
 
-    This can be used independent of the Themed TTK widgets, but it is primary designed to supplement the few widgets
-    that are used in conjunction with the TTK widgets. So, please be aware that standard tkinter widgets may not have
-    the desired look.
+    This class can potentially be used independent of the `StylerTTK` class, but it is primary designed to supplement
+    the few widgets that are used in conjunction with the TTK widgets. So, please be aware that standard tkinter widgets
+    may not have the desired look.
 
-    Attributes:
-        parent: an instance of `StylerTTK`
+    :param parent: an instance of `StylerTTK`
     """
 
     def __init__(self, parent):
         self.master = parent.style.master
         self.settings = parent.settings
 
-    def set_option(self, *args):
-        """A convenience method to shorten the call to `option_add`"""
+    def apply_style(self):
+        """
+        A wrapper on all widget style methods. Applies current theme to all standard tkinter widgets (NOT TTK)
+        """
+        self._style_window()
+        self._style_button()
+        self._style_label()
+        self._style_checkbutton()
+        self._style_radiobutton()
+        self._style_entry()
+        self._style_scale()
+        self._style_listbox()
+        self._style_spinbox()
+        self._style_menu()
+        self._style_menubutton()
+        self._style_labelframe()
+        self._style_scrollbar()
+        self._style_optionmenu()
+
+    def _set_option(self, *args):
+        """
+        A convenience method to shorten the call to `option_add`. Laziness is next to godliness.
+        """
         self.master.option_add(*args)
 
-    def apply_style(self):
-        """A wrapper on all widget style methods. Applies current theme to all standard tkinter widgets (NOT TTK)"""
-        self.style_window()
-        self.style_button()
-        self.style_label()
-        self.style_checkbutton()
-        self.style_radiobutton()
-        self.style_entry()
-        self.style_scale()
-        self.style_listbox()
-        self.style_spinbox()
-        self.style_menu()
-        self.style_menubutton()
-        self.style_labelframe()
-        self.style_scrollbar()
-        self.style_optionmenu()
-
-    def style_window(self):
-        """Apply global options to all matching tkinter widgets"""
+    def _style_window(self):
+        """
+        Apply global options to all matching tkinter widgets
+        """
         self.master.configure(background=self.settings.colors.bg)
-        self.set_option('*background', self.settings.colors.bg)
-        self.set_option('*font', 'Helvetica')
-        self.set_option('*borderWidth', 0)
-        self.set_option('*relief', 'flat')
-        self.set_option('*activeBackground', self.settings.colors.selectbg)
-        self.set_option('*activeForeground', self.settings.colors.selectfg)
-        self.set_option('*selectBackground', self.settings.colors.selectbg)
-        self.set_option('*selectForeground', self.settings.colors.selectfg)
+        self._set_option('*background', self.settings.colors.bg)
+        self._set_option('*font', 'Helvetica')
+        self._set_option('*borderWidth', 0)
+        self._set_option('*relief', 'flat')
+        self._set_option('*activeBackground', self.settings.colors.selectbg)
+        self._set_option('*activeForeground', self.settings.colors.selectfg)
+        self._set_option('*selectBackground', self.settings.colors.selectbg)
+        self._set_option('*selectForeground', self.settings.colors.selectfg)
 
-    def style_button(self):
-        """Apply style to tkinter button: `tkinter.Button`"""
-        self.set_option('*Button.foreground', self.settings.colors.selectfg)
-        self.set_option('*Button.background', self.settings.colors.primary)
+    def _style_button(self):
+        """
+        Apply style to tkinter button: `tkinter.Button`
+        """
+        self._set_option('*Button.foreground', self.settings.colors.selectfg)
+        self._set_option('*Button.background', self.settings.colors.primary)
 
-    def style_label(self):
-        """Apply style to tkinter label: `tkinter.Label`"""
-        self.set_option('*Label.foreground', self.settings.colors.fg)
-        self.set_option('*Label.background', self.settings.colors.bg)
+    def _style_label(self):
+        """
+        Apply style to tkinter label: `tkinter.Label`
+        """
+        self._set_option('*Label.foreground', self.settings.colors.fg)
+        self._set_option('*Label.background', self.settings.colors.bg)
 
-    def style_checkbutton(self):
-        """Apply style to tkinter checkbutton: `tkinter.Checkbutton`"""
-        self.set_option('*Checkbutton.background', self.settings.colors.bg)
-        self.set_option('*Checkbutton.foreground', self.settings.colors.fg)
-        self.set_option('*Checkbutton.selectColor',
-                        self.settings.colors.primary if self.settings.type == 'dark' else 'white')
+    def _style_checkbutton(self):
+        """
+        Apply style to tkinter checkbutton: `tkinter.Checkbutton`
+        """
+        self._set_option('*Checkbutton.background', self.settings.colors.bg)
+        self._set_option('*Checkbutton.foreground', self.settings.colors.fg)
+        self._set_option('*Checkbutton.selectColor',
+                         self.settings.colors.primary if self.settings.type == 'dark' else 'white')
 
-    def style_radiobutton(self):
-        """Apply style to tkinter radiobutton: `tkinter.Radiobutton`"""
-        self.set_option('*Radiobutton.background', self.settings.colors.bg)
-        self.set_option('*Radiobutton.foreground', self.settings.colors.fg)
-        self.set_option('*Radiobutton.selectColor',
-                        self.settings.colors.primary if self.settings.type == 'dark' else 'white')
+    def _style_radiobutton(self):
+        """
+        Apply style to tkinter radiobutton: `tkinter.Radiobutton`
+        """
+        self._set_option('*Radiobutton.background', self.settings.colors.bg)
+        self._set_option('*Radiobutton.foreground', self.settings.colors.fg)
+        self._set_option('*Radiobutton.selectColor',
+                         self.settings.colors.primary if self.settings.type == 'dark' else 'white')
 
-    def style_entry(self):
-        """Apply style to tkinter entry: `tkinter.Entry`"""
-        self.set_option('*Entry.relief', 'flat')
-        self.set_option('*Entry.background',
-                        (self.settings.colors.light if self.settings.type == 'light' else
-                         brightness(self.settings.colors.light, -0.1)))
-        self.set_option('*Entry.foreground', self.settings.colors.fg)
-        self.set_option('*Entry.highlightThickness', 1)
-        self.set_option('*Entry.highlightBackground', self.settings.colors.border)
-        self.set_option('*Entry.highlightColor', self.settings.colors.primary)
+    def _style_entry(self):
+        """
+        Apply style to tkinter entry: `tkinter.Entry`
+        """
+        self._set_option('*Entry.relief', 'flat')
+        self._set_option('*Entry.background',
+                         (self.settings.colors.light if self.settings.type == 'light' else
+                          brightness(self.settings.colors.light, -0.1)))
+        self._set_option('*Entry.foreground', self.settings.colors.fg)
+        self._set_option('*Entry.highlightThickness', 1)
+        self._set_option('*Entry.highlightBackground', self.settings.colors.border)
+        self._set_option('*Entry.highlightColor', self.settings.colors.primary)
 
-    def style_scale(self):
-        """Apply style to tkinter scale: `tkinter.Scale`"""
-        self.set_option('*Scale.background', self.settings.colors.primary)
-        self.set_option('*Scale.showValue', False)
-        self.set_option('*Scale.sliderRelief', 'flat')
-        self.set_option('*Scale.highlightThickness', 1)
-        self.set_option('*Scale.highlightColor', self.settings.colors.primary)
-        self.set_option('*Scale.highlightBackground', self.settings.colors.border)
-        self.set_option('*Scale.troughColor',
-                        (self.settings.colors.light if self.settings.type == 'light' else
-                         brightness(self.settings.colors.light, -0.1)))
+    def _style_scale(self):
+        """
+        Apply style to tkinter scale: `tkinter.Scale`
+        """
+        self._set_option('*Scale.background', self.settings.colors.primary)
+        self._set_option('*Scale.showValue', False)
+        self._set_option('*Scale.sliderRelief', 'flat')
+        self._set_option('*Scale.highlightThickness', 1)
+        self._set_option('*Scale.highlightColor', self.settings.colors.primary)
+        self._set_option('*Scale.highlightBackground', self.settings.colors.border)
+        self._set_option('*Scale.troughColor',
+                         (self.settings.colors.light if self.settings.type == 'light' else
+                          brightness(self.settings.colors.light, -0.1)))
 
-    def style_spinbox(self):
-        """Apply style to tkinter spinbox: `tkinter.Spinbox`"""
-        self.set_option('*Spinbox.foreground', self.settings.colors.fg)
-        self.set_option('*Spinbox.background',
-                        (self.settings.colors.light if self.settings.type == 'light' else
-                         brightness(self.settings.colors.light, -0.1)))
-        self.set_option('*Spinbox.highlightThickness', 1)
-        self.set_option('*Spinbox.highlightColor', self.settings.colors.primary)
-        self.set_option('*Spinbox.highlightBackground', self.settings.colors.border)
+    def _style_spinbox(self):
+        """
+        Apply style to tkinter spinbox: `tkinter.Spinbox`
+        """
+        self._set_option('*Spinbox.foreground', self.settings.colors.fg)
+        self._set_option('*Spinbox.background',
+                         (self.settings.colors.light if self.settings.type == 'light' else
+                          brightness(self.settings.colors.light, -0.1)))
+        self._set_option('*Spinbox.highlightThickness', 1)
+        self._set_option('*Spinbox.highlightColor', self.settings.colors.primary)
+        self._set_option('*Spinbox.highlightBackground', self.settings.colors.border)
 
-    def style_listbox(self):
-        """Apply style to tkinter listbox: `tkinter.Listbox`"""
-        self.set_option('*Listbox.foreground', self.settings.colors.fg)
-        self.set_option('*Listbox.background',
-                        (self.settings.colors.light if self.settings.type == 'light' else
-                         brightness(self.settings.colors.light, -0.1)))
-        self.set_option('*Listbox.relief', 'flat')
-        self.set_option('*Listbox.activeStyle', 'none')
-        self.set_option('*Listbox.highlightThickness', 1)
-        self.set_option('*Listbox.highlightColor', self.settings.colors.primary)
-        self.set_option('*Listbox.highlightBackground', self.settings.colors.border)
+    def _style_listbox(self):
+        """
+        Apply style to tkinter listbox: `tkinter.Listbox`
+        """
+        self._set_option('*Listbox.foreground', self.settings.colors.fg)
+        self._set_option('*Listbox.background',
+                         (self.settings.colors.light if self.settings.type == 'light' else
+                          brightness(self.settings.colors.light, -0.1)))
+        self._set_option('*Listbox.relief', 'flat')
+        self._set_option('*Listbox.activeStyle', 'none')
+        self._set_option('*Listbox.highlightThickness', 1)
+        self._set_option('*Listbox.highlightColor', self.settings.colors.primary)
+        self._set_option('*Listbox.highlightBackground', self.settings.colors.border)
 
-    def style_menubutton(self):
-        """Apply style to tkinter menubutton: `tkinter.Menubutton`"""
-        self.set_option('*Menubutton.background', self.settings.colors.primary)
-        self.set_option('*Menubutton.foreground', self.settings.colors.selectfg)
+    def _style_menubutton(self):
+        """
+        Apply style to tkinter menubutton: `tkinter.Menubutton`
+        """
+        self._set_option('*Menubutton.background', self.settings.colors.primary)
+        self._set_option('*Menubutton.foreground', self.settings.colors.selectfg)
 
-    def style_menu(self):
-        """Apply style to tkinter menu: `tkinter.Menu`"""
-        self.set_option('*Menu.tearOff', 0)
-        self.set_option('*Menu.foreground', self.settings.colors.fg)
-        self.set_option('*Menu.selectColor', self.settings.colors.primary)
+    def _style_menu(self):
+        """
+        Apply style to tkinter menu: `tkinter.Menu`
+        """
+        self._set_option('*Menu.tearOff', 0)
+        self._set_option('*Menu.foreground', self.settings.colors.fg)
+        self._set_option('*Menu.selectColor', self.settings.colors.primary)
 
-    def style_labelframe(self):
-        """Apply style to tkinter labelframe: `tkinter.Labelframe`"""
-        self.set_option('*Labelframe.foreground', self.settings.colors.fg)
-        self.set_option('*Labelframe.highlightColor', self.settings.colors.border)
-        self.set_option('*Labelframe.highlightBackground', self.settings.colors.border)
-        self.set_option('*Labelframe.highlightThickness', 1)
+    def _style_labelframe(self):
+        """
+        Apply style to tkinter labelframe: `tkinter.Labelframe`
+        """
+        self._set_option('*Labelframe.foreground', self.settings.colors.fg)
+        self._set_option('*Labelframe.highlightColor', self.settings.colors.border)
+        self._set_option('*Labelframe.highlightBackground', self.settings.colors.border)
+        self._set_option('*Labelframe.highlightThickness', 1)
 
-    def style_scrollbar(self):
-        """Apply style to tkinter scrollbar: `tkinter.Scrollbar`"""
-        # It does not appear to be possible to style the scrollbar on windows
+    def _style_scrollbar(self):
+        """
+        Apply style to tkinter scrollbar: `tkinter.Scrollbar`
+
+        NOTE: It appears this widget can only be styled in the constructor
+        """
+
         pass
 
-    def style_optionmenu(self):
-        """Apply style to tkinter option menu: `tkinter.OptionMenu`"""
-        # The widget constructor rejects all keyword arguments, so it cannot be set with options, only with
-        # configuration after the widget has been created.
+    def _style_optionmenu(self):
+        """
+        Apply style to tkinter option menu: `tkinter.OptionMenu`
+
+        NOTE: It appears this widget can only be styled in the constructor
+
+        """
         pass
 
 
 class StylerTTK:
-    """A flat TTK theme created with built-in elements and a supplied color scheme.
+    """
+    A class to create and apply a flat TTK theme created with built-in elements
 
-    Attributes:
-        style: An instance of the `ttk.Style` class
-        settings: An instance of the `ThemeSettings` class
+    The base theme of all ttkboostrap themes is the built-in `clam` theme. In many cases, widget layouts are re-created
+    using an assortment of elements from various styles (`clam`, `default`, `alt`, etc...).
+
+    :param style: An instance of the `ttk.Style` class
+    :param settings: An instance of the `ThemeSettings` class
     """
 
     def __init__(self, style, settings):
@@ -292,30 +381,35 @@ class StylerTTK:
         self.create_theme()
 
     def create_theme(self):
-        """Create a new ttk theme"""
+        """
+        Create and style a new ttk theme
+        """
         self.style.theme_create(self.settings.name, 'clam')
         self.style.theme_use(self.settings.name)
-        self.style_defaults()
-        self.style_spinbox()
-        self.style_scale()
-        self.style_scrollbar()
-        self.style_combobox()
-        self.style_frame()
-        self.style_checkbutton()
-        self.style_entry()
-        self.style_label()
-        self.style_labelframe()
-        self.style_notebook()
-        self.style_outline_buttons()
-        self.style_outline_menubutton()
+        self._style_defaults()
+        self._style_spinbox()
+        self._style_scale()
+        self._style_scrollbar()
+        self._style_combobox()
+        self._style_frame()
+        self._style_checkbutton()
+        self._style_entry()
+        self._style_label()
+        self._style_labelframe()
+        self._style_notebook()
+        self._style_outline_buttons()
+        self._style_outline_menubutton()
         self.style_progressbar()
-        self.style_radiobutton()
-        self.style_solid_buttons()
-        self.style_solid_menubutton()
-        self.style_treeview()
+        self._style_radiobutton()
+        self._style_solid_buttons()
+        self._style_solid_menubutton()
+        self._style_treeview()
 
-    def style_defaults(self):
-        """Setup the default ttk style settings"""
+    def _style_defaults(self):
+        """
+        Setup the default ttk style settings. These defaults are applied to any widget that contains these options.
+        This method should be called first before any other style is applied during theme creation.
+        """
         self.style.configure('.',
                              background=self.settings.colors.bg,
                              darkcolor=self.settings.colors.border,
@@ -331,14 +425,21 @@ class StylerTTK:
                              borderwidth=1,
                              focuscolor='')
 
-    def style_combobox(self):
-        """Apply style to ttk combobox: `ttk.Combobox`
+    def _style_combobox(self):
+        """
+        Apply style to ttk combobox: `ttk.Combobox`
 
-        Element Options:
+        This element style is created with a layout that combines `clam` and `default` theme elements.
+
+        The options available in this widget based on this layout include:
             - Combobox.downarrow: arrowsize, background, bordercolor, relief, arrowcolor
             - Combobox.field: bordercolor, lightcolor, darkcolor, fieldbackground
             - Combobox.padding: padding, relief, shiftrelief
             - Combobox.textarea: font, width
+
+        NOTE: When the dark theme is used, I used the `spinbox.field` from the `default` theme because the background
+        shines through the corners using the `clam` theme. This is an unfortuate hack to make it look ok. Hopefull there
+        will be a more permanent/better solution in the future.
         """
         self.style.layout('TCombobox', [('combo.Spinbox.field', {'side': 'top', 'sticky': 'we', 'children': [
             ('Combobox.downarrow', {'side': 'right', 'sticky': 'ns'}),
@@ -395,9 +496,10 @@ class StylerTTK:
                                ('hover', self.settings.colors.primary)])
 
     def style_progressbar(self):
-        """Apply style to ttk progressbar: `ttk.Progressbar`
+        """
+        Apply style to ttk progressbar: `ttk.Progressbar`
 
-        Element Options:
+        The options available in this widget include:
             - Progressbar.trough: borderwidth, troughcolor, troughrelief
             - Progressbar.pbar: orient, thickness, barsize, pbarrelief, borderwidth, background
         """
@@ -415,17 +517,23 @@ class StylerTTK:
             self.style.configure(f'{color}.Vertical.TProgressbar', background=self.settings.colors.get(color))
 
     @staticmethod
-    def create_slider_image(color, size=18):
-        """Create a slider based on given size and color"""
+    def _create_slider_image(color, size=18):
+        """
+        Create a circle slider image based on given size and color; used in the slider widget.
+
+        :param color: a hexadecimal color value
+        :param size: the size diameter of the slider circle.
+        """
         im = Image.new('RGBA', (100, 100))
         draw = ImageDraw.Draw(im)
         draw.ellipse((0, 0, 95, 95), fill=color)
         return ImageTk.PhotoImage(im.resize((size, size), Image.LANCZOS))
 
-    def style_scale(self):
-        """Apply style to ttk scale: `ttk.Scale`
+    def _style_scale(self):
+        """
+        Apply style to ttk scale: `ttk.Scale`
 
-        Element Options:
+        The options available in this widget include:
             - Scale.trough: borderwidth, troughcolor, troughrelief
             - Scale.slider: sliderlength, sliderthickness, sliderrelief, borderwidth, background, bordercolor, orient
         """
@@ -441,9 +549,9 @@ class StylerTTK:
 
         # create widget images
         self.scale_images = {}
-        self.scale_images['primary_regular'] = self.create_slider_image(self.settings.colors.primary)
-        self.scale_images['primary_pressed'] = self.create_slider_image(brightness(self.settings.colors.primary, -0.2))
-        self.scale_images['primary_hover'] = self.create_slider_image(brightness(self.settings.colors.primary, -0.1))
+        self.scale_images['primary_regular'] = self._create_slider_image(self.settings.colors.primary)
+        self.scale_images['primary_pressed'] = self._create_slider_image(brightness(self.settings.colors.primary, -0.2))
+        self.scale_images['primary_hover'] = self._create_slider_image(brightness(self.settings.colors.primary, -0.1))
         self.scale_images['trough'] = ImageTk.PhotoImage(
             Image.new('RGB', (8, 8), brightness(self.settings.colors.light, -0.05)))
 
@@ -453,10 +561,13 @@ class StylerTTK:
                                   ('pressed', self.scale_images['primary_pressed']),
                                   ('hover', self.scale_images['primary_hover']))
 
-    def style_scrollbar(self):
-        """Apply style to ttk scrollbar: ttk.Scrollbar
+    def _style_scrollbar(self):
+        """
+        Apply style to ttk scrollbar: ttk.Scrollbar
 
-        Element Options:
+        This theme uses elements from the 'alt' theme to build the widget layout.
+
+        The options available in this widget include:
             - Scrollbar.trough: orient, troughborderwidth, troughcolor, troughrelief, groovewidth
             - Scrollbar.uparrow: arrowsize, background, bordercolor, relief, arrowcolor
             - Scrollbar.downarrow: arrowsize, background, bordercolor, relief, arrowcolor
@@ -480,10 +591,15 @@ class StylerTTK:
                              arrowsize=16,
                              arrowcolor=self.settings.colors.inputfg)
 
-    def style_spinbox(self):
-        """Apply style to ttk spinbox: `ttk.Spinbox`
+    def _style_spinbox(self):
+        """
+        Apply style to ttk spinbox: `ttk.Spinbox`
 
-        Element Options:
+        This widget uses elements from the `default` and `clam` theme to create the widget layout.
+        For dark themes,the spinbox.field is created from the `default` theme element because the background
+        color shines through the corners of the widget when the primary theme background color is dark.
+
+        The options available in this widget include:
             - Spinbox.field: bordercolor, lightcolor, darkcolor, fieldbackground
             - spinbox.uparrow: background, relief, borderwidth, arrowcolor, arrowsize
             - spinbox.downarrow: background, relief, borderwidth, arrowcolor, arrowsize
@@ -503,7 +619,6 @@ class StylerTTK:
         if self.settings.type == 'dark':
             self.style.element_create('custom.Spinbox.field', 'from', 'default')
 
-        # A light background is shining through on the corners of the dark view.
         self.style.configure('TSpinbox',
                              fieldbackground=self.settings.colors.light,
                              bordercolor=self.settings.colors.bg,
@@ -532,7 +647,6 @@ class StylerTTK:
                            ('focus', self.settings.colors.inputfg),
                            ('hover', self.settings.colors.inputfg)])
 
-        # variation changes focus ring color
         for color in self.settings.colors:
             self.style.map(f'{color}.TSpinbox',
                            bordercolor=[
@@ -545,10 +659,13 @@ class StylerTTK:
                            lightcolor=[('focus', self.settings.colors.get(color))],
                            darkcolor=[('focus', self.settings.colors.get(color))])
 
-    def style_treeview(self):
-        """Apply style to ttk treeview: `ttk.Treeview`
+    def _style_treeview(self):
+        """
+        Apply style to ttk treeview: `ttk.Treeview`
 
-        Element Options:
+        This widget uses elements from the `alt` and `clam` theme to create the widget layout.
+
+        The options available in this widget include:
             - Treeview.field: bordercolor, lightcolor, darkcolor, fieldbackground
             - Treeview.padding: padding, relief, shiftrelief
             - Treeview.treearea: 
@@ -577,6 +694,8 @@ class StylerTTK:
                              lightcolor=self.settings.colors.bg,
                              darkcolor=self.settings.colors.bg,
                              relief='raised' if self.settings.type == 'light' else 'flat',
+
+                             # border showing through on dark theme... so pulling in the border with -2 padding
                              padding=-1 if self.settings.type == 'light' else -2)
 
         self.style.map('Treeview',
@@ -590,15 +709,15 @@ class StylerTTK:
                              relief='flat',
                              padding=5)
 
-        # variations change header color and focus ring
         for color in self.settings.colors:
             self.style.configure(f'{color}.Treeview.Heading', background=self.settings.colors.get(color))
             self.style.map(f'{color}.Treeview', bordercolor=[('focus', self.settings.colors.get(color))])
 
-    def style_frame(self):
-        """Apply style to ttk frame: `ttk.Frame`
+    def _style_frame(self):
+        """
+        Apply style to ttk frame: `ttk.Frame`
 
-        Element Options:
+        The options available in this widget include:
             - Frame.border: bordercolor, lightcolor, darkcolor, relief, borderwidth
         """
         self.style.configure('TFrame',
@@ -607,14 +726,16 @@ class StylerTTK:
         for color in self.settings.colors:
             self.style.configure(f'{color}.TFrame', background=self.settings.colors.get(color))
 
-    def style_solid_buttons(self):
-        """Apply a solid color style to ttk button: `ttk.Button`
+    def _style_solid_buttons(self):
+        """
+        Apply a solid color style to ttk button: `ttk.Button`
 
-        Element Options:
+        The options available in this widget include:
             - Button.border: bordercolor, lightcolor, darkcolor, relief, borderwidth
             - Button.focus: focuscolor, focusthickness
             - Button.padding: padding, relief, shiftrelief
-            - Button.label: compound, space, text, font, foreground, underline, width, anchor, justify, wraplength, embossed, image, stipple, background
+            - Button.label: compound, space, text, font, foreground, underline, width, anchor, justify, wraplength,
+                embossed, image, stipple, background
         """
         self.style.configure('TButton',
                              foreground=self.settings.colors.selectfg,
@@ -668,14 +789,17 @@ class StylerTTK:
                                ('pressed', brightness(self.settings.colors.get(color), -0.2)),
                                ('hover', brightness(self.settings.colors.get(color), -0.1))])
 
-    def style_outline_buttons(self):
-        """Apply an outline style to ttk button: `ttk.Button`
+    def _style_outline_buttons(self):
+        """
+        Apply an outline style to ttk button: `ttk.Button`. This button has a solid button look on focus and
+        hover.
 
-        Element Options:
+        The options available in this widget include:
             - Button.border: bordercolor, lightcolor, darkcolor, relief, borderwidth
             - Button.focus: focuscolor, focusthickness
             - Button.padding: padding, relief, shiftrelief
-            - Button.label: compound, space, text, font, foreground, underline, width, anchor, justify, wraplength, embossed, image, stipple, background
+            - Button.label: compound, space, text, font, foreground, underline, width, anchor, justify, wraplength,
+                embossed, image, stipple, background
         """
         self.style.configure('Outline.TButton',
                              foreground=self.settings.colors.primary,
@@ -734,10 +858,11 @@ class StylerTTK:
                                ('pressed', brightness(self.settings.colors.get(color), -0.2)),
                                ('hover', brightness(self.settings.colors.get(color), -0.1))])
 
-    def style_entry(self):
-        """Apply style to ttk entry: `ttk.Entry`
+    def _style_entry(self):
+        """
+        Apply style to ttk entry: `ttk.Entry`
 
-        Element Options:
+        The options available in this widget include:
             - Entry.field: bordercolor, lightcolor, darkcolor, fieldbackground
             - Entry.padding: padding, relief, shiftrelief
             - Entry.textarea: font, width        
@@ -761,24 +886,25 @@ class StylerTTK:
                            ('focus', self.settings.colors.primary),
                            ('hover', self.settings.colors.primary)])
 
-        # variation changes the focus ring color
         for color in self.settings.colors:
             self.style.map(f'{color}.TEntry',
                            bordercolor=[('focus', self.settings.colors.get(color))],
                            lightcolor=[('focus', self.settings.colors.get(color))],
                            darkcolor=[('focus', self.settings.colors.get(color))])
 
-    def style_radiobutton(self):
-        """Apply style to ttk radiobutton: `ttk.Radiobutton`
+    def _style_radiobutton(self):
+        """
+        Apply style to ttk radiobutton: `ttk.Radiobutton`
 
-        Operating System:
-            WINDOWS: defaults to the 'xpnative' theme look. Styles will not change the look and feel.
-            LINUX / MAC OS: defaults to stylized 'clam' theme. You can use styles with this setup.
-
-        Element Options:
+        The options available in this widget include:
             - Radiobutton.padding: padding, relief, shiftrelief
-            - Radiobutton.indicator: indicatorsize, indicatormargin, indicatorbackground, indicatorforeground, upperbordercolor, lowerbordercolor
-            - Radiobutton.label: compound, space, text, font, foreground, underline, width, anchor, justify, wraplength, embossed, image, stipple, background
+            - Radiobutton.indicator: indicatorsize, indicatormargin, indicatorbackground, indicatorforeground,
+                upperbordercolor, lowerbordercolor
+            - Radiobutton.label: compound, space, text, font, foreground, underline, width, anchor, justify, wraplength,
+                embossed, image, stipple, background
+
+        NOTE: On Windows, the button defaults to the 'xpnative' theme look. This means that you cannot change the look
+         and feel with styles. On Linux and MacOS, defaults to stylized 'clam' theme, so the style can be changed.
         """
         if 'xpnative' in self.style.theme_names():
             self.style.element_create('Radiobutton.indicator', 'from', 'xpnative')
@@ -786,9 +912,15 @@ class StylerTTK:
         self.style.configure('TRadiobutton',
                              indicatormargin=8,
                              indicatorsize=12,
-                             upperbordercolor=self.settings.colors.fg if self.settings.type == 'light' else self.settings.colors.light,
-                             lowerbordercolor=self.settings.colors.fg if self.settings.type == 'light' else self.settings.colors.light,
-                             indicatorforeground=self.settings.colors.fg if self.settings.type == 'light' else self.settings.colors.bg)
+                             upperbordercolor=(self.settings.colors.fg
+                                               if self.settings.type == 'light'
+                                               else self.settings.colors.light),
+                             lowerbordercolor=(self.settings.colors.fg
+                                               if self.settings.type == 'light'
+                                               else self.settings.colors.light),
+                             indicatorforeground=(self.settings.colors.fg
+                                                  if self.settings.type == 'light'
+                                                  else self.settings.colors.bg))
 
         self.style.map('TRadiobutton',
                        foreground=[
@@ -802,22 +934,25 @@ class StylerTTK:
                            foreground=[('active', brightness(self.settings.colors.get(color), -0.2))],
                            indicatorforeground=[('active', brightness(self.settings.colors.get(color), -0.2))])
 
-    def style_label(self):
-        """Apply style to ttk label: `ttk.Label`
+    def _style_label(self):
+        """
+        Apply style to ttk label: `ttk.Label`
 
-        Element Options:
+        The options available in this widget include:
             - Label.border: bordercolor, lightcolor, darkcolor, relief, borderwidth
             - Label.padding: padding, relief, shiftrelief
-            - Label.label: compound, space, text, font, foreground, underline, width, anchor, justify, wraplength, embossed, image, stipple, background
+            - Label.label: compound, space, text, font, foreground, underline, width, anchor, justify, wraplength,
+                embossed, image, stipple, background
         """
         self.style.configure('TLabel', foreground=self.settings.colors.fg)
         for color in self.settings.colors:
             self.style.configure(f'{color}.TLabel', foreground=self.settings.colors.get(color))
 
-    def style_labelframe(self):
-        """Apply style to ttk labelframe: `ttk.LabelFrame`
+    def _style_labelframe(self):
+        """
+        Apply style to ttk labelframe: `ttk.LabelFrame`
 
-        Element Options:
+        The options available in this widget include:
             - Labelframe.border: bordercolor, lightcolor, darkcolor, relief, borderwidth
             - Label.fill: background
             - Label.text: text, font, foreground, underline, width, anchor, justify, wraplength, embossed
@@ -839,17 +974,21 @@ class StylerTTK:
 
             self.style.configure(f'{color}.TLabelframe.Label', foreground=self.settings.colors.get(color))
 
-    def style_checkbutton(self):
-        """Apply style to ttk checkbutton: `ttk.Checkbutton`
-
-        Element Options:
-            - Checkbutton.padding: padding, relief, shiftrelief
-            - Checkbutton.indicator: indicatorsize, indicatormargin, indicatorbackground, indicatorforeground, upperbordercolor, lowerbordercolor
-            - Checkbutton.focus: focuscolor, focusthickness
-            - Checkbutton.label: compound, space, text, font, foreground, underline, width, anchor, justify, wraplength, embossed, image, stipple, background
+    def _style_checkbutton(self):
         """
-        # Use xpnative if available; the buttons look so much better
-        # TODO check for native options on Linux and MacOS
+        Apply style to ttk checkbutton: `ttk.Checkbutton`
+
+        The options available in this widget include:
+            - Checkbutton.padding: padding, relief, shiftrelief
+            - Checkbutton.indicator: indicatorsize, indicatormargin, indicatorbackground, indicatorforeground,
+                upperbordercolor, lowerbordercolor
+            - Checkbutton.focus: focuscolor, focusthickness
+            - Checkbutton.label: compound, space, text, font, foreground, underline, width, anchor, justify, wraplength,
+                embossed, image, stipple, background
+
+        NOTE: On Windows, the button defaults to the 'xpnative' theme look. This means that you cannot change the look
+         and feel with styles. On Linux and MacOS, defaults to stylized 'clam' theme, so the style can be changed.
+        """
         if 'xpnative' in self.style.theme_names():
             self.style.element_create('Checkbutton.indicator', 'from', 'xpnative')
 
@@ -879,14 +1018,16 @@ class StylerTTK:
                            foreground=[
                                ('active', brightness(self.settings.colors.get(color), -0.2))])
 
-    def style_solid_menubutton(self):
-        """Apply a solid color style to ttk menubutton: `ttk.Menubutton`
+    def _style_solid_menubutton(self):
+        """
+        Apply a solid color style to ttk menubutton: `ttk.Menubutton`
 
-        Element Options:
+        The options available in this widget include:
             - Menubutton.border: bordercolor, lightcolor, darkcolor, relief, borderwidth
             - Menubutton.focus: focuscolor, focusthickness
             - Menubutton.indicator: arrowsize, arrowcolor, arrowpadding
-            - Menubutton.padding: compound, space, text, font, foreground, underline, width, anchor, justify, wraplength, embossed, image, stipple, background
+            - Menubutton.padding: compound, space, text, font, foreground, underline, width, anchor, justify,
+                wraplength, embossed, image, stipple, background
             - Menubutton.label: 
         """
         self.style.configure('TMenubutton',
@@ -942,14 +1083,16 @@ class StylerTTK:
                                ('pressed', brightness(self.settings.colors.get(color), -0.2)),
                                ('hover', brightness(self.settings.colors.get(color), -0.1))])
 
-    def style_outline_menubutton(self):
-        """Apply and outline style to ttk menubutton: `ttk.Menubutton`
+    def _style_outline_menubutton(self):
+        """
+        Apply and outline style to ttk menubutton: `ttk.Menubutton`
 
-        Element Options:
+        The options available in this widget include:
             - Menubutton.border: bordercolor, lightcolor, darkcolor, relief, borderwidth
             - Menubutton.focus: focuscolor, focusthickness
             - Menubutton.indicator: arrowsize, arrowcolor, arrowpadding
-            - Menubutton.padding: compound, space, text, font, foreground, underline, width, anchor, justify, wraplength, embossed, image, stipple, background
+            - Menubutton.padding: compound, space, text, font, foreground, underline, width, anchor, justify,
+                wraplength, embossed, image, stipple, background
             - Menubutton.label:
         """
         self.style.configure('Outline.TMenubutton',
@@ -1018,15 +1161,17 @@ class StylerTTK:
                                ('pressed', self.settings.colors.bg),
                                ('hover', self.settings.colors.bg)])
 
-    def style_notebook(self):
-        """Apply style to ttk notebook: `ttk.Notebook`
+    def _style_notebook(self):
+        """
+        Apply style to ttk notebook: `ttk.Notebook`
 
-        Element Options:
+        The options available in this widget include:
             - Notebook.client: background, bordercolor, lightcolor, darkcolor
             - Notebook.tab: background, bordercolor, lightcolor, darkcolor
             - Notebook.padding: padding, relief, shiftrelief
             - Notebook.focus: focuscolor, focusthickness
-            - Notebook.label: compound, space, text, font, foreground, underline, width, anchor, justify, wraplength, embossed, image, stipple, background
+            - Notebook.label: compound, space, text, font, foreground, underline, width, anchor, justify, wraplength,
+                embossed, image, stipple, background
             
         """
         self.style.configure('TNotebook',
