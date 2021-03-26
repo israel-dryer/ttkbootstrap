@@ -34,24 +34,26 @@ def brightness(hex_color, pct_change):
     return rgb_to_hex(r_, g_, b_)
 
 
-class BootStyle(ttk.Style):
+class Style(ttk.Style):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.themes = {}
         self.load_themes()
         self.settings = None
+        self.colors = None
 
     def load_themes(self):
         """Load all ttkbootstrap defined themes"""
         json_data = importlib.resources.read_text('ttkbootstrap', 'themes.json')
         settings = json.loads(json_data)
         for theme in settings['themes']:
-            settings = ThemeSettings(
-                name=theme['name'],
-                type=theme['type'],
-                font=theme['font'],
-                colors=Colors(**theme['colors']))
-            self.themes[settings.name] = StylerTTK(self, settings)
+            if theme['name'] not in self.theme_names():
+                settings = ThemeSettings(
+                    name=theme['name'],
+                    type=theme['type'],
+                    font=theme['font'],
+                    colors=Colors(**theme['colors']))
+                self.themes[settings.name] = StylerTTK(self, settings)
 
     def theme_use(self, themename=None):
         """If themename is None, returns the theme in use, otherwise, set
@@ -66,6 +68,7 @@ class BootStyle(ttk.Style):
             current_theme = self.themes.get(themename)
             current_theme.styler_tk.apply_style()
             self.settings = current_theme.settings
+            self.colors = current_theme.settings.color
         except AttributeError:
             pass
 
@@ -73,11 +76,6 @@ class BootStyle(ttk.Style):
         # the variable currentTheme to be updated, also, ttk::setTheme calls
         # "ttk::style theme use" in order to change theme.
         self.tk.call("ttk::setTheme", themename)
-
-    def theme_names(self):
-        """Return a sorted list of available themes"""
-        return sorted(super().theme_names())
-
 
 class ThemeSettings:
     """Settings for a ttkbootstrap theme.

@@ -7,12 +7,12 @@
     Modified:
         March 25, 2023
 """
-from .theme_engine import BootStyle
+from .theme_engine import Style
 import tkinter
 from tkinter import ttk
 
 
-class Demo(BootStyle):
+class Demo(Style):
     """An application class for demonstrating styles"""
 
     def __init__(self):
