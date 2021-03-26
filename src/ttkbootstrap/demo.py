@@ -5,9 +5,11 @@
         Israel Dryer
 
     Modified:
-        March 24, 2023
+        March 25, 2023
 """
-from ttkbootstrap import BootStyle, tkinter, ttk
+from .theme_engine import BootStyle
+import tkinter
+from tkinter import ttk
 
 
 class Demo(BootStyle):
@@ -17,11 +19,16 @@ class Demo(BootStyle):
         super().__init__()
         self.theme_use('superhero')
         self.root = self.master
+        self.root.protocol("WM_DELETE_WINDOW", self.quit)
         self.root.title('TTK Bootstrap')
         self.root.geometry('590x650')
         self.theme_name = tkinter.StringVar()
         self.theme_name.set(self.theme_use())
         self.setup()
+        self.run()
+
+    def __repr__(self):
+        return "Demo Application"
 
     def setup(self):
         ttk.Scrollbar(self.root).pack(side='right', fill='y')
@@ -159,7 +166,7 @@ class Demo(BootStyle):
     def run(self):
         self.root.mainloop()
 
-
-if __name__ == '__main__':
-    demo = Demo()
-    demo.run()
+    def quit(self):
+        # I'm getting an error when closing the application without switching a standard theme ??
+        self.root.quit()
+        self.root.destroy()
