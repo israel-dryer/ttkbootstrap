@@ -3,7 +3,7 @@ Author: Israel Dryer
 License: MIT
 Copyright (c) 2021 Israel Dryer
 """
-from .theme_engine import Style
+from ttkbootstrap import Style
 import tkinter
 from tkinter import ttk
 
@@ -38,10 +38,12 @@ class Demo(Style):
         self.nb.add(ttk.Frame(self.nb), text='Tab 3')
 
     def change_theme(self, new_theme):
-        """Destroying the widget isn't strictly necessary with pure TTK widgets. However, for this demo, I'm
+        """
+        Destroying the widget isn't strictly necessary with pure TTK widgets. However, for this demo, I'm
         explicitly allowing the changing of colors, etc... and because I want the styles to be consistent on underlying
         standard tk widgets, I've choosing to redraw all the widgets in the main tab. You can use other methods or
-        avoid this altogether if you're not switch between light and dark themes."""
+        avoid this altogether if you're not switch between light and dark themes.
+        """
         self.tab.destroy()
         self.theme_use(new_theme)
         self.tab = self.create_themed_tab()
@@ -144,14 +146,15 @@ class Demo(Style):
         tv.insert('', 'end', 'example2', text='Example 2')
         tv.insert('example2', 'end', text='Example 2 Child 1')
         tv.insert('example2', 'end', text='Example 2 Child 2')
+        tv.selection_set('example1')
 
         # Scale
         scale_frame = ttk.Frame(widget_frame)
-        scale_var = tkinter.IntVar(value=25)
-        scale = ttk.Scale(scale_frame, variable=scale_var, from_=1, to=100)
+        self.scale_var = tkinter.IntVar(value=25)
+        scale = ttk.Scale(scale_frame, variable=self.scale_var, from_=1, to=100)
         scale.pack(side='left', fill='x', expand='yes', padx=(0, 2))
         scale_frame.pack(side='top', fill='x', pady=5)
-        entry = ttk.Entry(scale_frame, textvariable=scale_var, width=4)
+        entry = ttk.Entry(scale_frame, textvariable=self.scale_var, width=4)
         entry.pack(side='right')
 
         # Combobox
@@ -160,7 +163,7 @@ class Demo(Style):
         cbo.pack(fill='x', pady=5)
 
         # Progressbar
-        ttk.Progressbar(widget_frame, value=30).pack(fill='x', pady=5)
+        ttk.Progressbar(widget_frame, variable=self.scale_var).pack(fill='x', pady=5)
         return tab
 
     def run(self):
@@ -168,5 +171,7 @@ class Demo(Style):
 
     def quit(self):
         # I'm getting an error when closing the application without switching a standard theme ??
-        self.root.quit()
         self.root.destroy()
+
+if __name__ == '__main__':
+    Demo()
