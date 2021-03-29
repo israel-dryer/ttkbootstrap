@@ -11,8 +11,7 @@ pip install ttkbootstrap
 ## Demonstration
 You check out the examples below in a live demonstration by executing the following code in the python interpreter
 ```python
->> from ttkbootstrap import Demo
->> Demo()
+>> python -m ttkbootstrap
 ```
 
 ## Basic Usage
