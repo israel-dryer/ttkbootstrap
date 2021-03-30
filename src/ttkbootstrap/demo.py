@@ -56,10 +56,6 @@ class Demo(Style):
         self.nb.select(self.nb.tabs()[0])
         self.theme_name.set(new_theme)
 
-    def checked(self, btn):
-        btn_text = "Unchecked" if btn['text'] == "Checked" else "Checked"
-        btn.configure(text=btn_text)
-
     def create_themed_tab(self):
         """
         Create a return a frame containing themed widgets
