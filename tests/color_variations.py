@@ -1,4 +1,6 @@
-from ttkbootstrap import Style, tkinter, ttk
+from ttkbootstrap import Style
+import tkinter
+from tkinter import ttk
 
 root = tkinter.Tk()
 style = Style()

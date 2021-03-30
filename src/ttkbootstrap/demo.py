@@ -15,14 +15,15 @@ class Demo(Style):
 
     def __init__(self):
         super().__init__()
-        self.theme_use('superhero')
+        self.theme_use('lumen')
         self.root = self.master
         self.root.protocol("WM_DELETE_WINDOW", self.quit)
         self.root.title('TTK Bootstrap')
-        self.root.geometry('590x650')
+        #self.root.geometry('590x650')
         self.theme_name = tkinter.StringVar()
         self.theme_name.set(self.theme_use())
         self.setup()
+        self.root.eval('tk::PlaceWindow . center')
         self.run()
 
     def __repr__(self):
@@ -59,35 +60,48 @@ class Demo(Style):
         """
         Create a return a frame containing themed widgets
         """
-        tab = ttk.Frame(self.nb, padding=20)
+        tab = ttk.Frame(self.nb, padding=10)
         colors = ['Primary', 'Secondary', 'Success', 'Info', 'Warning', 'Danger']
 
-        header_frame = ttk.Frame(tab)
+        header_frame = ttk.Frame(tab, padding=10)
         header = ttk.Label(header_frame, textvariable=self.theme_name, font='-size 30')
         header.pack(side='left', fill='x', pady=5)
         header_frame.pack(fill='x')
 
         # Menubutton (select a theme)
         mb = ttk.Menubutton(header_frame, text='Select a theme to preview')
-        mb.pack(side='right', fill='x', padx=(0, 5), pady=5)
+        mb.pack(side='right', fill='x', pady=5)
         mb.menu = tkinter.Menu(mb)
         mb['menu'] = mb.menu
         for t in self.theme_names():
             mb.menu.add_command(label=t, command=lambda theme_name=t: self.change_theme(theme_name))
 
+        # Separator
+        ttk.Separator(tab, orient='horizontal').pack(fill='x', padx=10, pady=(10, 15))
+
+        # Paned Window
+        pw = ttk.PanedWindow(tab)
+        pw.pack(fill='x')
+
         # Available Colors
-        color_frame = ttk.Labelframe(tab, text='Colors available in this theme', padding=15)
+        color_frame = ttk.Labelframe(pw, text='Colors available in this theme', padding=15)
         for color in colors:
             btn = ttk.Button(color_frame, text=color.title(), style=f'{color.lower()}.TButton')
-            btn.pack(side='left', fill='x', expand='yes', padx=2)
-        color_frame.pack(side='top', fill='x', pady=5)
+            btn.pack(side='left', fill='x', expand='yes', padx=2, pady=5)
+        # color_frame.pack(side='top', fill='x')
+        pw.add(color_frame)
+
+        # This outer frame will provide an internal buffer between the widget examples and the window pane,
+        # there is no other way to add internal padding
+        widget_outer_frame = ttk.Frame(pw, padding=(0, 10))
+        pw.add(widget_outer_frame)
 
         # Widget examples
-        widget_frame = ttk.Labelframe(tab, padding=15, text='Widget examples')
-        widget_frame.pack(fill='x', expand='yes')
+        widget_frame = ttk.Frame(widget_outer_frame, padding=10)
+        widget_frame.pack(fill='x')
 
         # Label
-        ttk.Label(widget_frame, text='This is a label').pack(side='top', fill='x', pady=5)
+        ttk.Label(widget_frame, text='This is a label').pack(side='top', fill='x')
 
         entry_spin_frame = ttk.Frame(widget_frame)
         entry_spin_frame.pack(fill='x', pady=5)
@@ -101,7 +115,7 @@ class Demo(Style):
         spinner_options = ['Spinner option 1', 'Spinner option 2', 'Spinner option 3']
         spinner = ttk.Spinbox(entry_spin_frame, values=spinner_options)
         spinner.set('Spinner option 1')
-        spinner.pack(side='left', fill='x', expand='yes', padx=(5, 0))
+        spinner.pack(side='right', fill='x', expand='yes', padx=(5, 0))
 
         # Button
         btn_frame = ttk.Frame(widget_frame)
@@ -118,7 +132,7 @@ class Demo(Style):
         om.pack(side='right', fill='x', padx=(5, 0), pady=5)
 
         # Labelframe
-        options_frame = ttk.Frame(widget_frame)
+        options_frame = ttk.Frame(widget_frame, padding=(0, 10))
         options_frame.pack(fill='x', pady=5)
 
         # Radio
@@ -163,7 +177,7 @@ class Demo(Style):
         cbo.pack(fill='x', pady=5)
 
         # Progressbar
-        ttk.Progressbar(widget_frame, variable=self.scale_var).pack(fill='x', pady=5)
+        ttk.Progressbar(widget_frame, variable=self.scale_var).pack(fill='x', pady=10)
         return tab
 
     def run(self):
