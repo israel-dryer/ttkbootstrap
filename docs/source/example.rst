@@ -12,7 +12,8 @@ you would any built-in ``ttk`` theme such as *clam*, *alt*, *classic*, etc...
     style.theme_use('superhero')
 
     window = style.master
-    ttk.Button(window, text="Quit", command=window.quit).pack()
+    ttk.Button(window, text="quit", style='warning.TButton').pack(side='left', padx=5, pady=10)
+    ttk.Button(window, text="quit", style='warning.Outline.TButton').pack(side='left', padx=5, pady=10)
     window.mainloop()
 
 The ``style`` object automatically creates the master widget that we assigned to ``window``. This is
