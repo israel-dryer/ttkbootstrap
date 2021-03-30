@@ -76,7 +76,7 @@ class ThemeCreatorTTK(tk.Tk):
         # Color selectors
         selector_frame = ttk.Frame(chooser, name='selectors')
         selector_frame.pack(fill='x', pady=5)
-        for color in self.style.colors.color_label_iter():
+        for color in self.style.colors.label_iter():
             self.color_selector(selector_frame, color).pack(fill='x', pady=2, side='top')
 
         # Action Buttons
@@ -140,7 +140,7 @@ class ThemeCreatorTTK(tk.Tk):
         self.vars['font'] = tk.StringVar(name='font', value='Helvetica')
         self.vars['type'] = tk.StringVar(name='type', value='light')
 
-        for color in self.style.colors.color_label_iter():
+        for color in self.style.colors.label_iter():
             self.vars[color] = tk.StringVar(name=color, value=self.style.colors.get(color))
             self.vars[color].trace_add('write', self.update_theme)
 
@@ -202,7 +202,7 @@ class ThemeCreatorTTK(tk.Tk):
         self.vars['font'].set('Helvetica')
         self.vars['type'].set('light')
 
-        for color in self.style.colors.color_label_iter():
+        for color in self.style.colors.label_iter():
             var = self.vars[color]
             cbname = var.trace_info()[0][1]
             var.trace_remove('write', cbname)
@@ -214,7 +214,7 @@ class ThemeCreatorTTK(tk.Tk):
         Set all patch colors to match the current theme color values
         """
         selectors = self.get_selectors()
-        for color in self.style.colors.color_label_iter():
+        for color in self.style.colors.label_iter():
             patch = selectors[color].children['patch']
             patch.configure(background=self.style.colors.get(color))
 
