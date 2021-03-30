@@ -1,24 +1,4 @@
 {
 	"themes": [
-		{
-			"name": "pink!",
-			"font": "Helvetica",
-			"type": "light",
-			"colors": {
-				"primary": "#ff80c0",
-				"secondary": "#8000ff",
-				"success": "#28b62c",
-				"info": "#75caeb",
-				"warning": "#ff851b",
-				"danger": "#ff4136",
-				"bg": "#ffffff",
-				"fg": "#555555",
-				"selectbg": "#0080ff",
-				"selectfg": "#ffffff",
-				"light": "#f6f6f6",
-				"border": "#ced4da",
-				"inputfg": "#888888"
-			}
-		}
 	]
 }
