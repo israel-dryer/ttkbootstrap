@@ -1,12 +1,12 @@
 Theming
 =======
-``ttkbootstrap`` includes several built-in **light** and **dark** themes that are generated at run-time using the
-``ttk.Style`` class. Generally, the ttkbootstrap api is identical to the ``ttk.Style`` api.
+Built-in **light** and **dark** themes are generated at run-time. Generally, the ``ttkbootstrap`` api is identical to
+the ``ttk.Style`` api.
 
 Choosing a theme
 ----------------
-Using a pre-defined ``ttkbootstrap`` theme is identical to using any other ``ttk`` theme, by using the
-``ttk.Style.theme_use``.
+Using a pre-defined ``ttkbootstrap`` theme is identical to using standard ``ttk`` theme, except that you will use the
+``ttkbootstrap.Style`` class instead of the ``ttk.Style`` class.
 
 .. code-block:: python
 
@@ -70,6 +70,8 @@ Use the ``style`` property of the widget to apply any ``ttkbootstrap`` pre-defin
     ttk.Button(window, text="Submit", style='success.Outline.TButton').pack(side='left', padx=5, pady=10)
 
 .. image:: https://raw.githubusercontent.com/israel-dryer/ttkbootstrap/master/docs/source/images/submit.png
+
+
 
 
 
