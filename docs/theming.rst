@@ -35,7 +35,7 @@ Color patterns
 ``ttkbootstrap`` includes a set of pre-defined themed colors based on a pattern common to many bootstrap styles.
 All ``ttkbootstrap`` themes include style colors associated with the following labels:
 
-.. image:: https://raw.githubusercontent.com/israel-dryer/ttkbootstrap/master/docs/source/images/color-options.png
+.. image:: https://raw.githubusercontent.com/israel-dryer/ttkbootstrap/master/docs/images/color-options.png
 
 Styles
 ..................
@@ -69,7 +69,7 @@ Use the ``style`` property of the widget to apply any ``ttkbootstrap`` pre-defin
     # outline button
     ttk.Button(window, text="Submit", style='success.Outline.TButton').pack(side='left', padx=5, pady=10)
 
-.. image:: https://raw.githubusercontent.com/israel-dryer/ttkbootstrap/master/docs/source/images/submit.png
+.. image:: https://raw.githubusercontent.com/israel-dryer/ttkbootstrap/master/docs/images/submit.png
 
 
 
