@@ -12,5 +12,8 @@ Contents
     :glob:
 
     install
+    example
+    theming
+    
 
 
