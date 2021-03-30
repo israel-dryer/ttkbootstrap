@@ -71,6 +71,8 @@ ttk.Radiobutton(root, text='Hello World', style='danger.TRadiobutton')
 - Vertical.TProgressbar
 - TRadiobutton
 - Treeview
+- TPanedwindow
+- TSizegrip
 
 ### Exceptions
 - The **Scale** widget is built with an image set in the primary theme color; this cannot be changed via styles.
