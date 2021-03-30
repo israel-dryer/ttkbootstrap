@@ -7,6 +7,9 @@ from ttkbootstrap import Style
 import tkinter
 from tkinter import ttk
 
+# for taking screenshots
+from PIL import ImageGrab
+
 
 class Demo(Style):
     """
@@ -119,6 +122,8 @@ class Demo(Style):
 
         # Button
         btn_frame = ttk.Frame(widget_frame)
+        # UNCOMMENT the next line when taking screen shots of the demo
+        # b1 = ttk.Button(btn_frame, text='Solid Button', command=self.get_bounding_box)
         b1 = ttk.Button(btn_frame, text='Solid Button')
         b1.pack(side='left', fill='x', expand='yes', padx=(0, 5))
 
@@ -186,6 +191,29 @@ class Demo(Style):
     def quit(self):
         # I'm getting an error when closing the application without switching a standard theme ??
         self.root.destroy()
+
+    def get_bounding_box(self):
+        """
+        Take a screenshot of the current demo window and save to examples
+        """
+        # bounding box
+        titlebar = 31
+        x1 = self.root.winfo_rootx() - 1
+        y1 = self.root.winfo_rooty() - titlebar
+        x2 = x1 + self.root.winfo_width() + 2
+        y2 = y1 + self.root.winfo_height() + titlebar + 1
+
+        self.root.after_idle(self.save_screenshot, [x1, y1, x2, y2])
+
+    def save_screenshot(self, bbox):
+        # screenshot
+        img = ImageGrab.grab(bbox=bbox)
+
+        # image name
+        filename = f'../../examples/{self.theme_name.get()}.png'
+        print(filename)
+        img.save(filename, 'png')
+
 
 
 if __name__ == '__main__':
