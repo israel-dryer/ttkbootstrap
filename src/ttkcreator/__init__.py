@@ -7,7 +7,7 @@ from ttkbootstrap import Style, Colors, StylerTTK, ThemeSettings
 import tkinter as tk
 from tkinter.font import families
 from tkinter import ttk
-from tkinter.colorchooser import Chooser
+from tkinter.colorchooser import askcolor
 from tkinter.messagebox import showinfo, showerror
 import importlib.resources
 import uuid
@@ -21,8 +21,8 @@ class ThemeCreatorTTK(tk.Tk):
 
     def __init__(self):
         super().__init__()
-        self.title('Theme Creator TTK')
-        self.geometry('958x602')
+        self.title('TTK Theme Creator')
+        self.geometry('938x602')
         self.style = Style()
         self.style.theme_use('lumen')
         self.vars = {}
@@ -119,10 +119,10 @@ class ThemeCreatorTTK(tk.Tk):
 
         :param selector: the widget container for a color selector
         """
+        print(self.winfo_width(), self.winfo_height())
         color_label = selector.children.get('label').cget('text')
         color_patch = selector.children.get('patch')
-        chooser = Chooser()
-        color = chooser.show()
+        color = askcolor()
         if color[1]:
             color_value = color[1]
             color_patch.configure(background=color_value)
@@ -264,7 +264,7 @@ class EverythingBagel(ttk.Notebook):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.tab = ttk.Frame(self, padding=20)
+        self.tab = ttk.Frame(self, padding=10)
         self.setup()
 
     def setup(self):
@@ -288,8 +288,11 @@ class EverythingBagel(ttk.Notebook):
             btn.pack(side='left', fill='x', expand='yes', padx=2)
         color_frame.pack(side='top', fill='x', pady=5)
 
+        # Separator
+        ttk.Separator(self.tab).pack(fill='x', padx=10)
+
         # Widget examples
-        widget_frame = ttk.Labelframe(self.tab, padding=15, text='Widget examples')
+        widget_frame = ttk.Frame(self.tab, padding=15)
         widget_frame.pack(fill='both')
 
         # Label
@@ -316,7 +319,7 @@ class EverythingBagel(ttk.Notebook):
 
         b2 = ttk.Button(btn_frame, text='Outline Button', style='Outline.TButton')
         b2.pack(side='left', fill='x', expand='yes')
-        btn_frame.pack(fill='x', pady=5)
+        btn_frame.pack(fill='x', pady=(10, 5))
 
         # Option Menu
         om_var = tk.StringVar()
@@ -325,7 +328,7 @@ class EverythingBagel(ttk.Notebook):
 
         # Labelframe
         options_frame = ttk.Frame(widget_frame)
-        options_frame.pack(fill='x', pady=5)
+        options_frame.pack(fill='x', pady=10)
 
         # Radio
         r1 = ttk.Radiobutton(options_frame, value=1, text='Radio one')
@@ -369,7 +372,7 @@ class EverythingBagel(ttk.Notebook):
         cbo.pack(fill='x', pady=5)
 
         # Progressbar
-        ttk.Progressbar(widget_frame, variable=self.scale_var).pack(fill='x', pady=5)
+        ttk.Progressbar(widget_frame, variable=self.scale_var).pack(fill='x', pady=(10, 0))
 
 
 
