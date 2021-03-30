@@ -91,4 +91,7 @@ ttk.Radiobutton(root, text='Hello World', style='danger.TRadiobutton')
 <img src="https://raw.githubusercontent.com/israel-dryer/Izzy-Themes-TTK/master/examples/darkly.png" width="45%"/> <img src="https://raw.githubusercontent.com/israel-dryer/Izzy-Themes-TTK/master/examples/cyborg.png" width="45%"/>
 <img src="https://raw.githubusercontent.com/israel-dryer/Izzy-Themes-TTK/master/examples/superhero.png" width="45%"/> <img src="https://raw.githubusercontent.com/israel-dryer/Izzy-Themes-TTK/master/examples/solar.png" width="45%"/>  
 
+## Built-in Themes (for comparison)
+<img src="https://raw.githubusercontent.com/israel-dryer/Izzy-Themes-TTK/master/examples/alt.png" width="45%"/> <img src="https://raw.githubusercontent.com/israel-dryer/Izzy-Themes-TTK/master/examples/classic.png" width="45%"/>
+<img src="https://raw.githubusercontent.com/israel-dryer/Izzy-Themes-TTK/master/examples/clam.png" width="45%"/> <img src="https://raw.githubusercontent.com/israel-dryer/Izzy-Themes-TTK/master/examples/xpnative.png" width="45%"/>  
 
