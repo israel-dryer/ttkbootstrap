@@ -71,6 +71,8 @@ ttk.Radiobutton(root, text='Hello World', style='danger.TRadiobutton')
 - Vertical.TProgressbar
 - TRadiobutton
 - Treeview
+- Horizontal.TSeparator
+- Vertical.TSeparator
 - TPanedwindow
 - TSizegrip
 
