@@ -19,7 +19,7 @@ class Demo(Style):
         self.root = self.master
         self.root.protocol("WM_DELETE_WINDOW", self.quit)
         self.root.title('TTK Bootstrap')
-        #self.root.geometry('590x650')
+        # self.root.geometry('590x650')
         self.theme_name = tkinter.StringVar()
         self.theme_name.set(self.theme_use())
         self.setup()
@@ -186,6 +186,7 @@ class Demo(Style):
     def quit(self):
         # I'm getting an error when closing the application without switching a standard theme ??
         self.root.destroy()
+
 
 if __name__ == '__main__':
     Demo()

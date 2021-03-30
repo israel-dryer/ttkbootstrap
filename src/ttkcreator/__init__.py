@@ -119,7 +119,7 @@ class ThemeCreatorTTK(tk.Tk):
 
         :param selector: the widget container for a color selector
         """
-        print(self.winfo_width(), self.winfo_height())
+        # print(self.winfo_width(), self.winfo_height())
         color_label = selector.children.get('label').cget('text')
         color_patch = selector.children.get('patch')
         color = askcolor()
@@ -373,6 +373,3 @@ class EverythingBagel(ttk.Notebook):
 
         # Progressbar
         ttk.Progressbar(widget_frame, variable=self.scale_var).pack(fill='x', pady=(10, 0))
-
-
-
