@@ -12,11 +12,14 @@ from tkinter.messagebox import showinfo, showerror
 import importlib.resources
 import uuid
 import json
+from PIL import ImageGrab
 
 
 class ThemeCreatorTTK(tk.Tk):
     """
     An application for designing and saving user-defined themes for ttk / tkinter.
+
+    DEV NOTES: press the <Insert> key to save a screenshot to examples.
     """
 
     def __init__(self):
@@ -28,6 +31,7 @@ class ThemeCreatorTTK(tk.Tk):
         self.vars = {}
         self.setup()
         self.eval('tk::PlaceWindow . center')
+        self.bind("<Insert>", self.get_bounding_box)
 
     def setup(self):
         """
@@ -255,6 +259,28 @@ class ThemeCreatorTTK(tk.Tk):
         #     activeForeground=self.getvar('selectfg'),
         #     selectBackground=self.getvar('selectbg'),
         #     selectForeground=self.getvar('selectfg'))
+
+    def get_bounding_box(self, event):
+        """
+        Take a screenshot of the current demo window and save to examples
+        """
+        # bounding box
+        titlebar = 31
+        x1 = self.winfo_rootx() - 1
+        y1 = self.winfo_rooty() - titlebar
+        x2 = x1 + self.winfo_width() + 2
+        y2 = y1 + self.winfo_height() + titlebar + 1
+
+        self.after_idle(self.save_screenshot, [x1, y1, x2, y2])
+
+    def save_screenshot(self, bbox):
+        # screenshot
+        img = ImageGrab.grab(bbox=bbox)
+
+        # image name
+        filename = f'examples/ttkcreator.png'
+        print(filename)
+        img.save(filename, 'png')
 
 
 class EverythingBagel(ttk.Notebook):

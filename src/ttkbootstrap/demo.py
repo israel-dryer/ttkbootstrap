@@ -27,6 +27,7 @@ class Demo(Style):
         self.theme_name.set(self.theme_use())
         self.setup()
         self.root.eval('tk::PlaceWindow . center')
+        self.root.bind("<Insert>", self.get_bounding_box)
         self.run()
 
     def __repr__(self):
@@ -122,8 +123,6 @@ class Demo(Style):
 
         # Button
         btn_frame = ttk.Frame(widget_frame)
-        # UNCOMMENT the next line when taking screen shots of the demo
-        # b1 = ttk.Button(btn_frame, text='Solid Button', command=self.get_bounding_box)
         b1 = ttk.Button(btn_frame, text='Solid Button')
         b1.pack(side='left', fill='x', expand='yes', padx=(0, 5))
 
@@ -192,7 +191,7 @@ class Demo(Style):
         # I'm getting an error when closing the application without switching a standard theme ??
         self.root.destroy()
 
-    def get_bounding_box(self):
+    def get_bounding_box(self, event):
         """
         Take a screenshot of the current demo window and save to examples
         """
@@ -211,9 +210,8 @@ class Demo(Style):
 
         # image name
         filename = f'../../examples/{self.theme_name.get()}.png'
-        print(filename)
         img.save(filename, 'png')
-
+        print(filename)  # print for confirmation
 
 
 if __name__ == '__main__':
