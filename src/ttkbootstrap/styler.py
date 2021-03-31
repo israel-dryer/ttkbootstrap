@@ -153,19 +153,19 @@ class Colors:
     """
     A collection of colors used in a ttkbootstrap theme.
 
-    :param primary: the primary theme color; is used as basis for all widgets.
-    :param secondary: an accent color; typically the same as `selectbg` in built-in themes,
-    :param success: an accent color; an orange hue in most themes.
-    :param info: an accent color; a blue hue in most themes.
-    :param warning: an accent color; an orange hue in most themes.
-    :param danger: an accent color; a red hue in most themes.
-    :param bg: background color; used for root window background.
-    :param fg: primary font color; used for labels and non-input related widgets.
-    :param selectfg: foreground color of selected text.
-    :param selectbg; background color of selected text background
-    :param light: a color used for input widget background and trough color
-    :param border: a color used on the border of several input widgets (combobox, entry, spinbox, etc...)
-    :param inputfg: a color used for input widgets; typically a reverse lightness of `fg`
+    :param str primary: the primary theme color; is used as basis for all widgets
+    :param str secondary: an accent color; typically the same as `selectbg` in built-in themes
+    :param str success: an accent color; an orange hue in most themes
+    :param str info: an accent color; a blue hue in most themes
+    :param str warning: an accent color; an orange hue in most themes
+    :param str danger: an accent color; a red hue in most themes
+    :param str bg: background color; used for root window background
+    :param str fg: primary font color; used for labels and non-input related widgets
+    :param str selectfg: foreground color of selected text
+    :param str selectbg: background color of selected text background
+    :param str light: a color used for input widget background and trough color
+    :param str border: a color used on the border of several input widgets (combobox, entry, spinbox, etc...)
+    :param str inputfg: a color used for input widgets; typically a reverse lightness of `fg`
     """
 
     def __init__(self, **kwargs):
@@ -198,12 +198,12 @@ class Colors:
         """
         Set a color property
 
+        :param str color_label: the name of the color to be set (key)
+        :param str color_value: a hexadecimal color value
+
         Example::
 
             set('primary', '#fafafa')
-
-        :param str color_label: the name of the color to be set (key)
-        :param str color_value: a hexadecimal color value
         """
         self.__dict__[color_label] = color_value
 
@@ -216,6 +216,9 @@ class Colors:
     def label_iter(self):
         """
          Iterates over all color label properties in the Color class
+
+         :returns: an iterator representing the name of the color properties
+         :rtype: iter[str]
         """
         return iter(['primary', 'secondary', 'success', 'info', 'warning', 'danger', 'bg', 'fg', 'selectbg', 'selectfg',
                      'light', 'border', 'inputfg'])
@@ -223,11 +226,12 @@ class Colors:
 
 class StylerTK:
     """
-    A class that applies theme colors to standard Tkinter widgets (NOT TTK WIDGETS). Used as a mix-in for `StylerTTK`.
+    A class that applies theme colors to standard ``tkinter`` widgets (**not ``ttk`` widgets**).
+    Used as a mix-in for ``StylerTTK``.
 
-    This class can potentially be used independent of the `StylerTTK` class, but it is primary designed to supplement
-    the few widgets that are used in conjunction with the TTK widgets. So, please be aware that standard tkinter widgets
-    may not have the desired look.
+    This class is not intended to be used independent of ``StylerTTK``, though it could. It is meant to serve as a means
+    to format the few widgets that are used in conjunction with the TTK widgets, such as the *popdownlist* in the
+    ``ttk.Combobox``, and others like this.
 
     :param parent: an instance of `StylerTTK`
     """
@@ -238,7 +242,7 @@ class StylerTK:
 
     def apply_style(self):
         """
-        A wrapper on all widget style methods. Applies current theme to all standard tkinter widgets (NOT TTK)
+        A wrapper on all widget style methods. Applies current theme to all standard tkinter widgets
         """
         self._style_window()
         self._style_button()
@@ -257,13 +261,13 @@ class StylerTK:
 
     def _set_option(self, *args):
         """
-        A convenience method to shorten the call to `option_add`. Laziness is next to godliness.
+        A convenience method to shorten the call to ``option_add``. *Laziness is next to godliness*.
         """
         self.master.option_add(*args)
 
     def _style_window(self):
         """
-        Apply global options to all matching tkinter widgets
+        Apply global options to all matching ``tkinter`` widgets
         """
         self.master.configure(background=self.settings.colors.bg)
         self._set_option('*background', self.settings.colors.bg, 20)
@@ -277,21 +281,21 @@ class StylerTK:
 
     def _style_button(self):
         """
-        Apply style to tkinter button: `tkinter.Button`
+        Apply style to ``tkinter.Button``
         """
         self._set_option('*Button.foreground', self.settings.colors.selectfg)
         self._set_option('*Button.background', self.settings.colors.primary)
 
     def _style_label(self):
         """
-        Apply style to tkinter label: `tkinter.Label`
+        Apply style to ``tkinter.Label``
         """
         self._set_option('*Label.foreground', self.settings.colors.fg)
         self._set_option('*Label.background', self.settings.colors.bg)
 
     def _style_checkbutton(self):
         """
-        Apply style to tkinter checkbutton: `tkinter.Checkbutton`
+        Apply style to ``tkinter.Checkbutton``
         """
         self._set_option('*Checkbutton.background', self.settings.colors.bg)
         self._set_option('*Checkbutton.foreground', self.settings.colors.fg)
@@ -300,7 +304,7 @@ class StylerTK:
 
     def _style_radiobutton(self):
         """
-        Apply style to tkinter radiobutton: `tkinter.Radiobutton`
+        Apply style to ``tkinter.Radiobutton``
         """
         self._set_option('*Radiobutton.background', self.settings.colors.bg)
         self._set_option('*Radiobutton.foreground', self.settings.colors.fg)
@@ -309,7 +313,7 @@ class StylerTK:
 
     def _style_entry(self):
         """
-        Apply style to tkinter entry: `tkinter.Entry`
+        Apply style to ``tkinter.Entry``
         """
         self._set_option('*Entry.relief', 'flat')
         self._set_option('*Entry.background',
@@ -322,7 +326,7 @@ class StylerTK:
 
     def _style_scale(self):
         """
-        Apply style to tkinter scale: `tkinter.Scale`
+        Apply style to ``tkinter.Scale``
         """
         self._set_option('*Scale.background', self.settings.colors.primary)
         self._set_option('*Scale.showValue', False)
@@ -336,7 +340,7 @@ class StylerTK:
 
     def _style_spinbox(self):
         """
-        Apply style to tkinter spinbox: `tkinter.Spinbox`
+        Apply style to `tkinter.Spinbox``
         """
         self._set_option('*Spinbox.foreground', self.settings.colors.fg)
         self._set_option('*Spinbox.background',
@@ -348,7 +352,7 @@ class StylerTK:
 
     def _style_listbox(self):
         """
-        Apply style to tkinter listbox: `tkinter.Listbox`
+        Apply style to ``tkinter.Listbox``
         """
         self._set_option('*Listbox.foreground', self.settings.colors.fg)
         self._set_option('*Listbox.background',
@@ -362,14 +366,14 @@ class StylerTK:
 
     def _style_menubutton(self):
         """
-        Apply style to tkinter menubutton: `tkinter.Menubutton`
+        Apply style to ``tkinter.Menubutton``
         """
         self._set_option('*Menubutton.background', self.settings.colors.primary)
         self._set_option('*Menubutton.foreground', self.settings.colors.selectfg)
 
     def _style_menu(self):
         """
-        Apply style to tkinter menu: `tkinter.Menu`
+        Apply style to ``tkinter.Menu``
         """
         self._set_option('*Menu.tearOff', 0)
         self._set_option('*Menu.foreground', self.settings.colors.fg)
@@ -377,7 +381,7 @@ class StylerTK:
 
     def _style_labelframe(self):
         """
-        Apply style to tkinter labelframe: `tkinter.Labelframe`
+        Apply style to ``tkinter.Labelframe``
         """
         self._set_option('*Labelframe.foreground', self.settings.colors.fg)
         self._set_option('*Labelframe.highlightColor', self.settings.colors.border)
@@ -386,40 +390,43 @@ class StylerTK:
 
     def _style_scrollbar(self):
         """
-        Apply style to tkinter scrollbar: `tkinter.Scrollbar`
+        Apply style to ``tkinter.Scrollbar``
 
-        NOTE: It appears this widget can only be styled in the constructor
+        .. warning::
+            It appears this widget can only be styled in the constructor**
         """
 
         pass
 
     def _style_optionmenu(self):
         """
-        Apply style to tkinter option menu: `tkinter.OptionMenu`
+        Apply style to ``tkinter.OptionMenu``
 
-        NOTE: It appears this widget can only be styled in the constructor
-
+        .. warning::
+            It appears this widget can only be styled in the constructor
         """
         pass
 
     def _style_separator(self):
         """
-        Apply style to tkinter separator: `tkinter.Separator
+        Apply style to ``tkinter.Separator``
 
-        NOT IMPLEMENTED
+        .. warning::
+            Not implemented
         """
         pass
 
 
 class StylerTTK:
     """
-    A class to create and apply a flat TTK theme created with built-in elements
+    A class to create and apply a flat theme to ``ttk`` widgets by using a combination of built-in themes and some
+    image-based elements using ``pillow``.
 
-    The base theme of all ttkboostrap themes is the built-in `clam` theme. In many cases, widget layouts are re-created
-    using an assortment of elements from various styles (`clam`, `default`, `alt`, etc...).
+    The base theme of all ``ttkbootstrap`` themes is the built-in *clam* theme. In many cases, widget layouts are
+    re-created using an assortment of elements from various styles such as *clam*, *alt*, *default*, etc...
 
-    :param style: An instance of the `ttk.Style` class
-    :param settings: An instance of the `ThemeSettings` class
+    :param Style style: An instance of ``ttk.Style`` class
+    :param ThemeSettings settings: creates the settings for the theme to be created
     """
 
     def __init__(self, style, settings):
@@ -457,8 +464,8 @@ class StylerTTK:
 
     def _style_defaults(self):
         """
-        Setup the default ttk style settings. These defaults are applied to any widget that contains these options.
-        This method should be called first before any other style is applied during theme creation.
+        Setup the default ``ttk.Style`` configuration. These defaults are applied to any widget that contains these
+        element options. This method should be called *first* before any other style is applied during theme creation.
         """
         self.style.configure('.',
                              background=self.settings.colors.bg,
@@ -477,16 +484,15 @@ class StylerTTK:
 
     def _style_combobox(self):
         """
-        Apply style to ttk combobox: `ttk.Combobox`
-
-        This element style is created with a layout that combines *clam* and *default* theme elements.
+        Apply style to ``ttk.Combobox``. This element style is created with a layout that combines *clam* and *default*
+        theme elements.
 
         The options available in this widget based on this layout include:
 
-            - Combobox.downarrow: arrowsize, background, bordercolor, relief, arrowcolor
-            - Combobox.field: bordercolor, lightcolor, darkcolor, fieldbackground
-            - Combobox.padding: padding, relief, shiftrelief
-            - Combobox.textarea: font, width
+            * Combobox.downarrow: arrowsize, background, bordercolor, relief, arrowcolor
+            * Combobox.field: bordercolor, lightcolor, darkcolor, fieldbackground
+            * Combobox.padding: padding, relief, shiftrelief
+            * Combobox.textarea: font, width
 
         **NOTE:**
 

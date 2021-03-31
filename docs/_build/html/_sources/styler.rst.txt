@@ -1,0 +1,27 @@
+Styler
+======
+
+.. autoclass:: ttkbootstrap.styler.Style
+    :show-inheritance:
+    :special-members:
+    :members:
+
+.. autoclass:: ttkbootstrap.styler.ThemeSettings
+    :show-inheritance:
+    :special-members:
+    :members:
+
+.. autoclass:: ttkbootstrap.styler.Colors
+    :show-inheritance:
+    :special-members:
+    :members:
+
+.. autoclass:: ttkbootstrap.styler.StylerTK
+    :show-inheritance:
+    :special-members:
+    :members:
+
+.. autoclass:: ttkbootstrap.styler.StylerTTK
+    :show-inheritance:
+    :special-members:
+    :members:
