@@ -8,11 +8,5 @@ https://pypi.org/project/ttkbootstrap/
 pip install ttkbootstrap
 ```
 
-## Demonstration
-You check out the examples below in a live demonstration by executing the following code in the python interpreter
-```python
->> python -m ttkbootstrap
-```
-
 ## Usage
 For more information about how to use this project in your own programs, please check out the [documentation](https://ttkbootstrap.readthedocs.io/en/latest/) on ReadTheDocs. You can find examples of all the themes as well as usage instructions.
