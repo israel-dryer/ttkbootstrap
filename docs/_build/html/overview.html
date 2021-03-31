@@ -1,0 +1,174 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Overview &#8212; ttkbootstrap  documentation</title>
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Installation" href="install.html" />
+    <link rel="prev" title="Welcome to ttkbootstrap’s documentation!" href="index.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="overview">
+<h1>Overview<a class="headerlink" href="#overview" title="Permalink to this headline">¶</a></h1>
+<span class="target" id="module-ttkbootstrap"></span><p>A library for using and creating modern ttk themed applications</p>
+<dl class="field-list simple">
+<dt class="field-odd">Author</dt>
+<dd class="field-odd"><p>Israel Dryer</p>
+</dd>
+<dt class="field-even">Modified</dt>
+<dd class="field-even"><p>2021-03-24</p>
+</dd>
+</dl>
+<div class="section" id="why-does-this-project-exist">
+<h2>Why does this project exist?<a class="headerlink" href="#why-does-this-project-exist" title="Permalink to this headline">¶</a></h2>
+<p>Because… the people need to be able to build modern nice-looking applications. Tkinter is a powerful, and
+fantastic tool that is significantly under-appreciated and overlooked for building modern GUI’s. I built this
+project by leveraging the power of <code class="docutils literal notranslate"><span class="pre">ttk's</span></code> theme engine to create a large collection of professional and
+asthetically pleasing themes, which are inspired by, and in some cases, whole-sale rip-off’s of the themes found
+on <a class="reference external" href="https://bootswatch.com/">https://bootswatch.com/</a>.</p>
+</div>
+<div class="section" id="a-bootstrap-approach-to-style">
+<h2>A bootstrap approach to style<a class="headerlink" href="#a-bootstrap-approach-to-style" title="Permalink to this headline">¶</a></h2>
+<p>Many people are familiar with bootstrap for web developement. It comes pre-packaged with lots of built in css
+classes for styling a webpage. I took the same approach with this project by pre-defining styles for nearly all
+<code class="docutils literal notranslate"><span class="pre">ttk</span></code> widgets that allow you to easily use colors from the theme’s color palette for your widget. So, if you want
+a button in the secondary theme color, simply apply the <code class="docutils literal notranslate"><span class="pre">secondary.TButton</span></code> style to the button. Or, if you want
+a blue outlined button, apply the <code class="docutils literal notranslate"><span class="pre">info.Outline.TButton</span></code> style to your button.</p>
+</div>
+<div class="section" id="how-i-built-this-project">
+<h2>How I built this project<a class="headerlink" href="#how-i-built-this-project" title="Permalink to this headline">¶</a></h2>
+<p>Each <code class="docutils literal notranslate"><span class="pre">ttk</span></code> widget is created from a collection of elements. There is an old, but excellent reference to this
+<a class="reference external" href="https://anzeljg.github.io/rin2/book2/2405/docs/tkinter/ttk-themes.html">https://anzeljg.github.io/rin2/book2/2405/docs/tkinter/ttk-themes.html</a>.</p>
+<p>By using the <code class="docutils literal notranslate"><span class="pre">ttk.Style.theme_create</span></code> method, I was able to copy the parts of the built-in themes that I like to
+create completely new and modern looking themes. For example, the <code class="docutils literal notranslate"><span class="pre">ttk.Combobox</span></code> widget uses the <em>field</em> element
+from the <code class="docutils literal notranslate"><span class="pre">ttk.Spinbox</span></code>. This allowed me to create the border effect I wanted.  Another example is that I used the
+<em>clam</em> theme as the base for my <code class="docutils literal notranslate"><span class="pre">ttk.Treeview</span></code>, but I used the indicator from the <em>alt</em> theme. The reason is that
+I think it just looks nicer.</p>
+<p>All themes are built using the <em>clam</em> theme as a base. The <em>clam</em> theme provides a lot of flexibilty when it comes
+to borders, so I was able to get some nice focus and hover ring effects (similar to what you see in the Bootstrap
+form widgets) by leveraging this feature.</p>
+<p>I decided to use <code class="docutils literal notranslate"><span class="pre">pillow</span></code> to draw the <code class="docutils literal notranslate"><span class="pre">ttk.Scale</span></code> widget on the fly for each theme because the look was so much
+better than the old native look. Hopefully this will not be a noticeable performance issue, and it does require you
+to pip install <code class="docutils literal notranslate"><span class="pre">pillow</span></code>. However, I think the final result is worth this sacrifice. The biggest drawback is that
+I was only able to theme the <code class="docutils literal notranslate"><span class="pre">ttk.Scale</span></code> widget with the primary color of the theme. So, it does not have all the
+color options that most of the other widgets have.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>For Windows, I’m using the <code class="docutils literal notranslate"><span class="pre">ttk.Checkbutton</span></code> and <code class="docutils literal notranslate"><span class="pre">ttk.Radiobutton</span></code> from the <em>xpnative</em> theme. For Linux and
+MacOS, these widgets default to the <em>clam</em> theme elements.</p>
+</div>
+</div>
+<div class="section" id="what-about-the-old-tkinter-widgets">
+<h2>What about the old tkinter widgets?<a class="headerlink" href="#what-about-the-old-tkinter-widgets" title="Permalink to this headline">¶</a></h2>
+<p>Some of the <code class="docutils literal notranslate"><span class="pre">ttk</span></code> widgets utilize existing <code class="docutils literal notranslate"><span class="pre">tkinter</span></code> widgets. For example: the popdown list in the
+<code class="docutils literal notranslate"><span class="pre">ttk.Combobox</span></code> or the <code class="docutils literal notranslate"><span class="pre">ttk.OptionMenu</span></code>. To make sure these widgets didn’t stick out like a sore thumb, I created
+a <code class="docutils literal notranslate"><span class="pre">StyleTK</span></code> class to apply the same color and style, as much as it was possible, to these legacy widgets. While
+these legacy widgets are not necessarily intended to be used, they are available if needed, and shouldn’t look
+complete out-of-place in your <code class="docutils literal notranslate"><span class="pre">ttkbootstrap</span></code> themed application.</p>
+</div>
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">ttkbootstrap</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Overview</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#why-does-this-project-exist">Why does this project exist?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#a-bootstrap-approach-to-style">A bootstrap approach to style</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#how-i-built-this-project">How I built this project</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#what-about-the-old-tkinter-widgets">What about the old tkinter widgets?</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="install.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="example.html">Example</a></li>
+<li class="toctree-l1"><a class="reference internal" href="theming.html">Theming</a></li>
+<li class="toctree-l1"><a class="reference internal" href="reference.html">Reference</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="index.html" title="previous chapter">Welcome to ttkbootstrap’s documentation!</a></li>
+      <li>Next: <a href="install.html" title="next chapter">Installation</a></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2021, Israel Dryer.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.5.3</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="_sources/overview.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

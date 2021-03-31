@@ -1,0 +1,183 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Theming &#8212; ttkbootstrap  documentation</title>
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Reference" href="reference.html" />
+    <link rel="prev" title="Example" href="example.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="theming">
+<h1>Theming<a class="headerlink" href="#theming" title="Permalink to this headline">¶</a></h1>
+<p>Built-in <strong>light</strong> and <strong>dark</strong> themes are generated at run-time. Generally, the <code class="docutils literal notranslate"><span class="pre">ttkbootstrap</span></code> api is identical to
+the <code class="docutils literal notranslate"><span class="pre">ttk.Style</span></code> api.</p>
+<div class="section" id="choosing-a-theme">
+<h2>Choosing a theme<a class="headerlink" href="#choosing-a-theme" title="Permalink to this headline">¶</a></h2>
+<p>Using a pre-defined <code class="docutils literal notranslate"><span class="pre">ttkbootstrap</span></code> theme is identical to using standard <code class="docutils literal notranslate"><span class="pre">ttk</span></code> theme, except that you will use the
+<code class="docutils literal notranslate"><span class="pre">ttkbootstrap.Style</span></code> class instead of the <code class="docutils literal notranslate"><span class="pre">ttk.Style</span></code> class.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">style</span> <span class="o">=</span> <span class="n">Style</span><span class="p">()</span>
+<span class="n">style</span><span class="o">.</span><span class="n">theme_use</span><span class="p">(</span><span class="s1">&#39;superhero&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>To get a list of all available themes:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">style</span><span class="o">.</span><span class="n">theme_names</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>As of this latest update, the currently available themes include:</p>
+<blockquote>
+<div><dl class="field-list simple">
+<dt class="field-odd">light</dt>
+<dd class="field-odd"><p>cosmo - flatly - journal - literal - lumen - minty - pulse - sandstone - united - yeti</p>
+</dd>
+<dt class="field-even">dark</dt>
+<dd class="field-even"><p>cyborg - darkly - solar - superhero</p>
+</dd>
+</dl>
+</div></blockquote>
+</div>
+<div class="section" id="using-themed-widgets">
+<h2>Using themed widgets<a class="headerlink" href="#using-themed-widgets" title="Permalink to this headline">¶</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">ttkbootstrap</span></code> includes many <em>pre-defined widget styles</em> that you can easily apply with the <code class="docutils literal notranslate"><span class="pre">style</span></code> property
+available to every <code class="docutils literal notranslate"><span class="pre">ttk</span></code> widget.</p>
+<div class="section" id="color-patterns">
+<h3>Color patterns<a class="headerlink" href="#color-patterns" title="Permalink to this headline">¶</a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">ttkbootstrap</span></code> includes a set of pre-defined themed colors based on a pattern common to many bootstrap styles.
+All <code class="docutils literal notranslate"><span class="pre">ttkbootstrap</span></code> themes include style colors associated with the following labels:</p>
+<img alt="_images/color-options.png" src="_images/color-options.png" />
+</div>
+<div class="section" id="styles">
+<h3>Styles<a class="headerlink" href="#styles" title="Permalink to this headline">¶</a></h3>
+<p>Every widget has an associated <code class="docutils literal notranslate"><span class="pre">ttk</span></code> <a class="reference external" href="link_here">class</a>. All pre-defined styles include a <strong>color prefix</strong>, followed by the <code class="docutils literal notranslate"><span class="pre">ttk</span></code>
+<strong>widget class</strong>.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>While all widgets are themed, not all have themed color styles available, such as <code class="docutils literal notranslate"><span class="pre">ttk.PanedWindow</span></code> or
+<code class="docutils literal notranslate"><span class="pre">ttk.Scale</span></code>. Instead, these widgets are styled with the primary theme color.</p>
+</div>
+<p>To demonstrate, the <code class="docutils literal notranslate"><span class="pre">ttk.Button</span></code> has the following styles available:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>primary.TButton</p></li>
+<li><p>secondary.TButton</p></li>
+<li><p>success.TButton</p></li>
+<li><p>info.TButton</p></li>
+<li><p>warning.TButton</p></li>
+<li><p>danger.TButton</p></li>
+</ul>
+</div></blockquote>
+<p>Use the <code class="docutils literal notranslate"><span class="pre">style</span></code> property of the widget to apply any <code class="docutils literal notranslate"><span class="pre">ttkbootstrap</span></code> pre-defined style.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># solid button</span>
+<span class="n">ttk</span><span class="o">.</span><span class="n">Button</span><span class="p">(</span><span class="n">window</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="s2">&quot;Submit&quot;</span><span class="p">,</span> <span class="n">style</span><span class="o">=</span><span class="s1">&#39;success.TButton&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">pack</span><span class="p">(</span><span class="n">side</span><span class="o">=</span><span class="s1">&#39;left&#39;</span><span class="p">,</span> <span class="n">padx</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">pady</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+
+<span class="c1"># outline button</span>
+<span class="n">ttk</span><span class="o">.</span><span class="n">Button</span><span class="p">(</span><span class="n">window</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="s2">&quot;Submit&quot;</span><span class="p">,</span> <span class="n">style</span><span class="o">=</span><span class="s1">&#39;success.Outline.TButton&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">pack</span><span class="p">(</span><span class="n">side</span><span class="o">=</span><span class="s1">&#39;left&#39;</span><span class="p">,</span> <span class="n">padx</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">pady</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+</pre></div>
+</div>
+<img alt="_images/submit.png" src="_images/submit.png" />
+</div>
+</div>
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">ttkbootstrap</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="overview.html">ttkbootstrap</a></li>
+<li class="toctree-l1"><a class="reference internal" href="install.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="example.html">Example</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Theming</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#choosing-a-theme">Choosing a theme</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#using-themed-widgets">Using themed widgets</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="reference.html">Reference</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="example.html" title="previous chapter">Example</a></li>
+      <li>Next: <a href="reference.html" title="next chapter">Reference</a></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2021, Israel Dryer.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.5.3</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="_sources/theming.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>
