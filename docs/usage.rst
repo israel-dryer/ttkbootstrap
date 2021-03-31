@@ -43,7 +43,7 @@ For example, the ``ttk.Button`` has a widget class of *TButton*. The style patte
 
 These style patterns would produce the following buttons:
 
-.. image:: _images/color-options.png
+.. image:: _static/color-options.png
 
 Consider the following example, which also shows the *Outline* style that is available on buttons:
 
@@ -55,7 +55,7 @@ Consider the following example, which also shows the *Outline* style that is ava
     # outline button
     ttk.Button(window, text="Submit", style='success.Outline.TButton').pack(side='left', padx=5, pady=10)
 
-.. image:: _images/submit.png
+.. image:: _static/submit.png
 
 .. note::
 

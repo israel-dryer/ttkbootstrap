@@ -1,11 +1,18 @@
 import setuptools
 
-with open('README.md', 'r') as f:
-    long_description = f.read()
+long_description = """
+A collection of modern flat themes inspired by Bootstrap. There are more than a dozen built-in themes, and you also have 
+the ability to easily create your own.
+
+```
+## Links
+#### Documentation: https://ttkbootstrap.readthedocs.io/en/latest/
+#### GitHub: https://github.com/israel-dryer/ttkbootstrap
+"""
 
 setuptools.setup(
     name="ttkbootstrap",
-    version="0.0.15",
+    version="0.0.18",
     author="Israel Dryer",
     author_email="israel.dryer@gmail.com",
     description="A collection of modern ttk themes inspired by Bootstrap",
