@@ -22,7 +22,6 @@ class Demo(Style):
         self.root = self.master
         self.root.protocol("WM_DELETE_WINDOW", self.quit)
         self.root.title('TTK Bootstrap')
-        # self.root.geometry('590x650')
         self.theme_name = tkinter.StringVar()
         self.theme_name.set(self.theme_use())
         self.setup()
@@ -143,14 +142,14 @@ class Demo(Style):
         r2.pack(side='left', fill='x', expand='yes')
 
         # Checkbutton
-        cb1 = ttk.Checkbutton(options_frame, text='Unchecked')
-        cb1.configure(command=lambda: self.checked(cb1))
+        cb1 = ttk.Checkbutton(options_frame, text='Option 1')
         cb1.pack(side='left', fill='x', expand='yes')
         cb1.invoke()
 
-        cb2 = ttk.Checkbutton(options_frame, text='Unchecked')
-        cb2.configure(command=lambda: self.checked(cb2))
+        cb2 = ttk.Checkbutton(options_frame, text='Option 2')
         cb2.pack(side='left', fill='x', expand='yes')
+        cb2.invoke()
+        cb2.invoke()
 
         # Treeview
         tv = ttk.Treeview(widget_frame, height=3)

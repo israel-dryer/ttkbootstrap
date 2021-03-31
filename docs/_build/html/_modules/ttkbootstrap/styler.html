@@ -1,34 +1,158 @@
 
+
 <!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>ttkbootstrap.styler &mdash; ttkbootstrap  documentation</title>
+  
 
-<html>
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>ttkbootstrap.styler &#8212; ttkbootstrap  documentation</title>
-    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
-    <link rel="stylesheet" href="../../_static/alabaster.css" type="text/css" />
-    <script id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
-    <script src="../../_static/jquery.js"></script>
-    <script src="../../_static/underscore.js"></script>
-    <script src="../../_static/doctools.js"></script>
+  
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+    
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+
+    
     <link rel="index" title="Index" href="../../genindex.html" />
-    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
    
-  <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
-  
-  
-  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
-
-  </head><body>
-  
-
-    <div class="document">
-      <div class="documentwrapper">
-        <div class="bodywrapper">
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
           
 
-          <div class="body" role="main">
+          
+            <a href="../../index.html" class="icon icon-home"> ttkbootstrap
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../overview.html">Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../example.html">Example</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../install.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../theming.html">Theming</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../reference.html">Reference</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">ttkbootstrap</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+        
+      <li>ttkbootstrap.styler</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
             
   <h1>Source code for ttkbootstrap.styler</h1><div class="highlight"><pre>
 <span></span><span class="sd">&quot;&quot;&quot;</span>
@@ -44,79 +168,18 @@
 <span class="kn">from</span> <span class="nn">PIL</span> <span class="kn">import</span> <span class="n">ImageTk</span><span class="p">,</span> <span class="n">Image</span><span class="p">,</span> <span class="n">ImageDraw</span>
 
 
-<span class="k">def</span> <span class="nf">hex_to_rgb</span><span class="p">(</span><span class="n">color</span><span class="p">):</span>
+<div class="viewcode-block" id="Style"><a class="viewcode-back" href="../../reference.html#ttkbootstrap.styler.Style">[docs]</a><span class="k">class</span> <span class="nc">Style</span><span class="p">(</span><span class="n">ttk</span><span class="o">.</span><span class="n">Style</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Convert hexadecimal color to rgb color value</span>
-
-<span class="sd">    :param str color: hexadecimal color value</span>
-
-<span class="sd">    :returns: rgb color value</span>
-<span class="sd">    :rtype: tuple</span>
+<span class="sd">    A class for setting the application style.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">r</span> <span class="o">=</span> <span class="nb">round</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">color</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="mi">3</span><span class="p">],</span> <span class="mi">16</span><span class="p">)</span> <span class="o">/</span> <span class="mi">255</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
-    <span class="n">g</span> <span class="o">=</span> <span class="nb">round</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">color</span><span class="p">[</span><span class="mi">3</span><span class="p">:</span><span class="mi">5</span><span class="p">],</span> <span class="mi">16</span><span class="p">)</span> <span class="o">/</span> <span class="mi">255</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
-    <span class="n">b</span> <span class="o">=</span> <span class="nb">round</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">color</span><span class="p">[</span><span class="mi">5</span><span class="p">:],</span> <span class="mi">16</span><span class="p">)</span> <span class="o">/</span> <span class="mi">255</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">r</span><span class="p">,</span> <span class="n">g</span><span class="p">,</span> <span class="n">b</span>
-
-
-<span class="k">def</span> <span class="nf">rgb_to_hex</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">g</span><span class="p">,</span> <span class="n">b</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Convert rgb to hexadecimal color value</span>
-
-<span class="sd">    :param int r: red</span>
-<span class="sd">    :param int g: green</span>
-<span class="sd">    :param int b: blue</span>
-
-<span class="sd">    :returns: a hexadecimal color value</span>
-<span class="sd">    :rtype: str</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">r_</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">r</span> <span class="o">*</span> <span class="mi">255</span><span class="p">)</span>
-    <span class="n">g_</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">g</span> <span class="o">*</span> <span class="mi">255</span><span class="p">)</span>
-    <span class="n">b_</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">b</span> <span class="o">*</span> <span class="mi">255</span><span class="p">)</span>
-    <span class="k">return</span> <span class="s1">&#39;#</span><span class="si">{:02x}{:02x}{:02x}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">r_</span><span class="p">,</span> <span class="n">g_</span><span class="p">,</span> <span class="n">b_</span><span class="p">)</span>
-
-
-<span class="k">def</span> <span class="nf">brightness</span><span class="p">(</span><span class="n">hex_color</span><span class="p">,</span> <span class="n">pct_change</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Adjust the value of a given hexadecimal color. The percent change is expected to be a float.</span>
-
-<span class="sd">    To return a *lighter* color, use a positive floating value::</span>
-
-<span class="sd">        brightness(&#39;#fafafa&#39;, 0.15)</span>
-
-<span class="sd">    To return a *darker* color, use a negative floating value::</span>
-
-<span class="sd">        brightness(&#39;#fafafa&#39;, -0.15)</span>
-
-<span class="sd">    :param str hex_color: hexadecimal color</span>
-<span class="sd">    :param float pct_change: a floating value</span>
-
-<span class="sd">    :returns: a lightened or darkened hexadecimal color value</span>
-<span class="sd">    :rtype: str</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">r</span><span class="p">,</span> <span class="n">g</span><span class="p">,</span> <span class="n">b</span> <span class="o">=</span> <span class="n">hex_to_rgb</span><span class="p">(</span><span class="n">hex_color</span><span class="p">)</span>
-    <span class="n">h</span><span class="p">,</span> <span class="n">s</span><span class="p">,</span> <span class="n">v</span> <span class="o">=</span> <span class="n">colorsys</span><span class="o">.</span><span class="n">rgb_to_hsv</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">g</span><span class="p">,</span> <span class="n">b</span><span class="p">)</span>
-    <span class="n">v_</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">pct_change</span><span class="p">)</span> <span class="o">*</span> <span class="n">v</span>
-    <span class="n">v_max</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">v_</span><span class="p">)</span>
-    <span class="n">v_min</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">v_max</span><span class="p">)</span>
-    <span class="n">r_</span><span class="p">,</span> <span class="n">g_</span><span class="p">,</span> <span class="n">b_</span> <span class="o">=</span> <span class="n">colorsys</span><span class="o">.</span><span class="n">hsv_to_rgb</span><span class="p">(</span><span class="n">h</span><span class="p">,</span> <span class="n">s</span><span class="p">,</span> <span class="n">v_min</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">rgb_to_hex</span><span class="p">(</span><span class="n">r_</span><span class="p">,</span> <span class="n">g_</span><span class="p">,</span> <span class="n">b_</span><span class="p">)</span>
-
-
-<div class="viewcode-block" id="Style"><a class="viewcode-back" href="../../styler.html#ttkbootstrap.styler.Style">[docs]</a><span class="k">class</span> <span class="nc">Style</span><span class="p">(</span><span class="n">ttk</span><span class="o">.</span><span class="n">Style</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    A class that sets the theme for an instance of TK. This should be used as a replacement for the normal ttk.Style</span>
-<span class="sd">    class. It also supports the default themes provided.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-
-<div class="viewcode-block" id="Style.__init__"><a class="viewcode-back" href="../../styler.html#ttkbootstrap.styler.Style.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="Style.__init__"><a class="viewcode-back" href="../../reference.html#ttkbootstrap.styler.Style.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">themes</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">load_themes</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">settings</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">colors</span> <span class="o">=</span> <span class="kc">None</span></div>
 
-<div class="viewcode-block" id="Style.load_themes"><a class="viewcode-back" href="../../styler.html#ttkbootstrap.styler.Style.load_themes">[docs]</a>    <span class="k">def</span> <span class="nf">load_themes</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Style.load_themes"><a class="viewcode-back" href="../../reference.html#ttkbootstrap.styler.Style.load_themes">[docs]</a>    <span class="k">def</span> <span class="nf">load_themes</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Load all ttkbootstrap defined themes</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -136,7 +199,7 @@
                     <span class="n">colors</span><span class="o">=</span><span class="n">Colors</span><span class="p">(</span><span class="o">**</span><span class="n">theme</span><span class="p">[</span><span class="s1">&#39;colors&#39;</span><span class="p">]))</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">themes</span><span class="p">[</span><span class="n">settings</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">StylerTTK</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">settings</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="Style.theme_use"><a class="viewcode-back" href="../../styler.html#ttkbootstrap.styler.Style.theme_use">[docs]</a>    <span class="k">def</span> <span class="nf">theme_use</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">themename</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="Style.theme_use"><a class="viewcode-back" href="../../reference.html#ttkbootstrap.styler.Style.theme_use">[docs]</a>    <span class="k">def</span> <span class="nf">theme_use</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">themename</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        If themename is None, returns the theme in use, otherwise, set the current theme to themename, refreshes all</span>
 <span class="sd">        widgets and emits a &lt;&lt;ThemeChanged&gt;&gt; event.</span>
@@ -162,7 +225,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">tk</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="s2">&quot;ttk::setTheme&quot;</span><span class="p">,</span> <span class="n">themename</span><span class="p">)</span></div></div>
 
 
-<div class="viewcode-block" id="ThemeSettings"><a class="viewcode-back" href="../../styler.html#ttkbootstrap.styler.ThemeSettings">[docs]</a><span class="k">class</span> <span class="nc">ThemeSettings</span><span class="p">:</span>
+<div class="viewcode-block" id="ThemeSettings"><a class="viewcode-back" href="../../reference.html#ttkbootstrap.styler.ThemeSettings">[docs]</a><span class="k">class</span> <span class="nc">ThemeSettings</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A class to provide settings for a ttkbootstrap theme.</span>
 
@@ -172,17 +235,17 @@
 <span class="sd">    :param Color colors: An instance of the `Colors` class.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-<div class="viewcode-block" id="ThemeSettings.__init__"><a class="viewcode-back" href="../../styler.html#ttkbootstrap.styler.ThemeSettings.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;default&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="s1">&#39;light&#39;</span><span class="p">,</span> <span class="n">font</span><span class="o">=</span><span class="s1">&#39;helvetica&#39;</span><span class="p">,</span> <span class="n">colors</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="ThemeSettings.__init__"><a class="viewcode-back" href="../../reference.html#ttkbootstrap.styler.ThemeSettings.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;default&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="s1">&#39;light&#39;</span><span class="p">,</span> <span class="n">font</span><span class="o">=</span><span class="s1">&#39;helvetica&#39;</span><span class="p">,</span> <span class="n">colors</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">type</span> <span class="o">=</span> <span class="nb">type</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">font</span> <span class="o">=</span> <span class="n">font</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">colors</span> <span class="o">=</span> <span class="n">colors</span> <span class="k">if</span> <span class="n">colors</span> <span class="k">else</span> <span class="n">Colors</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="ThemeSettings.__repr__"><a class="viewcode-back" href="../../styler.html#ttkbootstrap.styler.ThemeSettings.__repr__">[docs]</a>    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="ThemeSettings.__repr__"><a class="viewcode-back" href="../../reference.html#ttkbootstrap.styler.ThemeSettings.__repr__">[docs]</a>    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="sa">f</span><span class="s1">&#39;name=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s1">, type=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">type</span><span class="si">}</span><span class="s1">, font=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">font</span><span class="si">}</span><span class="s1">, colors=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">colors</span><span class="si">}</span><span class="s1">&#39;</span></div></div>
 
 
-<div class="viewcode-block" id="Colors"><a class="viewcode-back" href="../../styler.html#ttkbootstrap.styler.Colors">[docs]</a><span class="k">class</span> <span class="nc">Colors</span><span class="p">:</span>
+<div class="viewcode-block" id="Colors"><a class="viewcode-back" href="../../reference.html#ttkbootstrap.styler.Colors">[docs]</a><span class="k">class</span> <span class="nc">Colors</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A collection of colors used in a ttkbootstrap theme.</span>
 
@@ -201,7 +264,7 @@
 <span class="sd">    :param str inputfg: a color used for input widgets; typically a reverse lightness of `fg`</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-<div class="viewcode-block" id="Colors.__init__"><a class="viewcode-back" href="../../styler.html#ttkbootstrap.styler.Colors.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="Colors.__init__"><a class="viewcode-back" href="../../reference.html#ttkbootstrap.styler.Colors.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">primary</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;primary&#39;</span><span class="p">,</span> <span class="s1">&#39;#ffffff&#39;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">secondary</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;secondary&#39;</span><span class="p">,</span> <span class="s1">&#39;#ffffff&#39;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">success</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;success&#39;</span><span class="p">,</span> <span class="s1">&#39;#ffffff&#39;</span><span class="p">)</span>
@@ -216,7 +279,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">border</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;border&#39;</span><span class="p">,</span> <span class="s1">&#39;#000000&#39;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">inputfg</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;inputfg&#39;</span><span class="p">,</span> <span class="s1">&#39;#000000&#39;</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="Colors.get"><a class="viewcode-back" href="../../styler.html#ttkbootstrap.styler.Colors.get">[docs]</a>    <span class="k">def</span> <span class="nf">get</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">color_label</span><span class="p">):</span>
+<div class="viewcode-block" id="Colors.get"><a class="viewcode-back" href="../../reference.html#ttkbootstrap.styler.Colors.get">[docs]</a>    <span class="k">def</span> <span class="nf">get</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">color_label</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Lookup a color property</span>
 
@@ -227,7 +290,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__dict__</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">color_label</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="Colors.set"><a class="viewcode-back" href="../../styler.html#ttkbootstrap.styler.Colors.set">[docs]</a>    <span class="k">def</span> <span class="nf">set</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">color_label</span><span class="p">,</span> <span class="n">color_value</span><span class="p">):</span>
+<div class="viewcode-block" id="Colors.set"><a class="viewcode-back" href="../../reference.html#ttkbootstrap.styler.Colors.set">[docs]</a>    <span class="k">def</span> <span class="nf">set</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">color_label</span><span class="p">,</span> <span class="n">color_value</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Set a color property</span>
 
@@ -243,10 +306,10 @@
     <span class="k">def</span> <span class="fm">__iter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="nb">iter</span><span class="p">([</span><span class="s1">&#39;primary&#39;</span><span class="p">,</span> <span class="s1">&#39;secondary&#39;</span><span class="p">,</span> <span class="s1">&#39;success&#39;</span><span class="p">,</span> <span class="s1">&#39;info&#39;</span><span class="p">,</span> <span class="s1">&#39;warning&#39;</span><span class="p">,</span> <span class="s1">&#39;danger&#39;</span><span class="p">])</span>
 
-<div class="viewcode-block" id="Colors.__repr__"><a class="viewcode-back" href="../../styler.html#ttkbootstrap.styler.Colors.__repr__">[docs]</a>    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Colors.__repr__"><a class="viewcode-back" href="../../reference.html#ttkbootstrap.styler.Colors.__repr__">[docs]</a>    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="nb">str</span><span class="p">((</span><span class="nb">tuple</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="vm">__dict__</span><span class="o">.</span><span class="n">keys</span><span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__dict__</span><span class="o">.</span><span class="n">values</span><span class="p">()))))</span></div>
 
-<div class="viewcode-block" id="Colors.label_iter"><a class="viewcode-back" href="../../styler.html#ttkbootstrap.styler.Colors.label_iter">[docs]</a>    <span class="k">def</span> <span class="nf">label_iter</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Colors.label_iter"><a class="viewcode-back" href="../../reference.html#ttkbootstrap.styler.Colors.label_iter">[docs]</a>    <span class="k">def</span> <span class="nf">label_iter</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">         Iterates over all color label properties in the Color class</span>
 
@@ -254,10 +317,69 @@
 <span class="sd">         :rtype: iter[str]</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="nb">iter</span><span class="p">([</span><span class="s1">&#39;primary&#39;</span><span class="p">,</span> <span class="s1">&#39;secondary&#39;</span><span class="p">,</span> <span class="s1">&#39;success&#39;</span><span class="p">,</span> <span class="s1">&#39;info&#39;</span><span class="p">,</span> <span class="s1">&#39;warning&#39;</span><span class="p">,</span> <span class="s1">&#39;danger&#39;</span><span class="p">,</span> <span class="s1">&#39;bg&#39;</span><span class="p">,</span> <span class="s1">&#39;fg&#39;</span><span class="p">,</span> <span class="s1">&#39;selectbg&#39;</span><span class="p">,</span> <span class="s1">&#39;selectfg&#39;</span><span class="p">,</span>
-                     <span class="s1">&#39;light&#39;</span><span class="p">,</span> <span class="s1">&#39;border&#39;</span><span class="p">,</span> <span class="s1">&#39;inputfg&#39;</span><span class="p">])</span></div></div>
+                     <span class="s1">&#39;light&#39;</span><span class="p">,</span> <span class="s1">&#39;border&#39;</span><span class="p">,</span> <span class="s1">&#39;inputfg&#39;</span><span class="p">])</span></div>
+
+<div class="viewcode-block" id="Colors.hex_to_rgb"><a class="viewcode-back" href="../../reference.html#ttkbootstrap.styler.Colors.hex_to_rgb">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">hex_to_rgb</span><span class="p">(</span><span class="n">color</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Convert hexadecimal color to rgb color value</span>
+
+<span class="sd">        :param str color: hexadecimal color value</span>
+
+<span class="sd">        :returns: rgb color value</span>
+<span class="sd">        :rtype: tuple</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">r</span> <span class="o">=</span> <span class="nb">round</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">color</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="mi">3</span><span class="p">],</span> <span class="mi">16</span><span class="p">)</span> <span class="o">/</span> <span class="mi">255</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+        <span class="n">g</span> <span class="o">=</span> <span class="nb">round</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">color</span><span class="p">[</span><span class="mi">3</span><span class="p">:</span><span class="mi">5</span><span class="p">],</span> <span class="mi">16</span><span class="p">)</span> <span class="o">/</span> <span class="mi">255</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+        <span class="n">b</span> <span class="o">=</span> <span class="nb">round</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">color</span><span class="p">[</span><span class="mi">5</span><span class="p">:],</span> <span class="mi">16</span><span class="p">)</span> <span class="o">/</span> <span class="mi">255</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">r</span><span class="p">,</span> <span class="n">g</span><span class="p">,</span> <span class="n">b</span></div>
+
+<div class="viewcode-block" id="Colors.rgb_to_hex"><a class="viewcode-back" href="../../reference.html#ttkbootstrap.styler.Colors.rgb_to_hex">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">rgb_to_hex</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">g</span><span class="p">,</span> <span class="n">b</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Convert rgb to hexadecimal color value</span>
+
+<span class="sd">        :param int r: red</span>
+<span class="sd">        :param int g: green</span>
+<span class="sd">        :param int b: blue</span>
+
+<span class="sd">        :returns: a hexadecimal color value</span>
+<span class="sd">        :rtype: str</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">r_</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">r</span> <span class="o">*</span> <span class="mi">255</span><span class="p">)</span>
+        <span class="n">g_</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">g</span> <span class="o">*</span> <span class="mi">255</span><span class="p">)</span>
+        <span class="n">b_</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">b</span> <span class="o">*</span> <span class="mi">255</span><span class="p">)</span>
+        <span class="k">return</span> <span class="s1">&#39;#</span><span class="si">{:02x}{:02x}{:02x}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">r_</span><span class="p">,</span> <span class="n">g_</span><span class="p">,</span> <span class="n">b_</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Colors.brightness"><a class="viewcode-back" href="../../reference.html#ttkbootstrap.styler.Colors.brightness">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">brightness</span><span class="p">(</span><span class="n">hex_color</span><span class="p">,</span> <span class="n">pct_change</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Adjust the value of a given hexadecimal color. The percent change is expected to be a float.</span>
+
+<span class="sd">        To return a *lighter* color, use a positive floating value::</span>
+
+<span class="sd">            Colors.brightness(&#39;#fafafa&#39;, 0.15)</span>
+
+<span class="sd">        To return a *darker* color, use a negative floating value::</span>
+
+<span class="sd">            Colors.brightness(&#39;#fafafa&#39;, -0.15)</span>
+
+<span class="sd">        :param str hex_color: hexadecimal color</span>
+<span class="sd">        :param float pct_change: a floating value</span>
+
+<span class="sd">        :returns: a lightened or darkened hexadecimal color value</span>
+<span class="sd">        :rtype: str</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">r</span><span class="p">,</span> <span class="n">g</span><span class="p">,</span> <span class="n">b</span> <span class="o">=</span> <span class="n">Colors</span><span class="o">.</span><span class="n">hex_to_rgb</span><span class="p">(</span><span class="n">hex_color</span><span class="p">)</span>
+        <span class="n">h</span><span class="p">,</span> <span class="n">s</span><span class="p">,</span> <span class="n">v</span> <span class="o">=</span> <span class="n">colorsys</span><span class="o">.</span><span class="n">rgb_to_hsv</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">g</span><span class="p">,</span> <span class="n">b</span><span class="p">)</span>
+        <span class="n">v_</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">pct_change</span><span class="p">)</span> <span class="o">*</span> <span class="n">v</span>
+        <span class="n">v_max</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">v_</span><span class="p">)</span>
+        <span class="n">v_min</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">v_max</span><span class="p">)</span>
+        <span class="n">r_</span><span class="p">,</span> <span class="n">g_</span><span class="p">,</span> <span class="n">b_</span> <span class="o">=</span> <span class="n">colorsys</span><span class="o">.</span><span class="n">hsv_to_rgb</span><span class="p">(</span><span class="n">h</span><span class="p">,</span> <span class="n">s</span><span class="p">,</span> <span class="n">v_min</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">Colors</span><span class="o">.</span><span class="n">rgb_to_hex</span><span class="p">(</span><span class="n">r_</span><span class="p">,</span> <span class="n">g_</span><span class="p">,</span> <span class="n">b_</span><span class="p">)</span></div></div>
 
 
-<div class="viewcode-block" id="StylerTK"><a class="viewcode-back" href="../../styler.html#ttkbootstrap.styler.StylerTK">[docs]</a><span class="k">class</span> <span class="nc">StylerTK</span><span class="p">:</span>
+<div class="viewcode-block" id="StylerTK"><a class="viewcode-back" href="../../reference.html#ttkbootstrap.styler.StylerTK">[docs]</a><span class="k">class</span> <span class="nc">StylerTK</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A class that applies theme colors to standard ``tkinter`` widgets (**not ``ttk`` widgets**).</span>
 <span class="sd">    Used as a mix-in for ``StylerTTK``.</span>
@@ -269,11 +391,11 @@
 <span class="sd">    :param parent: an instance of `StylerTTK`</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-<div class="viewcode-block" id="StylerTK.__init__"><a class="viewcode-back" href="../../styler.html#ttkbootstrap.styler.StylerTK.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parent</span><span class="p">):</span>
+<div class="viewcode-block" id="StylerTK.__init__"><a class="viewcode-back" href="../../reference.html#ttkbootstrap.styler.StylerTK.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parent</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">master</span> <span class="o">=</span> <span class="n">parent</span><span class="o">.</span><span class="n">style</span><span class="o">.</span><span class="n">master</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">settings</span> <span class="o">=</span> <span class="n">parent</span><span class="o">.</span><span class="n">settings</span></div>
 
-<div class="viewcode-block" id="StylerTK.apply_style"><a class="viewcode-back" href="../../styler.html#ttkbootstrap.styler.StylerTK.apply_style">[docs]</a>    <span class="k">def</span> <span class="nf">apply_style</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="StylerTK.apply_style"><a class="viewcode-back" href="../../reference.html#ttkbootstrap.styler.StylerTK.apply_style">[docs]</a>    <span class="k">def</span> <span class="nf">apply_style</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        A wrapper on all widget style methods. Applies current theme to all standard tkinter widgets</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -351,7 +473,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_set_option</span><span class="p">(</span><span class="s1">&#39;*Entry.relief&#39;</span><span class="p">,</span> <span class="s1">&#39;flat&#39;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_set_option</span><span class="p">(</span><span class="s1">&#39;*Entry.background&#39;</span><span class="p">,</span>
                          <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">colors</span><span class="o">.</span><span class="n">light</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">type</span> <span class="o">==</span> <span class="s1">&#39;light&#39;</span> <span class="k">else</span>
-                          <span class="n">brightness</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">colors</span><span class="o">.</span><span class="n">light</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.1</span><span class="p">)))</span>
+                          <span class="n">Colors</span><span class="o">.</span><span class="n">brightness</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">colors</span><span class="o">.</span><span class="n">light</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.1</span><span class="p">)))</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_set_option</span><span class="p">(</span><span class="s1">&#39;*Entry.foreground&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">colors</span><span class="o">.</span><span class="n">fg</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_set_option</span><span class="p">(</span><span class="s1">&#39;*Entry.highlightThickness&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_set_option</span><span class="p">(</span><span class="s1">&#39;*Entry.highlightBackground&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">colors</span><span class="o">.</span><span class="n">border</span><span class="p">)</span>
@@ -369,7 +491,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_set_option</span><span class="p">(</span><span class="s1">&#39;*Scale.highlightBackground&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">colors</span><span class="o">.</span><span class="n">border</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_set_option</span><span class="p">(</span><span class="s1">&#39;*Scale.troughColor&#39;</span><span class="p">,</span>
                          <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">colors</span><span class="o">.</span><span class="n">light</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">type</span> <span class="o">==</span> <span class="s1">&#39;light&#39;</span> <span class="k">else</span>
-                          <span class="n">brightness</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">colors</span><span class="o">.</span><span class="n">light</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.1</span><span class="p">)))</span>
+                          <span class="n">Colors</span><span class="o">.</span><span class="n">brightness</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">colors</span><span class="o">.</span><span class="n">light</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.1</span><span class="p">)))</span>
 
     <span class="k">def</span> <span class="nf">_style_spinbox</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -378,7 +500,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_set_option</span><span class="p">(</span><span class="s1">&#39;*Spinbox.foreground&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">colors</span><span class="o">.</span><span class="n">fg</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_set_option</span><span class="p">(</span><span class="s1">&#39;*Spinbox.background&#39;</span><span class="p">,</span>
                          <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">colors</span><span class="o">.</span><span class="n">light</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">type</span> <span class="o">==</span> <span class="s1">&#39;light&#39;</span> <span class="k">else</span>
-                          <span class="n">brightness</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">colors</span><span class="o">.</span><span class="n">light</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.1</span><span class="p">)))</span>
+                          <span class="n">Colors</span><span class="o">.</span><span class="n">brightness</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">colors</span><span class="o">.</span><span class="n">light</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.1</span><span class="p">)))</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_set_option</span><span class="p">(</span><span class="s1">&#39;*Spinbox.highlightThickness&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_set_option</span><span class="p">(</span><span class="s1">&#39;*Spinbox.highlightColor&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">colors</span><span class="o">.</span><span class="n">primary</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_set_option</span><span class="p">(</span><span class="s1">&#39;*Spinbox.highlightBackground&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">colors</span><span class="o">.</span><span class="n">border</span><span class="p">)</span>
@@ -390,7 +512,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_set_option</span><span class="p">(</span><span class="s1">&#39;*Listbox.foreground&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">colors</span><span class="o">.</span><span class="n">fg</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_set_option</span><span class="p">(</span><span class="s1">&#39;*Listbox.background&#39;</span><span class="p">,</span>
                          <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">colors</span><span class="o">.</span><span class="n">light</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">type</span> <span class="o">==</span> <span class="s1">&#39;light&#39;</span> <span class="k">else</span>
-                          <span class="n">brightness</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">colors</span><span class="o">.</span><span class="n">light</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.1</span><span class="p">)))</span>
+                          <span class="n">Colors</span><span class="o">.</span><span class="n">brightness</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">colors</span><span class="o">.</span><span class="n">light</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.1</span><span class="p">)))</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_set_option</span><span class="p">(</span><span class="s1">&#39;*Listbox.relief&#39;</span><span class="p">,</span> <span class="s1">&#39;flat&#39;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_set_option</span><span class="p">(</span><span class="s1">&#39;*Listbox.activeStyle&#39;</span><span class="p">,</span> <span class="s1">&#39;none&#39;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_set_option</span><span class="p">(</span><span class="s1">&#39;*Listbox.highlightThickness&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
@@ -450,25 +572,21 @@
         <span class="k">pass</span></div>
 
 
-<div class="viewcode-block" id="StylerTTK"><a class="viewcode-back" href="../../styler.html#ttkbootstrap.styler.StylerTTK">[docs]</a><span class="k">class</span> <span class="nc">StylerTTK</span><span class="p">:</span>
+<div class="viewcode-block" id="StylerTTK"><a class="viewcode-back" href="../../reference.html#ttkbootstrap.styler.StylerTTK">[docs]</a><span class="k">class</span> <span class="nc">StylerTTK</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    A class to create and apply a flat theme to ``ttk`` widgets by using a combination of built-in themes and some</span>
-<span class="sd">    image-based elements using ``pillow``.</span>
-
-<span class="sd">    The base theme of all ``ttkbootstrap`` themes is the built-in *clam* theme. In many cases, widget layouts are</span>
-<span class="sd">    re-created using an assortment of elements from various styles such as *clam*, *alt*, *default*, etc...</span>
+<span class="sd">    A class for creating a ttk theme</span>
 
 <span class="sd">    :param Style style: An instance of ``ttk.Style`` class</span>
 <span class="sd">    :param ThemeSettings settings: creates the settings for the theme to be created</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-<div class="viewcode-block" id="StylerTTK.__init__"><a class="viewcode-back" href="../../styler.html#ttkbootstrap.styler.StylerTTK.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">style</span><span class="p">,</span> <span class="n">settings</span><span class="p">):</span>
+<div class="viewcode-block" id="StylerTTK.__init__"><a class="viewcode-back" href="../../reference.html#ttkbootstrap.styler.StylerTTK.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">style</span><span class="p">,</span> <span class="n">settings</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">style</span> <span class="o">=</span> <span class="n">style</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">settings</span> <span class="o">=</span> <span class="n">settings</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">styler_tk</span> <span class="o">=</span> <span class="n">StylerTK</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">create_theme</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="StylerTTK.create_theme"><a class="viewcode-back" href="../../styler.html#ttkbootstrap.styler.StylerTTK.create_theme">[docs]</a>    <span class="k">def</span> <span class="nf">create_theme</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="StylerTTK.create_theme"><a class="viewcode-back" href="../../reference.html#ttkbootstrap.styler.StylerTTK.create_theme">[docs]</a>    <span class="k">def</span> <span class="nf">create_theme</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Create and style a new ttk theme. A wrapper around internal style methods.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -627,7 +745,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">style</span><span class="o">.</span><span class="n">configure</span><span class="p">(</span><span class="s1">&#39;TProgressbar&#39;</span><span class="p">,</span>
                              <span class="n">thickness</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span>
                              <span class="n">borderwidth</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
-                             <span class="n">troughcolor</span><span class="o">=</span><span class="n">brightness</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">colors</span><span class="o">.</span><span class="n">light</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.05</span><span class="p">),</span>
+                             <span class="n">troughcolor</span><span class="o">=</span><span class="n">Colors</span><span class="o">.</span><span class="n">brightness</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">colors</span><span class="o">.</span><span class="n">light</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.05</span><span class="p">),</span>
                              <span class="n">background</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">colors</span><span class="o">.</span><span class="n">primary</span><span class="p">)</span>
 
         <span class="k">for</span> <span class="n">color</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">colors</span><span class="p">:</span>
@@ -672,10 +790,10 @@
         <span class="c1"># create widget images</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">scale_images</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">scale_images</span><span class="p">[</span><span class="s1">&#39;primary_regular&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_create_slider_image</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">colors</span><span class="o">.</span><span class="n">primary</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">scale_images</span><span class="p">[</span><span class="s1">&#39;primary_pressed&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_create_slider_image</span><span class="p">(</span><span class="n">brightness</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">colors</span><span class="o">.</span><span class="n">primary</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.2</span><span class="p">))</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">scale_images</span><span class="p">[</span><span class="s1">&#39;primary_hover&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_create_slider_image</span><span class="p">(</span><span class="n">brightness</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">colors</span><span class="o">.</span><span class="n">primary</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.1</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">scale_images</span><span class="p">[</span><span class="s1">&#39;primary_pressed&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_create_slider_image</span><span class="p">(</span><span class="n">Colors</span><span class="o">.</span><span class="n">brightness</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">colors</span><span class="o">.</span><span class="n">primary</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.2</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">scale_images</span><span class="p">[</span><span class="s1">&#39;primary_hover&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_create_slider_image</span><span class="p">(</span><span class="n">Colors</span><span class="o">.</span><span class="n">brightness</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">colors</span><span class="o">.</span><span class="n">primary</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.1</span><span class="p">))</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">scale_images</span><span class="p">[</span><span class="s1">&#39;trough&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">ImageTk</span><span class="o">.</span><span class="n">PhotoImage</span><span class="p">(</span>
-            <span class="n">Image</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="s1">&#39;RGB&#39;</span><span class="p">,</span> <span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="mi">8</span><span class="p">),</span> <span class="n">brightness</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">colors</span><span class="o">.</span><span class="n">light</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.05</span><span class="p">)))</span>
+            <span class="n">Image</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="s1">&#39;RGB&#39;</span><span class="p">,</span> <span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="mi">8</span><span class="p">),</span> <span class="n">Colors</span><span class="o">.</span><span class="n">brightness</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">colors</span><span class="o">.</span><span class="n">light</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.05</span><span class="p">)))</span>
 
         <span class="c1"># create new elements based on images</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">style</span><span class="o">.</span><span class="n">element_create</span><span class="p">(</span><span class="s1">&#39;Scale.track&#39;</span><span class="p">,</span> <span class="s1">&#39;image&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">scale_images</span><span class="p">[</span><span class="s1">&#39;trough&#39;</span><span class="p">])</span>
@@ -709,7 +827,7 @@
                              <span class="n">relief</span><span class="o">=</span><span class="s1">&#39;flat&#39;</span><span class="p">,</span>
                              <span class="n">troughborderwidth</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
                              <span class="n">troughcolor</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">colors</span><span class="o">.</span><span class="n">light</span><span class="p">,</span>
-                             <span class="n">background</span><span class="o">=</span><span class="n">brightness</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">colors</span><span class="o">.</span><span class="n">light</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.1</span><span class="p">),</span>
+                             <span class="n">background</span><span class="o">=</span><span class="n">Colors</span><span class="o">.</span><span class="n">brightness</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">colors</span><span class="o">.</span><span class="n">light</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.1</span><span class="p">),</span>
                              <span class="n">arrowsize</span><span class="o">=</span><span class="mi">16</span><span class="p">,</span>
                              <span class="n">arrowcolor</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">colors</span><span class="o">.</span><span class="n">inputfg</span><span class="p">)</span>
 
@@ -881,17 +999,17 @@
 
         <span class="bp">self</span><span class="o">.</span><span class="n">style</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="s1">&#39;TButton&#39;</span><span class="p">,</span>
                        <span class="n">background</span><span class="o">=</span><span class="p">[</span>
-                           <span class="p">(</span><span class="s1">&#39;pressed&#39;</span><span class="p">,</span> <span class="n">brightness</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">colors</span><span class="o">.</span><span class="n">primary</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.2</span><span class="p">)),</span>
-                           <span class="p">(</span><span class="s1">&#39;hover&#39;</span><span class="p">,</span> <span class="n">brightness</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">colors</span><span class="o">.</span><span class="n">primary</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.1</span><span class="p">))],</span>
+                           <span class="p">(</span><span class="s1">&#39;pressed&#39;</span><span class="p">,</span> <span class="n">Colors</span><span class="o">.</span><span class="n">brightness</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">colors</span><span class="o">.</span><span class="n">primary</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.2</span><span class="p">)),</span>
+                           <span class="p">(</span><span class="s1">&#39;hover&#39;</span><span class="p">,</span> <span class="n">Colors</span><span class="o">.</span><span class="n">brightness</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">colors</span><span class="o">.</span><span class="n">primary</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.1</span><span class="p">))],</span>
                        <span class="n">bordercolor</span><span class="o">=</span><span class="p">[</span>
-                           <span class="p">(</span><span class="s1">&#39;pressed&#39;</span><span class="p">,</span> <span class="n">brightness</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">colors</span><span class="o">.</span><span class="n">primary</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.2</span><span class="p">)),</span>
-                           <span class="p">(</span><span class="s1">&#39;hover&#39;</span><span class="p">,</span> <span class="n">brightness</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">colors</span><span class="o">.</span><span class="n">primary</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.1</span><span class="p">))],</span>
+                           <span class="p">(</span><span class="s1">&#39;pressed&#39;</span><span class="p">,</span> <span class="n">Colors</span><span class="o">.</span><span class="n">brightness</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">colors</span><span class="o">.</span><span class="n">primary</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.2</span><span class="p">)),</span>
+                           <span class="p">(</span><span class="s1">&#39;hover&#39;</span><span class="p">,</span> <span class="n">Colors</span><span class="o">.</span><span class="n">brightness</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">colors</span><span class="o">.</span><span class="n">primary</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.1</span><span class="p">))],</span>
                        <span class="n">darkcolor</span><span class="o">=</span><span class="p">[</span>
-                           <span class="p">(</span><span class="s1">&#39;pressed&#39;</span><span class="p">,</span> <span class="n">brightness</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">colors</span><span class="o">.</span><span class="n">primary</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.2</span><span class="p">)),</span>
-                           <span class="p">(</span><span class="s1">&#39;hover&#39;</span><span class="p">,</span> <span class="n">brightness</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">colors</span><span class="o">.</span><span class="n">primary</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.1</span><span class="p">))],</span>
+                           <span class="p">(</span><span class="s1">&#39;pressed&#39;</span><span class="p">,</span> <span class="n">Colors</span><span class="o">.</span><span class="n">brightness</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">colors</span><span class="o">.</span><span class="n">primary</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.2</span><span class="p">)),</span>
+                           <span class="p">(</span><span class="s1">&#39;hover&#39;</span><span class="p">,</span> <span class="n">Colors</span><span class="o">.</span><span class="n">brightness</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">colors</span><span class="o">.</span><span class="n">primary</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.1</span><span class="p">))],</span>
                        <span class="n">lightcolor</span><span class="o">=</span><span class="p">[</span>
-                           <span class="p">(</span><span class="s1">&#39;pressed&#39;</span><span class="p">,</span> <span class="n">brightness</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">colors</span><span class="o">.</span><span class="n">primary</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.2</span><span class="p">)),</span>
-                           <span class="p">(</span><span class="s1">&#39;hover&#39;</span><span class="p">,</span> <span class="n">brightness</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">colors</span><span class="o">.</span><span class="n">primary</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.1</span><span class="p">))])</span>
+                           <span class="p">(</span><span class="s1">&#39;pressed&#39;</span><span class="p">,</span> <span class="n">Colors</span><span class="o">.</span><span class="n">brightness</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">colors</span><span class="o">.</span><span class="n">primary</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.2</span><span class="p">)),</span>
+                           <span class="p">(</span><span class="s1">&#39;hover&#39;</span><span class="p">,</span> <span class="n">Colors</span><span class="o">.</span><span class="n">brightness</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">colors</span><span class="o">.</span><span class="n">primary</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.1</span><span class="p">))])</span>
 
         <span class="k">for</span> <span class="n">color</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">colors</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">style</span><span class="o">.</span><span class="n">configure</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">color</span><span class="si">}</span><span class="s1">.TButton&#39;</span><span class="p">,</span>
@@ -907,17 +1025,17 @@
 
             <span class="bp">self</span><span class="o">.</span><span class="n">style</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">color</span><span class="si">}</span><span class="s1">.TButton&#39;</span><span class="p">,</span>
                            <span class="n">background</span><span class="o">=</span><span class="p">[</span>
-                               <span class="p">(</span><span class="s1">&#39;pressed&#39;</span><span class="p">,</span> <span class="n">brightness</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">colors</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">color</span><span class="p">),</span> <span class="o">-</span><span class="mf">0.2</span><span class="p">)),</span>
-                               <span class="p">(</span><span class="s1">&#39;hover&#39;</span><span class="p">,</span> <span class="n">brightness</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">colors</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">color</span><span class="p">),</span> <span class="o">-</span><span class="mf">0.1</span><span class="p">))],</span>
+                               <span class="p">(</span><span class="s1">&#39;pressed&#39;</span><span class="p">,</span> <span class="n">Colors</span><span class="o">.</span><span class="n">brightness</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">colors</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">color</span><span class="p">),</span> <span class="o">-</span><span class="mf">0.2</span><span class="p">)),</span>
+                               <span class="p">(</span><span class="s1">&#39;hover&#39;</span><span class="p">,</span> <span class="n">Colors</span><span class="o">.</span><span class="n">brightness</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">colors</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">color</span><span class="p">),</span> <span class="o">-</span><span class="mf">0.1</span><span class="p">))],</span>
                            <span class="n">bordercolor</span><span class="o">=</span><span class="p">[</span>
-                               <span class="p">(</span><span class="s1">&#39;pressed&#39;</span><span class="p">,</span> <span class="n">brightness</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">colors</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">color</span><span class="p">),</span> <span class="o">-</span><span class="mf">0.2</span><span class="p">)),</span>
-                               <span class="p">(</span><span class="s1">&#39;hover&#39;</span><span class="p">,</span> <span class="n">brightness</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">colors</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">color</span><span class="p">),</span> <span class="o">-</span><span class="mf">0.1</span><span class="p">))],</span>
+                               <span class="p">(</span><span class="s1">&#39;pressed&#39;</span><span class="p">,</span> <span class="n">Colors</span><span class="o">.</span><span class="n">brightness</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">colors</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">color</span><span class="p">),</span> <span class="o">-</span><span class="mf">0.2</span><span class="p">)),</span>
+                               <span class="p">(</span><span class="s1">&#39;hover&#39;</span><span class="p">,</span> <span class="n">Colors</span><span class="o">.</span><span class="n">brightness</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">colors</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">color</span><span class="p">),</span> <span class="o">-</span><span class="mf">0.1</span><span class="p">))],</span>
                            <span class="n">darkcolor</span><span class="o">=</span><span class="p">[</span>
-                               <span class="p">(</span><span class="s1">&#39;pressed&#39;</span><span class="p">,</span> <span class="n">brightness</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">colors</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">color</span><span class="p">),</span> <span class="o">-</span><span class="mf">0.2</span><span class="p">)),</span>
-                               <span class="p">(</span><span class="s1">&#39;hover&#39;</span><span class="p">,</span> <span class="n">brightness</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">colors</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">color</span><span class="p">),</span> <span class="o">-</span><span class="mf">0.1</span><span class="p">))],</span>
+                               <span class="p">(</span><span class="s1">&#39;pressed&#39;</span><span class="p">,</span> <span class="n">Colors</span><span class="o">.</span><span class="n">brightness</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">colors</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">color</span><span class="p">),</span> <span class="o">-</span><span class="mf">0.2</span><span class="p">)),</span>
+                               <span class="p">(</span><span class="s1">&#39;hover&#39;</span><span class="p">,</span> <span class="n">Colors</span><span class="o">.</span><span class="n">brightness</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">colors</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">color</span><span class="p">),</span> <span class="o">-</span><span class="mf">0.1</span><span class="p">))],</span>
                            <span class="n">lightcolor</span><span class="o">=</span><span class="p">[</span>
-                               <span class="p">(</span><span class="s1">&#39;pressed&#39;</span><span class="p">,</span> <span class="n">brightness</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">colors</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">color</span><span class="p">),</span> <span class="o">-</span><span class="mf">0.2</span><span class="p">)),</span>
-                               <span class="p">(</span><span class="s1">&#39;hover&#39;</span><span class="p">,</span> <span class="n">brightness</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">colors</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">color</span><span class="p">),</span> <span class="o">-</span><span class="mf">0.1</span><span class="p">))])</span>
+                               <span class="p">(</span><span class="s1">&#39;pressed&#39;</span><span class="p">,</span> <span class="n">Colors</span><span class="o">.</span><span class="n">brightness</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">colors</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">color</span><span class="p">),</span> <span class="o">-</span><span class="mf">0.2</span><span class="p">)),</span>
+                               <span class="p">(</span><span class="s1">&#39;hover&#39;</span><span class="p">,</span> <span class="n">Colors</span><span class="o">.</span><span class="n">brightness</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">colors</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">color</span><span class="p">),</span> <span class="o">-</span><span class="mf">0.1</span><span class="p">))])</span>
 
     <span class="k">def</span> <span class="nf">_style_outline_buttons</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -948,17 +1066,17 @@
                            <span class="p">(</span><span class="s1">&#39;pressed&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">colors</span><span class="o">.</span><span class="n">selectfg</span><span class="p">),</span>
                            <span class="p">(</span><span class="s1">&#39;hover&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">colors</span><span class="o">.</span><span class="n">selectfg</span><span class="p">)],</span>
                        <span class="n">background</span><span class="o">=</span><span class="p">[</span>
-                           <span class="p">(</span><span class="s1">&#39;pressed&#39;</span><span class="p">,</span> <span class="n">brightness</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">colors</span><span class="o">.</span><span class="n">primary</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.2</span><span class="p">)),</span>
-                           <span class="p">(</span><span class="s1">&#39;hover&#39;</span><span class="p">,</span> <span class="n">brightness</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">colors</span><span class="o">.</span><span class="n">primary</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.1</span><span class="p">))],</span>
+                           <span class="p">(</span><span class="s1">&#39;pressed&#39;</span><span class="p">,</span> <span class="n">Colors</span><span class="o">.</span><span class="n">brightness</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">colors</span><span class="o">.</span><span class="n">primary</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.2</span><span class="p">)),</span>
+                           <span class="p">(</span><span class="s1">&#39;hover&#39;</span><span class="p">,</span> <span class="n">Colors</span><span class="o">.</span><span class="n">brightness</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">colors</span><span class="o">.</span><span class="n">primary</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.1</span><span class="p">))],</span>
                        <span class="n">bordercolor</span><span class="o">=</span><span class="p">[</span>
-                           <span class="p">(</span><span class="s1">&#39;pressed&#39;</span><span class="p">,</span> <span class="n">brightness</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">colors</span><span class="o">.</span><span class="n">primary</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.2</span><span class="p">)),</span>
-                           <span class="p">(</span><span class="s1">&#39;hover&#39;</span><span class="p">,</span> <span class="n">brightness</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">colors</span><span class="o">.</span><span class="n">primary</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.1</span><span class="p">))],</span>
+                           <span class="p">(</span><span class="s1">&#39;pressed&#39;</span><span class="p">,</span> <span class="n">Colors</span><span class="o">.</span><span class="n">brightness</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">colors</span><span class="o">.</span><span class="n">primary</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.2</span><span class="p">)),</span>
+                           <span class="p">(</span><span class="s1">&#39;hover&#39;</span><span class="p">,</span> <span class="n">Colors</span><span class="o">.</span><span class="n">brightness</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">colors</span><span class="o">.</span><span class="n">primary</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.1</span><span class="p">))],</span>
                        <span class="n">darkcolor</span><span class="o">=</span><span class="p">[</span>
-                           <span class="p">(</span><span class="s1">&#39;pressed&#39;</span><span class="p">,</span> <span class="n">brightness</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">colors</span><span class="o">.</span><span class="n">primary</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.2</span><span class="p">)),</span>
-                           <span class="p">(</span><span class="s1">&#39;hover&#39;</span><span class="p">,</span> <span class="n">brightness</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">colors</span><span class="o">.</span><span class="n">primary</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.1</span><span class="p">))],</span>
+                           <span class="p">(</span><span class="s1">&#39;pressed&#39;</span><span class="p">,</span> <span class="n">Colors</span><span class="o">.</span><span class="n">brightness</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">colors</span><span class="o">.</span><span class="n">primary</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.2</span><span class="p">)),</span>
+                           <span class="p">(</span><span class="s1">&#39;hover&#39;</span><span class="p">,</span> <span class="n">Colors</span><span class="o">.</span><span class="n">brightness</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">colors</span><span class="o">.</span><span class="n">primary</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.1</span><span class="p">))],</span>
                        <span class="n">lightcolor</span><span class="o">=</span><span class="p">[</span>
-                           <span class="p">(</span><span class="s1">&#39;pressed&#39;</span><span class="p">,</span> <span class="n">brightness</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">colors</span><span class="o">.</span><span class="n">primary</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.2</span><span class="p">)),</span>
-                           <span class="p">(</span><span class="s1">&#39;hover&#39;</span><span class="p">,</span> <span class="n">brightness</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">colors</span><span class="o">.</span><span class="n">primary</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.1</span><span class="p">))])</span>
+                           <span class="p">(</span><span class="s1">&#39;pressed&#39;</span><span class="p">,</span> <span class="n">Colors</span><span class="o">.</span><span class="n">brightness</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">colors</span><span class="o">.</span><span class="n">primary</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.2</span><span class="p">)),</span>
+                           <span class="p">(</span><span class="s1">&#39;hover&#39;</span><span class="p">,</span> <span class="n">Colors</span><span class="o">.</span><span class="n">brightness</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">colors</span><span class="o">.</span><span class="n">primary</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.1</span><span class="p">))])</span>
 
         <span class="k">for</span> <span class="n">color</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">colors</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">style</span><span class="o">.</span><span class="n">configure</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">color</span><span class="si">}</span><span class="s1">.Outline.TButton&#39;</span><span class="p">,</span>
@@ -977,17 +1095,17 @@
                                <span class="p">(</span><span class="s1">&#39;pressed&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">colors</span><span class="o">.</span><span class="n">selectfg</span><span class="p">),</span>
                                <span class="p">(</span><span class="s1">&#39;hover&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">colors</span><span class="o">.</span><span class="n">selectfg</span><span class="p">)],</span>
                            <span class="n">background</span><span class="o">=</span><span class="p">[</span>
-                               <span class="p">(</span><span class="s1">&#39;pressed&#39;</span><span class="p">,</span> <span class="n">brightness</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">colors</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">color</span><span class="p">),</span> <span class="o">-</span><span class="mf">0.2</span><span class="p">)),</span>
-                               <span class="p">(</span><span class="s1">&#39;hover&#39;</span><span class="p">,</span> <span class="n">brightness</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">colors</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">color</span><span class="p">),</span> <span class="o">-</span><span class="mf">0.1</span><span class="p">))],</span>
+                               <span class="p">(</span><span class="s1">&#39;pressed&#39;</span><span class="p">,</span> <span class="n">Colors</span><span class="o">.</span><span class="n">brightness</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">colors</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">color</span><span class="p">),</span> <span class="o">-</span><span class="mf">0.2</span><span class="p">)),</span>
+                               <span class="p">(</span><span class="s1">&#39;hover&#39;</span><span class="p">,</span> <span class="n">Colors</span><span class="o">.</span><span class="n">brightness</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">colors</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">color</span><span class="p">),</span> <span class="o">-</span><span class="mf">0.1</span><span class="p">))],</span>
                            <span class="n">bordercolor</span><span class="o">=</span><span class="p">[</span>
-                               <span class="p">(</span><span class="s1">&#39;pressed&#39;</span><span class="p">,</span> <span class="n">brightness</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">colors</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">color</span><span class="p">),</span> <span class="o">-</span><span class="mf">0.2</span><span class="p">)),</span>
-                               <span class="p">(</span><span class="s1">&#39;hover&#39;</span><span class="p">,</span> <span class="n">brightness</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">colors</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">color</span><span class="p">),</span> <span class="o">-</span><span class="mf">0.1</span><span class="p">))],</span>
+                               <span class="p">(</span><span class="s1">&#39;pressed&#39;</span><span class="p">,</span> <span class="n">Colors</span><span class="o">.</span><span class="n">brightness</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">colors</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">color</span><span class="p">),</span> <span class="o">-</span><span class="mf">0.2</span><span class="p">)),</span>
+                               <span class="p">(</span><span class="s1">&#39;hover&#39;</span><span class="p">,</span> <span class="n">Colors</span><span class="o">.</span><span class="n">brightness</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">colors</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">color</span><span class="p">),</span> <span class="o">-</span><span class="mf">0.1</span><span class="p">))],</span>
                            <span class="n">darkcolor</span><span class="o">=</span><span class="p">[</span>
-                               <span class="p">(</span><span class="s1">&#39;pressed&#39;</span><span class="p">,</span> <span class="n">brightness</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">colors</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">color</span><span class="p">),</span> <span class="o">-</span><span class="mf">0.2</span><span class="p">)),</span>
-                               <span class="p">(</span><span class="s1">&#39;hover&#39;</span><span class="p">,</span> <span class="n">brightness</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">colors</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">color</span><span class="p">),</span> <span class="o">-</span><span class="mf">0.1</span><span class="p">))],</span>
+                               <span class="p">(</span><span class="s1">&#39;pressed&#39;</span><span class="p">,</span> <span class="n">Colors</span><span class="o">.</span><span class="n">brightness</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">colors</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">color</span><span class="p">),</span> <span class="o">-</span><span class="mf">0.2</span><span class="p">)),</span>
+                               <span class="p">(</span><span class="s1">&#39;hover&#39;</span><span class="p">,</span> <span class="n">Colors</span><span class="o">.</span><span class="n">brightness</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">colors</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">color</span><span class="p">),</span> <span class="o">-</span><span class="mf">0.1</span><span class="p">))],</span>
                            <span class="n">lightcolor</span><span class="o">=</span><span class="p">[</span>
-                               <span class="p">(</span><span class="s1">&#39;pressed&#39;</span><span class="p">,</span> <span class="n">brightness</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">colors</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">color</span><span class="p">),</span> <span class="o">-</span><span class="mf">0.2</span><span class="p">)),</span>
-                               <span class="p">(</span><span class="s1">&#39;hover&#39;</span><span class="p">,</span> <span class="n">brightness</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">colors</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">color</span><span class="p">),</span> <span class="o">-</span><span class="mf">0.1</span><span class="p">))])</span>
+                               <span class="p">(</span><span class="s1">&#39;pressed&#39;</span><span class="p">,</span> <span class="n">Colors</span><span class="o">.</span><span class="n">brightness</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">colors</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">color</span><span class="p">),</span> <span class="o">-</span><span class="mf">0.2</span><span class="p">)),</span>
+                               <span class="p">(</span><span class="s1">&#39;hover&#39;</span><span class="p">,</span> <span class="n">Colors</span><span class="o">.</span><span class="n">brightness</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">colors</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">color</span><span class="p">),</span> <span class="o">-</span><span class="mf">0.1</span><span class="p">))])</span>
 
     <span class="k">def</span> <span class="nf">_style_entry</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -1065,8 +1183,8 @@
         <span class="c1"># variations change the indicator color</span>
         <span class="k">for</span> <span class="n">color</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">colors</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">style</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">color</span><span class="si">}</span><span class="s1">.TRadiobutton&#39;</span><span class="p">,</span>
-                           <span class="n">foreground</span><span class="o">=</span><span class="p">[(</span><span class="s1">&#39;active&#39;</span><span class="p">,</span> <span class="n">brightness</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">colors</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">color</span><span class="p">),</span> <span class="o">-</span><span class="mf">0.2</span><span class="p">))],</span>
-                           <span class="n">indicatorforeground</span><span class="o">=</span><span class="p">[(</span><span class="s1">&#39;active&#39;</span><span class="p">,</span> <span class="n">brightness</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">colors</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">color</span><span class="p">),</span> <span class="o">-</span><span class="mf">0.2</span><span class="p">))])</span>
+                           <span class="n">foreground</span><span class="o">=</span><span class="p">[(</span><span class="s1">&#39;active&#39;</span><span class="p">,</span> <span class="n">Colors</span><span class="o">.</span><span class="n">brightness</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">colors</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">color</span><span class="p">),</span> <span class="o">-</span><span class="mf">0.2</span><span class="p">))],</span>
+                           <span class="n">indicatorforeground</span><span class="o">=</span><span class="p">[(</span><span class="s1">&#39;active&#39;</span><span class="p">,</span> <span class="n">Colors</span><span class="o">.</span><span class="n">brightness</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">colors</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">color</span><span class="p">),</span> <span class="o">-</span><span class="mf">0.2</span><span class="p">))])</span>
 
     <span class="k">def</span> <span class="nf">_style_label</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -1138,7 +1256,7 @@
 
         <span class="bp">self</span><span class="o">.</span><span class="n">style</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="s1">&#39;TCheckbutton&#39;</span><span class="p">,</span>
                        <span class="n">indicatorbackground</span><span class="o">=</span><span class="p">[</span>
-                           <span class="p">(</span><span class="s1">&#39;active selected&#39;</span><span class="p">,</span> <span class="n">brightness</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">colors</span><span class="o">.</span><span class="n">primary</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.2</span><span class="p">)),</span>
+                           <span class="p">(</span><span class="s1">&#39;active selected&#39;</span><span class="p">,</span> <span class="n">Colors</span><span class="o">.</span><span class="n">brightness</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">colors</span><span class="o">.</span><span class="n">primary</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.2</span><span class="p">)),</span>
                            <span class="p">(</span><span class="s1">&#39;selected&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">colors</span><span class="o">.</span><span class="n">fg</span><span class="p">),</span>
                            <span class="p">(</span><span class="s1">&#39;active !selected&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">colors</span><span class="o">.</span><span class="n">light</span><span class="p">)],</span>
                        <span class="n">foreground</span><span class="o">=</span><span class="p">[(</span><span class="s1">&#39;active&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">colors</span><span class="o">.</span><span class="n">primary</span><span class="p">)])</span>
@@ -1147,14 +1265,14 @@
         <span class="k">for</span> <span class="n">color</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">colors</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">style</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">color</span><span class="si">}</span><span class="s1">.TCheckbutton&#39;</span><span class="p">,</span>
                            <span class="n">indicatorbackground</span><span class="o">=</span><span class="p">[</span>
-                               <span class="p">(</span><span class="s1">&#39;active selected&#39;</span><span class="p">,</span> <span class="n">brightness</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">colors</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">color</span><span class="p">),</span> <span class="o">-</span><span class="mf">0.2</span><span class="p">)),</span>
+                               <span class="p">(</span><span class="s1">&#39;active selected&#39;</span><span class="p">,</span> <span class="n">Colors</span><span class="o">.</span><span class="n">brightness</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">colors</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">color</span><span class="p">),</span> <span class="o">-</span><span class="mf">0.2</span><span class="p">)),</span>
                                <span class="p">(</span><span class="s1">&#39;selected&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">colors</span><span class="o">.</span><span class="n">fg</span><span class="p">),</span>
                                <span class="p">(</span><span class="s1">&#39;active !selected&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">colors</span><span class="o">.</span><span class="n">light</span><span class="p">)],</span>
                            <span class="n">indicatorforeground</span><span class="o">=</span><span class="p">[</span>
-                               <span class="p">(</span><span class="s1">&#39;active selected&#39;</span><span class="p">,</span> <span class="n">brightness</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">colors</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">color</span><span class="p">),</span> <span class="o">-</span><span class="mf">0.2</span><span class="p">)),</span>
+                               <span class="p">(</span><span class="s1">&#39;active selected&#39;</span><span class="p">,</span> <span class="n">Colors</span><span class="o">.</span><span class="n">brightness</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">colors</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">color</span><span class="p">),</span> <span class="o">-</span><span class="mf">0.2</span><span class="p">)),</span>
                                <span class="p">(</span><span class="s1">&#39;selected&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">colors</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">color</span><span class="p">))],</span>
                            <span class="n">foreground</span><span class="o">=</span><span class="p">[</span>
-                               <span class="p">(</span><span class="s1">&#39;active&#39;</span><span class="p">,</span> <span class="n">brightness</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">colors</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">color</span><span class="p">),</span> <span class="o">-</span><span class="mf">0.2</span><span class="p">))])</span>
+                               <span class="p">(</span><span class="s1">&#39;active&#39;</span><span class="p">,</span> <span class="n">Colors</span><span class="o">.</span><span class="n">brightness</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">colors</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">color</span><span class="p">),</span> <span class="o">-</span><span class="mf">0.2</span><span class="p">))])</span>
 
     <span class="k">def</span> <span class="nf">_style_solid_menubutton</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -1184,17 +1302,17 @@
 
         <span class="bp">self</span><span class="o">.</span><span class="n">style</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="s1">&#39;TMenubutton&#39;</span><span class="p">,</span>
                        <span class="n">background</span><span class="o">=</span><span class="p">[</span>
-                           <span class="p">(</span><span class="s1">&#39;pressed&#39;</span><span class="p">,</span> <span class="n">brightness</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">colors</span><span class="o">.</span><span class="n">primary</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.2</span><span class="p">)),</span>
-                           <span class="p">(</span><span class="s1">&#39;hover&#39;</span><span class="p">,</span> <span class="n">brightness</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">colors</span><span class="o">.</span><span class="n">primary</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.1</span><span class="p">))],</span>
+                           <span class="p">(</span><span class="s1">&#39;pressed&#39;</span><span class="p">,</span> <span class="n">Colors</span><span class="o">.</span><span class="n">brightness</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">colors</span><span class="o">.</span><span class="n">primary</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.2</span><span class="p">)),</span>
+                           <span class="p">(</span><span class="s1">&#39;hover&#39;</span><span class="p">,</span> <span class="n">Colors</span><span class="o">.</span><span class="n">brightness</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">colors</span><span class="o">.</span><span class="n">primary</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.1</span><span class="p">))],</span>
                        <span class="n">bordercolor</span><span class="o">=</span><span class="p">[</span>
-                           <span class="p">(</span><span class="s1">&#39;pressed&#39;</span><span class="p">,</span> <span class="n">brightness</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">colors</span><span class="o">.</span><span class="n">primary</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.2</span><span class="p">)),</span>
-                           <span class="p">(</span><span class="s1">&#39;hover&#39;</span><span class="p">,</span> <span class="n">brightness</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">colors</span><span class="o">.</span><span class="n">primary</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.1</span><span class="p">))],</span>
+                           <span class="p">(</span><span class="s1">&#39;pressed&#39;</span><span class="p">,</span> <span class="n">Colors</span><span class="o">.</span><span class="n">brightness</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">colors</span><span class="o">.</span><span class="n">primary</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.2</span><span class="p">)),</span>
+                           <span class="p">(</span><span class="s1">&#39;hover&#39;</span><span class="p">,</span> <span class="n">Colors</span><span class="o">.</span><span class="n">brightness</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">colors</span><span class="o">.</span><span class="n">primary</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.1</span><span class="p">))],</span>
                        <span class="n">darkcolor</span><span class="o">=</span><span class="p">[</span>
-                           <span class="p">(</span><span class="s1">&#39;pressed&#39;</span><span class="p">,</span> <span class="n">brightness</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">colors</span><span class="o">.</span><span class="n">primary</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.2</span><span class="p">)),</span>
-                           <span class="p">(</span><span class="s1">&#39;hover&#39;</span><span class="p">,</span> <span class="n">brightness</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">colors</span><span class="o">.</span><span class="n">primary</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.1</span><span class="p">))],</span>
+                           <span class="p">(</span><span class="s1">&#39;pressed&#39;</span><span class="p">,</span> <span class="n">Colors</span><span class="o">.</span><span class="n">brightness</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">colors</span><span class="o">.</span><span class="n">primary</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.2</span><span class="p">)),</span>
+                           <span class="p">(</span><span class="s1">&#39;hover&#39;</span><span class="p">,</span> <span class="n">Colors</span><span class="o">.</span><span class="n">brightness</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">colors</span><span class="o">.</span><span class="n">primary</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.1</span><span class="p">))],</span>
                        <span class="n">lightcolor</span><span class="o">=</span><span class="p">[</span>
-                           <span class="p">(</span><span class="s1">&#39;pressed&#39;</span><span class="p">,</span> <span class="n">brightness</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">colors</span><span class="o">.</span><span class="n">primary</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.2</span><span class="p">)),</span>
-                           <span class="p">(</span><span class="s1">&#39;hover&#39;</span><span class="p">,</span> <span class="n">brightness</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">colors</span><span class="o">.</span><span class="n">primary</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.1</span><span class="p">))])</span>
+                           <span class="p">(</span><span class="s1">&#39;pressed&#39;</span><span class="p">,</span> <span class="n">Colors</span><span class="o">.</span><span class="n">brightness</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">colors</span><span class="o">.</span><span class="n">primary</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.2</span><span class="p">)),</span>
+                           <span class="p">(</span><span class="s1">&#39;hover&#39;</span><span class="p">,</span> <span class="n">Colors</span><span class="o">.</span><span class="n">brightness</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">colors</span><span class="o">.</span><span class="n">primary</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.1</span><span class="p">))])</span>
 
         <span class="k">for</span> <span class="n">color</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">colors</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">style</span><span class="o">.</span><span class="n">configure</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">color</span><span class="si">}</span><span class="s1">.TMenubutton&#39;</span><span class="p">,</span>
@@ -1210,17 +1328,17 @@
 
             <span class="bp">self</span><span class="o">.</span><span class="n">style</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">color</span><span class="si">}</span><span class="s1">.TMenubutton&#39;</span><span class="p">,</span>
                            <span class="n">background</span><span class="o">=</span><span class="p">[</span>
-                               <span class="p">(</span><span class="s1">&#39;pressed&#39;</span><span class="p">,</span> <span class="n">brightness</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">colors</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">color</span><span class="p">),</span> <span class="o">-</span><span class="mf">0.2</span><span class="p">)),</span>
-                               <span class="p">(</span><span class="s1">&#39;hover&#39;</span><span class="p">,</span> <span class="n">brightness</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">colors</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">color</span><span class="p">),</span> <span class="o">-</span><span class="mf">0.1</span><span class="p">))],</span>
+                               <span class="p">(</span><span class="s1">&#39;pressed&#39;</span><span class="p">,</span> <span class="n">Colors</span><span class="o">.</span><span class="n">brightness</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">colors</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">color</span><span class="p">),</span> <span class="o">-</span><span class="mf">0.2</span><span class="p">)),</span>
+                               <span class="p">(</span><span class="s1">&#39;hover&#39;</span><span class="p">,</span> <span class="n">Colors</span><span class="o">.</span><span class="n">brightness</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">colors</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">color</span><span class="p">),</span> <span class="o">-</span><span class="mf">0.1</span><span class="p">))],</span>
                            <span class="n">bordercolor</span><span class="o">=</span><span class="p">[</span>
-                               <span class="p">(</span><span class="s1">&#39;pressed&#39;</span><span class="p">,</span> <span class="n">brightness</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">colors</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">color</span><span class="p">),</span> <span class="o">-</span><span class="mf">0.2</span><span class="p">)),</span>
-                               <span class="p">(</span><span class="s1">&#39;hover&#39;</span><span class="p">,</span> <span class="n">brightness</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">colors</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">color</span><span class="p">),</span> <span class="o">-</span><span class="mf">0.1</span><span class="p">))],</span>
+                               <span class="p">(</span><span class="s1">&#39;pressed&#39;</span><span class="p">,</span> <span class="n">Colors</span><span class="o">.</span><span class="n">brightness</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">colors</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">color</span><span class="p">),</span> <span class="o">-</span><span class="mf">0.2</span><span class="p">)),</span>
+                               <span class="p">(</span><span class="s1">&#39;hover&#39;</span><span class="p">,</span> <span class="n">Colors</span><span class="o">.</span><span class="n">brightness</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">colors</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">color</span><span class="p">),</span> <span class="o">-</span><span class="mf">0.1</span><span class="p">))],</span>
                            <span class="n">darkcolor</span><span class="o">=</span><span class="p">[</span>
-                               <span class="p">(</span><span class="s1">&#39;pressed&#39;</span><span class="p">,</span> <span class="n">brightness</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">colors</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">color</span><span class="p">),</span> <span class="o">-</span><span class="mf">0.2</span><span class="p">)),</span>
-                               <span class="p">(</span><span class="s1">&#39;hover&#39;</span><span class="p">,</span> <span class="n">brightness</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">colors</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">color</span><span class="p">),</span> <span class="o">-</span><span class="mf">0.1</span><span class="p">))],</span>
+                               <span class="p">(</span><span class="s1">&#39;pressed&#39;</span><span class="p">,</span> <span class="n">Colors</span><span class="o">.</span><span class="n">brightness</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">colors</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">color</span><span class="p">),</span> <span class="o">-</span><span class="mf">0.2</span><span class="p">)),</span>
+                               <span class="p">(</span><span class="s1">&#39;hover&#39;</span><span class="p">,</span> <span class="n">Colors</span><span class="o">.</span><span class="n">brightness</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">colors</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">color</span><span class="p">),</span> <span class="o">-</span><span class="mf">0.1</span><span class="p">))],</span>
                            <span class="n">lightcolor</span><span class="o">=</span><span class="p">[</span>
-                               <span class="p">(</span><span class="s1">&#39;pressed&#39;</span><span class="p">,</span> <span class="n">brightness</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">colors</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">color</span><span class="p">),</span> <span class="o">-</span><span class="mf">0.2</span><span class="p">)),</span>
-                               <span class="p">(</span><span class="s1">&#39;hover&#39;</span><span class="p">,</span> <span class="n">brightness</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">colors</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">color</span><span class="p">),</span> <span class="o">-</span><span class="mf">0.1</span><span class="p">))])</span>
+                               <span class="p">(</span><span class="s1">&#39;pressed&#39;</span><span class="p">,</span> <span class="n">Colors</span><span class="o">.</span><span class="n">brightness</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">colors</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">color</span><span class="p">),</span> <span class="o">-</span><span class="mf">0.2</span><span class="p">)),</span>
+                               <span class="p">(</span><span class="s1">&#39;hover&#39;</span><span class="p">,</span> <span class="n">Colors</span><span class="o">.</span><span class="n">brightness</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">colors</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">color</span><span class="p">),</span> <span class="o">-</span><span class="mf">0.1</span><span class="p">))])</span>
 
     <span class="k">def</span> <span class="nf">_style_outline_menubutton</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -1253,17 +1371,17 @@
                            <span class="p">(</span><span class="s1">&#39;pressed&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">colors</span><span class="o">.</span><span class="n">selectfg</span><span class="p">),</span>
                            <span class="p">(</span><span class="s1">&#39;hover&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">colors</span><span class="o">.</span><span class="n">selectfg</span><span class="p">)],</span>
                        <span class="n">background</span><span class="o">=</span><span class="p">[</span>
-                           <span class="p">(</span><span class="s1">&#39;pressed&#39;</span><span class="p">,</span> <span class="n">brightness</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">colors</span><span class="o">.</span><span class="n">primary</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.2</span><span class="p">)),</span>
-                           <span class="p">(</span><span class="s1">&#39;hover&#39;</span><span class="p">,</span> <span class="n">brightness</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">colors</span><span class="o">.</span><span class="n">primary</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.1</span><span class="p">))],</span>
+                           <span class="p">(</span><span class="s1">&#39;pressed&#39;</span><span class="p">,</span> <span class="n">Colors</span><span class="o">.</span><span class="n">brightness</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">colors</span><span class="o">.</span><span class="n">primary</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.2</span><span class="p">)),</span>
+                           <span class="p">(</span><span class="s1">&#39;hover&#39;</span><span class="p">,</span> <span class="n">Colors</span><span class="o">.</span><span class="n">brightness</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">colors</span><span class="o">.</span><span class="n">primary</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.1</span><span class="p">))],</span>
                        <span class="n">bordercolor</span><span class="o">=</span><span class="p">[</span>
-                           <span class="p">(</span><span class="s1">&#39;pressed&#39;</span><span class="p">,</span> <span class="n">brightness</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">colors</span><span class="o">.</span><span class="n">primary</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.2</span><span class="p">)),</span>
-                           <span class="p">(</span><span class="s1">&#39;hover&#39;</span><span class="p">,</span> <span class="n">brightness</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">colors</span><span class="o">.</span><span class="n">primary</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.1</span><span class="p">))],</span>
+                           <span class="p">(</span><span class="s1">&#39;pressed&#39;</span><span class="p">,</span> <span class="n">Colors</span><span class="o">.</span><span class="n">brightness</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">colors</span><span class="o">.</span><span class="n">primary</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.2</span><span class="p">)),</span>
+                           <span class="p">(</span><span class="s1">&#39;hover&#39;</span><span class="p">,</span> <span class="n">Colors</span><span class="o">.</span><span class="n">brightness</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">colors</span><span class="o">.</span><span class="n">primary</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.1</span><span class="p">))],</span>
                        <span class="n">darkcolor</span><span class="o">=</span><span class="p">[</span>
-                           <span class="p">(</span><span class="s1">&#39;pressed&#39;</span><span class="p">,</span> <span class="n">brightness</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">colors</span><span class="o">.</span><span class="n">primary</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.2</span><span class="p">)),</span>
-                           <span class="p">(</span><span class="s1">&#39;hover&#39;</span><span class="p">,</span> <span class="n">brightness</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">colors</span><span class="o">.</span><span class="n">primary</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.1</span><span class="p">))],</span>
+                           <span class="p">(</span><span class="s1">&#39;pressed&#39;</span><span class="p">,</span> <span class="n">Colors</span><span class="o">.</span><span class="n">brightness</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">colors</span><span class="o">.</span><span class="n">primary</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.2</span><span class="p">)),</span>
+                           <span class="p">(</span><span class="s1">&#39;hover&#39;</span><span class="p">,</span> <span class="n">Colors</span><span class="o">.</span><span class="n">brightness</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">colors</span><span class="o">.</span><span class="n">primary</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.1</span><span class="p">))],</span>
                        <span class="n">lightcolor</span><span class="o">=</span><span class="p">[</span>
-                           <span class="p">(</span><span class="s1">&#39;pressed&#39;</span><span class="p">,</span> <span class="n">brightness</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">colors</span><span class="o">.</span><span class="n">primary</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.2</span><span class="p">)),</span>
-                           <span class="p">(</span><span class="s1">&#39;hover&#39;</span><span class="p">,</span> <span class="n">brightness</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">colors</span><span class="o">.</span><span class="n">primary</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.1</span><span class="p">))],</span>
+                           <span class="p">(</span><span class="s1">&#39;pressed&#39;</span><span class="p">,</span> <span class="n">Colors</span><span class="o">.</span><span class="n">brightness</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">colors</span><span class="o">.</span><span class="n">primary</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.2</span><span class="p">)),</span>
+                           <span class="p">(</span><span class="s1">&#39;hover&#39;</span><span class="p">,</span> <span class="n">Colors</span><span class="o">.</span><span class="n">brightness</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">colors</span><span class="o">.</span><span class="n">primary</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.1</span><span class="p">))],</span>
                        <span class="n">arrowcolor</span><span class="o">=</span><span class="p">[</span>
                            <span class="p">(</span><span class="s1">&#39;pressed&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">colors</span><span class="o">.</span><span class="n">selectfg</span><span class="p">),</span>
                            <span class="p">(</span><span class="s1">&#39;hover&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">colors</span><span class="o">.</span><span class="n">selectfg</span><span class="p">)])</span>
@@ -1286,17 +1404,17 @@
                                <span class="p">(</span><span class="s1">&#39;pressed&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">colors</span><span class="o">.</span><span class="n">fg</span><span class="p">),</span>
                                <span class="p">(</span><span class="s1">&#39;hover&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">colors</span><span class="o">.</span><span class="n">fg</span><span class="p">)],</span>
                            <span class="n">background</span><span class="o">=</span><span class="p">[</span>
-                               <span class="p">(</span><span class="s1">&#39;pressed&#39;</span><span class="p">,</span> <span class="n">brightness</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">colors</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">color</span><span class="p">),</span> <span class="o">-</span><span class="mf">0.2</span><span class="p">)),</span>
-                               <span class="p">(</span><span class="s1">&#39;hover&#39;</span><span class="p">,</span> <span class="n">brightness</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">colors</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">color</span><span class="p">),</span> <span class="o">-</span><span class="mf">0.1</span><span class="p">))],</span>
+                               <span class="p">(</span><span class="s1">&#39;pressed&#39;</span><span class="p">,</span> <span class="n">Colors</span><span class="o">.</span><span class="n">brightness</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">colors</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">color</span><span class="p">),</span> <span class="o">-</span><span class="mf">0.2</span><span class="p">)),</span>
+                               <span class="p">(</span><span class="s1">&#39;hover&#39;</span><span class="p">,</span> <span class="n">Colors</span><span class="o">.</span><span class="n">brightness</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">colors</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">color</span><span class="p">),</span> <span class="o">-</span><span class="mf">0.1</span><span class="p">))],</span>
                            <span class="n">bordercolor</span><span class="o">=</span><span class="p">[</span>
-                               <span class="p">(</span><span class="s1">&#39;pressed&#39;</span><span class="p">,</span> <span class="n">brightness</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">colors</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">color</span><span class="p">),</span> <span class="o">-</span><span class="mf">0.2</span><span class="p">)),</span>
-                               <span class="p">(</span><span class="s1">&#39;hover&#39;</span><span class="p">,</span> <span class="n">brightness</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">colors</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">color</span><span class="p">),</span> <span class="o">-</span><span class="mf">0.1</span><span class="p">))],</span>
+                               <span class="p">(</span><span class="s1">&#39;pressed&#39;</span><span class="p">,</span> <span class="n">Colors</span><span class="o">.</span><span class="n">brightness</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">colors</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">color</span><span class="p">),</span> <span class="o">-</span><span class="mf">0.2</span><span class="p">)),</span>
+                               <span class="p">(</span><span class="s1">&#39;hover&#39;</span><span class="p">,</span> <span class="n">Colors</span><span class="o">.</span><span class="n">brightness</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">colors</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">color</span><span class="p">),</span> <span class="o">-</span><span class="mf">0.1</span><span class="p">))],</span>
                            <span class="n">darkcolor</span><span class="o">=</span><span class="p">[</span>
-                               <span class="p">(</span><span class="s1">&#39;pressed&#39;</span><span class="p">,</span> <span class="n">brightness</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">colors</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">color</span><span class="p">),</span> <span class="o">-</span><span class="mf">0.2</span><span class="p">)),</span>
-                               <span class="p">(</span><span class="s1">&#39;hover&#39;</span><span class="p">,</span> <span class="n">brightness</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">colors</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">color</span><span class="p">),</span> <span class="o">-</span><span class="mf">0.1</span><span class="p">))],</span>
+                               <span class="p">(</span><span class="s1">&#39;pressed&#39;</span><span class="p">,</span> <span class="n">Colors</span><span class="o">.</span><span class="n">brightness</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">colors</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">color</span><span class="p">),</span> <span class="o">-</span><span class="mf">0.2</span><span class="p">)),</span>
+                               <span class="p">(</span><span class="s1">&#39;hover&#39;</span><span class="p">,</span> <span class="n">Colors</span><span class="o">.</span><span class="n">brightness</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">colors</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">color</span><span class="p">),</span> <span class="o">-</span><span class="mf">0.1</span><span class="p">))],</span>
                            <span class="n">lightcolor</span><span class="o">=</span><span class="p">[</span>
-                               <span class="p">(</span><span class="s1">&#39;pressed&#39;</span><span class="p">,</span> <span class="n">brightness</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">colors</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">color</span><span class="p">),</span> <span class="o">-</span><span class="mf">0.2</span><span class="p">)),</span>
-                               <span class="p">(</span><span class="s1">&#39;hover&#39;</span><span class="p">,</span> <span class="n">brightness</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">colors</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">color</span><span class="p">),</span> <span class="o">-</span><span class="mf">0.1</span><span class="p">))],</span>
+                               <span class="p">(</span><span class="s1">&#39;pressed&#39;</span><span class="p">,</span> <span class="n">Colors</span><span class="o">.</span><span class="n">brightness</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">colors</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">color</span><span class="p">),</span> <span class="o">-</span><span class="mf">0.2</span><span class="p">)),</span>
+                               <span class="p">(</span><span class="s1">&#39;hover&#39;</span><span class="p">,</span> <span class="n">Colors</span><span class="o">.</span><span class="n">brightness</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">colors</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">color</span><span class="p">),</span> <span class="o">-</span><span class="mf">0.1</span><span class="p">))],</span>
                            <span class="n">arrowcolor</span><span class="o">=</span><span class="p">[</span>
                                <span class="p">(</span><span class="s1">&#39;pressed&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">colors</span><span class="o">.</span><span class="n">bg</span><span class="p">),</span>
                                <span class="p">(</span><span class="s1">&#39;hover&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">colors</span><span class="o">.</span><span class="n">bg</span><span class="p">)])</span>
@@ -1347,7 +1465,7 @@
 <span class="sd">                - Sash.vsash: sashthickness</span>
 <span class="sd">                - Sash.vgrip: lightcolor, bordercolor, gripcount</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">style</span><span class="o">.</span><span class="n">configure</span><span class="p">(</span><span class="s1">&#39;TPanedwindow&#39;</span><span class="p">,</span> <span class="n">background</span><span class="o">=</span><span class="n">brightness</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">colors</span><span class="o">.</span><span class="n">light</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.1</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">style</span><span class="o">.</span><span class="n">configure</span><span class="p">(</span><span class="s1">&#39;TPanedwindow&#39;</span><span class="p">,</span> <span class="n">background</span><span class="o">=</span><span class="n">Colors</span><span class="o">.</span><span class="n">brightness</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">colors</span><span class="o">.</span><span class="n">light</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.1</span><span class="p">))</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">style</span><span class="o">.</span><span class="n">configure</span><span class="p">(</span><span class="s1">&#39;Sash&#39;</span><span class="p">,</span> <span class="n">bordercolor</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">colors</span><span class="o">.</span><span class="n">inputfg</span><span class="p">,</span> <span class="n">lightcolor</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">colors</span><span class="o">.</span><span class="n">light</span><span class="p">,</span>
                              <span class="n">sashthickness</span><span class="o">=</span><span class="mi">9</span><span class="p">,</span> <span class="n">sashpad</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">gripcount</span><span class="o">=</span><span class="mi">25</span><span class="p">)</span>
 
@@ -1364,65 +1482,47 @@
         <span class="k">pass</span></div>
 </pre></div>
 
+           </div>
+           
           </div>
-          
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright 2021, Israel Dryer.
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
         </div>
       </div>
-      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
-        <div class="sphinxsidebarwrapper">
-<h1 class="logo"><a href="../../index.html">ttkbootstrap</a></h1>
 
+    </section>
 
+  </div>
+  
 
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
 
-
-
-
-
-<h3>Navigation</h3>
-
-<div class="relations">
-<h3>Related Topics</h3>
-<ul>
-  <li><a href="../../index.html">Documentation overview</a><ul>
-  <li><a href="../index.html">Module code</a><ul>
-  </ul></li>
-  </ul></li>
-</ul>
-</div>
-<div id="searchbox" style="display: none" role="search">
-  <h3 id="searchlabel">Quick search</h3>
-    <div class="searchformwrapper">
-    <form class="search" action="../../search.html" method="get">
-      <input type="text" name="q" aria-labelledby="searchlabel" />
-      <input type="submit" value="Go" />
-    </form>
-    </div>
-</div>
-<script>$('#searchbox').show(0);</script>
-
-
-
-
-
-
-
-
-        </div>
-      </div>
-      <div class="clearer"></div>
-    </div>
-    <div class="footer">
-      &copy;2021, Israel Dryer.
-      
-      |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.5.3</a>
-      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
-      
-    </div>
-
+  
+  
     
+   
 
-    
-  </body>
+</body>
 </html>

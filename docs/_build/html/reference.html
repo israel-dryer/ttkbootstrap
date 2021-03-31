@@ -86,15 +86,12 @@
               <p class="caption"><span class="caption-text">Contents:</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="overview.html">Overview</a></li>
-<li class="toctree-l1"><a class="reference internal" href="install.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="example.html">Example</a></li>
+<li class="toctree-l1"><a class="reference internal" href="install.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="theming.html">Theming</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Reference</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#style">Style</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#stylerttk">StylerTTK</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#themesettings">ThemeSettings</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#colors">Colors</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#stylertk">StylerTk</a></li>
 </ul>
 </li>
 </ul>
@@ -168,27 +165,37 @@
 <h1>Reference<a class="headerlink" href="#reference" title="Permalink to this headline">¶</a></h1>
 <div class="section" id="style">
 <h2>Style<a class="headerlink" href="#style" title="Permalink to this headline">¶</a></h2>
+<p>Sets the theme of the <code class="docutils literal notranslate"><span class="pre">tkinter.Tk</span></code> instance and supports all ttkbootstrap and ttk themes provided. This class is meant
+to be a drop-in replacement for <code class="docutils literal notranslate"><span class="pre">ttk.Style</span></code> and inherits all of it’s methods and properties. Creating a <code class="docutils literal notranslate"><span class="pre">Style</span></code>
+object will instantiate the <code class="docutils literal notranslate"><span class="pre">tkinter.Tk</span></code> instance in the <code class="docutils literal notranslate"><span class="pre">Style.master</span></code> property, and so it is not
+necessary to explicitly create an instance of <code class="docutils literal notranslate"><span class="pre">tkinter.Tk</span></code>. For more details on the <code class="docutils literal notranslate"><span class="pre">ttk.Style</span></code> class, see the
+python <a class="reference external" href="https://docs.python.org/3.9/library/tkinter.ttk.html#tkinter.ttk.Style">documentation</a>.</p>
+<p>At runtime, the <code class="docutils literal notranslate"><span class="pre">ThemeSettings</span></code> and <code class="docutils literal notranslate"><span class="pre">Colors</span></code> objects for the selected theme are attached
+to the <code class="docutils literal notranslate"><span class="pre">Style</span></code> object, and are therefore available to use as needed in your application. You can access the theme
+settings using <code class="docutils literal notranslate"><span class="pre">Style.settings</span></code>, and the theme colors with <code class="docutils literal notranslate"><span class="pre">Style.colors</span></code>.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># instantiate the style and apply a theme</span>
+<span class="n">style</span> <span class="o">=</span> <span class="n">Style</span><span class="p">()</span>
+<span class="n">style</span><span class="o">.</span><span class="n">theme_use</span><span class="p">(</span><span class="s1">&#39;lumen&#39;</span><span class="p">)</span>
+
+<span class="c1"># available themes</span>
+<span class="k">for</span> <span class="n">theme</span> <span class="ow">in</span> <span class="n">style</span><span class="o">.</span><span class="n">theme_names</span><span class="p">():</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">theme</span><span class="p">)</span>
+</pre></div>
+</div>
 <dl class="py class">
-<dt id="ttkbootstrap.styler.Style">
-<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">ttkbootstrap.styler.</span></code><code class="sig-name descname"><span class="pre">Style</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ttkbootstrap/styler.html#Style"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ttkbootstrap.styler.Style" title="Permalink to this definition">¶</a></dt>
+<dt id="ttkbootstrap.Style">
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">ttkbootstrap.</span></code><code class="sig-name descname"><span class="pre">Style</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ttkbootstrap.html#Style"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ttkbootstrap.Style" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">tkinter.ttk.Style</span></code></p>
-<p>A class that sets the theme for an instance of TK. This should be used as a replacement for the normal ttk.Style
-class. It also supports the default themes provided.</p>
+<p>A class for setting the application style.</p>
 <dl class="py method">
-<dt id="ttkbootstrap.styler.Style.__init__">
-<code class="sig-name descname"><span class="pre">__init__</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ttkbootstrap/styler.html#Style.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ttkbootstrap.styler.Style.__init__" title="Permalink to this definition">¶</a></dt>
+<dt id="ttkbootstrap.Style.__init__">
+<code class="sig-name descname"><span class="pre">__init__</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ttkbootstrap.html#Style.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ttkbootstrap.Style.__init__" title="Permalink to this definition">¶</a></dt>
 <dd><p>Initialize self.  See help(type(self)) for accurate signature.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="ttkbootstrap.styler.Style.load_themes">
-<code class="sig-name descname"><span class="pre">load_themes</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/ttkbootstrap/styler.html#Style.load_themes"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ttkbootstrap.styler.Style.load_themes" title="Permalink to this definition">¶</a></dt>
-<dd><p>Load all ttkbootstrap defined themes</p>
-</dd></dl>
-
-<dl class="py method">
-<dt id="ttkbootstrap.styler.Style.theme_use">
-<code class="sig-name descname"><span class="pre">theme_use</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">themename</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ttkbootstrap/styler.html#Style.theme_use"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ttkbootstrap.styler.Style.theme_use" title="Permalink to this definition">¶</a></dt>
+<dt id="ttkbootstrap.Style.theme_use">
+<code class="sig-name descname"><span class="pre">theme_use</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">themename</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ttkbootstrap.html#Style.theme_use"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ttkbootstrap.Style.theme_use" title="Permalink to this definition">¶</a></dt>
 <dd><p>If themename is None, returns the theme in use, otherwise, set the current theme to themename, refreshes all
 widgets and emits a &lt;&lt;ThemeChanged&gt;&gt; event.</p>
 <dl class="field-list simple">
@@ -201,88 +208,34 @@ widgets and emits a &lt;&lt;ThemeChanged&gt;&gt; event.</p>
 </dd></dl>
 
 </div>
-<div class="section" id="stylerttk">
-<h2>StylerTTK<a class="headerlink" href="#stylerttk" title="Permalink to this headline">¶</a></h2>
-<dl class="py class">
-<dt id="ttkbootstrap.styler.StylerTTK">
-<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">ttkbootstrap.styler.</span></code><code class="sig-name descname"><span class="pre">StylerTTK</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">style</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">settings</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ttkbootstrap/styler.html#StylerTTK"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ttkbootstrap.styler.StylerTTK" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<p>A class to create and apply a flat theme to <code class="docutils literal notranslate"><span class="pre">ttk</span></code> widgets by using a combination of built-in themes and some
-image-based elements using <code class="docutils literal notranslate"><span class="pre">pillow</span></code>.</p>
-<p>The base theme of all <code class="docutils literal notranslate"><span class="pre">ttkbootstrap</span></code> themes is the built-in <em>clam</em> theme. In many cases, widget layouts are
-re-created using an assortment of elements from various styles such as <em>clam</em>, <em>alt</em>, <em>default</em>, etc…</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>style</strong> (<a class="reference internal" href="#ttkbootstrap.styler.Style" title="ttkbootstrap.styler.Style"><em>Style</em></a>) – An instance of <code class="docutils literal notranslate"><span class="pre">ttk.Style</span></code> class</p></li>
-<li><p><strong>settings</strong> (<a class="reference internal" href="#ttkbootstrap.styler.ThemeSettings" title="ttkbootstrap.styler.ThemeSettings"><em>ThemeSettings</em></a>) – creates the settings for the theme to be created</p></li>
-</ul>
-</dd>
-</dl>
-<dl class="py method">
-<dt id="ttkbootstrap.styler.StylerTTK.__init__">
-<code class="sig-name descname"><span class="pre">__init__</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">style</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">settings</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ttkbootstrap/styler.html#StylerTTK.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ttkbootstrap.styler.StylerTTK.__init__" title="Permalink to this definition">¶</a></dt>
-<dd><p>Initialize self.  See help(type(self)) for accurate signature.</p>
-</dd></dl>
-
-<dl class="py attribute">
-<dt id="ttkbootstrap.styler.StylerTTK.__weakref__">
-<code class="sig-name descname"><span class="pre">__weakref__</span></code><a class="headerlink" href="#ttkbootstrap.styler.StylerTTK.__weakref__" title="Permalink to this definition">¶</a></dt>
-<dd><p>list of weak references to the object (if defined)</p>
-</dd></dl>
-
-<dl class="py method">
-<dt id="ttkbootstrap.styler.StylerTTK.create_theme">
-<code class="sig-name descname"><span class="pre">create_theme</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/ttkbootstrap/styler.html#StylerTTK.create_theme"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ttkbootstrap.styler.StylerTTK.create_theme" title="Permalink to this definition">¶</a></dt>
-<dd><p>Create and style a new ttk theme. A wrapper around internal style methods.</p>
-</dd></dl>
-
-</dd></dl>
-
-</div>
-<div class="section" id="themesettings">
-<h2>ThemeSettings<a class="headerlink" href="#themesettings" title="Permalink to this headline">¶</a></h2>
-<dl class="py class">
-<dt id="ttkbootstrap.styler.ThemeSettings">
-<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">ttkbootstrap.styler.</span></code><code class="sig-name descname"><span class="pre">ThemeSettings</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'default'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'light'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">font</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'helvetica'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">colors</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ttkbootstrap/styler.html#ThemeSettings"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ttkbootstrap.styler.ThemeSettings" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<p>A class to provide settings for a ttkbootstrap theme.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>name</strong> (<em>str</em>) – The name of the theme</p></li>
-<li><p><strong>type</strong> (<em>str</em>) – type: ‘light’ or ‘dark’</p></li>
-<li><p><strong>font</strong> (<em>str</em>) – Default font to apply to theme. Helvetica is used by default.</p></li>
-<li><p><strong>colors</strong> (<em>Color</em>) – An instance of the <cite>Colors</cite> class.</p></li>
-</ul>
-</dd>
-</dl>
-<dl class="py method">
-<dt id="ttkbootstrap.styler.ThemeSettings.__init__">
-<code class="sig-name descname"><span class="pre">__init__</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'default'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'light'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">font</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'helvetica'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">colors</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ttkbootstrap/styler.html#ThemeSettings.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ttkbootstrap.styler.ThemeSettings.__init__" title="Permalink to this definition">¶</a></dt>
-<dd><p>Initialize self.  See help(type(self)) for accurate signature.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt id="ttkbootstrap.styler.ThemeSettings.__repr__">
-<code class="sig-name descname"><span class="pre">__repr__</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/ttkbootstrap/styler.html#ThemeSettings.__repr__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ttkbootstrap.styler.ThemeSettings.__repr__" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return repr(self).</p>
-</dd></dl>
-
-<dl class="py attribute">
-<dt id="ttkbootstrap.styler.ThemeSettings.__weakref__">
-<code class="sig-name descname"><span class="pre">__weakref__</span></code><a class="headerlink" href="#ttkbootstrap.styler.ThemeSettings.__weakref__" title="Permalink to this definition">¶</a></dt>
-<dd><p>list of weak references to the object (if defined)</p>
-</dd></dl>
-
-</dd></dl>
-
-</div>
 <div class="section" id="colors">
 <h2>Colors<a class="headerlink" href="#colors" title="Permalink to this headline">¶</a></h2>
+<p>A class that contains the theme colors as well as several helper methods for manipulating colors. This class is attached
+to the <code class="docutils literal notranslate"><span class="pre">Style</span></code> object at run-time for the selected theme, and so is available to use with <code class="docutils literal notranslate"><span class="pre">Style.colors</span></code>. The colors
+can be accessed via dot notation or get method:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># dot-notation</span>
+<span class="n">Colors</span><span class="o">.</span><span class="n">primary</span>
+
+<span class="c1"># get method</span>
+<span class="n">Colors</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;primary&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>This class is an iterator, so you can iterate over the main style color labels (primary, secondary, success, info, warning,
+danger):</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">for</span> <span class="n">color_label</span> <span class="ow">in</span> <span class="n">Colors</span><span class="p">:</span>
+    <span class="n">color</span> <span class="o">=</span> <span class="n">Colors</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">color_label</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">color_label</span><span class="p">,</span> <span class="n">color</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>If, for some reason, you need to iterate over all theme color labels, then you can use the <code class="docutils literal notranslate"><span class="pre">Colors.label_iter</span></code> method.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">for</span> <span class="n">color_label</span> <span class="ow">in</span> <span class="n">Colors</span><span class="o">.</span><span class="n">label_iter</span><span class="p">():</span>
+    <span class="n">color</span> <span class="o">=</span> <span class="n">Colors</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">color_label</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">color_label</span><span class="p">,</span> <span class="n">color</span><span class="p">)</span>
+</pre></div>
+</div>
 <dl class="py class">
-<dt id="ttkbootstrap.styler.Colors">
-<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">ttkbootstrap.styler.</span></code><code class="sig-name descname"><span class="pre">Colors</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ttkbootstrap/styler.html#Colors"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ttkbootstrap.styler.Colors" title="Permalink to this definition">¶</a></dt>
+<dt id="ttkbootstrap.Colors">
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">ttkbootstrap.</span></code><code class="sig-name descname"><span class="pre">Colors</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ttkbootstrap.html#Colors"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ttkbootstrap.Colors" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>A collection of colors used in a ttkbootstrap theme.</p>
 <dl class="field-list simple">
@@ -305,26 +258,54 @@ re-created using an assortment of elements from various styles such as <em>clam<
 </dd>
 </dl>
 <dl class="py method">
-<dt id="ttkbootstrap.styler.Colors.__init__">
-<code class="sig-name descname"><span class="pre">__init__</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ttkbootstrap/styler.html#Colors.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ttkbootstrap.styler.Colors.__init__" title="Permalink to this definition">¶</a></dt>
+<dt id="ttkbootstrap.Colors.__init__">
+<code class="sig-name descname"><span class="pre">__init__</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ttkbootstrap.html#Colors.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ttkbootstrap.Colors.__init__" title="Permalink to this definition">¶</a></dt>
 <dd><p>Initialize self.  See help(type(self)) for accurate signature.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="ttkbootstrap.styler.Colors.__repr__">
-<code class="sig-name descname"><span class="pre">__repr__</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/ttkbootstrap/styler.html#Colors.__repr__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ttkbootstrap.styler.Colors.__repr__" title="Permalink to this definition">¶</a></dt>
+<dt id="ttkbootstrap.Colors.__repr__">
+<code class="sig-name descname"><span class="pre">__repr__</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/ttkbootstrap.html#Colors.__repr__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ttkbootstrap.Colors.__repr__" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return repr(self).</p>
 </dd></dl>
 
 <dl class="py attribute">
-<dt id="ttkbootstrap.styler.Colors.__weakref__">
-<code class="sig-name descname"><span class="pre">__weakref__</span></code><a class="headerlink" href="#ttkbootstrap.styler.Colors.__weakref__" title="Permalink to this definition">¶</a></dt>
+<dt id="ttkbootstrap.Colors.__weakref__">
+<code class="sig-name descname"><span class="pre">__weakref__</span></code><a class="headerlink" href="#ttkbootstrap.Colors.__weakref__" title="Permalink to this definition">¶</a></dt>
 <dd><p>list of weak references to the object (if defined)</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="ttkbootstrap.styler.Colors.get">
-<code class="sig-name descname"><span class="pre">get</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">color_label</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ttkbootstrap/styler.html#Colors.get"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ttkbootstrap.styler.Colors.get" title="Permalink to this definition">¶</a></dt>
+<dt id="ttkbootstrap.Colors.brightness">
+<em class="property"><span class="pre">static</span> </em><code class="sig-name descname"><span class="pre">brightness</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">hex_color</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pct_change</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ttkbootstrap.html#Colors.brightness"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ttkbootstrap.Colors.brightness" title="Permalink to this definition">¶</a></dt>
+<dd><p>Adjust the value of a given hexadecimal color. The percent change is expected to be a float.</p>
+<p>To return a <em>lighter</em> color, use a positive floating value:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Colors</span><span class="o">.</span><span class="n">brightness</span><span class="p">(</span><span class="s1">&#39;#fafafa&#39;</span><span class="p">,</span> <span class="mf">0.15</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>To return a <em>darker</em> color, use a negative floating value:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Colors</span><span class="o">.</span><span class="n">brightness</span><span class="p">(</span><span class="s1">&#39;#fafafa&#39;</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.15</span><span class="p">)</span>
+</pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>hex_color</strong> (<em>str</em>) – hexadecimal color</p></li>
+<li><p><strong>pct_change</strong> (<em>float</em>) – a floating value</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>a lightened or darkened hexadecimal color value</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="ttkbootstrap.Colors.get">
+<code class="sig-name descname"><span class="pre">get</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">color_label</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ttkbootstrap.html#Colors.get"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ttkbootstrap.Colors.get" title="Permalink to this definition">¶</a></dt>
 <dd><p>Lookup a color property</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -340,8 +321,25 @@ re-created using an assortment of elements from various styles such as <em>clam<
 </dd></dl>
 
 <dl class="py method">
-<dt id="ttkbootstrap.styler.Colors.label_iter">
-<code class="sig-name descname"><span class="pre">label_iter</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/ttkbootstrap/styler.html#Colors.label_iter"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ttkbootstrap.styler.Colors.label_iter" title="Permalink to this definition">¶</a></dt>
+<dt id="ttkbootstrap.Colors.hex_to_rgb">
+<em class="property"><span class="pre">static</span> </em><code class="sig-name descname"><span class="pre">hex_to_rgb</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">color</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ttkbootstrap.html#Colors.hex_to_rgb"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ttkbootstrap.Colors.hex_to_rgb" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert hexadecimal color to rgb color value</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>color</strong> (<em>str</em>) – hexadecimal color value</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>rgb color value</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>tuple</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="ttkbootstrap.Colors.label_iter">
+<code class="sig-name descname"><span class="pre">label_iter</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/ttkbootstrap.html#Colors.label_iter"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ttkbootstrap.Colors.label_iter" title="Permalink to this definition">¶</a></dt>
 <dd><p>Iterates over all color label properties in the Color class</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
@@ -354,8 +352,29 @@ re-created using an assortment of elements from various styles such as <em>clam<
 </dd></dl>
 
 <dl class="py method">
-<dt id="ttkbootstrap.styler.Colors.set">
-<code class="sig-name descname"><span class="pre">set</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">color_label</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">color_value</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ttkbootstrap/styler.html#Colors.set"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ttkbootstrap.styler.Colors.set" title="Permalink to this definition">¶</a></dt>
+<dt id="ttkbootstrap.Colors.rgb_to_hex">
+<em class="property"><span class="pre">static</span> </em><code class="sig-name descname"><span class="pre">rgb_to_hex</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">r</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">g</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">b</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ttkbootstrap.html#Colors.rgb_to_hex"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ttkbootstrap.Colors.rgb_to_hex" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert rgb to hexadecimal color value</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>r</strong> (<em>int</em>) – red</p></li>
+<li><p><strong>g</strong> (<em>int</em>) – green</p></li>
+<li><p><strong>b</strong> (<em>int</em>) – blue</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>a hexadecimal color value</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="ttkbootstrap.Colors.set">
+<code class="sig-name descname"><span class="pre">set</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">color_label</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">color_value</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ttkbootstrap.html#Colors.set"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ttkbootstrap.Colors.set" title="Permalink to this definition">¶</a></dt>
 <dd><p>Set a color property</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -369,43 +388,6 @@ re-created using an assortment of elements from various styles such as <em>clam<
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nb">set</span><span class="p">(</span><span class="s1">&#39;primary&#39;</span><span class="p">,</span> <span class="s1">&#39;#fafafa&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
-</dd></dl>
-
-</dd></dl>
-
-</div>
-<div class="section" id="stylertk">
-<h2>StylerTk<a class="headerlink" href="#stylertk" title="Permalink to this headline">¶</a></h2>
-<dl class="py class">
-<dt id="ttkbootstrap.styler.StylerTK">
-<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">ttkbootstrap.styler.</span></code><code class="sig-name descname"><span class="pre">StylerTK</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">parent</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ttkbootstrap/styler.html#StylerTK"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ttkbootstrap.styler.StylerTK" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<p>A class that applies theme colors to standard <code class="docutils literal notranslate"><span class="pre">tkinter</span></code> widgets (<strong>not ``ttk`` widgets</strong>).
-Used as a mix-in for <code class="docutils literal notranslate"><span class="pre">StylerTTK</span></code>.</p>
-<p>This class is not intended to be used independent of <code class="docutils literal notranslate"><span class="pre">StylerTTK</span></code>, though it could. It is meant to serve as a means
-to format the few widgets that are used in conjunction with the TTK widgets, such as the <em>popdownlist</em> in the
-<code class="docutils literal notranslate"><span class="pre">ttk.Combobox</span></code>, and others like this.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>parent</strong> – an instance of <cite>StylerTTK</cite></p>
-</dd>
-</dl>
-<dl class="py method">
-<dt id="ttkbootstrap.styler.StylerTK.__init__">
-<code class="sig-name descname"><span class="pre">__init__</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">parent</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ttkbootstrap/styler.html#StylerTK.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ttkbootstrap.styler.StylerTK.__init__" title="Permalink to this definition">¶</a></dt>
-<dd><p>Initialize self.  See help(type(self)) for accurate signature.</p>
-</dd></dl>
-
-<dl class="py attribute">
-<dt id="ttkbootstrap.styler.StylerTK.__weakref__">
-<code class="sig-name descname"><span class="pre">__weakref__</span></code><a class="headerlink" href="#ttkbootstrap.styler.StylerTK.__weakref__" title="Permalink to this definition">¶</a></dt>
-<dd><p>list of weak references to the object (if defined)</p>
-</dd></dl>
-
-<dl class="py method">
-<dt id="ttkbootstrap.styler.StylerTK.apply_style">
-<code class="sig-name descname"><span class="pre">apply_style</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/ttkbootstrap/styler.html#StylerTK.apply_style"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ttkbootstrap.styler.StylerTK.apply_style" title="Permalink to this definition">¶</a></dt>
-<dd><p>A wrapper on all widget style methods. Applies current theme to all standard tkinter widgets</p>
 </dd></dl>
 
 </dd></dl>
