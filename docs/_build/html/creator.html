@@ -38,7 +38,7 @@
     
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="prev" title="Installation" href="install.html" /> 
+    <link rel="prev" title="Reference" href="reference.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -87,11 +87,16 @@
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="overview.html">Overview</a></li>
 <li class="toctree-l1"><a class="reference internal" href="themes.html">Themes</a></li>
-<li class="toctree-l1"><a class="reference internal" href="reference.html">Reference</a></li>
-<li class="toctree-l1"><a class="reference internal" href="theming.html">Styling widgets</a></li>
-<li class="toctree-l1"><a class="reference internal" href="example.html">Example</a></li>
 <li class="toctree-l1"><a class="reference internal" href="install.html">Installation</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">TTK Creator</a></li>
+<li class="toctree-l1"><a class="reference internal" href="gettingstarted.html">Getting started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="reference.html">Reference</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">TTK Creator</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#starting-the-application">Starting the application</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#select-a-base-theme">Select a base theme</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#create-and-save-your-theme">Create and save your theme</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#how-does-ttk-creator-create-themes">How does TTK Creator create themes?</a></li>
+</ul>
+</li>
 </ul>
 
             
@@ -160,8 +165,70 @@
            <div itemprop="articleBody">
             
   <div class="section" id="ttk-creator">
-<h1>TTK Creator<a class="headerlink" href="#ttk-creator" title="Permalink to this headline">¶</a></h1>
-<p>Coming soon…</p>
+<span id="ttkcreator"></span><h1>TTK Creator<a class="headerlink" href="#ttk-creator" title="Permalink to this headline">¶</a></h1>
+<p>TTK Creator is a program that makes it really easy to create and use your own defined themes.</p>
+<div class="section" id="starting-the-application">
+<h2>Starting the application<a class="headerlink" href="#starting-the-application" title="Permalink to this headline">¶</a></h2>
+<p>From the console, type:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">python</span> <span class="o">-</span><span class="n">m</span> <span class="n">ttkcreator</span>
+</pre></div>
+</div>
+<p>The first time you start TTK Creator, or if you happen to upgrade the package, you’ll be prompted to select the
+destination for your user-defined themes file. It is recommended to store these themes in a location that is safe and
+writable. It is not recommended to store themes in the package directory as they may get overwritten if the package is
+updated, re-installed, etc…</p>
+</div>
+<div class="section" id="select-a-base-theme">
+<h2>Select a base theme<a class="headerlink" href="#select-a-base-theme" title="Permalink to this headline">¶</a></h2>
+<p>You’ll be prompted to select a <em>light</em> or <em>dark</em> theme base. The reason you need to choose a base is that there are
+some nuanced differences in how the elements are constructed in a light vs a dark theme.</p>
+</div>
+<div class="section" id="create-and-save-your-theme">
+<h2>Create and save your theme<a class="headerlink" href="#create-and-save-your-theme" title="Permalink to this headline">¶</a></h2>
+<p>You should now see the TTK Creator design window</p>
+<ul class="simple">
+<li><p>Name your theme</p></li>
+<li><p>Click the color palette to select a color, or input a hex color directly</p></li>
+<li><p>Click <strong>Save</strong> to save your theme</p></li>
+<li><p>Click <strong>Reset</strong> to apply the defaults and start from scratch</p></li>
+</ul>
+<img alt="_images/ttkcreator.png" src="_images/ttkcreator.png" />
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>If you are using Linux or MacOS and the program crashes without starting, you may not have a font with
+emojii support. To fix this <code class="docutils literal notranslate"><span class="pre">sudo</span> <span class="pre">apt-get</span> <span class="pre">install</span> <span class="pre">fonts-symbola</span></code></p>
+</div>
+</div>
+<div class="section" id="how-does-ttk-creator-create-themes">
+<h2>How does TTK Creator create themes?<a class="headerlink" href="#how-does-ttk-creator-create-themes" title="Permalink to this headline">¶</a></h2>
+<p>TTK Creator creates a theme definition that looks exactly like the record below for the built-in <em>lumen</em> theme:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+  <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;lumen&quot;</span><span class="p">,</span>
+  <span class="s2">&quot;font&quot;</span><span class="p">:</span> <span class="s2">&quot;Helvetica&quot;</span><span class="p">,</span>
+  <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;light&quot;</span><span class="p">,</span>
+  <span class="s2">&quot;colors&quot;</span><span class="p">:</span> <span class="p">{</span>
+    <span class="s2">&quot;primary&quot;</span><span class="p">:</span> <span class="s2">&quot;#158cba&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;secondary&quot;</span><span class="p">:</span> <span class="s2">&quot;#555555&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;success&quot;</span><span class="p">:</span> <span class="s2">&quot;#28b62c&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;info&quot;</span><span class="p">:</span> <span class="s2">&quot;#75caeb&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;warning&quot;</span><span class="p">:</span> <span class="s2">&quot;#ff851b&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;danger&quot;</span><span class="p">:</span> <span class="s2">&quot;#ff4136&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;bg&quot;</span><span class="p">:</span> <span class="s2">&quot;#ffffff&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;fg&quot;</span><span class="p">:</span> <span class="s2">&quot;#555555&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;selectbg&quot;</span><span class="p">:</span> <span class="s2">&quot;#555555&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;selectfg&quot;</span><span class="p">:</span> <span class="s2">&quot;#ffffff&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;light&quot;</span><span class="p">:</span> <span class="s2">&quot;#f6f6f6&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;border&quot;</span><span class="p">:</span> <span class="s2">&quot;#ced4da&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;inputfg&quot;</span><span class="p">:</span> <span class="s2">&quot;#888888&quot;</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>This theme definition is read by the <code class="docutils literal notranslate"><span class="pre">ttkbootstrap.Style</span></code> class and converted into an actual theme by the
+<code class="docutils literal notranslate"><span class="pre">ttkbootstrap.StylerTTK</span></code> class at runtime. At that point, it is available to use like any other theme. The only
+information about a theme that is stored (built-in or user-defined) is the theme definition. All themes are created and
+loaded at run-time via the definitions found in the <code class="docutils literal notranslate"><span class="pre">themes.json</span></code> file or the <code class="docutils literal notranslate"><span class="pre">user_themes.json</span></code> file.</p>
+</div>
 </div>
 
 
@@ -170,7 +237,7 @@
           </div>
           <footer>
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-        <a href="install.html" class="btn btn-neutral float-left" title="Installation" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="reference.html" class="btn btn-neutral float-left" title="Reference" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
     </div>
 
   <hr/>

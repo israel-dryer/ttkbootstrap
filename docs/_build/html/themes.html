@@ -38,7 +38,7 @@
     
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Reference" href="reference.html" />
+    <link rel="next" title="Installation" href="install.html" />
     <link rel="prev" title="Overview" href="overview.html" /> 
 </head>
 
@@ -88,15 +88,19 @@
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="overview.html">Overview</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Themes</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#light-themes">Light themes</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#dark-themes">Dark themes</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#legacy-themes">Legacy themes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#how-are-themes-created">How are themes created?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#themes-included-with-ttkbootstrap">Themes included with ttkbootstrap</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#light-themes">Light themes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#dark-themes">Dark themes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#legacy-themes">Legacy themes</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="reference.html">Reference</a></li>
-<li class="toctree-l1"><a class="reference internal" href="theming.html">Styling widgets</a></li>
-<li class="toctree-l1"><a class="reference internal" href="example.html">Example</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="install.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="gettingstarted.html">Getting started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="reference.html">Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="creator.html">TTK Creator</a></li>
 </ul>
 
             
@@ -166,9 +170,30 @@
             
   <div class="section" id="themes">
 <h1>Themes<a class="headerlink" href="#themes" title="Permalink to this headline">¶</a></h1>
-<p>All of the following themes are available with ttkbootstrap:</p>
+<div class="section" id="how-are-themes-created">
+<h2>How are themes created?<a class="headerlink" href="#how-are-themes-created" title="Permalink to this headline">¶</a></h2>
+<p>Imagine being able to take the parts from several existing cars to design the one that you really want… that’s
+basically what happened. I used the best parts of the existing themes to craft a brand new theme template.</p>
+<p>The base of all widgets in the ttkbootstrap template is the <em>clam</em> theme. You may be wondering why the ttkbootstrap
+theme looks so different than the built-in clam theme… Each ttk widget is created from a collection of elements.
+These elements, when combined together, create what we see as a ttk widget. Aside from changing colors and state
+behavior, I constructed new widget layouts using the elements from various themes to give the desired look and feel.
+There is an old, but excellent reference to widget layouts <a class="reference external" href="https://anzeljg.github.io/rin2/book2/2405/docs/tkinter/ttk-themes.html">here</a>.</p>
+<p>As an example: the <code class="docutils literal notranslate"><span class="pre">ttk.Combobox</span></code> widget contains a <em>field</em> element. In order to get the border effect I wanted,
+I constructed a new layout for the <code class="docutils literal notranslate"><span class="pre">ttk.Combobox</span></code> using the <em>field</em> from the <code class="docutils literal notranslate"><span class="pre">ttk.Spinbox</span></code>.</p>
+<p>So, the <code class="docutils literal notranslate"><span class="pre">ttkbootstrap.StylerTTK</span></code> contains the style template for all ttkbootstrap themes. From there, a set of
+theme definitions (which includes color maps, default font, etc…) are extracted from a json file at runtime and
+loaded as a new theme by the <code class="docutils literal notranslate"><span class="pre">ttkbootstrap.Style</span></code> class.</p>
+<p>You can read more about how this works, and how you can create your own themes with <a class="reference internal" href="creator.html#ttkcreator"><span class="std std-ref">TTK Creator</span></a>.</p>
+</div>
+<div class="section" id="themes-included-with-ttkbootstrap">
+<h2>Themes included with ttkbootstrap<a class="headerlink" href="#themes-included-with-ttkbootstrap" title="Permalink to this headline">¶</a></h2>
+<p>All of the following themes are available with ttkbootstrap and can be viewed live with the ttkbootstrap demo:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">python</span> <span class="o">-</span><span class="n">m</span> <span class="n">ttkbootstrap</span>
+</pre></div>
+</div>
 <div class="section" id="light-themes">
-<h2>Light themes<a class="headerlink" href="#light-themes" title="Permalink to this headline">¶</a></h2>
+<h3>Light themes<a class="headerlink" href="#light-themes" title="Permalink to this headline">¶</a></h3>
 <div class="figure align-default" id="id1">
 <a class="reference internal image-reference" href="_images/cosmo.png"><img alt="an example image of theme cosmo" src="_images/cosmo.png" style="width: 396.9px; height: 501.9px;" /></a>
 <p class="caption"><span class="caption-text">inspired by <a class="reference external" href="https://bootswatch.com/cosmo/">https://bootswatch.com/cosmo/</a></span><a class="headerlink" href="#id1" title="Permalink to this image">¶</a></p>
@@ -210,7 +235,7 @@
 </div>
 </div>
 <div class="section" id="dark-themes">
-<h2>Dark themes<a class="headerlink" href="#dark-themes" title="Permalink to this headline">¶</a></h2>
+<h3>Dark themes<a class="headerlink" href="#dark-themes" title="Permalink to this headline">¶</a></h3>
 <div class="figure align-default" id="id10">
 <a class="reference internal image-reference" href="_images/darkly.png"><img alt="an example image of theme darkly" src="_images/darkly.png" style="width: 396.9px; height: 499.09999999999997px;" /></a>
 <p class="caption"><span class="caption-text">inspired by <a class="reference external" href="https://bootswatch.com/darkly/">https://bootswatch.com/darkly/</a></span><a class="headerlink" href="#id10" title="Permalink to this image">¶</a></p>
@@ -228,7 +253,7 @@
 </div>
 </div>
 <div class="section" id="legacy-themes">
-<h2>Legacy themes<a class="headerlink" href="#legacy-themes" title="Permalink to this headline">¶</a></h2>
+<h3>Legacy themes<a class="headerlink" href="#legacy-themes" title="Permalink to this headline">¶</a></h3>
 <p>Just for reference, these are some of the built in themes</p>
 <div class="figure align-default">
 <a class="reference internal image-reference" href="_images/classic.png"><img alt="an example image of theme classic" src="_images/classic.png" style="width: 400.4px; height: 484.4px;" /></a>
@@ -239,10 +264,11 @@
 <div class="figure align-default">
 <a class="reference internal image-reference" href="_images/clam.png"><img alt="an example image of theme clam" src="_images/clam.png" style="width: 410.2px; height: 474.59999999999997px;" /></a>
 </div>
-<div class="figure align-default">
+<div class="figure align-default" id="id13">
 <a class="reference internal image-reference" href="_images/xpnative.png"><img alt="an example image of theme xpnative" src="_images/xpnative.png" style="width: 387.09999999999997px; height: 467.59999999999997px;" /></a>
+<p class="caption"><span class="caption-text">This theme is for Windows only.</span><a class="headerlink" href="#id13" title="Permalink to this image">¶</a></p>
 </div>
-<p>This theme is for Windows only.</p>
+</div>
 </div>
 </div>
 
@@ -252,7 +278,7 @@
           </div>
           <footer>
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-        <a href="reference.html" class="btn btn-neutral float-right" title="Reference" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="install.html" class="btn btn-neutral float-right" title="Installation" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
         <a href="overview.html" class="btn btn-neutral float-left" title="Overview" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
     </div>
 
