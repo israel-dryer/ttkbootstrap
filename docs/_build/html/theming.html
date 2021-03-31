@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>Theming &mdash; ttkbootstrap  documentation</title>
+  <title>Styling widgets &mdash; ttkbootstrap  documentation</title>
   
 
   
@@ -38,8 +38,8 @@
     
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Reference" href="reference.html" />
-    <link rel="prev" title="Example" href="example.html" /> 
+    <link rel="next" title="Example" href="example.html" />
+    <link rel="prev" title="Reference" href="reference.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -87,18 +87,17 @@
               <p class="caption"><span class="caption-text">Contents:</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="overview.html">Overview</a></li>
-<li class="toctree-l1"><a class="reference internal" href="install.html">Installation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="example.html">Example</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Theming</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#choosing-a-theme">Choosing a theme</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#using-themed-widgets">Using themed widgets</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#color-patterns">Color patterns</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#styles">Styles</a></li>
-</ul>
-</li>
-</ul>
-</li>
+<li class="toctree-l1"><a class="reference internal" href="themes.html">Themes</a></li>
 <li class="toctree-l1"><a class="reference internal" href="reference.html">Reference</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Styling widgets</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#choosing-a-theme">Choosing a theme</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#using-themed-widgets">Using themed widgets</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#style-patterns">Style patterns</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="example.html">Example</a></li>
+<li class="toctree-l1"><a class="reference internal" href="install.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="creator.html">TTK Creator</a></li>
 </ul>
 
             
@@ -147,7 +146,7 @@
     
       <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
         
-      <li>Theming</li>
+      <li>Styling widgets</li>
     
     
       <li class="wy-breadcrumbs-aside">
@@ -166,14 +165,14 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="theming">
-<h1>Theming<a class="headerlink" href="#theming" title="Permalink to this headline">¶</a></h1>
-<p>Built-in <strong>light</strong> and <strong>dark</strong> themes are generated at run-time. Generally, the <code class="docutils literal notranslate"><span class="pre">ttkbootstrap</span></code> api is identical to
-the <code class="docutils literal notranslate"><span class="pre">ttk.Style</span></code> api.</p>
+  <div class="section" id="styling-widgets">
+<h1>Styling widgets<a class="headerlink" href="#styling-widgets" title="Permalink to this headline">¶</a></h1>
+<p>ttkbootstrap <strong>light</strong> and <strong>dark</strong> themes are generated at run-time. Generally, the <code class="docutils literal notranslate"><span class="pre">ttkbootstrap.Style</span></code> api is
+identical to the <code class="docutils literal notranslate"><span class="pre">ttk.Style</span></code> api.</p>
 <div class="section" id="choosing-a-theme">
 <h2>Choosing a theme<a class="headerlink" href="#choosing-a-theme" title="Permalink to this headline">¶</a></h2>
-<p>Using a pre-defined <code class="docutils literal notranslate"><span class="pre">ttkbootstrap</span></code> theme is identical to using standard <code class="docutils literal notranslate"><span class="pre">ttk</span></code> theme, except that you will use the
-<code class="docutils literal notranslate"><span class="pre">ttkbootstrap.Style</span></code> class instead of the <code class="docutils literal notranslate"><span class="pre">ttk.Style</span></code> class.</p>
+<p>To use a ttkbootstrap theme, you first create a <code class="docutils literal notranslate"><span class="pre">ttkbootstrap.Style</span></code> object, and then apply the desired theme using
+the <code class="docutils literal notranslate"><span class="pre">Style.theme_use</span></code> method.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">style</span> <span class="o">=</span> <span class="n">Style</span><span class="p">()</span>
 <span class="n">style</span><span class="o">.</span><span class="n">theme_use</span><span class="p">(</span><span class="s1">&#39;superhero&#39;</span><span class="p">)</span>
 </pre></div>
@@ -182,9 +181,8 @@ the <code class="docutils literal notranslate"><span class="pre">ttk.Style</span
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">style</span><span class="o">.</span><span class="n">theme_names</span><span class="p">()</span>
 </pre></div>
 </div>
-<p>As of this latest update, the currently available themes include:</p>
-<blockquote>
-<div><dl class="field-list simple">
+<p>Currently, the available pre-defined themes include:</p>
+<dl class="field-list simple">
 <dt class="field-odd">light</dt>
 <dd class="field-odd"><p>cosmo - flatly - journal - literal - lumen - minty - pulse - sandstone - united - yeti</p>
 </dd>
@@ -192,28 +190,14 @@ the <code class="docutils literal notranslate"><span class="pre">ttk.Style</span
 <dd class="field-even"><p>cyborg - darkly - solar - superhero</p>
 </dd>
 </dl>
-</div></blockquote>
 </div>
 <div class="section" id="using-themed-widgets">
 <h2>Using themed widgets<a class="headerlink" href="#using-themed-widgets" title="Permalink to this headline">¶</a></h2>
-<p><code class="docutils literal notranslate"><span class="pre">ttkbootstrap</span></code> includes many <em>pre-defined widget styles</em> that you can easily apply with the <code class="docutils literal notranslate"><span class="pre">style</span></code> property
-available to every <code class="docutils literal notranslate"><span class="pre">ttk</span></code> widget.</p>
-<div class="section" id="color-patterns">
-<h3>Color patterns<a class="headerlink" href="#color-patterns" title="Permalink to this headline">¶</a></h3>
-<p><code class="docutils literal notranslate"><span class="pre">ttkbootstrap</span></code> includes a set of pre-defined themed colors based on a pattern common to many bootstrap styles.
-All <code class="docutils literal notranslate"><span class="pre">ttkbootstrap</span></code> themes include style colors associated with the following labels:</p>
-<img alt="_images/color-options.png" src="_images/color-options.png" />
-</div>
-<div class="section" id="styles">
-<h3>Styles<a class="headerlink" href="#styles" title="Permalink to this headline">¶</a></h3>
-<p>Every widget has an associated <code class="docutils literal notranslate"><span class="pre">ttk</span></code> <a class="reference external" href="link_here">class</a>. All pre-defined styles include a <strong>color prefix</strong>, followed by the <code class="docutils literal notranslate"><span class="pre">ttk</span></code>
-<strong>widget class</strong>.</p>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>While all widgets are themed, not all have themed color styles available, such as <code class="docutils literal notranslate"><span class="pre">ttk.PanedWindow</span></code> or
-<code class="docutils literal notranslate"><span class="pre">ttk.Scale</span></code>. Instead, these widgets are styled with the primary theme color.</p>
-</div>
-<p>To demonstrate, the <code class="docutils literal notranslate"><span class="pre">ttk.Button</span></code> has the following styles available:</p>
+<p>ttkbootstrap includes many <em>pre-defined widget styles</em> that you can apply with the <code class="docutils literal notranslate"><span class="pre">style</span></code> property available to every
+ttk widget. The ttkbootstrap style pattern  is <code class="docutils literal notranslate"><span class="pre">Color.WidgetClass</span></code> where the color is a prefix to the ttk widget
+class. Most widgets include a style pattern for each main theme color (primary, secondary, success, info, warning,
+danger).</p>
+<p>For example, the <code class="docutils literal notranslate"><span class="pre">ttk.Button</span></code> has a widget class of <em>TButton</em>. The style patterns available on the button include:</p>
 <blockquote>
 <div><ul class="simple">
 <li><p>primary.TButton</p></li>
@@ -224,7 +208,9 @@ All <code class="docutils literal notranslate"><span class="pre">ttkbootstrap</s
 <li><p>danger.TButton</p></li>
 </ul>
 </div></blockquote>
-<p>Use the <code class="docutils literal notranslate"><span class="pre">style</span></code> property of the widget to apply any <code class="docutils literal notranslate"><span class="pre">ttkbootstrap</span></code> pre-defined style.</p>
+<p>These style patterns would produce the following buttons:</p>
+<img alt="_images/color-options.png" src="_images/color-options.png" />
+<p>Consider the following example, which also shows the <em>Outline</em> style that is available on buttons:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># solid button</span>
 <span class="n">ttk</span><span class="o">.</span><span class="n">Button</span><span class="p">(</span><span class="n">window</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="s2">&quot;Submit&quot;</span><span class="p">,</span> <span class="n">style</span><span class="o">=</span><span class="s1">&#39;success.TButton&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">pack</span><span class="p">(</span><span class="n">side</span><span class="o">=</span><span class="s1">&#39;left&#39;</span><span class="p">,</span> <span class="n">padx</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">pady</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
 
@@ -233,7 +219,139 @@ All <code class="docutils literal notranslate"><span class="pre">ttkbootstrap</s
 </pre></div>
 </div>
 <img alt="_images/submit.png" src="_images/submit.png" />
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>While all widgets are themed, not all have themed color styles available, such as <code class="docutils literal notranslate"><span class="pre">ttk.PanedWindow</span></code> or
+<code class="docutils literal notranslate"><span class="pre">ttk.Scale</span></code>. Instead, these widgets are styled with the primary theme color.</p>
 </div>
+</div>
+<div class="section" id="style-patterns">
+<h2>Style patterns<a class="headerlink" href="#style-patterns" title="Permalink to this headline">¶</a></h2>
+<p>The following table includes the styles available for all ttkbootstrap widgets:</p>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 15%" />
+<col style="width: 18%" />
+<col style="width: 27%" />
+<col style="width: 40%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Widget</p></th>
+<th class="head"><p>Colors</p></th>
+<th class="head"><p>Class</p></th>
+<th class="head"><p>Example</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td rowspan="2"><p>Button</p></td>
+<td rowspan="2"><p>all</p></td>
+<td><p>TButton</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">info.TButton</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p>Outline.TButton</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">info.Outline.TButton</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p>Checkbutton</p></td>
+<td><p><a class="footnote-reference brackets" href="#id3" id="id1">1</a> all</p></td>
+<td><p>TCheckbutton</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">info.TCheckbutton</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p>Combobox</p></td>
+<td><p>all</p></td>
+<td><p>TCombobox</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">info.TCombobox</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p>Entry</p></td>
+<td><p>all</p></td>
+<td><p>TEntry</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">info.TEntry</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p>Frame</p></td>
+<td><p>all</p></td>
+<td><p>TFrame</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">info.TFrame</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p>Label</p></td>
+<td><p>all</p></td>
+<td><p>TLabel</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">info.TLabel</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p>LabelFrame</p></td>
+<td><p>all</p></td>
+<td><p>TLabelframe</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">info.TLabelframe</span></code></p></td>
+</tr>
+<tr class="row-even"><td rowspan="2"><p>Menubutton</p></td>
+<td rowspan="2"><p>all</p></td>
+<td><p>TMenubutton</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">info.TMenubutton</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p>Outline.TMenubutton</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">info.Outline.TMenubutton</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p>Notebook</p></td>
+<td><p>all</p></td>
+<td><p>TNotebook</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">info.TNotebook</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p>PanedWindow</p></td>
+<td><p>primary</p></td>
+<td><p>TPanedWindow</p></td>
+<td><p>applied by default</p></td>
+</tr>
+<tr class="row-even"><td rowspan="2"><p>Progressbar</p></td>
+<td rowspan="2"><p>all</p></td>
+<td><p>Horizontal.TProgressbar</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">info.Horizontal.TProgressbar</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p>Vertical.TProgressbar</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">info.Vertical.TProgressbar</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p>Radiobutton</p></td>
+<td><p><a class="footnote-reference brackets" href="#id3" id="id2">1</a> all</p></td>
+<td><p>TRadiobutton</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">info.TRadiobutton</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p>Scale</p></td>
+<td><p>primary</p></td>
+<td><p>TScale</p></td>
+<td><p>applied by default</p></td>
+</tr>
+<tr class="row-even"><td><p>Scrollbar</p></td>
+<td><p>primary</p></td>
+<td><p>TScrollbar</p></td>
+<td><p>applied by default</p></td>
+</tr>
+<tr class="row-odd"><td rowspan="2"><p>Separator</p></td>
+<td rowspan="2"><p>all</p></td>
+<td><p>Horizontal.TSeparator</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">info.Horizontal.TSeparator</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p>Vertical.TSeparator</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">info.Vertical.TSeparator</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p>Sizegrip</p></td>
+<td><p>primary</p></td>
+<td><p>TSizegrip</p></td>
+<td><p>applied by default</p></td>
+</tr>
+<tr class="row-even"><td><p>Spinbox</p></td>
+<td><p>all</p></td>
+<td><p>TSpinbox</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">info.TSpinbox</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p>Treeview</p></td>
+<td><p>all</p></td>
+<td><p>Treeview</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">info.Treeview</span></code></p></td>
+</tr>
+</tbody>
+</table>
+<dl class="footnote brackets">
+<dt class="label" id="id3"><span class="brackets"><a class="fn-backref" href="#id2">1</a></span></dt>
+<dd><p>can only be styled on Linux and MacOS. Windows defaults to the <em>xpnative</em> style buttons</p>
+</dd>
+</dl>
 </div>
 </div>
 
@@ -243,8 +361,8 @@ All <code class="docutils literal notranslate"><span class="pre">ttkbootstrap</s
           </div>
           <footer>
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-        <a href="reference.html" class="btn btn-neutral float-right" title="Reference" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
-        <a href="example.html" class="btn btn-neutral float-left" title="Example" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="example.html" class="btn btn-neutral float-right" title="Example" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="reference.html" class="btn btn-neutral float-left" title="Reference" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
     </div>
 
   <hr/>

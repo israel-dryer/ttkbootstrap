@@ -2,4 +2,3 @@ Overview
 =====
 
 .. automodule:: ttkbootstrap
-    :members:
