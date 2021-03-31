@@ -38,7 +38,8 @@
     
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="prev" title="Theming" href="theming.html" /> 
+    <link rel="next" title="TTK Creator" href="creator.html" />
+    <link rel="prev" title="Getting started" href="gettingstarted.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -86,14 +87,15 @@
               <p class="caption"><span class="caption-text">Contents:</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="overview.html">Overview</a></li>
-<li class="toctree-l1"><a class="reference internal" href="example.html">Example</a></li>
+<li class="toctree-l1"><a class="reference internal" href="themes.html">Themes</a></li>
 <li class="toctree-l1"><a class="reference internal" href="install.html">Installation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="theming.html">Theming</a></li>
+<li class="toctree-l1"><a class="reference internal" href="gettingstarted.html">Getting started</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Reference</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#style">Style</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#colors">Colors</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="creator.html">TTK Creator</a></li>
 </ul>
 
             
@@ -170,9 +172,6 @@ to be a drop-in replacement for <code class="docutils literal notranslate"><span
 object will instantiate the <code class="docutils literal notranslate"><span class="pre">tkinter.Tk</span></code> instance in the <code class="docutils literal notranslate"><span class="pre">Style.master</span></code> property, and so it is not
 necessary to explicitly create an instance of <code class="docutils literal notranslate"><span class="pre">tkinter.Tk</span></code>. For more details on the <code class="docutils literal notranslate"><span class="pre">ttk.Style</span></code> class, see the
 python <a class="reference external" href="https://docs.python.org/3.9/library/tkinter.ttk.html#tkinter.ttk.Style">documentation</a>.</p>
-<p>At runtime, the <code class="docutils literal notranslate"><span class="pre">ThemeSettings</span></code> and <code class="docutils literal notranslate"><span class="pre">Colors</span></code> objects for the selected theme are attached
-to the <code class="docutils literal notranslate"><span class="pre">Style</span></code> object, and are therefore available to use as needed in your application. You can access the theme
-settings using <code class="docutils literal notranslate"><span class="pre">Style.settings</span></code>, and the theme colors with <code class="docutils literal notranslate"><span class="pre">Style.colors</span></code>.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># instantiate the style and apply a theme</span>
 <span class="n">style</span> <span class="o">=</span> <span class="n">Style</span><span class="p">()</span>
 <span class="n">style</span><span class="o">.</span><span class="n">theme_use</span><span class="p">(</span><span class="s1">&#39;lumen&#39;</span><span class="p">)</span>
@@ -209,7 +208,7 @@ widgets and emits a &lt;&lt;ThemeChanged&gt;&gt; event.</p>
 
 </div>
 <div class="section" id="colors">
-<h2>Colors<a class="headerlink" href="#colors" title="Permalink to this headline">¶</a></h2>
+<span id="id1"></span><h2>Colors<a class="headerlink" href="#colors" title="Permalink to this headline">¶</a></h2>
 <p>A class that contains the theme colors as well as several helper methods for manipulating colors. This class is attached
 to the <code class="docutils literal notranslate"><span class="pre">Style</span></code> object at run-time for the selected theme, and so is available to use with <code class="docutils literal notranslate"><span class="pre">Style.colors</span></code>. The colors
 can be accessed via dot notation or get method:</p>
@@ -227,7 +226,8 @@ danger):</p>
     <span class="nb">print</span><span class="p">(</span><span class="n">color_label</span><span class="p">,</span> <span class="n">color</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>If, for some reason, you need to iterate over all theme color labels, then you can use the <code class="docutils literal notranslate"><span class="pre">Colors.label_iter</span></code> method.</p>
+<p>If, for some reason, you need to iterate over all theme color labels, then you can use the <code class="docutils literal notranslate"><span class="pre">Colors.label_iter</span></code> method.
+This will include all theme colors, including border, fg, bg, etc…</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">for</span> <span class="n">color_label</span> <span class="ow">in</span> <span class="n">Colors</span><span class="o">.</span><span class="n">label_iter</span><span class="p">():</span>
     <span class="n">color</span> <span class="o">=</span> <span class="n">Colors</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">color_label</span><span class="p">)</span>
     <span class="nb">print</span><span class="p">(</span><span class="n">color_label</span><span class="p">,</span> <span class="n">color</span><span class="p">)</span>
@@ -401,7 +401,8 @@ danger):</p>
           </div>
           <footer>
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-        <a href="theming.html" class="btn btn-neutral float-left" title="Theming" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="creator.html" class="btn btn-neutral float-right" title="TTK Creator" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="gettingstarted.html" class="btn btn-neutral float-left" title="Getting started" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
     </div>
 
   <hr/>

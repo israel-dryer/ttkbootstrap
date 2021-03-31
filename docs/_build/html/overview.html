@@ -89,15 +89,14 @@
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Overview</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#why-does-this-project-exist">Why does this project exist?</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#a-bootstrap-approach-to-style">A bootstrap approach to style</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#how-did-i-create-new-themes">How did I create new themes?</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#what-about-the-old-tkinter-widgets">What about the old tkinter widgets?</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="themes.html">Themes</a></li>
-<li class="toctree-l1"><a class="reference internal" href="reference.html">Reference</a></li>
-<li class="toctree-l1"><a class="reference internal" href="theming.html">Styling widgets</a></li>
-<li class="toctree-l1"><a class="reference internal" href="example.html">Example</a></li>
 <li class="toctree-l1"><a class="reference internal" href="install.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="gettingstarted.html">Getting started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="reference.html">Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="creator.html">TTK Creator</a></li>
 </ul>
 
             
@@ -171,30 +170,18 @@
 <h2>Why does this project exist?<a class="headerlink" href="#why-does-this-project-exist" title="Permalink to this headline">¶</a></h2>
 <p>Yes, Tkinter is old, and so often under-appreciated or overlooked for building modern GUI’s. And yet, its theme
 engine is extremely powerful. This project was created to harness the power of ttk’s (and thus Python’s) existing
-built-in theme engine to create modern, professional looking user interfaces which are inspired by, and in many
-cases, whole-sale rip-off’s of the themes found on <a class="reference external" href="https://bootswatch.com/">https://bootswatch.com/</a>. The best part is that, by using another
-built in application, <code class="docutils literal notranslate"><span class="pre">ttkcreator</span></code> you’ll be able to replicate the process I used to build these themes in order
-to create your own <em>user-defined</em> themes to suite your purpose.</p>
+built-in theme engine to create modern and professional-looking user interfaces which are inspired by, and in many
+cases, whole-sale rip-off’s of the themes found on <a class="reference external" href="https://bootswatch.com/">https://bootswatch.com/</a>. Even better, you have the abilty to
+create and use your own custom themes using <a class="reference internal" href="creator.html#ttkcreator"><span class="std std-ref">TTK Creator</span></a>.</p>
 </div>
 <div class="section" id="a-bootstrap-approach-to-style">
 <h2>A bootstrap approach to style<a class="headerlink" href="#a-bootstrap-approach-to-style" title="Permalink to this headline">¶</a></h2>
 <p>Many people are familiar with bootstrap for web developement. It comes pre-packaged with built-in css style classes
 that provide a professional and consistent api for quick development. I took a similar approach with this project
-by pre-defining styles for nearly all ttk widgets. You can easily use colors from the theme’s color palette for your
-widget by applying that widgets style. If you want a button in the <cite>secondary</cite> theme color, simply apply the
+by pre-defining styles for nearly all ttk widgets. This makes is very easy to apply the theme colors to various
+widgets by using style declarations. If you want a button in the <cite>secondary</cite> theme color, simply apply the
 <code class="docutils literal notranslate"><span class="pre">secondary.TButton</span></code> style to the button. Want a blue outlined button? Apply the <code class="docutils literal notranslate"><span class="pre">info.Outline.TButton</span></code> style to
-your button.</p>
-</div>
-<div class="section" id="how-did-i-create-new-themes">
-<h2>How did I create new themes?<a class="headerlink" href="#how-did-i-create-new-themes" title="Permalink to this headline">¶</a></h2>
-<p>Imagine being able to take the parts from several existing cars to design the one that you really want… that’s
-basically what I did. I used the best parts of the existing themes to craft brand new ones. The base of all themes
-created in this project is the <em>clam</em> theme. Each ttk widget is created from a collection of elements. So, aside
-from changing colors and state behavior, I constructed new widget layouts using the elements from various themes to
-give the desired look and feel. There is an old, but excellent reference to widget layouts here:
-<a class="reference external" href="https://anzeljg.github.io/rin2/book2/2405/docs/tkinter/ttk-themes.html">https://anzeljg.github.io/rin2/book2/2405/docs/tkinter/ttk-themes.html</a>.</p>
-<p>As an example: the <code class="docutils literal notranslate"><span class="pre">ttk.Combobox</span></code> widget contains a <em>field</em> element. In order to get the border effect I wanted,
-I constructed a new layout for the <code class="docutils literal notranslate"><span class="pre">ttk.Combobox</span></code> using the <em>field</em> from the <code class="docutils literal notranslate"><span class="pre">ttk.Spinbox</span></code>.</p>
+the button.</p>
 </div>
 <div class="section" id="what-about-the-old-tkinter-widgets">
 <h2>What about the old tkinter widgets?<a class="headerlink" href="#what-about-the-old-tkinter-widgets" title="Permalink to this headline">¶</a></h2>

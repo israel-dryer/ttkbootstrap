@@ -6,8 +6,8 @@
 Welcome to ttkbootstrap's documentation!
 ========================================
 
-A collection of modern flat themes inspired by Bootstrap. There are more than a dozen built-in themes, and you also have
-the ability to easily create your own.
+A collection of modern, flat themes inspired by Bootstrap. There are more than a dozen built-in themes, and you also
+have the ability to easily :ref:`create your own <ttkcreator>`.
 
 Out with the **old**
 
@@ -30,7 +30,7 @@ In with the **NEW!**
    themes
    install
    example
-   usage
+   gettingstarted
    reference
    creator
 

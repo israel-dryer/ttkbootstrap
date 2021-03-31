@@ -85,10 +85,11 @@
               <p class="caption"><span class="caption-text">Contents:</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../overview.html">Overview</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../example.html">Example</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../themes.html">Themes</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../install.html">Installation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../theming.html">Theming</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../gettingstarted.html">Getting started</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../reference.html">Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../creator.html">TTK Creator</a></li>
 </ul>
 
             
@@ -160,31 +161,18 @@
 <span class="sd">    ============================</span>
 <span class="sd">    Yes, Tkinter is old, and so often under-appreciated or overlooked for building modern GUI&#39;s. And yet, its theme</span>
 <span class="sd">    engine is extremely powerful. This project was created to harness the power of ttk&#39;s (and thus Python&#39;s) existing</span>
-<span class="sd">    built-in theme engine to create modern, professional looking user interfaces which are inspired by, and in many</span>
-<span class="sd">    cases, whole-sale rip-off&#39;s of the themes found on https://bootswatch.com/. The best part is that, by using another</span>
-<span class="sd">    built in application, ``ttkcreator`` you&#39;ll be able to replicate the process I used to build these themes in order</span>
-<span class="sd">    to create your own *user-defined* themes to suite your purpose.</span>
+<span class="sd">    built-in theme engine to create modern and professional-looking user interfaces which are inspired by, and in many</span>
+<span class="sd">    cases, whole-sale rip-off&#39;s of the themes found on https://bootswatch.com/. Even better, you have the abilty to</span>
+<span class="sd">    create and use your own custom themes using :ref:`TTK Creator &lt;ttkcreator&gt;`.</span>
 
 <span class="sd">    A bootstrap approach to style</span>
 <span class="sd">    =============================</span>
 <span class="sd">    Many people are familiar with bootstrap for web developement. It comes pre-packaged with built-in css style classes</span>
 <span class="sd">    that provide a professional and consistent api for quick development. I took a similar approach with this project</span>
-<span class="sd">    by pre-defining styles for nearly all ttk widgets. You can easily use colors from the theme&#39;s color palette for your</span>
-<span class="sd">    widget by applying that widgets style. If you want a button in the `secondary` theme color, simply apply the</span>
+<span class="sd">    by pre-defining styles for nearly all ttk widgets. This makes is very easy to apply the theme colors to various</span>
+<span class="sd">    widgets by using style declarations. If you want a button in the `secondary` theme color, simply apply the</span>
 <span class="sd">    ``secondary.TButton`` style to the button. Want a blue outlined button? Apply the ``info.Outline.TButton`` style to</span>
-<span class="sd">    your button.</span>
-
-<span class="sd">    How did I create new themes?</span>
-<span class="sd">    ============================</span>
-<span class="sd">    Imagine being able to take the parts from several existing cars to design the one that you really want... that&#39;s</span>
-<span class="sd">    basically what I did. I used the best parts of the existing themes to craft brand new ones. The base of all themes</span>
-<span class="sd">    created in this project is the *clam* theme. Each ttk widget is created from a collection of elements. So, aside</span>
-<span class="sd">    from changing colors and state behavior, I constructed new widget layouts using the elements from various themes to</span>
-<span class="sd">    give the desired look and feel. There is an old, but excellent reference to widget layouts here:</span>
-<span class="sd">    https://anzeljg.github.io/rin2/book2/2405/docs/tkinter/ttk-themes.html.</span>
-
-<span class="sd">    As an example: the ``ttk.Combobox`` widget contains a *field* element. In order to get the border effect I wanted,</span>
-<span class="sd">    I constructed a new layout for the ``ttk.Combobox`` using the *field* from the ``ttk.Spinbox``.</span>
+<span class="sd">    the button.</span>
 
 <span class="sd">    What about the old tkinter widgets?</span>
 <span class="sd">    ===================================</span>
@@ -261,7 +249,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">tk</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="s2">&quot;ttk::setTheme&quot;</span><span class="p">,</span> <span class="n">themename</span><span class="p">)</span></div></div>
 
 
-<div class="viewcode-block" id="ThemeSettings"><a class="viewcode-back" href="../overview.html#ttkbootstrap.ThemeSettings">[docs]</a><span class="k">class</span> <span class="nc">ThemeSettings</span><span class="p">:</span>
+<span class="k">class</span> <span class="nc">ThemeSettings</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A class to provide settings for a ttkbootstrap theme.</span>
 
@@ -278,7 +266,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">colors</span> <span class="o">=</span> <span class="n">colors</span> <span class="k">if</span> <span class="n">colors</span> <span class="k">else</span> <span class="n">Colors</span><span class="p">()</span>
 
     <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="sa">f</span><span class="s1">&#39;name=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s1">, type=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">type</span><span class="si">}</span><span class="s1">, font=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">font</span><span class="si">}</span><span class="s1">, colors=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">colors</span><span class="si">}</span><span class="s1">&#39;</span></div>
+        <span class="k">return</span> <span class="sa">f</span><span class="s1">&#39;name=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s1">, type=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">type</span><span class="si">}</span><span class="s1">, font=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">font</span><span class="si">}</span><span class="s1">, colors=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">colors</span><span class="si">}</span><span class="s1">&#39;</span>
 
 
 <div class="viewcode-block" id="Colors"><a class="viewcode-back" href="../reference.html#ttkbootstrap.Colors">[docs]</a><span class="k">class</span> <span class="nc">Colors</span><span class="p">:</span>
@@ -415,7 +403,7 @@
         <span class="k">return</span> <span class="n">Colors</span><span class="o">.</span><span class="n">rgb_to_hex</span><span class="p">(</span><span class="n">r_</span><span class="p">,</span> <span class="n">g_</span><span class="p">,</span> <span class="n">b_</span><span class="p">)</span></div></div>
 
 
-<div class="viewcode-block" id="StylerTK"><a class="viewcode-back" href="../overview.html#ttkbootstrap.StylerTK">[docs]</a><span class="k">class</span> <span class="nc">StylerTK</span><span class="p">:</span>
+<span class="k">class</span> <span class="nc">StylerTK</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A class for styling tkinter widgets (not ttk). Several ttk widgets utilize tkinter widgets in some capacity, such</span>
 <span class="sd">    as the *popdownlist* on the ``ttk.Combobox``. To create a consistent user experience, standard tkinter widgets are</span>
@@ -429,7 +417,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">master</span> <span class="o">=</span> <span class="n">parent</span><span class="o">.</span><span class="n">style</span><span class="o">.</span><span class="n">master</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">settings</span> <span class="o">=</span> <span class="n">parent</span><span class="o">.</span><span class="n">settings</span>
 
-<div class="viewcode-block" id="StylerTK.apply_style"><a class="viewcode-back" href="../overview.html#ttkbootstrap.StylerTK.apply_style">[docs]</a>    <span class="k">def</span> <span class="nf">apply_style</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">apply_style</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        A wrapper on all widget style methods. Applies current theme to all standard tkinter widgets</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -446,7 +434,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_style_menubutton</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_style_labelframe</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_style_scrollbar</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_style_optionmenu</span><span class="p">()</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_style_optionmenu</span><span class="p">()</span>
 
     <span class="k">def</span> <span class="nf">_set_option</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -603,10 +591,10 @@
 <span class="sd">        .. warning::</span>
 <span class="sd">            Not implemented</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">pass</span></div>
+        <span class="k">pass</span>
 
 
-<div class="viewcode-block" id="StylerTTK"><a class="viewcode-back" href="../overview.html#ttkbootstrap.StylerTTK">[docs]</a><span class="k">class</span> <span class="nc">StylerTTK</span><span class="p">:</span>
+<span class="k">class</span> <span class="nc">StylerTTK</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A class to create a new ttk theme by using a combination of built-in themes and some image-based elements using</span>
 <span class="sd">    ``pillow``. A theme is generated at runtime and is available to use with the ``Style`` class methods.</span>
@@ -623,7 +611,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">styler_tk</span> <span class="o">=</span> <span class="n">StylerTK</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">create_theme</span><span class="p">()</span>
 
-<div class="viewcode-block" id="StylerTTK.create_theme"><a class="viewcode-back" href="../overview.html#ttkbootstrap.StylerTTK.create_theme">[docs]</a>    <span class="k">def</span> <span class="nf">create_theme</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">create_theme</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Create and style a new ttk theme. A wrapper around internal style methods.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -648,7 +636,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_style_solid_menubutton</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_style_treeview</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_style_separator</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_style_panedwindow</span><span class="p">()</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_style_panedwindow</span><span class="p">()</span>
 
     <span class="k">def</span> <span class="nf">_style_defaults</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -1518,7 +1506,7 @@
 
 <span class="sd">        **NOT IMPLEMENTED as existing styles are already covering this.**</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">pass</span></div>
+        <span class="k">pass</span>
 </pre></div>
 
            </div>

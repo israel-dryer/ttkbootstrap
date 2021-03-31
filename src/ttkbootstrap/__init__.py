@@ -3,31 +3,18 @@
     ============================
     Yes, Tkinter is old, and so often under-appreciated or overlooked for building modern GUI's. And yet, its theme
     engine is extremely powerful. This project was created to harness the power of ttk's (and thus Python's) existing
-    built-in theme engine to create modern, professional looking user interfaces which are inspired by, and in many
-    cases, whole-sale rip-off's of the themes found on https://bootswatch.com/. The best part is that, by using another
-    built in application, ``ttkcreator`` you'll be able to replicate the process I used to build these themes in order
-    to create your own *user-defined* themes to suite your purpose.
+    built-in theme engine to create modern and professional-looking user interfaces which are inspired by, and in many
+    cases, whole-sale rip-off's of the themes found on https://bootswatch.com/. Even better, you have the abilty to
+    create and use your own custom themes using :ref:`TTK Creator <ttkcreator>`.
 
     A bootstrap approach to style
     =============================
     Many people are familiar with bootstrap for web developement. It comes pre-packaged with built-in css style classes
     that provide a professional and consistent api for quick development. I took a similar approach with this project
-    by pre-defining styles for nearly all ttk widgets. You can easily use colors from the theme's color palette for your
-    widget by applying that widgets style. If you want a button in the `secondary` theme color, simply apply the
+    by pre-defining styles for nearly all ttk widgets. This makes is very easy to apply the theme colors to various
+    widgets by using style declarations. If you want a button in the `secondary` theme color, simply apply the
     ``secondary.TButton`` style to the button. Want a blue outlined button? Apply the ``info.Outline.TButton`` style to
-    your button.
-
-    How did I create new themes?
-    ============================
-    Imagine being able to take the parts from several existing cars to design the one that you really want... that's
-    basically what I did. I used the best parts of the existing themes to craft brand new ones. The base of all themes
-    created in this project is the *clam* theme. Each ttk widget is created from a collection of elements. So, aside
-    from changing colors and state behavior, I constructed new widget layouts using the elements from various themes to
-    give the desired look and feel. There is an old, but excellent reference to widget layouts here:
-    https://anzeljg.github.io/rin2/book2/2405/docs/tkinter/ttk-themes.html.
-
-    As an example: the ``ttk.Combobox`` widget contains a *field* element. In order to get the border effect I wanted,
-    I constructed a new layout for the ``ttk.Combobox`` using the *field* from the ``ttk.Spinbox``.
+    the button.
 
     What about the old tkinter widgets?
     ===================================

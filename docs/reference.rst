@@ -8,10 +8,6 @@ object will instantiate the ``tkinter.Tk`` instance in the ``Style.master`` prop
 necessary to explicitly create an instance of ``tkinter.Tk``. For more details on the ``ttk.Style`` class, see the
 python documentation_.
 
-At runtime, the ``ThemeSettings`` and ``Colors`` objects for the selected theme are attached
-to the ``Style`` object, and are therefore available to use as needed in your application. You can access the theme
-settings using ``Style.settings``, and the theme colors with ``Style.colors``.
-
 .. code-block:: python
 
     # instantiate the style and apply a theme
@@ -28,6 +24,8 @@ settings using ``Style.settings``, and the theme colors with ``Style.colors``.
     :show-inheritance:
     :special-members:
     :members:
+
+.. _colors:
 
 Colors
 ------
@@ -53,6 +51,7 @@ danger):
         print(color_label, color)
 
 If, for some reason, you need to iterate over all theme color labels, then you can use the ``Colors.label_iter`` method.
+This will include all theme colors, including border, fg, bg, etc...
 
 .. code-block:: python
 
