@@ -219,7 +219,7 @@ class CreatorDesignWindow(tk.Toplevel):
 
     def reset_theme(self):
         """
-        Reset all values and variable to the default theme (dark='superhero', light='lumen')
+        Reset all values and variable to the default theme (dark='superhero', light='flatly')
         """
         self.style.theme_use(self.theme_name)
         self.reset_variables()
@@ -308,15 +308,14 @@ class CreatorDesignWindow(tk.Toplevel):
         y1 = self.winfo_rooty() - titlebar
         x2 = x1 + self.winfo_width() + 2
         y2 = y1 + self.winfo_height() + titlebar + 1
-
-        self.after_idle(self.save_screenshot, [x1, y1, x2, y2])
+        self.save_screenshot([x1, y1, x2, y2])
 
     def save_screenshot(self, bbox):
         # screenshot
         img = ImageGrab.grab(bbox=bbox)
 
         # image name
-        filename = f'images/ttkcreator.png'
+        filename = f'docs/images/ttkcreator.png'
         print(filename)
         img.save(filename, 'png')
 
@@ -443,12 +442,12 @@ class CreatorBaseChooser(tk.Tk):
     def __init__(self):
         super().__init__()
         self.style = Style()
-        self.style.theme_use('lumen')
         self.title('TTK Creator')
         self.geometry(f'938x602')
         self.frame = ttk.Frame(self)
         self.setup()
         self.eval('tk::PlaceWindow . center')
+        self.bind("<Insert>", self.get_bounding_box)
 
     def setup(self):
         self.frame.pack(fill='both', expand='yes')
@@ -466,7 +465,7 @@ class CreatorBaseChooser(tk.Tk):
 
     def create_dark_theme(self):
         """
-        Startup the design window with the 'lumen' theme
+        Startup the design window with the 'flatly' theme
         """
         valid_user_path = self.check_user_themes_path()
         if not valid_user_path:
@@ -486,6 +485,27 @@ class CreatorBaseChooser(tk.Tk):
 
         CreatorDesignWindow(self)
         self.withdraw()
+
+    def save_screenshot(self, bbox):
+        # screenshot
+        img = ImageGrab.grab(bbox=bbox)
+
+        # image name
+        filename = f'docs/images/ttkcreator-splash.png'
+        print(filename)
+        img.save(filename, 'png')
+
+    def get_bounding_box(self, event):
+        """
+        Take a screenshot of the current demo window and save to images
+        """
+        # bounding box
+        titlebar = 31
+        x1 = self.winfo_rootx() - 1
+        y1 = self.winfo_rooty() - titlebar
+        x2 = x1 + self.winfo_width() + 2
+        y2 = y1 + self.winfo_height() + titlebar + 1
+        self.save_screenshot([x1, y1, x2, y2])
 
     def check_user_themes_path(self):
         """

@@ -38,9 +38,9 @@ class Style(ttk.Style):
     A class for setting the application style.
     """
 
-    def __init__(self, theme='lumen', *args, **kwargs):
+    def __init__(self, theme='flatly', *args, **kwargs):
         """
-        :param str theme: the name of the theme to use at runtime; *lumen* by default.
+        :param str theme: the name of the theme to use at runtime; *flatly* by default.
         """
         super().__init__(*args, **kwargs)
         self.themes = {}

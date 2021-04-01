@@ -12,7 +12,7 @@ Simple example
     from ttkbootstrap import Style
     from tkinter import ttk
 
-    style = Style()  # lumen style is applied by default
+    style = Style()  # flatly style is applied by default
 
     window = style.master
     ttk.Button(window, text="Submit", style='success.TButton').pack(side='left', padx=5, pady=10)
