@@ -11,6 +11,10 @@ Read for more information about how to use along with full-size screenshots, and
 https://ttkbootstrap.readthedocs.io/en/latest/
 
 ### Sample of themes
+Work with a live demo after installing
+```python
+python -m ttkbootstrap
+```
 ![](docs/images/ttkbootstrap.gif)
 
 ### TTK Creator
