@@ -7,13 +7,19 @@ identical to the ``ttk.Style`` api.
 
 Choosing a theme
 ----------------
-To use a ttkbootstrap theme, you first create a ``ttkbootstrap.Style`` object, and then apply the desired theme using
-the ``Style.theme_use`` method.
+To use a ttkbootstrap theme, you first create a ``ttkbootstrap.Style`` object. You can pass in the name of the theme
+you want to use as an argument. Otherwise, by default, the *lumen* style will be applied.
 
 .. code-block:: python
 
+    # lumen style is applied by default
     style = Style()
-    style.theme_use('superhero')
+
+    # if you want to set a specific theme at runtime, pass it's name as a keyword argument
+    style = Style(theme='superhero')
+
+If for some reason you need to change the theme *after* the window has already been created, you will need to use the
+``Style.theme_use`` method, which is actually what the ``ttkbootstrap.Style`` class does internally when instantiated.
 
 To get a list of all available themes:
 

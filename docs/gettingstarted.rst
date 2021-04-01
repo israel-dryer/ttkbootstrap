@@ -12,8 +12,7 @@ Simple example
     from ttkbootstrap import Style
     from tkinter import ttk
 
-    style = Style()
-    style.theme_use('lumen')
+    style = Style()  # lumen style is applied by default
 
     window = style.master
     ttk.Button(window, text="Submit", style='success.TButton').pack(side='left', padx=5, pady=10)
@@ -27,6 +26,14 @@ This results in the window below:
 
 The ``Style`` object automatically creates the master widget that we assigned to ``window``. This is
 standard ttk behavior, so you do not need to manually create a master widget by using ``tkinter.Tk()``.
+
+If you want to use a different style, you can pass the style name as a keyword argument when you create the style
+object:
+
+.. code-block:: python
+
+    style = Style(theme='darkly')
+
 
 Check out the :ref:`Styling widgets <stylingwidgets>` section to learn more about how theming works and how you can
 apply different colors and styles to the widgets.
