@@ -8,11 +8,11 @@ identical to the ``ttk.Style`` api.
 Choosing a theme
 ----------------
 To use a ttkbootstrap theme, you first create a ``ttkbootstrap.Style`` object. You can pass in the name of the theme
-you want to use as an argument. Otherwise, by default, the *lumen* style will be applied.
+you want to use as an argument. Otherwise, by default, the *flatly* style will be applied.
 
 .. code-block:: python
 
-    # lumen style is applied by default
+    # flatly style is applied by default
     style = Style()
 
     # if you want to set a specific theme at runtime, pass it's name as a keyword argument

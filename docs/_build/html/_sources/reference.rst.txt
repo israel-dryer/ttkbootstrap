@@ -10,7 +10,7 @@ python documentation_.
 
 .. code-block:: python
 
-    # instantiate the style with default theme *lumen*
+    # instantiate the style with default theme *flatly*
     style = Style()
 
     # instantiate the style with another theme
