@@ -14,5 +14,9 @@ This simple data entry form accepts user input and then prints it to the screen 
 
     *darkly* theme
 
+Run this code live on repl.it_
+
+.. _repl.it: https://replit.com/@IsraelDryer/simple-data-entry-form
+
 .. literalinclude:: ../../src/ttkbootstrap/examples/simple_data_entry.py
     :language: python

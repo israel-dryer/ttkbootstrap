@@ -1,7 +1,11 @@
 Examples
 ========
 
-Below you will find a growing list of examples that you can use to build out your own ttkbootstrap applications.
+Below you will find a *growing* list of ttkbootstrap example applications.
+
+All examples contain links to repl.it_ where you can *run the code live*
+
+.. _repl.it: https://replit.com/repls/folder/ttkbootstrap
 
 .. toctree::
 
