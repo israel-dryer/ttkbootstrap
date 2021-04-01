@@ -5,7 +5,7 @@ TTK Creator
 
 TTK Creator is a program that makes it really easy to create and use your own defined themes.
 
-.. image:: _static/examples/ttkcreator.png
+.. image:: images/ttkcreator.png
 
 Starting the application
 ------------------------
@@ -20,16 +20,16 @@ Select a base theme
 When you start TTK Creator, you'll be prompted to select a *light* or *dark* theme base. The reason you need to choose a
 base is that there are some nuanced differences in how the elements are constructed in a light vs a dark theme.
 
-.. image:: _static/examples/ttkcreator-splash.PNG
+.. image:: images/ttkcreator-splash.png
 
 The first time you start TTK Creator, or if you happen to upgrade the package, you'll be prompted to select the
 destination for your user-defined themes file. It is recommended to store these themes in a location that is safe and
 writable. It is not recommended to store themes in the package directory as they may get overwritten if the package is
 updated, re-installed, etc...
 
-.. image:: _static/examples/ttkcreator-alert.png
+.. image:: images/ttkcreator-alert.png
 
-.. image:: _static/examples/ttkcreator-filedialog.png
+.. image:: images/ttkcreator-filedialog.png
 
 .. note:: If you are pointed to an existing file, the dialogue will ask you if you want to overwrite the file. **Click
           YES**. The file will not actually get overwritten if it already exists. I couldn't find a setting in the
@@ -40,7 +40,7 @@ Create and save your theme
 --------------------------
 You should now see the TTK Creator design window
 
-.. image:: _static/examples/ttkcreator.png
+.. image:: images/ttkcreator.png
 
 - Name your theme
 - Click the color palette to select a color, or input a hex color directly
