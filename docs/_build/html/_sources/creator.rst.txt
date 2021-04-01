@@ -18,7 +18,7 @@ Select a base theme
 When you start TTK Creator, you'll be prompted to select a *light* or *dark* theme base. The reason you need to choose a
 base is that there are some nuanced differences in how the elements are constructed in a light vs a dark theme.
 
-.. image:: _static/examples/ttkcreator-splash.png
+.. image:: _static/examples/ttkcreator-splash.PNG
 
 The first time you start TTK Creator, or if you happen to upgrade the package, you'll be prompted to select the
 destination for your user-defined themes file. It is recommended to store these themes in a location that is safe and
