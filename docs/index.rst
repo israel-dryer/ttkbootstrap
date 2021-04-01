@@ -16,11 +16,11 @@ There are more than a dozen :ref:`built-in dark and light themes <themes>`
 +----------------------+---------------------+
 
 .. |old| image:: _static/examples/classic.png
-            :scale: 60% %
+            :scale: 50% %
             :align: middle
 
 .. |new| image:: _static/examples/lumen.png
-            :scale: 60 %
+            :scale: 50 %
             :align: middle
 
 Looking for more? You can create your own themes with :ref:`TTK Creator <ttkcreator>`
