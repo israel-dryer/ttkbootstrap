@@ -94,6 +94,8 @@ Light themes
     :scale: 70%
     :alt: an example image of theme yeti
 
+    inspired by https://bootswatch.com/yeti/
+
 Dark themes
 ...........
 .. figure:: _static/examples/darkly.png
@@ -117,6 +119,8 @@ Dark themes
 .. figure:: _static/examples/solar.png
     :scale: 70%
     :alt: an example image of theme solar
+
+    inspired by https://bootswatch.com/solar/
 
 Legacy themes
 .............
