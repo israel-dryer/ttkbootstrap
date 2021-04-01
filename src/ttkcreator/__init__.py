@@ -13,24 +13,27 @@ import importlib.resources
 import uuid
 import json
 from PIL import ImageGrab
+from tkinter.filedialog import asksaveasfilename
+from tkinter.messagebox import showwarning
+from pathlib import Path
 
 
-class ThemeCreatorTTK(tk.Tk):
+class CreatorDesignWindow(tk.Toplevel):
     """
     An application for designing and saving user-defined themes for ttk / tkinter.
 
     DEV NOTES: press the <Insert> key to save a screenshot to examples.
     """
 
-    def __init__(self):
-        super().__init__()
-        self.title('TTK Theme Creator')
-        self.geometry('938x602')
-        self.style = Style()
-        self.style.theme_use('lumen')
+    def __init__(self, master):
+        super().__init__(master)
+        self.title('TTK Creator')
+        self.protocol('WM_DELETE_WINDOW', self.master.quit)
+        self.geometry(f'938x602+{master.winfo_x()}+{master.winfo_y()}')
+        self.style = self.master.style
+        self.theme_name = self.master.style.theme_use()
         self.vars = {}
         self.setup()
-        self.eval('tk::PlaceWindow . center')
         self.bind("<Insert>", self.get_bounding_box)
 
     def setup(self):
@@ -150,8 +153,11 @@ class ThemeCreatorTTK(tk.Tk):
         """
         name = self.getvar('name').lower().replace(' ', '')
 
-        raw_json = importlib.resources.read_text('ttkbootstrap', 'user_themes.json')
-        user_themes = json.loads(raw_json)
+        raw_json = importlib.resources.read_text('ttkbootstrap', 'themes.json')
+        settings = json.loads(raw_json)
+
+        with open(settings['userpath'], encoding='utf-8') as f:
+            user_themes = json.load(f)
 
         theme_names = [t['name'] for t in user_themes['themes']]
 
@@ -190,7 +196,7 @@ class ThemeCreatorTTK(tk.Tk):
         """
         Reset all values and variable to the default theme (dark='superhero', light='lumen')
         """
-        self.style.theme_use('lumen')
+        self.style.theme_use(self.theme_name)
         self.reset_variables()
         self.reset_color_patches()
 
@@ -399,3 +405,81 @@ class EverythingBagel(ttk.Notebook):
 
         # Progressbar
         ttk.Progressbar(widget_frame, variable=self.scale_var).pack(fill='x', pady=(10, 0))
+
+
+class CreatorBaseChooser(tk.Tk):
+    def __init__(self):
+        super().__init__()
+        self.style = Style()
+        self.style.theme_use('lumen')
+        self.geometry(f'938x602')
+        self.frame = ttk.Frame(self)
+        self.setup()
+        self.eval('tk::PlaceWindow . center')
+
+    def setup(self):
+        self.frame.pack(fill='both', expand='yes')
+
+        lbl = ttk.Label(self.frame, text='What kind of theme do you want to create?', font='-size 18 -slant italic')
+        lbl.pack(side='top', pady=(35, 40))
+
+        self.style.configure('light.Outline.TButton', font='-size 26')
+        self.style.configure('dark.TButton', font='-size 26')
+        light = ttk.Button(self.frame, text='Light', style='light.Outline.TButton', command=self.create_light_theme)
+        light.pack(side='left', expand='yes', fill='both')
+
+        dark = ttk.Button(self.frame, text='Dark', style='dark.TButton', command=self.create_dark_theme)
+        dark.pack(side='right', expand='yes', fill='both')
+
+    def create_dark_theme(self):
+        """
+        Startup the design window with the 'lumen' theme
+        """
+        valid_user_path = self.check_user_themes_path()
+        if not valid_user_path:
+            return
+
+        self.style.theme_use('superhero')
+        CreatorDesignWindow(self)
+        self.withdraw()
+
+    def create_light_theme(self):
+        """
+        Startup the design window with the 'superhero' theme
+        """
+        valid_user_path = self.check_user_themes_path()
+        if not valid_user_path:
+            return
+
+        CreatorDesignWindow(self)
+        self.withdraw()
+
+    def check_user_themes_path(self):
+        """
+        If the user defined themes path does not exists, ask for one
+
+        :returns: is there a valid path for themes or not?
+        :rtype: bool
+        """
+        json_string = importlib.resources.read_text('ttkbootstrap', 'themes.json')
+        settings = json.loads(json_string)
+
+        if not settings['userpath']:
+            showwarning(title="User Defined Themes", message='Please supply a path to save user-defined themes')
+            userpath = asksaveasfilename(parent=self, title='User Defined Themes', defaultextension='json',
+                                         initialfile='ttkbootstrap_themes.json')
+            if not userpath:
+                showwarning(title='User Defined Themes', message='Cannot save user-defined themes without a valid path')
+                return False
+            else:
+                # set the new userpath
+                settings['userpath'] = userpath
+                with importlib.resources.path('ttkbootstrap', 'themes.json') as path:
+                    with open(path, 'w', encoding='utf-8') as f:
+                        json.dump(settings, f, indent='\t')
+                # create the new file if not exists
+                if not Path(userpath).exists():
+                    template = {"themes": []}
+                    with open(userpath, 'w', encoding='utf-8') as f:
+                        json.dump(template, f, indent='\t')
+        return True
