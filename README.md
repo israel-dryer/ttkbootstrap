@@ -1,7 +1,5 @@
 # ttkbootstrap
-A collection of modern themes for Tkinter TTK built using standard, cross-platform themes (*clam*, *alt*, *classic*, *default*).   
-
-Most of these themes are adapted and or/inspired from the open source bootstrap themes published on https://bootswatch.com/  
+A collection of modern flat themes inspired by Bootstrap. There are more than a dozen built-in themes, and you also have the ability to easily create your own.
 
 ![](docs/images/ttkbootstrap.gif)
 
