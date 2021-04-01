@@ -10,6 +10,7 @@ the timer state:
 :Reset: ``style="success.TButton"``
 :Exit: ``style="danger.TButton"``
 
+
 .. figure:: ../../src/ttkbootstrap/examples/images/timer_widget_started_light.png
 
     timer is running
@@ -17,6 +18,10 @@ the timer state:
 .. figure:: ../../src/ttkbootstrap/examples/images/timer_widget_paused_light.png
 
     timer is paused
+
+Run this code live on repl.it_
+
+.. _repl.it: https://replit.com/@IsraelDryer/timer-widget
 
 .. literalinclude:: ../../src/ttkbootstrap/examples/timer_widget.py
     :language: python
