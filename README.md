@@ -1,5 +1,5 @@
 # ttkbootstrap
-A collection of modern flat themes inspired by Bootstrap. There are more than a dozen built-in themes, and you also have the ability to easily create your own.
+A collection of modern flat themes inspired by Bootstrap. There are more than a dozen built-in themes, and you can also create your own.
 
 ![](docs/images/ttkbootstrap.gif)
 
