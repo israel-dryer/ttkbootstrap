@@ -1,0 +1,314 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>Timer Widget &mdash; ttkbootstrap  documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="How to style widgets" href="../usage.html" />
+    <link rel="prev" title="Simple Data Entry Form" href="simple_data_entry_form.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> ttkbootstrap
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../overview.html">Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../themes.html">Themes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../install.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../gettingstarted.html">Getting started</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../examples.html">Examples</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="simple_data_entry_form.html">Simple Data Entry Form</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Timer Widget</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../usage.html">How to style widgets</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../reference.html">Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../creator.html">TTK Creator</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">ttkbootstrap</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../examples.html">Examples</a> &raquo;</li>
+        
+      <li>Timer Widget</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="../_sources/examples/timer_widget.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="timer-widget">
+<h1>Timer Widget<a class="headerlink" href="#timer-widget" title="Permalink to this headline">¶</a></h1>
+<p>This simple data entry form accepts user input and then prints it to the screen when submitted.</p>
+<p>All three buttons use different styles. The <em>Start/Pause</em> toggle button uses a different style depending on the state of
+the timer state:</p>
+<dl class="field-list simple">
+<dt class="field-odd">Start</dt>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">style=&quot;info.TButton&quot;</span></code></p>
+</dd>
+<dt class="field-even">Pause</dt>
+<dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">style=&quot;info.Outline.TButton&quot;</span></code></p>
+</dd>
+<dt class="field-odd">Reset</dt>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">style=&quot;success.TButton&quot;</span></code></p>
+</dd>
+<dt class="field-even">Exit</dt>
+<dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">style=&quot;danger.TButton&quot;</span></code></p>
+</dd>
+</dl>
+<div class="figure align-default" id="id1">
+<img alt="../_images/timer_widget_started_light.png" src="../_images/timer_widget_started_light.png" />
+<p class="caption"><span class="caption-text">timer is running</span><a class="headerlink" href="#id1" title="Permalink to this image">¶</a></p>
+</div>
+<div class="figure align-default" id="id2">
+<img alt="../_images/timer_widget_paused_light.png" src="../_images/timer_widget_paused_light.png" />
+<p class="caption"><span class="caption-text">timer is paused</span><a class="headerlink" href="#id2" title="Permalink to this image">¶</a></p>
+</div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">ttkbootstrap</span> <span class="kn">import</span> <span class="n">Style</span>
+<span class="kn">import</span> <span class="nn">tkinter</span>
+<span class="kn">from</span> <span class="nn">tkinter</span> <span class="kn">import</span> <span class="n">ttk</span>
+
+
+<span class="k">def</span> <span class="nf">toggle_button</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;Toggle between start and paused&quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">running</span><span class="o">.</span><span class="n">get</span><span class="p">():</span>
+        <span class="n">pause_timer</span><span class="p">()</span>
+        <span class="n">running</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
+        <span class="n">toggle_btn</span><span class="o">.</span><span class="n">configure</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="s1">&#39;Start&#39;</span><span class="p">,</span> <span class="n">style</span><span class="o">=</span><span class="s1">&#39;info.TButton&#39;</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">start_timer</span><span class="p">()</span>
+        <span class="n">running</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">toggle_btn</span><span class="o">.</span><span class="n">configure</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="s1">&#39;Pause&#39;</span><span class="p">,</span> <span class="n">style</span><span class="o">=</span><span class="s1">&#39;info.Outline.TButton&#39;</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">start_timer</span><span class="p">():</span>
+    <span class="n">after_id</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">window</span><span class="o">.</span><span class="n">after</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">increment_timer</span><span class="p">))</span>
+
+
+<span class="k">def</span> <span class="nf">pause_timer</span><span class="p">():</span>
+    <span class="n">window</span><span class="o">.</span><span class="n">after_cancel</span><span class="p">(</span><span class="n">after_id</span><span class="o">.</span><span class="n">get</span><span class="p">())</span>
+
+
+<span class="k">def</span> <span class="nf">increment_timer</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;Add one second to timer&quot;&quot;&quot;</span>
+    <span class="n">current</span> <span class="o">=</span> <span class="n">seconds_var</span><span class="o">.</span><span class="n">get</span><span class="p">()</span> <span class="o">+</span> <span class="mi">1</span>
+    <span class="n">seconds_var</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">current</span><span class="p">)</span>
+    <span class="n">time_string</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">{:02d}</span><span class="s1">:</span><span class="si">{:02d}</span><span class="s1">:</span><span class="si">{:02d}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">((</span><span class="n">current</span> <span class="o">//</span> <span class="mi">100</span><span class="p">)</span> <span class="o">//</span> <span class="mi">60</span><span class="p">,</span> <span class="p">(</span><span class="n">current</span> <span class="o">//</span> <span class="mi">100</span><span class="p">)</span> <span class="o">%</span> <span class="mi">60</span><span class="p">,</span> <span class="n">current</span> <span class="o">%</span> <span class="mi">100</span><span class="p">)</span>
+    <span class="n">timer_var</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">time_string</span><span class="p">)</span>
+    <span class="n">after_id</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">window</span><span class="o">.</span><span class="n">after</span><span class="p">(</span><span class="mi">100</span><span class="p">,</span> <span class="n">increment_timer</span><span class="p">))</span>
+
+
+<span class="k">def</span> <span class="nf">reset_timer</span><span class="p">():</span>
+    <span class="n">seconds_var</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+    <span class="n">timer_var</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s1">&#39;00:00:00&#39;</span><span class="p">)</span>
+
+
+<span class="c1"># instantiate the window</span>
+<span class="n">style</span> <span class="o">=</span> <span class="n">Style</span><span class="p">()</span>
+<span class="n">window</span> <span class="o">=</span> <span class="n">style</span><span class="o">.</span><span class="n">master</span>
+<span class="n">window</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s1">&#39;Timer&#39;</span><span class="p">)</span>
+
+<span class="c1"># variables</span>
+<span class="n">seconds_var</span> <span class="o">=</span> <span class="n">tkinter</span><span class="o">.</span><span class="n">IntVar</span><span class="p">(</span><span class="n">value</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+<span class="n">timer_var</span> <span class="o">=</span> <span class="n">tkinter</span><span class="o">.</span><span class="n">StringVar</span><span class="p">(</span><span class="n">value</span><span class="o">=</span><span class="s1">&#39;00:00:00&#39;</span><span class="p">)</span>
+<span class="n">after_id</span> <span class="o">=</span> <span class="n">tkinter</span><span class="o">.</span><span class="n">StringVar</span><span class="p">()</span>
+<span class="n">running</span> <span class="o">=</span> <span class="n">tkinter</span><span class="o">.</span><span class="n">BooleanVar</span><span class="p">(</span><span class="n">value</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+<span class="c1"># timer label</span>
+<span class="n">timer_lbl</span> <span class="o">=</span> <span class="n">ttk</span><span class="o">.</span><span class="n">Label</span><span class="p">(</span><span class="n">window</span><span class="p">,</span> <span class="n">font</span><span class="o">=</span><span class="s1">&#39;-size 32&#39;</span><span class="p">,</span> <span class="n">anchor</span><span class="o">=</span><span class="s1">&#39;center&#39;</span><span class="p">,</span> <span class="n">textvariable</span><span class="o">=</span><span class="n">timer_var</span><span class="p">)</span>
+<span class="n">timer_lbl</span><span class="o">.</span><span class="n">pack</span><span class="p">(</span><span class="n">side</span><span class="o">=</span><span class="s1">&#39;top&#39;</span><span class="p">,</span> <span class="n">fill</span><span class="o">=</span><span class="s1">&#39;x&#39;</span><span class="p">,</span> <span class="n">padx</span><span class="o">=</span><span class="mi">60</span><span class="p">,</span> <span class="n">pady</span><span class="o">=</span><span class="mi">20</span><span class="p">)</span>
+
+<span class="c1"># control buttons</span>
+<span class="n">toggle_btn</span> <span class="o">=</span> <span class="n">ttk</span><span class="o">.</span><span class="n">Button</span><span class="p">(</span><span class="n">window</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="s1">&#39;Start&#39;</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">style</span><span class="o">=</span><span class="s1">&#39;info.TButton&#39;</span><span class="p">,</span> <span class="n">command</span><span class="o">=</span><span class="n">toggle_button</span><span class="p">)</span>
+<span class="n">toggle_btn</span><span class="o">.</span><span class="n">pack</span><span class="p">(</span><span class="n">side</span><span class="o">=</span><span class="s1">&#39;left&#39;</span><span class="p">,</span> <span class="n">fill</span><span class="o">=</span><span class="s1">&#39;x&#39;</span><span class="p">,</span> <span class="n">expand</span><span class="o">=</span><span class="s1">&#39;yes&#39;</span><span class="p">,</span> <span class="n">padx</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">pady</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+
+<span class="n">reset_btn</span> <span class="o">=</span> <span class="n">ttk</span><span class="o">.</span><span class="n">Button</span><span class="p">(</span><span class="n">window</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="s1">&#39;Reset&#39;</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">style</span><span class="o">=</span><span class="s1">&#39;success.TButton&#39;</span><span class="p">,</span> <span class="n">command</span><span class="o">=</span><span class="n">reset_timer</span><span class="p">)</span>
+<span class="n">reset_btn</span><span class="o">.</span><span class="n">pack</span><span class="p">(</span><span class="n">side</span><span class="o">=</span><span class="s1">&#39;left&#39;</span><span class="p">,</span> <span class="n">fill</span><span class="o">=</span><span class="s1">&#39;x&#39;</span><span class="p">,</span> <span class="n">expand</span><span class="o">=</span><span class="s1">&#39;yes&#39;</span><span class="p">,</span> <span class="n">pady</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+
+<span class="n">exit_btn</span> <span class="o">=</span> <span class="n">ttk</span><span class="o">.</span><span class="n">Button</span><span class="p">(</span><span class="n">window</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="s1">&#39;Exit&#39;</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">style</span><span class="o">=</span><span class="s1">&#39;danger.TButton&#39;</span><span class="p">,</span> <span class="n">command</span><span class="o">=</span><span class="n">window</span><span class="o">.</span><span class="n">quit</span><span class="p">)</span>
+<span class="n">exit_btn</span><span class="o">.</span><span class="n">pack</span><span class="p">(</span><span class="n">side</span><span class="o">=</span><span class="s1">&#39;left&#39;</span><span class="p">,</span> <span class="n">fill</span><span class="o">=</span><span class="s1">&#39;x&#39;</span><span class="p">,</span> <span class="n">expand</span><span class="o">=</span><span class="s1">&#39;yes&#39;</span><span class="p">,</span> <span class="n">padx</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">pady</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+
+<span class="n">window</span><span class="o">.</span><span class="n">mainloop</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+        <a href="../usage.html" class="btn btn-neutral float-right" title="How to style widgets" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="simple_data_entry_form.html" class="btn btn-neutral float-left" title="Simple Data Entry Form" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright 2021, Israel Dryer.
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

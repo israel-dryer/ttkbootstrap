@@ -1,11 +1,8 @@
-"""
-A simple data entry form that prints the values to the screen when submitted
-"""
 from ttkbootstrap import Style
 from tkinter import ttk
 import tkinter
 
-style = Style()
+style = Style(theme='darkly')
 window = style.master
 window.title('Simple data entry form')
 
