@@ -7,6 +7,7 @@ pip install ttkbootstrap
 ```
 
 ### Documentation
+Read for more information about how to use along with full-size screenshots, and other useful information.
 https://ttkbootstrap.readthedocs.io/en/latest/
 
 ### Sample of themes
