@@ -171,12 +171,17 @@
 identical to the <code class="docutils literal notranslate"><span class="pre">ttk.Style</span></code> api.</p>
 <div class="section" id="choosing-a-theme">
 <h2>Choosing a theme<a class="headerlink" href="#choosing-a-theme" title="Permalink to this headline">¶</a></h2>
-<p>To use a ttkbootstrap theme, you first create a <code class="docutils literal notranslate"><span class="pre">ttkbootstrap.Style</span></code> object, and then apply the desired theme using
-the <code class="docutils literal notranslate"><span class="pre">Style.theme_use</span></code> method.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">style</span> <span class="o">=</span> <span class="n">Style</span><span class="p">()</span>
-<span class="n">style</span><span class="o">.</span><span class="n">theme_use</span><span class="p">(</span><span class="s1">&#39;superhero&#39;</span><span class="p">)</span>
+<p>To use a ttkbootstrap theme, you first create a <code class="docutils literal notranslate"><span class="pre">ttkbootstrap.Style</span></code> object. You can pass in the name of the theme
+you want to use as an argument. Otherwise, by default, the <em>lumen</em> style will be applied.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># lumen style is applied by default</span>
+<span class="n">style</span> <span class="o">=</span> <span class="n">Style</span><span class="p">()</span>
+
+<span class="c1"># if you want to set a specific theme at runtime, pass it&#39;s name as a keyword argument</span>
+<span class="n">style</span> <span class="o">=</span> <span class="n">Style</span><span class="p">(</span><span class="n">theme</span><span class="o">=</span><span class="s1">&#39;superhero&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
+<p>If for some reason you need to change the theme <em>after</em> the window has already been created, you will need to use the
+<code class="docutils literal notranslate"><span class="pre">Style.theme_use</span></code> method, which is actually what the <code class="docutils literal notranslate"><span class="pre">ttkbootstrap.Style</span></code> class does internally when instantiated.</p>
 <p>To get a list of all available themes:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">style</span><span class="o">.</span><span class="n">theme_names</span><span class="p">()</span>
 </pre></div>

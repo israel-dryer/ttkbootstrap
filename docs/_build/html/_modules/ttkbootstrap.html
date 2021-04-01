@@ -197,12 +197,16 @@
 <span class="sd">    A class for setting the application style.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-<div class="viewcode-block" id="Style.__init__"><a class="viewcode-back" href="../reference.html#ttkbootstrap.Style.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="Style.__init__"><a class="viewcode-back" href="../reference.html#ttkbootstrap.Style.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">theme</span><span class="o">=</span><span class="s1">&#39;lumen&#39;</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        :param str theme: the name of the theme to use at runtime; *lumen* by default.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">themes</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_load_themes</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">settings</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">colors</span> <span class="o">=</span> <span class="kc">None</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">colors</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">theme_use</span><span class="p">(</span><span class="n">theme</span><span class="p">)</span></div>
 
     <span class="k">def</span> <span class="nf">_load_themes</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -235,7 +239,10 @@
 <div class="viewcode-block" id="Style.theme_use"><a class="viewcode-back" href="../reference.html#ttkbootstrap.Style.theme_use">[docs]</a>    <span class="k">def</span> <span class="nf">theme_use</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">themename</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        If themename is None, returns the theme in use, otherwise, set the current theme to themename, refreshes all</span>
-<span class="sd">        widgets and emits a &lt;&lt;ThemeChanged&gt;&gt; event.</span>
+<span class="sd">        widgets and emits a ``&lt;&lt;ThemeChanged&gt;&gt;`` event.</span>
+
+<span class="sd">        This method should be used when you want to change the theme *after* the window has already been created.</span>
+<span class="sd">        Otherwise, the preferred method is to instantiate the window with a ``theme`` argument.</span>
 
 <span class="sd">        :param str themename: the theme to apply when creating new widgets</span>
 <span class="sd">        &quot;&quot;&quot;</span>

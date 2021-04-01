@@ -10,9 +10,11 @@ python documentation_.
 
 .. code-block:: python
 
-    # instantiate the style and apply a theme
+    # instantiate the style with default theme *lumen*
     style = Style()
-    style.theme_use('lumen')
+
+    # instantiate the style with another theme
+    style = Style(theme='superhero')
 
     # available themes
     for theme in style.theme_names():

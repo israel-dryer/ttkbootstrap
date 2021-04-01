@@ -39,6 +39,9 @@ class Style(ttk.Style):
     """
 
     def __init__(self, theme='lumen', *args, **kwargs):
+        """
+        :param str theme: the name of the theme to use at runtime; *lumen* by default.
+        """
         super().__init__(*args, **kwargs)
         self.themes = {}
         self._load_themes()
@@ -77,7 +80,10 @@ class Style(ttk.Style):
     def theme_use(self, themename=None):
         """
         If themename is None, returns the theme in use, otherwise, set the current theme to themename, refreshes all
-        widgets and emits a <<ThemeChanged>> event.
+        widgets and emits a ``<<ThemeChanged>>`` event.
+
+        This method should be used when you want to change the theme *after* the window has already been created.
+        Otherwise, the preferred method is to instantiate the window with a ``theme`` argument.
 
         :param str themename: the theme to apply when creating new widgets
         """
