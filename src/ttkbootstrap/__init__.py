@@ -203,9 +203,16 @@ class Colors:
         :returns: rgb color value
         :rtype: tuple
         """
-        r = round(int(color[1:3], 16) / 255, 2)
-        g = round(int(color[3:5], 16) / 255, 2)
-        b = round(int(color[5:], 16) / 255, 2)
+        if len(color) == 4:
+            # 3 digit hexadecimal colors
+            r = round(int(color[1], 16) / 255, 2)
+            g = round(int(color[2], 16) / 255, 2)
+            b = round(int(color[3], 16) / 255, 2)
+        else:
+            # 6 digit hexadecimal colors
+            r = round(int(color[1:3], 16) / 255, 2)
+            g = round(int(color[3:5], 16) / 255, 2)
+            b = round(int(color[5:], 16) / 255, 2)
         return r, g, b
 
     @staticmethod

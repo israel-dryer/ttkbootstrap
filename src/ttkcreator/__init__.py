@@ -16,6 +16,7 @@ from PIL import ImageGrab
 from tkinter.filedialog import asksaveasfilename
 from tkinter.messagebox import showwarning
 from pathlib import Path
+from copy import deepcopy
 
 
 class CreatorDesignWindow(tk.Toplevel):
@@ -31,6 +32,7 @@ class CreatorDesignWindow(tk.Toplevel):
         self.protocol('WM_DELETE_WINDOW', self.master.quit)
         self.geometry(f'938x602+{master.winfo_x()}+{master.winfo_y()}')
         self.style = self.master.style
+        self.fallback_colors = deepcopy(self.style.colors)
         self.theme_name = self.master.style.theme_use()
         self.vars = {}
         self.setup()
@@ -113,27 +115,51 @@ class CreatorDesignWindow(tk.Toplevel):
         color_value = self.style.colors.get(color_label)
         ttk.Label(selector, text=color_label, name='label', width=10).pack(side='left')
         tk.Frame(selector, name='patch', width=10, background=color_value).pack(side='left', fill='y', padx=2)
-        ttk.Entry(selector, textvariable=color_label).pack(side='left', fill='x', expand='yes')
+        entry = ttk.Entry(selector, name='entry', textvariable=color_label)
+        entry.pack(side='left', fill='x', expand='yes')
+        entry.bind('<FocusOut>', lambda event, selector=selector: self.select_color(selector, event))
         btn = ttk.Button(selector, text="🎨", style='secondary.TButton', width=3)
         btn.configure(command=lambda s=selector: self.select_color(s))
         btn.pack(side='right', padx=2)
         return selector
 
-    def select_color(self, selector):
+    def select_color(self, selector, event=None):
         """
         Callback for selecting a new color in the color selector. Changes the color patch and updates the related
         theme variable.
 
         :param selector: the widget container for a color selector
         """
-        # print(self.winfo_width(), self.winfo_height())
         color_label = selector.children.get('label').cget('text')
         color_patch = selector.children.get('patch')
-        color = askcolor()
-        if color[1]:
-            color_value = color[1]
-            color_patch.configure(background=color_value)
-            self.setvar(color_label, color_value)
+        color_entry = selector.children.get('entry')
+
+        if not event:
+            # color was changed with palette button
+            color = askcolor()
+            if color[1]:
+                color_value = color[1]
+                color_patch.configure(background=color_value)
+                self.setvar(color_label, color_value)
+                return
+        else:
+            # color was changed with user input
+            color_value = self.getvar(color_label)
+            if len(color_value) == 4 or len(color_value) == 7:
+                # hex color is the correct length
+                self.setvar(color_label, color_value)
+                try:
+                    color_patch.configure(background=color_value)
+                except Exception:
+                    # Not a valid color, assign default
+                    color_value = self.fallback_colors.get(color_label)
+                    color_patch.configure(background=color_value)
+                    self.setvar(color_label, color_value)
+            else:
+                # hex color is not the correct length, assign default color
+                color_value = self.fallback_colors.get(color_label)
+                color_patch.configure(background=color_value)
+                self.setvar(color_label, color_value)
 
     def create_variables(self):
         """
@@ -233,25 +259,32 @@ class CreatorDesignWindow(tk.Toplevel):
         :param mode: the mode of the trace observer
         """
         theme_id = uuid.uuid4()  # a unique (and temporary) identifier for the new theme
-        colors = Colors(
-            primary=self.getvar('primary'),
-            secondary=self.getvar('secondary'),
-            success=self.getvar('success'),
-            info=self.getvar('info'),
-            warning=self.getvar('warning'),
-            danger=self.getvar('danger'),
-            fg=self.getvar('fg'),
-            bg=self.getvar('bg'),
-            selectfg=self.getvar('selectfg'),
-            selectbg=self.getvar('selectbg'),
-            light=self.getvar('light'),
-            border=self.getvar('border'),
-            inputfg=self.getvar('inputfg'))
 
-        settings = ThemeSettings(name=theme_id, type=self.getvar('inputfg'), font=self.getvar('font'), colors=colors)
-        self.new_style = StylerTTK(self.style, settings)
-        self.style.theme_use(theme_id)
+        try:
+            colors = Colors(
+                primary=self.getvar('primary'),
+                secondary=self.getvar('secondary'),
+                success=self.getvar('success'),
+                info=self.getvar('info'),
+                warning=self.getvar('warning'),
+                danger=self.getvar('danger'),
+                fg=self.getvar('fg'),
+                bg=self.getvar('bg'),
+                selectfg=self.getvar('selectfg'),
+                selectbg=self.getvar('selectbg'),
+                light=self.getvar('light'),
+                border=self.getvar('border'),
+                inputfg=self.getvar('inputfg'))
+        except Exception:
+            return
 
+        try:
+            settings = ThemeSettings(name=theme_id, type=self.getvar('inputfg'), font=self.getvar('font'),
+                                     colors=colors)
+            self.new_style = StylerTTK(self.style, settings)
+            self.style.theme_use(theme_id)
+        except Exception:
+            return
         """
             This call is forcing the select foreground to turn black, even if foreground is not specified in
             the palette parameters. Calling this will set some of the residual tk colors, such as the combobox 
@@ -465,7 +498,6 @@ class CreatorBaseChooser(tk.Tk):
 
         if settings['userpath'] and Path(settings['userpath']).exists():
             return True
-
 
         showwarning(title="User Defined Themes", message='Please supply a path to save user-defined themes')
         userpath = asksaveasfilename(parent=self, title='User Defined Themes', defaultextension='json',
