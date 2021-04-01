@@ -95,7 +95,7 @@
 <li class="toctree-l2"><a class="reference internal" href="#starting-the-application">Starting the application</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#select-a-base-theme">Select a base theme</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#create-and-save-your-theme">Create and save your theme</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#how-does-ttk-creator-create-themes">How does TTK Creator create themes?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#how-are-themes-created">How are themes created?</a></li>
 </ul>
 </li>
 </ul>
@@ -168,6 +168,7 @@
   <div class="section" id="ttk-creator">
 <span id="ttkcreator"></span><h1>TTK Creator<a class="headerlink" href="#ttk-creator" title="Permalink to this headline">¶</a></h1>
 <p>TTK Creator is a program that makes it really easy to create and use your own defined themes.</p>
+<img alt="_images/ttkcreator.png" src="_images/ttkcreator.png" />
 <div class="section" id="starting-the-application">
 <h2>Starting the application<a class="headerlink" href="#starting-the-application" title="Permalink to this headline">¶</a></h2>
 <p>From the console, type:</p>
@@ -196,21 +197,27 @@ widget to overide this… post it on GitHub if you know a solution.</p>
 <div class="section" id="create-and-save-your-theme">
 <h2>Create and save your theme<a class="headerlink" href="#create-and-save-your-theme" title="Permalink to this headline">¶</a></h2>
 <p>You should now see the TTK Creator design window</p>
+<img alt="_images/ttkcreator.png" src="_images/ttkcreator.png" />
 <ul class="simple">
 <li><p>Name your theme</p></li>
 <li><p>Click the color palette to select a color, or input a hex color directly</p></li>
 <li><p>Click <strong>Save</strong> to save your theme</p></li>
 <li><p>Click <strong>Reset</strong> to apply the defaults and start from scratch</p></li>
 </ul>
-<img alt="_images/ttkcreator.png" src="_images/ttkcreator.png" />
+<p>Theme names must be unique. If you choose a theme name that already exists, you will be prompted to choose another.</p>
+<p>You can check your new theme by starting up the ttkbootstrap demo application, which will load all available themes.
+Then, select your new theme from the option menu.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">python</span> <span class="o">-</span><span class="n">m</span> <span class="n">ttkbootstrap</span>
+</pre></div>
+</div>
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
 <p>If you are using Linux or MacOS and the program crashes without starting, you may not have a font with
 emojii support. To fix this <code class="docutils literal notranslate"><span class="pre">sudo</span> <span class="pre">apt-get</span> <span class="pre">install</span> <span class="pre">fonts-symbola</span></code></p>
 </div>
 </div>
-<div class="section" id="how-does-ttk-creator-create-themes">
-<h2>How does TTK Creator create themes?<a class="headerlink" href="#how-does-ttk-creator-create-themes" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="how-are-themes-created">
+<h2>How are themes created?<a class="headerlink" href="#how-are-themes-created" title="Permalink to this headline">¶</a></h2>
 <p>TTK Creator creates a theme definition that looks exactly like the record below for the built-in <em>lumen</em> theme:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
   <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;lumen&quot;</span><span class="p">,</span>
