@@ -444,6 +444,7 @@ class CreatorBaseChooser(tk.Tk):
         super().__init__()
         self.style = Style()
         self.style.theme_use('lumen')
+        self.title('TTK Creator')
         self.geometry(f'938x602')
         self.frame = ttk.Frame(self)
         self.setup()
