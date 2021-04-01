@@ -15,13 +15,13 @@ There are more than a dozen :ref:`built-in dark and light themes <themes>`
 Looking for more? Create your own themes with :ref:`TTK Creator <ttkcreator>`
 
 .. toctree::
-   :maxdepth: 2
    :caption: Contents:
 
    overview
    themes
    install
    gettingstarted
+   examples
    usage
    reference
    creator
