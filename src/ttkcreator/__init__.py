@@ -187,9 +187,8 @@ class CreatorDesignWindow(tk.Toplevel):
         }
         user_themes['themes'].append(theme)
 
-        with importlib.resources.path('ttkbootstrap', 'user_themes.json') as path:
-            with open(path, 'w') as f:
-                json.dump(user_themes, f, indent='\t')
+        with open(settings['userpath'], 'w', encoding='utf-8') as f:
+            json.dump(user_themes, f, indent='\t')
         showinfo(title='Save Theme', message=f'The theme {name} has been created')
 
     def reset_theme(self):
@@ -464,22 +463,25 @@ class CreatorBaseChooser(tk.Tk):
         json_string = importlib.resources.read_text('ttkbootstrap', 'themes.json')
         settings = json.loads(json_string)
 
-        if not settings['userpath']:
-            showwarning(title="User Defined Themes", message='Please supply a path to save user-defined themes')
-            userpath = asksaveasfilename(parent=self, title='User Defined Themes', defaultextension='json',
-                                         initialfile='ttkbootstrap_themes.json')
-            if not userpath:
-                showwarning(title='User Defined Themes', message='Cannot save user-defined themes without a valid path')
-                return False
-            else:
-                # set the new userpath
-                settings['userpath'] = userpath
-                with importlib.resources.path('ttkbootstrap', 'themes.json') as path:
-                    with open(path, 'w', encoding='utf-8') as f:
-                        json.dump(settings, f, indent='\t')
-                # create the new file if not exists
-                if not Path(userpath).exists():
-                    template = {"themes": []}
-                    with open(userpath, 'w', encoding='utf-8') as f:
-                        json.dump(template, f, indent='\t')
-        return True
+        if settings['userpath'] and Path(settings['userpath']).exists():
+            return True
+
+
+        showwarning(title="User Defined Themes", message='Please supply a path to save user-defined themes')
+        userpath = asksaveasfilename(parent=self, title='User Defined Themes', defaultextension='json',
+                                     initialfile='ttkbootstrap_themes.json', )
+        if not userpath:
+            showwarning(title='User Defined Themes', message='Cannot save user-defined themes without a valid path')
+            return False
+        else:
+            # set the new userpath
+            settings['userpath'] = userpath
+            with importlib.resources.path('ttkbootstrap', 'themes.json') as path:
+                with open(path, 'w', encoding='utf-8') as f:
+                    json.dump(settings, f, indent='\t')
+            # create the new file if not exists
+            if not Path(userpath).exists():
+                template = {"themes": []}
+                with open(userpath, 'w', encoding='utf-8') as f:
+                    json.dump(template, f, indent='\t')
+            return True

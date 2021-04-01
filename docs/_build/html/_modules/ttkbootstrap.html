@@ -207,11 +207,19 @@
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Load all ttkbootstrap defined themes</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># pre-defined themes</span>
         <span class="n">json_data</span> <span class="o">=</span> <span class="n">importlib</span><span class="o">.</span><span class="n">resources</span><span class="o">.</span><span class="n">read_text</span><span class="p">(</span><span class="s1">&#39;ttkbootstrap&#39;</span><span class="p">,</span> <span class="s1">&#39;themes.json&#39;</span><span class="p">)</span>
-        <span class="n">json_data_user</span> <span class="o">=</span> <span class="n">importlib</span><span class="o">.</span><span class="n">resources</span><span class="o">.</span><span class="n">read_text</span><span class="p">(</span><span class="s1">&#39;ttkbootstrap&#39;</span><span class="p">,</span> <span class="s1">&#39;user_themes.json&#39;</span><span class="p">)</span>
-
         <span class="n">builtin_themes</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">json_data</span><span class="p">)</span>
-        <span class="n">user_themes</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">json_data_user</span><span class="p">)</span>
+
+        <span class="c1"># user defined themes</span>
+        <span class="n">user_path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">builtin_themes</span><span class="p">[</span><span class="s1">&#39;userpath&#39;</span><span class="p">])</span>
+        <span class="k">if</span> <span class="n">user_path</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
+            <span class="k">with</span> <span class="n">user_path</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">encoding</span><span class="o">=</span><span class="s1">&#39;utf-8&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+                <span class="n">user_themes</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">user_themes</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;themes&#39;</span><span class="p">:</span> <span class="p">[]}</span>
+
+        <span class="c1"># combined theme collection</span>
         <span class="n">settings</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;themes&#39;</span><span class="p">:</span> <span class="n">builtin_themes</span><span class="p">[</span><span class="s1">&#39;themes&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="n">user_themes</span><span class="p">[</span><span class="s1">&#39;themes&#39;</span><span class="p">]}</span>
 
         <span class="k">for</span> <span class="n">theme</span> <span class="ow">in</span> <span class="n">settings</span><span class="p">[</span><span class="s1">&#39;themes&#39;</span><span class="p">]:</span>

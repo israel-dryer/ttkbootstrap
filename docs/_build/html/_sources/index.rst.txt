@@ -6,21 +6,26 @@
 Welcome to ttkbootstrap's documentation!
 ========================================
 
-A collection of modern, flat themes inspired by Bootstrap. There are more than a dozen built-in themes, and you also
-have the ability to easily :ref:`create your own <ttkcreator>`.
+A collection of modern, flat themes inspired by Bootstrap.
+There are more than a dozen :ref:`built-in dark and light themes <themes>`
 
-Out with the **old**
++----------------------+---------------------+
+| classic ttk theme    | ttkbootstrap theme  |
++----------------------+---------------------+
+| |old|                | |new|               |
++----------------------+---------------------+
 
-.. image:: _static/examples/classic.png
-  :scale: 60% %
-  :align: center
+.. |old| image:: _static/examples/classic.png
+            :scale: 60% %
+            :align: middle
 
-In with the **NEW!**
+.. |new| image:: _static/examples/lumen.png
+            :scale: 60 %
+            :align: middle
 
-.. image:: _static/examples/lumen.png
-  :scale: 60 %
-  :align: center
+Looking for more? You can create your own themes with :ref:`TTK Creator <ttkcreator>`
 
+.. image:: _static/examples/ttkcreator.png
 
 .. toctree::
    :maxdepth: 2
@@ -29,8 +34,8 @@ In with the **NEW!**
    overview
    themes
    install
-   example
    gettingstarted
+   usage
    reference
    creator
 
