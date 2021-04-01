@@ -59,36 +59,3 @@ Then, select your new theme from the option menu.
 .. warning:: If you are using Linux or MacOS and the program crashes without starting, you may not have a font with
     emojii support. To fix this ``sudo apt-get install fonts-symbola``
 
-How are themes created?
------------------------
-TTK Creator creates a theme definition that looks exactly like the record below for the built-in *lumen* theme:
-
-.. code-block:: python
-
-    {
-      "name": "lumen",
-      "font": "Helvetica",
-      "type": "light",
-      "colors": {
-        "primary": "#158cba",
-        "secondary": "#555555",
-        "success": "#28b62c",
-        "info": "#75caeb",
-        "warning": "#ff851b",
-        "danger": "#ff4136",
-        "bg": "#ffffff",
-        "fg": "#555555",
-        "selectbg": "#555555",
-        "selectfg": "#ffffff",
-        "light": "#f6f6f6",
-        "border": "#ced4da",
-        "inputfg": "#888888"
-      }
-    }
-
-This theme definition is read by the ``ttkbootstrap.Style`` class and converted into an actual theme by the
-``ttkbootstrap.StylerTTK`` class at runtime. At that point, it is available to use like any other theme. The only
-information about a theme that is stored (built-in or user-defined) is the theme definition. All themes are created and
-loaded at run-time via the definitions found in the ``themes.json`` file or the ``user_themes.json`` file.
-
-

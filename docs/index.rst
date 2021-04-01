@@ -9,6 +9,10 @@ Welcome to ttkbootstrap's documentation!
 A collection of modern, flat themes inspired by Bootstrap.
 There are more than a dozen :ref:`built-in dark and light themes <themes>`
 
+.. video:: _static/examples/ttkbootstrap.mp4
+   :autoplay:
+
+
 Looking for more? You can create your own themes with :ref:`TTK Creator <ttkcreator>`
 
 .. toctree::
