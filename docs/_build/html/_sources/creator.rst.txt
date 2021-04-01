@@ -5,6 +5,8 @@ TTK Creator
 
 TTK Creator is a program that makes it really easy to create and use your own defined themes.
 
+.. image:: _static/examples/ttkcreator.png
+
 Starting the application
 ------------------------
 From the console, type:
@@ -38,19 +40,27 @@ Create and save your theme
 --------------------------
 You should now see the TTK Creator design window
 
+.. image:: _static/examples/ttkcreator.png
+
 - Name your theme
 - Click the color palette to select a color, or input a hex color directly
 - Click **Save** to save your theme
 - Click **Reset** to apply the defaults and start from scratch
 
-.. image:: _static/examples/ttkcreator.png
+Theme names must be unique. If you choose a theme name that already exists, you will be prompted to choose another.
 
+You can check your new theme by starting up the ttkbootstrap demo application, which will load all available themes.
+Then, select your new theme from the option menu.
+
+.. code-block:: python
+
+    python -m ttkbootstrap
 
 .. warning:: If you are using Linux or MacOS and the program crashes without starting, you may not have a font with
     emojii support. To fix this ``sudo apt-get install fonts-symbola``
 
-How does TTK Creator create themes?
------------------------------------
+How are themes created?
+-----------------------
 TTK Creator creates a theme definition that looks exactly like the record below for the built-in *lumen* theme:
 
 .. code-block:: python
