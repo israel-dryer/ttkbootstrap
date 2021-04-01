@@ -23,7 +23,7 @@ Simple example
 
 This results in the window below:
 
-.. image:: _static/submit.png
+.. image:: images/submit.png
 
 The ``Style`` object automatically creates the master widget that we assigned to ``window``. This is
 standard ttk behavior, so you do not need to manually create a master widget by using ``tkinter.Tk()``.

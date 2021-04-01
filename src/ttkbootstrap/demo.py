@@ -90,12 +90,12 @@ class Demo(Style):
         # color_frame.pack(side='top', fill='x')
         pw.add(color_frame)
 
-        # This outer frame will provide an internal buffer between the widget examples and the window pane,
+        # This outer frame will provide an internal buffer between the widget images and the window pane,
         # there is no other way to add internal padding
         widget_outer_frame = ttk.Frame(pw, padding=(0, 10))
         pw.add(widget_outer_frame)
 
-        # Widget examples
+        # Widget images
         widget_frame = ttk.Frame(widget_outer_frame, padding=10)
         widget_frame.pack(fill='x')
 
@@ -188,7 +188,7 @@ class Demo(Style):
 
     def get_bounding_box(self, event):
         """
-        Take a screenshot of the current demo window and save to examples
+        Take a screenshot of the current demo window and save to images
         """
         # bounding box
         titlebar = 31
@@ -204,7 +204,7 @@ class Demo(Style):
         img = ImageGrab.grab(bbox=bbox)
 
         # image name
-        filename = f'../../examples/{self.theme_name.get()}.png'
+        filename = f'../../images/{self.theme_name.get()}.png'
         img.save(filename, 'png')
         print(filename)  # print for confirmation
 

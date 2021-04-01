@@ -23,7 +23,7 @@ class CreatorDesignWindow(tk.Toplevel):
     """
     An application for designing and saving user-defined themes for ttk / tkinter.
 
-    DEV NOTES: press the <Insert> key to save a screenshot to examples.
+    DEV NOTES: press the <Insert> key to save a screenshot to images.
     """
 
     def __init__(self, master):
@@ -300,7 +300,7 @@ class CreatorDesignWindow(tk.Toplevel):
 
     def get_bounding_box(self, event):
         """
-        Take a screenshot of the current demo window and save to examples
+        Take a screenshot of the current demo window and save to images
         """
         # bounding box
         titlebar = 31
@@ -316,7 +316,7 @@ class CreatorDesignWindow(tk.Toplevel):
         img = ImageGrab.grab(bbox=bbox)
 
         # image name
-        filename = f'examples/ttkcreator.png'
+        filename = f'images/ttkcreator.png'
         print(filename)
         img.save(filename, 'png')
 
@@ -355,7 +355,7 @@ class EverythingBagel(ttk.Notebook):
         # Separator
         ttk.Separator(self.tab).pack(fill='x', padx=10)
 
-        # Widget examples
+        # Widget images
         widget_frame = ttk.Frame(self.tab, padding=15)
         widget_frame.pack(fill='both')
 
