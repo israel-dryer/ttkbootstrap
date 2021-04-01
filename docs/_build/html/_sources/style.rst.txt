@@ -1,4 +1,0 @@
-.. autoclass:: ttkbootstrap.styler.Style
-    :show-inheritance:
-    :special-members:
-    :members:

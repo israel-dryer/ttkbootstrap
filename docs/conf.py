@@ -33,7 +33,8 @@ extensions = [
     'sphinx.ext.viewcode',
     'sphinx.ext.autosummary',
     'sphinx.ext.napoleon',
-    "sphinx_rtd_theme"
+    "sphinx_rtd_theme",
+    'sphinxcontrib.video'
 ]
 
 # Add any paths that contain templates here, relative to this directory.

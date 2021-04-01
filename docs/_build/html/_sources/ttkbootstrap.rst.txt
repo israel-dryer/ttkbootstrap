@@ -1,5 +1,0 @@
-ttkbootstrap
-=====
-
-.. automodule:: ttkbootstrap
-    :members:
