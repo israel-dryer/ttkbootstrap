@@ -1,284 +1,285 @@
 {
-  "themes": [
-    {
-      "name": "cosmo",
-      "font": "Helvetica",
-      "type": "light",
-      "colors": {
-        "primary": "#2780e3",
-        "secondary": "#373a3c",
-        "success": "#3fb618",
-        "info": "#9954bb",
-        "warning": "#ff7518",
-        "danger": "#ff0039",
-        "bg": "#ffffff",
-        "fg": "#373a3c",
-        "selectbg": "#373a3c",
-        "selectfg": "#ffffff",
-        "light": "#fdfdfe",
-        "border": "#ced4da",
-        "inputfg": "#49506a"
-      }
-    },
-    {
-      "name": "flatly",
-      "font": "Helvetica",
-      "type": "light",
-      "colors": {
-        "primary": "#2c3e50",
-        "secondary": "#95a5a6",
-        "success": "#18bc9c",
-        "info": "#3498db",
-        "warning": "#f39c12",
-        "danger": "#e74c3c",
-        "bg": "#ffffff",
-        "fg": "#212529",
-        "selectbg": "#95a5a6",
-        "selectfg": "#ffffff",
-        "light": "#ecf0f1",
-        "border": "#ced4da",
-        "inputfg": "#7b8a8b"
-      }
-    },
-    {
-      "name": "litera",
-      "font": "Helvetica",
-      "type": "light",
-      "colors": {
-        "primary": "#4582ec",
-        "secondary": "#adb5bd",
-        "success": "#02b875",
-        "info": "#17a2b8",
-        "warning": "#f0ad4e",
-        "danger": "#d9534f",
-        "bg": "#ffffff",
-        "fg": "#343a40",
-        "selectbg": "#adb5bd",
-        "selectfg": "#ffffff",
-        "light": "#f8f9fa",
-        "border": "#e5e5e5",
-        "inputfg": "#343a40"
-      }
-    },
-    {
-      "name": "minty",
-      "font": "Helvetica",
-      "type": "light",
-      "colors": {
-        "primary": "#78c2ad",
-        "secondary": "#f3969a",
-        "success": "#56cc9d",
-        "info": "#6cc3d5",
-        "warning": "#ffce67",
-        "danger": "#ff7851",
-        "bg": "#ffffff",
-        "fg": "#5a5a5a",
-        "selectbg": "#f3969a",
-        "selectfg": "#ffffff",
-        "light": "#f8f9fa",
-        "border": "#ced4da",
-        "inputfg": "#5a5a5a"
-      }
-    },
-    {
-      "name": "lumen",
-      "font": "Helvetica",
-      "type": "light",
-      "colors": {
-        "primary": "#158cba",
-        "secondary": "#555555",
-        "success": "#28b62c",
-        "info": "#75caeb",
-        "warning": "#ff851b",
-        "danger": "#ff4136",
-        "bg": "#ffffff",
-        "fg": "#555555",
-        "selectbg": "#555555",
-        "selectfg": "#ffffff",
-        "light": "#f6f6f6",
-        "border": "#ced4da",
-        "inputfg": "#888888"
-      }
-    },
-    {
-      "name": "sandstone",
-      "font": "Helvetica",
-      "type": "light",
-      "colors": {
-        "primary": "#3e3f3a",
-        "secondary": "#8e8c84",
-        "success": "#93c54b",
-        "info": "#29abe0",
-        "warning": "#f47c3c",
-        "danger": "#d9534f",
-        "bg": "#ffffff",
-        "fg": "#3e3f3a",
-        "selectbg": "#8e8c84",
-        "selectfg": "#ffffff",
-        "light": "#fdfcfb",
-        "border": "#ced4da",
-        "inputfg": "#3e3f3a"
-      }
-    },
-    {
-      "name": "yeti",
-      "font": "Helvetica",
-      "type": "light",
-      "colors": {
-        "primary": "#008cba",
-        "secondary": "#333333",
-        "success": "#43ac6a",
-        "info": "#5bc0de",
-        "warning": "#e99002",
-        "danger": "#f04124",
-        "bg": "#ffffff",
-        "fg": "#222222",
-        "selectbg": "#333333",
-        "selectfg": "#ffffff",
-        "light": "#eeeeee",
-        "border": "#cccccc",
-        "inputfg": "#222222"
-      }
-    },
-    {
-      "name": "pulse",
-      "font": "Helvetica",
-      "type": "light",
-      "colors": {
-        "primary": "#593196",
-        "secondary": "#17141f",
-        "success": "#13b955",
-        "info": "#009cdc",
-        "warning": "#efa31d",
-        "danger": "#fc3939",
-        "bg": "#ffffff",
-        "fg": "#444444",
-        "selectbg": "#17141f",
-        "selectfg": "#ffffff",
-        "light": "#fdfdfe",
-        "border": "#cbc8d0",
-        "inputfg": "#444444"
-      }
-    },
-    {
-      "name": "united",
-      "font": "Helvetica",
-      "type": "light",
-      "colors": {
-        "primary": "#e95420",
-        "secondary": "#aea79f",
-        "success": "#38b44a",
-        "info": "#17a2b8",
-        "warning": "#efb73e",
-        "danger": "#df382c",
-        "bg": "#ffffff",
-        "fg": "#333333",
-        "selectbg": "#aea79f",
-        "selectfg": "#ffffff",
-        "light": "#f9fafb",
-        "border": "#ced4da",
-        "inputfg": "#333333"
-      }
-    },
-    {
-      "name": "journal",
-      "font": "Helvetica",
-      "type": "light",
-      "colors": {
-        "primary": "#eb6864",
-        "secondary": "#aaaaaa",
-        "success": "#22b24c",
-        "info": "#336699",
-        "warning": "#f5e625",
-        "danger": "#f57a00",
-        "bg": "#ffffff",
-        "fg": "#222222",
-        "selectbg": "#aaaaaa",
-        "selectfg": "#ffffff",
-        "light": "#f9fafb",
-        "border": "#ced4da",
-        "inputfg": "#222222"
-      }
-    },
-    {
-      "name": "darkly",
-      "font": "Helvetica",
-      "type": "dark",
-      "colors": {
-        "primary": "#375a7f",
-        "secondary": "#444444",
-        "success": "#00bc8c",
-        "info": "#3498db",
-        "warning": "#f39c12",
-        "danger": "#e74c3c",
-        "bg": "#222222",
-        "fg": "#ffffff",
-        "selectbg": "#444444",
-        "selectfg": "#ffffff",
-        "light": "#adb5bd",
-        "border": "#222222",
-        "inputfg": "#444444"
-      }
-    },
-    {
-      "name": "superhero",
-      "font": "Helvetica",
-      "type": "dark",
-      "colors": {
-        "primary": "#df691a",
-        "secondary": "#4e5d6c",
-        "success": "#5cb85c",
-        "info": "#5bc0de",
-        "warning": "#f0ad4e",
-        "danger": "#d9534f",
-        "bg": "#2b3e50",
-        "fg": "#ffffff",
-        "selectbg": "#4e5d6c",
-        "selectfg": "#ffffff",
-        "light": "#adb5bd",
-        "border": "#222222",
-        "inputfg": "#444444"
-      }
-    },
-    {
-      "name": "solar",
-      "font": "Helvetica",
-      "type": "dark",
-      "colors": {
-        "primary": "#bc951a",
-        "secondary": "#94a2a4",
-        "success": "#44aca4",
-        "info": "#3f98d7",
-        "warning": "#d05e2f",
-        "danger": "#d95092",
-        "bg": "#002b36",
-        "fg": "#ffffff",
-        "selectbg": "#94a2a4",
-        "selectfg": "#ffffff",
-        "light": "#adb5bd",
-        "border": "#00252e",
-        "inputfg": "#495063"
-      }
-    },
-    {
-      "name": "cyborg",
-      "font": "Helvetica",
-      "type": "dark",
-      "colors": {
-        "primary": "#2a9fd6",
-        "secondary": "#555555",
-        "success": "#77b300",
-        "info": "#9933cc",
-        "warning": "#ff8800",
-        "danger": "#cc0000",
-        "bg": "#060606",
-        "fg": "#ffffff",
-        "selectbg": "#555555",
-        "selectfg": "#ffffff",
-        "light": "#adafae",
-        "border": "#060606",
-        "inputfg": "#555555"
-      }
-    }
-  ]
+	"userpath": "C:/Users/us43060/Documents/ttkbootstrap_themes.json",
+	"themes": [
+		{
+			"name": "cosmo",
+			"font": "Helvetica",
+			"type": "light",
+			"colors": {
+				"primary": "#2780e3",
+				"secondary": "#373a3c",
+				"success": "#3fb618",
+				"info": "#9954bb",
+				"warning": "#ff7518",
+				"danger": "#ff0039",
+				"bg": "#ffffff",
+				"fg": "#373a3c",
+				"selectbg": "#373a3c",
+				"selectfg": "#ffffff",
+				"light": "#fdfdfe",
+				"border": "#ced4da",
+				"inputfg": "#49506a"
+			}
+		},
+		{
+			"name": "flatly",
+			"font": "Helvetica",
+			"type": "light",
+			"colors": {
+				"primary": "#2c3e50",
+				"secondary": "#95a5a6",
+				"success": "#18bc9c",
+				"info": "#3498db",
+				"warning": "#f39c12",
+				"danger": "#e74c3c",
+				"bg": "#ffffff",
+				"fg": "#212529",
+				"selectbg": "#95a5a6",
+				"selectfg": "#ffffff",
+				"light": "#ecf0f1",
+				"border": "#ced4da",
+				"inputfg": "#7b8a8b"
+			}
+		},
+		{
+			"name": "litera",
+			"font": "Helvetica",
+			"type": "light",
+			"colors": {
+				"primary": "#4582ec",
+				"secondary": "#adb5bd",
+				"success": "#02b875",
+				"info": "#17a2b8",
+				"warning": "#f0ad4e",
+				"danger": "#d9534f",
+				"bg": "#ffffff",
+				"fg": "#343a40",
+				"selectbg": "#adb5bd",
+				"selectfg": "#ffffff",
+				"light": "#f8f9fa",
+				"border": "#e5e5e5",
+				"inputfg": "#343a40"
+			}
+		},
+		{
+			"name": "minty",
+			"font": "Helvetica",
+			"type": "light",
+			"colors": {
+				"primary": "#78c2ad",
+				"secondary": "#f3969a",
+				"success": "#56cc9d",
+				"info": "#6cc3d5",
+				"warning": "#ffce67",
+				"danger": "#ff7851",
+				"bg": "#ffffff",
+				"fg": "#5a5a5a",
+				"selectbg": "#f3969a",
+				"selectfg": "#ffffff",
+				"light": "#f8f9fa",
+				"border": "#ced4da",
+				"inputfg": "#5a5a5a"
+			}
+		},
+		{
+			"name": "lumen",
+			"font": "Helvetica",
+			"type": "light",
+			"colors": {
+				"primary": "#158cba",
+				"secondary": "#555555",
+				"success": "#28b62c",
+				"info": "#75caeb",
+				"warning": "#ff851b",
+				"danger": "#ff4136",
+				"bg": "#ffffff",
+				"fg": "#555555",
+				"selectbg": "#555555",
+				"selectfg": "#ffffff",
+				"light": "#f6f6f6",
+				"border": "#ced4da",
+				"inputfg": "#888888"
+			}
+		},
+		{
+			"name": "sandstone",
+			"font": "Helvetica",
+			"type": "light",
+			"colors": {
+				"primary": "#3e3f3a",
+				"secondary": "#8e8c84",
+				"success": "#93c54b",
+				"info": "#29abe0",
+				"warning": "#f47c3c",
+				"danger": "#d9534f",
+				"bg": "#ffffff",
+				"fg": "#3e3f3a",
+				"selectbg": "#8e8c84",
+				"selectfg": "#ffffff",
+				"light": "#fdfcfb",
+				"border": "#ced4da",
+				"inputfg": "#3e3f3a"
+			}
+		},
+		{
+			"name": "yeti",
+			"font": "Helvetica",
+			"type": "light",
+			"colors": {
+				"primary": "#008cba",
+				"secondary": "#333333",
+				"success": "#43ac6a",
+				"info": "#5bc0de",
+				"warning": "#e99002",
+				"danger": "#f04124",
+				"bg": "#ffffff",
+				"fg": "#222222",
+				"selectbg": "#333333",
+				"selectfg": "#ffffff",
+				"light": "#eeeeee",
+				"border": "#cccccc",
+				"inputfg": "#222222"
+			}
+		},
+		{
+			"name": "pulse",
+			"font": "Helvetica",
+			"type": "light",
+			"colors": {
+				"primary": "#593196",
+				"secondary": "#17141f",
+				"success": "#13b955",
+				"info": "#009cdc",
+				"warning": "#efa31d",
+				"danger": "#fc3939",
+				"bg": "#ffffff",
+				"fg": "#444444",
+				"selectbg": "#17141f",
+				"selectfg": "#ffffff",
+				"light": "#fdfdfe",
+				"border": "#cbc8d0",
+				"inputfg": "#444444"
+			}
+		},
+		{
+			"name": "united",
+			"font": "Helvetica",
+			"type": "light",
+			"colors": {
+				"primary": "#e95420",
+				"secondary": "#aea79f",
+				"success": "#38b44a",
+				"info": "#17a2b8",
+				"warning": "#efb73e",
+				"danger": "#df382c",
+				"bg": "#ffffff",
+				"fg": "#333333",
+				"selectbg": "#aea79f",
+				"selectfg": "#ffffff",
+				"light": "#f9fafb",
+				"border": "#ced4da",
+				"inputfg": "#333333"
+			}
+		},
+		{
+			"name": "journal",
+			"font": "Helvetica",
+			"type": "light",
+			"colors": {
+				"primary": "#eb6864",
+				"secondary": "#aaaaaa",
+				"success": "#22b24c",
+				"info": "#336699",
+				"warning": "#f5e625",
+				"danger": "#f57a00",
+				"bg": "#ffffff",
+				"fg": "#222222",
+				"selectbg": "#aaaaaa",
+				"selectfg": "#ffffff",
+				"light": "#f9fafb",
+				"border": "#ced4da",
+				"inputfg": "#222222"
+			}
+		},
+		{
+			"name": "darkly",
+			"font": "Helvetica",
+			"type": "dark",
+			"colors": {
+				"primary": "#375a7f",
+				"secondary": "#444444",
+				"success": "#00bc8c",
+				"info": "#3498db",
+				"warning": "#f39c12",
+				"danger": "#e74c3c",
+				"bg": "#222222",
+				"fg": "#ffffff",
+				"selectbg": "#444444",
+				"selectfg": "#ffffff",
+				"light": "#adb5bd",
+				"border": "#222222",
+				"inputfg": "#444444"
+			}
+		},
+		{
+			"name": "superhero",
+			"font": "Helvetica",
+			"type": "dark",
+			"colors": {
+				"primary": "#df691a",
+				"secondary": "#4e5d6c",
+				"success": "#5cb85c",
+				"info": "#5bc0de",
+				"warning": "#f0ad4e",
+				"danger": "#d9534f",
+				"bg": "#2b3e50",
+				"fg": "#ffffff",
+				"selectbg": "#4e5d6c",
+				"selectfg": "#ffffff",
+				"light": "#adb5bd",
+				"border": "#222222",
+				"inputfg": "#444444"
+			}
+		},
+		{
+			"name": "solar",
+			"font": "Helvetica",
+			"type": "dark",
+			"colors": {
+				"primary": "#bc951a",
+				"secondary": "#94a2a4",
+				"success": "#44aca4",
+				"info": "#3f98d7",
+				"warning": "#d05e2f",
+				"danger": "#d95092",
+				"bg": "#002b36",
+				"fg": "#ffffff",
+				"selectbg": "#94a2a4",
+				"selectfg": "#ffffff",
+				"light": "#adb5bd",
+				"border": "#00252e",
+				"inputfg": "#495063"
+			}
+		},
+		{
+			"name": "cyborg",
+			"font": "Helvetica",
+			"type": "dark",
+			"colors": {
+				"primary": "#2a9fd6",
+				"secondary": "#555555",
+				"success": "#77b300",
+				"info": "#9933cc",
+				"warning": "#ff8800",
+				"danger": "#cc0000",
+				"bg": "#060606",
+				"fg": "#ffffff",
+				"selectbg": "#555555",
+				"selectfg": "#ffffff",
+				"light": "#adafae",
+				"border": "#060606",
+				"inputfg": "#555555"
+			}
+		}
+	]
 }

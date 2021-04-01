@@ -49,11 +49,19 @@ class Style(ttk.Style):
         """
         Load all ttkbootstrap defined themes
         """
+        # pre-defined themes
         json_data = importlib.resources.read_text('ttkbootstrap', 'themes.json')
-        json_data_user = importlib.resources.read_text('ttkbootstrap', 'user_themes.json')
-
         builtin_themes = json.loads(json_data)
-        user_themes = json.loads(json_data_user)
+
+        # user defined themes
+        user_path = Path(builtin_themes['userpath'])
+        if user_path.exists():
+            with user_path.open(encoding='utf-8') as f:
+                user_themes = json.load(f)
+        else:
+            user_themes = {'themes': []}
+
+        # combined theme collection
         settings = {'themes': builtin_themes['themes'] + user_themes['themes']}
 
         for theme in settings['themes']:

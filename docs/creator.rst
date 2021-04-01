@@ -13,15 +13,26 @@ From the console, type:
 
     python -m ttkcreator
 
+Select a base theme
+-------------------
+When you start TTK Creator, you'll be prompted to select a *light* or *dark* theme base. The reason you need to choose a
+base is that there are some nuanced differences in how the elements are constructed in a light vs a dark theme.
+
+.. image:: _static/examples/ttkcreator-splash.png
+
 The first time you start TTK Creator, or if you happen to upgrade the package, you'll be prompted to select the
 destination for your user-defined themes file. It is recommended to store these themes in a location that is safe and
 writable. It is not recommended to store themes in the package directory as they may get overwritten if the package is
 updated, re-installed, etc...
 
-Select a base theme
--------------------
-You'll be prompted to select a *light* or *dark* theme base. The reason you need to choose a base is that there are
-some nuanced differences in how the elements are constructed in a light vs a dark theme.
+.. image:: _static/examples/ttkcreator-alert.png
+
+.. image:: _static/examples/ttkcreator-filedialog.png
+
+.. note:: If you are pointed to an existing file, the dialogue will ask you if you want to overwrite the file. **Click
+          YES**. The file will not actually get overwritten if it already exists. I couldn't find a setting in the
+          widget to overide this... post it on GitHub if you know a solution.
+
 
 Create and save your theme
 --------------------------
@@ -64,7 +75,6 @@ TTK Creator creates a theme definition that looks exactly like the record below 
         "inputfg": "#888888"
       }
     }
-
 
 This theme definition is read by the ``ttkbootstrap.Style`` class and converted into an actual theme by the
 ``ttkbootstrap.StylerTTK`` class at runtime. At that point, it is available to use like any other theme. The only
