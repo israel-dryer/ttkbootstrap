@@ -3,7 +3,7 @@ Author: Israel Dryer
 License: MIT
 Copyright (c) 2021 Israel Dryer
 """
-from ttkbootstrap import Style, Colors, StylerTTK, ThemeSettings
+from ttkbootstrap import Style, Colors, StylerTTK, ThemeDefinition
 import tkinter as tk
 from tkinter.font import families
 from tkinter import ttk
@@ -33,9 +33,6 @@ class CreatorDesignWindow(tk.Toplevel):
         self.geometry(f'938x602+{master.winfo_x()}+{master.winfo_y()}')
         self.style = self.master.style
         self.theme_name = self.master.style.theme_use()
-
-        # TODO BUG the colors are not updating when the theme is changed
-        # self.style.colors = self.style.themes.get(self.theme_name).settings.colors
         self.fallback_colors = deepcopy(self.style.colors)
         self.vars = {}
         self.setup()
@@ -262,7 +259,6 @@ class CreatorDesignWindow(tk.Toplevel):
         :param mode: the mode of the trace observer
         """
         theme_id = uuid.uuid4()  # a unique (and temporary) identifier for the new theme
-
         try:
             colors = Colors(
                 primary=self.getvar('primary'),
@@ -282,9 +278,12 @@ class CreatorDesignWindow(tk.Toplevel):
             return
 
         try:
-            settings = ThemeSettings(name=theme_id, type=self.getvar('inputfg'), font=self.getvar('font'),
-                                     colors=colors)
-            self.new_style = StylerTTK(self.style, settings)
+            definition = ThemeDefinition(
+                name=theme_id,
+                type=self.getvar('inputfg'),
+                font=self.getvar('font'),
+                colors=colors)
+            self.new_style = StylerTTK(self.style, definition)
             self.style.theme_use(themename=theme_id)
         except Exception:
             return
