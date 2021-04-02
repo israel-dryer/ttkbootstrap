@@ -85,6 +85,9 @@ class Style(ttk.Style):
         If themename is None, returns the theme in use, otherwise, set the current theme to themename, refreshes all
         widgets and emits a ``<<ThemeChanged>>`` event.
 
+        Only use this method if you are changing the theme *during* runtime. Otherwise, pass the theme name into the
+        Style constructor to instantiate the style with a theme.
+
         :param str themename: the theme to apply when creating new widgets
         """
         if themename is None:
@@ -262,10 +265,7 @@ class Colors:
 
 class StylerTK:
     """
-    A class for styling tkinter widgets (not ttk). Several ttk widgets utilize tkinter widgets in some capacity, such
-    as the *popdownlist* on the ``ttk.Combobox``. To create a consistent user experience, standard tkinter widgets are
-    themed as much as possible with the look and feel of the ttkbootstrap theme applied. Tkinter widgets are not the
-    primary target of this project; however, they can be used without looking entirely out-of-place in most cases.
+    A class for styling tkinter widgets (not ttk).
 
     :param parent: an instance of `StylerTTK`
     """
@@ -456,10 +456,7 @@ class StylerTK:
 
 class StylerTTK:
     """
-    A class to create a new ttk theme by using a combination of built-in themes and some image-based elements using
-    ``pillow``. A theme is generated at runtime and is available to use with the ``Style`` class methods.
-    The base theme of all ttkbootstrap themes is *clam*. In many cases, widget layouts are re-created using an
-    assortment of elements from various styles such as *clam*, *alt*, *default*, etc...
+    A class to create a new ttk theme.
 
     :param Style style: An instance of ``ttk.Style`` class
     :param ThemeDefinition settings: creates the settings for the theme to be created

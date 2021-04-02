@@ -1,32 +1,5 @@
 Reference
 =========
-Style
------
-Sets the theme of the ``tkinter.Tk`` instance and supports all ttkbootstrap and ttk themes provided. This class is meant
-to be a drop-in replacement for ``ttk.Style`` and inherits all of it's methods and properties. Creating a ``Style``
-object will instantiate the ``tkinter.Tk`` instance in the ``Style.master`` property, and so it is not
-necessary to explicitly create an instance of ``tkinter.Tk``. For more details on the ``ttk.Style`` class, see the
-python documentation_.
-
-.. code-block:: python
-
-    # instantiate the style with default theme *flatly*
-    style = Style()
-
-    # instantiate the style with another theme
-    style = Style(theme='superhero')
-
-    # available themes
-    for theme in style.theme_names():
-        print(theme)
-
-.. _documentation: https://docs.python.org/3.9/library/tkinter.ttk.html#tkinter.ttk.Style
-
-.. autoclass:: ttkbootstrap.Style
-    :show-inheritance:
-    :special-members:
-    :members:
-
 .. _colors:
 
 Colors
@@ -63,5 +36,62 @@ This will include all theme colors, including border, fg, bg, etc...
 
 .. autoclass:: ttkbootstrap.Colors
     :show-inheritance:
-    :special-members:
     :members:
+
+Style
+-----
+Sets the theme of the ``tkinter.Tk`` instance and supports all ttkbootstrap and ttk themes provided. This class is meant
+to be a drop-in replacement for ``ttk.Style`` and inherits all of it's methods and properties. Creating a ``Style``
+object will instantiate the ``tkinter.Tk`` instance in the ``Style.master`` property, and so it is not
+necessary to explicitly create an instance of ``tkinter.Tk``. For more details on the ``ttk.Style`` class, see the
+python documentation_.
+
+.. code-block:: python
+
+    # instantiate the style with default theme *flatly*
+    style = Style()
+
+    # instantiate the style with another theme
+    style = Style(theme='superhero')
+
+    # available themes
+    for theme in style.theme_names():
+        print(theme)
+
+.. _documentation: https://docs.python.org/3.9/library/tkinter.ttk.html#tkinter.ttk.Style
+
+.. autoclass:: ttkbootstrap.Style
+    :show-inheritance:
+    :members:
+
+
+StylerTTK
+---------
+A class to create a new ttk theme by using a combination of built-in themes and some image-based elements using
+``pillow``. A theme is generated at runtime and is available to use with the ``Style`` class methods.
+The base theme of all ttkbootstrap themes is *clam*. In many cases, widget layouts are re-created using an
+assortment of elements from various styles such as *clam*, *alt*, *default*, etc...
+
+.. autoclass:: ttkbootstrap.StylerTTK
+    :show-inheritance:
+    :members:
+
+StylerTK
+--------
+A class for styling tkinter widgets (not ttk). Several ttk widgets utilize tkinter widgets in some capacity, such
+as the *popdownlist* on the ``ttk.Combobox``. To create a consistent user experience, standard tkinter widgets are
+themed as much as possible with the look and feel of the ttkbootstrap theme applied. Tkinter widgets are not the
+primary target of this project; however, they can be used without looking entirely out-of-place in most cases.
+
+.. autoclass:: ttkbootstrap.StylerTK
+    :show-inheritance:
+    :members:
+
+ThemeDefinition
+---------------
+Contains the basic theme definition for name, colors, and font.
+
+.. autoclass:: ttkbootstrap.ThemeDefinition
+    :show-inheritance:
+    :members:
+
