@@ -32,8 +32,11 @@ class CreatorDesignWindow(tk.Toplevel):
         self.protocol('WM_DELETE_WINDOW', self.master.quit)
         self.geometry(f'938x602+{master.winfo_x()}+{master.winfo_y()}')
         self.style = self.master.style
-        self.fallback_colors = deepcopy(self.style.colors)
         self.theme_name = self.master.style.theme_use()
+
+        # TODO BUG the colors are not updating when the theme is changed
+        # self.style.colors = self.style.themes.get(self.theme_name).settings.colors
+        self.fallback_colors = deepcopy(self.style.colors)
         self.vars = {}
         self.setup()
         self.bind("<Insert>", self.get_bounding_box)
@@ -221,7 +224,7 @@ class CreatorDesignWindow(tk.Toplevel):
         """
         Reset all values and variable to the default theme (dark='superhero', light='flatly')
         """
-        self.style.theme_use(self.theme_name)
+        self.style.theme_use(themename=self.theme_name)
         self.reset_variables()
         self.reset_color_patches()
 
@@ -282,7 +285,7 @@ class CreatorDesignWindow(tk.Toplevel):
             settings = ThemeSettings(name=theme_id, type=self.getvar('inputfg'), font=self.getvar('font'),
                                      colors=colors)
             self.new_style = StylerTTK(self.style, settings)
-            self.style.theme_use(theme_id)
+            self.style.theme_use(themename=theme_id)
         except Exception:
             return
         """
@@ -471,7 +474,7 @@ class CreatorBaseChooser(tk.Tk):
         if not valid_user_path:
             return
 
-        self.style.theme_use('superhero')
+        self.style.theme_use(themename='darkly')
         CreatorDesignWindow(self)
         self.withdraw()
 
