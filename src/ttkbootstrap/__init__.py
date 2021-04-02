@@ -45,9 +45,9 @@ class Style(ttk.Style):
         super().__init__(*args, **kwargs)
         self.themes = {}
         self._load_themes()
-        self.settings = None
-        self.colors = None
-        self.theme_use(theme)
+        self.settings = self.themes.get(theme).settings
+        self.colors = self.themes.get(theme).settings.colors
+        self.theme_use(themename=theme)
 
     def _load_themes(self):
         """
@@ -94,9 +94,10 @@ class Style(ttk.Style):
 
         try:
             current_theme = self.themes.get(themename)
-            current_theme.styler_tk.apply_style()
-            self.settings = current_theme.settings
-            self.colors = current_theme.settings.colors
+            if current_theme:
+                current_theme.styler_tk.apply_style()
+                self.settings = current_theme.settings
+                self.colors = current_theme.settings.colors
         except AttributeError as e:
             pass
 
@@ -298,6 +299,7 @@ class StylerTK:
         self._style_menubutton()
         self._style_labelframe()
         self._style_scrollbar()
+        self._style_frame()
         self._style_optionmenu()
 
     def _set_option(self, *args):
@@ -319,6 +321,8 @@ class StylerTK:
         self._set_option('*activeForeground', self.settings.colors.selectfg, 20)
         self._set_option('*selectBackground', self.settings.colors.selectbg, 20)
         self._set_option('*selectForeground', self.settings.colors.selectfg, 20)
+        self._set_option('*Text*background', self.settings.colors.light)
+        self._set_option('*Text*foreground', self.settings.colors.inputfg)
 
     def _style_button(self):
         """
@@ -480,7 +484,7 @@ class StylerTTK:
         Create and style a new ttk theme. A wrapper around internal style methods.
         """
         self.style.theme_create(self.settings.name, 'clam')
-        self.style.theme_use(self.settings.name)
+        self.style.theme_use(themename=self.settings.name)
         self._style_defaults()
         self._style_spinbox()
         self._style_scale()
@@ -507,20 +511,21 @@ class StylerTTK:
         Setup the default ``ttk.Style`` configuration. These defaults are applied to any widget that contains these
         element options. This method should be called *first* before any other style is applied during theme creation.
         """
-        self.style.configure('.',
-                             background=self.settings.colors.bg,
-                             darkcolor=self.settings.colors.border,
-                             lightcolor=self.settings.colors.border,
-                             foreground=self.settings.colors.fg,
-                             troughcolor=self.settings.colors.bg,
-                             selectbg=self.settings.colors.selectbg,
-                             selectfg=self.settings.colors.selectfg,
-                             selectforeground=self.settings.colors.selectfg,
-                             selectbackground=self.settings.colors.selectbg,
-                             fieldbg='white',
-                             font=(self.settings.font,),
-                             borderwidth=1,
-                             focuscolor='')
+        themename = self.settings.name
+        self.style.theme_settings(themename, {
+            '.': {'configure': {
+                'background': self.settings.colors.bg,
+                'darkcolor': self.settings.colors.border,
+                'foreground': self.settings.colors.fg,
+                'troughcolor': self.settings.colors.bg,
+                'selectbg': self.settings.colors.selectbg,
+                'selectfg': self.settings.colors.selectfg,
+                'selectforeground': self.settings.colors.selectfg,
+                'selectbackground': self.settings.colors.selectbg,
+                'fieldbg': 'white',
+                'font': (self.settings.font,),
+                'borderwidth': 1,
+                'focuscolor': ''}}})
 
     def _style_combobox(self):
         """
@@ -540,59 +545,63 @@ class StylerTTK:
             shines through the corners using the `clam` theme. This is an unfortuate hack to make it look ok. Hopefully
             there will be a more permanent/better solution in the future.
         """
-        self.style.layout('TCombobox', [('combo.Spinbox.field', {'side': 'top', 'sticky': 'we', 'children': [
-            ('Combobox.downarrow', {'side': 'right', 'sticky': 'ns'}),
-            ('Combobox.padding', {'expand': '1', 'sticky': 'nswe', 'children': [
-                ('Combobox.textarea', {'sticky': 'nswe'})]})]})])
+        self.style.theme_settings(self.settings.name, {
+            'Combobox.downarrow': {'element create': ('from', 'default')},
+            'Combobox.padding': {'element create': ('from', 'clam')},
+            'Combobox.textarea': {'element create': ('from', 'clam')},
+            'TCombobox': {
+                'layout': [('combo.Spinbox.field', {'side': 'top', 'sticky': 'we', 'children': [
+                    ('Combobox.downarrow', {'side': 'right', 'sticky': 'ns'}),
+                    ('Combobox.padding', {'expand': '1', 'sticky': 'nswe', 'children': [
+                        ('Combobox.textarea', {'sticky': 'nswe'})]})]})],
+                'configure': {
+                    'bordercolor': self.settings.colors.border,
+                    'darkcolor': self.settings.colors.bg,
+                    'lightcolor': self.settings.colors.bg,
+                    'arrowcolor': self.settings.colors.inputfg,
+                    'foreground': self.settings.colors.inputfg,
+                    'fieldbackground ': self.settings.colors.light,
+                    'background ': self.settings.colors.light,
+                    'relief': 'flat',
+                    'borderwidth ': 0,
+                    'padding': 5,
+                    'arrowsize ': 16},
+                'map': {
+                    'bordercolor': [
+                        ('focus', self.settings.colors.primary),
+                        ('hover', self.settings.colors.bg)],
+                    'lightcolor': [
+                        ('focus', self.settings.colors.primary),
+                        ('hover', self.settings.colors.primary)],
+                    'darkcolor': [
+                        ('focus', self.settings.colors.primary),
+                        ('hover', self.settings.colors.primary)],
+                    'arrowcolor': [
+                        ('pressed', self.settings.colors.light),
+                        ('focus', self.settings.colors.inputfg),
+                        ('hover', self.settings.colors.primary)]}}})
 
         if self.settings.type == 'dark':
-            self.style.element_create('combo.Spinbox.field', 'from', 'default')
-
-        self.style.element_create('Combobox.downarrow', 'from', 'default')
-        self.style.element_create('Combobox.padding', 'from', 'clam')
-        self.style.element_create('Combobox.textarea', 'from', 'clam')
-        self.style.configure('TCombobox',
-                             bordercolor=self.settings.colors.border,
-                             darkcolor=self.settings.colors.bg,
-                             lightcolor=self.settings.colors.bg,
-                             arrowcolor=self.settings.colors.inputfg,
-                             foreground=self.settings.colors.inputfg,
-                             fieldbackground=self.settings.colors.light,
-                             background=self.settings.colors.light,
-                             relief='flat',
-                             borderwidth=0,
-                             padding=5,
-                             arrowsize=16)
-        self.style.map('TCombobox',
-                       bordercolor=[
-                           ('focus', self.settings.colors.primary),
-                           ('hover', self.settings.colors.bg)],
-                       lightcolor=[
-                           ('focus', self.settings.colors.primary),
-                           ('hover', self.settings.colors.primary)],
-                       darkcolor=[
-                           ('focus', self.settings.colors.primary),
-                           ('hover', self.settings.colors.primary)],
-                       arrowcolor=[
-                           ('pressed', self.settings.colors.light),
-                           ('focus', self.settings.colors.inputfg),
-                           ('hover', self.settings.colors.primary)])
+            self.style.theme_settings(self.settings.name, {
+                'combo.Spinbox.field': {'element create': ('from', 'default')}})
 
         for color in self.settings.colors:
-            self.style.map(f'{color}.TCombobox',
-                           bordercolor=[
-                               ('focus', self.settings.colors.get(color)),
-                               ('hover', self.settings.colors.get(color))],
-                           lightcolor=[
-                               ('focus', self.settings.colors.get(color)),
-                               ('pressed', self.settings.colors.get(color))],
-                           darkcolor=[
-                               ('focus', self.settings.colors.get(color)),
-                               ('pressed', self.settings.colors.get(color))],
-                           arrowcolor=[
-                               ('pressed', self.settings.colors.light),
-                               ('focus', self.settings.colors.inputfg),
-                               ('hover', self.settings.colors.primary)])
+            self.style.theme_settings(self.settings.name, {
+                f'{color}.TCombobox': {
+                    'map': {
+                        'bordercolor': [
+                            ('focus', self.settings.colors.get(color)),
+                            ('hover', self.settings.colors.get(color))],
+                        'lightcolor': [
+                            ('focus', self.settings.colors.get(color)),
+                            ('pressed', self.settings.colors.get(color))],
+                        'darkcolor': [
+                            ('focus', self.settings.colors.get(color)),
+                            ('pressed', self.settings.colors.get(color))],
+                        'arrowcolor': [
+                            ('pressed', self.settings.colors.light),
+                            ('focus', self.settings.colors.inputfg),
+                            ('hover', self.settings.colors.primary)]}}})
 
     def _style_separator(self):
         """
@@ -604,19 +613,24 @@ class StylerTTK:
 
             - Separator.separator: orient, background
         """
-        self.style.configure('Horizontal.TSeparator',
-                             background=(self.settings.colors.border
-                                         if self.settings.type == 'light'
-                                         else self.settings.colors.primary))
-
-        self.style.configure('Vertical.TSeparator',
-                             background=(self.settings.colors.border
-                                         if self.settings.type == 'light'
-                                         else self.settings.colors.primary))
+        self.style.theme_settings(self.settings.name, {
+            'Horizontal.TSeparator': {
+                'configure': {
+                    'background': (
+                        self.settings.colors.border
+                        if self.settings.type == 'light'
+                        else self.settings.colors.primary)}},
+            'Vertical.TSeparator': {
+                'configure': {
+                    'background': (
+                        self.settings.colors.border
+                        if self.settings.type == 'light'
+                        else self.settings.colors.primary)}}})
 
         for color in self.settings.colors:
-            self.style.configure(f'{color}.Horizontal.TSeparator', background=self.settings.colors.get(color))
-            self.style.configure(f'{color}.Vertical.TSeparator', background=self.settings.colors.get(color))
+            self.style.theme_settings(self.settings.name, {
+                f'{color}.Horizontal.TSeparator': {'map': {'background': self.settings.colors.get(color)}},
+                f'{color}.Vertical.TSeparator': {'map': {'background': self.settings.colors.get(color)}}})
 
     def _style_progressbar(self):
         """
@@ -626,20 +640,20 @@ class StylerTTK:
 
             - Progressbar.trough: borderwidth, troughcolor, troughrelief
             - Progressbar.pbar: orient, thickness, barsize, pbarrelief, borderwidth, background
-
         """
-        self.style.element_create('Progressbar.trough', 'from', 'default')
-        self.style.element_create('Progressbar.pbar', 'from', 'default')
-
-        self.style.configure('TProgressbar',
-                             thickness=20,
-                             borderwidth=0,
-                             troughcolor=Colors.brightness(self.settings.colors.light, -0.05),
-                             background=self.settings.colors.primary)
+        self.style.theme_settings(self.settings.name, {
+            'Progressbar.trough': {'element create': ('from', 'default')},
+            'Progressbar.pbar': {'element create': ('from', 'default')},
+            'TProgressbar': {'configure': {
+                'thickness': 20,
+                'borderwidth': 0,
+                'troughcolor': Colors.brightness(self.settings.colors.light, -0.05),
+                'background': self.settings.colors.primary}}})
 
         for color in self.settings.colors:
-            self.style.configure(f'{color}.Horizontal.TProgressbar', background=self.settings.colors.get(color))
-            self.style.configure(f'{color}.Vertical.TProgressbar', background=self.settings.colors.get(color))
+            self.style.theme_settings(self.settings.name, {
+                f'{color}.Horizontal.TProgressbar': {'configure': {'background': self.settings.colors.get(color)}},
+                f'{color}.Vertical.TProgressbar': {'configure': {'background': self.settings.colors.get(color)}}})
 
     @staticmethod
     def _create_slider_image(color, size=18):
@@ -666,16 +680,6 @@ class StylerTTK:
             - Scale.trough: borderwidth, troughcolor, troughrelief
             - Scale.slider: sliderlength, sliderthickness, sliderrelief, borderwidth, background, bordercolor, orient
         """
-        self.style.layout('Horizontal.TScale', [
-            ('Scale.focus', {'expand': '1', 'sticky': 'nswe', 'children': [
-                ('Horizontal.Scale.track', {'sticky': 'we'}),
-                ('Horizontal.Scale.slider', {'side': 'left', 'sticky': ''})]})])
-
-        self.style.layout('Vertical.TScale', [
-            ('Scale.focus', {'expand': '1', 'sticky': 'nswe', 'children': [
-                ('Vertical.Scale.track', {'sticky': 'we'}),
-                ('Vertical.Scale.slider', {'side': 'left', 'sticky': ''})]})])
-
         # create widget images
         self.scale_images = {}
         self.scale_images['primary_regular'] = self._create_slider_image(self.settings.colors.primary)
@@ -686,11 +690,22 @@ class StylerTTK:
         self.scale_images['trough'] = ImageTk.PhotoImage(
             Image.new('RGB', (8, 8), Colors.brightness(self.settings.colors.light, -0.05)))
 
-        # create new elements based on images
-        self.style.element_create('Scale.track', 'image', self.scale_images['trough'])
-        self.style.element_create('Scale.slider', 'image', self.scale_images['primary_regular'],
+        self.style.theme_settings(self.settings.name, {
+            'Horizontal.TScale': {
+                'layout': [
+                    ('Scale.focus', {'expand': '1', 'sticky': 'nswe', 'children': [
+                        ('Horizontal.Scale.track', {'sticky': 'we'}),
+                        ('Horizontal.Scale.slider', {'side': 'left', 'sticky': ''})]})]},
+            'Vertical.TScale': {
+                'layout': [
+                    ('Scale.focus', {'expand': '1', 'sticky': 'nswe', 'children': [
+                        ('Vertical.Scale.track', {'sticky': 'we'}),
+                        ('Vertical.Scale.slider', {'side': 'left', 'sticky': ''})]})]},
+            'Scale.track': {'element create': ('image', self.scale_images['trough'])},
+            'Scale.slider': {'element create':
+                                 ('image', self.scale_images['primary_regular'],
                                   ('pressed', self.scale_images['primary_pressed']),
-                                  ('hover', self.scale_images['primary_hover']))
+                                  ('hover', self.scale_images['primary_hover']))}})
 
     def _style_scrollbar(self):
         """
@@ -704,23 +719,23 @@ class StylerTTK:
             - Scrollbar.downarrow: arrowsize, background, bordercolor, relief, arrowcolor
             - Scrollbar.thumb: width, background, bordercolor, relief, orient
         """
-        self.style.element_create('Vertical.Scrollbar.trough', 'from', 'alt')
-        self.style.element_create('Vertical.Scrollbar.thumb', 'from', 'alt')
-        self.style.element_create('Vertical.Scrollbar.uparrow', 'from', 'alt')
-        self.style.element_create('Vertical.Scrollbar.downarrow', 'from', 'alt')
-        self.style.element_create('Horizontal.Scrollbar.trough', 'from', 'alt')
-        self.style.element_create('Horizontal.Scrollbar.thumb', 'from', 'alt')
-        self.style.element_create('Horizontal.Scrollbar.uparrow', 'from', 'alt')
-        self.style.element_create('Horizontal.Scrollbar.downarrow', 'from', 'alt')
-
-        self.style.configure('TScrollbar',
-                             troughrelief='flat',
-                             relief='flat',
-                             troughborderwidth=2,
-                             troughcolor=self.settings.colors.light,
-                             background=Colors.brightness(self.settings.colors.light, -0.1),
-                             arrowsize=16,
-                             arrowcolor=self.settings.colors.inputfg)
+        self.style.theme_settings(self.settings.name, {
+            'Vertical.Scrollbar.trough': {'element create': ('from', 'alt')},
+            'Vertical.Scrollbar.thumb': {'element create': ('from', 'alt')},
+            'Vertical.Scrollbar.uparrow': {'element create': ('from', 'alt')},
+            'Vertical.Scrollbar.downarrow': {'element create': ('from', 'alt')},
+            'Horizontal.Scrollbar.trough': {'element create': ('from', 'alt')},
+            'Horizontal.Scrollbar.thumb': {'element create': ('from', 'alt')},
+            'Horizontal.Scrollbar.uparrow': {'element create': ('from', 'alt')},
+            'Horizontal.Scrollbar.downarrow': {'element create': ('from', 'alt')},
+            'TScrollbar': {'configure': {
+                'troughrelief': 'flat',
+                'relief': 'flat',
+                'troughborderwidth': 2,
+                'troughcolor': self.settings.colors.light,
+                'background': Colors.brightness(self.settings.colors.light, -0.1),
+                'arrowsize': 16,
+                'arrowcolor': self.settings.colors.inputfg}}})
 
     def _style_spinbox(self):
         """
@@ -738,58 +753,61 @@ class StylerTTK:
             - spinbox.padding: padding, relief, shiftrelief
             - spinbox.textarea: font, width
         """
-        self.style.layout('TSpinbox', [
-            ('custom.Spinbox.field', {'side': 'top', 'sticky': 'we', 'children': [
-                ('null', {'side': 'right', 'sticky': '', 'children': [
-                    ('Spinbox.uparrow', {'side': 'top', 'sticky': 'e'}),
-                    ('Spinbox.downarrow', {'side': 'bottom', 'sticky': 'e'})]}),
-                ('Spinbox.padding', {'sticky': 'nswe', 'children': [
-                    ('Spinbox.textarea', {'sticky': 'nswe'})]})]})])
-
-        self.style.element_create('Spinbox.uparrow', 'from', 'default')
-        self.style.element_create('Spinbox.downarrow', 'from', 'default')
         if self.settings.type == 'dark':
-            self.style.element_create('custom.Spinbox.field', 'from', 'default')
+            self.style.theme_settings(self.settings.name, {'Spinbox.field': {'element create': ('from', 'default')}})
 
-        self.style.configure('TSpinbox',
-                             fieldbackground=self.settings.colors.light,
-                             bordercolor=self.settings.colors.bg,
-                             lightcolor=self.settings.colors.border,
-                             darkcolor=self.settings.colors.border,
-                             foreground=self.settings.colors.inputfg,
-                             borderwidth=0,
-                             background=self.settings.colors.light,
-                             relief='flat',
-                             arrowcolor=self.settings.colors.inputfg,
-                             arrowsize=16,
-                             padding=(10, 5))
-
-        self.style.map('TSpinbox',
-                       bordercolor=[
-                           ('focus', self.settings.colors.primary),
-                           ('hover', self.settings.colors.bg)],
-                       lightcolor=[
-                           ('focus', self.settings.colors.primary),
-                           ('hover', self.settings.colors.primary)],
-                       darkcolor=[
-                           ('focus', self.settings.colors.primary),
-                           ('hover', self.settings.colors.primary)],
-                       arrowcolor=[
-                           ('pressed', self.settings.colors.primary),
-                           ('focus', self.settings.colors.inputfg),
-                           ('hover', self.settings.colors.inputfg)])
+        self.style.theme_settings(self.settings.name, {
+            'Spinbox.uparrow': {'element create': ('from', 'default')},
+            'Spinbox.downarrow': {'element create': ('from', 'default')},
+            'TSpinbox': {
+                'layout': [
+                    ('custom.Spinbox.field', {'side': 'top', 'sticky': 'we', 'children': [
+                        ('null', {'side': 'right', 'sticky': '', 'children': [
+                            ('Spinbox.uparrow', {'side': 'top', 'sticky': 'e'}),
+                            ('Spinbox.downarrow', {'side': 'bottom', 'sticky': 'e'})]}),
+                        ('Spinbox.padding', {'sticky': 'nswe', 'children': [
+                            ('Spinbox.textarea', {'sticky': 'nswe'})]})]})],
+                'configure': {
+                    'fieldbackground': self.settings.colors.light,
+                    'bordercolor': self.settings.colors.bg,
+                    'lightcolor': self.settings.colors.border,
+                    'darkcolor': self.settings.colors.border,
+                    'foreground': self.settings.colors.inputfg,
+                    'borderwidth': 0,
+                    'background': self.settings.colors.light,
+                    'relief': 'flat',
+                    'arrowcolor': self.settings.colors.inputfg,
+                    'arrowsize': 16,
+                    'padding': (10, 5)
+                },
+                'map': {
+                    'bordercolor': [
+                        ('focus', self.settings.colors.primary),
+                        ('hover', self.settings.colors.bg)],
+                    'lightcolor': [
+                        ('focus', self.settings.colors.primary),
+                        ('hover', self.settings.colors.primary)],
+                    'darkcolor': [
+                        ('focus', self.settings.colors.primary),
+                        ('hover', self.settings.colors.primary)],
+                    'arrowcolor': [
+                        ('pressed', self.settings.colors.primary),
+                        ('focus', self.settings.colors.inputfg),
+                        ('hover', self.settings.colors.inputfg)]}}})
 
         for color in self.settings.colors:
-            self.style.map(f'{color}.TSpinbox',
-                           bordercolor=[
-                               ('focus', self.settings.colors.get(color)),
-                               ('hover', self.settings.colors.get(color))],
-                           arrowcolor=[
-                               ('pressed', self.settings.colors.get(color)),
-                               ('pressed', self.settings.colors.inputfg),
-                               ('hover', self.settings.colors.inputfg)],
-                           lightcolor=[('focus', self.settings.colors.get(color))],
-                           darkcolor=[('focus', self.settings.colors.get(color))])
+            self.style.theme_settings(self.settings.name, {
+                f'{color}.TSpinbox': {
+                    'map': {
+                        'bordercolor': [
+                            ('focus', self.settings.colors.get(color)),
+                            ('hover', self.settings.colors.get(color))],
+                        'arrowcolor': [
+                            ('pressed', self.settings.colors.get(color)),
+                            ('pressed', self.settings.colors.inputfg),
+                            ('hover', self.settings.colors.inputfg)],
+                        'lightcolor': [('focus', self.settings.colors.get(color))],
+                        'darkcolor': [('focus', self.settings.colors.get(color))]}}})
 
     def _style_treeview(self):
         """
@@ -817,38 +835,36 @@ class StylerTTK:
                 - Treeheading.image: image, stipple, background
                 - Treeheading.text: text, font, foreground, underline, width, anchor, justify, wraplength, embossed
         """
-        self.style.element_create('Treeitem.indicator', 'from', 'alt')
-
-        self.style.layout('Treeview', [
-            ('Button.border', {'sticky': 'nswe', 'border': '1', 'children': [
-                ('Treeview.padding', {'sticky': 'nswe', 'children': [
-                    ('Treeview.treearea', {'sticky': 'nswe'})]})]})])
-
-        self.style.configure('Treeview',
-                             background=self.settings.colors.light,
-                             foreground=self.settings.colors.inputfg,
-                             bordercolor=self.settings.colors.border,
-                             lightcolor=self.settings.colors.bg,
-                             darkcolor=self.settings.colors.bg,
-                             relief='raised' if self.settings.type == 'light' else 'flat',
-
-                             # border showing through on dark theme... so pulling in the border with -2 padding
-                             padding=-1 if self.settings.type == 'light' else -2)
-
-        self.style.map('Treeview',
-                       background=[('selected', self.settings.colors.selectbg)],
-                       foreground=[('selected', self.settings.colors.selectfg)],
-                       bordercolor=[('focus', self.settings.colors.border)])
-
-        self.style.configure('Treeview.Heading',
-                             background=self.settings.colors.primary,
-                             foreground=self.settings.colors.selectfg,
-                             relief='flat',
-                             padding=5)
+        self.style.theme_settings(self.settings.name, {
+            'Treeview': {
+                'layout': [
+                    ('Button.border', {'sticky': 'nswe', 'border': '1', 'children': [
+                        ('Treeview.padding', {'sticky': 'nswe', 'children': [
+                            ('Treeview.treearea', {'sticky': 'nswe'})]})]})],
+                'configure': {
+                    'background': self.settings.colors.light,
+                    'foreground': self.settings.colors.inputfg,
+                    'bordercolor': self.settings.colors.border,
+                    'lightcolor': self.settings.colors.bg,
+                    'darkcolor': self.settings.colors.bg,
+                    'relief': 'raised' if self.settings.type == 'light' else 'flat',
+                    'padding': -1 if self.settings.type == 'light' else -2},
+                'map': {
+                    'background': [('selected', self.settings.colors.selectbg)],
+                    'foreground': [('selected', self.settings.colors.selectfg)],
+                    'bordercolor': [('focus', self.settings.colors.border)]}},
+            'Treeview.Heading': {
+                'configure': {
+                    'background': self.settings.colors.primary,
+                    'foreground': self.settings.colors.selectfg,
+                    'relief': 'flat',
+                    'padding': 5}},
+            'Treeitem.indicator': {'element create': ('from', 'alt')}})
 
         for color in self.settings.colors:
-            self.style.configure(f'{color}.Treeview.Heading', background=self.settings.colors.get(color))
-            self.style.map(f'{color}.Treeview', bordercolor=[('focus', self.settings.colors.get(color))])
+            self.style.theme_settings(self.settings.name, {
+                'configure': {'background': self.settings.colors.get(color)},
+                'map': {'bordercolor': [('focus', self.settings.colors.get(color))]}})
 
     def _style_frame(self):
         """
@@ -858,11 +874,12 @@ class StylerTTK:
 
             - Frame.border: bordercolor, lightcolor, darkcolor, relief, borderwidth
         """
-        self.style.configure('TFrame',
-                             background=self.settings.colors.bg)
+        self.style.theme_settings(self.settings.name, {
+            'TFrame': {'configure': {'background': self.settings.colors.bg}}})
 
         for color in self.settings.colors:
-            self.style.configure(f'{color}.TFrame', background=self.settings.colors.get(color))
+            self.style.theme_settings(self.settings.name, {
+                f'{color}.TFrame': {'configure': {'background': self.settings.colors.get(color)}}})
 
     def _style_solid_buttons(self):
         """
@@ -876,57 +893,59 @@ class StylerTTK:
             - Button.label: compound, space, text, font, foreground, underline, width, anchor, justify, wraplength,
                 embossed, image, stipple, background
         """
-        self.style.configure('TButton',
-                             foreground=self.settings.colors.selectfg,
-                             background=self.settings.colors.primary,
-                             bordercolor=self.settings.colors.primary,
-                             darkcolor=self.settings.colors.primary,
-                             lightcolor=self.settings.colors.primary,
-                             anchor='center',
-                             relief='raised',
-                             focusthickness=0,
-                             focuscolor='',
-                             padding=(10, 5))
-
-        self.style.map('TButton',
-                       background=[
-                           ('pressed', Colors.brightness(self.settings.colors.primary, -0.2)),
-                           ('hover', Colors.brightness(self.settings.colors.primary, -0.1))],
-                       bordercolor=[
-                           ('pressed', Colors.brightness(self.settings.colors.primary, -0.2)),
-                           ('hover', Colors.brightness(self.settings.colors.primary, -0.1))],
-                       darkcolor=[
-                           ('pressed', Colors.brightness(self.settings.colors.primary, -0.2)),
-                           ('hover', Colors.brightness(self.settings.colors.primary, -0.1))],
-                       lightcolor=[
-                           ('pressed', Colors.brightness(self.settings.colors.primary, -0.2)),
-                           ('hover', Colors.brightness(self.settings.colors.primary, -0.1))])
+        self.style.theme_settings(self.settings.name, {
+            'TButton': {
+                'configure': {
+                    'foreground': self.settings.colors.selectfg,
+                    'background': self.settings.colors.primary,
+                    'bordercolor': self.settings.colors.primary,
+                    'darkcolor': self.settings.colors.primary,
+                    'lightcolor': self.settings.colors.primary,
+                    'anchor': 'center',
+                    'relief': 'raised',
+                    'focusthickness': 0,
+                    'focuscolor': '',
+                    'padding': (10, 5)},
+                'map': {
+                    'background': [
+                        ('pressed', Colors.brightness(self.settings.colors.primary, -0.2)),
+                        ('hover', Colors.brightness(self.settings.colors.primary, -0.1))],
+                    'bordercolor': [
+                        ('pressed', Colors.brightness(self.settings.colors.primary, -0.2)),
+                        ('hover', Colors.brightness(self.settings.colors.primary, -0.1))],
+                    'darkcolor': [
+                        ('pressed', Colors.brightness(self.settings.colors.primary, -0.2)),
+                        ('hover', Colors.brightness(self.settings.colors.primary, -0.1))],
+                    'lightcolor': [
+                        ('pressed', Colors.brightness(self.settings.colors.primary, -0.2)),
+                        ('hover', Colors.brightness(self.settings.colors.primary, -0.1))]}}})
 
         for color in self.settings.colors:
-            self.style.configure(f'{color}.TButton',
-                                 foreground=self.settings.colors.selectfg,
-                                 background=self.settings.colors.get(color),
-                                 bordercolor=self.settings.colors.get(color),
-                                 darkcolor=self.settings.colors.get(color),
-                                 lightcolor=self.settings.colors.get(color),
-                                 relief='raised',
-                                 focusthickness=0,
-                                 focuscolor='',
-                                 padding=(10, 5))
-
-            self.style.map(f'{color}.TButton',
-                           background=[
-                               ('pressed', Colors.brightness(self.settings.colors.get(color), -0.2)),
-                               ('hover', Colors.brightness(self.settings.colors.get(color), -0.1))],
-                           bordercolor=[
-                               ('pressed', Colors.brightness(self.settings.colors.get(color), -0.2)),
-                               ('hover', Colors.brightness(self.settings.colors.get(color), -0.1))],
-                           darkcolor=[
-                               ('pressed', Colors.brightness(self.settings.colors.get(color), -0.2)),
-                               ('hover', Colors.brightness(self.settings.colors.get(color), -0.1))],
-                           lightcolor=[
-                               ('pressed', Colors.brightness(self.settings.colors.get(color), -0.2)),
-                               ('hover', Colors.brightness(self.settings.colors.get(color), -0.1))])
+            self.style.theme_settings(self.settings.name, {
+                f'{color}.TButton': {
+                    'configure': {
+                        'foreground': self.settings.colors.selectfg,
+                        'background': self.settings.colors.get(color),
+                        'bordercolor': self.settings.colors.get(color),
+                        'darkcolor': self.settings.colors.get(color),
+                        'lightcolor': self.settings.colors.get(color),
+                        'relief': 'raised',
+                        'focusthickness': 0,
+                        'focuscolor': '',
+                        'padding': (10, 5)},
+                    'map': {
+                        'background': [
+                            ('pressed', Colors.brightness(self.settings.colors.get(color), -0.2)),
+                            ('hover', Colors.brightness(self.settings.colors.get(color), -0.1))],
+                        'bordercolor': [
+                            ('pressed', Colors.brightness(self.settings.colors.get(color), -0.2)),
+                            ('hover', Colors.brightness(self.settings.colors.get(color), -0.1))],
+                        'darkcolor': [
+                            ('pressed', Colors.brightness(self.settings.colors.get(color), -0.2)),
+                            ('hover', Colors.brightness(self.settings.colors.get(color), -0.1))],
+                        'lightcolor': [
+                            ('pressed', Colors.brightness(self.settings.colors.get(color), -0.2)),
+                            ('hover', Colors.brightness(self.settings.colors.get(color), -0.1))]}}})
 
     def _style_outline_buttons(self):
         """
@@ -941,62 +960,64 @@ class StylerTTK:
             - Button.label: compound, space, text, font, foreground, underline, width, anchor, justify, wraplength,
                 embossed, image, stipple, background
         """
-        self.style.configure('Outline.TButton',
-                             foreground=self.settings.colors.primary,
-                             background=self.settings.colors.bg,
-                             bordercolor=self.settings.colors.primary,
-                             darkcolor=self.settings.colors.bg,
-                             lightcolor=self.settings.colors.bg,
-                             relief='raised',
-                             focusthickness=0,
-                             focuscolor='',
-                             padding=(10, 5))
-
-        self.style.map('Outline.TButton',
-                       foreground=[
-                           ('pressed', self.settings.colors.selectfg),
-                           ('hover', self.settings.colors.selectfg)],
-                       background=[
-                           ('pressed', Colors.brightness(self.settings.colors.primary, -0.2)),
-                           ('hover', Colors.brightness(self.settings.colors.primary, -0.1))],
-                       bordercolor=[
-                           ('pressed', Colors.brightness(self.settings.colors.primary, -0.2)),
-                           ('hover', Colors.brightness(self.settings.colors.primary, -0.1))],
-                       darkcolor=[
-                           ('pressed', Colors.brightness(self.settings.colors.primary, -0.2)),
-                           ('hover', Colors.brightness(self.settings.colors.primary, -0.1))],
-                       lightcolor=[
-                           ('pressed', Colors.brightness(self.settings.colors.primary, -0.2)),
-                           ('hover', Colors.brightness(self.settings.colors.primary, -0.1))])
+        self.style.theme_settings(self.settings.name, {
+            'Outline.TButton': {
+                'configure': {
+                    'foreground': self.settings.colors.primary,
+                    'background': self.settings.colors.bg,
+                    'bordercolor': self.settings.colors.primary,
+                    'darkcolor': self.settings.colors.bg,
+                    'lightcolor': self.settings.colors.bg,
+                    'relief': 'raised',
+                    'focusthickness': 0,
+                    'focuscolor': '',
+                    'padding': (10, 5)},
+                'map': {
+                    'foreground': [
+                        ('pressed', self.settings.colors.selectfg),
+                        ('hover', self.settings.colors.selectfg)],
+                    'background': [
+                        ('pressed', Colors.brightness(self.settings.colors.primary, -0.2)),
+                        ('hover', Colors.brightness(self.settings.colors.primary, -0.1))],
+                    'bordercolor': [
+                        ('pressed', Colors.brightness(self.settings.colors.primary, -0.2)),
+                        ('hover', Colors.brightness(self.settings.colors.primary, -0.1))],
+                    'darkcolor': [
+                        ('pressed', Colors.brightness(self.settings.colors.primary, -0.2)),
+                        ('hover', Colors.brightness(self.settings.colors.primary, -0.1))],
+                    'lightcolor': [
+                        ('pressed', Colors.brightness(self.settings.colors.primary, -0.2)),
+                        ('hover', Colors.brightness(self.settings.colors.primary, -0.1))]}}})
 
         for color in self.settings.colors:
-            self.style.configure(f'{color}.Outline.TButton',
-                                 foreground=self.settings.colors.get(color),
-                                 background=self.settings.colors.bg,
-                                 bordercolor=self.settings.colors.get(color),
-                                 darkcolor=self.settings.colors.bg,
-                                 lightcolor=self.settings.colors.bg,
-                                 relief='raised',
-                                 focusthickness=0,
-                                 focuscolor='',
-                                 padding=(10, 5))
-
-            self.style.map(f'{color}.Outline.TButton',
-                           foreground=[
-                               ('pressed', self.settings.colors.selectfg),
-                               ('hover', self.settings.colors.selectfg)],
-                           background=[
-                               ('pressed', Colors.brightness(self.settings.colors.get(color), -0.2)),
-                               ('hover', Colors.brightness(self.settings.colors.get(color), -0.1))],
-                           bordercolor=[
-                               ('pressed', Colors.brightness(self.settings.colors.get(color), -0.2)),
-                               ('hover', Colors.brightness(self.settings.colors.get(color), -0.1))],
-                           darkcolor=[
-                               ('pressed', Colors.brightness(self.settings.colors.get(color), -0.2)),
-                               ('hover', Colors.brightness(self.settings.colors.get(color), -0.1))],
-                           lightcolor=[
-                               ('pressed', Colors.brightness(self.settings.colors.get(color), -0.2)),
-                               ('hover', Colors.brightness(self.settings.colors.get(color), -0.1))])
+            self.style.theme_settings(self.settings.name, {
+                f'{color}.Outline.TButton': {
+                    'configure': {
+                        'foreground': self.settings.colors.get(color),
+                        'background': self.settings.colors.bg,
+                        'bordercolor': self.settings.colors.get(color),
+                        'darkcolor': self.settings.colors.bg,
+                        'lightcolor': self.settings.colors.bg,
+                        'relief': 'raised',
+                        'focusthickness': 0,
+                        'focuscolor': '',
+                        'padding': (10, 5)},
+                    'map': {
+                        'foreground': [
+                            ('pressed', self.settings.colors.selectfg),
+                            ('hover', self.settings.colors.selectfg)],
+                        'background': [
+                            ('pressed', Colors.brightness(self.settings.colors.get(color), -0.2)),
+                            ('hover', Colors.brightness(self.settings.colors.get(color), -0.1))],
+                        'bordercolor': [
+                            ('pressed', Colors.brightness(self.settings.colors.get(color), -0.2)),
+                            ('hover', Colors.brightness(self.settings.colors.get(color), -0.1))],
+                        'darkcolor': [
+                            ('pressed', Colors.brightness(self.settings.colors.get(color), -0.2)),
+                            ('hover', Colors.brightness(self.settings.colors.get(color), -0.1))],
+                        'lightcolor': [
+                            ('pressed', Colors.brightness(self.settings.colors.get(color), -0.2)),
+                            ('hover', Colors.brightness(self.settings.colors.get(color), -0.1))]}}})
 
     def _style_entry(self):
         """
@@ -1008,30 +1029,34 @@ class StylerTTK:
             - Entry.padding: padding, relief, shiftrelief
             - Entry.textarea: font, width
         """
-        self.style.configure('TEntry',
-                             fieldbackground=self.settings.colors.light,
-                             bordercolor=self.settings.colors.bg,
-                             lightcolor=self.settings.colors.border,
-                             darkcolor=self.settings.colors.border,
-                             foreground=self.settings.colors.inputfg,
-                             padding=5)
-
-        self.style.map('TEntry',
-                       bordercolor=[
-                           ('focus', self.settings.colors.primary),
-                           ('hover', self.settings.colors.bg)],
-                       lightcolor=[
-                           ('focus', self.settings.colors.primary),
-                           ('hover', self.settings.colors.primary)],
-                       darkcolor=[
-                           ('focus', self.settings.colors.primary),
-                           ('hover', self.settings.colors.primary)])
+        self.style.theme_settings(self.settings.name, {
+            'TEntry': {
+                'configure': {
+                    'fieldbackground': self.settings.colors.light,
+                    'bordercolor': self.settings.colors.bg,
+                    'lightcolor': self.settings.colors.border,
+                    'darkcolor': self.settings.colors.border,
+                    'foreground': self.settings.colors.inputfg,
+                    'padding': 5},
+                'map': {
+                    'bordercolor': [
+                        ('focus', self.settings.colors.primary),
+                        ('hover', self.settings.colors.bg)],
+                    'lightcolor': [
+                        ('focus', self.settings.colors.primary),
+                        ('hover', self.settings.colors.primary)],
+                    'darkcolor': [
+                        ('focus', self.settings.colors.primary),
+                        ('hover', self.settings.colors.primary)]}}})
 
         for color in self.settings.colors:
-            self.style.map(f'{color}.TEntry',
-                           bordercolor=[('focus', self.settings.colors.get(color))],
-                           lightcolor=[('focus', self.settings.colors.get(color))],
-                           darkcolor=[('focus', self.settings.colors.get(color))])
+            self.style.theme_settings(self.settings.name, {
+                'map': {
+                    'bordercolor': [('focus', self.settings.colors.get(color))],
+                    'lightcolor': [('focus', self.settings.colors.get(color))],
+                    'darkcolor': [('focus', self.settings.colors.get(color))]
+                }
+            })
 
     def _style_radiobutton(self):
         """
@@ -1051,31 +1076,34 @@ class StylerTTK:
             and feel with styles. On Linux and MacOS, defaults to stylized 'clam' theme, so the style can be changed.
         """
         if 'xpnative' in self.style.theme_names():
-            self.style.element_create('Radiobutton.indicator', 'from', 'xpnative')
+            self.style.theme_settings(self.settings.name, {
+                'Radiobutton.indicator': {
+                    'element create': ('from', 'xpnative')}})
 
-        self.style.configure('TRadiobutton',
-                             indicatormargin=8,
-                             indicatorsize=12,
-                             upperbordercolor=(self.settings.colors.fg
-                                               if self.settings.type == 'light'
-                                               else self.settings.colors.light),
-                             lowerbordercolor=(self.settings.colors.fg
-                                               if self.settings.type == 'light'
-                                               else self.settings.colors.light),
-                             indicatorforeground=(self.settings.colors.fg
-                                                  if self.settings.type == 'light'
-                                                  else self.settings.colors.bg))
-
-        self.style.map('TRadiobutton',
-                       foreground=[('active', self.settings.colors.primary)],
-                       indicatorforeground=[
-                           ('active', self.settings.colors.primary if (self.settings.type == 'light') else 'black')])
+        self.style.theme_settings(self.settings.name, {
+            'TRadiobutton': {
+                'configure': {
+                    'indicatormargin': 8,
+                    'indicatorsize': 12,
+                    'upperbordercolor': (
+                        self.settings.colors.fg if self.settings.type == 'light' else self.settings.colors.light),
+                    'lowerbordercolor': (
+                        self.settings.colors.fg if self.settings.type == 'light' else self.settings.colors.light),
+                    'indicatorforeground': (
+                        self.settings.colors.fg if self.settings.type == 'light' else self.settings.colors.bg)},
+                'map': {
+                    'foreground': [('active', self.settings.colors.primary)],
+                    'indicatorforeground': [
+                        ('active', self.settings.colors.primary if (self.settings.type == 'light') else 'black')]}}})
 
         # variations change the indicator color
         for color in self.settings.colors:
-            self.style.map(f'{color}.TRadiobutton',
-                           foreground=[('active', Colors.brightness(self.settings.colors.get(color), -0.2))],
-                           indicatorforeground=[('active', Colors.brightness(self.settings.colors.get(color), -0.2))])
+            self.style.theme_settings(self.settings.name, {
+                f'{color}.TRadiobutton': {
+                    'map': {
+                        'foreground': [('active', Colors.brightness(self.settings.colors.get(color), -0.2))],
+                        'indicatorforeground': [
+                            ('active', Colors.brightness(self.settings.colors.get(color), -0.2))]}}})
 
     def _style_label(self):
         """
@@ -1088,9 +1116,15 @@ class StylerTTK:
             - Label.label: compound, space, text, font, foreground, underline, width, anchor, justify, wraplength,
                 embossed, image, stipple, background
         """
-        self.style.configure('TLabel', foreground=self.settings.colors.fg)
+        self.style.theme_settings(self.settings.name, {
+            'TLabel': {'configure': {'foreground': self.settings.colors.fg}}})
+
+        # self.style.configure('TLabel', foreground=self.settings.colors.fg)
         for color in self.settings.colors:
-            self.style.configure(f'{color}.TLabel', foreground=self.settings.colors.get(color))
+            self.style.theme_settings(self.settings.name, {
+                f'{color}.TLabel': {
+                    'configure': {
+                        'foreground': self.settings.colors.get(color)}}})
 
     def _style_labelframe(self):
         """
@@ -1102,22 +1136,28 @@ class StylerTTK:
             - Label.fill: background
             - Label.text: text, font, foreground, underline, width, anchor, justify, wraplength, embossed
         """
-        self.style.configure('TLabelframe',
-                             padding=(10, 5),
-                             foreground=self.settings.colors.fg,
-                             relief='raised',
-                             bordercolor=self.settings.colors.border,
-                             darkcolor=self.settings.colors.bg,
-                             lightcolor=self.settings.colors.bg)
-
-        self.style.configure('TLabelframe.Label', foreground=self.settings.colors.fg)
+        self.style.theme_settings(self.settings.name, {
+            'TLabelframe': {
+                'configure': {
+                    'padding': (10, 5),
+                    'foreground': self.settings.colors.fg,
+                    'relief': 'raised',
+                    'bordercolor': self.settings.colors.border,
+                    'darkcolor': self.settings.colors.bg,
+                    'lightcolor': self.settings.colors.bg}},
+            'TLabelframe.Label': {
+                'configure': {
+                    'foreground': self.settings.colors.fg}}})
 
         for color in self.settings.colors:
-            self.style.configure(f'{color}.TLabelframe',
-                                 foreground=self.settings.colors.get(color),
-                                 bordercolor=self.settings.colors.get(color))
-
-            self.style.configure(f'{color}.TLabelframe.Label', foreground=self.settings.colors.get(color))
+            self.style.theme_settings(self.settings.name, {
+                f'{color}.TLabelframe': {
+                    'configure': {
+                        'foreground': self.settings.colors.get(color),
+                        'background': self.settings.colors.get(color)}},
+                f'{color}.TLabelframe.Label': {
+                    'configure': {
+                        'foreground': self.settings.colors.get(color)}}})
 
     def _style_checkbutton(self):
         """
@@ -1137,33 +1177,39 @@ class StylerTTK:
             and feel with styles. On Linux and MacOS, defaults to stylized 'clam' theme, so the style can be changed.
         """
         if 'xpnative' in self.style.theme_names():
-            self.style.element_create('Checkbutton.indicator', 'from', 'xpnative')
+            self.style.theme_settings(self.settings.name, {
+                'Checkbutton.indicator': {
+                    'element create': ('from', 'xpnative')}})
 
-        self.style.configure('TCheckbutton',
-                             foreground=self.settings.colors.fg,
-                             indicatorsize=10,
-                             indicatormargin=10,
-                             indicatorforeground=self.settings.colors.selectfg)
-
-        self.style.map('TCheckbutton',
-                       indicatorbackground=[
-                           ('active selected', Colors.brightness(self.settings.colors.primary, -0.2)),
-                           ('selected', self.settings.colors.fg),
-                           ('active !selected', self.settings.colors.light)],
-                       foreground=[('active', self.settings.colors.primary)])
+        self.style.theme_settings(self.settings.name, {
+            'TCheckbutton': {
+                'configure': {
+                    'foreground': self.settings.colors.fg,
+                    'indicatorsize': 10,
+                    'indicatormargin': 10,
+                    'indicatorforeground': self.settings.colors.selectfg},
+                'map': {
+                    'indicatorbackground': [
+                        ('active selected', Colors.brightness(self.settings.colors.primary, -0.2)),
+                        ('selected', self.settings.colors.fg),
+                        ('active !selected', self.settings.colors.light)],
+                    'foreground': [
+                        ('active', self.settings.colors.primary)]}}})
 
         # variations change indicator color
         for color in self.settings.colors:
-            self.style.map(f'{color}.TCheckbutton',
-                           indicatorbackground=[
-                               ('active selected', Colors.brightness(self.settings.colors.get(color), -0.2)),
-                               ('selected', self.settings.colors.fg),
-                               ('active !selected', self.settings.colors.light)],
-                           indicatorforeground=[
-                               ('active selected', Colors.brightness(self.settings.colors.get(color), -0.2)),
-                               ('selected', self.settings.colors.get(color))],
-                           foreground=[
-                               ('active', Colors.brightness(self.settings.colors.get(color), -0.2))])
+            self.style.theme_settings(self.settings.name, {
+                f'{color}.TCheckbutton': {
+                    'map': {
+                        'indicatorbackground': [
+                            ('active selected', Colors.brightness(self.settings.colors.get(color), -0.2)),
+                            ('selected', self.settings.colors.fg),
+                            ('active !selected', self.settings.colors.light)],
+                        'indicatorforeground': [
+                            ('active selected', Colors.brightness(self.settings.colors.get(color), -0.2)),
+                            ('selected', self.settings.colors.get(color))],
+                        'foreground': [
+                            ('active', Colors.brightness(self.settings.colors.get(color), -0.2))]}}})
 
     def _style_solid_menubutton(self):
         """
@@ -1178,58 +1224,62 @@ class StylerTTK:
                 wraplength, embossed, image, stipple, background
             - Menubutton.label:
         """
-        self.style.configure('TMenubutton',
-                             foreground=self.settings.colors.selectfg,
-                             background=self.settings.colors.primary,
-                             bordercolor=self.settings.colors.primary,
-                             darkcolor=self.settings.colors.primary,
-                             lightcolor=self.settings.colors.primary,
-                             arrowcolor=self.settings.colors.bg if self.settings.type == 'light' else 'white',
-                             arrowpadding=(0, 0, 15, 0),
-                             relief='raised',
-                             focusthickness=0,
-                             focuscolor='',
-                             padding=(10, 5))
-
-        self.style.map('TMenubutton',
-                       background=[
-                           ('pressed', Colors.brightness(self.settings.colors.primary, -0.2)),
-                           ('hover', Colors.brightness(self.settings.colors.primary, -0.1))],
-                       bordercolor=[
-                           ('pressed', Colors.brightness(self.settings.colors.primary, -0.2)),
-                           ('hover', Colors.brightness(self.settings.colors.primary, -0.1))],
-                       darkcolor=[
-                           ('pressed', Colors.brightness(self.settings.colors.primary, -0.2)),
-                           ('hover', Colors.brightness(self.settings.colors.primary, -0.1))],
-                       lightcolor=[
-                           ('pressed', Colors.brightness(self.settings.colors.primary, -0.2)),
-                           ('hover', Colors.brightness(self.settings.colors.primary, -0.1))])
+        self.style.theme_settings(self.settings.name, {
+            'TMenubutton': {
+                'configure': {
+                    'foreground': self.settings.colors.selectfg,
+                    'background': self.settings.colors.primary,
+                    'bordercolor': self.settings.colors.primary,
+                    'darkcolor': self.settings.colors.primary,
+                    'lightcolor': self.settings.colors.primary,
+                    'arrowcolor': self.settings.colors.bg if self.settings.type == 'light' else 'white',
+                    'arrowpadding': (0, 0, 15, 0),
+                    'relief': 'raised',
+                    'focusthickness': 0,
+                    'focuscolor': '',
+                    'padding': (10, 5)},
+                'map': {
+                    'background': [
+                        ('pressed', Colors.brightness(self.settings.colors.primary, -0.2)),
+                        ('hover', Colors.brightness(self.settings.colors.primary, -0.1))],
+                    'bordercolor': [
+                        ('pressed', Colors.brightness(self.settings.colors.primary, -0.2)),
+                        ('hover', Colors.brightness(self.settings.colors.primary, -0.1))],
+                    'darkcolor': [
+                        ('pressed', Colors.brightness(self.settings.colors.primary, -0.2)),
+                        ('hover', Colors.brightness(self.settings.colors.primary, -0.1))],
+                    'lightcolor': [
+                        ('pressed', Colors.brightness(self.settings.colors.primary, -0.2)),
+                        ('hover', Colors.brightness(self.settings.colors.primary, -0.1))]}}})
 
         for color in self.settings.colors:
-            self.style.configure(f'{color}.TMenubutton',
-                                 foreground=self.settings.colors.selectfg,
-                                 background=self.settings.colors.get(color),
-                                 bordercolor=self.settings.colors.get(color),
-                                 darkcolor=self.settings.colors.get(color),
-                                 lightcolor=self.settings.colors.get(color),
-                                 relief='raised',
-                                 focusthickness=0,
-                                 focuscolor='',
-                                 padding=(10, 5))
-
-            self.style.map(f'{color}.TMenubutton',
-                           background=[
-                               ('pressed', Colors.brightness(self.settings.colors.get(color), -0.2)),
-                               ('hover', Colors.brightness(self.settings.colors.get(color), -0.1))],
-                           bordercolor=[
-                               ('pressed', Colors.brightness(self.settings.colors.get(color), -0.2)),
-                               ('hover', Colors.brightness(self.settings.colors.get(color), -0.1))],
-                           darkcolor=[
-                               ('pressed', Colors.brightness(self.settings.colors.get(color), -0.2)),
-                               ('hover', Colors.brightness(self.settings.colors.get(color), -0.1))],
-                           lightcolor=[
-                               ('pressed', Colors.brightness(self.settings.colors.get(color), -0.2)),
-                               ('hover', Colors.brightness(self.settings.colors.get(color), -0.1))])
+            self.style.theme_settings(self.settings.name, {
+                f'{color}.TMenubutton': {
+                    'configure': {
+                        'foreground': self.settings.colors.selectfg,
+                        'background': self.settings.colors.get(color),
+                        'bordercolor': self.settings.colors.get(color),
+                        'darkcolor': self.settings.colors.get(color),
+                        'lightcolor': self.settings.colors.get(color),
+                        'arrowcolor': self.settings.colors.bg if self.settings.type == 'light' else 'white',
+                        'arrowpadding': (0, 0, 15, 0),
+                        'relief': 'raised',
+                        'focusthickness': 0,
+                        'focuscolor': '',
+                        'padding': (10, 5)},
+                    'map': {
+                        'background': [
+                            ('pressed', Colors.brightness(self.settings.colors.get(color), -0.2)),
+                            ('hover', Colors.brightness(self.settings.colors.get(color), -0.1))],
+                        'bordercolor': [
+                            ('pressed', Colors.brightness(self.settings.colors.get(color), -0.2)),
+                            ('hover', Colors.brightness(self.settings.colors.get(color), -0.1))],
+                        'darkcolor': [
+                            ('pressed', Colors.brightness(self.settings.colors.get(color), -0.2)),
+                            ('hover', Colors.brightness(self.settings.colors.get(color), -0.1))],
+                        'lightcolor': [
+                            ('pressed', Colors.brightness(self.settings.colors.get(color), -0.2)),
+                            ('hover', Colors.brightness(self.settings.colors.get(color), -0.1))]}}})
 
     def _style_outline_menubutton(self):
         """
@@ -1244,71 +1294,74 @@ class StylerTTK:
                 wraplength, embossed, image, stipple, background
             - Menubutton.label:
         """
-        self.style.configure('Outline.TMenubutton',
-                             foreground=self.settings.colors.primary,
-                             background=self.settings.colors.bg,
-                             bordercolor=self.settings.colors.primary,
-                             darkcolor=self.settings.colors.bg,
-                             lightcolor=self.settings.colors.bg,
-                             arrowcolor=self.settings.colors.primary,
-                             arrowpadding=(0, 0, 15, 0),
-                             relief='raised',
-                             focusthickness=0,
-                             focuscolor='',
-                             padding=(10, 5))
-
-        self.style.map('Outline.TMenubutton',
-                       foreground=[
-                           ('pressed', self.settings.colors.selectfg),
-                           ('hover', self.settings.colors.selectfg)],
-                       background=[
-                           ('pressed', Colors.brightness(self.settings.colors.primary, -0.2)),
-                           ('hover', Colors.brightness(self.settings.colors.primary, -0.1))],
-                       bordercolor=[
-                           ('pressed', Colors.brightness(self.settings.colors.primary, -0.2)),
-                           ('hover', Colors.brightness(self.settings.colors.primary, -0.1))],
-                       darkcolor=[
-                           ('pressed', Colors.brightness(self.settings.colors.primary, -0.2)),
-                           ('hover', Colors.brightness(self.settings.colors.primary, -0.1))],
-                       lightcolor=[
-                           ('pressed', Colors.brightness(self.settings.colors.primary, -0.2)),
-                           ('hover', Colors.brightness(self.settings.colors.primary, -0.1))],
-                       arrowcolor=[
-                           ('pressed', self.settings.colors.selectfg),
-                           ('hover', self.settings.colors.selectfg)])
+        self.style.theme_settings(self.settings.name, {
+            'Outline.TMenubutton': {
+                'configure': {
+                    'foreground': self.settings.colors.primary,
+                    'background': self.settings.colors.bg,
+                    'bordercolor': self.settings.colors.primary,
+                    'darkcolor': self.settings.colors.bg,
+                    'lightcolor': self.settings.colors.bg,
+                    'arrowcolor': self.settings.colors.primary,
+                    'arrowpadding': (0, 0, 15, 0),
+                    'relief': 'raised',
+                    'focusthickness': 0,
+                    'focuscolor': '',
+                    'padding': (10, 5)},
+                'map': {
+                    'foreground': [
+                        ('pressed', self.settings.colors.selectfg),
+                        ('hover', self.settings.colors.selectfg)],
+                    'background': [
+                        ('pressed', Colors.brightness(self.settings.colors.primary, -0.2)),
+                        ('hover', Colors.brightness(self.settings.colors.primary, -0.1))],
+                    'bordercolor': [
+                        ('pressed', Colors.brightness(self.settings.colors.primary, -0.2)),
+                        ('hover', Colors.brightness(self.settings.colors.primary, -0.1))],
+                    'darkcolor': [
+                        ('pressed', Colors.brightness(self.settings.colors.primary, -0.2)),
+                        ('hover', Colors.brightness(self.settings.colors.primary, -0.1))],
+                    'lightcolor': [
+                        ('pressed', Colors.brightness(self.settings.colors.primary, -0.2)),
+                        ('hover', Colors.brightness(self.settings.colors.primary, -0.1))],
+                    'arrowcolor': [
+                        ('pressed', self.settings.colors.selectfg),
+                        ('hover', self.settings.colors.selectfg)]}}})
 
         for color in self.settings.colors:
-            self.style.configure(f'{color}.Outline.TMenubutton',
-                                 foreground=self.settings.colors.get(color),
-                                 background=self.settings.colors.bg,
-                                 bordercolor=self.settings.colors.get(color),
-                                 darkcolor=self.settings.colors.bg,
-                                 lightcolor=self.settings.colors.bg,
-                                 arrowcolor=self.settings.colors.get(color),
-                                 relief='raised',
-                                 focusthickness=0,
-                                 focuscolor='',
-                                 padding=(10, 5))
-
-            self.style.map(f'{color}.Outline.TMenubutton',
-                           foreground=[
-                               ('pressed', self.settings.colors.fg),
-                               ('hover', self.settings.colors.fg)],
-                           background=[
-                               ('pressed', Colors.brightness(self.settings.colors.get(color), -0.2)),
-                               ('hover', Colors.brightness(self.settings.colors.get(color), -0.1))],
-                           bordercolor=[
-                               ('pressed', Colors.brightness(self.settings.colors.get(color), -0.2)),
-                               ('hover', Colors.brightness(self.settings.colors.get(color), -0.1))],
-                           darkcolor=[
-                               ('pressed', Colors.brightness(self.settings.colors.get(color), -0.2)),
-                               ('hover', Colors.brightness(self.settings.colors.get(color), -0.1))],
-                           lightcolor=[
-                               ('pressed', Colors.brightness(self.settings.colors.get(color), -0.2)),
-                               ('hover', Colors.brightness(self.settings.colors.get(color), -0.1))],
-                           arrowcolor=[
-                               ('pressed', self.settings.colors.bg),
-                               ('hover', self.settings.colors.bg)])
+            self.style.theme_settings(self.settings.name, {
+                f'{color}.Outline.TMenubutton': {
+                    'configure': {
+                        'foreground': self.settings.colors.get(color),
+                        'background': self.settings.colors.bg,
+                        'bordercolor': self.settings.colors.get(color),
+                        'darkcolor': self.settings.colors.bg,
+                        'lightcolor': self.settings.colors.bg,
+                        'arrowcolor': self.settings.colors.get(color),
+                        'arrowpadding': (0, 0, 15, 0),
+                        'relief': 'raised',
+                        'focusthickness': 0,
+                        'focuscolor': '',
+                        'padding': (10, 5)},
+                    'map': {
+                        'foreground': [
+                            ('pressed', self.settings.colors.selectfg),
+                            ('hover', self.settings.colors.selectfg)],
+                        'background': [
+                            ('pressed', Colors.brightness(self.settings.colors.get(color), -0.2)),
+                            ('hover', Colors.brightness(self.settings.colors.get(color), -0.1))],
+                        'bordercolor': [
+                            ('pressed', Colors.brightness(self.settings.colors.get(color), -0.2)),
+                            ('hover', Colors.brightness(self.settings.colors.get(color), -0.1))],
+                        'darkcolor': [
+                            ('pressed', Colors.brightness(self.settings.colors.get(color), -0.2)),
+                            ('hover', Colors.brightness(self.settings.colors.get(color), -0.1))],
+                        'lightcolor': [
+                            ('pressed', Colors.brightness(self.settings.colors.get(color), -0.2)),
+                            ('hover', Colors.brightness(self.settings.colors.get(color), -0.1))],
+                        'arrowcolor': [
+                            ('pressed', self.settings.colors.selectfg),
+                            ('hover', self.settings.colors.selectfg)]}}})
 
     def _style_notebook(self):
         """
@@ -1323,21 +1376,27 @@ class StylerTTK:
             - Notebook.label: compound, space, text, font, foreground, underline, width, anchor, justify, wraplength,
                 embossed, image, stipple, background
         """
-        self.style.configure('TNotebook',
-                             bordercolor=self.settings.colors.border,
-                             borderwidth=1)
-
-        self.style.configure('TNotebook.Tab',
-                             bordercolor=self.settings.colors.border,
-                             foreground=self.settings.colors.fg,
-                             padding=(10, 5))
-
-        self.style.map('TNotebook.Tab',
-                       background=[('!selected', self.settings.colors.light)],
-                       lightcolor=[('!selected', self.settings.colors.light)],
-                       darkcolor=[('!selected', self.settings.colors.light)],
-                       bordercolor=[('!selected', self.settings.colors.border)],
-                       foreground=[('!selected', self.settings.colors.inputfg)])
+        self.style.theme_settings(self.settings.name, {
+            'TNotebook': {
+                'configure': {
+                    'bordercolor': self.settings.colors.border,
+                    'borderwidth': 1}},
+            'TNotebook.Tab': {
+                'configure': {
+                    'bordercolor': self.settings.colors.border,
+                    'foreground': self.settings.colors.fg,
+                    'padding': (10, 5)},
+                'map': {
+                    'background': [
+                        ('!selected', self.settings.colors.light)],
+                    'lightcolor': [
+                        ('!selected', self.settings.colors.light)],
+                    'darkcolor': [
+                        ('!selected', self.settings.colors.light)],
+                    'bordercolor': [
+                        ('!selected', self.settings.colors.border)],
+                    'foreground': [
+                        ('!selected', self.settings.colors.inputfg)]}}})
 
     def _style_panedwindow(self):
         """
@@ -1356,9 +1415,17 @@ class StylerTTK:
                 - Sash.vsash: sashthickness
                 - Sash.vgrip: lightcolor, bordercolor, gripcount
         """
-        self.style.configure('TPanedwindow', background=Colors.brightness(self.settings.colors.light, -0.1))
-        self.style.configure('Sash', bordercolor=self.settings.colors.inputfg, lightcolor=self.settings.colors.light,
-                             sashthickness=9, sashpad=0, gripcount=25)
+        self.style.theme_settings(self.settings.name, {
+            'TPanedwindow': {
+                'configure': {
+                    'background': Colors.brightness(self.settings.colors.light, -0.1)}},
+            'Sash': {
+                'configure': {
+                    'bordercolor': self.settings.colors.inputfg,
+                    'lightcolor': self.settings.colors.light,
+                    'sashthickness': 9,
+                    'sashpad': 0,
+                    'gripcount': 25}}})
 
     def _style_sizegroup(self):
         """
