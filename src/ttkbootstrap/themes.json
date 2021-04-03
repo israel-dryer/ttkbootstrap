@@ -3,7 +3,7 @@
 	"themes": [
 		{
 			"name": "cosmo",
-			"font": "TkDefaultFont 12",
+			"font": "Helvetica 10",
 			"type": "light",
 			"colors": {
 				"primary": "#2780e3",
@@ -23,7 +23,7 @@
 		},
 		{
 			"name": "flatly",
-			"font": "TkDefaultFont 12",
+			"font": "Helvetica 10",
 			"type": "light",
 			"colors": {
 				"primary": "#2c3e50",
@@ -43,7 +43,7 @@
 		},
 		{
 			"name": "litera",
-			"font": "TkDefaultFont 12",
+			"font": "Helvetica 10",
 			"type": "light",
 			"colors": {
 				"primary": "#4582ec",
@@ -63,7 +63,7 @@
 		},
 		{
 			"name": "minty",
-			"font": "TkDefaultFont 12",
+			"font": "Helvetica 10",
 			"type": "light",
 			"colors": {
 				"primary": "#78c2ad",
@@ -83,7 +83,7 @@
 		},
 		{
 			"name": "lumen",
-			"font": "TkDefaultFont 12",
+			"font": "Helvetica 10",
 			"type": "light",
 			"colors": {
 				"primary": "#158cba",
@@ -103,7 +103,7 @@
 		},
 		{
 			"name": "sandstone",
-			"font": "TkDefaultFont 12",
+			"font": "Helvetica 10",
 			"type": "light",
 			"colors": {
 				"primary": "#3e3f3a",
@@ -123,7 +123,7 @@
 		},
 		{
 			"name": "yeti",
-			"font": "TkDefaultFont 12",
+			"font": "Helvetica 10",
 			"type": "light",
 			"colors": {
 				"primary": "#008cba",
@@ -143,7 +143,7 @@
 		},
 		{
 			"name": "pulse",
-			"font": "TkDefaultFont 12",
+			"font": "Helvetica 10",
 			"type": "light",
 			"colors": {
 				"primary": "#593196",
@@ -163,7 +163,7 @@
 		},
 		{
 			"name": "united",
-			"font": "TkDefaultFont 12",
+			"font": "Helvetica 10",
 			"type": "light",
 			"colors": {
 				"primary": "#e95420",
@@ -183,7 +183,7 @@
 		},
 		{
 			"name": "journal",
-			"font": "TkDefaultFont 12",
+			"font": "Helvetica 10",
 			"type": "light",
 			"colors": {
 				"primary": "#eb6864",
@@ -203,7 +203,7 @@
 		},
 		{
 			"name": "darkly",
-			"font": "TkDefaultFont 12",
+			"font": "Helvetica 10",
 			"type": "dark",
 			"colors": {
 				"primary": "#375a7f",
@@ -223,7 +223,7 @@
 		},
 		{
 			"name": "superhero",
-			"font": "TkDefaultFont 12",
+			"font": "Helvetica 10",
 			"type": "dark",
 			"colors": {
 				"primary": "#df691a",
@@ -243,7 +243,7 @@
 		},
 		{
 			"name": "solar",
-			"font": "TkDefaultFont 12",
+			"font": "Helvetica 10",
 			"type": "dark",
 			"colors": {
 				"primary": "#bc951a",
@@ -263,7 +263,7 @@
 		},
 		{
 			"name": "cyborg",
-			"font": "TkDefaultFont 12",
+			"font": "Helvetica 10",
 			"type": "dark",
 			"colors": {
 				"primary": "#2a9fd6",
