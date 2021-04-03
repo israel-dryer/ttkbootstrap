@@ -532,7 +532,7 @@ class StylerTTK:
                     'selectforeground': self.theme.colors.selectfg,
                     'selectbackground': self.theme.colors.selectbg,
                     'fieldbg': 'white',
-                    'font': (self.theme.font,),
+                    'font': self.theme.font,
                     'borderwidth': 1,
                     'focuscolor': ''}}})
 
@@ -1309,6 +1309,7 @@ class StylerTTK:
         self.settings.update({
             'Outline.TMenubutton': {
                 'configure': {
+                    'font': self.theme.font,
                     'foreground': self.theme.colors.primary,
                     'background': self.theme.colors.bg,
                     'bordercolor': self.theme.colors.primary,
