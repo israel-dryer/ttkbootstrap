@@ -3,15 +3,14 @@ Author: Israel Dryer
 License: MIT
 Copyright (c) 2021 Israel Dryer
 """
+import uuid
+import json
 from ttkbootstrap import Style, Colors, StylerTTK, ThemeDefinition
 import tkinter as tk
-from tkinter.font import families
 from tkinter import ttk
 from tkinter.colorchooser import askcolor
 from tkinter.messagebox import showinfo, showerror
 import importlib.resources
-import uuid
-import json
 from PIL import ImageGrab
 from tkinter.filedialog import asksaveasfilename
 from tkinter.messagebox import showwarning
@@ -30,18 +29,13 @@ class CreatorDesignWindow(tk.Toplevel):
         super().__init__(master)
         self.title('TTK Creator')
         self.protocol('WM_DELETE_WINDOW', self.master.quit)
-        self.geometry(f'938x602+{master.winfo_x()}+{master.winfo_y()}')
         self.style = self.master.style
         self.theme_name = self.master.style.theme_use()
         self.fallback_colors = deepcopy(self.style.colors)
-        self.vars = {}
-        self.setup()
+        self.geometry_set = False
         self.bind("<Insert>", self.get_bounding_box)
 
-    def setup(self):
-        """
-        Setup the application
-        """
+        # setup application window
         self.window = ttk.Frame(self, name='window', padding=5)
         self.window.pack(expand=False)
 
@@ -54,7 +48,11 @@ class CreatorDesignWindow(tk.Toplevel):
         self.bagel.pack(side='left')
 
         # variables used to update selectors and theme values
+        self.vars = {}
         self.create_variables()
+
+        # set screen size after window has been created
+        self.after(1000, self.set_geometry)
 
     def color_chooser(self, master):
         """
@@ -68,15 +66,8 @@ class CreatorDesignWindow(tk.Toplevel):
         # Theme name
         name_frame = ttk.Frame(chooser)
         name_frame.pack(fill='x', pady=5)
-        ttk.Label(name_frame, text='theme name', width=10).pack(side='left', padx=(0, 10))
+        ttk.Label(name_frame, text='name', width=10).pack(side='left', padx=(0, 10))
         ttk.Entry(name_frame, textvariable='name').pack(fill='x', side='top')
-
-        # Default font --> not ready to make this available yet. So, all will default to Helvetica
-        # font_frame = ttk.Frame(chooser)
-        # font_frame.pack(fill='x', pady=(5, 10))
-        # ttk.Label(font_frame, text='default font', width=10).pack(side='left', padx=(0, 10))
-        # fonts = sorted(families())
-        # ttk.Combobox(font_frame, textvariable='font', values=fonts).pack(fill='x', expand='yes', side='left', padx=2)
 
         # Color selectors
         selector_frame = ttk.Frame(chooser, name='selectors')
@@ -92,6 +83,20 @@ class CreatorDesignWindow(tk.Toplevel):
         save_btn.pack(side='left', fill='x', expand='yes', padx=2)
         button_frame.pack(fill='x', pady=10)
         return chooser
+
+    def set_geometry(self):
+        """
+        Set the geometry after the window has been created to fix the size at the appropriate size to fit all
+        widgets.
+        """
+        if not self.geometry_set:
+            width = self.winfo_width()
+            height = self.winfo_height()
+            if width != 1:
+                self.geometry(f'{width}x{height}')
+                self.geometry_set = True
+            else:
+                self.after(1000, self.set_geometry)
 
     def get_selectors(self):
         """
@@ -129,10 +134,10 @@ class CreatorDesignWindow(tk.Toplevel):
         theme variable.
 
         :param selector: the widget container for a color selector
+        :param event: the event triggering the select color function
         """
         color_label = selector.children.get('label').cget('text')
         color_patch = selector.children.get('patch')
-        color_entry = selector.children.get('entry')
 
         if not event:
             # color was changed with palette button
@@ -165,9 +170,11 @@ class CreatorDesignWindow(tk.Toplevel):
         """
         Create variables to store theme settings
         """
+        themename = self.style.theme_use()
+        themesettings = self.style.themes.get(themename).theme
         self.vars['name'] = tk.StringVar(name='name', value='New Theme')
-        self.vars['font'] = tk.StringVar(name='font', value='Helvetica')
-        self.vars['type'] = tk.StringVar(name='type', value='light')
+        self.vars['font'] = tk.StringVar(name='font', value=themesettings.font)
+        self.vars['type'] = tk.StringVar(name='type', value=themesettings.type)
 
         for color in self.style.colors.label_iter():
             self.vars[color] = tk.StringVar(name=color, value=self.style.colors.get(color))
@@ -193,7 +200,7 @@ class CreatorDesignWindow(tk.Toplevel):
 
         theme = {
             "name": name,
-            "font": "Helvetica",
+            "font": self.getvar('font'),
             "type": self.getvar('type'),
             "colors": {
                 "primary": self.getvar('primary'),
@@ -208,9 +215,8 @@ class CreatorDesignWindow(tk.Toplevel):
                 "selectfg": self.getvar('selectfg'),
                 "light": self.getvar('light'),
                 "border": self.getvar('border'),
-                "inputfg": self.getvar('inputfg')
-            }
-        }
+                "inputfg": self.getvar('inputfg')}}
+
         user_themes['themes'].append(theme)
 
         with open(settings['userpath'], 'w', encoding='utf-8') as f:
@@ -230,8 +236,8 @@ class CreatorDesignWindow(tk.Toplevel):
         Reset all selector variables to the default theme values
         """
         self.vars['name'].set(value='New Theme')
-        self.vars['font'].set('Helvetica')
-        self.vars['type'].set('light')
+        # self.vars['font'].set('Helvetica 10')
+        # self.vars['type'].set('dark')
 
         for color in self.style.colors.label_iter():
             var = self.vars[color]
@@ -258,7 +264,7 @@ class CreatorDesignWindow(tk.Toplevel):
         :param index: the index of the item (if an array)
         :param mode: the mode of the trace observer
         """
-        theme_id = uuid.uuid4()  # a unique (and temporary) identifier for the new theme
+        theme_id = str(uuid.uuid4())  # a unique (and temporary) identifier for the new theme
         try:
             colors = Colors(
                 primary=self.getvar('primary'),
@@ -280,25 +286,15 @@ class CreatorDesignWindow(tk.Toplevel):
         try:
             definition = ThemeDefinition(
                 name=theme_id,
-                type=self.getvar('inputfg'),
+                themetype=self.getvar('type'),
                 font=self.getvar('font'),
                 colors=colors)
+
+            # attach the new theme to the style so that it is not garbage collected!!
             self.new_style = StylerTTK(self.style, definition)
             self.style.theme_use(themename=theme_id)
         except Exception:
             return
-        """
-            This call is forcing the select foreground to turn black, even if foreground is not specified in
-            the palette parameters. Calling this will set some of the residual tk colors, such as the combobox 
-            popdown, etc... However, due to this select fg issue, I've decided to comment this out for now.
-        """
-        # self.tk_setPalette(
-        #     foreground=self.getvar('fg'),
-        #     background=self.getvar('bg'),
-        #     activeBackground=self.getvar('selectbg'),
-        #     activeForeground=self.getvar('selectfg'),
-        #     selectBackground=self.getvar('selectbg'),
-        #     selectForeground=self.getvar('selectfg'))
 
     def get_bounding_box(self, event):
         """
@@ -424,7 +420,7 @@ class EverythingBagel(ttk.Notebook):
 
         # Scale
         scale_frame = ttk.Frame(widget_frame)
-        self.scale_var = tk.StringVar(value=25)
+        self.scale_var = tk.StringVar(value=25)  # assign to self so that it's not garbage collected
         scale = ttk.Scale(scale_frame, variable=self.scale_var, from_=0, to=100)
         scale.pack(side='left', fill='x', expand='yes', padx=(0, 2))
         scale_frame.pack(side='top', fill='x', pady=5)
@@ -445,20 +441,20 @@ class CreatorBaseChooser(tk.Tk):
         super().__init__()
         self.style = Style()
         self.title('TTK Creator')
-        self.geometry(f'938x602')
+        self.geometry(f'819x543')
         self.frame = ttk.Frame(self)
         self.setup()
-        self.eval('tk::PlaceWindow . center')
+        # self.eval('tk::PlaceWindow . center')
         self.bind("<Insert>", self.get_bounding_box)
 
     def setup(self):
         self.frame.pack(fill='both', expand='yes')
 
-        lbl = ttk.Label(self.frame, text='What kind of theme do you want to create?', font='-size 18 -slant italic')
+        lbl = ttk.Label(self.frame, text='What kind of theme do you want to create?', font='-size 16 -slant italic')
         lbl.pack(side='top', pady=(35, 40))
 
-        self.style.configure('light.Outline.TButton', font='-size 26')
-        self.style.configure('dark.TButton', font='-size 26')
+        self.style.configure('light.Outline.TButton', font='-size 20')
+        self.style.configure('dark.TButton', font='-size 20')
         light = ttk.Button(self.frame, text='Light', style='light.Outline.TButton', command=self.create_light_theme)
         light.pack(side='left', expand='yes', fill='both')
 
