@@ -75,7 +75,7 @@ class Style(ttk.Style):
             if theme['name'] not in self.theme_names():
                 settings = ThemeDefinition(
                     name=theme['name'],
-                    type=theme['type'],
+                    themetype=theme['type'],
                     font=theme['font'],
                     colors=Colors(**theme['colors']))
                 self.themes[settings.name] = StylerTTK(self, settings)
@@ -98,7 +98,7 @@ class Style(ttk.Style):
             current = self.themes.get(themename)
             if current:
                 current.styler_tk.style_tkinter_widgets()
-        except AttributeError as e:
+        except AttributeError:
             pass
 
 
@@ -107,14 +107,14 @@ class ThemeDefinition:
     A class to provide defined name, colors, and font settings for a ttkbootstrap theme.
 
     :param str name: The name of the theme
-    :param str type: type: 'light' or 'dark'
+    :param str themetype: type: 'light' or 'dark'
     :param str font: Default font to apply to theme. Helvetica is used by default.
     :param Color colors: An instance of the `Colors` class.
     """
 
-    def __init__(self, name='default', type='light', font='helvetica', colors=None):
+    def __init__(self, name='default', themetype='light', font='helvetica', colors=None):
         self.name = name
-        self.type = type
+        self.type = themetype
         self.font = font
         self.colors = colors if colors else Colors()
 
@@ -186,7 +186,8 @@ class Colors:
     def __repr__(self):
         return str((tuple(zip(self.__dict__.keys(), self.__dict__.values()))))
 
-    def label_iter(self):
+    @staticmethod
+    def label_iter():
         """
          Iterates over all color label properties in the Color class
 
@@ -291,8 +292,8 @@ class StylerTK:
         self._style_menubutton()
         self._style_labelframe()
         self._style_scrollbar()
-        self._style_frame()
         self._style_optionmenu()
+        self._style_combobox()
 
     def _set_option(self, *args):
         """
@@ -306,7 +307,7 @@ class StylerTK:
         """
         self.master.configure(background=self.theme.colors.bg)
         self._set_option('*background', self.theme.colors.bg, 20)
-        self._set_option('*font', 'Helvetica', 20)
+        self._set_option('*font', self.theme.font)
         self._set_option('*borderWidth', 0, 20)
         self._set_option('*relief', 'flat', 20)
         self._set_option('*activeBackground', self.theme.colors.selectbg, 20)
@@ -315,6 +316,17 @@ class StylerTK:
         self._set_option('*selectForeground', self.theme.colors.selectfg, 20)
         self._set_option('*Text*background', self.theme.colors.light)
         self._set_option('*Text*foreground', self.theme.colors.inputfg)
+
+    def _style_combobox(self):
+        """
+        Apply style for listbox on ``ttk.Combobox``
+            option add *TCombobox*Listbox.background color
+            option add *TCombobox*Listbox.font font
+            option add *TCombobox*Listbox.foreground color
+            option add *TCombobox*Listbox.selectBackground color
+            option add *TCombobox*Listbox.selectForeground color
+        """
+        self._set_option('*TCombobox*Listbox.background', self.theme.colors.bg)
 
     def _style_button(self):
         """
@@ -459,7 +471,7 @@ class StylerTTK:
     A class to create a new ttk theme.
 
     :param Style style: An instance of ``ttk.Style`` class
-    :param ThemeDefinition settings: creates the settings for the theme to be created
+    :param ThemeDefinition definition: creates the settings for the theme to be created
     """
 
     def __init__(self, style, definition):
@@ -501,6 +513,7 @@ class StylerTTK:
         self._style_treeview()
         self._style_separator()
         self._style_panedwindow()
+        pass
 
     def _style_defaults(self):
         """
@@ -525,8 +538,8 @@ class StylerTTK:
 
     def _style_combobox(self):
         """
-        Create style configuration for ``ttk.Combobox``. This element style is created with a layout that combines *clam* and *default*
-        theme elements.
+        Create style configuration for ``ttk.Combobox``. This element style is created with a layout that combines
+        *clam* and *default* theme elements.
 
         The options available in this widget based on this layout include:
 
@@ -601,9 +614,9 @@ class StylerTTK:
 
     def _style_separator(self):
         """
-        Create style configuration for ttk separator: *ttk.Separator*. The default style for light will be border, but dark will be
-        primary, as this makes the most sense for general use. However, all other colors will be available as well
-        through styling.
+        Create style configuration for ttk separator: *ttk.Separator*. The default style for light will be border, but
+        dark will be primary, as this makes the most sense for general use. However, all other colors will be available
+        as well through styling.
 
         The options avaiable in this widget include:
 
@@ -613,20 +626,20 @@ class StylerTTK:
             'Horizontal.TSeparator': {
                 'configure': {
                     'background': (
-                        self.theme.colors.border
-                        if self.theme.type == 'light'
-                        else self.theme.colors.primary)}},
+                        self.theme.colors.border if self.theme.type == 'light' else self.theme.colors.primary)}},
             'Vertical.TSeparator': {
                 'configure': {
                     'background': (
-                        self.theme.colors.border
-                        if self.theme.type == 'light'
-                        else self.theme.colors.primary)}}})
+                        self.theme.colors.border if self.theme.type == 'light' else self.theme.colors.primary)}}})
 
         for color in self.theme.colors:
             self.settings.update({
-                f'{color}.Horizontal.TSeparator': {'map': {'background': self.theme.colors.get(color)}},
-                f'{color}.Vertical.TSeparator': {'map': {'background': self.theme.colors.get(color)}}})
+                f'{color}.Horizontal.TSeparator': {
+                    'configure': {
+                        'background': self.theme.colors.get(color)}},
+                f'{color}.Vertical.TSeparator': {
+                    'configure': {
+                        'background': self.theme.colors.get(color)}}})
 
     def _style_progressbar(self):
         """
@@ -648,8 +661,12 @@ class StylerTTK:
 
         for color in self.theme.colors:
             self.settings.update({
-                f'{color}.Horizontal.TProgressbar': {'configure': {'background': self.theme.colors.get(color)}},
-                f'{color}.Vertical.TProgressbar': {'configure': {'background': self.theme.colors.get(color)}}})
+                f'{color}.Horizontal.TProgressbar': {
+                    'configure': {
+                        'background': self.theme.colors.get(color)}},
+                f'{color}.Vertical.TProgressbar': {
+                    'configure': {
+                        'background': self.theme.colors.get(color)}}})
 
     @staticmethod
     def _create_slider_image(color, size=18):
@@ -677,14 +694,13 @@ class StylerTTK:
             - Scale.slider: sliderlength, sliderthickness, sliderrelief, borderwidth, background, bordercolor, orient
         """
         # create widget images
-        self.scale_images = {}
-        self.scale_images['primary_regular'] = self._create_slider_image(self.theme.colors.primary)
-        self.scale_images['primary_pressed'] = self._create_slider_image(
-            Colors.brightness(self.theme.colors.primary, -0.2))
-        self.scale_images['primary_hover'] = self._create_slider_image(
-            Colors.brightness(self.theme.colors.primary, -0.1))
-        self.scale_images['trough'] = ImageTk.PhotoImage(
-            Image.new('RGB', (8, 8), Colors.brightness(self.theme.colors.light, -0.05)))
+        self.scale_images = {
+            'primary_regular': self._create_slider_image(self.theme.colors.primary),
+            'primary_pressed': self._create_slider_image(
+                Colors.brightness(self.theme.colors.primary, -0.2)),
+            'primary_hover': self._create_slider_image(
+                Colors.brightness(self.theme.colors.primary, -0.1)), 'trough': ImageTk.PhotoImage(
+                Image.new('RGB', (8, 8), Colors.brightness(self.theme.colors.light, -0.05)))}
 
         self.settings.update({
             'Horizontal.TScale': {
@@ -705,8 +721,8 @@ class StylerTTK:
 
     def _style_scrollbar(self):
         """
-        Create style configuration for ttk scrollbar: *ttk.Scrollbar*. This theme uses elements from the *alt* theme to build the
-        widget layout.
+        Create style configuration for ttk scrollbar: *ttk.Scrollbar*. This theme uses elements from the *alt* theme to
+        build the widget layout.
 
         The options available in this widget include:
 
@@ -807,8 +823,8 @@ class StylerTTK:
 
     def _style_treeview(self):
         """
-        Create style configuration for ttk treeview: *ttk.Treeview*. This widget uses elements from the *alt* and *clam* theme to
-        create the widget layout.
+        Create style configuration for ttk treeview: *ttk.Treeview*. This widget uses elements from the *alt* and *clam*
+         theme to create the widget layout.
 
         The options available in this widget include:
 
@@ -1372,14 +1388,17 @@ class StylerTTK:
             - Notebook.label: compound, space, text, font, foreground, underline, width, anchor, justify, wraplength,
                 embossed, image, stipple, background
         """
+
         self.settings.update({
             'TNotebook': {
                 'configure': {
                     'bordercolor': self.theme.colors.border,
+                    'lightcolor': self.theme.colors.bg if self.theme.type == 'light' else self.theme.colors.selectbg,
                     'borderwidth': 1}},
             'TNotebook.Tab': {
                 'configure': {
                     'bordercolor': self.theme.colors.border,
+                    'lightcolor': self.theme.colors.bg if self.theme.type == 'light' else self.theme.colors.selectbg,
                     'foreground': self.theme.colors.fg,
                     'padding': (10, 5)},
                 'map': {
