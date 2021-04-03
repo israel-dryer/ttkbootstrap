@@ -11,3 +11,4 @@ All examples contain links to repl.it_ where you can *run the code live*
 
     examples/simple_data_entry_form
     examples/timer_widget
+    examples/text_reader
