@@ -1,3 +1,7 @@
+"""
+Because I'm using importlib.resources, which did not exist until python 3.7, this does not support < 3.7 unless I can
+figure out another method for importing package resources.
+"""
 import setuptools
 
 long_description = """
@@ -11,7 +15,7 @@ the ability to easily create your own.
 
 setuptools.setup(
     name="ttkbootstrap",
-    version="0.0.23",
+    version="0.0.27",
     author="Israel Dryer",
     author_email="israel.dryer@gmail.com",
     description="A collection of modern ttk themes inspired by Bootstrap",
@@ -28,5 +32,5 @@ setuptools.setup(
     package_data={"": ["*.json"]},
     include_package_data=True,
     install_requires=["pillow"],
-    python_requires=">=3.6",
+    python_requires=">=3.7",
 )

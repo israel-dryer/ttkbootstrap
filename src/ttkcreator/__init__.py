@@ -489,7 +489,7 @@ class CreatorBaseChooser(tk.Tk):
         img = ImageGrab.grab(bbox=bbox)
 
         # image name
-        filename = f'docs/images/ttkcreator-splash.png'
+        filename = 'docs/images/ttkcreator-splash.png'
         print(filename)
         img.save(filename, 'png')
 

@@ -204,7 +204,7 @@ class Demo(Style):
         img = ImageGrab.grab(bbox=bbox)
 
         # image name
-        filename = f'../../images/{self.theme_name.get()}.png'
+        filename = f'docs/images/{self.theme_name.get()}.png'
         img.save(filename, 'png')
         print(filename)  # print for confirmation
 
