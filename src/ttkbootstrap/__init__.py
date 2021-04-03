@@ -293,6 +293,7 @@ class StylerTK:
         self._style_labelframe()
         self._style_scrollbar()
         self._style_optionmenu()
+        self._style_textwidget()
         self._style_combobox()
 
     def _set_option(self, *args):
@@ -464,6 +465,15 @@ class StylerTK:
             Not implemented
         """
         pass
+
+    def _style_textwidget(self):
+        """
+        Apply style to ``tkinter.Text``
+        """
+        self._set_option('*Text*background', self.theme.colors.light)
+        self._set_option('*Text*foreground', self.theme.colors.inputfg)
+
+
 
 
 class StylerTTK:
