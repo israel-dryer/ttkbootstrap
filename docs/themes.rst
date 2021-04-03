@@ -13,61 +13,51 @@ All of the following themes are available with ttkbootstrap and can be viewed li
 Light themes
 ............
 .. figure:: images/cosmo.png
-    :scale: 70%
     :alt: an example image of theme cosmo
 
     inspired by https://bootswatch.com/cosmo/
 
 .. figure:: images/flatly.png
-    :scale: 70%
     :alt: an example image of theme flatly
 
     inspired by https://bootswatch.com/flatly/
 
 .. figure:: images/journal.png
-    :scale: 70%
     :alt: an example image of theme journal
 
     inspired by https://bootswatch.com/journal/
 
 .. figure:: images/litera.png
-    :scale: 70%
     :alt: an example image of theme litera
 
     inspired by https://bootswatch.com/litera/
 
 .. figure:: images/lumen.png
-    :scale: 70%
     :alt: an example image of theme lumen
 
     inspired by https://bootswatch.com/lumen/
 
 .. figure:: images/minty.png
-    :scale: 70%
     :alt: an example image of theme minty
 
     inspired by https://bootswatch.com/minty/
 
 .. figure:: images/pulse.png
-    :scale: 70%
     :alt: an example image of theme pulse
 
     inspired by https://bootswatch.com/pulse/
 
 .. figure:: images/sandstone.png
-    :scale: 70%
     :alt: an example image of theme sandstone
 
     inspired by https://bootswatch.com/sandstone/
 
 .. figure:: images/united.png
-    :scale: 70%
     :alt: an example image of theme united
 
     inspired by https://bootswatch.com/united/
 
 .. figure:: images/yeti.png
-    :scale: 70%
     :alt: an example image of theme yeti
 
     inspired by https://bootswatch.com/yeti/
@@ -75,25 +65,21 @@ Light themes
 Dark themes
 ...........
 .. figure:: images/darkly.png
-    :scale: 70%
     :alt: an example image of theme darkly
 
     inspired by https://bootswatch.com/darkly/
 
 .. figure:: images/cyborg.png
-    :scale: 70%
     :alt: an example image of theme cyborg
 
     inspired by https://bootswatch.com/cyborg/
 
 .. figure:: images/superhero.png
-    :scale: 70%
     :alt: an example image of theme superhero
 
     inspired by https://bootswatch.com/superhero/
 
 .. figure:: images/solar.png
-    :scale: 70%
     :alt: an example image of theme solar
 
     inspired by https://bootswatch.com/solar/
@@ -102,20 +88,19 @@ Legacy themes
 .............
 Just for reference, these are some of the built in themes
 
+.. figure:: images/default.png
+    :alt: an example image of default theme
+
 .. figure:: images/classic.png
-    :scale: 70%
     :alt: an example image of theme classic
 
 .. figure:: images/alt.png
-    :scale: 70%
     :alt: an example image of theme alt
 
 .. figure:: images/clam.png
-    :scale: 70%
     :alt: an example image of theme clam
 
 .. figure:: images/xpnative.png
-    :scale: 70%
     :alt: an example image of theme xpnative
 
     This theme is for Windows only.

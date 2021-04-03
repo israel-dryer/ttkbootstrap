@@ -284,7 +284,7 @@ This will include all theme colors, including border, fg, bg, etc…</p>
 
 <dl class="py method">
 <dt id="ttkbootstrap.Colors.label_iter">
-<code class="sig-name descname"><span class="pre">label_iter</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/ttkbootstrap.html#Colors.label_iter"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ttkbootstrap.Colors.label_iter" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">static</span> </em><code class="sig-name descname"><span class="pre">label_iter</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/ttkbootstrap.html#Colors.label_iter"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ttkbootstrap.Colors.label_iter" title="Permalink to this definition">¶</a></dt>
 <dd><p>Iterates over all color label properties in the Color class</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
@@ -393,7 +393,7 @@ assortment of elements from various styles such as <em>clam</em>, <em>alt</em>, 
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>style</strong> (<a class="reference internal" href="#ttkbootstrap.Style" title="ttkbootstrap.Style"><em>Style</em></a>) – An instance of <code class="docutils literal notranslate"><span class="pre">ttk.Style</span></code> class</p></li>
-<li><p><strong>settings</strong> (<a class="reference internal" href="#ttkbootstrap.ThemeDefinition" title="ttkbootstrap.ThemeDefinition"><em>ThemeDefinition</em></a>) – creates the settings for the theme to be created</p></li>
+<li><p><strong>definition</strong> (<a class="reference internal" href="#ttkbootstrap.ThemeDefinition" title="ttkbootstrap.ThemeDefinition"><em>ThemeDefinition</em></a>) – creates the settings for the theme to be created</p></li>
 </ul>
 </dd>
 </dl>
@@ -443,14 +443,14 @@ primary target of this project; however, they can be used without looking entire
 <p>Contains the basic theme definition for name, colors, and font.</p>
 <dl class="py class">
 <dt id="ttkbootstrap.ThemeDefinition">
-<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">ttkbootstrap.</span></code><code class="sig-name descname"><span class="pre">ThemeDefinition</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'default'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'light'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">font</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'helvetica'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">colors</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ttkbootstrap.html#ThemeDefinition"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ttkbootstrap.ThemeDefinition" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">ttkbootstrap.</span></code><code class="sig-name descname"><span class="pre">ThemeDefinition</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'default'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">themetype</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'light'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">font</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'helvetica'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">colors</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ttkbootstrap.html#ThemeDefinition"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ttkbootstrap.ThemeDefinition" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>A class to provide defined name, colors, and font settings for a ttkbootstrap theme.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>name</strong> (<em>str</em>) – The name of the theme</p></li>
-<li><p><strong>type</strong> (<em>str</em>) – type: ‘light’ or ‘dark’</p></li>
+<li><p><strong>themetype</strong> (<em>str</em>) – type: ‘light’ or ‘dark’</p></li>
 <li><p><strong>font</strong> (<em>str</em>) – Default font to apply to theme. Helvetica is used by default.</p></li>
 <li><p><strong>colors</strong> (<em>Color</em>) – An instance of the <cite>Colors</cite> class.</p></li>
 </ul>
