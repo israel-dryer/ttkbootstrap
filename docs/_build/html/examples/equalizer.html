@@ -1,0 +1,289 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>Equalizer &mdash; ttkbootstrap  documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="How to style widgets" href="../usage.html" />
+    <link rel="prev" title="Text Reader" href="text_reader.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> ttkbootstrap
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../overview.html">Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../themes.html">Themes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../install.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../gettingstarted.html">Getting started</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../examples.html">Examples</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="simple_data_entry_form.html">Simple Data Entry Form</a></li>
+<li class="toctree-l2"><a class="reference internal" href="timer_widget.html">Timer Widget</a></li>
+<li class="toctree-l2"><a class="reference internal" href="text_reader.html">Text Reader</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Equalizer</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../usage.html">How to style widgets</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../reference.html">Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../creator.html">TTK Creator</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">ttkbootstrap</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../examples.html">Examples</a> &raquo;</li>
+        
+      <li>Equalizer</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="../_sources/examples/equalizer.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="equalizer">
+<h1>Equalizer<a class="headerlink" href="#equalizer" title="Permalink to this headline">¶</a></h1>
+<p>A simple equalizer interface using the <code class="docutils literal notranslate"><span class="pre">ttk.Scale</span></code> widget. Because I wanted the scale value to be reflected in a label
+below the scale, this application is a lot more complicated than it really needs to be due to some oddities of the ttk
+scale implementation. The <code class="docutils literal notranslate"><span class="pre">ttk.Scale</span></code> widget outputs a double type, which means that in order to display a nice
+rounded integer, that number has to be converted when updated. Fortunately, the scale widget has a <code class="docutils literal notranslate"><span class="pre">command</span></code> parameter
+for setting a callback. The callback will get the scale value, which can then be converted into a nice clean format.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>For a vertical orientation, the <code class="docutils literal notranslate"><span class="pre">from_</span></code> parameter corresponds to the top and <code class="docutils literal notranslate"><span class="pre">to</span></code> corresponds to the
+bottom of the widget, so you’ll need to take this into account when you set the minimum and maximum numbers for your
+scale range.</p>
+</div>
+<div class="figure align-default" id="id1">
+<img alt="../_images/equalizer.png" src="../_images/equalizer.png" />
+<p class="caption"><span class="caption-text">random scale values are generated at runtime for demonstration purposes</span><a class="headerlink" href="#id1" title="Permalink to this image">¶</a></p>
+</div>
+<p>Run this code live on <a class="reference external" href="https://replit.com/&#64;IsraelDryer/equalizer">repl.it</a></p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">tkinter</span>
+<span class="kn">from</span> <span class="nn">random</span> <span class="kn">import</span> <span class="n">randint</span>
+<span class="kn">from</span> <span class="nn">tkinter</span> <span class="kn">import</span> <span class="n">ttk</span>
+<span class="kn">from</span> <span class="nn">ttkbootstrap</span> <span class="kn">import</span> <span class="n">Style</span>
+
+
+<span class="k">class</span> <span class="nc">Application</span><span class="p">(</span><span class="n">tkinter</span><span class="o">.</span><span class="n">Tk</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s1">&#39;Equalizer&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">style</span> <span class="o">=</span> <span class="n">Style</span><span class="p">(</span><span class="s1">&#39;superhero&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">eq</span> <span class="o">=</span> <span class="n">Equalizer</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">eq</span><span class="o">.</span><span class="n">pack</span><span class="p">(</span><span class="n">fill</span><span class="o">=</span><span class="s1">&#39;both&#39;</span><span class="p">,</span> <span class="n">expand</span><span class="o">=</span><span class="s1">&#39;yes&#39;</span><span class="p">)</span>
+
+
+<span class="k">class</span> <span class="nc">Equalizer</span><span class="p">(</span><span class="n">ttk</span><span class="o">.</span><span class="n">Frame</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">configure</span><span class="p">(</span><span class="n">padding</span><span class="o">=</span><span class="mi">20</span><span class="p">)</span>
+        <span class="n">controls</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;VOL&#39;</span><span class="p">,</span> <span class="s1">&#39;31.25&#39;</span><span class="p">,</span> <span class="s1">&#39;62.5&#39;</span><span class="p">,</span> <span class="s1">&#39;125&#39;</span><span class="p">,</span> <span class="s1">&#39;250&#39;</span><span class="p">,</span> <span class="s1">&#39;500&#39;</span><span class="p">,</span> <span class="s1">&#39;1K&#39;</span><span class="p">,</span> <span class="s1">&#39;2K&#39;</span><span class="p">,</span> <span class="s1">&#39;4K&#39;</span><span class="p">,</span> <span class="s1">&#39;8K&#39;</span><span class="p">,</span> <span class="s1">&#39;16K&#39;</span><span class="p">,</span> <span class="s1">&#39;GAIN&#39;</span><span class="p">]</span>
+
+        <span class="c1"># create band widgets</span>
+        <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">controls</span><span class="p">:</span>
+            <span class="c1"># starting random value</span>
+            <span class="n">value</span> <span class="o">=</span> <span class="n">randint</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">99</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">setvar</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
+
+            <span class="c1"># container</span>
+            <span class="n">frame</span> <span class="o">=</span> <span class="n">ttk</span><span class="o">.</span><span class="n">Frame</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">padding</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+            <span class="n">frame</span><span class="o">.</span><span class="n">pack</span><span class="p">(</span><span class="n">side</span><span class="o">=</span><span class="s1">&#39;left&#39;</span><span class="p">,</span> <span class="n">fill</span><span class="o">=</span><span class="s1">&#39;y&#39;</span><span class="p">,</span> <span class="n">padx</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+
+            <span class="c1"># header</span>
+            <span class="n">ttk</span><span class="o">.</span><span class="n">Label</span><span class="p">(</span><span class="n">frame</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="n">c</span><span class="p">,</span> <span class="n">anchor</span><span class="o">=</span><span class="s1">&#39;center&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">pack</span><span class="p">(</span><span class="n">side</span><span class="o">=</span><span class="s1">&#39;top&#39;</span><span class="p">,</span> <span class="n">fill</span><span class="o">=</span><span class="s1">&#39;x&#39;</span><span class="p">,</span> <span class="n">pady</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+
+            <span class="c1"># slider</span>
+            <span class="n">scale</span> <span class="o">=</span> <span class="n">ttk</span><span class="o">.</span><span class="n">Scale</span><span class="p">(</span><span class="n">frame</span><span class="p">,</span> <span class="n">orient</span><span class="o">=</span><span class="s1">&#39;vertical&#39;</span><span class="p">,</span> <span class="n">from_</span><span class="o">=</span><span class="mi">99</span><span class="p">,</span> <span class="n">to</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="n">value</span><span class="p">)</span>
+            <span class="n">scale</span><span class="o">.</span><span class="n">pack</span><span class="p">(</span><span class="n">fill</span><span class="o">=</span><span class="s1">&#39;y&#39;</span><span class="p">)</span>
+            <span class="n">scale</span><span class="o">.</span><span class="n">configure</span><span class="p">(</span><span class="n">command</span><span class="o">=</span><span class="k">lambda</span> <span class="n">val</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">c</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">setvar</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="nb">float</span><span class="p">(</span><span class="n">val</span><span class="p">)</span><span class="si">:</span><span class="s1">.0f</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">))</span>
+
+            <span class="c1"># slider value label</span>
+            <span class="n">ttk</span><span class="o">.</span><span class="n">Label</span><span class="p">(</span><span class="n">frame</span><span class="p">,</span> <span class="n">textvariable</span><span class="o">=</span><span class="n">c</span><span class="p">)</span><span class="o">.</span><span class="n">pack</span><span class="p">(</span><span class="n">pady</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+    <span class="n">Application</span><span class="p">()</span><span class="o">.</span><span class="n">mainloop</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+        <a href="../usage.html" class="btn btn-neutral float-right" title="How to style widgets" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="text_reader.html" class="btn btn-neutral float-left" title="Text Reader" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright 2021, Israel Dryer.
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>
