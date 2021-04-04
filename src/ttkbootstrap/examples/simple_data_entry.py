@@ -1,41 +1,49 @@
-from ttkbootstrap import Style
-from tkinter import ttk
 import tkinter
+from tkinter import ttk
+from ttkbootstrap import Style
 
-style = Style(theme='darkly')
-window = style.master
-window.title('Simple data entry form')
 
-# add frame in order to add padding on inside of window
-frame = ttk.Frame(window, padding=(20, 10))
-frame.pack(fill='both', expand='yes')
-frame.columnconfigure(2, weight=1)
+class Application(tkinter.Tk):
 
-name = tkinter.StringVar(value='')
-address = tkinter.StringVar(value='')
-phone = tkinter.StringVar(value='')
+    def __init__(self):
+        super().__init__()
+        self.title('Simple data entry form')
+        self.style = Style()
+        self.form = EntryForm(self)
+        self.form.pack(fill='both', expand='yes')
 
-# form header
-ttk.Label(frame, text='Please enter your contact information', width=60).grid(columnspan=3, pady=10)
 
-# name
-ttk.Label(frame, text='Name').grid(row=1, column=0, sticky='ew', pady=10, padx=(0, 10))
-ttk.Entry(frame, textvariable=name).grid(row=1, column=1, columnspan=2, sticky='ew')
+class EntryForm(ttk.Frame):
 
-# address
-ttk.Label(frame, text='Address').grid(row=2, column=0, sticky='ew', pady=10, padx=(0, 10))
-ttk.Entry(frame, textvariable=address).grid(row=2, column=1, columnspan=2, sticky='ew')
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.configure(padding=(20, 10))
+        self.columnconfigure(2, weight=1)
 
-# phone number
-ttk.Label(frame, text='Phone').grid(row=3, column=0, pady=10, sticky='ew', padx=(0, 10))
-ttk.Entry(frame, textvariable=phone).grid(row=3, column=1, columnspan=2, sticky='ew')
+        # form variables
+        self.name = tkinter.StringVar(value='', name='name')
+        self.address = tkinter.StringVar(value='', name='address')
+        self.phone = tkinter.StringVar(value='', name='phone')
 
-# submit
-print_form_data = lambda: print(name.get(), address.get(), phone.get())
-submit_btn = ttk.Button(frame, text='Submit', style='success.TButton', command=print_form_data)
-submit_btn.grid(row=4, column=0, sticky='ew', pady=10, padx=(0, 10))
+        # form headers
+        ttk.Label(self, text='Please enter your contact information', width=60).grid(columnspan=3, pady=10)
 
-# cancel
-ttk.Button(frame, text='Cancel', style='danger.TButton', command=window.quit).grid(row=4, column=1, sticky='ew')
+        # create label/entry rows
+        for i, label in enumerate(['name', 'address', 'phone']):
+            ttk.Label(self, text=label.title()).grid(row=i + 1, column=0, sticky='ew', pady=10, padx=(0, 10))
+            ttk.Entry(self, textvariable=label).grid(row=i + 1, column=1, columnspan=2, sticky='ew')
 
-window.mainloop()
+        # submit button
+        self.submit = ttk.Button(self, text='Submit', style='success.TButton', command=self.print_form_data)
+        self.submit.grid(row=4, column=0, sticky='ew', pady=10, padx=(0, 10))
+
+        # cancel button
+        self.cancel = ttk.Button(self, text='Cancel', style='danger.TButton', command=self.quit)
+        self.cancel.grid(row=4, column=1, sticky='ew')
+
+    def print_form_data(self):
+        print(self.name.get(), self.address.get(), self.phone.get())
+
+
+if __name__ == '__main__':
+    Application().mainloop()

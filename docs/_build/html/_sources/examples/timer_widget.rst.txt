@@ -11,11 +11,11 @@ the timer state:
 :Exit: ``style="danger.TButton"``
 
 
-.. figure:: ../../src/ttkbootstrap/examples/images/timer_widget_started_light.png
+.. figure:: ../../src/ttkbootstrap/examples/images/timer_widget_started.png
 
     timer is running
 
-.. figure:: ../../src/ttkbootstrap/examples/images/timer_widget_paused_light.png
+.. figure:: ../../src/ttkbootstrap/examples/images/timer_widget_paused.png
 
     timer is paused
 
