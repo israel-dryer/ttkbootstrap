@@ -712,6 +712,7 @@ class StylerTTK:
                 Colors.brightness(self.theme.colors.primary, -0.1)), 'trough': ImageTk.PhotoImage(
                 Image.new('RGB', (8, 8), Colors.brightness(self.theme.colors.light, -0.05)))}
 
+        # The layout is derived from the 'xpnative' theme
         self.settings.update({
             'Horizontal.TScale': {
                 'layout': [
@@ -721,8 +722,8 @@ class StylerTTK:
             'Vertical.TScale': {
                 'layout': [
                     ('Scale.focus', {'expand': '1', 'sticky': 'nswe', 'children': [
-                        ('Vertical.Scale.track', {'sticky': 'we'}),
-                        ('Vertical.Scale.slider', {'side': 'left', 'sticky': ''})]})]},
+                        ('Vertical.Scale.track', {'sticky': 'ns'}),
+                        ('Vertical.Scale.slider', {'side': 'top', 'sticky': ''})]})]},
             'Scale.track': {'element create': ('image', self.scale_images['trough'])},
             'Scale.slider': {'element create':
                                  ('image', self.scale_images['primary_regular'],
