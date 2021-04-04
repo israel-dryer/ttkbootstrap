@@ -1,47 +1,51 @@
 import tkinter
 from tkinter import ttk
-from tkinter.scrolledtext import ScrolledText
 from tkinter.filedialog import askopenfilename
+from tkinter.scrolledtext import ScrolledText
 from ttkbootstrap import Style
 
 
-def open_file(text_area):
-    """Prompt user for filename, open and populate text area and filepath fields"""
-    path = askopenfilename()
-    if not path:
-        return
+class Application(tkinter.Tk):
 
-    with open(path, encoding='utf-8') as f:
-        text_area.delete('1.0', 'end')
-        text_area.insert('end', f.read())
-        window.setvar('filename', path)
+    def __init__(self):
+        super().__init__()
+        self.title('Text Reader')
+        self.style = Style()
+        self.reader = Reader(self)
+        self.reader.pack(fill='both', expand='yes')
 
 
-# instantiate window and set title
-style = Style()
-window = style.master
-window.title('Text File Reader')
+class Reader(ttk.Frame):
 
-# create a container for the widgets
-frame = ttk.Frame(window, padding=10)
-frame.pack(fill='both', expand='yes')
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.configure(padding=10)
+        self.filename = tkinter.StringVar()
 
-# Manually adjust tkinter widgets (not ttk) with theme colors available from ``Style.colors``
-text_area = ScrolledText(frame,
-                         highlightcolor=style.colors.primary,  # color of highlight border when focused
-                         highlightbackground=style.colors.border,  # color of highlight border when not focused
-                         highlightthickness=1)  # thickness of highlight border
-text_area.pack(fill='both')
+        # scrolled text with custom highlight colors
+        self.text_area = ScrolledText(self, highlightcolor=self.master.style.colors.primary,
+                                      highlightbackground=self.master.style.colors.border, highlightthickness=1)
+        self.text_area.pack(fill='both')
 
-# insert default text in text area
-text_area.insert('end', 'Click the browse button to open a new text file.')
+        # insert default text in text area
+        self.text_area.insert('end', 'Click the browse button to open a new text file.')
 
-# filepath
-filevar = tkinter.StringVar(name='filename')
-ttk.Entry(frame, textvariable=filevar).pack(side='left', fill='x', expand='yes', padx=(0, 5), pady=10)
+        # filepath
+        ttk.Entry(self, textvariable=self.filename).pack(side='left', fill='x', expand='yes', padx=(0, 5), pady=10)
 
-# browse button
-button = ttk.Button(frame, text='Browse', command=lambda t=text_area: open_file(t))
-button.pack(side='right', fill='x', padx=(5, 0), pady=10)
+        # browse button
+        ttk.Button(self, text='Browse', command=self.open_file).pack(side='right', fill='x', padx=(5, 0), pady=10)
 
-window.mainloop()
+    def open_file(self):
+        path = askopenfilename()
+        if not path:
+            return
+
+        with open(path, encoding='utf-8') as f:
+            self.text_area.delete('1.0', 'end')
+            self.text_area.insert('end', f.read())
+            self.filename.set(path)
+
+
+if __name__ == '__main__':
+    Application().mainloop()

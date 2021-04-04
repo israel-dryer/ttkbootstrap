@@ -190,51 +190,55 @@ palette.</p>
 <p>Run this code live on <a class="reference external" href="https://replit.com/&#64;IsraelDryer/text-reader">repl.it</a></p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">tkinter</span>
 <span class="kn">from</span> <span class="nn">tkinter</span> <span class="kn">import</span> <span class="n">ttk</span>
-<span class="kn">from</span> <span class="nn">tkinter.scrolledtext</span> <span class="kn">import</span> <span class="n">ScrolledText</span>
 <span class="kn">from</span> <span class="nn">tkinter.filedialog</span> <span class="kn">import</span> <span class="n">askopenfilename</span>
+<span class="kn">from</span> <span class="nn">tkinter.scrolledtext</span> <span class="kn">import</span> <span class="n">ScrolledText</span>
 <span class="kn">from</span> <span class="nn">ttkbootstrap</span> <span class="kn">import</span> <span class="n">Style</span>
 
 
-<span class="k">def</span> <span class="nf">open_file</span><span class="p">(</span><span class="n">text_area</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Prompt user for filename, open and populate text area and filepath fields&quot;&quot;&quot;</span>
-    <span class="n">path</span> <span class="o">=</span> <span class="n">askopenfilename</span><span class="p">()</span>
-    <span class="k">if</span> <span class="ow">not</span> <span class="n">path</span><span class="p">:</span>
-        <span class="k">return</span>
+<span class="k">class</span> <span class="nc">Application</span><span class="p">(</span><span class="n">tkinter</span><span class="o">.</span><span class="n">Tk</span><span class="p">):</span>
 
-    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s1">&#39;utf-8&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
-        <span class="n">text_area</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="s1">&#39;1.0&#39;</span><span class="p">,</span> <span class="s1">&#39;end&#39;</span><span class="p">)</span>
-        <span class="n">text_area</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="s1">&#39;end&#39;</span><span class="p">,</span> <span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">())</span>
-        <span class="n">window</span><span class="o">.</span><span class="n">setvar</span><span class="p">(</span><span class="s1">&#39;filename&#39;</span><span class="p">,</span> <span class="n">path</span><span class="p">)</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s1">&#39;Text Reader&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">style</span> <span class="o">=</span> <span class="n">Style</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">reader</span> <span class="o">=</span> <span class="n">Reader</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">reader</span><span class="o">.</span><span class="n">pack</span><span class="p">(</span><span class="n">fill</span><span class="o">=</span><span class="s1">&#39;both&#39;</span><span class="p">,</span> <span class="n">expand</span><span class="o">=</span><span class="s1">&#39;yes&#39;</span><span class="p">)</span>
 
 
-<span class="c1"># instantiate window and set title</span>
-<span class="n">style</span> <span class="o">=</span> <span class="n">Style</span><span class="p">()</span>
-<span class="n">window</span> <span class="o">=</span> <span class="n">style</span><span class="o">.</span><span class="n">master</span>
-<span class="n">window</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s1">&#39;Text File Reader&#39;</span><span class="p">)</span>
+<span class="k">class</span> <span class="nc">Reader</span><span class="p">(</span><span class="n">ttk</span><span class="o">.</span><span class="n">Frame</span><span class="p">):</span>
 
-<span class="c1"># create a container for the widgets</span>
-<span class="n">frame</span> <span class="o">=</span> <span class="n">ttk</span><span class="o">.</span><span class="n">Frame</span><span class="p">(</span><span class="n">window</span><span class="p">,</span> <span class="n">padding</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
-<span class="n">frame</span><span class="o">.</span><span class="n">pack</span><span class="p">(</span><span class="n">fill</span><span class="o">=</span><span class="s1">&#39;both&#39;</span><span class="p">,</span> <span class="n">expand</span><span class="o">=</span><span class="s1">&#39;yes&#39;</span><span class="p">)</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">configure</span><span class="p">(</span><span class="n">padding</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">filename</span> <span class="o">=</span> <span class="n">tkinter</span><span class="o">.</span><span class="n">StringVar</span><span class="p">()</span>
 
-<span class="c1"># Manually adjust tkinter widgets (not ttk) with theme colors available from ``Style.colors``</span>
-<span class="n">text_area</span> <span class="o">=</span> <span class="n">ScrolledText</span><span class="p">(</span><span class="n">frame</span><span class="p">,</span>
-                         <span class="n">highlightcolor</span><span class="o">=</span><span class="n">style</span><span class="o">.</span><span class="n">colors</span><span class="o">.</span><span class="n">primary</span><span class="p">,</span>  <span class="c1"># color of highlight border when focused</span>
-                         <span class="n">highlightbackground</span><span class="o">=</span><span class="n">style</span><span class="o">.</span><span class="n">colors</span><span class="o">.</span><span class="n">border</span><span class="p">,</span>  <span class="c1"># color of highlight border when not focused</span>
-                         <span class="n">highlightthickness</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>  <span class="c1"># thickness of highlight border</span>
-<span class="n">text_area</span><span class="o">.</span><span class="n">pack</span><span class="p">(</span><span class="n">fill</span><span class="o">=</span><span class="s1">&#39;both&#39;</span><span class="p">)</span>
+        <span class="c1"># scrolled text with custom highlight colors</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">text_area</span> <span class="o">=</span> <span class="n">ScrolledText</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">highlightcolor</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">master</span><span class="o">.</span><span class="n">style</span><span class="o">.</span><span class="n">colors</span><span class="o">.</span><span class="n">primary</span><span class="p">,</span>
+                                      <span class="n">highlightbackground</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">master</span><span class="o">.</span><span class="n">style</span><span class="o">.</span><span class="n">colors</span><span class="o">.</span><span class="n">border</span><span class="p">,</span> <span class="n">highlightthickness</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">text_area</span><span class="o">.</span><span class="n">pack</span><span class="p">(</span><span class="n">fill</span><span class="o">=</span><span class="s1">&#39;both&#39;</span><span class="p">)</span>
 
-<span class="c1"># insert default text in text area</span>
-<span class="n">text_area</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="s1">&#39;end&#39;</span><span class="p">,</span> <span class="s1">&#39;Click the browse button to open a new text file.&#39;</span><span class="p">)</span>
+        <span class="c1"># insert default text in text area</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">text_area</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="s1">&#39;end&#39;</span><span class="p">,</span> <span class="s1">&#39;Click the browse button to open a new text file.&#39;</span><span class="p">)</span>
 
-<span class="c1"># filepath</span>
-<span class="n">filevar</span> <span class="o">=</span> <span class="n">tkinter</span><span class="o">.</span><span class="n">StringVar</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;filename&#39;</span><span class="p">)</span>
-<span class="n">ttk</span><span class="o">.</span><span class="n">Entry</span><span class="p">(</span><span class="n">frame</span><span class="p">,</span> <span class="n">textvariable</span><span class="o">=</span><span class="n">filevar</span><span class="p">)</span><span class="o">.</span><span class="n">pack</span><span class="p">(</span><span class="n">side</span><span class="o">=</span><span class="s1">&#39;left&#39;</span><span class="p">,</span> <span class="n">fill</span><span class="o">=</span><span class="s1">&#39;x&#39;</span><span class="p">,</span> <span class="n">expand</span><span class="o">=</span><span class="s1">&#39;yes&#39;</span><span class="p">,</span> <span class="n">padx</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">5</span><span class="p">),</span> <span class="n">pady</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+        <span class="c1"># filepath</span>
+        <span class="n">ttk</span><span class="o">.</span><span class="n">Entry</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">textvariable</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">filename</span><span class="p">)</span><span class="o">.</span><span class="n">pack</span><span class="p">(</span><span class="n">side</span><span class="o">=</span><span class="s1">&#39;left&#39;</span><span class="p">,</span> <span class="n">fill</span><span class="o">=</span><span class="s1">&#39;x&#39;</span><span class="p">,</span> <span class="n">expand</span><span class="o">=</span><span class="s1">&#39;yes&#39;</span><span class="p">,</span> <span class="n">padx</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">5</span><span class="p">),</span> <span class="n">pady</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
 
-<span class="c1"># browse button</span>
-<span class="n">button</span> <span class="o">=</span> <span class="n">ttk</span><span class="o">.</span><span class="n">Button</span><span class="p">(</span><span class="n">frame</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="s1">&#39;Browse&#39;</span><span class="p">,</span> <span class="n">command</span><span class="o">=</span><span class="k">lambda</span> <span class="n">t</span><span class="o">=</span><span class="n">text_area</span><span class="p">:</span> <span class="n">open_file</span><span class="p">(</span><span class="n">t</span><span class="p">))</span>
-<span class="n">button</span><span class="o">.</span><span class="n">pack</span><span class="p">(</span><span class="n">side</span><span class="o">=</span><span class="s1">&#39;right&#39;</span><span class="p">,</span> <span class="n">fill</span><span class="o">=</span><span class="s1">&#39;x&#39;</span><span class="p">,</span> <span class="n">padx</span><span class="o">=</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="n">pady</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+        <span class="c1"># browse button</span>
+        <span class="n">ttk</span><span class="o">.</span><span class="n">Button</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="s1">&#39;Browse&#39;</span><span class="p">,</span> <span class="n">command</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">open_file</span><span class="p">)</span><span class="o">.</span><span class="n">pack</span><span class="p">(</span><span class="n">side</span><span class="o">=</span><span class="s1">&#39;right&#39;</span><span class="p">,</span> <span class="n">fill</span><span class="o">=</span><span class="s1">&#39;x&#39;</span><span class="p">,</span> <span class="n">padx</span><span class="o">=</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="n">pady</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
 
-<span class="n">window</span><span class="o">.</span><span class="n">mainloop</span><span class="p">()</span>
+    <span class="k">def</span> <span class="nf">open_file</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">path</span> <span class="o">=</span> <span class="n">askopenfilename</span><span class="p">()</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">path</span><span class="p">:</span>
+            <span class="k">return</span>
+
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s1">&#39;utf-8&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">text_area</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="s1">&#39;1.0&#39;</span><span class="p">,</span> <span class="s1">&#39;end&#39;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">text_area</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="s1">&#39;end&#39;</span><span class="p">,</span> <span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">())</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">filename</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+    <span class="n">Application</span><span class="p">()</span><span class="o">.</span><span class="n">mainloop</span><span class="p">()</span>
 </pre></div>
 </div>
 <p>The poem used in this demonstration can be found <a class="reference external" href="https://gist.githubusercontent.com/mrtnzlml/1e35b552b24e0637d2e3d1dcd9154de7/raw/95b055dd524a45df9a7d004a7bd310c031401d59/poem.txt">here</a>.</p>
