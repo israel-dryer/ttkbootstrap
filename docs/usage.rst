@@ -67,8 +67,8 @@ Consider the following example, which also shows the *Outline* style that is ava
 
 .. note::
 
-    While all widgets are themed, not all have themed color styles available, such as ``ttk.PanedWindow`` or
-    ``ttk.Scale``. Instead, these widgets are styled with the primary theme color.
+    While all widgets are themed, not all have themed color styles available, such as ``ttk.PanedWindow`` or the
+    ``ttk.Scrollbar``. Instead, these widgets are styled with a default theme color.
 
 
 Style patterns
@@ -108,7 +108,9 @@ The following table includes the styles available for all ttkbootstrap widgets:
 +-------------+----------------+------------------------+------------------------------------+
 | Radiobutton | [#]_ all       | TRadiobutton           | ``info.TRadiobutton``              |
 +-------------+----------------+------------------------+------------------------------------+
-| Scale       | primary        | TScale                 | applied by default                 |
+| Scale       | all            | Horizontal.TScale      | ``info.Horizontal.TScale``         |
++             +                +------------------------+------------------------------------+
+|             |                | Vertical.TScale        | ``info.Vertical.TScale``           |
 +-------------+----------------+------------------------+------------------------------------+
 | Scrollbar   | primary        | TScrollbar             | applied by default                 |
 +-------------+----------------+------------------------+------------------------------------+

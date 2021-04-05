@@ -9,7 +9,7 @@ class Application(tkinter.Tk):
     def __init__(self):
         super().__init__()
         self.title('Equalizer')
-        self.style = Style('superhero')
+        self.style = Style()
         self.eq = Equalizer(self)
         self.eq.pack(fill='both', expand='yes')
 
@@ -32,12 +32,15 @@ class Equalizer(ttk.Frame):
             frame.pack(side='left', fill='y', padx=10)
 
             # header
-            ttk.Label(frame, text=c, anchor='center').pack(side='top', fill='x', pady=10)
+            ttk.Label(frame, text=c, anchor='center', font=('Helvetica 10 bold')).pack(side='top', fill='x', pady=10)
 
             # slider
             scale = ttk.Scale(frame, orient='vertical', from_=99, to=1, value=value)
             scale.pack(fill='y')
             scale.configure(command=lambda val, name=c: self.setvar(name, f'{float(val):.0f}'))
+
+            # set slider style
+            scale.configure(style='success.Vertical.TScale' if c in ['VOL', 'GAIN'] else 'info.Vertical.TScale')
 
             # slider value label
             ttk.Label(frame, textvariable=c).pack(pady=10)
