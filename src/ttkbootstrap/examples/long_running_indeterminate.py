@@ -1,11 +1,10 @@
 import tkinter
+from queue import Queue
 from random import randint
 from threading import Thread
-from queue import Queue
 from time import sleep
 from tkinter import ttk
 from tkinter.messagebox import showinfo
-
 from ttkbootstrap import Style
 
 
@@ -40,7 +39,7 @@ class LongRunning(ttk.Frame):
         self.btn.pack(pady=10)
 
         # indeterminate progressbar
-        self.progressbar = ttk.Progressbar(self, mode='indeterminate')
+        self.progressbar = ttk.Progressbar(self, mode='indeterminate', style='info.Horizontal.TProgressbar')
         self.progressbar.pack(fill='x')
 
     def simulated_blocking_io_task(self):
@@ -51,10 +50,8 @@ class LongRunning(ttk.Frame):
 
     def start_task(self):
         """Start the progressbar and run the task in another thread"""
-        self.progressbar.start()
-        task = Thread(target=self.simulated_blocking_io_task, daemon=True)
-        self.task_queue.put(task)
-        task.start()
+        self.progressbar.start(10)  # ``start`` accepts a speed argument (in milliseconds)
+        self.task_queue.put(Thread(target=self.simulated_blocking_io_task, daemon=True).start())
         self.btn.configure(state='disabled')
         self.listen_for_complete_task()
 
@@ -65,7 +62,7 @@ class LongRunning(ttk.Frame):
             showinfo(title='alert', message="process complete")
             self.btn.configure(state='normal')
             return
-        self.after(1000, self.listen_for_complete_task)
+        self.after(500, self.listen_for_complete_task)
 
 
 if __name__ == '__main__':
