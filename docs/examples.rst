@@ -13,3 +13,4 @@ All examples contain links to repl.it_ where you can *run the code live*
     examples/timer_widget
     examples/text_reader
     examples/equalizer
+    examples/long_running_indeterminate
