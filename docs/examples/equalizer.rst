@@ -10,13 +10,12 @@ In order to create some contrast, I've applied different styles to the "VOL" and
     - VOL & GAIN: ``success.Vertical.TScale``
     - OTHERS: ``info.Vertical.TScale``
 
+.. figure:: ../../src/ttkbootstrap/examples/images/equalizer.png
+
 .. note:: For a vertical orientation, the ``from_`` parameter corresponds to the top and ``to`` corresponds to the
     bottom of the widget, so you'll need to take this into account when you set the minimum and maximum numbers for your
     scale range.
 
-.. figure:: ../../src/ttkbootstrap/examples/images/equalizer.png
-
-    random scale values are generated at runtime for demonstration purposes
 
 Run this code live on repl.it_
 

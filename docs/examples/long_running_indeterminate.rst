@@ -1,5 +1,7 @@
 Long-Running (Indeterminate)
 ============================
+*When the number of tasks or time is unknown or variable*
+
 You will often need to execute a task in tkinter that requires IO operations, or some other long-running task. For this
 you will likely want to use a combination of threading, queues, and scheduling. In this example, I'm using the python
 threading_ module to create a thread to run a simulated *blocking* task using the ``sleep`` function. This blocking
@@ -17,21 +19,14 @@ queue every second to check if all tasks have been completed by scheduling the `
 run in the main event loop every 1000ms (1 second) using the ``after`` method in tkinter. When all tasks in the queue
 are completed, the progress bar will be stopped and a popup alert will display indicated success.
 
-.. note::
-    If you set the parameter ``deaemon=True`` when creating the worker thread, it will close when your application
-    window is closed, even if it has not yet finished. Most of the time this is the desired behavior. However, if you
-    want the thread to continue to run until finished, even after the window has closed, you can ignore this parameter.
+.. figure:: ../../src/ttkbootstrap/examples/images/long_running_indeterminate.png
 
+.. note::
+    You can change the speed of the progress indicator by passing a time in milliseconds to the ``start`` methods. This
+    is 50ms by default.
 
 .. _threading: https://realpython.com/intro-to-python-threading/
 
-.. figure:: ../../src/ttkbootstrap/examples/images/long_running_indeterminate_stopped.png
-
-    process is not started
-
-.. figure:: ../../src/ttkbootstrap/examples/images/long_running_indeterminate_running.png
-
-    process is started
 
 Run this code live on repl.it_
 
