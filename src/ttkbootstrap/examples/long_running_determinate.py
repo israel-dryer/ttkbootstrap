@@ -12,7 +12,7 @@ class Application(tkinter.Tk):
 
     def __init__(self):
         super().__init__()
-        self.title('Long Running Operation - Indeterminate')
+        self.title('Long Running Operation - Determinate')
         self.style = Style('lumen')
 
         # set the main background color to primary, then add 10px padding to create a thick border effect
