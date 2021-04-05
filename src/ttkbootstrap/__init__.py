@@ -730,6 +730,35 @@ class StylerTTK:
                                   ('pressed', self.scale_images['primary_pressed']),
                                   ('hover', self.scale_images['primary_hover']))}})
 
+        for color in self.theme.colors:
+            self.scale_images.update({
+                f'{color}_regular': self._create_slider_image(self.theme.colors.get(color)),
+                f'{color}_pressed': self._create_slider_image(Colors.brightness(self.theme.colors.get(color), -0.2)),
+                f'{color}_hover': self._create_slider_image(
+                    Colors.brightness(self.theme.colors.get(color), -0.1)), f'{color}_trough': ImageTk.PhotoImage(
+                    Image.new('RGB', (8, 8), Colors.brightness(self.theme.colors.light, -0.05)))})
+
+            # The layout is derived from the 'xpnative' theme
+            self.settings.update({
+                f'{color}.Horizontal.TScale': {
+                    'layout': [
+                        ('Scale.focus', {'expand': '1', 'sticky': 'nswe', 'children': [
+                            ('Horizontal.Scale.track', {'sticky': 'we'}),
+                            (f'{color}.Horizontal.Scale.slider', {'side': 'left', 'sticky': ''})]})]},
+                f'{color}.Vertical.TScale': {
+                    'layout': [
+                        (f'{color}.Scale.focus', {'expand': '1', 'sticky': 'nswe', 'children': [
+                            ('Vertical.Scale.track', {'sticky': 'ns'}),
+                            (f'{color}.Vertical.Scale.slider', {'side': 'top', 'sticky': ''})]})]},
+                f'{color}.Vertical.Scale.slider': {'element create':
+                                     ('image', self.scale_images[f'{color}_regular'],
+                                      ('pressed', self.scale_images[f'{color}_pressed']),
+                                      ('hover', self.scale_images[f'{color}_hover']))},
+                f'{color}.Horizontal.Scale.slider': {'element create':
+                                                       ('image', self.scale_images[f'{color}_regular'],
+                                                        ('pressed', self.scale_images[f'{color}_pressed']),
+                                                        ('hover', self.scale_images[f'{color}_hover']))}})
+
     def _style_scrollbar(self):
         """
         Create style configuration for ttk scrollbar: *ttk.Scrollbar*. This theme uses elements from the *alt* theme to
