@@ -915,8 +915,11 @@ class StylerTTK:
 
         for color in self.theme.colors:
             self.settings.update({
-                'configure': {'background': self.theme.colors.get(color)},
-                'map': {'bordercolor': [('focus', self.theme.colors.get(color))]}})
+                f'{color}.Treeview.Heading': {
+                    'configure': {
+                        'background': self.theme.colors.get(color)},
+                    'map': {
+                        'bordercolor': [('focus', self.theme.colors.get(color))]}}})
 
     def _style_frame(self):
         """
