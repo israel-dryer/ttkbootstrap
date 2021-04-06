@@ -1,6 +1,7 @@
 File Search Engine
 ==================
-This example demonstrates the use of several styles on the buttons, treeview, and progressbar.
+This example demonstrates the use of several styles on the buttons, treeview, and progressbar. The overall theme is
+``journal``. For individual widgets, the applied styles are:
 
     - browse button: ``primary.TButton``
     - search button: ``primary.Outline.TButton``
