@@ -1,3 +1,4 @@
+# https://dribbble.com/shots/1237618--Gif-Spinner
 import tkinter
 from itertools import cycle
 from tkinter import ttk

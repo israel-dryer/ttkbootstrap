@@ -1,14 +1,17 @@
 Equalizer
 =========
-A simple equalizer interface using the ``ttk.Scale`` widget. Because I wanted the scale value to be reflected in a label
-below the scale, this application is a lot more complicated than it really needs to be due to some oddities of the ttk
-scale implementation. The ``ttk.Scale`` widget outputs a double type, which means that in order to display a nice
-rounded integer, that number has to be converted when updated. Fortunately, the scale widget has a ``command`` parameter
-for setting a callback. The callback will get the scale value, which can then be converted into a nice clean format.
+This example demonstrates the use of styles to differentiate slider functions. The ``ttk.Scale`` widget is one of
+several that include orientation in the style class.
 
-In order to create some contrast, I've applied different styles to the "VOL" and "GAIN" sliders:
+In order to create some contrast, different styles are applied to the "VOL" and "GAIN" sliders:
     - VOL & GAIN: ``success.Vertical.TScale``
     - OTHERS: ``info.Vertical.TScale``
+
+Now for some comments on the code: Because I wanted the scale value to be reflected in a label below the scale, this
+application is a lot more complicated than it really needs to be due to some oddities of the ttk scale implementation.
+The ``ttk.Scale`` widget outputs a double type, which means that in order to display a nice rounded integer, that number
+has to be converted when updated. Fortunately, the scale widget has a ``command`` parameter for setting a callback. The
+callback will get the scale value, which can then be converted into a nice clean format.
 
 .. figure:: ../../src/ttkbootstrap/examples/images/equalizer.png
 
