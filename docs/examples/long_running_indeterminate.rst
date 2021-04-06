@@ -1,23 +1,24 @@
 Long-Running (Indeterminate)
 ============================
-*When the number of tasks or time is unknown or variable*
+This example demonstrates the use of a progress bar for long-running tasks where the number of steps or time required is
+*unknown* ahead of time and cannot otherwise be calculated. Instead of filling from left to right as normal, this
+*indeterminate* mode of progressbar will shift the indicator from left to right to indicate that they system is working.
 
-You will often need to execute a task in tkinter that requires IO operations, or some other long-running task. For this
-you will likely want to use a combination of threading, queues, and scheduling. In this example, I'm using the python
-threading_ module to create a thread to run a simulated *blocking* task using the ``sleep`` function. This blocking
-operation can't be run in the main thread with tkinter or the window will become unresponsive; so, a new thread is
-created to handle this task.
+IO task are thread-blocking in python, which means that if you create a gui with a button that downloads a file from
+the internet, the gui will be unresponsive until that download task is completed. To prevent this kind of negative
+user experience, you can use threading to handle IO tasks. This will ensure that your gui will remain responsive to the
+end user while the task is being completed on another thread.
 
-While the thread is running, tkinter will start the progressbar in *indeterminate* mode, which means that the indicator
-will shift from left to right in a cycle until it is commanded to stop. This mode is handy when you are running a task
-or process, but you do not know how long it will take, and there is an *indeterminate* number of steps/time involved.
+In this example, I'm using the python threading_ module to create a thread to run a simulated IO task using the
+``sleep`` method. This sleep method is a proxy for any other thread-blocking operation you may perform.
 
-The thread needs to communicate to the application window when the process is finished. The vehicle for this is a
-``queue.Queue``. When the process is started, the application will add the thread to the Queue. When the process
-is complete, the task thread will mark this task as complete. While the thread is running, the application will poll the
-queue every second to check if all tasks have been completed by scheduling the ``listen_for_complete_task`` method to
-run in the main event loop every 1000ms (1 second) using the ``after`` method in tkinter. When all tasks in the queue
-are completed, the progress bar will be stopped and a popup alert will display indicated success.
+When a task is finished, the gui needs to be notified in order to update the progress bar.  The vehicle for this
+communication is a ``Queue``. When the long-running task is started, the application will add a thread to the Queue.
+While the task is running, the application will poll the queue every 500ms to check that all tasks have been completed.
+This is done by scheduling the ``listen_for_complete_task`` method to run in the main
+event loop every 500ms using the ``after`` method in tkinter. When all tasks in the queue are completed, the task thread
+will mark the task as compete in the queue and this will cause the gui to stop the progress bar and return a popup that
+indicates success.
 
 .. figure:: ../../src/ttkbootstrap/examples/images/long_running_indeterminate.png
 
