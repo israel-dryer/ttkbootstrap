@@ -11,7 +11,7 @@ class Application(tkinter.Tk):
 
     def __init__(self):
         super().__init__()
-        self.title('Accordian Widget')
+        self.title('Accordion Widget')
         self.style = Style('flatly')
 
         # accordian widget 1
