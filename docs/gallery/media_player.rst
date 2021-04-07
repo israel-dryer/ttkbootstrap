@@ -18,9 +18,5 @@ the VLC package for controlling audio and video.
 .. figure:: ../../src/ttkbootstrap/gallery/images/media_player.png
 
 
-Run this code live on repl.it_
-
-.. _repl.it: https://replit.com/@IsraelDryer/media-player
-
 .. literalinclude:: ../../src/ttkbootstrap/gallery/media_player.py
     :language: python
