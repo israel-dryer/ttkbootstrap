@@ -1106,12 +1106,11 @@ class StylerTTK:
 
         for color in self.theme.colors:
             self.settings.update({
+                f'{color}.TEntry': {
                 'map': {
                     'bordercolor': [('focus', self.theme.colors.get(color))],
                     'lightcolor': [('focus', self.theme.colors.get(color))],
-                    'darkcolor': [('focus', self.theme.colors.get(color))]
-                }
-            })
+                    'darkcolor': [('focus', self.theme.colors.get(color))]}}})
 
     def _style_radiobutton(self):
         """
