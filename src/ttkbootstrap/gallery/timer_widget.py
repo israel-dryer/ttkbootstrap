@@ -1,3 +1,8 @@
+"""
+    Author: Israe Dryer
+    Modified: 2021-04-07
+    Adapted for ttkbootstrap from: https://github.com/PySimpleGUI/PySimpleGUI/blob/master/DemoPrograms/Demo_Desktop_Widget_Timer.py
+"""
 import tkinter
 from tkinter import ttk
 from ttkbootstrap import Style
