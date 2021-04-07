@@ -1,8 +1,17 @@
 Long-Running (Indeterminate)
 ============================
 This example demonstrates the use of a progress bar for long-running tasks where the number of steps or time required is
-*unknown* ahead of time and cannot otherwise be calculated. Instead of filling from left to right as normal, this
-*indeterminate* mode of progressbar will shift the indicator from left to right to indicate that they system is working.
+*unknown* ahead of time and cannot otherwise be calculated. The overall theme is **lumen** and the following styles are
+applied to these widgets:
+
+    :Progressbar: ``info.Horizontal.TProgressbar``
+
+Additionally, the background color was set using ``Style.colors.primary`` with padding added around the inner frame
+to create a thick border effect.
+
+
+Instead of filling from left to right as normal, this *indeterminate* mode of progressbar will shift the indicator from
+left to right to indicate that they system is working.
 
 IO task are thread-blocking in python, which means that if you create a gui with a button that downloads a file from
 the internet, the gui will be unresponsive until that download task is completed. To prevent this kind of negative
@@ -20,7 +29,7 @@ event loop every 500ms using the ``after`` method in tkinter. When all tasks in 
 will mark the task as compete in the queue and this will cause the gui to stop the progress bar and return a popup that
 indicates success.
 
-.. figure:: ../../src/ttkbootstrap/examples/images/long_running_indeterminate.png
+.. figure:: ../../src/ttkbootstrap/gallery/images/long_running_indeterminate.png
 
 .. note::
     You can change the speed of the progress indicator by passing a time in milliseconds to the ``start`` methods. This
@@ -33,5 +42,5 @@ Run this code live on repl.it_
 
 .. _repl.it: https://replit.com/@IsraelDryer/long-running-indeterminate
 
-.. literalinclude:: ../../src/ttkbootstrap/examples/long_running_indeterminate.py
+.. literalinclude:: ../../src/ttkbootstrap/gallery/long_running_indeterminate.py
     :language: python

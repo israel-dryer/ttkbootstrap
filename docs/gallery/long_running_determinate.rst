@@ -1,7 +1,13 @@
 Long-Running (Determinate)
 ==========================
 This example demonstrates the use of a progress bar for long-running tasks where the number of steps or time required is
-known ahead of time or can be calculated.
+known ahead of time or can be calculated. The overall theme is **lumen** and the following styles are applied to these
+widgets:
+
+    :Progressbar: ``info.Horizontal.TProgressbar``
+
+Additionally, the background color was set using ``Style.colors.primary`` with padding added around the inner frame
+to create a thick border effect.
 
 IO task are thread-blocking in python, which means that if you create a gui with a button that downloads a file from
 the internet, the gui will be unresponsive until that download task is completed. To prevent this kind of negative
@@ -19,7 +25,7 @@ event loop every 500ms using the ``after`` method in tkinter. When all tasks in 
 the task thread will mark the task as compete in the queue and this will cause the gui to update the progress bar to the
 maximum value and return a popup that indicates success.
 
-.. figure:: ../../src/ttkbootstrap/examples/images/long_running_determinate.png
+.. figure:: ../../src/ttkbootstrap/gallery/images/long_running_determinate.png
 
 .. note::
     If you set the parameter ``deaemon=True`` when creating the worker thread, it will close when your application
@@ -33,5 +39,5 @@ Run this code live on repl.it_
 
 .. _repl.it: https://replit.com/@IsraelDryer/long-running-determinate
 
-.. literalinclude:: ../../src/ttkbootstrap/examples/long_running_determinate.py
+.. literalinclude:: ../../src/ttkbootstrap/gallery/long_running_determinate.py
     :language: python

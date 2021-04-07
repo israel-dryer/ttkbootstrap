@@ -8,11 +8,11 @@ border. However, this also removes the ability to close, minimize, or move the s
 as needed with key binding. Bind the *<Escape>* key to the ``quit`` method to give yourself the ability to close the
 window. The window can be centered by directly calling a tcl command: ``self.eval('tk::PlaceWindow . center')``.
 
-.. figure:: ../../src/ttkbootstrap/examples/images/spinners.gif
+.. figure:: ../../src/ttkbootstrap/gallery/images/spinners.gif
 
 Run this code live on repl.it_
 
 .. _repl.it: https://replit.com/@IsraelDryer/animated-gif
 
-.. literalinclude:: ../../src/ttkbootstrap/examples/animated_gif.py
+.. literalinclude:: ../../src/ttkbootstrap/gallery/animated_gif.py
     :language: python
