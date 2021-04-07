@@ -13,7 +13,7 @@ class Application(tkinter.Tk):
     def __init__(self):
         super().__init__()
         self.title('PC Cleaner')
-        self.style = Style('pulse')
+        self.style = Style('superhero')
         self.cleaner = Cleaner(self)
         self.cleaner.pack(fill='both', expand='yes')
 

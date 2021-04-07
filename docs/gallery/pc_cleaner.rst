@@ -2,7 +2,7 @@ PC Cleaner
 ==========
 In this example, I demonstrate how to use various styles to build a UI for a PC Cleaner application. This is adapted
 from an image you can find here_. The images below represent the same build except with the **pulse** as the light theme
-and **superhero** as the dark theme.  This application includes several widget styles include a customer header style
+and **superhero** as the dark theme.  This application includes several widget styles including a custom header style
 which is configured in the ``init`` method that changes the background and foreground colors from theme colors available
 in the ``Style.colors`` property.
 
@@ -23,7 +23,7 @@ serving as the border. By increasing the internal padding, you can effectively i
 
 Run this code live on repl.it_
 
-.. _repl.it: https://replit.com/@IsraelDryer/pc_cleaner
+.. _repl.it: https://replit.com/@IsraelDryer/pc-cleaner
 
 .. literalinclude:: ../../src/ttkbootstrap/gallery/pc_cleaner.py
     :language: python
