@@ -1,4 +1,8 @@
-# Adapted for ttkbootstrap from https://github.com/israel-dryer/File-Search-Engine-Tk
+"""
+    Author: Israel Dryer
+    Modified: 2021-04-07
+    Adapted for ttkbootstrap from: https://github.com/israel-dryer/File-Search-Engine-Tk
+"""
 import csv
 import datetime
 import pathlib
