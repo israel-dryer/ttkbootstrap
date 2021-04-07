@@ -1,9 +1,7 @@
 Gallery
 =======
 
-Below you will find a *growing* list of ttkbootstrap and ttk example applications.
-
-All examples contain links to repl.it_ where you can *run the code live*
+Below you will find a *growing* list of ttkbootstrap and ttk example applications. Most examples contain links to repl.it_ where you can *run the code live*
 
 .. _repl.it: https://replit.com/repls/folder/ttkbootstrap
 
