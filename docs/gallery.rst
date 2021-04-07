@@ -1,19 +1,16 @@
 Gallery
 =======
 
-Below you will find a *growing* list of ttkbootstrap and ttk example applications. Most examples contain links to repl.it_ where you can *run the code live*
-
-.. _repl.it: https://replit.com/repls/folder/ttkbootstrap
+Below you will find a *growing* list of ttkbootstrap projects meant to provide inspiration or direction when creating
+your own applications. These are meant to demonstrate design and are not necessarily fully functional applications.
 
 .. toctree::
 
-    gallery/animated_gif
-    gallery/calculator
+    gallery/pc_cleaner
+    gallery/media_player
     gallery/equalizer
     gallery/file_search_engine
-    gallery/long_running_determinate
-    gallery/long_running_indeterminate
-    gallery/media_player
+    gallery/calculator
     gallery/simple_data_entry_form
-    gallery/text_reader
     gallery/timer_widget
+    gallery/text_reader
