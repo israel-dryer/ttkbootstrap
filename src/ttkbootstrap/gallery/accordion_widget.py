@@ -82,7 +82,7 @@ class AccordionWidget(ttk.Frame):
     def add(self, contents):
         """Add contents to the canvas. Will overwrite existing contents"""
         self.contents.create_window(self.contents_padding, window=contents, anchor='nw')
-        self.update()
+        self.update_idletasks()
         self.contents.configure(height=contents.winfo_height() + self.contents_padding[0] * 2)
 
     def toggle_accordion(self):
