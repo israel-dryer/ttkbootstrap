@@ -50,7 +50,10 @@ class Style(ttk.Style):
     @property
     def colors(self):
         theme = self.theme_use()
-        return self.themes.get(theme).theme.colors
+        if theme in self.themes:
+            return self.themes.get(theme).theme.colors
+        else:
+            return Colors()
 
     def _load_themes(self):
         """
@@ -90,16 +93,25 @@ class Style(ttk.Style):
 
         :param str themename: the theme to apply when creating new widgets
         """
-        if themename is None:
+        if not themename:
             return super().theme_use()
 
-        try:
+        if all([themename, themename not in self.theme_names()]):
+            print(f"{themename} is not a valid theme name. Please try one of the following:")
+            print(self.theme_names())
+            return
+
+        if themename in self.themes:
+            try:
+                super().theme_use(themename)
+                current = self.themes.get(themename)
+                if current:
+                    current.styler_tk.style_tkinter_widgets()
+                return
+            except AttributeError:
+                return
+        else:
             super().theme_use(themename)
-            current = self.themes.get(themename)
-            if current:
-                current.styler_tk.style_tkinter_widgets()
-        except AttributeError:
-            pass
 
 
 class ThemeDefinition:
