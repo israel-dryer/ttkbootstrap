@@ -15,7 +15,7 @@ the ability to easily create your own.
 
 setuptools.setup(
     name="ttkbootstrap",
-    version="0.0.31",
+    version="0.0.33",
     author="Israel Dryer",
     author_email="israel.dryer@gmail.com",
     description="A collection of modern ttk themes inspired by Bootstrap",
