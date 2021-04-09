@@ -1170,17 +1170,17 @@ class StylerTTK:
                         self.theme.colors.fg if self.theme.type == 'light' else self.theme.colors.light),
                     'lowerbordercolor': (
                         self.theme.colors.fg if self.theme.type == 'light' else self.theme.colors.light),
-                    'indicatorforeground': (
-                        self.theme.colors.fg if self.theme.type == 'light' else self.theme.colors.bg)},
+                    'indicatorforeground': self.theme.colors.selectbg},
                 'map': {
                     'foreground': [('active', self.theme.colors.primary)],
                     'indicatorforeground': [
-                        ('active selected', self.theme.colors.selectfg)]}}})
+                        ('active selected', self.theme.colors.primary)]}}})
 
         # variations change the indicator color
         for color in self.theme.colors:
             self.settings.update({
                 f'{color}.TRadiobutton': {
+                    'configure': {'indicatorforeground': self.theme.colors.get(color)},
                     'map': {
                         'foreground': [('active', Colors.brightness(self.theme.colors.get(color), -0.2))],
                         'indicatorforeground': [
@@ -1281,30 +1281,21 @@ class StylerTTK:
                     'foreground': self.theme.colors.fg,
                     'indicatorsize': 10,
                     'indicatormargin': 10,
-                    'indicatorforeground': (self.theme.colors.selectfg if self.theme.type == 'light'
-                                            else self.theme.colors.primary)},
+                    'indicatorforeground': self.theme.colors.selectbg},
                 'map': {
-                    'indicatorbackground': [
-                        ('active selected', Colors.brightness(self.theme.colors.primary, -0.2)),
-                        ('selected', self.theme.colors.fg),
-                        ('active !selected', self.theme.colors.light)],
                     'foreground': [
                         ('active', self.theme.colors.primary)],
                     'indicatorforeground': [
-                        ('active', self.theme.colors.selectfg)]}}})
+                        ('active selected', self.theme.colors.primary)]}}})
 
         # variations change indicator color
         for color in self.theme.colors:
             self.settings.update({
                 f'{color}.TCheckbutton': {
+                    'configure': {'indicatorforeground': self.theme.colors.get(color)},
                     'map': {
-                        'indicatorbackground': [
-                            ('active selected', Colors.brightness(self.theme.colors.get(color), -0.2)),
-                            ('selected', self.theme.colors.fg),
-                            ('active !selected', self.theme.colors.light)],
                         'indicatorforeground': [
-                            ('active selected', Colors.brightness(self.theme.colors.get(color), -0.2)),
-                            ('selected', self.theme.colors.get(color))],
+                            ('active selected', Colors.brightness(self.theme.colors.get(color), -0.2))],
                         'foreground': [
                             ('active', Colors.brightness(self.theme.colors.get(color), -0.2))]}}})
 
