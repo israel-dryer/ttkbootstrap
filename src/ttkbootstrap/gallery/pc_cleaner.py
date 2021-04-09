@@ -23,7 +23,6 @@ class Application(tkinter.Tk):
         # do not allow window resizing
         self.resizable(False, False)
 
-
 class Cleaner(ttk.Frame):
 
     def __init__(self, *args, **kwargs):
@@ -81,8 +80,9 @@ class Cleaner(ttk.Frame):
 
         edge = ttk.Labelframe(scroll_frame, text='Microsoft Edge', padding=(20, 5))
         edge.pack(fill='both')
+
         explorer = ttk.Labelframe(scroll_frame, text='Internet Explorer', padding=(20, 5))
-        explorer.pack(fill='both')
+        explorer.pack(fill='both', pady=10)
 
         ### add radio buttons to each label frame section
         for section in [edge, explorer]:
