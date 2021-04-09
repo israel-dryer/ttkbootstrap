@@ -1,6 +1,6 @@
 """
     Author: Israel Dryer
-    Modified: 2021-04-08
+    Modified: 2021-04-09
     Adapted for ttkbootstrap from: http://www.leo-backup.com/screenshots.shtml
 """
 import tkinter
@@ -23,6 +23,7 @@ class Application(tkinter.Tk):
         self.style.configure('bg.TLabel', background=self.style.colors.light)
         self.bmu = BackMeUp(self, padding=2, style='bg.TFrame')
         self.bmu.pack(fill='both', expand='yes')
+
 
 class BackMeUp(ttk.Frame):
 

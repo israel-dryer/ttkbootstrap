@@ -1,6 +1,6 @@
 """
     Author: Israel Dryer
-    Modified: 2021-04-07
+    Modified: 2021-04-09
     Adapted for ttkbootstrap from: https://github.com/israel-dryer/File-Search-Engine-Tk
 """
 import csv
@@ -11,7 +11,6 @@ from queue import Queue
 from threading import Thread
 from tkinter import ttk
 from tkinter.filedialog import askdirectory, asksaveasfilename
-
 from ttkbootstrap import Style
 
 

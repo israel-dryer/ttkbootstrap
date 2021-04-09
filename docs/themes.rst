@@ -84,27 +84,6 @@ Dark themes
 
     inspired by https://bootswatch.com/solar/
 
-Legacy themes
-.............
-Just for reference, these are some of the built in themes
-
-.. figure:: images/default.png
-    :alt: an example image of default theme
-
-.. figure:: images/classic.png
-    :alt: an example image of theme classic
-
-.. figure:: images/alt.png
-    :alt: an example image of theme alt
-
-.. figure:: images/clam.png
-    :alt: an example image of theme clam
-
-.. figure:: images/xpnative.png
-    :alt: an example image of theme xpnative
-
-    This theme is for Windows only.
-
 How are themes created?
 .......................
 Imagine being able to take the parts from several existing cars to design the one that you really want... that's
