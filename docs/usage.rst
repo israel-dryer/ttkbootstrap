@@ -91,6 +91,8 @@ The following table includes the styles available for all ttkbootstrap widgets:
 | Frame       | all            | TFrame                 | ``info.TFrame``                    |
 +-------------+----------------+------------------------+------------------------------------+
 | Label       | all            | TLabel                 | ``info.TLabel``                    |
++             +                +                        +------------------------------------+
+|             |                |                        | ``info.inv.TLabel`` (inverted)     |
 +-------------+----------------+------------------------+------------------------------------+
 | LabelFrame  | all            | TLabelframe            | ``info.TLabelframe``               |
 +-------------+----------------+------------------------+------------------------------------+
@@ -126,4 +128,30 @@ The following table includes the styles available for all ttkbootstrap widgets:
 +-------------+----------------+------------------------+------------------------------------+
 
 .. [#] can only be styled on Linux and MacOS. Windows defaults to the *xpnative* style buttons
+
+Modifying and Creating Styles
+-----------------------------
+In a large application, you may need to customize widget styles. I've done this in several of applications in the
+demo gallery. To customize a style, you need to create a ``Style`` object first and then use the ``configure`` method
+using the form ``newName.oldName``. For example: in the gallery demo *File Backup Utility*, I created a custom style
+for a frame that used the background color of the theme border. For this example, let's say that color is *gray*.
+
+.. code-block:: python
+
+    style = Style()
+    style.configure('custom.TFrame', background='gray')
+
+This would create a frame style with the background color of gray. To apply this new style, I would create a frame and
+then use the style parameter to set the new style.
+
+.. code-block:: python
+
+    myframe = ttk.Frame(style='custom.TFrame')
+
+There is a widget style class whose name is '.' By configuring this widget style class, you will change some feature's
+default appearance for every widget that is not already configured by another style.
+
+.. code-block:: python
+
+    style.configure('.', font=('Helvetica', 10))
 
