@@ -313,7 +313,7 @@ class CreatorDesignWindow(tk.Toplevel):
         img = ImageGrab.grab(bbox=bbox)
 
         # image name
-        filename = f'docs/images/ttkcreator.png'
+        filename = f'../docs/images/ttkcreator.png'
         print(filename)
         img.save(filename, 'png')
 
@@ -486,7 +486,7 @@ class CreatorBaseChooser(tk.Tk):
         img = ImageGrab.grab(bbox=bbox)
 
         # image name
-        filename = 'docs/images/ttkcreator-splash.png'
+        filename = '../../docs/images/ttkcreator-splash.png'
         print(filename)
         img.save(filename, 'png')
 
