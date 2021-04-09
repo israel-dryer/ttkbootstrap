@@ -20,6 +20,7 @@ class Demo(Style):
         super().__init__()
         self.theme_use('lumen')
         self.root = self.master
+        #self.root.geometry('500x695')
         self.root.protocol("WM_DELETE_WINDOW", self.quit)
         self.root.title('TTK Bootstrap')
         self.theme_name = tkinter.StringVar()
@@ -48,6 +49,7 @@ class Demo(Style):
         standard tk widgets, I've choosing to redraw all the widgets in the main tab. You can use other methods or
         avoid this altogether if you're not switch between light and dark themes.
         """
+        # print(self.root.winfo_width(), self.root.winfo_height())
         self.tab.destroy()
         self.theme_use(new_theme)
         self.tab = self.create_themed_tab()
