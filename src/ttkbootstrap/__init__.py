@@ -789,8 +789,8 @@ class StylerTTK:
             'Vertical.Scrollbar.downarrow': {'element create': ('from', 'alt')},
             'Horizontal.Scrollbar.trough': {'element create': ('from', 'alt')},
             'Horizontal.Scrollbar.thumb': {'element create': ('from', 'alt')},
-            'Horizontal.Scrollbar.uparrow': {'element create': ('from', 'alt')},
-            'Horizontal.Scrollbar.downarrow': {'element create': ('from', 'alt')},
+            'Horizontal.Scrollbar.leftarrow': {'element create': ('from', 'alt')},
+            'Horizontal.Scrollbar.rightarrow': {'element create': ('from', 'alt')},
             'TScrollbar': {'configure': {
                 'troughrelief': 'flat',
                 'relief': 'flat',
