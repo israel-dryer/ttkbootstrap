@@ -610,7 +610,7 @@ class StylerTTK:
                     'relief': 'flat',
                     'borderwidth ': 0,  # only applies to dark theme border
                     'padding': 5,
-                    'arrowsize ': 16},
+                    'arrowsize ': 14},
                 'map': {
                     'bordercolor': [
                         ('focus', self.theme.colors.primary),
@@ -854,7 +854,7 @@ class StylerTTK:
                     'background': self.theme.colors.light,
                     'relief': 'flat',
                     'arrowcolor': self.theme.colors.inputfg,
-                    'arrowsize': 16,
+                    'arrowsize': 14,
                     'padding': (10, 5)
                 },
                 'map': {
@@ -1320,6 +1320,7 @@ class StylerTTK:
                     'bordercolor': self.theme.colors.primary,
                     'darkcolor': self.theme.colors.primary,
                     'lightcolor': self.theme.colors.primary,
+                    'arrowsize': 4,
                     'arrowcolor': self.theme.colors.bg if self.theme.type == 'light' else 'white',
                     'arrowpadding': (0, 0, 15, 0),
                     'relief': 'raised',
@@ -1349,6 +1350,7 @@ class StylerTTK:
                         'bordercolor': self.theme.colors.get(color),
                         'darkcolor': self.theme.colors.get(color),
                         'lightcolor': self.theme.colors.get(color),
+                        'arrowsize': 4,
                         'arrowcolor': self.theme.colors.bg if self.theme.type == 'light' else 'white',
                         'arrowpadding': (0, 0, 15, 0),
                         'relief': 'raised',
