@@ -1,6 +1,6 @@
 """
     Author: Israel Dryer
-    Modified: 2021-04-07
+    Modified: 2021-04-09
 """
 import tkinter
 from tkinter import ttk

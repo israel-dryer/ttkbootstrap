@@ -1,7 +1,7 @@
 Calculator
 ==========
 This basic calculator demonstrates how to use color styles to differentiate button functions. The overall theme is
-**darkly** and the following styles are applied to the widgets:
+**flatly** and the following styles are applied to the widgets:
 
     :Digits: ``primary.TButton``
     :Operators: ``secondary.TButton``
