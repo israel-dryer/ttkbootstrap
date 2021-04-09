@@ -441,10 +441,9 @@ class StylerTK:
         self._set_option('*Menu.selectColor', self.theme.colors.primary)
         self._set_option('*Menu.font', self.theme.font)
         self._set_option('*Menu.background', self.theme.colors.light if self.theme.type == 'light'
-                                              else self.theme.colors.bg)
+        else self.theme.colors.bg)
         self._set_option('*Menu.activeBackground', self.theme.colors.selectbg)
         self._set_option('*Menu.activeForeground', self.theme.colors.selectfg)
-
 
     def _style_labelframe(self):
         """
@@ -1176,7 +1175,7 @@ class StylerTTK:
                 'map': {
                     'foreground': [('active', self.theme.colors.primary)],
                     'indicatorforeground': [
-                        ('active', self.theme.colors.primary if (self.theme.type == 'light') else 'black')]}}})
+                        ('active selected', self.theme.colors.selectfg)]}}})
 
         # variations change the indicator color
         for color in self.theme.colors:
@@ -1185,7 +1184,7 @@ class StylerTTK:
                     'map': {
                         'foreground': [('active', Colors.brightness(self.theme.colors.get(color), -0.2))],
                         'indicatorforeground': [
-                            ('active', Colors.brightness(self.theme.colors.get(color), -0.2))]}}})
+                            ('active selected', Colors.brightness(self.theme.colors.get(color), -0.2))]}}})
 
     def _style_label(self):
         """
@@ -1282,14 +1281,17 @@ class StylerTTK:
                     'foreground': self.theme.colors.fg,
                     'indicatorsize': 10,
                     'indicatormargin': 10,
-                    'indicatorforeground': self.theme.colors.selectfg},
+                    'indicatorforeground': (self.theme.colors.selectfg if self.theme.type == 'light'
+                                            else self.theme.colors.primary)},
                 'map': {
                     'indicatorbackground': [
                         ('active selected', Colors.brightness(self.theme.colors.primary, -0.2)),
                         ('selected', self.theme.colors.fg),
                         ('active !selected', self.theme.colors.light)],
                     'foreground': [
-                        ('active', self.theme.colors.primary)]}}})
+                        ('active', self.theme.colors.primary)],
+                    'indicatorforeground': [
+                        ('active', self.theme.colors.selectfg)]}}})
 
         # variations change indicator color
         for color in self.theme.colors:
