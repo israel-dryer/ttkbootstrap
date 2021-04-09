@@ -67,7 +67,7 @@ class SearchEngine(ttk.Frame):
 
         # search results tree
         self.tree = ttk.Treeview(self, style='info.Treeview')
-        self.tree.pack(fill='both', padx=5)
+        self.tree.pack(fill='both', pady=5)
         self.tree['columns'] = ('modified', 'type', 'size', 'path')
         self.tree.column('#0', width=400)
         self.tree.column('modified', width=150, stretch=False, anchor='e')
@@ -82,7 +82,7 @@ class SearchEngine(ttk.Frame):
         # progress bar
         self.progressbar = ttk.Progressbar(self, orient='horizontal', mode='indeterminate',
                                            style='success.Horizontal.TProgressbar')
-        self.progressbar.pack(fill='x', padx=5, pady=5)
+        self.progressbar.pack(fill='x', pady=5)
 
         # right-click menu for treeview
         self.menu = tkinter.Menu(self, tearoff=False)
