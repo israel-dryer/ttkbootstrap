@@ -349,15 +349,12 @@ class EverythingBagel(ttk.Notebook):
             btn.pack(side='left', fill='x', expand='yes', padx=2)
         color_frame.pack(side='top', fill='x', pady=5)
 
-        # Separator
-        ttk.Separator(self.tab).pack(fill='x', padx=10)
-
         # Widget images
-        widget_frame = ttk.Frame(self.tab, padding=15)
+        widget_frame = ttk.Labelframe(self.tab, text='Styled widgets', padding=15)
         widget_frame.pack(fill='both')
 
         # Label
-        ttk.Label(widget_frame, text='This is a label').pack(side='top', fill='x', pady=5)
+        ttk.Label(widget_frame, text='This is a label').pack(side='top', fill='x')
 
         entry_spin_frame = ttk.Frame(widget_frame)
         entry_spin_frame.pack(fill='x', pady=5)
