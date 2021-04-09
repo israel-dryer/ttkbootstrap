@@ -60,7 +60,7 @@ class Cleaner(ttk.Frame):
 
         # option notebook
         notebook = ttk.Notebook(self)
-        notebook.grid(row=1, column=1, sticky='nsew', pady=(10, 0))
+        notebook.grid(row=1, column=1, sticky='nsew', pady=(25, 0))
 
         ## windows tab
         windows_tab = ttk.Frame(notebook, padding=10)
@@ -109,12 +109,12 @@ class Cleaner(ttk.Frame):
         self.setvar('progress', 78)
 
         ## result cards
-        cards_frame = ttk.Frame(results_frame, name='cards-frame')
+        cards_frame = ttk.Frame(results_frame, name='cards-frame', style='secondary.TFrame')
         cards_frame.pack(fill='both', expand='yes')
 
         ### privacy card
         priv_card = ttk.Frame(cards_frame, padding=1, style='secondary.TButton')
-        priv_card.pack(side='left', fill='both')
+        priv_card.pack(side='left', fill='both', padx=(10, 5), pady=10)
         priv_container = ttk.Frame(priv_card, padding=40)
         priv_container.pack(fill='both', expand='yes')
         priv_lbl = ttk.Label(priv_container, image='privacy', text='PRIVACY', compound='top', anchor='center')
@@ -124,7 +124,7 @@ class Cleaner(ttk.Frame):
 
         ### junk card
         junk_card = ttk.Frame(cards_frame, padding=1, style='secondary.TButton')
-        junk_card.pack(side='left', fill='both')
+        junk_card.pack(side='left', fill='both', padx=(5, 10), pady=10)
         junk_container = ttk.Frame(junk_card, padding=40)
         junk_container.pack(fill='both', expand='yes')
         junk_lbl = ttk.Label(junk_container, image='junk', text='PRIVACY', compound='top', anchor='center')
@@ -133,12 +133,11 @@ class Cleaner(ttk.Frame):
         self.setvar('junk_lbl', '1,150 MB of unneccesary file(s)\nremoved')
 
         ## user notification
-        note_frame = ttk.Frame(results_frame, style='secondary.TFrame', padding=20)
-        note_frame.pack(fill='x')
-        ttk.Label(note_frame, image='protect', anchor='center', style='header.TLabel').pack(fill='x')
+        note_frame = ttk.Frame(results_frame, style='secondary.TFrame', padding=40)
+        note_frame.pack(fill='both')
         note_msg = ttk.Label(note_frame, text='We recommend that you better protect your data', anchor='center',
                              style='header.TLabel', font=('Helvetica', 12, 'italic'))
-        note_msg.pack(fill='x')
+        note_msg.pack(fill='both')
 
 
 if __name__ == '__main__':
