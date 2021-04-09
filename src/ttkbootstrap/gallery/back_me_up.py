@@ -166,7 +166,7 @@ class BackMeUp(ttk.Frame):
         ttk.Label(left_panel, image='logo', style='bg.TLabel').pack(side='bottom')
 
         # ---- right panel
-        right_panel = ttk.Frame(self)
+        right_panel = ttk.Frame(self, padding=(2, 1))
         right_panel.pack(side='right', fill='both', expand='yes')
 
         ## file input
@@ -185,11 +185,11 @@ class BackMeUp(ttk.Frame):
             tv.column(col, stretch=False)
         for col in tv['columns']:
             tv.heading(col, text=col.title(), anchor='w')
-        tv.pack(fill='x', padx=2, pady=1)
+        tv.pack(fill='x', pady=1)
 
         ## scrolling text output
         scroll_cf = CollapsingFrame(right_panel)
-        scroll_cf.pack(fill='both', padx=2, pady=1)
+        scroll_cf.pack(fill='both', pady=1)
         output_container = ttk.Frame(scroll_cf, padding=1)
         self.setvar('scroll-message', 'Log: Backing up... [Uploading file: D:/sample_file_35.txt]')
         st = ScrolledText(output_container)
