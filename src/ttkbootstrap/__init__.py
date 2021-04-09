@@ -25,11 +25,12 @@
     versions when they exist), they are available if needed, and shouldn't look completely out-of-place in your
     ttkbootstrap themed application.
 """
-import json
 import colorsys
-from pathlib import Path
 import importlib.resources
+import json
+from pathlib import Path
 from tkinter import ttk
+
 from PIL import ImageTk, Image, ImageDraw
 
 
@@ -486,8 +487,6 @@ class StylerTK:
         self._set_option('*Text*foreground', self.theme.colors.inputfg)
 
 
-
-
 class StylerTTK:
     """
     A class to create a new ttk theme.
@@ -763,13 +762,13 @@ class StylerTTK:
                             ('Vertical.Scale.track', {'sticky': 'ns'}),
                             (f'{color}.Vertical.Scale.slider', {'side': 'top', 'sticky': ''})]})]},
                 f'{color}.Vertical.Scale.slider': {'element create':
-                                     ('image', self.scale_images[f'{color}_regular'],
-                                      ('pressed', self.scale_images[f'{color}_pressed']),
-                                      ('hover', self.scale_images[f'{color}_hover']))},
-                f'{color}.Horizontal.Scale.slider': {'element create':
                                                        ('image', self.scale_images[f'{color}_regular'],
                                                         ('pressed', self.scale_images[f'{color}_pressed']),
-                                                        ('hover', self.scale_images[f'{color}_hover']))}})
+                                                        ('hover', self.scale_images[f'{color}_hover']))},
+                f'{color}.Horizontal.Scale.slider': {'element create':
+                                                         ('image', self.scale_images[f'{color}_regular'],
+                                                          ('pressed', self.scale_images[f'{color}_pressed']),
+                                                          ('hover', self.scale_images[f'{color}_hover']))}})
 
     def _style_scrollbar(self):
         """
@@ -1119,10 +1118,10 @@ class StylerTTK:
         for color in self.theme.colors:
             self.settings.update({
                 f'{color}.TEntry': {
-                'map': {
-                    'bordercolor': [('focus', self.theme.colors.get(color))],
-                    'lightcolor': [('focus', self.theme.colors.get(color))],
-                    'darkcolor': [('focus', self.theme.colors.get(color))]}}})
+                    'map': {
+                        'bordercolor': [('focus', self.theme.colors.get(color))],
+                        'lightcolor': [('focus', self.theme.colors.get(color))],
+                        'darkcolor': [('focus', self.theme.colors.get(color))]}}})
 
     def _style_radiobutton(self):
         """
@@ -1185,12 +1184,15 @@ class StylerTTK:
         self.settings.update({
             'TLabel': {'configure': {'foreground': self.theme.colors.fg}}})
 
-        # self.style.configure('TLabel', foreground=self.settings.colors.fg)
         for color in self.theme.colors:
             self.settings.update({
                 f'{color}.TLabel': {
                     'configure': {
-                        'foreground': self.theme.colors.get(color)}}})
+                        'foreground': self.theme.colors.get(color)}},
+                f'{color}.inv.TLabel': {
+                    'configure': {
+                        'foreground': self.theme.colors.selectfg,
+                        'background': self.theme.colors.get(color)}}})
 
     def _style_labelframe(self):
         """

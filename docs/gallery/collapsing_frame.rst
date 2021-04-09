@@ -12,10 +12,10 @@ manager. The toggle checks to see if the contents is visible on the screen, and 
 the grid manager, otherwise, it will all be removed. This is all done in the ``_toggle_open_close`` method. Additionally
 the button image alternates from *open* to *closed* to give a visual hint about the child frame state.
 
-A style argument can be passed into the widget constructor to change the widget header color. The accepted style class
-is of ``TButton``. The default is **primary**, but you can use secondary, success, info, etc... and the styles for the
-other components will update based on the color prefix used.
-
+A style argument can be passed into the widget constructor to change the widget header color. The constructor extracts
+the color from the style class and applies it internally to color the header, using a label class for the title, and a
+button class for the button. The ``primary.inv.TLabel`` class inverts the foreground and background colors of the
+standard ``primary.TLabel`` style so that the background shows the primary color, similar to a button.
 
 .. figure:: ../../src/ttkbootstrap/gallery/images/collapsing_frame.png
 
