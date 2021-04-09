@@ -12,7 +12,7 @@ class Application(tkinter.Tk):
     def __init__(self):
         super().__init__()
         self.title('Calculator')
-        self.style = Style('darkly')
+        self.style = Style('flatly')
         self.style.configure('.', font='TkFixedFont 16')
         self.calc = Calculator(self)
         self.calc.pack(fill='both', expand='yes')

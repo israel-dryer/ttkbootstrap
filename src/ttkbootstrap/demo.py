@@ -76,18 +76,18 @@ class Demo(Style):
             mb.menu.add_command(label=t, command=lambda theme_name=t: self.change_theme(theme_name))
 
         # Separator
-        ttk.Separator(tab, orient='horizontal').pack(fill='x', padx=10, pady=(10, 15))
+        ttk.Separator(tab, orient='horizontal').pack(fill='x', pady=(10, 15))
 
         # Paned Window
         pw = ttk.PanedWindow(tab)
         pw.pack(fill='x')
 
         # Available Colors
-        color_frame = ttk.Labelframe(pw, text='Colors available in this theme', padding=15)
+        color_frame = ttk.Labelframe(pw, text='Colors available in this theme', padding=(5, 15))
         for color in colors:
             btn = ttk.Button(color_frame, text=color.title(), style=f'{color.lower()}.TButton')
             btn.pack(side='left', fill='x', expand='yes', padx=2, pady=5)
-        # color_frame.pack(side='top', fill='x')
+
         pw.add(color_frame)
 
         # This outer frame will provide an internal buffer between the widget images and the window pane,
@@ -96,7 +96,7 @@ class Demo(Style):
         pw.add(widget_outer_frame)
 
         # Widget images
-        widget_frame = ttk.Frame(widget_outer_frame, padding=10)
+        widget_frame = ttk.LabelFrame(widget_outer_frame, text='Styled Widgets', padding=10)
         widget_frame.pack(fill='x')
 
         # Label

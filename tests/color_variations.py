@@ -3,9 +3,9 @@ import tkinter
 from tkinter import ttk
 
 root = tkinter.Tk()
-style = Style('asdf')
+style = Style()
 
-f1 = ttk.Frame(root, padding=5)
+f1 = ttk.Labelframe(root, padding=15, text='Buttons', style=f'secondary.TLabelframe')
 f1.pack(fill='x', padx=25, pady=25)
 for color in style.colors:
     ttk.Button(f1, text=color.title(), style=f'{color}.TButton').pack(side='left', fill='x', expand='yes', padx=2)
