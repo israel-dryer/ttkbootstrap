@@ -517,7 +517,7 @@ class CreatorBaseChooser(tk.Tk):
 
         showwarning(title="User Defined Themes", message='Please supply a path to save user-defined themes')
         userpath = asksaveasfilename(parent=self, title='User Defined Themes', defaultextension='json',
-                                     initialfile='ttkbootstrap_themes.json', )
+                                     initialfile='ttkbootstrap_themes.json', confirmoverwrite=False, )
         if not userpath:
             showwarning(title='User Defined Themes', message='Cannot save user-defined themes without a valid path')
             return False
