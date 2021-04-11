@@ -15,8 +15,16 @@ you want to use as an argument. Otherwise, by default, the *flatly* style will b
     # flatly style is applied by default
     style = Style()
 
-    # if you want to set a specific theme at runtime, pass it's name as a keyword argument
+    # if you want to set a specific theme at runtime, pass its name as a keyword argument
     style = Style(theme='superhero')
+
+If you want to load a theme from a specific file (for example, to release an application with a custom theme), you can
+use the ``user_themes`` argument:
+
+.. code-block:: python
+
+    # use a user-defined theme from a specific file
+    style = Style(theme='custon_name', themes_file='C:/example/my_themes.json')
 
 If for some reason you need to change the theme *after* the window has already been created, you will need to use the
 ``Style.theme_use`` method, which is actually what the ``ttkbootstrap.Style`` class does internally when instantiated.
@@ -154,4 +162,3 @@ default appearance for every widget that is not already configured by another st
 .. code-block:: python
 
     style.configure('.', font=('Helvetica', 10))
-

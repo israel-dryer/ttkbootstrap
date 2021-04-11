@@ -54,6 +54,9 @@ python documentation_.
     # instantiate the style with another theme
     style = Style(theme='superhero')
 
+    # instantiate the style with a theme from a specific themes file
+    style = Style(theme='custon_name', themes_file='C:/example/my_themes.json')
+
     # available themes
     for theme in style.theme_names():
         print(theme)
@@ -94,4 +97,3 @@ Contains the basic theme definition for name, colors, and font.
 .. autoclass:: ttkbootstrap.ThemeDefinition
     :show-inheritance:
     :members:
-
