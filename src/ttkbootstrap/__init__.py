@@ -39,13 +39,14 @@ class Style(ttk.Style):
     A class for setting the application style.
     """
 
-    def __init__(self, theme='flatly', *args, **kwargs):
+    def __init__(self, theme='flatly', themes_file=None, *args, **kwargs):
         """
         :param str theme: the name of the theme to use at runtime; *flatly* by default.
+        :param str themes_file: Path to a user-defined themes file. Defaults to the themes file set in ttkcreator.
         """
         super().__init__(*args, **kwargs)
         self.themes = {}
-        self._load_themes()
+        self._load_themes(themes_file)
         self.theme_use(themename=theme)
 
     @property
@@ -56,7 +57,7 @@ class Style(ttk.Style):
         else:
             return Colors()
 
-    def _load_themes(self):
+    def _load_themes(self, themes_file=None):
         """
         Load all ttkbootstrap defined themes
         """
@@ -64,8 +65,10 @@ class Style(ttk.Style):
         json_data = importlib.resources.read_text('ttkbootstrap', 'themes.json')
         builtin_themes = json.loads(json_data)
 
-        # user defined themes
-        user_path = Path(builtin_themes['userpath'])
+        # application-defined or user-defined themes
+        if themes_file is None:
+            themes_file = builtin_themes['userpath']
+        user_path = Path(themes_file)
         if user_path.exists():
             with user_path.open(encoding='utf-8') as f:
                 user_themes = json.load(f)

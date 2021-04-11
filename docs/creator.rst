@@ -31,10 +31,6 @@ updated, re-installed, etc...
 
 .. image:: images/ttkcreator-filedialog.png
 
-.. note:: If you are pointed to an existing file, the dialogue will ask you if you want to overwrite the file. **Click
-          YES**. The file will not actually get overwritten if it already exists. I couldn't find a setting in the
-          widget to overide this... post it on GitHub if you know a solution.
-
 
 Create and save your theme
 --------------------------
@@ -57,5 +53,4 @@ Then, select your new theme from the option menu.
     python -m ttkbootstrap
 
 .. warning:: If you are using Linux or MacOS and the program crashes without starting, you may not have a font with
-    emojii support. To fix this ``sudo apt-get install fonts-symbola``
-
+    emoji support. To fix this ``sudo apt-get install fonts-symbola``
