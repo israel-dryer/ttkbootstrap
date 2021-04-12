@@ -6,6 +6,7 @@ import tkinter
 from tkinter import ttk
 from tkinter.filedialog import askopenfilename
 from tkinter.scrolledtext import ScrolledText
+
 from ttkbootstrap import Style
 
 

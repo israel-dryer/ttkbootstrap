@@ -24,7 +24,7 @@ use the ``user_themes`` argument:
 .. code-block:: python
 
     # use a user-defined theme from a specific file
-    style = Style(theme='custon_name', themes_file='C:/example/my_themes.json')
+    style = Style(theme='custom_name', themes_file='C:/example/my_themes.json')
 
 If for some reason you need to change the theme *after* the window has already been created, you will need to use the
 ``Style.theme_use`` method, which is actually what the ``ttkbootstrap.Style`` class does internally when instantiated.
