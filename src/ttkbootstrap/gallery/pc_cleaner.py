@@ -5,6 +5,7 @@
 """
 import tkinter
 from tkinter import ttk
+
 from ttkbootstrap import Style
 
 
@@ -22,6 +23,7 @@ class Application(tkinter.Tk):
 
         # do not allow window resizing
         self.resizable(False, False)
+
 
 class Cleaner(ttk.Frame):
 

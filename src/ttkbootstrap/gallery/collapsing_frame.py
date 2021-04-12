@@ -4,6 +4,7 @@
 """
 import tkinter
 from tkinter import ttk
+
 from ttkbootstrap import Style
 
 
@@ -20,21 +21,20 @@ class Application(tkinter.Tk):
         # option group 1
         group1 = ttk.Frame(cf, padding=10)
         for x in range(5):
-            ttk.Checkbutton(group1, text=f'Option {x+1}').pack(fill='x')
+            ttk.Checkbutton(group1, text=f'Option {x + 1}').pack(fill='x')
         cf.add(group1, title='Option Group 1', style='primary.TButton')
 
         # option group 2
         group2 = ttk.Frame(cf, padding=10)
         for x in range(5):
-            ttk.Checkbutton(group2, text=f'Option {x+1}').pack(fill='x')
+            ttk.Checkbutton(group2, text=f'Option {x + 1}').pack(fill='x')
         cf.add(group2, title='Option Group 2', style='danger.TButton')
 
         # option group 3
         group3 = ttk.Frame(cf, padding=10)
         for x in range(5):
-            ttk.Checkbutton(group3, text=f'Option {x+1}').pack(fill='x')
+            ttk.Checkbutton(group3, text=f'Option {x + 1}').pack(fill='x')
         cf.add(group3, title='Option Group 3', style='success.TButton')
-
 
 
 class CollapsingFrame(ttk.Frame):
