@@ -19,8 +19,8 @@ class Application(tkinter.Tk):
         super().__init__()
         self.title('Back Me Up')
         self.style = Style()
-        self.style.configure('bg.TFrame', background=self.style.colors.light)
-        self.style.configure('bg.TLabel', background=self.style.colors.light)
+        self.style.configure('bg.TFrame', background=self.style.colors.inputfg)
+        self.style.configure('bg.TLabel', background=self.style.colors.inputfg)
         self.bmu = BackMeUp(self, padding=2, style='bg.TFrame')
         self.bmu.pack(fill='both', expand='yes')
 
