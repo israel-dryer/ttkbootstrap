@@ -152,9 +152,9 @@ class Colors:
     :param str fg: primary font color; used for labels and non-input related widgets
     :param str selectfg: foreground color of selected text
     :param str selectbg: background color of selected text background
-    :param str light: a color used for input widget background and trough color
     :param str border: a color used on the border of several input widgets (combobox, entry, spinbox, etc...)
     :param str inputfg: a color used for input widgets; typically a reverse lightness of `fg`
+    :param str inputbg: a color used for input widget background and trough color
     """
 
     def __init__(self, **kwargs):
