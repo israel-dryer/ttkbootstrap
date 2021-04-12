@@ -20,7 +20,7 @@ of using a button style, I applied the ``primary.TLabel`` style to these buttons
 label a white background and primary color foreground, and there are no hover effects. I could have also created a
 custom button style by subclassing the existing ``TButton``.
 
-There are two custom styles which are subclassed from ``TFrame`` and ``TLabel``. I used the **light** color from the
+There are two custom styles which are subclassed from ``TFrame`` and ``TLabel``. I used the **inputbg** color from the
 ``Style.colors`` property and applied this style to the left panel, and the logo image background.
 
 .. figure:: ../../src/ttkbootstrap/gallery/images/back_me_up.png

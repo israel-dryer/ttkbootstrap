@@ -4,6 +4,7 @@
 """
 import tkinter
 from tkinter import ttk
+
 from ttkbootstrap import Style
 
 
@@ -12,7 +13,7 @@ class Application(tkinter.Tk):
     def __init__(self):
         super().__init__()
         self.title('Simple data entry form')
-        self.style = Style()
+        self.style = Style('darkly')
         self.form = EntryForm(self)
         self.form.pack(fill='both', expand='yes')
 

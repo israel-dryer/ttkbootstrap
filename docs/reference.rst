@@ -55,7 +55,7 @@ python documentation_.
     style = Style(theme='superhero')
 
     # instantiate the style with a theme from a specific themes file
-    style = Style(theme='custon_name', themes_file='C:/example/my_themes.json')
+    style = Style(theme='custom_name', themes_file='C:/example/my_themes.json')
 
     # available themes
     for theme in style.theme_names():
