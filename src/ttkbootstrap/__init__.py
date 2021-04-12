@@ -168,12 +168,9 @@ class Colors:
         self.fg = kwargs.get('fg', '#000000')
         self.selectbg = kwargs.get('selectbg', '#000000')
         self.selectfg = kwargs.get('selectfg', '#ffffff')
-        self.light = kwargs.get('light', '#ffffff')
         self.border = kwargs.get('border', '#000000')
         self.inputfg = kwargs.get('inputfg', '#000000')
         self.inputbg = kwargs.get('inputbg', '#000000')
-        self.disabledbg = kwargs.get('disabledbg', '#ffffff')
-        self.disabledfg = kwargs.get('disabledfg', '#000000')
 
     def get(self, color_label):
         """
@@ -214,7 +211,7 @@ class Colors:
          :rtype: iter[str]
         """
         return iter(['primary', 'secondary', 'success', 'info', 'warning', 'danger', 'bg', 'fg', 'selectbg', 'selectfg',
-                     'light', 'border', 'inputfg', 'inputbg', 'disabledfg', 'disabledbg'])
+                     'border', 'inputfg', 'inputbg'])
 
     @staticmethod
     def hex_to_rgb(color):
@@ -399,8 +396,8 @@ class StylerTK:
         """
         self._set_option('*Entry.relief', 'flat')
         self._set_option('*Entry.background',
-                         (self.theme.colors.light if self.theme.type == 'light' else
-                          Colors.update_hsv(self.theme.colors.light, vd=-0.1)))
+                         (self.theme.colors.inputbg if self.theme.type == 'light' else
+                          Colors.update_hsv(self.theme.colors.inputbg, vd=-0.1)))
         self._set_option('*Entry.foreground', self.theme.colors.fg)
         self._set_option('*Entry.highlightThickness', 1)
         self._set_option('*Entry.highlightBackground', self.theme.colors.border)
@@ -417,8 +414,8 @@ class StylerTK:
         self._set_option('*Scale.highlightColor', self.theme.colors.primary)
         self._set_option('*Scale.highlightBackground', self.theme.colors.border)
         self._set_option('*Scale.troughColor',
-                         (self.theme.colors.light if self.theme.type == 'light' else
-                          Colors.update_hsv(self.theme.colors.light, vd=-0.1)))
+                         (self.theme.colors.inputbg if self.theme.type == 'light' else
+                          Colors.update_hsv(self.theme.colors.inputbg, vd=-0.1)))
 
     def _style_spinbox(self):
         """
@@ -426,8 +423,8 @@ class StylerTK:
         """
         self._set_option('*Spinbox.foreground', self.theme.colors.fg)
         self._set_option('*Spinbox.background',
-                         (self.theme.colors.light if self.theme.type == 'light' else
-                          Colors.update_hsv(self.theme.colors.light, vd=-0.1)))
+                         (self.theme.colors.inputbg if self.theme.type == 'light' else
+                          Colors.update_hsv(self.theme.colors.inputbg, vd=-0.1)))
         self._set_option('*Spinbox.highlightThickness', 1)
         self._set_option('*Spinbox.highlightColor', self.theme.colors.primary)
         self._set_option('*Spinbox.highlightBackground', self.theme.colors.border)
@@ -437,7 +434,7 @@ class StylerTK:
         Apply style to ``tkinter.Listbox``
         """
         self._set_option('*Listbox.foreground', self.theme.colors.fg)
-        self._set_option('*Listbox.background', (self.theme.colors.light if
+        self._set_option('*Listbox.background', (self.theme.colors.inputbg if
                                                  self.theme.type == 'light' else self.theme.colors.bg))
         self._set_option('*Listbox.selectBackground', self.theme.colors.selectbg)
         self._set_option('*Listbox.selectForeground', self.theme.colors.selectfg)
@@ -462,7 +459,7 @@ class StylerTK:
         self._set_option('*Menu.foreground', self.theme.colors.fg)
         self._set_option('*Menu.selectColor', self.theme.colors.primary)
         self._set_option('*Menu.font', self.theme.font)
-        self._set_option('*Menu.background', self.theme.colors.light if self.theme.type == 'light'
+        self._set_option('*Menu.background', self.theme.colors.inputbg if self.theme.type == 'light'
         else self.theme.colors.bg)
         self._set_option('*Menu.activeBackground', self.theme.colors.selectbg)
         self._set_option('*Menu.activeForeground', self.theme.colors.selectfg)
@@ -608,6 +605,10 @@ class StylerTTK:
             shines through the corners using the `clam` theme. This is an unfortuate hack to make it look ok. Hopefully
             there will be a more permanent/better solution in the future.
         """
+        disabled_fg = self.theme.colors.inputfg
+        disabled_bg = (Colors.update_hsv(self.theme.colors.inputbg, vd=-0.2) if self.theme.type =='light' else
+                       Colors.update_hsv(self.theme.colors.inputbg, vd=-0.3))
+
         if self.theme.type == 'dark':
             self.settings.update({
                 'combo.Spinbox.field': {'element create': ('from', 'default')}})
@@ -623,8 +624,8 @@ class StylerTTK:
                         ('Combobox.textarea', {'sticky': 'nswe'})]})]})],
                 'configure': {
                     'bordercolor': self.theme.colors.border,
-                    'darkcolor': self.theme.colors.light,
-                    'lightcolor': self.theme.colors.light,
+                    'darkcolor': self.theme.colors.inputbg,
+                    'lightcolor': self.theme.colors.inputbg,
                     'arrowcolor': self.theme.colors.inputfg,
                     'foreground': self.theme.colors.inputfg,
                     'fieldbackground ': self.theme.colors.inputbg,
@@ -635,23 +636,26 @@ class StylerTTK:
                     'arrowsize ': 14},
                 'map': {
                     'background': [
-                        ('disabled', self.theme.colors.disabledbg)],
+                        ('disabled', disabled_bg)],
                     'foreground': [
-                        ('disabled', self.theme.colors.disabledfg)],
+                        ('disabled', disabled_fg)],
                     'fieldbackground': [
-                        ('disabled', self.theme.colors.disabledbg)],
+                        ('disabled', disabled_bg)],
                     'bordercolor': [
+                        ('disabled', disabled_bg),
                         ('focus !disabled', self.theme.colors.primary),
                         ('hover !disabled', self.theme.colors.bg)],
                     'lightcolor': [
+                        ('disabled', disabled_bg),
                         ('focus !disabled', self.theme.colors.primary),
                         ('hover !disabled', self.theme.colors.primary)],
                     'darkcolor': [
+                        ('disabled', disabled_bg),
                         ('focus !disabled', self.theme.colors.primary),
                         ('hover !disabled', self.theme.colors.primary)],
                     'arrowcolor': [
-                        ('disabled', self.theme.colors.disabledfg),
-                        ('pressed !disabled', self.theme.colors.light),
+                        ('disabled', disabled_fg),
+                        ('pressed !disabled', self.theme.colors.inputbg),
                         ('focus !disabled', self.theme.colors.inputfg),
                         ('hover !disabled', self.theme.colors.primary)]}}})
 
@@ -660,17 +664,20 @@ class StylerTTK:
                 f'{color}.TCombobox': {
                     'map': {
                         'bordercolor': [
+                            ('disabled', disabled_bg),
                             ('focus !disabled', self.theme.colors.get(color)),
                             ('hover !disabled', self.theme.colors.get(color))],
                         'lightcolor': [
+                            ('disabled', disabled_bg),
                             ('focus !disabled', self.theme.colors.get(color)),
                             ('pressed !disabled', self.theme.colors.get(color))],
                         'darkcolor': [
+                            ('disabled', disabled_bg),
                             ('focus !disabled', self.theme.colors.get(color)),
                             ('pressed !disabled', self.theme.colors.get(color))],
                         'arrowcolor': [
-                            ('disabled', self.theme.colors.disabledfg),
-                            ('pressed !disabled', self.theme.colors.light),
+                            ('disabled', disabled_fg),
+                            ('pressed !disabled', self.theme.colors.inputbg),
                             ('focus !disabled', self.theme.colors.inputfg),
                             ('hover !disabled', self.theme.colors.primary)]}}})
 
@@ -718,10 +725,10 @@ class StylerTTK:
             'TProgressbar': {'configure': {
                 'thickness': 20,
                 'borderwidth': 1,
-                'bordercolor': self.theme.colors.border if self.theme.type == 'light' else self.theme.colors.light,
+                'bordercolor': self.theme.colors.border if self.theme.type == 'light' else self.theme.colors.inputbg,
                 'lightcolor': self.theme.colors.border,
                 'pbarrelief': 'flat',
-                'troughcolor': self.theme.colors.light,
+                'troughcolor': self.theme.colors.inputbg,
                 'background': self.theme.colors.primary}}})
 
         for color in self.theme.colors:
@@ -758,15 +765,18 @@ class StylerTTK:
             - Scale.trough: borderwidth, troughcolor, troughrelief
             - Scale.slider: sliderlength, sliderthickness, sliderrelief, borderwidth, background, bordercolor, orient
         """
-        trough_color = (self.theme.colors.light if self.theme.type == 'dark'
-                        else Colors.update_hsv(self.theme.colors.light, vd=-0.03))
+        disabled_fg = (Colors.update_hsv(self.theme.colors.inputbg, vd=-0.2) if self.theme.type =='light' else
+                       Colors.update_hsv(self.theme.colors.inputbg, vd=-0.3))
+
+        trough_color = (self.theme.colors.inputbg if self.theme.type == 'dark' else
+                        Colors.update_hsv(self.theme.colors.inputbg, vd=-0.03))
 
         pressed_vd = -0.2
         hover_vd = -0.1
 
         # create widget images
         self.scale_images = {
-            'primary_disabled': self._create_slider_image(self.theme.colors.disabledfg),
+            'primary_disabled': self._create_slider_image(disabled_fg),
             'primary_regular': self._create_slider_image(self.theme.colors.primary),
             'primary_pressed': self._create_slider_image(
                 Colors.update_hsv(self.theme.colors.primary, vd=pressed_vd)),
@@ -854,8 +864,8 @@ class StylerTTK:
                 'troughrelief': 'flat',
                 'relief': 'flat',
                 'troughborderwidth': 2,
-                'troughcolor': self.theme.colors.light,
-                'background': Colors.update_hsv(self.theme.colors.light, vd=-0.1),
+                'troughcolor': self.theme.colors.inputbg,
+                'background': Colors.update_hsv(self.theme.colors.inputbg, vd=-0.1),
                 'arrowsize': 16,
                 'arrowcolor': self.theme.colors.inputfg}}})
 
@@ -875,6 +885,10 @@ class StylerTTK:
             - spinbox.padding: padding, relief, shiftrelief
             - spinbox.textarea: font, width
         """
+        disabled_fg = self.theme.colors.inputfg
+        disabled_bg = (Colors.update_hsv(self.theme.colors.inputbg, vd=-0.2) if self.theme.type =='light' else
+                       Colors.update_hsv(self.theme.colors.inputbg, vd=-0.3))
+
         if self.theme.type == 'dark':
             self.settings.update({'custom.Spinbox.field': {'element create': ('from', 'default')}})
 
@@ -891,8 +905,8 @@ class StylerTTK:
                             ('Spinbox.textarea', {'sticky': 'nswe'})]})]})],
                 'configure': {
                     'bordercolor': self.theme.colors.border,
-                    'darkcolor': self.theme.colors.light,
-                    'lightcolor': self.theme.colors.light,
+                    'darkcolor': self.theme.colors.inputbg,
+                    'lightcolor': self.theme.colors.inputbg,
                     'fieldbackground': self.theme.colors.inputbg,
                     'foreground': self.theme.colors.inputfg,
                     'borderwidth': 0,
@@ -904,22 +918,25 @@ class StylerTTK:
                 },
                 'map': {
                     'fieldbackground': [
-                        ('disabled', self.theme.colors.disabledbg)],
+                        ('disabled', disabled_bg)],
                     'background': [
-                        ('disabled', self.theme.colors.disabledbg)],
+                        ('disabled', disabled_bg)],
                     'foreground': [
-                        ('disabled', self.theme.colors.disabledfg)],
+                        ('disabled', disabled_fg)],
                     'bordercolor': [
+                        ('disabled', disabled_bg),
                         ('focus !disabled', self.theme.colors.primary),
                         ('hover !disabled', self.theme.colors.bg)],
                     'lightcolor': [
+                        ('disabled', disabled_bg),
                         ('focus !disabled', self.theme.colors.primary),
                         ('hover !disabled', self.theme.colors.primary)],
                     'darkcolor': [
+                        ('disabled', disabled_bg),
                         ('focus !disabled', self.theme.colors.primary),
                         ('hover !disabled', self.theme.colors.primary)],
                     'arrowcolor': [
-                        ('disabled !disabled', self.theme.colors.disabledfg),
+                        ('disabled !disabled', disabled_fg),
                         ('pressed !disabled', self.theme.colors.primary),
                         ('focus !disabled', self.theme.colors.inputfg),
                         ('hover !disabled', self.theme.colors.inputfg)]}}})
@@ -929,15 +946,18 @@ class StylerTTK:
                 f'{color}.TSpinbox': {
                     'map': {
                         'bordercolor': [
+                            ('disabled', disabled_bg),
                             ('focus !disabled', self.theme.colors.get(color)),
                             ('hover !disabled', self.theme.colors.get(color))],
                         'arrowcolor': [
-                            ('disabled !disabled', self.theme.colors.disabledfg),
+                            ('disabled !disabled', disabled_fg),
                             ('pressed !disabled', self.theme.colors.get(color)),
                             ('hover !disabled', self.theme.colors.inputfg)],
                         'lightcolor': [
+                            ('disabled', disabled_bg),
                             ('focus !disabled', self.theme.colors.get(color))],
                         'darkcolor': [
+                            ('disabled', disabled_bg),
                             ('focus !disabled', self.theme.colors.get(color))]}}})
 
     def _style_treeview(self):
@@ -966,6 +986,10 @@ class StylerTTK:
                 - Treeheading.image: image, stipple, background
                 - Treeheading.text: text, font, foreground, underline, width, anchor, justify, wraplength, embossed
         """
+        disabled_fg = self.theme.colors.inputfg
+        disabled_bg = (Colors.update_hsv(self.theme.colors.inputbg, vd=-0.2) if self.theme.type =='light' else
+                       Colors.update_hsv(self.theme.colors.inputbg, vd=-0.3))
+
         self.settings.update({
             'Treeview': {
                 'layout': [
@@ -983,10 +1007,10 @@ class StylerTTK:
                 },
                 'map': {
                     'background': [
-                        ('disabled', self.theme.colors.disabledbg),
+                        ('disabled', disabled_bg),
                         ('selected', self.theme.colors.selectbg)],
                     'foreground': [
-                        ('disabled', self.theme.colors.disabledfg),
+                        ('disabled', disabled_fg),
                         ('selected', self.theme.colors.selectfg)]}},
             'Treeview.Heading': {
                 'configure': {
@@ -1032,8 +1056,9 @@ class StylerTTK:
                 embossed, image, stipple, background
         """
         # disabled settings
-        disabled_fg = self.theme.colors.disabledbg if self.theme.type == 'dark' else self.theme.colors.disabledfg
-        disabled_bg = self.theme.colors.disabledfg if self.theme.type == 'dark' else self.theme.colors.disabledbg
+        disabled_fg = self.theme.colors.inputfg
+        disabled_bg = (Colors.update_hsv(self.theme.colors.inputbg, vd=-0.2) if self.theme.type =='light' else
+                       Colors.update_hsv(self.theme.colors.inputbg, vd=-0.3))
 
         # pressed and hover settings
         pressed_vd = -0.2
@@ -1119,8 +1144,10 @@ class StylerTTK:
                 embossed, image, stipple, background
         """
         # disabled settings
-        disabled_fg = self.theme.colors.disabledbg if self.theme.type == 'dark' else self.theme.colors.disabledfg
-        disabled_bg = self.theme.colors.disabledfg if self.theme.type == 'dark' else self.theme.colors.disabledbg
+        disabled_fg = self.theme.colors.inputfg
+        disabled_bg = (Colors.update_hsv(self.theme.colors.inputbg, vd=-0.2) if self.theme.type =='light' else
+                       Colors.update_hsv(self.theme.colors.inputbg, vd=-0.3))
+
 
         # pressed and hover settings
         pressed_vd = -0.10
@@ -1205,6 +1232,10 @@ class StylerTTK:
             - Entry.padding: padding, relief, shiftrelief
             - Entry.textarea: font, width
         """
+        disabled_fg = self.theme.colors.inputfg
+        disabled_bg = (Colors.update_hsv(self.theme.colors.inputbg, vd=-0.2) if self.theme.type =='light' else
+                       Colors.update_hsv(self.theme.colors.inputbg, vd=-0.3))
+
         if self.theme.type == 'dark':
             self.settings.update({'Entry.field': {'element create': ('from', 'default')}})
 
@@ -1212,30 +1243,39 @@ class StylerTTK:
             'TEntry': {
                 'configure': {
                     'bordercolor': self.theme.colors.border,
-                    'darkcolor': self.theme.colors.light,
-                    'lightcolor': self.theme.colors.light,
+                    'darkcolor': self.theme.colors.inputbg,
+                    'lightcolor': self.theme.colors.inputbg,
                     'fieldbackground': self.theme.colors.inputbg,
                     'foreground': self.theme.colors.inputfg,
                     'borderwidth': 0,  # only applies to border on darktheme
                     'padding': 5},
                 'map': {
-                    'fieldbackground': [('disabled', self.theme.colors.disabledbg)],
-                    'foreground': [('disabled', self.theme.colors.disabledfg)],
+                    'fieldbackground': [('disabled', disabled_bg)],
+                    'foreground': [('disabled', disabled_fg)],
                     'bordercolor': [
+                        ('disabled', disabled_bg),
                         ('focus !disabled', self.theme.colors.primary),
                         ('hover !disabled', self.theme.colors.primary)],
                     'lightcolor': [
+                        ('disabled', disabled_bg),
                         ('focus !disabled', self.theme.colors.primary)],
                     'darkcolor': [
+                        ('disabled', disabled_bg),
                         ('focus !disabled', self.theme.colors.primary)]}}})
 
         for color in self.theme.colors:
             self.settings.update({
                 f'{color}.TEntry': {
                     'map': {
-                        'bordercolor': [('focus', self.theme.colors.get(color))],
-                        'lightcolor': [('focus', self.theme.colors.get(color))],
-                        'darkcolor': [('focus', self.theme.colors.get(color))]}}})
+                        'bordercolor': [
+                            ('disabled', disabled_bg),
+                            ('focus !disabled', self.theme.colors.get(color))],
+                        'lightcolor': [
+                            ('disabled', disabled_bg),
+                            ('focus !disabled', self.theme.colors.get(color))],
+                        'darkcolor': [
+                            ('disabled', disabled_bg),
+                            ('focus !disabled', self.theme.colors.get(color))]}}})
 
     def _style_radiobutton(self):
         """
@@ -1254,6 +1294,9 @@ class StylerTTK:
             On Windows, the button defaults to the 'xpnative' theme look. This means that you cannot change the look
             and feel with styles. On Linux and MacOS, defaults to stylized 'clam' theme, so the style can be changed.
         """
+        disabled_fg = (Colors.update_hsv(self.theme.colors.inputbg, vd=-0.2) if self.theme.type =='light' else
+                       Colors.update_hsv(self.theme.colors.inputbg, vd=-0.3))
+
         if 'xpnative' in self.style.theme_names():
             self.settings.update({
                 'Radiobutton.indicator': {
@@ -1265,16 +1308,16 @@ class StylerTTK:
                     'indicatormargin': 8,
                     'indicatorsize': 12,
                     'upperbordercolor': (
-                        self.theme.colors.fg if self.theme.type == 'light' else self.theme.colors.light),
+                        self.theme.colors.fg if self.theme.type == 'light' else self.theme.colors.inputbg),
                     'lowerbordercolor': (
-                        self.theme.colors.fg if self.theme.type == 'light' else self.theme.colors.light),
+                        self.theme.colors.fg if self.theme.type == 'light' else self.theme.colors.inputbg),
                     'indicatorforeground': self.theme.colors.selectbg},
                 'map': {
                     'foreground': [
-                        ('disabled', self.theme.colors.disabledfg),
+                        ('disabled', disabled_fg),
                         ('active', self.theme.colors.primary)],
                     'indicatorforeground': [
-                        ('disabled', self.theme.colors.disabledfg),
+                        ('disabled', disabled_fg),
                         ('active selected !disabled', self.theme.colors.primary)]}}})
 
         # variations change the indicator color
@@ -1284,10 +1327,10 @@ class StylerTTK:
                     'configure': {'indicatorforeground': self.theme.colors.get(color)},
                     'map': {
                         'foreground': [
-                            ('disabled', self.theme.colors.disabledfg),
+                            ('disabled', disabled_fg),
                             ('active', Colors.update_hsv(self.theme.colors.get(color), vd=-0.2))],
                         'indicatorforeground': [
-                            ('disabled', self.theme.colors.disabledfg),
+                            ('disabled', disabled_fg),
                             ('active selected !disabled', Colors.update_hsv(self.theme.colors.get(color), vd=-0.2))]}}})
 
     def _style_label(self):
@@ -1374,6 +1417,9 @@ class StylerTTK:
             On Windows, the button defaults to the 'xpnative' theme look. This means that you cannot change the look
             and feel with styles. On Linux and MacOS, defaults to stylized 'clam' theme, so the style can be changed.
         """
+        disabled_fg = (Colors.update_hsv(self.theme.colors.inputbg, vd=-0.2) if self.theme.type =='light' else
+                       Colors.update_hsv(self.theme.colors.inputbg, vd=-0.3))
+
         if 'xpnative' in self.style.theme_names():
             self.settings.update({
                 'Checkbutton.indicator': {
@@ -1388,10 +1434,10 @@ class StylerTTK:
                     'indicatorforeground': self.theme.colors.selectbg},
                 'map': {
                     'foreground': [
-                        ('disabled', self.theme.colors.disabledfg),
+                        ('disabled', disabled_fg),
                         ('active !disabled', self.theme.colors.primary)],
                     'indicatorforeground': [
-                        ('disabled', self.theme.colors.disabledfg),
+                        ('disabled', disabled_fg),
                         ('active selected !disabled', self.theme.colors.primary)]}}})
 
         # variations change indicator color
@@ -1401,10 +1447,10 @@ class StylerTTK:
                     'configure': {'indicatorforeground': self.theme.colors.get(color)},
                     'map': {
                         'indicatorforeground': [
-                            ('disabled', self.theme.colors.disabledfg),
+                            ('disabled', disabled_fg),
                             ('active selected !disabled', Colors.update_hsv(self.theme.colors.get(color), vd=-0.2))],
                         'foreground': [
-                            ('disabled', self.theme.colors.disabledfg),
+                            ('disabled', disabled_fg),
                             ('active !disabled', Colors.update_hsv(self.theme.colors.get(color), vd=-0.2))]}}})
 
     def _style_solid_menubutton(self):
@@ -1421,8 +1467,9 @@ class StylerTTK:
             - Menubutton.label:
         """
         # disabled settings
-        disabled_fg = self.theme.colors.disabledbg if self.theme.type == 'dark' else self.theme.colors.disabledfg
-        disabled_bg = self.theme.colors.disabledfg if self.theme.type == 'dark' else self.theme.colors.disabledbg
+        disabled_fg = self.theme.colors.inputfg
+        disabled_bg = (Colors.update_hsv(self.theme.colors.inputbg, vd=-0.2) if self.theme.type =='light' else
+                       Colors.update_hsv(self.theme.colors.inputbg, vd=-0.3))
 
         # pressed and hover settings
         pressed_vd = -0.2
@@ -1517,8 +1564,9 @@ class StylerTTK:
             - Menubutton.label:
         """
         # disabled settings
-        disabled_fg = self.theme.colors.disabledbg if self.theme.type == 'dark' else self.theme.colors.disabledfg
-        disabled_bg = self.theme.colors.disabledfg if self.theme.type == 'dark' else self.theme.colors.disabledbg
+        disabled_fg = self.theme.colors.inputfg
+        disabled_bg = (Colors.update_hsv(self.theme.colors.inputbg, vd=-0.2) if self.theme.type =='light' else
+                       Colors.update_hsv(self.theme.colors.inputbg, vd=-0.3))
 
         # pressed and hover settings
         pressed_vd = -0.2
@@ -1620,8 +1668,8 @@ class StylerTTK:
                 embossed, image, stipple, background
         """
         border_color = self.theme.colors.border if self.theme.type == 'light' else self.theme.colors.selectbg
-        fg_color = self.theme.colors.inputfg if self.theme.type == 'light' else self.theme.colors.light
-        bg_color = self.theme.colors.light if self.theme.type == 'light' else border_color
+        fg_color = self.theme.colors.inputfg if self.theme.type == 'light' else self.theme.colors.inputbg
+        bg_color = self.theme.colors.inputbg if self.theme.type == 'light' else border_color
 
         self.settings.update({
             'TNotebook': {
@@ -1668,11 +1716,11 @@ class StylerTTK:
         self.settings.update({
             'TPanedwindow': {
                 'configure': {
-                    'background': Colors.update_hsv(self.theme.colors.light, vd=-0.1)}},
+                    'background': Colors.update_hsv(self.theme.colors.inputbg, vd=-0.1)}},
             'Sash': {
                 'configure': {
                     'bordercolor': self.theme.colors.inputfg,
-                    'lightcolor': self.theme.colors.light,
+                    'lightcolor': self.theme.colors.inputbg,
                     'sashthickness': 9,
                     'sashpad': 0,
                     'gripcount': 25}}})

@@ -16,12 +16,9 @@
 				"fg": "#373a3c",
 				"selectbg": "#373a3c",
 				"selectfg": "#ffffff",
-				"light": "#fdfdfe",
 				"border": "#ced4da",
-				"inputfg": "#9198a0",
-				"inputbg": "#ffffff",
-				"disabledfg": "#8a929a",
-				"disabledbg": "#e9ecef"
+				"inputfg": "#373a3c",
+				"inputbg": "#fdfdfe"
 			}
 		},
 		{
@@ -39,12 +36,9 @@
 				"fg": "#212529",
 				"selectbg": "#95a5a6",
 				"selectfg": "#ffffff",
-				"light": "#ecf0f1",
 				"border": "#ced4da",
-				"inputfg": "#95a5a6",
-				"inputbg": "#ffffff",
-				"disabledfg": "#8a929a",
-				"disabledbg": "#e9ecef"
+				"inputfg": "#212529",
+				"inputbg": "#ecf0f1"
 			}
 		},
 		{
@@ -62,12 +56,9 @@
 				"fg": "#343a40",
 				"selectbg": "#adb5bd",
 				"selectfg": "#ffffff",
-				"light": "#f8f9fa",
 				"border": "#e5e5e5",
-				"inputfg": "#9fa5ab",
-				"inputbg": "#ffffff",
-				"disabledfg": "#8a929a",
-				"disabledbg": "#e9ecef"
+				"inputfg": "#343a40",
+				"inputbg": "#f8f9fa"
 			}
 		},
 		{
@@ -85,12 +76,9 @@
 				"fg": "#5a5a5a",
 				"selectbg": "#f3969a",
 				"selectfg": "#ffffff",
-				"light": "#f8f9fa",
 				"border": "#ced4da",
-				"inputfg": "#939393",
-				"inputbg": "#ffffff",
-				"disabledfg": "#8d8d8d",
-				"disabledbg": "#f7f7f9"
+				"inputfg": "#696969",
+				"inputbg": "#f8f9fa"
 			}
 		},
 		{
@@ -108,12 +96,9 @@
 				"fg": "#555555",
 				"selectbg": "#555555",
 				"selectfg": "#ffffff",
-				"light": "#f6f6f6",
 				"border": "#ced4da",
-				"inputfg": "#a9a9a9",
-				"inputbg": "#ffffff",
-				"disabledfg": "#a2a2a2",
-				"disabledbg": "#f0f0f0"
+				"inputfg": "#555555",
+				"inputbg": "#f6f6f6"
 			}
 		},
 		{
@@ -131,12 +116,9 @@
 				"fg": "#3e3f3a",
 				"selectbg": "#8e8c84",
 				"selectfg": "#ffffff",
-				"light": "#fdfcfb",
 				"border": "#ced4da",
-				"inputfg": "#a19f99",
-				"inputbg": "#ffffff",
-				"disabledfg": "#a8a69f",
-				"disabledbg": "#f8f5f0"
+				"inputfg": "#6E6D69",
+				"inputbg": "#fdfcfb"
 			}
 		},
 		{
@@ -154,12 +136,9 @@
 				"fg": "#222222",
 				"selectbg": "#333333",
 				"selectfg": "#ffffff",
-				"light": "#eeeeee",
 				"border": "#cccccc",
-				"inputfg": "#9c9c9c",
-				"inputbg": "#ffffff",
-				"disabledfg": "#9d9d9d",
-				"disabledbg": "#eeeeee"
+				"inputfg": "#222222",
+				"inputbg": "#eeeeee"
 			}
 		},
 		{
@@ -177,12 +156,9 @@
 				"fg": "#444444",
 				"selectbg": "#17141f",
 				"selectfg": "#ffffff",
-				"light": "#fdfdfe",
 				"border": "#cbc8d0",
-				"inputfg": "#9198a0",
-				"inputbg": "#ffffff",
-				"disabledfg": "#99a0a7",
-				"disabledbg": "#f9f8fc"
+				"inputfg": "#444444",
+				"inputbg": "#fdfdfe"
 			}
 		},
 		{
@@ -200,12 +176,9 @@
 				"fg": "#333333",
 				"selectbg": "#aea79f",
 				"selectfg": "#ffffff",
-				"light": "#f9fafb",
 				"border": "#ced4da",
-				"inputfg": "#8d959c",
-				"inputbg": "#ffffff",
-				"disabledfg": "#8a929a",
-				"disabledbg": "#e9ecef"
+				"inputfg": "#333333",
+				"inputbg": "#f9fafb"
 			}
 		},
 		{
@@ -223,12 +196,9 @@
 				"fg": "#222222",
 				"selectbg": "#aaaaaa",
 				"selectfg": "#ffffff",
-				"light": "#f9fafb",
 				"border": "#ced4da",
-				"inputfg": "#898989",
-				"inputbg": "#ffffff",
-				"disabledfg": "#a1a1a1",
-				"disabledbg": "#eeeeee"
+				"inputfg": "#565656",
+				"inputbg": "#f9fafb"
 			}
 		},
 		{
@@ -246,12 +216,9 @@
 				"fg": "#ffffff",
 				"selectbg": "#444444",
 				"selectfg": "#ffffff",
-				"light": "#adb5bd",
 				"border": "#222222",
-				"inputfg": "#8e8e8e",
-				"inputbg": "#ffffff",
-				"disabledfg": "#919191",
-				"disabledbg": "#ebebeb"
+				"inputfg": "#333333",
+				"inputbg": "#adb5bd"
 			}
 		},
 		{
@@ -269,12 +236,9 @@
 				"fg": "#ffffff",
 				"selectbg": "#4e5d6c",
 				"selectfg": "#ffffff",
-				"light": "#adb5bd",
 				"border": "#222222",
-				"inputfg": "#9198a0",
-				"inputbg": "#ffffff",
-				"disabledfg": "#889098",
-				"disabledbg": "#ebebeb"
+				"inputfg": "#3e4d5c",
+				"inputbg": "#adb5bd"
 			}
 		},
 		{
@@ -292,12 +256,9 @@
 				"fg": "#ffffff",
 				"selectbg": "#94a2a4",
 				"selectfg": "#ffffff",
-				"light": "#adb5bd",
 				"border": "#00252e",
-				"inputfg": "#6a8088",
-				"inputbg": "#a9bdbd",
-				"disabledfg": "#596369",
-				"disabledbg": "#657b83"
+				"inputfg": "#46545A",
+				"inputbg": "#a9bdbd"
 			}
 		},
 		{
@@ -315,12 +276,9 @@
 				"fg": "#ffffff",
 				"selectbg": "#555555",
 				"selectfg": "#ffffff",
-				"light": "#adafae",
 				"border": "#060606",
-				"inputfg": "#555555",
-				"inputbg": "#ffffff",
-				"disabledfg": "#747574",
-				"disabledbg": "#adafae"
+				"inputfg": "#060606",
+				"inputbg": "#adafae"
 			}
 		}
 	]
