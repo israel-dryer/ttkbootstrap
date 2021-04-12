@@ -20,7 +20,7 @@ class Demo(Style):
         super().__init__()
         self.theme_use('lumen')
         self.root = self.master
-        #self.root.geometry('500x695')
+        self.root.geometry('500x695')
         self.root.protocol("WM_DELETE_WINDOW", self.quit)
         self.root.title('TTK Bootstrap')
         self.theme_name = tkinter.StringVar()
