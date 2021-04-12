@@ -258,13 +258,12 @@ class Colors:
     @staticmethod
     def update_hsv(color, hd=0, sd=0, vd=0):
         """
-        Modify the hue, saturation, and/or value of a given hex color value. The result of the change will be clamped
-        to hsv
+        Modify the hue, saturation, and/or value of a given hex color value.
 
         :param str color: the hexadecimal color value that is the target of hsv changes
-        :param float hd: % change in hue as a floating number between -1.0 and 1.0
-        :param float sd: % change in saturation as a floating number between -1.0 and 1.0
-        :param float vd: % change in value as a floating number between -1.0 and 1.0
+        :param float hd: % change in hue
+        :param float sd: % change in saturation
+        :param float vd: % change in value
 
         :returns: a new hexadecimal color value that results from the hsv arguments passed into the function
         :rtype: str
