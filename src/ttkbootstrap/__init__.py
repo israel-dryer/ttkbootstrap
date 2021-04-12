@@ -691,24 +691,38 @@ class StylerTTK:
 
             - Separator.separator: orient, background
         """
+        # create separator image
+        default_color = self.theme.colors.border if self.theme.type == 'light' else self.theme.colors.selectbg
+        im = Image.new('RGB', (1, 1))
+        draw = ImageDraw.Draw(im)
+        draw.rectangle([0, 0, 1, 1], fill=default_color)
+        self.theme_images['separator'] = ImageTk.PhotoImage(im)
+
         self.settings.update({
+            'Separator.separator': {
+                'element create': ('image', self.theme_images['separator'])},
             'Horizontal.TSeparator': {
-                'configure': {
-                    'background': (
-                        self.theme.colors.bg if self.theme.type == 'light' else self.theme.colors.primary)}},
+                'layout': [
+                    ('Separator.separator', {'sticky': 'nswe'})],
             'Vertical.TSeparator': {
-                'configure': {
-                    'background': (
-                        self.theme.colors.bg if self.theme.type == 'light' else self.theme.colors.primary)}}})
+                'layout': [
+                    ('Separator.separator', {'sticky': 'nswe'})]}}})
 
         for color in self.theme.colors:
+            im = Image.new('RGB', (1, 1))
+            draw = ImageDraw.Draw(im)
+            draw.rectangle([0, 0, 1, 1], fill=self.theme.colors.get(color))
+            self.theme_images[f'{color}_separator'] = ImageTk.PhotoImage(im)
+
             self.settings.update({
+                f'{color}.Separator.separator': {
+                    'element create': ('image', self.theme_images[f'{color}_separator'])},
                 f'{color}.Horizontal.TSeparator': {
-                    'configure': {
-                        'background': self.theme.colors.get(color)}},
+                    'layout': [
+                        (f'{color}.Separator.separator', {'sticky': 'nswe'})],
                 f'{color}.Vertical.TSeparator': {
-                    'configure': {
-                        'background': self.theme.colors.get(color)}}})
+                    'layout': [
+                        (f'{color}.Separator.separator', {'sticky': 'nswe'})]}}})
 
     def _style_progressbar(self):
         """
@@ -775,7 +789,7 @@ class StylerTTK:
         hover_vd = -0.1
 
         # create widget images
-        self.scale_images = {
+        self.theme_images = {
             'primary_disabled': self._create_slider_image(disabled_fg),
             'primary_regular': self._create_slider_image(self.theme.colors.primary),
             'primary_pressed': self._create_slider_image(
@@ -796,16 +810,16 @@ class StylerTTK:
                     ('Scale.focus', {'expand': '1', 'sticky': 'nswe', 'children': [
                         ('Vertical.Scale.track', {'sticky': 'ns'}),
                         ('Vertical.Scale.slider', {'side': 'top', 'sticky': ''})]})]},
-            'Scale.track': {'element create': ('image', self.scale_images['trough'])},
+            'Scale.track': {'element create': ('image', self.theme_images['trough'])},
             'Scale.slider': {
                 'element create':
-                    ('image', self.scale_images['primary_regular'],
-                     ('disabled', self.scale_images['primary_disabled']),
-                     ('pressed !disabled', self.scale_images['primary_pressed']),
-                     ('hover !disabled', self.scale_images['primary_hover']))}})
+                    ('image', self.theme_images['primary_regular'],
+                     ('disabled', self.theme_images['primary_disabled']),
+                     ('pressed !disabled', self.theme_images['primary_pressed']),
+                     ('hover !disabled', self.theme_images['primary_hover']))}})
 
         for color in self.theme.colors:
-            self.scale_images.update({
+            self.theme_images.update({
                 f'{color}_regular': self._create_slider_image(self.theme.colors.get(color)),
                 f'{color}_pressed': self._create_slider_image(
                     Colors.update_hsv(self.theme.colors.get(color), vd=pressed_vd)),
@@ -829,15 +843,15 @@ class StylerTTK:
                                 (f'{color}.Vertical.Scale.slider', {'side': 'top', 'sticky': ''})]})]},
                 f'{color}.Vertical.Scale.slider': {
                     'element create':
-                        ('image', self.scale_images[f'{color}_regular'],
-                         ('pressed', self.scale_images[f'{color}_pressed']),
-                         ('hover', self.scale_images[f'{color}_hover']))},
+                        ('image', self.theme_images[f'{color}_regular'],
+                         ('pressed', self.theme_images[f'{color}_pressed']),
+                         ('hover', self.theme_images[f'{color}_hover']))},
                 f'{color}.Horizontal.Scale.slider': {
                     'element create':
-                        ('image', self.scale_images[f'{color}_regular'],
-                         ('disabled', self.scale_images['primary_disabled']),
-                         ('pressed', self.scale_images[f'{color}_pressed']),
-                         ('hover', self.scale_images[f'{color}_hover']))}})
+                        ('image', self.theme_images[f'{color}_regular'],
+                         ('disabled', self.theme_images['primary_disabled']),
+                         ('pressed', self.theme_images[f'{color}_pressed']),
+                         ('hover', self.theme_images[f'{color}_hover']))}})
 
     def _style_scrollbar(self):
         """
