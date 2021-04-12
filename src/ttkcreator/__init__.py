@@ -213,9 +213,10 @@ class CreatorDesignWindow(tk.Toplevel):
                 "fg": self.getvar('fg'),
                 "selectbg": self.getvar('selectbg'),
                 "selectfg": self.getvar('selectfg'),
-                "light": self.getvar('light'),
                 "border": self.getvar('border'),
-                "inputfg": self.getvar('inputfg')}}
+                "inputfg": self.getvar('inputfg'),
+                "inputbg": self.getvar('inputbg')
+            }}
 
         user_themes['themes'].append(theme)
 
@@ -277,12 +278,9 @@ class CreatorDesignWindow(tk.Toplevel):
                 bg=self.getvar('bg'),
                 selectfg=self.getvar('selectfg'),
                 selectbg=self.getvar('selectbg'),
-                light=self.getvar('light'),
                 border=self.getvar('border'),
                 inputfg=self.getvar('inputfg'),
-                inputbg=self.getvar('inputbg'),
-                disabledfg=self.getvar('disabledfg'),
-                disabledbg=self.getvar('disabledbg')
+                inputbg=self.getvar('inputbg')
             )
         except Exception:
             return
@@ -352,9 +350,6 @@ class EverythingBagel(ttk.Notebook):
             btn = ttk.Button(color_frame, text=color.title(), style=f'{color.lower()}.TButton')
             btn.pack(side='left', fill='x', expand='yes', padx=2)
         color_frame.pack(side='top', fill='x', pady=5)
-        db = ttk.Button(color_frame, text='Disabled', state='disabled')
-        db.pack(side='left', fill='x', expand='yes', padx=2)
-
 
         # Widget images
         widget_frame = ttk.Labelframe(self.tab, text='Styled widgets', padding=15)
@@ -400,7 +395,6 @@ class EverythingBagel(ttk.Notebook):
         r1.pack(side='left', fill='x', expand='yes')
         r1.invoke()
         ttk.Radiobutton(options_frame, value=2, text='Radio 2').pack(side='left', fill='x', expand='yes')
-        ttk.Radiobutton(options_frame, value=3, text='Disabled', state='disabled').pack(side='left', fill='x', expand='yes')
 
         # Checkbutton
         cb1 = ttk.Checkbutton(options_frame, text='Check 1')
@@ -411,9 +405,6 @@ class EverythingBagel(ttk.Notebook):
         cb2.pack(side='left', fill='x', expand='yes')
         cb2.invoke()
         cb2.invoke()  # unchecked
-
-        # disabled checkbutton
-        ttk.Checkbutton(options_frame, text='Disabled', state='disabled').pack(side='left', fill='x', expand='yes')
 
         # Treeview
         tv = ttk.Treeview(widget_frame, height=3)
