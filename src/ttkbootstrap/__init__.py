@@ -538,10 +538,12 @@ class StylerTTK:
         self._style_notebook()
         self._style_outline_buttons()
         self._style_outline_menubutton()
+        self._style_outline_toolbutton()
         self._style_progressbar()
         self._style_radiobutton()
         self._style_solid_buttons()
         self._style_solid_menubutton()
+        self._style_solid_toolbutton()
         self._style_treeview()
         self._style_separator()
         self._style_panedwindow()
@@ -1190,6 +1192,195 @@ class StylerTTK:
                             ('hover !disabled', self.theme.colors.get(color))],
                         'lightcolor': [
                             ('pressed !disabled', Colors.update_hsv(self.theme.colors.get(color), vd=pressed_vd)),
+                            ('hover !disabled', self.theme.colors.get(color))]}}})
+
+    def _style_solid_toolbutton(self):
+        """
+        Apply a solid color style to ttk widgets that use the Toolbutton style (for example,
+        a checkbutton: *ttk.Checkbutton*)
+
+        The options available in this widget include:
+
+            - Button.border: bordercolor, lightcolor, darkcolor, relief, borderwidth
+            - Button.focus: focuscolor, focusthickness
+            - Button.padding: padding, relief, shiftrelief
+            - Button.label: compound, space, text, font, foreground, underline, width, anchor, justify, wraplength,
+                embossed, image, stipple, background
+        """
+        # disabled settings
+        disabled_fg = self.theme.colors.inputfg
+        disabled_bg = (Colors.update_hsv(self.theme.colors.inputbg, vd=-0.2) if self.theme.type == 'light' else
+                       Colors.update_hsv(self.theme.colors.inputbg, vd=-0.3))
+
+        # pressed and hover settings
+        pressed_vd = -0.2
+        hover_vd = -0.1
+
+        self.settings.update({
+            'Toolbutton': {
+                'configure': {
+                    'foreground': self.theme.colors.selectfg,
+                    'background': self.theme.colors.primary,
+                    'bordercolor': self.theme.colors.primary,
+                    'darkcolor': self.theme.colors.primary,
+                    'lightcolor': self.theme.colors.primary,
+                    'font': self.theme.font,
+                    'anchor': 'center',
+                    'relief': 'raised',
+                    'focusthickness': 0,
+                    'focuscolor': '',
+                    'padding': (10, 5)},
+                'map': {
+                    'foreground': [
+                        ('disabled', disabled_fg)],
+                    'background': [
+                        ('disabled', disabled_bg),
+                        ('pressed !disabled', Colors.update_hsv(self.theme.colors.primary, vd=pressed_vd)),
+                        ('selected !disabled', Colors.update_hsv(self.theme.colors.primary, vd=pressed_vd)),
+                        ('hover !disabled', Colors.update_hsv(self.theme.colors.primary, vd=hover_vd))],
+                    'bordercolor': [
+                        ('disabled', disabled_bg),
+                        ('pressed !disabled', Colors.update_hsv(self.theme.colors.primary, vd=pressed_vd)),
+                        ('selected !disabled', Colors.update_hsv(self.theme.colors.primary, vd=pressed_vd)),
+                        ('hover !disabled', Colors.update_hsv(self.theme.colors.primary, vd=hover_vd))],
+                    'darkcolor': [
+                        ('disabled', disabled_bg),
+                        ('pressed !disabled', Colors.update_hsv(self.theme.colors.primary, vd=pressed_vd)),
+                        ('selected !disabled', Colors.update_hsv(self.theme.colors.primary, vd=pressed_vd)),
+                        ('hover !disabled', Colors.update_hsv(self.theme.colors.primary, vd=hover_vd))],
+                    'lightcolor': [
+                        ('disabled', disabled_bg),
+                        ('pressed !disabled', Colors.update_hsv(self.theme.colors.primary, vd=pressed_vd)),
+                        ('selected !disabled', Colors.update_hsv(self.theme.colors.primary, vd=pressed_vd)),
+                        ('hover !disabled', Colors.update_hsv(self.theme.colors.primary, vd=hover_vd))]}}})
+
+        for color in self.theme.colors:
+            self.settings.update({
+                f'{color}.Toolbutton': {
+                    'configure': {
+                        'foreground': self.theme.colors.selectfg,
+                        'background': self.theme.colors.get(color),
+                        'bordercolor': self.theme.colors.get(color),
+                        'darkcolor': self.theme.colors.get(color),
+                        'lightcolor': self.theme.colors.get(color),
+                        'relief': 'raised',
+                        'focusthickness': 0,
+                        'focuscolor': '',
+                        'padding': (10, 5)},
+                    'map': {
+                        'foreground': [
+                            ('disabled', disabled_fg)],
+                        'background': [
+                            ('disabled', disabled_bg),
+                            ('pressed !disabled', Colors.update_hsv(self.theme.colors.get(color), vd=pressed_vd)),
+                            ('selected !disabled', Colors.update_hsv(self.theme.colors.get(color), vd=pressed_vd)),
+                            ('hover !disabled', Colors.update_hsv(self.theme.colors.get(color), vd=hover_vd))],
+                        'bordercolor': [
+                            ('disabled', disabled_bg),
+                            ('hover !disabled', Colors.update_hsv(self.theme.colors.get(color), vd=hover_vd))],
+                        'darkcolor': [
+                            ('disabled', disabled_bg),
+                            ('pressed !disabled', Colors.update_hsv(self.theme.colors.get(color), vd=pressed_vd)),
+                            ('selected !disabled', Colors.update_hsv(self.theme.colors.get(color), vd=pressed_vd)),
+                            ('hover !disabled', Colors.update_hsv(self.theme.colors.get(color), vd=hover_vd))],
+                        'lightcolor': [
+                            ('disabled', disabled_bg),
+                            ('pressed !disabled', Colors.update_hsv(self.theme.colors.get(color), vd=pressed_vd)),
+                            ('selected !disabled', Colors.update_hsv(self.theme.colors.get(color), vd=pressed_vd)),
+                            ('hover !disabled', Colors.update_hsv(self.theme.colors.get(color), vd=hover_vd))]}}})
+
+    def _style_outline_toolbutton(self):
+        """
+        Apply an outline style to ttk widgets that use the Toolbutton style (for example,
+        a checkbutton: *ttk.Checkbutton*). This button has a solid button look on focus and hover.
+
+        The options available in this widget include:
+
+            - Button.border: bordercolor, lightcolor, darkcolor, relief, borderwidth
+            - Button.focus: focuscolor, focusthickness
+            - Button.padding: padding, relief, shiftrelief
+            - Button.label: compound, space, text, font, foreground, underline, width, anchor, justify, wraplength,
+                embossed, image, stipple, background
+        """
+        # disabled settings
+        disabled_fg = (Colors.update_hsv(self.theme.colors.inputbg, vd=-0.2) if self.theme.type == 'light' else
+                       Colors.update_hsv(self.theme.colors.inputbg, vd=-0.3))
+
+        # pressed and hover settings
+        pressed_vd = -0.10
+
+        self.settings.update({
+            'Outline.Toolbutton': {
+                'configure': {
+                    'foreground': self.theme.colors.primary,
+                    'background': self.theme.colors.bg,
+                    'bordercolor': self.theme.colors.primary,
+                    'darkcolor': self.theme.colors.bg,
+                    'lightcolor': self.theme.colors.bg,
+                    'relief': 'raised',
+                    'font': self.theme.font,
+                    'focusthickness': 0,
+                    'focuscolor': '',
+                    'padding': (10, 5)},
+                'map': {
+                    'foreground': [
+                        ('disabled', disabled_fg),
+                        ('pressed !disabled', self.theme.colors.selectfg),
+                        ('selected !disabled', self.theme.colors.selectfg),
+                        ('hover !disabled', self.theme.colors.selectfg)],
+                    'background': [
+                        ('pressed !disabled', Colors.update_hsv(self.theme.colors.primary, vd=pressed_vd)),
+                        ('selected !disabled', Colors.update_hsv(self.theme.colors.primary, vd=pressed_vd)),
+                        ('hover !disabled', self.theme.colors.primary)],
+                    'bordercolor': [
+                        ('disabled', disabled_fg),
+                        ('pressed !disabled', Colors.update_hsv(self.theme.colors.primary, vd=pressed_vd)),
+                        ('selected !disabled', Colors.update_hsv(self.theme.colors.primary, vd=pressed_vd)),
+                        ('hover !disabled', self.theme.colors.primary)],
+                    'darkcolor': [
+                        ('pressed !disabled', Colors.update_hsv(self.theme.colors.primary, vd=pressed_vd)),
+                        ('selected !disabled', Colors.update_hsv(self.theme.colors.primary, vd=pressed_vd)),
+                        ('hover !disabled', self.theme.colors.primary)],
+                    'lightcolor': [
+                        ('pressed !disabled', Colors.update_hsv(self.theme.colors.primary, vd=pressed_vd)),
+                        ('selected !disabled', Colors.update_hsv(self.theme.colors.primary, vd=pressed_vd)),
+                        ('hover !disabled', self.theme.colors.primary)]}}})
+
+        for color in self.theme.colors:
+            self.settings.update({
+                f'{color}.Outline.Toolbutton': {
+                    'configure': {
+                        'foreground': self.theme.colors.get(color),
+                        'background': self.theme.colors.bg,
+                        'bordercolor': self.theme.colors.get(color),
+                        'darkcolor': self.theme.colors.bg,
+                        'lightcolor': self.theme.colors.bg,
+                        'relief': 'raised',
+                        'focusthickness': 0,
+                        'focuscolor': '',
+                        'padding': (10, 5)},
+                    'map': {
+                        'foreground': [
+                            ('disabled', disabled_fg),
+                            ('pressed !disabled', self.theme.colors.selectfg),
+                            ('selected !disabled', self.theme.colors.selectfg),
+                            ('hover !disabled', self.theme.colors.selectfg)],
+                        'background': [
+                            ('pressed !disabled', Colors.update_hsv(self.theme.colors.get(color), vd=pressed_vd)),
+                            ('selected !disabled', Colors.update_hsv(self.theme.colors.get(color), vd=pressed_vd)),
+                            ('hover !disabled', self.theme.colors.get(color))],
+                        'bordercolor': [
+                            ('disabled', disabled_fg),
+                            ('pressed !disabled', Colors.update_hsv(self.theme.colors.get(color), vd=pressed_vd)),
+                            ('selected !disabled', Colors.update_hsv(self.theme.colors.get(color), vd=pressed_vd)),
+                            ('hover !disabled', self.theme.colors.get(color))],
+                        'darkcolor': [
+                            ('pressed !disabled', Colors.update_hsv(self.theme.colors.get(color), vd=pressed_vd)),
+                            ('selected !disabled', Colors.update_hsv(self.theme.colors.get(color), vd=pressed_vd)),
+                            ('hover !disabled', self.theme.colors.get(color))],
+                        'lightcolor': [
+                            ('pressed !disabled', Colors.update_hsv(self.theme.colors.get(color), vd=pressed_vd)),
+                            ('selected !disabled', Colors.update_hsv(self.theme.colors.get(color), vd=pressed_vd)),
                             ('hover !disabled', self.theme.colors.get(color))]}}})
 
     def _style_entry(self):
