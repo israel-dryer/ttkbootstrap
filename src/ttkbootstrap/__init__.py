@@ -311,6 +311,7 @@ class StylerTK:
         """
         A wrapper on all widget style methods. Applies current theme to all standard tkinter widgets
         """
+        self._style_spinbox()
         self._style_textwidget()
         self._style_button()
         self._style_label()
@@ -319,13 +320,10 @@ class StylerTK:
         self._style_entry()
         self._style_scale()
         self._style_listbox()
-        self._style_spinbox()
         self._style_menu()
         self._style_menubutton()
         self._style_labelframe()
-        self._style_scrollbar()
-        self._style_optionmenu()
-        self._style_combobox()
+        self._style_canvas()
         self._style_window()
         pass
 
@@ -347,21 +345,22 @@ class StylerTK:
         self._set_option('*selectBackground', self.theme.colors.selectbg, 60)
         self._set_option('*selectForeground', self.theme.colors.selectfg, 60)
 
-    def _style_combobox(self):
+    def _style_canvas(self):
         """
-        Apply style for listbox on ``ttk.Combobox``
-            option add *TCombobox*Listbox.background color
-            option add *TCombobox*Listbox.font font
-            option add *TCombobox*Listbox.foreground color
-            option add *TCombobox*Listbox.selectBackground color
-            option add *TCombobox*Listbox.selectForeground color
+        Apply style to ``tkinter.Canvas``
         """
-        pass
+        self._set_option('*Canvas.highlightThickness', 1)
+        self._set_option('*Canvas.highlightBackground', self.theme.colors.border)
+        self._set_option('*Canvas.background', self.theme.colors.inputbg)
 
     def _style_button(self):
         """
         Apply style to ``tkinter.Button``
         """
+        active_bg = Colors.update_hsv(self.theme.colors.primary, vd=-0.2)
+        self._set_option('*Button.relief', 'flat')
+        self._set_option('*Button.borderWidth', 0)
+        self._set_option('*Button.activeBackground', active_bg)
         self._set_option('*Button.foreground', self.theme.colors.selectfg)
         self._set_option('*Button.background', self.theme.colors.primary)
 
@@ -376,6 +375,8 @@ class StylerTK:
         """
         Apply style to ``tkinter.Checkbutton``
         """
+        self._set_option('*Checkbutton.activeBackground', self.theme.colors.bg)
+        self._set_option('*Checkbutton.activeForeground', self.theme.colors.primary)
         self._set_option('*Checkbutton.background', self.theme.colors.bg)
         self._set_option('*Checkbutton.foreground', self.theme.colors.fg)
         self._set_option('*Checkbutton.selectColor',
@@ -385,6 +386,8 @@ class StylerTK:
         """
         Apply style to ``tkinter.Radiobutton``
         """
+        self._set_option('*Radiobutton.activeBackground', self.theme.colors.bg)
+        self._set_option('*Radiobutton.activeForeground', self.theme.colors.primary)
         self._set_option('*Radiobutton.background', self.theme.colors.bg)
         self._set_option('*Radiobutton.foreground', self.theme.colors.fg)
         self._set_option('*Radiobutton.selectColor',
@@ -398,7 +401,7 @@ class StylerTK:
         self._set_option('*Entry.background',
                          (self.theme.colors.inputbg if self.theme.type == 'light' else
                           Colors.update_hsv(self.theme.colors.inputbg, vd=-0.1)))
-        self._set_option('*Entry.foreground', self.theme.colors.fg)
+        self._set_option('*Entry.foreground', self.theme.colors.inputfg)
         self._set_option('*Entry.highlightThickness', 1)
         self._set_option('*Entry.highlightBackground', self.theme.colors.border)
         self._set_option('*Entry.highlightColor', self.theme.colors.primary)
@@ -407,21 +410,24 @@ class StylerTK:
         """
         Apply style to ``tkinter.Scale``
         """
+        active_color = Colors.update_hsv(self.theme.colors.primary, vd=-0.2)
+
         self._set_option('*Scale.background', self.theme.colors.primary)
         self._set_option('*Scale.showValue', False)
         self._set_option('*Scale.sliderRelief', 'flat')
+        self._set_option('*Scale.borderWidth', 0)
+        self._set_option('*Scale.activeBackground', active_color)
         self._set_option('*Scale.highlightThickness', 1)
-        self._set_option('*Scale.highlightColor', self.theme.colors.primary)
+        self._set_option('*Scale.highlightColor', self.theme.colors.border)
         self._set_option('*Scale.highlightBackground', self.theme.colors.border)
-        self._set_option('*Scale.troughColor',
-                         (self.theme.colors.inputbg if self.theme.type == 'light' else
-                          Colors.update_hsv(self.theme.colors.inputbg, vd=-0.1)))
+        self._set_option('*Scale.troughColor', self.theme.colors.inputbg)
 
     def _style_spinbox(self):
         """
         Apply style to `tkinter.Spinbox``
         """
-        self._set_option('*Spinbox.foreground', self.theme.colors.fg)
+        self._set_option('*Spinbox.foreground', self.theme.colors.inputfg)
+        self._set_option('*Spinbox.relief', 'flat')
         self._set_option('*Spinbox.background',
                          (self.theme.colors.inputbg if self.theme.type == 'light' else
                           Colors.update_hsv(self.theme.colors.inputbg, vd=-0.1)))
@@ -433,9 +439,8 @@ class StylerTK:
         """
         Apply style to ``tkinter.Listbox``
         """
-        self._set_option('*Listbox.foreground', self.theme.colors.fg)
-        self._set_option('*Listbox.background', (self.theme.colors.inputbg if
-                                                 self.theme.type == 'light' else self.theme.colors.bg))
+        self._set_option('*Listbox.foreground', self.theme.colors.inputfg)
+        self._set_option('*Listbox.background', self.theme.colors.inputbg)
         self._set_option('*Listbox.selectBackground', self.theme.colors.selectbg)
         self._set_option('*Listbox.selectForeground', self.theme.colors.selectfg)
         self._set_option('*Listbox.relief', 'flat')
@@ -448,8 +453,11 @@ class StylerTK:
         """
         Apply style to ``tkinter.Menubutton``
         """
+        hover_color = Colors.update_hsv(self.theme.colors.primary, vd=-0.2)
+        self._set_option('*Menubutton.activeBackground', hover_color)
         self._set_option('*Menubutton.background', self.theme.colors.primary)
         self._set_option('*Menubutton.foreground', self.theme.colors.selectfg)
+        self._set_option('*Menubutton.borderWidth', 0)
 
     def _style_menu(self):
         """
@@ -459,8 +467,9 @@ class StylerTK:
         self._set_option('*Menu.foreground', self.theme.colors.fg)
         self._set_option('*Menu.selectColor', self.theme.colors.primary)
         self._set_option('*Menu.font', self.theme.font)
-        self._set_option('*Menu.background', self.theme.colors.inputbg if self.theme.type == 'light'
-        else self.theme.colors.bg)
+        self._set_option('*Menu.background', (
+            self.theme.colors.inputbg if self.theme.type == 'light' else
+            self.theme.colors.bg))
         self._set_option('*Menu.activeBackground', self.theme.colors.selectbg)
         self._set_option('*Menu.activeForeground', self.theme.colors.selectfg)
 
@@ -471,36 +480,8 @@ class StylerTK:
         self._set_option('*Labelframe.font', self.theme.font)
         self._set_option('*Labelframe.foreground', self.theme.colors.fg)
         self._set_option('*Labelframe.highlightColor', self.theme.colors.border)
-        self._set_option('*Labelframe.highlightBackground', self.theme.colors.border)
-        self._set_option('*Labelframe.highlightThickness', 1)
-
-    def _style_scrollbar(self):
-        """
-        Apply style to ``tkinter.Scrollbar``
-
-        .. warning::
-            It appears this widget can only be styled in the constructor**
-        """
-
-        pass
-
-    def _style_optionmenu(self):
-        """
-        Apply style to ``tkinter.OptionMenu``
-
-        .. warning::
-            It appears this widget can only be styled in the constructor
-        """
-        pass
-
-    def _style_separator(self):
-        """
-        Apply style to ``tkinter.Separator``
-
-        .. warning::
-            Not implemented
-        """
-        pass
+        self._set_option('*Labelframe.borderWidth', 1)
+        self._set_option('*Labelframe.highlightThickness', 0)
 
     def _style_textwidget(self):
         """
@@ -508,7 +489,7 @@ class StylerTK:
         """
         self._set_option('*Text.background', self.theme.colors.inputbg)
         self._set_option('*Text.foreground', self.theme.colors.inputfg)
-        self._set_option('*Text.highlightColor', self.theme.colors.border)
+        self._set_option('*Text.highlightColor', self.theme.colors.primary)
         self._set_option('*Text.highlightBackground', self.theme.colors.border)
         self._set_option('*Text.borderColor', self.theme.colors.border)
         self._set_option('*Text.highlightThickness', 1)
@@ -605,7 +586,7 @@ class StylerTTK:
             shines through the corners using the `clam` theme. This is an unfortuate hack to make it look ok. Hopefully
             there will be a more permanent/better solution in the future.
         """
-        disabled_fg = (Colors.update_hsv(self.theme.colors.inputbg, vd=-0.2) if self.theme.type =='light' else
+        disabled_fg = (Colors.update_hsv(self.theme.colors.inputbg, vd=-0.2) if self.theme.type == 'light' else
                        Colors.update_hsv(self.theme.colors.inputbg, vd=-0.3))
 
         if self.theme.type == 'dark':
@@ -695,9 +676,9 @@ class StylerTTK:
             'Horizontal.TSeparator': {
                 'layout': [
                     ('Separator.separator', {'sticky': 'nswe'})],
-            'Vertical.TSeparator': {
-                'layout': [
-                    ('Separator.separator', {'sticky': 'nswe'})]}}})
+                'Vertical.TSeparator': {
+                    'layout': [
+                        ('Separator.separator', {'sticky': 'nswe'})]}}})
 
         for color in self.theme.colors:
             im = Image.new('RGB', (1, 1))
@@ -711,9 +692,9 @@ class StylerTTK:
                 f'{color}.Horizontal.TSeparator': {
                     'layout': [
                         (f'{color}.Separator.separator', {'sticky': 'nswe'})],
-                f'{color}.Vertical.TSeparator': {
-                    'layout': [
-                        (f'{color}.Separator.separator', {'sticky': 'nswe'})]}}})
+                    f'{color}.Vertical.TSeparator': {
+                        'layout': [
+                            (f'{color}.Separator.separator', {'sticky': 'nswe'})]}}})
 
     def _style_progressbar(self):
         """
@@ -770,7 +751,7 @@ class StylerTTK:
             - Scale.trough: borderwidth, troughcolor, troughrelief
             - Scale.slider: sliderlength, sliderthickness, sliderrelief, borderwidth, background, bordercolor, orient
         """
-        disabled_fg = (Colors.update_hsv(self.theme.colors.inputbg, vd=-0.2) if self.theme.type =='light' else
+        disabled_fg = (Colors.update_hsv(self.theme.colors.inputbg, vd=-0.2) if self.theme.type == 'light' else
                        Colors.update_hsv(self.theme.colors.inputbg, vd=-0.3))
 
         trough_color = (self.theme.colors.inputbg if self.theme.type == 'dark' else
@@ -890,7 +871,7 @@ class StylerTTK:
             - spinbox.padding: padding, relief, shiftrelief
             - spinbox.textarea: font, width
         """
-        disabled_fg = (Colors.update_hsv(self.theme.colors.inputbg, vd=-0.2) if self.theme.type =='light' else
+        disabled_fg = (Colors.update_hsv(self.theme.colors.inputbg, vd=-0.2) if self.theme.type == 'light' else
                        Colors.update_hsv(self.theme.colors.inputbg, vd=-0.3))
 
         if self.theme.type == 'dark':
@@ -982,7 +963,7 @@ class StylerTTK:
                 - Treeheading.image: image, stipple, background
                 - Treeheading.text: text, font, foreground, underline, width, anchor, justify, wraplength, embossed
         """
-        disabled_fg = (Colors.update_hsv(self.theme.colors.inputbg, vd=-0.2) if self.theme.type =='light' else
+        disabled_fg = (Colors.update_hsv(self.theme.colors.inputbg, vd=-0.2) if self.theme.type == 'light' else
                        Colors.update_hsv(self.theme.colors.inputbg, vd=-0.3))
 
         self.settings.update({
@@ -1054,7 +1035,7 @@ class StylerTTK:
         """
         # disabled settings
         disabled_fg = self.theme.colors.inputfg
-        disabled_bg = (Colors.update_hsv(self.theme.colors.inputbg, vd=-0.2) if self.theme.type =='light' else
+        disabled_bg = (Colors.update_hsv(self.theme.colors.inputbg, vd=-0.2) if self.theme.type == 'light' else
                        Colors.update_hsv(self.theme.colors.inputbg, vd=-0.3))
 
         # pressed and hover settings
@@ -1141,9 +1122,8 @@ class StylerTTK:
                 embossed, image, stipple, background
         """
         # disabled settings
-        disabled_fg = (Colors.update_hsv(self.theme.colors.inputbg, vd=-0.2) if self.theme.type =='light' else
+        disabled_fg = (Colors.update_hsv(self.theme.colors.inputbg, vd=-0.2) if self.theme.type == 'light' else
                        Colors.update_hsv(self.theme.colors.inputbg, vd=-0.3))
-
 
         # pressed and hover settings
         pressed_vd = -0.10
@@ -1222,7 +1202,7 @@ class StylerTTK:
             - Entry.padding: padding, relief, shiftrelief
             - Entry.textarea: font, width
         """
-        disabled_fg = (Colors.update_hsv(self.theme.colors.inputbg, vd=-0.2) if self.theme.type =='light' else
+        disabled_fg = (Colors.update_hsv(self.theme.colors.inputbg, vd=-0.2) if self.theme.type == 'light' else
                        Colors.update_hsv(self.theme.colors.inputbg, vd=-0.3))
 
         if self.theme.type == 'dark':
@@ -1278,7 +1258,7 @@ class StylerTTK:
             On Windows, the button defaults to the 'xpnative' theme look. This means that you cannot change the look
             and feel with styles. On Linux and MacOS, defaults to stylized 'clam' theme, so the style can be changed.
         """
-        disabled_fg = (Colors.update_hsv(self.theme.colors.inputbg, vd=-0.2) if self.theme.type =='light' else
+        disabled_fg = (Colors.update_hsv(self.theme.colors.inputbg, vd=-0.2) if self.theme.type == 'light' else
                        Colors.update_hsv(self.theme.colors.inputbg, vd=-0.3))
 
         if 'xpnative' in self.style.theme_names():
@@ -1401,7 +1381,7 @@ class StylerTTK:
             On Windows, the button defaults to the 'xpnative' theme look. This means that you cannot change the look
             and feel with styles. On Linux and MacOS, defaults to stylized 'clam' theme, so the style can be changed.
         """
-        disabled_fg = (Colors.update_hsv(self.theme.colors.inputbg, vd=-0.2) if self.theme.type =='light' else
+        disabled_fg = (Colors.update_hsv(self.theme.colors.inputbg, vd=-0.2) if self.theme.type == 'light' else
                        Colors.update_hsv(self.theme.colors.inputbg, vd=-0.3))
 
         if 'xpnative' in self.style.theme_names():
@@ -1452,7 +1432,7 @@ class StylerTTK:
         """
         # disabled settings
         disabled_fg = self.theme.colors.inputfg
-        disabled_bg = (Colors.update_hsv(self.theme.colors.inputbg, vd=-0.2) if self.theme.type =='light' else
+        disabled_bg = (Colors.update_hsv(self.theme.colors.inputbg, vd=-0.2) if self.theme.type == 'light' else
                        Colors.update_hsv(self.theme.colors.inputbg, vd=-0.3))
 
         # pressed and hover settings
@@ -1548,7 +1528,7 @@ class StylerTTK:
             - Menubutton.label:
         """
         # disabled settings
-        disabled_fg = (Colors.update_hsv(self.theme.colors.inputbg, vd=-0.2) if self.theme.type =='light' else
+        disabled_fg = (Colors.update_hsv(self.theme.colors.inputbg, vd=-0.2) if self.theme.type == 'light' else
                        Colors.update_hsv(self.theme.colors.inputbg, vd=-0.3))
 
         # pressed and hover settings
