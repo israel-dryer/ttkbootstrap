@@ -1196,7 +1196,8 @@ class StylerTTK:
 
     def _style_solid_toolbutton(self):
         """
-        Apply a solid color style to ttk checkbutton: *ttk.Checkbutton*, **in Toolbutton mode**
+        Apply a solid color style to ttk widgets that use the Toolbutton style (for example,
+        a checkbutton: *ttk.Checkbutton*)
 
         The options available in this widget include:
 
@@ -1290,8 +1291,8 @@ class StylerTTK:
 
     def _style_outline_toolbutton(self):
         """
-        Apply an outline style to checkbutton: *ttk.Checkbutton*, **in Toolbutton mode**. This button has
-        a solid button look on focus and hover.
+        Apply an outline style to ttk widgets that use the Toolbutton style (for example,
+        a checkbutton: *ttk.Checkbutton*). This button has a solid button look on focus and hover.
 
         The options available in this widget include:
 
