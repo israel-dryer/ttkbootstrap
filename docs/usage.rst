@@ -99,8 +99,8 @@ The following table includes the styles available for all ttkbootstrap widgets:
 | Frame       | all            | TFrame                 | ``info.TFrame``                    |
 +-------------+----------------+------------------------+------------------------------------+
 | Label       | all            | TLabel                 | ``info.TLabel``                    |
-+             +                +                        +------------------------------------+
-|             |                |                        | ``info.inv.TLabel`` (inverted)     |
++             +                +------------------------+------------------------------------+
+|             |                | Invert.TLabel          | ``info.Invert.TLabel`` (inverted)  |
 +-------------+----------------+------------------------+------------------------------------+
 | LabelFrame  | all            | TLabelframe            | ``info.TLabelframe``               |
 +-------------+----------------+------------------------+------------------------------------+

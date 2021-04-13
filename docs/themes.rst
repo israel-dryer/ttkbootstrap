@@ -132,4 +132,12 @@ This theme definition is read by the ``ttkbootstrap.Style`` class and converted 
 ``ttkbootstrap.StylerTTK`` class at runtime. At that point, it is available to use like any other theme. The only
 information about a theme that is stored (built-in or user-defined) is the theme definition.
 
+Legacy widget styles
+....................
+While they are not the focus of this package, if you need to use legacy tkinter widgets, they should not look completely
+out-of-place. Below is an example of the widgets using the **journal** style. Legacy tkinter widgets will have the
+primary color applied. If you wish to use other theme colors on the widgets, you can override the styles as you would
+normally when using tkinter widgets. The theme colors are available in the ``Style.colors`` property.
 
+.. figure:: images/legacy.png
+    :alt: an example image of legacy tkinter widgets styled with journal

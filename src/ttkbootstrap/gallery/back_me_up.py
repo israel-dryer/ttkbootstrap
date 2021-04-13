@@ -245,7 +245,7 @@ class CollapsingFrame(ttk.Frame):
         frm.grid(row=self.cumulative_rows, column=0, sticky='ew')
 
         # header title
-        lbl = ttk.Label(frm, text=title, style=f'{style_color}.inv.TLabel')
+        lbl = ttk.Label(frm, text=title, style=f'{style_color}.Invert.TLabel')
         if kwargs.get('textvariable'):
             lbl.configure(textvariable=kwargs.get('textvariable'))
         lbl.pack(side='left', fill='both', padx=10)

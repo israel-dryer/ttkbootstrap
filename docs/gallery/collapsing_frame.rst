@@ -14,7 +14,7 @@ the button image alternates from *open* to *closed* to give a visual hint about 
 
 A style argument can be passed into the widget constructor to change the widget header color. The constructor extracts
 the color from the style class and applies it internally to color the header, using a label class for the title, and a
-button class for the button. The ``primary.inv.TLabel`` class inverts the foreground and background colors of the
+button class for the button. The ``primary.Invert.TLabel`` class inverts the foreground and background colors of the
 standard ``primary.TLabel`` style so that the background shows the primary color, similar to a button.
 
 .. figure:: ../../src/ttkbootstrap/gallery/images/collapsing_frame.png

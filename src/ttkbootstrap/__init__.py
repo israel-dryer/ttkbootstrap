@@ -1507,7 +1507,7 @@ class StylerTTK:
                 f'{color}.TLabel': {
                     'configure': {
                         'foreground': self.theme.colors.get(color)}},
-                f'{color}.inv.TLabel': {
+                f'{color}.Invert.TLabel': {
                     'configure': {
                         'foreground': self.theme.colors.selectfg,
                         'background': self.theme.colors.get(color)}}})
