@@ -91,6 +91,10 @@ The following table includes the styles available for all ttkbootstrap widgets:
 |             |                | Outline.TButton        | ``info.Outline.TButton``           |
 +-------------+----------------+------------------------+------------------------------------+
 | Checkbutton | [1]_ all       | TCheckbutton           | ``info.TCheckbutton``              |
++             +                +------------------------+------------------------------------+
+|             |                | Toolbutton             | ``info.Toolbutton``                |
++             +                +------------------------+------------------------------------+
+|             |                | Outline.Toolbutton     | ``info.Outline.Toolbutton``        |
 +-------------+----------------+------------------------+------------------------------------+
 | Combobox    | all            | TCombobox              | ``info.TCombobox``                 |
 +-------------+----------------+------------------------+------------------------------------+
@@ -117,6 +121,10 @@ The following table includes the styles available for all ttkbootstrap widgets:
 |             |                | Vertical.TProgressbar  | ``info.Vertical.TProgressbar``     |
 +-------------+----------------+------------------------+------------------------------------+
 | Radiobutton | [#]_ all       | TRadiobutton           | ``info.TRadiobutton``              |
++             +                +------------------------+------------------------------------+
+|             |                | Toolbutton             | ``info.Toolbutton``                |
++             +                +------------------------+------------------------------------+
+|             |                | Outline.Toolbutton     | ``info.Outline.Toolbutton``        |
 +-------------+----------------+------------------------+------------------------------------+
 | Scale       | all            | Horizontal.TScale      | ``info.Horizontal.TScale``         |
 +             +                +------------------------+------------------------------------+

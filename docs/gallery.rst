@@ -6,11 +6,12 @@ your own applications. These are meant to demonstrate design and are not necessa
 
 .. toctree::
 
-    gallery/pc_cleaner
-    gallery/media_player
-    gallery/equalizer
     gallery/file_search_engine
     gallery/back_me_up
+    gallery/media_player
+    gallery/magic_mouse
+    gallery/pc_cleaner
+    gallery/equalizer
     gallery/collapsing_frame
     gallery/calculator
     gallery/simple_data_entry_form
