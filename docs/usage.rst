@@ -90,7 +90,7 @@ The following table includes the styles available for all ttkbootstrap widgets:
 +             +                +------------------------+------------------------------------+
 |             |                | Outline.TButton        | ``info.Outline.TButton``           |
 +-------------+----------------+------------------------+------------------------------------+
-| Checkbutton | [1]_ all       | TCheckbutton           | ``info.TCheckbutton``              |
+| Checkbutton | all            | TCheckbutton [1]_      | ``info.TCheckbutton``              |
 +             +                +------------------------+------------------------------------+
 |             |                | Toolbutton             | ``info.Toolbutton``                |
 +             +                +------------------------+------------------------------------+
@@ -124,7 +124,7 @@ The following table includes the styles available for all ttkbootstrap widgets:
 +             +                +------------------------+------------------------------------+
 |             |                | Vertical.TProgressbar  | ``info.Vertical.TProgressbar``     |
 +-------------+----------------+------------------------+------------------------------------+
-| Radiobutton | [#]_ all       | TRadiobutton           | ``info.TRadiobutton``              |
+| Radiobutton | all            | TRadiobutton [1]_      | ``info.TRadiobutton``              |
 +             +                +------------------------+------------------------------------+
 |             |                | Toolbutton             | ``info.Toolbutton``                |
 +             +                +------------------------+------------------------------------+
