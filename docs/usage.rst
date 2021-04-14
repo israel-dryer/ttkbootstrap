@@ -95,6 +95,10 @@ The following table includes the styles available for all ttkbootstrap widgets:
 |             |                | Toolbutton             | ``info.Toolbutton``                |
 +             +                +------------------------+------------------------------------+
 |             |                | Outline.Toolbutton     | ``info.Outline.Toolbutton``        |
++             +                +------------------------+------------------------------------+
+|             |                | Roundtoggle.Toolbutton | ``info.Roundtoggle.Toolbutton``    |
++             +                +------------------------+------------------------------------+
+|             |                | Squaretoggle.Toolbutton| ``info.Squaretoggle.Toolbutton``   |
 +-------------+----------------+------------------------+------------------------------------+
 | Combobox    | all            | TCombobox              | ``info.TCombobox``                 |
 +-------------+----------------+------------------------+------------------------------------+
