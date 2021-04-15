@@ -1708,7 +1708,7 @@ class StylerTTK:
                 'element create': ('image', self.theme_images['primary_radio_on'],
                                    ('disabled', self.theme_images['primary_radio_disabled']),
                                    ('!selected', self.theme_images['primary_radio_off']),
-                                   {'width': 28, 'border': 4, 'sticky': 'w'})},
+                                   {'width': 20, 'border': 4, 'sticky': 'w'})},
             'TRadiobutton': {
                 'layout': [
                     ('Radiobutton.padding', {'children': [
@@ -1734,7 +1734,7 @@ class StylerTTK:
                     'element create': ('image', self.theme_images[f'{color}_radio_on'],
                                        ('disabled', self.theme_images[f'{color}_radio_disabled']),
                                        ('!selected', self.theme_images[f'{color}_radio_off']),
-                                       {'width': 28, 'border': 4, 'sticky': 'w'})},
+                                       {'width': 20, 'border': 4, 'sticky': 'w'})},
                 f'{color}.TRadiobutton': {
                     'layout': [
                         ('Radiobutton.padding', {'children': [
