@@ -74,7 +74,7 @@ class Demo(Style):
         mb.pack(side='right', fill='x', pady=5)
         mb.menu = tkinter.Menu(mb)
         mb['menu'] = mb.menu
-        for t in self.theme_names():
+        for t in list(self._theme_names):
             mb.menu.add_command(label=t, command=lambda theme_name=t: self.change_theme(theme_name))
 
         # Separator
@@ -129,7 +129,7 @@ class Demo(Style):
 
         # Option Menu
         om_var = tkinter.StringVar()
-        om = ttk.OptionMenu(btn_frame, om_var, 'Option Menu', *self.theme_names())
+        om = ttk.OptionMenu(btn_frame, om_var, 'Option Menu', *list(self._theme_names))
         om.pack(side='right', fill='x', padx=(5, 0), pady=5)
 
         # Labelframe
