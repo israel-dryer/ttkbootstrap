@@ -1207,22 +1207,26 @@ class StylerTTK:
         :returns: a tuple of images (toggle_on, toggle_off, toggle_disabled)
         :rtype: Tuple[PhotoImage]
         """
-        primary_color = self.theme.colors.get(colorname)
-        secondary_color = self.theme.colors.inputbg if self.theme.type == 'dark' else primary_color
-        primary_fill = self.theme.colors.inputbg
-        secondary_fill = self.theme.colors.selectfg if self.theme.type == 'dark' else primary_color
+        prime_color = self.theme.colors.get(colorname)
+        on_border = prime_color
+        on_indicator = prime_color
+        on_fill = self.theme.colors.bg
+        off_border = self.theme.colors.selectbg if self.theme.type == 'light' else self.theme.colors.inputbg
+        off_indicator = self.theme.colors.selectbg if self.theme.type == 'light' else self.theme.colors.inputbg
+        off_fill = self.theme.colors.bg
+        disabled_fill = self.theme.colors.bg
         disabled_fg = (Colors.update_hsv(self.theme.colors.inputbg, vd=-0.2) if self.theme.type == 'light' else
                        Colors.update_hsv(self.theme.colors.inputbg, vd=-0.3))
 
         toggle_off = Image.new('RGBA', (226, 130))
         draw = ImageDraw.Draw(toggle_off)
-        draw.rectangle([1, 1, 225, 129], outline=secondary_color, width=6, fill=primary_fill)
-        draw.rectangle([18, 18, 110, 110], fill=secondary_fill)
+        draw.rectangle([1, 1, 225, 129], outline=off_border, width=6, fill=off_fill)
+        draw.rectangle([18, 18, 110, 110], fill=off_indicator)
 
         toggle_on = Image.new('RGBA', (226, 130))
         draw = ImageDraw.Draw(toggle_on)
-        draw.rectangle([1, 1, 225, 129], outline=primary_color, width=6)
-        draw.rectangle([18, 18, 110, 110], fill=primary_color)
+        draw.rectangle([1, 1, 225, 129], outline=on_border, width=6, fill=on_fill)
+        draw.rectangle([18, 18, 110, 110], fill=on_indicator)
         toggle_on = toggle_on.transpose(Image.ROTATE_180)
 
         toggle_disabled = Image.new('RGBA', (226, 130))
@@ -1246,22 +1250,26 @@ class StylerTTK:
         :returns: a tuple of images (toggle_on, toggle_off, toggle_disabled)
         :rtype: Tuple[PhotoImage]
         """
-        primary_color = self.theme.colors.get(colorname)
-        secondary_color = self.theme.colors.inputbg if self.theme.type == 'dark' else primary_color
-        primary_fill = self.theme.colors.inputbg
-        secondary_fill = self.theme.colors.selectfg if self.theme.type == 'dark' else primary_color
+        prime_color = self.theme.colors.get(colorname)
+        on_border = prime_color
+        on_indicator = self.theme.colors.selectfg
+        on_fill = prime_color
+        off_border = self.theme.colors.selectbg if self.theme.type == 'light' else self.theme.colors.inputbg
+        off_indicator = self.theme.colors.selectbg if self.theme.type == 'light' else self.theme.colors.inputbg
+        off_fill = self.theme.colors.bg
+        disabled_fill = self.theme.colors.bg
         disabled_fg = (Colors.update_hsv(self.theme.colors.inputbg, vd=-0.2) if self.theme.type == 'light' else
                        Colors.update_hsv(self.theme.colors.inputbg, vd=-0.3))
 
         toggle_off = Image.new('RGBA', (226, 130))
         draw = ImageDraw.Draw(toggle_off)
-        draw.rounded_rectangle([1, 1, 225, 129], radius=(128 / 2), outline=secondary_color, width=6, fill=primary_fill)
-        draw.ellipse([20, 18, 112, 110], fill=secondary_fill)
+        draw.rounded_rectangle([1, 1, 225, 129], radius=(128 / 2), outline=off_border, width=6, fill=off_fill)
+        draw.ellipse([20, 18, 112, 110], fill=off_indicator)
 
         toggle_on = Image.new('RGBA', (226, 130))
         draw = ImageDraw.Draw(toggle_on)
-        draw.rounded_rectangle([1, 1, 225, 129], radius=(128 / 2), fill=primary_color, outline=primary_color, width=6)
-        draw.ellipse([20, 18, 112, 110], fill=secondary_fill)
+        draw.rounded_rectangle([1, 1, 225, 129], radius=(128 / 2), outline=on_border, width=6, fill=on_fill)
+        draw.ellipse([20, 18, 112, 110], fill=on_indicator)
         toggle_on = toggle_on.transpose(Image.ROTATE_180)
 
         toggle_disabled = Image.new('RGBA', (226, 130))
