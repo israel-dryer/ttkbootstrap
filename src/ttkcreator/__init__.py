@@ -171,7 +171,7 @@ class CreatorDesignWindow(tk.Toplevel):
         Create variables to store theme settings
         """
         themename = self.style.theme_use()
-        themesettings = self.style.themes.get(themename).theme
+        themesettings = self.style._theme_definitions.get(themename)
         self.vars['name'] = tk.StringVar(name='name', value='New Theme')
         self.vars['font'] = tk.StringVar(name='font', value=themesettings.font)
         self.vars['type'] = tk.StringVar(name='type', value=themesettings.type)
@@ -286,14 +286,15 @@ class CreatorDesignWindow(tk.Toplevel):
             return
 
         try:
-            definition = ThemeDefinition(
-                name=theme_id,
-                themetype=self.getvar('type'),
-                font=self.getvar('font'),
-                colors=colors)
+            self.style.register_theme(
+                ThemeDefinition(
+                    name=theme_id,
+                    themetype=self.getvar('type'),
+                    font=self.getvar('font'),
+                    colors=colors))
 
-            # attach the new theme to the style so that it is not garbage collected!!
-            self.new_style = StylerTTK(self.style, definition)
+            # # attach the new theme to the style so that it is not garbage collected!!
+            # self.new_style = StylerTTK(self.style, definition)
             self.style.theme_use(themename=theme_id)
         except Exception:
             return
