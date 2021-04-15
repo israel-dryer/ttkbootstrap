@@ -45,15 +45,20 @@ class Style(ttk.Style):
         :param str themes_file: Path to a user-defined themes file. Defaults to the themes file set in ttkcreator.
         """
         super().__init__(*args, **kwargs)
-        self.themes = {}
+        self._styler = None
+        self._theme_names = set(self.theme_names())
+        self._theme_objects = {}  # used to prevent garbage collection of theme assets when changing themes at runtime
+        self._theme_definitions = {}
         self._load_themes(themes_file)
+
+        # load selected or default theme
         self.theme_use(themename=theme)
 
     @property
     def colors(self):
         theme = self.theme_use()
-        if theme in self.themes:
-            return self.themes.get(theme).theme.colors
+        if theme in list(self._theme_names):
+            return self._theme_definitions.get(theme).colors
         else:
             return Colors()
 
@@ -75,18 +80,26 @@ class Style(ttk.Style):
         else:
             user_themes = {'themes': []}
 
-        # combined theme collection
-        settings = {'themes': builtin_themes['themes'] + user_themes['themes']}
-
-        # TODO move the theme creation to the theme_use method so that assets only generated when needed
-        for theme in settings['themes']:
-            if theme['name'] not in self.theme_names():
-                settings = ThemeDefinition(
+        # create a theme definition object for each theme, this will be used to generate
+        #  the theme in tkinter along with any assets at run-time
+        theme_settings = {'themes': builtin_themes['themes'] + user_themes['themes']}
+        for theme in theme_settings['themes']:
+            self.register_theme(
+                ThemeDefinition(
                     name=theme['name'],
                     themetype=theme['type'],
                     font=theme['font'],
-                    colors=Colors(**theme['colors']))
-                self.themes[settings.name] = StylerTTK(self, settings)
+                    colors=Colors(**theme['colors'])))
+
+    def register_theme(self, definition):
+        """
+        Register a theme definition; this makes the definition and name available at run-time so that
+        the assets and styles can be created.
+
+        :param str definition: an instance of the ``ThemeDefinition`` class
+        """
+        self._theme_names.add(definition.name)
+        self._theme_definitions[definition.name] = definition
 
     def theme_use(self, themename=None):
         """
@@ -98,25 +111,31 @@ class Style(ttk.Style):
 
         :param str themename: the theme to apply when creating new widgets
         """
+        # self.themes[settings.name] = StylerTTK(self, settings)
+        self.theme = self._theme_definitions.get(themename)
+
         if not themename:
             return super().theme_use()
 
-        if all([themename, themename not in self.theme_names()]):
+        if all([themename, themename not in self._theme_names]):
             print(f"{themename} is not a valid theme name. Please try one of the following:")
-            print(self.theme_names())
+            print(list(self._theme_names))
             return
 
-        if themename in self.themes:
-            try:
-                super().theme_use(themename)
-                current = self.themes.get(themename)
-                if current:
-                    current.styler_tk.style_tkinter_widgets()
-                return
-            except AttributeError:
-                return
-        else:
+        if themename in self.theme_names():
+            # the theme has already been created in tkinter
             super().theme_use(themename)
+            if not self.theme:
+                # this is not a bootstrap theme
+                self._theme_definitions[themename] = ThemeDefinition()
+                return
+            return
+
+        # theme has not yet been created
+        self._theme_objects[themename] = StylerTTK(self, self.theme)
+        self._theme_objects[themename].styler_tk.style_tkinter_widgets()
+        super().theme_use(themename)
+        return
 
 
 class ThemeDefinition:
@@ -352,7 +371,7 @@ class StylerTK:
         """
         self._set_option('*Canvas.highlightThickness', 1)
         self._set_option('*Canvas.highlightBackground', self.theme.colors.border)
-        self._set_option('*Canvas.background', self.theme.colors.inputbg)
+        self._set_option('*Canvas.background', self.theme.colors.bg)
 
     def _style_button(self):
         """
@@ -669,38 +688,61 @@ class StylerTTK:
 
             - Separator.separator: orient, background
         """
-        # create separator image
+        # horizontal separator default
         default_color = self.theme.colors.border if self.theme.type == 'light' else self.theme.colors.selectbg
-        im = Image.new('RGB', (1, 1))
-        draw = ImageDraw.Draw(im)
-        draw.rectangle([0, 0, 1, 1], fill=default_color)
-        self.theme_images['separator'] = ImageTk.PhotoImage(im)
+        h_im = Image.new('RGB', (40, 1))
+        draw = ImageDraw.Draw(h_im)
+        draw.rectangle([0, 0, 40, 1], fill=default_color)
+        self.theme_images['hseparator'] = ImageTk.PhotoImage(h_im)
 
         self.settings.update({
-            'Separator.separator': {
-                'element create': ('image', self.theme_images['separator'])},
+            'Horizontal.Separator.separator': {
+                'element create': ('image', self.theme_images['hseparator'])},
             'Horizontal.TSeparator': {
                 'layout': [
-                    ('Separator.separator', {'sticky': 'nswe'})],
-                'Vertical.TSeparator': {
-                    'layout': [
-                        ('Separator.separator', {'sticky': 'nswe'})]}}})
+                    ('Horizontal.Separator.separator', {'sticky': 'ew'})]}})
 
+        # horizontal separator variations
         for color in self.theme.colors:
-            im = Image.new('RGB', (1, 1))
-            draw = ImageDraw.Draw(im)
-            draw.rectangle([0, 0, 1, 1], fill=self.theme.colors.get(color))
-            self.theme_images[f'{color}_separator'] = ImageTk.PhotoImage(im)
+            h_im = Image.new('RGB', (40, 1))
+            draw = ImageDraw.Draw(h_im)
+            draw.rectangle([0, 0, 40, 1], fill=self.theme.colors.get(color))
+            self.theme_images[f'{color}_hseparator'] = ImageTk.PhotoImage(h_im)
 
             self.settings.update({
-                f'{color}.Separator.separator': {
-                    'element create': ('image', self.theme_images[f'{color}_separator'])},
+                f'{color}.Horizontal.Separator.separator': {
+                    'element create': ('image', self.theme_images[f'{color}_hseparator'])},
                 f'{color}.Horizontal.TSeparator': {
                     'layout': [
-                        (f'{color}.Separator.separator', {'sticky': 'nswe'})],
-                    f'{color}.Vertical.TSeparator': {
-                        'layout': [
-                            (f'{color}.Separator.separator', {'sticky': 'nswe'})]}}})
+                        (f'{color}.Horizontal.Separator.separator', {'sticky': 'ew'})]}})
+
+        # vertical separator default
+        default_color = self.theme.colors.border if self.theme.type == 'light' else self.theme.colors.selectbg
+        v_im = Image.new('RGB', (1, 40))
+        draw = ImageDraw.Draw(v_im)
+        draw.rectangle([0, 0, 1, 40], fill=default_color)
+        self.theme_images['vseparator'] = ImageTk.PhotoImage(v_im)
+
+        self.settings.update({
+            'Vertical.Separator.separator': {
+                'element create': ('image', self.theme_images['vseparator'])},
+            'Vertical.TSeparator': {
+                'layout': [
+                    ('Vertical.Separator.separator', {'sticky': 'ns'})]}})
+
+        # vertical separator variations
+        for color in self.theme.colors:
+            v_im = Image.new('RGB', (1, 40))
+            draw = ImageDraw.Draw(v_im)
+            draw.rectangle([0, 0, 1, 40], fill=self.theme.colors.get(color))
+            self.theme_images[f'{color}_vseparator'] = ImageTk.PhotoImage(v_im)
+
+            self.settings.update({
+                f'{color}.Vertical.Separator.separator': {
+                    'element create': ('image', self.theme_images[f'{color}_vseparator'])},
+                f'{color}.Vertical.TSeparator': {
+                    'layout': [
+                        (f'{color}.Vertical.Separator.separator', {'sticky': 'ns'})]}})
 
     def _style_progressbar(self):
         """
@@ -774,7 +816,8 @@ class StylerTTK:
                 Colors.update_hsv(self.theme.colors.primary, vd=pressed_vd)),
             'primary_hover': self._create_slider_image(
                 Colors.update_hsv(self.theme.colors.primary, vd=hover_vd)),
-            'trough': ImageTk.PhotoImage(Image.new('RGB', (8, 8), trough_color))})
+            'htrough': ImageTk.PhotoImage(Image.new('RGB', (40, 8), trough_color)),
+            'vtrough': ImageTk.PhotoImage(Image.new('RGB', (8, 40), trough_color))})
 
         # The layout is derived from the 'xpnative' theme
         self.settings.update({
@@ -788,7 +831,8 @@ class StylerTTK:
                     ('Scale.focus', {'expand': '1', 'sticky': 'nswe', 'children': [
                         ('Vertical.Scale.track', {'sticky': 'ns'}),
                         ('Vertical.Scale.slider', {'side': 'top', 'sticky': ''})]})]},
-            'Scale.track': {'element create': ('image', self.theme_images['trough'])},
+            'Horizontal.Scale.track': {'element create': ('image', self.theme_images['htrough'])},
+            'Vertical.Scale.track': {'element create': ('image', self.theme_images['vtrough'])},
             'Scale.slider': {
                 'element create':
                     ('image', self.theme_images['primary_regular'],
@@ -802,8 +846,7 @@ class StylerTTK:
                 f'{color}_pressed': self._create_slider_image(
                     Colors.update_hsv(self.theme.colors.get(color), vd=pressed_vd)),
                 f'{color}_hover': self._create_slider_image(
-                    Colors.update_hsv(self.theme.colors.get(color), vd=hover_vd)),
-                f'{color}_trough': ImageTk.PhotoImage(Image.new('RGB', (8, 8), trough_color))})
+                    Colors.update_hsv(self.theme.colors.get(color), vd=hover_vd))})
 
             # The layout is derived from the 'xpnative' theme
             self.settings.update({
@@ -812,19 +855,14 @@ class StylerTTK:
                         ('Scale.focus', {
                             'expand': '1', 'sticky': 'nswe', 'children': [
                                 ('Horizontal.Scale.track', {'sticky': 'we'}),
-                                (f'{color}.Horizontal.Scale.slider', {'side': 'left', 'sticky': ''})]})]},
+                                (f'{color}.Scale.slider', {'side': 'left', 'sticky': ''})]})]},
                 f'{color}.Vertical.TScale': {
                     'layout': [
                         (f'{color}.Scale.focus', {
                             'expand': '1', 'sticky': 'nswe', 'children': [
                                 ('Vertical.Scale.track', {'sticky': 'ns'}),
-                                (f'{color}.Vertical.Scale.slider', {'side': 'top', 'sticky': ''})]})]},
-                f'{color}.Vertical.Scale.slider': {
-                    'element create':
-                        ('image', self.theme_images[f'{color}_regular'],
-                         ('pressed', self.theme_images[f'{color}_pressed']),
-                         ('hover', self.theme_images[f'{color}_hover']))},
-                f'{color}.Horizontal.Scale.slider': {
+                                (f'{color}.Scale.slider', {'side': 'top', 'sticky': ''})]})]},
+                f'{color}.Scale.slider': {
                     'element create':
                         ('image', self.theme_images[f'{color}_regular'],
                          ('disabled', self.theme_images['primary_disabled']),
