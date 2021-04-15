@@ -1697,30 +1697,27 @@ class StylerTTK:
                 upperbordercolor, lowerbordercolor
             - Radiobutton.label: compound, space, text, font, foreground, underline, width, anchor, justify, wraplength,
                 embossed, image, stipple, background
-
-        **NOTE:**
-
-            On Windows, the button defaults to the 'xpnative' theme look. This means that you cannot change the look
-            and feel with styles. On Linux and MacOS, defaults to stylized 'clam' theme, so the style can be changed.
         """
         disabled_fg = (Colors.update_hsv(self.theme.colors.inputbg, vd=-0.2) if self.theme.type == 'light' else
                        Colors.update_hsv(self.theme.colors.inputbg, vd=-0.3))
+        disabled_bg = self.theme.colors.inputbg if self.theme.type == 'light' else disabled_fg
 
-        if 'xpnative' in self.style.theme_names():
-            self.settings.update({
-                'Radiobutton.indicator': {
-                    'element create': ('from', 'xpnative')}})
-
+        self.theme_images.update(self._create_radiobutton_images('primary'))
         self.settings.update({
+            'Radiobutton.indicator': {
+                'element create': ('image', self.theme_images['primary_radio_on'],
+                                   ('disabled', self.theme_images['primary_radio_disabled']),
+                                   ('!selected', self.theme_images['primary_radio_off']),
+                                   {'width': 28, 'border': 4, 'sticky': 'w'})},
             'TRadiobutton': {
+                'layout': [
+                    ('Radiobutton.padding', {'children': [
+                        ('Radiobutton.indicator', {'side': 'left', 'sticky': ''}),
+                        ('Radiobutton.focus', {'children': [
+                            ('Radiobutton.label', {'sticky': 'nswe'})], 'side': 'left', 'sticky': ''})],
+                        'sticky': 'nswe'})],
                 'configure': {
-                    'indicatormargin': 8,
-                    'indicatorsize': 12,
-                    'upperbordercolor': (
-                        self.theme.colors.fg if self.theme.type == 'light' else self.theme.colors.inputbg),
-                    'lowerbordercolor': (
-                        self.theme.colors.fg if self.theme.type == 'light' else self.theme.colors.inputbg),
-                    'indicatorforeground': self.theme.colors.selectbg},
+                    'font': self.theme.font},
                 'map': {
                     'foreground': [
                         ('disabled', disabled_fg),
@@ -1731,9 +1728,22 @@ class StylerTTK:
 
         # variations change the indicator color
         for color in self.theme.colors:
+            self.theme_images.update(self._create_radiobutton_images(color))
             self.settings.update({
+                f'{color}.Radiobutton.indicator': {
+                    'element create': ('image', self.theme_images[f'{color}_radio_on'],
+                                       ('disabled', self.theme_images[f'{color}_radio_disabled']),
+                                       ('!selected', self.theme_images[f'{color}_radio_off']),
+                                       {'width': 28, 'border': 4, 'sticky': 'w'})},
                 f'{color}.TRadiobutton': {
-                    'configure': {'indicatorforeground': self.theme.colors.get(color)},
+                    'layout': [
+                        ('Radiobutton.padding', {'children': [
+                            (f'{color}.Radiobutton.indicator', {'side': 'left', 'sticky': ''}),
+                            ('Radiobutton.focus', {'children': [
+                                ('Radiobutton.label', {'sticky': 'nswe'})], 'side': 'left', 'sticky': ''})],
+                            'sticky': 'nswe'})],
+                    'configure': {
+                        'font': self.theme.font},
                     'map': {
                         'foreground': [
                             ('disabled', disabled_fg),
@@ -1741,6 +1751,46 @@ class StylerTTK:
                         'indicatorforeground': [
                             ('disabled', disabled_fg),
                             ('active selected !disabled', Colors.update_hsv(self.theme.colors.get(color), vd=-0.2))]}}})
+
+    def _create_radiobutton_images(self, colorname):
+        """
+        Create radiobutton assets
+
+        :param str colorname: the name of the color to use for the button on state
+        """
+        prime_color = self.theme.colors.get(colorname)
+        on_border = prime_color if self.theme.type == 'light' else self.theme.colors.selectbg
+        on_indicator = self.theme.colors.selectfg if self.theme.type == 'light' else prime_color
+        on_fill = prime_color if self.theme.type == 'light' else self.theme.colors.selectfg
+        off_border = self.theme.colors.border if self.theme.type == 'light' else self.theme.colors.selectbg
+        off_indicator = self.theme.colors.inputbg if self.theme.type == 'light' else self.theme.colors.selectfg
+        off_fill = self.theme.colors.inputbg if self.theme.type == 'light' else self.theme.colors.selectfg
+        disabled_fg = (Colors.update_hsv(self.theme.colors.inputbg, vd=-0.2) if self.theme.type == 'light' else
+                       Colors.update_hsv(self.theme.colors.inputbg, vd=-0.3))
+        disabled_bg = self.theme.colors.inputbg if self.theme.type == 'light' else disabled_fg
+
+        radio_off = Image.new('RGBA', (133, 131))
+        draw = ImageDraw.Draw(radio_off)
+        draw.ellipse([1, 1, 131, 129], outline=off_border, width=8, fill=off_fill)
+        draw.ellipse([40, 38, 92, 88], fill=off_indicator)
+
+        radio_on = Image.new('RGBA', (133, 131))
+        draw = ImageDraw.Draw(radio_on)
+        draw.ellipse([1, 1, 131, 129], outline=on_border, width=12 if self.theme.type == 'light' else 6, fill=on_fill)
+        if self.theme.type == 'light':
+            draw.ellipse([40, 38, 92, 88], fill=on_indicator)  # small indicator for light theme
+        else:
+            draw.ellipse([30, 28, 102, 98], fill=on_indicator)  # large indicator for dark theme
+
+        radio_disabled = Image.new('RGBA', (133, 131))
+        draw = ImageDraw.Draw(radio_disabled)
+        draw.ellipse([1, 1, 131, 129], outline=disabled_fg, width=3, fill=off_fill)
+        draw.ellipse([40, 38, 92, 88], fill=off_fill)
+
+        return {
+            f'{colorname}_radio_off': ImageTk.PhotoImage(radio_off.resize((16, 16), Image.LANCZOS)),
+            f'{colorname}_radio_on': ImageTk.PhotoImage(radio_on.resize((16, 16), Image.LANCZOS)),
+            f'{colorname}_radio_disabled': ImageTk.PhotoImage(radio_disabled.resize((16, 16), Image.LANCZOS))}
 
     def _style_label(self):
         """
