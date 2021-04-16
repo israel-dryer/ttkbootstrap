@@ -561,6 +561,7 @@ class StylerTTK:
         self._style_outline_menubutton()
         self._style_outline_toolbutton()
         self._style_progressbar()
+        self._style_striped_progressbar()
         self._style_radiobutton()
         self._style_solid_buttons()
         self._style_solid_menubutton()
@@ -743,6 +744,78 @@ class StylerTTK:
                 f'{color}.Vertical.TSeparator': {
                     'layout': [
                         (f'{color}.Vertical.Separator.separator', {'sticky': 'ns'})]}})
+
+    def _style_striped_progressbar(self):
+        """
+        Apply a striped theme to the progressbar
+        """
+        self.theme_images.update(self._create_striped_progressbar_image('primary'))
+        self.settings.update({
+            'Striped.Horizontal.Progressbar.pbar': {
+                'element create': ('image', self.theme_images['primary_striped_hpbar'], {'width': 20, 'sticky': 'ew'})},
+            'Striped.Horizontal.TProgressbar': {
+                'layout': [
+                    ('Horizontal.Progressbar.trough', {'sticky': 'nswe', 'children': [
+                        ('Striped.Horizontal.Progressbar.pbar', {'side': 'left', 'sticky': 'ns'})]})],
+                'configure': {
+                    'troughcolor': self.theme.colors.inputbg,
+                    'thickness': 20,
+                    'borderwidth': 1,
+                    'lightcolor':
+                        self.theme.colors.border if self.theme.type == 'light' else
+                        self.theme.colors.inputbg}}})
+
+        for color in self.theme.colors:
+            self.theme_images.update(self._create_striped_progressbar_image(color))
+            self.settings.update({
+                f'{color}.Striped.Horizontal.Progressbar.pbar': {
+                    'element create': (
+                        'image', self.theme_images[f'{color}_striped_hpbar'], {'width': 20, 'sticky': 'ew'})},
+                f'{color}.Striped.Horizontal.TProgressbar': {
+                    'layout': [
+                        ('Horizontal.Progressbar.trough', {'sticky': 'nswe', 'children': [
+                            (f'{color}.Striped.Horizontal.Progressbar.pbar', {'side': 'left', 'sticky': 'ns'})]})],
+                    'configure': {
+                        'troughcolor': self.theme.colors.inputbg,
+                        'thickness': 20,
+                        'borderwidth': 1,
+                        'lightcolor':
+                            self.theme.colors.border if self.theme.type == 'light' else
+                            self.theme.colors.inputbg}}})
+
+    def _create_striped_progressbar_image(self, colorname):
+        """
+        Create the striped progressbar image and return as a ``PhotoImage``
+
+        :param str colorname: the color label assigned to the colors property
+
+        :returns: a dictionary containing the image names and images
+        :rtype: Dict
+        """
+        bar_primary = self.theme.colors.get(colorname)
+
+        # calculate value of light color
+        brightness = colorsys.rgb_to_hsv(*Colors.hex_to_rgb(bar_primary))[2]
+        if brightness < 0.4:
+            value_delta = 0.3
+        elif brightness > 0.8:
+            value_delta = 0
+        else:
+            value_delta = 0.1
+        bar_secondary = Colors.update_hsv(bar_primary, sd=-0.2, vd=value_delta)
+
+        # need to check the darkness of the color before setting the secondary
+
+        # horizontal progressbar
+        h_im = Image.new('RGBA', (100, 100), bar_secondary)
+        draw = ImageDraw.Draw(h_im)
+        draw.polygon([(0, 0), (48, 0), (100, 52), (100, 100), (100, 100)], fill=bar_primary)
+        draw.polygon([(0, 52), (48, 100), (0, 100)], fill=bar_primary)
+        horizontal_img = ImageTk.PhotoImage(h_im.resize((22, 22), Image.LANCZOS))
+
+        # TODO vertical progressbar
+
+        return {f'{colorname}_striped_hpbar': horizontal_img}
 
     def _style_progressbar(self):
         """
