@@ -14,7 +14,7 @@ class Application(tkinter.Tk):
     def __init__(self):
         super().__init__()
         self.title('PC Cleaner')
-        self.style = Style('superhero')
+        self.style = Style('pulse')
         self.cleaner = Cleaner(self)
         self.cleaner.pack(fill='both', expand='yes')
 
@@ -104,7 +104,7 @@ class Cleaner(ttk.Frame):
         ## progressbar with text indicator
         pb_frame = ttk.Frame(results_frame, padding=(0, 10, 10, 10))
         pb_frame.pack(side='top', fill='x', expand='yes')
-        pb = ttk.Progressbar(pb_frame, style='success.Horizontal.TProgressbar', variable='progress')
+        pb = ttk.Progressbar(pb_frame, style='success.Striped.Horizontal.TProgressbar', variable='progress')
         pb.pack(side='left', fill='x', expand='yes', padx=(15, 10))
         ttk.Label(pb_frame, text='%').pack(side='right')
         ttk.Label(pb_frame, textvariable='progress').pack(side='right')
