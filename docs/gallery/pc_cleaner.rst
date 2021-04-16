@@ -15,7 +15,7 @@ button for any attributes they share. This effectively gives it a highlight colo
 putting another label or card inside with padding around, you can create a border effect, with the card background
 serving as the border. By increasing the internal padding, you can effectively increase the border size.
 
-.. figure:: ../../src/ttkbootstrap/gallery/images/pc_cleaner_dark.png
+.. figure:: ../../src/ttkbootstrap/gallery/images/pc_cleaner.png
 
 
 Run this code live on repl.it_

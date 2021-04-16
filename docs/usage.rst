@@ -90,7 +90,7 @@ The following table includes the styles available for all ttkbootstrap widgets:
 +             +                +------------------------+------------------------------------+
 |             |                | Outline.TButton        | ``info.Outline.TButton``           |
 +-------------+----------------+------------------------+------------------------------------+
-| Checkbutton | all            | TCheckbutton [1]_      | ``info.TCheckbutton``              |
+| Checkbutton | all            | TCheckbutton           | ``info.TCheckbutton``              |
 +             +                +------------------------+------------------------------------+
 |             |                | Toolbutton             | ``info.Toolbutton``                |
 +             +                +------------------------+------------------------------------+
@@ -124,7 +124,7 @@ The following table includes the styles available for all ttkbootstrap widgets:
 +             +                +------------------------+------------------------------------+
 |             |                | Vertical.TProgressbar  | ``info.Vertical.TProgressbar``     |
 +-------------+----------------+------------------------+------------------------------------+
-| Radiobutton | all            | TRadiobutton [1]_      | ``info.TRadiobutton``              |
+| Radiobutton | all            | TRadiobutton           | ``info.TRadiobutton``              |
 +             +                +------------------------+------------------------------------+
 |             |                | Toolbutton             | ``info.Toolbutton``                |
 +             +                +------------------------+------------------------------------+
@@ -146,8 +146,6 @@ The following table includes the styles available for all ttkbootstrap widgets:
 +-------------+----------------+------------------------+------------------------------------+
 | Treeview    | all            | Treeview               | ``info.Treeview``                  |
 +-------------+----------------+------------------------+------------------------------------+
-
-.. [#] can only be styled on Linux and MacOS. Windows defaults to the *xpnative* style buttons
 
 Modifying and Creating Styles
 -----------------------------
