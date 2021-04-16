@@ -31,7 +31,7 @@ import json
 from pathlib import Path
 from tkinter import ttk
 
-from PIL import ImageTk, Image, ImageDraw
+from PIL import ImageTk, Image, ImageDraw, ImageFont
 
 
 class Style(ttk.Style):
@@ -775,7 +775,7 @@ class StylerTTK:
                         'background': self.theme.colors.get(color)}}})
 
     @staticmethod
-    def _create_slider_image(color, size=18):
+    def _create_slider_image(color, size=16):
         """
         Create a circle slider image based on given size and color; used in the slider widget.
 
@@ -1762,7 +1762,7 @@ class StylerTTK:
         on_border = prime_color if self.theme.type == 'light' else self.theme.colors.selectbg
         on_indicator = self.theme.colors.selectfg if self.theme.type == 'light' else prime_color
         on_fill = prime_color if self.theme.type == 'light' else self.theme.colors.selectfg
-        off_border = self.theme.colors.border if self.theme.type == 'light' else self.theme.colors.selectbg
+        off_border = self.theme.colors.selectbg
         off_fill = self.theme.colors.inputbg if self.theme.type == 'light' else self.theme.colors.selectfg
         disabled_fg = (Colors.update_hsv(self.theme.colors.inputbg, vd=-0.2) if self.theme.type == 'light' else
                        Colors.update_hsv(self.theme.colors.inputbg, vd=-0.3))
@@ -1771,7 +1771,7 @@ class StylerTTK:
         # radio off
         radio_off = Image.new('RGBA', (134, 134))
         draw = ImageDraw.Draw(radio_off)
-        draw.ellipse([2, 2, 132, 132], outline=off_border, width=8, fill=off_fill)
+        draw.ellipse([2, 2, 132, 132], outline=off_border, width=3, fill=off_fill)
 
         # radio on
         radio_on = Image.new('RGBA', (134, 134))
@@ -1788,9 +1788,9 @@ class StylerTTK:
         draw.ellipse([2, 2, 132, 132], outline=disabled_fg, width=3, fill=off_fill)
 
         return {
-            f'{colorname}_radio_off': ImageTk.PhotoImage(radio_off.resize((16, 16), Image.LANCZOS)),
-            f'{colorname}_radio_on': ImageTk.PhotoImage(radio_on.resize((16, 16), Image.LANCZOS)),
-            f'{colorname}_radio_disabled': ImageTk.PhotoImage(radio_disabled.resize((16, 16), Image.LANCZOS))}
+            f'{colorname}_radio_off': ImageTk.PhotoImage(radio_off.resize((14, 14), Image.LANCZOS)),
+            f'{colorname}_radio_on': ImageTk.PhotoImage(radio_on.resize((14, 14), Image.LANCZOS)),
+            f'{colorname}_radio_disabled': ImageTk.PhotoImage(radio_disabled.resize((14, 14), Image.LANCZOS))}
 
     def _style_label(self):
         """
@@ -1879,38 +1879,91 @@ class StylerTTK:
         disabled_fg = (Colors.update_hsv(self.theme.colors.inputbg, vd=-0.2) if self.theme.type == 'light' else
                        Colors.update_hsv(self.theme.colors.inputbg, vd=-0.3))
 
-        if 'xpnative' in self.style.theme_names():
-            self.settings.update({
-                'Checkbutton.indicator': {
-                    'element create': ('from', 'xpnative')}})
+        self.theme_images.update(self._create_checkbutton_images('primary'))
 
         self.settings.update({
+            'Checkbutton.indicator': {
+                'element create': ('image', self.theme_images['primary_checkbutton_on'],
+                                   ('disabled', self.theme_images['primary_checkbutton_disabled']),
+                                   ('!selected', self.theme_images['primary_checkbutton_off']),
+                                   {'width': 20, 'border': 4, 'sticky': 'w'})},
             'TCheckbutton': {
+                'layout': [
+                    ('Checkbutton.padding', {'children': [
+                        ('primary.Checkbutton.indicator', {'side': 'left', 'sticky': ''}),
+                        ('Checkbutton.focus', {'children': [
+                            ('Checkbutton.label', {'sticky': 'nswe'})], 'side': 'left', 'sticky': ''})],
+                        'sticky': 'nswe'})],
                 'configure': {
                     'foreground': self.theme.colors.fg,
-                    'indicatorsize': 10,
-                    'indicatormargin': 10,
-                    'indicatorforeground': self.theme.colors.selectbg},
+                    'background': self.theme.colors.bg,
+                    'focuscolor': ''},
                 'map': {
                     'foreground': [
                         ('disabled', disabled_fg),
-                        ('active !disabled', self.theme.colors.primary)],
-                    'indicatorforeground': [
-                        ('disabled', disabled_fg),
-                        ('active selected !disabled', self.theme.colors.primary)]}}})
+                        ('active !disabled', self.theme.colors.primary)]}}})
 
         # variations change indicator color
         for color in self.theme.colors:
+            self.theme_images.update(self._create_checkbutton_images(color))
             self.settings.update({
+                f'{color}.Checkbutton.indicator': {
+                    'element create': ('image', self.theme_images[f'{color}_checkbutton_on'],
+                                       ('disabled', self.theme_images[f'{color}_checkbutton_disabled']),
+                                       ('!selected', self.theme_images[f'{color}_checkbutton_off']),
+                                       {'width': 20, 'border': 4, 'sticky': 'w'})},
                 f'{color}.TCheckbutton': {
-                    'configure': {'indicatorforeground': self.theme.colors.get(color)},
+                    'layout': [
+                        ('Checkbutton.padding', {'children': [
+                            (f'{color}.Checkbutton.indicator', {'side': 'left', 'sticky': ''}),
+                            ('Checkbutton.focus', {'children': [
+                                ('Checkbutton.label', {'sticky': 'nswe'})], 'side': 'left', 'sticky': ''})],
+                            'sticky': 'nswe'})],
                     'map': {
-                        'indicatorforeground': [
-                            ('disabled', disabled_fg),
-                            ('active selected !disabled', Colors.update_hsv(self.theme.colors.get(color), vd=-0.2))],
                         'foreground': [
                             ('disabled', disabled_fg),
                             ('active !disabled', Colors.update_hsv(self.theme.colors.get(color), vd=-0.2))]}}})
+
+    def _create_checkbutton_images(self, colorname):
+        """
+        Create radiobutton assets
+
+        :param str colorname: the name of the color to use for the button on state
+        """
+        prime_color = self.theme.colors.get(colorname)
+        on_border = prime_color
+        on_indicator = self.theme.colors.selectbg
+        on_fill = prime_color
+        off_border = self.theme.colors.selectbg
+        off_fill = self.theme.colors.inputbg if self.theme.type == 'light' else self.theme.colors.selectfg
+        disabled_fg = (Colors.update_hsv(self.theme.colors.inputbg, vd=-0.2) if self.theme.type == 'light' else
+                       Colors.update_hsv(self.theme.colors.inputbg, vd=-0.3))
+        disabled_bg = self.theme.colors.inputbg if self.theme.type == 'light' else disabled_fg
+
+        # checkbutton off
+        checkbutton_off = Image.new('RGBA', (134, 134))
+        draw = ImageDraw.Draw(checkbutton_off)
+        draw.rounded_rectangle([2, 2, 132, 132], radius=16, outline=off_border, width=3, fill=off_fill)
+
+        # checkbutton on
+        fnt = ImageFont.truetype(r"C:\Users\us43060\PycharmProjects\ttk-bootstrap\src\ttkbootstrap\Symbola.ttf", 130)
+        checkbutton_on = Image.new('RGBA', (134, 134))
+        draw = ImageDraw.Draw(checkbutton_on)
+        draw.rounded_rectangle([2, 2, 132, 132], radius=16, fill=on_fill, outline=on_border, width=3)
+        draw.text((20, 8), "✓", font=fnt, fill=self.theme.colors.selectfg)
+
+        # checkbutton disabled
+        checkbutton_disabled = Image.new('RGBA', (134, 134))
+        draw = ImageDraw.Draw(checkbutton_disabled)
+        draw.rounded_rectangle([2, 2, 132, 132], radius=16, outline=disabled_fg, width=3, fill=disabled_bg)
+
+        return {
+            f'{colorname}_checkbutton_off':
+                ImageTk.PhotoImage(checkbutton_off.resize((14, 14), Image.LANCZOS)),
+            f'{colorname}_checkbutton_on':
+                ImageTk.PhotoImage(checkbutton_on.resize((14, 14), Image.LANCZOS)),
+            f'{colorname}_checkbutton_disabled':
+                ImageTk.PhotoImage(checkbutton_disabled.resize((14, 14), Image.LANCZOS))}
 
     def _style_solid_menubutton(self):
         """
