@@ -15,7 +15,7 @@ the ability to easily create your own.
 
 setuptools.setup(
     name="ttkbootstrap",
-    version="0.0.38",
+    version="0.2.0",
     author="Israel Dryer",
     author_email="israel.dryer@gmail.com",
     description="A collection of modern ttk themes inspired by Bootstrap",
@@ -29,7 +29,7 @@ setuptools.setup(
     url="https://github.com/israel-dryer/ttkbootstrap",
     package_dir={"": "src"},
     packages=setuptools.find_packages(where="src"),
-    package_data={"": ["*.json"]},
+    package_data={"": ["*.json", "*.ttf"]},
     include_package_data=True,
     install_requires=["pillow"],
     python_requires=">=3.6",
