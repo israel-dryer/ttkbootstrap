@@ -1946,7 +1946,8 @@ class StylerTTK:
         draw.rounded_rectangle([2, 2, 132, 132], radius=16, outline=off_border, width=3, fill=off_fill)
 
         # checkbutton on
-        fnt = ImageFont.truetype(r"C:\Users\us43060\PycharmProjects\ttk-bootstrap\src\ttkbootstrap\Symbola.ttf", 130)
+        with importlib.resources.open_binary('ttkbootstrap', 'Symbola.ttf') as font_path:
+            fnt = ImageFont.truetype(font_path, 130)
         checkbutton_on = Image.new('RGBA', (134, 134))
         draw = ImageDraw.Draw(checkbutton_on)
         draw.rounded_rectangle([2, 2, 132, 132], radius=16, fill=on_fill, outline=on_border, width=3)
