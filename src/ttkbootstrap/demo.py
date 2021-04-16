@@ -74,7 +74,7 @@ class Demo(Style):
         mb.pack(side='right', fill='x', pady=5)
         mb.menu = tkinter.Menu(mb)
         mb['menu'] = mb.menu
-        for t in list(self._theme_names):
+        for t in sorted(self._theme_names):
             mb.menu.add_command(label=t, command=lambda theme_name=t: self.change_theme(theme_name))
 
         # Separator
