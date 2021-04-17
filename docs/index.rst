@@ -11,21 +11,16 @@ There are more than a dozen :ref:`built-in dark and light themes <themes>`
 
 .. image:: images/ttkbootstrap.gif
 
-
-Looking for more? Create your own themes with :ref:`TTK Creator <ttkcreator>`
-
 .. toctree::
    :caption: Contents:
+   :maxdepth: 3
 
-   overview
-   gallery
+   installation
+   handbook
    themes
-   install
-   gettingstarted
-   widgets
-   usage
+   gallery
+   cookbook
    reference
-   creator
 
 Indices and tables
 ==================

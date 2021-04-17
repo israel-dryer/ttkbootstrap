@@ -1,7 +1,7 @@
 .. _themes:
 
 Themes
-======
+######
 
 All of the following themes are available with ttkbootstrap and can be viewed live with the ttkbootstrap demo:
 

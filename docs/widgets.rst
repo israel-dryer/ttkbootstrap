@@ -1,5 +1,5 @@
 Widgets
-=======
+#######
 
 Documentation, examples, and tips for ttk widgets (in progress)
 

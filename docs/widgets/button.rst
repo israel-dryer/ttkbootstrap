@@ -1,61 +1,6 @@
 Button
-------
+######
 A ``ttk.Button`` widget displays a textual label and/or image, and evaluates a command when pressed.
-
-.. code-block:: python
-
-    button = ttk.Button(parent, option=value, ...)
-
-Options
-=======
-:class\_:
-    The widget class name. This may be specified when the widget is created, but cannot be changed later.
-
-:command:
-    A function to be called when the button is pressed.
-
-:compound:
-    If you provide both ``image`` and ``text`` options, the ``compound`` option specifies the position of the image
-    relative to the text. The value may be `top`, `bottom`, `left`, or `right`.
-
-    When you provide both ``image`` and ``text`` options but don't specify a ``compound`` option, the image will appear
-    and the text will not.
-
-:cursor:
-    The cursor that will appear when the mouse is over the button.
-
-:image:
-    An image to appear on the button.
-
-:style:
-    The style to be used in rendering this button.
-
-:takefocus:
-    By default, the ``ttk.Button`` will be included in focus traversal. To remove the widget from focus traversal, use
-    ``takefocus=False``.
-
-:text:
-    The text to appear on the button, as a string.
-
-:textvariable:
-    A variable that controls the text that appears in the button.
-
-:underline:
-    If this option has a non-negative value `n`, an underline will appear under the character at position `n`.
-
-:width:
-    If the label is text, this option specifies the absolute width of the text area on the button, as a number of
-    characters; the actual width is that number multiplied by the average width of a character in the current font.
-    For image labels, this option is ignored. The option may be configured in style.
-
-Commands
-========
-In addition to the standard **cget, configure, identify, instate,** and **state** commands, buttons support the
-following additional widget commands:
-
-:invoke():
-
-    Invokes the command associated with the button
 
 Styles
 ======
@@ -65,21 +10,8 @@ classes are further subclassed by each of the theme colors to produce the follow
 
 .. image:: images/buttons.png
 
-Use the *color.Class* pattern in the button's ``style`` option to use a pre-defined style class.
-
-:style patterns:
-
-    - color.TButton
-    - color.Outline.Button
-
-:colors:
-
-    - primary (default)
-    - secondary
-    - success
-    - info
-    - warning
-    - danger
+How to use
+==========
 
 .. code-block:: python
 
@@ -96,42 +28,43 @@ Use the *color.Class* pattern in the button's ``style`` option to use a pre-defi
     ttk.Button(parent, text="Submit", style='warning.Outline.TButton')
 
 
-Tips & tricks
-=============
-Apply the **TLabel** style class to remove the button's hover effects and to invert the colors. The button will still
-behave as a button, though it will look like a standard label.  Conversely, you can apply a **TButton** class to a label
-to inherit the colors and hover effects of the button.
-
 
 Configuration
 =============
 Use the following classes, states, and options when configuring or modifying a new ttk button style.
 
-:class names:
-    - TButton
-    - Outline.TButton
+Class names
+-----------
+- TButton
+- Outline.TButton
 
-:dynamic states:
-    - active
-    - disabled
-    - pressed
-    - readonly
+Dynamic states
+--------------
+- active
+- disabled
+- pressed
+- readonly
 
-:configurable style options:
-    - anchor `anchor`
-    - background `color`
-    - bordercolor `color`
-    - compound `compound`
-    - darkcolor `color`
-    - foreground `foreground`
-    - font `font`
-    - highlightcolor `color`
-    - highlightthickness `amount`
-    - lightcolor `color`
-    - padding `padding`
-    - relief `relief`
-    - shiftrelief `amount`
-    - width `amount`
+Style options
+-------------
+:anchor: `e, w, center`
+:background: `color`
+:bordercolor: `color`
+:compound: `top, bottom, left right`
+:darkcolor: `color`
+:embossed: `amount`
+:focuscolor: `color`
+:focusthickness: `amount`
+:foreground: `color`
+:font: `font`
+:highlightcolor: `color`
+:highlightthickness: `amount`
+:justify: `left, right, center`
+:lightcolor: `color`
+:padding: `padding`
+:relief: `flat, groove, raised, ridge, solid, sunken`
+:shiftrelief: `amount`
+:width: `amount`
 
 
 .. code-block:: python
@@ -150,8 +83,12 @@ Use the following classes, states, and options when configuring or modifying a n
     # use a custom style
     ttk.Button(parent, text='Submit', style='custom.TButton')
 
-*Some style options are only available to specific styles*
 
+Tips & tricks
+=============
+Apply the **TLabel** style class to remove the button's hover effects and to invert the colors. The button will still
+behave as a button, though it will look like a standard label.  Conversely, you can apply a **TButton** class to a label
+to inherit the colors and hover effects of the button.
 
 References
 ==========
