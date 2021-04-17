@@ -64,12 +64,12 @@ Dynamic states
 Style options
 -------------
 
-
 :anchor: `e, w, center`
 :arrowcolor: `color`
 :arrowsize: `amount`
 :background: `color`
 :bordercolor: `color`
+:borderwidth: `amount`
 :darkcolor: `color`
 :fieldbackground: `color`
 :foreground: `color`
