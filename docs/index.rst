@@ -18,10 +18,10 @@ Looking for more? Create your own themes with :ref:`TTK Creator <ttkcreator>`
    :caption: Contents:
 
    overview
+   gallery
    themes
    install
    gettingstarted
-   gallery
    widgets
    usage
    reference

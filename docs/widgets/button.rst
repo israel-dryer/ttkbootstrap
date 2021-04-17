@@ -6,8 +6,8 @@ A ``ttk.Button`` widget displays a textual label and/or image, and evaluates a c
 
     button = ttk.Button(parent, option=value, ...)
 
-widget options
-==============
+Options
+=======
 :class\_:
     The widget class name. This may be specified when the widget is created, but cannot be changed later.
 
@@ -48,8 +48,8 @@ widget options
     characters; the actual width is that number multiplied by the average width of a character in the current font.
     For image labels, this option is ignored. The option may be configured in style.
 
-widget commands
-===============
+Commands
+========
 In addition to the standard **cget, configure, identify, instate,** and **state** commands, buttons support the
 following additional widget commands:
 
@@ -57,8 +57,8 @@ following additional widget commands:
 
     Invokes the command associated with the button
 
-ttkbootstrap styles
-===================
+Styles
+======
 The ``ttk.Button`` includes the **TButton** and **Outline.TButton** style classes. The **TButton** class is applied to
 all buttons by default. Other styles must be specified in the button's ``style`` option. These two primary style
 classes are further subclassed by each of the theme colors to produce the following color and style combinations:
@@ -96,15 +96,15 @@ Use the *color.Class* pattern in the button's ``style`` option to use a pre-defi
     ttk.Button(parent, text="Submit", style='warning.Outline.TButton')
 
 
-tips & tricks
+Tips & tricks
 =============
 Apply the **TLabel** style class to remove the button's hover effects and to invert the colors. The button will still
 behave as a button, though it will look like a standard label.  Conversely, you can apply a **TButton** class to a label
 to inherit the colors and hover effects of the button.
 
 
-style configuration
-===================
+Configuration
+=============
 Use the following classes, states, and options when configuring or modifying a new ttk button style.
 
 :class names:
@@ -153,7 +153,7 @@ Use the following classes, states, and options when configuring or modifying a n
 *Some style options are only available to specific styles*
 
 
-references
+References
 ==========
 - https://www.pythontutorial.net/tkinter/tkinter-button/
 - https://anzeljg.github.io/rin2/book2/2405/docs/tkinter/ttk-Button.html

@@ -6,8 +6,8 @@ A ``ttk.Checkbutton`` an on/off widget.
 
     button = ttk.Checkbutton(parent, option=value, ...)
 
-widget options
-==============
+Options
+=======
 :class\_:
     The widget class name. This may be specified when the widget is created, but cannot be changed later.
 
@@ -60,8 +60,8 @@ widget options
     Use this option to specify a fixed width or minimum width. The value is specified in characters; a positive value
     sets a fixed width of that many average characters, while a negative width sets a minimum width.
 
-widget commands
-===============
+Commands
+========
 In addition to the standard **cget, configure, identify, instate,** and **state** commands, buttons support the
 following additional widget commands:
 
@@ -70,8 +70,8 @@ following additional widget commands:
     This method toggles the state of the checkbutton. If there is a ``command`` callback, it calls that callback, and
     returns whatever value the callback returned.
 
-ttkbootstrap styles
-===================
+Styles
+======
 The ``ttk.Checkbutton`` includes the **TCheckbutton**, **Toolbutton**, **Outline.Toolbutton**, **Roundtoggle.Toolbutton**,
 and **Squaretoggle.Toolbutton** style classes. The **TCheckbutton** class is applied to all checkbuttons by default.
 Other styles must be specified in the checkbutton's ``style`` option. These primary classes are further subclassed by
@@ -122,8 +122,8 @@ Use the *color.Class* pattern in the button's ``style`` option to use a pre-defi
     ttk.Checkbutton(parent, text="include", style='warning.Outline.Toolbutton')
 
 
-style configuration
-===================
+Configuration
+=============
 Use the following classes, states, and options when configuring or modifying a new ttk checkbutton style. TTK Bootstrap
 uses an image layout for this widget, so not all of these options will be available... for example: ``indicatormargin``.
 However, if you decide to create a new widget, these should be available, depending on the style you are using as a
@@ -168,7 +168,7 @@ base. Some options are only available in certain styles.
 
 
 
-references
+References
 ==========
 - https://www.pythontutorial.net/tkinter/tkinter-checkbox/
 - https://anzeljg.github.io/rin2/book2/2405/docs/tkinter/ttk-Checkbutton.html
