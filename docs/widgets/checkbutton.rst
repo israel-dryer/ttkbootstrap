@@ -1,6 +1,6 @@
 Checkbutton
 ###########
-A ``ttk.Checkbutton`` an on/off widget.
+A ``ttk.Checkbutton`` widget is an on/off widget.
 
 Styles
 ======
