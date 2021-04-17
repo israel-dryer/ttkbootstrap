@@ -1740,11 +1740,13 @@ class StylerTTK:
                     'foreground': [('disabled', disabled_fg)],
                     'bordercolor': [
                         ('focus !disabled', self.theme.colors.primary),
-                        ('hover !disabled', self.theme.colors.primary)],
+                        ('hover !disabled', self.theme.colors.bg)],
                     'lightcolor': [
-                        ('focus !disabled', self.theme.colors.primary)],
+                        ('focus !disabled', self.theme.colors.primary),
+                        ('hover !disabled', self.theme.colors.primary)],
                     'darkcolor': [
-                        ('focus !disabled', self.theme.colors.primary)]}}})
+                        ('focus !disabled', self.theme.colors.primary),
+                        ('hover !disabled', self.theme.colors.primary)]}}})
 
         for color in self.theme.colors:
             self.settings.update({
@@ -1753,11 +1755,14 @@ class StylerTTK:
                         'foreground': [
                             ('disabled', disabled_fg)],
                         'bordercolor': [
-                            ('focus !disabled', self.theme.colors.get(color))],
+                            ('focus !disabled', self.theme.colors.get(color)),
+                            ('hover !disabled', self.theme.colors.bg)],
                         'lightcolor': [
-                            ('focus !disabled', self.theme.colors.get(color))],
+                            ('focus !disabled', self.theme.colors.get(color)),
+                            ('hover !disabled', self.theme.colors.get(color))],
                         'darkcolor': [
-                            ('focus !disabled', self.theme.colors.get(color))]}}})
+                            ('focus !disabled', self.theme.colors.get(color)),
+                            ('hover !disabled', self.theme.colors.get(color))]}}})
 
     def _style_radiobutton(self):
         """
