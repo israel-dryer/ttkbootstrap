@@ -22,6 +22,7 @@ Looking for more? Create your own themes with :ref:`TTK Creator <ttkcreator>`
    install
    gettingstarted
    gallery
+   widgets
    usage
    reference
    creator
