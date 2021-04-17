@@ -1,7 +1,7 @@
 Widgets
 =======
 
-Documentation for widgets... in process
+Documentation, examples, and tips for ttk widgets (in progress)
 
 .. toctree::
     :maxdepth: 1
