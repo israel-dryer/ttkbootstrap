@@ -27,6 +27,5 @@ class Screenshot:
         img = ImageGrab.grab(bbox=bbox)
 
         # image name
-        filename = 'images/' + pathlib.Path(self.filename).stem + '.png'
-        img.save(filename, 'png')
-        print(filename)
+        img.save(self.filename, 'png')
+        print(self.filename)

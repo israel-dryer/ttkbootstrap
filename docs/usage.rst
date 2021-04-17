@@ -1,7 +1,7 @@
 .. _stylingwidgets:
 
-How to style widgets
-====================
+How to style
+============
 ttkbootstrap **light** and **dark** themes are generated at run-time. Generally, the ``ttkbootstrap.Style`` api is
 identical to the ``ttk.Style`` api.
 
