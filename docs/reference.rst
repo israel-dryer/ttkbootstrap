@@ -1,5 +1,5 @@
 Reference
-=========
+#########
 .. _colors:
 
 Colors
