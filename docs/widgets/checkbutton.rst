@@ -31,27 +31,46 @@ Square toggle button
 How to use
 ==========
 
+Create a default **checkbutton**
+
 .. code-block:: python
 
-    # default checkbutton
     ttk.Checkbutton(parent, text='include', value=1)
 
-    # default toolbutton
+Create a default **toolbutton**
+
+.. code-block:: python
+
     ttk.Checkbutton(parent, text='include', style='Toolbutton')
 
-    # default outline toolbutton
+Create a default **outline toolbutton**
+
+.. code-block:: python
+
     ttk.Checkbutton(parent, text='include', style='Outline.Toolbutton')
 
-    # default round toggle toolbutton
+Create a default **round toggle** toolbutton
+
+.. code-block:: python
+
     ttk.Checkbutton(parent, text='include', style='Roundtoggle.Toolbutton')
 
-    # default square toggle toolbutton
+Create a default **square toggle** toolbutton
+
+.. code-block:: python
+
     ttk.Checkbutton(parent, text='include', style='Squaretoggle.Toolbutton')
 
-    # "info" checkbutton
+Create an **'info' checkbutton**
+
+.. code-block:: python
+
     ttk.Checkbutton(parent, text='include', style='info.TCheckbutton')
 
-    # "warning" outline toolbutton
+Create a **'warning' outline toolbutton**
+
+.. code-block:: python
+
     ttk.Checkbutton(parent, text="include", style='warning.Outline.Toolbutton')
 
 
@@ -89,24 +108,35 @@ Style options
 :font: `font`
 :padding: `padding`
 
+Create a custom style
+---------------------
+
+Change the **font** and **font-size** on all buttons
+
 .. code-block:: python
 
-    # change the font and font-size on all buttons
     Style.configure('TCheckbutton', font=('Helvetica', 12))
 
-    # change the foreground color when the checkbutton is selected
+Change the **foreground color** when the checkbutton is **selected**
+
+.. code-block:: python
+
     Style.map('TCheckbutton', foreground=[
         ('disabled', 'white'),
         ('selected', 'yellow'),
         ('!selected', 'gray')])
 
-    # subclass an existing style to create a new one, using the pattern 'newstyle.OldStyle'
+Subclass an existing style to create a new one, using the pattern 'newstyle.OldStyle'
+
+.. code-block:: python
+
     Style.configure('custom.TCheckbutton', foreground='white', font=('Helvetica', 24))
 
-    # use a custom style
+Use a custom style
+
+.. code-block:: python
+
     ttk.Checkbutton(parent, text='include', style='custom.TCheckbutton')
-
-
 
 References
 ==========

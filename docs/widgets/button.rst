@@ -13,21 +13,29 @@ classes are further subclassed by each of the theme colors to produce the follow
 How to use
 ==========
 
+Create a default **solid button**
+
 .. code-block:: python
 
-    # default solid button
     ttk.Button(parent, text='Submit')
 
-    # default outline button
+Create a default **outline button**
+
+.. code-block:: python
+
     ttk.Button(parent, text='Submit', style='Outline.TButton')
 
-    # "info" solid button
+Create an **'info' solid button**
+
+.. code-block:: python
+
     ttk.Button(parent, text='Submit', style='info.TButton')
 
-    # "warning" outline button
+Create a **'warning' outline button**
+
+.. code-block:: python
+
     ttk.Button(parent, text="Submit", style='warning.Outline.TButton')
-
-
 
 Configuration
 =============
@@ -66,21 +74,33 @@ Style options
 :shiftrelief: `amount`
 :width: `amount`
 
+Create a custom style
+---------------------
+
+Change the **font** and **font-size** on all buttons
 
 .. code-block:: python
 
-    # change the font and font-size on all buttons
     Style.configure('TButton', font=('Helvetica', 12))
 
-    # change the foreground color when the button is active
+Change the **foreground color** when the button is active
+
+.. code-block:: python
+
     Style.map('TButton', foreground=[
         ('disabled', 'white'),
         ('active', 'yellow')])
 
-    # subclass an existing style to create a new one, using the pattern 'newstyle.OldStyle'
+Subclass an existing style to create a new one, using the pattern 'newstyle.OldStyle'
+
+.. code-block:: python
+
     Style.configure('custom.TButton', background='red', foreground='white', font=('Helvetica', 24))
 
-    # use a custom style
+Use a custom style
+
+.. code-block:: python
+
     ttk.Button(parent, text='Submit', style='custom.TButton')
 
 
