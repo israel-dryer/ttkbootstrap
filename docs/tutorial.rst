@@ -34,8 +34,8 @@ object:
     style = Style(theme='darkly')
 
 
-Check out the :ref:`Styling widgets <stylingwidgets>` section to learn more about how theming works and how you can
-apply different colors and styles to the widgets.
+Check out the Widgets_ section to learn more about how theming works. Each widget has a section on usage and
+*configuration options*.
 
 Choose a theme
 ==============
