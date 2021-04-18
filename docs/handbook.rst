@@ -8,4 +8,5 @@ Handbook
 
    overview
    tutorial
+   themes
    widgets

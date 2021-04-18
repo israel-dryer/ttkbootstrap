@@ -17,7 +17,6 @@ There are more than a dozen :ref:`built-in dark and light themes <themes>`
 
    installation
    handbook
-   themes
    gallery
    cookbook
    reference
