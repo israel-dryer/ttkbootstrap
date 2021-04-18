@@ -144,3 +144,4 @@ References
 - https://www.pythontutorial.net/tkinter/tkinter-checkbox/
 - https://anzeljg.github.io/rin2/book2/2405/docs/tkinter/ttk-Checkbutton.html
 - https://www.tcl.tk/man/tcl8.6/TkCmd/ttk_checkbutton.htm
+- https://tkdocs.com/widgets/checkbutton.html
