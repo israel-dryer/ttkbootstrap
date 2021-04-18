@@ -5,7 +5,7 @@
     engine is extremely powerful. This project was created to harness the power of ttk's (and thus Python's) existing
     built-in theme engine to create modern and professional-looking user interfaces which are inspired by, and in many
     cases, whole-sale rip-off's of the themes found on https://bootswatch.com/. Even better, you have the abilty to
-    create and use your own custom themes using :ref:`TTK Creator <ttkcreator>`.
+    create and use your own custom themes using TTK Creator.
 
     A bootstrap approach to style
     =============================
@@ -1882,7 +1882,13 @@ class StylerTTK:
                 embossed, image, stipple, background
         """
         self.settings.update({
-            'TLabel': {'configure': {'foreground': self.theme.colors.fg}}})
+            'TLabel': {
+                'configure': {
+                    'foreground': self.theme.colors.fg}},
+            'Inverse.TLabel': {
+                'configure': {
+                    'foreground': self.theme.colors.bg,
+                    'background': self.theme.colors.fg}}})
 
         for color in self.theme.colors:
             self.settings.update({
