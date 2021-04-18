@@ -32,6 +32,7 @@ Create an **'info' labelframe**
 
 Style configuration
 ===================
+Use the following classes, states, and options when configuring or modifying a new ttk labelframe style.
 
 Class names
 -----------
