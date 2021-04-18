@@ -28,6 +28,7 @@ Create and use a **notebook**
 
 Configuration
 =============
+Use the following classes, states, and options when configuring or modifying a new ttk notebook style.
 
 Class names
 -----------
