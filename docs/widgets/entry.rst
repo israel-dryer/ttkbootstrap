@@ -2,8 +2,8 @@ Entry
 #####
 
 The `ttk.Entry` widget displays a one-line text string and allows that string to be edited by the user. The value of
-the string may be linked to a Tcl variable with the ``textvariable`` option. Entry widgets support horizontal scrolling
-with the standard ``xscrollcommand`` option and ``xview`` widget command.
+the string may be linked to a tkinter variable with the ``textvariable`` option. Entry widgets support horizontal
+scrolling with the standard ``xscrollcommand`` option and ``xview`` widget command.
 
 Styles
 ======

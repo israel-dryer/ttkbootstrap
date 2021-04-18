@@ -63,7 +63,7 @@ Style options
 :anchor: `e, w, center`
 :background: `color`
 :bordercolor: `color`
-:compound: `top, bottom, left right`
+:compound: `top, bottom, left, right`
 :darkcolor: `color`
 :embossed: `amount`
 :focuscolor: `color`
