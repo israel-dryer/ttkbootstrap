@@ -8,7 +8,7 @@ directly into the entry (when it has focus), or edit the current text.
 Styles
 ======
 
-The ``ttk.Combobox`` includes the **TCombobox** class. This class is further subclassed by each of the theme colors to
+The ``ttk.Combobox`` includes the **TCombobox** class. This style is further subclassed by each of the theme colors to
 produce the following color and style combinations.
 
 .. image:: images/combobox_primary.png

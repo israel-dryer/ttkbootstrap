@@ -1,12 +1,17 @@
 Button
 ######
-A ``ttk.Button`` widget displays a textual label and/or image, and evaluates a command when pressed.
+A ``ttk.Button`` widget displays a textual string, bitmap or image. If text is displayed, it must all be in a single
+font, but it can occupy multiple lines on the screen (if it contains newlines or if wrapping occurs because of the
+``wraplength`` option) and one of the characters may optionally be underlined using the ``underline`` option. It can
+display itself in either of three different ways, according to the ``state`` option; it can be made to appear raised,
+sunken, or flat; and it can be made to flash. When a user invokes the button (by pressing mouse button 1 with the
+cursor over the button), then the Tcl command specified in the ``command`` option is invoked.
 
 Styles
 ======
-The ``ttk.Button`` includes the **TButton** and **Outline.TButton** style classes. The **TButton** class is applied to
-all buttons by default. Other styles must be specified in the button's ``style`` option. These two primary style
-classes are further subclassed by each of the theme colors to produce the following color and style combinations:
+The ``ttk.Button`` includes the **TButton** and **Outline.TButton** style classes. The **TButton** style is applied to
+all buttons by default. Other styles must be specified in the button's ``style`` option. These two primary styles are
+further subclassed by each of the theme colors to produce the following color and style combinations:
 
 .. image:: images/buttons.png
 
@@ -106,8 +111,8 @@ Use a custom style
 
 Tips & tricks
 =============
-Apply the **TLabel** style class to remove the button's hover effects and to invert the colors. The button will still
-behave as a button, though it will look like a standard label.  Conversely, you can apply a **TButton** class to a label
+Apply the **TLabel** style to remove the button's hover effects and to invert the colors. The button will still
+behave as a button, though it will look like a standard label.  Conversely, you can apply a **TButton** style to a label
 to inherit the colors and hover effects of the button.
 
 References
