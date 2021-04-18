@@ -1,7 +1,7 @@
 Checkbutton
 ###########
 A ``ttk.Checkbutton`` widget is used to show or change a setting. It has two states, selected and deselected. The state
-of the checkbutton may be linked to a Tcl variable.
+of the checkbutton may be linked to a tkinter variable.
 
 Styles
 ======
