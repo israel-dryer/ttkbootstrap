@@ -1889,6 +1889,11 @@ class StylerTTK:
                 f'{color}.TLabel': {
                     'configure': {
                         'foreground': self.theme.colors.get(color)}},
+                f'{color}.Inverse.TLabel': {
+                    'configure': {
+                        'foreground': self.theme.colors.selectfg,
+                        'background': self.theme.colors.get(color)}},
+                # TODO deprecate this version down the road
                 f'{color}.Invert.TLabel': {
                     'configure': {
                         'foreground': self.theme.colors.selectfg,
