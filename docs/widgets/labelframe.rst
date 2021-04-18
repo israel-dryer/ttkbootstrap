@@ -3,8 +3,8 @@ Labelframe
 A ``ttk.Labelframe`` widget is a container used to group other widgets together. It has an optional label, which may be
 a plain text string or another widget.
 
-Styles
-======
+Overview
+========
 The ``ttk.Labelframe`` includes the **TLabelframe** style class. The **TLabelframe** style is applied to
 all Labelframes by default. Other styles must be specified with the ``style`` option. This style is
 further subclassed by each of the theme colors to produce the following color and style combinations:
@@ -30,8 +30,8 @@ Create an **'info' labelframe**
     ttk.Labelframe(parent, text='My widgets', style='info.TLabelframe')
 
 
-Configuration
-=============
+Style configuration
+===================
 
 Class names
 -----------

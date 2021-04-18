@@ -2,8 +2,8 @@ Frame
 #####
 A ``ttk.Frame`` widget is a container, used to group other widgets together.
 
-Styles
-======
+Overview
+========
 The ``ttk.Frame`` includes the **TFrame** class. This class is further subclassed by each of the theme colors to
 produce the following color and style combinations.
 
@@ -28,8 +28,8 @@ Create an **'info' frame**
 
     ttk.Frame(parent, style='info.TFrame')
 
-Configuration
-=============
+Style configuration
+===================
 
 Class names
 -----------
@@ -49,7 +49,7 @@ Style options
 :relief: `flat, groove, raised, ridge, solid, sunken`
 
 Create a custom style
----------------------
+=====================
 
 Subclass an existing style to create a new one, using the pattern 'newstyle.OldStyle'
 
@@ -66,7 +66,7 @@ Use a custom style
 Tips & tricks
 =============
 If you use a themed **Frame** widget, then you will likely want to use a **Label** widget with an *Inverse.TLabel*
-style. This will create the effect that is presented in the Styles_ section, with the the label background matching the
+style. This will create the effect that is presented in the Overview_, with the the label background matching the
 background color of its parent.
 
 .. code-block:: python

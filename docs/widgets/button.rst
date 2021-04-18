@@ -7,8 +7,8 @@ display itself in either of three different ways, according to the ``state`` opt
 sunken, or flat; and it can be made to flash. When a user invokes the button (by pressing mouse button 1 with the
 cursor over the button), then the Tcl command specified in the ``command`` option is invoked.
 
-Styles
-======
+Overview
+========
 The ``ttk.Button`` includes the **TButton** and **Outline.TButton** style classes. The **TButton** style is applied to
 all buttons by default. Other styles must be specified with the ``style`` option. These two primary styles are
 further subclassed by each of the theme colors to produce the following color and style combinations:
@@ -42,8 +42,8 @@ Create a **'warning' outline button**
 
     ttk.Button(parent, text="Submit", style='warning.Outline.TButton')
 
-Configuration
-=============
+Style configuration
+===================
 Use the following classes, states, and options when configuring or modifying a new ttk button style.
 
 Class names
@@ -80,7 +80,7 @@ Style options
 :width: `amount`
 
 Create a custom style
----------------------
+=====================
 
 Change the **font** and **font-size** on all buttons
 

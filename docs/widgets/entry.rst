@@ -5,8 +5,8 @@ The `ttk.Entry` widget displays a one-line text string and allows that string to
 the string may be linked to a tkinter variable with the ``textvariable`` option. Entry widgets support horizontal
 scrolling with the standard ``xscrollcommand`` option and ``xview`` widget command.
 
-Styles
-======
+Overview
+========
 The ``ttk.Entry`` includes the **TEntry** class. This style is further subclassed by each of the theme colors to
 produce the following color and style combinations.
 
@@ -43,8 +43,8 @@ Create an **'info' entry**
 
     ttk.Entry(parent, style='info.TEntry')
 
-Configuration
-=============
+Style configuration
+===================
 
 Use the following classes, states, and options when configuring or modifying a new ``ttk.Entry`` style.
 
@@ -76,7 +76,7 @@ Style options
 :selectforeground: `color`
 
 Create a custom style
----------------------
+=====================
 
 Change the **font** and **font-size** on all entry widgets
 
