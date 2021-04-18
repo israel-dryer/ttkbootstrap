@@ -7,7 +7,7 @@ with the standard ``xscrollcommand`` option and ``xview`` widget command.
 
 Styles
 ======
-The ``ttk.Entry`` includes the **TEntry** class. This class is further subclassed by each of the theme colors to
+The ``ttk.Entry`` includes the **TEntry** class. This style is further subclassed by each of the theme colors to
 produce the following color and style combinations.
 
 .. image:: images/entry_primary.png
@@ -46,7 +46,7 @@ Create an **'info' entry**
 Configuration
 =============
 
-Use the following classes, states, and options when configuring or modifying a new ttk combobox style.
+Use the following classes, states, and options when configuring or modifying a new ``ttk.Entry`` style.
 
 Class names
 -----------
@@ -90,7 +90,6 @@ Change the **foreground color** when in different states
 
     Style.map('TEntry', foreground=[
         ('disabled', 'gray'),
-        ('pressed !disabled', 'blue'),
         ('focus !disabled', 'green'),
         ('hover !disabled', 'yellow')])
 

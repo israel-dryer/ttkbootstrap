@@ -1,12 +1,13 @@
 Checkbutton
 ###########
-A ``ttk.Checkbutton`` widget is an on/off widget.
+A ``ttk.Checkbutton`` widget is used to show or change a setting. It has two states, selected and deselected. The state
+of the checkbutton may be linked to a Tcl variable.
 
 Styles
 ======
 The ``ttk.Checkbutton`` includes the **TCheckbutton**, **Toolbutton**, **Outline.Toolbutton**,
-**Roundtoggle.Toolbutton**, and **Squaretoggle.Toolbutton** style classes. The **TCheckbutton** class is applied to all
-checkbuttons by default. Other styles must be specified in the checkbutton's ``style`` option. These primary classes are
+**Roundtoggle.Toolbutton**, and **Squaretoggle.Toolbutton** style classes. The **TCheckbutton** style is applied to all
+checkbuttons by default. Other styles must be specified in the checkbutton's ``style`` option. These primary styles are
 further subclassed by each of the theme colors to produce the following color and style combinations:
 
 Classic checkbutton
