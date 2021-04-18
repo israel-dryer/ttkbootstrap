@@ -7,7 +7,7 @@ Styles
 ======
 The ``ttk.Checkbutton`` includes the **TCheckbutton**, **Toolbutton**, **Outline.Toolbutton**,
 **Roundtoggle.Toolbutton**, and **Squaretoggle.Toolbutton** style classes. The **TCheckbutton** style is applied to all
-checkbuttons by default. Other styles must be specified in the checkbutton's ``style`` option. These primary styles are
+checkbuttons by default. Other styles must be specified with the ``style`` option. These primary styles are
 further subclassed by each of the theme colors to produce the following color and style combinations:
 
 Classic checkbutton

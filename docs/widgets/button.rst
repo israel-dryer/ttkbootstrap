@@ -10,7 +10,7 @@ cursor over the button), then the Tcl command specified in the ``command`` optio
 Styles
 ======
 The ``ttk.Button`` includes the **TButton** and **Outline.TButton** style classes. The **TButton** style is applied to
-all buttons by default. Other styles must be specified in the button's ``style`` option. These two primary styles are
+all buttons by default. Other styles must be specified with the ``style`` option. These two primary styles are
 further subclassed by each of the theme colors to produce the following color and style combinations:
 
 .. image:: images/buttons.png
