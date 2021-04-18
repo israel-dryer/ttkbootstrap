@@ -3,8 +3,8 @@ Label
 A ``ttk.Label`` widget displays a textual label and/or image. The label may be linked to a tkinter variable to
 automatically change the displayed text.
 
-Styles
-======
+Overview
+========
 The ``ttk.Label`` includes the **TLabel** and **Inverse.TLabel** style classes. The **TLabel** style is applied to
 all labels by default. Other styles must be specified with the ``style`` option. These two primary styles are
 further subclassed by each of the theme colors to produce the following color and style combinations:
@@ -43,8 +43,8 @@ Create a **'warning' inverse label**
 
     ttk.Label(parent, text="python is great", style='warning.Inverse.TLabel')
 
-Configuration
-=============
+Style configuration
+===================
 Use the following classes, states, and options when configuring or modifying a new ttk label style.
 
 Class names
@@ -74,7 +74,7 @@ Style options
 :width: `amount`
 
 Create a custom style
----------------------
+=====================
 Change the **font** and **font-size** on all labels
 
 .. code-block:: python

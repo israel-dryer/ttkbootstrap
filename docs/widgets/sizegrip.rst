@@ -1,12 +1,8 @@
 Sizegrip
 ########
 
-Styles
-======
-
-
-Examples
---------
+Overview
+========
 
 How to use
 ==========
@@ -25,7 +21,7 @@ Style options
 -------------
 
 Create a custom style
----------------------
+=====================
 
 
 References

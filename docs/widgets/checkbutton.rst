@@ -3,8 +3,8 @@ Checkbutton
 A ``ttk.Checkbutton`` widget is used to show or change a setting. It has two states, selected and deselected. The state
 of the checkbutton may be linked to a tkinter variable.
 
-Styles
-======
+Overview
+========
 The ``ttk.Checkbutton`` includes the **TCheckbutton**, **Toolbutton**, **Outline.Toolbutton**,
 **Roundtoggle.Toolbutton**, and **Squaretoggle.Toolbutton** style classes. The **TCheckbutton** style is applied to all
 checkbuttons by default. Other styles must be specified with the ``style`` option. These primary styles are
@@ -75,8 +75,8 @@ Create a **'warning' outline toolbutton**
     ttk.Checkbutton(parent, text="include", style='warning.Outline.Toolbutton')
 
 
-Configuration
-=============
+Style configuration
+===================
 Use the following classes, states, and options when configuring or modifying a new ttk checkbutton style. TTK Bootstrap
 uses an image layout for this widget, so not all of these options will be available... for example: ``indicatormargin``.
 However, if you decide to create a new widget, these should be available, depending on the style you are using as a
@@ -110,7 +110,7 @@ Style options
 :padding: `padding`
 
 Create a custom style
----------------------
+=====================
 
 Change the **font** and **font-size** on all buttons
 

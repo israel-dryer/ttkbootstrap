@@ -5,8 +5,8 @@ text entry area, with a downward-pointing arrow. When the user clicks on the arr
 user clicks on one, that choice replaces the current contents of the entry. However, the user may still type text
 directly into the entry (when it has focus), or edit the current text.
 
-Styles
-======
+Overview
+========
 
 The ``ttk.Combobox`` includes the **TCombobox** class. This style is further subclassed by each of the theme colors to
 produce the following color and style combinations.
@@ -45,8 +45,8 @@ Create an **'info' combobox**
     ttk.Combobox(parent, style='info.TCombobox')
 
 
-Configuration
-=============
+Style configuration
+===================
 
 Use the following classes, states, and options when configuring or modifying a new ttk combobox style.
 
@@ -88,7 +88,7 @@ Style options
     - ``tk.option_add('*TCombobox*Listbox.selectForeground', color)``
 
 Create a custom style
----------------------
+=====================
 
 Change the **font** and **font-size** on all comboboxes
 
