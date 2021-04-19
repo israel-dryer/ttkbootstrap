@@ -10,24 +10,19 @@ The ``ttk.Checkbutton`` includes the **TCheckbutton**, **Toolbutton**, **Outline
 checkbuttons by default. Other styles must be specified with the ``style`` option. These primary styles are
 further subclassed by each of the theme colors to produce the following color and style combinations:
 
-Classic checkbutton
--------------------
-.. image:: images/checkbutton.png
+.. figure:: images/checkbutton.png
 
-Classic toolbutton
-------------------
 
-.. image:: images/toolbutton.png
+.. figure:: images/checkbutton_toolbutton.png
 
-Round toggle button
--------------------
 
-.. image:: images/roundtoggle.png
+.. figure:: images/checkbutton_outline_toolbutton.png
 
-Square toggle button
---------------------
 
-.. image:: images/squaretoggle.png
+.. figure:: images/roundtoggle.png
+
+
+.. figure:: images/squaretoggle.png
 
 How to use
 ==========
@@ -112,7 +107,7 @@ Style options
 Create a custom style
 =====================
 
-Change the **font** and **font-size** on all buttons
+Change the **font** and **font-size** on all checkbuttons
 
 .. code-block:: python
 
