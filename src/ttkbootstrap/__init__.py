@@ -942,6 +942,28 @@ class StylerTTK:
                          ('pressed', self.theme_images[f'{color}_pressed']),
                          ('hover', self.theme_images[f'{color}_hover']))}})
 
+    def _create_scrollbar_images(self):
+        """
+        Create assets needed for scrollbar arrows
+        """
+        font_size = 13
+        fnt = ImageFont.truetype(r'C:\Users\us43060\PycharmProjects\ttk-bootstrap\src\ttkbootstrap\Symbola.ttf',
+                                 font_size)
+
+        hsup_im = Image.new('RGBA', (font_size, font_size))
+        up_draw = ImageDraw.Draw(hsup_im)
+        up_draw.text((1, 5), "🞁", font=fnt,
+                     fill=self.theme.colors.inputfg if self.theme.type == 'light' else
+                     Colors.update_hsv(self.theme.colors.selectbg, vd=0.35, sd=-0.1))
+        self.theme_images['hsup'] = ImageTk.PhotoImage(hsup_im)
+
+        hsdown_im = Image.new('RGBA', (font_size, font_size))
+        down_draw = ImageDraw.Draw(hsdown_im)
+        down_draw.text((1, -4), "🞃", font=fnt,
+                       fill=self.theme.colors.inputfg if self.theme.type == 'light' else
+                       Colors.update_hsv(self.theme.colors.selectbg, vd=0.35, sd=-0.1))
+        self.theme_images['hsdown'] = ImageTk.PhotoImage(hsdown_im)
+
     def _style_scrollbar(self):
         """
         Create style configuration for ttk scrollbar: *ttk.Scrollbar*. This theme uses elements from the *alt* theme to
@@ -954,23 +976,43 @@ class StylerTTK:
             - Scrollbar.downarrow: arrowsize, background, bordercolor, relief, arrowcolor
             - Scrollbar.thumb: width, background, bordercolor, relief, orient
         """
+        self._create_scrollbar_images()
+
         self.settings.update({
-            'Vertical.Scrollbar.trough': {'element create': ('from', 'alt')},
-            'Vertical.Scrollbar.thumb': {'element create': ('from', 'alt')},
-            'Vertical.Scrollbar.uparrow': {'element create': ('from', 'alt')},
-            'Vertical.Scrollbar.downarrow': {'element create': ('from', 'alt')},
-            'Horizontal.Scrollbar.trough': {'element create': ('from', 'alt')},
-            'Horizontal.Scrollbar.thumb': {'element create': ('from', 'alt')},
-            'Horizontal.Scrollbar.leftarrow': {'element create': ('from', 'alt')},
-            'Horizontal.Scrollbar.rightarrow': {'element create': ('from', 'alt')},
-            'TScrollbar': {'configure': {
-                'troughrelief': 'flat',
-                'relief': 'flat',
-                'troughborderwidth': 2,
-                'troughcolor': self.theme.colors.inputbg,
-                'background': Colors.update_hsv(self.theme.colors.inputbg, vd=-0.1),
-                'arrowsize': 16,
-                'arrowcolor': self.theme.colors.inputfg}}})
+            'Vertical.Scrollbar.trough': {
+                'element create': ('from', 'alt')},
+            'Vertical.Scrollbar.thumb': {
+                'element create': ('from', 'alt')},
+            'Vertical.Scrollbar.uparrow': {
+                'element create': ('image', self.theme_images['hsup'])},
+            'Vertical.Scrollbar.downarrow': {
+                'element create': ('image', self.theme_images['hsdown'])},
+            'Horizontal.Scrollbar.trough': {
+                'element create': ('from', 'alt')},
+            'Horizontal.Scrollbar.thumb': {
+                'element create': ('from', 'alt')},
+            'Horizontal.Scrollbar.leftarrow': {
+                'element create': ('from', 'alt')},
+            'Horizontal.Scrollbar.rightarrow': {
+                'element create': ('from', 'alt')},
+            'TScrollbar': {
+                'configure': {
+                    'troughrelief': 'flat',
+                    'relief': 'flat',
+                    'troughborderwidth': 2,
+                    'troughcolor': Colors.update_hsv(self.theme.colors.bg, vd=-0.05),
+                    'background':
+                        Colors.update_hsv(self.theme.colors.bg, vd=-0.15) if self.theme.type == 'light' else
+                        Colors.update_hsv(self.theme.colors.selectbg, vd=0.25, sd=-0.1),
+                    'width': 16},
+                'map': {
+                    'background': [
+                        ('pressed',
+                         Colors.update_hsv(self.theme.colors.bg, vd=-0.35) if self.theme.type == 'light' else
+                         Colors.update_hsv(self.theme.colors.selectbg, vd=0.05)),
+                        ('active',
+                         Colors.update_hsv(self.theme.colors.bg, vd=-0.25) if self.theme.type == 'light' else
+                         Colors.update_hsv(self.theme.colors.selectbg, vd=0.15))]}}})
 
     def _style_spinbox(self):
         """
