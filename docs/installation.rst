@@ -1,7 +1,7 @@
 Installation
 ============
 
-Installing ttkbootstrap is easy!. There are a few options for installing.
+Installing ttkbootstrap is easy! There are a few options for installing.
 
 PyPI
 ----
