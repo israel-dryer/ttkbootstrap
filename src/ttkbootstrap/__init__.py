@@ -1542,15 +1542,17 @@ class StylerTTK:
         # pressed and hover settings
         pressed_vd = -0.2
         hover_vd = -0.1
+        normal_sd = -0.5
+        normal_vd = 0.1
 
         self.settings.update({
             'Toolbutton': {
                 'configure': {
                     'foreground': self.theme.colors.selectfg,
-                    'background': self.theme.colors.primary,
-                    'bordercolor': self.theme.colors.primary,
-                    'darkcolor': self.theme.colors.primary,
-                    'lightcolor': self.theme.colors.primary,
+                    'background': Colors.update_hsv(self.theme.colors.primary, sd=normal_sd, vd=normal_vd),
+                    'bordercolor': Colors.update_hsv(self.theme.colors.primary, sd=normal_sd, vd=normal_vd),
+                    'darkcolor': Colors.update_hsv(self.theme.colors.primary, sd=normal_sd, vd=normal_vd),
+                    'lightcolor': Colors.update_hsv(self.theme.colors.primary, sd=normal_sd, vd=normal_vd),
                     'font': self.theme.font,
                     'anchor': 'center',
                     'relief': 'raised',
@@ -1562,34 +1564,34 @@ class StylerTTK:
                         ('disabled', disabled_fg)],
                     'background': [
                         ('disabled', disabled_bg),
-                        ('pressed !disabled', Colors.update_hsv(self.theme.colors.primary, vd=pressed_vd)),
-                        ('selected !disabled', Colors.update_hsv(self.theme.colors.primary, vd=pressed_vd)),
-                        ('hover !disabled', Colors.update_hsv(self.theme.colors.primary, vd=hover_vd))],
+                        ('pressed !disabled', self.theme.colors.primary),
+                        ('selected !disabled', self.theme.colors.primary),
+                        ('hover !disabled', self.theme.colors.primary)],
                     'bordercolor': [
                         ('disabled', disabled_bg),
-                        ('pressed !disabled', Colors.update_hsv(self.theme.colors.primary, vd=pressed_vd)),
-                        ('selected !disabled', Colors.update_hsv(self.theme.colors.primary, vd=pressed_vd)),
-                        ('hover !disabled', Colors.update_hsv(self.theme.colors.primary, vd=hover_vd))],
+                        ('selected !disabled', self.theme.colors.primary),
+                        ('pressed !disabled', self.theme.colors.primary),
+                        ('hover !disabled', self.theme.colors.primary)],
                     'darkcolor': [
                         ('disabled', disabled_bg),
-                        ('pressed !disabled', Colors.update_hsv(self.theme.colors.primary, vd=pressed_vd)),
-                        ('selected !disabled', Colors.update_hsv(self.theme.colors.primary, vd=pressed_vd)),
-                        ('hover !disabled', Colors.update_hsv(self.theme.colors.primary, vd=hover_vd))],
+                        ('pressed !disabled', self.theme.colors.primary),
+                        ('selected !disabled', self.theme.colors.primary),
+                        ('hover !disabled', self.theme.colors.primary)],
                     'lightcolor': [
                         ('disabled', disabled_bg),
-                        ('pressed !disabled', Colors.update_hsv(self.theme.colors.primary, vd=pressed_vd)),
-                        ('selected !disabled', Colors.update_hsv(self.theme.colors.primary, vd=pressed_vd)),
-                        ('hover !disabled', Colors.update_hsv(self.theme.colors.primary, vd=hover_vd))]}}})
+                        ('pressed !disabled', self.theme.colors.primary),
+                        ('selected !disabled', self.theme.colors.primary),
+                        ('hover !disabled', self.theme.colors.primary)]}}})
 
         for color in self.theme.colors:
             self.settings.update({
                 f'{color}.Toolbutton': {
                     'configure': {
                         'foreground': self.theme.colors.selectfg,
-                        'background': self.theme.colors.get(color),
-                        'bordercolor': self.theme.colors.get(color),
-                        'darkcolor': self.theme.colors.get(color),
-                        'lightcolor': self.theme.colors.get(color),
+                        'background': Colors.update_hsv(self.theme.colors.get(color), sd=normal_sd, vd=normal_vd),
+                        'bordercolor': Colors.update_hsv(self.theme.colors.get(color), sd=normal_sd, vd=normal_vd),
+                        'darkcolor': Colors.update_hsv(self.theme.colors.get(color), sd=normal_sd, vd=normal_vd),
+                        'lightcolor': Colors.update_hsv(self.theme.colors.get(color), sd=normal_sd, vd=normal_vd),
                         'relief': 'raised',
                         'focusthickness': 0,
                         'focuscolor': '',
@@ -1599,22 +1601,24 @@ class StylerTTK:
                             ('disabled', disabled_fg)],
                         'background': [
                             ('disabled', disabled_bg),
-                            ('pressed !disabled', Colors.update_hsv(self.theme.colors.get(color), vd=pressed_vd)),
-                            ('selected !disabled', Colors.update_hsv(self.theme.colors.get(color), vd=pressed_vd)),
-                            ('hover !disabled', Colors.update_hsv(self.theme.colors.get(color), vd=hover_vd))],
+                            ('pressed !disabled', self.theme.colors.get(color)),
+                            ('selected !disabled', self.theme.colors.get(color)),
+                            ('hover !disabled', self.theme.colors.get(color))],
                         'bordercolor': [
                             ('disabled', disabled_bg),
-                            ('hover !disabled', Colors.update_hsv(self.theme.colors.get(color), vd=hover_vd))],
+                            ('pressed !disabled', self.theme.colors.get(color)),
+                            ('selected !disabled', self.theme.colors.get(color)),
+                            ('hover !disabled', self.theme.colors.get(color))],
                         'darkcolor': [
                             ('disabled', disabled_bg),
-                            ('pressed !disabled', Colors.update_hsv(self.theme.colors.get(color), vd=pressed_vd)),
-                            ('selected !disabled', Colors.update_hsv(self.theme.colors.get(color), vd=pressed_vd)),
-                            ('hover !disabled', Colors.update_hsv(self.theme.colors.get(color), vd=hover_vd))],
+                            ('pressed !disabled', self.theme.colors.get(color)),
+                            ('selected !disabled', self.theme.colors.get(color)),
+                            ('hover !disabled', self.theme.colors.get(color))],
                         'lightcolor': [
                             ('disabled', disabled_bg),
-                            ('pressed !disabled', Colors.update_hsv(self.theme.colors.get(color), vd=pressed_vd)),
-                            ('selected !disabled', Colors.update_hsv(self.theme.colors.get(color), vd=pressed_vd)),
-                            ('hover !disabled', Colors.update_hsv(self.theme.colors.get(color), vd=hover_vd))]}}})
+                            ('pressed !disabled', self.theme.colors.get(color)),
+                            ('selected !disabled', self.theme.colors.get(color)),
+                            ('hover !disabled', self.theme.colors.get(color))]}}})
 
     def _style_outline_toolbutton(self):
         """
