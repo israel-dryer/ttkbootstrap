@@ -8,8 +8,8 @@ directly into the entry (when it has focus), or edit the current text.
 Overview
 ========
 
-The ``ttk.Combobox`` includes the **TCombobox** class. This style is further subclassed by each of the theme colors to
-produce the following color and style combinations.
+The ``ttk.Combobox`` includes the **TCombobox** class. The *primary* color is applied by default. This style is further
+subclassed by each of the theme colors to produce the following color and style combinations.
 
 .. image:: images/combobox_primary.png
 
@@ -24,7 +24,7 @@ produce the following color and style combinations.
 .. image:: images/combobox_danger.png
 
 As you can see, in a *normal* state, all styles look the same. What distinguishes them are the colors that are used
-for the *highlight* in an **active** (hover) state, and **focused** state.
+for the **active** and **focused** states.
 
 How to use
 ==========

@@ -5,13 +5,11 @@ A ``ttk.Frame`` widget is a container, used to group other widgets together.
 Overview
 ========
 The ``ttk.Frame`` includes the **TFrame** class. This class is further subclassed by each of the theme colors to
-produce the following color and style combinations.
+produce the following color and style combinations. The **TFrame** style is applied to all frame widgets by default and
+shares the same color as the theme background.
 
 .. image:: images/frame.png
 
-By default, the **TFrame** style is applied to all frame widgets with the theme background color. In this example, that
-color is *white*. However, you can easily use a themed color for the background by using one of the `color.TFrame`
-patterns above.
 
 How to use
 ==========

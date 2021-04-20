@@ -6,13 +6,14 @@ automatically change the displayed text.
 Overview
 ========
 The ``ttk.Label`` includes the **TLabel** and **Inverse.TLabel** style classes. The **TLabel** style is applied to
-all labels by default. Other styles must be specified with the ``style`` option. These two primary styles are
-further subclassed by each of the theme colors to produce the following color and style combinations:
+all labels by default and uses the theme's *inputfg* color for the foreground and the *background* color for the
+background. Other styles must be specified with the ``style`` option. These two primary styles are further subclassed
+by each of the theme colors to produce the following color and style combinations:
 
 .. image:: images/label.png
 
-The default background color of a **TLabel** is the theme background color. These colors can be *inverted* by using the
-**Invert.TLabel** style, which causes the *background* and *foreground* colors to reverse.
+The theme colors can be *inverted* by using the **Invert.TLabel** style, which causes the *background* and *foreground*
+colors to reverse.
 
 .. image:: images/label_inverse.png
 

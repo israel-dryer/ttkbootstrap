@@ -5,8 +5,8 @@ A ``ttk.Menubutton`` widget displays a textual label and/or image, and displays 
 Overview
 ========
 The ``ttk.Menubutton`` includes the **TMenubutton** and **Outline.TMenubutton** style classes. The **TMenubutton** style
-is applied to all Menubuttons by default. Other styles must be specified with the ``style`` option. These styles are
-further subclassed by each of the theme colors to produce the following color and style combinations:
+is applied to all Menubuttons by default and uses the theme *primary* color as the background. These two primary styles
+are further subclassed by each of the theme colors to produce the following color and style combinations:
 
 .. image:: images/menubutton.png
 

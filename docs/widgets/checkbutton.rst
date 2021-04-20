@@ -6,8 +6,8 @@ of the checkbutton may be linked to a tkinter variable.
 Overview
 ========
 The ``ttk.Checkbutton`` includes the **TCheckbutton**, **Toolbutton**, **Outline.Toolbutton**,
-**Roundtoggle.Toolbutton**, and **Squaretoggle.Toolbutton** style classes. The **TCheckbutton** style is applied to all
-checkbuttons by default. Other styles must be specified with the ``style`` option. These primary styles are
+**Roundtoggle.Toolbutton**, and **Squaretoggle.Toolbutton** style classes. The **primary.TCheckbutton** style is applied
+to all checkbuttons by default. Other styles must be specified with the ``style`` option. These primary styles are
 further subclassed by each of the theme colors to produce the following color and style combinations:
 
 .. figure:: images/checkbutton.png
