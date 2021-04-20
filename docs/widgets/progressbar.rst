@@ -10,11 +10,11 @@ The ``ttk.Progressbar`` includes the **Horizontal.TProgressbar**, **Vertical.TPr
 **Striped.Horizontal.TProgressbar** styles. These styles are further subclassed by each of the theme colors to produce
 the following color and style combinations (the *primary* color is the default for all progress bars:
 
-.. image:: images/pbar_horizontal.png
+.. image:: images/progressbar_horizontal.png
 
-.. image:: images/pbar_vertical.png
+.. image:: images/progressbar_vertical.png
 
-.. image:: images/pbar_horizontal_striped.png
+.. image:: images/progressbar_horizontal_striped.png
 
 How to use
 ==========
