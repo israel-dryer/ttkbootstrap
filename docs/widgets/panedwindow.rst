@@ -9,9 +9,6 @@ The ``ttk.PanedWindow`` includes the **TPanedwindow** style class. Presently, th
 light and dark themes, but no other styles are included. This may change in the future. See the `Create a custom style`_
 section to learn how to customize and create a paned window style.
 
-.. image:: images/panedwindow.png
-
-
 How to use
 ==========
 Create and use a **Paned Window**
