@@ -5,7 +5,7 @@
     engine is extremely powerful. This project was created to harness the power of ttk's (and thus Python's) existing
     built-in theme engine to create modern and professional-looking user interfaces which are inspired by, and in many
     cases, whole-sale rip-off's of the themes found on https://bootswatch.com/. Even better, you have the abilty to
-    create and use your own custom themes using TTK Creator.
+    :ref:`create and use your own custom themes <tutorial:create a new theme>` using TTK Creator.
 
     A bootstrap approach to style
     =============================
@@ -571,6 +571,7 @@ class StylerTTK:
         self._style_panedwindow()
         self._style_roundtoggle_toolbutton()
         self._style_squaretoggle_toolbutton()
+        self._style_sizegrip()
         self._style_defaults()
 
     def _style_defaults(self):
@@ -2366,14 +2367,41 @@ class StylerTTK:
                     'sashpad': 0,
                     'gripcount': 25}}})
 
-    def _style_sizegroup(self):
+    def _style_sizegrip(self):
         """
         Create style configuration for ttk sizegrip: *ttk.Sizegrip*
 
         The options available in this widget include:
 
             - Sizegrip.sizegrip: background
-
-        **NOT IMPLEMENTED as existing styles are already covering this.**
         """
-        pass
+        default_color = 'border' if self.theme.type == 'light' else 'inputbg'
+        self._create_sizegrip_images(default_color)
+        self.settings.update({
+            'Sizegrip.sizegrip': {
+                'element create': ('image', self.theme_images[f'{default_color}_sizegrip'])},
+            'TSizegrip': {
+                'layout': [('Sizegrip.sizegrip', {'side': 'bottom', 'sticky': 'se'})]}})
+
+        for color in self.theme.colors:
+            self._create_sizegrip_images(color)
+            self.settings.update({
+                f'{color}.Sizegrip.sizegrip': {
+                    'element create': ('image', self.theme_images[f'{color}_sizegrip'])},
+                f'{color}.TSizegrip': {
+                    'layout': [(f'{color}.Sizegrip.sizegrip', {'side': 'bottom', 'sticky': 'se'})]}})
+
+    def _create_sizegrip_images(self, colorname):
+        """
+        Create assets for size grip
+        """
+        im = Image.new('RGBA', (14, 14))
+        draw = ImageDraw.Draw(im)
+        color = self.theme.colors.get(colorname)
+        draw.rectangle((9, 3, 10, 4), fill=color)  # top
+        draw.rectangle((6, 6, 7, 7), fill=color)  # middle
+        draw.rectangle((9, 6, 10, 7), fill=color)
+        draw.rectangle((3, 9, 4, 10), fill=color)  # bottom
+        draw.rectangle((6, 9, 7, 10), fill=color)
+        draw.rectangle((9, 9, 10, 10), fill=color)
+        self.theme_images[f'{colorname}_sizegrip'] = ImageTk.PhotoImage(im)
