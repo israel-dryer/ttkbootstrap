@@ -1,5 +1,5 @@
 Slider
-#####
+######
 A ``ttk.Scale`` widget is typically used to control the numeric value of a linked variable that varies uniformly over
 some range. A scale displays a slider that can be moved along over a trough, with the relative position of the slider
 over the trough indicating the value of the variable.
@@ -33,6 +33,7 @@ Configuration
 Use the following classes, states, and options when configuring or modifying a new ttk progressbar style. TTK Bootstrap
 uses an image layout for this widget, so styling options will be limited, and not all options below will be available
 for ttk bootstrap themes.
+:ref:`tutorial:create a new theme` using TTK Creator if you want to change the default color scheme.
 
 Class names
 -----------

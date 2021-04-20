@@ -47,8 +47,9 @@ Create an **'info' combobox**
 
 Style configuration
 ===================
-
-Use the following classes, states, and options when configuring or modifying a new ttk combobox style.
+Use the following classes, states, and options when configuring or modifying a new ttk combobox style. Or,
+:ref:`create a new theme <tutorial:create a new theme>` using TTK Creator if you want to change the default color
+scheme.
 
 Class names
 -----------

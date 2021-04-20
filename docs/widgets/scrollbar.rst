@@ -36,7 +36,7 @@ Configuration
 Use the following classes, states, and options when configuring or modifying a new ttk scrollbar style. TTK Bootstrap
 uses an image layout for parts of this widget (the arrows), so styling options will not affect these elements. However,
 if you choose to create your own scrollbar layout and style, you may use whatever style options are available for your
-custom style.
+custom style. :ref:`tutorial:create a new theme` using TTK Creator if you want to change the default color scheme.
 
 Class names
 -----------

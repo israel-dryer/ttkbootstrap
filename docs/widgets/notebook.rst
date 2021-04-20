@@ -29,6 +29,7 @@ Create and use a **notebook**
 Configuration
 =============
 Use the following classes, states, and options when configuring or modifying a new ttk notebook style.
+:ref:`tutorial:create a new theme` using TTK Creator if you want to change the default color scheme.
 
 Class names
 -----------

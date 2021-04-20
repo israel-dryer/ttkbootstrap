@@ -44,7 +44,9 @@ Create a **'warning' outline button**
 
 Style configuration
 ===================
-Use the following classes, states, and options when configuring or modifying a new ttk button style.
+Use the following classes, states, and options when configuring or modifying a new ttk button style. Or,
+:ref:`create a new theme <tutorial:create a new theme>` using TTK Creator if you want to change the default color
+scheme.
 
 Class names
 -----------

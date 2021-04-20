@@ -47,6 +47,7 @@ Style configuration
 ===================
 
 Use the following classes, states, and options when configuring or modifying a new ``ttk.Entry`` style.
+:ref:`tutorial:create a new theme` using TTK Creator if you want to change the default color scheme.
 
 Class names
 -----------
