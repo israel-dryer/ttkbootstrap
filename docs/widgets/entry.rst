@@ -7,8 +7,8 @@ scrolling with the standard ``xscrollcommand`` option and ``xview`` widget comma
 
 Overview
 ========
-The ``ttk.Entry`` includes the **TEntry** class. This style is further subclassed by each of the theme colors to
-produce the following color and style combinations.
+The ``ttk.Entry`` includes the **TEntry** class. The *primary* color is applied by default. This style is further
+subclassed by each of the theme colors to produce the following color and style combinations.
 
 .. image:: images/entry_primary.png
 
@@ -23,8 +23,7 @@ produce the following color and style combinations.
 .. image:: images/entry_danger.png
 
 As you can see, in a *normal* state, all styles look the same. What distinguishes them are the colors that are used
-for the *highlight* in an **active** (hover) state, and **focused** state.
-
+for the **active** and **focused** states.
 
 How to use
 ==========

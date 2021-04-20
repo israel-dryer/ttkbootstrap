@@ -6,13 +6,11 @@ a plain text string or another widget.
 Overview
 ========
 The ``ttk.Labelframe`` includes the **TLabelframe** style class. The **TLabelframe** style is applied to
-all Labelframes by default. Other styles must be specified with the ``style`` option. This style is
-further subclassed by each of the theme colors to produce the following color and style combinations:
+all Labelframes by default and uses the theme *border* color for the frame and *background* color for the background.
+Other styles must be specified with the ``style`` option. This style is further subclassed by each of the theme colors
+to produce the following color and style combinations:
 
 .. image:: images/labelframe.png
-
-By default the **Labelframe** will have the background color of the theme. However, you can apply other theme colors by
-using the *color.TLabelframe* pattern in the examples above.
 
 How to use
 ==========

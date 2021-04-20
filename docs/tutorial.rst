@@ -172,9 +172,6 @@ This will include all theme colors, including border, fg, bg, etc...
         color = Colors.get(color_label)
         print(color_label, color)
 
-
-.. _`create your own theme`
-
 Create a new theme
 ==================
 
