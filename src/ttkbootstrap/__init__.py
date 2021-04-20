@@ -2358,14 +2358,14 @@ class StylerTTK:
         self.settings.update({
             'TPanedwindow': {
                 'configure': {
-                    'background': Colors.update_hsv(self.theme.colors.inputbg, vd=-0.1)}},
+                    'background': self.theme.colors.bg}},
             'Sash': {
                 'configure': {
-                    'bordercolor': self.theme.colors.inputfg,
-                    'lightcolor': self.theme.colors.inputbg,
-                    'sashthickness': 9,
+                    'bordercolor': self.theme.colors.bg,
+                    'lightcolor': self.theme.colors.bg,
+                    'sashthickness': 8,
                     'sashpad': 0,
-                    'gripcount': 25}}})
+                    'gripcount': 0}}})
 
     def _style_sizegrip(self):
         """
