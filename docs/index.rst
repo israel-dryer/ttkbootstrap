@@ -5,9 +5,11 @@
 
 Welcome to ttkbootstrap's documentation!
 ========================================
+**ttkbootstrap** is a collection of modern, flat themes inspired by Bootstrap_ for tkinter/ttk. There are more than a
+dozen :ref:`built-in dark and light themes <themes>`. Even better, you can create your own with
+:ref:`TTK Creator <tutorial:create a new theme>`!
 
-A collection of modern, flat themes inspired by Bootstrap.
-There are more than a dozen :ref:`built-in dark and light themes <themes>`
+.. _Bootstrap: https://bootswatch.com/
 
 .. image:: images/ttkbootstrap.gif
 

@@ -14,6 +14,8 @@ to produce the following color and style combinations:
 
 How to use
 ==========
+The examples below demonstrate how to *use a style* to create a widget. To learn more about how to *use the widget in
+ttk*, check out the References_ section for links to documentation and tutorials on this widget.
 
 Create a default **labelframe**
 
@@ -31,6 +33,8 @@ Create an **'info' labelframe**
 Style configuration
 ===================
 Use the following classes, states, and options when configuring or modifying a new ttk labelframe style.
+See the `python style documentation`_ for more information on creating a style.
+
 :ref:`tutorial:create a new theme` using TTK Creator if you want to change the default color scheme.
 
 Class names
@@ -64,7 +68,8 @@ Style options
 :foreground: `color`
 :lightcolor: `color`
 
-Create
+
+.. _References:
 
 References
 ==========
@@ -72,3 +77,5 @@ References
 - https://anzeljg.github.io/rin2/book2/2405/docs/tkinter/ttk-LabelFrame.html
 - https://tcl.tk/man/tcl8.6/TkCmd/ttk_labelframe.htm
 - https://tkdocs.com/tutorial/complex.html#labelframe
+
+.. _`python style documentation`: https://docs.python.org/3/library/tkinter.ttk.html#ttk-styling

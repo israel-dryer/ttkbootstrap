@@ -18,6 +18,8 @@ the following color and style combinations (the *primary* color is the default f
 
 How to use
 ==========
+The examples below demonstrate how to *use a style* to create a widget. To learn more about how to *use the widget in
+ttk*, check out the References_ section for links to documentation and tutorials on this widget.
 
 Create a default **horizontal progressbar**
 
@@ -48,7 +50,9 @@ Configuration
 Use the following classes, states, and options when configuring or modifying a new ttk progressbar style. The
 *Striped.Horizontal.TProgressbar* is an image-based layout, so the styling options will be limited to those
 which affect the *trough*. The regular progressbar styles can be configured with all available options.
+See the `python style documentation`_ for more information on creating a style.
 
+:ref:`tutorial:create a new theme` using TTK Creator if you want to change the default color scheme.
 
 Class names
 -----------
@@ -90,9 +94,13 @@ Use a custom style
 
     ttk.Progressbar(parent, value=25, orient='horizontal', style='custom.Horizontal.TProgressbar')
 
+.. _References:
+
 References
 ==========
 - https://docs.python.org/3/library/tkinter.ttk.html#ttk-progressbar
 - https://www.pythontutorial.net/tkinter/tkinter-progressbar/
 - https://anzeljg.github.io/rin2/book2/2405/docs/tkinter/ttk-Progressbar.html
 - https://tcl.tk/man/tcl8.6/TkCmd/ttk_progressbar.htm
+
+.. _`python style documentation`: https://docs.python.org/3/library/tkinter.ttk.html#ttk-styling

@@ -19,6 +19,8 @@ colors to reverse.
 
 How to use
 ==========
+The examples below demonstrate how to *use a style* to create a widget. To learn more about how to *use the widget in
+ttk*, check out the References_ section for links to documentation and tutorials on this widget.
 
 Create a default **label**
 
@@ -47,6 +49,8 @@ Create a **'warning' inverse label**
 Style configuration
 ===================
 Use the following classes, states, and options when configuring or modifying a new ttk label style.
+See the `python style documentation`_ for more information on creating a style.
+
 :ref:`tutorial:create a new theme` using TTK Creator if you want to change the default color scheme.
 
 Class names
@@ -100,9 +104,12 @@ Tips & tricks
 =============
 You can apply a **TButton** style to a label to inherit the colors and hover effects of the button.
 
+.. _References:
+
 References
 ==========
 - https://www.pythontutorial.net/tkinter/tkinter-label/
 - https://anzeljg.github.io/rin2/book2/2405/docs/tkinter/ttk-Label.html
 - https://tcl.tk/man/tcl8.6/TkCmd/ttk_label.htm
 
+.. _`python style documentation`: https://docs.python.org/3/library/tkinter.ttk.html#ttk-styling

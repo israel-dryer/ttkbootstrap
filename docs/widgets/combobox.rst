@@ -28,6 +28,8 @@ for the **active** and **focused** states.
 
 How to use
 ==========
+The examples below demonstrate how to *use a style* to create a widget. To learn more about how to *use the widget in
+ttk*, check out the References_ section for links to documentation and tutorials on this widget.
 
 Create a default **combobox**
 
@@ -47,9 +49,11 @@ Create an **'info' combobox**
 
 Style configuration
 ===================
-Use the following classes, states, and options when configuring or modifying a new ttk combobox style. Or,
-:ref:`create a new theme <tutorial:create a new theme>` using TTK Creator if you want to change the default color
-scheme.
+Use the following classes, states, and options when configuring or modifying a new ttk combobox style.
+See the `python style documentation`_ for more information on creating a style.
+
+:ref:`tutorial:create a new theme` using TTK Creator if you want to change the default color scheme.
+
 
 Class names
 -----------
@@ -119,8 +123,12 @@ Use a custom style
 
     ttk.Combobox(parent, style='custom.TCombobox')
 
+.. _References:
+
 References
 ==========
 - https://www.pythontutorial.net/tkinter/tkinter-combobox/
 - https://anzeljg.github.io/rin2/book2/2405/docs/tkinter/ttk-Combobox.html
 - https://tcl.tk/man/tcl8.6/TkCmd/ttk_combobox.htm
+
+.. _`python style documentation`: https://docs.python.org/3/library/tkinter.ttk.html#ttk-styling
