@@ -1,5 +1,5 @@
 # ttkbootstrap
-A collection of modern flat themes inspired by Bootstrap. There are more than a dozen built-in themes.
+A collection of modern flat themes inspired by Bootstrap. Also includes **TTK Creator** which allows you to easily create and use your own themes.
 
 ### How to install
 ```python
