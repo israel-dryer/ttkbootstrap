@@ -75,7 +75,8 @@ Style configuration
 Use the following classes, states, and options when configuring or modifying a new ttk checkbutton style. TTK Bootstrap
 uses an image layout for this widget, so not all of these options will be available... for example: ``indicatormargin``.
 However, if you decide to create a new widget, these should be available, depending on the style you are using as a
-base. Some options are only available in certain styles.
+base. Some options are only available in certain styles. :ref:`tutorial:create a new theme` using TTK Creator if you
+want to change the default color scheme.
 
 Class names
 -----------

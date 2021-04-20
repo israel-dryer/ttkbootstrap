@@ -37,6 +37,7 @@ Create and use a **Paned Window**
 Configuration
 =============
 Use the following classes, states, and options when configuring or modifying a new ttk paned window style.
+:ref:`tutorial:create a new theme` using TTK Creator if you want to change the default color scheme.
 
 Class names
 -----------
