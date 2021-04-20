@@ -5,7 +5,7 @@ font, but it can occupy multiple lines on the screen (if it contains newlines or
 ``wraplength`` option) and one of the characters may optionally be underlined using the ``underline`` option. It can
 display itself in either of three different ways, according to the ``state`` option; it can be made to appear raised,
 sunken, or flat; and it can be made to flash. When a user invokes the button (by pressing mouse button 1 with the
-cursor over the button), then the Tcl command specified in the ``command`` option is invoked.
+cursor over the button), then the command specified in the ``command`` option is invoked.
 
 Overview
 ========
@@ -17,6 +17,8 @@ further subclassed by each of the theme colors to produce the following color an
 
 How to use
 ==========
+The examples below demonstrate how to *use a style* to create a widget. To learn more about how to *use the widget in
+ttk*, check out the References_ section for links to documentation and tutorials on this widget.
 
 Create a default **solid button**
 
@@ -44,9 +46,11 @@ Create a **'warning' outline button**
 
 Style configuration
 ===================
-Use the following classes, states, and options when configuring or modifying a new ttk button style. Or,
-:ref:`create a new theme <tutorial:create a new theme>` using TTK Creator if you want to change the default color
-scheme.
+Use the following classes, states, and options when configuring or modifying a new ttk button style.
+See the `python style documentation`_ for more information on creating a style.
+
+:ref:`tutorial:create a new theme` using TTK Creator if you want to change the default color scheme.
+
 
 Class names
 -----------
@@ -117,9 +121,12 @@ Apply the **TLabel** style to remove the button's hover effects and to invert th
 behave as a button, though it will look like a standard label.  Conversely, you can apply a **TButton** style to a label
 to inherit the colors and hover effects of the button.
 
+.. _References:
+
 References
 ==========
 - https://www.pythontutorial.net/tkinter/tkinter-button/
 - https://anzeljg.github.io/rin2/book2/2405/docs/tkinter/ttk-Button.html
 - https://www.tcl.tk/man/tcl8.6/TkCmd/ttk_button.htm
-- https://tkdocs.com/widgets/button.html
+
+.. _`python style documentation`: https://docs.python.org/3/library/tkinter.ttk.html#ttk-styling

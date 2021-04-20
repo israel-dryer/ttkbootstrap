@@ -19,6 +19,9 @@ you decide to create a new custom style.
 
 How to use
 ==========
+The examples below demonstrate how to *use a style* to create a widget. To learn more about how to *use the widget in
+ttk*, check out the References_ section for links to documentation and tutorials on this widget.
+
 Create a default **horizontal scrollbar**
 
 .. code-block:: python
@@ -36,7 +39,9 @@ Configuration
 Use the following classes, states, and options when configuring or modifying a new ttk scrollbar style. TTK Bootstrap
 uses an image layout for parts of this widget (the arrows), so styling options will not affect these elements. However,
 if you choose to create your own scrollbar layout and style, you may use whatever style options are available for your
-custom style. :ref:`tutorial:create a new theme` using TTK Creator if you want to change the default color scheme.
+custom style. See the `python style documentation`_ for more information on creating a style.
+
+:ref:`tutorial:create a new theme` using TTK Creator if you want to change the default color scheme.
 
 Class names
 -----------
@@ -82,8 +87,12 @@ Use a custom style
 
     ttk.Scrollbar(parent, orient='horizontal', style='custom.Horizontal.TScrollbar')
 
+.. _References:
+
 References
 ==========
 - https://www.pythontutorial.net/tkinter/tkinter-scrollbar/
 - https://anzeljg.github.io/rin2/book2/2405/docs/tkinter/ttk-Scrollbar.html
 - https://www.tcl.tk/man/tcl8.6/TkCmd/ttk_scrollbar.htm
+
+.. _`python style documentation`: https://docs.python.org/3/library/tkinter.ttk.html#ttk-styling

@@ -1,3 +1,5 @@
+.. _file-backup-utility:
+
 File Backup Utility
 ===================
 In this example, I demonstrate how to use various styles to build a UI for a File Backup UI. The reference material is

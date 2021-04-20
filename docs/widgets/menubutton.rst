@@ -16,6 +16,8 @@ The **Outline.TMenubutton** style has a solid fill color (matching the regular *
 
 How to use
 ==========
+The examples below demonstrate how to *use a style* to create a widget. To learn more about how to *use the widget in
+ttk*, check out the References_ section for links to documentation and tutorials on this widget.
 
 Create an **info outline menubutton**
 
@@ -37,7 +39,10 @@ Create an **info outline menubutton**
 Style configuration
 ===================
 Use the following classes, states, and options when configuring or modifying a new ttk menubutton style.
+See the `python style documentation`_ for more information on creating a style.
+
 :ref:`tutorial:create a new theme` using TTK Creator if you want to change the default color scheme.
+
 
 Class names
 -----------
@@ -98,8 +103,12 @@ Use a custom style
     - ``tk.option_add('*Menu.activeBackground', 'yellow')``
     - ``tk.option_add('*Menu.activeForegorund', 'blue')``
 
+.. _References:
+
 References
 ==========
 - https://www.pythontutorial.net/tkinter/tkinter-menubutton/
 - https://anzeljg.github.io/rin2/book2/2405/docs/tkinter/ttk-Menubutton.html
 - https://tcl.tk/man/tcl8.6/TkCmd/ttk_menubutton.htm
+
+.. _`python style documentation`: https://docs.python.org/3/library/tkinter.ttk.html#ttk-styling

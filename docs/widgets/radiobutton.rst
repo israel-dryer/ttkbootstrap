@@ -17,6 +17,9 @@ are further subclassed by each of the theme colors to produce the following colo
 
 How to use
 ==========
+The examples below demonstrate how to *use a style* to create a widget. To learn more about how to *use the widget in
+ttk*, check out the References_ section for links to documentation and tutorials on this widget.
+
 Create a default **radiobutton**
 
 .. code-block:: python
@@ -54,6 +57,8 @@ Use the following classes, states, and options when configuring or modifying a n
 uses an image layout for the **TRadiobutton** style on this widget, so not all of these options will be available... for
 example: ``indicatormargin``. However, if you decide to create a new widget, these should be available, depending on the
 style you are using as a base. Some options are only available in certain styles.
+See the `python style documentation`_ for more information on creating a style.
+
 :ref:`tutorial:create a new theme` using TTK Creator if you want to change the default color scheme.
 
 
@@ -112,8 +117,12 @@ Use a custom style
 
     ttk.Radiobutton(parent, text='option 1', style='custom.TRadiobutton')
 
+.. _References:
+
 References
 ==========
 - https://www.pythontutorial.net/tkinter/tkinter-radio-button/
 - https://anzeljg.github.io/rin2/book2/2405/docs/tkinter/ttk-Radiobutton.html
 - https://tcl.tk/man/tcl8.6/TkCmd/ttk_radiobutton.htm
+
+.. _`python style documentation`: https://docs.python.org/3/library/tkinter.ttk.html#ttk-styling

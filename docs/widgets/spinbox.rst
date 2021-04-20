@@ -27,13 +27,30 @@ for the **active** and **focused** states.
 
 How to use
 ==========
+The examples below demonstrate how to *use a style* to create a widget. To learn more about how to *use the widget in
+ttk*, check out the References_ section for links to documentation and tutorials on this widget.
+
+Create a default **spinbox**
+
+.. code-block:: python
+
+    cb = ttk.Spinbox(parent, from_=1, to=100)
+
+Create an **'info' spinbox**
+
+.. code-block:: python
+
+    ttk.Spinbox(parent, from_=1, to=100, style='info.TSpinbox')
 
 
 Configuration
 =============
 Use the following classes, states, and options when configuring or modifying a new ttk spinbox style. Or,
+See the `python style documentation`_ for more information on creating a style.
+
 :ref:`create a new theme <tutorial:create a new theme>` using TTK Creator if you want to change the default color
 scheme.
+
 
 Class names
 -----------
@@ -86,7 +103,11 @@ Use a custom style
 
     ttk.Spinbox(parent, style='custom.TSpinbox')
 
+.. _References:
+
 References
 ==========
 - https://www.pythontutorial.net/tkinter/tkinter-spinbox/
 - https://www.tcl.tk/man/tcl8.6/TkCmd/ttk_spinbox.htm
+
+.. _`python style documentation`: https://docs.python.org/3/library/tkinter.ttk.html#ttk-styling

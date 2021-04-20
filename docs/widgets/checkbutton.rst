@@ -26,6 +26,8 @@ further subclassed by each of the theme colors to produce the following color an
 
 How to use
 ==========
+The examples below demonstrate how to *use a style* to create a widget. To learn more about how to *use the widget in
+ttk*, check out the References_ section for links to documentation and tutorials on this widget.
 
 Create a default **checkbutton**
 
@@ -75,8 +77,10 @@ Style configuration
 Use the following classes, states, and options when configuring or modifying a new ttk checkbutton style. TTK Bootstrap
 uses an image layout for this widget, so not all of these options will be available... for example: ``indicatormargin``.
 However, if you decide to create a new widget, these should be available, depending on the style you are using as a
-base. Some options are only available in certain styles. :ref:`tutorial:create a new theme` using TTK Creator if you
-want to change the default color scheme.
+base. Some options are only available in certain styles. See the `python style documentation`_ for more information on
+creating a style.
+
+:ref:`tutorial:create a new theme` using TTK Creator if you want to change the default color scheme.
 
 Class names
 -----------
@@ -135,9 +139,12 @@ Use a custom style
 
     ttk.Checkbutton(parent, text='include', style='custom.TCheckbutton')
 
+.. _References:
+
 References
 ==========
 - https://www.pythontutorial.net/tkinter/tkinter-checkbox/
 - https://anzeljg.github.io/rin2/book2/2405/docs/tkinter/ttk-Checkbutton.html
 - https://www.tcl.tk/man/tcl8.6/TkCmd/ttk_checkbutton.htm
-- https://tkdocs.com/widgets/checkbutton.html
+
+.. _`python style documentation`: https://docs.python.org/3/library/tkinter.ttk.html#ttk-styling
