@@ -953,8 +953,8 @@ class StylerTTK:
         Create assets needed for scrollbar arrows
         """
         font_size = 13
-        fnt = ImageFont.truetype(r'C:\Users\us43060\PycharmProjects\ttk-bootstrap\src\ttkbootstrap\Symbola.ttf',
-                                 font_size)
+        with importlib.resources.open_binary('ttkbootstrap', 'Symbola.ttf') as font_path:
+            fnt = ImageFont.truetype(font_path, font_size)
 
         hsup_im = Image.new('RGBA', (font_size, font_size))
         up_draw = ImageDraw.Draw(hsup_im)
