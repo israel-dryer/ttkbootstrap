@@ -26,9 +26,9 @@ This results in the window below:
 If you do not create an instance of ``Tk()``, the ``Style`` object automatically creates one. You can access this root
 window through the **master** property.
 
-By default, the **flatly** style will be applied to the application if you do not explicitly select one.
+By default, the **flatly** theme will be applied to the application if you do not explicitly select one.
 
-If you want to use a different style, you can pass the style name as a keyword argument when you create the style
+If you want to use a different theme, you can pass the style name as a keyword argument when you create the ``style``
 object:
 
 .. code-block:: python
@@ -37,7 +37,7 @@ object:
 
 
 .. note:: Check out the :ref:`visual style guide <widgets-section>` for each widget. Here you will find an image
-    for each available style, as well as information on how to apply and modify styles as needed for each widget.
+    for each available widget style, as well as information on how to apply and modify styles as needed for each widget.
 
 Choose a theme
 ==============
