@@ -12,10 +12,8 @@ by each of the theme colors to produce the following color and style combination
 
 .. image:: images/label.png
 
-The theme colors can be *inverted* by using the **Invert.TLabel** style, which causes the *background* and *foreground*
+The theme colors can be *inverted* by using the **Inverse.TLabel** style, which causes the *background* and *foreground*
 colors to reverse.
-
-.. image:: images/label_inverse.png
 
 How to use
 ==========

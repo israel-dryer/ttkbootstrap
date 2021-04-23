@@ -12,9 +12,9 @@ the following color and style combinations (the *primary* color is the default f
 
 .. image:: images/progressbar_horizontal.png
 
-.. image:: images/progressbar_vertical.png
-
 .. image:: images/progressbar_horizontal_striped.png
+
+.. image:: images/progressbar_vertical.png
 
 How to use
 ==========
