@@ -2047,7 +2047,8 @@ class StylerTTK:
         self.settings.update({
             'TLabel': {
                 'configure': {
-                    'foreground': self.theme.colors.fg}},
+                    'foreground': self.theme.colors.fg},
+                    'background': self.theme.colors.bg},
             'Inverse.TLabel': {
                 'configure': {
                     'foreground': self.theme.colors.bg,
