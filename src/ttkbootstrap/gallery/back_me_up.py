@@ -1,6 +1,6 @@
 """
     Author: Israel Dryer
-    Modified: 2021-04-09
+    Modified: 2021-04-23
     Adapted for ttkbootstrap from: http://www.leo-backup.com/screenshots.shtml
 """
 import tkinter
@@ -10,6 +10,7 @@ from tkinter import ttk
 from tkinter.filedialog import askdirectory
 from tkinter.messagebox import showinfo
 from tkinter.scrolledtext import ScrolledText
+
 from ttkbootstrap import Style
 
 
@@ -107,12 +108,12 @@ class BackMeUp(ttk.Frame):
 
         ## properties button
         bus_prop_btn = ttk.Button(bus_frm, text='Properties', image='properties-dark', compound='left')
-        bus_prop_btn.configure(command=lambda: showinfo(message='Changing properties'), style='primary.TLabel')
+        bus_prop_btn.configure(command=lambda: showinfo(message='Changing properties'), style='Link.TButton')
         bus_prop_btn.grid(row=4, column=0, columnspan=2, sticky='w')
 
         ## add to backup button
         bus_add_btn = ttk.Button(bus_frm, text='Add to backup', image='add-to-backup-dark', compound='left')
-        bus_add_btn.configure(command=lambda: showinfo(message='Adding to backup'), style='primary.TLabel')
+        bus_add_btn.configure(command=lambda: showinfo(message='Adding to backup'), style='Link.TButton')
         bus_add_btn.grid(row=5, column=0, columnspan=2, sticky='w')
 
         # ----- backup status (collapsible)
@@ -152,7 +153,7 @@ class BackMeUp(ttk.Frame):
 
         ## stop button
         status_stop_btn = ttk.Button(status_frm, text='Stop', image='stop-backup-dark', compound='left')
-        status_stop_btn.configure(command=lambda: showinfo(message='Stopping backup'), style='primary.TLabel')
+        status_stop_btn.configure(command=lambda: showinfo(message='Stopping backup'), style='Link.TButton')
         status_stop_btn.grid(row=6, column=0, columnspan=2, sticky='w')
 
         ## section separator
@@ -175,7 +176,8 @@ class BackMeUp(ttk.Frame):
         browse_frm.pack(side='top', fill='x', padx=2, pady=1)
         file_entry = ttk.Entry(browse_frm, textvariable='folder-path')
         file_entry.pack(side='left', fill='x', expand='yes')
-        open_btn = ttk.Button(browse_frm, image='opened-folder', style='secondary.TLabel', command=self.get_directory)
+        open_btn = ttk.Button(browse_frm, image='opened-folder', style='secondary.Link.TButton',
+                              command=self.get_directory)
         open_btn.pack(side='right')
 
         ## Treeview
@@ -245,7 +247,7 @@ class CollapsingFrame(ttk.Frame):
         frm.grid(row=self.cumulative_rows, column=0, sticky='ew')
 
         # header title
-        lbl = ttk.Label(frm, text=title, style=f'{style_color}.Invert.TLabel')
+        lbl = ttk.Label(frm, text=title, style=f'{style_color}.Inverse.TLabel')
         if kwargs.get('textvariable'):
             lbl.configure(textvariable=kwargs.get('textvariable'))
         lbl.pack(side='left', fill='both', padx=10)

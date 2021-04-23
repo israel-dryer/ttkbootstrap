@@ -11,9 +11,9 @@ are further subclassed by each of the theme colors to produce the following colo
 
 .. figure:: images/radiobutton.png
 
-.. figure:: images/radiobutton_toolbutton.png
+.. image:: images/radiobutton_toolbutton.png
 
-.. figure:: images/radiobutton_outline_toolbutton.png
+.. image:: images/radiobutton_outline_toolbutton.png
 
 How to use
 ==========

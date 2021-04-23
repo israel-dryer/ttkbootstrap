@@ -13,16 +13,17 @@ further subclassed by each of the theme colors to produce the following color an
 .. figure:: images/checkbutton.png
 
 
-.. figure:: images/checkbutton_toolbutton.png
+.. image:: images/checkbutton_toolbutton.png
 
 
-.. figure:: images/checkbutton_outline_toolbutton.png
+.. image:: images/checkbutton_outline_toolbutton.png
 
 
-.. figure:: images/roundtoggle.png
+
+.. image:: images/roundtoggle.png
 
 
-.. figure:: images/squaretoggle.png
+.. image:: images/squaretoggle.png
 
 How to use
 ==========

@@ -1,5 +1,9 @@
+import tkinter as tk
 from tkinter import Canvas, Pack, Grid, Place
+from tkinter import ttk
 from tkinter.ttk import Frame, Scrollbar
+
+from PIL import Image, ImageTk, ImageDraw
 
 
 class ScrolledFrame(Frame):
@@ -23,3 +27,5 @@ class ScrolledFrame(Frame):
         for m in methods:
             if m[0] != '_' and m != 'config' and m != 'configure':
                 setattr(self, m, getattr(self.frame, m))
+
+

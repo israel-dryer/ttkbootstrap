@@ -9,11 +9,13 @@ cursor over the button), then the command specified in the ``command`` option is
 
 Overview
 ========
-The ``ttk.Button`` includes the **TButton** and **Outline.TButton** style classes. The *primary* color is applied to
-all buttons by default. Other styles must be specified with the ``style`` option. These two primary styles are
+The ``ttk.Button`` includes the **TButton**, **Outline.TButton**, and **Link.TButton** style classes. The *primary*
+color is applied to all buttons by default. Other styles must be specified with the ``style`` option. These styles are
 further subclassed by each of the theme colors to produce the following color and style combinations:
 
 .. image:: images/buttons.png
+
+The **Link.TButton** has an *info* colored hover effect as well as a slight *shiftrelief* when the button is pressed.
 
 How to use
 ==========
@@ -56,6 +58,7 @@ Class names
 -----------
 - TButton
 - Outline.TButton
+- Link.TButton
 
 Dynamic states
 --------------
@@ -113,13 +116,6 @@ Use a custom style
 .. code-block:: python
 
     ttk.Button(parent, text='Submit', style='custom.TButton')
-
-
-Tips & tricks
-=============
-Apply the **TLabel** style to remove the button's hover effects and to invert the colors. The button will still
-behave as a button, though it will look like a standard label.  Conversely, you can apply a **TButton** style to a label
-to inherit the colors and hover effects of the button.
 
 .. _References:
 

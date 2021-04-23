@@ -12,8 +12,6 @@ are further subclassed by each of the theme colors to produce the following colo
 
 The **Outline.TMenubutton** style has a solid fill color (matching the regular *TMenubutton*) when hovered or pressed.
 
-.. image:: images/menubutton_outline.png
-
 How to use
 ==========
 The examples below demonstrate how to *use a style* to create a widget. To learn more about how to *use the widget in

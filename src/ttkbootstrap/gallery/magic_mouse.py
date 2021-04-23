@@ -59,9 +59,9 @@ class MouseUtilities(ttk.Frame):
         ### header
         dev_info_header = ttk.Frame(dev_info, padding=5)
         dev_info_header.pack(fill='x')
-        ttk.Button(dev_info_header, image='reset', style='TLabel', command=self.callback).pack(side='left')
+        ttk.Button(dev_info_header, image='reset', style='Link.TButton', command=self.callback).pack(side='left')
         ttk.Label(dev_info_header, text='Model 2009, 2xAA Batteries').pack(side='left', fill='x', padx=15)
-        ttk.Button(dev_info_header, image='submit', style='TLabel', command=self.callback).pack(side='left')
+        ttk.Button(dev_info_header, image='submit', style='Link.TButton', command=self.callback).pack(side='left')
 
         ### image
         ttk.Label(dev_info, image='mouse').pack(fill='x')
@@ -103,12 +103,12 @@ class MouseUtilities(ttk.Frame):
         ### no horizontal scrolling
         op2 = ttk.Checkbutton(scrolling, text='No horizontal scrolling', variable='op2')
         op2.pack(fill='x', padx=(20, 0), pady=5)
-        ttk.Button(op2, image='question', style='TLabel', command=self.callback).pack(side='right')
+        ttk.Button(op2, image='question', style='Link.TButton', command=self.callback).pack(side='right')
 
         ### inverse
         op3 = ttk.Checkbutton(scrolling, text='Inverse scroll directcion vertically', variable='op3')
         op3.pack(fill='x', padx=(20, 0), pady=5)
-        ttk.Button(op3, image='direction', style='TLabel', command=self.callback).pack(side='right')
+        ttk.Button(op3, image='direction', style='Link.TButton', command=self.callback).pack(side='right')
 
         ### Scroll only vertical or horizontal
         op4 = ttk.Checkbutton(scrolling, text='Scroll only vertical or horizontal', state='disabled')
@@ -118,14 +118,14 @@ class MouseUtilities(ttk.Frame):
         ### smooth scrolling
         op5 = ttk.Checkbutton(scrolling, text='Smooth scrolling', variable='op5')
         op5.pack(fill='x', padx=(20, 0), pady=5)
-        ttk.Button(op5, image='bluetooth', style='TLabel', command=self.callback).pack(side='right')
+        ttk.Button(op5, image='bluetooth', style='Link.TButton', command=self.callback).pack(side='right')
 
         ### scroll speed
         scroll_speed_frame = ttk.Frame(scrolling)
         scroll_speed_frame.pack(fill='x', padx=(20, 0), pady=5)
         ttk.Label(scroll_speed_frame, text='Speed:').pack(side='left')
         ttk.Scale(scroll_speed_frame, value=35, from_=1, to=100).pack(side='left', fill='x', expand='yes', padx=5)
-        scroll_speed_btn = ttk.Button(scroll_speed_frame, image='reset-small', style='TLabel')
+        scroll_speed_btn = ttk.Button(scroll_speed_frame, image='reset-small', style='Link.TButton')
         scroll_speed_btn.configure(command=self.callback)
         scroll_speed_btn.pack(side='left')
 
@@ -134,7 +134,7 @@ class MouseUtilities(ttk.Frame):
         scroll_sense_frame.pack(fill='x', padx=(20, 0), pady=(5, 0))
         ttk.Label(scroll_sense_frame, text='Sense:').pack(side='left')
         ttk.Scale(scroll_sense_frame, value=50, from_=1, to=100).pack(side='left', fill='x', expand='yes', padx=5)
-        scroll_sense_btn = ttk.Button(scroll_sense_frame, image='reset-small', style='TLabel')
+        scroll_sense_btn = ttk.Button(scroll_sense_frame, image='reset-small', style='Link.TButton')
         scroll_sense_btn.configure(command=self.callback)
         scroll_sense_btn.pack(side='left')
 
@@ -154,7 +154,7 @@ class MouseUtilities(ttk.Frame):
 
         ttk.Scale(gest_sense_frame, value=50, from_=1, to=100).pack(side='left', fill='x', expand='yes', padx=5)
 
-        gest_sense_btn = ttk.Button(gest_sense_frame, image='reset-small', style='TLabel')
+        gest_sense_btn = ttk.Button(gest_sense_frame, image='reset-small', style='Link.TButton')
         gest_sense_btn.configure(command=self.callback)
         gest_sense_btn.pack(side='left')
 
@@ -188,7 +188,7 @@ class MouseUtilities(ttk.Frame):
 
         ttk.Scale(gest_sense_frame, value=50, from_=1, to=100).pack(side='left', fill='x', expand='yes', padx=5)
 
-        gest_sense_btn = ttk.Button(gest_sense_frame, image='reset-small', style='TLabel')
+        gest_sense_btn = ttk.Button(gest_sense_frame, image='reset-small', style='Link.TButton')
         gest_sense_btn.configure(command=self.callback)
         gest_sense_btn.pack(side='left')
 
@@ -213,7 +213,7 @@ class MouseUtilities(ttk.Frame):
 
         ttk.Scale(two_finger_sense_frame, value=50, from_=1, to=100).pack(side='left', fill='x', expand='yes', padx=5)
 
-        two_finger_sense_btn = ttk.Button(two_finger_sense_frame, image='reset-small', style='TLabel')
+        two_finger_sense_btn = ttk.Button(two_finger_sense_frame, image='reset-small', style='Link.TButton')
         two_finger_sense_btn.configure(command=self.callback)
         two_finger_sense_btn.pack(side='left')
 
@@ -238,7 +238,7 @@ class MouseUtilities(ttk.Frame):
 
         ttk.Scale(base_speed_sense_frame, value=50, from_=1, to=100).pack(side='left', fill='x', expand='yes', padx=5)
 
-        base_speed_sense_btn = ttk.Button(base_speed_sense_frame, image='reset-small', style='TLabel')
+        base_speed_sense_btn = ttk.Button(base_speed_sense_frame, image='reset-small', style='Link.TButton')
         base_speed_sense_btn.configure(command=self.callback)
         base_speed_sense_btn.pack(side='left')
 

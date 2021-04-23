@@ -15,12 +15,10 @@ Some of the styles used in this application include:
     :collapsible frames: ``secondary.TButton``
     :separators: ``secondary.Horizontal.TSeparator``
     :progress bar: ``success.Horizontal.TProgressbar``
-    :file open button: ``secondary.TLabel``
+    :properties, stop, add-to-backup buttons: ``Link.TButton``
+    :file open button: ``secondary.Link.TButton``
 
-There are a few buttons in the collapsible frames on the left-hand side: "properties", "add to backup", "stop". Instead
-of using a button style, I applied the ``primary.TLabel`` style to these buttons. This has the effect of giving the
-label a white background and primary color foreground, and there are no hover effects. I could have also created a
-custom button style by subclassing the existing ``TButton``.
+There are a few buttons in the collapsible frames on the left-hand side: "properties", "add to backup", "stop".
 
 There are two custom styles which are subclassed from ``TFrame`` and ``TLabel``. I used the **inputbg** color from the
 ``Style.colors`` property and applied this style to the left panel, and the logo image background.
