@@ -18,8 +18,6 @@ Some of the styles used in this application include:
     :properties, stop, add-to-backup buttons: ``Link.TButton``
     :file open button: ``secondary.Link.TButton``
 
-There are a few buttons in the collapsible frames on the left-hand side: "properties", "add to backup", "stop".
-
 There are two custom styles which are subclassed from ``TFrame`` and ``TLabel``. I used the **inputbg** color from the
 ``Style.colors`` property and applied this style to the left panel, and the logo image background.
 
