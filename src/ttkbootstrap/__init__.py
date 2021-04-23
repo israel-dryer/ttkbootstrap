@@ -569,6 +569,7 @@ class StylerTTK:
         self._style_striped_progressbar()
         self._style_radiobutton()
         self._style_solid_buttons()
+        self._style_link_buttons()
         self._style_solid_menubutton()
         self._style_solid_toolbutton()
         self._style_treeview()
@@ -956,19 +957,37 @@ class StylerTTK:
         with importlib.resources.open_binary('ttkbootstrap', 'Symbola.ttf') as font_path:
             fnt = ImageFont.truetype(font_path, font_size)
 
-        hsup_im = Image.new('RGBA', (font_size, font_size))
-        up_draw = ImageDraw.Draw(hsup_im)
+        # up arrow
+        vs_upim = Image.new('RGBA', (font_size, font_size))
+        up_draw = ImageDraw.Draw(vs_upim)
         up_draw.text((1, 5), "🞁", font=fnt,
                      fill=self.theme.colors.inputfg if self.theme.type == 'light' else
                      Colors.update_hsv(self.theme.colors.selectbg, vd=0.35, sd=-0.1))
-        self.theme_images['hsup'] = ImageTk.PhotoImage(hsup_im)
+        self.theme_images['vsup'] = ImageTk.PhotoImage(vs_upim)
 
+        # down arrow
         hsdown_im = Image.new('RGBA', (font_size, font_size))
         down_draw = ImageDraw.Draw(hsdown_im)
         down_draw.text((1, -4), "🞃", font=fnt,
                        fill=self.theme.colors.inputfg if self.theme.type == 'light' else
                        Colors.update_hsv(self.theme.colors.selectbg, vd=0.35, sd=-0.1))
-        self.theme_images['hsdown'] = ImageTk.PhotoImage(hsdown_im)
+        self.theme_images['vsdown'] = ImageTk.PhotoImage(hsdown_im)
+
+        # left arrow
+        vs_upim = Image.new('RGBA', (font_size, font_size))
+        up_draw = ImageDraw.Draw(vs_upim)
+        up_draw.text((1, 1), "🞀", font=fnt,
+                     fill=self.theme.colors.inputfg if self.theme.type == 'light' else
+                     Colors.update_hsv(self.theme.colors.selectbg, vd=0.35, sd=-0.1))
+        self.theme_images['hsleft'] = ImageTk.PhotoImage(vs_upim)
+
+        # right arrow
+        vs_upim = Image.new('RGBA', (font_size, font_size))
+        up_draw = ImageDraw.Draw(vs_upim)
+        up_draw.text((1, 1), "🞂", font=fnt,
+                     fill=self.theme.colors.inputfg if self.theme.type == 'light' else
+                     Colors.update_hsv(self.theme.colors.selectbg, vd=0.35, sd=-0.1))
+        self.theme_images['hsright'] = ImageTk.PhotoImage(vs_upim)
 
     def _style_scrollbar(self):
         """
@@ -990,17 +1009,17 @@ class StylerTTK:
             'Vertical.Scrollbar.thumb': {
                 'element create': ('from', 'alt')},
             'Vertical.Scrollbar.uparrow': {
-                'element create': ('image', self.theme_images['hsup'])},
+                'element create': ('image', self.theme_images['vsup'])},
             'Vertical.Scrollbar.downarrow': {
-                'element create': ('image', self.theme_images['hsdown'])},
+                'element create': ('image', self.theme_images['vsdown'])},
             'Horizontal.Scrollbar.trough': {
                 'element create': ('from', 'alt')},
             'Horizontal.Scrollbar.thumb': {
                 'element create': ('from', 'alt')},
             'Horizontal.Scrollbar.leftarrow': {
-                'element create': ('from', 'alt')},
+                'element create': ('image', self.theme_images['hsleft'])},
             'Horizontal.Scrollbar.rightarrow': {
-                'element create': ('from', 'alt')},
+                'element create': ('image', self.theme_images['hsright'])},
             'TScrollbar': {
                 'configure': {
                     'troughrelief': 'flat',
@@ -1358,6 +1377,95 @@ class StylerTTK:
                             ('pressed !disabled', Colors.update_hsv(self.theme.colors.get(color), vd=pressed_vd)),
                             ('hover !disabled', self.theme.colors.get(color))]}}})
 
+    def _style_link_buttons(self):
+        """
+        Apply a solid color style to ttk button: *ttk.Button*
+
+        The options available in this widget include:
+
+            - Button.border: bordercolor, lightcolor, darkcolor, relief, borderwidth
+            - Button.focus: focuscolor, focusthickness
+            - Button.padding: padding, relief, shiftrelief
+            - Button.label: compound, space, text, font, foreground, underline, width, anchor, justify, wraplength,
+                embossed, image, stipple, background
+        """
+        # disabled settings
+        disabled_fg = (Colors.update_hsv(self.theme.colors.inputbg, vd=-0.2) if self.theme.type == 'light' else
+                       Colors.update_hsv(self.theme.colors.inputbg, vd=-0.3))
+
+        # pressed and hover settings
+        pressed_vd = 0
+        hover_vd = 0
+
+        self.settings.update({
+            'Link.TButton': {
+                'configure': {
+                    'foreground': self.theme.colors.fg,
+                    'background': self.theme.colors.bg,
+                    'bordercolor': self.theme.colors.bg,
+                    'darkcolor': self.theme.colors.bg,
+                    'lightcolor': self.theme.colors.bg,
+                    'relief': 'raised',
+                    'font': self.theme.font,
+                    'focusthickness': 0,
+                    'focuscolor': '',
+                    'padding': (10, 5)},
+                'map': {
+                    'foreground': [
+                        ('disabled', disabled_fg),
+                        ('pressed !disabled', Colors.update_hsv(self.theme.colors.info, vd=pressed_vd)),
+                        ('hover !disabled', Colors.update_hsv(self.theme.colors.info, vd=hover_vd))],
+                    'shiftrelief': [
+                        ('pressed !disabled', -1)],
+                    'background': [
+                        ('pressed !disabled', self.theme.colors.bg),
+                        ('hover !disabled', self.theme.colors.bg)],
+                    'bordercolor': [
+                        ('disabled', disabled_fg),
+                        ('pressed !disabled', self.theme.colors.bg),
+                        ('hover !disabled', self.theme.colors.bg)],
+                    'darkcolor': [
+                        ('pressed !disabled', self.theme.colors.bg),
+                        ('hover !disabled', self.theme.colors.bg)],
+                    'lightcolor': [
+                        ('pressed !disabled', self.theme.colors.bg),
+                        ('hover !disabled', self.theme.colors.bg)]}}})
+
+        for color in self.theme.colors:
+            self.settings.update({
+                f'{color}.Link.TButton': {
+                    'configure': {
+                        'foreground': self.theme.colors.get(color),
+                        'background': self.theme.colors.bg,
+                        'bordercolor': self.theme.colors.bg,
+                        'darkcolor': self.theme.colors.bg,
+                        'lightcolor': self.theme.colors.bg,
+                        'relief': 'raised',
+                        'font': self.theme.font,
+                        'focusthickness': 0,
+                        'focuscolor': '',
+                        'padding': (10, 5)},
+                    'map': {
+                        'foreground': [
+                            ('disabled', disabled_fg),
+                            ('pressed !disabled', Colors.update_hsv(self.theme.colors.info, vd=pressed_vd)),
+                            ('hover !disabled', Colors.update_hsv(self.theme.colors.info, vd=hover_vd))],
+                        'shiftrelief': [
+                            ('pressed !disabled', -1)],
+                        'background': [
+                            ('pressed !disabled', self.theme.colors.bg),
+                            ('hover !disabled', self.theme.colors.bg)],
+                        'bordercolor': [
+                            ('disabled', disabled_fg),
+                            ('pressed !disabled', self.theme.colors.bg),
+                            ('hover !disabled', self.theme.colors.bg)],
+                        'darkcolor': [
+                            ('pressed !disabled', self.theme.colors.bg),
+                            ('hover !disabled', self.theme.colors.bg)],
+                        'lightcolor': [
+                            ('pressed !disabled', self.theme.colors.bg),
+                            ('hover !disabled', self.theme.colors.bg)]}}})
+
     def _create_squaretoggle_image(self, colorname):
         """
         Create a set of images for the square toggle button and return as ``PhotoImage``
@@ -1694,13 +1802,14 @@ class StylerTTK:
                 'configure': {
                     'foreground': self.theme.colors.primary,
                     'background': self.theme.colors.bg,
-                    'bordercolor': self.theme.colors.primary,
+                    'bordercolor': self.theme.colors.border,
                     'darkcolor': self.theme.colors.bg,
                     'lightcolor': self.theme.colors.bg,
                     'relief': 'raised',
                     'font': self.theme.font,
                     'focusthickness': 0,
                     'focuscolor': '',
+                    'borderwidth': 1,
                     'padding': (10, 5)},
                 'map': {
                     'foreground': [
@@ -1732,12 +1841,13 @@ class StylerTTK:
                     'configure': {
                         'foreground': self.theme.colors.get(color),
                         'background': self.theme.colors.bg,
-                        'bordercolor': self.theme.colors.get(color),
+                        'bordercolor': self.theme.colors.border,
                         'darkcolor': self.theme.colors.bg,
                         'lightcolor': self.theme.colors.bg,
                         'relief': 'raised',
                         'focusthickness': 0,
                         'focuscolor': '',
+                        'borderwidth': 1,
                         'padding': (10, 5)},
                     'map': {
                         'foreground': [
