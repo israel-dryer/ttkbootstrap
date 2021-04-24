@@ -1,1 +1,2 @@
-from .gauge import RadialGauge
+from .radialgauge import Radialgauge
+from .floodgauge import Floodgauge

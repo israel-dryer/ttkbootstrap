@@ -567,6 +567,7 @@ class StylerTTK:
         self._style_outline_toolbutton()
         self._style_progressbar()
         self._style_striped_progressbar()
+        self._style_floodgauge()
         self._style_radiobutton()
         self._style_solid_buttons()
         self._style_link_buttons()
@@ -988,6 +989,64 @@ class StylerTTK:
                      fill=self.theme.colors.inputfg if self.theme.type == 'light' else
                      Colors.update_hsv(self.theme.colors.selectbg, vd=0.35, sd=-0.1))
         self.theme_images['hsright'] = ImageTk.PhotoImage(vs_upim)
+
+    def _style_floodgauge(self):
+        """
+        Create a style configuration for the *ttk.Progressbar* that makes it into a floodgauge. Which is essentially
+        a very large progress bar with text in the middle.
+
+        The options available in this widget include:
+
+            - Floodgauge.trough: borderwidth, troughcolor, troughrelief
+            - Floodgauge.pbar: orient, thickness, barsize, pbarrelief, borderwidth, background
+            - Floodgauge.text: 'text', 'font', 'foreground', 'underline', 'width', 'anchor', 'justify', 'wraplength',
+                'embossed'
+        """
+        self.settings.update({
+            'Floodgauge.trough': {'element create': ('from', 'clam')},
+            'Floodgauge.pbar': {'element create': ('from', 'default')},
+            'Horizontal.TFloodgauge': {
+                'layout': [('Floodgauge.trough', {'children': [
+                    ('Floodgauge.pbar', {'side': 'left', 'sticky': 'ns'}),
+                    ("Floodgauge.label", {"sticky": ""})],
+                    'sticky': 'nswe'})],
+                'configure': {
+                    'thickness': 100,
+                    'borderwidth': 1,
+                    'bordercolor': self.theme.colors.primary,
+                    'lightcolor': self.theme.colors.primary,
+                    'pbarrelief': 'flat',
+                    'troughcolor': Colors.update_hsv(self.theme.colors.primary, sd=-0.3, vd=0.8),
+                    'background': self.theme.colors.primary,
+                    'foreground': self.theme.colors.selectfg,
+                    'justify': 'center',
+                    'anchor': 'center',
+                    'font': 'helvetica 16'}},
+            'Vertical.TFloodgauge': {
+                'layout': [('Floodgauge.trough', {'children': [
+                    ('Floodgauge.pbar', {'side': 'bottom', 'sticky': 'we'}),
+                    ("Floodgauge.label", {"sticky": ""})],
+                    'sticky': 'nswe'})],
+                'configure': {
+                    'thickness': 100,
+                    'borderwidth': 1,
+                    'bordercolor': self.theme.colors.primary,
+                    'lightcolor': self.theme.colors.primary,
+                    'pbarrelief': 'flat',
+                    'troughcolor': Colors.update_hsv(self.theme.colors.primary, sd=-0.3, vd=0.8),
+                    'background': self.theme.colors.primary,
+                    'foreground': self.theme.colors.selectfg,
+                    'justify': 'center',
+                    'anchor': 'center',
+                    'font': 'helvetica 16'}
+            }})
+
+        # for color in self.theme.colors:
+        #     self.settings.update({
+        #         f'{color}.TFloodgauge': {
+        #             'configure': {
+        #                 'troughcolor': Colors.update_hsv(self.theme.colors.get(color), sd=-0.3),
+        #                 'background': self.theme.colors.get(color)}}})
 
     def _style_scrollbar(self):
         """
@@ -2048,7 +2107,7 @@ class StylerTTK:
             'TLabel': {
                 'configure': {
                     'foreground': self.theme.colors.fg},
-                    'background': self.theme.colors.bg},
+                'background': self.theme.colors.bg},
             'Inverse.TLabel': {
                 'configure': {
                     'foreground': self.theme.colors.bg,
