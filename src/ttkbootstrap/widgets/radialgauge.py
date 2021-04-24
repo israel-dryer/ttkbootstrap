@@ -33,7 +33,7 @@ class Radialgauge(ttk.Label):
 
     def __init__(self, parent, **kwargs):
         excluded = ['anchor', 'theme', 'image', 'compound', 'relief', 'bordwidth', 'maximum', 'value', 'variable',
-                    'indicatorcolor', 'troughcolor', 'textvariable', 'angle']
+                    'indicatorcolor', 'troughcolor', 'textvariable', 'angle', 'indicatorthickness']
         kwargs_ = {k: v for k, v in kwargs.items() if k not in excluded}
         self.style = kwargs.get('style') or 'primary.TLabel'
         super().__init__(parent, class_='RadialGauge', style=self.style, **kwargs_)
@@ -93,7 +93,7 @@ class Radialgauge(ttk.Label):
         :param event: the *<Configure>* event that is triggered when the gauge widget is resized.
         """
         padding = 4  # not sure why this is required, but if I don't include it it growths continually
-        self.size = max(min(event.width - padding, event.height - padding), 100)
+        self.size = max(min(event.width - padding, event.height - padding), 200)
         self.update_indicator()
 
     def step(self, delta=1):
@@ -125,13 +125,14 @@ class Radialgauge(ttk.Label):
         .. _tkinter.trace_add: https://docs.oracle.com/cd/E88353_01/html/E37839/trace-1t.html
         """
         var = float(self.variable.get()) / self.maximum
+        scale_factor = 2
         endangle = (360 + self.startangle) if var >= 1.0 else (int(var * 360) + self.startangle)
-        self.im = Image.new('RGBA', (self.size * 10, self.size * 10))
+        self.im = Image.new('RGBA', (self.size * scale_factor, self.size * scale_factor))
         draw = ImageDraw.Draw(self.im)
-        draw.ellipse((0, 0, ((self.size * 10) - 10), ((self.size * 10) - 10)), outline=self.troughcolor,
-                     width=self.indicatorthickness * 10)
-        draw.arc((0, 0, ((self.size * 10) - 10), (self.size * 10) - 10), self.startangle, endangle, self.indicatorcolor,
-                 self.indicatorthickness * 10)
+        draw.ellipse((0, 0, ((self.size * scale_factor) - 10), ((self.size * scale_factor) - 10)),
+                     outline=self.troughcolor, width=self.indicatorthickness * scale_factor)
+        draw.arc((0, 0, ((self.size * scale_factor) - 10), (self.size * scale_factor) - 10), self.startangle, endangle,
+                 self.indicatorcolor, self.indicatorthickness * scale_factor)
         self.arc = ImageTk.PhotoImage(self.im.resize((self.size, self.size), Image.CUBIC))
         self.configure(image=self.arc)
 
