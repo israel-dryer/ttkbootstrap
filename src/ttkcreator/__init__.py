@@ -123,7 +123,7 @@ class CreatorDesignWindow(tk.Toplevel):
         entry = ttk.Entry(selector, name='entry', textvariable=color_label)
         entry.pack(side='left', fill='x', expand='yes')
         entry.bind('<FocusOut>', lambda event, selector=selector: self.select_color(selector, event))
-        btn = ttk.Button(selector, text="🎨", style='secondary.TButton', width=3)
+        btn = ttk.Button(selector, text="", style='secondary.TButton', width=3)
         btn.configure(command=lambda s=selector: self.select_color(s))
         btn.pack(side='right', padx=2)
         return selector
