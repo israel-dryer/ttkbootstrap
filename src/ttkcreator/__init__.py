@@ -11,7 +11,7 @@ from tkinter import ttk
 from tkinter.colorchooser import askcolor
 from tkinter.messagebox import showinfo, showerror
 import importlib.resources
-from PIL import ImageGrab
+from PIL import Image, ImageGrab, ImageDraw, ImageFont, ImageTk
 from tkinter.filedialog import asksaveasfilename
 from tkinter.messagebox import showwarning
 from pathlib import Path
@@ -40,6 +40,7 @@ class CreatorDesignWindow(tk.Toplevel):
         self.window.pack(expand=False)
 
         # widget container for selecting theme colors
+        self.update_selector_image(color=self.style.colors.selectfg)
         self.color_chooser = self.color_chooser(self.window)
         self.color_chooser.pack(side='left', padx=(0, 10))
 
@@ -107,6 +108,29 @@ class CreatorDesignWindow(tk.Toplevel):
                 ['color_chooser'].children
                 ['selectors'].children)
 
+    def update_selector_image(self, color=None):
+        """
+        Draw the selector image using the packaged `Symbola` font.
+        """
+        font_size = 16
+        with importlib.resources.open_binary('ttkbootstrap', 'Symbola.ttf') as font_path:
+            fnt = ImageFont.truetype(font_path, font_size)
+
+        im = Image.new('RGBA', (font_size, font_size))
+        draw = ImageDraw.Draw(im)
+        draw.text((1, 1), "🎨", font=fnt, fill=color or self.getvar('selectfg'))
+        self.image = ImageTk.PhotoImage(im)
+
+        try:
+            selectors = self.get_selectors()
+            if selectors:
+                for color in self.style.colors.label_iter():
+                    selectors[color].children['button'].configure(image=self.image)
+        except KeyError:
+            # selectors have not been created yet
+            pass
+
+
     def color_selector(self, master, color_label):
         """
         A container widget that represents a color selector. This includes a label, a color patch, an entry field,
@@ -123,7 +147,7 @@ class CreatorDesignWindow(tk.Toplevel):
         entry = ttk.Entry(selector, name='entry', textvariable=color_label)
         entry.pack(side='left', fill='x', expand='yes')
         entry.bind('<FocusOut>', lambda event, selector=selector: self.select_color(selector, event))
-        btn = ttk.Button(selector, text="", style='secondary.TButton', width=3)
+        btn = ttk.Button(selector, name='button', image=self.image, style='secondary.TButton')
         btn.configure(command=lambda s=selector: self.select_color(s))
         btn.pack(side='right', padx=2)
         return selector
@@ -230,6 +254,7 @@ class CreatorDesignWindow(tk.Toplevel):
         """
         self.style.theme_use(themename=self.theme_name)
         self.reset_variables()
+        self.update_selector_image()
         self.reset_color_patches()
 
     def reset_variables(self):
@@ -237,8 +262,6 @@ class CreatorDesignWindow(tk.Toplevel):
         Reset all selector variables to the default theme values
         """
         self.vars['name'].set(value='New Theme')
-        # self.vars['font'].set('Helvetica 10')
-        # self.vars['type'].set('dark')
 
         for color in self.style.colors.label_iter():
             var = self.vars[color]
@@ -253,8 +276,8 @@ class CreatorDesignWindow(tk.Toplevel):
         """
         selectors = self.get_selectors()
         for color in self.style.colors.label_iter():
-            patch = selectors[color].children['patch']
-            patch.configure(background=self.style.colors.get(color))
+            selectors[color].children['patch'].configure(background=self.style.colors.get(color))
+            selectors[color].children['button'].configure(image=self.image)
 
     def update_theme(self, var, index, mode):
         """
@@ -266,6 +289,8 @@ class CreatorDesignWindow(tk.Toplevel):
         :param mode: the mode of the trace observer
         """
         theme_id = str(uuid.uuid4())  # a unique (and temporary) identifier for the new theme
+        self.update_selector_image()
+
         try:
             colors = Colors(
                 primary=self.getvar('primary'),
