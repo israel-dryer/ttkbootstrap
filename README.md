@@ -6,6 +6,12 @@ A collection of modern flat themes inspired by Bootstrap. Also includes **TTK Cr
 pip install ttkbootstrap
 ```
 
+If you are on **Linux**, you may need to install a font with emojii support, or the program will crash. 
+
+```
+  sudo apt-get install fonts-symbola
+```
+
 ### Documentation
 Read for more information about how to use along with full-size screenshots, and other useful information.
 https://ttkbootstrap.readthedocs.io/en/latest/
