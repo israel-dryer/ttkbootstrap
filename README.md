@@ -9,7 +9,7 @@ pip install ttkbootstrap
 If you are on **Linux**, you may need to install a font with emojii support, or the program will crash. 
 
 ```
-  sudo apt-get install fonts-symbola
+sudo apt-get install fonts-symbola
 ```
 
 ### Documentation
