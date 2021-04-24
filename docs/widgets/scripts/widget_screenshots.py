@@ -17,6 +17,7 @@ def screenshot_button(screenshot_on=True, theme='flatly'):
     """
     style = Style(theme)
     window = style.master
+    window.title('ttkbootstrap')
     ss = Screenshot(window, '../images/buttons.png')
 
     # solid buttons
@@ -59,6 +60,7 @@ def screenshot_checkbutton(screenshot_on=True, theme='flatly'):
     style = Style(theme)
     window = style.master
     window.geometry('272x280')
+    window.title('ttkbootstrap')
     ss = Screenshot(window, '../images/checkbutton.png')
 
     # classic checkbutton
@@ -83,6 +85,7 @@ def screenshot_checkbutton_toolbutton(screenshot_on=True, theme='flatly'):
     """
     style = Style(theme)
     window = style.master
+    window.title('ttkbootstrap')
     ss = Screenshot(window, '../images/checkbutton_toolbutton.png')
     f5 = ttk.Frame(window, padding=10)
     f5.pack(fill='both', side='left', expand='yes')
@@ -122,6 +125,7 @@ def screenshot_checkbutton_outline_toolbutton(screenshot_on=True, theme='flatly'
     """
     style = Style(theme)
     window = style.master
+    window.title('ttkbootstrap')
     ss = Screenshot(window, '../images/checkbutton_outline_toolbutton.png')
     f5 = ttk.Frame(window, padding=10)
     f5.pack(fill='both', side='left', expand='yes')
@@ -165,6 +169,7 @@ def screenshot_roundtoggle_toolbutton():
     style = Style()
     window = style.master
     window.geometry('272x335')
+    window.title('ttkbootstrap')
     ss = Screenshot(window, '../images/roundtoggle.png')
 
     # classic checkbutton
@@ -193,6 +198,7 @@ def screenshot_squaretoggle_toolbutton():
     style = Style()
     window = style.master
     window.geometry('272x335')
+    window.title('ttkbootstrap')
     ss = Screenshot(window, '../images/squaretoggle.png')
 
     # classic checkbutton
@@ -220,6 +226,7 @@ def screenshot_combobox_primary():
     """
     style = Style()
     window = style.master
+    window.title('ttkbootstrap')
     color = 'primary'
     ss = Screenshot(window, f'../images/combobox_{color}.png')
 
@@ -256,6 +263,7 @@ def screenshot_combobox_secondary():
     """
     style = Style()
     window = style.master
+    window.title('ttkbootstrap')
     color = 'secondary'
     ss = Screenshot(window, f'../images/combobox_{color}.png')
 
@@ -292,6 +300,7 @@ def screenshot_combobox_success():
     """
     style = Style()
     window = style.master
+    window.title('ttkbootstrap')
     color = 'success'
     ss = Screenshot(window, f'../images/combobox_{color}.png')
 
@@ -328,6 +337,7 @@ def screenshot_combobox_info():
     """
     style = Style()
     window = style.master
+    window.title('ttkbootstrap')
     color = 'info'
     ss = Screenshot(window, f'../images/combobox_{color}.png')
 
@@ -364,6 +374,7 @@ def screenshot_combobox_warning():
     """
     style = Style()
     window = style.master
+    window.title('ttkbootstrap')
     color = 'warning'
     ss = Screenshot(window, f'../images/combobox_{color}.png')
 
@@ -400,6 +411,7 @@ def screenshot_combobox_danger():
     """
     style = Style()
     window = style.master
+    window.title('ttkbootstrap')
     color = 'danger'
     ss = Screenshot(window, f'../images/combobox_{color}.png')
 
@@ -436,6 +448,7 @@ def screenshot_entry_primary():
     """
     style = Style()
     window = style.master
+    window.title('ttkbootstrap')
     color = 'primary'
     ss = Screenshot(window, f'../images/entry_{color}.png')
 
@@ -472,6 +485,7 @@ def screenshot_entry_secondary():
     """
     style = Style()
     window = style.master
+    window.title('ttkbootstrap')
     color = 'secondary'
     ss = Screenshot(window, f'../images/entry_{color}.png')
 
@@ -508,6 +522,7 @@ def screenshot_entry_success():
     """
     style = Style()
     window = style.master
+    window.title('ttkbootstrap')
     color = 'success'
     ss = Screenshot(window, f'../images/entry_{color}.png')
 
@@ -544,6 +559,7 @@ def screenshot_entry_info():
     """
     style = Style()
     window = style.master
+    window.title('ttkbootstrap')
     color = 'info'
     ss = Screenshot(window, f'../images/entry_{color}.png')
 
@@ -580,6 +596,7 @@ def screenshot_entry_warning():
     """
     style = Style()
     window = style.master
+    window.title('ttkbootstrap')
     color = 'warning'
     ss = Screenshot(window, f'../images/entry_{color}.png')
 
@@ -616,6 +633,7 @@ def screenshot_entry_danger():
     """
     style = Style()
     window = style.master
+    window.title('ttkbootstrap')
     color = 'danger'
     ss = Screenshot(window, f'../images/entry_{color}.png')
 
@@ -652,6 +670,7 @@ def screenshot_frame(screenshot_on=True, theme='flatly'):
     """
     style = Style(theme)
     window = style.master
+    window.title('ttkbootstrap')
     window.geometry('300x500')
     ss = Screenshot(window, f'../images/frame.png')
 
@@ -684,6 +703,7 @@ def screenshot_label(screenshot_on=True, theme='flatly'):
     """
     style = Style(theme)
     window = style.master
+    window.title('ttkbootstrap')
     ss = Screenshot(window, '../images/label.png')
 
     # regular labels
@@ -717,6 +737,7 @@ def screenshot_labelframe(screenshot_on=True, theme='flatly'):
     """
     style = Style(theme)
     window = style.master
+    window.title('ttkbootstrap')
     window.geometry('400x600')
     ss = Screenshot(window, '../images/labelframe.png')
 
@@ -745,6 +766,7 @@ def screenshot_menubutton(screenshot_on=True, theme='flatly'):
     """
     style = Style(theme)
     window = style.master
+    window.title('ttkbootstrap')
     ss = Screenshot(window, '../images/menubutton.png')
 
     # solid menubuttons
@@ -779,6 +801,7 @@ def screenshot_notebook(screenshot_on=True, theme='flatly'):
     """
     style = Style(theme)
     window = style.master
+    window.title('ttkbootstrap')
     window.geometry('400x300')
     ss = Screenshot(window, '../images/notebook.png')
     f1 = ttk.Frame(window, padding=5)
@@ -805,6 +828,7 @@ def screenshot_progressbar_horizontal(screenshot_on=True, theme='flatly'):
     """
     style = Style(theme)
     window = style.master
+    window.title('ttkbootstrap')
     window.geometry('600x400')
     ss = Screenshot(window, '../images/progressbar_horizontal.png')
 
@@ -832,6 +856,7 @@ def screenshot_progressbar_horizontal_striped(screenshot_on=True, theme='flatly'
     """
     style = Style(theme)
     window = style.master
+    window.title('ttkbootstrap')
     window.geometry('600x400')
     ss = Screenshot(window, '../images/progressbar_horizontal_striped.png')
 
@@ -861,6 +886,7 @@ def screenshot_progressbar_vertical(screenshot_on=True, theme='flatly'):
     """
     style = Style(theme)
     window = style.master
+    window.title('ttkbootstrap')
     window.geometry('600x400')
     ss = Screenshot(window, '../images/progressbar_vertical.png')
 
@@ -891,6 +917,7 @@ def screenshot_radiobutton(screenshot_on=True, theme='flatly'):
     """
     style = Style(theme)
     window = style.master
+    window.title('ttkbootstrap')
     window.geometry('272x310')
     ss = Screenshot(window, '../images/radiobutton.png')
     f1 = ttk.Frame(window, padding=10)
@@ -920,6 +947,7 @@ def screenshot_radiobutton_toolbutton(screenshot_on=True, theme='flatly'):
     """
     style = Style(theme)
     window = style.master
+    window.title('ttkbootstrap')
     ss = Screenshot(window, '../images/radiobutton_toolbutton.png')
     f5 = ttk.Frame(window, padding=10)
     f5.pack(fill='both', side='left', expand='yes')
@@ -959,6 +987,7 @@ def screenshot_radiobutton_outline_toolbutton(screenshot_on=True, theme='flatly'
     """
     style = Style(theme)
     window = style.master
+    window.title('ttkbootstrap')
     ss = Screenshot(window, '../images/radiobutton_outline_toolbutton.png')
     f5 = ttk.Frame(window, padding=10)
     f5.pack(fill='both', side='left', expand='yes')
@@ -1001,6 +1030,7 @@ def screenshot_scale_horizontal(screenshot_on=True, theme='flatly'):
     """
     style = Style(theme)
     window = style.master
+    window.title('ttkbootstrap')
     window.geometry('500x400')
     ss = Screenshot(window, '../images/scale_horizontal.png')
 
@@ -1029,6 +1059,7 @@ def screenshot_scale_vertical(screenshot_on=True, theme='flatly'):
     """
     style = Style(theme)
     window = style.master
+    window.title('ttkbootstrap')
     window.geometry('500x400')
     ss = Screenshot(window, '../images/scale_vertical.png')
 
@@ -1059,6 +1090,7 @@ def screenshot_scrollbar_horizontal(screenshot_on=True, theme='flatly'):
     """
     style = Style(theme)
     window = style.master
+    window.title('ttkbootstrap')
     window.geometry('400x125')
     ss = Screenshot(window, '../images/scrollbar_horizontal.png')
 
@@ -1085,6 +1117,7 @@ def screenshot_scrollbar_vertical(screenshot_on=True, theme='flatly'):
     """
     style = Style(theme)
     window = style.master
+    window.title('ttkbootstrap')
     window.geometry('150x400')
     ss = Screenshot(window, '../images/scrollbar_vertical.png')
 
@@ -1111,6 +1144,7 @@ def screenshot_separator_horizontal(screenshot_on=True, theme='flatly'):
     """
     style = Style(theme)
     window = style.master
+    window.title('ttkbootstrap')
     window.geometry('475x400')
     ss = Screenshot(window, '../images/separator_horizontal.png')
 
@@ -1136,6 +1170,7 @@ def screenshot_separator_vertical(screenshot_on=True, theme='flatly'):
     """
     style = Style(theme)
     window = style.master
+    window.title('ttkbootstrap')
     window.geometry('475x400')
     ss = Screenshot(window, '../images/separator_vertical.png')
 
@@ -1165,6 +1200,7 @@ def screenshot_sizegrip(screenshot_on=True, theme='flatly'):
     """
     style = Style(theme)
     window = style.master
+    window.title('ttkbootstrap')
     window.geometry('200x75')
     ss = Screenshot(window, f'../images/sizegrip.png')
 
@@ -1183,6 +1219,7 @@ def screenshot_sizegrip_primary(screenshot_on=True, theme='flatly'):
     """
     style = Style(theme)
     window = style.master
+    window.title('ttkbootstrap')
     window.geometry('200x75')
     color = 'primary'
     ss = Screenshot(window, f'../images/sizegrip_{color}.png')
@@ -1202,6 +1239,7 @@ def screenshot_sizegrip_secondary(screenshot_on=True, theme='flatly'):
     """
     style = Style(theme)
     window = style.master
+    window.title('ttkbootstrap')
     window.geometry('200x75')
     color = 'secondary'
     ss = Screenshot(window, f'../images/sizegrip_{color}.png')
@@ -1221,6 +1259,7 @@ def screenshot_sizegrip_success(screenshot_on=True, theme='flatly'):
     """
     style = Style(theme)
     window = style.master
+    window.title('ttkbootstrap')
     window.geometry('200x75')
     color = 'success'
     ss = Screenshot(window, f'../images/sizegrip_{color}.png')
@@ -1240,6 +1279,7 @@ def screenshot_sizegrip_info(screenshot_on=True, theme='flatly'):
     """
     style = Style(theme)
     window = style.master
+    window.title('ttkbootstrap')
     window.geometry('200x75')
     color = 'info'
     ss = Screenshot(window, f'../images/sizegrip_{color}.png')
@@ -1259,6 +1299,7 @@ def screenshot_sizegrip_warning(screenshot_on=True, theme='flatly'):
     """
     style = Style(theme)
     window = style.master
+    window.title('ttkbootstrap')
     window.geometry('200x75')
     color = 'warning'
     ss = Screenshot(window, f'../images/sizegrip_{color}.png')
@@ -1278,6 +1319,7 @@ def screenshot_sizegrip_danger(screenshot_on=True, theme='flatly'):
     """
     style = Style(theme)
     window = style.master
+    window.title('ttkbootstrap')
     window.geometry('200x75')
     color = 'danger'
     ss = Screenshot(window, f'../images/sizegrip_{color}.png')
@@ -1297,6 +1339,7 @@ def screenshot_spinbox_primary(screenshot_on=True, theme='flatly'):
     """
     style = Style(theme)
     window = style.master
+    window.title('ttkbootstrap')
     color = 'primary'
     ss = Screenshot(window, f'../images/spinbox_{color}.png')
 
@@ -1334,6 +1377,7 @@ def screenshot_spinbox_secondary(screenshot_on=True, theme='flatly'):
     """
     style = Style(theme)
     window = style.master
+    window.title('ttkbootstrap')
     color = 'secondary'
     ss = Screenshot(window, f'../images/spinbox_{color}.png')
 
@@ -1371,6 +1415,7 @@ def screenshot_spinbox_success(screenshot_on=True, theme='flatly'):
     """
     style = Style(theme)
     window = style.master
+    window.title('ttkbootstrap')
     color = 'success'
     ss = Screenshot(window, f'../images/spinbox_{color}.png')
 
@@ -1408,6 +1453,7 @@ def screenshot_spinbox_info(screenshot_on=True, theme='flatly'):
     """
     style = Style(theme)
     window = style.master
+    window.title('ttkbootstrap')
     color = 'info'
     ss = Screenshot(window, f'../images/spinbox_{color}.png')
 
@@ -1445,6 +1491,7 @@ def screenshot_spinbox_warning(screenshot_on=True, theme='flatly'):
     """
     style = Style(theme)
     window = style.master
+    window.title('ttkbootstrap')
     color = 'warning'
     ss = Screenshot(window, f'../images/spinbox_{color}.png')
 
@@ -1482,6 +1529,7 @@ def screenshot_spinbox_danger(screenshot_on=True, theme='flatly'):
     """
     style = Style(theme)
     window = style.master
+    window.title('ttkbootstrap')
     color = 'danger'
     ss = Screenshot(window, f'../images/spinbox_{color}.png')
 
@@ -1519,6 +1567,7 @@ def screenshot_treeview_primary(screenshot_on=True, theme='flatly'):
     """
     style = Style(theme)
     window = style.master
+    window.title('ttkbootstrap')
     window.geometry('300x125')
     color = 'primary'
     ss = Screenshot(window, f'../images/treeview_{color}.png')
@@ -1548,6 +1597,7 @@ def screenshot_treeview_secondary(screenshot_on=True, theme='flatly'):
     """
     style = Style(theme)
     window = style.master
+    window.title('ttkbootstrap')
     window.geometry('300x125')
     color = 'secondary'
     ss = Screenshot(window, f'../images/treeview_{color}.png')
@@ -1577,6 +1627,7 @@ def screenshot_treeview_success(screenshot_on=True, theme='flatly'):
     """
     style = Style(theme)
     window = style.master
+    window.title('ttkbootstrap')
     window.geometry('300x125')
     color = 'success'
     ss = Screenshot(window, f'../images/treeview_{color}.png')
@@ -1606,6 +1657,7 @@ def screenshot_treeview_info(screenshot_on=True, theme='flatly'):
     """
     style = Style(theme)
     window = style.master
+    window.title('ttkbootstrap')
     window.geometry('300x125')
     color = 'info'
     ss = Screenshot(window, f'../images/treeview_{color}.png')
@@ -1635,6 +1687,7 @@ def screenshot_treeview_warning(screenshot_on=True, theme='flatly'):
     """
     style = Style(theme)
     window = style.master
+    window.title('ttkbootstrap')
     window.geometry('300x125')
     color = 'warning'
     ss = Screenshot(window, f'../images/treeview_{color}.png')
@@ -1664,6 +1717,7 @@ def screenshot_treeview_danger(screenshot_on=True, theme='flatly'):
     """
     style = Style(theme)
     window = style.master
+    window.title('ttkbootstrap')
     window.geometry('300x125')
     color = 'danger'
     ss = Screenshot(window, f'../images/treeview_{color}.png')
@@ -1693,7 +1747,7 @@ if __name__ == '__main__':
         screenshot_checkbutton,
         screenshot_checkbutton_toolbutton,
         screenshot_checkbutton_outline_toolbutton,
-        screenshot_squaretoggle_toolbutton,
+        screenshot_roundtoggle_toolbutton,
         screenshot_squaretoggle_toolbutton,
         screenshot_combobox_primary,
         screenshot_combobox_secondary,
@@ -1755,5 +1809,4 @@ if __name__ == '__main__':
 
 
     # TODO add an application window here to select the type of screenshots I want to do.
-
 
