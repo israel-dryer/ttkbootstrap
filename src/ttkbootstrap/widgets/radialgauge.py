@@ -5,9 +5,9 @@ from PIL import Image, ImageTk, ImageDraw
 from ttkbootstrap import Style, Colors
 
 
-class RadialGauge(ttk.Label):
+class Radialgauge(ttk.Label):
     """
-    A RadialGauge widget shows the amount completed relative to the total amount of work to be done.
+    A Radialgauge widget shows the amount completed relative to the total amount of work to be done.
 
     :param str background: the widget background color; may also be set with ``style``.
     :param str cursor: specify the appearance of the mouse cursor when it is over the widget.
@@ -146,7 +146,7 @@ def test_radial_gauge():
     style = Style('minty')
 
     # Create the gauge widget
-    gauge = RadialGauge(root, font='helvetica 14 bold', maximum=360, value=275, text='275 deg')
+    gauge = Radialgauge(root, font='helvetica 14 bold', maximum=360, value=275, text='275 deg')
     gauge.pack(fill='both', expand='yes', padx=5, pady=20)
     gauge.variable.trace_add('write', lambda *args, g=gauge: g.textvariable.set(f'{g.variable.get()} deg'))
 
