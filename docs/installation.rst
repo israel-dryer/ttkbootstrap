@@ -16,7 +16,7 @@ This also installs ``pillow`` as a required dependency if it is not already inst
 some of the image processing used in ttkbootstrap.
 
 .. note::
-    If you are on Linux, you may not have a font with emojii support. I recommend you also install the `Symbola` font.
+    If you are on **Linux**, you may not have a font with emojii support to prevent the program from crashing. I recommend you also install the `Symbola` font.
     
     ``sudo apt-get install fonts-symbola``
     
