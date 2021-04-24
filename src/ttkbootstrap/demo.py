@@ -34,7 +34,10 @@ class Demo(Style):
         return "Demo Application"
 
     def setup(self):
-        ttk.Scrollbar(self.root).pack(side='right', fill='y')
+        sb = ttk.Scrollbar(self.root)
+        sb.set(0.1, 0.55)
+
+        sb.pack(side='right', fill='y')
         self.nb = ttk.Notebook(self.root)
         self.nb.pack(fill='both', expand='yes')
         self.tab = self.create_themed_tab()
@@ -178,7 +181,7 @@ class Demo(Style):
         cbo.pack(fill='x', pady=5)
 
         # Progressbar
-        ttk.Progressbar(widget_frame, variable=self.scale_var).pack(fill='x', pady=10)
+        ttk.Progressbar(widget_frame, variable=self.scale_var, style='Striped.Horizontal.TProgressbar').pack(fill='x', pady=10)
         return tab
 
     def run(self):
