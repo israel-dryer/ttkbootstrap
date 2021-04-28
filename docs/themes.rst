@@ -108,23 +108,25 @@ loaded as a new theme by the ``ttkbootstrap.Style`` class.
 .. code-block:: python
 
     {
-      "name": "lumen",
+      "name": "cosmo",
       "font": "Helvetica",
       "type": "light",
       "colors": {
-        "primary": "#158cba",
-        "secondary": "#555555",
-        "success": "#28b62c",
-        "info": "#75caeb",
-        "warning": "#ff851b",
-        "danger": "#ff4136",
-        "bg": "#ffffff",
-        "fg": "#555555",
-        "selectbg": "#555555",
-        "selectfg": "#ffffff",
-        "light": "#f6f6f6",
-        "border": "#ced4da",
-        "inputfg": "#888888"
+				"primary": "#2780e3",
+				"secondary": "#373a3c",
+				"success": "#3fb618",
+				"info": "#9954bb",
+				"warning": "#ff7518",
+				"danger": "#ff0039",
+				"light": "#f8f9fa",
+				"dark": "#373a3c",
+				"bg": "#ffffff",
+				"fg": "#373a3c",
+				"selectbg": "#373a3c",
+				"selectfg": "#ffffff",
+				"border": "#ced4da",
+				"inputfg": "#373a3c",
+				"inputbg": "#fdfdfe"
       }
     }
 
