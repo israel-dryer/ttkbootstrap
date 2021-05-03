@@ -1,2 +1,2 @@
-from .radialgauge import Radialgauge
+from .meter import Meter
 from .floodgauge import Floodgauge
