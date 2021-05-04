@@ -2,20 +2,22 @@
     A Meter widget that presents data and progress in a radial style gauge.
 
     Author: Israel Dryer, israel.dryer@gmail.com
-    Modified: 2021-05-22
+    Modified: 2021-05-4
 
     Inspired by: https://www.jqueryscript.net/chart-graph/Customizable-Animated-jQuery-HTML5-Gauge-Meter-Plugin.html
 """
-import tkinter as tk
-from PIL import Image, ImageTk, ImageDraw
+import math
 from tkinter import StringVar, IntVar
 from tkinter import ttk
 from tkinter.ttk import Frame
+
+from PIL import Image, ImageTk, ImageDraw
 from ttkbootstrap import Style, Colors
 
 
 class Meter(Frame):
-    """A radial meter that can be used to show progress of long running operations or the amount of work completed
+    """A radial meter that can be used to show progress of long running operations or the amount of work completed;
+    can also be used as a `Dial` when set to ``interactive=True``.
 
     This widget is very flexible and can be customized to show a wide variety of styles.  There are two primary meter
     types which can be set with the ``metertype`` parameter: 'full', and 'semi', which show the arc of the meter in
@@ -36,7 +38,6 @@ class Meter(Frame):
     Properties are also available for these variables so that they can be modified and access without calling the
     getter and setter directly.  For example: ``Meter.amountused`` or ``Meter.amountused = 55`` will get or set the
     amount used on the widget without having to call the ``get`` or ``set`` methods of the tkinter variable.
-
     """
 
     def __init__(self,
@@ -45,6 +46,7 @@ class Meter(Frame):
                  arcoffset=None,
                  amounttotal=100,
                  amountused=0,
+                 interactive=False,
                  labelfont='Helvetica 10 bold',
                  labelstyle='secondary.TLabel',
                  labeltext=None,
@@ -68,6 +70,7 @@ class Meter(Frame):
             arcrange (int): the range of the arc in degrees from starting to ending position.
             amounttotal (int): the maximum value of the meter.
             amountused (int): the current value of the meter; display on the meter if ``showvalue`` is ``True``.
+            interactive (bool): allows the meter to be adjusted with clicks and drags.
             labelfont(int): the font size of the supplemental label.
             labelstyle (str): the ttk style used to render the supplemental label.
             labeltext (str): supplemental text that appears `below` the central text of the meter.
@@ -89,11 +92,11 @@ class Meter(Frame):
 
         # default arcoffset and arcrange for 'semi' and 'full' meter modes.
         if metertype == 'semi':
-            self.arcoffset = -225 if not arcoffset else arcoffset
-            self.arcrange = 270 if not arcrange else arcrange
+            self.arcoffset = arcoffset if arcoffset is not None else 135
+            self.arcrange = arcrange if arcrange is not None else 270
         else:  # aka 'full'
-            self.arcoffset = -90 if not arcoffset else arcoffset
-            self.arcrange = 360 if not arcrange else arcrange
+            self.arcoffset = arcoffset if arcoffset is not None else -90
+            self.arcrange = arcrange if arcrange is not None else 360
 
         # widget variables
         self.amountusedvariable = IntVar(value=amountused)
@@ -124,6 +127,11 @@ class Meter(Frame):
         self.textappend = ttk.Label(self.textcontainer, text=textappend, font=labelfont, style=labelstyle)
         self.textappend.configure(anchor='s', padding=(0, 5))
         self.label = ttk.Label(self.box, text=labeltext, style=labelstyle, font=labelfont)
+
+        # set interactive mode
+        if interactive:
+            self.meter.bind('<B1-Motion>', self.on_dial_interact)
+            self.meter.bind('<Button-1>', self.on_dial_interact)
 
         # geometry manager
         self.meter.place(x=0, y=0)
@@ -191,7 +199,7 @@ class Meter(Frame):
         """Draw a solid meter
 
         Args:
-            draw (ImageDraw): an object used to draw an arc on the meter
+            draw (ImageDraw.Draw): an object used to draw an arc on the meter
         """
         if self.wedgesize > 0:
             meter_value = self.meter_value()
@@ -206,7 +214,7 @@ class Meter(Frame):
         """Draw a striped meter
 
         Args:
-            draw (ImageDraw): an object used to draw an arc on the meter
+            draw (ImageDraw.Draw): an object used to draw an arc on the meter
         """
         if self.wedgesize > 0:
             meter_value = self.meter_value()
@@ -238,6 +246,31 @@ class Meter(Frame):
         """
         return int((self.amountused / self.amounttotal) * self.arcrange + self.arcoffset)
 
+    def on_dial_interact(self, e):
+        """Callback for mouse drag motion on indicator
+
+        Args:
+            e (Event): event callback for drag motion.
+        """
+        dx = e.x - self.metersize // 2
+        dy = e.y - self.metersize // 2
+        rads = math.atan2(dy, dx)
+        degs = math.degrees(rads)
+
+        if degs > self.arcoffset:
+            factor = degs - self.arcoffset
+        else:
+            factor = 360 + degs - self.arcoffset
+
+        # clamp value between 0 and ``amounttotal``
+        amountused = int(self.amounttotal / self.arcrange * factor)
+        if amountused < 0:
+            self.amountused = 0
+        elif amountused > self.amounttotal:
+            self.amountused = self.amounttotal
+        else:
+            self.amountused = amountused
+
     def step(self, delta=1):
         """Increase the indicator value by ``delta``.
 
@@ -267,13 +300,15 @@ if __name__ == '__main__':
 
     style = Style('litera')
     root = style.master
+    root.title('ttkbootstrap')
 
-    Meter(metersize=180, padding=20, amountused=25, metertype='semi', labeltext='miles per hour').grid(row=0, column=0)
+    Meter(metersize=180, padding=20, amountused=25, metertype='semi', labeltext='miles per hour',
+          interactive=True).grid(row=0, column=0)
     Meter(metersize=180, padding=20, amountused=1800, amounttotal=2600, labeltext='storage used', textappend='gb',
-          meterstyle='info.TLabel', stripethickness=10).grid(row=0, column=1)
+          meterstyle='info.TLabel', stripethickness=10, interactive=True).grid(row=0, column=1)
     Meter(metersize=180, padding=20, stripethickness=2, amountused=40, labeltext='project capacity', textappend='%',
-          meterstyle='success.TLabel').grid(row=1, column=0)
+          meterstyle='success.TLabel', interactive=True).grid(row=1, column=0)
     Meter(metersize=180, padding=10, amounttotal=280, arcrange=180, arcoffset=-180, amountused=75, textappend='°',
-          labeltext='heat temperature', meterstyle='danger.TLabel').grid(row=1, column=1)
+          labeltext='heat temperature', wedgesize=5, meterstyle='danger.TLabel', interactive=True).grid(row=1, column=1)
 
     style.master.mainloop()
