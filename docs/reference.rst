@@ -65,8 +65,8 @@ python documentation_.
 
 .. autoclass:: ttkbootstrap.Style
     :show-inheritance:
+    :inherited-members:
     :members:
-
 
 StylerTTK
 ---------
@@ -83,7 +83,7 @@ StylerTK
 --------
 A class for styling tkinter widgets (not ttk). Several ttk widgets utilize tkinter widgets in some capacity, such
 as the *popdownlist* on the ``ttk.Combobox``. To create a consistent user experience, standard tkinter widgets are
-themed as much as possible with the look and feel of the ttkbootstrap theme applied. Tkinter widgets are not the
+themed as much as possible with the look and feel of the **ttkbootstrap** theme applied. Tkinter widgets are not the
 primary target of this project; however, they can be used without looking entirely out-of-place in most cases.
 
 .. autoclass:: ttkbootstrap.StylerTK
