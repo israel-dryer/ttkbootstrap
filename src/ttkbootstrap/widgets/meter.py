@@ -88,6 +88,11 @@ class Meter(Frame):
             wedgesize (int): if greater than zero, the width of the wedge on either side of the current meter value.
         """
         super().__init__(master=master, **kw)
+
+        # check that style is instantiated.
+        if self.lookup(meterstyle, 'background') == 'SystemButtonFace':
+            raise Exception("Cannot use this widget without instantiating a ttkbootstrap Style object.")
+
         self.box = ttk.Frame(self, width=metersize, height=metersize)
 
         # default arcoffset and arcrange for 'semi' and 'full' meter modes.
