@@ -52,7 +52,6 @@ class Demo(Style):
         standard tk widgets, I've choosing to redraw all the widgets in the main tab. You can use other methods or
         avoid this altogether if you're not switch between light and dark themes.
         """
-        # print(self.root.winfo_width(), self.root.winfo_height())
         self.tab.destroy()
         self.theme_use(new_theme)
         self.tab = self.create_themed_tab()
@@ -77,7 +76,7 @@ class Demo(Style):
         mb.pack(side='right', fill='x', pady=5)
         mb.menu = tkinter.Menu(mb)
         mb['menu'] = mb.menu
-        for t in sorted(self._theme_names):
+        for t in sorted(self._theme_definitions.keys()):
             mb.menu.add_command(label=t, command=lambda theme_name=t: self.change_theme(theme_name))
 
         # Separator
