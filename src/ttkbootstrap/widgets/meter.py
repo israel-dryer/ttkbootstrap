@@ -28,7 +28,7 @@ class Meter(Frame):
     By default, the ``stripethickness`` is 0, which results in a solid progressbar. A higher ``stripethickness`` results
     in larger widgets around the meter.
 
-    Various text and label options exist. You can prepend or append text to the centeral text displayed on the widget
+    Various text and label options exist. You can prepend or append text to the central text displayed on the widget
     with the ``textappend`` and ``textprepend`` parameters.  You can also change the style and font size of those
     elements.
 
@@ -312,9 +312,6 @@ class Meter(Frame):
 
 
 if __name__ == '__main__':
-    def test(meter):
-        meter.step()
-        meter.after(10, test, meter)
 
     style = Style()
     root = style.master
