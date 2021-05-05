@@ -12,7 +12,7 @@ from tkinter import ttk
 from tkinter.ttk import Frame
 
 from PIL import Image, ImageTk, ImageDraw
-from ttkbootstrap import Colors
+from ttkbootstrap import Style, Colors
 
 
 class Meter(Frame):
@@ -316,11 +316,7 @@ if __name__ == '__main__':
         meter.step()
         meter.after(10, test, meter)
 
-    from ttkbootstrap import Style
     style = Style()
-    style.theme_use('clam')
-    from tkinter import ttk
-
     root = style.master
     root.title('ttkbootstrap')
 
