@@ -3,7 +3,7 @@
 Widgets
 #######
 
-Documentation, examples, and tips for ttk widgets (in progress)
+Documentation, examples, and tips for ttk and ttkbootstrap widgets
 
 .. toctree::
     :maxdepth: 1
@@ -16,6 +16,7 @@ Documentation, examples, and tips for ttk widgets (in progress)
     widgets/label
     widgets/labelframe
     widgets/menubutton
+    widgets/meter
     widgets/notebook
     widgets/panedwindow
     widgets/progressbar

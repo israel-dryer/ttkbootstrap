@@ -1741,6 +1741,37 @@ def screenshot_treeview_danger(screenshot_on=True, theme='flatly'):
     window.mainloop()
 
 
+def screenshot_meter(screenshot_on=True, theme='flatly'):
+    """
+    Get screenshot for meter
+    """
+    from ttkbootstrap.widgets import Meter
+    style = Style(theme)
+    window = style.master
+    window.title('ttkbootstrap')
+    ss = Screenshot(window, '../images/meter.png')
+
+    # headers
+    f1 = ttk.Frame(window, padding=5)
+    f1.pack(fill='both', side='left', expand='yes')
+
+    # widgets
+    n = 50
+    for i, c in enumerate(style.colors):
+        if i < 3:
+            m = Meter(f1, amountused=n + (i*10), meterstyle=f'{c}.TLabel', labeltext=f'{c}.TLabel')
+            m.grid(row=0, column=i, padx=10, pady=10)
+        else:
+            m = Meter(f1, amountused=n + (i*10), meterstyle=f'{c}.TLabel', labeltext=f'{c}.TLabel')
+            m.grid(row=1, column=i-3, padx=10, pady=10)
+
+    if screenshot_on:
+        window.after(1000, lambda: ss.get_bounding_box(None))
+        window.after(1500, window.quit)
+    window.mainloop()
+
+
+
 if __name__ == '__main__':
     programs = [
         screenshot_button,
@@ -1799,14 +1830,14 @@ if __name__ == '__main__':
         screenshot_treeview_danger,
     ]
 
-    p_list = []
-    for p in programs:
-        p_list.append(Process(target=p))
+    # p_list = []
+    # for p in programs:
+    #     p_list.append(Process(target=p))
+    #
+    # for p in p_list:
+    #     p.start()
+    #     p.join()
 
-    for p in p_list:
-        p.start()
-        p.join()
-
-
+    screenshot_meter(False)
     # TODO add an application window here to select the type of screenshots I want to do.
 
