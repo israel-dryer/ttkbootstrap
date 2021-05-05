@@ -12,7 +12,7 @@ from tkinter import ttk
 from tkinter.ttk import Frame
 
 from PIL import Image, ImageTk, ImageDraw
-from ttkbootstrap import Style, Colors
+from ttkbootstrap import Colors
 
 
 class Meter(Frame):
@@ -89,10 +89,6 @@ class Meter(Frame):
         """
         super().__init__(master=master, **kw)
 
-        # check that style is instantiated.
-        if self.lookup(meterstyle, 'background') == 'SystemButtonFace':
-            raise Exception("Cannot use this widget without instantiating a ttkbootstrap Style object.")
-
         self.box = ttk.Frame(self, width=metersize, height=metersize)
 
         # default arcoffset and arcrange for 'semi' and 'full' meter modes.
@@ -113,11 +109,20 @@ class Meter(Frame):
         self.towardsmaximum = True
         self.metersize = metersize
         self.meterthickness = meterthickness
-        self.meterforeground = self.lookup(meterstyle, 'foreground')
-        self.meterbackground = Colors.update_hsv(self.lookup(meterstyle, 'background'), vd=-0.1)
         self.stripethickness = stripethickness
         self.showvalue = showvalue
         self.wedgesize = wedgesize
+
+        # translate system colors if a ttkboostrap style is not used
+        if 'system' in self.lookup(meterstyle, 'foreground').lower():
+            self.meterforeground = self.convert_system_color(self.lookup(meterstyle, 'foreground'))
+        else:
+            self.meterforeground = self.lookup(meterstyle, 'foreground')
+        if 'system' in self.lookup(meterstyle, 'background').lower():
+            self.meterbackground = Colors.update_hsv(self.convert_system_color(
+                self.lookup(meterstyle, 'background')), vd=-0.1)
+        else:
+            self.meterbackground = Colors.update_hsv(self.lookup(meterstyle, 'background'), vd=-0.1)
 
         # meter image
         self.meter = ttk.Label(self.box)
@@ -168,6 +173,15 @@ class Meter(Frame):
     @amounttotal.setter
     def amounttotal(self, value):
         self.amounttotalvariable.set(value)
+
+    def convert_system_color(self, systemcolorname):
+        """Convert a system color name to a hexadecimal value
+
+        Args:
+            systemcolorname (str): a system color name, such as `SystemButtonFace`
+        """
+        r, g, b = [x >> 8 for x in self.winfo_rgb(systemcolorname)]
+        return f'#{r:02x}{g:02x}{b:02x}'
 
     def draw_base_image(self):
         """Draw the base image to be used for subsequent updates"""
@@ -302,8 +316,11 @@ if __name__ == '__main__':
         meter.step()
         meter.after(10, test, meter)
 
+    from ttkbootstrap import Style
+    style = Style()
+    style.theme_use('clam')
+    from tkinter import ttk
 
-    style = Style('litera')
     root = style.master
     root.title('ttkbootstrap')
 
@@ -313,7 +330,7 @@ if __name__ == '__main__':
           meterstyle='info.TLabel', stripethickness=10, interactive=True).grid(row=0, column=1)
     Meter(metersize=180, padding=20, stripethickness=2, amountused=40, labeltext='project capacity', textappend='%',
           meterstyle='success.TLabel', interactive=True).grid(row=1, column=0)
-    Meter(metersize=180, padding=10, amounttotal=280, arcrange=180, arcoffset=-180, amountused=75, textappend='°',
+    Meter(metersize=180, padding=20, amounttotal=280, arcrange=180, arcoffset=-180, amountused=75, textappend='°',
           labeltext='heat temperature', wedgesize=5, meterstyle='danger.TLabel', interactive=True).grid(row=1, column=1)
 
-    style.master.mainloop()
+    root.mainloop()
