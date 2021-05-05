@@ -137,7 +137,7 @@ class Style(ttk.Style):
             super().theme_use(themename)
             if not self.theme:
                 # this is not a bootstrap theme
-                self._theme_definitions[themename] = ThemeDefinition()
+                # self._theme_definitions[themename] = ThemeDefinition()
                 return
             return
 
