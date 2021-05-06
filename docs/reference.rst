@@ -40,6 +40,8 @@ Widgets
 
 Meter
 -----
+
 .. autoclass:: ttkbootstrap.widgets.Meter
     :show-inheritance:
     :members:
+
