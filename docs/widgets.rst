@@ -3,7 +3,7 @@
 Widgets
 #######
 
-Documentation, examples, and tips for ttk and ttkbootstrap widgets
+A visual style guide for using ttkbootstrap on ttk widgets.
 
 .. toctree::
     :maxdepth: 1
