@@ -38,10 +38,23 @@ ThemeDefinition
 Widgets
 =======
 
+Button
+------
+.. autoclass:: ttkbootstrap.widgets.Button
+    :show-inheritance:
+    :members:
+
+    .. automethod:: invoke
+
 Meter
 -----
-
 .. autoclass:: ttkbootstrap.widgets.Meter
     :show-inheritance:
     :members:
+
+
+
+
+
+
 
