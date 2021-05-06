@@ -32,7 +32,6 @@
 """
 import colorsys
 import importlib.resources
-import widgets
 import json
 from pathlib import Path
 from tkinter import ttk
