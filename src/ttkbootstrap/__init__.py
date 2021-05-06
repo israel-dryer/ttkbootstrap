@@ -1227,20 +1227,28 @@ class StylerTTK:
 
                 - Treeview.field: bordercolor, lightcolor, darkcolor, fieldbackground
                 - Treeview.padding: padding, relief, shiftrelief
-                - Treeview.treearea:
+                - Treeview.treearea
+
+            Item:
+
                 - Treeitem.padding: padding, relief, shiftrelief
                 - Treeitem.indicator: foreground, diameter, indicatormargins
                 - Treeitem.image: image, stipple, background
                 - Treeitem.focus: focuscolor, focusthickness
                 - Treeitem.text: text, font, foreground, underline, width, anchor, justify, wraplength, embossed
 
-            Treeheading:
+            Heading:
 
                 - Treeheading.cell: background, rownumber
                 - Treeheading.border: bordercolor, lightcolor, darkcolor, relief, borderwidth
                 - Treeheading.padding: padding, relief, shiftrelief
                 - Treeheading.image: image, stipple, background
                 - Treeheading.text: text, font, foreground, underline, width, anchor, justify, wraplength, embossed
+
+            Cell:
+                - Treedata.padding: padding, relief, shiftrelief
+                - Treeitem.text: text, font, foreground, underline, width, anchor, justify, wraplength, embossed
+
         """
         disabled_fg = (Colors.update_hsv(self.theme.colors.inputbg, vd=-0.2) if self.theme.type == 'light' else
                        Colors.update_hsv(self.theme.colors.inputbg, vd=-0.3))
