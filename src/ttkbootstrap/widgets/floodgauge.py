@@ -38,7 +38,7 @@ class Floodgauge(Progressbar):
                  **kw):
         """
         Args:
-            parent (Tk): Parent widget
+            parent (Widget): Parent widget
             cursor (str): The cursor that will appear when the mouse is over the progress bar.
             font (Font or str): The font to use for the progress bar label.
             length (int): Specifies the length of the long axis of the progress bar (width if horizontal, height if
