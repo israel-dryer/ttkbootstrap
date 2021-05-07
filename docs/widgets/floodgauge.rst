@@ -1,9 +1,9 @@
 Floodgauge
 ##########
-A ``Floodgauge`` widget shows the status of a long-running operation with an optional text indicator. Similar to the
-``ttk.Progressbar``, this widget can operate in two modes: **determinate** mode shows the amount completed relative to
-the total amount of work to be done, and **indeterminate** mode provides an animated display to let the user know that
-something is happening.
+A ``Floodgauge`` widget is a custom **ttkbootstrap** widget that shows the status of a long-running operation with an 
+optional text indicator. Similar to the ``ttk.Progressbar``, this widget can operate in two modes: **determinate** 
+mode shows the amount completed relative to the total amount of work to be done, and **indeterminate** mode provides 
+an animated display to let the user know that something is happening.
 
 Overview
 ========
