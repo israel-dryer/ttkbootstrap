@@ -9,7 +9,8 @@
 import math
 from tkinter import StringVar, IntVar
 from tkinter import ttk
-from tkinter.ttk import Frame
+from tkinter.font import Font
+from tkinter.ttk import Frame, Widget
 
 from PIL import Image, ImageTk, ImageDraw
 from ttkbootstrap import Style, Colors
@@ -20,21 +21,22 @@ class Meter(Frame):
     can also be used as a `Dial` when set to ``interactive=True``.
 
     This widget is very flexible. There are two primary meter types which can be set with the ``metertype`` parameter:
-    'full', and 'semi', which show the arc of the meter in a full or semi circle. You can also customize the arc of the
+    'full' and 'semi', which show the arc of the meter in a full or semi-circle. You can also customize the arc of the
     circle with the ``arcrange`` and ``arcoffset`` parameters.
 
-    The progressbar indicator can be displayed as a solid color or with stripes using the ``stripethickness`` parameter.
-    By default, the ``stripethickness`` is 0, which results in a solid progressbar. A higher ``stripethickness`` results
-    in larger wedges around the arc of the meter.
+    The progress bar indicator can be displayed as a solid color or with stripes using the ``stripethickness``
+    parameter. By default, the ``stripethickness`` is 0, which results in a solid progress bar. A higher
+    ``stripethickness`` results in larger wedges around the arc of the meter.
 
     Various text and label options exist. The center text can be formatted with the ``meterstyle`` parameter and uses
-    the `TLabel` styles.  This also colors the progressbar.  You can prepend or append text to the center text using the
-    ``textappend`` and ``textprepend`` parameters.
+    the `TLabel` styles.  This also colors the progress bar arch.  You can prepend or append text to the center text
+    using the ``textappend`` and ``textprepend`` parameters. This is most commonly used for '$', '%', or other such
+    symbols.
 
     Variable are generated automatically for this widget and can be linked to other widgets by referencing them via
-    the ``Meter.amountusedvariable`` and ``Meter.amounttotalvariable`` attributes.
+    the ``amountusedvariable`` and ``amounttotalvariable`` attributes.
 
-    You can use the variable properties to easily set and get the value of these variables. For example:
+    The variable properties allow you to easily get and set the value of these variables. For example:
     ``Meter.amountused`` or ``Meter.amountused = 55`` will get or set the amount used on the widget without having to
     call the ``get`` or ``set`` methods of the tkinter variable.
     """
@@ -62,29 +64,27 @@ class Meter(Frame):
                  **kw):
         """
         Args:
-              master (Widget): parent widget
-
-        Keyword Args:
-            arcoffset (int): the amount to offset the arc's starting position in degrees; 0 is at 3 o'clock.
-            arcrange (int): the range of the arc in degrees from starting to ending position.
-            amounttotal (int): the maximum value of the meter.
-            amountused (int): the current value of the meter; display on the meter if ``showvalue`` is ``True``.
-            interactive (bool): allows the meter to be adjusted with clicks and drags.
-            labelfont(int): the font size of the supplemental label.
-            labelstyle (str): the ttk style used to render the supplemental label.
-            labeltext (str): supplemental text that appears `below` the central text of the meter.
-            metersize (int): the size of the meter; represented by one side length of a square.
-            meterstyle (str): the ttk style used to render the meter and central text.
-            metertype (str): `full`, or `semi`; displays a full-circle or semi-circle.
-            meterthickness (int): the thickness of the meter's progress bar.
-            showvalue (bool): shows the meter value in the central text of the meter; default = True.
-            stripethickness (int): shows the meter's progressbar in solid or striped form. If the value is greater than
-                0, the meter's progressbar changes from a solid to a stripe, where the value is the thickness of the
-                stripes.
-            textappend (str): a short string appended to the central meter text.
-            textfont (int): the font size of the central text shown on the meter.
-            textprepend (str): a short string prepended to the central meter text.
-            wedgesize (int): if greater than zero, the width of the wedge on either side of the current meter value.
+            master (Widget): Parent widget
+            arcoffset (int): The amount to offset the arc's starting position in degrees; 0 is at 3 o'clock.
+            arcrange (int): The range of the arc in degrees from start to end.
+            amounttotal (int): The maximum value of the meter.
+            amountused (int): The current value of the meter; displayed if ``showvalue=True``.
+            interactive (bool): Enables the meter to be adjusted with mouse interaction.
+            labelfont(Font or str): The font of the supplemental label.
+            labelstyle (str): The ttk style used to render the supplemental label.
+            labeltext (str): Supplemental label text that appears `below` the center text.
+            metersize (int): The size of the meter; represented by one side length of a square.
+            meterstyle (str): The ttk style used to render the meter and center text.
+            metertype (str): One of **full** or **semi**; displays a full-circle or semi-circle.
+            meterthickness (int): The thickness of the meter's progress bar.
+            showvalue (bool): Show the meter's value in the center text; default = True.
+            stripethickness (int): The meter's progress bar can be displayed in solid or striped form. If the value is
+                greater than 0, the meter's progress bar changes from a solid to striped, where the value is the
+                thickness of the stripes.
+            textappend (str): A short string appended to the center text.
+            textfont (Font or str): The font of the center text.
+            textprepend (str): A short string prepended to the center text.
+            wedgesize (int): If greater than zero, the width of the wedge on either side of the current meter value.
         """
         super().__init__(master=master, **kw)
 
@@ -112,7 +112,7 @@ class Meter(Frame):
         self.showvalue = showvalue
         self.wedgesize = wedgesize
 
-        # translate system colors if a ttkboostrap style is not used
+        # translate system colors if a ttkbootstrap style is not used
         if 'system' in self.lookup(meterstyle, 'foreground').lower():
             self.meterforeground = self.convert_system_color(self.lookup(meterstyle, 'foreground'))
         else:
@@ -128,7 +128,7 @@ class Meter(Frame):
         self.draw_base_image()
         self.draw_meter()
 
-        # text & Label widgets
+        # text & label widgets
         self.textcontainer = ttk.Frame(self.box)
         self.textprepend = ttk.Label(self.textcontainer, text=textprepend, font=labelfont, style=labelstyle)
         self.textprepend.configure(anchor='s', padding=(0, 5))
@@ -142,7 +142,7 @@ class Meter(Frame):
             self.meter.bind('<B1-Motion>', self.on_dial_interact)
             self.meter.bind('<Button-1>', self.on_dial_interact)
 
-        # geometry manager
+        # geometry management
         self.meter.place(x=0, y=0)
         self.box.pack()
         if labeltext:
