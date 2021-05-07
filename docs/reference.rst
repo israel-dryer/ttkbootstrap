@@ -46,6 +46,18 @@ Button
 
     .. automethod:: invoke
 
+Floodgauge
+----------
+.. autoclass:: ttkbootstrap.widgets.Floodgauge
+    :show-inheritance:
+    :members:
+
+    .. automethod:: start
+
+    .. automethod:: step
+
+    .. automethod:: stop
+
 Meter
 -----
 .. autoclass:: ttkbootstrap.widgets.Meter

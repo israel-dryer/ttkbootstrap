@@ -5,6 +5,7 @@ from multiprocessing.context import Process
 from tkinter import ttk
 
 from ttkbootstrap import Style
+from ttkbootstrap import widgets
 from ttkbootstrap.gallery.screenshot import Screenshot
 
 
@@ -1770,7 +1771,85 @@ def screenshot_meter(screenshot_on=True, theme='flatly'):
         window.after(1500, window.quit)
     window.mainloop()
 
+def screenshot_floodgauge_horizontal(screenshot_on=True, theme='flatly'):
+    """
+    Get screenshot for horizontal floodgauges
+    """
+    style = Style(theme)
+    window = style.master
+    window.title('ttkbootstrap')
+    window.geometry('800x500')
+    ss = Screenshot(window, '../images/floodgauge_horizontal.png')
 
+    # headers
+    f1 = ttk.Frame(window, padding=5)
+    f1.pack(fill='both', side='left', expand='yes')
+    for x in [2, 4]:
+        f1.rowconfigure(x, weight=1)
+    for y in range(3):
+        f1.columnconfigure(y, weight=1)
+
+    l = ttk.Label(f1, text='Horizontal.TFloodgauge', font='Helvetica 10 bold', anchor='center')
+    l.grid(row=0, column=0, columnspan=3, pady=10)
+
+    # widgets
+    for i, c in enumerate(style.colors):
+        s = f'{c}.Horizontal.TFloodgauge'
+        value = 50 + i * 10
+        wl = ttk.Label(f1, text=s, anchor='center', padding=(0, 10, 0, 0))
+        w = widgets.Floodgauge(f1, value=value, text=f'{value}K', style=s, font='helvetica 24 bold')
+
+        if i < 3:
+            wl.grid(row=1, column=i, sticky='sew')
+            w.grid(row=2, column=i, sticky='news', ipady=10, padx=5, pady=5)
+        else:
+            wl.grid(row=3, column=i-3, sticky='sew')
+            w.grid(row=4, column=i-3, sticky='news', ipady=10, pady=5, padx=5)
+
+    if screenshot_on:
+        window.after(1000, lambda: ss.get_bounding_box(None))
+        window.after(1500, window.quit)
+    window.mainloop()
+
+def screenshot_floodgauge_vertical(screenshot_on=True, theme='flatly'):
+    """
+    Get screenshot for vertical floodgauges
+    """
+    style = Style(theme)
+    window = style.master
+    window.title('ttkbootstrap')
+    window.geometry('800x500')
+    ss = Screenshot(window, '../images/floodgauge_vertical.png')
+
+    # headers
+    f1 = ttk.Frame(window, padding=5)
+    f1.pack(fill='both', side='left', expand='yes')
+    for x in [2, 4]:
+        f1.rowconfigure(x, weight=1)
+    for y in range(3):
+        f1.columnconfigure(y, weight=1)
+
+    l = ttk.Label(f1, text='Vertical.TFloodgauge', font='Helvetica 10 bold', anchor='center')
+    l.grid(row=0, column=0, columnspan=3, pady=10)
+
+    # widgets
+    for i, c in enumerate(style.colors):
+        s = f'{c}.Vertical.TFloodgauge'
+        value = 50 + i * 10
+        wl = ttk.Label(f1, text=s, anchor='center', padding=(0, 10, 0, 0))
+        w = widgets.Floodgauge(f1, value=value, text=f'{value}K', style=s, orient='vertical', font='helvetica 24 bold')
+
+        if i < 3:
+            wl.grid(row=1, column=i, sticky='sew')
+            w.grid(row=2, column=i, sticky='news', ipady=10, padx=5, pady=5)
+        else:
+            wl.grid(row=3, column=i-3, sticky='sew')
+            w.grid(row=4, column=i-3, sticky='news', ipady=10, pady=5, padx=5)
+
+    if screenshot_on:
+        window.after(1000, lambda: ss.get_bounding_box(None))
+        window.after(1500, window.quit)
+    window.mainloop()
 
 if __name__ == '__main__':
     programs = [
@@ -1792,10 +1871,13 @@ if __name__ == '__main__':
         screenshot_entry_info,
         screenshot_entry_warning,
         screenshot_entry_danger,
+        screenshot_floodgauge_vertical,
+        screenshot_floodgauge_horizontal,
         screenshot_frame,
         screenshot_label,
         screenshot_labelframe,
         screenshot_menubutton,
+        screenshot_meter,
         screenshot_notebook,
         screenshot_progressbar_horizontal,
         screenshot_progressbar_horizontal_striped,
@@ -1838,6 +1920,6 @@ if __name__ == '__main__':
     #     p.start()
     #     p.join()
 
-    screenshot_meter(False)
+    screenshot_floodgauge_vertical()
     # TODO add an application window here to select the type of screenshots I want to do.
 
