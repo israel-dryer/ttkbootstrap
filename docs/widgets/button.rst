@@ -7,6 +7,12 @@ display itself in either of three different ways, according to the ``state`` opt
 sunken, or flat; and it can be made to flash. When a user invokes the button (by pressing mouse button 1 with the
 cursor over the button), then the command specified in the ``command`` option is invoked.
 
+.. note::
+
+    This is a **style guide** for using ttkbootstrap styles. This guide will show you how to **apply visual styles** to
+    change the look and feel of the widget. For more information on how to use the widget and what options are
+    available, consult the :ref:`reference section on widgets <reference:button>`.
+
 Overview
 ========
 The ``ttk.Button`` includes the **TButton**, **Outline.TButton**, and **Link.TButton** style classes. The *primary*

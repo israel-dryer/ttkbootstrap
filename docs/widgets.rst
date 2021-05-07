@@ -1,9 +1,11 @@
 .. _widgets-section:
 
-Widgets
-#######
+Styles
+######
 
-A visual style guide for using ttkbootstrap on ttk widgets.
+This is a **style guide** for using ttkbootstrap styles. This guide will show you how to **apply visual styles** to
+change the look and feel of the widget. If you want more information on how to use the widget and what options are
+available, consult the :ref:`reference section on widgets <reference:widgets>`.
 
 .. toctree::
     :maxdepth: 1
