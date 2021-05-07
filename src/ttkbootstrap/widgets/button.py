@@ -8,7 +8,7 @@ class Button(ttk.Button):
         """Ttk button widget, displays as a textual label and/or image, and evaluates a command when pressed.
 
         Args:
-            parent (Tk): The parent widget.
+            parent (Widget): The parent widget.
 
         Keyword Args:
             class (str): Specifies the window class. The class is used when querying the option database for the
