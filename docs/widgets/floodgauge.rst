@@ -5,6 +5,12 @@ optional text indicator. Similar to the ``ttk.Progressbar``, this widget can ope
 mode shows the amount completed relative to the total amount of work to be done, and **indeterminate** mode provides 
 an animated display to let the user know that something is happening.
 
+.. note::
+
+    This is a **style guide** for using ttkbootstrap styles. This guide will show you how to **apply visual styles** to
+    change the look and feel of the widget. For more information on how to use the widget and what options are
+    available, consult the :ref:`reference section on widgets <reference:floodgauge>`.
+
 Overview
 ========
 The ``Floodgauge`` includes the **Horizontal.TFloodgauge** and **Vertical.TFloodgauge** styles. These styles are further

@@ -1,8 +1,13 @@
 Meter
 #####
 The ``Meter`` is a custom **ttkbootstrap** widget that can be used to show progress of long-running operations or the
-amount of work completed. It can also be used as a `Dial` when `interactive` mode is set to True. See the
-:ref:`documentation <reference:meter>` for a complete reference on widget options and settings.
+amount of work completed. It can also be used as a `Dial` when `interactive` mode is set to True.
+
+.. note::
+
+    This is a **style guide** for using ttkbootstrap styles. This guide will show you how to **apply visual styles** to
+    change the look and feel of the widget. For more information on how to use the widget and what options are
+    available, consult the :ref:`reference section on widgets <reference:meter>`.
 
 Overview
 ========
