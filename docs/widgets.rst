@@ -12,6 +12,7 @@ A visual style guide for using ttkbootstrap on ttk widgets.
     widgets/checkbutton
     widgets/combobox
     widgets/entry
+    widgets/floodgauge
     widgets/frame
     widgets/label
     widgets/labelframe

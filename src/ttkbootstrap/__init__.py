@@ -1045,11 +1045,11 @@ class StylerTTK:
             'Floodgauge.pbar': {'element create': ('from', 'default')},
             'Horizontal.TFloodgauge': {
                 'layout': [('Floodgauge.trough', {'children': [
-                    ('Floodgauge.pbar', {'side': 'left', 'sticky': 'ns'}),
+                    ('Floodgauge.pbar', {'sticky': 'ns'}),
                     ("Floodgauge.label", {"sticky": ""})],
                     'sticky': 'nswe'})],
                 'configure': {
-                    'thickness': 100,
+                    'thickness': 50,
                     'borderwidth': 1,
                     'bordercolor': self.theme.colors.primary,
                     'lightcolor': self.theme.colors.primary,
@@ -1059,14 +1059,14 @@ class StylerTTK:
                     'foreground': self.theme.colors.selectfg,
                     'justify': 'center',
                     'anchor': 'center',
-                    'font': 'helvetica 16'}},
+                    'font': 'helvetica 14'}},
             'Vertical.TFloodgauge': {
                 'layout': [('Floodgauge.trough', {'children': [
-                    ('Floodgauge.pbar', {'side': 'bottom', 'sticky': 'we'}),
+                    ('Floodgauge.pbar', {'sticky': 'we'}),
                     ("Floodgauge.label", {"sticky": ""})],
                     'sticky': 'nswe'})],
                 'configure': {
-                    'thickness': 100,
+                    'thickness': 50,
                     'borderwidth': 1,
                     'bordercolor': self.theme.colors.primary,
                     'lightcolor': self.theme.colors.primary,
@@ -1076,16 +1076,38 @@ class StylerTTK:
                     'foreground': self.theme.colors.selectfg,
                     'justify': 'center',
                     'anchor': 'center',
-                    'font': 'helvetica 16'}
+                    'font': 'helvetica 14'}
             }})
 
-        # TODO add color styles for this widget
-        # for color in self.theme.colors:
-        #     self.settings.update({
-        #         f'{color}.TFloodgauge': {
-        #             'configure': {
-        #                 'troughcolor': Colors.update_hsv(self.theme.colors.get(color), sd=-0.3),
-        #                 'background': self.theme.colors.get(color)}}})
+        for color in self.theme.colors:
+            self.settings.update({
+                f'{color}.Horizontal.TFloodgauge': {
+                    'configure': {
+                        'thickness': 50,
+                        'borderwidth': 1,
+                        'bordercolor': self.theme.colors.get(color),
+                        'lightcolor': self.theme.colors.get(color),
+                        'pbarrelief': 'flat',
+                        'troughcolor': Colors.update_hsv(self.theme.colors.get(color), sd=-0.3, vd=0.8),
+                        'background': self.theme.colors.get(color),
+                        'foreground': self.theme.colors.selectfg,
+                        'justify': 'center',
+                        'anchor': 'center',
+                        'font': 'helvetica 14'}},
+                f'{color}.Vertical.TFloodgauge': {
+                    'configure': {
+                        'thickness': 50,
+                        'borderwidth': 1,
+                        'bordercolor': self.theme.colors.get(color),
+                        'lightcolor': self.theme.colors.get(color),
+                        'pbarrelief': 'flat',
+                        'troughcolor': Colors.update_hsv(self.theme.colors.get(color), sd=-0.3, vd=0.8),
+                        'background': self.theme.colors.get(color),
+                        'foreground': self.theme.colors.selectfg,
+                        'justify': 'center',
+                        'anchor': 'center',
+                        'font': 'helvetica 14'}
+                }})
 
     def _style_scrollbar(self):
         """Create style configuration for ttk scrollbar: *ttk.Scrollbar*. This theme uses elements from the *alt* theme
