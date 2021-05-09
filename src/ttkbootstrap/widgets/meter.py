@@ -90,7 +90,6 @@ class Meter(Frame):
 
         self.box = ttk.Frame(self, width=metersize, height=metersize)
 
-        # default arcoffset and arcrange for 'semi' and 'full' meter modes.
         if metertype == 'semi':
             self.arcoffset = arcoffset if arcoffset is not None else 135
             self.arcrange = arcrange if arcrange is not None else 270
@@ -315,7 +314,7 @@ if __name__ == '__main__':
     root = style.master
     root.title('ttkbootstrap')
 
-    Meter(metersize=180, padding=20, amountused=25, metertype='semi', labeltext='miles per hour',
+    Meter(root, metersize=180, padding=20, amountused=25, metertype='semi', labeltext='miles per hour',
           interactive=True).grid(row=0, column=0)
     Meter(metersize=180, padding=20, amountused=1800, amounttotal=2600, labeltext='storage used', textappend='gb',
           meterstyle='info.TLabel', stripethickness=10, interactive=True).grid(row=0, column=1)
