@@ -1,13 +1,14 @@
 import calendar
-from PIL import Image, ImageTk, ImageDraw
 from datetime import datetime
 from tkinter import IntVar, Toplevel, StringVar
 from tkinter import ttk
 from tkinter.ttk import Frame, Entry
+
+from PIL import Image, ImageTk, ImageDraw
 from ttkbootstrap import Style, Colors
 
 
-def ask_date(parent,
+def ask_date(parent=None,
              startdate=None,
              firstweekday=6
              ):
@@ -29,7 +30,7 @@ def ask_date(parent,
 class DateEntry(Frame):
 
     def __init__(self,
-                 parent=None,
+                 master=None,
                  dateformat='%B %d, %Y',
                  firstweekday=6,
                  startdate=None,
@@ -37,14 +38,13 @@ class DateEntry(Frame):
                  ):
         """
         Args:
-            parent (Widget): The parent widget.
+            master (Widget): The parent widget.
             dateformat (str): The format string used to render the text in the entry widget. Default is '%B %d, %Y'.
             firstweekday (int): Specifies the first day of the week. ``0`` is Monday, ``6`` is Sunday (the default).
             startdate (datetime): The date to be in focus when the calendar is displayed. Current date is default.
             **kw: Optional keyword arguments to be passed to containing frame widget.
         """
-        super().__init__(master=parent, **kw)
-        self.parent = parent
+        super().__init__(master=master, **kw)
         self.dateformat = dateformat
         self.firstweekday = firstweekday
         self.image = self.draw_button_image('white')
@@ -106,11 +106,11 @@ class DateEntry(Frame):
         date and print a message to the console.
         """
         try:
-            self.startdate = datetime.strptime(self.entry.get(), self.dateformat).date()
+            self.startdate = datetime.strptime(self.entry.get(), self.dateformat)
         except Exception as e:
             print(e)
             self.startdate = datetime.today()
-        olddate = datetime.strptime(self.entry.get() or self.startdate, self.dateformat).date()
+        olddate = datetime.strptime(self.entry.get() or self.startdate, self.dateformat)
         newdate = ask_date(self.entry, startdate=olddate, firstweekday=self.firstweekday)
         self.entry.delete('0', 'end')
         self.entry.insert('end', newdate.strftime(self.dateformat))
@@ -120,7 +120,7 @@ class DateEntry(Frame):
 class DateChooserPopup:
 
     def __init__(self,
-                 parent,
+                 parent=None,
                  firstweekday=6,
                  startdate=None
                  ):
@@ -131,9 +131,8 @@ class DateChooserPopup:
             firstweekday (int): Specifies the first day of the week. ``0`` is Monday, ``6`` is Sunday (the default).
             **kw:
         """
-        self.root = Toplevel()
-
         self.parent = parent
+        self.root = Toplevel()
         self.firstweekday = firstweekday
         self.startdate = startdate
 
@@ -178,7 +177,8 @@ class DateChooserPopup:
                     if all([
                         day == self.date_selected.day,
                         self.date.month == self.date_selected.month,
-                        self.date.year == self.date_selected.year]):
+                        self.date.year == self.date_selected.year
+                    ]):
 
                         day_style = 'success.Toolbutton'
                     else:
@@ -228,11 +228,15 @@ class DateChooserPopup:
     def set_geometry(self):
         """Adjust the window size based on the number of weeks in the month"""
         w = 226
-        h = 255 if len(self.monthdates) == 5 else 285 # this needs to be adjusted if I change the font size.
-        xpos = self.parent.winfo_rootx() + self.parent.winfo_width()
-        ypos = self.parent.winfo_rooty() + self.parent.winfo_height()
-        self.root.geometry(f'{w}x{h}+{xpos}+{ypos}')
-        # print(self.root.geometry())
+        h = 255 if len(self.monthdates) == 5 else 285  # this needs to be adjusted if I change the font size.
+        if self.parent:
+            xpos = self.parent.winfo_rootx() + self.parent.winfo_width()
+            ypos = self.parent.winfo_rooty() + self.parent.winfo_height()
+            self.root.geometry(f'{w}x{h}+{xpos}+{ypos}')
+        else:
+            xpos = self.root.winfo_screenwidth()//2 - w
+            ypos = self.root.winfo_screenheight() //2 - h
+            self.root.geometry(f'{w}x{h}+{xpos}+{ypos}')
 
     def setup(self):
         """Setup the calendar widget"""
@@ -280,12 +284,12 @@ if __name__ == '__main__':
                     font='helvetica 12')
     style.configure('chevron.primary.TButton', font='helvetica 14')
     style.map('exit.primary.TButton',
-              background = [
+              background=[
                   ('disabled', disabled_bg),
                   ('pressed', '!disabled', Colors.update_hsv(style.colors.primary, vd=pressed_vd)),
                   ('hover', '!disabled', style.colors.danger)])
 
     root = style.master
     root.title('Date Chooser')
-    DateEntry(root, padding=10).pack(fill='x', expand='yes')
+    DateEntry(padding=10).pack(fill='x', expand='yes')
     root.mainloop()
