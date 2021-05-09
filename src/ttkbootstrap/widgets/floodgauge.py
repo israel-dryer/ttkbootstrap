@@ -24,7 +24,7 @@ class Floodgauge(Progressbar):
     """
 
     def __init__(self,
-                 parent,
+                 parent=None,
                  cursor=None,
                  font=None,
                  length=None,
@@ -71,7 +71,7 @@ class Floodgauge(Progressbar):
         # progress bar value variable
         self.variable = IntVar(value=value)
 
-        super().__init__(parent, class_='Floodgauge', cursor=cursor, length=length, maximum=maximum, mode=mode,
+        super().__init__(parent=None, class_='Floodgauge', cursor=cursor, length=length, maximum=maximum, mode=mode,
                          orient=orient, style=self._widgetstyle, takefocus=takefocus, variable=self.variable, **kw)
 
         # set the label font
@@ -113,11 +113,11 @@ if __name__ == '__main__':
     root = tk.Tk()
     root.title('ttkbootstrap')
     s = Style()
-    p = Floodgauge(root, orient='vertical')
+    p = Floodgauge(root, orient='vertical', style='danger.Vertical.TFloodgauge')
 
 
     def auto(progress):
-        p.text = f'Memory Usage\n{p.value}%'
+        p.text = f'Memory\n{p.value}%'
         p.step(1)
         p.after(50, auto, p)
 
