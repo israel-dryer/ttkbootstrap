@@ -40,7 +40,7 @@ Create a default **meter**
 
     Meter(parent, amountused=25, labeltext='miles per hour')
 
-Create a **danger colored meter**
+Create a **danger meter**
 
 .. code-block:: python
 
