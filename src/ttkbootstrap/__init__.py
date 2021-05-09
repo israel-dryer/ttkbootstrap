@@ -605,10 +605,13 @@ class StylerTTK:
         self._style_scale()
         self._style_scrollbar()
         self._style_combobox()
+        self._style_exit_button()
         self._style_frame()
+        self._style_calendar()
         self._style_checkbutton()
         self._style_entry()
         self._style_label()
+        self._style_meter()
         self._style_notebook()
         self._style_outline_buttons()
         self._style_outline_menubutton()
@@ -2146,6 +2149,159 @@ class StylerTTK:
             f'{colorname}_radio_on': ImageTk.PhotoImage(radio_on.resize((14, 14), Image.LANCZOS)),
             f'{colorname}_radio_disabled': ImageTk.PhotoImage(radio_disabled.resize((14, 14), Image.LANCZOS))}
 
+    def _style_calendar(self):
+        """Create style configuration for the ttkbootstrap.widgets.datechooser
+
+        The options available in this widget include:
+
+            - Label.border: bordercolor, lightcolor, darkcolor, relief, borderwidth
+            - Label.padding: padding, relief, shiftrelief
+            - Label.label: compound, space, text, font, foreground, underline, width, anchor, justify, wraplength,
+                embossed, image, stipple, background
+        """
+        # disabled settings
+        disabled_fg = (Colors.update_hsv(self.theme.colors.inputbg, vd=-0.2) if self.theme.type == 'light' else
+                       Colors.update_hsv(self.theme.colors.inputbg, vd=-0.3))
+
+        # pressed and hover settings
+        pressed_vd = -0.10
+
+        self.settings.update({
+            'TCalendar': {
+                'layout': [
+                    ('Toolbutton.border', {'sticky': 'nswe', 'children': [
+                        ('Toolbutton.padding', {'sticky': 'nswe', 'children': [
+                            ('Toolbutton.label', {'sticky': 'nswe'})]})]})],
+                'configure': {
+                    'foreground': self.theme.colors.primary,
+                    'background': self.theme.colors.bg,
+                    'bordercolor': self.theme.colors.bg,
+                    'darkcolor': self.theme.colors.bg,
+                    'lightcolor': self.theme.colors.bg,
+                    'relief': 'raised',
+                    'font': self.theme.font,
+                    'focusthickness': 0,
+                    'focuscolor': '',
+                    'borderwidth': 1,
+                    'anchor': 'center',
+                    'padding': (10, 5)},
+                'map': {
+                    'foreground': [
+                        ('disabled', disabled_fg),
+                        ('pressed !disabled', self.theme.colors.selectfg),
+                        ('selected !disabled', self.theme.colors.selectfg),
+                        ('hover !disabled', self.theme.colors.selectfg)],
+                    'background': [
+                        ('pressed !disabled', Colors.update_hsv(self.theme.colors.primary, vd=pressed_vd)),
+                        ('selected !disabled', Colors.update_hsv(self.theme.colors.primary, vd=pressed_vd)),
+                        ('hover !disabled', self.theme.colors.primary)],
+                    'bordercolor': [
+                        ('disabled', disabled_fg),
+                        ('pressed !disabled', Colors.update_hsv(self.theme.colors.primary, vd=pressed_vd)),
+                        ('selected !disabled', Colors.update_hsv(self.theme.colors.primary, vd=pressed_vd)),
+                        ('hover !disabled', self.theme.colors.primary)],
+                    'darkcolor': [
+                        ('pressed !disabled', Colors.update_hsv(self.theme.colors.primary, vd=pressed_vd)),
+                        ('selected !disabled', Colors.update_hsv(self.theme.colors.primary, vd=pressed_vd)),
+                        ('hover !disabled', self.theme.colors.primary)],
+                    'lightcolor': [
+                        ('pressed !disabled', Colors.update_hsv(self.theme.colors.primary, vd=pressed_vd)),
+                        ('selected !disabled', Colors.update_hsv(self.theme.colors.primary, vd=pressed_vd)),
+                        ('hover !disabled', self.theme.colors.primary)]}}})
+
+        for color in self.theme.colors:
+            self.settings.update({
+                f'{color}.TCalendar': {
+                    'configure': {
+                        'foreground': self.theme.colors.get(color),
+                        'background': self.theme.colors.bg,
+                        'bordercolor': self.theme.colors.bg,
+                        'darkcolor': self.theme.colors.bg,
+                        'lightcolor': self.theme.colors.bg,
+                        'relief': 'raised',
+                        'focusthickness': 0,
+                        'focuscolor': '',
+                        'borderwidth': 1,
+                        'padding': (10, 5)},
+                    'map': {
+                        'foreground': [
+                            ('disabled', disabled_fg),
+                            ('pressed !disabled', self.theme.colors.selectfg),
+                            ('selected !disabled', self.theme.colors.selectfg),
+                            ('hover !disabled', self.theme.colors.selectfg)],
+                        'background': [
+                            ('pressed !disabled', Colors.update_hsv(self.theme.colors.get(color), vd=pressed_vd)),
+                            ('selected !disabled', Colors.update_hsv(self.theme.colors.get(color), vd=pressed_vd)),
+                            ('hover !disabled', self.theme.colors.get(color))],
+                        'bordercolor': [
+                            ('disabled', disabled_fg),
+                            ('pressed !disabled', Colors.update_hsv(self.theme.colors.get(color), vd=pressed_vd)),
+                            ('selected !disabled', Colors.update_hsv(self.theme.colors.get(color), vd=pressed_vd)),
+                            ('hover !disabled', self.theme.colors.get(color))],
+                        'darkcolor': [
+                            ('pressed !disabled', Colors.update_hsv(self.theme.colors.get(color), vd=pressed_vd)),
+                            ('selected !disabled', Colors.update_hsv(self.theme.colors.get(color), vd=pressed_vd)),
+                            ('hover !disabled', self.theme.colors.get(color))],
+                        'lightcolor': [
+                            ('pressed !disabled', Colors.update_hsv(self.theme.colors.get(color), vd=pressed_vd)),
+                            ('selected !disabled', Colors.update_hsv(self.theme.colors.get(color), vd=pressed_vd)),
+                            ('hover !disabled', self.theme.colors.get(color))]}}})
+
+    def _style_exit_button(self):
+        """Create style configuration for the toolbutton exit button"""
+        disabled_bg = (Colors.update_hsv(self.theme.colors.inputbg, vd=-0.2) if self.theme.type == 'light' else
+                       Colors.update_hsv(self.theme.colors.inputbg, vd=-0.3))
+        pressed_vd = -0.2
+
+        self.settings.update({
+            'exit.TButton': {
+                'configure': {
+                    'relief': 'flat',
+                    'font': 'helvetica 12'},
+                'map': {
+                    'background': [
+                        ('disabled', disabled_bg),
+                        ('pressed !disabled', Colors.update_hsv(self.theme.colors.primary, vd=pressed_vd)),
+                        ('hover !disabled', self.theme.colors.danger)]}}})
+
+        for color in self.theme.colors:
+            self.settings.update({
+                f'exit.{color}.TButton': {
+                    'configure': {
+                        'relief': 'flat',
+                        'font': 'helvetica 12'},
+                    'map': {
+                        'background': [
+                            ('disabled', disabled_bg),
+                            ('pressed !disabled', Colors.update_hsv(self.theme.colors.get(color), vd=pressed_vd)),
+                            ('hover !disabled', self.theme.colors.danger)]}}})
+
+    def _style_meter(self):
+        """Create style configuration for the ttkbootstrap.widgets.meter
+
+        The options available in this widget include:
+
+            - Label.border: bordercolor, lightcolor, darkcolor, relief, borderwidth
+            - Label.padding: padding, relief, shiftrelief
+            - Label.label: compound, space, text, font, foreground, underline, width, anchor, justify, wraplength,
+                embossed, image, stipple, background
+        """
+        self.settings.update({
+            'TMeter': {
+                'layout': [
+                    ('Label.border', {'sticky': 'nswe', 'border': '1', 'children': [
+                        ('Label.padding', {'sticky': 'nswe', 'border': '1', 'children': [
+                            ('Label.label', {'sticky': 'nswe'})]})]})],
+                'configure': {
+                    'foreground': self.theme.colors.fg,
+                    'background': self.theme.colors.bg}}})
+
+        for color in self.theme.colors:
+            self.settings.update({
+                f'{color}.TMeter': {
+                    'configure': {
+                        'foreground': self.theme.colors.get(color)}}})
+
     def _style_label(self):
         """Create style configuration for ttk label: *ttk.Label*
 
@@ -2159,8 +2315,8 @@ class StylerTTK:
         self.settings.update({
             'TLabel': {
                 'configure': {
-                    'foreground': self.theme.colors.fg},
-                'background': self.theme.colors.bg},
+                    'foreground': self.theme.colors.fg,
+                    'background': self.theme.colors.bg}},
             'Inverse.TLabel': {
                 'configure': {
                     'foreground': self.theme.colors.bg,
