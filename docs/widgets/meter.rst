@@ -30,6 +30,26 @@ The examples below demonstrate how flexible this widget can be. You can see the 
 .. image:: images/meter_variations.png
 
 
+How to use
+==========
+The examples below demonstrate how to *use a style* when creating a meter widget.
 
+Create a default **meter**
+
+.. code-block:: python
+
+    Meter(parent, amountused=25, labeltext='miles per hour')
+
+Create a **danger colored meter**
+
+.. code-block:: python
+
+        Meter(parent, amountused=25, labeltext='miles per hour', meterstyle='danger.TLabel')
+
+Create an **info meter** with an **success label**
+
+.. code-block:: python
+
+        Meter(parent, amountused=25, labeltext='miles per hour', meterstyle='info.TLabel', labelstyle='success.TLabel')
 
 
