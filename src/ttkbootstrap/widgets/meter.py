@@ -28,10 +28,9 @@ class Meter(Frame):
     parameter. By default, the ``stripethickness`` is 0, which results in a solid progress bar. A higher
     ``stripethickness`` results in larger wedges around the arc of the meter.
 
-    Various text and label options exist. The center text can be formatted with the ``meterstyle`` parameter and uses
-    the `TLabel` styles.  This also colors the progress bar arch.  You can prepend or append text to the center text
-    using the ``textappend`` and ``textprepend`` parameters. This is most commonly used for '$', '%', or other such
-    symbols.
+    Various text and label options exist. The center text and progressbar is formatted with the ``meterstyle`` parameter
+    and uses the `TMeter` styles. You can prepend or append text to the center text using the ``textappend`` and
+    ``textprepend`` parameters. This is most commonly used for '$', '%', or other such symbols.
 
     Variable are generated automatically for this widget and can be linked to other widgets by referencing them via
     the ``amountusedvariable`` and ``amounttotalvariable`` attributes.
@@ -52,7 +51,7 @@ class Meter(Frame):
                  labelstyle='secondary.TLabel',
                  labeltext=None,
                  metersize=200,
-                 meterstyle='primary.TLabel',
+                 meterstyle='TMeter',
                  metertype='full',
                  meterthickness=10,
                  showvalue=True,
@@ -317,10 +316,10 @@ if __name__ == '__main__':
     Meter(root, metersize=180, padding=20, amountused=25, metertype='semi', labeltext='miles per hour',
           interactive=True).grid(row=0, column=0)
     Meter(metersize=180, padding=20, amountused=1800, amounttotal=2600, labeltext='storage used', textappend='gb',
-          meterstyle='info.TLabel', stripethickness=10, interactive=True).grid(row=0, column=1)
+          meterstyle='info.TMeter', stripethickness=10, interactive=True).grid(row=0, column=1)
     Meter(metersize=180, padding=20, stripethickness=2, amountused=40, labeltext='project capacity', textappend='%',
-          meterstyle='success.TLabel', interactive=True).grid(row=1, column=0)
+          meterstyle='success.TMeter', interactive=True).grid(row=1, column=0)
     Meter(metersize=180, padding=20, amounttotal=280, arcrange=180, arcoffset=-180, amountused=75, textappend='°',
-          labeltext='heat temperature', wedgesize=5, meterstyle='danger.TLabel', interactive=True).grid(row=1, column=1)
+          labeltext='heat temperature', wedgesize=5, meterstyle='danger.TMeter', interactive=True).grid(row=1, column=1)
 
     root.mainloop()
