@@ -6,3 +6,4 @@ dist
 *.mp4
 *_build
 *_static
+.vscode
