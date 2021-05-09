@@ -24,7 +24,7 @@ class Floodgauge(Progressbar):
     """
 
     def __init__(self,
-                 parent=None,
+                 master=None,
                  cursor=None,
                  font=None,
                  length=None,
@@ -38,7 +38,7 @@ class Floodgauge(Progressbar):
                  **kw):
         """
         Args:
-            parent (Widget): Parent widget
+            master (Widget): Parent widget
             cursor (str): The cursor that will appear when the mouse is over the progress bar.
             font (Font or str): The font to use for the progress bar label.
             length (int): Specifies the length of the long axis of the progress bar (width if horizontal, height if
@@ -71,7 +71,7 @@ class Floodgauge(Progressbar):
         # progress bar value variable
         self.variable = IntVar(value=value)
 
-        super().__init__(parent=None, class_='Floodgauge', cursor=cursor, length=length, maximum=maximum, mode=mode,
+        super().__init__(parent=parent, class_='Floodgauge', cursor=cursor, length=length, maximum=maximum, mode=mode,
                          orient=orient, style=self._widgetstyle, takefocus=takefocus, variable=self.variable, **kw)
 
         # set the label font
@@ -113,7 +113,7 @@ if __name__ == '__main__':
     root = tk.Tk()
     root.title('ttkbootstrap')
     s = Style()
-    p = Floodgauge(root, orient='vertical', style='danger.Vertical.TFloodgauge')
+    p = Floodgauge(orient='vertical', style='danger.Vertical.TFloodgauge')
 
 
     def auto(progress):
