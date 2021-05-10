@@ -25,8 +25,8 @@ The **Link.TButton** has an *info* colored hover effect as well as a slight *shi
 
 How to use
 ==========
-The examples below demonstrate how to *use a style* to create a widget. To learn more about how to *use the widget in
-ttk*, check out the References_ section for links to documentation and tutorials on this widget.
+The examples below demonstrate how to *use a style* when creating a widget. To learn more about how to *use the widget
+in ttk*, check out the References_ section for links to documentation and tutorials on this widget.
 
 Create a default **solid button**
 

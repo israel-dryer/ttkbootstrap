@@ -1760,10 +1760,10 @@ def screenshot_meter(screenshot_on=True, theme='flatly'):
     n = 50
     for i, c in enumerate(style.colors):
         if i < 3:
-            m = Meter(f1, amountused=n + (i*10), meterstyle=f'{c}.TLabel', labeltext=f'{c}.TLabel')
+            m = Meter(f1, amountused=n + (i*10), meterstyle=f'{c}.TMeter', labeltext=f'{c}.TMeter')
             m.grid(row=0, column=i, padx=10, pady=10)
         else:
-            m = Meter(f1, amountused=n + (i*10), meterstyle=f'{c}.TLabel', labeltext=f'{c}.TLabel')
+            m = Meter(f1, amountused=n + (i*10), meterstyle=f'{c}.TMeter', labeltext=f'{c}.TMeter')
             m.grid(row=1, column=i-3, padx=10, pady=10)
 
     if screenshot_on:
@@ -1960,6 +1960,6 @@ if __name__ == '__main__':
     #     p.start()
     #     p.join()
 
-    screenshot_date_chooser()
+    screenshot_meter()
     # TODO add an application window here to select the type of screenshots I want to do.
 
