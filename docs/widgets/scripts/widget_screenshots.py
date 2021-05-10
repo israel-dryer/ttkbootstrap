@@ -1851,6 +1851,45 @@ def screenshot_floodgauge_vertical(screenshot_on=True, theme='flatly'):
         window.after(1500, window.quit)
     window.mainloop()
 
+def screenshot_date_entry(screenshot_on=True, theme='flatly'):
+    """
+    Get screenshot for date entry
+    """
+    from ttkbootstrap.widgets.calendar import DateEntry
+    from datetime import datetime
+    style = Style(theme)
+    window = style.master
+    window.title('ttkbootstrap')
+    ss = Screenshot(window, '../images/date_entry.png')
+    ttk.Label(window, text='DateEntry', font='Helvetica 10 bold', anchor='center', padding=(0, 5, 0, 0)).pack(side='top', fill='x')
+
+    def entry(color, parent):
+        # child = ttk.Frame(left_frame)
+        ttk.Label(parent, text=f'{color}.TCalendar', padding=(0, 15, 0, 5)).pack(fill='x')
+        DateEntry(parent, startdate=datetime(2021, 5, 14), style=f'{color}.TCalendar').pack()
+
+    left_frame = ttk.Frame(window, padding=10)
+    entry('primary', left_frame)
+    entry('secondary', left_frame)
+    entry('success', left_frame)
+    left_frame.pack(side='left')
+
+    right_frame = ttk.Frame(window, padding=10)
+    entry('info', right_frame)
+    entry('warning', right_frame)
+    entry('danger', right_frame)
+    right_frame.pack(side='right')
+
+def screenshot_date_chooser(screenshot_on=True, theme='flatly'):
+    """
+    Get screenshot for date entry
+    """
+    from ttkbootstrap.widgets.calendar import DateChooserPopup
+    from datetime import datetime
+    style = Style(theme)
+    DateChooserPopup(startdate=datetime(2021, 5, 14), style='info.TCalendar')
+
+
 if __name__ == '__main__':
     programs = [
         screenshot_button,
@@ -1865,6 +1904,7 @@ if __name__ == '__main__':
         screenshot_combobox_info,
         screenshot_combobox_warning,
         screenshot_combobox_danger,
+        screenshot_date_entry,
         screenshot_entry_primary,
         screenshot_entry_secondary,
         screenshot_entry_success,
@@ -1920,6 +1960,6 @@ if __name__ == '__main__':
     #     p.start()
     #     p.join()
 
-    screenshot_floodgauge_vertical()
+    screenshot_date_chooser()
     # TODO add an application window here to select the type of screenshots I want to do.
 

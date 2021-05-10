@@ -12,6 +12,7 @@ available, consult the :ref:`reference section on widgets <reference:widgets>`.
 
     widgets/button
     widgets/checkbutton
+    widgets/calendar
     widgets/combobox
     widgets/entry
     widgets/floodgauge

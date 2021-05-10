@@ -2173,7 +2173,7 @@ class StylerTTK:
                         ('Toolbutton.padding', {'sticky': 'nswe', 'children': [
                             ('Toolbutton.label', {'sticky': 'nswe'})]})]})],
                 'configure': {
-                    'foreground': self.theme.colors.primary,
+                    'foreground': self.theme.colors.fg,
                     'background': self.theme.colors.bg,
                     'bordercolor': self.theme.colors.bg,
                     'darkcolor': self.theme.colors.bg,
@@ -2207,13 +2207,15 @@ class StylerTTK:
                     'lightcolor': [
                         ('pressed !disabled', Colors.update_hsv(self.theme.colors.primary, vd=pressed_vd)),
                         ('selected !disabled', Colors.update_hsv(self.theme.colors.primary, vd=pressed_vd)),
-                        ('hover !disabled', self.theme.colors.primary)]}}})
+                        ('hover !disabled', self.theme.colors.primary)]}},
+        'chevron.TButton': {
+            'configure': {'font': 'helvetica 14'}}})
 
         for color in self.theme.colors:
             self.settings.update({
                 f'{color}.TCalendar': {
                     'configure': {
-                        'foreground': self.theme.colors.get(color),
+                        'foreground': self.theme.colors.fg,
                         'background': self.theme.colors.bg,
                         'bordercolor': self.theme.colors.bg,
                         'darkcolor': self.theme.colors.bg,
@@ -2245,7 +2247,9 @@ class StylerTTK:
                         'lightcolor': [
                             ('pressed !disabled', Colors.update_hsv(self.theme.colors.get(color), vd=pressed_vd)),
                             ('selected !disabled', Colors.update_hsv(self.theme.colors.get(color), vd=pressed_vd)),
-                            ('hover !disabled', self.theme.colors.get(color))]}}})
+                            ('hover !disabled', self.theme.colors.get(color))]}},
+            f'chevron.{color}.TButton': {
+                'configure': {'font': 'helvetica 14'}}})
 
     def _style_exit_button(self):
         """Create style configuration for the toolbutton exit button"""

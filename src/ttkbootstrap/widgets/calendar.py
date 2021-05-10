@@ -32,18 +32,18 @@ def ask_date(parent=None,
 
 
 class DateEntry(Frame):
-    """A date entry widget that combines a ``ttk.Combobox`` and a ``widgets.calendar.DateChooser``
+    """A date entry widget that combines a ``ttk.Combobox`` and a ttk.Button`` with a callback attached to the
+    ``ask_date`` function.
 
-    The calendar button is programmed to the ``calendar.ask_date`` function, which displays a date chooser popup and
-    then inserts the returned value into the combobox.
+    When pressed, displays a date chooser popup and then inserts the returned value into the combobox.
 
-    You may also set the ``startdate`` of the date chooser popup by typing in a date that is consistent with the format
+    Optionally set the ``startdate`` of the date chooser popup by typing in a date that is consistent with the format
     that you have specified with the ``dateformat`` parameter. By default this is `%Y-%m-%d`.
 
-    You may change the style of the widget by using the `TCalendar` style, with the optional colors: 'primary',
-    'secondary', 'success', 'info', 'warning', 'danger'. By default, the `primary.TCalendar` style is applied.
+    Change the style of the widget by using the `TCalendar` style, with the colors: 'primary', 'secondary',
+    'success', 'info', 'warning', 'danger'. By default, the `primary.TCalendar` style is applied.
 
-    The starting weekday can be changed with the ``firstweekday`` parameter for geographies that do not start the week
+    Change the starting weekday with the ``firstweekday`` parameter for geographies that do not start the week
     on `Sunday`, which is the widget default.
     """
 
@@ -169,18 +169,21 @@ class DateChooserPopup:
     """A custom **ttkbootstrap** widget that displays a calendar and allows the user to select a date which is returned
     as a ``datetime`` object for the date selected.
 
-    The widget displays the current date by default unless a ``statedate`` is provided. The month can be changed by
-    clicking on the chevrons to the right and left of the month and year title which is displayed on the top center of
-    the widget.
+    The widget displays the current date by default unless a ``startdate`` is provided. The month can be changed by
+    clicking on the chevrons to the right and left of the month-year title which is displayed on the top-center of
+    the widget. A "left-click" will move the calendar `one month`. A "right-click" will move the calendar
+    `one year`.
 
-    The widget grabs focus and all screen events until released. If you want to cancel a date selection, you must click
-    on the "X" button at the top-right hand corner of the widget.
+    A "right-click" on the `month-year` title will reset the calendar widget to the starting date.
+
+    The starting weekday can be changed with the ``firstweekday`` parameter for geographies that do not start the
+    week on `Sunday`, which is the widget default.
+
+    The widget grabs focus and all screen events until released. If you want to cancel a date selection, you must
+    click on the "X" button at the top-right hand corner of the widget.
 
     Styles can be applied to the widget by using the `TCalendar` style with the optional colors: 'primary',
     'secondary', 'success', 'info', 'warning', and 'danger'. By default, the `primary.TCalendar` style is applied.
-
-    The starting weekday can be changed with the ``firstweekday`` parameter for geographies that do not start the week
-    on `Sunday`, which is the widget default.
     """
 
     def __init__(self,
@@ -244,8 +247,7 @@ class DateChooserPopup:
                         self.date.month == self.date_selected.month,
                         self.date.year == self.date_selected.year
                     ]):
-
-                        day_style = 'success.Toolbutton'
+                        day_style = self.styles['selected']
                     else:
                         day_style = self.styles['calendar']
 
@@ -257,14 +259,20 @@ class DateChooserPopup:
         """Create the title bar"""
         # previous month button
         self.btn_prev = ttk.Button(self.tframe, text='«', style=self.styles['chevron'], command=self.on_prev_month)
+        self.btn_prev.bind('<Button-3>', self.on_prev_year, '+')
         self.btn_prev.pack(side='left')
+
         # month and year title
-        self.title_label = ttk.Label(self.tframe, textvariable=self.titlevar, anchor='center',
-                                     style=self.styles['title'], font='helvetica 11')
+        self.title_label = ttk.Label(self.tframe, textvariable=self.titlevar, anchor='center')
+        self.title_label.configure(style=self.styles['title'], font='helvetica 11')
         self.title_label.pack(side='left', fill='x', expand='yes')
+        self.title_label.bind('<Button-1>', self.on_reset_date)
+
         # next month button
         self.btn_next = ttk.Button(self.tframe, text='»', command=self.on_next_month, style=self.styles['chevron'])
+        self.btn_next.bind('<Button-3>', self.on_next_year, '+')
         self.btn_next.pack(side='left')
+
         # days of the week header
         for wd in self.weekday_header():
             wd_lbl = ttk.Label(self.wframe, text=wd, anchor='center', padding=(0, 5, 0, 10))
@@ -275,10 +283,11 @@ class DateChooserPopup:
         """Generate all the styles required for this widget from the ``base_style``."""
         match = re.search(COLOR_PATTERN, self.styles['calendar'])
         color = 'primary.' if not match else match.group(0) + '.'
-        self.styles.update({'chevron': f'{color}TButton'})
+        self.styles.update({'chevron': f'chevron.{color}TButton'})
         self.styles.update({'exit': f'exit.{color}TButton'})
         self.styles.update({'title': f'{color}Inverse.TLabel'})
         self.styles.update({'frame': f'{color}TFrame'})
+        self.styles.update({'selected': f'{color}Toolbutton'})
 
     def on_date_selected(self, index):
         """Callback for selecting a date.
@@ -294,16 +303,36 @@ class DateChooserPopup:
         self.root.destroy()
 
     def on_next_month(self):
-        """Callback for changing calendar to prior month"""
+        """Callback for changing calendar to next month"""
         year, month = calendar._nextmonth(self.date.year, self.date.month)
         self.date = datetime(year=year, month=month, day=1).date()
         self.dframe.destroy()
         self.draw_calendar()
 
+    def on_next_year(self, *args):
+        """Callback for changing calendar to next year"""
+        year = self.date.year + 1
+        self.date = datetime(year=year, month=self.date.month, day=1).date()
+        self.dframe.destroy()
+        self.draw_calendar()
+
     def on_prev_month(self):
-        """Callback for changing calendar to next month"""
+        """Callback for changing calendar to previous month"""
         year, month = calendar._prevmonth(self.date.year, self.date.month)
         self.date = datetime(year=year, month=month, day=1).date()
+        self.dframe.destroy()
+        self.draw_calendar()
+
+    def on_prev_year(self, *args):
+        """Callback for changing calendar to previous year"""
+        year = self.date.year - 1
+        self.date = datetime(year=year, month=self.date.month, day=1).date()
+        self.dframe.destroy()
+        self.draw_calendar()
+
+    def on_reset_date(self, *args):
+        """Callback for clicking the month-year title; reset the date to the start date"""
+        self.date = self.startdate
         self.dframe.destroy()
         self.draw_calendar()
 
