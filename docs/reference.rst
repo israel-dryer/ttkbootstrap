@@ -46,6 +46,27 @@ Button
 
     .. automethod:: invoke
 
+Calendar
+--------
+Classes and functions that enable the user to select a date.
+
+ask_date
+~~~~~~~~
+.. autofunction:: ttkbootstrap.widgets.calendar.ask_date
+
+DateChooserPopup
+~~~~~~~~~~~~~~~~
+.. autoclass:: ttkbootstrap.widgets.calendar.DateChooserPopup
+    :show-inheritance:
+    :members:
+
+DateEntry
+~~~~~~~~~
+.. autoclass:: ttkbootstrap.widgets.calendar.DateEntry
+    :show-inheritance:
+    :members:
+
+
 Floodgauge
 ----------
 .. autoclass:: ttkbootstrap.widgets.Floodgauge
@@ -63,6 +84,7 @@ Meter
 .. autoclass:: ttkbootstrap.widgets.Meter
     :show-inheritance:
     :members:
+
 
 
 
