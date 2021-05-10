@@ -6,7 +6,7 @@ The calendar module contains several classes and functions that enable the user 
 
     This is a **style guide** for using ttkbootstrap styles. This guide will show you how to **apply visual styles** to
     change the look and feel of the widget. For more information on how to use the widget and what options are
-    available, consult the :ref:`reference section on widgets <reference:dateentry>`.
+    available, consult the :ref:`reference section on widgets <reference:calendar>`.
 
 Overview
 ========
@@ -118,3 +118,4 @@ Use a custom style
 
     DateEntry(parent, style='custom.TCalendar')
 
+.. _`python style documentation`: https://docs.python.org/3/library/tkinter.ttk.html#ttk-styling

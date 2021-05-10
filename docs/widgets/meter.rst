@@ -15,12 +15,12 @@ This widget is very flexible. The ``metertype`` parameter has two stock settings
 circle and a semi-circle respectively. Customize the arc of the circle with the ``arcrange`` and ``arcoffset``
 parameters. This moves the starting position of the arc and can also be used to make the arc longer or shorter.
 
-The meter color is set with ``meterstyle`` and uses the `TLabel` styles. This also colors the center text. There is an
-optional supplementary label `below` the center text that can be styled with the ``labelstyle`` parameter. This setting
-also formats the text added with ``textappend`` and ``textprepend``.
+The meter color is set with ``meterstyle`` and uses the `TMeter` style class. This also colors the center text. There is
+an optional supplementary label `below` the center text that can be styled with the ``labelstyle`` parameter, which
+excepts a `TLabel` style class. This setting also formats the text added with ``textappend`` and ``textprepend``.
 
-The widget color is `primary` by default. The supplementary label is `secondary` by default. Below is an example of the
-color options.
+The **primary.TMeter** style is applied by default. The base style is further subclassed by each of the theme colors to
+produce the following color and style combinations:
 
 .. image:: images/meter.png
 
