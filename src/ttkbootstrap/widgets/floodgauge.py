@@ -71,7 +71,7 @@ class Floodgauge(Progressbar):
         # progress bar value variable
         self.variable = IntVar(value=value)
 
-        super().__init__(parent=parent, class_='Floodgauge', cursor=cursor, length=length, maximum=maximum, mode=mode,
+        super().__init__(master=master, class_='Floodgauge', cursor=cursor, length=length, maximum=maximum, mode=mode,
                          orient=orient, style=self._widgetstyle, takefocus=takefocus, variable=self.variable, **kw)
 
         # set the label font
