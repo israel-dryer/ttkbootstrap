@@ -7,3 +7,4 @@ dist
 *_build
 *_static
 .vscode
+__pycache__
