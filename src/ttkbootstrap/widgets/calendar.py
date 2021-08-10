@@ -158,7 +158,7 @@ class DateEntry(Frame):
         except Exception as e:
             print(e)
             self.startdate = datetime.today()
-            self.entry.delete(0, len(self.entry.get()))
+            self.entry.delete(0, 'end')
             self.entry.insert('end', self.startdate.strftime(self.dateformat))
         olddate = datetime.strptime(self.entry.get() or self.startdate, self.dateformat)
         newdate = ask_date(self.entry, startdate=olddate, firstweekday=self.firstweekday, style=self.base_style)
