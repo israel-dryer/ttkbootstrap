@@ -2875,7 +2875,7 @@ class StylerTTK:
                                        ('active', 'pressed', '!disabled', self.theme_images[f'{color}_close_button_pressed']),
                                        ('active', 'pressed', 'disabled', self.theme_images[f'{color}_newtab_button_pressed']),
                                        ('disabled', self.theme_images['newtab_button']),
-                                       {'padding': '8 0', 'sticky': ''})},
+                                       {'padding': '8 8 8 8', 'sticky': ''})},
                 f'{color}.Interactive.TNotebook.Tab': {
                     'layout': [
                         (f'{color}.Interactive.TNotebook.tab', {'sticky': 'nswe', 'children': [
