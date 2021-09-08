@@ -613,6 +613,7 @@ class StylerTTK:
         self._style_label()
         self._style_meter()
         self._style_notebook()
+        self._style_flat_notebook()
         self._style_outline_buttons()
         self._style_outline_menubutton()
         self._style_outline_toolbutton()
@@ -2766,6 +2767,56 @@ class StylerTTK:
         """
         im = Image.new("RGBA", (0, 0))
         return ImageTk.PhotoImage(im)
+
+    def _style_flat_notebook(self):
+        """Create style configuration with a flat look for ttk notebook: *ttk.Notebook*
+
+        The options available in this widget include:
+
+            - Notebook.client: background, bordercolor, lightcolor, darkcolor
+            - Notebook.tab: background, bordercolor, lightcolor, darkcolor
+            - Notebook.padding: padding, relief, shiftrelief
+            - Notebook.focus: focuscolor, focusthickness
+            - Notebook.label: compound, space, text, font, foreground, underline, width, anchor, justify, wraplength,
+                embossed, image, stipple, background
+        """
+        # based on the Bootstrap style: https://getbootstrap.com/docs/5.0/components/navs-tabs/#tabs
+        border_color = self.theme.colors.border if self.theme.type == 'light' else self.theme.colors.selectbg
+
+        disabled_fg = (Colors.update_hsv(self.theme.colors.inputbg, vd=-0.2) if self.theme.type == 'light' else
+                       Colors.update_hsv(self.theme.colors.inputbg, vd=-0.3))
+
+        self.settings.update({
+            'Flat.TNotebook.Tab': {
+                'configure': {
+                    'bordercolor': border_color,
+                    'lightcolor': self.theme.colors.bg,
+                    # need to set bottom expand to -1 to prevent the border
+                    # from overlapping the horizontal line below the tabs
+                    'expand': (0, 0, -1, -1),
+                    'foreground': self.theme.colors.fg},
+                'map': {
+                    # overwrite the default TNotebook style to make all tabs
+                    # have the same background color
+                    'background': [],
+                    'lightcolor': [
+                        ('!selected', self.theme.colors.bg)],
+                    'darkcolor': [
+                        ('!selected', self.theme.colors.bg)],
+                    'bordercolor': [
+                        ('active', '!selected', '!disabled', disabled_fg),
+                        ('!selected', self.theme.colors.bg)],
+                    'foreground': [
+                        ('disabled', disabled_fg),
+                        ('!selected', self.theme.colors.primary)]}}})
+
+        for color in self.theme.colors:
+            self.settings.update({
+                f'{color}.Flat.TNotebook.Tab': {
+                    'map': {
+                        'foreground': [
+                            ('disabled', disabled_fg),
+                            ('!selected', self.theme.colors.get(color))]}}})
 
     def _style_panedwindow(self):
         """Create style configuration for ttk paned window: *ttk.PanedWindow*
