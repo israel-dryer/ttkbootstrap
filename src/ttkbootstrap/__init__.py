@@ -2937,6 +2937,10 @@ class StylerTTK:
                     # need to set bottom expand to -1 to prevent the border
                     # from overlapping the horizontal line below the tabs
                     'expand': (0, 0, -1, -1),
+                    # reduce the bottom padding by 1 to make up for the
+                    # increase in the closebutton padding, to keep the style
+                    # identical to the other notebook layouts
+                    'padding': (10, 5, 10, 4),
                     'foreground': self.theme.colors.fg},
                 'map': {
                     # overwrite the default TNotebook style to make all tabs
