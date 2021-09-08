@@ -2696,18 +2696,46 @@ class StylerTTK:
         fg_color = self.theme.colors.inputfg if self.theme.type == 'light' else self.theme.colors.inputbg
         bg_color = self.theme.colors.inputbg if self.theme.type == 'light' else border_color
 
+        disabled_fg = (Colors.update_hsv(self.theme.colors.inputbg, vd=-0.2) if self.theme.type == 'light' else
+                       Colors.update_hsv(self.theme.colors.inputbg, vd=-0.3))
+
+        self.theme_images.update({
+            'blank_image': self._create_blank_image()
+        })
+
         self.settings.update({
+            # To separate the tabs from each other, we set the expand option to
+            # -1 .However, that cuts off one pixel from the content of the tab.
+            # To overcome this, we add a blank 0x0 image element to every tab
+            # with 1 px padding on the right, which will be cut off by the
+            # expand option.
+            'TNotebook.paddingpixel': {
+                'element create': ('image', self.theme_images['blank_image'],
+                                   {'padding': '0 0 1 0', 'sticky': ''})},
             'TNotebook': {
                 'configure': {
                     'bordercolor': border_color,
                     'lightcolor': self.theme.colors.bg,
-                    'darkcolor': self.theme.colors.bg,
-                    'borderwidth': 1}},
+                    'darkcolor': self.theme.colors.bg}},
             'TNotebook.Tab': {
+                'layout': [
+                    ('TNotebook.tab', {'sticky': 'nswe', 'children': [
+                        ('TNotebook.padding', {'side': 'top', 'sticky': 'nswe', 'children': [
+                            ('TNotebook.focus', {'side': 'top', 'sticky': 'nswe', 'children': [
+                                ('TNotebook.label', {'side': 'left', 'sticky': ''}),
+                                ('TNotebook.paddingpixel', {'side': 'right', 'sticky': ''}),
+                            ]})
+                        ]})
+                    ]})
+                ],
                 'configure': {
                     'bordercolor': border_color,
                     'lightcolor': self.theme.colors.bg,
                     'foreground': self.theme.colors.fg,
+                    # Expand -1 on the right to separate the tabs, so that each
+                    # tab has a fully visible border that can be highlighted
+                    # when mouse is over it.
+                    'expand': (0, 0, -1, 0),
                     'padding': (10, 5)},
                 'map': {
                     'background': [
@@ -2717,9 +2745,27 @@ class StylerTTK:
                     'darkcolor': [
                         ('!selected', bg_color)],
                     'bordercolor': [
+                        ('active', '!selected', '!disabled', self.theme.colors.primary),
                         ('!selected', border_color)],
                     'foreground': [
+                        ('disabled', disabled_fg),
                         ('!selected', fg_color)]}}})
+
+        for color in self.theme.colors:
+            self.settings.update({
+                f'{color}.TNotebook.Tab': {
+                    'map': {
+                        'bordercolor': [
+                            ('active', '!selected', '!disabled', self.theme.colors.get(color))]}}})
+
+    def _create_blank_image(self):
+        """Create a blank image to separate elements
+
+        Returns:
+            ImageTk.PhotoImage: a blank 0x0 image
+        """
+        im = Image.new("RGBA", (0, 0))
+        return ImageTk.PhotoImage(im)
 
     def _style_panedwindow(self):
         """Create style configuration for ttk paned window: *ttk.PanedWindow*
