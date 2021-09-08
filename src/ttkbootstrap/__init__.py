@@ -3016,7 +3016,7 @@ class StylerTTK:
         factor = 5
         fullsize = size * factor
 
-        im = Image.new('RGBA, (fullsize, fullsize))
+        im = Image.new('RGBA', (fullsize, fullsize))
         draw = ImageDraw.Draw(im)
 
         imin = 0
