@@ -2708,7 +2708,7 @@ class StylerTTK:
 
         self.settings.update({
             # To separate the tabs from each other, we set the expand option to
-            # -1 .However, that cuts off one pixel from the content of the tab.
+            # -1. However, that cuts off one pixel from the content of the tab.
             # To overcome this, we add a blank 0x0 image element to every tab
             # with 1 px padding on the right, which will be cut off by the
             # expand option.
@@ -2793,11 +2793,19 @@ class StylerTTK:
                 'configure': {
                     'bordercolor': border_color,
                     'lightcolor': self.theme.colors.bg,
-                    # need to set bottom expand to -1 to prevent the border
-                    # from overlapping the horizontal line below the tabs
+                    # Need to set bottom expand to -1 to prevent the border
+                    # from overlapping the horizontal line below the tabs.
+                    # Interestingly, as long as the -1 on the right is only
+                    # cutting into the paddingpixel, the -1 on the bottom
+                    # does not cut into the label, only into the border, so no
+                    # extra paddingpixel on the bottom is needed.
                     'expand': (0, 0, -1, -1),
                     'foreground': self.theme.colors.fg},
                 'map': {
+                    # remove the 1 px gap between the leftmost tab border and
+                    # the frame, as the frame has a rounded corner
+                    'expand': [
+                        ('selected', (0, 0, -1, 0))],
                     # overwrite the default TNotebook style to make all tabs
                     # have the same background color
                     'background': [],
@@ -2943,6 +2951,10 @@ class StylerTTK:
                     'padding': (10, 5, 10, 4),
                     'foreground': self.theme.colors.fg},
                 'map': {
+                    # remove the 1 px gap between the leftmost tab border and
+                    # the frame, as the frame has a rounded corner
+                    'expand': [
+                        ('selected', (0, 0, -1, 0))],
                     # overwrite the default TNotebook style to make all tabs
                     # have the same background color
                     'background': [],
