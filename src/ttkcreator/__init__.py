@@ -115,9 +115,16 @@ class CreatorDesignWindow(tk.Toplevel):
         """
         Draw the selector image using the packaged `Symbola` font.
         """
+
+        # set platform specific  font
+        winsys = self.style.tk.call('tk','windowingsystem')
         font_size = 16
-        with importlib.resources.open_binary('ttkbootstrap', 'Symbola.ttf') as font_path:
-            fnt = ImageFont.truetype(font_path, font_size)
+        if winsys == 'win32':
+            fnt = ImageFont.truetype('seguisym.ttf', font_size)
+        elif winsys == 'x11':
+            fnt = ImageFont.truetype('FreeSerif.ttf', font_size)
+        else:
+            fnt = ImageFont.truetype('LucidaGrande.ttc', font_size)
 
         im = Image.new('RGBA', (font_size, font_size))
         draw = ImageDraw.Draw(im)
@@ -148,7 +155,7 @@ class CreatorDesignWindow(tk.Toplevel):
         ttk.Label(selector, text=color_label, name='label', width=10).pack(side='left')
         tk.Frame(selector, name='patch', width=10, background=color_value).pack(side='left', fill='y', padx=2)
         entry = ttk.Entry(selector, name='entry', textvariable=color_label)
-        entry.pack(side='left', fill='x', expand='yes')
+        entry.pack(side='left', fill='both', expand='yes')
         entry.bind('<FocusOut>', lambda event, selector=selector: self.select_color(selector, event))
         btn = ttk.Button(selector, name='button', image=self.image, style='secondary.TButton')
         btn.configure(command=lambda s=selector: self.select_color(s))

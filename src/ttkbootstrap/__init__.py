@@ -983,9 +983,16 @@ class StylerTTK:
 
     def _create_scrollbar_images(self):
         """Create assets needed for scrollbar arrows. The assets are saved to the ``theme_images`` property."""
+
+        # set platform specific checkfont
         font_size = 13
-        with importlib.resources.open_binary('ttkbootstrap', 'Symbola.ttf') as font_path:
-            fnt = ImageFont.truetype(font_path, font_size)
+        winsys = self.style.tk.call('tk','windowingsystem')
+        if winsys == 'win32':
+            fnt = ImageFont.truetype('seguisym.ttf', font_size)
+        elif winsys == 'x11':
+            fnt = ImageFont.truetype('FreeSerif.ttf', font_size)
+        else:
+            fnt = ImageFont.truetype('LucidaGrande.ttc', font_size)
 
         # up arrow
         vs_upim = Image.new('RGBA', (font_size, font_size))
@@ -2439,6 +2446,19 @@ class StylerTTK:
         Returns:
             Tuple[PhotoImage]: a tuple of widget images.
         """
+
+        # set platform specific checkfont
+        winsys = self.style.tk.call('tk','windowingsystem')
+        if winsys == 'win32':
+            fnt = ImageFont.truetype('seguisym.ttf', 120)
+            font_offset = -20
+        elif winsys == 'x11':
+            fnt = ImageFont.truetype('FreeSerif.ttf', 130)
+            font_offset = 10
+        else:
+            fnt = ImageFont.truetype('LucidaGrande.ttc', 120)
+            font_offset = -10
+
         prime_color = self.theme.colors.get(colorname)
         on_border = prime_color
         on_indicator = self.theme.colors.selectbg
@@ -2455,12 +2475,10 @@ class StylerTTK:
         draw.rounded_rectangle([2, 2, 132, 132], radius=16, outline=off_border, width=3, fill=off_fill)
 
         # checkbutton on
-        with importlib.resources.open_binary('ttkbootstrap', 'Symbola.ttf') as font_path:
-            fnt = ImageFont.truetype(font_path, 130)
         checkbutton_on = Image.new('RGBA', (134, 134))
         draw = ImageDraw.Draw(checkbutton_on)
         draw.rounded_rectangle([2, 2, 132, 132], radius=16, fill=on_fill, outline=on_border, width=3)
-        draw.text((20, 8), "✓", font=fnt, fill=self.theme.colors.selectfg)
+        draw.text((20, font_offset), "✓", font=fnt, fill=self.theme.colors.selectfg)
 
         # checkbutton disabled
         checkbutton_disabled = Image.new('RGBA', (134, 134))
