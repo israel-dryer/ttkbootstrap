@@ -1331,9 +1331,12 @@ class StylerTTK:
                 embossed, image, stipple, background
         """
         # disabled settings
-        disabled_fg = self.theme.colors.inputfg
-        disabled_bg = (Colors.update_hsv(self.theme.colors.inputbg, vd=-0.2) if self.theme.type == 'light' else
-                       Colors.update_hsv(self.theme.colors.inputbg, vd=-0.3))
+        if self.theme.type == 'light':
+            disabled_fg = Colors.update_hsv(self.theme.colors.inputbg, vd=-0.2)
+            disabled_bg = Colors.update_hsv(self.theme.colors.inputbg, vd=-0.2)
+        else:
+            disabled_fg = Colors.update_hsv(self.theme.colors.inputbg, vd=-0.3)
+            disabled_bg = Colors.update_hsv(self.theme.colors.inputbg, vd=-0.3)
 
         # pressed and hover settings
         pressed_vd = -0.2
@@ -1356,7 +1359,7 @@ class StylerTTK:
                 # TODO should I remove default padding? I can also use: width: -12 to set a minimum width
                 'map': {
                     'foreground': [
-                        ('disabled', disabled_fg)],
+                        ('disabled', self.theme.colors.inputbg)],
                     'background': [
                         ('disabled', disabled_bg),
                         ('pressed !disabled', Colors.update_hsv(self.theme.colors.primary, vd=pressed_vd)),
@@ -1417,10 +1420,11 @@ class StylerTTK:
             - Button.label: compound, space, text, font, foreground, underline, width, anchor, justify, wraplength,
                 embossed, image, stipple, background
         """
-        # disabled settings
-        disabled_fg = (Colors.update_hsv(self.theme.colors.inputbg, vd=-0.2) if self.theme.type == 'light' else
-                       Colors.update_hsv(self.theme.colors.inputbg, vd=-0.3))
-
+        if self.theme.type == 'light':
+            disabled_fg = Colors.update_hsv(self.theme.colors.inputbg, vd=-0.2)
+        else:
+            disabled_fg = self.theme.colors.inputbg
+        
         # pressed and hover settings
         pressed_vd = -0.10
 
@@ -1508,8 +1512,10 @@ class StylerTTK:
                 embossed, image, stipple, background
         """
         # disabled settings
-        disabled_fg = (Colors.update_hsv(self.theme.colors.inputbg, vd=-0.2) if self.theme.type == 'light' else
-                       Colors.update_hsv(self.theme.colors.inputbg, vd=-0.3))
+        if self.theme.type == 'light':
+            disabled_fg = Colors.update_hsv(self.theme.colors.inputbg, vd=-0.2)
+        else:
+            disabled_fg = self.theme.colors.inputbg
 
         # pressed and hover settings
         pressed_vd = 0
@@ -1539,13 +1545,15 @@ class StylerTTK:
                         ('pressed !disabled', self.theme.colors.bg),
                         ('hover !disabled', self.theme.colors.bg)],
                     'bordercolor': [
-                        ('disabled', disabled_fg),
+                        ('disabled', self.theme.colors.bg),
                         ('pressed !disabled', self.theme.colors.bg),
                         ('hover !disabled', self.theme.colors.bg)],
                     'darkcolor': [
+                        ('disabled', self.theme.colors.bg),
                         ('pressed !disabled', self.theme.colors.bg),
                         ('hover !disabled', self.theme.colors.bg)],
                     'lightcolor': [
+                        ('disabled', self.theme.colors.bg),
                         ('pressed !disabled', self.theme.colors.bg),
                         ('hover !disabled', self.theme.colors.bg)]}}})
 
@@ -1571,16 +1579,19 @@ class StylerTTK:
                         'shiftrelief': [
                             ('pressed !disabled', -1)],
                         'background': [
+                            ('disabled', self.theme.colors.bg),
                             ('pressed !disabled', self.theme.colors.bg),
                             ('hover !disabled', self.theme.colors.bg)],
                         'bordercolor': [
-                            ('disabled', disabled_fg),
+                            ('disabled', self.theme.colors.bg),                            
                             ('pressed !disabled', self.theme.colors.bg),
                             ('hover !disabled', self.theme.colors.bg)],
                         'darkcolor': [
+                            ('disabled', self.theme.colors.bg),
                             ('pressed !disabled', self.theme.colors.bg),
                             ('hover !disabled', self.theme.colors.bg)],
                         'lightcolor': [
+                            ('disabled', self.theme.colors.bg),
                             ('pressed !disabled', self.theme.colors.bg),
                             ('hover !disabled', self.theme.colors.bg)]}}})
 
