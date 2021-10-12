@@ -920,8 +920,8 @@ class StylerTTK:
                 Colors.update_hsv(self.theme.colors.primary, vd=pressed_vd)),
             'primary_hover': self._create_slider_image(
                 Colors.update_hsv(self.theme.colors.primary, vd=hover_vd)),
-            'htrough': ImageTk.PhotoImage(Image.new('RGB', (40, 8), trough_color)),
-            'vtrough': ImageTk.PhotoImage(Image.new('RGB', (8, 40), trough_color))})
+            'htrough': ImageTk.PhotoImage(Image.new('RGB', (40, 5), trough_color)),
+            'vtrough': ImageTk.PhotoImage(Image.new('RGB', (5, 40), trough_color))})
 
         # The layout is derived from the 'xpnative' theme
         self.settings.update({
