@@ -2691,34 +2691,41 @@ class StylerTTK:
             - Notebook.label: compound, space, text, font, foreground, underline, width, anchor, justify, wraplength,
                 embossed, image, stipple, background
         """
-        border_color = self.theme.colors.border if self.theme.type == 'light' else self.theme.colors.selectbg
-        fg_color = self.theme.colors.inputfg if self.theme.type == 'light' else self.theme.colors.inputbg
-        bg_color = self.theme.colors.inputbg if self.theme.type == 'light' else border_color
+        if self.theme.type == 'light':
+            bordercolor = self.theme.colors.border
+            foreground = self.theme.colors.inputfg
+        else:
+            bordercolor = self.theme.colors.selectbg
+            foreground = self.theme.colors.selectfg        
+        
+        # border_color = self.theme.colors.border if self.theme.type == 'light' else self.theme.colors.selectbg
+        # fg_color = self.theme.colors.inputfg if self.theme.type == 'light' else self.theme.colors.inputbg
+        # bg_color = self.theme.colors.inputbg if self.theme.type == 'light' else border_color
 
         self.settings.update({
             'TNotebook': {
                 'configure': {
-                    'bordercolor': border_color,
+                    'bordercolor': bordercolor,
                     'lightcolor': self.theme.colors.bg,
                     'darkcolor': self.theme.colors.bg,
                     'borderwidth': 1}},
             'TNotebook.Tab': {
                 'configure': {
-                    'bordercolor': border_color,
+                    'bordercolor': bordercolor,
                     'lightcolor': self.theme.colors.bg,
                     'foreground': self.theme.colors.fg,
                     'padding': (10, 5)},
                 'map': {
                     'background': [
-                        ('!selected', bg_color)],
+                        ('!selected', self.theme.colors.inputbg)],
                     'lightcolor': [
-                        ('!selected', bg_color)],
+                        ('!selected', self.theme.colors.inputbg)],
                     'darkcolor': [
-                        ('!selected', bg_color)],
+                        ('!selected', self.theme.colors.inputbg)],
                     'bordercolor': [
-                        ('!selected', border_color)],
+                        ('!selected', bordercolor)],
                     'foreground': [
-                        ('!selected', fg_color)]}}})
+                        ('!selected', self.theme.colors.fg)]}}})
 
     def _style_panedwindow(self):
         """Create style configuration for ttk paned window: *ttk.PanedWindow*
