@@ -13,7 +13,7 @@ class Application(tkinter.Tk):
     def __init__(self):
         super().__init__()
         self.title('Simple data entry form')
-        self.style = Style('darkly')
+        self.style = Style('superhero')
         self.form = EntryForm(self)
         self.form.pack(fill='both', expand='yes')
 
