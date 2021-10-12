@@ -34,7 +34,6 @@ import colorsys
 from tkinter import ttk
 from ttkbootstrap.themes import DEFINED_THEMES
 from ttkbootstrap.user_defined import USER_DEFINED
-
 from PIL import ImageTk, Image, ImageDraw, ImageFont
 
 
@@ -648,19 +647,13 @@ class StylerTTK:
             - Combobox.field: bordercolor, lightcolor, darkcolor, fieldbackground
             - Combobox.padding: padding, relief, shiftrelief
             - Combobox.textarea: font, width
-
-        .. info::
-
-            When the dark theme is used, I used the *spinbox.field* from the *default* theme because the background
-            shines through the corners using the `clam` theme. This is an unfortuate hack to make it look ok. Hopefully
-            there will be a more permanent/better solution in the future.
         """
-        disabled_fg = (Colors.update_hsv(self.theme.colors.inputbg, vd=-0.2) if self.theme.type == 'light' else
-                       Colors.update_hsv(self.theme.colors.inputbg, vd=-0.3))
-
-        if self.theme.type == 'dark':
-            self.settings.update({
-                'combo.Spinbox.field': {'element create': ('from', 'default')}})
+        if self.theme.type == 'light':
+            disabled_fg = Colors.update_hsv(self.theme.colors.inputbg, vd=-0.2)
+            bordercolor = self.theme.colors.border
+        else:
+            disabled_fg = Colors.update_hsv(self.theme.colors.inputbg, vd=-0.3)
+            bordercolor = self.theme.colors.selectbg
 
         self.settings.update({
             'Combobox.downarrow': {'element create': ('from', 'default')},
@@ -672,7 +665,7 @@ class StylerTTK:
                     ('Combobox.padding', {'expand': '1', 'sticky': 'nswe', 'children': [
                         ('Combobox.textarea', {'sticky': 'nswe'})]})]})],
                 'configure': {
-                    'bordercolor': self.theme.colors.border,
+                    'bordercolor': bordercolor,
                     'darkcolor': self.theme.colors.inputbg,
                     'lightcolor': self.theme.colors.inputbg,
                     'arrowcolor': self.theme.colors.inputfg,
@@ -698,7 +691,7 @@ class StylerTTK:
                     'arrowcolor': [
                         ('disabled', disabled_fg),
                         ('pressed !disabled', self.theme.colors.inputbg),
-                        ('focus !disabled', self.theme.colors.inputfg),
+                        ('focus !disabled', self.theme.colors.primary),
                         ('hover !disabled', self.theme.colors.primary)]}}})
 
         for color in self.theme.colors:
@@ -1169,11 +1162,12 @@ class StylerTTK:
             - spinbox.padding: padding, relief, shiftrelief
             - spinbox.textarea: font, width
         """
-        disabled_fg = (Colors.update_hsv(self.theme.colors.inputbg, vd=-0.2) if self.theme.type == 'light' else
-                       Colors.update_hsv(self.theme.colors.inputbg, vd=-0.3))
-
-        if self.theme.type == 'dark':
-            self.settings.update({'custom.Spinbox.field': {'element create': ('from', 'default')}})
+        if self.theme.type == 'light':
+            disabled_fg = Colors.update_hsv(self.theme.colors.inputbg, vd=-0.2)
+            bordercolor = self.theme.colors.border
+        else:
+            disabled_fg = Colors.update_hsv(self.theme.colors.inputbg, vd=-0.3)
+            bordercolor = self.theme.colors.selectbg
 
         self.settings.update({
             'Spinbox.uparrow': {'element create': ('from', 'default')},
@@ -1187,7 +1181,7 @@ class StylerTTK:
                         ('Spinbox.padding', {'sticky': 'nswe', 'children': [
                             ('Spinbox.textarea', {'sticky': 'nswe'})]})]})],
                 'configure': {
-                    'bordercolor': self.theme.colors.border,
+                    'bordercolor': bordercolor,
                     'darkcolor': self.theme.colors.inputbg,
                     'lightcolor': self.theme.colors.inputbg,
                     'fieldbackground': self.theme.colors.inputbg,
@@ -1990,16 +1984,17 @@ class StylerTTK:
             - Entry.padding: padding, relief, shiftrelief
             - Entry.textarea: font, width
         """
-        disabled_fg = (Colors.update_hsv(self.theme.colors.inputbg, vd=-0.2) if self.theme.type == 'light' else
-                       Colors.update_hsv(self.theme.colors.inputbg, vd=-0.3))
-
-        if self.theme.type == 'dark':
-            self.settings.update({'Entry.field': {'element create': ('from', 'default')}})
+        if self.theme.type == 'light':
+            disabled_fg = Colors.update_hsv(self.theme.colors.inputbg, vd=-0.2)
+            bordercolor = self.theme.colors.border
+        else:
+            disabled_fg = Colors.update_hsv(self.theme.colors.inputbg, vd=-0.3)
+            bordercolor = self.theme.colors.selectbg
 
         self.settings.update({
             'TEntry': {
                 'configure': {
-                    'bordercolor': self.theme.colors.border,
+                    'bordercolor': bordercolor,
                     'darkcolor': self.theme.colors.inputbg,
                     'lightcolor': self.theme.colors.inputbg,
                     'fieldbackground': self.theme.colors.inputbg,
