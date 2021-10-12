@@ -31,7 +31,6 @@
 
 """
 import colorsys
-import importlib.resources
 from tkinter import ttk
 from ttkbootstrap.themes import DEFINED_THEMES
 from ttkbootstrap.user_defined import USER_DEFINED
