@@ -2383,8 +2383,10 @@ class StylerTTK:
             - Checkbutton.label: compound, space, text, font, foreground, underline, width, anchor, justify, wraplength,
                 embossed, image, stipple, background
         """
-        disabled_fg = (Colors.update_hsv(self.theme.colors.inputbg, vd=-0.2) if self.theme.type == 'light' else
-                       Colors.update_hsv(self.theme.colors.inputbg, vd=-0.3))
+        if self.theme.type == 'light':
+            disabled_fg = Colors.update_hsv(self.theme.colors.inputbg, vd=-0.2)
+        else:
+            disabled_fg = Colors.update_hsv(self.theme.colors.inputbg, vd=-0.3)
 
         self.theme_images.update(self._create_checkbutton_images('primary'))
 
@@ -2455,13 +2457,17 @@ class StylerTTK:
 
         prime_color = self.theme.colors.get(colorname)
         on_border = prime_color
-        on_indicator = self.theme.colors.selectbg
         on_fill = prime_color
         off_border = self.theme.colors.selectbg
-        off_fill = self.theme.colors.inputbg if self.theme.type == 'light' else self.theme.colors.selectfg
-        disabled_fg = (Colors.update_hsv(self.theme.colors.inputbg, vd=-0.2) if self.theme.type == 'light' else
-                       Colors.update_hsv(self.theme.colors.inputbg, vd=-0.3))
-        disabled_bg = self.theme.colors.inputbg if self.theme.type == 'light' else disabled_fg
+        
+        if self.theme.type == 'light':
+            off_fill = self.theme.colors.inputbg
+            disabled_fg = Colors.update_hsv(self.theme.colors.inputbg, vd=-0.2)
+            disabled_bg = self.theme.colors.inputbg
+        else:
+            off_fill = self.theme.colors.selectbg
+            disabled_fg = Colors.update_hsv(self.theme.colors.inputbg, vd=-0.3)
+            disabled_bg = disabled_fg
 
         # checkbutton off
         checkbutton_off = Image.new('RGBA', (134, 134))
