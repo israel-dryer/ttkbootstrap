@@ -32,9 +32,9 @@
 """
 import colorsys
 import importlib.resources
-import json
-from pathlib import Path
 from tkinter import ttk
+from ttkbootstrap.themes import DEFINED_THEMES
+from ttkbootstrap.user_defined import USER_DEFINED
 
 from PIL import ImageTk, Image, ImageDraw, ImageFont
 
@@ -65,7 +65,6 @@ class Style(ttk.Style):
 
     .. _documentation: https://docs.python.org/3.9/library/tkinter.ttk.html#tkinter.ttk.Style
     """
-
     def __init__(self, theme='flatly', themes_file=None, *args, **kwargs):
         """
         Args:
@@ -96,30 +95,18 @@ class Style(ttk.Style):
         Args:
             themes_file (str): the path of the `themes.json` file.
         """
-        # pre-defined themes
-        json_data = importlib.resources.read_text('ttkbootstrap', 'themes.json')
-        builtin_themes = json.loads(json_data)
-
-        # application-defined or user-defined themes
-        if themes_file is None:
-            themes_file = builtin_themes['userpath']
-        user_path = Path(themes_file)
-        if user_path.exists():
-            with user_path.open(encoding='utf-8') as f:
-                user_themes = json.load(f)
-        else:
-            user_themes = {'themes': []}
-
         # create a theme definition object for each theme, this will be used to generate
         #  the theme in tkinter along with any assets at run-time
-        theme_settings = {'themes': builtin_themes['themes'] + user_themes['themes']}
-        for theme in theme_settings['themes']:
+        if USER_DEFINED:
+            DEFINED_THEMES.update(USER_DEFINED)
+        theme_settings = {'themes': DEFINED_THEMES}
+        for name, definition in theme_settings['themes'].items():
             self.register_theme(
                 ThemeDefinition(
-                    name=theme['name'],
-                    themetype=theme['type'],
-                    font=theme['font'],
-                    colors=Colors(**theme['colors'])))
+                    name=name,
+                    themetype=definition['type'],
+                    font=definition.get('font') or "Helvetica 10",
+                    colors=Colors(**definition['colors'])))
 
     def register_theme(self, definition):
         """Registers a theme definition for use by the ``Style`` class.

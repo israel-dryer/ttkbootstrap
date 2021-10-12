@@ -5,6 +5,8 @@ Copyright (c) 2021 Israel Dryer
 """
 import uuid
 import json
+from ttkbootstrap.themes import DEFINED_THEMES
+from ttkbootstrap import user_defined
 from ttkbootstrap import Style, Colors, StylerTTK, ThemeDefinition
 import tkinter as tk
 from tkinter import ttk
@@ -16,6 +18,7 @@ from tkinter.filedialog import asksaveasfilename
 from tkinter.messagebox import showwarning
 from pathlib import Path
 from copy import deepcopy
+
 
 
 class CreatorDesignWindow(tk.Toplevel):
@@ -210,42 +213,37 @@ class CreatorDesignWindow(tk.Toplevel):
         """
         name = self.getvar('name').lower().replace(' ', '')
 
-        raw_json = importlib.resources.read_text('ttkbootstrap', 'themes.json')
-        settings = json.loads(raw_json)
-
-        with open(settings['userpath'], encoding='utf-8') as f:
-            user_themes = json.load(f)
-
-        theme_names = [t['name'] for t in user_themes['themes']]
-
-        if name in theme_names:
+        if name in user_defined.USER_DEFINED:
             showerror(title='Save Theme', message=f'The theme {name} already exists.')
             return
 
         theme = {
-            "name": name,
-            "font": self.getvar('font'),
-            "type": self.getvar('type'),
-            "colors": {
-                "primary": self.getvar('primary'),
-                "secondary": self.getvar('secondary'),
-                "success": self.getvar('success'),
-                "info": self.getvar('info'),
-                "warning": self.getvar('warning'),
-                "danger": self.getvar('danger'),
-                "bg": self.getvar('bg'),
-                "fg": self.getvar('fg'),
-                "selectbg": self.getvar('selectbg'),
-                "selectfg": self.getvar('selectfg'),
-                "border": self.getvar('border'),
-                "inputfg": self.getvar('inputfg'),
-                "inputbg": self.getvar('inputbg')
-            }}
+            name : {
+                "font": self.getvar('font'),
+                "type": self.getvar('type'),
+                "colors": {
+                    "primary": self.getvar('primary'),
+                    "secondary": self.getvar('secondary'),
+                    "success": self.getvar('success'),
+                    "info": self.getvar('info'),
+                    "warning": self.getvar('warning'),
+                    "danger": self.getvar('danger'),
+                    "bg": self.getvar('bg'),
+                    "fg": self.getvar('fg'),
+                    "selectbg": self.getvar('selectbg'),
+                    "selectfg": self.getvar('selectfg'),
+                    "border": self.getvar('border'),
+                    "inputfg": self.getvar('inputfg'),
+                    "inputbg": self.getvar('inputbg')
+                }
+            }
+        }
 
-        user_themes['themes'].append(theme)
-
-        with open(settings['userpath'], 'w', encoding='utf-8') as f:
-            json.dump(user_themes, f, indent='\t')
+        filepath = Path(user_defined.__file__)
+        user_themes = {**user_defined.USER_DEFINED, **theme}
+        DEFINED_THEMES[name] = theme[name]
+        output = f'USER_DEFINED={str(user_themes)}'
+        filepath.write_text(output, encoding='utf-8')
         showinfo(title='Save Theme', message=f'The theme {name} has been created')
 
     def reset_theme(self):
@@ -489,9 +487,9 @@ class CreatorBaseChooser(tk.Tk):
         """
         Startup the design window with the 'flatly' theme
         """
-        valid_user_path = self.check_user_themes_path()
-        if not valid_user_path:
-            return
+        # valid_user_path = self.check_user_themes_path()
+        # if not valid_user_path:
+        #     return
 
         self.style.theme_use(themename='darkly')
         CreatorDesignWindow(self)
@@ -501,9 +499,9 @@ class CreatorBaseChooser(tk.Tk):
         """
         Startup the design window with the 'superhero' theme
         """
-        valid_user_path = self.check_user_themes_path()
-        if not valid_user_path:
-            return
+        # valid_user_path = self.check_user_themes_path()
+        # if not valid_user_path:
+        #     return
 
         CreatorDesignWindow(self)
         self.withdraw()
