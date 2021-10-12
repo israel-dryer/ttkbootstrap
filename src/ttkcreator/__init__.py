@@ -492,13 +492,13 @@ class CreatorBaseChooser(tk.Tk):
 
     def create_dark_theme(self):
         """
-        Startup the design window with the 'flatly' theme
+        Startup the design window with the 'superhero' theme
         """
         # valid_user_path = self.check_user_themes_path()
         # if not valid_user_path:
         #     return
 
-        self.style.theme_use(themename='darkly')
+        self.style.theme_use(themename='superhero')
         CreatorDesignWindow(self)
         self.withdraw()
 
