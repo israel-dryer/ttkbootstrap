@@ -1611,9 +1611,12 @@ class StylerTTK:
         off_border = self.theme.colors.selectbg if self.theme.type == 'light' else self.theme.colors.inputbg
         off_indicator = self.theme.colors.selectbg if self.theme.type == 'light' else self.theme.colors.inputbg
         off_fill = self.theme.colors.bg
-        disabled_fill = self.theme.colors.bg
-        disabled_fg = (Colors.update_hsv(self.theme.colors.inputbg, vd=-0.2) if self.theme.type == 'light' else
-                       Colors.update_hsv(self.theme.colors.inputbg, vd=-0.3))
+
+        # disabled settings
+        if self.theme.type == 'light':
+            disabled_fg = Colors.update_hsv(self.theme.colors.inputbg, vd=-0.2)
+        else:
+            disabled_fg = self.theme.colors.inputbg
 
         toggle_off = Image.new('RGBA', (226, 130))
         draw = ImageDraw.Draw(toggle_off)
@@ -1654,9 +1657,11 @@ class StylerTTK:
         off_border = self.theme.colors.selectbg if self.theme.type == 'light' else self.theme.colors.inputbg
         off_indicator = self.theme.colors.selectbg if self.theme.type == 'light' else self.theme.colors.inputbg
         off_fill = self.theme.colors.bg
-        disabled_fill = self.theme.colors.bg
-        disabled_fg = (Colors.update_hsv(self.theme.colors.inputbg, vd=-0.2) if self.theme.type == 'light' else
-                       Colors.update_hsv(self.theme.colors.inputbg, vd=-0.3))
+        
+        if self.theme.type == 'light':
+            disabled_fg = Colors.update_hsv(self.theme.colors.inputbg, vd=-0.2)
+        else:
+            disabled_fg = self.theme.colors.inputbg
 
         toggle_off = Image.new('RGBA', (226, 130))
         draw = ImageDraw.Draw(toggle_off)
@@ -1686,8 +1691,11 @@ class StylerTTK:
         checkbutton: *ttk.Checkbutton*)
         """
         self.theme_images.update(self._create_roundtoggle_image('primary'))
-        disabled_fg = (Colors.update_hsv(self.theme.colors.inputbg, vd=-0.2) if self.theme.type == 'light' else
-                       Colors.update_hsv(self.theme.colors.inputbg, vd=-0.3))
+
+        if self.theme.type == 'light':
+            disabled_fg = Colors.update_hsv(self.theme.colors.inputbg, vd=-0.2)
+        else:
+            disabled_fg = self.theme.colors.inputbg
 
         # create indicator element
         self.settings.update({
@@ -1746,8 +1754,10 @@ class StylerTTK:
         checkbutton: *ttk.Checkbutton*)
         """
         self.theme_images.update(self._create_squaretoggle_image('primary'))
-        disabled_fg = (Colors.update_hsv(self.theme.colors.inputbg, vd=-0.2) if self.theme.type == 'light' else
-                       Colors.update_hsv(self.theme.colors.inputbg, vd=-0.3))
+        if self.theme.type == 'light':
+            disabled_fg = Colors.update_hsv(self.theme.colors.inputbg, vd=-0.2)
+        else:
+            disabled_fg = self.theme.colors.inputbg
 
         # create indicator element
         self.settings.update({
@@ -1814,13 +1824,14 @@ class StylerTTK:
                 embossed, image, stipple, background
         """
         # disabled settings
-        disabled_fg = self.theme.colors.inputfg
-        disabled_bg = (Colors.update_hsv(self.theme.colors.inputbg, vd=-0.2) if self.theme.type == 'light' else
-                       Colors.update_hsv(self.theme.colors.inputbg, vd=-0.3))
+        if self.theme.type == 'light':
+            disabled_fg = self.theme.colors.inputbg
+            disabled_bg = Colors.update_hsv(self.theme.colors.inputbg, vd=-0.2)
+        else:
+            disabled_fg = self.theme.colors.inputbg
+            disabled_bg = Colors.update_hsv(self.theme.colors.inputbg, vd=-0.3)
 
         # pressed and hover settings
-        pressed_vd = -0.2
-        hover_vd = -0.1
         normal_sd = -0.5
         normal_vd = 0.1
 
@@ -1912,8 +1923,11 @@ class StylerTTK:
                 embossed, image, stipple, background
         """
         # disabled settings
-        disabled_fg = (Colors.update_hsv(self.theme.colors.inputbg, vd=-0.2) if self.theme.type == 'light' else
-                       Colors.update_hsv(self.theme.colors.inputbg, vd=-0.3))
+        # disabled settings
+        if self.theme.type == 'light':
+            disabled_fg = Colors.update_hsv(self.theme.colors.inputbg, vd=-0.2)
+        else:
+            disabled_fg = self.theme.colors.inputbg
 
         # pressed and hover settings
         pressed_vd = -0.10
@@ -2405,7 +2419,7 @@ class StylerTTK:
         if self.theme.type == 'light':
             disabled_fg = Colors.update_hsv(self.theme.colors.inputbg, vd=-0.2)
         else:
-            disabled_fg = Colors.update_hsv(self.theme.colors.inputbg, vd=-0.3)
+            disabled_fg = self.theme.colors.inputbg
 
         self.theme_images.update(self._create_checkbutton_images('primary'))
 
@@ -2485,7 +2499,7 @@ class StylerTTK:
             disabled_bg = self.theme.colors.inputbg
         else:
             off_fill = self.theme.colors.selectbg
-            disabled_fg = Colors.update_hsv(self.theme.colors.inputbg, vd=-0.3)
+            disabled_fg = self.theme.colors.inputbg
             disabled_bg = disabled_fg
 
         # checkbutton off
