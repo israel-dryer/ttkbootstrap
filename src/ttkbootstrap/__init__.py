@@ -1351,7 +1351,7 @@ class StylerTTK:
                     'anchor': 'center',
                     'relief': 'raised',
                     'focusthickness': 0,
-                    'focuscolor': '',
+                    'focuscolor': self.theme.colors.selectfg,
                     'padding': (10, 5)},
                 # TODO should I remove default padding? I can also use: width: -12 to set a minimum width
                 'map': {
@@ -1385,7 +1385,7 @@ class StylerTTK:
                         'lightcolor': self.theme.colors.get(color),
                         'relief': 'raised',
                         'focusthickness': 0,
-                        'focuscolor': '',
+                        'focuscolor': self.theme.colors.selectfg,
                         'padding': (10, 5)},
                     'map': {
                         'foreground': [
@@ -1435,7 +1435,7 @@ class StylerTTK:
                     'relief': 'raised',
                     'font': self.theme.font,
                     'focusthickness': 0,
-                    'focuscolor': '',
+                    'focuscolor': self.theme.colors.primary,
                     'padding': (10, 5)},
                 'map': {
                     'foreground': [
@@ -1449,6 +1449,10 @@ class StylerTTK:
                         ('disabled', disabled_fg),
                         ('pressed !disabled', Colors.update_hsv(self.theme.colors.primary, vd=pressed_vd)),
                         ('hover !disabled', self.theme.colors.primary)],
+                    'focuscolor': [
+                        ('pressed !disabled', self.theme.colors.selectfg),
+                        ('hover !disabled', self.theme.colors.selectfg)
+                    ],
                     'darkcolor': [
                         ('pressed !disabled', Colors.update_hsv(self.theme.colors.primary, vd=pressed_vd)),
                         ('hover !disabled', self.theme.colors.primary)],
@@ -1467,7 +1471,7 @@ class StylerTTK:
                         'lightcolor': self.theme.colors.bg,
                         'relief': 'raised',
                         'focusthickness': 0,
-                        'focuscolor': '',
+                        'focuscolor': self.theme.colors.get(color),
                         'padding': (10, 5)},
                     'map': {
                         'foreground': [
@@ -1481,6 +1485,10 @@ class StylerTTK:
                             ('disabled', disabled_fg),
                             ('pressed !disabled', Colors.update_hsv(self.theme.colors.get(color), vd=pressed_vd)),
                             ('hover !disabled', self.theme.colors.get(color))],
+                        'focuscolor': [
+                            ('pressed !disabled', self.theme.colors.selectfg),
+                            ('hover !disabled', self.theme.colors.selectfg)
+                        ],                            
                         'darkcolor': [
                             ('pressed !disabled', Colors.update_hsv(self.theme.colors.get(color), vd=pressed_vd)),
                             ('hover !disabled', self.theme.colors.get(color))],
@@ -1518,7 +1526,7 @@ class StylerTTK:
                     'relief': 'raised',
                     'font': self.theme.font,
                     'focusthickness': 0,
-                    'focuscolor': '',
+                    'focuscolor': self.theme.colors.primary,
                     'padding': (10, 5)},
                 'map': {
                     'foreground': [
@@ -1553,7 +1561,7 @@ class StylerTTK:
                         'relief': 'raised',
                         'font': self.theme.font,
                         'focusthickness': 0,
-                        'focuscolor': '',
+                        'focuscolor': self.theme.colors.get(color),
                         'padding': (10, 5)},
                     'map': {
                         'foreground': [
@@ -2527,7 +2535,7 @@ class StylerTTK:
                     'arrowpadding': (0, 0, 15, 0),
                     'relief': 'raised',
                     'focusthickness': 0,
-                    'focuscolor': '',
+                    'focuscolor': self.theme.colors.selectfg,
                     'padding': (10, 5)},
                 'map': {
                     'arrowcolor': [
