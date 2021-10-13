@@ -825,7 +825,7 @@ class StylerTTK:
             disabled_fg = Colors.update_hsv(self.colors.inputbg, vd=-0.2)
             bordercolor = self.colors.border
         else:
-            disabled_fg = Colors.update_hsv(self.colors.inputbg, vd=-0.3)
+            disabled_fg = self.colors.selectbg
             bordercolor = self.colors.selectbg
 
         self.settings.update(
@@ -3087,7 +3087,7 @@ class StylerTTK:
             disabled_fg = Colors.update_hsv(self.colors.inputbg, vd=-0.2)
             bordercolor = self.colors.border
         else:
-            disabled_fg = Colors.update_hsv(self.colors.inputbg, vd=-0.3)
+            disabled_fg = self.colors.selectbg
             bordercolor = self.colors.selectbg
 
         self.settings.update(
