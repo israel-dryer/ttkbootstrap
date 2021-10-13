@@ -13,13 +13,13 @@ def create_frame_test(widget_style, style):
     title.pack(padx=5, pady=2, fill=tk.BOTH)
     ttk.Separator(frame).pack(padx=5, pady=5, fill=tk.X)
 
-    # default style
+    # default
     frm = ttk.Frame(frame, style=widget_style, width=200, height=100)
     frm.pack(padx=5, pady=5)
     frm.pack_propagate(0)
     ttk.Label(frm, text=widget_style).pack(fill=tk.BOTH)
 
-    # color styles
+    # color
     for color in style.theme.colors:
         frm_style = f'{color}.{widget_style}'
         frm = ttk.Frame(frame, style=frm_style, width=150, height=100)

@@ -13,11 +13,11 @@ def create_label_style(widget_style, style):
     title.pack(padx=5, pady=2, fill=tk.BOTH)
     ttk.Separator(frame).pack(padx=5, pady=5, fill=tk.X)
 
-    # default button
+    # default
     lbl = ttk.Label(frame, text=widget_style, style=widget_style)
     lbl.pack(padx=5, pady=5, fill=tk.BOTH)
 
-    # colored buttons
+    # colored 
     for color in style.colors:
         label_style = f'{color}.{widget_style}'
         lbl = ttk.Label(frame, text=label_style, style=label_style)

@@ -13,7 +13,7 @@ def create_notebook_frame(widget_style, style):
     title.pack(padx=5, pady=2, fill=tk.BOTH)
     ttk.Separator(frame).pack(padx=5, pady=5, fill=tk.X)
 
-    # default button
+    # default
     nb = ttk.Notebook(frame, style=widget_style, height=50, width=100)
     nb.pack(padx=5, pady=5, fill=tk.BOTH)
     for i, _ in enumerate(style.colors):

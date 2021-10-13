@@ -37,7 +37,7 @@ def create_checkbutton_test(widget_style, style):
 if __name__ == '__main__':
     # create visual widget style tests
     root = tk.Tk()
-    style = Style(theme=LIGHT)
+    style = Style(theme=DARK)
 
     test1 = create_checkbutton_test('TCheckbutton', style)
     test1.pack(side=tk.LEFT, fill=tk.BOTH)
