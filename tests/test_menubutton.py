@@ -13,17 +13,17 @@ def create_menubutton_frame(widget_style, style):
     title.pack(padx=5, pady=2, fill=tk.BOTH)
     ttk.Separator(frame).pack(padx=5, pady=5, fill=tk.X)
 
-    # default button
+    # default
     btn = ttk.Menubutton(frame, text=widget_style, style=widget_style)
     btn.pack(padx=5, pady=5, fill=tk.BOTH)
 
-    # colored buttons
+    # colored 
     for color in style.colors:
         button_style = f'{color}.{widget_style}'
         btn = ttk.Menubutton(frame, text=button_style, style=button_style)
         btn.pack(padx=5, pady=5, fill=tk.BOTH)
 
-    # disabled button
+    # disabled
     disabled_style = f'{widget_style} (disabled)'
     btn = ttk.Menubutton(frame, text=disabled_style, state=tk.DISABLED, 
                     style=widget_style)

@@ -13,13 +13,13 @@ def create_combobox_test(widget_style, style):
     title.pack(padx=5, pady=2, fill=tk.BOTH)
     ttk.Separator(frame).pack(padx=5, pady=5, fill=tk.X)
 
-    # default style
+    # default
     cbo = ttk.Combobox(frame, values=[widget_style, 'other'], 
                        style=widget_style)
     cbo.pack(padx=5, pady=5, fill=tk.BOTH)
     cbo.current(0)
 
-    # color styles
+    # color
     for color in style.theme.colors:
         cbo_style = f'{color}.{widget_style}'
         cbo = ttk.Combobox(frame, values=[cbo_style, 'other'], 
@@ -27,7 +27,7 @@ def create_combobox_test(widget_style, style):
         cbo.pack(padx=5, pady=5, fill=tk.BOTH)
         cbo.current(0)
 
-    # disabled style
+    # disabled
     cbo = ttk.Combobox(frame, values=[widget_style,'other'], 
                        style=widget_style, state=tk.DISABLED)
     cbo.pack(padx=5, pady=5, fill=tk.BOTH)

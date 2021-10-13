@@ -13,19 +13,19 @@ def create_entry_test(widget_style, style):
     title.pack(padx=5, pady=2, fill=tk.BOTH)
     ttk.Separator(frame).pack(padx=5, pady=5, fill=tk.X)
 
-    # default style
+    # default
     entry = ttk.Entry(frame, style=widget_style)
     entry.pack(padx=5, pady=5, fill=tk.BOTH)
     entry.insert('end', widget_style)
 
-    # color styles
+    # color
     for color in style.theme.colors:
         cbo_style = f'{color}.{widget_style}'
         entry = ttk.Entry(frame, style=cbo_style)
         entry.pack(padx=5, pady=5, fill=tk.BOTH)
         entry.insert('end', cbo_style)
 
-    # disabled style
+    # disabled 
     entry = ttk.Entry(frame, style=widget_style)
     entry.insert('end', widget_style)
     entry.configure(state=tk.DISABLED)
