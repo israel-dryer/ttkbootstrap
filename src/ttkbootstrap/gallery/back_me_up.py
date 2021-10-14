@@ -192,7 +192,7 @@ class BackMeUp(ttk.Frame):
         _func = lambda: showinfo(message='Stopping backup')
         btn = ttk.Button(status_frm, text='Stop', image='stop-backup-dark', 
                          compound=tk.LEFT, command=_func, 
-                        style='Link.TButton')
+                         style='Link.TButton')
         btn.grid(row=6, column=0, columnspan=2, sticky='w')
 
         ## section separator
@@ -247,7 +247,7 @@ class BackMeUp(ttk.Frame):
         st.pack(fill=tk.BOTH, expand=tk.YES)
         scroll_cf.add(output_container, textvariable='scroll-message')
 
-        # ----- seed with some sample data -----------------------------------------------------------------------------
+        # ----- seed with some sample data ----------------------------
 
         ## starting sample directory
         file_entry.insert('end', 'D:/text/myfiles/top-secret/samples/')
