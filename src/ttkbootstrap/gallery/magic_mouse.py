@@ -1,26 +1,29 @@
 """
     Author: Israel Dryer
-    Modified: 2021-04-13
+    Modified: 2021-10-14
     Adapted for ttkbootstrap from: https://magicutilities.net/magic-mouse/features
 """
-import tkinter
+from pathlib import Path
+import tkinter as tk
 from tkinter import PhotoImage
 from tkinter import ttk
 from tkinter.messagebox import showinfo
-
 from ttkbootstrap import Style
 
 
-class Application(tkinter.Tk):
+class Application(tk.Tk):
 
     def __init__(self):
         super().__init__()
         self.title('Magic Mouse')
-        self.style = Style('lumen')
+        self.style = Style('yeti')
+        
         self.window = ttk.Frame(self)
-        self.window.pack(fill='both', expand='yes')
+        self.window.pack(fill=tk.BOTH, expand=tk.YES)
+        
         self.nb = ttk.Notebook(self.window)
-        self.nb.pack(fill='both', expand='yes', padx=5, pady=5)
+        self.nb.pack(fill=tk.BOTH, expand=tk.YES, padx=5, pady=5)
+        
         mu = MouseUtilities(self.nb)
         self.nb.add(mu, text='Mouse 1')
 
@@ -33,214 +36,427 @@ class MouseUtilities(ttk.Frame):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        
+        _path = Path(__file__).parent / 'assets'
         self.images = {
-            'reset': PhotoImage(name='reset', file='assets/magic_mouse/icons8_reset_24px.png'),
-            'reset-small': PhotoImage(name='reset-small', file='assets/magic_mouse/icons8_reset_16px.png'),
-            'submit': PhotoImage(name='submit', file='assets/magic_mouse/icons8_submit_progress_24px.png'),
-            'question': PhotoImage(name='question', file='assets/magic_mouse/icons8_question_mark_16px.png'),
-            'direction': PhotoImage(name='direction', file='assets/magic_mouse/icons8_move_16px.png'),
-            'bluetooth': PhotoImage(name='bluetooth', file='assets/magic_mouse/icons8_bluetooth_2_16px.png'),
-            'buy': PhotoImage(name='buy', file='assets/magic_mouse/icons8_buy_26px_2.png'),
-            'mouse': PhotoImage(name='mouse', file='assets/magic_mouse/magic_mouse.png')
+            'reset': PhotoImage(
+                name='reset', 
+                file=_path / 'magic_mouse/icons8_reset_24px.png'),
+            'reset-small': PhotoImage(
+                name='reset-small', 
+                file=_path / 'magic_mouse/icons8_reset_16px.png'),
+            'submit': PhotoImage(
+                name='submit', 
+                file=_path / 'magic_mouse/icons8_submit_progress_24px.png'),
+            'question': PhotoImage(
+                name='question', 
+                file=_path / 'magic_mouse/icons8_question_mark_16px.png'),
+            'direction': PhotoImage(
+                name='direction', 
+                file=_path / 'magic_mouse/icons8_move_16px.png'),
+            'bluetooth': PhotoImage(
+                name='bluetooth', 
+                file=_path / 'magic_mouse/icons8_bluetooth_2_16px.png'),
+            'buy': PhotoImage(
+                name='buy', 
+                file=_path / 'magic_mouse/icons8_buy_26px_2.png'),
+            'mouse': PhotoImage(
+                name='mouse', 
+                file=_path / 'magic_mouse/magic_mouse.png')
         }
 
         for i in range(3):
             self.columnconfigure(i, weight=1)
         self.rowconfigure(0, weight=1)
 
-        # Column 1 =====================================================================================================
+        # Column 1 ====================================================
         col1 = ttk.Frame(self, padding=10)
-        col1.grid(row=0, column=0, sticky='news')
+        col1.grid(row=0, column=0, sticky=tk.NSEW)
 
-        ## device info -------------------------------------------------------------------------------------------------
+        ## device info ------------------------------------------------
         dev_info = ttk.Labelframe(col1, text='Device Info', padding=10)
-        dev_info.pack(side='top', fill='both', expand='yes')
+        dev_info.pack(side=tk.TOP, fill=tk.BOTH, expand=tk.YES)
 
         ### header
         dev_info_header = ttk.Frame(dev_info, padding=5)
-        dev_info_header.pack(fill='x')
-        ttk.Button(dev_info_header, image='reset', style='Link.TButton', command=self.callback).pack(side='left')
-        ttk.Label(dev_info_header, text='Model 2009, 2xAA Batteries').pack(side='left', fill='x', padx=15)
-        ttk.Button(dev_info_header, image='submit', style='Link.TButton', command=self.callback).pack(side='left')
+        dev_info_header.pack(fill=tk.X)
+        
+        btn = ttk.Button(
+            master=dev_info_header, 
+            image='reset', 
+            style='Link.TButton',
+            command=self.callback
+        )
+        btn.pack(side=tk.LEFT)
+        
+        lbl = ttk.Label(dev_info_header, text='Model 2009, 2xAA Batteries')
+        lbl.pack(side=tk.LEFT, fill=tk.X, padx=15)
+        
+        btn = ttk.Button(
+            master=dev_info_header, 
+            image='submit', 
+            style='Link.TButton', 
+            command=self.callback
+        )
+        btn.pack(side=tk.LEFT)
 
         ### image
-        ttk.Label(dev_info, image='mouse').pack(fill='x')
+        ttk.Label(dev_info, image='mouse').pack(fill=tk.X)
 
         ### progressbar
-        pb = ttk.Progressbar(dev_info, value=66)  # also used as a container for the % complete label
-        pb.pack(fill='x', pady=5, padx=5)
-        ttk.Label(pb, text='66%', style='primary.Invert.TLabel').pack()
+        pb = ttk.Progressbar(dev_info, value=66)
+        pb.pack(fill=tk.X, pady=5, padx=5)
+        ttk.Label(pb, text='66%', style='primary.Inverse.TLabel').pack()
 
         ### progress message
         self.setvar('progress', 'Battery is discharging.')
-        ttk.Label(dev_info, textvariable='progress', font='Helvetica 8', anchor='center').pack(fill='x')
+        lbl = ttk.Label(
+            master=dev_info, 
+            textvariable='progress', 
+            font='Helvetica 8', 
+            anchor=tk.CENTER
+        )
+        lbl.pack(fill=tk.X)
 
-        ## licence info ------------------------------------------------------------------------------------------------
+        ## licence info -----------------------------------------------
         lic_info = ttk.Labelframe(col1, text='License Info', padding=20)
-        lic_info.pack(side='top', fill='both', expand='yes', pady=(10, 0))
+        lic_info.pack(side=tk.TOP, fill=tk.BOTH, expand=tk.YES, pady=(10, 0))
         lic_info.rowconfigure(0, weight=1)
         lic_info.columnconfigure(0, weight=2)
-        lic_title = ttk.Label(lic_info, text='Trial Version, 28 days left', anchor='center')
-        lic_title.pack(fill='x', pady=(0, 20))
-        ttk.Label(lic_info, text='Mouse serial number:', anchor='center', font='Helvetica 8').pack(fill='x')
+        
+        lic_title = ttk.Label(
+            master=lic_info, 
+            text='Trial Version, 28 days left', 
+            anchor=tk.CENTER
+        )
+        lic_title.pack(fill=tk.X, pady=(0, 20))
+        
+        lbl = ttk.Label(
+            master=lic_info, 
+            text='Mouse serial number:', 
+            anchor=tk.CENTER, 
+            font='Helvetica 8'
+        )
+        lbl.pack(fill=tk.X)
         self.setvar('license', 'dtMM2-XYZGHIJKLMN3')
-        lic_num = ttk.Label(lic_info, textvariable='license', style='primary.TLabel', anchor='center')
-        lic_num.pack(fill='x', pady=(0, 20))
-        buy_now = ttk.Button(lic_info, image='buy', text='Buy now', compound='bottom', command=self.callback)
-        buy_now.pack(padx=10, fill='x')
+        
+        lic_num = ttk.Label(
+            master=lic_info, 
+            textvariable='license', 
+            style='primary.TLabel', 
+            anchor=tk.CENTER
+        )
+        lic_num.pack(fill=tk.X, pady=(0, 20))
+        
+        buy_now = ttk.Button(
+            master=lic_info, 
+            image='buy', 
+            text='Buy now', 
+            compound=tk.BOTTOM, 
+            command=self.callback
+        )
+        buy_now.pack(padx=10, fill=tk.X)
 
-        # Column 2 =====================================================================================================
+        # Column 2 ====================================================
         col2 = ttk.Frame(self, padding=10)
-        col2.grid(row=0, column=1, sticky='news')
+        col2.grid(row=0, column=1, sticky=tk.NSEW)
 
-        ## scrolling ---------------------------------------------------------------------------------------------------
+        ## scrolling --------------------------------------------------
         scrolling = ttk.Labelframe(col2, text='Scrolling', padding=(15, 10))
-        scrolling.pack(side='top', fill='both', expand='yes')
+        scrolling.pack(side=tk.TOP, fill=tk.BOTH, expand=tk.YES)
 
         op1 = ttk.Checkbutton(scrolling, text='Scrolling', variable='op1')
-        op1.pack(fill='x', pady=5)
+        op1.pack(fill=tk.X, pady=5)
 
         ### no horizontal scrolling
-        op2 = ttk.Checkbutton(scrolling, text='No horizontal scrolling', variable='op2')
-        op2.pack(fill='x', padx=(20, 0), pady=5)
-        ttk.Button(op2, image='question', style='Link.TButton', command=self.callback).pack(side='right')
+        op2 = ttk.Checkbutton(
+            master=scrolling, 
+            text='No horizontal scrolling', 
+            variable='op2'
+        )
+        op2.pack(fill=tk.X, padx=(20, 0), pady=5)
+        
+        btn = ttk.Button(
+            master=op2, 
+            image='question', 
+            style='Link.TButton', 
+            command=self.callback
+        )
+        btn.pack(side=tk.RIGHT)
 
         ### inverse
-        op3 = ttk.Checkbutton(scrolling, text='Inverse scroll directcion vertically', variable='op3')
-        op3.pack(fill='x', padx=(20, 0), pady=5)
-        ttk.Button(op3, image='direction', style='Link.TButton', command=self.callback).pack(side='right')
+        op3 = ttk.Checkbutton(
+            master=scrolling, 
+            text='Inverse scroll directcion vertically', 
+            variable='op3'
+        )
+        op3.pack(fill=tk.X, padx=(20, 0), pady=5)
+        
+        btn = ttk.Button(
+            master=op3, 
+            image='direction', 
+            style='Link.TButton', 
+            command=self.callback
+        )
+        btn.pack(side=tk.RIGHT)
 
         ### Scroll only vertical or horizontal
-        op4 = ttk.Checkbutton(scrolling, text='Scroll only vertical or horizontal', state='disabled')
+        op4 = ttk.Checkbutton(
+            master=scrolling, 
+            text='Scroll only vertical or horizontal', 
+            state=tk.DISABLED
+        )
         op4.configure(variable='op4')
-        op4.pack(fill='x', padx=(20, 0), pady=5)
+        op4.pack(fill=tk.X, padx=(20, 0), pady=5)
 
         ### smooth scrolling
-        op5 = ttk.Checkbutton(scrolling, text='Smooth scrolling', variable='op5')
-        op5.pack(fill='x', padx=(20, 0), pady=5)
-        ttk.Button(op5, image='bluetooth', style='Link.TButton', command=self.callback).pack(side='right')
+        op5 = ttk.Checkbutton(
+            master=scrolling, 
+            text='Smooth scrolling', 
+            variable='op5'
+        )
+        op5.pack(fill=tk.X, padx=(20, 0), pady=5)
+        
+        btn = ttk.Button(
+            master=op5, 
+            image='bluetooth', 
+            style='Link.TButton', 
+            command=self.callback
+        )
+        btn.pack(side=tk.RIGHT)
 
         ### scroll speed
         scroll_speed_frame = ttk.Frame(scrolling)
-        scroll_speed_frame.pack(fill='x', padx=(20, 0), pady=5)
-        ttk.Label(scroll_speed_frame, text='Speed:').pack(side='left')
-        ttk.Scale(scroll_speed_frame, value=35, from_=1, to=100).pack(side='left', fill='x', expand='yes', padx=5)
-        scroll_speed_btn = ttk.Button(scroll_speed_frame, image='reset-small', style='Link.TButton')
-        scroll_speed_btn.configure(command=self.callback)
-        scroll_speed_btn.pack(side='left')
+        scroll_speed_frame.pack(fill=tk.X, padx=(20, 0), pady=5)
+        
+        lbl = ttk.Label(scroll_speed_frame, text='Speed:')
+        lbl.pack(side=tk.LEFT)
+        
+        scale = ttk.Scale(scroll_speed_frame, value=35, from_=1, to=100)
+        scale.pack(side=tk.LEFT, fill=tk.X, expand=tk.YES, padx=5)
+        
+        scroll_speed_btn = ttk.Button(
+            master=scroll_speed_frame, 
+            image='reset-small', 
+            style='Link.TButton',
+            command=self.callback
+        )
+        scroll_speed_btn.pack(side=tk.LEFT)
 
         ### scroll sense
         scroll_sense_frame = ttk.Frame(scrolling)
-        scroll_sense_frame.pack(fill='x', padx=(20, 0), pady=(5, 0))
-        ttk.Label(scroll_sense_frame, text='Sense:').pack(side='left')
-        ttk.Scale(scroll_sense_frame, value=50, from_=1, to=100).pack(side='left', fill='x', expand='yes', padx=5)
-        scroll_sense_btn = ttk.Button(scroll_sense_frame, image='reset-small', style='Link.TButton')
-        scroll_sense_btn.configure(command=self.callback)
-        scroll_sense_btn.pack(side='left')
+        scroll_sense_frame.pack(fill=tk.X, padx=(20, 0), pady=(5, 0))
+        
+        ttk.Label(scroll_sense_frame, text='Sense:').pack(side=tk.LEFT)
+        
+        scale = ttk.Scale(scroll_sense_frame, value=50, from_=1, to=100)
+        scale.pack(side=tk.LEFT, fill=tk.X, expand=tk.YES, padx=5)
 
-        ## 1 finger gestures -------------------------------------------------------------------------------------------
-        finger_gest = ttk.Labelframe(col2, text='1 Finger Gestures', padding=(15, 10))
-        finger_gest.pack(side='top', fill='both', expand='yes', pady=(10, 0))
+        scroll_sense_btn = ttk.Button(
+            master=scroll_sense_frame, 
+            image='reset-small', 
+            style='Link.TButton', 
+            command=self.callback
+        )
+        scroll_sense_btn.pack(side=tk.LEFT)
 
-        op6 = ttk.Checkbutton(finger_gest, text='Fast swipe left/right to navigate back/forward', variable='op6')
-        op6.pack(fill='x', pady=5)
-        ttk.Checkbutton(finger_gest, text='Swap swipe direction', variable='op7').pack(fill='x', padx=(20, 0), pady=5)
+        ## 1 finger gestures ------------------------------------------
+        finger_gest = ttk.Labelframe(
+            master=col2, 
+            text='1 Finger Gestures', 
+            padding=(15, 10)
+        )
+        finger_gest.pack(
+            side=tk.TOP, 
+            fill=tk.BOTH, 
+            expand=tk.YES, 
+            pady=(10, 0)
+        )
+        op6 = ttk.Checkbutton(
+            master=finger_gest, 
+            text='Fast swipe left/right', 
+            variable='op6'
+        )
+        op6.pack(fill=tk.X, pady=5)
+        
+        cb = ttk.Checkbutton(
+            master=finger_gest, 
+            text='Swap swipe direction', 
+            variable='op7'
+        )
+        cb.pack(fill=tk.X, padx=(20, 0), pady=5)
 
         ### gest sense
         gest_sense_frame = ttk.Frame(finger_gest)
-        gest_sense_frame.pack(fill='x', padx=(20, 0), pady=(5, 0))
+        gest_sense_frame.pack(fill=tk.X, padx=(20, 0), pady=(5, 0))
 
-        ttk.Label(gest_sense_frame, text='Sense:').pack(side='left')
+        ttk.Label(gest_sense_frame, text='Sense:').pack(side=tk.LEFT)
 
-        ttk.Scale(gest_sense_frame, value=50, from_=1, to=100).pack(side='left', fill='x', expand='yes', padx=5)
+        scale = ttk.Scale(gest_sense_frame, value=50, from_=1, to=100)
+        scale.pack(side=tk.LEFT, fill=tk.X, expand=tk.YES, padx=5)
 
-        gest_sense_btn = ttk.Button(gest_sense_frame, image='reset-small', style='Link.TButton')
-        gest_sense_btn.configure(command=self.callback)
-        gest_sense_btn.pack(side='left')
+        btn = ttk.Button(gest_sense_frame, image='reset-small', 
+                         style='Link.TButton', command=self.callback)
+        btn.pack(side=tk.LEFT)
 
-        ## middle click ------------------------------------------------------------------------------------------------
-        middle_click = ttk.Labelframe(col2, text='Middle Click', padding=(15, 10))
-        middle_click.pack(side='top', fill='both', expand='yes', pady=(10, 0))
-
-        cbo = ttk.Combobox(middle_click, values=['Any 2 finger click', 'Other 1', 'Other 2'])
+        ## middle click -----------------------------------------------
+        middle_click = ttk.Labelframe(
+            master=col2, 
+            text='Middle Click', 
+            padding=(15, 10)
+        )
+        middle_click.pack(
+            side=tk.TOP, 
+            fill=tk.BOTH, 
+            expand=tk.YES, 
+            pady=(10, 0)
+        )
+        cbo = ttk.Combobox(
+            master=middle_click, 
+            values=['Any 2 finger', 'Other 1', 'Other 2']
+        )
         cbo.current(0)
-        cbo.pack(fill='x')
+        cbo.pack(fill=tk.X)
 
-        # Column 3 =====================================================================================================
+        # Column 3 ====================================================
         col3 = ttk.Frame(self, padding=10)
-        col3.grid(row=0, column=2, sticky='news')
+        col3.grid(row=0, column=2, sticky=tk.NSEW)
 
-        ## two finger gestures -----------------------------------------------------------------------------------------
-        two_finger_gest = ttk.Labelframe(col3, text='2 Finger Gestures', padding=10)
-        two_finger_gest.pack(side='top', fill='both')
+        ## two finger gestures ----------------------------------------
+        two_finger_gest = ttk.Labelframe(
+            master=col3, 
+            text='2 Finger Gestures', 
+            padding=10
+        )
+        two_finger_gest.pack(side=tk.TOP, fill=tk.BOTH)
 
-        op7 = ttk.Checkbutton(two_finger_gest, text='Fast swipe left/right to navigate back/forward', variable='op7')
-        op7.pack(fill='x', pady=5)
+        op7 = ttk.Checkbutton(
+            master=two_finger_gest, 
+            text='Fast swipe left/right', 
+            variable='op7'
+        )
+        op7.pack(fill=tk.X, pady=5)
 
-        op8 = ttk.Checkbutton(two_finger_gest, text='Swap swipe direction', variable='op8')
-        op8.pack(fill='x', padx=(20, 0), pady=5)
+        op8 = ttk.Checkbutton(
+            master=two_finger_gest, 
+            text='Swap swipe direction', 
+            variable='op8'
+        )
+        op8.pack(fill=tk.X, padx=(20, 0), pady=5)
 
         ### gest sense
         gest_sense_frame = ttk.Frame(two_finger_gest)
-        gest_sense_frame.pack(fill='x', padx=(20, 0), pady=(5, 0))
+        gest_sense_frame.pack(fill=tk.X, padx=(20, 0), pady=(5, 0))
 
-        ttk.Label(gest_sense_frame, text='Sense:').pack(side='left')
+        ttk.Label(gest_sense_frame, text='Sense:').pack(side=tk.LEFT)
 
-        ttk.Scale(gest_sense_frame, value=50, from_=1, to=100).pack(side='left', fill='x', expand='yes', padx=5)
+        scale = ttk.Scale(gest_sense_frame, value=50, from_=1, to=100)
+        scale.pack(side=tk.LEFT, fill=tk.X, expand=tk.YES, padx=5)
 
-        gest_sense_btn = ttk.Button(gest_sense_frame, image='reset-small', style='Link.TButton')
-        gest_sense_btn.configure(command=self.callback)
-        gest_sense_btn.pack(side='left')
+        btn = ttk.Button(
+            master=gest_sense_frame, 
+            image='reset-small', 
+            style='Link.TButton', 
+            command=self.callback
+        )
+        btn.pack(side=tk.LEFT)
 
         ### fast two finger swipe down
-        ttk.Label(two_finger_gest, text='On fast 2 finger up/down swipe:').pack(fill='x', pady=(10, 5))
+        lbl = ttk.Label(
+            master=two_finger_gest, 
+            text='On fast 2 finger up/down swipe:'
+        )
+        lbl.pack(fill=tk.X, pady=(10, 5))
 
-        op9 = ttk.Checkbutton(two_finger_gest, text='Swap swipe direction', variable='op9')
-        op9.pack(fill='x', padx=(20, 0), pady=5)
+        op9 = ttk.Checkbutton(
+            master=two_finger_gest, 
+            text='Swap swipe direction', 
+            variable='op9'
+        )
+        op9.pack(fill=tk.X, padx=(20, 0), pady=5)
 
-        op10 = ttk.Checkbutton(two_finger_gest, text='Swap swipe direction', variable='op10')
-        op10.pack(fill='x', padx=(20, 0), pady=5)
+        op10 = ttk.Checkbutton(
+            master=two_finger_gest, 
+            text='Swap swipe direction', 
+            variable='op10'
+        )
+        op10.pack(fill=tk.X, padx=(20, 0), pady=5)
 
-        two_finger_cbo = ttk.Combobox(two_finger_gest, values=['Cycle Task View | Normal | Desktop View'])
+        two_finger_cbo = ttk.Combobox(
+            master=two_finger_gest, 
+            values=['Cycle Task View | Normal | Desktop View']
+        )
         two_finger_cbo.current(0)
-        two_finger_cbo.pack(fill='x', padx=(20, 0), pady=5)
+        two_finger_cbo.pack(fill=tk.X, padx=(20, 0), pady=5)
 
         ### two finger sense
         two_finger_sense_frame = ttk.Frame(two_finger_gest)
-        two_finger_sense_frame.pack(fill='x', padx=(20, 0), pady=(5, 0))
+        two_finger_sense_frame.pack(fill=tk.X, padx=(20, 0), pady=(5, 0))
 
-        ttk.Label(two_finger_sense_frame, text='Sense:').pack(side='left')
+        ttk.Label(two_finger_sense_frame, text='Sense:').pack(side=tk.LEFT)
 
-        ttk.Scale(two_finger_sense_frame, value=50, from_=1, to=100).pack(side='left', fill='x', expand='yes', padx=5)
+        scale = ttk.Scale(two_finger_sense_frame, value=50, from_=1, to=100)
+        scale.pack(side=tk.LEFT, fill=tk.X, expand=tk.YES, padx=5)
 
-        two_finger_sense_btn = ttk.Button(two_finger_sense_frame, image='reset-small', style='Link.TButton')
+        two_finger_sense_btn = ttk.Button(
+            master=two_finger_sense_frame, 
+            image='reset-small', 
+            style='Link.TButton'
+        )
         two_finger_sense_btn.configure(command=self.callback)
-        two_finger_sense_btn.pack(side='left')
+        two_finger_sense_btn.pack(side=tk.LEFT)
 
-        ## mouse options -----------------------------------------------------------------------------------------------
-        mouse_options = ttk.Labelframe(col3, text='2 Finger Gestures', padding=(15, 10))
-        mouse_options.pack(side='top', fill='both', expand='yes', pady=(10, 0))
+        ## mouse options ----------------------------------------------
+        mouse_options = ttk.Labelframe(
+            master=col3, 
+            text='2 Finger Gestures', 
+            padding=(15, 10)
+        )
+        mouse_options.pack(
+            side=tk.TOP, 
+            fill=tk.BOTH, 
+            expand=tk.YES, 
+            pady=(10, 0)
+        )
 
-        op11 = ttk.Checkbutton(mouse_options, text='Ignore input if mouse if lifted', variable='op11')
-        op11.pack(fill='x', pady=5)
+        op11 = ttk.Checkbutton(
+            master=mouse_options, 
+            text='Ignore input if mouse if lifted', 
+            variable='op11'
+        )
+        op11.pack(fill=tk.X, pady=5)
 
-        op12 = ttk.Checkbutton(mouse_options, text='Ignore input if mouse if lifted', variable='op12')
-        op12.pack(fill='x', pady=5)
+        op12 = ttk.Checkbutton(
+            master=mouse_options, 
+            text='Ignore input if mouse if lifted', 
+            variable='op12'
+        )
+        op12.pack(fill=tk.X, pady=5)
 
-        op13 = ttk.Checkbutton(mouse_options, text='Ignore input if mouse if lifted', variable='op13')
-        op13.pack(fill='x', pady=5)
+        op13 = ttk.Checkbutton(
+            master=mouse_options, 
+            text='Ignore input if mouse if lifted', 
+            variable='op13'
+        )
+        op13.pack(fill=tk.X, pady=5)
 
         ### base speed
         base_speed_sense_frame = ttk.Frame(mouse_options)
-        base_speed_sense_frame.pack(fill='x', padx=(20, 0), pady=(5, 0))
+        base_speed_sense_frame.pack(fill=tk.X, padx=(20, 0), pady=(5, 0))
 
-        ttk.Label(base_speed_sense_frame, text='Base speed:').pack(side='left')
+        lbl = ttk.Label(base_speed_sense_frame, text='Base speed:')
+        lbl.pack(side=tk.LEFT)
 
-        ttk.Scale(base_speed_sense_frame, value=50, from_=1, to=100).pack(side='left', fill='x', expand='yes', padx=5)
+        scale = ttk.Scale(base_speed_sense_frame, value=50, from_=1, to=100)
+        scale.pack(side=tk.LEFT, fill=tk.X, expand=tk.YES, padx=5)
 
-        base_speed_sense_btn = ttk.Button(base_speed_sense_frame, image='reset-small', style='Link.TButton')
+        base_speed_sense_btn = ttk.Button(
+            master=base_speed_sense_frame, 
+            image='reset-small', 
+            style='Link.TButton'
+        )
         base_speed_sense_btn.configure(command=self.callback)
-        base_speed_sense_btn.pack(side='left')
+        base_speed_sense_btn.pack(side=tk.LEFT)
 
         # turn on all checkbuttons
         for i in range(1, 14):
