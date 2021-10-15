@@ -2525,144 +2525,6 @@ class StylerTTK:
                 }
             )
 
-    def _style_radiobutton(self):
-        """Create style configuration for ttk radiobutton"""
-        if self.is_light_theme:
-            disabled_fg = Colors.update_hsv(self.colors.inputbg, vd=-0.2)
-        else:
-            disabled_fg = self.colors.inputbg
-
-        self.theme_images.update(self._create_radiobutton_images("primary"))
-        self.settings.update(
-            {
-                "Radiobutton.indicator": {
-                    "element create": (
-                        "image",
-                        self.theme_images["primary_radio_on"],
-                        (
-                            "disabled",
-                            self.theme_images["primary_radio_disabled"],
-                        ),
-                        ("!selected", self.theme_images["primary_radio_off"]),
-                        {"width": 20, "border": 4, "sticky": "w"},
-                    )
-                },
-                "TRadiobutton": {
-                    "layout": [
-                        (
-                            "Radiobutton.padding",
-                            {
-                                "children": [
-                                    (
-                                        "Radiobutton.indicator",
-                                        {"side": "left", "sticky": ""},
-                                    ),
-                                    (
-                                        "Radiobutton.focus",
-                                        {
-                                            "children": [
-                                                (
-                                                    "Radiobutton.label",
-                                                    {"sticky": "nswe"},
-                                                )
-                                            ],
-                                            "side": "left",
-                                            "sticky": "",
-                                        },
-                                    ),
-                                ],
-                                "sticky": "nswe",
-                            },
-                        )
-                    ],
-                    "configure": {"font": self.theme.font},
-                    "map": {
-                        "foreground": [
-                            ("disabled", disabled_fg),
-                            ("active", self.colors.primary),
-                        ],
-                        "indicatorforeground": [
-                            ("disabled", disabled_fg),
-                            ("active selected !disabled", self.colors.primary),
-                        ],
-                    },
-                },
-            }
-        )
-
-        # variations change the indicator color
-        for color in self.colors:
-            self.theme_images.update(self._create_radiobutton_images(color))
-            self.settings.update(
-                {
-                    f"{color}.Radiobutton.indicator": {
-                        "element create": (
-                            "image",
-                            self.theme_images[f"{color}_radio_on"],
-                            (
-                                "disabled",
-                                self.theme_images[f"{color}_radio_disabled"],
-                            ),
-                            (
-                                "!selected",
-                                self.theme_images[f"{color}_radio_off"],
-                            ),
-                            {"width": 20, "border": 4, "sticky": "w"},
-                        )
-                    },
-                    f"{color}.TRadiobutton": {
-                        "layout": [
-                            (
-                                "Radiobutton.padding",
-                                {
-                                    "children": [
-                                        (
-                                            f"{color}.Radiobutton.indicator",
-                                            {"side": "left", "sticky": ""},
-                                        ),
-                                        (
-                                            "Radiobutton.focus",
-                                            {
-                                                "children": [
-                                                    (
-                                                        "Radiobutton.label",
-                                                        {"sticky": "nswe"},
-                                                    )
-                                                ],
-                                                "side": "left",
-                                                "sticky": "",
-                                            },
-                                        ),
-                                    ],
-                                    "sticky": "nswe",
-                                },
-                            )
-                        ],
-                        "configure": {"font": self.theme.font},
-                        "map": {
-                            "foreground": [
-                                ("disabled", disabled_fg),
-                                (
-                                    "active",
-                                    Colors.update_hsv(
-                                        self.colors.get(color), vd=-0.2
-                                    ),
-                                ),
-                            ],
-                            "indicatorforeground": [
-                                ("disabled", disabled_fg),
-                                (
-                                    "active selected !disabled",
-                                    Colors.update_hsv(
-                                        self.colors.get(color), vd=-0.2
-                                    ),
-                                ),
-                            ],
-                        },
-                    },
-                }
-            )
-
     def _create_radiobutton_images(self, colorname):
         """Create radiobutton assets
 
@@ -2673,15 +2535,19 @@ class StylerTTK:
 
         Returns
         -------
-        Tuple[PhotoImage]
-            A tuple of widget images.
+        List[str]
+            A list of photoimage names
         """
-        prime_color = self.colors.get(colorname)
+        if colorname == DEFAULT:
+            prime_color = self.colors.primary
+        else:
+            prime_color = self.colors.get(colorname)
+
         on_indicator = self.colors.selectfg
         on_fill = prime_color
         off_border = self.colors.selectbg
 
-        if self.theme.type == "light":
+        if self.is_light_theme:
             on_border = prime_color
             off_fill = self.colors.inputbg
             disabled = self.colors.border
@@ -2694,14 +2560,20 @@ class StylerTTK:
         radio_off = Image.new("RGBA", (134, 134))
         draw = ImageDraw.Draw(radio_off)
         draw.ellipse(
-            [2, 2, 132, 132], outline=off_border, width=3, fill=off_fill
+            xy=[2, 2, 132, 132], 
+            outline=off_border, 
+            width=3, 
+            fill=off_fill
         )
 
         # radio on
         radio_on = Image.new("RGBA", (134, 134))
         draw = ImageDraw.Draw(radio_on)
         draw.ellipse(
-            [2, 2, 132, 132], outline=on_border, width=12, fill=on_fill
+            xy=[2, 2, 132, 132], 
+            outline=on_border, 
+            width=12, 
+            fill=on_fill
         )
         draw.ellipse([40, 40, 94, 94], fill=on_indicator)
 
@@ -2709,20 +2581,65 @@ class StylerTTK:
         radio_disabled = Image.new("RGBA", (134, 134))
         draw = ImageDraw.Draw(radio_disabled)
         draw.ellipse(
-            [2, 2, 132, 132], outline=disabled, width=3, fill=off_fill
+            xy=[2, 2, 132, 132], 
+            outline=disabled, 
+            width=3, 
+            fill=off_fill
         )
 
-        return {
-            f"{colorname}_radio_off": ImageTk.PhotoImage(
-                radio_off.resize((14, 14), Image.LANCZOS)
-            ),
-            f"{colorname}_radio_on": ImageTk.PhotoImage(
-                radio_on.resize((14, 14), Image.LANCZOS)
-            ),
-            f"{colorname}_radio_disabled": ImageTk.PhotoImage(
-                radio_disabled.resize((14, 14), Image.LANCZOS)
-            ),
-        }
+        image_names = []
+
+        for image in [radio_on, radio_off, radio_disabled]:
+            _img = ImageTk.PhotoImage(image.resize((14, 14), Image.LANCZOS))
+            _name = _img._PhotoImage__photo.name
+            image_names.append(_name)
+            self.theme_images[_name] = _img
+
+        return image_names
+
+    def _style_radiobutton(self):
+        """Create style configuration for ttk radiobutton"""
+        
+        STYLE = 'TRadiobutton'
+
+        if self.is_light_theme:
+            disabled_fg = Colors.update_hsv(self.colors.inputbg, vd=-0.2)
+        else:
+            disabled_fg = self.colors.inputbg
+
+        for color in [DEFAULT, *self.colors]:
+            _on, _off, _disabled = self._create_radiobutton_images(color)
+            
+            if color == DEFAULT:
+                ttkstyle = STYLE
+                focuscolor = self.colors.primary
+            else:
+                ttkstyle = f'{color}.{STYLE}'
+                focuscolor = self.colors.get(color)
+
+            self.settings.update(
+                {
+                    f"{ttkstyle}.indicator": {
+                        "element create": (
+                            "image", _on, 
+                            ("disabled", _disabled),
+                            ("!selected", _off),
+                            {"width": 20, "border": 4, "sticky": tk.W})},
+                    ttkstyle: {
+                        "layout": [
+                            ("Radiobutton.padding", {"children": [
+                                (f"{ttkstyle}.indicator", 
+                                 {"side": tk.LEFT, "sticky": ""}),
+                                ("Radiobutton.focus", {"children": [
+                                    ("Radiobutton.label", 
+                                     {"sticky": tk.NSEW})],
+                                    "side": tk.LEFT, "sticky": ""})],
+                                    "sticky": tk.NSEW})],
+                        "configure": {"font": self.theme.font},
+                        "map": {
+                            "foreground": [
+                                ("disabled", disabled_fg),
+                                ("active", focuscolor)]}}})
 
     def _style_calendar(self):
         """Create style configuration for the date chooser"""
