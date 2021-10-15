@@ -1868,7 +1868,7 @@ class StylerTTK:
 
     def _style_solid_buttons(self):
         """Apply a solid color style to ttk button"""
-        # disabled settings
+
         if self.is_light_theme:
             disabled_fg = Colors.update_hsv(self.colors.inputbg, vd=-0.2)
             disabled_bg = Colors.update_hsv(self.colors.inputbg, vd=-0.2)
@@ -1876,165 +1876,57 @@ class StylerTTK:
             disabled_fg = Colors.update_hsv(self.colors.inputbg, vd=-0.3)
             disabled_bg = Colors.update_hsv(self.colors.inputbg, vd=-0.3)
 
-        # pressed and hover settings
-        pressed_vd = -0.2
-        hover_vd = -0.1
+        for color in ['default', *self.colors]:
+            if color == 'default':
+                background = self.colors.primary
+                ttkstyle = 'TButton'
+            else:
+                background = self.colors.get(color)
+                ttkstyle =f'{color}.TButton'
+            if self.is_light_theme:
+                pressed = Colors.update_hsv(background, vd=-0.2)
+                hover = Colors.update_hsv(background, vd=-0.1)
+            else:
+                pressed = Colors.update_hsv(background, vd=0.2)
+                hover = Colors.update_hsv(background, vd=0.1)
 
-        self.settings.update(
-            {
-                "TButton": {
-                    "configure": {
-                        "foreground": self.colors.selectfg,
-                        "background": self.colors.primary,
-                        "bordercolor": self.colors.primary,
-                        "darkcolor": self.colors.primary,
-                        "lightcolor": self.colors.primary,
-                        "font": self.theme.font,
-                        "anchor": "center",
-                        "relief": "raised",
-                        "focusthickness": 0,
-                        "focuscolor": self.colors.selectfg,
-                        "padding": (10, 5),
-                    },
-                    "map": {
-                        "foreground": [("disabled", self.colors.inputbg)],
-                        "background": [
-                            ("disabled", disabled_bg),
-                            (
-                                "pressed !disabled",
-                                Colors.update_hsv(
-                                    self.colors.primary, vd=pressed_vd
-                                ),
-                            ),
-                            (
-                                "hover !disabled",
-                                Colors.update_hsv(
-                                    self.colors.primary, vd=hover_vd
-                                ),
-                            ),
-                        ],
-                        "bordercolor": [
-                            ("disabled", disabled_bg),
-                            (
-                                "pressed !disabled",
-                                Colors.update_hsv(
-                                    self.colors.primary, vd=pressed_vd
-                                ),
-                            ),
-                            (
-                                "hover !disabled",
-                                Colors.update_hsv(
-                                    self.colors.primary, vd=hover_vd
-                                ),
-                            ),
-                        ],
-                        "darkcolor": [
-                            ("disabled", disabled_bg),
-                            (
-                                "pressed !disabled",
-                                Colors.update_hsv(
-                                    self.colors.primary, vd=pressed_vd
-                                ),
-                            ),
-                            (
-                                "hover !disabled",
-                                Colors.update_hsv(
-                                    self.colors.primary, vd=hover_vd
-                                ),
-                            ),
-                        ],
-                        "lightcolor": [
-                            ("disabled", disabled_bg),
-                            (
-                                "pressed !disabled",
-                                Colors.update_hsv(
-                                    self.colors.primary, vd=pressed_vd
-                                ),
-                            ),
-                            (
-                                "hover !disabled",
-                                Colors.update_hsv(
-                                    self.colors.primary, vd=hover_vd
-                                ),
-                            ),
-                        ],
-                    },
-                }
-            }
-        )
-
-        for color in self.colors:
             self.settings.update(
                 {
-                    f"{color}.TButton": {
+                    ttkstyle: {
                         "configure": {
                             "foreground": self.colors.selectfg,
-                            "background": self.colors.get(color),
-                            "bordercolor": self.colors.get(color),
-                            "darkcolor": self.colors.get(color),
-                            "lightcolor": self.colors.get(color),
-                            "relief": "raised",
+                            "background": background,
+                            "bordercolor": background,
+                            "darkcolor": background,
+                            "lightcolor": background,
+                            "relief": tk.RAISED,
                             "focusthickness": 0,
                             "focuscolor": self.colors.selectfg,
                             "padding": (10, 5),
+                            "anchor": tk.CENTER
                         },
                         "map": {
                             "foreground": [("disabled", disabled_fg)],
-                            "background": [
-                                ("disabled", disabled_bg),
-                                (
-                                    "pressed !disabled",
-                                    Colors.update_hsv(
-                                        self.colors.get(color), vd=pressed_vd
-                                    ),
-                                ),
-                                (
-                                    "hover !disabled",
-                                    Colors.update_hsv(
-                                        self.colors.get(color), vd=hover_vd
-                                    ),
-                                ),
-                            ],
-                            "bordercolor": [
-                                ("disabled", disabled_bg),
-                                (
-                                    "hover !disabled",
-                                    Colors.update_hsv(
-                                        self.colors.get(color), vd=hover_vd
-                                    ),
-                                ),
-                            ],
-                            "darkcolor": [
-                                ("disabled", disabled_bg),
-                                (
-                                    "pressed !disabled",
-                                    Colors.update_hsv(
-                                        self.colors.get(color), vd=pressed_vd
-                                    ),
-                                ),
-                                (
-                                    "hover !disabled",
-                                    Colors.update_hsv(
-                                        self.colors.get(color), vd=hover_vd
-                                    ),
-                                ),
-                            ],
-                            "lightcolor": [
-                                ("disabled", disabled_bg),
-                                (
-                                    "pressed !disabled",
-                                    Colors.update_hsv(
-                                        self.colors.get(color), vd=pressed_vd
-                                    ),
-                                ),
-                                (
-                                    "hover !disabled",
-                                    Colors.update_hsv(
-                                        self.colors.get(color), vd=hover_vd
-                                    ),
-                                ),
-                            ],
-                        },
+                        "background": [
+                            ("disabled", disabled_bg),
+                            ("pressed !disabled", pressed),
+                            ("hover !disabled", hover),
+                        ],
+                        "bordercolor": [
+                            ("disabled", disabled_bg),
+                            ("pressed !disabled",pressed),
+                            ("hover !disabled", hover),
+                        ],
+                        "darkcolor": [
+                            ("disabled", disabled_bg),
+                            ("pressed !disabled", pressed),
+                            ("hover !disabled", hover)
+                        ],
+                        "lightcolor": [
+                            ("disabled", disabled_bg),
+                            ("pressed !disabled", pressed),
+                            ("hover !disabled", hover)
+                        ]}
                     }
                 }
             )
@@ -2048,90 +1940,35 @@ class StylerTTK:
         else:
             disabled_fg = self.colors.inputbg
 
-        # pressed and hover settings
-        pressed_vd = -0.10
+        for color in ['default', *self.colors]:
+            if color == 'default':
+                foreground = self.colors.primary
+                ttkstyle = 'Outline.TButton'
+            else:
+                foreground = self.colors.get(color)
+                ttkstyle = f'{color}.Outline.TButton'
 
-        self.settings.update(
-            {
-                "Outline.TButton": {
-                    "configure": {
-                        "foreground": self.colors.primary,
-                        "background": self.colors.bg,
-                        "bordercolor": self.colors.primary,
-                        "darkcolor": self.colors.bg,
-                        "lightcolor": self.colors.bg,
-                        "relief": "raised",
-                        "font": self.theme.font,
-                        "focusthickness": 0,
-                        "focuscolor": self.colors.primary,
-                        "padding": (10, 5),
-                    },
-                    "map": {
-                        "foreground": [
-                            ("disabled", disabled_fg),
-                            ("pressed !disabled", self.colors.selectfg),
-                            ("hover !disabled", self.colors.selectfg),
-                        ],
-                        "background": [
-                            (
-                                "pressed !disabled",
-                                Colors.update_hsv(
-                                    self.colors.primary, vd=pressed_vd
-                                ),
-                            ),
-                            ("hover !disabled", self.colors.primary),
-                        ],
-                        "bordercolor": [
-                            ("disabled", disabled_fg),
-                            (
-                                "pressed !disabled",
-                                Colors.update_hsv(
-                                    self.colors.primary, vd=pressed_vd
-                                ),
-                            ),
-                            ("hover !disabled", self.colors.primary),
-                        ],
-                        "focuscolor": [
-                            ("pressed !disabled", self.colors.selectfg),
-                            ("hover !disabled", self.colors.selectfg),
-                        ],
-                        "darkcolor": [
-                            (
-                                "pressed !disabled",
-                                Colors.update_hsv(
-                                    self.colors.primary, vd=pressed_vd
-                                ),
-                            ),
-                            ("hover !disabled", self.colors.primary),
-                        ],
-                        "lightcolor": [
-                            (
-                                "pressed !disabled",
-                                Colors.update_hsv(
-                                    self.colors.primary, vd=pressed_vd
-                                ),
-                            ),
-                            ("hover !disabled", self.colors.primary),
-                        ],
-                    },
-                }
-            }
-        )
+            if self.is_light_theme:
+                pressed = Colors.update_hsv(foreground, vd=-0.1)
+                hover = Colors.update_hsv(foreground, vd=-0.2)
+            else:
+                pressed = Colors.update_hsv(foreground, vd=0.1)
+                hover = Colors.update_hsv(foreground, vd=0.2)
 
-        for color in self.colors:
             self.settings.update(
                 {
-                    f"{color}.Outline.TButton": {
+                    ttkstyle: {
                         "configure": {
-                            "foreground": self.colors.get(color),
+                            "foreground": foreground,
                             "background": self.colors.bg,
-                            "bordercolor": self.colors.get(color),
+                            "bordercolor": foreground,
                             "darkcolor": self.colors.bg,
                             "lightcolor": self.colors.bg,
-                            "relief": "raised",
+                            "relief": tk.RAISED,
                             "focusthickness": 0,
-                            "focuscolor": self.colors.get(color),
+                            "focuscolor": foreground,
                             "padding": (10, 5),
+                            "anchor": tk.CENTER
                         },
                         "map": {
                             "foreground": [
@@ -2140,45 +1977,25 @@ class StylerTTK:
                                 ("hover !disabled", self.colors.selectfg),
                             ],
                             "background": [
-                                (
-                                    "pressed !disabled",
-                                    Colors.update_hsv(
-                                        self.colors.get(color), vd=pressed_vd
-                                    ),
-                                ),
-                                ("hover !disabled", self.colors.get(color)),
+                                ("pressed !disabled", pressed),
+                                ("hover !disabled", hover),
                             ],
                             "bordercolor": [
                                 ("disabled", disabled_fg),
-                                (
-                                    "pressed !disabled",
-                                    Colors.update_hsv(
-                                        self.colors.get(color), vd=pressed_vd
-                                    ),
-                                ),
-                                ("hover !disabled", self.colors.get(color)),
+                                ("pressed !disabled", pressed),
+                                ("hover !disabled", hover),
                             ],
                             "focuscolor": [
                                 ("pressed !disabled", self.colors.selectfg),
                                 ("hover !disabled", self.colors.selectfg),
                             ],
                             "darkcolor": [
-                                (
-                                    "pressed !disabled",
-                                    Colors.update_hsv(
-                                        self.colors.get(color), vd=pressed_vd
-                                    ),
-                                ),
-                                ("hover !disabled", self.colors.get(color)),
+                                ("pressed !disabled", pressed),
+                                ("hover !disabled", hover),
                             ],
                             "lightcolor": [
-                                (
-                                    "pressed !disabled",
-                                    Colors.update_hsv(
-                                        self.colors.get(color), vd=pressed_vd
-                                    ),
-                                ),
-                                ("hover !disabled", self.colors.get(color)),
+                                ("pressed !disabled", pressed),
+                                ("hover !disabled", hover),
                             ],
                         },
                     }
