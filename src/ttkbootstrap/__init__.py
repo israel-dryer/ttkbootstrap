@@ -52,6 +52,8 @@ from ttkbootstrap.user_defined import USER_DEFINED
 from PIL import ImageTk, Image, ImageDraw, ImageFont
 import warnings
 
+DEFAULT = 'default'
+
 
 class Style(ttk.Style):
     """A class for setting the application style.
@@ -1868,6 +1870,8 @@ class StylerTTK:
 
     def _style_solid_buttons(self):
         """Apply a solid color style to ttk button"""
+        
+        STYLE = 'TButton'
 
         if self.is_light_theme:
             disabled_fg = Colors.update_hsv(self.colors.inputbg, vd=-0.2)
@@ -1876,13 +1880,13 @@ class StylerTTK:
             disabled_fg = Colors.update_hsv(self.colors.inputbg, vd=-0.3)
             disabled_bg = Colors.update_hsv(self.colors.inputbg, vd=-0.3)
 
-        for color in ['default', *self.colors]:
-            if color == 'default':
+        for color in [DEFAULT, *self.colors]:
+            if color == DEFAULT:
                 background = self.colors.primary
-                ttkstyle = 'TButton'
+                ttkstyle = STYLE
             else:
                 background = self.colors.get(color)
-                ttkstyle =f'{color}.TButton'
+                ttkstyle =f'{color}.{STYLE}'
             if self.is_light_theme:
                 pressed = Colors.update_hsv(background, vd=-0.2)
                 hover = Colors.update_hsv(background, vd=-0.1)
@@ -1935,18 +1939,20 @@ class StylerTTK:
         """Apply an outline style to ttk button. This button has a 
         solid button look on focus and hover.
         """
+        STYLE = 'Outline.TButton'
+
         if self.is_light_theme:
             disabled_fg = Colors.update_hsv(self.colors.inputbg, vd=-0.2)
         else:
             disabled_fg = self.colors.inputbg
 
-        for color in ['default', *self.colors]:
-            if color == 'default':
+        for color in [DEFAULT, *self.colors]:
+            if color == DEFAULT:
                 foreground = self.colors.primary
-                ttkstyle = 'Outline.TButton'
+                ttkstyle = STYLE
             else:
                 foreground = self.colors.get(color)
-                ttkstyle = f'{color}.Outline.TButton'
+                ttkstyle = f'{color}.{STYLE}'
 
             if self.is_light_theme:
                 pressed = Colors.update_hsv(foreground, vd=-0.1)
@@ -2004,103 +2010,45 @@ class StylerTTK:
 
     def _style_link_buttons(self):
         """Apply a solid color style to ttk button"""
-        # disabled settings
+        
+        STYLE = 'Link.TButton'
+
+        pressed = self.colors.info
+        hover = self.colors.info
+
         if self.is_light_theme:
             disabled_fg = Colors.update_hsv(self.colors.inputbg, vd=-0.2)
         else:
             disabled_fg = self.colors.inputbg
 
-        # pressed and hover settings
-        pressed_vd = 0
-        hover_vd = 0
-
-        self.settings.update(
-            {
-                "Link.TButton": {
-                    "configure": {
-                        "foreground": self.colors.fg,
-                        "background": self.colors.bg,
-                        "bordercolor": self.colors.bg,
-                        "darkcolor": self.colors.bg,
-                        "lightcolor": self.colors.bg,
-                        "relief": "raised",
-                        "font": self.theme.font,
-                        "focusthickness": 0,
-                        "focuscolor": self.colors.primary,
-                        "padding": (10, 5),
-                    },
-                    "map": {
-                        "foreground": [
-                            ("disabled", disabled_fg),
-                            (
-                                "pressed !disabled",
-                                Colors.update_hsv(
-                                    self.colors.info, vd=pressed_vd
-                                ),
-                            ),
-                            (
-                                "hover !disabled",
-                                Colors.update_hsv(
-                                    self.colors.info, vd=hover_vd
-                                ),
-                            ),
-                        ],
-                        "shiftrelief": [("pressed !disabled", -1)],
-                        "background": [
-                            ("pressed !disabled", self.colors.bg),
-                            ("hover !disabled", self.colors.bg),
-                        ],
-                        "bordercolor": [
-                            ("disabled", self.colors.bg),
-                            ("pressed !disabled", self.colors.bg),
-                            ("hover !disabled", self.colors.bg),
-                        ],
-                        "darkcolor": [
-                            ("disabled", self.colors.bg),
-                            ("pressed !disabled", self.colors.bg),
-                            ("hover !disabled", self.colors.bg),
-                        ],
-                        "lightcolor": [
-                            ("disabled", self.colors.bg),
-                            ("pressed !disabled", self.colors.bg),
-                            ("hover !disabled", self.colors.bg),
-                        ],
-                    },
-                }
-            }
-        )
-
-        for color in self.colors:
+        for color in [DEFAULT, *self.colors]:
+            if color == DEFAULT:
+                foreground = self.colors.fg
+                ttkstyle = STYLE
+            else:
+                foreground = self.colors.get(color)
+                ttkstyle = f'{color}.{STYLE}'
+            
             self.settings.update(
                 {
-                    f"{color}.Link.TButton": {
+                    ttkstyle: {
                         "configure": {
-                            "foreground": self.colors.get(color),
+                            "foreground": foreground,
                             "background": self.colors.bg,
                             "bordercolor": self.colors.bg,
                             "darkcolor": self.colors.bg,
                             "lightcolor": self.colors.bg,
-                            "relief": "raised",
+                            "relief": tk.RAISED,
                             "font": self.theme.font,
                             "focusthickness": 0,
-                            "focuscolor": self.colors.get(color),
+                            "focuscolor": foreground,
                             "padding": (10, 5),
                         },
                         "map": {
                             "foreground": [
                                 ("disabled", disabled_fg),
-                                (
-                                    "pressed !disabled",
-                                    Colors.update_hsv(
-                                        self.colors.info, vd=pressed_vd
-                                    ),
-                                ),
-                                (
-                                    "hover !disabled",
-                                    Colors.update_hsv(
-                                        self.colors.info, vd=hover_vd
-                                    ),
-                                ),
+                                ("pressed !disabled", pressed),
+                                ("hover !disabled", hover)
                             ],
                             "shiftrelief": [("pressed !disabled", -1)],
                             "background": [
@@ -2139,10 +2087,13 @@ class StylerTTK:
 
         Returns
         -------
-        Tuple[PhotoImage]
-            A tuple of images (toggle_on, toggle_off, toggle_disabled)
+        List[str]
+            A list of tkinter image names
         """
-        prime_color = self.colors.get(colorname)
+        if colorname == DEFAULT:
+            prime_color = self.colors.primary
+        else:
+            prime_color = self.colors.get(colorname)
         on_border = prime_color
         on_indicator = prime_color
         on_fill = self.colors.bg
@@ -2184,17 +2135,14 @@ class StylerTTK:
         draw.rectangle([1, 1, 225, 129], outline=disabled_fg, width=6)
         draw.rectangle([18, 18, 110, 110], fill=disabled_fg)
 
-        images = {}
-        images[f"{colorname}_squaretoggle_on"] = ImageTk.PhotoImage(
-            toggle_on.resize((24, 15), Image.LANCZOS)
-        )
-        images[f"{colorname}_squaretoggle_off"] = ImageTk.PhotoImage(
-            toggle_off.resize((24, 15), Image.LANCZOS)
-        )
-        images[f"{colorname}_squaretoggle_disabled"] = ImageTk.PhotoImage(
-            toggle_disabled.resize((24, 15), Image.LANCZOS)
-        )
-        return images
+        image_names = []
+        for im in [toggle_on, toggle_off, toggle_disabled]:
+            _im = ImageTk.PhotoImage(im.resize((24, 15), Image.LANCZOS))
+            _name = _im._PhotoImage__photo.name
+            image_names.append(_name)
+            self.theme_images[_name] = _im
+        
+        return image_names
 
     def _create_roundtoggle_image(self, colorname):
         """Create a set of images for the rounded toggle button and 
@@ -2207,9 +2155,14 @@ class StylerTTK:
 
         Returns
         -------
-        Tuple[PhotoImage]
+        List[str]
+            A list of tkinter image names
         """
-        prime_color = self.colors.get(colorname)
+        if colorname == DEFAULT:
+            prime_color = self.colors.primary
+        else:
+            prime_color = self.colors.get(colorname)
+        
         on_border = prime_color
         on_indicator = self.colors.selectfg
         on_fill = prime_color
@@ -2257,306 +2210,125 @@ class StylerTTK:
         )
         draw.ellipse([20, 18, 112, 110], fill=disabled_fg)
 
-        images = {}
-        images[f"{colorname}_roundtoggle_on"] = ImageTk.PhotoImage(
-            toggle_on.resize((24, 15), Image.LANCZOS)
-        )
-        images[f"{colorname}_roundtoggle_off"] = ImageTk.PhotoImage(
-            toggle_off.resize((24, 15), Image.LANCZOS)
-        )
-        images[f"{colorname}_roundtoggle_disabled"] = ImageTk.PhotoImage(
-            toggle_disabled.resize((24, 15), Image.LANCZOS)
-        )
-        return images
+        image_names = []
+        for im in [toggle_on, toggle_off, toggle_disabled]:
+            _im = ImageTk.PhotoImage(im.resize((24, 15), Image.LANCZOS))
+            _name = _im._PhotoImage__photo.name
+            image_names.append(_name)
+            self.theme_images[_name] = _im
+        
+        return image_names
 
     def _style_roundtoggle_toolbutton(self):
         """Apply a rounded toggle switch style to ttk widgets that accept 
         the toolbutton style (for example, a checkbutton: *ttk.Checkbutton*)
         """
-        self.theme_images.update(self._create_roundtoggle_image("primary"))
+        STYLE = 'Roundtoggle.Toolbutton'
 
         if self.is_light_theme:
             disabled_fg = Colors.update_hsv(self.colors.inputbg, vd=-0.2)
         else:
             disabled_fg = self.colors.inputbg
 
-        # create indicator element
-        self.settings.update(
-            {
-                "Roundtoggle.Toolbutton.indicator": {
-                    "element create": (
-                        "image",
-                        self.theme_images["primary_roundtoggle_on"],
-                        (
-                            "disabled",
-                            self.theme_images["primary_roundtoggle_disabled"],
-                        ),
-                        (
-                            "!selected",
-                            self.theme_images["primary_roundtoggle_off"],
-                        ),
-                        {"width": 28, "border": 4, "sticky": "w"},
-                    )
-                },
-                "Roundtoggle.Toolbutton": {
-                    "layout": [
-                        (
-                            "Toolbutton.border",
-                            {
-                                "sticky": "nswe",
-                                "children": [
-                                    (
-                                        "Toolbutton.padding",
-                                        {
-                                            "sticky": "nswe",
-                                            "children": [
-                                                (
-                                                    "Roundtoggle.Toolbutton.indicator",
-                                                    {"side": "left"},
-                                                ),
-                                                (
-                                                    "Toolbutton.label",
-                                                    {"side": "left"},
-                                                ),
-                                            ],
-                                        },
-                                    )
-                                ],
-                            },
-                        )
-                    ],
-                    "configure": {
-                        "relief": "flat",
-                        "borderwidth": 0,
-                        "foreground": self.colors.fg,
-                    },
-                    "map": {
-                        "foreground": [
-                            ("disabled", disabled_fg),
-                            ("hover", self.colors.primary),
-                        ],
-                        "background": [
-                            ("selected", self.colors.bg),
-                            ("!selected", self.colors.bg),
-                        ],
-                    },
-                },
-            }
-        )
+        for color in [DEFAULT, *self.colors]:
+            
+            _on, _off, _disabled = self._create_roundtoggle_image(color)
 
-        # color variations
-        for color in self.colors:
-            self.theme_images.update(self._create_roundtoggle_image(color))
+            if color == DEFAULT:
+                ttkstyle = STYLE
+                indicatorcolor = self.colors.primary
+            else:
+                ttkstyle = f"{color}.{STYLE}"
+                indicatorcolor = self.colors.get(color)
 
-            # create indicator element
             self.settings.update(
                 {
-                    f"{color}.Roundtoggle.Toolbutton.indicator": {
-                        "element create": (
-                            "image",
-                            self.theme_images[f"{color}_roundtoggle_on"],
-                            (
-                                "disabled",
-                                self.theme_images[
-                                    f"{color}_roundtoggle_disabled"
-                                ],
-                            ),
-                            (
-                                "!selected",
-                                self.theme_images[f"{color}_roundtoggle_off"],
-                            ),
-                            {"width": 28, "border": 4, "sticky": "w"},
-                        )
-                    },
-                    f"{color}.Roundtoggle.Toolbutton": {
+                    f"{ttkstyle}.indicator": {
+                        "element create": ("image", _on,
+                            ("disabled", _disabled),
+                            ("!selected", _off),
+                            {"width": 28, "border": 4, "sticky": "w"})},
+                    ttkstyle: {
                         "layout": [
-                            (
-                                "Toolbutton.border",
-                                {
-                                    "sticky": "nswe",
-                                    "children": [
-                                        (
-                                            "Toolbutton.padding",
-                                            {
-                                                "sticky": "nswe",
-                                                "children": [
-                                                    (
-                                                        f"{color}.Roundtoggle.Toolbutton.indicator",
-                                                        {"side": "left"},
-                                                    ),
-                                                    (
-                                                        "Toolbutton.label",
-                                                        {"side": "left"},
-                                                    ),
-                                                ],
-                                            },
-                                        )
-                                    ],
-                                },
-                            )
-                        ],
+                            ("Toolbutton.border", {
+                                "sticky": tk.NSEW,
+                                "children": [
+                                    ("Toolbutton.padding", {
+                                        "sticky": tk.NSEW,
+                                        "children": [
+                                            (f"{ttkstyle}.indicator",
+                                             {"side": tk.LEFT}),
+                                            ("Toolbutton.label",
+                                             {"side": tk.LEFT})]})]})],
                         "configure": {
-                            "relief": "flat",
+                            "relief": tk.FLAT,
                             "borderwidth": 0,
                             "foreground": self.colors.fg,
                         },
                         "map": {
                             "foreground": [
                                 ("disabled", disabled_fg),
-                                ("hover", self.colors.get(color)),
+                                ("hover", indicatorcolor),
                             ],
                             "background": [
                                 ("selected", self.colors.bg),
-                                ("!selected", self.colors.bg),
-                            ],
-                        },
-                    },
-                }
-            )
+                                ("!selected", self.colors.bg)]}}})
 
     def _style_squaretoggle_toolbutton(self):
         """Apply a square toggle switch style to ttk widgets that 
         accept the toolbutton style
         """
-        self.theme_images.update(self._create_squaretoggle_image("primary"))
+        STYLE = 'Squaretoggle.Toolbutton'
+        
         if self.is_light_theme:
             disabled_fg = Colors.update_hsv(self.colors.inputbg, vd=-0.2)
         else:
             disabled_fg = self.colors.inputbg
 
-        # create indicator element
-        self.settings.update(
-            {
-                "Squaretoggle.Toolbutton.indicator": {
-                    "element create": (
-                        "image",
-                        self.theme_images["primary_squaretoggle_on"],
-                        (
-                            "disabled",
-                            self.theme_images["primary_squaretoggle_disabled"],
-                        ),
-                        (
-                            "!selected",
-                            self.theme_images["primary_squaretoggle_off"],
-                        ),
-                        {"width": 28, "border": 4, "sticky": "w"},
-                    )
-                },
-                "Squaretoggle.Toolbutton": {
-                    "layout": [
-                        (
-                            "Toolbutton.border",
-                            {
-                                "sticky": "nswe",
-                                "children": [
-                                    (
-                                        "Toolbutton.padding",
-                                        {
-                                            "sticky": "nswe",
-                                            "children": [
-                                                (
-                                                    "Squaretoggle.Toolbutton.indicator",
-                                                    {"side": "left"},
-                                                ),
-                                                (
-                                                    "Toolbutton.label",
-                                                    {"side": "left"},
-                                                ),
-                                            ],
-                                        },
-                                    )
-                                ],
-                            },
-                        )
-                    ],
-                    "configure": {
-                        "relief": "flat",
-                        "borderwidth": 0,
-                        "foreground": self.colors.fg,
-                    },
-                    "map": {
-                        "foreground": [
-                            ("disabled", disabled_fg),
-                            ("hover", self.colors.primary),
-                        ],
-                        "background": [
-                            ("selected", self.colors.bg),
-                            ("!selected", self.colors.bg),
-                        ],
-                    },
-                },
-            }
-        )
-
         # color variations
-        for color in self.colors:
-            self.theme_images.update(self._create_squaretoggle_image(color))
+        for color in [DEFAULT, *self.colors]:
+            
+            _on, _off, _disabled = self._create_squaretoggle_image(color)
+            
+            if color == DEFAULT:
+                ttkstyle = STYLE
+                indicatorcolor = self.colors.primary
+            else:
+                ttkstyle = f'{color}.{STYLE}'
+                indicatorcolor = self.colors.get(color)
 
             # create indicator element
             self.settings.update(
                 {
-                    f"{color}.Squaretoggle.Toolbutton.indicator": {
-                        "element create": (
-                            "image",
-                            self.theme_images[f"{color}_squaretoggle_on"],
-                            (
-                                "disabled",
-                                self.theme_images[
-                                    f"{color}_squaretoggle_disabled"
-                                ],
-                            ),
-                            (
-                                "!selected",
-                                self.theme_images[f"{color}_squaretoggle_off"],
-                            ),
-                            {"width": 28, "border": 4, "sticky": "w"},
-                        )
-                    },
-                    f"{color}.Squaretoggle.Toolbutton": {
+                    f"{ttkstyle}.indicator": {
+                        "element create": ("image", _on, 
+                            ("disabled", _disabled),
+                            ("!selected", _off),
+                            {"width": 28, "border": 4, "sticky": tk.W})},
+                    ttkstyle: {
                         "layout": [
-                            (
-                                "Toolbutton.border",
-                                {
-                                    "sticky": "nswe",
+                            ("Toolbutton.border", {
+                                    "sticky": tk.NSEW,
                                     "children": [
-                                        (
-                                            "Toolbutton.padding",
-                                            {
-                                                "sticky": "nswe",
-                                                "children": [
-                                                    (
-                                                        f"{color}.Squaretoggle.Toolbutton.indicator",
-                                                        {"side": "left"},
-                                                    ),
-                                                    (
-                                                        "Toolbutton.label",
-                                                        {"side": "left"},
-                                                    ),
-                                                ],
-                                            },
-                                        )
-                                    ],
-                                },
-                            )
-                        ],
+                                        ("Toolbutton.padding", {
+                                            "sticky": tk.NSEW,
+                                            "children": [
+                                                (f"{ttkstyle}.indicator", 
+                                                 {"side": tk.LEFT}),
+                                                ("Toolbutton.label",
+                                                 {"side": "left"})]})]})],
                         "configure": {
-                            "relief": "flat",
+                            "relief": tk.FLAT,
                             "borderwidth": 0,
-                            "foreground": self.colors.fg,
-                        },
+                            "foreground": self.colors.fg},
                         "map": {
                             "foreground": [
                                 ("disabled", disabled_fg),
-                                ("hover", self.colors.get(color)),
+                                ("hover", indicatorcolor),
                             ],
                             "background": [
                                 ("selected", self.colors.bg),
-                                ("!selected", self.colors.bg),
-                            ],
-                        },
-                    },
-                }
-            )
+                                ("!selected", self.colors.bg)]}}})
 
     def _style_solid_toolbutton(self):
         """Apply a solid color style to ttk widgets that use the 
