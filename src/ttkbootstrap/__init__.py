@@ -2334,100 +2334,39 @@ class StylerTTK:
         """Apply a solid color style to ttk widgets that use the 
         Toolbutton style.
         """
-        # disabled settings
+        STYLE = 'Toolbutton'
+
         if self.is_light_theme:
-            disabled_fg = self.colors.inputbg
-            disabled_bg = Colors.update_hsv(self.colors.inputbg, vd=-0.2)
+            disabled_fg = self.colors.selectbg
+            disabled_bg = Colors.update_hsv(self.colors.inputbg, sd=0.3)
         else:
-            disabled_fg = self.colors.inputbg
-            disabled_bg = Colors.update_hsv(self.colors.inputbg, vd=-0.3)
+            disabled_fg = self.colors.selectbg
+            disabled_bg = Colors.update_hsv(self.colors.inputbg, sd=-0.3)
 
-        # pressed and hover settings
-        normal_sd = -0.5
-        normal_vd = 0.1
+        for color in [DEFAULT, *self.colors]:
 
-        self.settings.update(
-            {
-                "Toolbutton": {
-                    "configure": {
-                        "foreground": self.colors.selectfg,
-                        "background": Colors.update_hsv(
-                            self.colors.primary, sd=normal_sd, vd=normal_vd
-                        ),
-                        "bordercolor": Colors.update_hsv(
-                            self.colors.primary, sd=normal_sd, vd=normal_vd
-                        ),
-                        "darkcolor": Colors.update_hsv(
-                            self.colors.primary, sd=normal_sd, vd=normal_vd
-                        ),
-                        "lightcolor": Colors.update_hsv(
-                            self.colors.primary, sd=normal_sd, vd=normal_vd
-                        ),
-                        "font": self.theme.font,
-                        "anchor": "center",
-                        "relief": "raised",
-                        "focusthickness": 0,
-                        "focuscolor": "",
-                        "padding": (10, 5),
-                    },
-                    "map": {
-                        "foreground": [("disabled", disabled_fg)],
-                        "background": [
-                            ("disabled", disabled_bg),
-                            ("pressed !disabled", self.colors.primary),
-                            ("selected !disabled", self.colors.primary),
-                            ("hover !disabled", self.colors.primary),
-                        ],
-                        "bordercolor": [
-                            ("disabled", disabled_bg),
-                            ("selected !disabled", self.colors.primary),
-                            ("pressed !disabled", self.colors.primary),
-                            ("hover !disabled", self.colors.primary),
-                        ],
-                        "darkcolor": [
-                            ("disabled", disabled_bg),
-                            ("pressed !disabled", self.colors.primary),
-                            ("selected !disabled", self.colors.primary),
-                            ("hover !disabled", self.colors.primary),
-                        ],
-                        "lightcolor": [
-                            ("disabled", disabled_bg),
-                            ("pressed !disabled", self.colors.primary),
-                            ("selected !disabled", self.colors.primary),
-                            ("hover !disabled", self.colors.primary),
-                        ],
-                    },
-                }
-            }
-        )
+            if color == DEFAULT:
+                ttkstyle = STYLE
+                toggle_on = self.colors.primary
+            else:
+                ttkstyle = f'{color}.{STYLE}'
+                toggle_on = self.colors.get(color)
 
-        for color in self.colors:
+            if self.is_light_theme:
+                toggle_off = self.colors.selectbg
+            else:
+                toggle_off = self.colors.inputbg
+            
             self.settings.update(
                 {
-                    f"{color}.Toolbutton": {
+                    ttkstyle: {
                         "configure": {
                             "foreground": self.colors.selectfg,
-                            "background": Colors.update_hsv(
-                                self.colors.get(color),
-                                sd=normal_sd,
-                                vd=normal_vd,
-                            ),
-                            "bordercolor": Colors.update_hsv(
-                                self.colors.get(color),
-                                sd=normal_sd,
-                                vd=normal_vd,
-                            ),
-                            "darkcolor": Colors.update_hsv(
-                                self.colors.get(color),
-                                sd=normal_sd,
-                                vd=normal_vd,
-                            ),
-                            "lightcolor": Colors.update_hsv(
-                                self.colors.get(color),
-                                sd=normal_sd,
-                                vd=normal_vd,
-                            ),
-                            "relief": "raised",
+                            "background": toggle_off,
+                            "bordercolor": toggle_off,
+                            "darkcolor": toggle_off,
+                            "lightcolor": toggle_off,
+                            "relief": tk.RAISED,
                             "focusthickness": 0,
                             "focuscolor": "",
                             "padding": (10, 5),
@@ -2436,27 +2375,27 @@ class StylerTTK:
                             "foreground": [("disabled", disabled_fg)],
                             "background": [
                                 ("disabled", disabled_bg),
-                                ("pressed !disabled", self.colors.get(color)),
-                                ("selected !disabled", self.colors.get(color)),
-                                ("hover !disabled", self.colors.get(color)),
+                                ("pressed !disabled", toggle_on),
+                                ("selected !disabled", toggle_on),
+                                ("hover !disabled", toggle_on),
                             ],
                             "bordercolor": [
                                 ("disabled", disabled_bg),
-                                ("pressed !disabled", self.colors.get(color)),
-                                ("selected !disabled", self.colors.get(color)),
-                                ("hover !disabled", self.colors.get(color)),
+                                ("pressed !disabled", toggle_on),
+                                ("selected !disabled", toggle_on),
+                                ("hover !disabled", toggle_on),
                             ],
                             "darkcolor": [
                                 ("disabled", disabled_bg),
-                                ("pressed !disabled", self.colors.get(color)),
-                                ("selected !disabled", self.colors.get(color)),
-                                ("hover !disabled", self.colors.get(color)),
+                                ("pressed !disabled", toggle_on),
+                                ("selected !disabled", toggle_on),
+                                ("hover !disabled", toggle_on),
                             ],
                             "lightcolor": [
                                 ("disabled", disabled_bg),
-                                ("pressed !disabled", self.colors.get(color)),
-                                ("selected !disabled", self.colors.get(color)),
-                                ("hover !disabled", self.colors.get(color)),
+                                ("pressed !disabled", toggle_on),
+                                ("selected !disabled", toggle_on),
+                                ("hover !disabled", toggle_on),
                             ],
                         },
                     }
