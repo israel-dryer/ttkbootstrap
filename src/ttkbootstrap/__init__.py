@@ -2477,6 +2477,8 @@ class StylerTTK:
 
     def _style_entry(self):
         """Create style configuration for ttk entry"""
+        STYLE = 'TEntry'
+
         if self.is_light_theme:
             disabled_fg = Colors.update_hsv(self.colors.inputbg, vd=-0.2)
             bordercolor = self.colors.border
@@ -2484,53 +2486,39 @@ class StylerTTK:
             disabled_fg = self.colors.selectbg
             bordercolor = self.colors.selectbg
 
-        self.settings.update(
-            {
-                "TEntry": {
-                    "configure": {
-                        "bordercolor": bordercolor,
-                        "darkcolor": self.colors.inputbg,
-                        "lightcolor": self.colors.inputbg,
-                        "fieldbackground": self.colors.inputbg,
-                        "foreground": self.colors.inputfg,
-                        "padding": 5,
-                    },
-                    "map": {
-                        "foreground": [("disabled", disabled_fg)],
-                        "bordercolor": [
-                            ("focus !disabled", self.colors.primary),
-                            ("hover !disabled", self.colors.bg),
-                        ],
-                        "lightcolor": [
-                            ("focus !disabled", self.colors.primary),
-                            ("hover !disabled", self.colors.primary),
-                        ],
-                        "darkcolor": [
-                            ("focus !disabled", self.colors.primary),
-                            ("hover !disabled", self.colors.primary),
-                        ],
-                    },
-                }
-            }
-        )
+        for color in [DEFAULT, *self.colors]:
 
-        for color in self.colors:
+            if color == DEFAULT:
+                ttkstyle = STYLE
+                focuscolor = self.colors.primary
+            else:
+                ttkstyle = f'{color}.{STYLE}'
+                focuscolor = self.colors.get(color)
+
             self.settings.update(
                 {
-                    f"{color}.TEntry": {
+                    ttkstyle: {
+                        "configure": {
+                            "bordercolor": bordercolor,
+                            "darkcolor": self.colors.inputbg,
+                            "lightcolor": self.colors.inputbg,
+                            "fieldbackground": self.colors.inputbg,
+                            "foreground": self.colors.inputfg,
+                            "padding": 5,
+                        },                        
                         "map": {
                             "foreground": [("disabled", disabled_fg)],
                             "bordercolor": [
-                                ("focus !disabled", self.colors.get(color)),
+                                ("focus !disabled", focuscolor),
                                 ("hover !disabled", self.colors.bg),
                             ],
                             "lightcolor": [
-                                ("focus !disabled", self.colors.get(color)),
-                                ("hover !disabled", self.colors.get(color)),
+                                ("focus !disabled", focuscolor),
+                                ("hover !disabled", focuscolor),
                             ],
                             "darkcolor": [
-                                ("focus !disabled", self.colors.get(color)),
-                                ("hover !disabled", self.colors.get(color)),
+                                ("focus !disabled", focuscolor),
+                                ("hover !disabled", focuscolor),
                             ],
                         }
                     }
