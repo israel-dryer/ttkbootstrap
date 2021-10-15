@@ -45,6 +45,7 @@
 
 """
 import colorsys
+import tkinter as tk
 from tkinter import ttk
 from ttkbootstrap.themes import DEFINED_THEMES
 from ttkbootstrap.user_defined import USER_DEFINED
@@ -1408,69 +1409,6 @@ class StylerTTK:
                 }
             )
 
-    def _create_scrollbar_images(self):
-        """Create assets needed for scrollbar arrows. The assets are saved to 
-        the ``theme_images`` property.
-        """
-        # set platform specific checkfont
-        font_size = 13
-        winsys = self.style.tk.call("tk", "windowingsystem")
-        if winsys == "win32":
-            fnt = ImageFont.truetype("seguisym.ttf", font_size)
-        elif winsys == "x11":
-            fnt = ImageFont.truetype("FreeSerif.ttf", font_size)
-        else:
-            fnt = ImageFont.truetype("LucidaGrande.ttc", font_size)
-
-        if self.is_light_theme:
-            fill = self.colors.inputfg
-        else:
-            fill = Colors.update_hsv(self.colors.selectbg, vd=0.35, sd=-0.1)
-
-        # up arrow
-        vs_upim = Image.new("RGBA", (font_size, font_size))
-        up_draw = ImageDraw.Draw(vs_upim)
-        up_draw.text(
-            xy=(1, 5),
-            text="🞁",
-            font=fnt,
-            fill=fill,
-        )
-        self.theme_images["vsup"] = ImageTk.PhotoImage(vs_upim)
-
-        # down arrow
-        hsdown_im = Image.new("RGBA", (font_size, font_size))
-        down_draw = ImageDraw.Draw(hsdown_im)
-        down_draw.text(
-            xy=(1, -4),
-            text="🞃",
-            font=fnt,
-            fill=fill
-        )
-        self.theme_images["vsdown"] = ImageTk.PhotoImage(hsdown_im)
-
-        # left arrow
-        vs_upim = Image.new("RGBA", (font_size, font_size))
-        up_draw = ImageDraw.Draw(vs_upim)
-        up_draw.text(
-            xy=(1, 1),
-            text="🞀",
-            font=fnt,
-            fill=fill
-        )
-        self.theme_images["hsleft"] = ImageTk.PhotoImage(vs_upim)
-
-        # right arrow
-        vs_upim = Image.new("RGBA", (font_size, font_size))
-        up_draw = ImageDraw.Draw(vs_upim)
-        up_draw.text(
-            xy=(1, 1),
-            text="🞂",
-            font=fnt,
-            fill=fill
-        )
-        self.theme_images["hsright"] = ImageTk.PhotoImage(vs_upim)
-
     def _style_floodgauge(self):
         """Create a style configuration for the *ttk.Progressbar* that makes 
         it into a floodgauge. Which is essentially a very large progress bar 
@@ -1581,11 +1519,77 @@ class StylerTTK:
                 }
             )
 
+    def _create_arrow_assets(self, arrowcolor, pressed, active):
+        """Create horizontal and vertical arrow assets to be used for
+        buttons"""
+        assets = dict()
+
+        def draw_arrow(color: str, name: str):
+
+            img = Image.new("RGBA", (11, 11))
+            draw = ImageDraw.Draw(img)
+
+            draw.line([2, 6, 2, 9], fill=color)
+            draw.line([3, 5, 3, 8], fill=color)
+            draw.line([4, 4, 4, 7], fill=color)
+            draw.line([5, 3, 5, 6], fill=color)
+            draw.line([6, 4, 6, 7], fill=color)
+            draw.line([7, 5, 7, 8], fill=color)
+            draw.line([8, 6, 8, 9], fill=color)
+
+
+            _name = f'{self.theme.name}.{name}'
+            assets.update({f"{_name}.uparrow": ImageTk.PhotoImage(img)})
+            assets.update({f"{_name}.downarrow": ImageTk.PhotoImage(img.rotate(180))})
+            assets.update({f"{_name}.leftarrow": ImageTk.PhotoImage(img.rotate(90))})
+            assets.update({f"{_name}.rightarrow": ImageTk.PhotoImage(img.rotate(-90))})
+
+        draw_arrow(arrowcolor, "normal")
+        draw_arrow(pressed, "pressed")
+        draw_arrow(active, "active")
+        self.theme_images = {**self.theme_images, **assets}
+
     def _style_scrollbar(self):
         """Create style configuration for ttk scrollbar: *ttk.Scrollbar*. This 
         theme uses elements from the *alt* theme tobuild the widget layout.
         """
-        self._create_scrollbar_images()
+        troughcolor = Colors.update_hsv(self.colors.bg, vd=-0.05)
+
+        if self.is_light_theme:
+            background = Colors.update_hsv(self.colors.bg, vd=-0.25)
+            pressed = Colors.update_hsv(background, vd=-0.35)
+            active = Colors.update_hsv(background, vd=-0.25)
+        else:
+            background = Colors.update_hsv(
+                color=self.colors.selectbg,
+                vd=0.35, 
+                sd=-0.1
+            )
+            pressed = Colors.update_hsv(background, vd=0.05)
+            active = Colors.update_hsv(background, vd=0.15)
+
+        img_test = self.theme_images.get(f'{self.theme.name}.normal.uparrow')
+        if img_test is None:
+            self._create_arrow_assets(background, pressed, active)
+
+        img = self.theme_images
+        _name = self.theme.name
+
+        up_normal = img.get(f'{_name}.normal.uparrow')
+        up_pressed = img.get(f'{_name}.pressed.uparrow')
+        up_active = img.get(f'{_name}.active.uparrow')
+
+        dw_normal = img.get(f'{_name}.normal.downarrow')
+        dw_pressed = img.get(f'{_name}.pressed.downarrow')
+        dw_active = img.get(f'{_name}.active.downarrow')
+
+        lf_normal = img.get(f'{_name}.normal.leftarrow')
+        lf_pressed = img.get(f'{_name}.pressed.leftarrow')
+        lf_active = img.get(f'{_name}.active.leftarrow')
+
+        rt_normal = img.get(f'{_name}.normal.rightarrow')
+        rt_pressed = img.get(f'{_name}.pressed.rightarrow')
+        rt_active = img.get(f'{_name}.active.rightarrow')
 
         self.settings.update(
             {
@@ -1596,10 +1600,10 @@ class StylerTTK:
                     "element create": ("from", "alt")
                 },
                 "Vertical.Scrollbar.uparrow": {
-                    "element create": ("image", self.theme_images["vsup"])
+                    "element create": ("image", up_normal, ('pressed', up_pressed), ('active', up_active))
                 },
                 "Vertical.Scrollbar.downarrow": {
-                    "element create": ("image", self.theme_images["vsdown"])
+                    "element create": ("image", dw_normal, ('pressed', dw_pressed), ('active', dw_active))
                 },
                 "Horizontal.Scrollbar.trough": {
                     "element create": ("from", "alt")
@@ -1608,46 +1612,26 @@ class StylerTTK:
                     "element create": ("from", "alt")
                 },
                 "Horizontal.Scrollbar.leftarrow": {
-                    "element create": ("image", self.theme_images["hsleft"])
+                    "element create": ("image", lf_normal, ('pressed', lf_pressed), ('active', lf_active))  
                 },
                 "Horizontal.Scrollbar.rightarrow": {
-                    "element create": ("image", self.theme_images["hsright"])
+                    "element create": ("image", rt_normal, ('pressed', rt_pressed), ('active', rt_active))
                 },
                 "TScrollbar": {
                     "configure": {
                         "troughrelief": "flat",
                         "relief": "flat",
-                        "troughborderwidth": 2,
-                        "troughcolor": Colors.update_hsv(
-                            self.colors.bg, vd=-0.05
-                        ),
-                        "background": Colors.update_hsv(
-                            self.colors.bg, vd=-0.15
-                        )
-                        if self.theme.type == "light"
-                        else Colors.update_hsv(
-                            self.colors.selectbg, vd=0.25, sd=-0.1
-                        ),
-                        "width": 16,
+                        "troughborderwidth": 1,
+                        "arrowcolor": self.colors.inputfg,
+                        "troughcolor": troughcolor,
+                        "background": background,
+                        "arrowsize": 11,
+                        "width": 11
                     },
                     "map": {
                         "background": [
-                            (
-                                "pressed",
-                                Colors.update_hsv(self.colors.bg, vd=-0.35)
-                                if self.theme.type == "light"
-                                else Colors.update_hsv(
-                                    self.colors.selectbg, vd=0.05
-                                ),
-                            ),
-                            (
-                                "active",
-                                Colors.update_hsv(self.colors.bg, vd=-0.25)
-                                if self.theme.type == "light"
-                                else Colors.update_hsv(
-                                    self.colors.selectbg, vd=0.15
-                                ),
-                            ),
+                            ("pressed", pressed),
+                            ("active", active),
                         ]
                     },
                 },
@@ -1667,7 +1651,7 @@ class StylerTTK:
             disabled_fg = Colors.update_hsv(self.colors.inputbg, vd=-0.2)
             bordercolor = self.colors.border
         else:
-            disabled_fg = Colors.update_hsv(self.colors.inputbg, vd=-0.3)
+            disabled_fg = self.colors.selectbg
             bordercolor = self.colors.selectbg
 
         self.settings.update(
@@ -3145,7 +3129,10 @@ class StylerTTK:
 
     def _style_radiobutton(self):
         """Create style configuration for ttk radiobutton"""
-        disabled_fg = Colors.update_hsv(self.colors.inputbg, vd=-0.2)
+        if self.is_light_theme:
+            disabled_fg = Colors.update_hsv(self.colors.inputbg, vd=-0.2)
+        else:
+            disabled_fg = self.colors.inputbg
 
         self.theme_images.update(self._create_radiobutton_images("primary"))
         self.settings.update(
