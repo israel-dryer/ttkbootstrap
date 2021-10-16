@@ -904,8 +904,10 @@ class StylerTTK:
                                         "sticky": tk.NSEW,
                                         "children": [
                                             ("Combobox.textarea", {
-                                                "sticky": tk.NSEW})]})]})]}
-                        })
+                                                "sticky": tk.NSEW})]})]})]
+                    }
+                }
+            )
 
     def _style_separator(self):
         """Create style configuration for ttk separator:
@@ -942,7 +944,10 @@ class StylerTTK:
                     ttkstyle: {
                         "layout": [
                             (f"{ttkstyle}.Separator.separator",
-                             {"sticky": tk.EW})]}})
+                             {"sticky": tk.EW})]
+                    }
+                }
+            )
 
         # vertical separator
         for color in [DEFAULT, *self.colors]:
@@ -963,88 +968,8 @@ class StylerTTK:
                     ttkstyle: {
                         "layout": [
                             (f"{ttkstyle}.Separator.separator",
-                            {"sticky": tk.NS})]}})
-
-    def _style_striped_progressbar(self):
-        """Apply a striped theme to the progressbar"""
-
-        if self.is_light_theme:
-            lightcolor = self.colors.border
-        else:
-            lightcolor = self.colors.inputbg
-
-        self.theme_images.update(
-            self._create_striped_progressbar_image("primary")
-        )
-        self.settings.update(
-            {
-                "Striped.Horizontal.Progressbar.pbar": {
-                    "element create": (
-                        "image",
-                        self.theme_images["primary_striped_hpbar"],
-                        {"width": 20, "sticky": "ew"},
-                    )
-                },
-                "Striped.Horizontal.TProgressbar": {
-                    "layout": [
-                        (
-                            "Horizontal.Progressbar.trough",
-                            {
-                                "sticky": tk.NSEW,
-                                "children": [
-                                    (
-                                        "Striped.Horizontal.Progressbar.pbar",
-                                        {"side": "left", "sticky": tk.NS},
-                                    )
-                                ],
-                            },
-                        )
-                    ],
-                    "configure": {
-                        "troughcolor": self.colors.inputbg,
-                        "thickness": 20,
-                        "borderwidth": 1,
-                        "lightcolor": lightcolor,
-                    },
-                },
-            }
-        )
-
-        for color in self.colors:
-            self.theme_images.update(
-                self._create_striped_progressbar_image(color)
-            )
-            self.settings.update(
-                {
-                    f"{color}.Striped.Horizontal.Progressbar.pbar": {
-                        "element create": (
-                            "image",
-                            self.theme_images[f"{color}_striped_hpbar"],
-                            {"width": 20, "sticky": "ew"},
-                        )
-                    },
-                    f"{color}.Striped.Horizontal.TProgressbar": {
-                        "layout": [
-                            (
-                                "Horizontal.Progressbar.trough",
-                                {
-                                    "sticky": tk.NSEW,
-                                    "children": [
-                                        (
-                                            f"{color}.Striped.Horizontal.Progressbar.pbar",
-                                            {"side": "left", "sticky": tk.NS},
-                                        )
-                                    ],
-                                },
-                            )
-                        ],
-                        "configure": {
-                            "troughcolor": self.colors.inputbg,
-                            "thickness": 20,
-                            "borderwidth": 1,
-                            "lightcolor": lightcolor,
-                        },
-                    },
+                            {"sticky": tk.NS})]
+                    }
                 }
             )
 
@@ -1060,38 +985,102 @@ class StylerTTK:
 
         Returns
         -------
-        dict
-            A dictionary containing the widget images.
+        List[str]
+            A list of photoimage names.
         """
-        bar_primary = self.colors.get(colorname)
+        if colorname == DEFAULT:
+            barcolor = self.colors.primary
+        else:
+            barcolor = self.colors.get(colorname)
 
-        # calculate value of light color
-        brightness = colorsys.rgb_to_hsv(*Colors.hex_to_rgb(bar_primary))[2]
+        # calculate value of the light color
+        brightness = colorsys.rgb_to_hsv(*Colors.hex_to_rgb(barcolor))[2]
         if brightness < 0.4:
             value_delta = 0.3
         elif brightness > 0.8:
             value_delta = 0
         else:
             value_delta = 0.1
-        bar_secondary = Colors.update_hsv(bar_primary, sd=-0.2, vd=value_delta)
+        
+        barcolor_light = Colors.update_hsv(barcolor, sd=-0.2, vd=value_delta)
 
         # horizontal progressbar
-        h_im = Image.new("RGBA", (100, 100), bar_secondary)
-        draw = ImageDraw.Draw(h_im)
+        img = Image.new("RGBA", (100, 100), barcolor_light)
+        draw = ImageDraw.Draw(img)
         draw.polygon(
-            xy=[(0, 0), (48, 0), (100, 52), (100, 100), (100, 100)],
-            fill=bar_primary,
+            xy=[(0, 0), (48, 0), (100, 52), (100, 100)],
+            fill=barcolor,
         )
         draw.polygon(
             xy=[(0, 52), (48, 100), (0, 100)], 
-            fill=bar_primary)
-        horizontal_img = ImageTk.PhotoImage(
-            h_im.resize((22, 22), Image.LANCZOS)
-        )
+            fill=barcolor)
 
-        # TODO vertical progressbar
+        _resized = img.resize((22, 22), Image.LANCZOS)
+        h_img = ImageTk.PhotoImage(_resized)
+        h_name = h_img._PhotoImage__photo.name
+        v_img = ImageTk.PhotoImage(_resized.rotate(90))
+        v_name = v_img._PhotoImage__photo.name
+        
+        self.theme_images[h_name] = h_img
+        self.theme_images[v_name] = v_img
+        return [h_name, v_name]                            
 
-        return {f"{colorname}_striped_hpbar": horizontal_img}
+    def _style_striped_progressbar(self):
+        """Apply a striped theme to the progressbar"""
+        HSTYLE = 'Striped.Horizontal.TProgressbar'
+        VSTYLE = 'Striped.Vertical.TProgressbar'
+
+        for color in [DEFAULT, *self.colors]:
+
+            h_img, v_img = self._create_striped_progressbar_image(color)
+
+            if color == DEFAULT:
+                h_ttkstyle = HSTYLE
+                v_ttkstyle = VSTYLE
+            else:
+                h_ttkstyle = f'{color}.{HSTYLE}'
+                v_ttkstyle = f'{color}.{VSTYLE}'                
+
+            self.settings.update(
+                {
+                    f"{h_ttkstyle}.Progressbar.pbar": {
+                        "element create": (
+                            "image", h_img,
+                            {"width": 20, "sticky": tk.EW})},
+                    h_ttkstyle: {
+                        "layout": [
+                            ("Horizontal.Progressbar.trough", {  
+                                "sticky": tk.NSEW,
+                                "children": [
+                                    (f"{h_ttkstyle}.Progressbar.pbar", {
+                                        "side": tk.LEFT, 
+                                        "sticky": tk.NS})]})],
+                        "configure": {
+                            "troughcolor": self.colors.inputbg,
+                            "thickness": 20,
+                            "borderwidth": 1
+                        }
+                    },
+                    f"{v_ttkstyle}.Progressbar.pbar": {
+                        "element create": (
+                            "image", v_img,
+                            {"width": 20, "sticky": tk.NS})},
+                    v_ttkstyle: {
+                        "layout": [
+                            ("Vertical.Progressbar.trough", {  
+                                "sticky": tk.NSEW,
+                                "children": [
+                                    (f"{v_ttkstyle}.Progressbar.pbar", {
+                                        "side": tk.BOTTOM, 
+                                        "sticky": tk.EW})]})],
+                        "configure": {
+                            "troughcolor": self.colors.inputbg,
+                            "thickness": 20,
+                            "borderwidth": 1
+                        }
+                    }
+                }
+            )
 
     def _style_progressbar(self):
         """Create style configuration for ttk progressbar"""
@@ -1103,7 +1092,7 @@ class StylerTTK:
         self.settings.update(
             {
                 "Progressbar.trough": {"element create": ("from", TTK_CLAM)},
-                "Progressbar.pbar": {"element create": ("from", "default")},
+                "Progressbar.pbar": {"element create": ("from", TTK_DEFAULT)},
                 "TProgressbar": {
                     "configure": {
                         "thickness": 20,
@@ -1117,7 +1106,6 @@ class StylerTTK:
                 },
             }
         )
-
         for color in self.colors:
             self.settings.update(
                 {
@@ -1126,9 +1114,9 @@ class StylerTTK:
                     },
                     f"{color}.Vertical.TProgressbar": {
                         "configure": {"background": self.colors.get(color)}
-                    },
                 }
-            )
+            }
+        )
 
     @staticmethod
     def _create_slider_image(color, size=16):

@@ -15,7 +15,10 @@ def create_progressbar_frame(widget_style, style, orient):
 
     # default
     pb = ttk.Progressbar(frame, value=10, style=widget_style, orient=orient)
-    pb.pack(padx=5, pady=5, fill=tk.BOTH)
+    if orient == 'h':
+        pb.pack(padx=5, pady=5, fill=tk.X)
+    else:
+        pb.pack(padx=5, pady=5, fill=tk.Y)
 
     # colored
     for i, color in enumerate(style.colors):
@@ -23,18 +26,26 @@ def create_progressbar_frame(widget_style, style, orient):
         ttk.Label(frame, text=pb_style).pack(fill=tk.X)
         pb = ttk.Progressbar(frame, value=25 + ((i-1)*10), style=pb_style,
                              orient=orient)
-        pb.pack(padx=5, pady=5, fill=tk.BOTH)
+        if orient == 'h':
+            pb.pack(padx=5, pady=5, fill=tk.X)
+        else:
+            pb.pack(padx=5, pady=5, fill=tk.Y)
+        pb.start()
 
     return frame
 
 if __name__ == '__main__':
     # create visual widget style tests
     root = tk.Tk()
-    style = Style(theme=LIGHT)
+    style = Style(theme=DARK)
 
     test1 = create_progressbar_frame('Horizontal.TProgressbar', style, 'h')
     test1.pack(side=tk.LEFT)
     test2 = create_progressbar_frame('Striped.Horizontal.TProgressbar', style, 'h')
     test2.pack(side=tk.LEFT)
+    test3 = create_progressbar_frame('Vertical.TProgressbar', style, 'v')
+    test3.pack(side=tk.LEFT)
+    test4 = create_progressbar_frame('Striped.Vertical.TProgressbar', style, 'v')
+    test4.pack(side=tk.LEFT)    
 
     root.mainloop()
