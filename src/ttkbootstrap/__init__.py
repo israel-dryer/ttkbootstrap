@@ -1474,10 +1474,10 @@ class StylerTTK:
         self.settings.update(
             {
                 "Vertical.Scrollbar.trough": {
-                    "element create": ("from", "alt")
+                    "element create": ("from", TTK_ALT)
                 },
                 "Vertical.Scrollbar.thumb": {
-                    "element create": ("from", "alt")
+                    "element create": ("from", TTK_ALT)
                 },
                 "Vertical.Scrollbar.uparrow": {
                     "element create": ("image", up_normal, ('pressed', up_pressed), ('active', up_active))
@@ -1486,10 +1486,10 @@ class StylerTTK:
                     "element create": ("image", dw_normal, ('pressed', dw_pressed), ('active', dw_active))
                 },
                 "Horizontal.Scrollbar.trough": {
-                    "element create": ("from", "alt")
+                    "element create": ("from", TTK_ALT)
                 },
                 "Horizontal.Scrollbar.thumb": {
-                    "element create": ("from", "alt")
+                    "element create": ("from", TTK_ALT)
                 },
                 "Horizontal.Scrollbar.leftarrow": {
                     "element create": ("image", lf_normal, ('pressed', lf_pressed), ('active', lf_active))  
@@ -1527,6 +1527,8 @@ class StylerTTK:
         background color shines through the corners of the widget when 
         the primary theme background color is dark.
         """
+        STYLE = 'TSpinbox'
+
         if self.is_light_theme:
             disabled_fg = Colors.update_hsv(self.colors.inputbg, vd=-0.2)
             bordercolor = self.colors.border
@@ -1536,113 +1538,88 @@ class StylerTTK:
 
         self.settings.update(
             {
-                "Spinbox.uparrow": {"element create": ("from", "default")},
-                "Spinbox.downarrow": {"element create": ("from", "default")},
-                "TSpinbox": {
-                    "layout": [
-                        (
-                            "custom.Spinbox.field",
-                            {
-                                "side": tk.TOP,
-                                "sticky": tk.EW,
+                "Spinbox.uparrow": {
+                    "element create": ("from", TTK_DEFAULT)},
+                "Spinbox.downarrow": {
+                    "element create": ("from", TTK_DEFAULT)},
+                STYLE: {"layout": [
+                    ("custom.Spinbox.field", {
+                        "side": tk.TOP, 
+                        "sticky": tk.EW, 
+                        "children": [
+                            ("null", {
+                                "side": tk.RIGHT,
+                                "sticky": "",
                                 "children": [
                                     (
-                                        "null",
-                                        {
-                                            "side": tk.RIGHT,
-                                            "sticky": "",
-                                            "children": [
-                                                (
-                                                    "Spinbox.uparrow",
-                                                    {
-                                                        "side": tk.TOP,
-                                                        "sticky": "e",
-                                                    },
-                                                ),
-                                                (
-                                                    "Spinbox.downarrow",
-                                                    {
-                                                        "side": "bottom",
-                                                        "sticky": "e",
-                                                    },
-                                                ),
-                                            ],
-                                        },
+                                        "Spinbox.uparrow", {
+                                        "side": tk.TOP,
+                                        "sticky": tk.E}
                                     ),
-                                    (
-                                        "Spinbox.padding",
-                                        {
-                                            "sticky": tk.NSEW,
-                                            "children": [
-                                                (
-                                                    "Spinbox.textarea",
-                                                    {"sticky": tk.NSEW},
-                                                )
-                                            ],
-                                        },
-                                    ),
-                                ],
-                            },
+                                    ("Spinbox.downarrow", {
+                                        "side": tk.BOTTOM,
+                                        "sticky": tk.E,
+                                        }
+                                    )]
+                                }
+                            ),                                    
+                            (
+                                "Spinbox.padding", {
+                                    "sticky": tk.NSEW,
+                                    "children": [
+                                        (
+                                            "Spinbox.textarea",
+                                            {"sticky": tk.NSEW})]
+                                        }
+                                    )
+                                ]
+                            }
                         )
-                    ],
-                    "configure": {
-                        "bordercolor": bordercolor,
-                        "darkcolor": self.colors.inputbg,
-                        "lightcolor": self.colors.inputbg,
-                        "fieldbackground": self.colors.inputbg,
-                        "foreground": self.colors.inputfg,
-                        "borderwidth": 0,
-                        "background": self.colors.inputbg,
-                        "relief": tk.FLAT,
-                        "arrowcolor": self.colors.inputfg,
-                        "arrowsize": 14,
-                        "padding": (10, 5),
-                    },
-                    "map": {
-                        "foreground": [("disabled", disabled_fg)],
-                        "bordercolor": [
-                            ("focus !disabled", self.colors.primary),
-                            ("hover !disabled", self.colors.bg),
-                        ],
-                        "lightcolor": [
-                            ("focus !disabled", self.colors.primary),
-                            ("hover !disabled", self.colors.primary),
-                        ],
-                        "darkcolor": [
-                            ("focus !disabled", self.colors.primary),
-                            ("hover !disabled", self.colors.primary),
-                        ],
-                        "arrowcolor": [
-                            ("disabled !disabled", disabled_fg),
-                            ("pressed !disabled", self.colors.primary),
-                            ("focus !disabled", self.colors.inputfg),
-                            ("hover !disabled", self.colors.inputfg),
-                        ],
-                    },
-                },
+                    ]
+                }
             }
         )
 
-        for color in self.colors:
+        for color in [DEFAULT, *self.colors]:
+            if color == DEFAULT:
+                ttkstyle = STYLE
+                focuscolor = self.colors.primary
+            else:
+                ttkstyle = f'{color}.{STYLE}'
+                focuscolor = self.colors.get(color)
+
             self.settings.update(
                 {
-                    f"{color}.TSpinbox": {
+                    ttkstyle: {
+                        "configure": {
+                            "bordercolor": bordercolor,
+                            "darkcolor": self.colors.inputbg,
+                            "lightcolor": self.colors.inputbg,
+                            "fieldbackground": self.colors.inputbg,
+                            "foreground": self.colors.inputfg,
+                            "borderwidth": 0,
+                            "background": self.colors.inputbg,
+                            "relief": tk.FLAT,
+                            "arrowcolor": self.colors.inputfg,
+                            "arrowsize": 14,
+                            "padding": (10, 5),
+                        },
                         "map": {
                             "foreground": [("disabled", disabled_fg)],
                             "bordercolor": [
-                                ("focus !disabled", self.colors.get(color)),
-                                ("hover !disabled", self.colors.get(color)),
+                                ("focus !disabled", focuscolor),
+                                ("hover !disabled", focuscolor),
                             ],
                             "arrowcolor": [
                                 ("disabled !disabled", disabled_fg),
-                                ("pressed !disabled", self.colors.get(color)),
+                                ("pressed !disabled", focuscolor),
                                 ("hover !disabled", self.colors.inputfg),
                             ],
                             "lightcolor": [
-                                ("focus !disabled", self.colors.get(color))
+                                ("focus !disabled", focuscolor)
                             ],
                             "darkcolor": [
-                                ("focus !disabled", self.colors.get(color))
+                                ("focus !disabled", focuscolor)
                             ],
                         }
                     }
@@ -1691,10 +1668,6 @@ class StylerTTK:
                         "bordercolor": self.colors.bg,
                         "lightcolor": self.colors.border,
                         "darkcolor": self.colors.border,
-                        # "relief": "raised"
-                        # if self.theme.type == "light"
-                        # else tk.FLAT,
-                        # "padding": 0 if self.theme.type == "light" else -2,
                     },
                     "map": {
                         "background": [("selected", self.colors.selectbg)],
@@ -1712,7 +1685,7 @@ class StylerTTK:
                         "padding": 5,
                     }
                 },
-                "Treeitem.indicator": {"element create": ("from", "alt")},
+                "Treeitem.indicator": {"element create": ("from", TTK_ALT)},
             }
         )
 
