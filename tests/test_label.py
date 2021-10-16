@@ -5,9 +5,10 @@ from ttkbootstrap import Style
 DARK = 'superhero'
 LIGHT = 'flatly'
 
+
 def create_label_style(widget_style, style):
     frame = ttk.Frame(root, padding=5)
-    
+
     # title
     title = ttk.Label(frame, text=widget_style, anchor=tk.CENTER)
     title.pack(padx=5, pady=2, fill=tk.BOTH)
@@ -17,13 +18,14 @@ def create_label_style(widget_style, style):
     lbl = ttk.Label(frame, text=widget_style, style=widget_style)
     lbl.pack(padx=5, pady=5, fill=tk.BOTH)
 
-    # colored 
+    # colored
     for color in style.colors:
         label_style = f'{color}.{widget_style}'
         lbl = ttk.Label(frame, text=label_style, style=label_style)
         lbl.pack(padx=5, pady=5, fill=tk.BOTH)
 
     return frame
+
 
 if __name__ == '__main__':
     # create visual widget style tests
