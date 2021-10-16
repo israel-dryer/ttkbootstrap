@@ -53,6 +53,13 @@ from PIL import ImageTk, Image, ImageDraw, ImageFont
 import warnings
 
 DEFAULT = 'default'
+LIGHT = 'light'
+DARK = 'dark'
+DEFAULT_FONT = 'Helvetica 10'
+DEFAULT_THEME = 'flatly'
+TTK_CLAM = 'clam'
+TTK_ALT = 'alt'
+TTK_DEFAULT = 'default'
 
 
 class Style(ttk.Style):
@@ -82,7 +89,7 @@ class Style(ttk.Style):
     .. _documentation: https://docs.python.org/3.9/library/tkinter.ttk.html#tkinter.ttk.Style
     """
 
-    def __init__(self, theme="flatly", *args, **kwargs):
+    def __init__(self, theme=DEFAULT_THEME, *args, **kwargs):
         """
         Parameters
         ----------
@@ -135,7 +142,7 @@ class Style(ttk.Style):
                 ThemeDefinition(
                     name=name,
                     themetype=definition["type"],
-                    font=definition.get("font") or "Helvetica 10",
+                    font=definition.get("font") or DEFAULT_FONT,
                     colors=Colors(**definition["colors"]),
                 )
             )
@@ -199,7 +206,7 @@ class ThemeDefinition:
     ttkbootstrap theme."""
 
     def __init__(
-        self, name="default", themetype="light", font="helvetica", colors=None
+        self, name="default", themetype=LIGHT, font=DEFAULT_FONT, colors=None
     ):
         """
         Parameters
@@ -532,7 +539,7 @@ class StylerTK:
         self.theme: ThemeDefinition = styler_ttk.theme
 
         self.colors = self.theme.colors
-        self.is_light_theme = self.theme.type == "light"
+        self.is_light_theme = self.theme.type == LIGHT
 
     def style_tkinter_widgets(self):
         """A wrapper on all widget style methods. Applies current theme
@@ -583,7 +590,7 @@ class StylerTK:
     def _style_button(self):
         """Apply style to ``tkinter.Button``"""
         active_bg = Colors.update_hsv(self.colors.primary, vd=-0.2)
-        self._set_option("*Button.relief", "flat")
+        self._set_option("*Button.relief", tk.FLAT)
         self._set_option("*Button.borderWidth", 0)
         self._set_option("*Button.activeBackground", active_bg)
         self._set_option("*Button.foreground", self.colors.selectfg)
@@ -618,7 +625,7 @@ class StylerTK:
 
     def _style_entry(self):
         """Apply style to ``tkinter.Entry``"""
-        self._set_option("*Entry.relief", "flat")
+        self._set_option("*Entry.relief", tk.FLAT)
         self._set_option("*Entry.highlightThickness", 1)
         self._set_option("*Entry.foreground", self.colors.inputfg)
         self._set_option("*Entry.highlightBackground", self.colors.border)
@@ -637,7 +644,7 @@ class StylerTK:
         active_color = Colors.update_hsv(self.colors.primary, vd=-0.2)
         self._set_option("*Scale.background", self.colors.primary)
         self._set_option("*Scale.showValue", False)
-        self._set_option("*Scale.sliderRelief", "flat")
+        self._set_option("*Scale.sliderRelief", tk.FLAT)
         self._set_option("*Scale.borderWidth", 0)
         self._set_option("*Scale.activeBackground", active_color)
         self._set_option("*Scale.highlightThickness", 1)
@@ -648,7 +655,7 @@ class StylerTK:
     def _style_spinbox(self):
         """Apply style to `tkinter.Spinbox``"""
         self._set_option("*Spinbox.foreground", self.colors.inputfg)
-        self._set_option("*Spinbox.relief", "flat")
+        self._set_option("*Spinbox.relief", tk.FLAT)
         self._set_option("*Spinbox.highlightThickness", 1)
         self._set_option("*Spinbox.highlightColor", self.colors.primary)
         self._set_option("*Spinbox.highlightBackground", self.colors.border)
@@ -670,7 +677,7 @@ class StylerTK:
         self._set_option("*Listbox.highlightBackground", self.colors.border)
         self._set_option("*Listbox.highlightThickness", 1)
         self._set_option("*Listbox.activeStyle", "none")
-        self._set_option("*Listbox.relief", "flat")
+        self._set_option("*Listbox.relief", tk.FLAT)
 
     def _style_menubutton(self):
         """Apply style to ``tkinter.Menubutton``"""
@@ -709,7 +716,7 @@ class StylerTK:
         self._set_option("*Text.highlightBackground", self.colors.border)
         self._set_option("*Text.borderColor", self.colors.border)
         self._set_option("*Text.highlightThickness", 1)
-        self._set_option("*Text.relief", "flat")
+        self._set_option("*Text.relief", tk.FLAT)
         self._set_option("*Text.font", self.theme.font)
         self._set_option("*Text.padX", 5)
         self._set_option("*Text.padY", 5)
@@ -740,19 +747,17 @@ class StylerTTK:
         self.theme: ThemeDefinition = definition
         self.theme_images = {}
         self.colors = self.theme.colors
-        self.is_light_theme = self.theme.type == "light"
+        self.is_light_theme = self.theme.type == LIGHT
         self.settings = {}
         self.styler_tk = StylerTK(self)
         self.create_theme()
-
-
 
     def create_theme(self):
         """Create and style a new ttk theme. A wrapper around internal
         style methods.
         """
         self.update_ttk_theme_settings()
-        self.style.theme_create(self.theme.name, "clam", self.settings)
+        self.style.theme_create(self.theme.name, TTK_CLAM, self.settings)
 
     def update_ttk_theme_settings(self):
         """Update the settings dictionary that is used to create a
@@ -824,6 +829,8 @@ class StylerTTK:
         element style is created with a layout that combines *clam* and
         *default* theme elements.
         """
+        STYLE = 'TCombobox'
+
         if self.is_light_theme:
             disabled_fg = Colors.update_hsv(self.colors.inputbg, vd=-0.2)
             bordercolor = self.colors.border
@@ -833,103 +840,72 @@ class StylerTTK:
 
         self.settings.update(
             {
-                "Combobox.downarrow": {"element create": ("from", "default")},
-                "Combobox.padding": {"element create": ("from", "clam")},
-                "Combobox.textarea": {"element create": ("from", "clam")},
-                "TCombobox": {
-                    "layout": [
-                        (
-                            "combo.Spinbox.field",
-                            {
-                                "side": "top",
-                                "sticky": "we",
-                                "children": [
-                                    (
-                                        "Combobox.downarrow",
-                                        {"side": "right", "sticky": "ns"},
-                                    ),
-                                    (
-                                        "Combobox.padding",
-                                        {
-                                            "expand": "1",
-                                            "sticky": "nswe",
-                                            "children": [
-                                                (
-                                                    "Combobox.textarea",
-                                                    {"sticky": "nswe"},
-                                                )
-                                            ],
-                                        },
-                                    ),
-                                ],
-                            },
-                        )
-                    ],
-                    "configure": {
-                        "bordercolor": bordercolor,
-                        "darkcolor": self.colors.inputbg,
-                        "lightcolor": self.colors.inputbg,
-                        "arrowcolor": self.colors.inputfg,
-                        "foreground": self.colors.inputfg,
-                        "fieldbackground ": self.colors.inputbg,
-                        "background ": self.colors.inputbg,
-                        "relief": "flat",
-                        "padding": 5,
-                        "arrowsize ": 14,
-                    },
-                    "map": {
-                        "foreground": [("disabled", disabled_fg)],
-                        "bordercolor": [
-                            ("focus !disabled", self.colors.primary),
-                            ("hover !disabled", self.colors.bg),
-                        ],
-                        "lightcolor": [
-                            ("focus !disabled", self.colors.primary),
-                            ("hover !disabled", self.colors.primary),
-                        ],
-                        "darkcolor": [
-                            ("focus !disabled", self.colors.primary),
-                            ("hover !disabled", self.colors.primary),
-                        ],
-                        "arrowcolor": [
-                            ("disabled", disabled_fg),
-                            ("pressed !disabled", self.colors.inputbg),
-                            ("focus !disabled", self.colors.primary),
-                            ("hover !disabled", self.colors.primary),
-                        ],
-                    },
-                },
-            }
-        )
+                "Combobox.downarrow": {
+                    "element create": ("from", TTK_DEFAULT)},
+                "Combobox.padding": {
+                    "element create": ("from", TTK_CLAM)},
+                "Combobox.textarea": {
+                    "element create": ("from", TTK_CLAM)}})
 
-        for color in self.colors:
+        for color in [DEFAULT, *self.colors]:
+            if color == DEFAULT:
+                ttkstyle = STYLE
+                focuscolor = self.colors.primary
+            else:
+                ttkstyle = f'{color}.{STYLE}'
+                focuscolor = self.colors.get(color)
+            
             self.settings.update(
                 {
-                    f"{color}.TCombobox": {
+                    ttkstyle: {
+                        "configure": {
+                            "bordercolor": bordercolor,
+                            "darkcolor": self.colors.inputbg,
+                            "lightcolor": self.colors.inputbg,
+                            "arrowcolor": self.colors.inputfg,
+                            "foreground": self.colors.inputfg,
+                            "fieldbackground ": self.colors.inputbg,
+                            "background ": self.colors.inputbg,
+                            "relief": tk.FLAT,
+                            "padding": 5,
+                            "arrowsize ": 14
+                        },                        
                         "map": {
                             "foreground": [("disabled", disabled_fg)],
                             "bordercolor": [
-                                ("focus !disabled", self.colors.get(color)),
-                                ("hover !disabled", self.colors.get(color)),
+                                ("focus !disabled", focuscolor),
+                                ("hover !disabled", focuscolor),
                             ],
                             "lightcolor": [
-                                ("focus !disabled", self.colors.get(color)),
-                                ("pressed !disabled", self.colors.get(color)),
+                                ("focus !disabled", focuscolor),
+                                ("pressed !disabled", focuscolor),
                             ],
                             "darkcolor": [
-                                ("focus !disabled", self.colors.get(color)),
-                                ("pressed !disabled", self.colors.get(color)),
+                                ("focus !disabled", focuscolor),
+                                ("pressed !disabled", focuscolor),
                             ],
                             "arrowcolor": [
                                 ("disabled", disabled_fg),
                                 ("pressed !disabled", self.colors.inputbg),
                                 ("focus !disabled", self.colors.inputfg),
-                                ("hover !disabled", self.colors.primary),
-                            ],
-                        }
-                    }
-                }
-            )
+                                ("hover !disabled", self.colors.primary)]
+                        },
+                        "layout": [
+                            ("combo.Spinbox.field", {
+                                "side": tk.TOP,
+                                "sticky": tk.EW,
+                                "children": [
+                                    ("Combobox.downarrow", {
+                                        "side": tk.RIGHT, 
+                                        "sticky": tk.NS
+                                    }),
+                                    ("Combobox.padding", {
+                                        "expand": "1",
+                                        "sticky": tk.NSEW,
+                                        "children": [
+                                            ("Combobox.textarea", {
+                                                "sticky": tk.NSEW})]})]})]}
+                        })
 
     def _style_separator(self):
         """Create style configuration for ttk separator:
@@ -1013,7 +989,7 @@ class StylerTTK:
                 },
                 "Vertical.TSeparator": {
                     "layout": [
-                        ("Vertical.Separator.separator", {"sticky": "ns"})
+                        ("Vertical.Separator.separator", {"sticky": tk.NS})
                     ]
                 },
             }
@@ -1038,7 +1014,7 @@ class StylerTTK:
                         "layout": [
                             (
                                 f"{color}.Vertical.Separator.separator",
-                                {"sticky": "ns"},
+                                {"sticky": tk.NS},
                             )
                         ]
                     },
@@ -1070,11 +1046,11 @@ class StylerTTK:
                         (
                             "Horizontal.Progressbar.trough",
                             {
-                                "sticky": "nswe",
+                                "sticky": tk.NSEW,
                                 "children": [
                                     (
                                         "Striped.Horizontal.Progressbar.pbar",
-                                        {"side": "left", "sticky": "ns"},
+                                        {"side": "left", "sticky": tk.NS},
                                     )
                                 ],
                             },
@@ -1108,11 +1084,11 @@ class StylerTTK:
                             (
                                 "Horizontal.Progressbar.trough",
                                 {
-                                    "sticky": "nswe",
+                                    "sticky": tk.NSEW,
                                     "children": [
                                         (
                                             f"{color}.Striped.Horizontal.Progressbar.pbar",
-                                            {"side": "left", "sticky": "ns"},
+                                            {"side": "left", "sticky": tk.NS},
                                         )
                                     ],
                                 },
@@ -1182,7 +1158,7 @@ class StylerTTK:
 
         self.settings.update(
             {
-                "Progressbar.trough": {"element create": ("from", "clam")},
+                "Progressbar.trough": {"element create": ("from", TTK_CLAM)},
                 "Progressbar.pbar": {"element create": ("from", "default")},
                 "TProgressbar": {
                     "configure": {
@@ -1190,7 +1166,7 @@ class StylerTTK:
                         "borderwidth": 1,
                         "bordercolor": bordercolor,
                         "lightcolor": self.colors.border,
-                        "pbarrelief": "flat",
+                        "pbarrelief": tk.FLAT,
                         "troughcolor": self.colors.inputbg,
                         "background": self.colors.primary,
                     }
@@ -1277,11 +1253,11 @@ class StylerTTK:
                             "Scale.focus",
                             {
                                 "expand": "1",
-                                "sticky": "nswe",
+                                "sticky": tk.NSEW,
                                 "children": [
                                     (
                                         "Horizontal.Scale.track",
-                                        {"sticky": "we"},
+                                        {"sticky": tk.EW},
                                     ),
                                     (
                                         "Horizontal.Scale.slider",
@@ -1298,12 +1274,12 @@ class StylerTTK:
                             "Scale.focus",
                             {
                                 "expand": "1",
-                                "sticky": "nswe",
+                                "sticky": tk.NSEW,
                                 "children": [
-                                    ("Vertical.Scale.track", {"sticky": "ns"}),
+                                    ("Vertical.Scale.track", {"sticky": tk.NS}),
                                     (
                                         "Vertical.Scale.slider",
-                                        {"side": "top", "sticky": ""},
+                                        {"side": tk.TOP, "sticky": ""},
                                     ),
                                 ],
                             },
@@ -1360,11 +1336,11 @@ class StylerTTK:
                                 "Scale.focus",
                                 {
                                     "expand": "1",
-                                    "sticky": "nswe",
+                                    "sticky": tk.NSEW,
                                     "children": [
                                         (
                                             "Horizontal.Scale.track",
-                                            {"sticky": "we"},
+                                            {"sticky": tk.EW},
                                         ),
                                         (
                                             f"{color}.Scale.slider",
@@ -1381,15 +1357,15 @@ class StylerTTK:
                                 f"{color}.Scale.focus",
                                 {
                                     "expand": "1",
-                                    "sticky": "nswe",
+                                    "sticky": tk.NSEW,
                                     "children": [
                                         (
                                             "Vertical.Scale.track",
-                                            {"sticky": "ns"},
+                                            {"sticky": tk.NS},
                                         ),
                                         (
                                             f"{color}.Scale.slider",
-                                            {"side": "top", "sticky": ""},
+                                            {"side": tk.TOP, "sticky": ""},
                                         ),
                                     ],
                                 },
@@ -1418,7 +1394,7 @@ class StylerTTK:
         """
         self.settings.update(
             {
-                "Floodgauge.trough": {"element create": ("from", "clam")},
+                "Floodgauge.trough": {"element create": ("from", TTK_CLAM)},
                 "Floodgauge.pbar": {"element create": ("from", "default")},
                 "Horizontal.TFloodgauge": {
                     "layout": [
@@ -1426,10 +1402,10 @@ class StylerTTK:
                             "Floodgauge.trough",
                             {
                                 "children": [
-                                    ("Floodgauge.pbar", {"sticky": "ns"}),
+                                    ("Floodgauge.pbar", {"sticky": tk.NS}),
                                     ("Floodgauge.label", {"sticky": ""}),
                                 ],
-                                "sticky": "nswe",
+                                "sticky": tk.NSEW,
                             },
                         )
                     ],
@@ -1438,7 +1414,7 @@ class StylerTTK:
                         "borderwidth": 1,
                         "bordercolor": self.colors.primary,
                         "lightcolor": self.colors.primary,
-                        "pbarrelief": "flat",
+                        "pbarrelief": tk.FLAT,
                         "troughcolor": Colors.update_hsv(
                             self.colors.primary, sd=-0.3, vd=0.8
                         ),
@@ -1455,10 +1431,10 @@ class StylerTTK:
                             "Floodgauge.trough",
                             {
                                 "children": [
-                                    ("Floodgauge.pbar", {"sticky": "we"}),
+                                    ("Floodgauge.pbar", {"sticky": tk.EW}),
                                     ("Floodgauge.label", {"sticky": ""}),
                                 ],
-                                "sticky": "nswe",
+                                "sticky": tk.NSEW,
                             },
                         )
                     ],
@@ -1467,7 +1443,7 @@ class StylerTTK:
                         "borderwidth": 1,
                         "bordercolor": self.colors.primary,
                         "lightcolor": self.colors.primary,
-                        "pbarrelief": "flat",
+                        "pbarrelief": tk.FLAT,
                         "troughcolor": Colors.update_hsv(
                             self.colors.primary, sd=-0.3, vd=0.8
                         ),
@@ -1490,7 +1466,7 @@ class StylerTTK:
                             "borderwidth": 1,
                             "bordercolor": self.colors.get(color),
                             "lightcolor": self.colors.get(color),
-                            "pbarrelief": "flat",
+                            "pbarrelief": tk.FLAT,
                             "troughcolor": Colors.update_hsv(
                                 self.colors.get(color), sd=-0.3, vd=0.8
                             ),
@@ -1507,7 +1483,7 @@ class StylerTTK:
                             "borderwidth": 1,
                             "bordercolor": self.colors.get(color),
                             "lightcolor": self.colors.get(color),
-                            "pbarrelief": "flat",
+                            "pbarrelief": tk.FLAT,
                             "troughcolor": Colors.update_hsv(
                                 self.colors.get(color), sd=-0.3, vd=0.8
                             ),
@@ -1621,8 +1597,8 @@ class StylerTTK:
                 },
                 "TScrollbar": {
                     "configure": {
-                        "troughrelief": "flat",
-                        "relief": "flat",
+                        "troughrelief": tk.FLAT,
+                        "relief": tk.FLAT,
                         "troughborderwidth": 1,
                         "arrowcolor": self.colors.inputfg,
                         "troughcolor": troughcolor,
@@ -1665,19 +1641,19 @@ class StylerTTK:
                         (
                             "custom.Spinbox.field",
                             {
-                                "side": "top",
-                                "sticky": "we",
+                                "side": tk.TOP,
+                                "sticky": tk.EW,
                                 "children": [
                                     (
                                         "null",
                                         {
-                                            "side": "right",
+                                            "side": tk.RIGHT,
                                             "sticky": "",
                                             "children": [
                                                 (
                                                     "Spinbox.uparrow",
                                                     {
-                                                        "side": "top",
+                                                        "side": tk.TOP,
                                                         "sticky": "e",
                                                     },
                                                 ),
@@ -1694,11 +1670,11 @@ class StylerTTK:
                                     (
                                         "Spinbox.padding",
                                         {
-                                            "sticky": "nswe",
+                                            "sticky": tk.NSEW,
                                             "children": [
                                                 (
                                                     "Spinbox.textarea",
-                                                    {"sticky": "nswe"},
+                                                    {"sticky": tk.NSEW},
                                                 )
                                             ],
                                         },
@@ -1715,7 +1691,7 @@ class StylerTTK:
                         "foreground": self.colors.inputfg,
                         "borderwidth": 0,
                         "background": self.colors.inputbg,
-                        "relief": "flat",
+                        "relief": tk.FLAT,
                         "arrowcolor": self.colors.inputfg,
                         "arrowsize": 14,
                         "padding": (10, 5),
@@ -1788,17 +1764,17 @@ class StylerTTK:
                         (
                             "Button.border",
                             {
-                                "sticky": "nswe",
+                                "sticky": tk.NSEW,
                                 "border": "1",
                                 "children": [
                                     (
                                         "Treeview.padding",
                                         {
-                                            "sticky": "nswe",
+                                            "sticky": tk.NSEW,
                                             "children": [
                                                 (
                                                     "Treeview.treearea",
-                                                    {"sticky": "nswe"},
+                                                    {"sticky": tk.NSEW},
                                                 )
                                             ],
                                         },
@@ -1815,7 +1791,7 @@ class StylerTTK:
                         "darkcolor": self.colors.border,
                         # "relief": "raised"
                         # if self.theme.type == "light"
-                        # else "flat",
+                        # else tk.FLAT,
                         # "padding": 0 if self.theme.type == "light" else -2,
                     },
                     "map": {
@@ -1830,7 +1806,7 @@ class StylerTTK:
                     "configure": {
                         "background": self.colors.primary,
                         "foreground": self.colors.selectfg,
-                        "relief": "flat",
+                        "relief": tk.FLAT,
                         "padding": 5,
                     }
                 },
@@ -2659,16 +2635,16 @@ class StylerTTK:
                         (
                             "Toolbutton.border",
                             {
-                                "sticky": "nswe",
+                                "sticky": tk.NSEW,
                                 "children": [
                                     (
                                         "Toolbutton.padding",
                                         {
-                                            "sticky": "nswe",
+                                            "sticky": tk.NSEW,
                                             "children": [
                                                 (
                                                     "Toolbutton.label",
-                                                    {"sticky": "nswe"},
+                                                    {"sticky": tk.NSEW},
                                                 )
                                             ],
                                         },
@@ -2868,7 +2844,7 @@ class StylerTTK:
         self.settings.update(
             {
                 "exit.TButton": {
-                    "configure": {"relief": "flat", "font": "helvetica 12"},
+                    "configure": {"relief": tk.FLAT, "font": "helvetica 12"},
                     "map": {
                         "background": [
                             ("disabled", disabled_bg),
@@ -2890,7 +2866,7 @@ class StylerTTK:
                 {
                     f"exit.{color}.TButton": {
                         "configure": {
-                            "relief": "flat",
+                            "relief": tk.FLAT,
                             "font": "helvetica 12",
                         },
                         "map": {
@@ -2918,18 +2894,18 @@ class StylerTTK:
                         (
                             "Label.border",
                             {
-                                "sticky": "nswe",
+                                "sticky": tk.NSEW,
                                 "border": "1",
                                 "children": [
                                     (
                                         "Label.padding",
                                         {
-                                            "sticky": "nswe",
+                                            "sticky": tk.NSEW,
                                             "border": "1",
                                             "children": [
                                                 (
                                                     "Label.label",
-                                                    {"sticky": "nswe"},
+                                                    {"sticky": tk.NSEW},
                                                 )
                                             ],
                                         },
@@ -2993,17 +2969,17 @@ class StylerTTK:
         """Create style configuration for ttk labelframe"""
         self.settings.update(
             {
-                "Labelframe.Label": {"element create": ("from", "clam")},
-                "Label.fill": {"element create": ("from", "clam")},
-                "Label.text": {"element create": ("from", "clam")},
+                "Labelframe.Label": {"element create": ("from", TTK_CLAM)},
+                "Label.fill": {"element create": ("from", TTK_CLAM)},
+                "Label.text": {"element create": ("from", TTK_CLAM)},
                 "TLabelframe.Label": {
                     "layout": [
                         (
                             "Label.fill",
                             {
-                                "sticky": "nswe",
+                                "sticky": tk.NSEW,
                                 "children": [
-                                    ("Label.text", {"sticky": "nswe"})
+                                    ("Label.text", {"sticky": tk.NSEW})
                                 ],
                             },
                         )
@@ -3011,7 +2987,7 @@ class StylerTTK:
                     "configure": {"foreground": self.colors.fg},
                 },
                 "TLabelframe": {
-                    "layout": [("Labelframe.border", {"sticky": "nswe"})],
+                    "layout": [("Labelframe.border", {"sticky": tk.NSEW})],
                     "configure": {
                         "relief": "raised",
                         "borderwidth": "1",
@@ -3090,7 +3066,7 @@ class StylerTTK:
                                             "children": [
                                                 (
                                                     "Checkbutton.label",
-                                                    {"sticky": "nswe"},
+                                                    {"sticky": tk.NSEW},
                                                 )
                                             ],
                                             "side": "left",
@@ -3098,7 +3074,7 @@ class StylerTTK:
                                         },
                                     ),
                                 ],
-                                "sticky": "nswe",
+                                "sticky": tk.NSEW,
                             },
                         )
                     ],
@@ -3155,7 +3131,7 @@ class StylerTTK:
                                                 "children": [
                                                     (
                                                         "Checkbutton.label",
-                                                        {"sticky": "nswe"},
+                                                        {"sticky": tk.NSEW},
                                                     )
                                                 ],
                                                 "side": "left",
@@ -3163,7 +3139,7 @@ class StylerTTK:
                                             },
                                         ),
                                     ],
-                                    "sticky": "nswe",
+                                    "sticky": tk.NSEW,
                                 },
                             )
                         ],
