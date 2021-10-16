@@ -854,7 +854,7 @@ class StylerTTK:
             else:
                 ttkstyle = f'{color}.{STYLE}'
                 focuscolor = self.colors.get(color)
-            
+
             self.settings.update(
                 {
                     ttkstyle: {
@@ -869,7 +869,7 @@ class StylerTTK:
                             "relief": tk.FLAT,
                             "padding": 5,
                             "arrowsize ": 14
-                        },                        
+                        },
                         "map": {
                             "foreground": [("disabled", disabled_fg)],
                             "bordercolor": [
@@ -896,7 +896,7 @@ class StylerTTK:
                                 "sticky": tk.EW,
                                 "children": [
                                     ("Combobox.downarrow", {
-                                        "side": tk.RIGHT, 
+                                        "side": tk.RIGHT,
                                         "sticky": tk.NS
                                     }),
                                     ("Combobox.padding", {
@@ -923,7 +923,7 @@ class StylerTTK:
             default_color = self.colors.border
         else:
             default_color = self.colors.selectbg
-        
+
         # horizontal separator
         for color in [DEFAULT, *self.colors]:
             if color == DEFAULT:
@@ -968,7 +968,7 @@ class StylerTTK:
                     ttkstyle: {
                         "layout": [
                             (f"{ttkstyle}.Separator.separator",
-                            {"sticky": tk.NS})]
+                             {"sticky": tk.NS})]
                     }
                 }
             )
@@ -1001,7 +1001,7 @@ class StylerTTK:
             value_delta = 0
         else:
             value_delta = 0.1
-        
+
         barcolor_light = Colors.update_hsv(barcolor, sd=-0.2, vd=value_delta)
 
         # horizontal progressbar
@@ -1012,7 +1012,7 @@ class StylerTTK:
             fill=barcolor,
         )
         draw.polygon(
-            xy=[(0, 52), (48, 100), (0, 100)], 
+            xy=[(0, 52), (48, 100), (0, 100)],
             fill=barcolor)
 
         _resized = img.resize((22, 22), Image.LANCZOS)
@@ -1020,10 +1020,10 @@ class StylerTTK:
         h_name = h_img._PhotoImage__photo.name
         v_img = ImageTk.PhotoImage(_resized.rotate(90))
         v_name = v_img._PhotoImage__photo.name
-        
+
         self.theme_images[h_name] = h_img
         self.theme_images[v_name] = v_img
-        return [h_name, v_name]                            
+        return [h_name, v_name]
 
     def _style_striped_progressbar(self):
         """Apply a striped theme to the progressbar"""
@@ -1039,7 +1039,7 @@ class StylerTTK:
                 v_ttkstyle = VSTYLE
             else:
                 h_ttkstyle = f'{color}.{HSTYLE}'
-                v_ttkstyle = f'{color}.{VSTYLE}'                
+                v_ttkstyle = f'{color}.{VSTYLE}'
 
             self.settings.update(
                 {
@@ -1049,11 +1049,11 @@ class StylerTTK:
                             {"width": 20, "sticky": tk.EW})},
                     h_ttkstyle: {
                         "layout": [
-                            ("Horizontal.Progressbar.trough", {  
+                            ("Horizontal.Progressbar.trough", {
                                 "sticky": tk.NSEW,
                                 "children": [
                                     (f"{h_ttkstyle}.Progressbar.pbar", {
-                                        "side": tk.LEFT, 
+                                        "side": tk.LEFT,
                                         "sticky": tk.NS})]})],
                         "configure": {
                             "troughcolor": self.colors.inputbg,
@@ -1067,11 +1067,11 @@ class StylerTTK:
                             {"width": 20, "sticky": tk.NS})},
                     v_ttkstyle: {
                         "layout": [
-                            ("Vertical.Progressbar.trough", {  
+                            ("Vertical.Progressbar.trough", {
                                 "sticky": tk.NSEW,
                                 "children": [
                                     (f"{v_ttkstyle}.Progressbar.pbar", {
-                                        "side": tk.BOTTOM, 
+                                        "side": tk.BOTTOM,
                                         "sticky": tk.EW})]})],
                         "configure": {
                             "troughcolor": self.colors.inputbg,
@@ -1114,9 +1114,9 @@ class StylerTTK:
                     },
                     f"{color}.Vertical.TProgressbar": {
                         "configure": {"background": self.colors.get(color)}
+                    }
                 }
-            }
-        )
+            )
 
     @staticmethod
     def _create_slider_image(color, size=16):
@@ -1208,7 +1208,8 @@ class StylerTTK:
                                 "expand": "1",
                                 "sticky": tk.NSEW,
                                 "children": [
-                                    ("Vertical.Scale.track", {"sticky": tk.NS}),
+                                    ("Vertical.Scale.track",
+                                     {"sticky": tk.NS}),
                                     (
                                         "Vertical.Scale.slider",
                                         {"side": tk.TOP, "sticky": ""},
@@ -1326,7 +1327,7 @@ class StylerTTK:
         HSTYLE = 'Horizontal.TFloodgauge'
         VSTYLE = 'Vertical.TFloodgauge'
         FLOOD_FONT = 'helvetica 14'
-        
+
         self.settings.update(
             {
                 "Floodgauge.trough": {"element create": ("from", TTK_CLAM)},
@@ -1349,11 +1350,11 @@ class StylerTTK:
             self.settings.update({
                 "Horizontal.TFloodgauge": {
                     "layout": [
-                        ("Floodgauge.trough", { "children": [
+                        ("Floodgauge.trough", {"children": [
                             ("Floodgauge.pbar", {"sticky": tk.NS}),
-                            ("Floodgauge.label", {"sticky": ""})], 
-                             "sticky": tk.NSEW}
-                        )
+                            ("Floodgauge.label", {"sticky": ""})],
+                            "sticky": tk.NSEW}
+                         )
                     ]
                 },
                 "Vertical.TFloodgauge": {
@@ -1361,11 +1362,11 @@ class StylerTTK:
                         ("Floodgauge.trough", {"children": [
                             ("Floodgauge.pbar", {"sticky": tk.EW}),
                             ("Floodgauge.label", {"sticky": ""})],
-                             "sticky": tk.NSEW
-                            }
+                            "sticky": tk.NSEW
+                        }
                         )
                     ]
-                },                        
+                },
                 h_ttkstyle: {
                     "configure": {
                         "thickness": 50,
@@ -1397,7 +1398,7 @@ class StylerTTK:
                     }
                 },
             }
-        )
+            )
 
     def _create_arrow_assets(self, arrowcolor, pressed, active):
         """Create horizontal and vertical arrow assets to be used for
@@ -1417,12 +1418,14 @@ class StylerTTK:
             draw.line([7, 5, 7, 8], fill=color)
             draw.line([8, 6, 8, 9], fill=color)
 
-
             _name = f'{self.theme.name}.{name}'
             assets.update({f"{_name}.uparrow": ImageTk.PhotoImage(img)})
-            assets.update({f"{_name}.downarrow": ImageTk.PhotoImage(img.rotate(180))})
-            assets.update({f"{_name}.leftarrow": ImageTk.PhotoImage(img.rotate(90))})
-            assets.update({f"{_name}.rightarrow": ImageTk.PhotoImage(img.rotate(-90))})
+            assets.update(
+                {f"{_name}.downarrow": ImageTk.PhotoImage(img.rotate(180))})
+            assets.update(
+                {f"{_name}.leftarrow": ImageTk.PhotoImage(img.rotate(90))})
+            assets.update(
+                {f"{_name}.rightarrow": ImageTk.PhotoImage(img.rotate(-90))})
 
         draw_arrow(arrowcolor, "normal")
         draw_arrow(pressed, "pressed")
@@ -1442,7 +1445,7 @@ class StylerTTK:
         else:
             background = Colors.update_hsv(
                 color=self.colors.selectbg,
-                vd=0.35, 
+                vd=0.35,
                 sd=-0.1
             )
             pressed = Colors.update_hsv(background, vd=0.05)
@@ -1492,7 +1495,7 @@ class StylerTTK:
                     "element create": ("from", TTK_ALT)
                 },
                 "Horizontal.Scrollbar.leftarrow": {
-                    "element create": ("image", lf_normal, ('pressed', lf_pressed), ('active', lf_active))  
+                    "element create": ("image", lf_normal, ('pressed', lf_pressed), ('active', lf_active))
                 },
                 "Horizontal.Scrollbar.rightarrow": {
                     "element create": ("image", rt_normal, ('pressed', rt_pressed), ('active', rt_active))
@@ -1544,8 +1547,8 @@ class StylerTTK:
                     "element create": ("from", TTK_DEFAULT)},
                 STYLE: {"layout": [
                     ("custom.Spinbox.field", {
-                        "side": tk.TOP, 
-                        "sticky": tk.EW, 
+                        "side": tk.TOP,
+                        "sticky": tk.EW,
                         "children": [
                             ("null", {
                                 "side": tk.RIGHT,
@@ -1553,16 +1556,16 @@ class StylerTTK:
                                 "children": [
                                     (
                                         "Spinbox.uparrow", {
-                                        "side": tk.TOP,
-                                        "sticky": tk.E}
+                                            "side": tk.TOP,
+                                            "sticky": tk.E}
                                     ),
                                     ("Spinbox.downarrow", {
                                         "side": tk.BOTTOM,
                                         "sticky": tk.E,
-                                        }
+                                    }
                                     )]
-                                }
-                            ),                                    
+                            }
+                            ),
                             (
                                 "Spinbox.padding", {
                                     "sticky": tk.NSEW,
@@ -1570,12 +1573,12 @@ class StylerTTK:
                                         (
                                             "Spinbox.textarea",
                                             {"sticky": tk.NSEW})]
-                                        }
-                                    )
-                                ]
-                            }
-                        )
-                    ]
+                                }
+                            )
+                        ]
+                    }
+                    )
+                ]
                 }
             }
         )
@@ -1627,10 +1630,9 @@ class StylerTTK:
             )
 
     def _style_treeview(self):
-        """Create style configuration for ttk treeview: *ttk.Treeview*. This 
-        widget uses elements from the *alt* and *clam* theme to create the 
-        widget layout.
-        """
+        """Create style configuration for ttk treeview"""
+        STYLE = 'Treeview'
+
         if self.is_light_theme:
             disabled_fg = Colors.update_hsv(self.colors.inputbg, vd=-0.2)
         else:
@@ -1638,66 +1640,63 @@ class StylerTTK:
 
         self.settings.update(
             {
-                "Treeview": {
+                STYLE: {
                     "layout": [
-                        (
-                            "Button.border",
-                            {
-                                "sticky": tk.NSEW,
-                                "border": "1",
-                                "children": [
-                                    (
-                                        "Treeview.padding",
-                                        {
-                                            "sticky": tk.NSEW,
-                                            "children": [
-                                                (
-                                                    "Treeview.treearea",
-                                                    {"sticky": tk.NSEW},
-                                                )
-                                            ],
-                                        },
-                                    )
-                                ],
-                            },
-                        )
-                    ],
-                    "configure": {
-                        "background": self.colors.inputbg,
-                        "foreground": self.colors.inputfg,
-                        "bordercolor": self.colors.bg,
-                        "lightcolor": self.colors.border,
-                        "darkcolor": self.colors.border,
-                    },
-                    "map": {
-                        "background": [("selected", self.colors.selectbg)],
-                        "foreground": [
-                            ("disabled", disabled_fg),
-                            ("selected", self.colors.selectfg),
-                        ],
-                    },
-                },
-                "Treeview.Heading": {
-                    "configure": {
-                        "background": self.colors.primary,
-                        "foreground": self.colors.selectfg,
-                        "relief": tk.FLAT,
-                        "padding": 5,
-                    }
+                        ("Button.border", {
+                            "sticky": tk.NSEW,
+                            "border": "1",
+                            "children": [
+                                ("Treeview.padding", {
+                                    "sticky": tk.NSEW,
+                                    "children": [
+                                        ("Treeview.treearea", {
+                                            "sticky": tk.NSEW})]})]})]
                 },
                 "Treeitem.indicator": {"element create": ("from", TTK_ALT)},
             }
         )
 
-        for color in self.colors:
+        for color in [DEFAULT, *self.colors]:
+            if color == DEFAULT:
+                background = self.colors.inputbg
+                foreground = self.colors.inputfg
+                body_style = 'Treeview'
+                header_style = 'Treeview.Heading'
+            else:
+                background = self.colors.get(color)
+                foreground = self.colors.selectfg
+                body_style = f'{color}.Treeview'
+                header_style = f'{color}.Treeview.Heading'
+
             self.settings.update(
                 {
-                    f"{color}.Treeview.Heading": {
-                        "configure": {"background": self.colors.get(color)},
+                    body_style: {
+                        "configure": {
+                            "background": self.colors.inputbg,
+                            "foreground": self.colors.inputfg,
+                            "bordercolor": self.colors.bg,
+                            "lightcolor": self.colors.border,
+                            "darkcolor": self.colors.border,
+                        },
+                        "map": {
+                            "background": [
+                                ("selected", self.colors.selectbg)],
+                            "foreground": [
+                                ("disabled", disabled_fg),
+                                ("selected", self.colors.selectfg)],
+                        },
+                    },
+                    header_style: {
+                        "configure": {
+                            "background": background,
+                            "foreground": foreground,
+                            "relief": tk.FLAT,
+                            "padding": 5
+                        },
                         "map": {
                             "foreground": [("disabled", disabled_fg)],
                             "bordercolor": [
-                                ("focus !disabled", self.colors.get(color))
+                                ("focus !disabled", background)
                             ],
                         },
                     }
@@ -1721,7 +1720,7 @@ class StylerTTK:
 
     def _style_solid_buttons(self):
         """Apply a solid color style to ttk button"""
-        
+
         STYLE = 'TButton'
 
         if self.is_light_theme:
@@ -1737,7 +1736,7 @@ class StylerTTK:
                 ttkstyle = STYLE
             else:
                 background = self.colors.get(color)
-                ttkstyle =f'{color}.{STYLE}'
+                ttkstyle = f'{color}.{STYLE}'
             if self.is_light_theme:
                 pressed = Colors.update_hsv(background, vd=-0.2)
                 hover = Colors.update_hsv(background, vd=-0.1)
@@ -1762,26 +1761,26 @@ class StylerTTK:
                         },
                         "map": {
                             "foreground": [("disabled", disabled_fg)],
-                        "background": [
-                            ("disabled", disabled_bg),
-                            ("pressed !disabled", pressed),
-                            ("hover !disabled", hover),
-                        ],
-                        "bordercolor": [
-                            ("disabled", disabled_bg),
-                            ("pressed !disabled",pressed),
-                            ("hover !disabled", hover),
-                        ],
-                        "darkcolor": [
-                            ("disabled", disabled_bg),
-                            ("pressed !disabled", pressed),
-                            ("hover !disabled", hover)
-                        ],
-                        "lightcolor": [
-                            ("disabled", disabled_bg),
-                            ("pressed !disabled", pressed),
-                            ("hover !disabled", hover)
-                        ]}
+                            "background": [
+                                ("disabled", disabled_bg),
+                                ("pressed !disabled", pressed),
+                                ("hover !disabled", hover),
+                            ],
+                            "bordercolor": [
+                                ("disabled", disabled_bg),
+                                ("pressed !disabled", pressed),
+                                ("hover !disabled", hover),
+                            ],
+                            "darkcolor": [
+                                ("disabled", disabled_bg),
+                                ("pressed !disabled", pressed),
+                                ("hover !disabled", hover)
+                            ],
+                            "lightcolor": [
+                                ("disabled", disabled_bg),
+                                ("pressed !disabled", pressed),
+                                ("hover !disabled", hover)
+                            ]}
                     }
                 }
             )
@@ -1861,7 +1860,7 @@ class StylerTTK:
 
     def _style_link_buttons(self):
         """Apply a solid color style to ttk button"""
-        
+
         STYLE = 'Link.TButton'
 
         pressed = self.colors.info
@@ -1879,7 +1878,7 @@ class StylerTTK:
             else:
                 foreground = self.colors.get(color)
                 ttkstyle = f'{color}.{STYLE}'
-            
+
             self.settings.update(
                 {
                     ttkstyle: {
@@ -1953,7 +1952,7 @@ class StylerTTK:
             off_border = self.colors.selectbg
             off_indicator = self.colors.selectbg
             disabled_fg = Colors.update_hsv(self.colors.inputbg, vd=-0.2)
-            
+
         else:
             off_border = self.colors.inputbg
             off_indicator = self.colors.inputbg
@@ -1963,9 +1962,9 @@ class StylerTTK:
         toggle_off = Image.new("RGBA", (226, 130))
         draw = ImageDraw.Draw(toggle_off)
         draw.rectangle(
-            xy=[1, 1, 225, 129], 
-            outline=off_border, 
-            width=6, 
+            xy=[1, 1, 225, 129],
+            outline=off_border,
+            width=6,
             fill=off_fill
         )
         draw.rectangle([18, 18, 110, 110], fill=off_indicator)
@@ -1973,9 +1972,9 @@ class StylerTTK:
         toggle_on = Image.new("RGBA", (226, 130))
         draw = ImageDraw.Draw(toggle_on)
         draw.rectangle(
-            xy=[1, 1, 225, 129], 
-            outline=on_border, 
-            width=6, 
+            xy=[1, 1, 225, 129],
+            outline=on_border,
+            width=6,
             fill=on_fill
         )
         draw.rectangle([18, 18, 110, 110], fill=on_indicator)
@@ -1992,7 +1991,7 @@ class StylerTTK:
             _name = _im._PhotoImage__photo.name
             image_names.append(_name)
             self.theme_images[_name] = _im
-        
+
         return image_names
 
     def _create_roundtoggle_image(self, colorname):
@@ -2013,7 +2012,7 @@ class StylerTTK:
             prime_color = self.colors.primary
         else:
             prime_color = self.colors.get(colorname)
-        
+
         on_border = prime_color
         on_indicator = self.colors.selectfg
         on_fill = prime_color
@@ -2054,9 +2053,9 @@ class StylerTTK:
         toggle_disabled = Image.new("RGBA", (226, 130))
         draw = ImageDraw.Draw(toggle_disabled)
         draw.rounded_rectangle(
-            xy=[1, 1, 225, 129], 
-            radius=(128 / 2), 
-            outline=disabled_fg, 
+            xy=[1, 1, 225, 129],
+            radius=(128 / 2),
+            outline=disabled_fg,
             width=6
         )
         draw.ellipse([20, 18, 112, 110], fill=disabled_fg)
@@ -2067,7 +2066,7 @@ class StylerTTK:
             _name = _im._PhotoImage__photo.name
             image_names.append(_name)
             self.theme_images[_name] = _im
-        
+
         return image_names
 
     def _style_roundtoggle_toolbutton(self):
@@ -2082,7 +2081,7 @@ class StylerTTK:
             disabled_fg = self.colors.inputbg
 
         for color in [DEFAULT, *self.colors]:
-            
+
             _on, _off, _disabled = self._create_roundtoggle_image(color)
 
             if color == DEFAULT:
@@ -2096,9 +2095,9 @@ class StylerTTK:
                 {
                     f"{ttkstyle}.indicator": {
                         "element create": ("image", _on,
-                            ("disabled", _disabled),
-                            ("!selected", _off),
-                            {"width": 28, "border": 4, "sticky": "w"})},
+                                           ("disabled", _disabled),
+                                           ("!selected", _off),
+                                           {"width": 28, "border": 4, "sticky": "w"})},
                     ttkstyle: {
                         "layout": [
                             ("Toolbutton.border", {
@@ -2130,7 +2129,7 @@ class StylerTTK:
         accept the toolbutton style
         """
         STYLE = 'Squaretoggle.Toolbutton'
-        
+
         if self.is_light_theme:
             disabled_fg = Colors.update_hsv(self.colors.inputbg, vd=-0.2)
         else:
@@ -2138,9 +2137,9 @@ class StylerTTK:
 
         # color variations
         for color in [DEFAULT, *self.colors]:
-            
+
             _on, _off, _disabled = self._create_squaretoggle_image(color)
-            
+
             if color == DEFAULT:
                 ttkstyle = STYLE
                 indicatorcolor = self.colors.primary
@@ -2152,22 +2151,22 @@ class StylerTTK:
             self.settings.update(
                 {
                     f"{ttkstyle}.indicator": {
-                        "element create": ("image", _on, 
-                            ("disabled", _disabled),
-                            ("!selected", _off),
-                            {"width": 28, "border": 4, "sticky": tk.W})},
+                        "element create": ("image", _on,
+                                           ("disabled", _disabled),
+                                           ("!selected", _off),
+                                           {"width": 28, "border": 4, "sticky": tk.W})},
                     ttkstyle: {
                         "layout": [
                             ("Toolbutton.border", {
-                                    "sticky": tk.NSEW,
-                                    "children": [
-                                        ("Toolbutton.padding", {
-                                            "sticky": tk.NSEW,
-                                            "children": [
-                                                (f"{ttkstyle}.indicator", 
-                                                 {"side": tk.LEFT}),
-                                                ("Toolbutton.label",
-                                                 {"side": "left"})]})]})],
+                                "sticky": tk.NSEW,
+                                "children": [
+                                    ("Toolbutton.padding", {
+                                        "sticky": tk.NSEW,
+                                        "children": [
+                                            (f"{ttkstyle}.indicator",
+                                             {"side": tk.LEFT}),
+                                            ("Toolbutton.label",
+                                             {"side": "left"})]})]})],
                         "configure": {
                             "relief": tk.FLAT,
                             "borderwidth": 0,
@@ -2207,7 +2206,7 @@ class StylerTTK:
                 toggle_off = self.colors.selectbg
             else:
                 toggle_off = self.colors.inputbg
-            
+
             self.settings.update(
                 {
                     ttkstyle: {
@@ -2356,7 +2355,7 @@ class StylerTTK:
                             "fieldbackground": self.colors.inputbg,
                             "foreground": self.colors.inputfg,
                             "padding": 5,
-                        },                        
+                        },
                         "map": {
                             "foreground": [("disabled", disabled_fg)],
                             "bordercolor": [
@@ -2411,9 +2410,9 @@ class StylerTTK:
         radio_off = Image.new("RGBA", (134, 134))
         draw = ImageDraw.Draw(radio_off)
         draw.ellipse(
-            xy=[2, 2, 132, 132], 
-            outline=off_border, 
-            width=3, 
+            xy=[2, 2, 132, 132],
+            outline=off_border,
+            width=3,
             fill=off_fill
         )
 
@@ -2421,9 +2420,9 @@ class StylerTTK:
         radio_on = Image.new("RGBA", (134, 134))
         draw = ImageDraw.Draw(radio_on)
         draw.ellipse(
-            xy=[2, 2, 132, 132], 
-            outline=on_border, 
-            width=12, 
+            xy=[2, 2, 132, 132],
+            outline=on_border,
+            width=12,
             fill=on_fill
         )
         draw.ellipse([40, 40, 94, 94], fill=on_indicator)
@@ -2432,9 +2431,9 @@ class StylerTTK:
         radio_disabled = Image.new("RGBA", (134, 134))
         draw = ImageDraw.Draw(radio_disabled)
         draw.ellipse(
-            xy=[2, 2, 132, 132], 
-            outline=disabled, 
-            width=3, 
+            xy=[2, 2, 132, 132],
+            outline=disabled,
+            width=3,
             fill=off_fill
         )
 
@@ -2450,7 +2449,7 @@ class StylerTTK:
 
     def _style_radiobutton(self):
         """Create style configuration for ttk radiobutton"""
-        
+
         STYLE = 'TRadiobutton'
 
         if self.is_light_theme:
@@ -2460,7 +2459,7 @@ class StylerTTK:
 
         for color in [DEFAULT, *self.colors]:
             _on, _off, _disabled = self._create_radiobutton_images(color)
-            
+
             if color == DEFAULT:
                 ttkstyle = STYLE
                 focuscolor = self.colors.primary
@@ -2472,20 +2471,20 @@ class StylerTTK:
                 {
                     f"{ttkstyle}.indicator": {
                         "element create": (
-                            "image", _on, 
+                            "image", _on,
                             ("disabled", _disabled),
                             ("!selected", _off),
                             {"width": 20, "border": 4, "sticky": tk.W})},
                     ttkstyle: {
                         "layout": [
                             ("Radiobutton.padding", {"children": [
-                                (f"{ttkstyle}.indicator", 
+                                (f"{ttkstyle}.indicator",
                                  {"side": tk.LEFT, "sticky": ""}),
                                 ("Radiobutton.focus", {"children": [
-                                    ("Radiobutton.label", 
+                                    ("Radiobutton.label",
                                      {"sticky": tk.NSEW})],
                                     "side": tk.LEFT, "sticky": ""})],
-                                    "sticky": tk.NSEW})],
+                                "sticky": tk.NSEW})],
                         "configure": {"font": self.theme.font},
                         "map": {
                             "foreground": [
@@ -3554,7 +3553,7 @@ class StylerTTK:
     def _style_sizegrip(self):
         """Create style configuration for ttk sizegrip"""
         if self.is_light_theme:
-            default_color = "border" 
+            default_color = "border"
         else:
             default_color = "inputbg"
 

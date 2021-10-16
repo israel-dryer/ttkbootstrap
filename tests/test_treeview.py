@@ -42,7 +42,7 @@ def create_treeview_style(widget_style, style):
 if __name__ == '__main__':
     # create visual widget style tests
     root = tk.Tk()
-    style = Style(theme=DARK)
+    style = Style(theme=LIGHT)
 
     create_treeview_style('Treeview', style).pack(side=tk.LEFT)
 
