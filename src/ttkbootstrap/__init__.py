@@ -914,112 +914,56 @@ class StylerTTK:
         general use. However, all other colors will be available as
         well through styling.
         """
-        # horizontal separator default
-        if self.is_light_theme:
-            default_color = self.colors.border
-        else:
-            default_color = self.colors.selectbg
-        h_im = Image.new("RGB", (40, 1))
-        draw = ImageDraw.Draw(h_im)
-        draw.rectangle([0, 0, 40, 1], fill=default_color)
-        self.theme_images["hseparator"] = ImageTk.PhotoImage(h_im)
-
-        self.settings.update(
-            {
-                "Horizontal.Separator.separator": {
-                    "element create": (
-                        "image",
-                        self.theme_images["hseparator"],
-                    )
-                },
-                "Horizontal.TSeparator": {
-                    "layout": [
-                        ("Horizontal.Separator.separator", {"sticky": "ew"})
-                    ]
-                },
-            }
-        )
-
-        # horizontal separator variations
-        for color in self.colors:
-            h_im = Image.new("RGB", (40, 1))
-            draw = ImageDraw.Draw(h_im)
-            draw.rectangle([0, 0, 40, 1], fill=self.colors.get(color))
-            self.theme_images[
-                f"{color}_hseparator"] = ImageTk.PhotoImage(h_im)
-
-            self.settings.update(
-                {
-                    f"{color}.Horizontal.Separator.separator": {
-                        "element create": (
-                            "image",
-                            self.theme_images[f"{color}_hseparator"],
-                        )
-                    },
-                    f"{color}.Horizontal.TSeparator": {
-                        "layout": [
-                            (
-                                f"{color}.Horizontal.Separator.separator",
-                                {"sticky": "ew"},
-                            )
-                        ]
-                    },
-                }
-            )
-
-        # vertical separator default
+        HSTYLE = 'Horizontal.TSeparator'
+        VSTYLE = 'Vertical.TSeparator'
 
         if self.is_light_theme:
             default_color = self.colors.border
         else:
             default_color = self.colors.selectbg
+        
+        # horizontal separator
+        for color in [DEFAULT, *self.colors]:
+            if color == DEFAULT:
+                background = default_color
+                ttkstyle = HSTYLE
+            else:
+                background = self.colors.get(color)
+                ttkstyle = f'{color}.{HSTYLE}'
 
-        v_im = Image.new("RGB", (1, 40))
-        draw = ImageDraw.Draw(v_im)
-        draw.rectangle([0, 0, 1, 40], fill=default_color)
-        self.theme_images["vseparator"] = ImageTk.PhotoImage(v_im)
-
-        self.settings.update(
-            {
-                "Vertical.Separator.separator": {
-                    "element create": (
-                        "image",
-                        self.theme_images["vseparator"],
-                    )
-                },
-                "Vertical.TSeparator": {
-                    "layout": [
-                        ("Vertical.Separator.separator", {"sticky": tk.NS})
-                    ]
-                },
-            }
-        )
-
-        # vertical separator variations
-        for color in self.colors:
-            v_im = Image.new("RGB", (1, 40))
-            draw = ImageDraw.Draw(v_im)
-            draw.rectangle([0, 0, 1, 40], fill=self.colors.get(color))
-            self.theme_images[f"{color}_vseparator"] = ImageTk.PhotoImage(v_im)
-
+            # create separator image
+            _img = ImageTk.PhotoImage(Image.new("RGB", (40, 1), background))
+            _name = _img._PhotoImage__photo.name
+            self.theme_images[_name] = _img
             self.settings.update(
                 {
-                    f"{color}.Vertical.Separator.separator": {
-                        "element create": (
-                            "image",
-                            self.theme_images[f"{color}_vseparator"],
-                        )
-                    },
-                    f"{color}.Vertical.TSeparator": {
+                    f"{ttkstyle}.Separator.separator": {
+                        "element create": ("image", _name)},
+                    ttkstyle: {
                         "layout": [
-                            (
-                                f"{color}.Vertical.Separator.separator",
-                                {"sticky": tk.NS},
-                            )
-                        ]
-                    },
-                }
-            )
+                            (f"{ttkstyle}.Separator.separator",
+                             {"sticky": tk.EW})]}})
+
+        # vertical separator
+        for color in [DEFAULT, *self.colors]:
+            if color == DEFAULT:
+                background = default_color
+                ttkstyle = VSTYLE
+            else:
+                background = self.colors.get(color)
+                ttkstyle = f'{color}.{VSTYLE}'
+
+            _img = ImageTk.PhotoImage(Image.new("RGB", (1, 40), background))
+            _name = _img._PhotoImage__photo.name
+            self.theme_images[_name] = _img
+            self.settings.update(
+                {
+                    f"{ttkstyle}.Separator.separator": {
+                        "element create": ("image", _name)},
+                    ttkstyle: {
+                        "layout": [
+                            (f"{ttkstyle}.Separator.separator",
+                            {"sticky": tk.NS})]}})
 
     def _style_striped_progressbar(self):
         """Apply a striped theme to the progressbar"""
