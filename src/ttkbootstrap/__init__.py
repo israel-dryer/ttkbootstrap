@@ -1241,7 +1241,6 @@ class StylerTTK:
                 },
             }
         )
-
         for color in self.colors:
             self.theme_images.update(
                 {
@@ -1324,110 +1323,81 @@ class StylerTTK:
         it into a floodgauge. Which is essentially a very large progress bar 
         with text in the middle.
         """
+        HSTYLE = 'Horizontal.TFloodgauge'
+        VSTYLE = 'Vertical.TFloodgauge'
+        FLOOD_FONT = 'helvetica 14'
+        
         self.settings.update(
             {
                 "Floodgauge.trough": {"element create": ("from", TTK_CLAM)},
-                "Floodgauge.pbar": {"element create": ("from", "default")},
+                "Floodgauge.pbar": {"element create": ("from", TTK_DEFAULT)},
+            }
+        )
+        for color in [DEFAULT, *self.colors]:
+
+            if color == DEFAULT:
+                h_ttkstyle = HSTYLE
+                v_ttkstyle = VSTYLE
+                background = self.colors.primary
+            else:
+                h_ttkstyle = f'{color}.{HSTYLE}'
+                v_ttkstyle = f'{color}.{VSTYLE}'
+                background = self.colors.get(color)
+
+            troughcolor = Colors.update_hsv(background, sd=-0.3, vd=0.8)
+
+            self.settings.update({
                 "Horizontal.TFloodgauge": {
                     "layout": [
-                        (
-                            "Floodgauge.trough",
-                            {
-                                "children": [
-                                    ("Floodgauge.pbar", {"sticky": tk.NS}),
-                                    ("Floodgauge.label", {"sticky": ""}),
-                                ],
-                                "sticky": tk.NSEW,
-                            },
+                        ("Floodgauge.trough", { "children": [
+                            ("Floodgauge.pbar", {"sticky": tk.NS}),
+                            ("Floodgauge.label", {"sticky": ""})], 
+                             "sticky": tk.NSEW}
                         )
-                    ],
-                    "configure": {
-                        "thickness": 50,
-                        "borderwidth": 1,
-                        "bordercolor": self.colors.primary,
-                        "lightcolor": self.colors.primary,
-                        "pbarrelief": tk.FLAT,
-                        "troughcolor": Colors.update_hsv(
-                            self.colors.primary, sd=-0.3, vd=0.8
-                        ),
-                        "background": self.colors.primary,
-                        "foreground": self.colors.selectfg,
-                        "justify": "center",
-                        "anchor": "center",
-                        "font": "helvetica 14",
-                    },
+                    ]
                 },
                 "Vertical.TFloodgauge": {
                     "layout": [
-                        (
-                            "Floodgauge.trough",
-                            {
-                                "children": [
-                                    ("Floodgauge.pbar", {"sticky": tk.EW}),
-                                    ("Floodgauge.label", {"sticky": ""}),
-                                ],
-                                "sticky": tk.NSEW,
-                            },
+                        ("Floodgauge.trough", {"children": [
+                            ("Floodgauge.pbar", {"sticky": tk.EW}),
+                            ("Floodgauge.label", {"sticky": ""})],
+                             "sticky": tk.NSEW
+                            }
                         )
-                    ],
+                    ]
+                },                        
+                h_ttkstyle: {
                     "configure": {
                         "thickness": 50,
                         "borderwidth": 1,
-                        "bordercolor": self.colors.primary,
-                        "lightcolor": self.colors.primary,
+                        "bordercolor": background,
+                        "lightcolor": background,
                         "pbarrelief": tk.FLAT,
-                        "troughcolor": Colors.update_hsv(
-                            self.colors.primary, sd=-0.3, vd=0.8
-                        ),
-                        "background": self.colors.primary,
+                        "troughcolor": troughcolor,
+                        "background": background,
                         "foreground": self.colors.selectfg,
-                        "justify": "center",
-                        "anchor": "center",
-                        "font": "helvetica 14",
-                    },
+                        "justify": tk.CENTER,
+                        "anchor": tk.CENTER,
+                        "font": FLOOD_FONT,
+                    }
+                },
+                v_ttkstyle: {
+                    "configure": {
+                        "thickness": 50,
+                        "borderwidth": 1,
+                        "bordercolor": background,
+                        "lightcolor": background,
+                        "pbarrelief": tk.FLAT,
+                        "troughcolor": troughcolor,
+                        "background": background,
+                        "foreground": self.colors.selectfg,
+                        "justify": tk.CENTER,
+                        "anchor": tk.CENTER,
+                        "font": FLOOD_FONT
+                    }
                 },
             }
         )
-
-        for color in self.colors:
-            self.settings.update(
-                {
-                    f"{color}.Horizontal.TFloodgauge": {
-                        "configure": {
-                            "thickness": 50,
-                            "borderwidth": 1,
-                            "bordercolor": self.colors.get(color),
-                            "lightcolor": self.colors.get(color),
-                            "pbarrelief": tk.FLAT,
-                            "troughcolor": Colors.update_hsv(
-                                self.colors.get(color), sd=-0.3, vd=0.8
-                            ),
-                            "background": self.colors.get(color),
-                            "foreground": self.colors.selectfg,
-                            "justify": "center",
-                            "anchor": "center",
-                            "font": "helvetica 14",
-                        }
-                    },
-                    f"{color}.Vertical.TFloodgauge": {
-                        "configure": {
-                            "thickness": 50,
-                            "borderwidth": 1,
-                            "bordercolor": self.colors.get(color),
-                            "lightcolor": self.colors.get(color),
-                            "pbarrelief": tk.FLAT,
-                            "troughcolor": Colors.update_hsv(
-                                self.colors.get(color), sd=-0.3, vd=0.8
-                            ),
-                            "background": self.colors.get(color),
-                            "foreground": self.colors.selectfg,
-                            "justify": "center",
-                            "anchor": "center",
-                            "font": "helvetica 14",
-                        }
-                    },
-                }
-            )
 
     def _create_arrow_assets(self, arrowcolor, pressed, active):
         """Create horizontal and vertical arrow assets to be used for
