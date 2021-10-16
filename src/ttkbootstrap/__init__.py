@@ -2106,7 +2106,7 @@ class StylerTTK:
                         "element create": ("image", _on,
                                            ("disabled", _disabled),
                                            ("!selected", _off),
-                                           {"width": 28, "border": 4, "sticky": "w"})},
+                                           {"width": 28, "border": 4, "sticky": tk.W})},
                     ttkstyle: {
                         "layout": [
                             ("Toolbutton.border", {
@@ -2816,33 +2816,33 @@ class StylerTTK:
 
     def _style_label(self):
         """Create style configuration for ttk label"""
-        self.settings.update(
-            {
-                "TLabel": {
-                    "configure": {
-                        "foreground": self.colors.fg,
-                        "background": self.colors.bg,
-                    }
-                },
-                "Inverse.TLabel": {
-                    "configure": {
-                        "foreground": self.colors.bg,
-                        "background": self.colors.fg,
-                    }
-                },
-            }
-        )
 
-        for color in self.colors:
+        STYLE = 'TLabel'
+
+        for color in [DEFAULT, *self.colors]:
+            if color == DEFAULT:
+                ttkstyle = STYLE
+                inverse_ttkstyle = f'Inverse.{STYLE}'
+                stylecolor = self.colors.fg
+                inv_foreground = self.colors.bg
+            else:
+                ttkstyle = f'{color}.{STYLE}'
+                inverse_ttkstyle = f'{color}.Inverse.{STYLE}'
+                stylecolor = self.colors.get(color)
+                inv_foreground = self.colors.selectfg
+
             self.settings.update(
                 {
-                    f"{color}.TLabel": {
-                        "configure": {"foreground": self.colors.get(color)}
-                    },
-                    f"{color}.Inverse.TLabel": {
+                    ttkstyle: {
                         "configure": {
-                            "foreground": self.colors.selectfg,
-                            "background": self.colors.get(color),
+                            "foreground": stylecolor,
+                            "background": self.colors.bg
+                        }
+                    },
+                    inverse_ttkstyle: {
+                        "configure": {
+                            "foreground": inv_foreground,
+                            "background": stylecolor
                         }
                     },
                 }
@@ -2930,7 +2930,7 @@ class StylerTTK:
                             "!selected",
                             self.theme_images["primary_checkbutton_off"],
                         ),
-                        {"width": 20, "border": 4, "sticky": "w"},
+                        {"width": 20, "border": 4, "sticky": tk.W},
                     )
                 },
                 "TCheckbutton": {
@@ -2995,7 +2995,7 @@ class StylerTTK:
                                 "!selected",
                                 self.theme_images[f"{color}_checkbutton_off"],
                             ),
-                            {"width": 20, "border": 4, "sticky": "w"},
+                            {"width": 20, "border": 4, "sticky": tk.W},
                         )
                     },
                     f"{color}.TCheckbutton": {
