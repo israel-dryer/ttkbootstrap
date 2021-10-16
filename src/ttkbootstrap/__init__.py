@@ -1705,15 +1705,24 @@ class StylerTTK:
 
     def _style_frame(self):
         """Create style configuration for ttk frame"""
-        self.settings.update(
-            {"TFrame": {"configure": {"background": self.colors.bg}}}
-        )
+        STYLE = 'TFrame'
 
-        for color in self.colors:
+        for color in [DEFAULT, *self.colors]:
+            if color == DEFAULT:
+                ttkstyle = STYLE
+                background = self.colors.bg
+            else:
+                ttkstyle = f'{color}.{STYLE}'
+                background = self.colors.get(color)
+
             self.settings.update(
                 {
-                    f"{color}.TFrame": {
-                        "configure": {"background": self.colors.get(color)}
+                    ttkstyle:
+                    {
+                        "configure":
+                        {
+                            "background": background
+                        }
                     }
                 }
             )
