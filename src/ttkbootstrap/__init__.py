@@ -3544,65 +3544,39 @@ class StylerTTK:
 
     def _style_panedwindow(self):
         """Create style configuration for ttk paned window"""
-        self.settings.update(
-            {
-                "TPanedwindow": {"configure": {"background": self.colors.bg}},
-                "Sash": {
-                    "configure": {
-                        "bordercolor": self.colors.bg,
-                        "lightcolor": self.colors.bg,
-                        "sashthickness": 8,
-                        "sashpad": 0,
-                        "gripcount": 0,
-                    }
-                },
-            }
-        )
+        PANE_STYLE = 'TPanedwindow'
 
-    def _style_sizegrip(self):
-        """Create style configuration for ttk sizegrip"""
         if self.is_light_theme:
-            default_color = "border"
+            default_color = self.colors.border
         else:
-            default_color = "inputbg"
+            default_color = self.colors.selectbg
 
-        self._create_sizegrip_images(default_color)
         self.settings.update(
             {
-                "Sizegrip.sizegrip": {
-                    "element create": (
-                        "image",
-                        self.theme_images[f"{default_color}_sizegrip"],
-                    )
-                },
-                "TSizegrip": {
-                    "layout": [
-                        (
-                            "Sizegrip.sizegrip",
-                            {"side": "bottom", "sticky": "se"},
-                        )
-                    ]
-                },
+                'Sash': {
+                    "configure": {
+                        "sashthickness": 3,
+                        "gripcount": 0,
+                    },
+                }
             }
         )
 
-        for color in self.colors:
-            self._create_sizegrip_images(color)
+        for color in [DEFAULT, *self.colors]:
+
+            if color == DEFAULT:
+                sashcolor = default_color
+                sash_ttkstyle = PANE_STYLE
+            else:
+                sashcolor = self.colors.get(color)
+                sash_ttkstyle = f'{color}.{PANE_STYLE}'
+
             self.settings.update(
                 {
-                    f"{color}.Sizegrip.sizegrip": {
-                        "element create": (
-                            "image",
-                            self.theme_images[f"{color}_sizegrip"],
-                        )
-                    },
-                    f"{color}.TSizegrip": {
-                        "layout": [
-                            (
-                                f"{color}.Sizegrip.sizegrip",
-                                {"side": "bottom", "sticky": "se"},
-                            )
-                        ]
+                    sash_ttkstyle: {
+                        "configure": {
+                            "background": sashcolor
+                        }
                     },
                 }
             )
@@ -3614,6 +3588,11 @@ class StylerTTK:
         ----------
         colorname : str
             The name of the color to use for the sizegrip images
+
+        Returns
+        -------
+        str
+            The PhotoImage name.
         """
         im = Image.new("RGBA", (14, 14))
         draw = ImageDraw.Draw(im)
@@ -3624,4 +3603,41 @@ class StylerTTK:
         draw.rectangle((3, 9, 4, 10), fill=color)  # bottom
         draw.rectangle((6, 9, 7, 10), fill=color)
         draw.rectangle((9, 9, 10, 10), fill=color)
-        self.theme_images[f"{colorname}_sizegrip"] = ImageTk.PhotoImage(im)
+
+        _img = ImageTk.PhotoImage(im)
+        _name = _img._PhotoImage__photo.name
+        self.theme_images[_name] = _img
+        return _name
+
+    def _style_sizegrip(self):
+        """Create style configuration for ttk sizegrip"""
+        STYLE = 'TSizegrip'
+
+        if self.is_light_theme:
+            default_color = "border"
+        else:
+            default_color = "inputbg"
+
+        for color in [DEFAULT, *self.colors]:
+
+            if color == DEFAULT:
+                grip_image = self._create_sizegrip_images(default_color)
+                ttkstyle = STYLE
+            else:
+                grip_image = self._create_sizegrip_images(color)
+                ttkstyle = f'{color}.{STYLE}'
+
+            self.settings.update(
+                {
+                    f"{ttkstyle}.Sizegrip.sizegrip": {
+                        "element create": ("image", grip_image)},
+                    ttkstyle: {
+                        "layout": [
+                            (
+                                f"{ttkstyle}.Sizegrip.sizegrip", {
+                                    "side": tk.BOTTOM, "sticky": tk.SE},
+                            )
+                        ]
+                    },
+                }
+            )
