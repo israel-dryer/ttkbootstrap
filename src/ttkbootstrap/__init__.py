@@ -1907,8 +1907,8 @@ class StylerTTK:
                             ],
                             "shiftrelief": [("pressed !disabled", -1)],
                             "focuscolor": [
-                                ("pressed !disabled", focuscolor),
-                                ("hover !disabled", focuscolor)
+                                ("pressed !disabled", pressed),
+                                ("hover !disabled", pressed)
                             ],
                             "background": [
                                 ("disabled", self.colors.bg),
@@ -3033,7 +3033,7 @@ class StylerTTK:
                             "arrowpadding": (0, 0, 15, 0),
                             "relief": tk.RAISED,
                             "focusthickness": 0,
-                            "focuscolor": "",
+                            "focuscolor": self.colors.selectfg,
                             "padding": (10, 5),
                         },
                         "map": {
