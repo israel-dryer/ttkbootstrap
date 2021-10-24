@@ -2502,132 +2502,30 @@ class StylerTTK:
 
     def _style_calendar(self):
         """Create style configuration for the date chooser"""
-        # disabled settings
-        if self.is_light_theme:
-            disabled_fg = Colors.update_hsv(self.colors.inputbg, vd=-0.2)
-        else:
-            disabled_fg = Colors.update_hsv(self.colors.inputbg, vd=-0.3)
 
-        # pressed and hover settings
-        pressed_vd = -0.10
+        STYLE = 'TCalendar'
 
-        self.settings.update(
-            {
-                "TCalendar": {
-                    "layout": [
-                        (
-                            "Toolbutton.border",
-                            {
-                                "sticky": tk.NSEW,
-                                "children": [
-                                    (
-                                        "Toolbutton.padding",
-                                        {
-                                            "sticky": tk.NSEW,
-                                            "children": [
-                                                (
-                                                    "Toolbutton.label",
-                                                    {"sticky": tk.NSEW},
-                                                )
-                                            ],
-                                        },
-                                    )
-                                ],
-                            },
-                        )
-                    ],
-                    "configure": {
-                        "foreground": self.colors.fg,
-                        "background": self.colors.bg,
-                        "bordercolor": self.colors.bg,
-                        "darkcolor": self.colors.bg,
-                        "lightcolor": self.colors.bg,
-                        "relief": "raised",
-                        "font": self.theme.font,
-                        "focusthickness": 0,
-                        "focuscolor": "",
-                        "borderwidth": 1,
-                        "anchor": "center",
-                        "padding": (10, 5),
-                    },
-                    "map": {
-                        "foreground": [
-                            ("disabled", disabled_fg),
-                            ("pressed !disabled", self.colors.selectfg),
-                            ("selected !disabled", self.colors.selectfg),
-                            ("hover !disabled", self.colors.selectfg),
-                        ],
-                        "background": [
-                            (
-                                "pressed !disabled",
-                                Colors.update_hsv(
-                                    self.colors.primary, vd=pressed_vd
-                                ),
-                            ),
-                            (
-                                "selected !disabled",
-                                Colors.update_hsv(
-                                    self.colors.primary, vd=pressed_vd
-                                ),
-                            ),
-                            ("hover !disabled", self.colors.primary),
-                        ],
-                        "bordercolor": [
-                            ("disabled", disabled_fg),
-                            (
-                                "pressed !disabled",
-                                Colors.update_hsv(
-                                    self.colors.primary, vd=pressed_vd
-                                ),
-                            ),
-                            (
-                                "selected !disabled",
-                                Colors.update_hsv(
-                                    self.colors.primary, vd=pressed_vd
-                                ),
-                            ),
-                            ("hover !disabled", self.colors.primary),
-                        ],
-                        "darkcolor": [
-                            (
-                                "pressed !disabled",
-                                Colors.update_hsv(
-                                    self.colors.primary, vd=pressed_vd
-                                ),
-                            ),
-                            (
-                                "selected !disabled",
-                                Colors.update_hsv(
-                                    self.colors.primary, vd=pressed_vd
-                                ),
-                            ),
-                            ("hover !disabled", self.colors.primary),
-                        ],
-                        "lightcolor": [
-                            (
-                                "pressed !disabled",
-                                Colors.update_hsv(
-                                    self.colors.primary, vd=pressed_vd
-                                ),
-                            ),
-                            (
-                                "selected !disabled",
-                                Colors.update_hsv(
-                                    self.colors.primary, vd=pressed_vd
-                                ),
-                            ),
-                            ("hover !disabled", self.colors.primary),
-                        ],
-                    },
-                },
-                "chevron.TButton": {"configure": {"font": "helvetica 14"}},
-            }
-        )
+        for color in [DEFAULT, *self.colors]:
 
-        for color in self.colors:
+            if color == DEFAULT:
+                prime_color = self.colors.primary
+                ttkstyle = STYLE
+                chevron_style = "chevron.TButton"
+            else:
+                prime_color = self.colors.get(color)
+                ttkstyle = f'{color}.{STYLE}'
+                chevron_style = f"chevron.{color}.TButton"
+
+            if self.is_light_theme:
+                disabled_fg = Colors.update_hsv(self.colors.inputbg, vd=-0.2)
+                pressed = Colors.update_hsv(prime_color, vd=-0.1)
+            else:
+                disabled_fg = Colors.update_hsv(self.colors.inputbg, vd=-0.3)
+                pressed = Colors.update_hsv(prime_color, vd=0.1)
+
             self.settings.update(
                 {
-                    f"{color}.TCalendar": {
+                    ttkstyle: {
                         "configure": {
                             "foreground": self.colors.fg,
                             "background": self.colors.bg,
@@ -2639,7 +2537,16 @@ class StylerTTK:
                             "focuscolor": "",
                             "borderwidth": 1,
                             "padding": (10, 5),
+                            "anchor": tk.CENTER
                         },
+                        "layout": [
+                            ("Toolbutton.border", {
+                                "sticky": tk.NSEW, "children": [
+                                    ("Toolbutton.padding",
+                                     {"sticky": tk.NSEW, "children": [
+                                         ("Toolbutton.label",
+                                          {"sticky": tk.NSEW})]})]})
+                        ],
                         "map": {
                             "foreground": [
                                 ("disabled", disabled_fg),
@@ -2648,69 +2555,29 @@ class StylerTTK:
                                 ("hover !disabled", self.colors.selectfg),
                             ],
                             "background": [
-                                (
-                                    "pressed !disabled",
-                                    Colors.update_hsv(
-                                        self.colors.get(color), vd=pressed_vd
-                                    ),
-                                ),
-                                (
-                                    "selected !disabled",
-                                    Colors.update_hsv(
-                                        self.colors.get(color), vd=pressed_vd
-                                    ),
-                                ),
-                                ("hover !disabled", self.colors.get(color)),
+                                ("pressed !disabled", pressed),
+                                ("selected !disabled", pressed),
+                                ("hover !disabled", pressed)
                             ],
                             "bordercolor": [
                                 ("disabled", disabled_fg),
-                                (
-                                    "pressed !disabled",
-                                    Colors.update_hsv(
-                                        self.colors.get(color), vd=pressed_vd
-                                    ),
-                                ),
-                                (
-                                    "selected !disabled",
-                                    Colors.update_hsv(
-                                        self.colors.get(color), vd=pressed_vd
-                                    ),
-                                ),
-                                ("hover !disabled", self.colors.get(color)),
+                                ("pressed !disabled", pressed),
+                                ("selected !disabled", pressed),
+                                ("hover !disabled", pressed)
                             ],
                             "darkcolor": [
-                                (
-                                    "pressed !disabled",
-                                    Colors.update_hsv(
-                                        self.colors.get(color), vd=pressed_vd
-                                    ),
-                                ),
-                                (
-                                    "selected !disabled",
-                                    Colors.update_hsv(
-                                        self.colors.get(color), vd=pressed_vd
-                                    ),
-                                ),
-                                ("hover !disabled", self.colors.get(color)),
+                                ("pressed !disabled", pressed),
+                                ("selected !disabled", pressed),
+                                ("hover !disabled", pressed)
                             ],
                             "lightcolor": [
-                                (
-                                    "pressed !disabled",
-                                    Colors.update_hsv(
-                                        self.colors.get(color), vd=pressed_vd
-                                    ),
-                                ),
-                                (
-                                    "selected !disabled",
-                                    Colors.update_hsv(
-                                        self.colors.get(color), vd=pressed_vd
-                                    ),
-                                ),
-                                ("hover !disabled", self.colors.get(color)),
+                                ("pressed !disabled", pressed),
+                                ("selected !disabled", pressed),
+                                ("hover !disabled", pressed)
                             ],
                         },
                     },
-                    f"chevron.{color}.TButton": {
+                    chevron_style: {
                         "configure": {"font": "helvetica 14"}
                     },
                 }
