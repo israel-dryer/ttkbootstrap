@@ -765,39 +765,39 @@ class StylerTTK:
         which define the layout, configuration, and styling mapping
         for each ttk widget.
         """
-        self._style_labelframe()
-        self._style_spinbox()
-        self._style_scale()
-        self._style_scrollbar()
-        self._style_combobox()
-        self._style_exit_button()
-        self._style_frame()
-        self._style_calendar()
-        self._style_checkbutton()
-        self._style_entry()
-        self._style_label()
-        self._style_meter()
-        self._style_notebook()
-        self._style_outline_buttons()
-        self._style_outline_menubutton()
-        self._style_outline_toolbutton()
-        self._style_progressbar()
-        self._style_striped_progressbar()
-        self._style_floodgauge()
-        self._style_radiobutton()
-        self._style_solid_buttons()
-        self._style_link_buttons()
-        self._style_solid_menubutton()
-        self._style_solid_toolbutton()
-        self._style_treeview()
-        self._style_separator()
-        self._style_panedwindow()
-        self._style_roundtoggle_toolbutton()
-        self._style_squaretoggle_toolbutton()
-        self._style_sizegrip()
-        self._style_defaults()
+        self.create_labelframe_style()
+        self.create_spinbox_style()
+        self.create_scale_style()
+        self.create_scrollbar_style()
+        self.create_combobox_style()
+        self.create_exit_button_style()
+        self.create_frame_style()
+        self.create_calendar_style()
+        self.create_checkbutton_style()
+        self.create_entry_style()
+        self.create_label_style()
+        self.create_meter_style()
+        self.create_notebook_style()
+        self.create_outline_button_style()
+        self.create_outline_menubutton_style()
+        self.create_outline_toolbutton_style()
+        self.create_progressbar_style()
+        self.create_striped_progressbar_style()
+        self.create_floodgauge_style()
+        self.create_radiobutton_style()
+        self.create_solid_button_style()
+        self.create_link_button_style()
+        self.create_solid_menubutton()
+        self.create_solid_toolbutton_style()
+        self.create_treeview_style()
+        self.create_separator_style()
+        self.create_panedwindow_style()
+        self.create_round_toggle_style()
+        self.create_square_toggle_style()
+        self.create_sizegrip_style()
+        self.create_default_style()
 
-    def _style_defaults(self):
+    def create_default_style(self):
         """Setup the default ``ttk.Style`` configuration. These
         defaults are applied to any widget that contains these
         element options. This method should be called *first* before
@@ -824,7 +824,7 @@ class StylerTTK:
             }
         )
 
-    def _style_combobox(self):
+    def create_combobox_style(self):
         """Create style configuration for ``ttk.Combobox``. This
         element style is created with a layout that combines *clam* and
         *default* theme elements.
@@ -909,7 +909,7 @@ class StylerTTK:
                 }
             )
 
-    def _style_separator(self):
+    def create_separator_style(self):
         """Create style configuration for ttk separator:
         *ttk.Separator*. The default style for light will be border,
         but dark will be primary, as this makes the most sense for
@@ -973,7 +973,7 @@ class StylerTTK:
                 }
             )
 
-    def _create_striped_progressbar_image(self, colorname):
+    def create_striped_progressbar_assets(self, colorname):
         """Create the striped progressbar image and return as a
         ``PhotoImage``
 
@@ -1025,14 +1025,14 @@ class StylerTTK:
         self.theme_images[v_name] = v_img
         return [h_name, v_name]
 
-    def _style_striped_progressbar(self):
+    def create_striped_progressbar_style(self):
         """Apply a striped theme to the progressbar"""
         HSTYLE = 'Striped.Horizontal.TProgressbar'
         VSTYLE = 'Striped.Vertical.TProgressbar'
 
         for color in [DEFAULT, *self.colors]:
 
-            h_img, v_img = self._create_striped_progressbar_image(color)
+            h_img, v_img = self.create_striped_progressbar_assets(color)
 
             if color == DEFAULT:
                 h_ttkstyle = HSTYLE
@@ -1082,7 +1082,7 @@ class StylerTTK:
                 }
             )
 
-    def _style_progressbar(self):
+    def create_progressbar_style(self):
         """Create style configuration for ttk progressbar"""
         if self.is_light_theme:
             bordercolor = self.colors.border
@@ -1119,7 +1119,7 @@ class StylerTTK:
             )
 
     @staticmethod
-    def _create_slider_image(color, size=16):
+    def create_scale_assets(color, size=16):
         """Create a circle slider image based on given size and color;
         used in the slider widget.
 
@@ -1142,7 +1142,7 @@ class StylerTTK:
         draw.ellipse((0, 0, 95, 95), fill=color)
         return ImageTk.PhotoImage(im.resize((size, size), Image.LANCZOS))
 
-    def _style_scale(self):
+    def create_scale_style(self):
         """Create style configuration for ttk scale: *ttk.Scale*"""
         if self.is_light_theme:
             disabled_fg = Colors.update_hsv(self.colors.inputbg, vd=-0.2)
@@ -1157,14 +1157,14 @@ class StylerTTK:
         # create widget images
         self.theme_images.update(
             {
-                "primary_disabled": self._create_slider_image(disabled_fg),
-                "primary_regular": self._create_slider_image(
+                "primary_disabled": self.create_scale_assets(disabled_fg),
+                "primary_regular": self.create_scale_assets(
                     self.colors.primary
                 ),
-                "primary_pressed": self._create_slider_image(
+                "primary_pressed": self.create_scale_assets(
                     Colors.update_hsv(self.colors.primary, vd=pressed_vd)
                 ),
-                "primary_hover": self._create_slider_image(
+                "primary_hover": self.create_scale_assets(
                     Colors.update_hsv(self.colors.primary, vd=hover_vd)
                 ),
                 "htrough": ImageTk.PhotoImage(
@@ -1193,7 +1193,7 @@ class StylerTTK:
                                     ),
                                     (
                                         "Horizontal.Scale.slider",
-                                        {"side": "left", "sticky": ""},
+                                        {"side": tk.LEFT, "sticky": ""},
                                     ),
                                 ],
                             },
@@ -1245,15 +1245,15 @@ class StylerTTK:
         for color in self.colors:
             self.theme_images.update(
                 {
-                    f"{color}_regular": self._create_slider_image(
+                    f"{color}_regular": self.create_scale_assets(
                         self.colors.get(color)
                     ),
-                    f"{color}_pressed": self._create_slider_image(
+                    f"{color}_pressed": self.create_scale_assets(
                         Colors.update_hsv(
                             self.colors.get(color), vd=pressed_vd
                         )
                     ),
-                    f"{color}_hover": self._create_slider_image(
+                    f"{color}_hover": self.create_scale_assets(
                         Colors.update_hsv(self.colors.get(color), vd=hover_vd)
                     ),
                 }
@@ -1276,7 +1276,7 @@ class StylerTTK:
                                         ),
                                         (
                                             f"{color}.Scale.slider",
-                                            {"side": "left", "sticky": ""},
+                                            {"side": tk.LEFT, "sticky": ""},
                                         ),
                                     ],
                                 },
@@ -1319,7 +1319,7 @@ class StylerTTK:
                 }
             )
 
-    def _style_floodgauge(self):
+    def create_floodgauge_style(self):
         """Create a style configuration for the *ttk.Progressbar* that makes 
         it into a floodgauge. Which is essentially a very large progress bar 
         with text in the middle.
@@ -1400,7 +1400,7 @@ class StylerTTK:
             }
             )
 
-    def _create_arrow_assets(self, arrowcolor, pressed, active):
+    def create_arrow_assets(self, arrowcolor, pressed, active):
         """Create horizontal and vertical arrow assets to be used for
         buttons"""
         assets = dict()
@@ -1432,7 +1432,7 @@ class StylerTTK:
         draw_arrow(active, "active")
         self.theme_images = {**self.theme_images, **assets}
 
-    def _style_scrollbar(self):
+    def create_scrollbar_style(self):
         """Create style configuration for ttk scrollbar: *ttk.Scrollbar*. This 
         theme uses elements from the *alt* theme tobuild the widget layout.
         """
@@ -1453,7 +1453,7 @@ class StylerTTK:
 
         img_test = self.theme_images.get(f'{self.theme.name}.normal.uparrow')
         if img_test is None:
-            self._create_arrow_assets(background, pressed, active)
+            self.create_arrow_assets(background, pressed, active)
 
         img = self.theme_images
         _name = self.theme.name
@@ -1521,7 +1521,7 @@ class StylerTTK:
             }
         )
 
-    def _style_spinbox(self):
+    def create_spinbox_style(self):
         """Create style configuration for ttk spinbox: *ttk.Spinbox*
 
         This widget uses elements from the *default* and *clam* theme 
@@ -1629,7 +1629,7 @@ class StylerTTK:
                 }
             )
 
-    def _style_treeview(self):
+    def create_treeview_style(self):
         """Create style configuration for ttk treeview"""
         STYLE = 'Treeview'
 
@@ -1673,6 +1673,7 @@ class StylerTTK:
                     body_style: {
                         "configure": {
                             "background": self.colors.inputbg,
+                            "fieldbackground": self.colors.inputbg,
                             "foreground": self.colors.inputfg,
                             "bordercolor": self.colors.bg,
                             "lightcolor": self.colors.border,
@@ -1703,7 +1704,7 @@ class StylerTTK:
                 }
             )
 
-    def _style_frame(self):
+    def create_frame_style(self):
         """Create style configuration for ttk frame"""
         STYLE = 'TFrame'
 
@@ -1727,17 +1728,13 @@ class StylerTTK:
                 }
             )
 
-    def _style_solid_buttons(self):
+    def create_solid_button_style(self):
         """Apply a solid color style to ttk button"""
 
         STYLE = 'TButton'
 
-        if self.is_light_theme:
-            disabled_fg = Colors.update_hsv(self.colors.inputbg, vd=-0.2)
-            disabled_bg = Colors.update_hsv(self.colors.inputbg, vd=-0.2)
-        else:
-            disabled_fg = Colors.update_hsv(self.colors.inputbg, vd=-0.3)
-            disabled_bg = Colors.update_hsv(self.colors.inputbg, vd=-0.3)
+        disabled_fg = self.colors.selectbg
+        disabled_bg = self.colors.inputbg
 
         for color in [DEFAULT, *self.colors]:
             if color == DEFAULT:
@@ -1794,16 +1791,13 @@ class StylerTTK:
                 }
             )
 
-    def _style_outline_buttons(self):
+    def create_outline_button_style(self):
         """Apply an outline style to ttk button. This button has a 
         solid button look on focus and hover.
         """
         STYLE = 'Outline.TButton'
 
-        if self.is_light_theme:
-            disabled_fg = Colors.update_hsv(self.colors.inputbg, vd=-0.2)
-        else:
-            disabled_fg = self.colors.inputbg
+        disabled_fg = self.colors.inputbg
 
         for color in [DEFAULT, *self.colors]:
             if color == DEFAULT:
@@ -1867,7 +1861,7 @@ class StylerTTK:
                 }
             )
 
-    def _style_link_buttons(self):
+    def create_link_button_style(self):
         """Apply a solid color style to ttk button"""
 
         STYLE = 'Link.TButton'
@@ -1884,9 +1878,11 @@ class StylerTTK:
             if color == DEFAULT:
                 foreground = self.colors.fg
                 ttkstyle = STYLE
+                focuscolor = self.colors.fg
             else:
                 foreground = self.colors.get(color)
                 ttkstyle = f'{color}.{STYLE}'
+                focuscolor = foreground
 
             self.settings.update(
                 {
@@ -1910,6 +1906,10 @@ class StylerTTK:
                                 ("hover !disabled", hover)
                             ],
                             "shiftrelief": [("pressed !disabled", -1)],
+                            "focuscolor": [
+                                ("pressed !disabled", focuscolor),
+                                ("hover !disabled", focuscolor)
+                            ],
                             "background": [
                                 ("disabled", self.colors.bg),
                                 ("pressed !disabled", self.colors.bg),
@@ -1935,7 +1935,7 @@ class StylerTTK:
                 }
             )
 
-    def _create_squaretoggle_image(self, colorname):
+    def create_square_toggle_assets(self, colorname):
         """Create a set of images for the square toggle button and 
         return as ``PhotoImage``
 
@@ -2003,7 +2003,7 @@ class StylerTTK:
 
         return image_names
 
-    def _create_roundtoggle_image(self, colorname):
+    def create_round_toggle_assets(self, colorname):
         """Create a set of images for the rounded toggle button and 
         return as ``PhotoImage``
 
@@ -2078,7 +2078,7 @@ class StylerTTK:
 
         return image_names
 
-    def _style_roundtoggle_toolbutton(self):
+    def create_round_toggle_style(self):
         """Apply a rounded toggle switch style to ttk widgets that accept 
         the toolbutton style (for example, a checkbutton: *ttk.Checkbutton*)
         """
@@ -2091,7 +2091,7 @@ class StylerTTK:
 
         for color in [DEFAULT, *self.colors]:
 
-            _on, _off, _disabled = self._create_roundtoggle_image(color)
+            _on, _off, _disabled = self.create_round_toggle_assets(color)
 
             if color == DEFAULT:
                 ttkstyle = STYLE
@@ -2133,7 +2133,7 @@ class StylerTTK:
                                 ("selected", self.colors.bg),
                                 ("!selected", self.colors.bg)]}}})
 
-    def _style_squaretoggle_toolbutton(self):
+    def create_square_toggle_style(self):
         """Apply a square toggle switch style to ttk widgets that 
         accept the toolbutton style
         """
@@ -2147,7 +2147,7 @@ class StylerTTK:
         # color variations
         for color in [DEFAULT, *self.colors]:
 
-            _on, _off, _disabled = self._create_squaretoggle_image(color)
+            _on, _off, _disabled = self.create_square_toggle_assets(color)
 
             if color == DEFAULT:
                 ttkstyle = STYLE
@@ -2175,7 +2175,7 @@ class StylerTTK:
                                             (f"{ttkstyle}.indicator",
                                              {"side": tk.LEFT}),
                                             ("Toolbutton.label",
-                                             {"side": "left"})]})]})],
+                                             {"side": tk.LEFT})]})]})],
                         "configure": {
                             "relief": tk.FLAT,
                             "borderwidth": 0,
@@ -2189,7 +2189,7 @@ class StylerTTK:
                                 ("selected", self.colors.bg),
                                 ("!selected", self.colors.bg)]}}})
 
-    def _style_solid_toolbutton(self):
+    def create_solid_toolbutton_style(self):
         """Apply a solid color style to ttk widgets that use the 
         Toolbutton style.
         """
@@ -2262,7 +2262,7 @@ class StylerTTK:
                 }
             )
 
-    def _style_outline_toolbutton(self):
+    def create_outline_toolbutton_style(self):
         """Apply an outline style to ttk widgets that use the 
         Toolbutton style. This button has a solid button look on focus 
         and hover.
@@ -2334,7 +2334,7 @@ class StylerTTK:
                 }
             )
 
-    def _style_entry(self):
+    def create_entry_style(self):
         """Create style configuration for ttk entry"""
         STYLE = 'TEntry'
 
@@ -2384,7 +2384,7 @@ class StylerTTK:
                 }
             )
 
-    def _create_radiobutton_images(self, colorname):
+    def create_radiobutton_assets(self, colorname):
         """Create radiobutton assets
 
         Parameters
@@ -2456,7 +2456,7 @@ class StylerTTK:
 
         return image_names
 
-    def _style_radiobutton(self):
+    def create_radiobutton_style(self):
         """Create style configuration for ttk radiobutton"""
 
         STYLE = 'TRadiobutton'
@@ -2467,7 +2467,7 @@ class StylerTTK:
             disabled_fg = self.colors.inputbg
 
         for color in [DEFAULT, *self.colors]:
-            _on, _off, _disabled = self._create_radiobutton_images(color)
+            _on, _off, _disabled = self.create_radiobutton_assets(color)
 
             if color == DEFAULT:
                 ttkstyle = STYLE
@@ -2500,7 +2500,7 @@ class StylerTTK:
                                 ("disabled", disabled_fg),
                                 ("active", focuscolor)]}}})
 
-    def _style_calendar(self):
+    def create_calendar_style(self):
         """Create style configuration for the date chooser"""
 
         STYLE = 'TCalendar'
@@ -2583,7 +2583,7 @@ class StylerTTK:
                 }
             )
 
-    def _style_exit_button(self):
+    def create_exit_button_style(self):
         """Create style configuration for the toolbutton exit button"""
         if self.is_light_theme:
             disabled_bg = Colors.update_hsv(self.colors.inputbg, vd=-0.2)
@@ -2635,7 +2635,7 @@ class StylerTTK:
                 }
             )
 
-    def _style_meter(self):
+    def create_meter_style(self):
         """Create style configuration for the meter"""
         self.settings.update(
             {
@@ -2681,7 +2681,7 @@ class StylerTTK:
                 }
             )
 
-    def _style_label(self):
+    def create_label_style(self):
         """Create style configuration for ttk label"""
 
         STYLE = 'TLabel'
@@ -2715,7 +2715,7 @@ class StylerTTK:
                 }
             )
 
-    def _style_labelframe(self):
+    def create_labelframe_style(self):
         """Create style configuration for ttk labelframe"""
         self.settings.update(
             {
@@ -2774,14 +2774,14 @@ class StylerTTK:
                 }
             )
 
-    def _style_checkbutton(self):
+    def create_checkbutton_style(self):
         """Create style configuration for ttk checkbutton"""
         if self.is_light_theme:
             disabled_fg = Colors.update_hsv(self.colors.inputbg, vd=-0.2)
         else:
             disabled_fg = self.colors.inputbg
 
-        self.theme_images.update(self._create_checkbutton_images("primary"))
+        self.theme_images.update(self.create_checkbutton_assets("primary"))
 
         self.settings.update(
             {
@@ -2808,7 +2808,7 @@ class StylerTTK:
                                 "children": [
                                     (
                                         "primary.Checkbutton.indicator",
-                                        {"side": "left", "sticky": ""},
+                                        {"side": tk.LEFT, "sticky": ""},
                                     ),
                                     (
                                         "Checkbutton.focus",
@@ -2819,7 +2819,7 @@ class StylerTTK:
                                                     {"sticky": tk.NSEW},
                                                 )
                                             ],
-                                            "side": "left",
+                                            "side": tk.LEFT,
                                             "sticky": "",
                                         },
                                     ),
@@ -2845,7 +2845,7 @@ class StylerTTK:
 
         # variations change indicator color
         for color in self.colors:
-            self.theme_images.update(self._create_checkbutton_images(color))
+            self.theme_images.update(self.create_checkbutton_assets(color))
             self.settings.update(
                 {
                     f"{color}.Checkbutton.indicator": {
@@ -2873,7 +2873,7 @@ class StylerTTK:
                                     "children": [
                                         (
                                             f"{color}.Checkbutton.indicator",
-                                            {"side": "left", "sticky": ""},
+                                            {"side": tk.LEFT, "sticky": ""},
                                         ),
                                         (
                                             "Checkbutton.focus",
@@ -2884,7 +2884,7 @@ class StylerTTK:
                                                         {"sticky": tk.NSEW},
                                                     )
                                                 ],
-                                                "side": "left",
+                                                "side": tk.LEFT,
                                                 "sticky": "",
                                             },
                                         ),
@@ -2908,7 +2908,7 @@ class StylerTTK:
                 }
             )
 
-    def _create_checkbutton_images(self, colorname):
+    def create_checkbutton_assets(self, colorname):
         """Create radiobutton assets
 
         Parameters
@@ -2993,123 +2993,45 @@ class StylerTTK:
             ),
         }
 
-    def _style_solid_menubutton(self):
+    def create_solid_menubutton(self):
         """Apply a solid color style to ttk menubutton"""
-        # disabled settings
-        disabled_fg = self.colors.inputfg
-        disabled_bg = (
-            Colors.update_hsv(self.colors.inputbg, vd=-0.2)
-            if self.theme.type == "light"
-            else Colors.update_hsv(self.colors.inputbg, vd=-0.3)
-        )
+        STYLE = 'TMenubutton'
 
-        # pressed and hover settings
-        pressed_vd = -0.2
-        hover_vd = -0.1
+        disabled_fg = self.colors.selectbg
+        disabled_bg = self.colors.inputbg
 
-        self.settings.update(
-            {
-                "TMenubutton": {
-                    "configure": {
-                        "foreground": self.colors.selectfg,
-                        "background": self.colors.primary,
-                        "bordercolor": self.colors.primary,
-                        "darkcolor": self.colors.primary,
-                        "lightcolor": self.colors.primary,
-                        "arrowsize": 4,
-                        "arrowcolor": self.colors.bg
-                        if self.theme.type == "light"
-                        else "white",
-                        "arrowpadding": (0, 0, 15, 0),
-                        "relief": "raised",
-                        "focusthickness": 0,
-                        "focuscolor": self.colors.selectfg,
-                        "padding": (10, 5),
-                    },
-                    "map": {
-                        "arrowcolor": [("disabled", disabled_fg)],
-                        "foreground": [("disabled", disabled_fg)],
-                        "background": [
-                            ("disabled", disabled_bg),
-                            (
-                                "pressed !disabled",
-                                Colors.update_hsv(
-                                    self.colors.primary, vd=pressed_vd
-                                ),
-                            ),
-                            (
-                                "hover !disabled",
-                                Colors.update_hsv(
-                                    self.colors.primary, vd=hover_vd
-                                ),
-                            ),
-                        ],
-                        "bordercolor": [
-                            ("disabled", disabled_bg),
-                            (
-                                "pressed !disabled",
-                                Colors.update_hsv(
-                                    self.colors.primary, vd=pressed_vd
-                                ),
-                            ),
-                            (
-                                "hover !disabled",
-                                Colors.update_hsv(
-                                    self.colors.primary, vd=hover_vd
-                                ),
-                            ),
-                        ],
-                        "darkcolor": [
-                            ("disabled", disabled_bg),
-                            (
-                                "pressed !disabled",
-                                Colors.update_hsv(
-                                    self.colors.primary, vd=pressed_vd
-                                ),
-                            ),
-                            (
-                                "hover !disabled",
-                                Colors.update_hsv(
-                                    self.colors.primary, vd=hover_vd
-                                ),
-                            ),
-                        ],
-                        "lightcolor": [
-                            ("disabled", disabled_bg),
-                            (
-                                "pressed !disabled",
-                                Colors.update_hsv(
-                                    self.colors.primary, vd=pressed_vd
-                                ),
-                            ),
-                            (
-                                "hover !disabled",
-                                Colors.update_hsv(
-                                    self.colors.primary, vd=hover_vd
-                                ),
-                            ),
-                        ],
-                    },
-                }
-            }
-        )
+        for color in [DEFAULT, *self.colors]:
 
-        for color in self.colors:
+            if color == DEFAULT:
+                ttkstyle = STYLE
+                background = self.colors.primary
+            else:
+                ttkstyle = f'{color}.{STYLE}'
+                background = self.colors.get(color)
+
+            if self.is_light_theme:
+                pressed = Colors.update_hsv(background, vd=-0.2)
+                hover = Colors.update_hsv(background, vd=-0.1)
+                arrowcolor = self.colors.bg
+
+            else:
+                pressed = Colors.update_hsv(background, vd=0.2)
+                hover = Colors.update_hsv(background, vd=0.1)
+                arrowcolor = self.colors.selectfg
+
             self.settings.update(
                 {
-                    f"{color}.TMenubutton": {
+                    ttkstyle: {
                         "configure": {
                             "foreground": self.colors.selectfg,
-                            "background": self.colors.get(color),
-                            "bordercolor": self.colors.get(color),
-                            "darkcolor": self.colors.get(color),
-                            "lightcolor": self.colors.get(color),
+                            "background": background,
+                            "bordercolor": background,
+                            "darkcolor": background,
+                            "lightcolor": background,
                             "arrowsize": 4,
-                            "arrowcolor": self.colors.bg
-                            if self.theme.type == "light"
-                            else "white",
+                            "arrowcolor": arrowcolor,
                             "arrowpadding": (0, 0, 15, 0),
-                            "relief": "raised",
+                            "relief": tk.RAISED,
                             "focusthickness": 0,
                             "focuscolor": "",
                             "padding": (10, 5),
@@ -3119,186 +3041,65 @@ class StylerTTK:
                             "foreground": [("disabled", disabled_fg)],
                             "background": [
                                 ("disabled", disabled_bg),
-                                (
-                                    "pressed !disabled",
-                                    Colors.update_hsv(
-                                        self.colors.get(color), vd=pressed_vd
-                                    ),
-                                ),
-                                (
-                                    "hover !disabled",
-                                    Colors.update_hsv(
-                                        self.colors.get(color), vd=hover_vd
-                                    ),
-                                ),
+                                ("pressed !disabled", pressed),
+                                ("hover !disabled", hover),
                             ],
                             "bordercolor": [
                                 ("disabled", disabled_bg),
-                                (
-                                    "pressed !disabled",
-                                    Colors.update_hsv(
-                                        self.colors.get(color), vd=pressed_vd
-                                    ),
-                                ),
-                                (
-                                    "hover !disabled",
-                                    Colors.update_hsv(
-                                        self.colors.get(color), vd=hover_vd
-                                    ),
-                                ),
+                                ("pressed !disabled", pressed),
+                                ("hover !disabled", hover),
                             ],
                             "darkcolor": [
                                 ("disabled", disabled_bg),
-                                (
-                                    "pressed !disabled",
-                                    Colors.update_hsv(
-                                        self.colors.get(color), vd=pressed_vd
-                                    ),
-                                ),
-                                (
-                                    "hover !disabled",
-                                    Colors.update_hsv(
-                                        self.colors.get(color), vd=hover_vd
-                                    ),
-                                ),
+                                ("pressed !disabled", pressed),
+                                ("hover !disabled", hover),
                             ],
                             "lightcolor": [
                                 ("disabled", disabled_bg),
-                                (
-                                    "pressed !disabled",
-                                    Colors.update_hsv(
-                                        self.colors.get(color), vd=pressed_vd
-                                    ),
-                                ),
-                                (
-                                    "hover !disabled",
-                                    Colors.update_hsv(
-                                        self.colors.get(color), vd=hover_vd
-                                    ),
-                                ),
+                                ("pressed !disabled", pressed),
+                                ("hover !disabled", hover),
                             ],
                         },
                     }
                 }
             )
 
-    def _style_outline_menubutton(self):
+    def create_outline_menubutton_style(self):
         """Apply and outline style to ttk menubutton"""
-        # disabled settings
-        if self.is_light_theme:
-            disabled_fg = Colors.update_hsv(self.colors.inputbg, vd=-0.2)
-        else:
-            disabled_fg = Colors.update_hsv(self.colors.inputbg, vd=-0.3)
 
-        # pressed and hover settings
-        pressed_vd = -0.2
-        hover_vd = -0.1
+        STYLE = 'Outline.TMenubutton'
 
-        self.settings.update(
-            {
-                "Outline.TMenubutton": {
-                    "configure": {
-                        "font": self.theme.font,
-                        "foreground": self.colors.primary,
-                        "background": self.colors.bg,
-                        "bordercolor": self.colors.primary,
-                        "darkcolor": self.colors.bg,
-                        "lightcolor": self.colors.bg,
-                        "arrowcolor": self.colors.primary,
-                        "arrowpadding": (0, 0, 15, 0),
-                        "relief": "raised",
-                        "focusthickness": 0,
-                        "focuscolor": "",
-                        "padding": (10, 5),
-                    },
-                    "map": {
-                        "foreground": [
-                            ("disabled", disabled_fg),
-                            ("pressed !disabled", self.colors.selectfg),
-                            ("hover !disabled", self.colors.selectfg),
-                        ],
-                        "background": [
-                            (
-                                "pressed !disabled",
-                                Colors.update_hsv(
-                                    self.colors.primary, vd=pressed_vd
-                                ),
-                            ),
-                            (
-                                "hover !disabled",
-                                Colors.update_hsv(
-                                    self.colors.primary, vd=hover_vd
-                                ),
-                            ),
-                        ],
-                        "bordercolor": [
-                            ("disabled", disabled_fg),
-                            (
-                                "pressed !disabled",
-                                Colors.update_hsv(
-                                    self.colors.primary, vd=pressed_vd
-                                ),
-                            ),
-                            (
-                                "hover !disabled",
-                                Colors.update_hsv(
-                                    self.colors.primary, vd=hover_vd
-                                ),
-                            ),
-                        ],
-                        "darkcolor": [
-                            (
-                                "pressed !disabled",
-                                Colors.update_hsv(
-                                    self.colors.primary, vd=pressed_vd
-                                ),
-                            ),
-                            (
-                                "hover !disabled",
-                                Colors.update_hsv(
-                                    self.colors.primary, vd=hover_vd
-                                ),
-                            ),
-                        ],
-                        "lightcolor": [
-                            (
-                                "pressed !disabled",
-                                Colors.update_hsv(
-                                    self.colors.primary, vd=pressed_vd
-                                ),
-                            ),
-                            (
-                                "hover !disabled",
-                                Colors.update_hsv(
-                                    self.colors.primary, vd=hover_vd
-                                ),
-                            ),
-                        ],
-                        "arrowcolor": [
-                            ("disabled", disabled_fg),
-                            ("pressed !disabled", self.colors.selectfg),
-                            ("hover !disabled", self.colors.selectfg),
-                        ],
-                    },
-                }
-            }
-        )
+        disabled_fg = self.colors.inputbg
 
-        for color in self.colors:
+        for color in [DEFAULT, *self.colors]:
+            if color == DEFAULT:
+                foreground = self.colors.primary
+                ttkstyle = STYLE
+            else:
+                foreground = self.colors.get(color)
+                ttkstyle = f'{color}.{STYLE}'
+
+            if self.is_light_theme:
+                pressed = Colors.update_hsv(foreground, vd=-0.1)
+                hover = Colors.update_hsv(foreground, vd=-0.2)
+            else:
+                pressed = Colors.update_hsv(foreground, vd=0.1)
+                hover = Colors.update_hsv(foreground, vd=0.2)
+
             self.settings.update(
                 {
-                    f"{color}.Outline.TMenubutton": {
+                    ttkstyle: {
                         "configure": {
-                            "foreground": self.colors.get(color),
+                            "foreground": foreground,
                             "background": self.colors.bg,
-                            "bordercolor": self.colors.get(color),
+                            "bordercolor": foreground,
                             "darkcolor": self.colors.bg,
                             "lightcolor": self.colors.bg,
-                            "arrowcolor": self.colors.get(color),
+                            "arrowcolor": foreground,
                             "arrowpadding": (0, 0, 15, 0),
-                            "relief": "raised",
+                            "relief": tk.RAISED,
                             "focusthickness": 0,
-                            "focuscolor": "",
+                            "focuscolor": foreground,
                             "padding": (10, 5),
                         },
                         "map": {
@@ -3308,61 +3109,21 @@ class StylerTTK:
                                 ("hover !disabled", self.colors.selectfg),
                             ],
                             "background": [
-                                (
-                                    "pressed !disabled",
-                                    Colors.update_hsv(
-                                        self.colors.get(color), vd=pressed_vd
-                                    ),
-                                ),
-                                (
-                                    "hover !disabled",
-                                    Colors.update_hsv(
-                                        self.colors.get(color), vd=hover_vd
-                                    ),
-                                ),
+                                ("pressed !disabled", pressed),
+                                ("hover !disabled", hover),
                             ],
                             "bordercolor": [
                                 ("disabled", disabled_fg),
-                                (
-                                    "pressed !disabled",
-                                    Colors.update_hsv(
-                                        self.colors.get(color), vd=pressed_vd
-                                    ),
-                                ),
-                                (
-                                    "hover !disabled",
-                                    Colors.update_hsv(
-                                        self.colors.get(color), vd=hover_vd
-                                    ),
-                                ),
+                                ("pressed !disabled", pressed),
+                                ("hover !disabled", hover),
                             ],
                             "darkcolor": [
-                                (
-                                    "pressed !disabled",
-                                    Colors.update_hsv(
-                                        self.colors.get(color), vd=pressed_vd
-                                    ),
-                                ),
-                                (
-                                    "hover !disabled",
-                                    Colors.update_hsv(
-                                        self.colors.get(color), vd=hover_vd
-                                    ),
-                                ),
+                                ("pressed !disabled", pressed),
+                                ("hover !disabled", hover),
                             ],
                             "lightcolor": [
-                                (
-                                    "pressed !disabled",
-                                    Colors.update_hsv(
-                                        self.colors.get(color), vd=pressed_vd
-                                    ),
-                                ),
-                                (
-                                    "hover !disabled",
-                                    Colors.update_hsv(
-                                        self.colors.get(color), vd=hover_vd
-                                    ),
-                                ),
+                                ("pressed !disabled", pressed),
+                                ("hover !disabled", hover),
                             ],
                             "arrowcolor": [
                                 ("disabled", disabled_fg),
@@ -3374,7 +3135,7 @@ class StylerTTK:
                 }
             )
 
-    def _style_notebook(self):
+    def create_notebook_style(self):
         """Create style configuration for ttk notebook"""
         if self.is_light_theme:
             bordercolor = self.colors.border
@@ -3409,8 +3170,9 @@ class StylerTTK:
             }
         )
 
-    def _style_panedwindow(self):
+    def create_panedwindow_style(self):
         """Create style configuration for ttk paned window"""
+
         PANE_STYLE = 'TPanedwindow'
 
         if self.is_light_theme:
@@ -3448,7 +3210,7 @@ class StylerTTK:
                 }
             )
 
-    def _create_sizegrip_images(self, colorname):
+    def create_sizegrip_assets(self, colorname):
         """Create assets for size grip
 
         Parameters
@@ -3476,7 +3238,7 @@ class StylerTTK:
         self.theme_images[_name] = _img
         return _name
 
-    def _style_sizegrip(self):
+    def create_sizegrip_style(self):
         """Create style configuration for ttk sizegrip"""
         STYLE = 'TSizegrip'
 
@@ -3488,10 +3250,10 @@ class StylerTTK:
         for color in [DEFAULT, *self.colors]:
 
             if color == DEFAULT:
-                grip_image = self._create_sizegrip_images(default_color)
+                grip_image = self.create_sizegrip_assets(default_color)
                 ttkstyle = STYLE
             else:
-                grip_image = self._create_sizegrip_images(color)
+                grip_image = self.create_sizegrip_assets(color)
                 ttkstyle = f'{color}.{STYLE}'
 
             self.settings.update(
