@@ -4,7 +4,7 @@ License: MIT
 Copyright (c) 2021 Israel Dryer
 """
 from ttkbootstrap import Style
-import tkinter
+import tkinter as tk
 from tkinter import ttk
 
 # for taking screenshots
@@ -23,7 +23,7 @@ class Demo(Style):
         self.root.geometry('500x695')
         self.root.protocol("WM_DELETE_WINDOW", self.quit)
         self.root.title('TTK Bootstrap')
-        self.theme_name = tkinter.StringVar()
+        self.theme_name = tk.StringVar()
         self.theme_name.set(self.theme_use())
         self.setup()
         self.root.eval('tk::PlaceWindow . center')
@@ -39,7 +39,7 @@ class Demo(Style):
 
         sb.pack(side='right', fill='y')
         self.nb = ttk.Notebook(self.root)
-        self.nb.pack(fill='both', expand='yes')
+        self.nb.pack(fill=tk.BOTH, expand=tk.YES)
         self.tab = self.create_themed_tab()
         self.nb.add(self.tab, text='Tab 1')
         self.nb.add(ttk.Frame(self.nb), text='Tab 2')
@@ -64,20 +64,23 @@ class Demo(Style):
         Create a return a frame containing themed widgets
         """
         tab = ttk.Frame(self.nb, padding=10)
-        colors = ['Primary', 'Secondary', 'Success', 'Info', 'Warning', 'Danger']
+        colors = ['Primary', 'Secondary',
+                  'Success', 'Info', 'Warning', 'Danger']
 
         header_frame = ttk.Frame(tab, padding=10)
-        header = ttk.Label(header_frame, textvariable=self.theme_name, font='-size 30')
+        header = ttk.Label(
+            header_frame, textvariable=self.theme_name, font='-size 30')
         header.pack(side='left', fill='x', pady=5)
         header_frame.pack(fill='x')
 
         # Menubutton (select a theme)
         mb = ttk.Menubutton(header_frame, text='Select a theme to preview')
         mb.pack(side='right', fill='x', pady=5)
-        mb.menu = tkinter.Menu(mb)
+        mb.menu = tk.Menu(mb)
         mb['menu'] = mb.menu
         for t in sorted(self._theme_definitions.keys()):
-            mb.menu.add_command(label=t, command=lambda theme_name=t: self.change_theme(theme_name))
+            mb.menu.add_command(
+                label=t, command=lambda theme_name=t: self.change_theme(theme_name))
 
         # Separator
         ttk.Separator(tab, orient='horizontal').pack(fill='x', pady=(10, 15))
@@ -87,9 +90,11 @@ class Demo(Style):
         pw.pack(fill='x')
 
         # Available Colors
-        color_frame = ttk.Labelframe(pw, text='Colors available in this theme', padding=(5, 15))
+        color_frame = ttk.Labelframe(
+            pw, text='Colors available in this theme', padding=(5, 15))
         for color in colors:
-            btn = ttk.Button(color_frame, text=color.title(), style=f'{color.lower()}.TButton')
+            btn = ttk.Button(color_frame, text=color.title(),
+                             style=f'{color.lower()}.TButton')
             btn.pack(side='left', fill='x', expand='yes', padx=2, pady=5)
 
         pw.add(color_frame)
@@ -100,11 +105,13 @@ class Demo(Style):
         pw.add(widget_outer_frame)
 
         # Widget images
-        widget_frame = ttk.LabelFrame(widget_outer_frame, text='Styled Widgets', padding=10)
+        widget_frame = ttk.LabelFrame(
+            widget_outer_frame, text='Styled Widgets', padding=10)
         widget_frame.pack(fill='x')
 
         # Label
-        ttk.Label(widget_frame, text='This is a label').pack(side='top', fill='x')
+        ttk.Label(widget_frame, text='This is a label').pack(
+            side='top', fill='x')
 
         entry_spin_frame = ttk.Frame(widget_frame)
         entry_spin_frame.pack(fill='x', pady=5)
@@ -115,7 +122,8 @@ class Demo(Style):
         entry.pack(side='left', fill='x', expand='yes')
 
         # Spinbox
-        spinner_options = ['Spinner option 1', 'Spinner option 2', 'Spinner option 3']
+        spinner_options = ['Spinner option 1',
+                           'Spinner option 2', 'Spinner option 3']
         spinner = ttk.Spinbox(entry_spin_frame, values=spinner_options)
         spinner.set('Spinner option 1')
         spinner.pack(side='right', fill='x', expand='yes', padx=(5, 0))
@@ -125,13 +133,15 @@ class Demo(Style):
         b1 = ttk.Button(btn_frame, text='Solid Button')
         b1.pack(side='left', fill='x', expand='yes', padx=(0, 5))
 
-        b2 = ttk.Button(btn_frame, text='Outline Button', style='Outline.TButton')
+        b2 = ttk.Button(btn_frame, text='Outline Button',
+                        style='Outline.TButton')
         b2.pack(side='left', fill='x', expand='yes')
         btn_frame.pack(fill='x', pady=5)
 
         # Option Menu
-        om_var = tkinter.StringVar()
-        om = ttk.OptionMenu(btn_frame, om_var, 'Option Menu', *list(self._theme_names))
+        om_var = tk.StringVar()
+        om = ttk.OptionMenu(btn_frame, om_var, 'Option Menu',
+                            *list(self._theme_names))
         om.pack(side='right', fill='x', padx=(5, 0), pady=5)
 
         # Labelframe
@@ -167,8 +177,9 @@ class Demo(Style):
 
         # Scale
         scale_frame = ttk.Frame(widget_frame)
-        self.scale_var = tkinter.IntVar(value=25)
-        scale = ttk.Scale(scale_frame, variable=self.scale_var, from_=1, to=100)
+        self.scale_var = tk.IntVar(value=25)
+        scale = ttk.Scale(
+            scale_frame, variable=self.scale_var, from_=1, to=100)
         scale.pack(side='left', fill='x', expand='yes', padx=(0, 2))
         scale_frame.pack(side='top', fill='x', pady=5)
         entry = ttk.Entry(scale_frame, textvariable=self.scale_var, width=4)
@@ -180,7 +191,8 @@ class Demo(Style):
         cbo.pack(fill='x', pady=5)
 
         # Progressbar
-        ttk.Progressbar(widget_frame, variable=self.scale_var, style='Striped.Horizontal.TProgressbar').pack(fill='x', pady=10)
+        ttk.Progressbar(widget_frame, variable=self.scale_var,
+                        style='Striped.Horizontal.TProgressbar').pack(fill='x', pady=10)
         return tab
 
     def run(self):
