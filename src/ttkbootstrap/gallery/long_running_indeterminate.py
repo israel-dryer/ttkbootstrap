@@ -46,7 +46,7 @@ class LongRunning(ttk.Frame):
         self.progressbar = ttk.Progressbar(
             master=self, 
             mode='indeterminate', 
-            style='info.Horizontal.TProgressbar'
+            bootstyle='info'
         )
         self.progressbar.pack(fill=tk.X)
 

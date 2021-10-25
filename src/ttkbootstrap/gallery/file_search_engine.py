@@ -1,6 +1,6 @@
 """
     Author: Israel Dryer
-    Modified: 2021-10-14
+    Modified: 2021-10-24
     Adapted from: https://github.com/israel-dryer/File-Search-Engine-Tk
 """
 import csv
@@ -49,8 +49,11 @@ class SearchEngine(ttk.Frame):
         lbl.grid(row=0, column=0, padx=10, pady=2, sticky=tk.EW)
         e1 = ttk.Entry(input_labelframe, textvariable=self.search_path_var)
         e1.grid(row=0, column=1, sticky=tk.EW, padx=10, pady=2)
-        b1 = ttk.Button(input_labelframe, text='Browse', 
-                        command=self.on_browse, style='primary.TButton')
+        b1 = ttk.Button(
+            master=input_labelframe, 
+            text='Browse', 
+            command=self.on_browse
+        )
         b1.grid(row=0, column=2, sticky=tk.EW, pady=2, ipadx=10)
 
         # search term input
@@ -58,9 +61,12 @@ class SearchEngine(ttk.Frame):
         lbl.grid(row=1, column=0, padx=10, pady=2, sticky=tk.EW)
         e2 = ttk.Entry(input_labelframe, textvariable=self.search_term_var)
         e2.grid(row=1, column=1, sticky=tk.EW, padx=10, pady=2)
-        b2 = ttk.Button(input_labelframe, text='Search', 
-                        command=self.on_search, 
-                        style='primary.Outline.TButton')
+        b2 = ttk.Button(
+            master=input_labelframe, 
+            text='Search', 
+            command=self.on_search, 
+            bootstyle='outline'
+        )
         b2.grid(row=1, column=2, sticky=tk.EW, pady=2)
 
         # search type selection
@@ -69,22 +75,33 @@ class SearchEngine(ttk.Frame):
         option_frame = ttk.Frame(input_labelframe, padding=(15, 10, 0, 10))
         option_frame.grid(row=2, column=1, columnspan=2, sticky=tk.EW)
         
-        r1 = ttk.Radiobutton(option_frame, text='Contains', value='contains',
-                             variable=self.search_type_var)
+        r1 = ttk.Radiobutton(
+            master=option_frame, 
+            text='Contains', 
+            value='contains',
+            variable=self.search_type_var
+        )
         r1.pack(side=tk.LEFT, fill=tk.X, pady=2, padx=10)
         
-        r2 = ttk.Radiobutton(option_frame, text='StartsWith', 
-                             value='startswith', 
-                             variable=self.search_type_var)
+        r2 = ttk.Radiobutton(
+            master=option_frame, 
+            text='StartsWith', 
+            value='startswith', 
+            variable=self.search_type_var
+        )
         r2.pack(side=tk.LEFT, fill=tk.X, pady=2, padx=10)
         
-        r3 = ttk.Radiobutton(option_frame, text='EndsWith', value='endswith',
-                             variable=self.search_type_var)
+        r3 = ttk.Radiobutton(
+            master=option_frame, 
+            text='EndsWith', 
+            value='endswith',
+            variable=self.search_type_var
+        )
         r3.pack(side=tk.LEFT, fill=tk.X, pady=2, padx=10)
         r3.invoke()
 
         # search results tree
-        self.tree = ttk.Treeview(self, style='info.Treeview')
+        self.tree = ttk.Treeview(self, bootstyle='info')
         self.tree.pack(fill=tk.BOTH, pady=5)
         self.tree['columns'] = ('modified', 'type', 'size', 'path')
         self.tree.column('#0', width=400)
@@ -101,17 +118,20 @@ class SearchEngine(ttk.Frame):
         self.progressbar = ttk.Progressbar(
             master=self, orient=tk.HORIZONTAL, 
             mode='indeterminate',
-            style='success.Horizontal.TProgressbar'
+            bootstyle='success'
         )
         self.progressbar.pack(fill=tk.X, pady=5)
 
         # right-click menu for treeview
         self.menu = tk.Menu(self, tearoff=False)
-        self.menu.add_command(label='Reveal in file manager', 
-                              command=self.on_doubleclick_tree)
-        self.menu.add_command(label='Export results to csv', 
-                              command=self.export_to_csv)
-
+        self.menu.add_command(
+            label='Reveal in file manager', 
+            command=self.on_doubleclick_tree
+        )
+        self.menu.add_command(
+            label='Export results to csv', 
+            command=self.export_to_csv
+        )
         # event binding
         self.tree.bind('<Double-1>', self.on_doubleclick_tree)
         self.tree.bind('<Button-3>', self.right_click_tree)
@@ -138,15 +158,23 @@ class SearchEngine(ttk.Frame):
         except IndexError:
             return
         if id.startswith('I'):
-            self.menu.entryconfigure('Export results to csv', 
-                                     state=tk.DISABLED)
-            self.menu.entryconfigure('Reveal in file manager', 
-                                     state=tk.NORMAL)
+            self.menu.entryconfigure(
+                index='Export results to csv', 
+                state=tk.DISABLED
+            )
+            self.menu.entryconfigure(
+                index='Reveal in file manager', 
+                state=tk.NORMAL
+            )
         else:
-            self.menu.entryconfigure('Export results to csv', 
-                                     state=tk.NORMAL)
-            self.menu.entryconfigure('Reveal in file manager', 
-                                     state=tk.DISABLED)
+            self.menu.entryconfigure(
+                index='Export results to csv', 
+                state=tk.NORMAL
+            )
+            self.menu.entryconfigure(
+                index='Reveal in file manager', 
+                state=tk.DISABLED
+            )
         self.menu.post(event.x_root, event.y_root)
 
     def on_search(self):
@@ -167,9 +195,12 @@ class SearchEngine(ttk.Frame):
         self.progressbar.start(10)
         self.search_count += 1
         
-        id = self.tree.insert('', 'end', self.search_count, 
-                              text=f'Search {self.search_count}')
-        
+        id = self.tree.insert(
+            parent='', 
+            index='end', 
+            iid=self.search_count, 
+            text=f'Search {self.search_count}'
+        )
         self.tree.item(id, open=True)
         self.check_queue(id)
 

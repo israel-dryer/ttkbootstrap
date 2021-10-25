@@ -1,6 +1,6 @@
 """
     Author: Israel Dryer
-    Modified: 2021-10-14
+    Modified: 2021-10-24
     Adapted for ttkbootstrap from: https://github.com/israel-dryer/Mini-VLC-Player
 """
 import tkinter as tk
@@ -14,18 +14,18 @@ class Application(tk.Tk):
     def __init__(self):
         super().__init__()
         self.title('Media Player')
-        
+
         self.style = Style()
         self.style.theme_use('minty')
-        
+
         self.player = Player(self)
         self.player.pack(fill=tk.BOTH, expand=tk.YES)
-        
+
         # configure custom styles
         self.style.configure('TButton', font='Helvetica 20')
         self.style.configure(
-            style='header.TLabel', 
-            background=self.style.colors.border, 
+            style='header.TLabel',
+            background=self.style.colors.border,
             padding=10
         )
 
@@ -48,8 +48,12 @@ class Player(ttk.Frame):
 
         # track information header
         self.track_info = tk.StringVar(value='Open a file to begin playback')
-        header = ttk.Label(self, textvariable=self.track_info, 
-                           font='Helvetica 12', style='header.TLabel')
+        header = ttk.Label(
+            master=self,
+            textvariable=self.track_info,
+            font='Helvetica 12',
+            style='header.TLabel'
+        )
         header.pack(fill=tk.X, padx=2)
 
         # media container
@@ -60,44 +64,66 @@ class Player(ttk.Frame):
         progress_frame = ttk.Frame(self, padding=10)
         progress_frame.pack(fill=tk.X, expand=tk.YES)
 
-        self.time_elapsed = ttk.Label(progress_frame, text='00:00', 
-                                      font='Helvetica 12')
+        self.time_elapsed = ttk.Label(
+            master=progress_frame,
+            text='00:00',
+            font='Helvetica 12'
+        )
         self.time_elapsed.pack(side=tk.LEFT)
 
-        self.time_scale = ttk.Scale(progress_frame, orient=tk.HORIZONTAL, 
-                                    style='info.Horizontal.TScale')
+        self.time_scale = ttk.Scale(
+            master=progress_frame,
+            orient=tk.HORIZONTAL,
+            bootstyle='info'
+        )
         self.time_scale.pack(side=tk.LEFT, fill=tk.X, expand=tk.YES, padx=10)
 
-        self.time_remaining = ttk.Label(progress_frame, text='00:00', 
-                                        font='Helvetica 12')
+        self.time_remaining = ttk.Label(
+            master=progress_frame,
+            text='00:00',
+            font='Helvetica 12'
+        )
         self.time_remaining.pack(side=tk.RIGHT)
 
         # button controls
         control_frame = ttk.Frame(self)
         control_frame.pack(fill=tk.X, expand=tk.YES)
-        
+
         self.buttons = {
-            'play': ttk.Button(control_frame, text=self.controls['play']),
-            
-            'skip-previous': ttk.Button(control_frame, 
-                                        text=self.controls['skip-previous']),
-            
-            'skip-next': ttk.Button(control_frame, 
-                                    text=self.controls['skip-next']),
-            
-            'pause': ttk.Button(control_frame, text=self.controls['pause']),
-            
-            'stop': ttk.Button(control_frame, text=self.controls['stop']),
-            
-            'open-file': ttk.Button(control_frame, 
-                                    text=self.controls['open-file'], 
-                                    style='secondary.TButton')
-            }
-        for button in ['skip-previous', 'play', 'skip-next', 
-                       'pause', 'stop', 'open-file'
-                    ]:
-            self.buttons[button].pack(side=tk.LEFT, fill=tk.X, expand=tk.YES, 
-                                      ipadx=5, ipady=5, padx=2, pady=2)
+            'play': ttk.Button(
+                master=control_frame,
+                text=self.controls['play']),
+            'skip-previous': ttk.Button(
+                master=control_frame,
+                text=self.controls['skip-previous']),
+            'skip-next': ttk.Button(
+                master=control_frame,
+                text=self.controls['skip-next']),
+            'pause': ttk.Button(
+                master=control_frame,
+                text=self.controls['pause']),
+            'stop': ttk.Button(
+                master=control_frame,
+                text=self.controls['stop']),
+            'open-file': ttk.Button(
+                master=control_frame,
+                text=self.controls['open-file'],
+                bootstyle='secondary')
+        }
+
+        for button in [
+            'skip-previous', 'play', 'skip-next',
+            'pause', 'stop', 'open-file'
+        ]:
+            self.buttons[button].pack(
+                side=tk.LEFT,
+                fill=tk.X,
+                expand=tk.YES,
+                ipadx=5,
+                ipady=5,
+                padx=2,
+                pady=2
+            )
 
 
 if __name__ == '__main__':
