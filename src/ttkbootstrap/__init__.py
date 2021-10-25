@@ -63,6 +63,7 @@ TTK_DEFAULT = 'default'
 
 bootstyle.inject_bootstyle_keyword_api()
 
+
 class Style(ttk.Style):
     """A class for setting the application style.
 
@@ -867,6 +868,7 @@ class StylerTTK:
                             "foreground": self.colors.inputfg,
                             "fieldbackground ": self.colors.inputbg,
                             "background ": self.colors.inputbg,
+                            "insertcolor": self.colors.inputfg,
                             "relief": tk.FLAT,
                             "padding": 5,
                             "arrowsize ": 14
@@ -1605,6 +1607,7 @@ class StylerTTK:
                             "background": self.colors.inputbg,
                             "relief": tk.FLAT,
                             "arrowcolor": self.colors.inputfg,
+                            "insertcolor": self.colors.inputfg,
                             "arrowsize": 14,
                             "padding": (10, 5),
                         },
@@ -2364,6 +2367,7 @@ class StylerTTK:
                             "lightcolor": self.colors.inputbg,
                             "fieldbackground": self.colors.inputbg,
                             "foreground": self.colors.inputfg,
+                            "insertcolor": self.colors.inputfg,
                             "padding": 5,
                         },
                         "map": {
