@@ -1,21 +1,21 @@
 """
     Author: Israe Dryer
-    Modified: 2021-10-24
+    Modified: 2021-04-07
     Adapted for ttkbootstrap from: https://github.com/PySimpleGUI/PySimpleGUI/blob/master/DemoPrograms/Demo_Desktop_Widget_Timer.py
 """
-import tkinter as tk
+import tkinter
 from tkinter import ttk
 from ttkbootstrap import Style
 
 
-class Application(tk.Tk):
+class Application(tkinter.Tk):
 
     def __init__(self):
         super().__init__()
         self.title('Timer')
         self.style = Style()
         self.timer = TimerWidget(self)
-        self.timer.pack(fill=tk.BOTH, expand=tk.YES)
+        self.timer.pack(fill='both', expand='yes')
 
 
 class TimerWidget(ttk.Frame):
@@ -24,79 +24,34 @@ class TimerWidget(ttk.Frame):
         super().__init__(*args, **kwargs)
 
         # variables
-        self.running = tk.BooleanVar(value=False)
-        self.after_id = tk.StringVar()
-        self.time_elapsed = tk.IntVar()
-        self.time_text = tk.StringVar(value='00:00:00')
+        self.running = tkinter.BooleanVar(value=False)
+        self.after_id = tkinter.StringVar()
+        self.time_elapsed = tkinter.IntVar()
+        self.time_text = tkinter.StringVar(value='00:00:00')
 
         # timer label
-        self.timer_lbl = ttk.Label(
-            master=self,
-            font='-size 32',
-            anchor=tk.CENTER,
-            textvariable=self.time_text
-        )
-        self.timer_lbl.pack(
-            side=tk.TOP,
-            fill=tk.X,
-            padx=60,
-            pady=20
-        )
+        self.timer_lbl = ttk.Label(self, font='-size 32', anchor='center', textvariable=self.time_text)
+        self.timer_lbl.pack(side='top', fill='x', padx=60, pady=20)
+
         # control buttons
-        self.toggle_btn = ttk.Button(
-            master=self,
-            text='Start',
-            width=10,
-            bootstyle='info',
-            command=self.toggle
-        )
-        self.toggle_btn.pack(
-            side=tk.LEFT,
-            fill=tk.X,
-            expand=tk.YES,
-            padx=10,
-            pady=10
-        )
-        self.reset_btn = ttk.Button(
-            master=self,
-            text='Reset',
-            width=10,
-            bootstyle='success',
-            command=self.reset
-        )
-        self.reset_btn.pack(
-            side=tk.LEFT,
-            fill=tk.X,
-            expand=tk.YES,
-            pady=10
-        )
-        self.quit_btn = ttk.Button(
-            master=self,
-            text='Quit',
-            width=10,
-            bootstyle='danger',
-            command=self.quit
-        )
-        self.quit_btn.pack(
-            side=tk.LEFT,
-            fill=tk.X,
-            expand=tk.YES,
-            padx=10,
-            pady=10
-        )
+        self.toggle_btn = ttk.Button(self, text='Start', width=10, style='info.TButton', command=self.toggle)
+        self.toggle_btn.pack(side='left', fill='x', expand='yes', padx=10, pady=10)
+
+        self.reset_btn = ttk.Button(self, text='Reset', width=10, style='success.TButton', command=self.reset)
+        self.reset_btn.pack(side='left', fill='x', expand='yes', pady=10)
+
+        self.quit_btn = ttk.Button(self, text='Quit', width=10, style='danger.TButton', command=self.quit)
+        self.quit_btn.pack(side='left', fill='x', expand='yes', padx=10, pady=10)
 
     def toggle(self):
         if self.running.get():
             self.pause()
             self.running.set(False)
-            self.toggle_btn.configure(text='Start', bootstyle='info')
+            self.toggle_btn.configure(text='Start', style='info.TButton')
         else:
             self.start()
             self.running.set(True)
-            self.toggle_btn.configure(
-                text='Pause',
-                bootstyle=('info', 'outline')
-            )
+            self.toggle_btn.configure(text='Pause', style='info.Outline.TButton')
 
     def pause(self):
         self.after_cancel(self.after_id.get())
@@ -107,11 +62,7 @@ class TimerWidget(ttk.Frame):
     def increment(self):
         current = self.time_elapsed.get() + 1
         self.time_elapsed.set(current)
-        time_str = '{:02d}:{:02d}:{:02d}'.format(
-            (current // 100) // 60,
-            (current // 100) % 60,
-            current % 100
-        )
+        time_str = '{:02d}:{:02d}:{:02d}'.format((current // 100) // 60, (current // 100) % 60, current % 100)
         self.time_text.set(time_str)
         self.after_id.set(self.after(100, self.increment))
 

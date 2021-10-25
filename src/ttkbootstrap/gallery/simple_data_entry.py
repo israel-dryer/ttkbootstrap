@@ -1,18 +1,19 @@
 """
     Author: Israel Dryer
-    Modified: 2021-10-24
+    Modified: 2021-04-07
 """
-import tkinter as tk
+import tkinter
 from tkinter import ttk
 
 from ttkbootstrap import Style
 
-class Application(tk.Tk):
+
+class Application(tkinter.Tk):
 
     def __init__(self):
         super().__init__()
         self.title('Simple data entry form')
-        self.style = Style('superhero')
+        self.style = Style('darkly')
         self.form = EntryForm(self)
         self.form.pack(fill='both', expand='yes')
 
@@ -25,50 +26,25 @@ class EntryForm(ttk.Frame):
         self.columnconfigure(2, weight=1)
 
         # form variables
-        self.name = tk.StringVar(value='', name='name')
-        self.address = tk.StringVar(value='', name='address')
-        self.phone = tk.StringVar(value='', name='phone')
+        self.name = tkinter.StringVar(value='', name='name')
+        self.address = tkinter.StringVar(value='', name='address')
+        self.phone = tkinter.StringVar(value='', name='phone')
 
         # form headers
-        ttk.Label(
-            master=self, 
-            text='Please enter your contact information', 
-            width=60
-        ).grid(columnspan=3, pady=10)
+        ttk.Label(self, text='Please enter your contact information', width=60).grid(columnspan=3, pady=10)
 
         # create label/entry rows
         for i, label in enumerate(['name', 'address', 'phone']):
-            ttk.Label(
-                master=self, 
-                text=label.title()
-            ).grid(row=i + 1, column=0, sticky='ew', pady=10, padx=(0, 10))
-            
-            ttk.Entry(
-                master=self, 
-                textvariable=label
-            ).grid(row=i + 1, column=1, columnspan=2, sticky=tk.EW)
+            ttk.Label(self, text=label.title()).grid(row=i + 1, column=0, sticky='ew', pady=10, padx=(0, 10))
+            ttk.Entry(self, textvariable=label).grid(row=i + 1, column=1, columnspan=2, sticky='ew')
 
         # submit button
-        self.submit = ttk.Button(
-            master=self, 
-            text='Submit', 
-            bootstyle='success', 
-            command=self.print_form_data
-        ).grid(
-            row=4, 
-            column=0, 
-            sticky=tk.EW, 
-            pady=10, 
-            padx=(0, 10)
-        )
+        self.submit = ttk.Button(self, text='Submit', style='success.TButton', command=self.print_form_data)
+        self.submit.grid(row=4, column=0, sticky='ew', pady=10, padx=(0, 10))
 
         # cancel button
-        self.cancel = ttk.Button(
-            master=self, 
-            text='Cancel', 
-            bootstyle='danger', 
-            command=self.quit
-        ).grid(row=4, column=1, sticky=tk.EW)
+        self.cancel = ttk.Button(self, text='Cancel', style='danger.TButton', command=self.quit)
+        self.cancel.grid(row=4, column=1, sticky='ew')
 
     def print_form_data(self):
         print(self.name.get(), self.address.get(), self.phone.get())
