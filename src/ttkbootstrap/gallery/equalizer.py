@@ -1,6 +1,6 @@
 """
     Author: Israel Dryer
-    Modified: 2021-10-14
+    Modified: 2021-10-24
 """
 import tkinter as tk
 from random import randint
@@ -24,10 +24,10 @@ class Equalizer(ttk.Frame):
         super().__init__(*args, **kwargs)
         self.configure(padding=20)
         controls = [
-            'VOL', '31.25', '62.5', '125', 
-            '250', '500', '1K', '2K', 
+            'VOL', '31.25', '62.5', '125',
+            '250', '500', '1K', '2K',
             '4K', '8K', '16K', 'GAIN'
-            ]
+        ]
 
         # create band widgets
         for c in controls:
@@ -40,21 +40,33 @@ class Equalizer(ttk.Frame):
             frame.pack(side=tk.LEFT, fill=tk.Y, padx=10)
 
             # header
-            lbl = ttk.Label(frame, text=c, anchor=tk.CENTER, 
-                            font=('Helvetica 10 bold'))
+            lbl = ttk.Label(
+                master=frame,
+                text=c,
+                anchor=tk.CENTER,
+                font=('Helvetica 10 bold')
+            )
             lbl.pack(side=tk.TOP, fill=tk.X, pady=10)
 
             # slider
 
-            if c in ['VOL','GAIN']:
-                _style = 'success.Vertical.TScale'
+            if c in ['VOL', 'GAIN']:
+                _bootstyle = 'success'
             else:
-                _style = 'info.Vertical.TScale'
+                _bootstyle = 'info'
 
-            _func = lambda val, name=c: self.setvar(name, f'{float(val):.0f}')
+            def _func(val, name=c): return self.setvar(
+                name, f'{float(val):.0f}')
 
-            scale = ttk.Scale(frame, orient=tk.VERTICAL, from_=99, to=1, 
-                              value=value, command=_func, style=_style)
+            scale = ttk.Scale(
+                master=frame,
+                orient=tk.VERTICAL,
+                from_=99,
+                to=1,
+                value=value,
+                command=_func,
+                bootstyle=_bootstyle
+            )
             scale.pack(fill=tk.Y)
 
             # slider value label

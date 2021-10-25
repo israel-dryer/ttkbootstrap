@@ -47,10 +47,10 @@
 import colorsys
 import tkinter as tk
 from tkinter import ttk
+from ttkbootstrap import bootstyle
 from ttkbootstrap.themes import DEFINED_THEMES
 from ttkbootstrap.user_defined import USER_DEFINED
 from PIL import ImageTk, Image, ImageDraw, ImageFont
-import warnings
 
 DEFAULT = 'default'
 LIGHT = 'light'
@@ -61,6 +61,7 @@ TTK_CLAM = 'clam'
 TTK_ALT = 'alt'
 TTK_DEFAULT = 'default'
 
+bootstyle.inject_bootstyle_keyword_api()
 
 class Style(ttk.Style):
     """A class for setting the application style.
