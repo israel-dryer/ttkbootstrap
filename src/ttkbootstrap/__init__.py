@@ -895,9 +895,9 @@ class StylerTTK:
                             ],
                             "arrowcolor": [
                                 ("disabled", disabled_fg),
-                                ("pressed !disabled", self.colors.inputbg),
-                                ("focus !disabled", self.colors.inputfg),
-                                ("hover !disabled", self.colors.primary)]
+                                ("pressed !disabled", focuscolor),
+                                ("focus !disabled", focuscolor),
+                                ("hover !disabled", focuscolor)]
                         },
                         "layout": [
                             ("combo.Spinbox.field", {
