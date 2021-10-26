@@ -1156,12 +1156,13 @@ class StylerTTK:
         if self.is_light_theme:
             disabled_fg = Colors.update_hsv(self.colors.inputbg, vd=-0.2)
             trough_color = Colors.update_hsv(self.colors.inputbg, vd=-0.03)
+            pressed_vd = -0.25
+            hover_vd = -0.15
         else:
             disabled_fg = Colors.update_hsv(self.colors.inputbg, vd=-0.3)
             trough_color = self.colors.inputbg
-
-        pressed_vd = -0.2
-        hover_vd = -0.1
+            pressed_vd = 0.35
+            hover_vd = 0.15
 
         # create widget images
         self.theme_images.update(
@@ -1882,13 +1883,11 @@ class StylerTTK:
 
         for color in [DEFAULT, *self.colors]:
             if color == DEFAULT:
-                foreground = self.colors.fg
+                foreground = self.colors.primary
                 ttkstyle = STYLE
-                focuscolor = self.colors.fg
             else:
                 foreground = self.colors.get(color)
                 ttkstyle = f'{color}.{STYLE}'
-                focuscolor = foreground
 
             self.settings.update(
                 {
