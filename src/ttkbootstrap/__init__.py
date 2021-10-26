@@ -110,7 +110,7 @@ class Style(ttk.Style):
 
         super().__init__(*args, **kwargs)
         self._styler = None
-        self._theme_names = set(self.theme_names())
+        self._theme_names = set(super().theme_names())
         self._theme_objects = {}  # prevents image garbage collection
         self._theme_definitions = {}
         self._load_themes()
@@ -148,6 +148,10 @@ class Style(ttk.Style):
                     colors=Colors(**definition["colors"]),
                 )
             )
+
+    def theme_names(self):
+        """Return a list of all ttkbootstrap themes"""
+        return list(self._theme_definitions.keys())
 
     def register_theme(self, definition):
         """Registers a theme definition for use by the ``Style`` class.
@@ -189,7 +193,7 @@ class Style(ttk.Style):
             print(list(self._theme_names))
             return
 
-        if themename in self.theme_names():
+        if themename in super().theme_names():
             # the theme has already been created in tkinter
             super().theme_use(themename)
             if not self.theme:
@@ -767,6 +771,7 @@ class StylerTTK:
         which define the layout, configuration, and styling mapping
         for each ttk widget.
         """
+        self.create_default_style()
         self.create_labelframe_style()
         self.create_spinbox_style()
         self.create_scale_style()
@@ -797,7 +802,6 @@ class StylerTTK:
         self.create_round_toggle_style()
         self.create_square_toggle_style()
         self.create_sizegrip_style()
-        self.create_default_style()
 
     def create_default_style(self):
         """Setup the default ``ttk.Style`` configuration. These
