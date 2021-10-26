@@ -877,7 +877,7 @@ class StylerTTK:
                             "insertcolor": self.colors.inputfg,
                             "relief": tk.FLAT,
                             "padding": 5,
-                            "arrowsize ": 14
+                            "arrowsize ": 13
                         },
                         "map": {
                             "foreground": [("disabled", disabled_fg)],
@@ -1610,7 +1610,7 @@ class StylerTTK:
                             "relief": tk.FLAT,
                             "arrowcolor": self.colors.inputfg,
                             "insertcolor": self.colors.inputfg,
-                            "arrowsize": 14,
+                            "arrowsize": 13,
                             "padding": (10, 5),
                         },
                         "map": {
