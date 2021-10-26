@@ -2702,11 +2702,13 @@ class StylerTTK:
                 ttkstyle = STYLE
                 inverse_ttkstyle = f'Inverse.{STYLE}'
                 stylecolor = self.colors.fg
+                inv_background = self.colors.fg
                 inv_foreground = self.colors.bg
             else:
                 ttkstyle = f'{color}.{STYLE}'
                 inverse_ttkstyle = f'{color}.Inverse.{STYLE}'
                 stylecolor = self.colors.get(color)
+                inv_background = stylecolor
                 inv_foreground = self.colors.selectfg
 
             self.settings.update(
@@ -2720,7 +2722,7 @@ class StylerTTK:
                     inverse_ttkstyle: {
                         "configure": {
                             "foreground": inv_foreground,
-                            "background": stylecolor
+                            "background": inv_background
                         }
                     },
                 }
