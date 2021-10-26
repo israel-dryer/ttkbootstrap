@@ -721,6 +721,8 @@ class StylerTK:
         self._set_option("*Text.highlightColor", self.colors.primary)
         self._set_option("*Text.highlightBackground", self.colors.border)
         self._set_option("*Text.borderColor", self.colors.border)
+        self._set_option("*Text.insertBackground", self.colors.inputfg)
+        self._set_option("*Text.insertWidth", 1)
         self._set_option("*Text.highlightThickness", 1)
         self._set_option("*Text.relief", tk.FLAT)
         self._set_option("*Text.font", self.theme.font)
