@@ -1022,7 +1022,7 @@ class StylerTTK:
             xy=[(0, 52), (48, 100), (0, 100)],
             fill=barcolor)
 
-        _resized = img.resize((22, 22), Image.LANCZOS)
+        _resized = img.resize((16, 16), Image.LANCZOS)
         h_img = ImageTk.PhotoImage(_resized)
         h_name = h_img._PhotoImage__photo.name
         v_img = ImageTk.PhotoImage(_resized.rotate(90))
@@ -1053,7 +1053,7 @@ class StylerTTK:
                     f"{h_ttkstyle}.Progressbar.pbar": {
                         "element create": (
                             "image", h_img,
-                            {"width": 20, "sticky": tk.EW})},
+                            {"width": 16, "sticky": tk.EW})},
                     h_ttkstyle: {
                         "layout": [
                             ("Horizontal.Progressbar.trough", {
@@ -1064,14 +1064,14 @@ class StylerTTK:
                                         "sticky": tk.NS})]})],
                         "configure": {
                             "troughcolor": self.colors.inputbg,
-                            "thickness": 20,
+                            "thickness": 16,
                             "borderwidth": 1
                         }
                     },
                     f"{v_ttkstyle}.Progressbar.pbar": {
                         "element create": (
                             "image", v_img,
-                            {"width": 20, "sticky": tk.NS})},
+                            {"width": 16, "sticky": tk.NS})},
                     v_ttkstyle: {
                         "layout": [
                             ("Vertical.Progressbar.trough", {
@@ -1082,7 +1082,7 @@ class StylerTTK:
                                         "sticky": tk.EW})]})],
                         "configure": {
                             "troughcolor": self.colors.inputbg,
-                            "thickness": 20,
+                            "thickness": 16,
                             "borderwidth": 1
                         }
                     }
@@ -1102,7 +1102,7 @@ class StylerTTK:
                 "Progressbar.pbar": {"element create": ("from", TTK_DEFAULT)},
                 "TProgressbar": {
                     "configure": {
-                        "thickness": 20,
+                        "thickness": 14,
                         "borderwidth": 1,
                         "bordercolor": bordercolor,
                         "lightcolor": self.colors.border,
