@@ -1448,17 +1448,13 @@ class StylerTTK:
         troughcolor = Colors.update_hsv(self.colors.bg, vd=-0.05)
 
         if self.is_light_theme:
-            background = Colors.update_hsv(self.colors.bg, vd=-0.25)
+            background = self.colors.border
             pressed = Colors.update_hsv(background, vd=-0.35)
             active = Colors.update_hsv(background, vd=-0.25)
         else:
-            background = Colors.update_hsv(
-                color=self.colors.selectbg,
-                vd=0.35,
-                sd=-0.1
-            )
-            pressed = Colors.update_hsv(background, vd=0.05)
-            active = Colors.update_hsv(background, vd=0.15)
+            background = self.colors.selectbg
+            pressed = Colors.update_hsv(background, vd=0.35)
+            active = Colors.update_hsv(background, vd=0.25)
 
         img_test = self.theme_images.get(f'{self.theme.name}.normal.uparrow')
         if img_test is None:
