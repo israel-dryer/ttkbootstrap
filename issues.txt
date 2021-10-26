@@ -1,7 +1,12 @@
-- Scrollbar styles are not working
-- Width of progressbar is not consistent for striped and solid
+x Width of progressbar is not consistent for striped and solid
+x insertcolor on text should be `selectfg`
+x combobox arrowcolor should be the same as focuscolor
+x inverse default label style is not working
+x fix scrollbar dark colors
+x combobox arrow too big
+x menubutton arrow too big
+x orientation does not work for 'h' or 'v'
+x scale dark theme should lighten on press & hover
+
 - tk widgets do not change colors after theme change
-- insertcolor on text should be `selectfg`
-- combobox arrowcolor should be the same as focuscolor
-- inverse default label style is not working
-- orientation does not work for 'h' or 'v'
+- refactor scale style
