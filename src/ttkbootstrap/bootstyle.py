@@ -90,8 +90,14 @@ def inject_bootstyle_keyword_api():
             # bootstyle keywords
             elif 'bootstyle' in kwargs:
                 _bootstyle = kwargs.pop('bootstyle')
-                _orient = kwargs.get('orient')
                 _class = widget.__name__
+
+                _orient = kwargs.get('orient')
+                if _orient == 'h':
+                    _orient = tk.HORIZONTAL
+                elif _orient == 'v':
+                    _orient = tk.VERTICAL
+
                 ttkstyle = create_ttk_style(
                     bootstyle=_bootstyle,
                     widget_class=_class,
