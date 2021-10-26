@@ -23,6 +23,7 @@ WIDGET_LOOKUP = {
     "lblframe": "TLabelframe",
     "lblfrm": "TLabelframe",
     "label": "TLabel",
+    "menubutton": "TMenubutton",
     "radio": "TRadiobutton",
     "radiobutton": "TRadiobutton",
     "radiobtn": "TRadiobutton",

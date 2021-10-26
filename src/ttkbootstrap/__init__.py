@@ -3037,7 +3037,7 @@ class StylerTTK:
                             "bordercolor": background,
                             "darkcolor": background,
                             "lightcolor": background,
-                            "arrowsize": 4,
+                            "arrowsize": 3,
                             "arrowcolor": arrowcolor,
                             "arrowpadding": (0, 0, 15, 0),
                             "relief": tk.RAISED,
