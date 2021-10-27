@@ -1642,8 +1642,10 @@ class StylerTTK:
 
         if self.is_light_theme:
             disabled_fg = Colors.update_hsv(self.colors.inputbg, vd=-0.2)
+            bordercolor = self.colors.border
         else:
             disabled_fg = Colors.update_hsv(self.colors.inputbg, vd=-0.3)
+            bordercolor = self.colors.selectbg
 
         self.settings.update(
             {
@@ -1669,11 +1671,13 @@ class StylerTTK:
                 foreground = self.colors.inputfg
                 body_style = 'Treeview'
                 header_style = 'Treeview.Heading'
+                focuscolor = bordercolor
             else:
                 background = self.colors.get(color)
                 foreground = self.colors.selectfg
                 body_style = f'{color}.Treeview'
                 header_style = f'{color}.Treeview.Heading'
+                focuscolor = background
 
             self.settings.update(
                 {
@@ -1682,9 +1686,9 @@ class StylerTTK:
                             "background": self.colors.inputbg,
                             "fieldbackground": self.colors.inputbg,
                             "foreground": self.colors.inputfg,
-                            "bordercolor": self.colors.bg,
-                            "lightcolor": self.colors.border,
-                            "darkcolor": self.colors.border,
+                            "bordercolor": bordercolor,
+                            "lightcolor": self.colors.inputbg,
+                            "darkcolor": self.colors.inputbg,
                         },
                         "map": {
                             "background": [
@@ -1692,6 +1696,13 @@ class StylerTTK:
                             "foreground": [
                                 ("disabled", disabled_fg),
                                 ("selected", self.colors.selectfg)],
+                            "bordercolor": [
+                                ("disabled", bordercolor),
+                                ("focus", focuscolor),
+                                ("pressed", focuscolor),
+                                ("hover", focuscolor)],
+                            "lightcolor": [("focus", focuscolor)],
+                            "darkcolor": [("focus", focuscolor)]
                         },
                     },
                     header_style: {
