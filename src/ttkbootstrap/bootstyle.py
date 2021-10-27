@@ -75,36 +75,60 @@ TTK_WIDGETS = (
 )
 
 
+def __setitem(widget, key, value):
+    widget.configure(**{key: value})
+
+
+def __getitem(widget, key):
+    if 'bootstyle' in key:
+        return getattr(widget, '_bootstyle')
+    else:
+        return widget.tk.call(widget.name, 'configure', '-'+key)
+
+
 def inject_bootstyle_keyword_api():
     """Inject the style keyword API into the ttk widget constructor
     and widget configure method
     """
 
     def bootstyle_wrapper(widget, func):
+
+        # create private variable for bootstyle
+        setattr(widget, '_bootstyle', '')
+
         def inner(*args, **kwargs):
-            # standard ttk style overrides bootstyle keywords
+            # use style if exists; remove bootstyle in this case
             if 'style' in kwargs:
                 if 'bootstyle' in kwargs:
                     kwargs.pop('bootstyle')
                 func(*args, **kwargs)
-            # bootstyle keywords
-            elif 'bootstyle' in kwargs:
-                _bootstyle = kwargs.pop('bootstyle')
-                _class = widget.__name__
 
+            # parse the bootstyle keywords to create a ttk style
+            elif 'bootstyle' in kwargs:
+
+                # save a copy of the bootstyle keywords
+                widget._bootstyle = kwargs.pop('bootstyle')
+
+                # get widget class and orientation
+                _class = widget.__name__
                 _orient = kwargs.get('orient')
+
+                # standardize the orientation naming convention
                 if _orient == 'h':
                     _orient = tk.HORIZONTAL
                 elif _orient == 'v':
                     _orient = tk.VERTICAL
 
+                # create and set the ttk style
                 ttkstyle = create_ttk_style(
-                    bootstyle=_bootstyle,
+                    bootstyle=widget._bootstyle,
                     widget_class=_class,
                     widget_orient=_orient
                 )
                 func(*args, style=ttkstyle, **kwargs)
             else:
+                # neither `style` or `bootstyle` arguments are present
+                # pass through to the enclosed method
                 func(*args, **kwargs)
         return inner
 
@@ -112,6 +136,8 @@ def inject_bootstyle_keyword_api():
         widget.__init__ = bootstyle_wrapper(widget, widget.__init__)
         widget.configure = bootstyle_wrapper(widget, widget.configure)
         widget.config = widget.configure
+        widget.__setitem__ = __setitem
+        widget.__getitem__ = __getitem
 
 
 def normalize_style(bootstyle):
