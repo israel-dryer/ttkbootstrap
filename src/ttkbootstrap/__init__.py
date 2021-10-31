@@ -53,13 +53,22 @@ from ttkbootstrap.user_defined import USER_DEFINED
 from PIL import ImageTk, Image, ImageDraw, ImageFont
 
 DEFAULT = 'default'
-LIGHT = 'light'
-DARK = 'dark'
 DEFAULT_FONT = 'Helvetica 10'
 DEFAULT_THEME = 'flatly'
 TTK_CLAM = 'clam'
 TTK_ALT = 'alt'
 TTK_DEFAULT = 'default'
+
+# bootstyle colors
+PRIMARY = 'primary'
+SECONDARY = 'secondary'
+SUCCESS = 'success'
+DANGER = 'danger'
+WARNING = 'warning'
+INFO = 'info'
+LIGHT = 'light'
+DARK = 'dark'
+
 
 bootstyle.inject_bootstyle_keyword_api()
 
@@ -260,6 +269,8 @@ class Colors:
         info,
         warning,
         danger,
+        light,
+        dark,
         bg,
         fg,
         selectbg,
@@ -321,6 +332,12 @@ class Colors:
         danger : str
             An accent color; commonly of a `red` hue.
 
+        light : str
+            An accent color.
+
+        dark : str
+            An accent color.
+
         bg : str
             Background color.
 
@@ -348,6 +365,8 @@ class Colors:
         self.info = info
         self.warning = warning
         self.danger = danger
+        self.light = light
+        self.dark = dark
         self.bg = bg
         self.fg = fg
         self.selectbg = selectbg
@@ -355,6 +374,22 @@ class Colors:
         self.border = border
         self.inputfg = inputfg
         self.inputbg = inputbg
+
+    def get_foreground(self, color_label: str):
+        """Return the appropriate foreground color for the specified
+        color_label.
+
+        Parameters
+        ----------
+        color_label : str
+            A color label corresponding to a class property
+        """
+        if color_label in (WARNING, LIGHT):
+            return '#000'
+        elif color_label == DARK:
+            return self.selectfg
+        else:
+            return self.selectfg
 
     def get(self, color_label):
         """Lookup a color property
@@ -386,7 +421,8 @@ class Colors:
 
     def __iter__(self):
         return iter(
-            ["primary", "secondary", "success", "info", "warning", "danger"]
+            ["primary", "secondary", "success", "info", "warning", "danger",
+             "light", "dark"]
         )
 
     def __repr__(self):
@@ -410,6 +446,8 @@ class Colors:
                 "info",
                 "warning",
                 "danger",
+                "light",
+                "dark",
                 "bg",
                 "fg",
                 "selectbg",
@@ -1751,35 +1789,45 @@ class StylerTTK:
 
         STYLE = 'TButton'
 
-        disabled_fg = self.colors.selectbg
-        disabled_bg = self.colors.inputbg
+        if self.is_light_theme:
+            disabled_fg = self.colors.border
+            disabled_bg = self.colors.inputbg
+        else:
+            disabled_fg = self.colors.selectbg
+            disabled_bg = Colors.update_hsv(disabled_fg, vd=-0.2)
 
         for color in [DEFAULT, *self.colors]:
             if color == DEFAULT:
-                background = self.colors.primary
                 ttkstyle = STYLE
+                foreground = self.colors.get_foreground(PRIMARY)
+                background = self.colors.primary
+                bordercolor = background
             else:
-                background = self.colors.get(color)
                 ttkstyle = f'{color}.{STYLE}'
+                foreground = self.colors.get_foreground(color)
+                background = self.colors.get(color)
+                bordercolor = background
+            
+            # light & dark theme adjustments
             if self.is_light_theme:
-                pressed = Colors.update_hsv(background, vd=-0.2)
-                hover = Colors.update_hsv(background, vd=-0.1)
+                pressed = Colors.update_hsv(background, vd=-0.1)
+                hover = Colors.update_hsv(background, vd=0.10)
             else:
-                pressed = Colors.update_hsv(background, vd=0.2)
-                hover = Colors.update_hsv(background, vd=0.1)
+                pressed = Colors.update_hsv(background, vd=-0.1)
+                hover = Colors.update_hsv(background, vd=0.10)
 
             self.settings.update(
                 {
                     ttkstyle: {
                         "configure": {
-                            "foreground": self.colors.selectfg,
+                            "foreground": foreground,
                             "background": background,
-                            "bordercolor": background,
+                            "bordercolor": bordercolor,
                             "darkcolor": background,
                             "lightcolor": background,
                             "relief": tk.RAISED,
                             "focusthickness": 0,
-                            "focuscolor": self.colors.selectfg,
+                            "focuscolor": foreground,
                             "padding": (10, 5),
                             "anchor": tk.CENTER
                         },
@@ -1791,9 +1839,7 @@ class StylerTTK:
                                 ("hover !disabled", hover),
                             ],
                             "bordercolor": [
-                                ("disabled", disabled_bg),
-                                ("pressed !disabled", pressed),
-                                ("hover !disabled", hover),
+                                ("disabled", disabled_bg)
                             ],
                             "darkcolor": [
                                 ("disabled", disabled_bg),
@@ -1815,22 +1861,32 @@ class StylerTTK:
         """
         STYLE = 'Outline.TButton'
 
-        disabled_fg = self.colors.inputbg
+        if self.is_light_theme:
+            disabled_fg = self.colors.border
+        else:
+            disabled_fg = Colors.update_hsv(self.colors.selectbg, vd=-0.3)
 
         for color in [DEFAULT, *self.colors]:
-            if color == DEFAULT:
-                foreground = self.colors.primary
-                ttkstyle = STYLE
+            if color == LIGHT and self.is_light_theme:
+                foreground = self.colors.fg
+                foreground_pressed = foreground
+                background = self.colors.bg
+                bordercolor = self.colors.border
+                pressed = self.colors.border
+                hover = self.colors.border
+                ttkstyle = f'{color}.{STYLE}'                
             else:
+                if color == DEFAULT:
+                    ttkstyle = STYLE
+                    color = PRIMARY
+                else:
+                    ttkstyle = f'{color}.{STYLE}'
                 foreground = self.colors.get(color)
-                ttkstyle = f'{color}.{STYLE}'
-
-            if self.is_light_theme:
-                pressed = Colors.update_hsv(foreground, vd=-0.1)
-                hover = Colors.update_hsv(foreground, vd=-0.2)
-            else:
-                pressed = Colors.update_hsv(foreground, vd=0.1)
-                hover = Colors.update_hsv(foreground, vd=0.2)
+                background = self.colors.get_foreground(color)
+                foreground_pressed = background
+                bordercolor = foreground
+                pressed = foreground
+                hover = foreground
 
             self.settings.update(
                 {
@@ -1838,7 +1894,7 @@ class StylerTTK:
                         "configure": {
                             "foreground": foreground,
                             "background": self.colors.bg,
-                            "bordercolor": foreground,
+                            "bordercolor": bordercolor,
                             "darkcolor": self.colors.bg,
                             "lightcolor": self.colors.bg,
                             "relief": tk.RAISED,
@@ -1850,8 +1906,8 @@ class StylerTTK:
                         "map": {
                             "foreground": [
                                 ("disabled", disabled_fg),
-                                ("pressed !disabled", self.colors.selectfg),
-                                ("hover !disabled", self.colors.selectfg),
+                                ("pressed !disabled", foreground_pressed),
+                                ("hover !disabled", foreground_pressed),
                             ],
                             "background": [
                                 ("pressed !disabled", pressed),
@@ -1863,8 +1919,8 @@ class StylerTTK:
                                 ("hover !disabled", hover),
                             ],
                             "focuscolor": [
-                                ("pressed !disabled", self.colors.selectfg),
-                                ("hover !disabled", self.colors.selectfg),
+                                ("pressed !disabled", background),
+                                ("hover !disabled", background),
                             ],
                             "darkcolor": [
                                 ("pressed !disabled", pressed),
@@ -1887,18 +1943,21 @@ class StylerTTK:
         pressed = self.colors.info
         hover = self.colors.info
 
-        if self.is_light_theme:
-            disabled_fg = Colors.update_hsv(self.colors.inputbg, vd=-0.2)
-        else:
-            disabled_fg = self.colors.inputbg
-
         for color in [DEFAULT, *self.colors]:
             if color == DEFAULT:
                 foreground = self.colors.primary
                 ttkstyle = STYLE
+            elif color == LIGHT:
+                foreground = self.colors.fg
+                ttkstyle = f'{color}.{STYLE}'
             else:
                 foreground = self.colors.get(color)
                 ttkstyle = f'{color}.{STYLE}'
+
+            if self.is_light_theme:
+                disabled_fg = self.colors.border
+            else:
+                disabled_fg = Colors.update_hsv(self.colors.selectbg, vd=-0.3)
 
             self.settings.update(
                 {
