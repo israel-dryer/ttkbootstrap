@@ -47,7 +47,7 @@ WIDGET_LOOKUP = {
 }
 
 WIDGET_PATTERN = "|".join(WIDGET_LOOKUP.keys())
-COLOR_PATTERN = re.compile(r"primary|secondary|success|info|warning|danger")
+COLOR_PATTERN = re.compile(r"primary|secondary|success|info|warning|danger|light|dark")
 ORIENT_PATTERN = re.compile(r"horizontal|vertical")
 STYLE_PATTERN = re.compile(
     r"outline|link|inverse|rounded|striped|squared|focusframe"
@@ -136,8 +136,8 @@ def inject_bootstyle_keyword_api():
         widget.__init__ = bootstyle_wrapper(widget, widget.__init__)
         widget.configure = bootstyle_wrapper(widget, widget.configure)
         widget.config = widget.configure
-        widget.__setitem__ = __setitem
-        widget.__getitem__ = __getitem
+        # widget.__setitem__ = __setitem
+        # widget.__getitem__ = __getitem
 
 
 def normalize_style(bootstyle):
