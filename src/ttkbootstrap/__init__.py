@@ -2025,16 +2025,16 @@ class StylerTTK:
 
         Returns
         -------
-        List[str]
-            A list of tkinter image names
+        Tuple[str]
+            A tuple of PhotoImage names.
         """
         if colorname == DEFAULT:
-            prime_color = self.colors.primary
-        else:
-            prime_color = self.colors.get(colorname)
+            colorname = PRIMARY
+        
+        prime_color = self.colors.get(colorname)
         on_border = prime_color
-        on_indicator = prime_color
-        on_fill = self.colors.bg
+        on_indicator = self.colors.selectfg
+        on_fill = prime_color
 
         if self.is_light_theme:
             off_border = self.colors.selectbg
@@ -2042,13 +2042,15 @@ class StylerTTK:
             disabled_fg = Colors.update_hsv(self.colors.inputbg, vd=-0.2)
 
         else:
-            off_border = self.colors.inputbg
-            off_indicator = self.colors.inputbg
+            off_border = self.colors.selectbg
+            off_indicator = self.colors.selectbg
             disabled_fg = self.colors.inputbg
 
         off_fill = self.colors.bg
-        toggle_off = Image.new("RGBA", (226, 130))
-        draw = ImageDraw.Draw(toggle_off)
+
+        # toggle off
+        _off = Image.new("RGBA", (226, 130))
+        draw = ImageDraw.Draw(_off)
         draw.rectangle(
             xy=[1, 1, 225, 129],
             outline=off_border,
@@ -2056,7 +2058,11 @@ class StylerTTK:
             fill=off_fill
         )
         draw.rectangle([18, 18, 110, 110], fill=off_indicator)
+        off_img = ImageTk.PhotoImage(_off.resize((24, 15), Image.LANCZOS))
+        off_name = get_image_name(off_img)
+        self.theme_images[off_name] = off_img
 
+        # toggle on
         toggle_on = Image.new("RGBA", (226, 130))
         draw = ImageDraw.Draw(toggle_on)
         draw.rectangle(
@@ -2066,21 +2072,23 @@ class StylerTTK:
             fill=on_fill
         )
         draw.rectangle([18, 18, 110, 110], fill=on_indicator)
-        toggle_on = toggle_on.transpose(Image.ROTATE_180)
+        _on = toggle_on.transpose(Image.ROTATE_180)
+        on_img = ImageTk.PhotoImage(_on.resize((24, 15), Image.LANCZOS))
+        on_name = get_image_name(on_img)
+        self.theme_images[on_name] = on_img
 
-        toggle_disabled = Image.new("RGBA", (226, 130))
-        draw = ImageDraw.Draw(toggle_disabled)
+        # toggle disabled
+        _disabled = Image.new("RGBA", (226, 130))
+        draw = ImageDraw.Draw(_disabled)
         draw.rectangle([1, 1, 225, 129], outline=disabled_fg, width=6)
         draw.rectangle([18, 18, 110, 110], fill=disabled_fg)
-
-        image_names = []
-        for im in [toggle_on, toggle_off, toggle_disabled]:
-            _im = ImageTk.PhotoImage(im.resize((24, 15), Image.LANCZOS))
-            _name = _im._PhotoImage__photo.name
-            image_names.append(_name)
-            self.theme_images[_name] = _im
-
-        return image_names
+        disabled_img = ImageTk.PhotoImage(
+            _disabled.resize((24, 15), Image.LANCZOS)
+        )
+        disabled_name = get_image_name(disabled_img)
+        self.theme_images[disabled_name] = disabled_img
+        
+        return off_name, on_name, disabled_name
 
     def create_round_toggle_assets(self, colorname):
         """Create a set of images for the rounded toggle button and 
@@ -2093,14 +2101,13 @@ class StylerTTK:
 
         Returns
         -------
-        List[str]
-            A list of tkinter image names
+        Tuple[str]
+            A tuple of PhotoImage names
         """
         if colorname == DEFAULT:
-            prime_color = self.colors.primary
-        else:
-            prime_color = self.colors.get(colorname)
+            colorname = PRIMARY
 
+        prime_color = self.colors.get(colorname)
         on_border = prime_color
         on_indicator = self.colors.selectfg
         on_fill = prime_color
@@ -2110,13 +2117,15 @@ class StylerTTK:
             off_indicator = self.colors.selectbg
             disabled_fg = Colors.update_hsv(self.colors.inputbg, vd=-0.2)
         else:
-            off_border = self.colors.inputbg
-            off_indicator = self.colors.inputbg
+            off_border = self.colors.selectbg
+            off_indicator = self.colors.selectbg
             disabled_fg = self.colors.inputbg
 
         off_fill = self.colors.bg
-        toggle_off = Image.new("RGBA", (226, 130))
-        draw = ImageDraw.Draw(toggle_off)
+
+        # toggle off
+        _off = Image.new("RGBA", (226, 130))
+        draw = ImageDraw.Draw(_off)
         draw.rounded_rectangle(
             xy=[1, 1, 225, 129],
             radius=(128 / 2),
@@ -2125,9 +2134,13 @@ class StylerTTK:
             fill=off_fill,
         )
         draw.ellipse([20, 18, 112, 110], fill=off_indicator)
+        off_img = ImageTk.PhotoImage(_off.resize((24, 15), Image.LANCZOS))
+        off_name = get_image_name(off_img)
+        self.theme_images[off_name] = off_img
 
-        toggle_on = Image.new("RGBA", (226, 130))
-        draw = ImageDraw.Draw(toggle_on)
+        # toggle on
+        _on = Image.new("RGBA", (226, 130))
+        draw = ImageDraw.Draw(_on)
         draw.rounded_rectangle(
             xy=[1, 1, 225, 129],
             radius=(128 / 2),
@@ -2136,10 +2149,14 @@ class StylerTTK:
             fill=on_fill,
         )
         draw.ellipse([20, 18, 112, 110], fill=on_indicator)
-        toggle_on = toggle_on.transpose(Image.ROTATE_180)
+        _on = _on.transpose(Image.ROTATE_180)
+        on_img = ImageTk.PhotoImage(_on.resize((24, 15), Image.LANCZOS))
+        on_name = get_image_name(on_img)
+        self.theme_images[on_name] = on_img
 
-        toggle_disabled = Image.new("RGBA", (226, 130))
-        draw = ImageDraw.Draw(toggle_disabled)
+        # toggle disabled
+        _disabled = Image.new("RGBA", (226, 130))
+        draw = ImageDraw.Draw(_disabled)
         draw.rounded_rectangle(
             xy=[1, 1, 225, 129],
             radius=(128 / 2),
@@ -2147,15 +2164,13 @@ class StylerTTK:
             width=6
         )
         draw.ellipse([20, 18, 112, 110], fill=disabled_fg)
+        disabled_img = ImageTk.PhotoImage(
+            _disabled.resize((24, 15), Image.LANCZOS)
+        )
+        disabled_name = get_image_name(disabled_img)
+        self.theme_images[disabled_name] = disabled_img
 
-        image_names = []
-        for im in [toggle_on, toggle_off, toggle_disabled]:
-            _im = ImageTk.PhotoImage(im.resize((24, 15), Image.LANCZOS))
-            _name = _im._PhotoImage__photo.name
-            image_names.append(_name)
-            self.theme_images[_name] = _im
-
-        return image_names
+        return off_name, on_name, disabled_name
 
     def create_round_toggle_style(self):
         """Apply a rounded toggle switch style to ttk widgets that accept 
@@ -2170,7 +2185,8 @@ class StylerTTK:
 
         for color in [DEFAULT, *self.colors]:
 
-            _on, _off, _disabled = self.create_round_toggle_assets(color)
+            # ( off, on, disabled )
+            images = self.create_round_toggle_assets(color)
 
             if color == DEFAULT:
                 ttkstyle = STYLE
@@ -2182,9 +2198,9 @@ class StylerTTK:
             self.settings.update(
                 {
                     f"{ttkstyle}.indicator": {
-                        "element create": ("image", _on,
-                                           ("disabled", _disabled),
-                                           ("!selected", _off),
+                        "element create": ("image", images[1],
+                                           ("disabled", images[2]),
+                                           ("!selected", images[0]),
                                            {"width": 28, "border": 4, "sticky": tk.W})},
                     ttkstyle: {
                         "layout": [
@@ -2206,7 +2222,6 @@ class StylerTTK:
                         "map": {
                             "foreground": [
                                 ("disabled", disabled_fg),
-                                ("hover", indicatorcolor),
                             ],
                             "background": [
                                 ("selected", self.colors.bg),
@@ -2226,7 +2241,8 @@ class StylerTTK:
         # color variations
         for color in [DEFAULT, *self.colors]:
 
-            _on, _off, _disabled = self.create_square_toggle_assets(color)
+            # ( off, on, disabled )
+            images = self.create_square_toggle_assets(color)
 
             if color == DEFAULT:
                 ttkstyle = STYLE
@@ -2239,9 +2255,9 @@ class StylerTTK:
             self.settings.update(
                 {
                     f"{ttkstyle}.indicator": {
-                        "element create": ("image", _on,
-                                           ("disabled", _disabled),
-                                           ("!selected", _off),
+                        "element create": ("image", images[1],
+                                           ("disabled", images[2]),
+                                           ("!selected", images[0]),
                                            {"width": 28, "border": 4, "sticky": tk.W})},
                     ttkstyle: {
                         "layout": [
@@ -2262,7 +2278,6 @@ class StylerTTK:
                         "map": {
                             "foreground": [
                                 ("disabled", disabled_fg),
-                                ("hover", indicatorcolor),
                             ],
                             "background": [
                                 ("selected", self.colors.bg),
@@ -2474,8 +2489,8 @@ class StylerTTK:
 
         Returns
         -------
-        List[str]
-            A list of photoimage names
+        Tuple[str]
+            A tuple of PhotoImage names
         """
         if colorname == DEFAULT:
             prime_color = self.colors.primary
@@ -2954,13 +2969,12 @@ class StylerTTK:
         on_border = prime_color
         on_fill = prime_color
         off_border = self.colors.selectbg
+        off_fill = self.colors.bg
 
         if self.is_light_theme:
-            off_fill = self.colors.inputbg
             disabled_fg = Colors.update_hsv(self.colors.inputbg, vd=-0.2)
             disabled_bg = self.colors.inputbg
         else:
-            off_fill = self.colors.selectbg
             disabled_fg = self.colors.inputbg
             disabled_bg = disabled_fg
 
@@ -2971,7 +2985,7 @@ class StylerTTK:
             [2, 2, 132, 132],
             radius=16,
             outline=off_border,
-            width=3,
+            width=6,
             fill=off_fill,
         )
         off_img = ImageTk.PhotoImage(
@@ -3003,8 +3017,6 @@ class StylerTTK:
         draw.rounded_rectangle(
             [2, 2, 132, 132],
             radius=16,
-            outline=disabled_fg,
-            width=3,
             fill=disabled_bg,
         )
         disabled_img = ImageTk.PhotoImage(
