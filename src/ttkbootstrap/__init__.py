@@ -73,6 +73,10 @@ DARK = 'dark'
 bootstyle.inject_bootstyle_keyword_api()
 
 
+def get_image_name(image: ImageTk.PhotoImage):
+    return image._PhotoImage__photo.name
+
+
 class Style(ttk.Style):
     """A class for setting the application style.
 
@@ -2854,103 +2858,53 @@ class StylerTTK:
 
     def create_checkbutton_style(self):
         """Create style configuration for ttk checkbutton"""
+        STYLE = 'TCheckbutton'
+        
         if self.is_light_theme:
-            disabled_fg = Colors.update_hsv(self.colors.inputbg, vd=-0.2)
+            disabled_fg = self.colors.border
         else:
-            disabled_fg = self.colors.inputbg
+            disabled_fg = Colors.update_hsv(self.colors.selectbg, vd=-0.3)
 
-        self.theme_images.update(self.create_checkbutton_assets("primary"))
+        for color in [DEFAULT, *self.colors]:
+            if color == DEFAULT:
+                color = PRIMARY
+                ttkstyle = STYLE
+                indicator_element = 'Checkbutton.indicator'
+            else:
+                ttkstyle = f'{color}.TCheckbutton'
+                indicator_element = f'{color}.Checkbutton.indicator'
 
-        self.settings.update(
-            {
-                "Checkbutton.indicator": {
-                    "element create": (
-                        "image",
-                        self.theme_images["primary_checkbutton_on"],
-                        (
-                            "disabled",
-                            self.theme_images["primary_checkbutton_disabled"],
-                        ),
-                        (
-                            "!selected",
-                            self.theme_images["primary_checkbutton_off"],
-                        ),
-                        {"width": 20, "border": 4, "sticky": tk.W},
-                    )
-                },
-                "TCheckbutton": {
-                    "layout": [
-                        (
-                            "Checkbutton.padding",
-                            {
-                                "children": [
-                                    (
-                                        "primary.Checkbutton.indicator",
-                                        {"side": tk.LEFT, "sticky": ""},
-                                    ),
-                                    (
-                                        "Checkbutton.focus",
-                                        {
-                                            "children": [
-                                                (
-                                                    "Checkbutton.label",
-                                                    {"sticky": tk.NSEW},
-                                                )
-                                            ],
-                                            "side": tk.LEFT,
-                                            "sticky": "",
-                                        },
-                                    ),
-                                ],
-                                "sticky": tk.NSEW,
-                            },
-                        )
-                    ],
-                    "configure": {
-                        "foreground": self.colors.fg,
-                        "background": self.colors.bg,
-                        "focuscolor": "",
-                    },
-                    "map": {
-                        "foreground": [
-                            ("disabled", disabled_fg),
-                            ("active !disabled", self.colors.primary),
-                        ]
-                    },
-                },
-            }
-        )
-
-        # variations change indicator color
-        for color in self.colors:
-            self.theme_images.update(self.create_checkbutton_assets(color))
+            # [0]off [1]on [2]disabled
+            images = self.create_checkbutton_assets(color)
+            self.theme_images.update(
+                {
+                    get_image_name(images[0]): images[0], # off
+                    get_image_name(images[1]): images[1], # on
+                    get_image_name(images[2]): images[2]  # disabled
+                }
+            )
+            
             self.settings.update(
                 {
-                    f"{color}.Checkbutton.indicator": {
+                    indicator_element: {
                         "element create": (
-                            "image",
-                            self.theme_images[f"{color}_checkbutton_on"],
-                            (
-                                "disabled",
-                                self.theme_images[
-                                    f"{color}_checkbutton_disabled"
-                                ],
-                            ),
-                            (
-                                "!selected",
-                                self.theme_images[f"{color}_checkbutton_off"],
-                            ),
+                            "image", images[1],
+                            ("disabled", images[2]),
+                            ("!selected", images[0]),
                             {"width": 20, "border": 4, "sticky": tk.W},
                         )
                     },
-                    f"{color}.TCheckbutton": {
+                    ttkstyle: {
+                        "configure": {
+                            "foreground": self.colors.fg
+                        },
                         "layout": [
                             (
                                 "Checkbutton.padding",
                                 {
                                     "children": [
                                         (
-                                            f"{color}.Checkbutton.indicator",
+                                            indicator_element,
                                             {"side": tk.LEFT, "sticky": ""},
                                         ),
                                         (
@@ -2972,15 +2926,7 @@ class StylerTTK:
                             )
                         ],
                         "map": {
-                            "foreground": [
-                                ("disabled", disabled_fg),
-                                (
-                                    "active !disabled",
-                                    Colors.update_hsv(
-                                        self.colors.get(color), vd=-0.2
-                                    ),
-                                ),
-                            ]
+                            "foreground": [("disabled", disabled_fg)]
                         },
                     },
                 }
@@ -3059,17 +3005,17 @@ class StylerTTK:
             fill=disabled_bg,
         )
 
-        return {
-            f"{colorname}_checkbutton_off": ImageTk.PhotoImage(
+        return [
+            ImageTk.PhotoImage(
                 checkbutton_off.resize((14, 14), Image.LANCZOS)
             ),
-            f"{colorname}_checkbutton_on": ImageTk.PhotoImage(
+            ImageTk.PhotoImage(
                 checkbutton_on.resize((14, 14), Image.LANCZOS)
             ),
-            f"{colorname}_checkbutton_disabled": ImageTk.PhotoImage(
+            ImageTk.PhotoImage(
                 checkbutton_disabled.resize((14, 14), Image.LANCZOS)
-            ),
-        }
+            )
+        ]
 
     def create_solid_menubutton(self):
         """Apply a solid color style to ttk menubutton"""
