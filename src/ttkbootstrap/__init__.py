@@ -388,7 +388,7 @@ class Colors:
         color_label : str
             A color label corresponding to a class property
         """
-        if color_label in (WARNING, LIGHT):
+        if color_label == LIGHT:
             return '#000'
         elif color_label == DARK:
             return self.selectfg
@@ -1169,155 +1169,132 @@ class StylerTTK:
                 }
             )
 
-    @staticmethod
-    def create_scale_assets(color, size=16):
+    def create_scale_assets(self, color_name, size=16):
         """Create a circle slider image based on given size and color;
         used in the slider widget.
 
         Parameters
         ----------
-        color : str
-            A hexadecimal color value.
+        color_name : str
+            The color name to use as the primary color
 
         size : int
             The size diameter of the slider circle; default=16.
 
         Returns
         -------
-        ImageTk.PhotoImage
-            An image drawn in the shape of the circle of the theme
-            color specified.
+        Tuple[str]
+            A tuple of PhotoImage names.
         """
-        im = Image.new("RGBA", (100, 100))
-        draw = ImageDraw.Draw(im)
-        draw.ellipse((0, 0, 95, 95), fill=color)
-        return ImageTk.PhotoImage(im.resize((size, size), Image.LANCZOS))
+        if self.is_light_theme:
+            disabled_color = self.colors.inputbg
+            track_color = Colors.update_hsv(self.colors.inputbg, vd=-0.03)
+        else:
+            disabled_color = Colors.update_hsv(self.colors.selectbg, vd=-0.2)
+            track_color = self.colors.inputbg
+
+        if color_name == DEFAULT:
+            normal_color = self.colors.primary
+        else:
+            normal_color = self.colors.get(color_name)
+
+        pressed_color = Colors.update_hsv(normal_color, vd=-0.1)
+        hover_color = Colors.update_hsv(normal_color, vd=0.1)
+
+        # normal state
+        _normal = Image.new("RGBA", (100, 100))
+        draw = ImageDraw.Draw(_normal)
+        draw.ellipse((0, 0, 95, 95), fill=normal_color)
+        normal_img = ImageTk.PhotoImage(
+            _normal.resize((size, size), Image.LANCZOS)
+        )
+        normal_name = get_image_name(normal_img)
+        self.theme_images[normal_name] = normal_img
+
+        # pressed state
+        _pressed = Image.new("RGBA", (100, 100))
+        draw = ImageDraw.Draw(_pressed)
+        draw.ellipse((0, 0, 95, 95), fill=pressed_color)
+        pressed_img = ImageTk.PhotoImage(
+            _pressed.resize((size, size), Image.LANCZOS)
+        )
+        pressed_name = get_image_name(pressed_img)
+        self.theme_images[pressed_name] = pressed_img
+
+        # hover state
+        _hover = Image.new("RGBA", (100, 100))
+        draw = ImageDraw.Draw(_hover)
+        draw.ellipse((0, 0, 95, 95), fill=hover_color)
+        hover_img = ImageTk.PhotoImage(
+            _hover.resize((size, size), Image.LANCZOS)
+        )
+        hover_name = get_image_name(hover_img)
+        self.theme_images[hover_name] = hover_img
+
+        # disabled state
+        _disabled = Image.new("RGBA", (100, 100))
+        draw = ImageDraw.Draw(_disabled)
+        draw.ellipse((0, 0, 95, 95), fill=disabled_color)
+        disabled_img = ImageTk.PhotoImage(
+            _disabled.resize((size, size), Image.LANCZOS)
+        )
+        disabled_name = get_image_name(disabled_img)
+        self.theme_images[disabled_name] = disabled_img        
+
+        # vertical track
+        h_track_img = ImageTk.PhotoImage(
+            Image.new("RGB", (40, 5), track_color)
+        )
+        h_track_name = get_image_name(h_track_img)
+        self.theme_images[h_track_name] = h_track_img
+
+        # horizontal track
+        v_track_img = ImageTk.PhotoImage(
+            Image.new("RGB", (5, 40), track_color)
+        )
+        v_track_name = get_image_name(v_track_img)
+        self.theme_images[v_track_name] = v_track_img
+
+        return (
+            normal_name, pressed_name, hover_name, 
+            disabled_name, h_track_name, v_track_name
+        )
 
     def create_scale_style(self):
         """Create style configuration for ttk scale: *ttk.Scale*"""
-        if self.is_light_theme:
-            disabled_fg = Colors.update_hsv(self.colors.inputbg, vd=-0.2)
-            trough_color = Colors.update_hsv(self.colors.inputbg, vd=-0.03)
-            pressed_vd = -0.25
-            hover_vd = -0.15
-        else:
-            disabled_fg = Colors.update_hsv(self.colors.inputbg, vd=-0.3)
-            trough_color = self.colors.inputbg
-            pressed_vd = 0.35
-            hover_vd = 0.15
+        STYLE = 'TScale'
 
-        # create widget images
-        self.theme_images.update(
-            {
-                "primary_disabled": self.create_scale_assets(disabled_fg),
-                "primary_regular": self.create_scale_assets(
-                    self.colors.primary
-                ),
-                "primary_pressed": self.create_scale_assets(
-                    Colors.update_hsv(self.colors.primary, vd=pressed_vd)
-                ),
-                "primary_hover": self.create_scale_assets(
-                    Colors.update_hsv(self.colors.primary, vd=hover_vd)
-                ),
-                "htrough": ImageTk.PhotoImage(
-                    Image.new("RGB", (40, 5), trough_color)
-                ),
-                "vtrough": ImageTk.PhotoImage(
-                    Image.new("RGB", (5, 40), trough_color)
-                ),
-            }
-        )
+        for color in [DEFAULT, *self.colors]:
+            if color == DEFAULT:
+                h_ttkstyle = f'Horizontal.{STYLE}'
+                v_ttkstyle = f'Vertical.{STYLE}'
+                h_track_element = 'Horizontal.Scale.track'
+                v_track_element = 'Vertical.Scale.track'
+                focus_element = 'Scale.focus'
+                slider_element = 'Scale.slider'
+            else:
+                h_ttkstyle = f'{color}.Horizontal.{STYLE}'
+                h_track_element = f'{color}.Horizontal.Scale.track'
+                v_ttkstyle = f'{color}.Vertical.{STYLE}'
+                v_track_element = f'{color}.Vertical.Scale.track'
+                focus_element = f'{color}.Scale.focus'
+                slider_element = f'{color}.Scale.slider'
 
-        # The layout is derived from the 'xpnative' theme
-        self.settings.update(
-            {
-                "Horizontal.TScale": {
-                    "layout": [
-                        (
-                            "Scale.focus",
-                            {
-                                "expand": "1",
-                                "sticky": tk.NSEW,
-                                "children": [
-                                    (
-                                        "Horizontal.Scale.track",
-                                        {"sticky": tk.EW},
-                                    ),
-                                    (
-                                        "Horizontal.Scale.slider",
-                                        {"side": tk.LEFT, "sticky": ""},
-                                    ),
-                                ],
-                            },
-                        )
-                    ]
-                },
-                "Vertical.TScale": {
-                    "layout": [
-                        (
-                            "Scale.focus",
-                            {
-                                "expand": "1",
-                                "sticky": tk.NSEW,
-                                "children": [
-                                    ("Vertical.Scale.track",
-                                     {"sticky": tk.NS}),
-                                    (
-                                        "Vertical.Scale.slider",
-                                        {"side": tk.TOP, "sticky": ""},
-                                    ),
-                                ],
-                            },
-                        )
-                    ]
-                },
-                "Horizontal.Scale.track": {
-                    "element create": ("image", self.theme_images["htrough"])
-                },
-                "Vertical.Scale.track": {
-                    "element create": ("image", self.theme_images["vtrough"])
-                },
-                "Scale.slider": {
-                    "element create": (
-                        "image",
-                        self.theme_images["primary_regular"],
-                        ("disabled", self.theme_images["primary_disabled"]),
-                        (
-                            "pressed !disabled",
-                            self.theme_images["primary_pressed"],
-                        ),
-                        (
-                            "hover !disabled",
-                            self.theme_images["primary_hover"],
-                        ),
-                    )
-                },
-            }
-        )
-        for color in self.colors:
-            self.theme_images.update(
-                {
-                    f"{color}_regular": self.create_scale_assets(
-                        self.colors.get(color)
-                    ),
-                    f"{color}_pressed": self.create_scale_assets(
-                        Colors.update_hsv(
-                            self.colors.get(color), vd=pressed_vd
-                        )
-                    ),
-                    f"{color}_hover": self.create_scale_assets(
-                        Colors.update_hsv(self.colors.get(color), vd=hover_vd)
-                    ),
-                }
-            )
+            # ( normal, pressed, hover, disabled, htrack, vtrack )
+            images = self.create_scale_assets(color)
 
-            # The layout is derived from the 'xpnative' theme
             self.settings.update(
                 {
-                    f"{color}.Horizontal.TScale": {
+                    h_track_element: {
+                        "element create": ("image", images[4])
+                    },
+                    v_track_element: {
+                        "element create": ("image", images[5])
+                    },
+                    h_ttkstyle: {
                         "layout": [
                             (
-                                "Scale.focus",
+                                focus_element,
                                 {
                                     "expand": "1",
                                     "sticky": tk.NSEW,
@@ -1327,7 +1304,7 @@ class StylerTTK:
                                             {"sticky": tk.EW},
                                         ),
                                         (
-                                            f"{color}.Scale.slider",
+                                            slider_element,
                                             {"side": tk.LEFT, "sticky": ""},
                                         ),
                                     ],
@@ -1335,10 +1312,10 @@ class StylerTTK:
                             )
                         ]
                     },
-                    f"{color}.Vertical.TScale": {
+                    v_ttkstyle: {
                         "layout": [
                             (
-                                f"{color}.Scale.focus",
+                                focus_element,
                                 {
                                     "expand": "1",
                                     "sticky": tk.NSEW,
@@ -1348,7 +1325,7 @@ class StylerTTK:
                                             {"sticky": tk.NS},
                                         ),
                                         (
-                                            f"{color}.Scale.slider",
+                                            slider_element,
                                             {"side": tk.TOP, "sticky": ""},
                                         ),
                                     ],
@@ -1356,16 +1333,12 @@ class StylerTTK:
                             )
                         ]
                     },
-                    f"{color}.Scale.slider": {
+                    slider_element: {
                         "element create": (
-                            "image",
-                            self.theme_images[f"{color}_regular"],
-                            (
-                                "disabled",
-                                self.theme_images["primary_disabled"],
-                            ),
-                            ("pressed", self.theme_images[f"{color}_pressed"]),
-                            ("hover", self.theme_images[f"{color}_hover"]),
+                            "image", images[0],
+                            ("disabled", images[3]),
+                            ("pressed", images[1]),
+                            ("hover", images[2]),
                         )
                     },
                 }
@@ -1812,13 +1785,8 @@ class StylerTTK:
                 background = self.colors.get(color)
                 bordercolor = background
             
-            # light & dark theme adjustments
-            if self.is_light_theme:
-                pressed = Colors.update_hsv(background, vd=-0.1)
-                hover = Colors.update_hsv(background, vd=0.10)
-            else:
-                pressed = Colors.update_hsv(background, vd=-0.1)
-                hover = Colors.update_hsv(background, vd=0.10)
+            pressed = Colors.update_hsv(background, vd=-0.1)
+            hover = Colors.update_hsv(background, vd=0.10)
 
             self.settings.update(
                 {
