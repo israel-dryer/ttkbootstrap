@@ -2493,63 +2493,62 @@ class StylerTTK:
             A tuple of PhotoImage names
         """
         if colorname == DEFAULT:
-            prime_color = self.colors.primary
-        else:
-            prime_color = self.colors.get(colorname)
+            colorname = PRIMARY
 
+        prime_color = self.colors.get(colorname)
         on_indicator = self.colors.selectfg
         on_fill = prime_color
         off_border = self.colors.selectbg
+        off_fill = self.colors.bg
 
         if self.is_light_theme:
-            on_border = prime_color
-            off_fill = self.colors.inputbg
             disabled = self.colors.border
         else:
-            on_border = self.colors.selectbg
-            disabled = self.colors.selectbg
-            off_fill = self.colors.selectbg
+            disabled = self.colors.inputbg
 
         # radio off
-        radio_off = Image.new("RGBA", (134, 134))
-        draw = ImageDraw.Draw(radio_off)
+        _off = Image.new("RGBA", (134, 134))
+        draw = ImageDraw.Draw(_off)
         draw.ellipse(
             xy=[2, 2, 132, 132],
             outline=off_border,
-            width=3,
+            width=6,
             fill=off_fill
         )
+        off_img = ImageTk.PhotoImage(_off.resize((14, 14), Image.LANCZOS))
+        off_name = get_image_name(off_img)
+        self.theme_images[off_name] = off_img
 
         # radio on
-        radio_on = Image.new("RGBA", (134, 134))
-        draw = ImageDraw.Draw(radio_on)
+        _on = Image.new("RGBA", (134, 134))
+        draw = ImageDraw.Draw(_on)
         draw.ellipse(
             xy=[2, 2, 132, 132],
-            outline=on_border,
-            width=12,
+            outline=on_fill,
+            width=3,
             fill=on_fill
         )
         draw.ellipse([40, 40, 94, 94], fill=on_indicator)
+        on_img = ImageTk.PhotoImage(_on.resize((14, 14), Image.LANCZOS))
+        on_name = get_image_name(on_img)
+        self.theme_images[on_name] = on_img
 
         # radio disabled
-        radio_disabled = Image.new("RGBA", (134, 134))
-        draw = ImageDraw.Draw(radio_disabled)
+        _disabled = Image.new("RGBA", (134, 134))
+        draw = ImageDraw.Draw(_disabled)
         draw.ellipse(
             xy=[2, 2, 132, 132],
             outline=disabled,
             width=3,
             fill=off_fill
         )
+        disabled_img = ImageTk.PhotoImage(
+            _disabled.resize((14, 14), Image.LANCZOS)
+        )
+        disabled_name = get_image_name(disabled_img)
+        self.theme_images[disabled_name] = disabled_img
 
-        image_names = []
-
-        for image in [radio_on, radio_off, radio_disabled]:
-            _img = ImageTk.PhotoImage(image.resize((14, 14), Image.LANCZOS))
-            _name = _img._PhotoImage__photo.name
-            image_names.append(_name)
-            self.theme_images[_name] = _img
-
-        return image_names
+        return off_name, on_name, disabled_name
 
     def create_radiobutton_style(self):
         """Create style configuration for ttk radiobutton"""
@@ -2562,7 +2561,8 @@ class StylerTTK:
             disabled_fg = self.colors.inputbg
 
         for color in [DEFAULT, *self.colors]:
-            _on, _off, _disabled = self.create_radiobutton_assets(color)
+            # ( off, on, disabled )
+            images = self.create_radiobutton_assets(color)
 
             if color == DEFAULT:
                 ttkstyle = STYLE
@@ -2575,9 +2575,9 @@ class StylerTTK:
                 {
                     f"{ttkstyle}.indicator": {
                         "element create": (
-                            "image", _on,
-                            ("disabled", _disabled),
-                            ("!selected", _off),
+                            "image", images[1],
+                            ("disabled", images[2]),
+                            ("!selected", images[0]),
                             {"width": 20, "border": 4, "sticky": tk.W})},
                     ttkstyle: {
                         "layout": [
@@ -2592,8 +2592,7 @@ class StylerTTK:
                         "configure": {"font": self.theme.font},
                         "map": {
                             "foreground": [
-                                ("disabled", disabled_fg),
-                                ("active", focuscolor)]}}})
+                                ("disabled", disabled_fg)]}}})
 
     def create_calendar_style(self):
         """Create style configuration for the date chooser"""
