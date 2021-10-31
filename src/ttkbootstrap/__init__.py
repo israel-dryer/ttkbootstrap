@@ -2258,14 +2258,13 @@ class StylerTTK:
         STYLE = 'Toolbutton'
 
         if self.is_light_theme:
-            disabled_fg = self.colors.selectbg
-            disabled_bg = Colors.update_hsv(self.colors.inputbg, sd=0.3)
+            disabled_fg = self.colors.border
+            disabled_bg = self.colors.inputbg
         else:
             disabled_fg = self.colors.selectbg
-            disabled_bg = Colors.update_hsv(self.colors.inputbg, sd=-0.3)
+            disabled_bg = Colors.update_hsv(disabled_fg, vd=-0.2)
 
         for color in [DEFAULT, *self.colors]:
-
             if color == DEFAULT:
                 ttkstyle = STYLE
                 toggle_on = self.colors.primary
@@ -2332,9 +2331,9 @@ class StylerTTK:
         STYLE = 'Outline.Toolbutton'
 
         if self.is_light_theme:
-            disabled_fg = Colors.update_hsv(self.colors.inputbg, vd=-0.2)
+            disabled_fg = self.colors.border
         else:
-            disabled_fg = self.colors.inputbg
+            disabled_fg = Colors.update_hsv(self.colors.selectbg, vd=-0.3)
 
         for color in [DEFAULT, *self.colors]:
 
@@ -2998,8 +2997,12 @@ class StylerTTK:
         """Apply a solid color style to ttk menubutton"""
         STYLE = 'TMenubutton'
 
-        disabled_fg = self.colors.selectbg
-        disabled_bg = self.colors.inputbg
+        if self.is_light_theme:
+            disabled_fg = self.colors.border
+            disabled_bg = self.colors.inputbg
+        else:
+            disabled_fg = self.colors.selectbg
+            disabled_bg = Colors.update_hsv(disabled_fg, vd=-0.2)
 
         for color in [DEFAULT, *self.colors]:
 
@@ -3010,14 +3013,13 @@ class StylerTTK:
                 ttkstyle = f'{color}.{STYLE}'
                 background = self.colors.get(color)
 
+            pressed = Colors.update_hsv(background, vd=-0.1)
+            hover = Colors.update_hsv(background, vd=0.10)                
+
             if self.is_light_theme:
-                pressed = Colors.update_hsv(background, vd=-0.2)
-                hover = Colors.update_hsv(background, vd=-0.1)
                 arrowcolor = self.colors.bg
 
             else:
-                pressed = Colors.update_hsv(background, vd=0.2)
-                hover = Colors.update_hsv(background, vd=0.1)
                 arrowcolor = self.colors.selectfg
 
             self.settings.update(
@@ -3070,7 +3072,10 @@ class StylerTTK:
 
         STYLE = 'Outline.TMenubutton'
 
-        disabled_fg = self.colors.inputbg
+        if self.is_light_theme:
+            disabled_fg = self.colors.border
+        else:
+            disabled_fg = Colors.update_hsv(self.colors.selectbg, vd=-0.3)
 
         for color in [DEFAULT, *self.colors]:
             if color == DEFAULT:
@@ -3079,13 +3084,6 @@ class StylerTTK:
             else:
                 foreground = self.colors.get(color)
                 ttkstyle = f'{color}.{STYLE}'
-
-            if self.is_light_theme:
-                pressed = Colors.update_hsv(foreground, vd=-0.1)
-                hover = Colors.update_hsv(foreground, vd=-0.2)
-            else:
-                pressed = Colors.update_hsv(foreground, vd=0.1)
-                hover = Colors.update_hsv(foreground, vd=0.2)
 
             self.settings.update(
                 {
@@ -3110,21 +3108,21 @@ class StylerTTK:
                                 ("hover !disabled", self.colors.selectfg),
                             ],
                             "background": [
-                                ("pressed !disabled", pressed),
-                                ("hover !disabled", hover),
+                                ("pressed !disabled", foreground),
+                                ("hover !disabled", foreground),
                             ],
                             "bordercolor": [
                                 ("disabled", disabled_fg),
-                                ("pressed !disabled", pressed),
-                                ("hover !disabled", hover),
+                                ("pressed !disabled", foreground),
+                                ("hover !disabled", foreground),
                             ],
                             "darkcolor": [
-                                ("pressed !disabled", pressed),
-                                ("hover !disabled", hover),
+                                ("pressed !disabled", foreground),
+                                ("hover !disabled", foreground),
                             ],
                             "lightcolor": [
-                                ("pressed !disabled", pressed),
-                                ("hover !disabled", hover),
+                                ("pressed !disabled", foreground),
+                                ("hover !disabled", foreground),
                             ],
                             "arrowcolor": [
                                 ("disabled", disabled_fg),
