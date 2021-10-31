@@ -15,10 +15,10 @@ def create_panedwindow_frame(widget_style, style):
     ttk.Separator(frame).pack(padx=5, pady=5, fill=tk.X)
 
     # default
-    pw = ttk.PanedWindow(frame, orient=tk.HORIZONTAL, style=widget_style)
+    pw = ttk.PanedWindow(frame, orient=tk.HORIZONTAL)
     pw.pack(padx=5, pady=5, fill=tk.BOTH)
-    pw.add(ttk.Frame(pw, width=200, height=200, style='info.TFrame'))
-    pw.add(ttk.Frame(pw, width=200, height=200, style='success.TFrame'))
+    pw.add(ttk.Frame(pw, width=200, height=200, bootstyle='info'))
+    pw.add(ttk.Frame(pw, width=200, height=200, bootstyle='success'))
 
     return frame
 

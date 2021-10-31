@@ -5,18 +5,17 @@ from ttkbootstrap import Style
 DARK = 'superhero'
 LIGHT = 'flatly'
 
-def create_treeview_style(widget_style, style):
+def create_treeview_style(_, style):
     frame = ttk.Frame(root, padding=5)
     
     # title
-    title = ttk.Label(frame, text=widget_style, anchor=tk.CENTER)
+    title = ttk.Label(frame, text='Treeview', anchor=tk.CENTER)
     title.pack(padx=5, pady=2, fill=tk.BOTH)
     ttk.Separator(frame).pack(padx=5, pady=5, fill=tk.X)
 
     # default
-    ttk.Label(frame, text=widget_style).pack(fill=tk.X)
-    tv = ttk.Treeview(frame, style=widget_style, columns=[0, 1],
-                      height=2)
+    ttk.Label(frame, text='default').pack(fill=tk.X)
+    tv = ttk.Treeview(frame, columns=[0, 1], height=2)
     tv.heading('#0', text='Column')
     for x in range(2):
         tv.heading(x, text=f'Column {x}')
@@ -26,10 +25,13 @@ def create_treeview_style(widget_style, style):
 
     # colored 
     for color in style.colors:
-        sg_style = f'{color}.{widget_style}'
-        ttk.Label(frame, text=sg_style).pack(fill=tk.X)
-        tv = ttk.Treeview(frame, style=sg_style, columns=[0, 1],
-                          height=2)
+        ttk.Label(frame, text=color).pack(fill=tk.X)
+        tv = ttk.Treeview(
+            master=frame, 
+            bootstyle=color, 
+            columns=[0, 1],
+            height=2
+        )
         tv.heading('#0', text='Column')
         for x in range(2):
             tv.heading(x, text=f'Column {x}')
@@ -44,6 +46,6 @@ if __name__ == '__main__':
     root = tk.Tk()
     style = Style(theme=LIGHT)
 
-    create_treeview_style('Treeview', style).pack(side=tk.LEFT)
+    create_treeview_style('', style).pack(side=tk.LEFT)
 
     root.mainloop()

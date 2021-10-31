@@ -5,29 +5,29 @@ from ttkbootstrap import Style
 DARK = 'superhero'
 LIGHT = 'flatly'
 
-def create_spinbox_test(widget_style, style):
+
+def create_spinbox_test(bootstyle, style):
     frame = ttk.Frame(padding=10)
 
     # title
-    title = ttk.Label(frame, text=widget_style, anchor=tk.CENTER)
+    title = ttk.Label(frame, text='Spinbox', anchor=tk.CENTER)
     title.pack(padx=5, pady=2, fill=tk.BOTH)
     ttk.Separator(frame).pack(padx=5, pady=5, fill=tk.X)
 
     # default
-    spinbox = ttk.Spinbox(frame, style=widget_style)
+    spinbox = ttk.Spinbox(frame)
     spinbox.pack(padx=5, pady=5, fill=tk.BOTH)
-    spinbox.insert('end', widget_style)
+    spinbox.insert(tk.END, bootstyle)
 
     # color
     for color in style.theme.colors:
-        cbo_style = f'{color}.{widget_style}'
-        spinbox = ttk.Spinbox(frame, style=cbo_style)
+        spinbox = ttk.Spinbox(frame, bootstyle=color)
         spinbox.pack(padx=5, pady=5, fill=tk.BOTH)
-        spinbox.insert('end', cbo_style)
+        spinbox.insert(tk.END, color)
 
-    # disabled 
-    spinbox = ttk.Spinbox(frame, style=widget_style)
-    spinbox.insert('end', widget_style)
+    # disabled
+    spinbox = ttk.Spinbox(frame)
+    spinbox.insert(tk.END, bootstyle)
     spinbox.configure(state=tk.DISABLED)
     spinbox.pack(padx=5, pady=5, fill=tk.BOTH)
 
@@ -39,7 +39,7 @@ if __name__ == '__main__':
     root = tk.Tk()
     style = Style(theme=DARK)
 
-    test1 = create_spinbox_test('TSpinbox', style)
+    test1 = create_spinbox_test('', style)
     test1.pack(side=tk.LEFT, fill=tk.BOTH)
 
     root.mainloop()

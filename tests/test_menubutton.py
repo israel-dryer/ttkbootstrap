@@ -6,12 +6,12 @@ DARK = 'superhero'
 LIGHT = 'flatly'
 
 
-def create_menubutton_frame(widget_style, style):
+def create_menubutton_frame(bootstyle, style, testname):
     frame = ttk.Frame(root, padding=5)
 
     title = ttk.Label(
         master=frame,
-        text=widget_style,
+        text=testname,
         anchor=tk.CENTER
     )
     title.pack(padx=5, pady=2, fill=tk.BOTH)
@@ -20,27 +20,24 @@ def create_menubutton_frame(widget_style, style):
 
     btn = ttk.Menubutton(
         master=frame,
-        text=widget_style,
-        style=widget_style
+        text='default',
+        bootstyle=bootstyle
     )
     btn.pack(padx=5, pady=5, fill=tk.BOTH)
 
     for color in style.colors:
-        button_style = f'{color}.{widget_style}'
         btn = ttk.Menubutton(
             master=frame,
-            text=button_style,
-            style=button_style
+            text=color,
+            bootstyle=(color, bootstyle)
         )
         btn.pack(padx=5, pady=5, fill=tk.BOTH)
 
-    disabled_style = f'{widget_style} (disabled)'
-
     btn = ttk.Menubutton(
         master=frame,
-        text=disabled_style,
+        text='disabled',
         state=tk.DISABLED,
-        style=widget_style
+        bootstyle=bootstyle
     )
     btn.pack(padx=5, pady=5, fill=tk.BOTH)
 
@@ -52,13 +49,11 @@ if __name__ == '__main__':
     style = Style(theme=DARK)
 
     create_menubutton_frame(
-        widget_style='TMenubutton',
-        style=style
+        '', style, 'Solid Menubutton'
     ).pack(side=tk.LEFT)
-
+    
     create_menubutton_frame(
-        widget_style='Outline.TMenubutton',
-        style=style
+        'outline', style, 'Outline Menubutton'
     ).pack(side=tk.LEFT)
 
     root.mainloop()
