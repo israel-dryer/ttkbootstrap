@@ -14,7 +14,7 @@ def create_checkbutton_test(bootstyle, style, name):
     ttk.Separator(frame).pack(padx=5, pady=5, fill=tk.X)
 
     # default style
-    cb = ttk.Checkbutton(frame, text=bootstyle, bootstyle=bootstyle)
+    cb = ttk.Checkbutton(frame, text='default', bootstyle=bootstyle)
     cb.pack(padx=5, pady=5, fill=tk.BOTH)
     cb.invoke()
 
@@ -31,7 +31,7 @@ def create_checkbutton_test(bootstyle, style, name):
     # disabled style
     cb = ttk.Checkbutton(
         master=frame, 
-        text=bootstyle, 
+        text='disabled', 
         bootstyle=bootstyle,
         state=tk.DISABLED
     )
@@ -46,7 +46,7 @@ if __name__ == '__main__':
     root = tk.Tk()
     style = Style(theme=DARK)
 
-    test1 = create_checkbutton_test('', style, 'Solid Button')
+    test1 = create_checkbutton_test('', style, 'Checkbutton')
     test1.pack(side=tk.LEFT, fill=tk.BOTH)
     test2 = create_checkbutton_test('round', style, 'Roundtoggle')
     test2.pack(side=tk.LEFT, fill=tk.BOTH)
