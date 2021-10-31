@@ -2874,16 +2874,9 @@ class StylerTTK:
                 ttkstyle = f'{color}.TCheckbutton'
                 indicator_element = f'{color}.Checkbutton.indicator'
 
-            # [0]off [1]on [2]disabled
+            # ( off, on, disabled )
             images = self.create_checkbutton_assets(color)
-            self.theme_images.update(
-                {
-                    get_image_name(images[0]): images[0], # off
-                    get_image_name(images[1]): images[1], # on
-                    get_image_name(images[2]): images[2]  # disabled
-                }
-            )
-            
+
             self.settings.update(
                 {
                     indicator_element: {
@@ -2942,8 +2935,8 @@ class StylerTTK:
 
         Returns
         -------
-        Tuple[PhotoImage]
-            A tuple of widget images.
+        Tuple[str]
+            A tuple of PhotoImage names.
         """
         # set platform specific checkfont
         winsys = self.style.tk.call("tk", "windowingsystem")
@@ -2981,6 +2974,11 @@ class StylerTTK:
             width=3,
             fill=off_fill,
         )
+        off_img = ImageTk.PhotoImage(
+            checkbutton_off.resize((14, 14), Image.LANCZOS)
+        )
+        off_name = get_image_name(off_img)
+        self.theme_images[off_name] = off_img        
 
         # checkbutton on
         checkbutton_on = Image.new("RGBA", (134, 134))
@@ -2993,6 +2991,11 @@ class StylerTTK:
             width=3,
         )
         draw.text((20, font_offset), "✓", font=fnt, fill=self.colors.selectfg)
+        on_img = ImageTk.PhotoImage(
+            checkbutton_on.resize((14, 14), Image.LANCZOS)
+        )
+        on_name = get_image_name(on_img)
+        self.theme_images[on_name] = on_img
 
         # checkbutton disabled
         checkbutton_disabled = Image.new("RGBA", (134, 134))
@@ -3004,18 +3007,13 @@ class StylerTTK:
             width=3,
             fill=disabled_bg,
         )
+        disabled_img = ImageTk.PhotoImage(
+            checkbutton_disabled.resize((14, 14), Image.LANCZOS)
+        )
+        disabled_name = get_image_name(disabled_img)
+        self.theme_images[disabled_name] = disabled_img
 
-        return [
-            ImageTk.PhotoImage(
-                checkbutton_off.resize((14, 14), Image.LANCZOS)
-            ),
-            ImageTk.PhotoImage(
-                checkbutton_on.resize((14, 14), Image.LANCZOS)
-            ),
-            ImageTk.PhotoImage(
-                checkbutton_disabled.resize((14, 14), Image.LANCZOS)
-            )
-        ]
+        return off_name, on_name, disabled_name
 
     def create_solid_menubutton(self):
         """Apply a solid color style to ttk menubutton"""
@@ -3258,7 +3256,7 @@ class StylerTTK:
         draw.rectangle((9, 9, 10, 10), fill=color)
 
         _img = ImageTk.PhotoImage(im)
-        _name = _img._PhotoImage__photo.name
+        _name = get_image_name(_img)
         self.theme_images[_name] = _img
         return _name
 
