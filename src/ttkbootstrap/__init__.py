@@ -828,7 +828,6 @@ class StylerTTK:
         self.create_outline_button_style()
         self.create_outline_menubutton_style()
         self.create_outline_toolbutton_style()
-        self.create_floodgauge_style()
         self.create_radiobutton_style()
         self.create_solid_button_style()
         self.create_link_button_style()
@@ -847,6 +846,7 @@ class StylerTTK:
             self.create_striped_progressbar_style(color)
             self.create_scale_style(color)
             self.create_scrollbar_style(color)
+            self.create_floodgauge_style(color)
 
             # entry widgets            
             self.create_combobox_style(color)
@@ -1309,7 +1309,7 @@ class StylerTTK:
             ]   
         )
 
-    def create_floodgauge_style(self):
+    def create_floodgauge_style(self, colorname):
         """Create a style configuration for the *ttk.Progressbar* that makes 
         it into a floodgauge. Which is essentially a very large progress bar 
         with text in the middle.
@@ -1318,77 +1318,68 @@ class StylerTTK:
         VSTYLE = 'Vertical.TFloodgauge'
         FLOOD_FONT = 'helvetica 14'
 
-        self.settings.update(
-            {
-                "Floodgauge.trough": {"element create": ("from", TTK_CLAM)},
-                "Floodgauge.pbar": {"element create": ("from", TTK_DEFAULT)},
-            }
+        if colorname == DEFAULT:
+            h_ttkstyle = HSTYLE
+            v_ttkstyle = VSTYLE
+            background = self.colors.primary
+        else:
+            h_ttkstyle = f'{colorname}.{HSTYLE}'
+            v_ttkstyle = f'{colorname}.{VSTYLE}'
+            background = self.colors.get(colorname)
+        troughcolor = Colors.update_hsv(background, sd=-0.3, vd=0.8)
+
+        # horizontal floodgauge
+        h_element = h_ttkstyle.replace('.TF', '.F')
+        self.style.element_create(f'{h_element}.trough', 'from', TTK_CLAM)
+        self.style.element_create(f'{h_element}.pbar', 'from', TTK_DEFAULT)
+        self.style.layout(
+            h_ttkstyle, 
+            [
+                (f"{h_element}.trough", {"children": [
+                    (f"{h_element}.pbar", {"sticky": tk.NS}),
+                    ("Floodgauge.label", {"sticky": ""})], "sticky": tk.NSEW})
+            ]
         )
-        for color in [DEFAULT, *self.colors]:
-
-            if color == DEFAULT:
-                h_ttkstyle = HSTYLE
-                v_ttkstyle = VSTYLE
-                background = self.colors.primary
-            else:
-                h_ttkstyle = f'{color}.{HSTYLE}'
-                v_ttkstyle = f'{color}.{VSTYLE}'
-                background = self.colors.get(color)
-
-            troughcolor = Colors.update_hsv(background, sd=-0.3, vd=0.8)
-
-            self.settings.update({
-                "Horizontal.TFloodgauge": {
-                    "layout": [
-                        ("Floodgauge.trough", {"children": [
-                            ("Floodgauge.pbar", {"sticky": tk.NS}),
-                            ("Floodgauge.label", {"sticky": ""})],
-                            "sticky": tk.NSEW}
-                         )
-                    ]
-                },
-                "Vertical.TFloodgauge": {
-                    "layout": [
-                        ("Floodgauge.trough", {"children": [
-                            ("Floodgauge.pbar", {"sticky": tk.EW}),
-                            ("Floodgauge.label", {"sticky": ""})],
-                            "sticky": tk.NSEW
-                        }
-                        )
-                    ]
-                },
-                h_ttkstyle: {
-                    "configure": {
-                        "thickness": 50,
-                        "borderwidth": 1,
-                        "bordercolor": background,
-                        "lightcolor": background,
-                        "pbarrelief": tk.FLAT,
-                        "troughcolor": troughcolor,
-                        "background": background,
-                        "foreground": self.colors.selectfg,
-                        "justify": tk.CENTER,
-                        "anchor": tk.CENTER,
-                        "font": FLOOD_FONT,
-                    }
-                },
-                v_ttkstyle: {
-                    "configure": {
-                        "thickness": 50,
-                        "borderwidth": 1,
-                        "bordercolor": background,
-                        "lightcolor": background,
-                        "pbarrelief": tk.FLAT,
-                        "troughcolor": troughcolor,
-                        "background": background,
-                        "foreground": self.colors.selectfg,
-                        "justify": tk.CENTER,
-                        "anchor": tk.CENTER,
-                        "font": FLOOD_FONT
-                    }
-                },
-            }
-            )
+        self.style.configure(
+            h_ttkstyle,
+            thickness=50,
+            borderwidth=1,
+            bordercolor=background,
+            lightcolor=background,
+            pbarrelief=tk.FLAT,
+            troughcolor=troughcolor,
+            background=background,
+            foreground=self.colors.selectfg,
+            justify=tk.CENTER,
+            anchor=tk.CENTER,
+            font=FLOOD_FONT,            
+        )
+        # vertical floodgauge
+        v_element = v_ttkstyle.replace('.TF', '.F')
+        self.style.element_create(f'{v_element}.trough', 'from', TTK_CLAM)
+        self.style.element_create(f'{v_element}.pbar', 'from', TTK_DEFAULT)
+        self.style.layout(
+            v_ttkstyle,
+            [
+                (f"{v_element}.trough", {"children": [
+                    (f"{v_element}.pbar", {"sticky": tk.EW}),
+                    ("Floodgauge.label", {"sticky": ""})], "sticky": tk.NSEW})
+            ]
+        )
+        self.style.configure(
+            v_ttkstyle,
+            thickness=50,
+            borderwidth=1,
+            bordercolor=background,
+            lightcolor=background,
+            pbarrelief=tk.FLAT,
+            troughcolor=troughcolor,
+            background=background,
+            foreground=self.colors.selectfg,
+            justify=tk.CENTER,
+            anchor=tk.CENTER,
+            font=FLOOD_FONT,            
+        )
 
     def create_arrow_assets(self, arrowcolor, pressed, active):
         """Create horizontal and vertical arrow assets to be used for
