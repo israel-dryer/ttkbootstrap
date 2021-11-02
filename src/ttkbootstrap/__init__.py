@@ -818,9 +818,7 @@ class StylerTTK:
         """
         self.create_default_style()
         self.create_labelframe_style()
-        self.create_spinbox_style()
         self.create_exit_button_style()
-        self.create_frame_style()
         self.create_calendar_style()
         self.create_checkbutton_style()
         self.create_entry_style()
@@ -836,14 +834,12 @@ class StylerTTK:
         self.create_link_button_style()
         self.create_solid_menubutton()
         self.create_solid_toolbutton_style()
-        self.create_treeview_style()
         self.create_panedwindow_style()
         self.create_round_toggle_style()
         self.create_square_toggle_style()
         self.create_sizegrip_style()
 
         for color in [DEFAULT, *self.colors]:
-            self.create_combobox_style(color)
 
             # widgets with orientation
             self.create_separator_style(color)
@@ -851,6 +847,13 @@ class StylerTTK:
             self.create_striped_progressbar_style(color)
             self.create_scale_style(color)
             self.create_scrollbar_style(color)
+
+            # entry widgets            
+            self.create_combobox_style(color)
+            self.create_spinbox_style(color)
+
+            self.create_treeview_style(color)
+            self.create_frame_style(color)
 
     def create_default_style(self):
         """Setup the default ``ttk.Style`` configuration. These
@@ -1428,7 +1431,6 @@ class StylerTTK:
 
         return normal_names, pressed_names, active_names
 
-
     def create_scrollbar_style(self, colorname):
         """Create style configuration for ttk scrollbar: *ttk.Scrollbar* 
         This theme uses elements from the *alt* theme tobuild the widget 
@@ -1541,8 +1543,7 @@ class StylerTTK:
             ]
         )
 
-
-    def create_spinbox_style(self):
+    def create_spinbox_style(self, colorname):
         """Create style configuration for ttk spinbox: *ttk.Spinbox*
 
         This widget uses elements from the *default* and *clam* theme 
@@ -1560,98 +1561,73 @@ class StylerTTK:
             disabled_fg = self.colors.selectbg
             bordercolor = self.colors.selectbg
 
-        self.settings.update(
-            {
-                "Spinbox.uparrow": {
-                    "element create": ("from", TTK_DEFAULT)},
-                "Spinbox.downarrow": {
-                    "element create": ("from", TTK_DEFAULT)},
-                STYLE: {"layout": [
-                    ("custom.Spinbox.field", {
-                        "side": tk.TOP,
-                        "sticky": tk.EW,
-                        "children": [
-                            ("null", {
-                                "side": tk.RIGHT,
-                                "sticky": "",
-                                "children": [
-                                    (
-                                        "Spinbox.uparrow", {
-                                            "side": tk.TOP,
-                                            "sticky": tk.E}
-                                    ),
-                                    ("Spinbox.downarrow", {
-                                        "side": tk.BOTTOM,
-                                        "sticky": tk.E,
-                                    }
-                                    )]
+        if colorname == DEFAULT:
+            ttkstyle = STYLE
+            focuscolor = self.colors.primary
+        else:
+            ttkstyle = f'{colorname}.{STYLE}'
+            focuscolor = self.colors.get(colorname)
+
+        element = ttkstyle.replace('.TS', '.S')
+        self.style.element_create(f'{element}.uparrow', 'from', TTK_DEFAULT)
+        self.style.element_create(f'{element}.downarrow', 'from', TTK_DEFAULT)
+        self.style.layout(
+            ttkstyle, 
+            [
+                (f"{element}.field", 
+                    {"side": tk.TOP, "sticky": tk.EW, "children": [
+                        ("null", 
+                            {"side": tk.RIGHT, "sticky": "", "children": [
+                                (f"{element}.uparrow", 
+                                    {"side": tk.TOP, "sticky": tk.E}),
+                                (f"{element}.downarrow", 
+                                    {"side": tk.BOTTOM, "sticky": tk.E})
+                                ]
                             }
-                            ),
-                            (
-                                "Spinbox.padding", {
-                                    "sticky": tk.NSEW,
-                                    "children": [
-                                        (
-                                            "Spinbox.textarea",
-                                            {"sticky": tk.NSEW})]
+                        ),
+                        (
+                            f"{element}.padding", 
+                                {"sticky": tk.NSEW, "children": [
+                                    (f"{element}.textarea", 
+                                        {"sticky": tk.NSEW})
+                                    ]
                                 }
                             )
                         ]
                     }
-                    )
-                ]
-                }
-            }
+                )
+            ]            
+        )
+        self.style.configure(
+            ttkstyle, 
+            bordercolor=bordercolor,
+            darkcolor=self.colors.inputbg,
+            lightcolor=self.colors.inputbg,
+            fieldbackground=self.colors.inputbg,
+            foreground=self.colors.inputfg,
+            borderwidth=0,
+            background=self.colors.inputbg,
+            relief=tk.FLAT,
+            arrowcolor=self.colors.inputfg,
+            insertcolor=self.colors.inputfg,
+            arrowsize=13,
+            padding=(10, 5),            
+        )
+        self.style.map(
+            ttkstyle,
+            foreground=[("disabled", disabled_fg)],
+            lightcolor=[("focus !disabled", focuscolor)],
+            darkcolor=[("focus !disabled", focuscolor)],
+            bordercolor=[
+                ("focus !disabled", focuscolor),
+                ("hover !disabled", focuscolor)],
+            arrowcolor=[
+                ("disabled !disabled", disabled_fg),
+                ("pressed !disabled", focuscolor),
+                ("hover !disabled", self.colors.inputfg)],
         )
 
-        for color in [DEFAULT, *self.colors]:
-            if color == DEFAULT:
-                ttkstyle = STYLE
-                focuscolor = self.colors.primary
-            else:
-                ttkstyle = f'{color}.{STYLE}'
-                focuscolor = self.colors.get(color)
-
-            self.settings.update(
-                {
-                    ttkstyle: {
-                        "configure": {
-                            "bordercolor": bordercolor,
-                            "darkcolor": self.colors.inputbg,
-                            "lightcolor": self.colors.inputbg,
-                            "fieldbackground": self.colors.inputbg,
-                            "foreground": self.colors.inputfg,
-                            "borderwidth": 0,
-                            "background": self.colors.inputbg,
-                            "relief": tk.FLAT,
-                            "arrowcolor": self.colors.inputfg,
-                            "insertcolor": self.colors.inputfg,
-                            "arrowsize": 13,
-                            "padding": (10, 5),
-                        },
-                        "map": {
-                            "foreground": [("disabled", disabled_fg)],
-                            "bordercolor": [
-                                ("focus !disabled", focuscolor),
-                                ("hover !disabled", focuscolor),
-                            ],
-                            "arrowcolor": [
-                                ("disabled !disabled", disabled_fg),
-                                ("pressed !disabled", focuscolor),
-                                ("hover !disabled", self.colors.inputfg),
-                            ],
-                            "lightcolor": [
-                                ("focus !disabled", focuscolor)
-                            ],
-                            "darkcolor": [
-                                ("focus !disabled", focuscolor)
-                            ],
-                        }
-                    }
-                }
-            )
-
-    def create_treeview_style(self):
+    def create_treeview_style(self, colorname):
         """Create style configuration for ttk treeview"""
         STYLE = 'Treeview'
 
@@ -1662,108 +1638,106 @@ class StylerTTK:
             disabled_fg = Colors.update_hsv(self.colors.inputbg, vd=-0.3)
             bordercolor = self.colors.selectbg
 
-        self.settings.update(
-            {
-                STYLE: {
-                    "layout": [
-                        ("Button.border", {
-                            "sticky": tk.NSEW,
-                            "border": "1",
-                            "children": [
-                                ("Treeview.padding", {
-                                    "sticky": tk.NSEW,
-                                    "children": [
-                                        ("Treeview.treearea", {
-                                            "sticky": tk.NSEW})]})]})]
-                },
-                "Treeitem.indicator": {"element create": ("from", TTK_ALT)},
-            }
+        if colorname == DEFAULT:
+            background = self.colors.inputbg
+            foreground = self.colors.inputfg
+            body_style = STYLE
+            header_style = f'{STYLE}.Heading'
+            item_style = 'Item'
+            focuscolor = bordercolor
+        else:
+            background = self.colors.get(colorname)
+            foreground = self.colors.selectfg
+            body_style = f'{colorname}.{STYLE}'
+            header_style = f'{colorname}.{STYLE}.Heading'
+            item_style = f'{colorname}.Item'
+            focuscolor = background
+
+        # treeview header
+        self.style.configure(
+            header_style,
+            background=background,
+            foreground=foreground,
+            relief=tk.FLAT,
+            padding=5            
+        )
+        self.style.map(
+            header_style,
+            foreground=[("disabled", disabled_fg)],
+            bordercolor=[("focus !disabled", background)],
+        )
+        # treeview body
+        self.style.configure(
+            body_style,
+            background=self.colors.inputbg,
+            fieldbackground=self.colors.inputbg,
+            foreground=self.colors.inputfg,
+            bordercolor=bordercolor,
+            lightcolor=self.colors.inputbg,
+            darkcolor=self.colors.inputbg,            
+        )
+        self.style.map(
+            body_style,
+            background=[("selected", self.colors.selectbg)],
+            foreground=[
+                ("disabled", disabled_fg), 
+                ("selected", self.colors.selectfg)],
+            bordercolor=[
+                ("disabled", bordercolor),
+                ("focus", focuscolor),
+                ("pressed", focuscolor),
+                ("hover", focuscolor)],
+            lightcolor=[("focus", focuscolor)],
+            darkcolor=[("focus", focuscolor)]
+        )
+        self.style.layout(
+            body_style,
+            [
+                ("Button.border",
+                    {"sticky": tk.NSEW, "border": "1", "children": [
+                        ("Treeview.padding", 
+                            {"sticky": tk.NSEW, "children": [
+                                ("Treeview.treearea", {"sticky": tk.NSEW})]
+                            }
+                        )
+                    ]
+                })
+            ]
+        )
+        self.style.element_create(f'{item_style}.Treeitem.indicator', 
+            'from', TTK_ALT
+        )
+        self.style.layout(
+            item_style,
+            [
+                ('Treeitem.padding', {'sticky': 'nswe', 'children': [
+                    (f'{item_style}.Treeitem.indicator', 
+                        {'side': 'left', 'sticky': ''}), 
+                    ('Treeitem.image', {'side': 'left', 'sticky': ''}),
+                    ('Treeitem.focus', 
+                        {'side': 'left', 'sticky': '', 'children': [
+                            ('Treeitem.text', {'side': 'left', 'sticky': ''})
+                        ]}
+                    )]}
+                )
+            ]
         )
 
-        for color in [DEFAULT, *self.colors]:
-            if color == DEFAULT:
-                background = self.colors.inputbg
-                foreground = self.colors.inputfg
-                body_style = 'Treeview'
-                header_style = 'Treeview.Heading'
-                focuscolor = bordercolor
-            else:
-                background = self.colors.get(color)
-                foreground = self.colors.selectfg
-                body_style = f'{color}.Treeview'
-                header_style = f'{color}.Treeview.Heading'
-                focuscolor = background
-
-            self.settings.update(
-                {
-                    body_style: {
-                        "configure": {
-                            "background": self.colors.inputbg,
-                            "fieldbackground": self.colors.inputbg,
-                            "foreground": self.colors.inputfg,
-                            "bordercolor": bordercolor,
-                            "lightcolor": self.colors.inputbg,
-                            "darkcolor": self.colors.inputbg,
-                        },
-                        "map": {
-                            "background": [
-                                ("selected", self.colors.selectbg)],
-                            "foreground": [
-                                ("disabled", disabled_fg),
-                                ("selected", self.colors.selectfg)],
-                            "bordercolor": [
-                                ("disabled", bordercolor),
-                                ("focus", focuscolor),
-                                ("pressed", focuscolor),
-                                ("hover", focuscolor)],
-                            "lightcolor": [("focus", focuscolor)],
-                            "darkcolor": [("focus", focuscolor)]
-                        },
-                    },
-                    header_style: {
-                        "configure": {
-                            "background": background,
-                            "foreground": foreground,
-                            "relief": tk.FLAT,
-                            "padding": 5
-                        },
-                        "map": {
-                            "foreground": [("disabled", disabled_fg)],
-                            "bordercolor": [
-                                ("focus !disabled", background)
-                            ],
-                        },
-                    }
-                }
-            )
-
-    def create_frame_style(self):
+    def create_frame_style(self, colorname):
         """Create style configuration for ttk frame"""
         STYLE = 'TFrame'
 
-        for color in [DEFAULT, *self.colors]:
-            if color == DEFAULT:
-                ttkstyle = STYLE
-                background = self.colors.bg
-            else:
-                ttkstyle = f'{color}.{STYLE}'
-                background = self.colors.get(color)
+        if colorname == DEFAULT:
+            ttkstyle = STYLE
+            background = self.colors.bg
+        else:
+            ttkstyle = f'{colorname}.{STYLE}'
+            background = self.colors.get(colorname)
 
-            self.settings.update(
-                {
-                    ttkstyle:
-                    {
-                        "configure":
-                        {
-                            "background": background
-                        }
-                    }
-                }
-            )
+        self.style.configure(ttkstyle, background=background)
 
     def create_solid_button_style(self):
         """Apply a solid color style to ttk button"""
-
         STYLE = 'TButton'
 
         if self.is_light_theme:
