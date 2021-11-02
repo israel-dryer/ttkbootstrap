@@ -826,14 +826,12 @@ class StylerTTK:
         self.create_meter_style()
         self.create_notebook_style()
         self.create_outline_menubutton_style()
-        self.create_outline_toolbutton_style()
         self.create_radiobutton_style()
-        self.create_solid_menubutton()
-        self.create_solid_toolbutton_style()
         self.create_panedwindow_style()
         self.create_round_toggle_style()
         self.create_square_toggle_style()
         self.create_sizegrip_style()
+        self.create_solid_menubutton_style()
 
         for color in [DEFAULT, *self.colors]:
 
@@ -853,6 +851,8 @@ class StylerTTK:
             self.create_solid_button_style(color)
             self.create_outline_button_style(color)
             self.create_link_button_style(color)
+            self.create_solid_toolbutton_style(color)
+            self.create_outline_toolbutton_style(color)
 
             # other widgets
             self.create_frame_style(color)
@@ -2190,11 +2190,23 @@ class StylerTTK:
                                 ("selected", self.colors.bg),
                                 ("!selected", self.colors.bg)]}}})
 
-    def create_solid_toolbutton_style(self):
+    def create_solid_toolbutton_style(self, colorname):
         """Apply a solid color style to ttk widgets that use the 
         Toolbutton style.
         """
         STYLE = 'Toolbutton'
+        
+        if colorname == DEFAULT:
+            ttkstyle = STYLE
+            toggle_on = self.colors.primary
+        else:
+            ttkstyle = f'{colorname}.{STYLE}'
+            toggle_on = self.colors.get(colorname)
+
+        if self.is_light_theme:
+            toggle_off = self.colors.selectbg
+        else:
+            toggle_off = self.colors.inputbg
 
         if self.is_light_theme:
             disabled_fg = self.colors.border
@@ -2203,66 +2215,45 @@ class StylerTTK:
             disabled_fg = self.colors.selectbg
             disabled_bg = Colors.update_hsv(disabled_fg, vd=-0.2)
 
-        for color in [DEFAULT, *self.colors]:
-            if color == DEFAULT:
-                ttkstyle = STYLE
-                toggle_on = self.colors.primary
-            else:
-                ttkstyle = f'{color}.{STYLE}'
-                toggle_on = self.colors.get(color)
+        self.style.configure(
+            ttkstyle,
+            foreground=self.colors.selectfg,
+            background=toggle_off,
+            bordercolor=toggle_off,
+            darkcolor=toggle_off,
+            lightcolor=toggle_off,
+            relief=tk.RAISED,
+            focusthickness=0,
+            focuscolor="",
+            padding=(10, 5),
+            anchor=tk.CENTER
+        )
+        self.style.map(
+            ttkstyle,
+            foreground=[("disabled", disabled_fg)],
+            background=[
+                ("disabled", disabled_bg),
+                ("pressed !disabled", toggle_on),
+                ("selected !disabled", toggle_on),
+                ("hover !disabled", toggle_on)],
+            bordercolor=[
+                ("disabled", disabled_bg),
+                ("pressed !disabled", toggle_on),
+                ("selected !disabled", toggle_on),
+                ("hover !disabled", toggle_on)],
+            darkcolor=[
+                ("disabled", disabled_bg),
+                ("pressed !disabled", toggle_on),
+                ("selected !disabled", toggle_on),
+                ("hover !disabled", toggle_on)],
+            lightcolor=[
+                ("disabled", disabled_bg),
+                ("pressed !disabled", toggle_on),
+                ("selected !disabled", toggle_on),
+                ("hover !disabled", toggle_on)],
+        )
 
-            if self.is_light_theme:
-                toggle_off = self.colors.selectbg
-            else:
-                toggle_off = self.colors.inputbg
-
-            self.settings.update(
-                {
-                    ttkstyle: {
-                        "configure": {
-                            "foreground": self.colors.selectfg,
-                            "background": toggle_off,
-                            "bordercolor": toggle_off,
-                            "darkcolor": toggle_off,
-                            "lightcolor": toggle_off,
-                            "relief": tk.RAISED,
-                            "focusthickness": 0,
-                            "focuscolor": "",
-                            "padding": (10, 5),
-                            "anchor": tk.CENTER
-                        },
-                        "map": {
-                            "foreground": [("disabled", disabled_fg)],
-                            "background": [
-                                ("disabled", disabled_bg),
-                                ("pressed !disabled", toggle_on),
-                                ("selected !disabled", toggle_on),
-                                ("hover !disabled", toggle_on),
-                            ],
-                            "bordercolor": [
-                                ("disabled", disabled_bg),
-                                ("pressed !disabled", toggle_on),
-                                ("selected !disabled", toggle_on),
-                                ("hover !disabled", toggle_on),
-                            ],
-                            "darkcolor": [
-                                ("disabled", disabled_bg),
-                                ("pressed !disabled", toggle_on),
-                                ("selected !disabled", toggle_on),
-                                ("hover !disabled", toggle_on),
-                            ],
-                            "lightcolor": [
-                                ("disabled", disabled_bg),
-                                ("pressed !disabled", toggle_on),
-                                ("selected !disabled", toggle_on),
-                                ("hover !disabled", toggle_on),
-                            ],
-                        },
-                    }
-                }
-            )
-
-    def create_outline_toolbutton_style(self):
+    def create_outline_toolbutton_style(self, colorname):
         """Apply an outline style to ttk widgets that use the 
         Toolbutton style. This button has a solid button look on focus 
         and hover.
@@ -2274,65 +2265,54 @@ class StylerTTK:
         else:
             disabled_fg = Colors.update_hsv(self.colors.selectbg, vd=-0.3)
 
-        for color in [DEFAULT, *self.colors]:
+        if colorname == DEFAULT:
+            ttkstyle = STYLE
+            foreground = self.colors.primary
+        else:
+            ttkstyle = f'{colorname}.{STYLE}'
+            foreground = self.colors.get(colorname)
 
-            if color == DEFAULT:
-                ttkstyle = STYLE
-                foreground = self.colors.primary
-            else:
-                ttkstyle = f'{color}.{STYLE}'
-                foreground = self.colors.get(color)
-
-            self.settings.update(
-                {
-                    ttkstyle: {
-                        "configure": {
-                            "foreground": foreground,
-                            "background": self.colors.bg,
-                            "bordercolor": foreground,
-                            "darkcolor": self.colors.bg,
-                            "lightcolor": self.colors.bg,
-                            "relief": tk.RAISED,
-                            "focusthickness": 0,
-                            "focuscolor": "",
-                            "borderwidth": 1,
-                            "padding": (10, 5),
-                            "anchor": tk.CENTER
-                        },
-                        "map": {
-                            "foreground": [
-                                ("disabled", disabled_fg),
-                                ("pressed !disabled", self.colors.selectfg),
-                                ("selected !disabled", self.colors.selectfg),
-                                ("hover !disabled", self.colors.selectfg),
-                            ],
-                            "background": [
-                                ("pressed !disabled", foreground),
-                                ("selected !disabled", foreground),
-                                ("hover !disabled", foreground),
-                            ],
-                            "bordercolor": [
-                                ("disabled", disabled_fg),
-                                ("pressed !disabled", foreground),
-                                ("selected !disabled", foreground),
-                                ("hover !disabled", foreground),
-                            ],
-                            "darkcolor": [
-                                ("disabled", self.colors.bg),
-                                ("pressed !disabled", foreground),
-                                ("selected !disabled", foreground),
-                                ("hover !disabled", foreground),
-                            ],
-                            "lightcolor": [
-                                ("disabled", self.colors.bg),
-                                ("pressed !disabled", foreground),
-                                ("selected !disabled", foreground),
-                                ("hover !disabled", foreground),
-                            ],
-                        },
-                    }
-                }
-            )
+        self.style.configure(
+            ttkstyle,
+            foreground=foreground,
+            background=self.colors.bg,
+            bordercolor=foreground,
+            darkcolor=self.colors.bg,
+            lightcolor=self.colors.bg,
+            relief=tk.RAISED,
+            focusthickness=0,
+            focuscolor="",
+            borderwidth=1,
+            padding=(10, 5),
+            anchor=tk.CENTER
+        )
+        self.style.map(
+            ttkstyle,
+            foreground=[
+                ("disabled", disabled_fg),
+                ("pressed !disabled", self.colors.selectfg),
+                ("selected !disabled", self.colors.selectfg),
+                ("hover !disabled", self.colors.selectfg)],
+            background=[
+                ("pressed !disabled", foreground),
+                ("selected !disabled", foreground),
+                ("hover !disabled", foreground)],
+            bordercolor=[
+                ("disabled", disabled_fg),
+                ("pressed !disabled", foreground),
+                ("selected !disabled", foreground),
+                ("hover !disabled", foreground)],
+            darkcolor=[
+                ("disabled", self.colors.bg),
+                ("pressed !disabled", foreground),
+                ("selected !disabled", foreground),
+                ("hover !disabled", foreground)],
+            lightcolor=[
+                ("disabled", self.colors.bg),
+                ("pressed !disabled", foreground),
+                ("selected !disabled", foreground),
+                ("hover !disabled", foreground)],
+        )
 
     def create_entry_style(self):
         """Create style configuration for ttk entry"""
@@ -2932,7 +2912,7 @@ class StylerTTK:
 
         return off_name, on_name, disabled_name
 
-    def create_solid_menubutton(self):
+    def create_solid_menubutton_style(self):
         """Apply a solid color style to ttk menubutton"""
         STYLE = 'TMenubutton'
 
