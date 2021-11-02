@@ -819,7 +819,6 @@ class StylerTTK:
         self.create_default_style()
         self.create_labelframe_style()
         self.create_spinbox_style()
-        self.create_scale_style()
         self.create_scrollbar_style()
         self.create_exit_button_style()
         self.create_frame_style()
@@ -846,9 +845,12 @@ class StylerTTK:
 
         for color in [DEFAULT, *self.colors]:
             self.create_combobox_style(color)
+
+            # widgets with orientation
             self.create_separator_style(color)
             self.create_progressbar_style(color)
             self.create_striped_progressbar_style(color)
+            self.create_scale_style(color)
 
     def create_default_style(self):
         """Setup the default ``ttk.Style`` configuration. These
@@ -1146,7 +1148,7 @@ class StylerTTK:
             pbarrelief=tk.FLAT,
             troughcolor=self.colors.inputbg,
         )
-        
+
          # horizontal progressbar
         h_element = h_ttkstyle.replace('.TP', '.P')
         self.style.element_create(f'{h_element}.trough', 'from', TTK_CLAM)
@@ -1250,89 +1252,59 @@ class StylerTTK:
             disabled_name, h_track_name, v_track_name
         )
 
-    def create_scale_style(self):
+    def create_scale_style(self, colorname):
         """Create style configuration for ttk scale: *ttk.Scale*"""
         STYLE = 'TScale'
 
-        for color in [DEFAULT, *self.colors]:
-            if color == DEFAULT:
-                h_ttkstyle = f'Horizontal.{STYLE}'
-                v_ttkstyle = f'Vertical.{STYLE}'
-                h_track_element = 'Horizontal.Scale.track'
-                v_track_element = 'Vertical.Scale.track'
-                focus_element = 'Scale.focus'
-                slider_element = 'Scale.slider'
-            else:
-                h_ttkstyle = f'{color}.Horizontal.{STYLE}'
-                h_track_element = f'{color}.Horizontal.Scale.track'
-                v_ttkstyle = f'{color}.Vertical.{STYLE}'
-                v_track_element = f'{color}.Vertical.Scale.track'
-                focus_element = f'{color}.Scale.focus'
-                slider_element = f'{color}.Scale.slider'
+        if colorname == DEFAULT:
+            h_ttkstyle = f'Horizontal.{STYLE}'
+            v_ttkstyle = f'Vertical.{STYLE}'
+        else:
+            h_ttkstyle = f'{colorname}.Horizontal.{STYLE}'
+            v_ttkstyle = f'{colorname}.Vertical.{STYLE}'
 
-            # ( normal, pressed, hover, disabled, htrack, vtrack )
-            images = self.create_scale_assets(color)
-
-            self.settings.update(
-                {
-                    h_track_element: {
-                        "element create": ("image", images[4])
-                    },
-                    v_track_element: {
-                        "element create": ("image", images[5])
-                    },
-                    h_ttkstyle: {
-                        "layout": [
-                            (
-                                focus_element,
-                                {
-                                    "expand": "1",
-                                    "sticky": tk.NSEW,
-                                    "children": [
-                                        (
-                                            "Horizontal.Scale.track",
-                                            {"sticky": tk.EW},
-                                        ),
-                                        (
-                                            slider_element,
-                                            {"side": tk.LEFT, "sticky": ""},
-                                        ),
-                                    ],
-                                },
-                            )
-                        ]
-                    },
-                    v_ttkstyle: {
-                        "layout": [
-                            (
-                                focus_element,
-                                {
-                                    "expand": "1",
-                                    "sticky": tk.NSEW,
-                                    "children": [
-                                        (
-                                            "Vertical.Scale.track",
-                                            {"sticky": tk.NS},
-                                        ),
-                                        (
-                                            slider_element,
-                                            {"side": tk.TOP, "sticky": ""},
-                                        ),
-                                    ],
-                                },
-                            )
-                        ]
-                    },
-                    slider_element: {
-                        "element create": (
-                            "image", images[0],
-                            ("disabled", images[3]),
-                            ("pressed", images[1]),
-                            ("hover", images[2]),
-                        )
-                    },
-                }
-            )
+        # ( normal, pressed, hover, disabled, htrack, vtrack )
+        images = self.create_scale_assets(colorname)
+        
+        # slider element
+        slider_element = f'{colorname}.Scale.slider'
+        self.style.element_create(slider_element, 'image', images[0],
+            ('disabled', images[3]),
+            ('pressed', images[1]),
+            ('hover', images[2])
+        )
+        # horizontal scale
+        h_element = h_ttkstyle.replace('.TS', '.S')
+        self.style.element_create(f'{h_element}.track', 'image', images[4])
+        self.style.layout(
+            h_ttkstyle,
+            [
+                (f'{h_element}.focus', {
+                    "expand": "1",
+                    "sticky": tk.NSEW,
+                    "children": [
+                        (f'{h_element}.track', {"sticky": tk.EW}),
+                        (slider_element, {"side": tk.LEFT, "sticky": ""})
+                    ]}
+                )
+            ]
+        )
+        # vertical scale
+        v_element = v_ttkstyle.replace('.TS', '.S')
+        self.style.element_create(f'{v_element}.track', 'image', images[5])
+        self.style.layout(
+            v_ttkstyle,
+            [
+                (f'{v_element}.focus', {
+                    "expand": "1",
+                    "sticky": tk.NSEW,
+                    "children": [
+                        (f'{v_element}.track', {"sticky": tk.NS}),
+                        (slider_element, {"side": tk.TOP, "sticky": ""})
+                    ]}
+                )
+            ]   
+        )
 
     def create_floodgauge_style(self):
         """Create a style configuration for the *ttk.Progressbar* that makes 
