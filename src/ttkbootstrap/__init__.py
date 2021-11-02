@@ -832,7 +832,6 @@ class StylerTTK:
         self.create_outline_button_style()
         self.create_outline_menubutton_style()
         self.create_outline_toolbutton_style()
-        self.create_progressbar_style()
         self.create_floodgauge_style()
         self.create_radiobutton_style()
         self.create_solid_button_style()
@@ -848,6 +847,7 @@ class StylerTTK:
         for color in [DEFAULT, *self.colors]:
             self.create_combobox_style(color)
             self.create_separator_style(color)
+            self.create_progressbar_style(color)
             self.create_striped_progressbar_style(color)
 
     def create_default_style(self):
@@ -1118,41 +1118,46 @@ class StylerTTK:
             thickness=16
         )
 
-    def create_progressbar_style(self):
+    def create_progressbar_style(self, colorname):
         """Create style configuration for ttk progressbar"""
+        H_STYLE = 'Horizontal.TProgressbar'
+        V_STYLE = 'Vertical.TProgressbar'
+
         if self.is_light_theme:
             bordercolor = self.colors.border
         else:
             bordercolor = self.colors.inputbg
 
-        self.settings.update(
-            {
-                "Progressbar.trough": {"element create": ("from", TTK_CLAM)},
-                "Progressbar.pbar": {"element create": ("from", TTK_DEFAULT)},
-                "TProgressbar": {
-                    "configure": {
-                        "thickness": 14,
-                        "borderwidth": 1,
-                        "bordercolor": bordercolor,
-                        "lightcolor": self.colors.border,
-                        "pbarrelief": tk.FLAT,
-                        "troughcolor": self.colors.inputbg,
-                        "background": self.colors.primary,
-                    }
-                },
-            }
+        if colorname == DEFAULT:
+            background = self.colors.primary
+            h_ttkstyle = H_STYLE
+            v_ttkstyle = V_STYLE
+        else:
+            background = self.colors.get(colorname)
+            h_ttkstyle = f'{colorname}.{H_STYLE}'
+            v_ttkstyle = f'{colorname}.{V_STYLE}'
+
+        self.style.configure(
+            'TProgressbar',
+            thickness=14,
+            borderwidth=1,
+            bordercolor=bordercolor,
+            lightcolor=self.colors.border,
+            pbarrelief=tk.FLAT,
+            troughcolor=self.colors.inputbg,
         )
-        for color in self.colors:
-            self.settings.update(
-                {
-                    f"{color}.Horizontal.TProgressbar": {
-                        "configure": {"background": self.colors.get(color)}
-                    },
-                    f"{color}.Vertical.TProgressbar": {
-                        "configure": {"background": self.colors.get(color)}
-                    }
-                }
-            )
+        
+         # horizontal progressbar
+        h_element = h_ttkstyle.replace('.TP', '.P')
+        self.style.element_create(f'{h_element}.trough', 'from', TTK_CLAM)
+        self.style.element_create(f'{h_element}.pbar', 'from', TTK_DEFAULT)
+        self.style.configure(h_ttkstyle, background=background)
+
+        # vertical progressbar
+        v_element = v_ttkstyle.replace('.TP', '.P')
+        self.style.element_create(f'{v_element}.trough', 'from', TTK_CLAM)
+        self.style.element_create(f'{v_element}.pbar', 'from', TTK_DEFAULT)
+        self.style.configure(v_ttkstyle, background=background)
 
     def create_scale_assets(self, color_name, size=16):
         """Create a circle slider image based on given size and color;
