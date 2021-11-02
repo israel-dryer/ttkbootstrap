@@ -793,7 +793,7 @@ class StylerTTK:
             An instance of ``ThemeDefinition``; used to create the
             theme settings.
         """
-        self.style = style
+        self.style: ttk.Style = style
         self.theme: ThemeDefinition = definition
         self.theme_images = {}
         self.colors = self.theme.colors
@@ -806,8 +806,9 @@ class StylerTTK:
         """Create and style a new ttk theme. A wrapper around internal
         style methods.
         """
+        self.style.theme_create(self.theme.name, TTK_CLAM)#, self.settings)
+        self.style.theme_use(self.theme.name)
         self.update_ttk_theme_settings()
-        self.style.theme_create(self.theme.name, TTK_CLAM, self.settings)
 
     def update_ttk_theme_settings(self):
         """Update the settings dictionary that is used to create a
@@ -820,7 +821,6 @@ class StylerTTK:
         self.create_spinbox_style()
         self.create_scale_style()
         self.create_scrollbar_style()
-        self.create_combobox_style()
         self.create_exit_button_style()
         self.create_frame_style()
         self.create_calendar_style()
@@ -833,7 +833,6 @@ class StylerTTK:
         self.create_outline_menubutton_style()
         self.create_outline_toolbutton_style()
         self.create_progressbar_style()
-        self.create_striped_progressbar_style()
         self.create_floodgauge_style()
         self.create_radiobutton_style()
         self.create_solid_button_style()
@@ -841,11 +840,15 @@ class StylerTTK:
         self.create_solid_menubutton()
         self.create_solid_toolbutton_style()
         self.create_treeview_style()
-        self.create_separator_style()
         self.create_panedwindow_style()
         self.create_round_toggle_style()
         self.create_square_toggle_style()
         self.create_sizegrip_style()
+
+        for color in [DEFAULT, *self.colors]:
+            self.create_combobox_style(color)
+            self.create_separator_style(color)
+            self.create_striped_progressbar_style(color)
 
     def create_default_style(self):
         """Setup the default ``ttk.Style`` configuration. These
@@ -853,28 +856,23 @@ class StylerTTK:
         element options. This method should be called *first* before
         any other style is applied during theme creation.
         """
-        self.settings.update(
-            {
-                ".": {
-                    "configure": {
-                        "background": self.colors.bg,
-                        "darkcolor": self.colors.border,
-                        "foreground": self.colors.fg,
-                        "troughcolor": self.colors.bg,
-                        "selectbg": self.colors.selectbg,
-                        "selectfg": self.colors.selectfg,
-                        "selectforeground": self.colors.selectfg,
-                        "selectbackground": self.colors.selectbg,
-                        "fieldbg": "white",
-                        "font": self.theme.font,
-                        "borderwidth": 1,
-                        "focuscolor": "",
-                    }
-                }
-            }
+        self.style.configure(
+            style=".",
+            background= self.colors.bg,
+            darkcolor= self.colors.border,
+            foreground= self.colors.fg,
+            troughcolor= self.colors.bg,
+            selectbg= self.colors.selectbg,
+            selectfg= self.colors.selectfg,
+            selectforeground= self.colors.selectfg,
+            selectbackground= self.colors.selectbg,
+            fieldbg= "white",
+            font= self.theme.font,
+            borderwidth= 1,
+            focuscolor= ''
         )
 
-    def create_combobox_style(self):
+    def create_combobox_style(self, colorname):
         """Create style configuration for ``ttk.Combobox``. This
         element style is created with a layout that combines *clam* and
         *default* theme elements.
@@ -888,79 +886,74 @@ class StylerTTK:
             disabled_fg = self.colors.selectbg
             bordercolor = self.colors.selectbg
 
-        self.settings.update(
-            {
-                "Combobox.downarrow": {
-                    "element create": ("from", TTK_DEFAULT)},
-                "Combobox.padding": {
-                    "element create": ("from", TTK_CLAM)},
-                "Combobox.textarea": {
-                    "element create": ("from", TTK_CLAM)}})
+        if colorname == DEFAULT:
+            ttkstyle = STYLE
+            element = f"{ttkstyle.replace('TC','C')}"
+            focuscolor = self.colors.primary
+        else:
+            ttkstyle = f'{colorname}.{STYLE}'
+            element = f"{ttkstyle.replace('TC','C')}"
+            focuscolor = self.colors.get(colorname)
+            
+        self.style.element_create(f'{element}.downarrow', 'from', TTK_DEFAULT)
+        self.style.element_create(f'{element}.padding', 'from', TTK_CLAM)
+        self.style.element_create(f'{element}.textarea', 'from', TTK_CLAM)
 
-        for color in [DEFAULT, *self.colors]:
-            if color == DEFAULT:
-                ttkstyle = STYLE
-                focuscolor = self.colors.primary
-            else:
-                ttkstyle = f'{color}.{STYLE}'
-                focuscolor = self.colors.get(color)
+        self.style.configure(
+            ttkstyle,
+            bordercolor=bordercolor,
+            darkcolor=self.colors.inputbg,
+            lightcolor=self.colors.inputbg,
+            arrowcolor=self.colors.inputfg,
+            foreground=self.colors.inputfg,
+            fieldbackground =self.colors.inputbg,
+            background =self.colors.inputbg,
+            insertcolor=self.colors.inputfg,
+            relief=tk.FLAT,
+            padding=5,
+            arrowsize=13
+        )
+        self.style.map(
+            ttkstyle,
+            foreground=[("disabled", disabled_fg)],
+            bordercolor=[
+                ("focus !disabled", focuscolor),
+                ("hover !disabled", focuscolor),
+            ],
+            lightcolor=[
+                ("focus !disabled", focuscolor),
+                ("pressed !disabled", focuscolor),
+            ],
+            darkcolor=[
+                ("focus !disabled", focuscolor),
+                ("pressed !disabled", focuscolor),
+            ],
+            arrowcolor=[
+                ("disabled", disabled_fg),
+                ("pressed !disabled", focuscolor),
+                ("focus !disabled", focuscolor),
+                ("hover !disabled", focuscolor)]
+        )
+        self.style.layout(
+            ttkstyle,
+            [
+                ("combo.Spinbox.field", {
+                    "side": tk.TOP,
+                    "sticky": tk.EW,
+                    "children": [
+                        ("Combobox.downarrow", {
+                            "side": tk.RIGHT,
+                            "sticky": tk.NS
+                        }),
+                        ("Combobox.padding", {
+                            "expand": "1",
+                            "sticky": tk.NSEW,
+                            "children": [
+                                ("Combobox.textarea", {
+                                    "sticky": tk.NSEW})]})]})]
+        )
 
-            self.settings.update(
-                {
-                    ttkstyle: {
-                        "configure": {
-                            "bordercolor": bordercolor,
-                            "darkcolor": self.colors.inputbg,
-                            "lightcolor": self.colors.inputbg,
-                            "arrowcolor": self.colors.inputfg,
-                            "foreground": self.colors.inputfg,
-                            "fieldbackground ": self.colors.inputbg,
-                            "background ": self.colors.inputbg,
-                            "insertcolor": self.colors.inputfg,
-                            "relief": tk.FLAT,
-                            "padding": 5,
-                            "arrowsize ": 13
-                        },
-                        "map": {
-                            "foreground": [("disabled", disabled_fg)],
-                            "bordercolor": [
-                                ("focus !disabled", focuscolor),
-                                ("hover !disabled", focuscolor),
-                            ],
-                            "lightcolor": [
-                                ("focus !disabled", focuscolor),
-                                ("pressed !disabled", focuscolor),
-                            ],
-                            "darkcolor": [
-                                ("focus !disabled", focuscolor),
-                                ("pressed !disabled", focuscolor),
-                            ],
-                            "arrowcolor": [
-                                ("disabled", disabled_fg),
-                                ("pressed !disabled", focuscolor),
-                                ("focus !disabled", focuscolor),
-                                ("hover !disabled", focuscolor)]
-                        },
-                        "layout": [
-                            ("combo.Spinbox.field", {
-                                "side": tk.TOP,
-                                "sticky": tk.EW,
-                                "children": [
-                                    ("Combobox.downarrow", {
-                                        "side": tk.RIGHT,
-                                        "sticky": tk.NS
-                                    }),
-                                    ("Combobox.padding", {
-                                        "expand": "1",
-                                        "sticky": tk.NSEW,
-                                        "children": [
-                                            ("Combobox.textarea", {
-                                                "sticky": tk.NSEW})]})]})]
-                    }
-                }
-            )
-
-    def create_separator_style(self):
+    def create_separator_style(self, colorname):
         """Create style configuration for ttk separator:
         *ttk.Separator*. The default style for light will be border,
         but dark will be primary, as this makes the most sense for
@@ -970,59 +963,43 @@ class StylerTTK:
         HSTYLE = 'Horizontal.TSeparator'
         VSTYLE = 'Vertical.TSeparator'
 
+        # style colors
         if self.is_light_theme:
             default_color = self.colors.border
         else:
             default_color = self.colors.selectbg
 
-        # horizontal separator
-        for color in [DEFAULT, *self.colors]:
-            if color == DEFAULT:
-                background = default_color
-                ttkstyle = HSTYLE
-            else:
-                background = self.colors.get(color)
-                ttkstyle = f'{color}.{HSTYLE}'
+        if colorname == DEFAULT:
+            background = default_color
+            h_ttkstyle = HSTYLE
+            v_ttkstyle = VSTYLE
+        else:
+            background = self.colors.get(colorname)
+            h_ttkstyle = f'{colorname}.{HSTYLE}'
+            v_ttkstyle = f'{colorname}.{VSTYLE}'
 
-            # create separator image
-            _img = ImageTk.PhotoImage(Image.new("RGB", (40, 1), background))
-            _name = get_image_name(_img)
-            self.theme_images[_name] = _img
-            self.settings.update(
-                {
-                    f"{ttkstyle}.Separator.separator": {
-                        "element create": ("image", _name)},
-                    ttkstyle: {
-                        "layout": [
-                            (f"{ttkstyle}.Separator.separator",
-                             {"sticky": tk.EW})]
-                    }
-                }
-            )
+        # horizontal separator
+        h_element = h_ttkstyle.replace('.TS', '.S')            
+        h_img = ImageTk.PhotoImage(Image.new("RGB", (40, 1), background))
+        h_name = get_image_name(h_img)
+        self.theme_images[h_name] = h_img
+
+        self.style.element_create(f'{h_element}.separator', 'image', h_name)
+        self.style.layout(
+            h_ttkstyle, 
+            [(f'{h_element}.separator', {'sticky': tk.EW})]
+        )
 
         # vertical separator
-        for color in [DEFAULT, *self.colors]:
-            if color == DEFAULT:
-                background = default_color
-                ttkstyle = VSTYLE
-            else:
-                background = self.colors.get(color)
-                ttkstyle = f'{color}.{VSTYLE}'
-
-            _img = ImageTk.PhotoImage(Image.new("RGB", (1, 40), background))
-            _name = get_image_name(_img)
-            self.theme_images[_name] = _img
-            self.settings.update(
-                {
-                    f"{ttkstyle}.Separator.separator": {
-                        "element create": ("image", _name)},
-                    ttkstyle: {
-                        "layout": [
-                            (f"{ttkstyle}.Separator.separator",
-                             {"sticky": tk.NS})]
-                    }
-                }
-            )
+        v_element = v_ttkstyle.replace('.TS', '.S')
+        v_img = ImageTk.PhotoImage(Image.new("RGB", (1, 40), background))
+        v_name = get_image_name(v_img)
+        self.theme_images[v_name] = v_img
+        self.style.element_create(f'{v_element}.separator', 'image', v_name)
+        self.style.layout(
+            v_ttkstyle, 
+            [(f'{v_element}.separator', {'sticky': tk.NS})]
+        )
 
     def create_striped_progressbar_assets(self, colorname):
         """Create the striped progressbar image and return as a
@@ -1076,61 +1053,70 @@ class StylerTTK:
         self.theme_images[v_name] = v_img
         return h_name, v_name
 
-    def create_striped_progressbar_style(self):
+    def create_striped_progressbar_style(self, colorname):
         """Apply a striped theme to the progressbar"""
         HSTYLE = 'Striped.Horizontal.TProgressbar'
         VSTYLE = 'Striped.Vertical.TProgressbar'
 
-        for color in [DEFAULT, *self.colors]:
-            h_img, v_img = self.create_striped_progressbar_assets(color)
+        if colorname == DEFAULT:
+            h_ttkstyle = HSTYLE
+            v_ttkstyle = VSTYLE
+        else:
+            h_ttkstyle = f'{colorname}.{HSTYLE}'
+            v_ttkstyle = f'{colorname}.{VSTYLE}'
 
-            if color == DEFAULT:
-                h_ttkstyle = HSTYLE
-                v_ttkstyle = VSTYLE
-            else:
-                h_ttkstyle = f'{color}.{HSTYLE}'
-                v_ttkstyle = f'{color}.{VSTYLE}'
+        # ( horizontal, vertical )
+        images = self.create_striped_progressbar_assets(colorname)
 
-            self.settings.update(
-                {
-                    f"{h_ttkstyle}.Progressbar.pbar": {
-                        "element create": (
-                            "image", h_img,
-                            {"width": 16, "sticky": tk.EW})},
-                    h_ttkstyle: {
-                        "layout": [
-                            ("Horizontal.Progressbar.trough", {
-                                "sticky": tk.NSEW,
-                                "children": [
-                                    (f"{h_ttkstyle}.Progressbar.pbar", {
-                                        "side": tk.LEFT,
-                                        "sticky": tk.NS})]})],
-                        "configure": {
-                            "troughcolor": self.colors.inputbg,
-                            "thickness": 16,
-                            "borderwidth": 1
-                        }
-                    },
-                    f"{v_ttkstyle}.Progressbar.pbar": {
-                        "element create": (
-                            "image", v_img,
-                            {"width": 16, "sticky": tk.NS})},
-                    v_ttkstyle: {
-                        "layout": [
-                            ("Vertical.Progressbar.trough", {
-                                "sticky": tk.NSEW,
-                                "children": [
-                                    (f"{v_ttkstyle}.Progressbar.pbar", {
-                                        "side": tk.BOTTOM,
-                                        "sticky": tk.EW})]})],
-                        "configure": {
-                            "troughcolor": self.colors.inputbg,
-                            "thickness": 16,
-                            "borderwidth": 1
-                        }
+        # horizontal progressbar
+        h_element = h_ttkstyle.replace('.TP', '.P')
+        self.style.element_create(f'{h_element}.pbar', 'image', images[0],
+            width=16, sticky=tk.EW
+        )
+        self.style.layout(
+            h_ttkstyle, 
+            [
+                (f"{h_element}.trough", {
+                    "sticky": tk.NSEW,
+                    "children": [
+                        (f"{h_element}.pbar", {
+                            "side": tk.LEFT,
+                            "sticky": tk.NS})
+                        ]
                     }
-                }
-            )
+                )
+            ]
+        )
+        self.style.configure(
+            h_ttkstyle,
+            troughcolor=self.colors.inputbg,
+            thickness=16,
+            borderwidth=1
+        ) 
+
+        # vertical progressbar
+        v_element = v_ttkstyle.replace('.TP', '.P')
+        self.style.element_create(f'{v_element}.pbar', 'image', images[1],
+            width=16, sticky=tk.NS
+        )
+        self.style.layout(
+            v_ttkstyle,
+            [
+                (f"{v_element}.trough", {
+                    "sticky": tk.NSEW,
+                    "children": [
+                        (f"{v_element}.pbar", {
+                            "side": tk.BOTTOM,
+                            "sticky": tk.EW})]
+                    }
+                )
+            ]
+        )
+        self.style.configure(
+            v_ttkstyle,
+            troughcolor=self.colors.inputbg,
+            thickness=16
+        )
 
     def create_progressbar_style(self):
         """Create style configuration for ttk progressbar"""
