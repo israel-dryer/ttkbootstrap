@@ -819,7 +819,6 @@ class StylerTTK:
         self.create_default_style()
         self.create_labelframe_style()
         self.create_spinbox_style()
-        self.create_scrollbar_style()
         self.create_exit_button_style()
         self.create_frame_style()
         self.create_calendar_style()
@@ -851,6 +850,7 @@ class StylerTTK:
             self.create_progressbar_style(color)
             self.create_striped_progressbar_style(color)
             self.create_scale_style(color)
+            self.create_scrollbar_style(color)
 
     def create_default_style(self):
         """Setup the default ``ttk.Style`` configuration. These
@@ -1429,121 +1429,118 @@ class StylerTTK:
         return normal_names, pressed_names, active_names
 
 
-    def create_scrollbar_style(self):
-        """Create style configuration for ttk scrollbar: *ttk.Scrollbar*. This 
-        theme uses elements from the *alt* theme tobuild the widget layout.
+    def create_scrollbar_style(self, colorname):
+        """Create style configuration for ttk scrollbar: *ttk.Scrollbar* 
+        This theme uses elements from the *alt* theme tobuild the widget 
+        layout.
         """
         STYLE = 'TScrollbar'
 
         troughcolor = Colors.update_hsv(self.colors.bg, vd=-0.05)
 
-        for color in [DEFAULT, *self.colors]:
-            if color == DEFAULT:
-                h_ttkstyle = f'Horizontal.{STYLE}'
-                v_ttkstyle = f'Vertical.{STYLE}'
+        if colorname == DEFAULT:
+            h_ttkstyle = f'Horizontal.{STYLE}'
+            v_ttkstyle = f'Vertical.{STYLE}'
 
-                if self.is_light_theme:
-                    background = self.colors.border
-                else:
-                    background = self.colors.selectbg
-
+            if self.is_light_theme:
+                background = self.colors.border
             else:
-                h_ttkstyle = f'{color}.Horizontal.{STYLE}'
-                v_ttkstyle = f'{color}.Vertical.{STYLE}'
-                background = self.colors.get(color)
+                background = self.colors.selectbg
 
-            # TODO pressed and active colors are not working!!
-            pressed = Colors.update_hsv(background, vd=-0.05)
-            active = Colors.update_hsv(background, vd=0.05)
+        else:
+            h_ttkstyle = f'{colorname}.Horizontal.{STYLE}'
+            v_ttkstyle = f'{colorname}.Vertical.{STYLE}'
+            background = self.colors.get(colorname)
 
-            # ( 
-            #   normal (up, down, left, right),
-            #   pressed (up, down, left, right),
-            #   active (up, down, left right)
-            # )
-            images = self.create_arrow_assets(background, pressed, active)
-            
-            v_element = v_ttkstyle.replace('.T', '.')
-            h_element = h_ttkstyle.replace('.T', '.')
+        pressed = Colors.update_hsv(background, vd=-0.05)
+        active = Colors.update_hsv(background, vd=0.05)
 
-            self.settings.update(
-                {
-                    f'{v_element}.trough': {
-                        "element create": ("from", TTK_ALT)
-                    },
-                    f"{v_element}.thumb": {
-                        "element create": ("from", TTK_ALT)
-                    },
-                    f"{v_element}.uparrow": {
-                        "element create": ("image", images[0][0], 
-                        ('pressed', images[1][0]), 
-                        ('active', images[2][0]))},
-                    f"{v_element}.downarrow": {
-                        "element create": ("image", images[0][1], 
-                        ('pressed', images[1][1]), 
-                        ('active', images[2][1]))},
-                    f"{h_element}.trough": {
-                        "element create": ("from", TTK_ALT)},
-                    f"{h_element}.thumb": {
-                        "element create": ("from", TTK_ALT)},
-                    f"{h_element}.leftarrow": {
-                        "element create": ("image", images[0][2], 
-                        ('pressed', images[1][2]), 
-                        ('active', images[2][2]))},
-                    f"{h_element}.rightarrow": {
-                        "element create": ("image", images[0][3], 
-                        ('pressed', images[1][3]), 
-                        ('active', images[2][3]))},
-                    v_ttkstyle: {
-                        "layout": [
-                            (f'{v_element}.trough', {
-                                'sticky': tk.NS, 'children': [
-                                    (f'{v_element}.uparrow', 
-                                    {'side': tk.TOP, 'sticky': ''}), 
-                                    (f'{v_element}.downarrow', 
-                                    {'side': 'bottom', 'sticky': ''}), 
-                                    (f'{v_element}.thumb', 
-                                    {'expand': True, 'sticky': tk.NSEW})]})],
-                        "configure": {
-                            "troughrelief": tk.FLAT,
-                            "relief": tk.FLAT,
-                            "troughborderwidth": 1,
-                            "troughcolor": troughcolor,
-                            "background": background,
-                        },
-                        "map": {
-                            "background": [
-                                ("pressed", pressed),
-                                ("active", active),
-                            ]
-                        },
-                    },
-                    h_ttkstyle: {
-                        "layout": [
-                            (f'{h_element}.trough', {
-                                'sticky': tk.EW, 'children': [
-                                    (f'{h_element}.leftarrow', 
-                                    {'side': tk.LEFT, 'sticky': ''}), 
-                                    (f'{h_element}.rightarrow', 
-                                    {'side': tk.RIGHT, 'sticky': ''}), 
-                                    (f'{h_element}.thumb', 
-                                    {'expand': True, 'sticky': tk.NSEW})]})],
-                        "configure": {
-                            "troughrelief": tk.FLAT,
-                            "relief": tk.FLAT,
-                            "troughborderwidth": 1,
-                            "troughcolor": troughcolor,
-                            "background": background,
-                        },
-                        "map": {
-                            "background": [
-                                ("pressed", pressed),
-                                ("active", active),
-                            ]
-                        },
-                    },
-                }
-            )
+        # ( normal, pressed, active ) ( up, down, left, right )
+        images = self.create_arrow_assets(background, pressed, active)
+
+        # vertical scrollbar
+        v_element = v_ttkstyle.replace('.TS', '.S')
+        self.style.element_create(f'{v_element}.trough', 'from', TTK_ALT)
+        self.style.element_create(f'{v_element}.thumb', 'from', TTK_ALT)
+        self.style.element_create(f'{v_element}.uparrow', 'image', 
+            images[0][0], 
+            ('pressed', images[1][0]),
+            ('active', images[2][0])
+        )
+        self.style.element_create(f'{v_element}.downarrow', 'image', 
+            images[0][1], 
+            ('pressed', images[1][1]),
+            ('active', images[2][1])
+        )
+        self.style.configure(
+            v_ttkstyle,
+            troughrelief=tk.FLAT,
+            relief=tk.FLAT,
+            troughborderwidth=1,
+            troughcolor=troughcolor,
+            background=background
+        )
+        self.style.map(
+            v_ttkstyle, 
+            background=[('pressed', pressed), ('active', active)]
+        )
+        self.style.layout(
+            v_ttkstyle,
+            [
+                (f'{v_element}.trough', {
+                    'sticky': tk.NS, 'children': [
+                        (f'{v_element}.uparrow', 
+                            {'side': tk.TOP, 'sticky': ''}), 
+                        (f'{v_element}.downarrow', 
+                            {'side': 'bottom', 'sticky': ''}), 
+                        (f'{v_element}.thumb', 
+                            {'expand': True, 'sticky': tk.NSEW})
+                    ]}
+                )
+            ]
+        )
+
+        # horizontal scrollbar
+        h_element = h_ttkstyle.replace('.T', '.')
+        self.style.element_create(f'{h_element}.trough', 'from', TTK_ALT)
+        self.style.element_create(f'{h_element}.thumb', 'from', TTK_ALT)
+        self.style.element_create(f'{h_element}.leftarrow', 'image', 
+            images[1][2], 
+            ('pressed', images[1][2]),
+            ('active', images[2][2])
+        )
+        self.style.element_create(f'{h_element}.rightarrow', 'image', 
+            images[0][3],
+            ('pressed', images[1][3]),
+            ('active', images[2][3])
+        )
+        self.style.configure(
+            h_ttkstyle,
+            troughrelief=tk.FLAT,
+            relief=tk.FLAT,
+            troughborderwidth=1,
+            troughcolor=troughcolor,
+            background=background
+        )
+        self.style.map(
+            h_ttkstyle, 
+            background=[('pressed', pressed), ('active', active)]
+        )        
+        self.style.layout(
+            h_ttkstyle,
+            [
+                (f'{h_element}.trough', {
+                    'sticky': tk.EW, 'children': [
+                (f'{h_element}.leftarrow', 
+                    {'side': tk.LEFT, 'sticky': ''}), 
+                (f'{h_element}.rightarrow', 
+                    {'side': tk.RIGHT, 'sticky': ''}), 
+                (f'{h_element}.thumb', 
+                    {'expand': True, 'sticky': tk.NSEW})]
+                })
+            ]
+        )
+
 
     def create_spinbox_style(self):
         """Create style configuration for ttk spinbox: *ttk.Spinbox*
