@@ -47,6 +47,7 @@
 import colorsys
 import tkinter as tk
 from tkinter import ttk
+from tkinter.constants import HORIZONTAL, VERTICAL
 from ttkbootstrap import bootstyle
 from ttkbootstrap.themes import DEFINED_THEMES
 from ttkbootstrap.user_defined import USER_DEFINED
@@ -825,7 +826,6 @@ class StylerTTK:
         self.create_checkbutton_style()
         self.create_radiobutton_style()
         self.create_round_toggle_style()
-        self.create_panedwindow_style()
         self.create_square_toggle_style()
         self.create_sizegrip_style()
         self.create_entry_style()
@@ -839,6 +839,7 @@ class StylerTTK:
             self.create_scale_style(color)
             self.create_scrollbar_style(color)
             self.create_floodgauge_style(color)
+            self.create_panedwindow_style(color)
 
             # entry widgets            
             self.create_combobox_style(color)
@@ -3086,8 +3087,7 @@ class StylerTTK:
                 ('!selected', selectfg)]
         )
 
-
-    def create_panedwindow_style(self):
+    def create_panedwindow_style(self, colorname):
         """Create style configuration for ttk paned window"""
 
         PANE_STYLE = 'TPanedwindow'
@@ -3097,35 +3097,17 @@ class StylerTTK:
         else:
             default_color = self.colors.selectbg
 
-        self.settings.update(
-            {
-                'Sash': {
-                    "configure": {
-                        "sashthickness": 3,
-                        "gripcount": 0,
-                    },
-                }
-            }
-        )
+        if colorname == DEFAULT:
+            sashcolor = default_color
+            ttkstyle = PANE_STYLE
 
-        for color in [DEFAULT, *self.colors]:
+        else:
+            sashcolor = self.colors.get(colorname)
+            ttkstyle = f'{colorname}.{PANE_STYLE}'
 
-            if color == DEFAULT:
-                sashcolor = default_color
-                sash_ttkstyle = PANE_STYLE
-            else:
-                sashcolor = self.colors.get(color)
-                sash_ttkstyle = f'{color}.{PANE_STYLE}'
+        self.style.configure('Sash', gripcount=0, sashthickness=3)
+        self.style.configure(ttkstyle, background=sashcolor)
 
-            self.settings.update(
-                {
-                    sash_ttkstyle: {
-                        "configure": {
-                            "background": sashcolor
-                        }
-                    },
-                }
-            )
 
     def create_sizegrip_assets(self, colorname):
         """Create assets for size grip
