@@ -821,13 +821,11 @@ class StylerTTK:
         self.create_labelframe_style()
         self.create_exit_button_style()
         self.create_calendar_style()
-        self.create_label_style()
         self.create_meter_style()
         self.create_checkbutton_style()
         self.create_radiobutton_style()
         self.create_round_toggle_style()
         self.create_square_toggle_style()
-        self.create_entry_style()
 
         for color in [DEFAULT, *self.colors]:
 
@@ -841,6 +839,7 @@ class StylerTTK:
             self.create_panedwindow_style(color)
 
             # entry widgets            
+            self.create_entry_style(color)
             self.create_combobox_style(color)
             self.create_spinbox_style(color)
 
@@ -854,6 +853,7 @@ class StylerTTK:
             self.create_outline_menubutton_style(color)
 
             # other widgets
+            self.create_label_style(color)
             self.create_frame_style(color)
             self.create_treeview_style(color)
             self.create_notebook_style(color)
@@ -2315,8 +2315,9 @@ class StylerTTK:
                 ("hover !disabled", foreground)],
         )
 
-    def create_entry_style(self):
+    def create_entry_style(self, colorname):
         """Create style configuration for ttk entry"""
+        
         STYLE = 'TEntry'
 
         if self.is_light_theme:
@@ -2326,45 +2327,36 @@ class StylerTTK:
             disabled_fg = self.colors.selectbg
             bordercolor = self.colors.selectbg
 
-        for color in [DEFAULT, *self.colors]:
+        if colorname == DEFAULT:
+            ttkstyle = STYLE
+            focuscolor = self.colors.primary
+        else:
+            ttkstyle = f'{colorname}.{STYLE}'
+            focuscolor = self.colors.get(colorname)
 
-            if color == DEFAULT:
-                ttkstyle = STYLE
-                focuscolor = self.colors.primary
-            else:
-                ttkstyle = f'{color}.{STYLE}'
-                focuscolor = self.colors.get(color)
-
-            self.settings.update(
-                {
-                    ttkstyle: {
-                        "configure": {
-                            "bordercolor": bordercolor,
-                            "darkcolor": self.colors.inputbg,
-                            "lightcolor": self.colors.inputbg,
-                            "fieldbackground": self.colors.inputbg,
-                            "foreground": self.colors.inputfg,
-                            "insertcolor": self.colors.inputfg,
-                            "padding": 5,
-                        },
-                        "map": {
-                            "foreground": [("disabled", disabled_fg)],
-                            "bordercolor": [
-                                ("focus !disabled", focuscolor),
-                                ("hover !disabled", self.colors.bg),
-                            ],
-                            "lightcolor": [
-                                ("focus !disabled", focuscolor),
-                                ("hover !disabled", focuscolor),
-                            ],
-                            "darkcolor": [
-                                ("focus !disabled", focuscolor),
-                                ("hover !disabled", focuscolor),
-                            ],
-                        }
-                    }
-                }
-            )
+        self.style.configure(
+            ttkstyle,
+            bordercolor=bordercolor,
+            darkcolor=self.colors.inputbg,
+            lightcolor=self.colors.inputbg,
+            fieldbackground=self.colors.inputbg,
+            foreground=self.colors.inputfg,
+            insertcolor=self.colors.inputfg,
+            padding=5,
+        )
+        self.style.map(
+            ttkstyle,
+            foreground=[("disabled", disabled_fg)],
+            bordercolor=[
+                ("focus !disabled", focuscolor),
+                ("hover !disabled", self.colors.bg)],
+            lightcolor=[
+                ("focus !disabled", focuscolor),
+                ("hover !disabled", focuscolor)],
+            darkcolor=[
+                ("focus !disabled", focuscolor),
+                ("hover !disabled", focuscolor)],
+        )
 
     def create_radiobutton_assets(self, colorname):
         """Create radiobutton assets
@@ -2662,41 +2654,39 @@ class StylerTTK:
                 }
             )
 
-    def create_label_style(self):
+    def create_label_style(self, colorname):
         """Create style configuration for ttk label"""
 
         STYLE = 'TLabel'
+        STYLE_INVERSE = 'Inverse.TLabel'
 
-        for color in [DEFAULT, *self.colors]:
-            if color == DEFAULT:
-                ttkstyle = STYLE
-                inverse_ttkstyle = f'Inverse.{STYLE}'
-                stylecolor = self.colors.fg
-                inv_background = self.colors.fg
-                inv_foreground = self.colors.bg
-            else:
-                ttkstyle = f'{color}.{STYLE}'
-                inverse_ttkstyle = f'{color}.Inverse.{STYLE}'
-                stylecolor = self.colors.get(color)
-                inv_background = stylecolor
-                inv_foreground = self.colors.selectfg
+        if colorname == DEFAULT:
+            ttkstyle = STYLE
+            inverse_ttkstyle = STYLE_INVERSE
+            foreground = self.colors.fg
+            background = self.colors.bg
+            inverse_background = self.colors.fg
+            inverse_foreground = self.colors.bg
+        else:
+            ttkstyle = f'{colorname}.{STYLE}'
+            inverse_ttkstyle = f'{colorname}.{STYLE_INVERSE}'
+            foreground = self.colors.get(colorname)
+            background = self.colors.bg
+            inverse_foreground = self.colors.selectfg
+            inverse_background = foreground
 
-            self.settings.update(
-                {
-                    ttkstyle: {
-                        "configure": {
-                            "foreground": stylecolor,
-                            "background": self.colors.bg
-                        }
-                    },
-                    inverse_ttkstyle: {
-                        "configure": {
-                            "foreground": inv_foreground,
-                            "background": inv_background
-                        }
-                    },
-                }
-            )
+        # standard label
+        self.style.configure(
+            ttkstyle, 
+            foreground=foreground, 
+            background=background
+        )
+        # inverse label
+        self.style.configure(
+            inverse_ttkstyle,
+            foreground=inverse_foreground,
+            background=inverse_background
+        )
 
     def create_labelframe_style(self):
         """Create style configuration for ttk labelframe"""
