@@ -807,7 +807,7 @@ class StylerTTK:
         """Create and style a new ttk theme. A wrapper around internal
         style methods.
         """
-        self.style.theme_create(self.theme.name, TTK_CLAM)#, self.settings)
+        self.style.theme_create(self.theme.name, TTK_CLAM)
         self.style.theme_use(self.theme.name)
         self.update_ttk_theme_settings()
 
@@ -817,50 +817,49 @@ class StylerTTK:
         which define the layout, configuration, and styling mapping
         for each ttk widget.
         """
-        self.create_meter_style()
         self.create_default_style()
 
-        for color in [DEFAULT, *self.colors]:
-            # widgets with orientation
-            self.create_separator_style(color)
-            self.create_progressbar_style(color)
-            self.create_striped_progressbar_style(color)
-            self.create_scale_style(color)
-            self.create_scrollbar_style(color)
-            self.create_floodgauge_style(color)
-            self.create_panedwindow_style(color)
+        # widgets with orientation
+        self.create_separator_style()
+        self.create_progressbar_style()
+        self.create_striped_progressbar_style()
+        self.create_scale_style()
+        self.create_scrollbar_style()
+        self.create_floodgauge_style()
+        self.create_panedwindow_style()
 
-            # entry widgets            
-            self.create_entry_style(color)
-            self.create_combobox_style(color)
-            self.create_spinbox_style(color)
+        # entry widgets            
+        self.create_entry_style()
+        self.create_combobox_style()
+        self.create_spinbox_style()
 
-            # button widgets
-            self.create_solid_button_style(color)
-            self.create_outline_button_style(color)
-            self.create_link_button_style(color)
+        # button widgets
+        self.create_solid_button_style()
+        self.create_outline_button_style()
+        self.create_link_button_style()
 
-            self.create_solid_toolbutton_style(color)
-            self.create_outline_toolbutton_style(color)
+        self.create_solid_toolbutton_style()
+        self.create_outline_toolbutton_style()
 
-            self.create_solid_menubutton_style(color)
-            self.create_outline_menubutton_style(color)
+        self.create_solid_menubutton_style()
+        self.create_outline_menubutton_style()
 
-            self.create_checkbutton_style(color)
-            self.create_radiobutton_style(color)
-            self.create_round_toggle_style(color)
-            self.create_square_toggle_style(color)
+        self.create_checkbutton_style()
+        self.create_radiobutton_style()
+        self.create_round_toggle_style()
+        self.create_square_toggle_style()
 
-            # other widgets
-            self.create_label_style(color)
-            self.create_frame_style(color)
-            self.create_treeview_style(color)
-            self.create_notebook_style(color)
-            self.create_sizegrip_style(color)
-            self.create_labelframe_style(color)
+        # other widgets
+        self.create_label_style()
+        self.create_frame_style()
+        self.create_treeview_style()
+        self.create_notebook_style()
+        self.create_sizegrip_style()
+        self.create_labelframe_style()
 
-            # custom widgets
-            self.create_calendar_style(color)
+        # custom widgets
+        self.create_calendar_style()
+        self.create_meter_style()
 
 
     def create_default_style(self):
@@ -885,7 +884,7 @@ class StylerTTK:
             focuscolor= ''
         )
 
-    def create_combobox_style(self, colorname):
+    def create_combobox_style(self, colorname=DEFAULT):
         """Create style configuration for ``ttk.Combobox``. This
         element style is created with a layout that combines *clam* and
         *default* theme elements.
@@ -966,7 +965,7 @@ class StylerTTK:
                                     "sticky": tk.NSEW})]})]})]
         )
 
-    def create_separator_style(self, colorname):
+    def create_separator_style(self, colorname=DEFAULT):
         """Create style configuration for ttk separator:
         *ttk.Separator*. The default style for light will be border,
         but dark will be primary, as this makes the most sense for
@@ -1014,7 +1013,7 @@ class StylerTTK:
             [(f'{v_element}.separator', {'sticky': tk.NS})]
         )
 
-    def create_striped_progressbar_assets(self, colorname):
+    def create_striped_progressbar_assets(self, colorname=DEFAULT):
         """Create the striped progressbar image and return as a
         ``PhotoImage``
 
@@ -1066,7 +1065,7 @@ class StylerTTK:
         self.theme_images[v_name] = v_img
         return h_name, v_name
 
-    def create_striped_progressbar_style(self, colorname):
+    def create_striped_progressbar_style(self, colorname=DEFAULT):
         """Apply a striped theme to the progressbar"""
         HSTYLE = 'Striped.Horizontal.TProgressbar'
         VSTYLE = 'Striped.Vertical.TProgressbar'
@@ -1131,7 +1130,7 @@ class StylerTTK:
             thickness=16
         )
 
-    def create_progressbar_style(self, colorname):
+    def create_progressbar_style(self, colorname=DEFAULT):
         """Create style configuration for ttk progressbar"""
         H_STYLE = 'Horizontal.TProgressbar'
         V_STYLE = 'Vertical.TProgressbar'
@@ -1172,7 +1171,7 @@ class StylerTTK:
         self.style.element_create(f'{v_element}.pbar', 'from', TTK_DEFAULT)
         self.style.configure(v_ttkstyle, background=background)
 
-    def create_scale_assets(self, color_name, size=16):
+    def create_scale_assets(self, color_name=DEFAULT, size=16):
         """Create a circle slider image based on given size and color;
         used in the slider widget.
 
@@ -1263,7 +1262,7 @@ class StylerTTK:
             disabled_name, h_track_name, v_track_name
         )
 
-    def create_scale_style(self, colorname):
+    def create_scale_style(self, colorname=DEFAULT):
         """Create style configuration for ttk scale: *ttk.Scale*"""
         STYLE = 'TScale'
 
@@ -1317,7 +1316,7 @@ class StylerTTK:
             ]   
         )
 
-    def create_floodgauge_style(self, colorname):
+    def create_floodgauge_style(self, colorname=DEFAULT):
         """Create a style configuration for the *ttk.Progressbar* that makes 
         it into a floodgauge. Which is essentially a very large progress bar 
         with text in the middle.
@@ -1430,7 +1429,7 @@ class StylerTTK:
 
         return normal_names, pressed_names, active_names
 
-    def create_scrollbar_style(self, colorname):
+    def create_scrollbar_style(self, colorname=DEFAULT):
         """Create style configuration for ttk scrollbar: *ttk.Scrollbar* 
         This theme uses elements from the *alt* theme tobuild the widget 
         layout.
@@ -1542,7 +1541,7 @@ class StylerTTK:
             ]
         )
 
-    def create_spinbox_style(self, colorname):
+    def create_spinbox_style(self, colorname=DEFAULT):
         """Create style configuration for ttk spinbox: *ttk.Spinbox*
 
         This widget uses elements from the *default* and *clam* theme 
@@ -1626,7 +1625,7 @@ class StylerTTK:
                 ("hover !disabled", self.colors.inputfg)],
         )
 
-    def create_treeview_style(self, colorname):
+    def create_treeview_style(self, colorname=DEFAULT):
         """Create style configuration for ttk treeview"""
         STYLE = 'Treeview'
 
@@ -1722,7 +1721,7 @@ class StylerTTK:
             ]
         )
 
-    def create_frame_style(self, colorname):
+    def create_frame_style(self, colorname=DEFAULT):
         """Create style configuration for ttk frame"""
         STYLE = 'TFrame'
 
@@ -1735,7 +1734,7 @@ class StylerTTK:
 
         self.style.configure(ttkstyle, background=background)
 
-    def create_solid_button_style(self, colorname):
+    def create_solid_button_style(self, colorname=DEFAULT):
         """Apply a solid color style to ttk button"""
 
         STYLE = 'TButton'
@@ -1793,7 +1792,7 @@ class StylerTTK:
                 ("hover !disabled", hover)]
         )
 
-    def create_outline_button_style(self, colorname):
+    def create_outline_button_style(self, colorname=DEFAULT):
         """Apply an outline style to ttk button. This button has a 
         solid button look on focus and hover.
         """
@@ -1862,7 +1861,7 @@ class StylerTTK:
                 ("hover !disabled", hover)],
         )
 
-    def create_link_button_style(self, colorname):
+    def create_link_button_style(self, colorname=DEFAULT):
         """Apply a solid color style to ttk button"""
         STYLE = 'Link.TButton'
 
@@ -1925,7 +1924,7 @@ class StylerTTK:
                 ("hover !disabled", self.colors.bg)]
         )
 
-    def create_square_toggle_assets(self, colorname):
+    def create_square_toggle_assets(self, colorname=DEFAULT):
         """Create a set of images for the square toggle button and 
         return as ``PhotoImage``
 
@@ -2001,7 +2000,7 @@ class StylerTTK:
         
         return off_name, on_name, disabled_name
 
-    def create_round_toggle_assets(self, colorname):
+    def create_round_toggle_assets(self, colorname=DEFAULT):
         """Create a set of images for the rounded toggle button and 
         return as ``PhotoImage``
 
@@ -2083,7 +2082,7 @@ class StylerTTK:
 
         return off_name, on_name, disabled_name
 
-    def create_round_toggle_style(self, colorname):
+    def create_round_toggle_style(self, colorname=DEFAULT):
         """Apply a rounded toggle switch style to ttk widgets that accept 
         the toolbutton style (for example, a checkbutton: *ttk.Checkbutton*)
         """
@@ -2133,7 +2132,7 @@ class StylerTTK:
             ]
         )
 
-    def create_square_toggle_style(self, colorname):
+    def create_square_toggle_style(self, colorname=DEFAULT):
         """Apply a square toggle switch style to ttk widgets that 
         accept the toolbutton style
         """
@@ -2189,7 +2188,7 @@ class StylerTTK:
             ]
         )
 
-    def create_solid_toolbutton_style(self, colorname):
+    def create_solid_toolbutton_style(self, colorname=DEFAULT):
         """Apply a solid color style to ttk widgets that use the 
         Toolbutton style.
         """
@@ -2252,7 +2251,7 @@ class StylerTTK:
                 ("hover !disabled", toggle_on)],
         )
 
-    def create_outline_toolbutton_style(self, colorname):
+    def create_outline_toolbutton_style(self, colorname=DEFAULT):
         """Apply an outline style to ttk widgets that use the 
         Toolbutton style. This button has a solid button look on focus 
         and hover.
@@ -2313,7 +2312,7 @@ class StylerTTK:
                 ("hover !disabled", foreground)],
         )
 
-    def create_entry_style(self, colorname):
+    def create_entry_style(self, colorname=DEFAULT):
         """Create style configuration for ttk entry"""
         
         STYLE = 'TEntry'
@@ -2356,7 +2355,7 @@ class StylerTTK:
                 ("hover !disabled", focuscolor)],
         )
 
-    def create_radiobutton_assets(self, colorname):
+    def create_radiobutton_assets(self, colorname=DEFAULT):
         """Create radiobutton assets
 
         Parameters
@@ -2427,7 +2426,7 @@ class StylerTTK:
 
         return off_name, on_name, disabled_name
 
-    def create_radiobutton_style(self, colorname):
+    def create_radiobutton_style(self, colorname=DEFAULT):
         """Create style configuration for ttk radiobutton"""
 
         STYLE = 'TRadiobutton'
@@ -2474,7 +2473,7 @@ class StylerTTK:
         )
 
 
-    def create_calendar_style(self, colorname):
+    def create_calendar_style(self, colorname=DEFAULT):
         """Create style configuration for the date chooser"""
 
         STYLE = 'TCalendar'
@@ -2546,53 +2545,39 @@ class StylerTTK:
         self.style.configure(chevron_style, font='helvetica 14')
 
 
-    def create_meter_style(self):
+    def create_meter_style(self, colorname=DEFAULT):
         """Create style configuration for the meter"""
-        self.settings.update(
-            {
-                "TMeter": {
-                    "layout": [
-                        (
-                            "Label.border",
-                            {
-                                "sticky": tk.NSEW,
-                                "border": "1",
-                                "children": [
-                                    (
-                                        "Label.padding",
-                                        {
-                                            "sticky": tk.NSEW,
-                                            "border": "1",
-                                            "children": [
-                                                (
-                                                    "Label.label",
-                                                    {"sticky": tk.NSEW},
-                                                )
-                                            ],
-                                        },
-                                    )
-                                ],
+        
+        STYLE = 'TMeter'
+
+        if colorname == DEFAULT:
+            ttkstyle = STYLE
+            foreground = self.colors.primary
+        else:
+            ttkstyle = f'{colorname}.{STYLE}'
+            foreground = self.colors.get(colorname)
+
+        self.style.configure(
+            ttkstyle,
+            foreground=foreground,
+            background=self.colors.bg
+        )
+        self.style.layout(
+            ttkstyle,
+            [
+                ("Label.border", 
+                    {"sticky": tk.NSEW, "border": "1", "children": [
+                        ("Label.padding", 
+                            {"sticky": tk.NSEW, "border": "1", "children": [
+                                ("Label.label", {"sticky": tk.NSEW})]
                             },
                         )
                     ],
-                    "configure": {
-                        "foreground": self.colors.fg,
-                        "background": self.colors.bg,
-                    },
-                }
-            }
+                })
+            ]
         )
 
-        for color in self.colors:
-            self.settings.update(
-                {
-                    f"{color}.TMeter": {
-                        "configure": {"foreground": self.colors.get(color)}
-                    }
-                }
-            )
-
-    def create_label_style(self, colorname):
+    def create_label_style(self, colorname=DEFAULT):
         """Create style configuration for ttk label"""
 
         STYLE = 'TLabel'
@@ -2626,7 +2611,7 @@ class StylerTTK:
             background=inverse_background
         )
 
-    def create_labelframe_style(self, colorname):
+    def create_labelframe_style(self, colorname=DEFAULT):
         """Create style configuration for ttk labelframe"""
         
         STYLE = 'TLabelframe'
@@ -2661,7 +2646,7 @@ class StylerTTK:
             background=background
         )
 
-    def create_checkbutton_style(self, colorname):
+    def create_checkbutton_style(self, colorname=DEFAULT):
         """Create style configuration for ttk checkbutton"""
         
         STYLE = 'TCheckbutton'
@@ -2702,7 +2687,7 @@ class StylerTTK:
             ]
         )
 
-    def create_checkbutton_assets(self, colorname):
+    def create_checkbutton_assets(self, colorname=DEFAULT):
         """Create radiobutton assets
 
         Parameters
@@ -2789,7 +2774,7 @@ class StylerTTK:
 
         return off_name, on_name, disabled_name
 
-    def create_solid_menubutton_style(self, colorname):
+    def create_solid_menubutton_style(self, colorname=DEFAULT):
         """Apply a solid color style to ttk menubutton"""
 
         STYLE = 'TMenubutton'
@@ -2850,7 +2835,7 @@ class StylerTTK:
                 ("hover !disabled", hover)],
         )
 
-    def create_outline_menubutton_style(self, colorname):
+    def create_outline_menubutton_style(self, colorname=DEFAULT):
         """Apply and outline style to ttk menubutton"""
 
         STYLE = 'Outline.TMenubutton'
@@ -2906,7 +2891,7 @@ class StylerTTK:
                 ("hover", self.colors.selectfg)],
         )
 
-    def create_notebook_style(self, colorname):
+    def create_notebook_style(self, colorname=DEFAULT):
         """Create style configuration for ttk notebook"""
         
         STYLE = 'TNotebook'
@@ -2963,7 +2948,7 @@ class StylerTTK:
                 ('!selected', selectfg)]
         )
 
-    def create_panedwindow_style(self, colorname):
+    def create_panedwindow_style(self, colorname=DEFAULT):
         """Create style configuration for ttk paned window"""
 
         PANE_STYLE = 'TPanedwindow'
@@ -2989,7 +2974,7 @@ class StylerTTK:
 
         Parameters
         ----------
-        colorname : str
+        color : str
             The name of the color to use for the sizegrip images
 
         Returns
@@ -3011,7 +2996,7 @@ class StylerTTK:
         self.theme_images[_name] = _img
         return _name
 
-    def create_sizegrip_style(self, colorname):
+    def create_sizegrip_style(self, colorname=DEFAULT):
         """Create style configuration for ttk sizegrip"""
         
         STYLE = 'TSizegrip'
