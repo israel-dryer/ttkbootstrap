@@ -827,7 +827,6 @@ class StylerTTK:
         self.create_radiobutton_style()
         self.create_round_toggle_style()
         self.create_square_toggle_style()
-        self.create_sizegrip_style()
         self.create_entry_style()
 
         for color in [DEFAULT, *self.colors]:
@@ -858,6 +857,7 @@ class StylerTTK:
             self.create_frame_style(color)
             self.create_treeview_style(color)
             self.create_notebook_style(color)
+            self.create_sizegrip_style(color)
 
 
     def create_default_style(self):
@@ -3100,7 +3100,6 @@ class StylerTTK:
         if colorname == DEFAULT:
             sashcolor = default_color
             ttkstyle = PANE_STYLE
-
         else:
             sashcolor = self.colors.get(colorname)
             ttkstyle = f'{colorname}.{PANE_STYLE}'
@@ -3109,7 +3108,7 @@ class StylerTTK:
         self.style.configure(ttkstyle, background=sashcolor)
 
 
-    def create_sizegrip_assets(self, colorname):
+    def create_sizegrip_assets(self, color):
         """Create assets for size grip
 
         Parameters
@@ -3124,9 +3123,8 @@ class StylerTTK:
         """
         im = Image.new("RGBA", (14, 14))
         draw = ImageDraw.Draw(im)
-        color = self.colors.get(colorname)
         draw.rectangle((9, 3, 10, 4), fill=color)  # top
-        draw.rectangle((6, 6, 7, 7), fill=color)  # middle
+        draw.rectangle((6, 6, 7, 7), fill=color)   # middle
         draw.rectangle((9, 6, 10, 7), fill=color)
         draw.rectangle((3, 9, 4, 10), fill=color)  # bottom
         draw.rectangle((6, 9, 7, 10), fill=color)
@@ -3137,35 +3135,31 @@ class StylerTTK:
         self.theme_images[_name] = _img
         return _name
 
-    def create_sizegrip_style(self):
+    def create_sizegrip_style(self, colorname):
         """Create style configuration for ttk sizegrip"""
+        
         STYLE = 'TSizegrip'
 
-        if self.is_light_theme:
-            default_color = "border"
-        else:
-            default_color = "inputbg"
+        if colorname == DEFAULT:
+            ttkstyle = STYLE
 
-        for color in [DEFAULT, *self.colors]:
-
-            if color == DEFAULT:
-                grip_image = self.create_sizegrip_assets(default_color)
-                ttkstyle = STYLE
+            if self.is_light_theme:
+                grip_color = self.colors.border
             else:
-                grip_image = self.create_sizegrip_assets(color)
-                ttkstyle = f'{color}.{STYLE}'
-
-            self.settings.update(
-                {
-                    f"{ttkstyle}.Sizegrip.sizegrip": {
-                        "element create": ("image", grip_image)},
-                    ttkstyle: {
-                        "layout": [
-                            (
-                                f"{ttkstyle}.Sizegrip.sizegrip", {
-                                    "side": tk.BOTTOM, "sticky": tk.SE},
-                            )
-                        ]
-                    },
-                }
-            )
+                grip_color = self.colors.inputbg
+        else:
+            ttkstyle = f'{colorname}.{STYLE}'
+            grip_color = self.colors.get(colorname)
+        
+        image = self.create_sizegrip_assets(grip_color)
+        
+        self.style.element_create(
+            f'{ttkstyle}.Sizegrip.sizegrip', 'image', image
+        )
+        self.style.layout(
+            ttkstyle, 
+            [
+                (f'{ttkstyle}.Sizegrip.sizegrip', 
+                {'side': tk.BOTTOM, 'sticky': tk.SE})
+            ]
+        )
