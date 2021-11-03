@@ -822,7 +822,6 @@ class StylerTTK:
         self.create_exit_button_style()
         self.create_calendar_style()
         self.create_meter_style()
-        self.create_radiobutton_style()
         self.create_round_toggle_style()
         self.create_square_toggle_style()
 
@@ -843,6 +842,7 @@ class StylerTTK:
             self.create_spinbox_style(color)
 
             # button widgets
+            self.create_radiobutton_style(color)
             self.create_checkbutton_style(color)
             self.create_solid_button_style(color)
             self.create_outline_button_style(color)
@@ -2429,7 +2429,7 @@ class StylerTTK:
 
         return off_name, on_name, disabled_name
 
-    def create_radiobutton_style(self):
+    def create_radiobutton_style(self, colorname):
         """Create style configuration for ttk radiobutton"""
 
         STYLE = 'TRadiobutton'
@@ -2439,39 +2439,42 @@ class StylerTTK:
         else:
             disabled_fg = self.colors.inputbg
 
-        for color in [DEFAULT, *self.colors]:
-            # ( off, on, disabled )
-            images = self.create_radiobutton_assets(color)
+        if colorname == DEFAULT:
+            ttkstyle = STYLE
+            focuscolor = self.colors.primary
+        else:
+            ttkstyle = f'{colorname}.{STYLE}'
+            focuscolor = self.colors.get(colorname)
 
-            if color == DEFAULT:
-                ttkstyle = STYLE
-                focuscolor = self.colors.primary
-            else:
-                ttkstyle = f'{color}.{STYLE}'
-                focuscolor = self.colors.get(color)
+        # ( off, on, disabled )
+        images = self.create_radiobutton_assets(colorname)
 
-            self.settings.update(
-                {
-                    f"{ttkstyle}.indicator": {
-                        "element create": (
-                            "image", images[1],
-                            ("disabled", images[2]),
-                            ("!selected", images[0]),
-                            {"width": 20, "border": 4, "sticky": tk.W})},
-                    ttkstyle: {
-                        "layout": [
-                            ("Radiobutton.padding", {"children": [
-                                (f"{ttkstyle}.indicator",
-                                 {"side": tk.LEFT, "sticky": ""}),
-                                ("Radiobutton.focus", {"children": [
-                                    ("Radiobutton.label",
-                                     {"sticky": tk.NSEW})],
-                                    "side": tk.LEFT, "sticky": ""})],
-                                "sticky": tk.NSEW})],
-                        "configure": {"font": self.theme.font},
-                        "map": {
-                            "foreground": [
-                                ("disabled", disabled_fg)]}}})
+        self.style.element_create(
+            f'{ttkstyle}.indicator', 'image', images[1],
+            ('disabled', images[2]),
+            ('!selected', images[0]),
+            width=20, border=4, sticky=tk.W
+        )
+        self.style.map(ttkstyle, [('disabled', disabled_fg)])
+        self.style.configure(ttkstyle, font=self.theme.font)
+        self.style.layout(
+            ttkstyle,
+            [
+                ("Radiobutton.padding", {"children": [
+                    (f"{ttkstyle}.indicator", 
+                        {"side": tk.LEFT, "sticky": ""}),
+                    ("Radiobutton.focus", 
+                        {"children": [
+                            ("Radiobutton.label", 
+                                {"sticky": tk.NSEW})
+                            ],
+                            "side": tk.LEFT, "sticky": ""})],
+                            "sticky": tk.NSEW
+                    }
+                )
+            ]
+        )
+
 
     def create_calendar_style(self):
         """Create style configuration for the date chooser"""
