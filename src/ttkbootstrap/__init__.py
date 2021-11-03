@@ -822,7 +822,6 @@ class StylerTTK:
         self.create_calendar_style()
         self.create_label_style()
         self.create_meter_style()
-        self.create_notebook_style()
         self.create_checkbutton_style()
         self.create_radiobutton_style()
         self.create_round_toggle_style()
@@ -857,6 +856,7 @@ class StylerTTK:
             # other widgets
             self.create_frame_style(color)
             self.create_treeview_style(color)
+            self.create_notebook_style(color)
 
 
     def create_default_style(self):
@@ -3015,8 +3015,8 @@ class StylerTTK:
                 ("hover !disabled", foreground)],
             bordercolor=[
                 ("disabled", disabled_fg),
-                ("pressed !disabled", foreground),
-                ("hover !disabled", foreground)],
+                ("pressed", foreground),
+                ("hover", foreground)],
             darkcolor=[
                 ("pressed !disabled", foreground),
                 ("hover !disabled", foreground)],
@@ -3025,44 +3025,67 @@ class StylerTTK:
                 ("hover !disabled", foreground)],
             arrowcolor=[
                 ("disabled", disabled_fg),
-                ("pressed !disabled", self.colors.selectfg),
-                ("hover !disabled", self.colors.selectfg)],
+                ("pressed", self.colors.selectfg),
+                ("hover", self.colors.selectfg)],
         )
 
-    def create_notebook_style(self):
+    def create_notebook_style(self, colorname):
         """Create style configuration for ttk notebook"""
+        
+        STYLE = 'TNotebook'
+
         if self.is_light_theme:
             bordercolor = self.colors.border
+            foreground = self.colors.inputfg
         else:
             bordercolor = self.colors.selectbg
+            foreground = self.colors.selectfg
 
-        self.settings.update(
-            {
-                "TNotebook": {
-                    "configure": {
-                        "bordercolor": bordercolor,
-                        "lightcolor": self.colors.bg,
-                        "darkcolor": self.colors.bg,
-                        "borderwidth": 1,
-                    }
-                },
-                "TNotebook.Tab": {
-                    "configure": {
-                        "bordercolor": bordercolor,
-                        "lightcolor": self.colors.bg,
-                        "foreground": self.colors.fg,
-                        "padding": (10, 5),
-                    },
-                    "map": {
-                        "background": [("!selected", self.colors.inputbg)],
-                        "lightcolor": [("!selected", self.colors.inputbg)],
-                        "darkcolor": [("!selected", self.colors.inputbg)],
-                        "bordercolor": [("!selected", bordercolor)],
-                        "foreground": [("!selected", self.colors.fg)],
-                    },
-                },
-            }
+        if colorname == DEFAULT:
+            background = self.colors.inputbg
+            selectfg = self.colors.fg
+            ttkstyle = STYLE
+        else:
+            selectfg = self.colors.selectfg
+            background = self.colors.get(colorname)
+            ttkstyle = f'{colorname}.{STYLE}'
+
+        ttkstyle_tab = f'{ttkstyle}.Tab'
+
+        # create widget style
+        self.style.configure(
+            ttkstyle,
+            background=self.colors.bg,
+            bordercolor=bordercolor,
+            lightcolor=self.colors.bg,
+            darkcolor=self.colors.bg,
+            tabmargins=(0, 1, 1, 0),
         )
+        self.style.configure(
+            ttkstyle_tab,
+            focuscolor='',
+            foreground=foreground,
+            padding=(6, 5)
+        )
+        self.style.map(
+            ttkstyle_tab,
+            background=[
+                ('selected', self.colors.bg),
+                ('!selected', background)],
+            lightcolor=[
+                ('selected', self.colors.bg),
+                ('!selected', background)],
+            bordercolor=[
+                ('selected', bordercolor),
+                ('!selected', bordercolor)],
+            padding=[
+                ('selected', (6, 5)),
+                ('!selected', (6, 5))],
+            foreground=[
+                ('selected', foreground),
+                ('!selected', selectfg)]
+        )
+
 
     def create_panedwindow_style(self):
         """Create style configuration for ttk paned window"""
