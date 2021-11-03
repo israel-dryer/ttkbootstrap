@@ -817,7 +817,6 @@ class StylerTTK:
         which define the layout, configuration, and styling mapping
         for each ttk widget.
         """
-        self.create_labelframe_style()
         self.create_meter_style()
         self.create_default_style()
 
@@ -858,6 +857,7 @@ class StylerTTK:
             self.create_treeview_style(color)
             self.create_notebook_style(color)
             self.create_sizegrip_style(color)
+            self.create_labelframe_style(color)
 
             # custom widgets
             self.create_calendar_style(color)
@@ -2626,64 +2626,40 @@ class StylerTTK:
             background=inverse_background
         )
 
-    def create_labelframe_style(self):
+    def create_labelframe_style(self, colorname):
         """Create style configuration for ttk labelframe"""
-        self.settings.update(
-            {
-                "Labelframe.Label": {"element create": ("from", TTK_CLAM)},
-                "Label.fill": {"element create": ("from", TTK_CLAM)},
-                "Label.text": {"element create": ("from", TTK_CLAM)},
-                "TLabelframe.Label": {
-                    "layout": [
-                        (
-                            "Label.fill",
-                            {
-                                "sticky": tk.NSEW,
-                                "children": [
-                                    ("Label.text", {"sticky": tk.NSEW})
-                                ],
-                            },
-                        )
-                    ],
-                    "configure": {"foreground": self.colors.fg},
-                },
-                "TLabelframe": {
-                    "layout": [("Labelframe.border", {"sticky": tk.NSEW})],
-                    "configure": {
-                        "relief": "raised",
-                        "borderwidth": "1",
-                        "bordercolor": (
-                            self.colors.border
-                            if self.theme.type == "light"
-                            else self.colors.selectbg
-                        ),
-                        "lightcolor": self.colors.bg,
-                        "darkcolor": self.colors.bg,
-                    },
-                },
-            }
-        )
+        
+        STYLE = 'TLabelframe'
 
-        for color in self.colors:
-            self.settings.update(
-                {
-                    f"{color}.TLabelframe": {
-                        "configure": {
-                            "background": self.colors.get(color),
-                            "lightcolor": self.colors.get(color),
-                            "darkcolor": self.colors.get(color),
-                        }
-                    },
-                    f"{color}.TLabelframe.Label": {
-                        "configure": {
-                            "foreground": self.colors.selectfg,
-                            "background": self.colors.get(color),
-                            "lightcolor": self.colors.get(color),
-                            "darkcolor": self.colors.get(color),
-                        }
-                    },
-                }
-            )
+        background = self.colors.bg
+        
+        if colorname == DEFAULT:
+            foreground = self.colors.fg
+            ttkstyle = STYLE
+        else:
+            foreground = self.colors.get(colorname)
+            ttkstyle = f'{colorname}.{STYLE}'
+
+        if self.is_light_theme:
+            bordercolor = self.colors.border
+        else:
+            bordercolor = self.colors.selectbg
+
+        # create widget style
+        self.style.configure(
+            f'{ttkstyle}.Label',
+            foreground=foreground,
+            background=background,
+        )
+        self.style.configure(
+            ttkstyle,
+            relief=tk.RAISED,
+            borderwidth=1,
+            bordercolor=bordercolor,
+            lightcolor=background,
+            darkcolor=background,
+            background=background
+        )
 
     def create_checkbutton_style(self, colorname):
         """Create style configuration for ttk checkbutton"""
