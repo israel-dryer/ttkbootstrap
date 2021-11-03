@@ -822,8 +822,6 @@ class StylerTTK:
         self.create_exit_button_style()
         self.create_calendar_style()
         self.create_meter_style()
-        self.create_round_toggle_style()
-        self.create_square_toggle_style()
 
         for color in [DEFAULT, *self.colors]:
 
@@ -842,15 +840,20 @@ class StylerTTK:
             self.create_spinbox_style(color)
 
             # button widgets
-            self.create_radiobutton_style(color)
-            self.create_checkbutton_style(color)
             self.create_solid_button_style(color)
             self.create_outline_button_style(color)
             self.create_link_button_style(color)
+
             self.create_solid_toolbutton_style(color)
             self.create_outline_toolbutton_style(color)
+
             self.create_solid_menubutton_style(color)
             self.create_outline_menubutton_style(color)
+
+            self.create_checkbutton_style(color)
+            self.create_radiobutton_style(color)
+            self.create_round_toggle_style(color)
+            self.create_square_toggle_style(color)
 
             # other widgets
             self.create_label_style(color)
@@ -2080,7 +2083,7 @@ class StylerTTK:
 
         return off_name, on_name, disabled_name
 
-    def create_round_toggle_style(self):
+    def create_round_toggle_style(self, colorname):
         """Apply a rounded toggle switch style to ttk widgets that accept 
         the toolbutton style (for example, a checkbutton: *ttk.Checkbutton*)
         """
@@ -2091,54 +2094,50 @@ class StylerTTK:
         else:
             disabled_fg = self.colors.inputbg
 
-        for color in [DEFAULT, *self.colors]:
+        if colorname == DEFAULT:
+            ttkstyle = STYLE
+            colorname = PRIMARY
+        else:
+            ttkstyle = f"{colorname}.{STYLE}"
 
-            # ( off, on, disabled )
-            images = self.create_round_toggle_assets(color)
+        # ( off, on, disabled )
+        images = self.create_round_toggle_assets(colorname)
 
-            if color == DEFAULT:
-                ttkstyle = STYLE
-                indicatorcolor = self.colors.primary
-            else:
-                ttkstyle = f"{color}.{STYLE}"
-                indicatorcolor = self.colors.get(color)
+        self.style.element_create(
+            f'{ttkstyle}.indicator', 'image', images[1],
+            ('disabled', images[2]),
+            ('!selected', images[0]),
+            width=28, border=4, sticky=tk.W
+        )
+        self.style.configure(
+            ttkstyle,
+            relief=tk.FLAT,
+            borderwidth=0,
+            padding=0,
+            foreground=self.colors.fg,
+            background=self.colors.bg
+        )
+        self.style.map(ttkstyle, 
+            foreground=[('disabled', disabled_fg)],
+            background=[('selected', self.colors.bg)]
+        )
+        self.style.layout(
+            ttkstyle,
+            [
+                ("Toolbutton.border", {
+                    "sticky": tk.NSEW, "children": [
+                        ("Toolbutton.padding", {
+                            "sticky": tk.NSEW, "children": [
+                                (f"{ttkstyle}.indicator", {"side": tk.LEFT}),
+                                ("Toolbutton.label", {"side": tk.LEFT})]})]})
+            ]
+        )
 
-            self.settings.update(
-                {
-                    f"{ttkstyle}.indicator": {
-                        "element create": ("image", images[1],
-                                           ("disabled", images[2]),
-                                           ("!selected", images[0]),
-                                           {"width": 28, "border": 4, "sticky": tk.W})},
-                    ttkstyle: {
-                        "layout": [
-                            ("Toolbutton.border", {
-                                "sticky": tk.NSEW,
-                                "children": [
-                                    ("Toolbutton.padding", {
-                                        "sticky": tk.NSEW,
-                                        "children": [
-                                            (f"{ttkstyle}.indicator",
-                                             {"side": tk.LEFT}),
-                                            ("Toolbutton.label",
-                                             {"side": tk.LEFT})]})]})],
-                        "configure": {
-                            "relief": tk.FLAT,
-                            "borderwidth": 0,
-                            "foreground": self.colors.fg,
-                        },
-                        "map": {
-                            "foreground": [
-                                ("disabled", disabled_fg),
-                            ],
-                            "background": [
-                                ("selected", self.colors.bg),
-                                ("!selected", self.colors.bg)]}}})
-
-    def create_square_toggle_style(self):
+    def create_square_toggle_style(self, colorname):
         """Apply a square toggle switch style to ttk widgets that 
         accept the toolbutton style
         """
+        
         STYLE = 'Squaretoggle.Toolbutton'
 
         if self.is_light_theme:
@@ -2146,50 +2145,49 @@ class StylerTTK:
         else:
             disabled_fg = self.colors.inputbg
 
-        # color variations
-        for color in [DEFAULT, *self.colors]:
+        if colorname == DEFAULT:
+            ttkstyle = STYLE
+        else:
+            ttkstyle = f'{colorname}.{STYLE}'
 
-            # ( off, on, disabled )
-            images = self.create_square_toggle_assets(color)
+        # ( off, on, disabled )
+        images = self.create_square_toggle_assets(colorname)
 
-            if color == DEFAULT:
-                ttkstyle = STYLE
-                indicatorcolor = self.colors.primary
-            else:
-                ttkstyle = f'{color}.{STYLE}'
-                indicatorcolor = self.colors.get(color)
-
-            # create indicator element
-            self.settings.update(
-                {
-                    f"{ttkstyle}.indicator": {
-                        "element create": ("image", images[1],
-                                           ("disabled", images[2]),
-                                           ("!selected", images[0]),
-                                           {"width": 28, "border": 4, "sticky": tk.W})},
-                    ttkstyle: {
-                        "layout": [
-                            ("Toolbutton.border", {
-                                "sticky": tk.NSEW,
-                                "children": [
-                                    ("Toolbutton.padding", {
-                                        "sticky": tk.NSEW,
-                                        "children": [
-                                            (f"{ttkstyle}.indicator",
-                                             {"side": tk.LEFT}),
-                                            ("Toolbutton.label",
-                                             {"side": tk.LEFT})]})]})],
-                        "configure": {
-                            "relief": tk.FLAT,
-                            "borderwidth": 0,
-                            "foreground": self.colors.fg},
-                        "map": {
-                            "foreground": [
-                                ("disabled", disabled_fg),
-                            ],
-                            "background": [
-                                ("selected", self.colors.bg),
-                                ("!selected", self.colors.bg)]}}})
+        self.style.element_create(
+            f'{ttkstyle}.indicator', 'image', images[1],
+            ('disabled', images[2]),
+            ('!selected', images[0]),
+            width=28, border=4, sticky=tk.W
+        )
+        self.style.layout(
+            ttkstyle,
+            [
+                ("Toolbutton.border", {
+                    "sticky": tk.NSEW, "children": [
+                        ("Toolbutton.padding", {
+                            "sticky": tk.NSEW, "children": [
+                                (f"{ttkstyle}.indicator", {"side": tk.LEFT}),
+                                ("Toolbutton.label", {"side": tk.LEFT})]
+                            }
+                        )
+                    ]
+                })
+            ]
+        )
+        self.style.configure(
+            ttkstyle,
+            relief=tk.FLAT,
+            borderwidth=0,
+            foreground=self.colors.fg
+        )
+        self.style.map(
+            ttkstyle, 
+            foreground=[('disabled', disabled_fg)],
+            background=[
+                ('selected', self.colors.bg), 
+                ('!selected', self.colors.bg)
+            ]
+        )
 
     def create_solid_toolbutton_style(self, colorname):
         """Apply a solid color style to ttk widgets that use the 
