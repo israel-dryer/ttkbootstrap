@@ -822,7 +822,6 @@ class StylerTTK:
         self.create_exit_button_style()
         self.create_calendar_style()
         self.create_meter_style()
-        self.create_checkbutton_style()
         self.create_radiobutton_style()
         self.create_round_toggle_style()
         self.create_square_toggle_style()
@@ -844,6 +843,7 @@ class StylerTTK:
             self.create_spinbox_style(color)
 
             # button widgets
+            self.create_checkbutton_style(color)
             self.create_solid_button_style(color)
             self.create_outline_button_style(color)
             self.create_link_button_style(color)
@@ -2747,8 +2747,9 @@ class StylerTTK:
                 }
             )
 
-    def create_checkbutton_style(self):
+    def create_checkbutton_style(self, colorname):
         """Create style configuration for ttk checkbutton"""
+        
         STYLE = 'TCheckbutton'
         
         if self.is_light_theme:
@@ -2756,65 +2757,36 @@ class StylerTTK:
         else:
             disabled_fg = Colors.update_hsv(self.colors.selectbg, vd=-0.3)
 
-        for color in [DEFAULT, *self.colors]:
-            if color == DEFAULT:
-                color = PRIMARY
-                ttkstyle = STYLE
-                indicator_element = 'Checkbutton.indicator'
-            else:
-                ttkstyle = f'{color}.TCheckbutton'
-                indicator_element = f'{color}.Checkbutton.indicator'
+        if colorname == DEFAULT:
+            colorname = PRIMARY
+            ttkstyle = STYLE
+            indicator_element = 'Checkbutton.indicator'
+        else:
+            ttkstyle = f'{colorname}.TCheckbutton'
+            indicator_element = f'{colorname}.Checkbutton.indicator'
 
-            # ( off, on, disabled )
-            images = self.create_checkbutton_assets(color)
+        # ( off, on, disabled )
+        images = self.create_checkbutton_assets(colorname)
 
-            self.settings.update(
-                {
-                    indicator_element: {
-                        "element create": (
-                            "image", images[1],
-                            ("disabled", images[2]),
-                            ("!selected", images[0]),
-                            {"width": 20, "border": 4, "sticky": tk.W},
-                        )
-                    },
-                    ttkstyle: {
-                        "configure": {
-                            "foreground": self.colors.fg
-                        },
-                        "layout": [
-                            (
-                                "Checkbutton.padding",
-                                {
-                                    "children": [
-                                        (
-                                            indicator_element,
-                                            {"side": tk.LEFT, "sticky": ""},
-                                        ),
-                                        (
-                                            "Checkbutton.focus",
-                                            {
-                                                "children": [
-                                                    (
-                                                        "Checkbutton.label",
-                                                        {"sticky": tk.NSEW},
-                                                    )
-                                                ],
-                                                "side": tk.LEFT,
-                                                "sticky": "",
-                                            },
-                                        ),
-                                    ],
-                                    "sticky": tk.NSEW,
-                                },
-                            )
-                        ],
-                        "map": {
-                            "foreground": [("disabled", disabled_fg)]
-                        },
-                    },
-                }
-            )
+        self.style.element_create(indicator_element, 'image', images[1],
+            ('disabled', images[2]),
+            ('!selected', images[0]),
+            width=20, border=4, sticky=tk.W
+        )
+        self.style.configure(ttkstyle, foreground=self.colors.fg)
+        self.style.map(ttkstyle, foreground=[('disabled', disabled_fg)])
+        self.style.layout(
+            ttkstyle, 
+            [
+                ("Checkbutton.padding", { "children": [
+                    (indicator_element, {"side": tk.LEFT, "sticky": ""}),
+                    ("Checkbutton.focus", {"children": [
+                        ("Checkbutton.label", {"sticky": tk.NSEW})],
+                            "side": tk.LEFT, "sticky": ""})],
+                        "sticky": tk.NSEW}
+                )
+            ]
+        )
 
     def create_checkbutton_assets(self, colorname):
         """Create radiobutton assets
