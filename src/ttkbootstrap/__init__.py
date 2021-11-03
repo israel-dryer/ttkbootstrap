@@ -817,14 +817,11 @@ class StylerTTK:
         which define the layout, configuration, and styling mapping
         for each ttk widget.
         """
-        self.create_default_style()
         self.create_labelframe_style()
-        self.create_exit_button_style()
-        self.create_calendar_style()
         self.create_meter_style()
+        self.create_default_style()
 
         for color in [DEFAULT, *self.colors]:
-
             # widgets with orientation
             self.create_separator_style(color)
             self.create_progressbar_style(color)
@@ -861,6 +858,9 @@ class StylerTTK:
             self.create_treeview_style(color)
             self.create_notebook_style(color)
             self.create_sizegrip_style(color)
+
+            # custom widgets
+            self.create_calendar_style(color)
 
 
     def create_default_style(self):
@@ -2474,140 +2474,77 @@ class StylerTTK:
         )
 
 
-    def create_calendar_style(self):
+    def create_calendar_style(self, colorname):
         """Create style configuration for the date chooser"""
 
         STYLE = 'TCalendar'
 
-        for color in [DEFAULT, *self.colors]:
-
-            if color == DEFAULT:
-                prime_color = self.colors.primary
-                ttkstyle = STYLE
-                chevron_style = "chevron.TButton"
-            else:
-                prime_color = self.colors.get(color)
-                ttkstyle = f'{color}.{STYLE}'
-                chevron_style = f"chevron.{color}.TButton"
-
-            if self.is_light_theme:
-                disabled_fg = Colors.update_hsv(self.colors.inputbg, vd=-0.2)
-                pressed = Colors.update_hsv(prime_color, vd=-0.1)
-            else:
-                disabled_fg = Colors.update_hsv(self.colors.inputbg, vd=-0.3)
-                pressed = Colors.update_hsv(prime_color, vd=0.1)
-
-            self.settings.update(
-                {
-                    ttkstyle: {
-                        "configure": {
-                            "foreground": self.colors.fg,
-                            "background": self.colors.bg,
-                            "bordercolor": self.colors.bg,
-                            "darkcolor": self.colors.bg,
-                            "lightcolor": self.colors.bg,
-                            "relief": "raised",
-                            "focusthickness": 0,
-                            "focuscolor": "",
-                            "borderwidth": 1,
-                            "padding": (10, 5),
-                            "anchor": tk.CENTER
-                        },
-                        "layout": [
-                            ("Toolbutton.border", {
-                                "sticky": tk.NSEW, "children": [
-                                    ("Toolbutton.padding",
-                                     {"sticky": tk.NSEW, "children": [
-                                         ("Toolbutton.label",
-                                          {"sticky": tk.NSEW})]})]})
-                        ],
-                        "map": {
-                            "foreground": [
-                                ("disabled", disabled_fg),
-                                ("pressed !disabled", self.colors.selectfg),
-                                ("selected !disabled", self.colors.selectfg),
-                                ("hover !disabled", self.colors.selectfg),
-                            ],
-                            "background": [
-                                ("pressed !disabled", pressed),
-                                ("selected !disabled", pressed),
-                                ("hover !disabled", pressed)
-                            ],
-                            "bordercolor": [
-                                ("disabled", disabled_fg),
-                                ("pressed !disabled", pressed),
-                                ("selected !disabled", pressed),
-                                ("hover !disabled", pressed)
-                            ],
-                            "darkcolor": [
-                                ("pressed !disabled", pressed),
-                                ("selected !disabled", pressed),
-                                ("hover !disabled", pressed)
-                            ],
-                            "lightcolor": [
-                                ("pressed !disabled", pressed),
-                                ("selected !disabled", pressed),
-                                ("hover !disabled", pressed)
-                            ],
-                        },
-                    },
-                    chevron_style: {
-                        "configure": {"font": "helvetica 14"}
-                    },
-                }
-            )
-
-    def create_exit_button_style(self):
-        """Create style configuration for the toolbutton exit button"""
-        if self.is_light_theme:
-            disabled_bg = Colors.update_hsv(self.colors.inputbg, vd=-0.2)
+        if colorname == DEFAULT:
+            prime_color = self.colors.primary
+            ttkstyle = STYLE
+            chevron_style = "chevron.TButton"
         else:
-            disabled_bg = Colors.update_hsv(self.colors.inputbg, vd=-0.3)
+            prime_color = self.colors.get(colorname)
+            ttkstyle = f'{colorname}.{STYLE}'
+            chevron_style = f"chevron.{colorname}.TButton"
 
-        pressed_vd = -0.2
-        self.settings.update(
-            {
-                "exit.TButton": {
-                    "configure": {"relief": tk.FLAT, "font": "helvetica 12"},
-                    "map": {
-                        "background": [
-                            ("disabled", disabled_bg),
-                            (
-                                "pressed !disabled",
-                                Colors.update_hsv(
-                                    self.colors.primary, vd=pressed_vd
-                                ),
-                            ),
-                            ("hover !disabled", self.colors.danger),
-                        ]
-                    },
-                }
-            }
+        if self.is_light_theme:
+            disabled_fg = Colors.update_hsv(self.colors.inputbg, vd=-0.2)
+            pressed = Colors.update_hsv(prime_color, vd=-0.1)
+        else:
+            disabled_fg = Colors.update_hsv(self.colors.inputbg, vd=-0.3)
+            pressed = Colors.update_hsv(prime_color, vd=0.1)
+
+        self.style.configure(
+            ttkstyle,
+            foreground=self.colors.fg,
+            background=self.colors.bg,
+            bordercolor=self.colors.bg,
+            darkcolor=self.colors.bg,
+            lightcolor=self.colors.bg,
+            relief=tk.RAISED,
+            focusthickness=0,
+            focuscolor='',
+            borderwidth=1,
+            padding=(10, 5),
+            anchor=tk.CENTER            
         )
+        self.style.layout(
+            ttkstyle,
+            [
+                ("Toolbutton.border", {"sticky": tk.NSEW, "children": [
+                    ("Toolbutton.padding", {"sticky": tk.NSEW, "children": [
+                        ("Toolbutton.label", {"sticky": tk.NSEW})]})]}
+                )
+            ]
+        )
+        self.style.map(
+            ttkstyle,
+            foreground=[
+                ("disabled", disabled_fg),
+                ("pressed !disabled", self.colors.selectfg),
+                ("selected !disabled", self.colors.selectfg),
+                ("hover !disabled", self.colors.selectfg)],
+            background=[
+                ("pressed !disabled", pressed),
+                ("selected !disabled", pressed),
+                ("hover !disabled", pressed)],
+            bordercolor=[
+                ("disabled", disabled_fg),
+                ("pressed !disabled", pressed),
+                ("selected !disabled", pressed),
+                ("hover !disabled", pressed)],
+            darkcolor=[
+                ("pressed !disabled", pressed),
+                ("selected !disabled", pressed),
+                ("hover !disabled", pressed)],
+            lightcolor=[
+                ("pressed !disabled", pressed),
+                ("selected !disabled", pressed),
+                ("hover !disabled", pressed)],
+        )
+        self.style.configure(chevron_style, font='helvetica 14')
 
-        for color in self.colors:
-            self.settings.update(
-                {
-                    f"exit.{color}.TButton": {
-                        "configure": {
-                            "relief": tk.FLAT,
-                            "font": "helvetica 12",
-                        },
-                        "map": {
-                            "background": [
-                                ("disabled", disabled_bg),
-                                (
-                                    "pressed !disabled",
-                                    Colors.update_hsv(
-                                        self.colors.get(color), vd=pressed_vd
-                                    ),
-                                ),
-                                ("hover !disabled", self.colors.danger),
-                            ]
-                        },
-                    }
-                }
-            )
 
     def create_meter_style(self):
         """Create style configuration for the meter"""
