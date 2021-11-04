@@ -1,5 +1,7 @@
 import tkinter as tk
 from tkinter import ttk
+from ttkbootstrap.constants import DEFAULT
+from ttkbootstrap.style.style import Style
 import re
 
 WIDGET_LOOKUP = {
@@ -24,6 +26,8 @@ WIDGET_LOOKUP = {
     "lblfrm": "TLabelframe",
     "label": "TLabel",
     "menubutton": "TMenubutton",
+    "notebook": "TNotebook",
+    "panedwindow": "TPanedwindow",
     "radio": "TRadiobutton",
     "radiobutton": "TRadiobutton",
     "radiobtn": "TRadiobutton",
@@ -107,11 +111,14 @@ def inject_bootstyle_keyword_api():
             elif 'bootstyle' in kwargs:
 
                 # save a copy of the bootstyle keywords
-                widget._bootstyle = kwargs.pop('bootstyle')
+                bootstyle = normalize_bootstyle(kwargs.pop('bootstyle'))
+                widget._bootstyle = bootstyle
 
-                # get widget class and orientation
+                # get widget class, orient, and type
                 _class = widget.__name__
                 _orient = kwargs.get('orient')
+                _type = find_widget_type(bootstyle)
+                _color = find_widget_color(bootstyle).replace('.', '')
 
                 # standardize the orientation naming convention
                 if _orient == 'h':
@@ -120,11 +127,15 @@ def inject_bootstyle_keyword_api():
                     _orient = tk.VERTICAL
 
                 # create and set the ttk style
-                ttkstyle = create_ttk_style(
+                ttkstyle = build_ttkstyle_name(
                     bootstyle=widget._bootstyle,
                     widget_class=_class,
                     widget_orient=_orient
                 )
+                if not ttkstyle_exists(ttkstyle):
+                    builder = Style.get_builder()
+                    builder_func = builder.get_create_style_method(_type, _class)
+                    builder_func(builder, _color or DEFAULT)
                 func(*args, style=ttkstyle, **kwargs)
             else:
                 # neither `style` or `bootstyle` arguments are present
@@ -139,27 +150,37 @@ def inject_bootstyle_keyword_api():
         # widget.__setitem__ = __setitem
         # widget.__getitem__ = __getitem
 
+def check_widget_style(*args):
+    ...
 
-def normalize_style(bootstyle):
+
+def ttkstyle_exists(ttkstyle: str) -> bool:
+    """Returns True if style exists, else False"""
+    root = tk._get_default_root()
+    cnf = root.tk.call('ttk::style', 'configure', ttkstyle)
+    return cnf != ''
+
+
+def normalize_bootstyle(style_keywords):
     """Remove all spaces and capitalization in the style keywords and
     return the resulting string
     Parameters
     ----------
-    bootstyle : Union[str, Iterable]
-        A string of widget style keywords.
+    style_keywords : Union[str, Iterable]
+        A iterable or string of bootstyle keywords
 
     Returns
     -------
     str
         A string with all spaces and capitalization removed.
     """
-    if bootstyle:
-        return "".join(bootstyle).lower()
+    if style_keywords:
+        return "".join(style_keywords).lower()
     else:
         return ""
 
 
-def find_bootstyle_widget_class(style_keywords, widget_class) -> str:
+def find_widget_class(style_keywords, widget_class) -> str:
     """Extract and return the widget class.
     The matching style is based on a regex pattern match from widget
     types in the WIDGET_PATTERN constant. If not found, then the
@@ -213,7 +234,7 @@ def find_widget_color(style_keywords):
     return "" if not match else match.group(0) + "."
 
 
-def find_bootstyle_orient(style_keywords, widget_class, orient=None):
+def find_widget_orient(style_keywords, widget_class, orient=None):
     """Extract, modify, and return the widget style orientation.
     Returns a lowercased orientation appended with a "." if an
     orientation is present. This is required to build the style name
@@ -233,7 +254,7 @@ def find_bootstyle_orient(style_keywords, widget_class, orient=None):
         return ""
 
 
-def find_bootstyle_type(style_keywords):
+def find_widget_type(style_keywords):
     """Extract and return the style type from the style keywords.
     The matching style is based on a regex pattern match from style
     types in the STYLE_PATTERN constant. If found, a "." is appended to
@@ -253,15 +274,15 @@ def find_bootstyle_type(style_keywords):
     return "" if not match else match.group(0).title() + "."
 
 
-def create_ttk_style(bootstyle, widget_class, widget_orient=None):
+def build_ttkstyle_name(bootstyle, widget_class, widget_orient=None):
     """Parse the raw style keywords and build a real ttk style name
     that will be used when building the widget style. These style
     keywords trigger different settings and procedures in the
     theme_builder.
     """
-    style_keywords = normalize_style(bootstyle)
+    style_keywords = normalize_bootstyle(bootstyle)
     _color = find_widget_color(style_keywords)
-    _type = find_bootstyle_type(style_keywords)
-    _class = find_bootstyle_widget_class(style_keywords, widget_class)
-    _orient = find_bootstyle_orient(style_keywords, _class, widget_orient)
+    _type = find_widget_type(style_keywords)
+    _class = find_widget_class(style_keywords, widget_class)
+    _orient = find_widget_orient(style_keywords, _class, widget_orient)
     return f"{_color}{_type}{_orient}{_class}"

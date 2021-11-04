@@ -1,0 +1,27 @@
+x Width of progressbar is not consistent for striped and solid
+x insertcolor on text should be `selectfg`
+x combobox arrowcolor should be the same as focuscolor
+x inverse default label style is not working
+x fix scrollbar dark colors
+x combobox arrow too big
+x menubutton arrow too big
+x orientation does not work for 'h' or 'v'
+x scale dark theme should lighten on press & hover
+x refactor scale style
+
+- update meter with bootstyle api
+
+- Create method for updating non-ttk widgets when theme is changed
+    - bind an update method to each instance of a non-ttk widget
+    - update the widget based on the parameters of the bootstyle
+    - the callback will override any style setting defined in the 
+        bootstyle, but all others will remain unchanged.
+- Create method for creating ttk styles as needed, other than the default style.
+    - A lookup should be created to find the appropriate method for each bootstyle callback
+    - All create style methods should accept the bootstyle color as an argument
+    - Any style that contains an orientation will be built for both horizontal and vertical
+    - Build all styles in the default color during Style initialization
+    - When a bootstyle is called, check if the style exists, and create if not.
+    - When subclassing a style, check that the base bootstyle exists. If not,
+        create and then proceed to update the subclasses style.
+    

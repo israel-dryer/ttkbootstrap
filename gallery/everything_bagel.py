@@ -25,7 +25,8 @@ Namespaces are one honking great idea -- let's do more of those!"""
 
 root = tk.Tk()
 root.title("ttkbootstrap widget demo")
-style = Style("superhero")
+style = Style()
+style.theme_use('superhero')
 theme_names = style.theme_names()
 
 sb1 = ttk.Scrollbar(root, orient=tk.HORIZONTAL)
@@ -263,7 +264,23 @@ sb = ttk.Scrollbar(
     master=vframe,
     orient=tk.VERTICAL,
 )
-sb.set(0.3, 0.7)
+sb.set(0.1, 0.9)
+sb.pack(fill=tk.Y, padx=5, side=tk.LEFT, expand=tk.YES)
+
+sb = ttk.Scrollbar(
+    master=vframe,
+    orient=tk.VERTICAL,
+    bootstyle='info'
+)
+sb.set(0.1, 0.9)
+sb.pack(fill=tk.Y, padx=5, side=tk.LEFT, expand=tk.YES)
+
+sb = ttk.Scrollbar(
+    master=vframe,
+    orient=tk.VERTICAL,
+    bootstyle='primary'
+)
+sb.set(0.1, 0.9)
 sb.pack(fill=tk.Y, padx=5, side=tk.LEFT, expand=tk.YES)
 
 default.configure(command=lambda: lb.delete(1))

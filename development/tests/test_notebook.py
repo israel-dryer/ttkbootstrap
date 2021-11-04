@@ -14,11 +14,17 @@ def create_notebook_frame(widget_style, style):
     ttk.Separator(frame).pack(padx=5, pady=5, fill=tk.X)
 
     # default
-    nb = ttk.Notebook(frame, style=widget_style, height=50, width=100)
+    nb = ttk.Notebook(frame, height=50, width=100)
     nb.pack(padx=5, pady=5, fill=tk.BOTH)
     for i, _ in enumerate(style.colors):
         nb.add(ttk.Frame(nb), text=f'Tab {i+1}')
 
+    # other colors
+    for color in style.colors:
+        nb = ttk.Notebook(frame, bootstyle=color, height=50, width=100)
+        nb.pack(padx=5, pady=5, fill=tk.BOTH)
+        for i, _ in enumerate(style.colors):
+            nb.add(ttk.Frame(nb), text=f'Tab {i+1}')
     return frame
 
 if __name__ == '__main__':

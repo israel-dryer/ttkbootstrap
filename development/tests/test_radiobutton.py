@@ -8,19 +8,23 @@ LIGHT = 'flatly'
 def create_radiobutton_test(bootstyle, style, testname):
     frame = ttk.Frame(padding=10)
 
+    var = tk.Variable()
+
     # title
     title = ttk.Label(frame, text=testname, anchor=tk.CENTER)
     title.pack(padx=5, pady=2, fill=tk.BOTH)
     ttk.Separator(frame).pack(padx=5, pady=5, fill=tk.X)
 
     # default style
-    cb = ttk.Radiobutton(frame, text='default', bootstyle=bootstyle)
+    cb = ttk.Radiobutton(frame, text='default', bootstyle=bootstyle, value=0)
+    cb.configure(variable=var)
     cb.pack(padx=5, pady=5, fill=tk.BOTH)
     cb.invoke()
 
     # color styles
-    for color in style.theme.colors:
+    for i, color in enumerate(style.colors):
         cb = ttk.Radiobutton(frame, text=color, bootstyle=(color, bootstyle))
+        cb.configure(variable=var, value=i+1)
         cb.pack(padx=5, pady=5, fill=tk.BOTH)
         cb.invoke()
 
@@ -29,7 +33,9 @@ def create_radiobutton_test(bootstyle, style, testname):
         master=frame, 
         text=bootstyle, 
         bootstyle=bootstyle,
-        state=tk.DISABLED
+        state=tk.DISABLED,
+        variable=var,
+        value=i+1
     )
     cb.pack(padx=5, pady=5, fill=tk.BOTH)
     cb.invoke()
@@ -44,10 +50,6 @@ if __name__ == '__main__':
 
     test1 = create_radiobutton_test('', style, 'Radiobutton')
     test1.pack(side=tk.LEFT, fill=tk.BOTH)
-    test2 = create_radiobutton_test('round', style, 'Roundtoggle')
-    test2.pack(side=tk.LEFT, fill=tk.BOTH)
-    test3 = create_radiobutton_test('square', style, 'Squaretoggle')
-    test3.pack(side=tk.LEFT, fill=tk.BOTH)
     test4 = create_radiobutton_test('toolbutton', style, 'Toolbutton')
     test4.pack(side=tk.LEFT, fill=tk.BOTH)
     test5 = create_radiobutton_test('outline-toolbutton', style, 'Outline Toolbutton')

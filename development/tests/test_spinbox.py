@@ -17,7 +17,7 @@ def create_spinbox_test(bootstyle, style):
     # default
     spinbox = ttk.Spinbox(frame)
     spinbox.pack(padx=5, pady=5, fill=tk.BOTH)
-    spinbox.insert(tk.END, bootstyle)
+    spinbox.insert(tk.END, 'default')
 
     # color
     for color in style.theme.colors:
@@ -27,7 +27,7 @@ def create_spinbox_test(bootstyle, style):
 
     # disabled
     spinbox = ttk.Spinbox(frame)
-    spinbox.insert(tk.END, bootstyle)
+    spinbox.insert(tk.END, 'disabled')
     spinbox.configure(state=tk.DISABLED)
     spinbox.pack(padx=5, pady=5, fill=tk.BOTH)
 
