@@ -1,0 +1,16 @@
+DEFAULT = 'default'
+DEFAULT_FONT = 'Helvetica 10'
+DEFAULT_THEME = 'flatly'
+TTK_CLAM = 'clam'
+TTK_ALT = 'alt'
+TTK_DEFAULT = 'default'
+
+# bootstyle colors
+PRIMARY = 'primary'
+SECONDARY = 'secondary'
+SUCCESS = 'success'
+DANGER = 'danger'
+WARNING = 'warning'
+INFO = 'info'
+LIGHT = 'light'
+DARK = 'dark'

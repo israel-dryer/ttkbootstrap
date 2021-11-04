@@ -20,7 +20,7 @@ class Demo(Style):
         super().__init__()
         self.theme_use('lumen')
         self.root = self.master
-        self.root.geometry('500x695')
+        #self.root.geometry('500x695')
         self.root.protocol("WM_DELETE_WINDOW", self.quit)
         self.root.title('TTK Bootstrap')
         self.theme_name = tk.StringVar()
@@ -28,6 +28,7 @@ class Demo(Style):
         self.setup()
         self.root.eval('tk::PlaceWindow . center')
         self.root.bind("<Insert>", self.get_bounding_box)
+        self.root.resizable(False, False)
         self.run()
 
     def __repr__(self):
@@ -68,7 +69,9 @@ class Demo(Style):
         """
         tab = ttk.Frame(self.nb, padding=10)
         colors = [
-            'Primary', 'Secondary', 'Success', 'Info', 'Warning', 'Danger']
+            'Primary', 'Secondary', 'Success', 'Info', 'Warning', 'Danger',
+            'Light', 'Dark'
+        ]
 
         header_frame = ttk.Frame(tab, padding=10)
         header = ttk.Label(

@@ -45,7 +45,7 @@ def create_scale_frame(widget_style, style, orient):
 if __name__ == '__main__':
     # create visual widget style tests
     root = tk.Tk()
-    style = Style(theme=DARK)
+    style = Style(theme=LIGHT)
 
     test1 = create_scale_frame('', style, tk.HORIZONTAL)
     test1.pack(side=tk.LEFT, anchor=tk.N)

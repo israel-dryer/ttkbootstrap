@@ -1,0 +1,39 @@
+colors
+    primary
+    secondary
+    success
+    danger
+    warning
+    info
+    light
+    dark
+    muted
+    white
+
+solid-button
+    - hover is dark
+    - pressed is darkest
+    - has focus ring of foreground color
+    - the focus color pressed state should match button background
+    - disabled color is muted
+
+outline-button
+    - hover is standard colors
+    - there is not pressed effect
+    - has focus ring of foreground color
+    
+entry
+    - border color changes with focus only
+    - readonly background color is greyed, and text muted
+    - focus color
+        - border is lightened primary color
+        - lightcolor and darkcolor are primary color
+    - input background
+    - use inputbackground for dark themes, but bg for light themes
+    - use inputbackground for 'readonly' on light themes. for dark themes a different color.
+
+
+radio-button / check-button
+    - hover and pressed are same, darker
+    - no hover text effect
+    - disabled color is muted

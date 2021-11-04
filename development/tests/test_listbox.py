@@ -13,5 +13,6 @@ if __name__ == '__main__':
     lb = tk.Listbox(root)
     lb.pack(padx=10, pady=10)
     lb.insert('end', *list(range(5)))
+    print(lb.exists)
 
     root.mainloop()

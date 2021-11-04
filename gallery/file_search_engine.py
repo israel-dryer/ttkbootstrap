@@ -19,7 +19,7 @@ class Application(tk.Tk):
     def __init__(self):
         super().__init__()
         self.title('File Search Engine')
-        self.style = Style('journal')
+        self.style = Style('flatly')
         self.search = SearchEngine(self, padding=10)
         self.search.pack(fill=tk.BOTH, expand=tk.YES)
 

@@ -21,13 +21,13 @@ def create_sizegrip_style(bootstyle, style):
     # default
     ttk.Label(frame, text=bootstyle).pack(fill=tk.X)
     sg = ttk.Sizegrip(frame)
-    sg.pack(padx=5, pady=5, fill=tk.BOTH)
+    sg.pack(padx=5, pady=5, fill=tk.BOTH, expand=True)
 
     # colored
     for color in style.colors:
         ttk.Label(frame, text=color).pack(fill=tk.X)
         sg = ttk.Sizegrip(frame, bootstyle=(color, bootstyle))
-        sg.pack(padx=5, pady=5, fill=tk.BOTH)
+        sg.pack(padx=5, pady=5, fill=tk.BOTH, expand=True)
 
     return frame
 
@@ -37,6 +37,8 @@ if __name__ == '__main__':
     root = tk.Tk()
     style = Style(theme=LIGHT)
 
-    create_sizegrip_style('', style).pack(side=tk.LEFT)
+    create_sizegrip_style('', style).pack(
+        side=tk.LEFT, fill=tk.BOTH, expand=True
+    )
 
     root.mainloop()

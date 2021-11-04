@@ -5,7 +5,7 @@ from ttkbootstrap import Style
 DARK = 'superhero'
 LIGHT = 'flatly'
 
-def create_scrollbar_frame(bootstyle, style, orient):
+def create_scrollbar_frame(style, orient):
     frame = ttk.Frame(root, padding=5)
     
     # title
@@ -14,7 +14,7 @@ def create_scrollbar_frame(bootstyle, style, orient):
     ttk.Separator(frame).pack(padx=5, pady=5, fill=tk.X)
 
     # default
-    sb = ttk.Scrollbar(frame, bootstyle=bootstyle, orient=orient)
+    sb = ttk.Scrollbar(frame, orient=orient)
     sb.set(0.1, 0.3)
     if orient == tk.HORIZONTAL:
         sb.pack(padx=5, pady=5, fill=tk.X)
@@ -37,20 +37,18 @@ def create_scrollbar_frame(bootstyle, style, orient):
 if __name__ == '__main__':
     # create visual widget style tests
     root = tk.Tk()
-    style = Style(theme=LIGHT)
+    style = Style(theme=DARK)
 
     test1 = create_scrollbar_frame(
-        bootstyle='', 
         style=style, 
         orient=tk.HORIZONTAL
     )
     test1.pack(side=tk.LEFT, anchor=tk.N, fill=tk.BOTH, expand=tk.YES)
     
-    # test2 = create_scrollbar_frame(
-    #     widget_style='',
-    #     style=style, 
-    #     orient=tk.VERTICAL
-    # )
-    # test2.pack(side=tk.LEFT, anchor=tk.N, fill=tk.BOTH, expand=tk.YES)
+    test2 = create_scrollbar_frame(
+        style=style, 
+        orient=tk.VERTICAL
+    )
+    test2.pack(side=tk.LEFT, anchor=tk.N, fill=tk.BOTH, expand=tk.YES)
 
     root.mainloop()

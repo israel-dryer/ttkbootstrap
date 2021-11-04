@@ -1,4 +1,4 @@
-DEFINED_THEMES = {
+STANDARD_THEMES = {
     "cosmo": {
         "type": "light",
         "colors": {
@@ -250,13 +250,13 @@ DEFINED_THEMES = {
             "danger": "#d95092",
             "light": "#ecf0f1",
             "dark": "#7b8a8b",
-            "bg": "#002b36",
+            "bg": "#002B36",
             "fg": "#ffffff",
-            "selectbg": "#94a2a4",
+            "selectbg": "#627378",
             "selectfg": "#ffffff",
             "border": "#00252e",
-            "inputfg": "#46545A",
-            "inputbg": "#a9bdbd"
+            "inputfg": "#A9BDBD",
+            "inputbg": "#073642"
         },
     },
     "cyborg": {
