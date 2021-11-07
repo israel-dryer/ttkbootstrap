@@ -284,13 +284,8 @@ class StyleBuilderTTK:
         self.create_theme()
 
     @staticmethod
-    def get_create_style_method(widget_type, widget_class):
-        _type = widget_type.lower().replace('.', '').replace('_', '')
-        _class = widget_class.lower().replace('.T', '')
-        if _type:
-            _type = '_' + _type
-        func_name = f'create{_type}_{_class}_style'
-        func = getattr(StyleBuilderTTK, func_name)
+    def name_to_method(method_name):
+        func = getattr(StyleBuilderTTK, method_name)
         return func        
 
     def create_theme(self):
@@ -336,8 +331,8 @@ class StyleBuilderTTK:
 
         self.create_checkbutton_style()
         self.create_radiobutton_style()
-        self.create_round_toggle_style()
-        self.create_square_toggle_style()
+        self.create_roundtoggle_toolbutton_style()
+        self.create_squaretoggle_toolbutton_style()
 
         # other widgets
         self.create_label_style()
@@ -455,6 +450,7 @@ class StyleBuilderTTK:
                                 ("Combobox.textarea", {
                                     "sticky": tk.NSEW})]})]})]
         )
+        self.style.register_ttkstyle(ttkstyle)
 
     def create_separator_style(self, colorname=DEFAULT):
         """Create style configuration for ttk separator:
@@ -503,6 +499,8 @@ class StyleBuilderTTK:
             v_ttkstyle, 
             [(f'{v_element}.separator', {'sticky': tk.NS})]
         )
+        self.style.register_ttkstyle(h_ttkstyle)
+        self.style.register_ttkstyle(v_ttkstyle)
 
     def create_striped_progressbar_assets(self, colorname=DEFAULT):
         """Create the striped progressbar image and return as a
@@ -620,6 +618,8 @@ class StyleBuilderTTK:
             troughcolor=self.colors.inputbg,
             thickness=16
         )
+        self.style.register_ttkstyle(h_ttkstyle)
+        self.style.register_ttkstyle(v_ttkstyle)
 
     def create_progressbar_style(self, colorname=DEFAULT):
         """Create style configuration for ttk progressbar"""
@@ -661,6 +661,11 @@ class StyleBuilderTTK:
         self.style.element_create(f'{v_element}.trough', 'from', TTK_CLAM)
         self.style.element_create(f'{v_element}.pbar', 'from', TTK_DEFAULT)
         self.style.configure(v_ttkstyle, background=background)
+
+        # register ttkstyles
+        self.style.register_ttkstyle(h_ttkstyle)
+        self.style.register_ttkstyle(v_ttkstyle)
+
 
     def create_scale_assets(self, color_name=DEFAULT, size=16):
         """Create a circle slider image based on given size and color;
@@ -767,15 +772,13 @@ class StyleBuilderTTK:
         # ( normal, pressed, hover, disabled, htrack, vtrack )
         images = self.create_scale_assets(colorname)
         
-        # slider element
-        slider_element = f'{colorname}.Scale.slider'
-        self.style.element_create(slider_element, 'image', images[0],
+        # horizontal scale
+        h_element = h_ttkstyle.replace('.TS', '.S')
+        self.style.element_create(f'{h_element}.slider', 'image', images[0],
             ('disabled', images[3]),
             ('pressed', images[1]),
             ('hover', images[2])
         )
-        # horizontal scale
-        h_element = h_ttkstyle.replace('.TS', '.S')
         self.style.element_create(f'{h_element}.track', 'image', images[4])
         self.style.layout(
             h_ttkstyle,
@@ -785,13 +788,18 @@ class StyleBuilderTTK:
                     "sticky": tk.NSEW,
                     "children": [
                         (f'{h_element}.track', {"sticky": tk.EW}),
-                        (slider_element, {"side": tk.LEFT, "sticky": ""})
+                        (f'{h_element}.slider', {"side": tk.LEFT, "sticky": ""})
                     ]}
                 )
             ]
         )
         # vertical scale
         v_element = v_ttkstyle.replace('.TS', '.S')
+        self.style.element_create(f'{v_element}.slider', 'image', images[0],
+            ('disabled', images[3]),
+            ('pressed', images[1]),
+            ('hover', images[2])
+        )
         self.style.element_create(f'{v_element}.track', 'image', images[5])
         self.style.layout(
             v_ttkstyle,
@@ -801,11 +809,15 @@ class StyleBuilderTTK:
                     "sticky": tk.NSEW,
                     "children": [
                         (f'{v_element}.track', {"sticky": tk.NS}),
-                        (slider_element, {"side": tk.TOP, "sticky": ""})
+                        (f'{v_element}.slider', {"side": tk.TOP, "sticky": ""})
                     ]}
                 )
             ]   
         )
+        # register ttkstyles
+        self.style.register_ttkstyle(h_ttkstyle)
+        self.style.register_ttkstyle(v_ttkstyle)
+
 
     def create_floodgauge_style(self, colorname=DEFAULT):
         """Create a style configuration for the *ttk.Progressbar* that makes 
@@ -878,6 +890,9 @@ class StyleBuilderTTK:
             anchor=tk.CENTER,
             font=FLOOD_FONT,            
         )
+        # register ttkstyles
+        self.style.register_ttkstyle(h_ttkstyle)
+        self.style.register_ttkstyle(v_ttkstyle)
 
     def create_arrow_assets(self, arrowcolor, pressed, active):
         """Create horizontal and vertical arrow assets to be used for
@@ -1031,6 +1046,10 @@ class StyleBuilderTTK:
                 })
             ]
         )
+        # register ttkstyles
+        self.style.register_ttkstyle(h_ttkstyle)
+        self.style.register_ttkstyle(v_ttkstyle)
+
 
     def create_spinbox_style(self, colorname=DEFAULT):
         """Create style configuration for ttk spinbox: *ttk.Spinbox*
@@ -1115,6 +1134,8 @@ class StyleBuilderTTK:
                 ("pressed !disabled", focuscolor),
                 ("hover !disabled", self.colors.inputfg)],
         )
+        # register ttkstyles
+        self.style.register_ttkstyle(ttkstyle)
 
     def create_treeview_style(self, colorname=DEFAULT):
         """Create style configuration for ttk treeview"""
@@ -1211,6 +1232,10 @@ class StyleBuilderTTK:
                 )
             ]
         )
+        # register ttkstyles
+        self.style.register_ttkstyle(body_style)
+        self.style.register_ttkstyle(header_style)
+        self.style.register_ttkstyle(item_style)
 
     def create_frame_style(self, colorname=DEFAULT):
         """Create style configuration for ttk frame"""
@@ -1224,6 +1249,9 @@ class StyleBuilderTTK:
             background = self.colors.get(colorname)
 
         self.style.configure(ttkstyle, background=background)
+        
+        # register style
+        self.style.register_ttkstyle(ttkstyle)
 
     def create_button_style(self, colorname=DEFAULT):
         """Apply a solid color style to ttk button"""
@@ -1282,6 +1310,8 @@ class StyleBuilderTTK:
                 ("pressed !disabled", pressed),
                 ("hover !disabled", hover)]
         )
+        # register ttkstyle
+        self.style.register_ttkstyle(ttkstyle)
 
     def create_outline_button_style(self, colorname=DEFAULT):
         """Apply an outline style to ttk button. This button has a 
@@ -1351,6 +1381,8 @@ class StyleBuilderTTK:
                 ("pressed !disabled", pressed),
                 ("hover !disabled", hover)],
         )
+        # register ttkstyle
+        self.style.register_ttkstyle(ttkstyle)
 
     def create_link_button_style(self, colorname=DEFAULT):
         """Apply a solid color style to ttk button"""
@@ -1414,6 +1446,8 @@ class StyleBuilderTTK:
                 ("pressed !disabled", self.colors.bg),
                 ("hover !disabled", self.colors.bg)]
         )
+        # register ttkstyle
+        self.style.register_ttkstyle(ttkstyle)
 
     def create_square_toggle_assets(self, colorname=DEFAULT):
         """Create a set of images for the square toggle button and 
@@ -1573,7 +1607,7 @@ class StyleBuilderTTK:
 
         return off_name, on_name, disabled_name
 
-    def create_round_toggle_style(self, colorname=DEFAULT):
+    def create_roundtoggle_toolbutton_style(self, colorname=DEFAULT):
         """Apply a rounded toggle switch style to ttk widgets that accept 
         the toolbutton style (for example, a checkbutton: *ttk.Checkbutton*)
         """
@@ -1622,8 +1656,10 @@ class StyleBuilderTTK:
                                 ("Toolbutton.label", {"side": tk.LEFT})]})]})
             ]
         )
+        # register ttkstyle
+        self.style.register_ttkstyle(ttkstyle)
 
-    def create_square_toggle_style(self, colorname=DEFAULT):
+    def create_squaretoggle_toolbutton_style(self, colorname=DEFAULT):
         """Apply a square toggle switch style to ttk widgets that 
         accept the toolbutton style
         """
@@ -1678,6 +1714,8 @@ class StyleBuilderTTK:
                 ('!selected', self.colors.bg)
             ]
         )
+        # register ttkstyle
+        self.style.register_ttkstyle(ttkstyle)
 
     def create_toolbutton_style(self, colorname=DEFAULT):
         """Apply a solid color style to ttk widgets that use the 
@@ -1741,6 +1779,8 @@ class StyleBuilderTTK:
                 ("selected !disabled", toggle_on),
                 ("hover !disabled", toggle_on)],
         )
+        # register ttkstyle
+        self.style.register_ttkstyle(ttkstyle)
 
     def create_outline_toolbutton_style(self, colorname=DEFAULT):
         """Apply an outline style to ttk widgets that use the 
@@ -1802,6 +1842,8 @@ class StyleBuilderTTK:
                 ("selected !disabled", foreground),
                 ("hover !disabled", foreground)],
         )
+        # register ttkstyle
+        self.style.register_ttkstyle(ttkstyle)
 
     def create_entry_style(self, colorname=DEFAULT):
         """Create style configuration for ttk entry"""
@@ -1845,6 +1887,8 @@ class StyleBuilderTTK:
                 ("focus !disabled", focuscolor),
                 ("hover !disabled", focuscolor)],
         )
+        # register ttkstyle
+        self.style.register_ttkstyle(ttkstyle)
 
     def create_radiobutton_assets(self, colorname=DEFAULT):
         """Create radiobutton assets
@@ -1960,7 +2004,8 @@ class StyleBuilderTTK:
                 )
             ]
         )
-
+        # register ttkstyle
+        self.style.register_ttkstyle(ttkstyle)
 
     def create_calendar_style(self, colorname=DEFAULT):
         """Create style configuration for the date chooser"""
@@ -2033,6 +2078,9 @@ class StyleBuilderTTK:
         )
         self.style.configure(chevron_style, font='helvetica 14')
 
+        # register ttkstyle
+        self.style.register_ttkstyle(ttkstyle)
+        self.style.register_ttkstyle(chevron_style)        
 
     def create_meter_style(self, colorname=DEFAULT):
         """Create style configuration for the meter"""
@@ -2065,6 +2113,8 @@ class StyleBuilderTTK:
                 })
             ]
         )
+        # register ttkstyle
+        self.style.register_ttkstyle(ttkstyle)        
 
     def create_label_style(self, colorname=DEFAULT):
         """Create style configuration for ttk label"""
@@ -2086,6 +2136,8 @@ class StyleBuilderTTK:
             foreground=foreground, 
             background=background
         )
+        # register ttkstyle
+        self.style.register_ttkstyle(ttkstyle)             
 
     def create_inverse_label_style(self, colorname=DEFAULT):
         """Create inverse style configuration for ttk label"""
@@ -2093,19 +2145,21 @@ class StyleBuilderTTK:
         STYLE_INVERSE = 'Inverse.TLabel'
 
         if colorname == DEFAULT:
-            inverse_ttkstyle = STYLE_INVERSE
+            ttkstyle = STYLE_INVERSE
             background = self.colors.fg
             foreground = self.colors.bg
         else:
-            inverse_ttkstyle = f'{colorname}.{STYLE_INVERSE}'
+            ttkstyle = f'{colorname}.{STYLE_INVERSE}'
             foreground = self.colors.selectfg
             background = self.colors.get(colorname)
 
         self.style.configure(
-            inverse_ttkstyle,
+            ttkstyle,
             foreground=foreground,
             background=background
         )
+        # register ttkstyle
+        self.style.register_ttkstyle(ttkstyle)             
 
     def create_labelframe_style(self, colorname=DEFAULT):
         """Create style configuration for ttk labelframe"""
@@ -2141,6 +2195,8 @@ class StyleBuilderTTK:
             darkcolor=background,
             background=background
         )
+        # register ttkstyle
+        self.style.register_ttkstyle(ttkstyle)             
 
     def create_checkbutton_style(self, colorname=DEFAULT):
         """Create style configuration for ttk checkbutton"""
@@ -2155,15 +2211,14 @@ class StyleBuilderTTK:
         if colorname == DEFAULT:
             colorname = PRIMARY
             ttkstyle = STYLE
-            indicator_element = 'Checkbutton.indicator'
         else:
             ttkstyle = f'{colorname}.TCheckbutton'
-            indicator_element = f'{colorname}.Checkbutton.indicator'
 
         # ( off, on, disabled )
         images = self.create_checkbutton_assets(colorname)
 
-        self.style.element_create(indicator_element, 'image', images[1],
+        element = ttkstyle.replace('.TC', '.C')
+        self.style.element_create(f'{element}.indicator', 'image', images[1],
             ('disabled', images[2]),
             ('!selected', images[0]),
             width=20, border=4, sticky=tk.W
@@ -2174,7 +2229,7 @@ class StyleBuilderTTK:
             ttkstyle, 
             [
                 ("Checkbutton.padding", { "children": [
-                    (indicator_element, {"side": tk.LEFT, "sticky": ""}),
+                    (f'{element}.indicator', {"side": tk.LEFT, "sticky": ""}),
                     ("Checkbutton.focus", {"children": [
                         ("Checkbutton.label", {"sticky": tk.NSEW})],
                             "side": tk.LEFT, "sticky": ""})],
@@ -2182,6 +2237,8 @@ class StyleBuilderTTK:
                 )
             ]
         )
+        # register ttkstyle
+        self.style.register_ttkstyle(ttkstyle)             
 
     def create_checkbutton_assets(self, colorname=DEFAULT):
         """Create radiobutton assets
@@ -2330,6 +2387,8 @@ class StyleBuilderTTK:
                 ("pressed !disabled", pressed),
                 ("hover !disabled", hover)],
         )
+        # register ttkstyle
+        self.style.register_ttkstyle(ttkstyle)             
 
     def create_outline_menubutton_style(self, colorname=DEFAULT):
         """Apply and outline style to ttk menubutton"""
@@ -2386,6 +2445,8 @@ class StyleBuilderTTK:
                 ("pressed", self.colors.selectfg),
                 ("hover", self.colors.selectfg)],
         )
+        # register ttkstyle
+        self.style.register_ttkstyle(ttkstyle)             
 
     def create_notebook_style(self, colorname=DEFAULT):
         """Create style configuration for ttk notebook"""
@@ -2443,11 +2504,14 @@ class StyleBuilderTTK:
                 ('selected', foreground),
                 ('!selected', selectfg)]
         )
+        # register ttkstyle
+        self.style.register_ttkstyle(ttkstyle)     
 
     def create_panedwindow_style(self, colorname=DEFAULT):
         """Create style configuration for ttk paned window"""
 
-        PANE_STYLE = 'TPanedwindow'
+        H_STYLE = 'Horizontal.TPanedwindow'
+        V_STYLE = 'Vertical.TPanedwindow'
 
         if self.is_light_theme:
             default_color = self.colors.border
@@ -2456,14 +2520,20 @@ class StyleBuilderTTK:
 
         if colorname == DEFAULT:
             sashcolor = default_color
-            ttkstyle = PANE_STYLE
+            h_ttkstyle = H_STYLE
+            v_ttkstyle = V_STYLE
         else:
             sashcolor = self.colors.get(colorname)
-            ttkstyle = f'{colorname}.{PANE_STYLE}'
+            h_ttkstyle = f'{colorname}.{H_STYLE}'
+            v_ttkstyle = f'{colorname}.{V_STYLE}'
 
         self.style.configure('Sash', gripcount=0, sashthickness=3)
-        self.style.configure(ttkstyle, background=sashcolor)
+        self.style.configure(h_ttkstyle, background=sashcolor)
+        self.style.configure(v_ttkstyle, background=sashcolor)
 
+        # register ttkstyle
+        self.style.register_ttkstyle(h_ttkstyle)
+        self.style.register_ttkstyle(v_ttkstyle)
 
     def create_sizegrip_assets(self, color):
         """Create assets for size grip
@@ -2520,3 +2590,5 @@ class StyleBuilderTTK:
                 {'side': tk.BOTTOM, 'sticky': tk.SE})
             ]
         )
+        # register ttkstyle
+        self.style.register_ttkstyle(ttkstyle)             
