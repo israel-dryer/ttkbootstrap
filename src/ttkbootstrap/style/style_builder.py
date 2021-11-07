@@ -293,7 +293,7 @@ class StyleBuilderTTK:
         style methods.
         """
         self.style.theme_create(self.theme.name, TTK_CLAM)
-        self.style.theme_use(self.theme.name)
+        Style.theme_use(self.style, self.theme.name)
         self.update_ttk_theme_settings()
 
     def update_ttk_theme_settings(self):
@@ -331,8 +331,9 @@ class StyleBuilderTTK:
 
         self.create_checkbutton_style()
         self.create_radiobutton_style()
-        self.create_roundtoggle_toolbutton_style()
-        self.create_squaretoggle_toolbutton_style()
+        self.create_toggle_style()
+        self.create_round_toggle_style()
+        self.create_square_toggle_style()
 
         # other widgets
         self.create_label_style()
@@ -1525,6 +1526,60 @@ class StyleBuilderTTK:
         
         return off_name, on_name, disabled_name
 
+    def create_toggle_style(self, colorname=DEFAULT):
+        """Create a toggle style. This method is the same as the
+        `create_round_toggle_style` method, as round toggle is the
+        default toggle style.
+        """
+        self.create_round_toggle_style(colorname)
+        # STYLE = 'Toggle'
+
+        # if self.is_light_theme:
+        #     disabled_fg = Colors.update_hsv(self.colors.inputbg, vd=-0.2)
+        # else:
+        #     disabled_fg = self.colors.inputbg
+
+        # if colorname == DEFAULT:
+        #     ttkstyle = STYLE
+        #     colorname = PRIMARY
+        # else:
+        #     ttkstyle = f"{colorname}.{STYLE}"
+
+        # # ( off, on, disabled )
+        # images = self.create_round_toggle_assets(colorname)
+
+        # self.style.element_create(
+        #     f'{ttkstyle}.indicator', 'image', images[1],
+        #     ('disabled', images[2]),
+        #     ('!selected', images[0]),
+        #     width=28, border=4, sticky=tk.W
+        # )
+        # self.style.configure(
+        #     ttkstyle,
+        #     relief=tk.FLAT,
+        #     borderwidth=0,
+        #     padding=0,
+        #     foreground=self.colors.fg,
+        #     background=self.colors.bg
+        # )
+        # self.style.map(ttkstyle, 
+        #     foreground=[('disabled', disabled_fg)],
+        #     background=[('selected', self.colors.bg)]
+        # )
+        # self.style.layout(
+        #     ttkstyle,
+        #     [
+        #         ("Toolbutton.border", {
+        #             "sticky": tk.NSEW, "children": [
+        #                 ("Toolbutton.padding", {
+        #                     "sticky": tk.NSEW, "children": [
+        #                         (f"{ttkstyle}.indicator", {"side": tk.LEFT}),
+        #                         ("Toolbutton.label", {"side": tk.LEFT})]})]})
+        #     ]
+        # )
+        # # register ttkstyle
+        # self.style.register_ttkstyle(ttkstyle)     
+
     def create_round_toggle_assets(self, colorname=DEFAULT):
         """Create a set of images for the rounded toggle button and 
         return as ``PhotoImage``
@@ -1607,11 +1662,11 @@ class StyleBuilderTTK:
 
         return off_name, on_name, disabled_name
 
-    def create_roundtoggle_toolbutton_style(self, colorname=DEFAULT):
+    def create_round_toggle_style(self, colorname=DEFAULT):
         """Apply a rounded toggle switch style to ttk widgets that accept 
         the toolbutton style (for example, a checkbutton: *ttk.Checkbutton*)
         """
-        STYLE = 'Roundtoggle.Toolbutton'
+        STYLE = 'Round.Toggle'
 
         if self.is_light_theme:
             disabled_fg = Colors.update_hsv(self.colors.inputbg, vd=-0.2)
@@ -1627,12 +1682,20 @@ class StyleBuilderTTK:
         # ( off, on, disabled )
         images = self.create_round_toggle_assets(colorname)
 
-        self.style.element_create(
-            f'{ttkstyle}.indicator', 'image', images[1],
-            ('disabled', images[2]),
-            ('!selected', images[0]),
-            width=28, border=4, sticky=tk.W
-        )
+        try:
+            self.style.element_create(
+                f'{ttkstyle}.indicator', 'image', images[1],
+                ('disabled', images[2]),
+                ('!selected', images[0]),
+                width=28, border=4, sticky=tk.W
+            )
+        except:
+            """This method is used as the default Toggle style, so it
+            is neccessary to catch Tcl Errors when it tries to create
+            and element that was already created by the Toggle or 
+            Round Toggle style"""
+            pass
+        
         self.style.configure(
             ttkstyle,
             relief=tk.FLAT,
@@ -1659,12 +1722,12 @@ class StyleBuilderTTK:
         # register ttkstyle
         self.style.register_ttkstyle(ttkstyle)
 
-    def create_squaretoggle_toolbutton_style(self, colorname=DEFAULT):
+    def create_square_toggle_style(self, colorname=DEFAULT):
         """Apply a square toggle switch style to ttk widgets that 
         accept the toolbutton style
         """
         
-        STYLE = 'Squaretoggle.Toolbutton'
+        STYLE = 'Square.Toggle'
 
         if self.is_light_theme:
             disabled_fg = Colors.update_hsv(self.colors.inputbg, vd=-0.2)
