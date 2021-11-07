@@ -21,9 +21,8 @@ TYPES = [
     'link',
     'inverse',
     'round',
+    'square',
     'striped',
-    'squaretoggle',
-    'roundtoggle',
     'focus',
     'input'
 ]

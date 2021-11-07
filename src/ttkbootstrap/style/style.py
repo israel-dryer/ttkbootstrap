@@ -3,6 +3,7 @@ from ttkbootstrap.constants import *
 from ttkbootstrap.themes.standard import STANDARD_THEMES
 from ttkbootstrap.themes.user import USER_THEMES
 from ttkbootstrap.style.style_builder import StyleBuilderTTK, ThemeDefinition
+from ttkbootstrap.style.publisher import Publisher, Channel
 
 
 class Style(ttk.Style):
@@ -169,6 +170,7 @@ class Style(ttk.Style):
         if themename in super().theme_names():
             # the theme has already been created in tkinter
             super().theme_use(themename)
+            Publisher.publish_message(Channel.TTK)
             if not self.theme:
                 return
             return
@@ -176,6 +178,7 @@ class Style(ttk.Style):
         # theme has not yet been created
         self._theme_objects[themename] = StyleBuilderTTK(self, self.theme)
         self._theme_objects[themename].styler_tk.style_tkinter_widgets()
+        Publisher.publish_message(Channel.TTK)
         return
 
     def exists(self, ttkstyle: str):
