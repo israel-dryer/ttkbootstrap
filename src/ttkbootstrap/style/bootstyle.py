@@ -2,60 +2,9 @@ import tkinter as tk
 from tkinter import ttk
 from ttkbootstrap.constants import DEFAULT
 from ttkbootstrap.style.style import Style
-import re
-
-WIDGET_LOOKUP = {
-    "button": "TButton",
-    "btn": "TButton",
-    "progressbar": "TProgressbar",
-    "progress": "TProgressbar",
-    "check": "TCheckbutton",
-    "checkbutton": "TCheckbutton",
-    "checkbtn": "TCheckbutton",
-    "combo": "TCombobox",
-    "combobox": "TCombobox",
-    "entry": "TEntry",
-    "frame": "TFrame",
-    "inputframe": "Input.TFrame",
-    "floodgauge": "TFloodgauge",
-    "gauge": "TFloodgauge",
-    "grip": "TSizegrip",
-    "lbl": "TLabel",
-    "labelframe": "TLabelframe",
-    "lblframe": "TLabelframe",
-    "lblfrm": "TLabelframe",
-    "label": "TLabel",
-    "menubutton": "TMenubutton",
-    "notebook": "TNotebook",
-    "panedwindow": "TPanedwindow",
-    "radio": "TRadiobutton",
-    "radiobutton": "TRadiobutton",
-    "radiobtn": "TRadiobutton",
-    "round": "Roundtoggle.Toolbutton",
-    "roundtoggle": "Roundtoggle.Toolbutton",
-    "roundedtoggle": "Roundtoggle.Toolbutton",
-    "separator": "TSeparator",
-    "scrollbar": "TScrollbar",
-    "sizegrip": "TSizegrip",
-    "spinbox": "TSpinbox",
-    "scale": "TScale",
-    "slider": "TScale",
-    "square": "Squaretoggle.Toolbutton",
-    "squaretoggle": "Squaretoggle.Toolbutton",
-    "squaredtoggle": "Squaretoggle.Toolbutton",
-    "toggle": "Toggle.Toolbutton",
-    "toolbutton": "Toolbutton",
-    "tool": "Toolbutton",
-    "tree": "Treeview",
-    "treeview": "Treeview",
-}
-
-WIDGET_PATTERN = "|".join(WIDGET_LOOKUP.keys())
-COLOR_PATTERN = re.compile(r"primary|secondary|success|info|warning|danger|light|dark")
-ORIENT_PATTERN = re.compile(r"horizontal|vertical")
-STYLE_PATTERN = re.compile(
-    r"outline|link|inverse|rounded|striped|squared|focusframe"
-)
+from ttkbootstrap.style.style_builder import StyleBuilderTTK
+import ttkbootstrap.style.utility as util
+from ttkbootstrap.style.publisher import Publisher, Channel
 
 TTK_WIDGETS = (
     ttk.Button,
@@ -78,211 +27,127 @@ TTK_WIDGETS = (
     ttk.Treeview
 )
 
-
-def __setitem(widget, key, value):
-    widget.configure(**{key: value})
-
-
-def __getitem(widget, key):
-    if 'bootstyle' in key:
-        return getattr(widget, '_bootstyle')
-    else:
-        return widget.tk.call(widget.name, 'configure', '-'+key)
+TK_WIDGETS = (
+    tk.Button,
+    tk.Frame,
+    tk.Label,
+    tk.Listbox,
+    tk.Text,
+    tk.OptionMenu
+)
 
 
-def inject_bootstyle_keyword_api():
-    """Inject the style keyword API into the ttk widget constructor
-    and widget configure method
+def override_ttk_widget_constructor(func):
+    """Override widget constructors with bootstyle api options"""
+    
+    def __init__wrapper(self, *args, **kwargs):
+        
+        ttkstyle = get_ttkstyle_name(self, **kwargs)
+        if ttkstyle:
+            kwargs.update(style=ttkstyle)
+
+        if 'bootstyle' in kwargs:
+            kwargs.pop('bootstyle')
+
+        # instantiate the widget
+        func(self, *args, **kwargs)
+        
+        # create style if not existing
+        if ttkstyle is not None:
+            update_ttk_widget_style(self, ttkstyle)
+
+        # subscriber to <<ThemeChanged>> events
+        Publisher.subscribe(self._name, print, Channel.TTK)
+
+    return __init__wrapper
+
+
+def override_ttk_widget_configure(func):
+
+    def configure_wrapper(self, cnf=None, **kwargs):
+        # get configuration
+        if cnf == 'bootstyle':
+            return func(self, 'style')
+        elif cnf is not None:
+            return func(self, cnf)
+
+        # set configuration
+        ttkstyle = get_ttkstyle_name(self, **kwargs)
+        if ttkstyle:
+            kwargs.update(style=ttkstyle)
+            update_ttk_widget_style(self, ttkstyle)        
+            
+        if 'bootstyle' in kwargs:
+            kwargs.pop('bootstyle')
+
+        func(self, **kwargs)
+
+    return configure_wrapper
+
+
+def get_ttkstyle_name(widget, **kwargs):
+    ttkstyle = None
+    bootstyle = None
+    
+    if 'bootstyle' in kwargs:
+        bootstyle = kwargs.pop('bootstyle')
+        bootstyle = util.normalize_bootstyle(bootstyle, widget)
+
+    if 'style' in kwargs:
+        ttkstyle = kwargs.get('style')
+
+    # use bootstyle ONLY if style is NOT provided directly
+    if bootstyle and 'style' not in kwargs:
+        ttkstyle = util.ttkstyle_name_from_string(bootstyle)
+
+    return ttkstyle
+
+
+def update_ttk_widget_style(widget: ttk.Widget, style_string: str=None):
+    """Update the ttk style or create if not existing.
+    
+    Parameters
+    ----------
+    widget: ttk.Widget
+        The widget instance being updated.
+    
+    style_string : str
+        The style string to evalulate. May be the `style`, `ttkstyle`
+        or `bootstyle` argument depending on the context and scenario.
     """
+    style: Style = Style.get_instance()
+    
+    # get widget style if not provided
+    if style_string is None:
+        style_string = widget.cget('style')
 
-    def bootstyle_wrapper(widget, func):
+    # do nothing if the style has not been set
+    if not style_string:
+        return
 
-        # create private variable for bootstyle
-        setattr(widget, '_bootstyle', '')
+    # build style if not existing
+    ttkstyle = util.ttkstyle_name_from_string(style_string)
+    if not style.exists(ttkstyle):
+        widget_color = util.widget_color_from_string(ttkstyle)
+        method_name = util.ttkstyle_method_name_from_string(ttkstyle)
+        builder: StyleBuilderTTK = style.get_builder()
+        builder_method = builder.name_to_method(method_name)
+        builder_method(builder, widget_color)
 
-        def inner(*args, **kwargs):
-            # use style if exists; remove bootstyle in this case
-            if 'style' in kwargs:
-                if 'bootstyle' in kwargs:
-                    kwargs.pop('bootstyle')
-                func(*args, **kwargs)
 
-            # parse the bootstyle keywords to create a ttk style
-            elif 'bootstyle' in kwargs:
-
-                # save a copy of the bootstyle keywords
-                bootstyle = normalize_bootstyle(kwargs.pop('bootstyle'))
-                widget._bootstyle = bootstyle
-
-                # get widget class, orient, and type
-                _class = widget.__name__
-                _orient = kwargs.get('orient')
-                _type = find_widget_type(bootstyle)
-                _color = find_widget_color(bootstyle).replace('.', '')
-
-                # standardize the orientation naming convention
-                if _orient == 'h':
-                    _orient = tk.HORIZONTAL
-                elif _orient == 'v':
-                    _orient = tk.VERTICAL
-
-                # create and set the ttk style
-                ttkstyle = build_ttkstyle_name(
-                    bootstyle=widget._bootstyle,
-                    widget_class=_class,
-                    widget_orient=_orient
-                )
-                if not ttkstyle_exists(ttkstyle):
-                    builder = Style.get_builder()
-                    builder_func = builder.get_create_style_method(_type, _class)
-                    builder_func(builder, _color or DEFAULT)
-                func(*args, style=ttkstyle, **kwargs)
-            else:
-                # neither `style` or `bootstyle` arguments are present
-                # pass through to the enclosed method
-                func(*args, **kwargs)
-        return inner
-
+def setup_ttkbootstap_api():
     for widget in TTK_WIDGETS:
-        widget.__init__ = bootstyle_wrapper(widget, widget.__init__)
-        widget.configure = bootstyle_wrapper(widget, widget.configure)
-        widget.config = widget.configure
-        # widget.__setitem__ = __setitem
-        # widget.__getitem__ = __getitem
-
-def check_widget_style(*args):
-    ...
-
-
-def ttkstyle_exists(ttkstyle: str) -> bool:
-    """Returns True if style exists, else False"""
-    root = tk._get_default_root()
-    cnf = root.tk.call('ttk::style', 'configure', ttkstyle)
-    return cnf != ''
-
-
-def normalize_bootstyle(style_keywords):
-    """Remove all spaces and capitalization in the style keywords and
-    return the resulting string
-    Parameters
-    ----------
-    style_keywords : Union[str, Iterable]
-        A iterable or string of bootstyle keywords
-
-    Returns
-    -------
-    str
-        A string with all spaces and capitalization removed.
-    """
-    if style_keywords:
-        return "".join(style_keywords).lower()
-    else:
-        return ""
-
-
-def find_widget_class(style_keywords, widget_class) -> str:
-    """Extract and return the widget class.
-    The matching style is based on a regex pattern match from widget
-    types in the WIDGET_PATTERN constant. If not found, then the
-    fallback widget_class is returned.
-    The reason for this distinction is because it is possible to style
-    one type of widget with the style of another... for example, one
-    can use a TButton style on a TLabel widget and inherit the hover
-    effects, etc... from the button on the label. So, the expected
-    style widget class must be evaluated before falling back to the
-    actual widget_class of the widget.
-
-    Parameters
-    ----------
-    style_keywords : str
-        A string of widget style keywords.
-
-    widget_class : str
-        The Class.function name from which the widget class will be
-        derived.
-
-    Returns
-    -------
-    str
-        The matching widget_class pattern or the fallback widget
-        class.
-    """
-    widget_class_match = re.search(WIDGET_PATTERN, widget_class.lower())
-    bootstyle_match = re.search(WIDGET_PATTERN, style_keywords.lower())
-
-    if bootstyle_match:
-        return WIDGET_LOOKUP.get(bootstyle_match.group(0))
-    else:
-        return WIDGET_LOOKUP.get(widget_class_match.group(0))
-
-
-def find_widget_color(style_keywords):
-    """Extract and return the style color from the style keywords.
-    The matching color is based on a regex pattern match from color
-    patterns in the COLOR_PATTERN constant.
-    Parameters
-    ----------
-    style_keywords: str
-        A string of widget style keywords.
-
-    Returns
-    -------
-    str
-        A matching style color.
-    """
-    match = re.search(COLOR_PATTERN, style_keywords)
-    return "" if not match else match.group(0) + "."
-
-
-def find_widget_orient(style_keywords, widget_class, orient=None):
-    """Extract, modify, and return the widget style orientation.
-    Returns a lowercased orientation appended with a "." if an
-    orientation is present. This is required to build the style name
-    provided to ttk. Otherwise, an empty string is returned.
-    """
-    if tk.HORIZONTAL in style_keywords.lower():
-        return 'Horizontal.'
-    if tk.VERTICAL in style_keywords.lower():
-        return 'Vertical.'
-    if orient is not None:
-        return f"{orient.title()}."
-    elif widget_class in ["TProgressbar", "TScale", "TSeparator"]:
-        return "Horizontal."
-    elif widget_class in ["TPanedwindow", "TScrollbar"]:
-        return "Vertical."
-    else:
-        return ""
-
-
-def find_widget_type(style_keywords):
-    """Extract and return the style type from the style keywords.
-    The matching style is based on a regex pattern match from style
-    types in the STYLE_PATTERN constant. If found, a "." is appended to
-    the end so that a ttk style can be built. Otherwise, an empty
-    string is returned.
-    Parameters
-    ----------
-    style_keywords: str
-        A string of widget style keywords.
-
-    Returns
-    -------
-    str
-        A matching style style.
-    """
-    match = re.search(STYLE_PATTERN, style_keywords)
-    return "" if not match else match.group(0).title() + "."
-
-
-def build_ttkstyle_name(bootstyle, widget_class, widget_orient=None):
-    """Parse the raw style keywords and build a real ttk style name
-    that will be used when building the widget style. These style
-    keywords trigger different settings and procedures in the
-    theme_builder.
-    """
-    style_keywords = normalize_bootstyle(bootstyle)
-    _color = find_widget_color(style_keywords)
-    _type = find_widget_type(style_keywords)
-    _class = find_widget_class(style_keywords, widget_class)
-    _orient = find_widget_orient(style_keywords, _class, widget_orient)
-    return f"{_color}{_type}{_orient}{_class}"
+        
+        # override widget constructor
+        __init = override_ttk_widget_constructor(widget.__init__)
+        widget.__init__ = __init
+        
+        # override configure method
+        __configure = override_ttk_widget_configure(widget.configure)
+        widget.configure = __configure
+        
+        # override get and set methods
+        __setitem = lambda self, key, val: __configure(self, **{key: val})
+        __getitem = lambda self, key: __configure(self, cnf=key)
+        widget.__setitem__ = __setitem
+        widget.__getitem__ = __getitem
