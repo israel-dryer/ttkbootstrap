@@ -62,7 +62,8 @@ class Publisher:
             List of key-value tuples        
         """
         subs = Publisher.__subscribers.values()
-        return [s for s in subs if s.channel == channel]
+        channel_subs = [s for s in subs if s.channel == channel]
+        return  channel_subs
     
     def publish_message(channel, *args):
         """Publish a message to all subscribers"""
