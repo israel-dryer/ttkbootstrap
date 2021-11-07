@@ -91,8 +91,6 @@ class StyleBuilderTK:
         to all standard tkinter widgets
         """
         self.update_spinbox_style()
-        #self.update_text_style()
-        self.update_button_style()
         self.update_label_style()
         self.update_checkbutton_style()
         self.update_radiobutton_style()
@@ -121,14 +119,26 @@ class StyleBuilderTK:
         self._set_option("*Canvas.background", self.colors.bg)
         self._set_option("*Canvas.highlightBackground", self.colors.border)
 
-    def update_button_style(self):
+    def update_button_style(self, widget: tk.Widget):
         """Apply style to ``tkinter.Button``"""
-        active_bg = Colors.update_hsv(self.colors.primary, vd=-0.2)
-        self._set_option("*Button.relief", tk.FLAT)
-        self._set_option("*Button.borderWidth", 0)
-        self._set_option("*Button.activeBackground", active_bg)
-        self._set_option("*Button.foreground", self.colors.selectfg)
-        self._set_option("*Button.background", self.colors.primary)
+        background = self.colors.primary
+        foreground = self.colors.selectfg
+        activebackground = Colors.update_hsv(self.colors.primary, vd=-0.1)
+
+        if self.is_light_theme:
+            disabledforeround = self.colors.border
+        else:
+            disabledforeround = self.colors.selectbg
+
+        widget.configure(
+            background=background,
+            foreground=foreground,
+            relief=tk.FLAT,
+            borderwidth=0,
+            activebackground=activebackground,
+            highlightbackground=self.colors.selectfg,
+        )
+
 
     def update_label_style(self):
         """Apply style to ``tkinter.Label``"""

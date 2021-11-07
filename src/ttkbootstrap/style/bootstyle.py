@@ -29,7 +29,7 @@ TTK_WIDGETS = (
 )
 
 TK_WIDGETS = (
-    # tk.Button,
+    tk.Button,
     # tk.Frame,
     # tk.Label,
     # tk.Listbox,
@@ -177,7 +177,6 @@ def update_tk_widget_style(widget: tk.Widget):
     widget: tk.Widget
         The widget instance being updated.
     """
-    print(widget.cget('background'))
     style: Style = Style.get_instance()
     widget_class = widget.__class__.__name__
     method_name = util.tkupdate_method_name_from_string(widget_class)
