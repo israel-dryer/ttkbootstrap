@@ -8,28 +8,25 @@ from ttkbootstrap.style.style_builder import StyleBuilderTTK, ThemeDefinition
 class Style(ttk.Style):
     """A class for setting the application style.
 
-    Sets the theme of the ``tkinter.Tk`` instance and supports all
+    Sets the theme of the `tkinter.Tk` instance and supports all
     ttkbootstrap and ttk themes provided. This class is meant to be a
-    drop-in replacement for ``ttk.Style`` and inherits all of it's
-    methods and properties. Creating a ``Style`` object will
-    instantiate the ``tkinter.Tk`` instance in the ``Style.master``
+    drop-in replacement for `ttk.Style` and inherits all of it's
+    methods and properties. Creating a `Style` object will
+    instantiate the `tkinter.Tk` instance in the `Style.master`
     property, and so it is not necessary to explicitly create an
-    instance of ``tkinter.Tk``. For more details on the ``ttk.Style``
+    instance of `tkinter.Tk`. For more details on the `ttk.Style`
     class, see the python documentation_.
 
-    .. code-block:: python
+    Examples
+    --------
+    Instantiate a style object with default theme
+    >>> style = Style()
 
-        # instantiate the style with default theme *flatly*
-        style = Style()
+    Instantiate a style with another theme
+    >>> style = Style(theme='superhero')
 
-        # instantiate the style with another theme
-        style = Style(theme='superhero')
-
-        # available themes
-        for theme in style.theme_names():
-            print(theme)
-
-    .. _documentation: https://docs.python.org/3.9/library/tkinter.ttk.html#tkinter.ttk.Style
+    Show available themes
+    >>> print(style.theme_names())
     """
     __instance = None
 
@@ -38,7 +35,7 @@ class Style(ttk.Style):
         Parameters
         ----------
         theme : str
-            the name of the theme to use at runtime; default='flatly'.
+            The name of the theme to use at runtime; default="flatly".
 
         *args : Any
             Other optional arguments
@@ -46,7 +43,12 @@ class Style(ttk.Style):
         **kwargs : Any
             Other optional keyword arguments
         """
-        Style.__instance = self
+        # create or return singleton
+        if Style.__instance is not None:
+            return Style.__instance
+        else:
+            Style.__instance = self
+
         # this parameter has been replaced internally with py file
         if "themes_file" in kwargs:
             del kwargs["themes_file"]
@@ -56,25 +58,34 @@ class Style(ttk.Style):
         self._theme_names = set(super().theme_names())
         self._theme_objects = {}  # prevents image garbage collection
         self._theme_definitions = {}
+        self._theme_styles = {}
         self._load_themes()
 
         # load selected or default theme
         self.theme_use(themename=theme)
 
+    def __del__(self):
+        Style.__instance = None
+
+
     @staticmethod
     def get_instance():
-        return Style.__instance
+        """Return a singleton instance of the Style class."""
+        if Style.__instance is None:        
+            Style.__instance = Style()
+        else:
+            return Style.__instance
 
     @staticmethod
     def get_builder():
         _style = Style.get_instance()
-        _theme = _style.theme_use()
+        _theme = _style.theme.name
         return _style._theme_objects[_theme]
 
     @property
     def colors(self):
         """The theme colors"""
-        theme = self.theme_use()
+        theme = self.theme.name
         if theme in list(self._theme_names):
             definition = self._theme_definitions.get(theme)
             if not definition:
@@ -105,6 +116,15 @@ class Style(ttk.Style):
     def theme_names(self):
         """Return a list of all ttkbootstrap themes"""
         return list(self._theme_definitions.keys())
+
+    def register_ttkstyle(self, ttkstyle):
+        if not self.theme:
+            return
+        theme = self.theme.name
+        if theme not in self._theme_styles:
+            self._theme_styles[theme] = set()
+        else:
+            self._theme_styles[theme].add(ttkstyle)
 
     def register_theme(self, definition):
         """Registers a theme definition for use by the ``Style`` class.
@@ -156,9 +176,13 @@ class Style(ttk.Style):
         # theme has not yet been created
         self._theme_objects[themename] = StyleBuilderTTK(self, self.theme)
         self._theme_objects[themename].styler_tk.style_tkinter_widgets()
-        super().theme_use(themename)
         return
 
-    def exists(self, style: str):
+    def exists(self, ttkstyle: str):
         """Return True if style exists else False"""
-        return self.configure(style) is not None
+        ttkstyles = self._theme_styles.get(self.theme.name)
+        if not ttkstyles:
+            return False
+        else:
+            return ttkstyle in ttkstyles
+      
