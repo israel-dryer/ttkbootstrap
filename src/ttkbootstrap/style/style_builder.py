@@ -70,25 +70,6 @@ class StyleBuilderTK:
         self.colors = self.theme.colors
         self.is_light_theme = self.theme.type == LIGHT
 
-    def style_tkinter_widgets(self):
-        """A wrapper on all widget style methods. Applies current theme
-        to all standard tkinter widgets
-        """
-        self._style_spinbox()
-        self._style_textwidget()
-        self._style_button()
-        self._style_label()
-        self._style_checkbutton()
-        self._style_radiobutton()
-        self._style_entry()
-        self._style_scale()
-        self._style_listbox()
-        self._style_menu()
-        self._style_menubutton()
-        self._style_labelframe()
-        self._style_canvas()
-        self._style_window()
-
     def _set_option(self, *args):
         """A convenience wrapper method to shorten the call to
         ``option_add``. *Laziness is next to godliness*.
@@ -100,7 +81,31 @@ class StyleBuilderTK:
         """
         self.master.option_add(*args)
 
-    def _style_window(self):
+    @staticmethod
+    def name_to_method(method_name):
+        func = getattr(StyleBuilderTK, method_name)
+        return func                
+
+    def style_tkinter_widgets(self):
+        """A wrapper on all widget style methods. Applies current theme
+        to all standard tkinter widgets
+        """
+        self.update_spinbox_style()
+        #self.update_text_style()
+        self.update_button_style()
+        self.update_label_style()
+        self.update_checkbutton_style()
+        self.update_radiobutton_style()
+        self.update_entry_style()
+        self.update_scale_style()
+        self.update_listbox_style()
+        self.update_menu_style()
+        self.update_menubutton_style()
+        self.update_labelframe_style()
+        self.update_canvas_style()
+        self.update_window_style()        
+
+    def update_window_style(self):
         """Apply global options to all matching ``tkinter`` widgets"""
         self.master.configure(background=self.colors.bg)
         self._set_option("*background", self.colors.bg, 60)
@@ -110,13 +115,13 @@ class StyleBuilderTK:
         self._set_option("*selectBackground", self.colors.selectbg, 60)
         self._set_option("*selectForeground", self.colors.selectfg, 60)
 
-    def _style_canvas(self):
+    def update_canvas_style(self):
         """Apply style to ``tkinter.Canvas``"""
         self._set_option("*Canvas.highlightThickness", 1)
         self._set_option("*Canvas.background", self.colors.bg)
         self._set_option("*Canvas.highlightBackground", self.colors.border)
 
-    def _style_button(self):
+    def update_button_style(self):
         """Apply style to ``tkinter.Button``"""
         active_bg = Colors.update_hsv(self.colors.primary, vd=-0.2)
         self._set_option("*Button.relief", tk.FLAT)
@@ -125,12 +130,12 @@ class StyleBuilderTK:
         self._set_option("*Button.foreground", self.colors.selectfg)
         self._set_option("*Button.background", self.colors.primary)
 
-    def _style_label(self):
+    def update_label_style(self):
         """Apply style to ``tkinter.Label``"""
         self._set_option("*Label.foreground", self.colors.fg)
         self._set_option("*Label.background", self.colors.bg)
 
-    def _style_checkbutton(self):
+    def update_checkbutton_style(self):
         """Apply style to ``tkinter.Checkbutton``"""
         self._set_option("*Checkbutton.activeBackground", self.colors.bg)
         self._set_option("*Checkbutton.activeForeground", self.colors.primary)
@@ -141,7 +146,7 @@ class StyleBuilderTK:
         else:
             self._set_option("*Checkbutton.selectColor", "white")
 
-    def _style_radiobutton(self):
+    def update_radiobutton_style(self):
         """Apply style to ``tkinter.Radiobutton``"""
         self._set_option("*Radiobutton.activeBackground", self.colors.bg)
         self._set_option("*Radiobutton.activeForeground", self.colors.primary)
@@ -152,7 +157,7 @@ class StyleBuilderTK:
         else:
             self._set_option("*Checkbutton.selectColor", "white")
 
-    def _style_entry(self):
+    def update_entry_style(self):
         """Apply style to ``tkinter.Entry``"""
         self._set_option("*Entry.relief", tk.FLAT)
         self._set_option("*Entry.highlightThickness", 1)
@@ -168,7 +173,7 @@ class StyleBuilderTK:
                 Colors.update_hsv(self.colors.inputbg, vd=-0.1),
             )
 
-    def _style_scale(self):
+    def update_scale_style(self):
         """Apply style to ``tkinter.Scale``"""
         active_color = Colors.update_hsv(self.colors.primary, vd=-0.2)
         self._set_option("*Scale.background", self.colors.primary)
@@ -181,7 +186,7 @@ class StyleBuilderTK:
         self._set_option("*Scale.highlightBackground", self.colors.border)
         self._set_option("*Scale.troughColor", self.colors.inputbg)
 
-    def _style_spinbox(self):
+    def update_spinbox_style(self):
         """Apply style to `tkinter.Spinbox``"""
         self._set_option("*Spinbox.foreground", self.colors.inputfg)
         self._set_option("*Spinbox.relief", tk.FLAT)
@@ -196,7 +201,7 @@ class StyleBuilderTK:
                 Colors.update_hsv(self.colors.inputbg, vd=-0.1),
             )
 
-    def _style_listbox(self):
+    def update_listbox_style(self):
         """Apply style to ``tkinter.Listbox``"""
         self._set_option("*Listbox.foreground", self.colors.inputfg)
         self._set_option("*Listbox.background", self.colors.inputbg)
@@ -208,7 +213,7 @@ class StyleBuilderTK:
         self._set_option("*Listbox.activeStyle", "none")
         self._set_option("*Listbox.relief", tk.FLAT)
 
-    def _style_menubutton(self):
+    def update_menubutton_style(self):
         """Apply style to ``tkinter.Menubutton``"""
         hover_color = Colors.update_hsv(self.colors.primary, vd=-0.2)
         self._set_option("*Menubutton.background", self.colors.primary)
@@ -216,7 +221,7 @@ class StyleBuilderTK:
         self._set_option("*Menubutton.activeBackground", hover_color)
         self._set_option("*Menubutton.borderWidth", 0)
 
-    def _style_menu(self):
+    def update_menu_style(self):
         """Apply style to ``tkinter.Menu``"""
         self._set_option("*Menu.tearOff", 0)
         self._set_option("*Menu.activeBackground", self.colors.selectbg)
@@ -229,7 +234,7 @@ class StyleBuilderTK:
         else:
             self._set_option("*Menu.background", self.colors.bg)
 
-    def _style_labelframe(self):
+    def update_labelframe_style(self):
         """Apply style to ``tkinter.Labelframe``"""
         self._set_option("*Labelframe.highlightColor", self.colors.border)
         self._set_option("*Labelframe.foreground", self.colors.fg)
@@ -237,20 +242,25 @@ class StyleBuilderTK:
         self._set_option("*Labelframe.borderWidth", 1)
         self._set_option("*Labelframe.highlightThickness", 0)
 
-    def _style_textwidget(self):
+    def update_text_style(self, widget: tk.Widget):
         """Apply style to ``tkinter.Text``"""
-        self._set_option("*Text.background", self.colors.inputbg)
-        self._set_option("*Text.foreground", self.colors.inputfg)
-        self._set_option("*Text.highlightColor", self.colors.primary)
-        self._set_option("*Text.highlightBackground", self.colors.border)
-        self._set_option("*Text.borderColor", self.colors.border)
-        self._set_option("*Text.insertBackground", self.colors.inputfg)
-        self._set_option("*Text.insertWidth", 1)
-        self._set_option("*Text.highlightThickness", 1)
-        self._set_option("*Text.relief", tk.FLAT)
-        self._set_option("*Text.font", self.theme.font)
-        self._set_option("*Text.padX", 5)
-        self._set_option("*Text.padY", 5)
+        if self.is_light_theme:
+            bordercolor = self.colors.border
+        else:
+            bordercolor = self.colors.selectbg
+        widget.configure(
+            background=self.colors.inputbg,
+            foreground=self.colors.inputfg,
+            highlightcolor=self.colors.primary,
+            highlightbackground=bordercolor,
+            insertbackground=self.colors.inputfg,
+            insertwidth=1,
+            highlightthickness=1,
+            relief=tk.FLAT,
+            font=self.theme.font,
+            padx=5,
+            pady=5
+        )
 
 
 class StyleBuilderTTK:
@@ -280,7 +290,7 @@ class StyleBuilderTTK:
         self.colors = self.theme.colors
         self.is_light_theme = self.theme.type == LIGHT
         self.settings = {}
-        self.styler_tk = StyleBuilderTK(self)
+        self.builder_tk = StyleBuilderTK(self)
         self.create_theme()
 
     @staticmethod

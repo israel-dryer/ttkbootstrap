@@ -46,6 +46,7 @@ CLASSES = [
     'scrollbar',
     'spinbox',
     'scale',
+    'text',
     'toolbutton',
     'treeview',
     'toggle'
@@ -197,6 +198,19 @@ def get_ttkstyle_name(widget, **kwargs):
         ttkstyle = ttkstyle_name_from_string(bootstyle)
 
     return ttkstyle        
+
+def tkupdate_method_name_from_string(string):
+    """Parse a string to return the name of the `StyleBuilderTK` method 
+    that updates the target tk widget style.
+    """
+    _string = ''.join(string).lower()
+    widget_class = widget_class_from_string(_string)
+    
+    if widget_class:
+        widget_class = f'_{widget_class}'
+
+    method_name = f'update{widget_class}_style'
+    return method_name          
 
 
 if __name__ == '__main__':
