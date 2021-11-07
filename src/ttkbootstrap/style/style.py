@@ -83,6 +83,11 @@ class Style(ttk.Style):
         _theme = _style.theme.name
         return _style._theme_objects[_theme]
 
+    @staticmethod
+    def get_builder_tk():
+        builder = Style.get_builder()
+        return builder.builder_tk
+
     @property
     def colors(self):
         """The theme colors"""
@@ -171,14 +176,16 @@ class Style(ttk.Style):
             # the theme has already been created in tkinter
             super().theme_use(themename)
             Publisher.publish_message(Channel.TTK)
+            Publisher.publish_message(Channel.STD)
             if not self.theme:
                 return
             return
 
         # theme has not yet been created
         self._theme_objects[themename] = StyleBuilderTTK(self, self.theme)
-        self._theme_objects[themename].styler_tk.style_tkinter_widgets()
+        self._theme_objects[themename].builder_tk.style_tkinter_widgets()
         Publisher.publish_message(Channel.TTK)
+        Publisher.publish_message(Channel.STD)        
         return
 
     def exists(self, ttkstyle: str):
