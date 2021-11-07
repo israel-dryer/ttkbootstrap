@@ -46,4 +46,4 @@
 """
 from ttkbootstrap.style.style import Style
 from ttkbootstrap.style import bootstyle
-bootstyle.inject_bootstyle_keyword_api()
+bootstyle.setup_ttkbootstap_api()
