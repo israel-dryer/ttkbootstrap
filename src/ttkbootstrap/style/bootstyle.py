@@ -59,7 +59,11 @@ def override_ttk_widget_constructor(func):
             update_ttk_widget_style(self, ttkstyle)
 
         # subscriber to <<ThemeChanged>> events
-        #Publisher.subscribe(self._name, print, Channel.TTK)
+        Publisher.subscribe(
+            name=self._name, 
+            func=lambda widget=self: update_ttk_widget_style(widget), 
+            channel=Channel.TTK
+        )
 
     return __init__wrapper
 
