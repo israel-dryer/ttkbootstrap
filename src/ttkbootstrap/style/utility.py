@@ -28,14 +28,14 @@ TYPES = [
     'input'
 ]
 
-CLASSES = set([
+CLASSES = [
     'button',
     'progressbar',
     'checkbutton',
     'combobox',
     'entry',
     'label',
-    'labelframe'
+    'labelframe',
     'frame',
     'floodgauge',
     'sizegrip',
@@ -50,7 +50,7 @@ CLASSES = set([
     'toolbutton',
     'treeview',
     'toggle'
-])
+]
 
 # regex patterns
 COLOR_PATTERN = re.compile('|'.join(COLORS))
@@ -63,7 +63,7 @@ TYPE_PATTERN = re.compile('|'.join(TYPES))
 def normalize_bootstyle(bootstyle, widget):
     """Convert an iterable to a string and append the func class"""
     string = ''.join(bootstyle)
-    string += widget.__class__.__name__
+    string += widget.__class__.__name__.lower()
     return string
 
 def widget_class_from_string(string):
@@ -167,6 +167,37 @@ def ttkstyle_method_name_from_string(string):
     else:
         method_name = f'create{widget_type}{widget_class}_style'
         return method_name
+
+def get_ttkstyle_name(widget, **kwargs):
+    ttkstyle = ''
+    bootstyle = ''
+    
+    if all(['bootstyle' not in kwargs, 'style' not in kwargs]):
+        return ''
+
+    # extract bootstyle if exists
+    if 'bootstyle' in kwargs:
+        bootstyle = kwargs.pop('bootstyle')
+        bootstyle = normalize_bootstyle(bootstyle, widget)
+
+    # extract orient if exists
+    if 'orient' in kwargs:
+        orient = kwargs.pop('orient')
+        if orient == 'h':
+            orient = 'horizontal'
+        elif orient == 'v':
+            orient = 'vertical'
+        bootstyle += orient
+
+    # check if style is set directly
+    if 'style' in kwargs:
+        ttkstyle = kwargs.get('style')
+
+    # use bootstyle ONLY if style is NOT provided directly
+    if bootstyle and 'style' not in kwargs:
+        ttkstyle = ttkstyle_name_from_string(bootstyle)
+
+    return ttkstyle        
 
 
 if __name__ == '__main__':
