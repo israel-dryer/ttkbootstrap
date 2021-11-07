@@ -16,6 +16,7 @@ TTK_WIDGETS = (
     ttk.Labelframe,
     ttk.Menubutton,
     ttk.Notebook,
+    # ttk.OptionMenu,
     ttk.Panedwindow,
     ttk.Progressbar,
     ttk.Radiobutton,
@@ -42,7 +43,8 @@ def override_ttk_widget_constructor(func):
     
     def __init__wrapper(self, *args, **kwargs):
         
-        ttkstyle = get_ttkstyle_name(self, **kwargs)
+        ttkstyle = util.get_ttkstyle_name(self, **kwargs)
+        
         if ttkstyle:
             kwargs.update(style=ttkstyle)
 
@@ -57,7 +59,7 @@ def override_ttk_widget_constructor(func):
             update_ttk_widget_style(self, ttkstyle)
 
         # subscriber to <<ThemeChanged>> events
-        Publisher.subscribe(self._name, print, Channel.TTK)
+        #Publisher.subscribe(self._name, print, Channel.TTK)
 
     return __init__wrapper
 
@@ -72,7 +74,7 @@ def override_ttk_widget_configure(func):
             return func(self, cnf)
 
         # set configuration
-        ttkstyle = get_ttkstyle_name(self, **kwargs)
+        ttkstyle = util.get_ttkstyle_name(self, **kwargs)
         if ttkstyle:
             kwargs.update(style=ttkstyle)
             update_ttk_widget_style(self, ttkstyle)        
@@ -83,24 +85,6 @@ def override_ttk_widget_configure(func):
         func(self, **kwargs)
 
     return configure_wrapper
-
-
-def get_ttkstyle_name(widget, **kwargs):
-    ttkstyle = None
-    bootstyle = None
-    
-    if 'bootstyle' in kwargs:
-        bootstyle = kwargs.pop('bootstyle')
-        bootstyle = util.normalize_bootstyle(bootstyle, widget)
-
-    if 'style' in kwargs:
-        ttkstyle = kwargs.get('style')
-
-    # use bootstyle ONLY if style is NOT provided directly
-    if bootstyle and 'style' not in kwargs:
-        ttkstyle = util.ttkstyle_name_from_string(bootstyle)
-
-    return ttkstyle
 
 
 def update_ttk_widget_style(widget: ttk.Widget, style_string: str=None):
@@ -126,6 +110,7 @@ def update_ttk_widget_style(widget: ttk.Widget, style_string: str=None):
         return
 
     # build style if not existing
+    style_string += util.normalize_bootstyle(style_string, widget)
     ttkstyle = util.ttkstyle_name_from_string(style_string)
     if not style.exists(ttkstyle):
         widget_color = util.widget_color_from_string(ttkstyle)
