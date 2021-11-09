@@ -30,10 +30,11 @@ TTK_WIDGETS = (
 
 TK_WIDGETS = (
     tk.Button,
-    # tk.Frame,
-    # tk.Label,
-    # tk.Listbox,
+    tk.Label,
     tk.Text,
+    tk.Frame,
+    tk.Tk,
+    # tk.Listbox,
     # tk.OptionMenu
 )
 
@@ -43,20 +44,29 @@ def override_ttk_widget_constructor(func):
 
     def __init__wrapper(self, *args, **kwargs):
 
-        ttkstyle = util.get_ttkstyle_name(self, **kwargs)
-
-        if ttkstyle:
-            kwargs.update(style=ttkstyle)
-
+        # capture bootstyle and style arguments
         if 'bootstyle' in kwargs:
-            kwargs.pop('bootstyle')
+            bootstyle = kwargs.pop('bootstyle')
+        else:
+            bootstyle = ''
+
+        if 'style' in kwargs:
+            style = kwargs.get('style')
+        else:
+            style = ''
 
         # instantiate the widget
         func(self, *args, **kwargs)
+        
+        # must be called AFTER instantiation in order to use winfo_class
+        #    in the `get_ttkstyle_name` method
 
-        # create style if not existing
-        if ttkstyle is not None:
-            update_ttk_widget_style(self, ttkstyle)
+        if style:
+            ttkstyle = update_ttk_widget_style(self, style, **kwargs)
+            self.configure(style=ttkstyle)
+        elif bootstyle:
+            ttkstyle = update_ttk_widget_style(self, bootstyle, **kwargs)
+            self.configure(style=ttkstyle)
 
         # subscriber to <<ThemeChanged>> events
         Publisher.subscribe(
@@ -78,20 +88,25 @@ def override_ttk_widget_configure(func):
             return func(self, cnf)
 
         # set configuration
-        ttkstyle = util.get_ttkstyle_name(self, **kwargs)
-        if ttkstyle:
-            kwargs.update(style=ttkstyle)
-            update_ttk_widget_style(self, ttkstyle)
-
         if 'bootstyle' in kwargs:
-            kwargs.pop('bootstyle')
+            bootstyle = kwargs.pop('bootstyle')
+        else:
+            bootstyle = ''
+        
+        if 'style' in kwargs:
+            style = kwargs.get('style')
+            ttkstyle = update_ttk_widget_style(self, style, **kwargs)
+        elif bootstyle:
+            ttkstyle = update_ttk_widget_style(self, bootstyle, **kwargs)
+            kwargs.update(style=ttkstyle)
 
+        # update widget configuration
         func(self, **kwargs)
 
     return configure_wrapper
 
 
-def update_ttk_widget_style(widget: ttk.Widget, style_string: str = None):
+def update_ttk_widget_style(widget: ttk.Widget, style_string: str=None, **kwargs):
     """Update the ttk style or create if not existing.
 
     Parameters
@@ -102,30 +117,38 @@ def update_ttk_widget_style(widget: ttk.Widget, style_string: str = None):
     style_string : str
         The style string to evalulate. May be the `style`, `ttkstyle`
         or `bootstyle` argument depending on the context and scenario.
+
+    **kwargs: Dict[str, Any]
+        Other keyword arguments.
+
+    Returns
+    -------
+    ttkstyle : str
+        The ttkstyle or empty string if there is none.
     """
     style: Style = Style.get_instance()
 
-    # get widget style if not provided
+    # get existing widget style if not provided
     if style_string is None:
         style_string = widget.cget('style')
 
     # do nothing if the style has not been set
     if not style_string:
-        return
+        return ''
 
-    # build style if not existing
-    style_string += util.normalize_bootstyle(style_string, widget)
-    ttkstyle = util.ttkstyle_name_from_string(style_string)
+    # build style if not existing (example: theme changed)
+    ttkstyle = util.ttkstyle_name(widget, style_string, **kwargs)
     if not style.exists(ttkstyle):
-        widget_color = util.widget_color_from_string(ttkstyle)
-        method_name = util.ttkstyle_method_name_from_string(ttkstyle)
+        widget_color = util.ttkstyle_widget_color(ttkstyle)
+        method_name = util.ttkstyle_method_name(widget, ttkstyle)
         builder: StyleBuilderTTK = style.get_builder()
         builder_method = builder.name_to_method(method_name)
         builder_method(builder, widget_color)
+    return ttkstyle
 
 
 def setup_ttkbootstap_api():
-    
+    """Setup ttkbootstrap for use with tkinter and ttk"""
     # TTK WIDGETS
     for widget in TTK_WIDGETS:
         # override widget constructor
@@ -142,12 +165,21 @@ def setup_ttkbootstap_api():
         widget.__setitem__ = __setitem
         widget.__getitem__ = __getitem
 
+        # override destroy method
+        widget.destroy = override_widget_destroy_method
+
     # TK WIDGETS
     for widget in TK_WIDGETS:
 
         # override widget constructor
         __init = override_tk_widget_constructor(widget.__init__)
         widget.__init__ = __init
+
+        # override widget destroy method (quit for tk.Tk)
+        if issubclass(widget, tk.Widget):
+            widget.destroy = override_widget_destroy_method
+        elif issubclass(widget, tk.Tk):
+            widget.quit = override_widget_destroy_method
 
 
 def override_tk_widget_constructor(func):
@@ -162,12 +194,18 @@ def override_tk_widget_constructor(func):
         update_tk_widget_style(self)
 
         # subscriber to <<ThemeChanged>> events
+        if isinstance(self, tk.Tk):
+            name = '.'
+        else:
+            name = self._name
+
         Publisher.subscribe(
-            name=self._name,
+            name=name,
             func=lambda widget=self: update_tk_widget_style(widget),
             channel=Channel.STD
         )
     return __init__wrapper
+
 
 def update_tk_widget_style(widget: tk.Widget):
     """Update the tk widget style
@@ -177,9 +215,17 @@ def update_tk_widget_style(widget: tk.Widget):
     widget: tk.Widget
         The widget instance being updated.
     """
-    style: Style = Style.get_instance()
-    widget_class = widget.__class__.__name__
-    method_name = util.tkupdate_method_name_from_string(widget_class)
-    builder: StyleBuilderTK = style.get_builder_tk()
+    method_name = util.tkupdate_method_name(widget)
+    builder: StyleBuilderTK = Style.get_builder_tk()
     builder_method = builder.name_to_method(method_name)
     builder_method(builder, widget)
+
+
+def override_widget_destroy_method(self):
+    """Unsubscribe widget from publication and destroy"""
+    if isinstance(self, tk.Widget):
+        Publisher.unsubscribe(self._name)
+        tk.Widget.destroy(self)
+    elif isinstance(self, tk.Tk):
+        Publisher.__subscribers.clear()
+        tk.Tk.quit(self)

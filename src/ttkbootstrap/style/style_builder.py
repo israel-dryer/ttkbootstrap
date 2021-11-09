@@ -91,7 +91,6 @@ class StyleBuilderTK:
         to all standard tkinter widgets
         """
         self.update_spinbox_style()
-        self.update_label_style()
         self.update_checkbutton_style()
         self.update_radiobutton_style()
         self.update_entry_style()
@@ -101,7 +100,10 @@ class StyleBuilderTK:
         self.update_menubutton_style()
         self.update_labelframe_style()
         self.update_canvas_style()
-        self.update_window_style()        
+        self.update_window_style()
+
+    def update_tk_style(self, widget: tk.Tk):
+        widget.configure(background=self.colors.bg)
 
     def update_window_style(self):
         """Apply global options to all matching ``tkinter`` widgets"""
@@ -125,11 +127,6 @@ class StyleBuilderTK:
         foreground = self.colors.selectfg
         activebackground = Colors.update_hsv(self.colors.primary, vd=-0.1)
 
-        if self.is_light_theme:
-            disabledforeround = self.colors.border
-        else:
-            disabledforeround = self.colors.selectbg
-
         widget.configure(
             background=background,
             foreground=foreground,
@@ -139,11 +136,16 @@ class StyleBuilderTK:
             highlightbackground=self.colors.selectfg,
         )
 
-
-    def update_label_style(self):
+    def update_label_style(self, widget: tk.Widget):
         """Apply style to ``tkinter.Label``"""
-        self._set_option("*Label.foreground", self.colors.fg)
-        self._set_option("*Label.background", self.colors.bg)
+        widget.configure(
+            foreground=self.colors.fg,
+            background=self.colors.bg
+        )
+
+    def update_frame_style(self, widget: tk.Widget):
+        """Apply style to ``tkinter.Frame"""
+        widget.configure(background=self.colors.bg)
 
     def update_checkbutton_style(self):
         """Apply style to ``tkinter.Checkbutton``"""

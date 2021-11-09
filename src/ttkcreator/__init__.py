@@ -5,9 +5,11 @@ Copyright (c) 2021 Israel Dryer
 """
 import uuid
 import json
-from ttkbootstrap.themes import DEFINED_THEMES
-from ttkbootstrap import user_defined
-from ttkbootstrap import Style, Colors, StylerTTK, ThemeDefinition
+from ttkbootstrap.style.colors import Colors
+from ttkbootstrap.style.style import Style
+from ttkbootstrap.style.style_builder import ThemeDefinition
+from ttkbootstrap.themes import standard
+from ttkbootstrap.themes import user
 import tkinter as tk
 from tkinter import ttk
 from tkinter.colorchooser import askcolor
@@ -33,7 +35,7 @@ class CreatorDesignWindow(tk.Toplevel):
         self.title('TTK Creator')
         self.protocol('WM_DELETE_WINDOW', self.master.quit)
         self.style = self.master.style
-        self.theme_name = self.master.style.theme_use()
+        self.theme_name = self.style.theme.name
         self.fallback_colors = deepcopy(self.style.colors)
         self.geometry_set = False
         self.bind("<Insert>", self.get_bounding_box)
@@ -220,7 +222,7 @@ class CreatorDesignWindow(tk.Toplevel):
         """
         name = self.getvar('name').lower().replace(' ', '')
 
-        if name in user_defined.USER_DEFINED:
+        if name in user.USER_THEMES:
             showerror(title='Save Theme', message=f'The theme {name} already exists.')
             return
 
@@ -235,6 +237,8 @@ class CreatorDesignWindow(tk.Toplevel):
                     "info": self.getvar('info'),
                     "warning": self.getvar('warning'),
                     "danger": self.getvar('danger'),
+                    "light": self.getvar('light'),
+                    "dark": self.getvar('dark'),
                     "bg": self.getvar('bg'),
                     "fg": self.getvar('fg'),
                     "selectbg": self.getvar('selectbg'),
@@ -246,10 +250,10 @@ class CreatorDesignWindow(tk.Toplevel):
             }
         }
 
-        filepath = Path(user_defined.__file__)
-        user_themes = {**user_defined.USER_DEFINED, **theme}
-        DEFINED_THEMES[name] = theme[name]
-        output = f'USER_DEFINED={str(user_themes)}'
+        filepath = Path(user.__file__)
+        user_themes = {**user.USER_THEMES, **theme}
+        standard.STANDARD_THEMES[name] = theme[name]
+        output = f'USER_THEMES={str(user_themes)}'
         filepath.write_text(output, encoding='utf-8')
         showinfo(title='Save Theme', message=f'The theme {name} has been created')
 
