@@ -29,59 +29,44 @@ class Style(ttk.Style):
     Show available themes
     >>> print(style.theme_names())
     """
-    __instance = None
+    instance = None
 
-    def __init__(self, theme=DEFAULT_THEME, *args, **kwargs):
+    def __new__(cls, *args, **kwargs):
+        if cls.instance is None:
+            cls.instance = super().__new__(cls)
+            cls.instance._styler = None
+            cls.instance._theme_objects = {}  # prevents image garbage collection
+            cls.instance._theme_definitions = {}
+            cls.instance._theme_styles = {}
+            cls.instance._theme_names = set()
+            cls.instance._load_themes()
+            cls.__init__(cls.instance, *args, **kwargs)
+        return cls.instance
+
+
+    def __init__(self, theme=DEFAULT_THEME, **kwargs):
         """
         Parameters
         ----------
         theme : str
             The name of the theme to use at runtime; default="flatly".
-
-        *args : Any
-            Other optional arguments
-
-        **kwargs : Any
-            Other optional keyword arguments
         """
-        # create or return singleton
-        if Style.__instance is not None:
-            return Style.__instance
-        else:
-            Style.__instance = self
-
-        # this parameter has been replaced internally with py file
-        if "themes_file" in kwargs:
-            del kwargs["themes_file"]
-
-        super().__init__(*args, **kwargs)
-        self._styler = None
-        self._theme_names = set(super().theme_names())
-        self._theme_objects = {}  # prevents image garbage collection
-        self._theme_definitions = {}
-        self._theme_styles = {}
-        self._load_themes()
-
-        # load selected or default theme
-        self.theme_use(themename=theme)
-
-    def __del__(self):
-        Style.__instance = None
-
+        super().__init__(**kwargs)
+        self.theme_use(theme)
 
     @staticmethod
     def get_instance():
         """Return a singleton instance of the Style class."""
-        if Style.__instance is None:        
-            Style.__instance = Style()
+        if Style.instance is None:        
+            return Style()
         else:
-            return Style.__instance
+            return Style.instance
 
     @staticmethod
     def get_builder():
-        _style = Style.get_instance()
-        _theme = _style.theme.name
-        return _style._theme_objects[_theme]
+        style = Style.get_instance()
+        theme_name = style.theme.name
+        return style._theme_objects[theme_name]
 
     @staticmethod
     def get_builder_tk():
