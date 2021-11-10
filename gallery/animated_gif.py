@@ -1,12 +1,12 @@
 # https://dribbble.com/shots/1237618--Gif-Spinner
-import tkinter
-from itertools import cycle
-from tkinter import ttk
 from pathlib import Path
+from itertools import cycle
+import tkinter as tk
+import ttkbootstrap as ttk
 from PIL import Image, ImageTk, ImageSequence
 
 
-class AnimatedGif(tkinter.Tk):
+class AnimatedGif(tk.Tk):
 
     def __init__(self):
         super().__init__()

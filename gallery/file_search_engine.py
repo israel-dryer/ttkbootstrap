@@ -1,17 +1,16 @@
 """
     Author: Israel Dryer
-    Modified: 2021-10-24
+    Modified: 2021-11-10
     Adapted from: https://github.com/israel-dryer/File-Search-Engine-Tk
 """
 import csv
 import datetime
 import pathlib
-import tkinter as tk
 from queue import Queue
 from threading import Thread
-from tkinter import ttk
+import tkinter as tk
 from tkinter.filedialog import askdirectory, asksaveasfilename
-from ttkbootstrap import Style
+import ttkbootstrap as ttk
 
 
 class Application(tk.Tk):
@@ -19,7 +18,7 @@ class Application(tk.Tk):
     def __init__(self):
         super().__init__()
         self.title('File Search Engine')
-        self.style = Style('flatly')
+        self.style = ttk.Style('journal')
         self.search = SearchEngine(self, padding=10)
         self.search.pack(fill=tk.BOTH, expand=tk.YES)
 
@@ -103,7 +102,7 @@ class SearchEngine(ttk.Frame):
         # search results tree
         self.tree = ttk.Treeview(self, bootstyle='info')
         self.tree.pack(fill=tk.BOTH, pady=5)
-        self.tree['columns'] = ('modified', 'type', 'size', 'path')
+        self.tree.configure(columns=('modified', 'type', 'size', 'path'))
         self.tree.column('#0', width=400)
         self.tree.column('modified', width=150, stretch=False, anchor=tk.E)
         self.tree.column('type', width=50, stretch=False, anchor=tk.E)

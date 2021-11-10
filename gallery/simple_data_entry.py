@@ -1,18 +1,16 @@
 """
     Author: Israel Dryer
-    Modified: 2021-10-24
+    Modified: 2021-11-10
 """
 import tkinter as tk
-from tkinter import ttk
-
-from ttkbootstrap import Style
+import ttkbootstrap as ttk
 
 class Application(tk.Tk):
 
     def __init__(self):
         super().__init__()
         self.title('Simple data entry form')
-        self.style = Style('superhero')
+        self.style = ttk.Style('superhero')
         self.form = EntryForm(self)
         self.form.pack(fill='both', expand='yes')
 

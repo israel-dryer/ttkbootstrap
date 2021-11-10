@@ -1,12 +1,12 @@
 """
     Author: Israel Dryer
-    Modified: 2021-10-24
+    Modified: 2021-11-10
     Adapted from: https://images.idgesg.net/images/article/2018/08/cw_win10_utilities_ss_02-100769136-orig.jpg
 """
 from pathlib import Path
 import tkinter as tk
-from tkinter import ttk
-from ttkbootstrap import Style
+import ttkbootstrap as ttk
+
 
 PATH = Path(__file__)
 
@@ -16,17 +16,9 @@ class Application(tk.Tk):
     def __init__(self):
         super().__init__()
         self.title('PC Cleaner')
-        self.style = Style('pulse')
+        self.style = ttk.Style('pulse')
         self.cleaner = Cleaner(self)
         self.cleaner.pack(fill=tk.BOTH, expand=tk.YES)
-
-        # custom styles
-        self.style.configure(
-            style='header.TLabel',
-            background=self.style.colors.secondary,
-            foreground=self.style.colors.info
-        )
-        # do not allow window resizing
         self.resizable(False, False)
 
 
@@ -76,14 +68,14 @@ class Cleaner(ttk.Frame):
         ttk.Label(
             master=header_frame,
             image='logo',
-            style='header.TLabel'
+            bootstyle='inverse-secondary'
         ).pack(side=tk.LEFT)
 
         logo_text = ttk.Label(
             master=header_frame,
             text='pc cleaner',
             font=('TkDefaultFixed', 30),
-            style='header.TLabel'
+            bootstyle='inverse-secondary'
         )
         logo_text.pack(side=tk.LEFT, padx=10)
 
@@ -281,8 +273,8 @@ class Cleaner(ttk.Frame):
             master=note_frame, 
             text='We recommend that you better protect your data', 
             anchor=tk.CENTER,
-            style='header.TLabel', 
-            font=('Helvetica', 12, 'italic')
+            font=('Helvetica', 12, 'italic'),
+            bootstyle='inverse-secondary'
         )
         note_msg.pack(fill=tk.BOTH)
 

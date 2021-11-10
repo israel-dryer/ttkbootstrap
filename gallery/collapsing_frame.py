@@ -1,11 +1,10 @@
 """
     Author: Israel Dryer
-    Modified: 2021-10-24
+    Modified: 2021-11-10
 """
 from pathlib import Path
 import tkinter as tk
-from tkinter import ttk
-from ttkbootstrap import Style
+import ttkbootstrap as ttk
 from ttkbootstrap.style.utility import ttkstyle_widget_color
 
 
@@ -14,7 +13,7 @@ class Application(tk.Tk):
     def __init__(self):
         super().__init__()
         self.title('Collapsing Frame')
-        self.style = Style(theme='superhero')
+        self.style = ttk.Style(theme='superhero')
 
         cf = CollapsingFrame(self)
         cf.pack(fill='both')

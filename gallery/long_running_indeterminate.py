@@ -1,11 +1,10 @@
-import tkinter as tk
 from queue import Queue
 from random import randint
 from threading import Thread
 from time import sleep
-from tkinter import ttk
+import tkinter as tk
+import ttkbootstrap as ttk
 from tkinter.messagebox import showinfo
-from ttkbootstrap import Style
 
 
 class Application(tk.Tk):
@@ -13,7 +12,7 @@ class Application(tk.Tk):
     def __init__(self):
         super().__init__()
         self.title('Long Running Operation - Indeterminate')
-        self.style = Style('lumen')
+        self.style = ttk.Style('lumen')
 
         # set the main background color to primary, then add 10px 
         # padding to create a thick border effect

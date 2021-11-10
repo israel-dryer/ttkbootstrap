@@ -1,11 +1,10 @@
 """
     Author: Israel Dryer
-    Modified: 2021-10-24
+    Modified: 2021-11-10
 """
 import tkinter as tk
+import ttkbootstrap as ttk
 from random import randint
-from tkinter import ttk
-from ttkbootstrap import Style
 
 
 class Application(tk.Tk):
@@ -13,7 +12,7 @@ class Application(tk.Tk):
     def __init__(self):
         super().__init__()
         self.title('Equalizer')
-        self.style = Style()
+        self.style = ttk.Style()
         self.eq = Equalizer(self)
         self.eq.pack(fill=tk.BOTH, expand=tk.YES)
 

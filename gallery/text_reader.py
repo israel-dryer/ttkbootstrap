@@ -1,12 +1,11 @@
 """
     Author: Israel Dryer
-    Modified: 2021-10-24
+    Modified: 2021-11-10
 """
 import tkinter as tk
-from tkinter import ttk
+import ttkbootstrap as ttk
 from tkinter.filedialog import askopenfilename
 from tkinter.scrolledtext import ScrolledText
-from ttkbootstrap import Style
 
 
 class Application(tk.Tk):
@@ -14,7 +13,7 @@ class Application(tk.Tk):
     def __init__(self):
         super().__init__()
         self.title('Text Reader')
-        self.style = Style()
+        self.style = ttk.Style()
         self.reader = Reader(self)
         self.reader.pack(fill=tk.BOTH, expand=tk.YES)
 

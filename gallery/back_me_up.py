@@ -1,18 +1,17 @@
 """
     Author: Israel Dryer
-    Modified: 2021-10-24
+    Modified: 2021-11-10
     Adapted from: http://www.leo-backup.com/screenshots.shtml
 """
-import tkinter as tk
 from datetime import datetime
 from random import choices
-from tkinter import ttk
+import tkinter as tk
+import ttkbootstrap as ttk
+from ttkbootstrap.style.utility import ttkstyle_widget_color
 from tkinter.filedialog import askdirectory
 from tkinter.messagebox import showinfo
 from tkinter.scrolledtext import ScrolledText
 from pathlib import Path
-from ttkbootstrap import Style
-from ttkbootstrap.bootstyle import find_widget_color
 
 
 class Application(tk.Tk):
@@ -21,18 +20,9 @@ class Application(tk.Tk):
         super().__init__()
         self.title('Back Me Up')
 
-        self.style = Style()
+        self.style = ttk.Style()
 
-        # configure custom styles
-        self.style.configure(
-            style='bg.TFrame', 
-            background=self.style.colors.inputbg
-        )
-        self.style.configure(
-            style='bg.TLabel', 
-            background=self.style.colors.inputbg
-        )
-        self.bmu = BackMeUp(self, padding=2, style='bg.TFrame')
+        self.bmu = BackMeUp(self, padding=2)
         self.bmu.pack(fill=tk.BOTH, expand=tk.YES)
 
 
@@ -185,7 +175,7 @@ class BackMeUp(ttk.Frame):
 
         # ----- backup status (collapsible)
         status_cf = CollapsingFrame(left_panel)
-        status_cf.pack(fill=tk.X, pady=1)
+        status_cf.pack(fill=tk.BOTH, pady=1)
 
         ## container
         status_frm = ttk.Frame(status_cf, padding=10)
@@ -278,17 +268,17 @@ class BackMeUp(ttk.Frame):
 
         ## Treeview
         tv = ttk.Treeview(right_panel, show='headings')
-        tv['columns'] = (
+        tv.configure(columns=(
             'name', 'state', 'last-modified', 
             'last-run-time', 'size'
-        )
+        ))
         tv.column('name', width=150, stretch=True)
         
-        for col in ['last-modified', 'last-run-time', 'size']:
-            tv.column(col, stretch=False)
+        # for col in ['last-modified', 'last-run-time', 'size']:
+        #     tv.column(col, stretch=False)
         
-        for col in tv['columns']:
-            tv.heading(col, text=col.title(), anchor=tk.W)
+        # for col in tv['columns']:
+        #     tv.heading(col, text=col.title(), anchor=tk.W)
         
         tv.pack(fill=tk.X, pady=1)
 
@@ -367,7 +357,7 @@ class CollapsingFrame(ttk.Frame):
         """
         if child.winfo_class() != 'TFrame':
             return
-        style_color = find_widget_color(bootstyle)
+        style_color = ttkstyle_widget_color(bootstyle)
         frm = ttk.Frame(self, bootstyle=style_color)
         frm.grid(row=self.cumulative_rows, column=0, sticky=tk.EW)
 
