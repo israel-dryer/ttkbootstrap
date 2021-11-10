@@ -38,6 +38,7 @@ CLASSES = [
     'frame',
     'floodgauge',
     'sizegrip',
+    'optionmenu',
     'menubutton',
     'menu',
     'notebook',

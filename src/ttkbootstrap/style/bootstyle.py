@@ -15,7 +15,6 @@ TTK_WIDGETS = (
     ttk.Label,
     ttk.Menubutton,
     ttk.Notebook,
-    # ttk.OptionMenu,
     ttk.Panedwindow,
     ttk.Progressbar,
     ttk.Radiobutton,
@@ -24,7 +23,8 @@ TTK_WIDGETS = (
     ttk.Separator,
     ttk.Sizegrip,
     ttk.Spinbox,
-    ttk.Treeview
+    ttk.Treeview,
+    ttk.OptionMenu,
 )
 
 TK_WIDGETS = (
@@ -58,7 +58,7 @@ def override_ttk_widget_constructor(func):
             bootstyle = ''
 
         if 'style' in kwargs:
-            style = kwargs.get('style')
+            style = kwargs.pop('style') or ''
         else:
             style = ''
 
@@ -90,9 +90,9 @@ def override_ttk_widget_configure(func):
     def configure_wrapper(self, cnf=None, **kwargs):
         # get configuration
         if cnf == 'bootstyle':
-            return func(self, 'style')
+            return self.cget('style')
         elif cnf is not None:
-            return func(self, cnf)
+            return self.cget(cnf)
 
         # set configuration
         if 'bootstyle' in kwargs:
@@ -165,18 +165,19 @@ def setup_ttkbootstap_api():
     # TTK WIDGETS
     for widget in TTK_WIDGETS:
         # override widget constructor
-        __init = override_ttk_widget_constructor(widget.__init__)
-        widget.__init__ = __init
+        _init = override_ttk_widget_constructor(widget.__init__)
+        widget.__init__ = _init
 
         # override configure method
-        __configure = override_ttk_widget_configure(widget.configure)
-        widget.configure = __configure
+        _configure = override_ttk_widget_configure(widget.configure)
+        widget.configure = _configure
 
         # override get and set methods
-        def __setitem(self, key, val): return __configure(self, **{key: val})
-        def __getitem(self, key): return __configure(self, cnf=key)
-        widget.__setitem__ = __setitem
-        widget.__getitem__ = __getitem
+        def __setitem(self, key, val): return _configure(self, **{key: val})
+        def __getitem(self, key): return _configure(self, cnf=key)
+        if widget.__name__ != 'OptionMenu': # this has it's own override
+            widget.__setitem__ = __setitem
+            widget.__getitem__ = __getitem
 
         # override destroy method
         widget.destroy = override_widget_destroy_method
@@ -185,8 +186,8 @@ def setup_ttkbootstap_api():
     for widget in TK_WIDGETS:
 
         # override widget constructor
-        __init = override_tk_widget_constructor(widget.__init__)
-        widget.__init__ = __init
+        _init = override_tk_widget_constructor(widget.__init__)
+        widget.__init__ = _init
 
         # override widget destroy method (quit for tk.Tk)
         if issubclass(widget, tk.Widget):
