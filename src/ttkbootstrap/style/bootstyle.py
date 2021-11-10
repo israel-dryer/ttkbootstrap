@@ -5,27 +5,6 @@ from ttkbootstrap.style.style import Style
 from ttkbootstrap.style.style_builder import StyleBuilderTK, StyleBuilderTTK
 from ttkbootstrap.style.publisher import Publisher, Channel
 
-TTK_WIDGETS = (
-    ttk.Button,
-    ttk.Checkbutton,
-    ttk.Combobox,
-    ttk.Entry,
-    ttk.Frame,
-    ttk.Labelframe,
-    ttk.Label,
-    ttk.Menubutton,
-    ttk.Notebook,
-    ttk.Panedwindow,
-    ttk.Progressbar,
-    ttk.Radiobutton,
-    ttk.Scale,
-    ttk.Scrollbar,
-    ttk.Separator,
-    ttk.Sizegrip,
-    ttk.Spinbox,
-    ttk.Treeview,
-    ttk.OptionMenu,
-)
 
 TK_WIDGETS = (
     tk.Button,
@@ -46,7 +25,7 @@ TK_WIDGETS = (
 )
 
 
-def override_ttk_widget_constructor(func):
+def bootstrap_ttk_init(func):
     """Override widget constructors with bootstyle api options"""
 
     def __init__wrapper(self, *args, **kwargs):
@@ -85,7 +64,7 @@ def override_ttk_widget_constructor(func):
     return __init__wrapper
 
 
-def override_ttk_widget_configure(func):
+def bootstrap_ttk_configure(func):
 
     def configure_wrapper(self, cnf=None, **kwargs):
         # get configuration
@@ -162,31 +141,31 @@ def update_ttk_widget_style(widget: ttk.Widget, style_string: str=None, **kwargs
 
 def setup_ttkbootstap_api():
     """Setup ttkbootstrap for use with tkinter and ttk"""
-    # TTK WIDGETS
-    for widget in TTK_WIDGETS:
-        # override widget constructor
-        _init = override_ttk_widget_constructor(widget.__init__)
-        widget.__init__ = _init
+    # # TTK WIDGETS
+    # for widget in TTK_WIDGETS:
+    #     # override widget constructor
+    #     _init = bootstrap_ttk_init(widget.__init__)
+    #     widget.__init__ = _init
 
-        # override configure method
-        _configure = override_ttk_widget_configure(widget.configure)
-        widget.configure = _configure
+    #     # override configure method
+    #     _configure = bootstrap_ttk_configure(widget.configure)
+    #     widget.configure = _configure
 
-        # override get and set methods
-        def __setitem(self, key, val): return _configure(self, **{key: val})
-        def __getitem(self, key): return _configure(self, cnf=key)
-        if widget.__name__ != 'OptionMenu': # this has it's own override
-            widget.__setitem__ = __setitem
-            widget.__getitem__ = __getitem
+    #     # override get and set methods
+    #     def __setitem(self, key, val): return _configure(self, **{key: val})
+    #     def __getitem(self, key): return _configure(self, cnf=key)
+    #     if widget.__name__ != 'OptionMenu': # this has it's own override
+    #         widget.__setitem__ = __setitem
+    #         widget.__getitem__ = __getitem
 
-        # override destroy method
-        widget.destroy = override_widget_destroy_method
+    #     # override destroy method
+    #     widget.destroy = override_widget_destroy_method
 
     # TK WIDGETS
     for widget in TK_WIDGETS:
 
         # override widget constructor
-        _init = override_tk_widget_constructor(widget.__init__)
+        _init = bootstrap_tk_init(widget.__init__)
         widget.__init__ = _init
 
         # override widget destroy method (quit for tk.Tk)
@@ -196,7 +175,7 @@ def setup_ttkbootstap_api():
             widget.quit = override_widget_destroy_method
 
 
-def override_tk_widget_constructor(func):
+def bootstrap_tk_init(func):
     """Override widget constructors to apply default style for tk 
     widgets
     """
@@ -230,9 +209,13 @@ def update_tk_widget_style(widget: tk.Widget):
         The widget instance being updated.
     """
     method_name = util.tkupdate_method_name(widget)
-    builder: StyleBuilderTK = Style.get_builder_tk()
-    builder_method = builder.name_to_method(method_name)
-    builder_method(builder, widget)
+    try:
+        builder: StyleBuilderTK = Style.get_builder_tk()
+        builder_method = builder.name_to_method(method_name)
+        builder_method(builder, widget)
+    except:
+        # theme has not been initialized yet
+        pass
 
 
 def override_widget_destroy_method(self):
