@@ -46,4 +46,5 @@
 """
 from ttkbootstrap.style.style import Style
 from ttkbootstrap.style import bootstyle
+from ttkbootstrap.widgets import *
 bootstyle.setup_ttkbootstap_api()
