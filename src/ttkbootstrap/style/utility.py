@@ -33,12 +33,13 @@ CLASSES = [
     'checkbutton',
     'combobox',
     'entry',
-    'label',
     'labelframe',
+    'label',
     'frame',
     'floodgauge',
     'sizegrip',
     'menubutton',
+    'menu',
     'notebook',
     'panedwindow',
     'radiobutton',
@@ -51,7 +52,9 @@ CLASSES = [
     'treeview',
     'toggle',
     'tk',
-    'calendar'
+    'calendar',
+    'listbox',
+    'canvas'
 ]
 
 # regex patterns

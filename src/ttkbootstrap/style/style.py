@@ -168,7 +168,6 @@ class Style(ttk.Style):
 
         # theme has not yet been created
         self._theme_objects[themename] = StyleBuilderTTK(self, self.theme)
-        self._theme_objects[themename].builder_tk.style_tkinter_widgets()
         Publisher.publish_message(Channel.TTK)
         Publisher.publish_message(Channel.STD)        
         return

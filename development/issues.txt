@@ -29,12 +29,12 @@ x Create method for creating ttk styles as needed, other than the default style.
 OPEN ISSUES
 ===========
 - update meter with bootstyle api
-- labelframe borders do not show up except on primary
-- refactor remaining tk widgets with new architecture
-- optionmenu does now work with new api
+x labelframe borders do not show up except on primary (fixed by setting order of pattern search)
+x refactor remaining tk widgets with new architecture.
+- optionmenu does now work with new api.
 - when subclassing from Style, it appears that two instances of the window are opened so that
     when I try to close the window, another opens up immedietly.
-- create new style creator application to replace the existing version
+- create new style creator application to replace the existing version.
 
 - update gallary applications
     - everything_bagel
