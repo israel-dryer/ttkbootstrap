@@ -1,10 +1,9 @@
 """
     Author: Israel Dryer
-    Modified: 2021-10-24
+    Modified: 2021-11-10
 """
 import tkinter as tk
-from tkinter import ttk
-from ttkbootstrap import Style
+import ttkbootstrap as ttk
 
 
 class Application(tk.Tk):
@@ -12,7 +11,7 @@ class Application(tk.Tk):
     def __init__(self):
         super().__init__()
         self.title('Calculator')
-        self.style = Style('flatly')
+        self.style = ttk.Style('flatly')
         self.style.configure('.', font='TkFixedFont 16')
         self.calc = Calculator(self)
         self.calc.pack(fill=tk.BOTH, expand=tk.YES)

@@ -1,11 +1,10 @@
 """
     Author: Israe Dryer
-    Modified: 2021-10-24
+    Modified: 2021-11-10
     Adapted for ttkbootstrap from: https://github.com/PySimpleGUI/PySimpleGUI/blob/master/DemoPrograms/Demo_Desktop_Widget_Timer.py
 """
 import tkinter as tk
-from tkinter import ttk
-from ttkbootstrap import Style
+import ttkbootstrap as ttk
 
 
 class Application(tk.Tk):
@@ -13,7 +12,7 @@ class Application(tk.Tk):
     def __init__(self):
         super().__init__()
         self.title('Timer')
-        self.style = Style('darkly')
+        self.style = ttk.Style('darkly')
         self.timer = TimerWidget(self)
         self.timer.pack(fill=tk.BOTH, expand=tk.YES)
 

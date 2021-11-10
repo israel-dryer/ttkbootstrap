@@ -1,11 +1,10 @@
 """
     Author: Israel Dryer
-    Modified: 2021-10-24
+    Modified: 2021-11-10
     Adapted for ttkbootstrap from: https://github.com/israel-dryer/Mini-VLC-Player
 """
 import tkinter as tk
-from tkinter import ttk
-from ttkbootstrap import Style
+import ttkbootstrap as ttk
 from pathlib import Path
 
 
@@ -15,7 +14,7 @@ class Application(tk.Tk):
         super().__init__()
         self.title('Media Player')
 
-        self.style = Style()
+        self.style = ttk.Style()
         self.style.theme_use('minty')
 
         self.player = Player(self)

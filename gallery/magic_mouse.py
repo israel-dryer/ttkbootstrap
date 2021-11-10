@@ -1,14 +1,14 @@
 """
     Author: Israel Dryer
-    Modified: 2021-10-24
+    Modified: 2021-11-10
     Adapted for ttkbootstrap from: https://magicutilities.net/magic-mouse/features
 """
 from pathlib import Path
 import tkinter as tk
 from tkinter import PhotoImage
-from tkinter import ttk
+import ttkbootstrap as ttk
 from tkinter.messagebox import showinfo
-from ttkbootstrap import Style
+
 
 
 class Application(tk.Tk):
@@ -16,7 +16,7 @@ class Application(tk.Tk):
     def __init__(self):
         super().__init__()
         self.title('Magic Mouse')
-        self.style = Style('yeti')
+        self.style = ttk.Style('yeti')
 
         self.window = ttk.Frame(self)
         self.window.pack(fill=tk.BOTH, expand=tk.YES)

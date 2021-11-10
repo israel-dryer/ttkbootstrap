@@ -1,6 +1,5 @@
 import tkinter as tk
-from tkinter import ttk
-from ttkbootstrap import Style
+import ttkbootstrap as ttk
 
 ZEN = """Beautiful is better than ugly. 
 Explicit is better than implicit. 
@@ -25,7 +24,7 @@ Namespaces are one honking great idea -- let's do more of those!"""
 
 root = tk.Tk()
 root.title("ttkbootstrap widget demo")
-style = Style()
+style = ttk.Style()
 style.theme_use('superhero')
 theme_names = style.theme_names()
 
@@ -174,17 +173,17 @@ menu = tk.Menu(root)
 for i, t in enumerate(style.theme_names()):
     menu.add_radiobutton(label=t, value=i)
 
-mb = ttk.Menubutton(btn_group, text="Menubutton", menu=menu)
+mb = ttk.Menubutton(btn_group, text="Menubutton", menu=menu, bootstyle='secondary')
 mb.pack(fill=tk.X, pady=5)
 
 default = ttk.Button(btn_group, text="Default button")
 default.pack(fill=tk.X)
 default.focus_set()
 
-ob = ttk.Button(btn_group, text="Outline button", bootstyle='outline')
+ob = ttk.Button(btn_group, text="Outline button", bootstyle='outline-success')
 ob.pack(fill=tk.X, pady=5)
 
-lb = ttk.Button(btn_group, text="Link button", bootstyle='link')
+lb = ttk.Button(btn_group, text="Link button", bootstyle='link-warning')
 lb.pack(fill=tk.X, pady=5)
 
 input_group = ttk.Labelframe(rframe, text="Other input widgets", padding=10)
