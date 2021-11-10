@@ -46,7 +46,7 @@ class LongRunning(ttk.Frame):
         self.progressbar = ttk.Progressbar(
             master=self, 
             maximum=10, 
-            bootstyle='info'
+            bootstyle='info-striped'
         )
         self.progressbar.pack(fill=tk.X)
 
@@ -78,8 +78,7 @@ class LongRunning(ttk.Frame):
             showinfo(title='alert', message="process complete")
             self.btn.configure(state=tk.NORMAL)
             return
-        tasks_completed = (self.progressbar['maximum'] - 
-                           self.task_queue.unfinished_tasks)
+        tasks_completed = self.progressbar.cget('maximum') - self.task_queue.unfinished_tasks
         self.progressbar.configure(value=tasks_completed)
         self.after(500, self.listen_for_complete_task)
 
