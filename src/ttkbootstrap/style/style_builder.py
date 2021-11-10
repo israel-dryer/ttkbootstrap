@@ -86,40 +86,21 @@ class StyleBuilderTK:
         func = getattr(StyleBuilderTK, method_name)
         return func                
 
-    def style_tkinter_widgets(self):
-        """A wrapper on all widget style methods. Applies current theme
-        to all standard tkinter widgets
-        """
-        self.update_spinbox_style()
-        self.update_checkbutton_style()
-        self.update_radiobutton_style()
-        self.update_entry_style()
-        self.update_scale_style()
-        self.update_listbox_style()
-        self.update_menu_style()
-        self.update_menubutton_style()
-        self.update_labelframe_style()
-        self.update_canvas_style()
-        self.update_window_style()
-
     def update_tk_style(self, widget: tk.Tk):
         widget.configure(background=self.colors.bg)
 
-    def update_window_style(self):
-        """Apply global options to all matching ``tkinter`` widgets"""
-        self.master.configure(background=self.colors.bg)
-        self._set_option("*background", self.colors.bg, 60)
-        self._set_option("*font", self.theme.font, 60)
-        self._set_option("*activeBackground", self.colors.selectbg, 60)
-        self._set_option("*activeForeground", self.colors.selectfg, 60)
-        self._set_option("*selectBackground", self.colors.selectbg, 60)
-        self._set_option("*selectForeground", self.colors.selectfg, 60)
-
-    def update_canvas_style(self):
+    def update_canvas_style(self, widget: tk.Widget):
         """Apply style to ``tkinter.Canvas``"""
-        self._set_option("*Canvas.highlightThickness", 1)
-        self._set_option("*Canvas.background", self.colors.bg)
-        self._set_option("*Canvas.highlightBackground", self.colors.border)
+        if self.is_light_theme:
+            bordercolor = self.colors.border
+        else:
+            bordercolor = self.colors.selectbg
+
+        widget.configure(
+            background=self.colors.bg,
+            highlightthickness=1,
+            highlightbackground=bordercolor
+        )
 
     def update_button_style(self, widget: tk.Widget):
         """Apply style to ``tkinter.Button``"""
@@ -147,112 +128,144 @@ class StyleBuilderTK:
         """Apply style to ``tkinter.Frame"""
         widget.configure(background=self.colors.bg)
 
-    def update_checkbutton_style(self):
+    def update_checkbutton_style(self, widget: tk.Widget):
         """Apply style to ``tkinter.Checkbutton``"""
-        self._set_option("*Checkbutton.activeBackground", self.colors.bg)
-        self._set_option("*Checkbutton.activeForeground", self.colors.primary)
-        self._set_option("*Checkbutton.background", self.colors.bg)
-        self._set_option("*Checkbutton.foreground", self.colors.fg)
-        if not self.is_light_theme:
-            self._set_option("*Checkbutton.selectColor", self.colors.primary)
-        else:
-            self._set_option("*Checkbutton.selectColor", "white")
+        widget.configure(
+            activebackground=self.colors.bg,
+            activeforeground=self.colors.primary,
+            background=self.colors.bg,
+            foreground=self.colors.fg,
+            selectcolor=self.colors.bg
+        )
 
-    def update_radiobutton_style(self):
+    def update_radiobutton_style(self, widget: tk.Widget):
         """Apply style to ``tkinter.Radiobutton``"""
-        self._set_option("*Radiobutton.activeBackground", self.colors.bg)
-        self._set_option("*Radiobutton.activeForeground", self.colors.primary)
-        self._set_option("*Radiobutton.background", self.colors.bg)
-        self._set_option("*Radiobutton.foreground", self.colors.fg)
-        if not self.is_light_theme:
-            self._set_option("*Radiobutton.selectColor", self.colors.primary)
-        else:
-            self._set_option("*Checkbutton.selectColor", "white")
+        widget.configure(
+            activebackground=self.colors.bg,
+            activeforeground=self.colors.primary,
+            background=self.colors.bg,
+            foreground=self.colors.fg,
+            selectcolor=self.colors.bg
+        )
 
-    def update_entry_style(self):
+    def update_entry_style(self, widget: tk.Widget):
         """Apply style to ``tkinter.Entry``"""
-        self._set_option("*Entry.relief", tk.FLAT)
-        self._set_option("*Entry.highlightThickness", 1)
-        self._set_option("*Entry.foreground", self.colors.inputfg)
-        self._set_option("*Entry.highlightBackground", self.colors.border)
-        self._set_option("*Entry.highlightColor", self.colors.primary)
-
         if self.is_light_theme:
-            self._set_option("*Entry.background", self.colors.inputbg)
+            bordercolor = self.colors.border
         else:
-            self._set_option(
-                "*Entry.background",
-                Colors.update_hsv(self.colors.inputbg, vd=-0.1),
-            )
+            bordercolor = self.colors.selectbg
+        
+        widget.configure(
+            relief=tk.FLAT,
+            highlightthickness=1,
+            foreground=self.colors.inputfg,
+            highlightbackground=bordercolor,
+            highlightcolor=self.colors.primary,
+            background=self.colors.inputbg,
+            insertbackground=self.colors.inputfg,
+            insertwidth=1
+        )
 
-    def update_scale_style(self):
+    def update_scale_style(self, widget: tk.Widget):
         """Apply style to ``tkinter.Scale``"""
-        active_color = Colors.update_hsv(self.colors.primary, vd=-0.2)
-        self._set_option("*Scale.background", self.colors.primary)
-        self._set_option("*Scale.showValue", False)
-        self._set_option("*Scale.sliderRelief", tk.FLAT)
-        self._set_option("*Scale.borderWidth", 0)
-        self._set_option("*Scale.activeBackground", active_color)
-        self._set_option("*Scale.highlightThickness", 1)
-        self._set_option("*Scale.highlightColor", self.colors.border)
-        self._set_option("*Scale.highlightBackground", self.colors.border)
-        self._set_option("*Scale.troughColor", self.colors.inputbg)
+        if self.is_light_theme:
+            bordercolor = self.colors.border
+        else:
+            bordercolor = self.colors.selectbg
 
-    def update_spinbox_style(self):
+        activecolor= Colors.update_hsv(self.colors.primary, vd=-0.2)
+        widget.configure(
+            background=self.colors.primary,
+            showvalue=False,
+            sliderrelief=tk.FLAT,
+            borderwidth=0,
+            activebackground=activecolor,
+            highlightthickness=1,
+            highlightcolor=bordercolor,
+            highlightbackground=bordercolor,
+            troughcolor=self.colors.inputbg
+        )
+
+    def update_spinbox_style(self, widget: tk.Widget):
         """Apply style to `tkinter.Spinbox``"""
-        self._set_option("*Spinbox.foreground", self.colors.inputfg)
-        self._set_option("*Spinbox.relief", tk.FLAT)
-        self._set_option("*Spinbox.highlightThickness", 1)
-        self._set_option("*Spinbox.highlightColor", self.colors.primary)
-        self._set_option("*Spinbox.highlightBackground", self.colors.border)
         if self.is_light_theme:
-            self._set_option("*Spinbox.background", self.colors.inputbg)
+            bordercolor = self.colors.border
         else:
-            self._set_option(
-                "*Spinbox.background",
-                Colors.update_hsv(self.colors.inputbg, vd=-0.1),
-            )
+            bordercolor = self.colors.selectbg        
+        
+        widget.configure(
+            relief=tk.FLAT,
+            highlightthickness=1,
+            foreground=self.colors.inputfg,
+            highlightbackground=bordercolor,
+            highlightcolor=self.colors.primary,
+            background=self.colors.inputbg,
+            buttonbackground=self.colors.inputbg,
+            insertbackground=self.colors.inputfg,
+            insertwidth=1,
 
-    def update_listbox_style(self):
+            # these options should work, but do not have any affect
+            buttonuprelief=tk.FLAT,
+            buttondownrelief=tk.SUNKEN
+        )        
+
+    def update_listbox_style(self, widget: tk.Widget):
         """Apply style to ``tkinter.Listbox``"""
-        self._set_option("*Listbox.foreground", self.colors.inputfg)
-        self._set_option("*Listbox.background", self.colors.inputbg)
-        self._set_option("*Listbox.selectBackground", self.colors.selectbg)
-        self._set_option("*Listbox.selectForeground", self.colors.selectfg)
-        self._set_option("*Listbox.highlightColor", self.colors.primary)
-        self._set_option("*Listbox.highlightBackground", self.colors.border)
-        self._set_option("*Listbox.highlightThickness", 1)
-        self._set_option("*Listbox.activeStyle", "none")
-        self._set_option("*Listbox.relief", tk.FLAT)
-
-    def update_menubutton_style(self):
-        """Apply style to ``tkinter.Menubutton``"""
-        hover_color = Colors.update_hsv(self.colors.primary, vd=-0.2)
-        self._set_option("*Menubutton.background", self.colors.primary)
-        self._set_option("*Menubutton.foreground", self.colors.selectfg)
-        self._set_option("*Menubutton.activeBackground", hover_color)
-        self._set_option("*Menubutton.borderWidth", 0)
-
-    def update_menu_style(self):
-        """Apply style to ``tkinter.Menu``"""
-        self._set_option("*Menu.tearOff", 0)
-        self._set_option("*Menu.activeBackground", self.colors.selectbg)
-        self._set_option("*Menu.activeForeground", self.colors.selectfg)
-        self._set_option("*Menu.foreground", self.colors.fg)
-        self._set_option("*Menu.selectColor", self.colors.primary)
-        self._set_option("*Menu.font", self.theme.font)
         if self.is_light_theme:
-            self._set_option("*Menu.background", self.colors.inputbg)
+            bordercolor = self.colors.border
         else:
-            self._set_option("*Menu.background", self.colors.bg)
+            bordercolor = self.colors.selectbg        
+        
+        widget.configure(
+            foreground=self.colors.inputfg,
+            background=self.colors.inputbg,
+            selectbackground=self.colors.selectbg,
+            selectforeground=self.colors.selectfg,
+            highlightcolor=self.colors.primary,
+            highlightbackground=bordercolor,
+            highlightthickness=1,
+            activestyle="none",
+            relief=tk.FLAT
+        )        
 
-    def update_labelframe_style(self):
+    def update_menubutton_style(self, widget: tk.Widget):
+        """Apply style to ``tkinter.Menubutton``"""
+        activebackground = Colors.update_hsv(self.colors.primary, vd=-0.2)
+        widget.configure(
+            background=self.colors.primary,
+            foreground=self.colors.selectfg,
+            activebackground=activebackground,
+            activeforeground=self.colors.selectfg,
+            borderwidth=0
+        )
+
+    def update_menu_style(self, widget: tk.Widget):
+        """Apply style to ``tkinter.Menu``"""
+        widget.configure(
+            tearoff=False,
+            activebackground=self.colors.selectbg,
+            activeforeground=self.colors.selectfg,
+            foreground=self.colors.fg,
+            selectcolor=self.colors.primary,
+            background=self.colors.bg,
+            relief=tk.FLAT,
+            borderwidth=0
+        )
+
+    def update_labelframe_style(self, widget: tk.Widget):
         """Apply style to ``tkinter.Labelframe``"""
-        self._set_option("*Labelframe.highlightColor", self.colors.border)
-        self._set_option("*Labelframe.foreground", self.colors.fg)
-        self._set_option("*Labelframe.font", self.theme.font)
-        self._set_option("*Labelframe.borderWidth", 1)
-        self._set_option("*Labelframe.highlightThickness", 0)
+        if self.is_light_theme:
+            bordercolor = self.colors.border
+        else:
+            bordercolor = self.colors.selectbg        
+        
+        widget.configure(
+            highlightcolor=bordercolor,
+            foreground=self.colors.fg,
+            borderwidth=1,
+            highlightthickness=0,
+            background=self.colors.bg
+        )
 
     def update_text_style(self, widget: tk.Widget):
         """Apply style to ``tkinter.Text``"""
@@ -1177,7 +1190,7 @@ class StyleBuilderTTK:
             body_style = STYLE
             header_style = f'{STYLE}.Heading'
             item_style = 'Item'
-            focuscolor = bordercolor
+            focuscolor = self.colors.primary
         else:
             background = self.colors.get(colorname)
             foreground = self.colors.selectfg
@@ -1207,7 +1220,10 @@ class StyleBuilderTTK:
             foreground=self.colors.inputfg,
             bordercolor=bordercolor,
             lightcolor=self.colors.inputbg,
-            darkcolor=self.colors.inputbg,            
+            darkcolor=self.colors.inputbg,    
+            borderwidth=2,
+            padding=0,
+            relief=tk.RAISED
         )
         self.style.map(
             body_style,
@@ -2256,14 +2272,16 @@ class StyleBuilderTTK:
         if colorname == DEFAULT:
             foreground = self.colors.fg
             ttkstyle = STYLE
+
+            if self.is_light_theme:
+                bordercolor = self.colors.border
+            else:
+                bordercolor = self.colors.selectbg
+
         else:
             foreground = self.colors.get(colorname)
+            bordercolor = foreground
             ttkstyle = f'{colorname}.{STYLE}'
-
-        if self.is_light_theme:
-            bordercolor = self.colors.border
-        else:
-            bordercolor = self.colors.selectbg
 
         # create widget style
         self.style.configure(

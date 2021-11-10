@@ -1,9 +1,8 @@
 import tkinter as tk
 from tkinter import ttk
-from ttkbootstrap.constants import DEFAULT
+import ttkbootstrap.style.utility as util
 from ttkbootstrap.style.style import Style
 from ttkbootstrap.style.style_builder import StyleBuilderTK, StyleBuilderTTK
-import ttkbootstrap.style.utility as util
 from ttkbootstrap.style.publisher import Publisher, Channel
 
 TTK_WIDGETS = (
@@ -12,8 +11,8 @@ TTK_WIDGETS = (
     ttk.Combobox,
     ttk.Entry,
     ttk.Frame,
-    ttk.Label,
     ttk.Labelframe,
+    ttk.Label,
     ttk.Menubutton,
     ttk.Notebook,
     # ttk.OptionMenu,
@@ -34,8 +33,16 @@ TK_WIDGETS = (
     tk.Text,
     tk.Frame,
     tk.Tk,
-    # tk.Listbox,
-    # tk.OptionMenu
+    tk.Checkbutton,
+    tk.Radiobutton,
+    tk.Entry,
+    tk.Scale,
+    tk.Spinbox,
+    tk.Listbox,
+    tk.Menu,
+    tk.Menubutton,
+    tk.LabelFrame,
+    tk.Canvas
 )
 
 
