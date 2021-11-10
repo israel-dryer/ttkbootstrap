@@ -2650,10 +2650,15 @@ class StyleBuilderTTK:
 
     def update_combobox_popdown_style(self, widget):
         """Update the combobox popdown list and scrollbar"""
+        if self.is_light_theme:
+            bordercolor = self.colors.border
+        else:
+            bordercolor = self.colors.selectbg
+
         tk_settings = []
-        tk_settings.extend(["-borderwidth", 0])
-        tk_settings.extend(["-highlightthickness", 3])
-        tk_settings.extend(["-highlightcolor", self.colors.inputbg])
+        tk_settings.extend(["-borderwidth", 2])
+        tk_settings.extend(["-highlightthickness", 1])
+        tk_settings.extend(["-highlightcolor", bordercolor])#self.colors.inputbg])
         tk_settings.extend(["-background", self.colors.inputbg])
         tk_settings.extend(["-foreground", self.colors.inputfg])
         tk_settings.extend(["-selectbackground", self.colors.selectbg])
