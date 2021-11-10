@@ -61,7 +61,7 @@ cbo.current(theme_names.index(style.theme.name))
 def change_theme(e):
     t = cbo.get()
     style.theme_use(t)
-    # root.configure(background=root.theme.colors.background)
+    #root.configure(background=root.theme.colors.background)
 
 
 cbo.bind('<<ComboboxSelected>>', change_theme)
@@ -69,7 +69,7 @@ cbo.bind('<<ComboboxSelected>>', change_theme)
 cb1 = ttk.Checkbutton(
     master=theme_frame,
     text="rounded toggle",
-    bootstyle="round",
+    bootstyle="success-round-toggle",
 )
 cb1.pack(side=tk.RIGHT)
 cb1.invoke()
@@ -77,7 +77,7 @@ cb1.invoke()
 cb2 = ttk.Checkbutton(
     master=theme_frame,
     text="squared toggle",
-    bootstyle="square"
+    bootstyle="square-toggle"
 )
 cb2.pack(side=tk.RIGHT, padx=10)
 cb2.invoke()
@@ -110,7 +110,8 @@ for i, color in enumerate(style.colors):
         bootstyle=color
     )
     rb.pack(side=tk.LEFT, expand=tk.YES, padx=5)
-    rb.invoke()
+    if i == 0:
+        rb.invoke()
 
 rb = ttk.Radiobutton(
     master=rb_group,
