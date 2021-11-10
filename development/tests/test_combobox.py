@@ -1,6 +1,6 @@
 import tkinter as tk
-from tkinter import ttk
-from ttkbootstrap import Style
+import ttkbootstrap as ttk
+
 
 DARK = 'superhero'
 LIGHT = 'flatly'
@@ -52,7 +52,7 @@ def create_combobox_test(bootstyle, style, test_name):
 if __name__ == '__main__':
     # create visual widget style tests
     root = tk.Tk()
-    style = Style()
+    style = ttk.Style()
 
     test1 = create_combobox_test('TCombobox', style, 'Combobox')
     test1.pack(side=tk.LEFT, fill=tk.BOTH)

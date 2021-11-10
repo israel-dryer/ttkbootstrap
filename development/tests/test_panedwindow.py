@@ -1,6 +1,5 @@
 import tkinter as tk
-from tkinter import ttk
-from ttkbootstrap import Style
+import ttkbootstrap as ttk
 
 DARK = 'superhero'
 LIGHT = 'flatly'
@@ -15,14 +14,14 @@ def create_panedwindow_frame(widget_style, style):
     ttk.Separator(frame).pack(padx=5, pady=5, fill=tk.X)
 
     # default
-    pw = ttk.PanedWindow(frame)
+    pw = ttk.Panedwindow(frame)
     pw.pack(padx=5, pady=5, fill=tk.BOTH)
     pw.add(ttk.Frame(pw, width=100, height=50, bootstyle='info'))
     pw.add(ttk.Frame(pw, width=100, height=50, bootstyle='success'))
 
     for color in style.colors:
     # default
-        pw = ttk.PanedWindow(frame, bootstyle=color)
+        pw = ttk.Panedwindow(frame, bootstyle=color)
         pw.pack(padx=5, pady=5, fill=tk.BOTH)
         pw.add(ttk.Frame(pw, width=100, height=50))
         pw.add(ttk.Frame(pw, width=100, height=50))        
@@ -33,7 +32,7 @@ def create_panedwindow_frame(widget_style, style):
 if __name__ == '__main__':
     # create visual widget style tests
     root = tk.Tk()
-    style = Style(theme=LIGHT)
+    style = ttk.Style(theme=LIGHT)
 
     create_panedwindow_frame('TPanedwindow', style).pack(side=tk.LEFT)
 

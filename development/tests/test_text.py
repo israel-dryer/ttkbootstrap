@@ -1,6 +1,5 @@
 import tkinter as tk
-from tkinter import ttk
-from ttkbootstrap import Style
+import ttkbootstrap as ttk
 
 DARK = 'superhero'
 LIGHT = 'flatly'
@@ -8,7 +7,7 @@ LIGHT = 'flatly'
 if __name__ == '__main__':
     # create visual widget style tests
     root = tk.Tk()
-    style = Style(theme=DARK)
+    style = ttk.Style(theme=DARK)
 
     tk.Text(root).pack(padx=10, pady=10)
 

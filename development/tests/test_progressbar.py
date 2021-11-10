@@ -1,6 +1,5 @@
 import tkinter as tk
-from tkinter import ttk
-from ttkbootstrap import Style
+import ttkbootstrap as ttk
 
 DARK = 'superhero'
 LIGHT = 'flatly'
@@ -47,7 +46,7 @@ def create_progressbar_frame(bootstyle, style, orient, testname):
 if __name__ == '__main__':
     # create visual widget style tests
     root = tk.Tk()
-    style = Style(theme=LIGHT)
+    style = ttk.Style(theme=LIGHT)
 
     test1 = create_progressbar_frame(
         '', style, 'horizontal', 'Solid Progressbar')
