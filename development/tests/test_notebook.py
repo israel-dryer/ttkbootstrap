@@ -1,6 +1,6 @@
 import tkinter as tk
-from tkinter import ttk
-from ttkbootstrap import Style
+import ttkbootstrap as ttk
+
 
 DARK = 'superhero'
 LIGHT = 'flatly'
@@ -30,7 +30,7 @@ def create_notebook_frame(widget_style, style):
 if __name__ == '__main__':
     # create visual widget style tests
     root = tk.Tk()
-    style = Style(theme=DARK)
+    style = ttk.Style(theme=DARK)
 
     create_notebook_frame('TNotebook', style).pack(side=tk.LEFT)
 

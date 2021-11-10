@@ -1,6 +1,6 @@
 import tkinter as tk
-from tkinter import ttk
-from ttkbootstrap import Style
+import ttkbootstrap as ttk
+
 
 DARK = 'superhero'
 LIGHT = 'flatly'
@@ -41,7 +41,7 @@ def create_labelframe_style(bootstyle, style):
 if __name__ == '__main__':
     # create visual widget style tests
     root = tk.Tk()
-    style = Style(theme=LIGHT)
+    style = ttk.Style(theme=LIGHT)
 
     create_labelframe_style('', style).pack(side=tk.LEFT)
 

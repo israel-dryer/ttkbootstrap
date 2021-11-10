@@ -1,6 +1,5 @@
 import tkinter as tk
-from tkinter import ttk
-from ttkbootstrap import Style
+import ttkbootstrap as ttk
 
 DARK = 'superhero'
 LIGHT = 'flatly'
@@ -47,10 +46,10 @@ def button_style_frame(bootstyle, style, widget_name):
 if __name__ == '__main__':
     # create visual widget style tests
     root = tk.Tk()
-    style = Style(theme='flatly')
+    style = ttk.Style(theme='minty')
 
-    button_style_frame('', style, 'Solid Button').pack(side=tk.LEFT)
     button_style_frame('outline', style, 'Outline Button').pack(side=tk.LEFT)
+    button_style_frame('', style, 'Solid Button').pack(side=tk.LEFT)
     button_style_frame('link', style, 'Link Button').pack(side=tk.LEFT)
 
     root.mainloop()
