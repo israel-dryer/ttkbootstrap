@@ -48,9 +48,9 @@ if __name__ == '__main__':
 
     test1 = create_checkbutton_test('', style, 'Checkbutton')
     test1.pack(side=tk.LEFT, fill=tk.BOTH)
-    test2 = create_checkbutton_test('round', style, 'Roundtoggle')
+    test2 = create_checkbutton_test('round-toggle', style, 'Roundtoggle')
     test2.pack(side=tk.LEFT, fill=tk.BOTH)
-    test3 = create_checkbutton_test('square', style, 'Squaretoggle')
+    test3 = create_checkbutton_test('square-toggle', style, 'Squaretoggle')
     test3.pack(side=tk.LEFT, fill=tk.BOTH)
     test4 = create_checkbutton_test('toolbutton', style, 'Toolbutton')
     test4.pack(side=tk.LEFT, fill=tk.BOTH)

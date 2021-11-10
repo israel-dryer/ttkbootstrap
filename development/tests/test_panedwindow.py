@@ -15,14 +15,14 @@ def create_panedwindow_frame(widget_style, style):
     ttk.Separator(frame).pack(padx=5, pady=5, fill=tk.X)
 
     # default
-    pw = ttk.PanedWindow(frame, orient=tk.HORIZONTAL)
+    pw = ttk.PanedWindow(frame)
     pw.pack(padx=5, pady=5, fill=tk.BOTH)
     pw.add(ttk.Frame(pw, width=100, height=50, bootstyle='info'))
     pw.add(ttk.Frame(pw, width=100, height=50, bootstyle='success'))
 
     for color in style.colors:
     # default
-        pw = ttk.PanedWindow(frame, orient=tk.VERTICAL, style=f'{color}.TPanedwindow')
+        pw = ttk.PanedWindow(frame, bootstyle=color)
         pw.pack(padx=5, pady=5, fill=tk.BOTH)
         pw.add(ttk.Frame(pw, width=100, height=50))
         pw.add(ttk.Frame(pw, width=100, height=50))        
@@ -33,7 +33,7 @@ def create_panedwindow_frame(widget_style, style):
 if __name__ == '__main__':
     # create visual widget style tests
     root = tk.Tk()
-    style = Style(theme=DARK)
+    style = Style(theme=LIGHT)
 
     create_panedwindow_frame('TPanedwindow', style).pack(side=tk.LEFT)
 

@@ -151,6 +151,12 @@ def update_ttk_widget_style(widget: ttk.Widget, style_string: str=None, **kwargs
         builder: StyleBuilderTTK = style.get_builder()
         builder_method = builder.name_to_method(method_name)
         builder_method(builder, widget_color)
+
+    # update combobox style
+    if widget.winfo_class() == 'TCombobox':
+        builder: StyleBuilderTTK = style.get_builder()
+        builder.update_combobox_popdown_style(widget)
+
     return ttkstyle
 
 

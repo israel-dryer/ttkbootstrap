@@ -13,7 +13,7 @@ class Application(tk.Tk):
     def __init__(self):
         super().__init__()
         self.title('Timer')
-        self.style = Style()
+        self.style = Style('darkly')
         self.timer = TimerWidget(self)
         self.timer.pack(fill=tk.BOTH, expand=tk.YES)
 

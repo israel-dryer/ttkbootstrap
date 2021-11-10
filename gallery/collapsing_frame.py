@@ -6,7 +6,7 @@ from pathlib import Path
 import tkinter as tk
 from tkinter import ttk
 from ttkbootstrap import Style
-from ttkbootstrap.bootstyle import find_widget_color
+from ttkbootstrap.style.utility import ttkstyle_widget_color
 
 
 class Application(tk.Tk):
@@ -75,7 +75,7 @@ class CollapsingFrame(ttk.Frame):
         """
         if child.winfo_class() != 'TFrame':
             return
-        style_color = find_widget_color(bootstyle)
+        style_color = ttkstyle_widget_color(bootstyle)
         frm = ttk.Frame(self, bootstyle=style_color)
         frm.grid(row=self.cumulative_rows, column=0, sticky=tk.EW)
 
