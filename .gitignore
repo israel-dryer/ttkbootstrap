@@ -8,3 +8,4 @@ dist
 *_static
 .vscode
 __pycache__
+experiment
