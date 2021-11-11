@@ -1,5 +1,5 @@
 import tkinter as tk
-from tkinter.ttk import Style
+from tkinter import ttk
 from ttkbootstrap.constants import *
 from ttkbootstrap.style.colors import Colors
 from PIL import Image, ImageDraw, ImageTk, ImageFont
@@ -66,7 +66,7 @@ class StyleBuilderTK:
         styler_ttk : StylerTTK
             An instance of the ``StylerTTK`` class.
         """
-        self.master = builder.style.master
+        self.master = builder.style.master  # TODO is this used?
         self.theme: ThemeDefinition = builder.theme
 
         self.colors = self.theme.colors
@@ -304,20 +304,20 @@ class StyleBuilderTTK:
 
         Parameters
         ----------
-        style : Style
-            An instance of ``ttk.Style``.
+        style : BootStyle
+            An instance of ``BootStyle``.
 
         definition : ThemeDefinition
             An instance of ``ThemeDefinition``; used to create the
             theme settings.
         """
-        self.style: Style = style
+        self.style = style
         self.theme: ThemeDefinition = definition
         self.theme_images = {}
         self.colors = self.theme.colors
         self.is_light_theme = self.theme.type == LIGHT
-        self.settings = {}
-        self.builder_tk = StyleBuilderTK(self)
+        self.settings = {}  # TODO is this used?
+        self.builder_tk = StyleBuilderTK(self)  #TODO is this used?
         self.create_theme()
 
     @staticmethod
@@ -330,7 +330,7 @@ class StyleBuilderTTK:
         style methods.
         """
         self.style.theme_create(self.theme.name, TTK_CLAM)
-        Style.theme_use(self.style, self.theme.name)
+        ttk.Style.theme_use(self.style, self.theme.name)
         self.update_ttk_theme_settings()
 
     def update_ttk_theme_settings(self):
@@ -340,50 +340,6 @@ class StyleBuilderTTK:
         for each ttk widget.
         """
         self.create_default_style()
-
-        # widgets with orientation
-        self.create_separator_style()
-        self.create_progressbar_style()
-        self.create_striped_progressbar_style()
-        self.create_scale_style()
-        self.create_scrollbar_style()
-        self.create_floodgauge_style()
-        self.create_panedwindow_style()
-
-        # entry widgets
-        self.create_entry_style()
-        self.create_combobox_style()
-        self.create_spinbox_style()
-
-        # button widgets
-        self.create_button_style()
-        self.create_outline_button_style()
-        self.create_link_button_style()
-
-        self.create_toolbutton_style()
-        self.create_outline_toolbutton_style()
-
-        self.create_menubutton_style()
-        self.create_outline_menubutton_style()
-
-        self.create_checkbutton_style()
-        self.create_radiobutton_style()
-        self.create_toggle_style()
-        self.create_round_toggle_style()
-        self.create_square_toggle_style()
-
-        # other widgets
-        self.create_label_style()
-        self.create_inverse_label_style()
-        self.create_frame_style()
-        self.create_treeview_style()
-        self.create_notebook_style()
-        self.create_sizegrip_style()
-        self.create_labelframe_style()
-
-        # custom widgets
-        self.create_calendar_style()
-        self.create_meter_style()
 
     def create_default_style(self):
         """Setup the default ``ttk.Style`` configuration. These
@@ -421,7 +377,7 @@ class StyleBuilderTTK:
             disabled_fg = self.colors.selectbg
             bordercolor = self.colors.selectbg
 
-        if colorname == DEFAULT:
+        if any([colorname == DEFAULT, colorname == '']):
             ttkstyle = STYLE
             element = f"{ttkstyle.replace('TC','C')}"
             focuscolor = self.colors.primary
@@ -505,7 +461,7 @@ class StyleBuilderTTK:
         else:
             default_color = self.colors.selectbg
 
-        if colorname == DEFAULT:
+        if any([colorname == DEFAULT, colorname == '']):
             background = default_color
             h_ttkstyle = HSTYLE
             v_ttkstyle = VSTYLE
@@ -554,7 +510,7 @@ class StyleBuilderTTK:
         Tuple[str]
             A list of photoimage names.
         """
-        if colorname == DEFAULT:
+        if any([colorname == DEFAULT, colorname == '']):
             barcolor = self.colors.primary
         else:
             barcolor = self.colors.get(colorname)
@@ -596,7 +552,7 @@ class StyleBuilderTTK:
         HSTYLE = 'Striped.Horizontal.TProgressbar'
         VSTYLE = 'Striped.Vertical.TProgressbar'
 
-        if colorname == DEFAULT:
+        if any([colorname == DEFAULT, colorname == '']):
             h_ttkstyle = HSTYLE
             v_ttkstyle = VSTYLE
         else:
@@ -668,7 +624,7 @@ class StyleBuilderTTK:
         else:
             bordercolor = self.colors.inputbg
 
-        if colorname == DEFAULT:
+        if any([colorname == DEFAULT, colorname == '']):
             background = self.colors.primary
             h_ttkstyle = H_STYLE
             v_ttkstyle = V_STYLE
@@ -687,29 +643,48 @@ class StyleBuilderTTK:
             troughcolor=self.colors.inputbg,
         )
 
+        existing_elements = self.style.element_names()
+
         # horizontal progressbar
         h_element = h_ttkstyle.replace('.TP', '.P')
-        self.style.element_create(f'{h_element}.trough', 'from', TTK_CLAM)
-        self.style.element_create(f'{h_element}.pbar', 'from', TTK_DEFAULT)
+        trough_element = f'{h_element}.trough'
+        pbar_element = f'{h_element}.pbar'
+        if trough_element not in existing_elements:
+            self.style.element_create(trough_element, 'from', TTK_CLAM)
+            self.style.element_create(pbar_element, 'from', TTK_DEFAULT)
+        
+        self.style.layout(
+            h_ttkstyle,
+            [(trough_element, {'sticky': 'nswe', 'children': 
+                [(pbar_element, {'side': 'left', 'sticky': 'ns'})]})]
+        )
         self.style.configure(h_ttkstyle, background=background)
 
         # vertical progressbar
         v_element = v_ttkstyle.replace('.TP', '.P')
-        self.style.element_create(f'{v_element}.trough', 'from', TTK_CLAM)
-        self.style.element_create(f'{v_element}.pbar', 'from', TTK_DEFAULT)
-        self.style.configure(v_ttkstyle, background=background)
+        trough_element = f'{v_element}.trough'
+        pbar_element = f'{v_element}.pbar'
+        if trough_element not in existing_elements:
+            self.style.element_create(trough_element, 'from', TTK_CLAM)
+            self.style.element_create(pbar_element, 'from', TTK_DEFAULT)
+            self.style.configure(v_ttkstyle, background=background)
+        self.style.layout(
+            v_ttkstyle,
+            [(trough_element, {'sticky': 'nswe', 'children': 
+                [(pbar_element, {'side': 'bottom', 'sticky': 'we'})]})]
+        )
 
         # register ttkstyles
         self.style.register_ttkstyle(h_ttkstyle)
         self.style.register_ttkstyle(v_ttkstyle)
 
-    def create_scale_assets(self, color_name=DEFAULT, size=16):
+    def create_scale_assets(self, colorname=DEFAULT, size=16):
         """Create a circle slider image based on given size and color;
         used in the slider widget.
 
         Parameters
         ----------
-        color_name : str
+        colorname : str
             The color name to use as the primary color
 
         size : int
@@ -727,10 +702,10 @@ class StyleBuilderTTK:
             disabled_color = Colors.update_hsv(self.colors.selectbg, vd=-0.2)
             track_color = self.colors.inputbg
 
-        if color_name == DEFAULT:
+        if any([colorname == DEFAULT, colorname == '']):
             normal_color = self.colors.primary
         else:
-            normal_color = self.colors.get(color_name)
+            normal_color = self.colors.get(colorname)
 
         pressed_color = Colors.update_hsv(normal_color, vd=-0.1)
         hover_color = Colors.update_hsv(normal_color, vd=0.1)
@@ -798,7 +773,7 @@ class StyleBuilderTTK:
         """Create style configuration for ttk scale: *ttk.Scale*"""
         STYLE = 'TScale'
 
-        if colorname == DEFAULT:
+        if any([colorname == DEFAULT, colorname == '']):
             h_ttkstyle = f'Horizontal.{STYLE}'
             v_ttkstyle = f'Vertical.{STYLE}'
         else:
@@ -863,7 +838,7 @@ class StyleBuilderTTK:
         VSTYLE = 'Vertical.TFloodgauge'
         FLOOD_FONT = 'helvetica 14'
 
-        if colorname == DEFAULT:
+        if any([colorname == DEFAULT, colorname == '']):
             h_ttkstyle = HSTYLE
             v_ttkstyle = VSTYLE
             background = self.colors.primary
@@ -979,7 +954,7 @@ class StyleBuilderTTK:
 
         troughcolor = Colors.update_hsv(self.colors.bg, vd=-0.05)
 
-        if colorname == DEFAULT:
+        if any([colorname == DEFAULT, colorname == '']):
             h_ttkstyle = f'Horizontal.{STYLE}'
             v_ttkstyle = f'Vertical.{STYLE}'
 
@@ -1103,7 +1078,7 @@ class StyleBuilderTTK:
             disabled_fg = self.colors.selectbg
             bordercolor = self.colors.selectbg
 
-        if colorname == DEFAULT:
+        if any([colorname == DEFAULT, colorname == '']):
             ttkstyle = STYLE
             focuscolor = self.colors.primary
         else:
@@ -1182,7 +1157,7 @@ class StyleBuilderTTK:
             disabled_fg = Colors.update_hsv(self.colors.inputbg, vd=-0.3)
             bordercolor = self.colors.selectbg
 
-        if colorname == DEFAULT:
+        if any([colorname == DEFAULT, colorname == '']):
             background = self.colors.inputbg
             foreground = self.colors.inputfg
             body_style = STYLE
@@ -1271,14 +1246,12 @@ class StyleBuilderTTK:
         )
         # register ttkstyles
         self.style.register_ttkstyle(body_style)
-        self.style.register_ttkstyle(header_style)
-        self.style.register_ttkstyle(item_style)
 
     def create_frame_style(self, colorname=DEFAULT):
         """Create style configuration for ttk frame"""
         STYLE = 'TFrame'
 
-        if colorname == DEFAULT:
+        if any([colorname == DEFAULT, colorname == '']):
             ttkstyle = STYLE
             background = self.colors.bg
         else:
@@ -1302,7 +1275,7 @@ class StyleBuilderTTK:
             disabled_fg = self.colors.selectbg
             disabled_bg = Colors.update_hsv(disabled_fg, vd=-0.2)
 
-        if colorname == DEFAULT:
+        if any([colorname == DEFAULT, colorname == '']):
             ttkstyle = STYLE
             foreground = self.colors.get_foreground(PRIMARY)
             background = self.colors.primary
@@ -1370,7 +1343,7 @@ class StyleBuilderTTK:
             hover = self.colors.border
             ttkstyle = f'{colorname}.{STYLE}'
         else:
-            if colorname == DEFAULT:
+            if any([colorname == DEFAULT, colorname == '']):
                 ttkstyle = STYLE
                 colorname = PRIMARY
             else:
@@ -1428,7 +1401,7 @@ class StyleBuilderTTK:
         pressed = self.colors.info
         hover = self.colors.info
 
-        if colorname == DEFAULT:
+        if any([colorname == DEFAULT, colorname == '']):
             foreground = self.colors.primary
             ttkstyle = STYLE
         elif colorname == LIGHT:
@@ -1500,7 +1473,7 @@ class StyleBuilderTTK:
         Tuple[str]
             A tuple of PhotoImage names.
         """
-        if colorname == DEFAULT:
+        if any([colorname == DEFAULT, colorname == '']):
             colorname = PRIMARY
 
         prime_color = self.colors.get(colorname)
@@ -1583,7 +1556,7 @@ class StyleBuilderTTK:
         Tuple[str]
             A tuple of PhotoImage names
         """
-        if colorname == DEFAULT:
+        if any([colorname == DEFAULT, colorname == '']):
             colorname = PRIMARY
 
         prime_color = self.colors.get(colorname)
@@ -1662,7 +1635,7 @@ class StyleBuilderTTK:
         else:
             disabled_fg = self.colors.inputbg
 
-        if colorname == DEFAULT:
+        if any([colorname == DEFAULT, colorname == '']):
             ttkstyle = STYLE
             colorname = PRIMARY
         else:
@@ -1723,7 +1696,7 @@ class StyleBuilderTTK:
         else:
             disabled_fg = self.colors.inputbg
 
-        if colorname == DEFAULT:
+        if any([colorname == DEFAULT, colorname == '']):
             ttkstyle = STYLE
         else:
             ttkstyle = f'{colorname}.{STYLE}'
@@ -1775,7 +1748,7 @@ class StyleBuilderTTK:
         """
         STYLE = 'Toolbutton'
 
-        if colorname == DEFAULT:
+        if any([colorname == DEFAULT, colorname == '']):
             ttkstyle = STYLE
             toggle_on = self.colors.primary
         else:
@@ -1846,7 +1819,7 @@ class StyleBuilderTTK:
         else:
             disabled_fg = Colors.update_hsv(self.colors.selectbg, vd=-0.3)
 
-        if colorname == DEFAULT:
+        if any([colorname == DEFAULT, colorname == '']):
             ttkstyle = STYLE
             foreground = self.colors.primary
         else:
@@ -1909,7 +1882,7 @@ class StyleBuilderTTK:
             disabled_fg = self.colors.selectbg
             bordercolor = self.colors.selectbg
 
-        if colorname == DEFAULT:
+        if any([colorname == DEFAULT, colorname == '']):
             ttkstyle = STYLE
             focuscolor = self.colors.primary
         else:
@@ -1955,9 +1928,6 @@ class StyleBuilderTTK:
         Tuple[str]
             A tuple of PhotoImage names
         """
-        if colorname == DEFAULT:
-            colorname = PRIMARY
-
         prime_color = self.colors.get(colorname)
         on_indicator = self.colors.selectfg
         on_fill = prime_color
@@ -2023,8 +1993,9 @@ class StyleBuilderTTK:
         else:
             disabled_fg = self.colors.inputbg
 
-        if colorname == DEFAULT:
+        if any([colorname == DEFAULT, colorname == '']):
             ttkstyle = STYLE
+            colorname = PRIMARY
         else:
             ttkstyle = f'{colorname}.{STYLE}'
 
@@ -2064,7 +2035,7 @@ class StyleBuilderTTK:
 
         STYLE = 'TCalendar'
 
-        if colorname == DEFAULT:
+        if any([colorname == DEFAULT, colorname == '']):
             prime_color = self.colors.primary
             ttkstyle = STYLE
             chevron_style = "chevron.TButton"
@@ -2140,7 +2111,7 @@ class StyleBuilderTTK:
 
         STYLE = 'TMeter'
 
-        if colorname == DEFAULT:
+        if any([colorname == DEFAULT, colorname == '']):
             ttkstyle = STYLE
             foreground = self.colors.primary
         else:
@@ -2174,7 +2145,7 @@ class StyleBuilderTTK:
 
         STYLE = 'TLabel'
 
-        if colorname == DEFAULT:
+        if any([colorname == DEFAULT, colorname == '']):
             ttkstyle = STYLE
             foreground = self.colors.fg
             background = self.colors.bg
@@ -2197,7 +2168,7 @@ class StyleBuilderTTK:
 
         STYLE_INVERSE = 'Inverse.TLabel'
 
-        if colorname == DEFAULT:
+        if any([colorname == DEFAULT, colorname == '']):
             ttkstyle = STYLE_INVERSE
             background = self.colors.fg
             foreground = self.colors.bg
@@ -2221,7 +2192,7 @@ class StyleBuilderTTK:
 
         background = self.colors.bg
 
-        if colorname == DEFAULT:
+        if any([colorname == DEFAULT, colorname == '']):
             foreground = self.colors.fg
             ttkstyle = STYLE
 
@@ -2263,7 +2234,7 @@ class StyleBuilderTTK:
         else:
             disabled_fg = Colors.update_hsv(self.colors.selectbg, vd=-0.3)
 
-        if colorname == DEFAULT:
+        if any([colorname == DEFAULT, colorname == '']):
             colorname = PRIMARY
             ttkstyle = STYLE
         else:
@@ -2396,7 +2367,7 @@ class StyleBuilderTTK:
             disabled_bg = Colors.update_hsv(disabled_fg, vd=-0.2)
             arrowcolor = self.colors.selectfg
 
-        if colorname == DEFAULT:
+        if any([colorname == DEFAULT, colorname == '']):
             ttkstyle = STYLE
             background = self.colors.primary
         else:
@@ -2455,7 +2426,7 @@ class StyleBuilderTTK:
         else:
             disabled_fg = Colors.update_hsv(self.colors.selectbg, vd=-0.3)
 
-        if colorname == DEFAULT:
+        if any([colorname == DEFAULT, colorname == '']):
             foreground = self.colors.primary
             ttkstyle = STYLE
         else:
@@ -2515,7 +2486,7 @@ class StyleBuilderTTK:
             bordercolor = self.colors.selectbg
             foreground = self.colors.selectfg
 
-        if colorname == DEFAULT:
+        if any([colorname == DEFAULT, colorname == '']):
             background = self.colors.inputbg
             selectfg = self.colors.fg
             ttkstyle = STYLE
@@ -2573,7 +2544,7 @@ class StyleBuilderTTK:
         else:
             default_color = self.colors.selectbg
 
-        if colorname == DEFAULT:
+        if any([colorname == DEFAULT, colorname == '']):
             sashcolor = default_color
             h_ttkstyle = H_STYLE
             v_ttkstyle = V_STYLE
@@ -2622,7 +2593,7 @@ class StyleBuilderTTK:
 
         STYLE = 'TSizegrip'
 
-        if colorname == DEFAULT:
+        if any([colorname == DEFAULT, colorname == '']):
             ttkstyle = STYLE
 
             if self.is_light_theme:
