@@ -3,32 +3,27 @@ Author: Israel Dryer
 License: MIT
 Copyright (c) 2021 Israel Dryer
 """
-from ttkbootstrap import Style
 import tkinter as tk
-from tkinter import ttk
-
-# for taking screenshots
+import ttkbootstrap as ttk
 from PIL import ImageGrab
 
 
-class Demo(Style):
+class Demo:
     """
     An application class for demonstrating styles
     """
 
     def __init__(self):
-        super().__init__()
-        self.theme_use('lumen')
-        self.root = self.master
-        #self.root.geometry('500x695')
+        self.root = tk.Tk()
+        self.style = ttk.Style("lumen")
+        self.root.geometry('500x695')
         self.root.protocol("WM_DELETE_WINDOW", self.quit)
         self.root.title('TTK Bootstrap')
         self.theme_name = tk.StringVar()
-        self.theme_name.set(self.theme_use())
+        self.theme_name.set(self.style.theme_use())
         self.setup()
         self.root.eval('tk::PlaceWindow . center')
         self.root.bind("<Insert>", self.get_bounding_box)
-        self.root.resizable(False, False)
         self.run()
 
     def __repr__(self):
@@ -47,20 +42,7 @@ class Demo(Style):
         self.nb.add(ttk.Frame(self.nb), text='Tab 3')
 
     def change_theme(self, new_theme):
-        """
-        Destroying the widget isn't strictly necessary with pure TTK 
-        widgets. However, for this demo, I'm explicitly allowing the 
-        changing of colors, etc... and because I want the styles to be 
-        consistent on underlying standard tk widgets, I've choosing to 
-        redraw all the widgets in the main tab. You can use other 
-        methods or avoid this altogether if you're not switch between 
-        light and dark themes.
-        """
-        self.tab.destroy()
-        self.theme_use(new_theme)
-        self.tab = self.create_themed_tab()
-        self.nb.insert(0, self.tab, text='Tab 1')
-        self.nb.select(self.nb.tabs()[0])
+        self.style.theme_use(new_theme)
         self.theme_name.set(new_theme)
 
     def create_themed_tab(self):
@@ -69,9 +51,7 @@ class Demo(Style):
         """
         tab = ttk.Frame(self.nb, padding=10)
         colors = [
-            'Primary', 'Secondary', 'Success', 'Info', 'Warning', 'Danger',
-            'Light', 'Dark'
-        ]
+            'Primary', 'Secondary', 'Success', 'Info', 'Warning', 'Danger']
 
         header_frame = ttk.Frame(tab, padding=10)
         header = ttk.Label(
@@ -85,12 +65,12 @@ class Demo(Style):
         # Menubutton (select a theme)
         mb = ttk.Menubutton(header_frame, text='Select a theme to preview')
         mb.pack(side=tk.RIGHT, fill=tk.X, pady=5)
-        mb.menu = tk.Menu(mb)
-        mb['menu'] = mb.menu
-        for t in sorted(self._theme_definitions.keys()):
-            mb.menu.add_command(
+        menu = tk.Menu(mb)
+        mb.configure(menu=menu)
+        for t in sorted(self.style._theme_definitions.keys()):
+            menu.add_command(
                 label=t,
-                command=lambda theme_name=t: self.change_theme(theme_name)
+                command=lambda theme=t: self.change_theme(theme)
             )
 
         # Separator
@@ -177,7 +157,7 @@ class Demo(Style):
             btn_frame,
             om_var,
             'Option Menu',
-            *list(self._theme_names)
+            *list(self.style._theme_names)
         )
         om.pack(side=tk.RIGHT, fill=tk.X, padx=(5, 0), pady=5)
 
