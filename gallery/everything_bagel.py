@@ -1,5 +1,6 @@
 import tkinter as tk
-import ttkbootstrap as ttk
+from ttkbootstrap import Style
+from tkinter import ttk
 
 ZEN = """Beautiful is better than ugly. 
 Explicit is better than implicit. 
@@ -24,8 +25,7 @@ Namespaces are one honking great idea -- let's do more of those!"""
 
 root = tk.Tk()
 root.title("ttkbootstrap widget demo")
-style = ttk.Style()
-style.theme_use('superhero')
+style = Style('superhero')
 theme_names = style.theme_names()
 
 sb1 = ttk.Scrollbar(root, orient=tk.HORIZONTAL)

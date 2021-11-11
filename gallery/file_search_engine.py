@@ -18,7 +18,7 @@ class Application(tk.Tk):
     def __init__(self):
         super().__init__()
         self.title('File Search Engine')
-        self.style = ttk.Style('journal')
+        self.style = ttk.Style()
         self.search = SearchEngine(self, padding=10)
         self.search.pack(fill=tk.BOTH, expand=tk.YES)
 
@@ -115,9 +115,10 @@ class SearchEngine(ttk.Frame):
 
         # progress bar
         self.progressbar = ttk.Progressbar(
-            master=self, orient=tk.HORIZONTAL, 
+            master=self, 
+            orient=tk.HORIZONTAL, 
             mode='indeterminate',
-            bootstyle='success'
+            bootstyle='secondary'
         )
         self.progressbar.pack(fill=tk.X, pady=5)
 
