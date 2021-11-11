@@ -70,3 +70,7 @@ class Publisher:
         subs: List[Subscriber] = Publisher.get_subscribers(channel)
         for sub in subs:
             sub.func(*args)
+
+    @staticmethod
+    def clear_subscribers():
+        Publisher.__subscribers.clear()
