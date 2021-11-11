@@ -66,7 +66,7 @@ TYPE_PATTERN = re.compile('|'.join(TYPES))
 
 # ttkstyle namebuilder helper methods
 
-def ttkstyle_widget_class(widget, string=''):
+def ttkstyle_widget_class(widget=None, string=''):
     """Find and return the widget class"""
     # find widget class from string pattern
     match = re.search(CLASS_PATTERN, string.lower())
@@ -75,6 +75,8 @@ def ttkstyle_widget_class(widget, string=''):
         return widget_class
 
     # find widget class from tkinter/tcl method
+    if widget is None:
+        return ''
     _class = widget.winfo_class()
     match = re.search(CLASS_PATTERN, _class.lower())
     if match is not None:
@@ -92,7 +94,7 @@ def ttkstyle_widget_type(string):
         widget_type = match.group(0)
         return widget_type
 
-def ttkstyle_widget_orient(widget, string='', **kwargs):
+def ttkstyle_widget_orient(widget=None, string='', **kwargs):
     """Find and return widget orient, or default orient for widget if
     a widget with orientation.
     """
@@ -116,6 +118,8 @@ def ttkstyle_widget_orient(widget, string='', **kwargs):
         return widget_orient
         
     # orient from settings
+    if widget is None:
+        return widget_orient
     try:
         widget_orient = str(widget.cget('orient'))
     except:
@@ -132,7 +136,7 @@ def ttkstyle_widget_color(string):
         widget_color = _color.group(0)
         return widget_color
 
-def ttkstyle_name(widget, string='', **kwargs):
+def ttkstyle_name(widget=None, string='', **kwargs):
     """Parse a string to build and return a ttkstyle name."""
     style_string = ''.join(string).lower()
     widget_color = ttkstyle_widget_color(style_string)
@@ -157,7 +161,7 @@ def ttkstyle_name(widget, string='', **kwargs):
     ttkstyle = f'{widget_color}{widget_type}{widget_orient}{widget_class}'
     return ttkstyle
 
-def ttkstyle_method_name(widget, string=''):
+def ttkstyle_method_name(widget=None, string=''):
     """Parse a string to build and return the name of the 
     `StyleBuilderTTK` method that creates the ttk style for the target
     widget.
