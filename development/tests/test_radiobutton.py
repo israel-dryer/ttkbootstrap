@@ -1,5 +1,6 @@
 import tkinter as tk
 import ttkbootstrap as ttk
+from random import choice
 
 DARK = 'superhero'
 LIGHT = 'flatly'
@@ -22,7 +23,7 @@ def create_radiobutton_test(bootstyle, style, testname):
 
     # color styles
     for i, color in enumerate(style.colors):
-        cb = ttk.Radiobutton(frame, text=color, bootstyle=(color, bootstyle))
+        cb = ttk.Radiobutton(frame, text=color, bootstyle=f'{color}-{bootstyle}')
         cb.configure(variable=var, value=i+1)
         cb.pack(padx=5, pady=5, fill=tk.BOTH)
         cb.invoke()
@@ -42,10 +43,17 @@ def create_radiobutton_test(bootstyle, style, testname):
     return frame
 
 
+def change_style():
+    theme = choice(style.theme_names())
+    style.theme_use(theme)    
+
+
 if __name__ == '__main__':
     # create visual widget style tests
     root = tk.Tk()
-    style = ttk.Style(theme=DARK)
+    style = ttk.Style()
+
+    ttk.Button(text="Change Theme", command=change_style).pack(padx=10, pady=10)
 
     test1 = create_radiobutton_test('', style, 'Radiobutton')
     test1.pack(side=tk.LEFT, fill=tk.BOTH)

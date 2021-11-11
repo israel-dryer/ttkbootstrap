@@ -1,5 +1,6 @@
 import tkinter as tk
 import ttkbootstrap as ttk
+from random import choice
 
 DARK = 'superhero'
 LIGHT = 'flatly'
@@ -17,30 +18,32 @@ def button_style_frame(bootstyle, style, widget_name):
 
     ttk.Separator(frame).pack(padx=5, pady=5, fill=tk.X)
 
-    btn = ttk.Button(
+    ttk.Button(
         master=frame,
         text='default',
         bootstyle=bootstyle
-    )
-    btn.pack(padx=5, pady=5, fill=tk.BOTH)
+    ).pack(padx=5, pady=5, fill=tk.BOTH)
 
     for color in style.colors:
-        btn = ttk.Button(
+        ttk.Button(
             master=frame,
             text=color,
-            bootstyle=(color, bootstyle)
-        )
-        btn.pack(padx=5, pady=5, fill=tk.BOTH)
+            bootstyle=f'{color}-{bootstyle}'
+        ).pack(padx=5, pady=5, fill=tk.BOTH)
 
-    btn = ttk.Button(
+    ttk.Button(
         master=frame,
         text='disabled',
         state=tk.DISABLED,
         bootstyle=bootstyle
-    )
-    btn.pack(padx=5, pady=5, fill=tk.BOTH)
+    ).pack(padx=5, pady=5, fill=tk.BOTH)
 
     return frame
+
+def change_style():
+    theme = choice(style.theme_names())
+    style.theme_use(theme)
+
 
 
 if __name__ == '__main__':
@@ -51,5 +54,6 @@ if __name__ == '__main__':
     button_style_frame('outline', style, 'Outline Button').pack(side=tk.LEFT)
     button_style_frame('', style, 'Solid Button').pack(side=tk.LEFT)
     button_style_frame('link', style, 'Link Button').pack(side=tk.LEFT)
+    ttk.Button(text="Change Theme", command=change_style).pack(padx=10, pady=10)
 
     root.mainloop()

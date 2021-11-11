@@ -1,5 +1,6 @@
 import tkinter as tk
 import ttkbootstrap as ttk
+from random import choice
 
 DARK = 'superhero'
 LIGHT = 'flatly'
@@ -39,6 +40,10 @@ def create_checkbutton_test(bootstyle, style, name):
 
     return frame
 
+def change_style():
+    theme = choice(style.theme_names())
+    style.theme_use(theme)
+
 
 if __name__ == '__main__':
     # create visual widget style tests
@@ -55,5 +60,8 @@ if __name__ == '__main__':
     test4.pack(side=tk.LEFT, fill=tk.BOTH)
     test5 = create_checkbutton_test('outline-toolbutton', style, 'Outline Toolbutton')
     test5.pack(side=tk.LEFT, fill=tk.BOTH)
+
+    btn = ttk.Button(text="Change Theme", command=change_style)
+    btn.pack(padx=10, pady=10)    
 
     root.mainloop()
