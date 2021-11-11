@@ -17,12 +17,6 @@ python -m ttkbootstrap
 ```
 ![](docs/images/ttkbootstrap.gif)
 
-### TTK Creator
-Create your own themes with the built-in TTK Creator. Read the docs for instructions on how to create your own themes.  
-```python
-python -m ttkcreator
-```
-![](docs/images/ttkcreator.png)
 
 
 
