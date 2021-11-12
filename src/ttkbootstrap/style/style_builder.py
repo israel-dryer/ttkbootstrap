@@ -4,7 +4,6 @@ from ttkbootstrap.constants import *
 from ttkbootstrap.style.colors import Colors
 from PIL import Image, ImageDraw, ImageTk, ImageFont
 
-
 def get_image_name(image):
     return image._PhotoImage__photo.name
 
@@ -66,7 +65,7 @@ class StyleBuilderTK:
         styler_ttk : StylerTTK
             An instance of the ``StylerTTK`` class.
         """
-        self.master = builder.style.master  # TODO is this used?
+        self.master = builder.style.master
         self.theme: ThemeDefinition = builder.theme
 
         self.colors = self.theme.colors
@@ -82,11 +81,6 @@ class StyleBuilderTK:
             (pattern, value, priority=80)
         """
         self.master.option_add(*args)
-
-    @staticmethod
-    def name_to_method(method_name):
-        func = getattr(StyleBuilderTK, method_name)
-        return func
 
     def update_tk_style(self, widget: tk.Tk):
         widget.configure(background=self.colors.bg)

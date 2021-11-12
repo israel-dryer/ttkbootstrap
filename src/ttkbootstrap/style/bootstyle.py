@@ -28,11 +28,11 @@ TTK_WIDGETS = (
 )
 
 TK_WIDGETS = (
+    tk.Tk,
     tk.Button,
     tk.Label,
     tk.Text,
     tk.Frame,
-    tk.Tk,
     tk.Checkbutton,
     tk.Radiobutton,
     tk.Entry,
@@ -78,12 +78,6 @@ def override_ttk_widget_constructor(func):
             ttkstyle = update_ttk_widget_style(self, 'default', **kwargs)
             self.configure(style=ttkstyle)
 
-        # subscriber to <<ThemeChanged>> events
-        # Publisher.subscribe(
-        #     name=self._name,
-        #     func=lambda widget=self: update_ttk_widget_style(widget),
-        #     channel=Channel.TTK
-        # )
     return __init__
 
 
@@ -164,6 +158,7 @@ def update_ttk_widget_style(widget: ttk.Widget, style_string: str=None, **kwargs
 
 def setup_ttkbootstap_api():
     """Setup ttkbootstrap for use with tkinter and ttk"""
+
     # TTK WIDGETS
     for widget in TTK_WIDGETS:
         # override widget constructor
@@ -188,11 +183,23 @@ def setup_ttkbootstap_api():
         _init = override_tk_widget_constructor(widget.__init__)
         widget.__init__ = _init
 
-        # # override widget destroy method (quit for tk.Tk)
-        # if issubclass(widget, tk.Widget):
-        #     widget.destroy = override_widget_destroy_method
-        # elif issubclass(widget, tk.Tk):
-        #     widget.quit = override_widget_destroy_method
+        # override widget destroy method (quit for tk.Tk)
+        widget.destroy = override_widget_destroy_method
+
+def update_tk_widget_style(widget):
+    """Lookup the widget name and call the appropriate update 
+    method
+    
+    Parameters
+    ----------
+    widget : object
+        The tcl/tk name given by `tk.Widget.winfo_name()`
+    """
+    style = Style()
+    method_name = util.tkupdate_method_name(widget)
+    builder = style.get_builder_tk()
+    builder_method = getattr(StyleBuilderTK, method_name)
+    builder_method(builder, widget)
 
 
 def override_tk_widget_constructor(func):
@@ -204,46 +211,22 @@ def override_tk_widget_constructor(func):
 
         # instantiate the widget
         func(self, *args, **kwargs)
-        update_tk_widget_style(self)
-
-        # subscriber to <<ThemeChanged>> events
-        if isinstance(self, tk.Tk):
-            name = '.'
-        else:
-            name = self._name
-
+        
         Publisher.subscribe(
-            name=name,
-            func=lambda widget=self: update_tk_widget_style(widget),
+            name=str(self),
+            func=lambda w=self: update_tk_widget_style(w),
             channel=Channel.STD
         )
+        update_tk_widget_style(self)
+
     return __init__wrapper
-
-
-def update_tk_widget_style(widget: tk.Widget):
-    """Update the tk widget style
-
-    Parameters
-    ----------
-    widget: tk.Widget
-        The widget instance being updated.
-    """
-    method_name = util.tkupdate_method_name(widget)
-    try:
-        style = Style()
-        builder: StyleBuilderTK = style.get_builder_tk()
-        builder_method = builder.name_to_method(method_name)
-        builder_method(builder, widget)
-    except:
-        # theme has not been initialized yet
-        pass
 
 
 def override_widget_destroy_method(self):
     """Unsubscribe widget from publication and destroy"""
     if isinstance(self, tk.Widget):
         Publisher.unsubscribe(self._name)
-        tk.Widget.destroy(self)
+        super(tk.Widget, self).destroy()
     elif isinstance(self, tk.Tk):
         Publisher.clear_subscribers()
-        tk.Tk.quit(self)
+        super(tk.Tk, self).quit()
