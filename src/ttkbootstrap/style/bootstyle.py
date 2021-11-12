@@ -148,9 +148,14 @@ def update_ttk_widget_style(widget: ttk.Widget, style_string: str=None, **kwargs
         builder_method = builder.name_to_method(method_name)
         builder_method(builder, widget_color)
 
-    # update combobox style
+    # subscribe popdown style to theme changes
     if widget.winfo_class() == 'TCombobox':
         builder: StyleBuilderTTK = style.get_builder()
+        Publisher.subscribe(
+            name=widget._name, 
+            func=lambda w=widget: builder.update_combobox_popdown_style(w), 
+            channel=Channel.STD
+        )
         builder.update_combobox_popdown_style(widget)
 
     return ttkstyle
