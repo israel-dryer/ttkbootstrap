@@ -195,11 +195,19 @@ def update_tk_widget_style(widget):
     widget : object
         The tcl/tk name given by `tk.Widget.winfo_name()`
     """
-    style = Style()
-    method_name = util.tkupdate_method_name(widget)
-    builder = style.get_builder_tk()
-    builder_method = getattr(StyleBuilderTK, method_name)
-    builder_method(builder, widget)
+    try:
+        style = Style()
+        method_name = util.tkupdate_method_name(widget)
+        builder = style.get_builder_tk()
+        builder_method = getattr(StyleBuilderTK, method_name)
+        builder_method(builder, widget)
+    except:
+        """Must pass here to prevent a failure when the user calls
+        the `Style`method BEFORE an instance of `Tk` is instantiated.
+        This will defer the update of the `Tk` background until the end
+        of the `BootStyle` object instantiation (created by the `Style`
+        method)"""
+        pass
 
 
 def override_tk_widget_constructor(func):
