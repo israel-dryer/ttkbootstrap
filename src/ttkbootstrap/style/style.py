@@ -134,7 +134,7 @@ class BootStyle(ttk.Style):
         # setup a new theme
         elif themename in self._theme_names:
             self.theme = self._theme_definitions.get(themename)            
-            self._theme_objects[themename] = StyleBuilderTTK(self, self.theme)
+            self._theme_objects[themename] = StyleBuilderTTK(self)
             self.create_ttk_styles_on_theme_change()
             Publisher.publish_message(Channel.STD)
         else:
