@@ -1,4 +1,4 @@
-from tkinter import ttk
+from tkinter import TclError, ttk
 from typing import Callable
 from ttkbootstrap.constants import *
 from ttkbootstrap.themes.standard import STANDARD_THEMES
@@ -26,7 +26,6 @@ class BootStyle(ttk.Style):
         theme : str
             The name of the theme to use at runtime; default="flatly".
         """
-        print('creating a new instance')
         self._theme_objects = {}
         self._theme_definitions = {}
         self._style_registry = set() # all styles used
@@ -122,32 +121,25 @@ class BootStyle(ttk.Style):
             The name of the theme to apply when creating new widgets
         """
         if not themename:
+            # return current theme
             return super().theme_use()
 
-        if all([themename, themename not in self._theme_names]):
-            print(f"{themename} is invalid.Try one of the following:")
-            print(list(self._theme_names))
-            return
-        else:
-            self.theme = self._theme_definitions.get(themename)
-
+        # change to an existing theme
         existing_themes = super().theme_names()
         if themename in existing_themes:
-            # the theme has already been created in tkinter
+            self.theme = self._theme_definitions.get(themename)
             super().theme_use(themename)
-            # Publisher.publish_message(Channel.TTK)
             self.create_ttk_styles_on_theme_change()
             Publisher.publish_message(Channel.STD)
-            if not self.theme:
-                return
-            return
+        # setup a new theme
+        elif themename in self._theme_names:
+            self.theme = self._theme_definitions.get(themename)            
+            self._theme_objects[themename] = StyleBuilderTTK(self, self.theme)
+            self.create_ttk_styles_on_theme_change()
+            Publisher.publish_message(Channel.STD)
+        else:
+            raise TclError(themename, "is not a valid theme.")
 
-        # theme has not yet been created
-        self._theme_objects[themename] = StyleBuilderTTK(self, self.theme)
-        self.create_ttk_styles_on_theme_change()
-        #Publisher.publish_message(Channel.TTK)
-        Publisher.publish_message(Channel.STD)        
-        return
 
     def exists(self, ttkstyle: str):
         """Return True if style exists else False"""
