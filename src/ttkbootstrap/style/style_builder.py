@@ -4,6 +4,7 @@ from ttkbootstrap.constants import *
 from ttkbootstrap.style.colors import Colors
 from PIL import Image, ImageDraw, ImageTk, ImageFont
 
+
 def get_image_name(image):
     return image._PhotoImage__photo.name
 
@@ -65,22 +66,20 @@ class StyleBuilderTK:
         styler_ttk : StylerTTK
             An instance of the ``StylerTTK`` class.
         """
+        self.builder = builder
         self.master = builder.style.master
-        self.theme: ThemeDefinition = builder.theme
 
-        self.colors = self.theme.colors
-        self.is_light_theme = self.theme.type == LIGHT
+    @property
+    def theme(self) -> ThemeDefinition:
+        return self.builder.theme
 
-    def _set_option(self, *args):
-        """A convenience wrapper method to shorten the call to
-        ``option_add``. *Laziness is next to godliness*.
+    @property
+    def colors(self) -> Colors:
+        return self.builder.theme.colors
 
-        Parameters
-        ----------
-        *args : Tuple[str]
-            (pattern, value, priority=80)
-        """
-        self.master.option_add(*args)
+    @property
+    def is_light_theme(self) -> bool:
+        return self.builder.theme.type == LIGHT
 
     def update_tk_style(self, widget: tk.Tk):
         widget.configure(background=self.colors.bg)
@@ -287,7 +286,7 @@ class StyleBuilderTK:
 class StyleBuilderTTK:
     """A class to create a new ttk theme"""
 
-    def __init__(self, style, definition):
+    def __init__(self, style):
         """Create a new ttk theme by using a combination of built-in
         themes and some image-based elements using ``pillow``. A theme
         is generated at runtime and is available to use with the
@@ -306,18 +305,26 @@ class StyleBuilderTTK:
             theme settings.
         """
         self.style = style
-        self.theme: ThemeDefinition = definition
         self.theme_images = {}
-        self.colors = self.theme.colors
-        self.is_light_theme = self.theme.type == LIGHT
-        self.settings = {}  # TODO is this used?
-        self.builder_tk = StyleBuilderTK(self)  #TODO is this used?
+        self.builder_tk = StyleBuilderTK(self)
         self.create_theme()
 
     @staticmethod
     def name_to_method(method_name):
         func = getattr(StyleBuilderTTK, method_name)
         return func
+
+    @property
+    def colors(self) -> Colors:
+        return self.style.theme.colors
+
+    @property
+    def is_light_theme(self) -> bool:
+        return self.style.theme.type == LIGHT
+
+    @property
+    def theme(self) -> ThemeDefinition:
+        return self.style.theme
 
     def create_theme(self):
         """Create and style a new ttk theme. A wrapper around internal
@@ -646,11 +653,11 @@ class StyleBuilderTTK:
         if trough_element not in existing_elements:
             self.style.element_create(trough_element, 'from', TTK_CLAM)
             self.style.element_create(pbar_element, 'from', TTK_DEFAULT)
-        
+
         self.style.layout(
             h_ttkstyle,
-            [(trough_element, {'sticky': 'nswe', 'children': 
-                [(pbar_element, {'side': 'left', 'sticky': 'ns'})]})]
+            [(trough_element, {'sticky': 'nswe', 'children':
+                               [(pbar_element, {'side': 'left', 'sticky': 'ns'})]})]
         )
         self.style.configure(h_ttkstyle, background=background)
 
@@ -664,8 +671,8 @@ class StyleBuilderTTK:
             self.style.configure(v_ttkstyle, background=background)
         self.style.layout(
             v_ttkstyle,
-            [(trough_element, {'sticky': 'nswe', 'children': 
-                [(pbar_element, {'side': 'bottom', 'sticky': 'we'})]})]
+            [(trough_element, {'sticky': 'nswe', 'children':
+                               [(pbar_element, {'side': 'bottom', 'sticky': 'we'})]})]
         )
 
         # register ttkstyles
@@ -2623,7 +2630,7 @@ class StyleBuilderTTK:
         tk_settings = []
         tk_settings.extend(["-borderwidth", 2])
         tk_settings.extend(["-highlightthickness", 1])
-        tk_settings.extend(["-highlightcolor", bordercolor])#self.colors.inputbg])
+        tk_settings.extend(["-highlightcolor", bordercolor])
         tk_settings.extend(["-background", self.colors.inputbg])
         tk_settings.extend(["-foreground", self.colors.inputfg])
         tk_settings.extend(["-selectbackground", self.colors.selectbg])
