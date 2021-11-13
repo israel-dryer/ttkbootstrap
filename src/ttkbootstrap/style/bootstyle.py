@@ -29,6 +29,7 @@ TTK_WIDGETS = (
 
 TK_WIDGETS = (
     tk.Tk,
+    tk.Toplevel,
     tk.Button,
     tk.Label,
     tk.Text,
@@ -243,3 +244,6 @@ def override_widget_destroy_method(self):
     elif isinstance(self, tk.Tk):
         Publisher.clear_subscribers()
         super(tk.Tk, self).quit()
+    elif isinstance(self, tk.Toplevel):
+        Publisher.clear_subscribers()
+        super(tk.Toplevel, self).destroy()

@@ -84,6 +84,9 @@ class StyleBuilderTK:
     def update_tk_style(self, widget: tk.Tk):
         widget.configure(background=self.colors.bg)
 
+    def update_toplevel_style(self, widget: tk.Toplevel):
+        widget.configure(background=self.colors.bg)
+
     def update_canvas_style(self, widget: tk.Widget):
         """Apply style to ``tkinter.Canvas``"""
         if self.is_light_theme:
@@ -2031,6 +2034,101 @@ class StyleBuilderTTK:
         # register ttkstyle
         self.style.register_ttkstyle(ttkstyle)
 
+    def create_date_button_assets(self):
+        """Draw a calendar button image of the specified color
+
+        Returns
+        -------
+        str
+            The PhotoImage name.
+        """
+        fill = self.colors.selectfg
+        image = Image.new('RGBA', (21, 22))
+        draw = ImageDraw.Draw(image)
+
+        draw.rounded_rectangle([1, 3, 20, 21], radius=2, outline=fill, width=1)
+
+        calendar_image_coordinates = [
+            # page spirals
+            [4, 1, 5, 5], [10, 1, 11, 5], [16, 1, 17, 5],
+            # row 1
+            [7, 9, 9, 11], [11, 9, 13, 11], [15, 9, 17, 11],
+            # row 2
+            [3, 13, 5, 15], [7, 13, 9, 15], [11, 13, 13, 15], [15, 13, 17, 15],
+            # row 3
+            [3, 17, 5, 19], [7, 17, 9, 19], [11, 17, 13, 19]
+        ]
+        for xy in calendar_image_coordinates:
+            draw.rectangle(xy=xy, fill=fill)
+
+        tk_img = ImageTk.PhotoImage(image)
+        tk_name = get_image_name(tk_img)
+        self.theme_images[tk_name] = tk_img
+        return tk_name
+        
+    def create_date_button_style(self, colorname=DEFAULT):
+        """Create a solid date button style"""
+
+        STYLE = 'Date.TButton'
+
+        date_image = self.create_date_button_assets()
+
+        if self.is_light_theme:
+            disabled_fg = self.colors.border
+            disabled_bg = self.colors.inputbg
+        else:
+            disabled_fg = self.colors.selectbg
+            disabled_bg = Colors.update_hsv(disabled_fg, vd=-0.2)
+
+        if any([colorname == DEFAULT, colorname == '']):
+            ttkstyle = STYLE
+            foreground = self.colors.get_foreground(PRIMARY)
+            background = self.colors.primary
+            bordercolor = background
+        else:
+            ttkstyle = f'{colorname}.{STYLE}'
+            foreground = self.colors.get_foreground(colorname)
+            background = self.colors.get(colorname)
+            bordercolor = background
+
+        pressed = Colors.update_hsv(background, vd=-0.1)
+        hover = Colors.update_hsv(background, vd=0.10)
+
+        self.style.configure(
+            ttkstyle,
+            foreground=foreground,
+            background=background,
+            bordercolor=bordercolor,
+            darkcolor=background,
+            lightcolor=background,
+            relief=tk.RAISED,
+            focusthickness=0,
+            focuscolor=foreground,
+            padding=(2, 2),
+            anchor=tk.CENTER,
+            image=date_image
+        )
+        self.style.map(
+            ttkstyle,
+            foreground=[("disabled", disabled_fg)],
+            background=[
+                ("disabled", disabled_bg),
+                ("pressed !disabled", pressed),
+                ("hover !disabled", hover)],
+            bordercolor=[
+                ("disabled", disabled_bg)],
+            darkcolor=[
+                ("disabled", disabled_bg),
+                ("pressed !disabled", pressed),
+                ("hover !disabled", hover)],
+            lightcolor=[
+                ("disabled", disabled_bg),
+                ("pressed !disabled", pressed),
+                ("hover !disabled", hover)]
+        )
+
+        self.style.register_ttkstyle(ttkstyle)
+
     def create_calendar_style(self, colorname=DEFAULT):
         """Create style configuration for the date chooser"""
 
@@ -2039,11 +2137,11 @@ class StyleBuilderTTK:
         if any([colorname == DEFAULT, colorname == '']):
             prime_color = self.colors.primary
             ttkstyle = STYLE
-            chevron_style = "chevron.TButton"
+            chevron_style = "Chevron.TButton"
         else:
             prime_color = self.colors.get(colorname)
             ttkstyle = f'{colorname}.{STYLE}'
-            chevron_style = f"chevron.{colorname}.TButton"
+            chevron_style = f"Chevron.{colorname}.TButton"
 
         if self.is_light_theme:
             disabled_fg = Colors.update_hsv(self.colors.inputbg, vd=-0.2)
@@ -2100,7 +2198,7 @@ class StyleBuilderTTK:
                 ("selected !disabled", pressed),
                 ("hover !disabled", pressed)],
         )
-        self.style.configure(chevron_style, font='helvetica 14')
+        self.style.configure(chevron_style, font='helvetica 14', focuscolor='')
 
         # register ttkstyle
         self.style.register_ttkstyle(ttkstyle)
