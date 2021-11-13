@@ -24,7 +24,8 @@ TYPES = [
     'square',
     'striped',
     'focus',
-    'input'
+    'input',
+    'date'
 ]
 
 CLASSES = [
@@ -55,7 +56,8 @@ CLASSES = [
     'tk',
     'calendar',
     'listbox',
-    'canvas'
+    'canvas',
+    'toplevel'
 ]
 
 # regex patterns
