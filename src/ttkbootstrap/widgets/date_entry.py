@@ -3,6 +3,7 @@ from tkinter import ttk
 from ttkbootstrap.dialogs.calendar import ask_date
 from datetime import datetime
 
+PRIMARY = 'primary'
 
 class DateEntry(ttk.Frame):
 
@@ -12,7 +13,7 @@ class DateEntry(ttk.Frame):
         dateformat=r"%Y-%m-%d",
         firstweekday=6,
         startdate=None,
-        bootstyle='primary',
+        bootstyle=PRIMARY,
         **kwargs
     ):
         """A date entry widget combines the `Combobox` and a `Button` 
