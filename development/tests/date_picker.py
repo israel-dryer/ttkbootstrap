@@ -1,16 +1,13 @@
 import tkinter as tk
-import ttkbootstrap as ttk
-from ttkbootstrap.dialogs.calendar import ask_date
+from ttkbootstrap.widgets import DateEntry
 
 root = tk.Tk()
 
-def get_the_age(parent=None):
-    date = ask_date(parent, bootstyle='success')
-    print(date)
-    
+de = DateEntry()
+de.pack(padx=10, pady=10)
 
-btn = ttk.Button(root, text="Hello")
-btn.configure(command=lambda b=btn: get_the_age(b))
-btn.pack(padx=10, pady=10)
+de.configure(bootstyle='danger')
+assert de['bootstyle'] == 'danger'
+assert de.button.cget('style') == 'danger.Date.TButton'
+assert de.configure('bootstyle') == 'danger'
 
-root.mainloop()
