@@ -7,13 +7,15 @@ import ttkbootstrap.style.utility as util
 
 FULL = 'full'
 SEMI = 'semi'
+PRIMARY = 'primary'
+DEFAULT = 'default'
 
 class Meter(ttk.Frame):
     
     def __init__(
         self,
         master=None,
-        bootstyle='primary',
+        bootstyle=PRIMARY,
         arcrange=None,
         arcoffset=None,
         amounttotal=100,
@@ -29,7 +31,7 @@ class Meter(ttk.Frame):
         textright=None,
         textfont='helvetica 25 bold',
         subtext=None,
-        subtextstyle='default',
+        subtextstyle=DEFAULT,
         subtextfont='helvetica 10 bold',
         **kwargs
     ):
