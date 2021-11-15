@@ -33,6 +33,9 @@ class DateEntry(ttk.Frame):
         with the `firstweekday` parameter. By default this value is 
         `6`, which represents "Sunday".
 
+        The `Entry` and `Button` widgets are accessible from the 
+        `DateEntry.Entry` and `DateEntry.Button` properties.
+
         Parameters
         ----------
         master : Widget, optional
@@ -61,30 +64,37 @@ class DateEntry(ttk.Frame):
             Other keyword arguments passed to the frame containing the 
             entry and date button.
         """
-        self.dateformat = dateformat
-        self.firstweekday = firstweekday
+        self._dateformat = dateformat
+        self._firstweekday = firstweekday
         
-        self.startdate = startdate or datetime.today()
-        self.bootstyle = bootstyle
+        self._startdate = startdate or datetime.today()
+        self._bootstyle = bootstyle
         super().__init__(master, **kwargs)
 
         # add visual components
-        self.entry = ttk.Entry(self, bootstyle=self.bootstyle)
+        self.entry = ttk.Entry(self, bootstyle=self._bootstyle)
         self.entry.pack(side=tk.LEFT, fill=tk.X, expand=tk.YES)
 
         self.button = ttk.Button(
             master=self, 
             command=self.on_date_ask, 
-            bootstyle=f'{self.bootstyle}-date'
+            bootstyle=f'{self._bootstyle}-date'
         )
         self.button.pack(side=tk.LEFT)
 
         # starting value
-        self.entry.insert(tk.END, self.startdate.strftime(self.dateformat))
+        self.entry.insert(tk.END, self._startdate.strftime(self._dateformat))
 
-    def configure(self, *args, **kwargs):
-        """Override configure method to allow for setting disabled and 
-        readonly state on entry/button"""
+    def __getitem__(self, key: str):
+        return self.configure(cnf=key)
+
+    def __setitem__(self, key: str, value):
+        self.configure(cnf=None, **{key: value})
+
+    def _configure_set(self, **kwargs):
+        """Override configure method to allow for setting custom 
+        DateEntry parameters"""
+
         if 'state' in kwargs:
             state = kwargs.pop('state')
             if state in ['readonly', 'invalid']:
@@ -93,29 +103,63 @@ class DateEntry(ttk.Frame):
                 self.entry.configure(state=state)
                 self.button.configure(state=state)
             else:
-                kwargs[state] = state    
-        super(ttk.Frame, self).configure(*args, **kwargs)
+                kwargs[state] = state
+        if 'dateformat' in kwargs:
+            self._dateformat = kwargs.pop('dateformat')
+        if 'firstweekday' in kwargs:
+            self._firstweekday = kwargs.pop('firstweekday')
+        if 'startdate' in kwargs:
+            self._startdate = kwargs.pop('startdate')
+        if 'bootstyle' in kwargs:
+            self._bootstyle = kwargs.pop('bootstyle')
+            self.entry.configure(bootstyle=self._bootstyle)
+            self.button.configure(bootstyle=[self._bootstyle, 'date'])
+
+        super(ttk.Frame, self).configure(**kwargs)
+
+    def _configure_get(self, cnf):
+        """Override the configure get method"""
+        if cnf == 'state':
+            entrystate = self.entry.cget('state')
+            buttonstate = self.button.cget('state')
+            return {'Entry': entrystate, 'Button': buttonstate}
+        if cnf == 'dateformat':
+            return self._dateformat
+        if cnf == 'firstweekday':
+            return self._firstweekday
+        if cnf == 'startdate':
+            return self._startdate
+        if cnf == 'bootstyle':
+            return self._bootstyle
+        else:
+            return super(ttk.Frame, self).configure(cnf=cnf)
+
+    def configure(self, cnf=None, **kwargs):
+        if cnf is not None:
+            return self._configure_get(cnf)
+        else:
+            return self._configure_set(**kwargs)
 
     def on_date_ask(self):
         """Callback for pushing the date button"""
         _val = self.entry.get()
         try:
-            self.startdate = datetime.strptime(_val, self.dateformat)
+            self._startdate = datetime.strptime(_val, self._dateformat)
         except Exception as e:
-            print("Date entry text does not match", self.dateformat)
-            self.startdate = datetime.today()
+            print("Date entry text does not match", self._dateformat)
+            self._startdate = datetime.today()
             self.entry.delete(first=0, last=tk.END)
-            self.entry.insert(tk.END, self.startdate.strftime(self.dateformat))
+            self.entry.insert(tk.END, self._startdate.strftime(self._dateformat))
 
-        old_date = datetime.strptime(_val or self.startdate, self.dateformat)
+        old_date = datetime.strptime(_val or self._startdate, self._dateformat)
         
         # get the new date and insert into the entry
         new_date = ask_date(
             parent=self.entry,
             startdate=old_date,
-            firstweekday=self.firstweekday,
-            bootstyle=self.bootstyle
+            firstweekday=self._firstweekday,
+            bootstyle=self._bootstyle
         )
         self.entry.delete(first=0, last=tk.END)
-        self.entry.insert(tk.END, new_date.strftime(self.dateformat))
+        self.entry.insert(tk.END, new_date.strftime(self._dateformat))
         self.entry.focus_force()
