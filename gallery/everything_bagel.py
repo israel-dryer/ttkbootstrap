@@ -270,7 +270,7 @@ sb.pack(fill=tk.Y, padx=5, side=tk.LEFT, expand=tk.YES)
 sb = ttk.Scrollbar(
     master=vframe,
     orient=tk.VERTICAL,
-    bootstyle='info'
+    bootstyle='primary'
 )
 sb.set(0.1, 0.9)
 sb.pack(fill=tk.Y, padx=5, side=tk.LEFT, expand=tk.YES)
@@ -278,7 +278,16 @@ sb.pack(fill=tk.Y, padx=5, side=tk.LEFT, expand=tk.YES)
 sb = ttk.Scrollbar(
     master=vframe,
     orient=tk.VERTICAL,
-    bootstyle='primary'
+    bootstyle='info-round'
+)
+sb.set(0.1, 0.9)
+sb.pack(fill=tk.Y, padx=5, side=tk.LEFT, expand=tk.YES)
+
+
+sb = ttk.Scrollbar(
+    master=vframe,
+    orient=tk.VERTICAL,
+    bootstyle='success-round'
 )
 sb.set(0.1, 0.9)
 sb.pack(fill=tk.Y, padx=5, side=tk.LEFT, expand=tk.YES)
