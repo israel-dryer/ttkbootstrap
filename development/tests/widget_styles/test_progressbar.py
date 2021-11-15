@@ -14,18 +14,6 @@ def create_progressbar_frame(bootstyle, style, orient, testname):
     title.pack(padx=5, pady=2, fill=tk.BOTH)
     ttk.Separator(frame).pack(padx=5, pady=5, fill=tk.X)
 
-    # default
-    pb = ttk.Progressbar(
-        master=frame,
-        value=10,
-        bootstyle=bootstyle,
-        orient=orient
-    )
-    if orient == 'h':
-        pb.pack(padx=5, pady=5, fill=tk.X)
-    else:
-        pb.pack(padx=5, pady=5, fill=tk.Y)
-
     # colored
     for i, color in enumerate(style.colors):
         ttk.Label(frame, text=color).pack(fill=tk.X)
