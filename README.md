@@ -10,11 +10,11 @@ pip install ttkbootstrap
 
 **light theme example (1.0 - alpha)**
 
-<img src="https://user-images.githubusercontent.com/42584742/141484763-7d6d4ce1-f162-4d4a-8cb0-8432763d149a.png" width=70%>
+<img src="https://user-images.githubusercontent.com/42584742/141869893-d7c19b77-466c-4f58-a24f-652db8c9d919.png" width=70%>
 
 **dark theme example (1.0 - alpha)**
 
-<img src="https://user-images.githubusercontent.com/42584742/141484689-80925a6e-4823-44d3-b59d-dbca9443ee4f.png" width=70%>
+<img src="https://user-images.githubusercontent.com/42584742/141869935-2cfe7ea7-c110-452f-b8cf-871907aaf7b9.png" width=70%>
 
 ## Versions
 ### [0.5 - stable](https://github.com/israel-dryer/ttkbootstrap/tree/0.5)
