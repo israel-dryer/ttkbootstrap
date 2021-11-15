@@ -25,7 +25,8 @@ TYPES = [
     'striped',
     'focus',
     'input',
-    'date'
+    'date',
+    'meter'
 ]
 
 CLASSES = [

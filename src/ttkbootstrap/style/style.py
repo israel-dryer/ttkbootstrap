@@ -8,7 +8,7 @@ from ttkbootstrap.style.publisher import Publisher, Channel
 from ttkbootstrap.style import utility as util
 
 
-class BootStyle(ttk.Style):
+class StyleManager(ttk.Style):
     """A class for setting the application style.
 
     Sets the theme of the `tkinter.Tk` instance and supports all
@@ -33,18 +33,18 @@ class BootStyle(ttk.Style):
         self._theme_names = set()
         self._load_themes()
         super().__init__(**kwargs)
-        BootStyle.instance = self
+        StyleManager.instance = self
         self.theme_use(theme)
 
     @staticmethod
     def get_builder():
-        style: BootStyle = Style()
+        style: StyleManager = Style()
         theme_name = style.theme.name
         return style._theme_objects[theme_name]
 
     @staticmethod
     def get_builder_tk():
-        builder = BootStyle.get_builder()
+        builder = StyleManager.get_builder()
         return builder.builder_tk
 
     @property
@@ -169,12 +169,12 @@ def Style(theme=DEFAULT_THEME, **kwargs):
     Return instance with defined theme
     >>> style = Style(theme='superhero')
     """
-    if BootStyle.instance is None:
-        BootStyle(theme, **kwargs)
-        return BootStyle.instance
+    if StyleManager.instance is None:
+        StyleManager(theme, **kwargs)
+        return StyleManager.instance
     else:
         if theme == DEFAULT_THEME:
-            return BootStyle.instance
+            return StyleManager.instance
         else:
-            BootStyle.instance.theme_use(theme)
-            return BootStyle.instance
+            StyleManager.instance.theme_use(theme)
+            return StyleManager.instance

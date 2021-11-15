@@ -2204,40 +2204,37 @@ class StyleBuilderTTK:
         self.style.register_ttkstyle(ttkstyle)
         self.style.register_ttkstyle(chevron_style)
 
-    def create_meter_style(self, colorname=DEFAULT):
-        """Create style configuration for the meter"""
-        # TODO Refactor
-
-        STYLE = 'TMeter'
-
+    def create_meter_label_style(self, colorname=DEFAULT):
+        """Create label style for meter widget"""
+        
+        STYLE = 'Meter.TLabel'
+        
         if any([colorname == DEFAULT, colorname == '']):
             ttkstyle = STYLE
-            foreground = self.colors.primary
+            if self.is_light_theme:
+                foreground = self.colors.secondary
+            else:
+                foreground = self.colors.selectbg
+            background = self.colors.bg
         else:
             ttkstyle = f'{colorname}.{STYLE}'
             foreground = self.colors.get(colorname)
+            background = self.colors.bg
+
+        if self.is_light_theme:
+            # TODO conform this with other trough colors
+            troughcolor = Colors.update_hsv(self.colors.light, vd=-0.01)
+        else:
+            troughcolor = self.colors.inputbg
 
         self.style.configure(
             ttkstyle,
             foreground=foreground,
-            background=self.colors.bg
-        )
-        self.style.layout(
-            ttkstyle,
-            [
-                ("Label.border",
-                    {"sticky": tk.NSEW, "border": "1", "children": [
-                        ("Label.padding",
-                            {"sticky": tk.NSEW, "border": "1", "children": [
-                                ("Label.label", {"sticky": tk.NSEW})]
-                             },
-                         )
-                    ],
-                    })
-            ]
+            background=background,
+            space=troughcolor
         )
         # register ttkstyle
-        self.style.register_ttkstyle(ttkstyle)
+        self.style.register_ttkstyle(ttkstyle)        
 
     def create_label_style(self, colorname=DEFAULT):
         """Create style configuration for ttk label"""
