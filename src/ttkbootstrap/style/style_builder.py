@@ -2267,7 +2267,7 @@ class StyleBuilderTTK:
         # register ttkstyle
         self.style.register_ttkstyle(ttkstyle)
 
-    def create_date_button_assets(self):
+    def create_date_button_assets(self, foreground):
         """Draw a calendar button image of the specified color
 
         Returns
@@ -2275,7 +2275,7 @@ class StyleBuilderTTK:
         str
             The PhotoImage name.
         """
-        fill = self.colors.selectfg
+        fill = foreground
         image = Image.new('RGBA', (21, 22))
         draw = ImageDraw.Draw(image)
 
@@ -2305,6 +2305,12 @@ class StyleBuilderTTK:
         STYLE = 'Date.TButton'
 
         date_image = self.create_date_button_assets()
+        if colorname == 'light':
+            btn_foreground = self.colors.fg
+        else:
+            btn_foreground= self.colors.selectfg
+        
+        date_image = self.create_date_button_assets(btn_foreground)
 
         if self.is_light_theme:
             disabled_fg = self.colors.border
