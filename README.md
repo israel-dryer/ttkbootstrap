@@ -8,13 +8,7 @@ pip install ttkbootstrap
 
 ## Examples
 
-**light theme example (1.0 - alpha)**
-
-<img src="https://user-images.githubusercontent.com/42584742/141869893-d7c19b77-466c-4f58-a24f-652db8c9d919.png" width=70%>
-
-**dark theme example (1.0 - alpha)**
-
-<img src="https://user-images.githubusercontent.com/42584742/141869935-2cfe7ea7-c110-452f-b8cf-871907aaf7b9.png" width=70%>
+![](https://github.com/israel-dryer/ttkbootstrap/blob/master/docs/assets/themes/themes.gif)
 
 ## Versions
 ### [0.5 - stable](https://github.com/israel-dryer/ttkbootstrap/tree/0.5)
@@ -40,6 +34,7 @@ root.mainloop()
 ```
 
 ### [1.0 - alpha](https://github.com/israel-dryer/ttkbootstrap/)
+- https://ttkbootstrap.readthedocs.io/en/latest/
 - Adds the new `bootstyle` parameter to set styles (legacy ttk style is also useable)
 - Adds new themed styles for Labelframe, Scrollbar, 
 - Saves memory by only building ttk styles that are used
