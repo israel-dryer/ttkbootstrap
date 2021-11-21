@@ -1,0 +1,38 @@
+import tkinter as tk
+import ttkbootstrap as ttk
+from ctypes import windll
+windll.shcore.SetProcessDpiAwareness(1)
+
+root = tk.Tk()
+#root.geometry('800x400')
+style = ttk.Style("lumen")
+
+
+frame = ttk.Frame(padding=10)
+frame.pack(padx=10, pady=10, expand=tk.YES, fill=tk.BOTH)
+
+top_frame = ttk.Frame(frame)
+top_frame.pack(fill=tk.BOTH, expand=tk.YES)
+
+bot_frame = ttk.Frame(frame)
+bot_frame.pack(fill=tk.BOTH, expand=tk.YES)
+
+for i, color in enumerate(['default', *style.colors]):
+    if i < 5:
+        p = ttk.Floodgauge(
+            master=top_frame,
+            bootstyle=color,
+            text=color,
+            value=65,
+        )
+    else:
+        p = ttk.Floodgauge(
+            master=bot_frame,
+            bootstyle=color,
+            text=color,
+            value=65,
+        )
+    p.pack(padx=5, pady=5, fill=tk.BOTH, side=tk.LEFT)
+    p.start()
+
+root.mainloop()

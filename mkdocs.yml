@@ -1,0 +1,17 @@
+site_name: ttkbootstrap
+theme:
+  name: flatly
+  features:
+    - navigation.tracking
+    - navigation.tabs
+nav:
+  - 'Home': index.md
+  - 'Style Guide': styleguide.md
+  - 'Themes': themes.md
+  - 'Gallery': gallery.md
+markdown_extensions:
+  - admonition
+  - pymdownx.details
+  - pymdownx.superfences
+  - pymdownx.keys
+  - pymdownx.snippets
