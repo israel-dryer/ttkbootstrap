@@ -3,8 +3,6 @@ from tkinter import ttk
 from ttkbootstrap.dialogs.calendar import ask_date
 from datetime import datetime
 
-PRIMARY = 'primary'
-
 class DateEntry(ttk.Frame):
 
     def __init__(
@@ -13,7 +11,7 @@ class DateEntry(ttk.Frame):
         dateformat=r"%Y-%m-%d",
         firstweekday=6,
         startdate=None,
-        bootstyle=PRIMARY,
+        bootstyle='',
         **kwargs
     ):
         """A date entry widget combines the `Combobox` and a `Button` 
@@ -73,7 +71,11 @@ class DateEntry(ttk.Frame):
         super().__init__(master, **kwargs)
 
         # add visual components
-        self.entry = ttk.Entry(self, bootstyle=self._bootstyle)
+        entry_kwargs = {'bootstyle': self._bootstyle}
+        if 'width' in kwargs:
+            entry_kwargs['width'] = kwargs.pop('width')
+        
+        self.entry = ttk.Entry(self, **entry_kwargs)
         self.entry.pack(side=tk.LEFT, fill=tk.X, expand=tk.YES)
 
         self.button = ttk.Button(
@@ -115,6 +117,9 @@ class DateEntry(ttk.Frame):
             self._bootstyle = kwargs.pop('bootstyle')
             self.entry.configure(bootstyle=self._bootstyle)
             self.button.configure(bootstyle=[self._bootstyle, 'date'])
+        if 'width' in kwargs:
+            width = kwargs.pop('width')
+            self.entry.configure(width=width)
 
         super(ttk.Frame, self).configure(**kwargs)
 
