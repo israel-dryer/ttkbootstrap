@@ -5,7 +5,7 @@
 includes pre-defined widget styles that are easily accessible with 
 easy to remember keywords that change the widget color and form.
 
-![themes](/assets/themes/themes.gif)
+![themes](./assets/themes/themes.gif)
 
 ## Installation
 
@@ -96,7 +96,7 @@ root.mainloop()
 
 This results in the window below:
 
-![simple usage window](/assets/tutorial/simple-usage.png)
+![simple usage window](./assets/tutorial/simple-usage.png)
 
 ### Choose a theme
 
@@ -163,7 +163,7 @@ for color in style.colors:
 root.mainloop()
 ```
 
-![button colors](/assets/tutorial/button-colors.png)
+![button colors](./assets/tutorial/button-colors.png)
 
 Consider the following example, which also shows the _outline_ style that is 
 available for `Button`, and `Menubutton`
@@ -183,7 +183,7 @@ b2.pack(side=tk.LEFT, padx=5, pady=10)
 
 root.mainloop()
 ```
-![button styles](/assets/tutorial/solid-outline-button-styles.png)
+![button styles](./assets/tutorial/solid-outline-button-styles.png)
 
 ### Use themed colors
 

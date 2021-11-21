@@ -13,7 +13,7 @@ inserted result in the results `Treeview`.
 
 The theme used in this example is **journal**.
 
-![file search image example](assets/gallery/file_search_engine.png)
+![file search image example](./assets/gallery/file_search_engine.png)
 
 ### Style Summary
 
@@ -382,7 +382,7 @@ with a mouse-click action.
 
 The theme used in this example is **flatly**.
 
-![file search image example](assets/gallery/back_me_up.png)
+![file search image example](./assets/gallery/back_me_up.png)
 
 ### Style Summary
 
@@ -816,7 +816,7 @@ simple unicode characters.
 
 The theme used in this example is **minty**.
 
-![file search image example](assets/gallery/media_player.png)
+![file search image example](./assets/gallery/media_player.png)
 
 ### Style Summary
 
@@ -964,7 +964,7 @@ into a nice clean format.
 
 The theme used is **flatly**.
 
-![file search image example](assets/gallery/equalizer.png)
+![file search image example](./assets/gallery/equalizer.png)
 
 ### Style Summary
 
@@ -1065,7 +1065,7 @@ applied to each option group.
 
 The theme used is **flatly**.
 
-![file search image example](assets/gallery/collapsing_frame.png)
+![file search image example](./assets/gallery/collapsing_frame.png)
 
 ### Style Summary
 
@@ -1212,7 +1212,7 @@ differentiate button functions.
 
 The theme used in this example is **flatly**.
 
-![file search image example](assets/gallery/calculator.png)
+![file search image example](./assets/gallery/calculator.png)
 
 ### Style Summary
 
@@ -1377,9 +1377,9 @@ when submitted.
 
 The two examples below used the themes **flatly** and **superhero**.
 
-![file search image example](assets/gallery/simple_data_entry_light.png)
+![file search image example](./assets/gallery/simple_data_entry_light.png)
 
-![file search image example](assets/gallery/simple_data_entry_dark.png)
+![file search image example](./assets/gallery/simple_data_entry_dark.png)
 
 ### Style Summary
 
@@ -1475,9 +1475,9 @@ state of the button.
 
 The theme applied is **cosmo**.
 
-![file search image example](assets/gallery/timer_widget_started.png)  
+![file search image example](./assets/gallery/timer_widget_started.png)  
 
-![file search image example](assets/gallery/timer_widget_paused.png)  
+![file search image example](./assets/gallery/timer_widget_paused.png)  
 
 
 ### Style Summary
@@ -1575,7 +1575,7 @@ widget.
 
 The theme applied is **sandstone**.
 
-![file search image example](assets/gallery/text_reader.png)  
+![file search image example](./assets/gallery/text_reader.png)  
 
 ### Style Summary
 
