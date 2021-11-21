@@ -4,7 +4,8 @@
 """
 import tkinter as tk
 import ttkbootstrap as ttk
-
+# from ctypes import windll
+# windll.shcore.SetProcessDpiAwareness(1)
 
 class Application(tk.Tk):
 
@@ -21,7 +22,7 @@ class Calculator(ttk.Frame):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.configure(padding=1)
+        self.configure(padding=3)
 
         # number display
         self.display_var = tk.StringVar(value=0)

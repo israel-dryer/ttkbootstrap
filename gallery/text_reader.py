@@ -6,14 +6,15 @@ import tkinter as tk
 import ttkbootstrap as ttk
 from tkinter.filedialog import askopenfilename
 from tkinter.scrolledtext import ScrolledText
-
+# from ctypes import windll
+# windll.shcore.SetProcessDpiAwareness(1)
 
 class Application(tk.Tk):
 
     def __init__(self):
         super().__init__()
         self.title('Text Reader')
-        self.style = ttk.Style()
+        self.style = ttk.Style("sandstone")
         self.reader = Reader(self)
         self.reader.pack(fill=tk.BOTH, expand=tk.YES)
 

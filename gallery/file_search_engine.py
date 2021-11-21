@@ -11,6 +11,8 @@ from threading import Thread
 import tkinter as tk
 from tkinter.filedialog import askdirectory, asksaveasfilename
 import ttkbootstrap as ttk
+# from ctypes import windll
+# windll.shcore.SetProcessDpiAwareness(1)
 
 
 class Application(tk.Tk):
@@ -18,7 +20,7 @@ class Application(tk.Tk):
     def __init__(self):
         super().__init__()
         self.title('File Search Engine')
-        self.style = ttk.Style()
+        self.style = ttk.Style("journal")
         self.search = SearchEngine(self, padding=10)
         self.search.pack(fill=tk.BOTH, expand=tk.YES)
 
@@ -118,7 +120,7 @@ class SearchEngine(ttk.Frame):
             master=self, 
             orient=tk.HORIZONTAL, 
             mode='indeterminate',
-            bootstyle='secondary'
+            bootstyle='success'
         )
         self.progressbar.pack(fill=tk.X, pady=5)
 

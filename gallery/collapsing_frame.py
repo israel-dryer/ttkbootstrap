@@ -6,14 +6,15 @@ from pathlib import Path
 import tkinter as tk
 import ttkbootstrap as ttk
 from ttkbootstrap.style.utility import ttkstyle_widget_color
-
+# from ctypes import windll
+# windll.shcore.SetProcessDpiAwareness(1)
 
 class Application(tk.Tk):
 
     def __init__(self):
         super().__init__()
         self.title('Collapsing Frame')
-        self.style = ttk.Style(theme='superhero')
+        self.style = ttk.Style()
 
         cf = CollapsingFrame(self)
         cf.pack(fill='both')
