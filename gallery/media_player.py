@@ -6,7 +6,8 @@
 import tkinter as tk
 import ttkbootstrap as ttk
 from pathlib import Path
-
+# from ctypes import windll
+# windll.shcore.SetProcessDpiAwareness(1)
 
 class Application(tk.Tk):
 
@@ -19,15 +20,6 @@ class Application(tk.Tk):
 
         self.player = Player(self)
         self.player.pack(fill=tk.BOTH, expand=tk.YES)
-
-        # configure custom styles
-        self.style.configure('TButton', font='Helvetica 20')
-        self.style.configure(
-            style='header.TLabel',
-            background=self.style.colors.border,
-            padding=10
-        )
-
 
 class Player(ttk.Frame):
     """An interface for a media player"""
@@ -51,7 +43,8 @@ class Player(ttk.Frame):
             master=self,
             textvariable=self.track_info,
             font='Helvetica 12',
-            style='header.TLabel'
+            bootstyle='light-inverse',
+            padding=(5, 10)
         )
         header.pack(fill=tk.X, padx=2)
 

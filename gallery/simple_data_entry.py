@@ -4,13 +4,15 @@
 """
 import tkinter as tk
 import ttkbootstrap as ttk
+# from ctypes import windll
+# windll.shcore.SetProcessDpiAwareness(1)
 
 class Application(tk.Tk):
 
     def __init__(self):
         super().__init__()
         self.title('Simple data entry form')
-        self.style = ttk.Style('superhero')
+        self.style = ttk.Style()
         self.form = EntryForm(self)
         self.form.pack(fill='both', expand='yes')
 

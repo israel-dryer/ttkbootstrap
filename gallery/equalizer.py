@@ -5,6 +5,8 @@
 import tkinter as tk
 import ttkbootstrap as ttk
 from random import randint
+# from ctypes import windll
+# windll.shcore.SetProcessDpiAwareness(1)
 
 
 class Application(tk.Tk):

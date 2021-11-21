@@ -12,6 +12,8 @@ from tkinter.filedialog import askdirectory
 from tkinter.messagebox import showinfo
 from tkinter.scrolledtext import ScrolledText
 from pathlib import Path
+# from ctypes import windll
+# windll.shcore.SetProcessDpiAwareness(1)
 
 
 class Application(tk.Tk):
@@ -371,7 +373,7 @@ class CollapsingFrame(ttk.Frame):
         if kwargs.get('textvariable'):
             lbl.configure(textvariable=kwargs.get('textvariable'))
         
-        lbl.pack(side=tk.LEFT, fill=tk.BOTH, expand=tk.YES)
+        lbl.pack(side=tk.LEFT, fill=tk.BOTH, expand=tk.YES, padx=(10, 0))
 
         # header toggle button
         _func = lambda c=child: self._toggle_open_close(child)

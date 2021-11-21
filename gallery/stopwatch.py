@@ -5,14 +5,15 @@
 """
 import tkinter as tk
 import ttkbootstrap as ttk
-
+# from ctypes import windll
+# windll.shcore.SetProcessDpiAwareness(1)
 
 class Application(tk.Tk):
 
     def __init__(self):
         super().__init__()
-        self.title('Timer')
-        self.style = ttk.Style('darkly')
+        self.title('Stopwatch')
+        self.style = ttk.Style("cosmo")
         self.timer = TimerWidget(self)
         self.timer.pack(fill=tk.BOTH, expand=tk.YES)
 
