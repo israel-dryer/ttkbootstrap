@@ -1399,14 +1399,12 @@ class StyleBuilderTTK:
             foreground = self.colors.inputfg
             body_style = STYLE
             header_style = f'{STYLE}.Heading'
-            item_style = 'Item'
             focuscolor = self.colors.primary
         else:
             background = self.colors.get(colorname)
             foreground = self.colors.selectfg
             body_style = f'{colorname}.{STYLE}'
             header_style = f'{colorname}.{STYLE}.Heading'
-            item_style = f'{colorname}.Item'
             focuscolor = background
 
         # treeview header
@@ -1463,24 +1461,12 @@ class StyleBuilderTTK:
                     })
             ]
         )
-        self.style.element_create(f'{item_style}.Treeitem.indicator',
-                                  'from', TTK_ALT
-                                  )
-        self.style.layout(
-            item_style,
-            [
-                ('Treeitem.padding', {'sticky': 'nswe', 'children': [
-                    (f'{item_style}.Treeitem.indicator',
-                        {'side': 'left', 'sticky': ''}),
-                    ('Treeitem.image', {'side': 'left', 'sticky': ''}),
-                    ('Treeitem.focus',
-                        {'side': 'left', 'sticky': '', 'children': [
-                            ('Treeitem.text', {'side': 'left', 'sticky': ''})
-                        ]}
-                     )]}
-                 )
-            ]
-        )
+        
+        try:
+            self.style.element_create('Treeitem.indicator', 'from', TTK_ALT)
+        except:
+            pass
+                                  
         # register ttkstyles
         self.style.register_ttkstyle(body_style)
 
@@ -1992,6 +1978,11 @@ class StyleBuilderTTK:
             ttkstyle = f'{colorname}.{STYLE}'
             toggle_on = self.colors.get(colorname)
 
+        if colorname == 'light':
+            foreground=self.colors.fg
+        else:
+            foreground=self.colors.selectfg
+
         if self.is_light_theme:
             toggle_off = self.colors.selectbg
         else:
@@ -2019,7 +2010,11 @@ class StyleBuilderTTK:
         )
         self.style.map(
             ttkstyle,
-            foreground=[("disabled", disabled_fg)],
+            foreground=[
+                ("disabled", disabled_fg),
+                ("hover", foreground),
+                ("selected", foreground)
+            ],
             background=[
                 ("disabled", disabled_bg),
                 ("pressed !disabled", toggle_on),
