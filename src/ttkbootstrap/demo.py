@@ -1,255 +1,274 @@
-"""
-Author: Israel Dryer
-License: MIT
-Copyright (c) 2021 Israel Dryer
-"""
 import tkinter as tk
 import ttkbootstrap as ttk
-from PIL import ImageGrab
+
+ZEN = """Beautiful is better than ugly. 
+Explicit is better than implicit. 
+Simple is better than complex. 
+Complex is better than complicated.
+Flat is better than nested. 
+Sparse is better than dense.  
+Readability counts.
+Special cases aren't special enough to break the rules.
+Although practicality beats purity.
+Errors should never pass silently.
+Unless explicitly silenced.
+In the face of ambiguity, refuse the temptation to guess.
+There should be one-- and preferably only one --obvious way to do it.
+Although that way may not be obvious at first unless you're Dutch.
+Now is better than never.
+Although never is often better than *right* now.
+If the implementation is hard to explain, it's a bad idea.
+If the implementation is easy to explain, it may be a good idea.
+Namespaces are one honking great idea -- let's do more of those!"""
 
 
-class Demo:
-    """
-    An application class for demonstrating styles
-    """
+root = tk.Tk()
+root.title("ttkbootstrap widget demo")
+root.minsize(1, 525)
+style = ttk.Style()
+theme_names = style.theme_names()
 
-    def __init__(self):
-        self.root = tk.Tk()
-        self.style = ttk.Style("lumen")
-        self.root.geometry('500x695')
-        self.root.protocol("WM_DELETE_WINDOW", self.quit)
-        self.root.title('TTK Bootstrap')
-        self.theme_name = tk.StringVar()
-        self.theme_name.set(self.style.theme_use())
-        self.setup()
-        self.root.eval('tk::PlaceWindow . center')
-        self.root.bind("<Insert>", self.get_bounding_box)
-        self.run()
+lframe = ttk.Frame(root, padding=10)
+lframe.pack(side=tk.LEFT, fill=tk.BOTH)
 
-    def __repr__(self):
-        return "Demo Application"
+rframe = ttk.Frame(root, padding=10)
+rframe.pack(side=tk.RIGHT, fill=tk.BOTH)
 
-    def setup(self):
-        sb = ttk.Scrollbar(self.root)
-        sb.set(0.1, 0.55)
+theme_frame = ttk.Frame(lframe)
+theme_frame.pack(fill=tk.X, pady=15, side=tk.TOP)
 
-        sb.pack(side=tk.RIGHT, fill='y')
-        self.nb = ttk.Notebook(self.root)
-        self.nb.pack(fill=tk.BOTH, expand=tk.YES)
-        self.tab = self.create_themed_tab()
-        self.nb.add(self.tab, text='Tab 1')
-        self.nb.add(ttk.Frame(self.nb), text='Tab 2')
-        self.nb.add(ttk.Frame(self.nb), text='Tab 3')
+ttk.Label(theme_frame, text="Theme").pack(side=tk.LEFT)
 
-    def change_theme(self, new_theme):
-        self.style.theme_use(new_theme)
-        self.theme_name.set(new_theme)
+cbo = ttk.Combobox(
+    master=theme_frame,
+    text=style.theme.name,
+    values=theme_names,
+)
+cbo.pack(side=tk.LEFT, padx=10)
+cbo.current(theme_names.index(style.theme.name))
 
-    def create_themed_tab(self):
-        """
-        Create a return a frame containing themed widgets
-        """
-        tab = ttk.Frame(self.nb, padding=10)
-        colors = [
-            'Primary', 'Secondary', 'Success', 'Info', 'Warning', 'Danger']
 
-        header_frame = ttk.Frame(tab, padding=10)
-        header = ttk.Label(
-            master=header_frame,
-            textvariable=self.theme_name,
-            font='-size 30'
-        )
-        header.pack(side=tk.LEFT, fill=tk.X, pady=5)
-        header_frame.pack(fill=tk.X)
+def change_theme(e):
+    t = cbo.get()
+    cbo.selection_clear()    
+    style.theme_use(t)
+    default.focus_set()
 
-        # Menubutton (select a theme)
-        mb = ttk.Menubutton(header_frame, text='Select a theme to preview')
-        mb.pack(side=tk.RIGHT, fill=tk.X, pady=5)
-        menu = tk.Menu(mb)
-        mb.configure(menu=menu)
-        for t in sorted(self.style._theme_definitions.keys()):
-            menu.add_command(
-                label=t,
-                command=lambda theme=t: self.change_theme(theme)
-            )
+cbo.bind('<<ComboboxSelected>>', change_theme)
 
-        # Separator
-        ttk.Separator(
-            master=tab,
-            orient=tk.HORIZONTAL
-        ).pack(fill=tk.X, pady=(10, 15))
+cb1 = ttk.Checkbutton(
+    master=theme_frame,
+    text="rounded toggle",
+    bootstyle="success-round-toggle",
+)
+cb1.pack(side=tk.RIGHT)
+cb1.invoke()
 
-        # Paned Window
-        pw = ttk.PanedWindow(tab)
-        pw.pack(fill=tk.X)
+cb2 = ttk.Checkbutton(
+    master=theme_frame,
+    text="squared toggle",
+    bootstyle="square-toggle"
+)
+cb2.pack(side=tk.RIGHT, padx=10)
+cb2.invoke()
 
-        # Available Colors
-        color_frame = ttk.Labelframe(
-            master=pw,
-            text='Colors available in this theme',
-            padding=(5, 15)
-        )
-        for color in colors:
-            ttk.Button(
-                master=color_frame,
-                text=color.title(),
-                bootstyle=color
-            ).pack(
-                side=tk.LEFT,
-                fill=tk.X,
-                expand=tk.YES,
-                padx=2,
-                pady=5
-            )
-        pw.add(color_frame)
+color_group = ttk.Labelframe(
+    master=lframe,
+    text="Theme color options",
+    padding=10
+)
+color_group.pack(fill=tk.X, side=tk.TOP)
 
-        # This outer frame will provide an internal buffer between the widget images and the window pane,
-        # there is no other way to add internal padding
-        widget_outer_frame = ttk.Frame(pw, padding=(0, 10))
-        pw.add(widget_outer_frame)
+for color in style.colors:
+    cb = ttk.Button(color_group, text=color, bootstyle=color)
+    cb.pack(side=tk.LEFT, expand=tk.YES, padx=5, fill=tk.X)
 
-        # Widget images
-        widget_frame = ttk.LabelFrame(
-            master=widget_outer_frame,
-            text='Styled Widgets',
-            padding=10
-        )
-        widget_frame.pack(fill=tk.X)
+rb_group = ttk.Labelframe(lframe, text="Checkbuttons & radiobuttons", padding=10)
+rb_group.pack(fill=tk.X, pady=10, side=tk.TOP)
 
-        # Label
-        ttk.Label(
-            master=widget_frame,
-            text='This is a label'
-        ).pack(side=tk.TOP, fill=tk.X)
+check1 = ttk.Checkbutton(rb_group, text="selected")
+check1.pack(side=tk.LEFT, expand=tk.YES, padx=5)
+check1.invoke()
+check2 = ttk.Checkbutton(rb_group, text="deselected")
+check2.pack(side=tk.LEFT, expand=tk.YES, padx=5)
+check3 = ttk.Checkbutton(rb_group, text="disabled", state=tk.DISABLED)
+check3.pack(side=tk.LEFT, expand=tk.YES, padx=5)
 
-        entry_spin_frame = ttk.Frame(widget_frame)
-        entry_spin_frame.pack(fill=tk.X, pady=5)
+radio1 = ttk.Radiobutton(rb_group, text="selected", value=1)
+radio1.pack(side=tk.LEFT, expand=tk.YES, padx=5)
+radio1.invoke()
+radio2 = ttk.Radiobutton(rb_group, text="deselected", value=2)
+radio2.pack(side=tk.LEFT, expand=tk.YES, padx=5)
+radio3 = ttk.Radiobutton(rb_group, text="disabled", value=3, state=tk.DISABLED)
+radio3.pack(side=tk.LEFT, expand=tk.YES, padx=5)
 
-        # Entry
-        entry = ttk.Entry(entry_spin_frame)
-        entry.insert(tk.END, 'An entry field with focus ring')
-        entry.pack(side=tk.LEFT, fill=tk.X, expand=tk.YES)
+ttframe = ttk.Frame(lframe)
+ttframe.pack(pady=5, fill=tk.X, side=tk.TOP)
 
-        # Spinbox
-        spinner_options = [
-            'Spinner option 1', 'Spinner option 2',
-            'Spinner option 3'
-        ]
-        spinner = ttk.Spinbox(entry_spin_frame, values=spinner_options)
-        spinner.set('Spinner option 1')
-        spinner.pack(side=tk.RIGHT, fill=tk.X, expand=tk.YES, padx=(5, 0))
+table_data = [
+    ('South Island, New Zealand', 1),
+    ('Paris', 2),
+    ('Bora Bora', 3),
+    ('Maui', 4),
+    ('Tahiti', 5)
+]
 
-        # Button
-        btn_frame = ttk.Frame(widget_frame)
-        b1 = ttk.Button(btn_frame, text='Solid Button')
-        b1.pack(side=tk.LEFT, fill=tk.X, expand=tk.YES, padx=(0, 5))
+tv = ttk.Treeview(
+    master=ttframe,
+    columns=[0, 1],
+    show='headings',
+    height=5
+)
+for row in table_data:
+    tv.insert('', tk.END, values=row)
 
-        b2 = ttk.Button(
-            master=btn_frame,
-            text='Outline Button',
-            bootstyle='outline')
-        b2.pack(side=tk.LEFT, fill=tk.X, expand=tk.YES)
-        btn_frame.pack(fill=tk.X, pady=5)
+tv.selection_set('I001')
+tv.heading(0, text='City')
+tv.heading(1, text='Rank')
+tv.column(1, width=50, anchor=tk.CENTER)
+tv.pack(side=tk.LEFT, anchor=tk.NE, fill=tk.X)
 
-        # Option Menu
-        om_var = tk.StringVar()
-        om = ttk.OptionMenu(
-            btn_frame,
-            om_var,
-            'Option Menu',
-            *list(self.style._theme_names)
-        )
-        om.pack(side=tk.RIGHT, fill=tk.X, padx=(5, 0), pady=5)
+# text widget
+txt = tk.Text(ttframe, height=5, width=50)
+txt.insert(tk.END, ZEN)
+txt.pack(side=tk.RIGHT, anchor=tk.NW, padx=(5, 0), fill=tk.BOTH, expand=tk.YES)
 
-        # Labelframe
-        options_frame = ttk.Frame(widget_frame, padding=(0, 10))
-        options_frame.pack(fill=tk.X, pady=5)
+# # notebook with table and text tabs
+nb = ttk.Notebook(lframe)
+nb.pack(pady=5, fill=tk.BOTH, expand=True)
+nb_text = "This is a notebook tab.\nYou can put any widget you want here."
+nb.add(ttk.Label(nb, text=nb_text), text="Tab 1", sticky=tk.NW)
+nb.add(
+    child=ttk.Label(nb, text="A notebook tab."),
+    text="Tab 2",
+    sticky=tk.NW
+)
+nb.add(ttk.Frame(nb), text='Tab 3')
+nb.add(ttk.Frame(nb), text='Tab 4')
+nb.add(ttk.Frame(nb), text='Tab 5')
 
-        # Radio
-        r1 = ttk.Radiobutton(options_frame, value=1, text='Radio one')
-        r1.pack(side=tk.LEFT, fill=tk.X, expand=tk.YES)
-        r1.invoke()
+btn_group = ttk.Labelframe(rframe, text="Buttons", padding=(10, 5))
+btn_group.pack(fill=tk.X)
 
-        r2 = ttk.Radiobutton(options_frame, value=2, text='Radio two')
-        r2.pack(side=tk.LEFT, fill=tk.X, expand=tk.YES)
+menu = tk.Menu(root)
+for i, t in enumerate(style.theme_names()):
+    menu.add_radiobutton(label=t, value=i)
 
-        # Checkbutton
-        cb1 = ttk.Checkbutton(options_frame, text='Option 1')
-        cb1.pack(side=tk.LEFT, fill=tk.X, expand=tk.YES)
-        cb1.invoke()
+mb = ttk.Menubutton(btn_group, text="Menubutton", menu=menu)
+mb.pack(fill=tk.X, pady=5)
 
-        cb2 = ttk.Checkbutton(options_frame, text='Option 2')
-        cb2.pack(side=tk.LEFT, fill=tk.X, expand=tk.YES)
-        cb2.invoke()
-        cb2.invoke()
+default = ttk.Button(btn_group, text="Default button")
+default.pack(fill=tk.X)
+default.focus_set()
 
-        # Treeview
-        tv = ttk.Treeview(widget_frame, height=3)
-        tv.pack(fill=tk.X, pady=5)
-        tv.heading('#0', text='Example heading')
-        tv.insert('', tk.END, 'example1', text='Example 1')
-        tv.insert('', tk.END, 'example2', text='Example 2')
-        tv.insert('example2', tk.END, text='Example 2 Child 1')
-        tv.insert('example2', tk.END, text='Example 2 Child 2')
-        tv.selection_set('example1')
+ob = ttk.Button(btn_group, text="Outline button", bootstyle='outline')
+ob.pack(fill=tk.X, pady=5)
 
-        # Scale
-        scale_frame = ttk.Frame(widget_frame)
-        self.scale_var = tk.IntVar(value=25)
-        scale = ttk.Scale(
-            master=scale_frame,
-            variable=self.scale_var,
-            from_=1,
-            to=100
-        )
-        scale.pack(side=tk.LEFT, fill=tk.X, expand=tk.YES, padx=(0, 2))
-        scale_frame.pack(side=tk.TOP, fill=tk.X, pady=5)
+lb = ttk.Button(btn_group, text="Link button", bootstyle='link')
+lb.pack(fill=tk.X, pady=5)
 
-        entry = ttk.Entry(scale_frame, textvariable=self.scale_var, width=4)
-        entry.pack(side=tk.RIGHT)
+input_group = ttk.Labelframe(rframe, text="Other input widgets", padding=10)
+input_group.pack(fill=tk.X, pady=10)
 
-        # Combobox
-        cbo = ttk.Combobox(widget_frame, values=colors)
-        cbo.current(0)
-        cbo.pack(fill=tk.X, pady=5)
+entry = ttk.Entry(input_group)
+entry.pack(fill=tk.X)
+entry.insert(tk.END, "entry widget")
 
-        # Progressbar
-        ttk.Progressbar(
-            master=widget_frame,
-            variable=self.scale_var,
-            bootstyle='striped'
-        ).pack(fill=tk.X, pady=10)
-        return tab
+password = ttk.Entry(input_group, show="•")
+password.pack(fill=tk.X, pady=5)
+password.insert(tk.END, "password")
 
-    def run(self):
-        self.root.mainloop()
+spinbox = ttk.Spinbox(input_group, from_=0, to=100)
+spinbox.pack(fill=tk.X)
+spinbox.set(45)
 
-    def quit(self):
-        # I'm getting an error when closing the application without switching a standard theme ??
-        self.root.destroy()
+de = ttk.DateEntry(input_group)
+de.pack(fill=tk.X, pady=5)
 
-    def get_bounding_box(self, event):
-        """
-        Take a screenshot of the current demo window and save to images
-        """
-        # bounding box
-        titlebar = 31
-        x1 = self.root.winfo_rootx() - 1
-        y1 = self.root.winfo_rooty() - titlebar
-        x2 = x1 + self.root.winfo_width() + 2
-        y2 = y1 + self.root.winfo_height() + titlebar + 1
+# # vertical widgets
+vframe = ttk.Frame(rframe)
+vframe.pack(expand=tk.YES, fill=tk.BOTH)
 
-        self.root.after_idle(self.save_screenshot, [x1, y1, x2, y2])
+s1 = ttk.Scale(
+    master=vframe,
+    orient=tk.VERTICAL,
+    value=50,
+    from_=100,
+    to=0
+)
+s1.pack(fill=tk.Y, padx=5, side=tk.LEFT, expand=tk.YES)
 
-    def save_screenshot(self, bbox):
-        # screenshot
-        img = ImageGrab.grab(bbox=bbox)
+s2 = ttk.Scale(
+    master=vframe,
+    orient=tk.VERTICAL,
+    bootstyle='info',
+    value=75,
+    from_=100,
+    to=0
+)
+s2.pack(fill=tk.Y, padx=5, side=tk.LEFT, expand=tk.YES)
 
-        # image name
-        filename = f'../../docs/images/{self.theme_name.get()}.png'
-        img.save(filename, 'png')
-        print(filename)  # print for confirmation
+s3 = ttk.Scale(
+    master=vframe,
+    orient=tk.VERTICAL,
+    bootstyle='warning',
+    value=25,
+    from_=100,
+    to=0
+)
+s3.pack(fill=tk.Y, padx=5, side=tk.LEFT, expand=tk.YES)
 
+ttk.Progressbar(
+    master=vframe,
+    orient=tk.VERTICAL,
+    value=50,
+).pack(fill=tk.Y, padx=5, side=tk.LEFT)
+
+ttk.Progressbar(
+    master=vframe,
+    orient=tk.VERTICAL,
+    value=75,
+    bootstyle='success-striped'
+).pack(fill=tk.Y, padx=5, side=tk.LEFT)
+
+ttk.Progressbar(
+    master=vframe,
+    orient=tk.VERTICAL,
+    value=25,
+    bootstyle='danger-striped'
+).pack(fill=tk.Y, padx=5, side=tk.LEFT)
+
+sb = ttk.Scrollbar(
+    master=vframe,
+    orient=tk.VERTICAL,
+)
+sb.set(0.1, 0.9)
+sb.pack(fill=tk.Y, padx=5, side=tk.LEFT, expand=tk.YES)
+
+sb = ttk.Scrollbar(
+    master=vframe,
+    orient=tk.VERTICAL,
+    bootstyle='primary'
+)
+sb.set(0.1, 0.9)
+sb.pack(fill=tk.Y, padx=5, side=tk.LEFT, expand=tk.YES)
+
+sb = ttk.Scrollbar(
+    master=vframe,
+    orient=tk.VERTICAL,
+    bootstyle='info-round'
+)
+sb.set(0.1, 0.9)
+sb.pack(fill=tk.Y, padx=5, side=tk.LEFT, expand=tk.YES)
+
+sb = ttk.Scrollbar(
+    master=vframe,
+    orient=tk.VERTICAL,
+    bootstyle='success-round'
+)
+sb.set(0.1, 0.9)
+sb.pack(fill=tk.Y, padx=5, side=tk.LEFT, expand=tk.YES)
 
 if __name__ == '__main__':
-    Demo()
+
+    root.mainloop()
