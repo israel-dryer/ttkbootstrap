@@ -67,7 +67,7 @@ class DatePickerPopup:
         self.root.title(title)
         self.firstweekday = firstweekday
         self.startdate = startdate or datetime.today().date()
-        self.bootstyle = bootstyle
+        self.bootstyle = bootstyle or 'primary'
         
         self.date_selected = self.startdate
         self.date = startdate or self.date_selected
