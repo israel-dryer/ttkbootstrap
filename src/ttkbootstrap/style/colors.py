@@ -133,9 +133,9 @@ class Colors:
             A color label corresponding to a class property
         """
         if color_label == LIGHT:
-            return '#000'
+            return self.dark
         elif color_label == DARK:
-            return self.selectfg
+            return self.light
         else:
             return self.selectfg
 
