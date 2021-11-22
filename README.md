@@ -7,12 +7,13 @@ Check out the [documentation](https://ttkbootstrap.readthedocs.io/en/latest/) _u
 
 ## Installation
 
-Version 1.0 is currently unpublished; for the moment you must install from source.
+[Version 1.0](https://ttkbootstrap.readthedocs.io/en/latest/) is currently unpublished; for 
+the moment you must install from source.
 ```shell
 python -m pip install git+https://github.com/israel-dryer/ttkbootstrap
 ```
 
-[Version 0.5](https://github.com/israel-dryer/ttkbootstrap/tree/0.5) is currently on PyPI.
+[Version 0.5](https://ttkbootstrap.readthedocs.io/en/version-0.5/) is currently on PyPI.
 ```python
 pip install ttkbootstrap
 ```
