@@ -377,9 +377,12 @@ class StyleBuilderTTK:
         if self.is_light_theme:
             disabled_fg = Colors.update_hsv(self.colors.inputbg, vd=-0.2)
             bordercolor = self.colors.border
+            readonly = self.colors.light
         else:
             disabled_fg = self.colors.selectbg
             bordercolor = self.colors.selectbg
+            readonly = bordercolor
+
 
         if any([colorname == DEFAULT, colorname == '']):
             ttkstyle = STYLE
@@ -413,6 +416,8 @@ class StyleBuilderTTK:
         )
         self.style.map(
             ttkstyle,
+            background=[('readonly', readonly)],
+            fieldbackground=[('readonly', readonly)],
             foreground=[("disabled", disabled_fg)],
             bordercolor=[
                 ("focus !disabled", focuscolor),
@@ -421,10 +426,12 @@ class StyleBuilderTTK:
             lightcolor=[
                 ("focus !disabled", focuscolor),
                 ("pressed !disabled", focuscolor),
+                ("readonly", readonly),
             ],
             darkcolor=[
                 ("focus !disabled", focuscolor),
                 ("pressed !disabled", focuscolor),
+                ("readonly", readonly)
             ],
             arrowcolor=[
                 ("disabled", disabled_fg),
