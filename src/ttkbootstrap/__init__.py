@@ -2860,8 +2860,8 @@ class StylerTTK:
                     ('Interactive.TNotebook.tab', {'sticky': 'nswe', 'children': [
                         ('Interactive.TNotebook.padding', {'side': 'top', 'sticky': 'nswe', 'children': [
                             ('Interactive.TNotebook.focus', {'side': 'top', 'sticky': 'nswe', 'children': [
-                                ('Interactive.TNotebook.label', {'side': 'left', 'sticky': ''}),
                                 ('Interactive.TNotebook.closebutton', {'side': 'right', 'sticky': ''}),
+                                ('Interactive.TNotebook.label', {'side': 'left', 'sticky': ''}),
                                 ('Interactive.TNotebook.paddingpixel', {'side': 'right', 'sticky': ''})
                             ]})
                         ]})
@@ -2889,8 +2889,8 @@ class StylerTTK:
                         (f'{color}.Interactive.TNotebook.tab', {'sticky': 'nswe', 'children': [
                             (f'{color}.Interactive.TNotebook.padding', {'side': 'top', 'sticky': 'nswe', 'children': [
                                 (f'{color}.Interactive.TNotebook.focus', {'side': 'top', 'sticky': 'nswe', 'children': [
-                                    (f'{color}.Interactive.TNotebook.label', {'side': 'left', 'sticky': ''}),
                                     (f'{color}.Interactive.TNotebook.closebutton', {'side': 'right', 'sticky': ''}),
+                                    (f'{color}.Interactive.TNotebook.label', {'side': 'left', 'sticky': ''}),
                                     (f'{color}.Interactive.TNotebook.paddingpixel', {'side': 'right', 'sticky': ''})
                                 ]})
                             ]})
@@ -2932,8 +2932,8 @@ class StylerTTK:
                     ('Flat.Interactive.TNotebook.tab', {'sticky': 'nswe', 'children': [
                         ('Flat.Interactive.TNotebook.padding', {'side': 'top', 'sticky': 'nswe', 'children': [
                             ('Flat.Interactive.TNotebook.focus', {'side': 'top', 'sticky': 'nswe', 'children': [
-                                ('Flat.Interactive.TNotebook.label', {'side': 'left', 'sticky': ''}),
                                 ('Flat.Interactive.TNotebook.closebutton', {'side': 'right', 'sticky': ''}),
+                                ('Flat.Interactive.TNotebook.label', {'side': 'left', 'sticky': ''}),
                                 ('Flat.Interactive.TNotebook.paddingpixel', {'side': 'right', 'sticky': ''})
                             ]})
                         ]})
@@ -2983,8 +2983,8 @@ class StylerTTK:
                         (f'{color}.Flat.Interactive.TNotebook.tab', {'sticky': 'nswe', 'children': [
                             (f'{color}.Flat.Interactive.TNotebook.padding', {'side': 'top', 'sticky': 'nswe', 'children': [
                                 (f'{color}.Flat.Interactive.TNotebook.focus', {'side': 'top', 'sticky': 'nswe', 'children': [
-                                    (f'{color}.Flat.Interactive.TNotebook.label', {'side': 'left', 'sticky': ''}),
                                     (f'{color}.Flat.Interactive.TNotebook.closebutton', {'side': 'right', 'sticky': ''}),
+                                    (f'{color}.Flat.Interactive.TNotebook.label', {'side': 'left', 'sticky': ''}),
                                     (f'{color}.Flat.Interactive.TNotebook.paddingpixel', {'side': 'right', 'sticky': ''})
                                 ]})
                             ]})
