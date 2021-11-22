@@ -36,7 +36,7 @@ STANDARD_THEMES = {
             "selectfg": "#ffffff",
             "border": "#ced4da",
             "inputfg": "#212529",
-            "inputbg": "#ecf0f1"
+            "inputbg": "#ffffff"
         },
     },
     "litera": {
