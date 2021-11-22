@@ -40,6 +40,8 @@ class Demo(Style):
 
         sb.pack(side='right', fill='y')
         self.nb = widgets.InteractiveNotebook(self.root, newtab=self.addtab)
+        # Uncomment to use the Flat notebook style instead
+        # self.nb = widgets.InteractiveNotebook(self.root, newtab=self.addtab, style="Flat.Interactive.TNotebook")
         self.nb.pack(fill='both', expand='yes')
         self.tab = self.create_themed_tab()
         self.nb.add(self.tab, text='Tab 1')
