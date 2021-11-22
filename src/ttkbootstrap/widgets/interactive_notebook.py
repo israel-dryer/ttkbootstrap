@@ -36,6 +36,8 @@ class InteractiveNotebook(ttk.Notebook):
 
         self.bind('<ButtonPress-1>', self._on_close_press, True)
         self.bind('<ButtonRelease-1>', self._on_close_release)
+        self.bind('<ButtonPress-2>', self._on_close_press, True)
+        self.bind('<ButtonRelease-2>', self._on_close_release)
 
         if self._has_newtab_button:
             self._create_newtab()
@@ -73,11 +75,17 @@ class InteractiveNotebook(ttk.Notebook):
         element = self.identify(event.x, event.y)
         if element == '':
             # click happened outside of any tabs
+            self._last_pressed = None
             return
 
         index = self.index(f'@{event.x},{event.y}')
 
-        if 'closebutton' in element or index == self._last_tab:
+        newtab_hit = (index == self._last_tab and self._has_newtab_button)
+
+        if (
+            (event.num == 1 and (('closebutton' in element) or newtab_hit))
+            or (event.num == 2 and not newtab_hit)
+        ):
             self.state(['pressed'])
             self._last_pressed = index
             return 'break'  # to prevent selecting the tab
@@ -96,11 +104,15 @@ class InteractiveNotebook(ttk.Notebook):
 
         index = self.index(f'@{event.x},{event.y}')
 
+        newtab_hit = (index == self._last_tab and self._has_newtab_button)
+
         if self._last_pressed == index:
-            if self._has_newtab_button and index == self._last_tab:
+            if event.num == 1 and newtab_hit:
                 # new tab button was pressed
                 self._newtab_callback()
             # for the close button, the click position has to be more accurate
-            elif 'closebutton' in element:
+            elif ((event.num == 1 and 'closebutton' in element)
+                  or (event.num == 2 and not newtab_hit)
+                  ):
                 # a close tab button was pressed
                 self.forget(index)
