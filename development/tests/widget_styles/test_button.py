@@ -43,6 +43,7 @@ def button_style_frame(bootstyle, style, widget_name):
 def change_style():
     theme = choice(style.theme_names())
     style.theme_use(theme)
+    print(theme)
 
 
 

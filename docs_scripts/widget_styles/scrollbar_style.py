@@ -4,7 +4,7 @@ from ctypes import windll
 windll.shcore.SetProcessDpiAwareness(1)
 
 root = tk.Tk()
-style = ttk.Style("lumen")
+style = ttk.Style()
 
 frame = ttk.Frame(padding=5)
 frame.pack(padx=5, pady=5, fill=tk.X)
@@ -15,18 +15,6 @@ bot_frame = ttk.Frame(frame)
 top_frame.pack(fill=tk.X)
 bot_frame.pack(fill=tk.X)
 
-for i, color in enumerate(['default', *style.colors]):
-    if i < 5:
-        f = ttk.Frame(top_frame)
-    else:
-        f = ttk.Frame(bot_frame)
-
-    ttk.Label(f, text=color, width=20).pack(side=tk.TOP)
-    a = ttk.Scrollbar(f, bootstyle=color, orient=tk.HORIZONTAL)
-    a.set(0.1, 0.9)
-    a.pack(fill=tk.X)
-    f.pack(side=tk.LEFT, padx=3, pady=10, fill=tk.X)
-
 # for i, color in enumerate(['default', *style.colors]):
 #     if i < 5:
 #         f = ttk.Frame(top_frame)
@@ -34,9 +22,21 @@ for i, color in enumerate(['default', *style.colors]):
 #         f = ttk.Frame(bot_frame)
 
 #     ttk.Label(f, text=color, width=20).pack(side=tk.TOP)
-#     a = ttk.Scrollbar(f, bootstyle=color+'round', orient=tk.HORIZONTAL)
+#     a = ttk.Scrollbar(f, bootstyle=color, orient=tk.HORIZONTAL)
 #     a.set(0.1, 0.9)
 #     a.pack(fill=tk.X)
 #     f.pack(side=tk.LEFT, padx=3, pady=10, fill=tk.X)
+
+for i, color in enumerate(['default', *style.colors]):
+    if i < 5:
+        f = ttk.Frame(top_frame)
+    else:
+        f = ttk.Frame(bot_frame)
+
+    ttk.Label(f, text=color, width=20).pack(side=tk.TOP)
+    a = ttk.Scrollbar(f, bootstyle=color+'round', orient=tk.HORIZONTAL)
+    a.set(0.1, 0.9)
+    a.pack(fill=tk.X)
+    f.pack(side=tk.LEFT, padx=3, pady=10, fill=tk.X)
 
 root.mainloop()

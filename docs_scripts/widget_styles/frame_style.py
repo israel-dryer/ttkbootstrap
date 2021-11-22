@@ -4,7 +4,7 @@ from ctypes import windll
 windll.shcore.SetProcessDpiAwareness(1)
 
 root = tk.Tk()
-style = ttk.Style("lumen")
+style = ttk.Style()
 
 frame = ttk.Frame()
 frame.pack(padx=10, pady=10)

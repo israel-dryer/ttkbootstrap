@@ -23,7 +23,7 @@ def create_checkbutton_test(bootstyle, style, name):
         cb = ttk.Checkbutton(
             master=frame, 
             text=color, 
-            bootstyle=(color, bootstyle)
+            bootstyle=color + bootstyle
         )
         cb.pack(padx=5, pady=5, fill=tk.BOTH)
         cb.invoke()

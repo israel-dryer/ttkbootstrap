@@ -4,7 +4,7 @@ from ctypes import windll
 windll.shcore.SetProcessDpiAwareness(1)
 
 root = tk.Tk()
-style = ttk.Style("lumen")
+style = ttk.Style()
 
 # # normal label
 # frame = ttk.Frame(padding=5)
@@ -40,6 +40,5 @@ for i, color in enumerate(['default', *style.colors]):
         a = ttk.Label(bot_frame, text=color, bootstyle=color + "inverse", width=10)
     
     a.pack(side=tk.LEFT, padx=3, pady=10)    
-
 
 root.mainloop()

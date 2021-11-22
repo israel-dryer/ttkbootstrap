@@ -5,7 +5,7 @@ windll.shcore.SetProcessDpiAwareness(1)
 
 root = tk.Tk()
 #root.geometry('800x400')
-style = ttk.Style("lumen")
+style = ttk.Style()
 
 
 frame = ttk.Frame(padding=10)
