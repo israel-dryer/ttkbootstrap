@@ -498,12 +498,16 @@ Scale(bootstyle="info")
 **add detail here**
 
 ### Square (default)
+
 **add detail here**
-![scrollbar](./assets/widget-styles/square-scrollbars.gif)
+
+![scrollbar](./assets/widget-styles/square-scrollbars.png)
 
 ### Round
+
 **add detail here**
-![round scrollbar](./assets/widget-styles/round-scrollbars.gif)
+
+![round scrollbar](./assets/widget-styles/round-scrollbars.png)
 
 ```python
 # default scrollbar style
@@ -520,7 +524,9 @@ Scrollbar(bootstyle="danger-round")
 ```
 
 ## Separator
+
 **add detail here**
+
 ![separator](./assets/widget-styles/separator.png)
 
 ```python
@@ -532,7 +538,9 @@ Separator(bootstyle="info")
 ```
 
 ## Sizegrip
+
 **add detail here**
+
 ![sizegrip](./assets/widget-styles/sizegrip.gif)
 
 ```python
@@ -544,7 +552,9 @@ Sizegrip(bootstyle="info")
 ```
 
 ## Spinbox
+
 **add detail here**
+
 ![spinbox](./assets/widget-styles/spinbox.gif)
 
 ```python

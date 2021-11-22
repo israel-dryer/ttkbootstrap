@@ -1,6 +1,5 @@
 import tkinter as tk
 import ttkbootstrap as ttk
-
 from ctypes import windll
 windll.shcore.SetProcessDpiAwareness(1)
 

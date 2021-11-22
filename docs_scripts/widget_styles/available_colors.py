@@ -5,7 +5,7 @@ windll.shcore.SetProcessDpiAwareness(1)
 
 
 root = tk.Tk()
-style = ttk.Style("lumen")
+style = ttk.Style()
 
 row_one = ttk.Frame()
 row_two = ttk.Frame()

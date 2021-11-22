@@ -13,6 +13,10 @@ Installing ttkbootstrap is easy!
 
 ### PyPI
 
+!!! warning "Currently Unpublished!!"
+    ttkbootstrap version 1.0 has not yet been published to PyPI, so 
+    installing from source is currently the only option.
+
 The best method for installing ttkbootstrap is from PyPI. 
 
 ```bash
@@ -30,10 +34,10 @@ You may also install directly from the GitHub repository.
 python -m pip install git+https://github.com/israel-dryer/ttkbootstrap
 ```
 
-!!! warning "Installing from GitHub"
+<!-- !!! warning "Installing from GitHub"
     GitHub contains the most recent development version of this project, but 
     it may also contain potential bugs and other issues that you would not want 
-    in a production project.
+    in a production project. -->
 
 ## Overview
 
