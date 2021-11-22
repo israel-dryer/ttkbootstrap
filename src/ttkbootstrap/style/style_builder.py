@@ -2225,7 +2225,7 @@ class StyleBuilderTTK:
             if colorname == LIGHT:
                 on_indicator =  self.colors.dark
         else:
-            disabled = self.colors.inputbg
+            disabled = self.colors.selectbg
             off_border = self.colors.selectbg
 
         # radio off
@@ -2295,7 +2295,8 @@ class StyleBuilderTTK:
             ('!selected', images[0]),
             width=20, border=4, sticky=tk.W
         )
-        self.style.map(ttkstyle, [('disabled', disabled_fg)])
+        self.style.map(ttkstyle, foreground=[('disabled', disabled_fg)]
+        )
         self.style.configure(ttkstyle, font=self.theme.font)
         self.style.layout(
             ttkstyle,
@@ -2675,11 +2676,9 @@ class StyleBuilderTTK:
         off_fill = self.colors.bg
 
         if self.is_light_theme:
-            disabled_fg = Colors.update_hsv(self.colors.inputbg, vd=-0.2)
-            disabled_bg = self.colors.inputbg
+            disabled_bg = self.colors.border
         else:
-            disabled_fg = self.colors.inputbg
-            disabled_bg = disabled_fg
+            disabled_bg = self.colors.selectbg
 
         if colorname == LIGHT:
             check_color = self.colors.dark
@@ -2730,7 +2729,8 @@ class StyleBuilderTTK:
         draw.rounded_rectangle(
             [2, 2, 132, 132],
             radius=16,
-            fill=disabled_bg,
+            outline=disabled_bg,
+            width=3
         )
         disabled_img = ImageTk.PhotoImage(
             checkbutton_disabled.resize((14, 14), Image.LANCZOS)
