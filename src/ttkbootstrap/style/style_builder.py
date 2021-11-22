@@ -1031,11 +1031,7 @@ class StyleBuilderTTK:
         STYLE = 'TScrollbar'
         thickness = 9 # TODO consider making this configurable
         
-        if self.is_light_theme:
-            troughcolor = Colors.update_hsv(self.colors.inputbg, vd=-0.03)
-        else:
-            troughcolor = Colors.update_hsv(self.colors.selectbg, vd=-0.2)
-            
+        troughcolor = Colors.update_hsv(self.colors.bg, vd=-0.04)            
 
         if any([colorname == DEFAULT, colorname == '']):
             h_ttkstyle = f'Round.Horizontal.{STYLE}'
@@ -1049,10 +1045,7 @@ class StyleBuilderTTK:
         else:
             h_ttkstyle = f'{colorname}.Round.Horizontal.{STYLE}'
             v_ttkstyle = f'{colorname}.Round.Vertical.{STYLE}'
-            if colorname == LIGHT:
-                background = self.colors.bg
-            else:
-                background = self.colors.get(colorname)
+            background = self.colors.get(colorname)
 
         pressed = Colors.update_hsv(background, vd=-0.05)
         active = Colors.update_hsv(background, vd=0.05)
@@ -1202,11 +1195,7 @@ class StyleBuilderTTK:
         STYLE = 'TScrollbar'
         thickness = 9 # TODO consider making this configurable
         
-        if self.is_light_theme:
-            troughcolor = Colors.update_hsv(self.colors.inputbg, vd=-0.03)
-        else:
-            troughcolor = Colors.update_hsv(self.colors.selectbg, vd=-0.2)
-            
+        troughcolor = Colors.update_hsv(self.colors.bg, vd=-0.04)              
 
         if any([colorname == DEFAULT, colorname == '']):
             h_ttkstyle = f'Horizontal.{STYLE}'
@@ -1220,10 +1209,7 @@ class StyleBuilderTTK:
         else:
             h_ttkstyle = f'{colorname}.Horizontal.{STYLE}'
             v_ttkstyle = f'{colorname}.Vertical.{STYLE}'
-            if colorname == LIGHT:
-                background = self.colors.bg
-            else:
-                background = self.colors.get(colorname)
+            background = self.colors.get(colorname)
 
         pressed = Colors.update_hsv(background, vd=-0.05)
         active = Colors.update_hsv(background, vd=0.05)
@@ -1556,13 +1542,12 @@ class StyleBuilderTTK:
             ttkstyle = STYLE
             foreground = self.colors.get_foreground(PRIMARY)
             background = self.colors.primary
-            bordercolor = background
         else:
             ttkstyle = f'{colorname}.{STYLE}'
             foreground = self.colors.get_foreground(colorname)
             background = self.colors.get(colorname)
-            bordercolor = background
 
+        bordercolor = background
         pressed = Colors.update_hsv(background, vd=-0.1)
         hover = Colors.update_hsv(background, vd=0.10)
 
@@ -1611,27 +1596,18 @@ class StyleBuilderTTK:
         else:
             disabled_fg = Colors.update_hsv(self.colors.selectbg, vd=-0.3)
 
-        if colorname == LIGHT and self.is_light_theme:
-            foreground = self.colors.fg
-            foreground_pressed = foreground
-            background = self.colors.bg
-            bordercolor = self.colors.border
-            pressed = self.colors.border
-            hover = self.colors.border
-            ttkstyle = f'{colorname}.{STYLE}'
+        if any([colorname == DEFAULT, colorname == '']):
+            ttkstyle = STYLE
+            colorname = PRIMARY
         else:
-            if any([colorname == DEFAULT, colorname == '']):
-                ttkstyle = STYLE
-                colorname = PRIMARY
-            else:
-                ttkstyle = f'{colorname}.{STYLE}'
+            ttkstyle = f'{colorname}.{STYLE}'
             
-            foreground = self.colors.get(colorname)
-            background = self.colors.get_foreground(colorname)
-            foreground_pressed = background
-            bordercolor = foreground
-            pressed = foreground
-            hover = foreground
+        foreground = self.colors.get(colorname)
+        background = self.colors.get_foreground(colorname)
+        foreground_pressed = background
+        bordercolor = foreground
+        pressed = foreground
+        hover = foreground
 
         self.style.configure(
             ttkstyle,
@@ -1755,22 +1731,29 @@ class StyleBuilderTTK:
         if any([colorname == DEFAULT, colorname == '']):
             colorname = PRIMARY
 
+        # set default style color values
         prime_color = self.colors.get(colorname)
         on_border = prime_color
         on_indicator = self.colors.selectfg
         on_fill = prime_color
+        off_fill = self.colors.bg
 
         if self.is_light_theme:
             off_border = self.colors.selectbg
             off_indicator = self.colors.selectbg
             disabled_fg = Colors.update_hsv(self.colors.inputbg, vd=-0.2)
-
         else:
             off_border = self.colors.selectbg
             off_indicator = self.colors.selectbg
             disabled_fg = self.colors.inputbg
 
-        off_fill = self.colors.bg
+        # override defaults for light and dark colors
+        if colorname == LIGHT:
+            on_border = self.colors.dark
+            on_indicator = on_border
+        elif colorname == DARK:
+            on_border = self.colors.light
+            on_indicator = on_border
 
         # toggle off
         _off = Image.new("RGBA", (226, 130))
@@ -1838,10 +1821,12 @@ class StyleBuilderTTK:
         if any([colorname == DEFAULT, colorname == '']):
             colorname = PRIMARY
 
+        # set default style color values
         prime_color = self.colors.get(colorname)
         on_border = prime_color
         on_indicator = self.colors.selectfg
         on_fill = prime_color
+        off_fill = self.colors.bg
 
         if self.is_light_theme:
             off_border = self.colors.selectbg
@@ -1852,7 +1837,13 @@ class StyleBuilderTTK:
             off_indicator = self.colors.selectbg
             disabled_fg = self.colors.inputbg
 
-        off_fill = self.colors.bg
+        # override defaults for light and dark colors
+        if colorname == LIGHT:
+            on_border = self.colors.dark
+            on_indicator = on_border
+        elif colorname == DARK:
+            on_border = self.colors.light
+            on_indicator = on_border
 
         # toggle off
         _off = Image.new("RGBA", (226, 130))
@@ -2034,10 +2025,7 @@ class StyleBuilderTTK:
             ttkstyle = f'{colorname}.{STYLE}'
             toggle_on = self.colors.get(colorname)
 
-        if colorname == 'light':
-            foreground=self.colors.fg
-        else:
-            foreground=self.colors.selectfg
+        foreground=self.colors.get_foreground(colorname)
 
         if self.is_light_theme:
             toggle_off = self.colors.border
@@ -2107,27 +2095,18 @@ class StyleBuilderTTK:
         else:
             disabled_fg = Colors.update_hsv(self.colors.selectbg, vd=-0.3)
 
-        if colorname == LIGHT and self.is_light_theme:
-            foreground = self.colors.fg
-            foreground_pressed = foreground
-            background = self.colors.bg
-            bordercolor = self.colors.border
-            pressed = self.colors.border
-            hover = self.colors.border
-            ttkstyle = f'{colorname}.{STYLE}'
+        if any([colorname == DEFAULT, colorname == '']):
+            ttkstyle = STYLE
+            colorname = PRIMARY
         else:
-            if any([colorname == DEFAULT, colorname == '']):
-                ttkstyle = STYLE
-                colorname = PRIMARY
-            else:
-                ttkstyle = f'{colorname}.{STYLE}'
+            ttkstyle = f'{colorname}.{STYLE}'
             
-            foreground = self.colors.get(colorname)
-            background = self.colors.get_foreground(colorname)
-            foreground_pressed = background
-            bordercolor = foreground
-            pressed = foreground
-            hover = foreground
+        foreground = self.colors.get(colorname)
+        background = self.colors.get_foreground(colorname)
+        foreground_pressed = background
+        bordercolor = foreground
+        pressed = foreground
+        hover = foreground
 
         self.style.configure(
             ttkstyle,
@@ -2180,6 +2159,7 @@ class StyleBuilderTTK:
 
         STYLE = 'TEntry'
 
+        # general default colors
         if self.is_light_theme:
             disabled_fg = Colors.update_hsv(self.colors.inputbg, vd=-0.2)
             bordercolor = self.colors.border
@@ -2187,14 +2167,14 @@ class StyleBuilderTTK:
             disabled_fg = self.colors.selectbg
             bordercolor = self.colors.selectbg
 
-        if any([colorname == DEFAULT, colorname == '']):
+        if any([colorname == DEFAULT, not colorname]):
+            # default style
             ttkstyle = STYLE
             focuscolor = self.colors.primary
         else:
+            # colored style
             ttkstyle = f'{colorname}.{STYLE}'
             focuscolor = self.colors.get(colorname)
-
-        if all([colorname, colorname != DEFAULT]):
             bordercolor = focuscolor
 
         self.style.configure(
@@ -2374,12 +2354,7 @@ class StyleBuilderTTK:
 
         STYLE = 'Date.TButton'
 
-
-        if colorname == 'light':
-            btn_foreground = self.colors.fg
-        else:
-            btn_foreground= self.colors.selectfg
-        
+        btn_foreground = Colors.get_foreground(self.colors, colorname)
         date_image = self.create_date_button_assets(btn_foreground)
 
         if self.is_light_theme:
@@ -2393,12 +2368,10 @@ class StyleBuilderTTK:
             ttkstyle = STYLE
             foreground = self.colors.get_foreground(PRIMARY)
             background = self.colors.primary
-            bordercolor = background
         else:
             ttkstyle = f'{colorname}.{STYLE}'
             foreground = self.colors.get_foreground(colorname)
             background = self.colors.get(colorname)
-            bordercolor = background
 
         pressed = Colors.update_hsv(background, vd=-0.1)
         hover = Colors.update_hsv(background, vd=0.10)
@@ -2407,7 +2380,7 @@ class StyleBuilderTTK:
             ttkstyle,
             foreground=foreground,
             background=background,
-            bordercolor=bordercolor,
+            bordercolor=background,
             darkcolor=background,
             lightcolor=background,
             relief=tk.RAISED,
@@ -2531,7 +2504,6 @@ class StyleBuilderTTK:
             background = self.colors.bg
 
         if self.is_light_theme:
-            # TODO conform this with other trough colors
             troughcolor = Colors.update_hsv(self.colors.light, vd=-0.01)
         else:
             troughcolor = self.colors.inputbg
@@ -2577,14 +2549,10 @@ class StyleBuilderTTK:
             ttkstyle = STYLE_INVERSE
             background = self.colors.fg
             foreground = self.colors.bg
-        elif colorname == 'light':
-            ttkstyle = f'{colorname}.{STYLE_INVERSE}'
-            background = self.colors.get(colorname)
-            foreground = self.colors.fg
         else:
             ttkstyle = f'{colorname}.{STYLE_INVERSE}'
             background = self.colors.get(colorname)
-            foreground = self.colors.selectfg
+            foreground = self.colors.get_foreground(colorname)
 
         self.style.configure(
             ttkstyle,
@@ -2713,8 +2681,12 @@ class StyleBuilderTTK:
             disabled_fg = self.colors.inputbg
             disabled_bg = disabled_fg
 
-        if colorname == 'light':
-            check_color = self.colors.fg
+        if colorname == LIGHT:
+            check_color = self.colors.dark
+            on_border = check_color
+        elif colorname == DARK:
+            check_color = self.colors.light
+            on_border = check_color
         else:
             check_color = self.colors.selectfg
 
@@ -2773,19 +2745,14 @@ class StyleBuilderTTK:
 
         STYLE = 'TMenubutton'
 
-        if colorname == 'light':
-            foreground = self.colors.fg
-        else:
-            foreground = self.colors.selectfg
+        foreground = self.colors.get_foreground(colorname)
 
         if self.is_light_theme:
             disabled_fg = self.colors.border
             disabled_bg = self.colors.inputbg
-            arrowcolor = self.colors.bg
         else:
             disabled_fg = self.colors.selectbg
             disabled_bg = Colors.update_hsv(disabled_fg, vd=-0.2)
-            arrowcolor = self.colors.selectfg
 
         if any([colorname == DEFAULT, colorname == '']):
             ttkstyle = STYLE
@@ -2846,27 +2813,18 @@ class StyleBuilderTTK:
         else:
             disabled_fg = Colors.update_hsv(self.colors.selectbg, vd=-0.3)
 
-        if colorname == LIGHT and self.is_light_theme:
-            foreground = self.colors.fg
-            foreground_pressed = foreground
-            background = self.colors.bg
-            bordercolor = self.colors.border
-            pressed = self.colors.border
-            hover = self.colors.border
-            ttkstyle = f'{colorname}.{STYLE}'
+        if any([colorname == DEFAULT, colorname == '']):
+            ttkstyle = STYLE
+            colorname = PRIMARY
         else:
-            if any([colorname == DEFAULT, colorname == '']):
-                ttkstyle = STYLE
-                colorname = PRIMARY
-            else:
-                ttkstyle = f'{colorname}.{STYLE}'
-            
-            foreground = self.colors.get(colorname)
-            background = self.colors.get_foreground(colorname)
-            foreground_pressed = background
-            bordercolor = foreground
-            pressed = foreground
-            hover = foreground
+            ttkstyle = f'{colorname}.{STYLE}'
+        
+        foreground = self.colors.get(colorname)
+        background = self.colors.get_foreground(colorname)
+        foreground_pressed = background
+        bordercolor = foreground
+        pressed = foreground
+        hover = foreground
 
         self.style.configure(
             ttkstyle,
@@ -2927,12 +2885,8 @@ class StyleBuilderTTK:
             background = self.colors.inputbg
             selectfg = self.colors.fg
             ttkstyle = STYLE
-        elif colorname == LIGHT and self.is_light_theme:
-            selectfg = self.colors.fg
-            background = self.colors.get(colorname)
-            ttkstyle = f'{colorname}.{STYLE}'
         else:
-            selectfg = self.colors.selectfg
+            selectfg = self.colors.get_foreground(colorname)
             background = self.colors.get(colorname)
             ttkstyle = f'{colorname}.{STYLE}'
 
