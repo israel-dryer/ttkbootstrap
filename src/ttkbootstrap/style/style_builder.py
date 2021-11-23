@@ -420,15 +420,18 @@ class StyleBuilderTTK:
             fieldbackground=[('readonly', readonly)],
             foreground=[("disabled", disabled_fg)],
             bordercolor=[
+                ("invalid", self.colors.danger),
                 ("focus !disabled", focuscolor),
                 ("hover !disabled", focuscolor),
             ],
             lightcolor=[
+                ("focus invalid", self.colors.danger),
                 ("focus !disabled", focuscolor),
                 ("pressed !disabled", focuscolor),
                 ("readonly", readonly),
             ],
             darkcolor=[
+                ("focus invalid", self.colors.danger),
                 ("focus !disabled", focuscolor),
                 ("pressed !disabled", focuscolor),
                 ("readonly", readonly)
@@ -1413,12 +1416,15 @@ class StyleBuilderTTK:
             fieldbackground=[("readonly", readonly)],
             background=[("readonly", readonly)],
             lightcolor=[
+                ("focus invalid", self.colors.danger),
                 ("focus !disabled", focuscolor),
                 ("readonly", readonly)],
             darkcolor=[
+                ("focus invalid", self.colors.danger),
                 ("focus !disabled", focuscolor),
                 ("readonly", readonly)],
             bordercolor=[
+                ("invalid", self.colors.danger),
                 ("focus !disabled", focuscolor),
                 ("hover !disabled", focuscolor)],
             arrowcolor=[
@@ -2208,12 +2214,15 @@ class StyleBuilderTTK:
             foreground=[("disabled", disabled_fg)],
             fieldbackground=[("readonly", readonly)],
             bordercolor=[
+                ("invalid", self.colors.danger),
                 ("focus !disabled", focuscolor),
                 ("hover !disabled", focuscolor)],
             lightcolor=[
+                ("focus invalid", self.colors.danger),
                 ("focus !disabled", focuscolor),
                 ("readonly", readonly)],
             darkcolor=[
+                ("focus invalid", self.colors.danger),
                 ("focus !disabled", focuscolor),
                 ("readonly", readonly)],
         )

@@ -102,7 +102,7 @@ class DateEntry(ttk.Frame):
             state = kwargs.pop('state')
             if state in ['readonly', 'invalid']:
                 self.entry.configure(state=state)
-            elif    state == 'disabled':
+            elif state == 'disabled':
                 self.entry.configure(state=state)
                 self.button.configure(state=state)
             else:
