@@ -445,7 +445,7 @@ Progressbar(bootstyle="danger-striped")
 
 **add detail here**
 
-![radiobutton](./assets/widget-styles/radiobutton.gif)
+![radiobutton](./assets/widget-styles/radiobuttons.png)
 
 ### Solid toolbutton
 
