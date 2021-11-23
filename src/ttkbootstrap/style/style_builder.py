@@ -1341,9 +1341,11 @@ class StyleBuilderTTK:
         if self.is_light_theme:
             disabled_fg = Colors.update_hsv(self.colors.inputbg, vd=-0.2)
             bordercolor = self.colors.border
+            readonly = self.colors.light
         else:
             disabled_fg = self.colors.selectbg
             bordercolor = self.colors.selectbg
+            readonly = bordercolor
 
         if any([colorname == DEFAULT, colorname == '']):
             ttkstyle = STYLE
@@ -1359,7 +1361,6 @@ class StyleBuilderTTK:
             arrowfocus = self.colors.fg
         else:
             arrowfocus = focuscolor
-        
 
         element = ttkstyle.replace('.TS', '.S')
         self.style.element_create(f'{element}.uparrow', 'from', TTK_DEFAULT)
@@ -1409,8 +1410,14 @@ class StyleBuilderTTK:
         self.style.map(
             ttkstyle,
             foreground=[("disabled", disabled_fg)],
-            lightcolor=[("focus !disabled", focuscolor)],
-            darkcolor=[("focus !disabled", focuscolor)],
+            fieldbackground=[("readonly", readonly)],
+            background=[("readonly", readonly)],
+            lightcolor=[
+                ("focus !disabled", focuscolor),
+                ("readonly", readonly)],
+            darkcolor=[
+                ("focus !disabled", focuscolor),
+                ("readonly", readonly)],
             bordercolor=[
                 ("focus !disabled", focuscolor),
                 ("hover !disabled", focuscolor)],
@@ -2170,9 +2177,11 @@ class StyleBuilderTTK:
         if self.is_light_theme:
             disabled_fg = Colors.update_hsv(self.colors.inputbg, vd=-0.2)
             bordercolor = self.colors.border
+            readonly = self.colors.light
         else:
             disabled_fg = self.colors.selectbg
             bordercolor = self.colors.selectbg
+            readonly = bordercolor
 
         if any([colorname == DEFAULT, not colorname]):
             # default style
@@ -2197,13 +2206,16 @@ class StyleBuilderTTK:
         self.style.map(
             ttkstyle,
             foreground=[("disabled", disabled_fg)],
+            fieldbackground=[("readonly", readonly)],
             bordercolor=[
                 ("focus !disabled", focuscolor),
                 ("hover !disabled", focuscolor)],
             lightcolor=[
-                ("focus !disabled", focuscolor)],
+                ("focus !disabled", focuscolor),
+                ("readonly", readonly)],
             darkcolor=[
-                ("focus !disabled", focuscolor)],
+                ("focus !disabled", focuscolor),
+                ("readonly", readonly)],
         )
         # register ttkstyle
         self.style.register_ttkstyle(ttkstyle)
@@ -2357,13 +2369,12 @@ class StyleBuilderTTK:
         self.theme_images[tk_name] = tk_img
         return tk_name
         
+        
     def create_date_button_style(self, colorname=DEFAULT):
         """Create a solid date button style"""
 
         STYLE = 'Date.TButton'
 
-        btn_foreground = Colors.get_foreground(self.colors, colorname)
-        date_image = self.create_date_button_assets(btn_foreground)
 
         if self.is_light_theme:
             disabled_fg = self.colors.border
@@ -2371,6 +2382,10 @@ class StyleBuilderTTK:
         else:
             disabled_fg = self.colors.selectbg
             disabled_bg = Colors.update_hsv(disabled_fg, vd=-0.2)
+
+        btn_foreground = Colors.get_foreground(self.colors, colorname)
+        
+        img_normal = self.create_date_button_assets(btn_foreground)
 
         if any([colorname == DEFAULT, colorname == '']):
             ttkstyle = STYLE
@@ -2396,23 +2411,23 @@ class StyleBuilderTTK:
             focuscolor=foreground,
             padding=(2, 2),
             anchor=tk.CENTER,
-            image=date_image
+            image=img_normal
         )
         self.style.map(
             ttkstyle,
             foreground=[("disabled", disabled_fg)],
             background=[
-                ("disabled", disabled_bg),
+                ("disabled", disabled_fg),
                 ("pressed !disabled", pressed),
                 ("hover !disabled", hover)],
             bordercolor=[
-                ("disabled", disabled_bg)],
+                ("disabled", disabled_fg)],
             darkcolor=[
-                ("disabled", disabled_bg),
+                ("disabled", disabled_fg),
                 ("pressed !disabled", pressed),
                 ("hover !disabled", hover)],
             lightcolor=[
-                ("disabled", disabled_bg),
+                ("disabled", disabled_fg),
                 ("pressed !disabled", pressed),
                 ("hover !disabled", hover)]
         )
