@@ -4,18 +4,15 @@ This is a style guide for applying ttkbootstrap styles. All ttkbootstrap styles
 are applied using the `bootstyle` parameter that has been injected into the
 `ttk` widget constructor.
 
-As this is a style guide, you will need to consult the references at the bottom
-of each widget section for information on how to _use_ the widget and to determine
-what ttk option are available. 
-
 ## Colors
 
-The following color options are available on all widgets, except where excluded,
-and can be used along with widget specific style keywords which are described for
-each widget. Keywords are not required for default styles. 
+The following color options are available on _all_ widgets, except where 
+excluded, and can be used along with widget specific style keywords which 
+are described for each widget. Keywords are not required for default styles. 
 
-The actual color value of the color keywords are defined in each specific theme, 
-but the descriptions below are what you can expect typically from each color keyword.
+The actual color value of the keywords below are 
+[defined in each specific theme](themes.md#how-are-themes-created), but the 
+descriptions below are what you can expect typically from each color keyword.
 
 | Keyword      | Description                           | Example |
 | ---          | ---                                   | ---      |
@@ -44,8 +41,10 @@ Progressbar(bootstyle="success")
 ## Button
 
 ttkbootstrap includes many predefined button styles that provide quick 
-access to a varied color palette and semantic meaning to your application
-design.
+access to a varied [color palette](#colors) and adds semantic meaning to your 
+application design. 
+
+This widget supports a special style for [disabled state](#other-button-styles).
 
 ### Solid buttons (default)
 
@@ -83,7 +82,7 @@ Button(bootstyle="success-outline")
 
 A button with the appearance of a label. The text color changes to **info** on 
 _hover_. When the widget has focus, a dashed focus ring appears in the same color 
-as the foreground. 
+as the foreground. On _press_ the text has a slight shift-relief.
 
 ![link buttons](./assets/widget-styles/link-buttons.gif)
 
@@ -97,9 +96,9 @@ Button(bootstyle="success-link")
 
 ### Other button styles
 
-All of the button types above support a style reserved for the **disabled**
-state, which you can see in the exhibits above. This style _cannot be 
-applied via keywords_.  To apply the disabled button style:
+##### Disabled button
+This style _cannot be applied via keywords_; it is configured through widget 
+settings.
 
 ```python
 # create the button in a disabled state
@@ -113,14 +112,18 @@ b.configure(state="disabled")
 ---
 ## Checkbutton
 
-ttkbootstrap includes many types of checkbutton styles. In addition to the
-traditional checkbutton and toolbutton styles, round and square toggle buttons
-have been added.
+ttkbootstrap includes many checkbutton types. In addition to the traditional 
+[checkbutton](#checkbutton) and [toolbutton](#toolbutton) styles, 
+[round](#round-toggle-button) and [square](#square-toggle-button) toggle 
+button styles have been added. 
+
+This widget supports a special style for 
+[disabled state](#other-checkbutton-styles).
 
 ### Checkbutton (default)
 
 A standard checkbutton which displays a checkmark when invoked. The indicator
-color is set by the selected color keyword.
+color is set by the selected [color keyword](#colors). 
 
 ![checkbutton](./assets/widget-styles/checkbuttons.gif)
 
@@ -134,9 +137,9 @@ Checkbutton(bootstyle="success")
 
 ### Toolbutton
 
-A solid color button with a background that alternates between colors when invoked.
-The _off_ state color is always the **secondary** color of the selected theme. The 
-_on_ state color is based on the [color keyword](#colors) as indicated below.
+A solid color toolbutton with a background that alternates between colors when 
+invoked. The _off_ state color is fixed, but the _on_ state color is based on the 
+[color keyword](#colors) selected as indicated below.
 
 ![solid toolbuttons](./assets/widget-styles/solid-toolbuttons.gif)
 
@@ -166,9 +169,9 @@ Checkbutton(bootstyle="success-outline-toolbutton")
 
 ### Round toggle button
 
-A rounded toggle button with an indicator that shifts left and right as it is toggled
-on and off. The background color alternates between the theme background color and
-the [color keyword](#colors) as indicated below.
+A rounded toggle button with an indicator that shifts left and right as it is 
+toggled _on_ and _off_. The background color alternates between the theme 
+background color and the [color keyword](#colors) selected as indicated below.
 
 ![round toggles](./assets/widget-styles/round-toggles.gif)
 
@@ -182,9 +185,9 @@ Checkbutton(bootstyle="success-round-toggle")
 
 ### Square toggle button
 
-A square toggle button with an indicator that shifts left and right as it is toggled
-on and off. The background color alternates between the theme background color and
-the [color keyword](#colors) as indicated below.
+A square toggle button with an indicator that shifts left and right as it is 
+toggled _on_ and _off_. The background color alternates between the theme 
+background color and the [color keyword](#colors) selected as indicated below.
 
 ![square toggles](./assets/widget-styles/square-toggles.gif)
 
@@ -196,11 +199,11 @@ Checkbutton(bootstyle="square-toggle")
 Checkbutton(bootstyle="success-square-toggle")
 ```
 
-### Other button styles
+### Other checkbutton styles
 
-All of the checkbutton types above support a style reserved for the **disabled**
-state, which you can see in the exhibits above. This style _cannot be applied via 
-keywords_.  To apply the disabled button style:
+##### Disabled checkbutton
+This style _cannot be applied via keywords_; it is configured through widget 
+settings.
 
 ```python
 # create the checkbutton in a disabled state
@@ -214,9 +217,12 @@ cb.configure(state="disabled")
 ---
 ## Combobox
 
-By default, the combobox widget has a light colored border. On _hover_ this border
-changes to a thin **primary** color by default or the selected [color](#colors). 
-On _focus_ the border becomes twice a thick.
+This widget has a colored border that has _hover_ and _focus_ effects. When 
+hovering, this border changes to a thin **primary** color by default or the 
+selected [color](#colors). When focused, the border becomes twice a thick. 
+
+This widget also supports special styles for [disabled state](#disabled-combobox), 
+[readonly state](#readonly-combobox), and [invalid state](#invalid-combobox).
 
 ![combobox](./assets/widget-styles/combos.gif)
 
@@ -228,13 +234,12 @@ Combobox()
 Combobox(bootstyle="danger")
 ```
 
-### Other styles
+### Other combobox styles
 
-##### Disabled
+##### Disabled combobox
 
-This widget supports a style reserved for the **disabled** state, which you 
-can see in the exhibit above. This style _cannot be applied via keywords_. To 
-apply the disabled style:
+This style _cannot be applied via keywords_; it is configured through widget 
+settings.
 
 ```python
 # create the combobox in a disabled state
@@ -245,11 +250,11 @@ cb = Combobox()
 cb.configure(state="disabled")
 ```
 
-##### Readonly
+##### Readonly combobox
 
-This widget supports a style reserved for the **readonly** state, which you 
-can see in the exhibit above. This style _cannot be applied via keywords_.  To 
-apply the readonly style:
+This style _cannot be applied via keywords_; it is configured through widget 
+settings.
+
 
 ```python
 # create the combobox in a readonly state
@@ -260,65 +265,72 @@ cb = Combobox()
 cb.configure(state="readonly")
 ```
 
-##### Invalid
+##### Invalid combobox
 
-Add content here.
+This style _cannot be applied via keywords_, but rather is the result of a 
+validation process implemented on the widget. In the **Cookbook** you will find 
+an example of [how to apply validation](cookbook.md#validate-user-input) to an 
+`Entry` based widget.
 
 ---
 ## DateEntry
 
 This widget is composed of two widgets, the `Entry` widget and the `Button` 
 widget. Both the `Entry` widget and the `Button` widget use the same default
-styles as their independent versions.
+styles as their independent versions. 
 
 The [DatePickerPopup](#datepickerpopup) is invoked when the calendar
 button is pressed. The default color applied to the popup is **primary**.
 
+This widget also supports special styles for [disabled state](#disabled-date-entry), 
+[readonly state](#readonly-date-entry),  and [invalid state](#invalid-date-entry).
+
 ![date entries](./assets/widget-styles/date-entries.gif)
 
 ```python
-# default dateentry
+# default date entry
 DateEntry()
 
-# success colored dateentry
+# success colored date entry
 DateEntry(bootstyle="success")
 ```
 
-### Other styles
+### Other date entry styles
 
-##### Disabled
+##### Disabled date entry
 
-This widget supports a style reserved for the **disabled** state, which you 
-can see in the exhibit above. This style _cannot be applied via keywords_. To 
-apply the disabled style:
+This style _cannot be applied via keywords_; it is configured through widget 
+settings.
 
 ```python
-# create the dateentry in a disabled state
+# create the date entry in a disabled state
 DateEntry(state="disabled")
 
-# disable a dateentry after creation
+# disable a date entry after creation
 d = DateEntry()
 d.configure(state="disabled")
 ```
 
-##### Readonly
+##### Readonly date entry
 
-This widget supports a style reserved for the **readonly** state, which you 
-can see in the exhibit above. This style _cannot be applied via keywords_.  To 
-apply the readonly style:
+This style _cannot be applied via keywords_; it is configured through widget 
+settings.
 
 ```python
-# create the dateentry in a readonly state
+# create the date entry in a readonly state
 DateEntry(state="readonly")
 
-# set the dateentry readonly state after creation
+# set the date entry readonly state after creation
 d = DateEntry()
 d.configure(state="readonly")
 ```
 
-##### Invalid
+##### Invalid date entry
 
-Add content here.
+This style _cannot be applied via keywords_, but rather is the result of a 
+validation process implemented on the widget. In the **Cookbook** you will find 
+an example of [how to apply validation](cookbook.md#validate-user-input) to an 
+`Entry` based widget.
 
 ---
 ## DatePickerPopup
@@ -342,7 +354,12 @@ DatePickerPopup(bootstyle="warning")
 ---
 ## Entry
 
-**add detail here**
+This widget has a colored border that has _hover_ and _focus_ effects. When 
+hovering, this border changes to a thin **primary** color by default or the 
+selected [color](#colors). When focused, the border becomes twice a thick. 
+
+This widget also supports special styles for [disabled state](#disabled-entry), 
+[readonly state](#readonly-entry), and [invalid state](#invalid-entry).
 
 ![entry](./assets/widget-styles/entries.gif)
 
@@ -354,13 +371,12 @@ Entry()
 Entry(bootstyle="danger")
 ```
 
-### Other styles
+### Other entry styles
 
-##### Disabled
+##### Disabled entry
 
-This widget supports a style reserved for the **disabled** state, which you 
-can see in the exhibit above. This style _cannot be applied via keywords_. To 
-apply the disabled style:
+This style _cannot be applied via keywords_; it is configured through widget 
+settings.
 
 ```python
 # create the widget in a disabled state
@@ -371,11 +387,10 @@ e = Entry()
 e.configure(state="disabled")
 ```
 
-##### Readonly
+##### Readonly entry
 
-This widget supports a style reserved for the **readonly** state, which you 
-can see in the exhibit above. This style _cannot be applied via keywords_.  To 
-apply the readonly style:
+This style _cannot be applied via keywords_; it is configured through widget 
+settings.
 
 ```python
 # create the widget in a readonly state
@@ -386,9 +401,12 @@ e = Entry()
 e.configure(state="readonly")
 ```
 
-##### Invalid
+##### Invalid entry
 
-Add content here.
+This style _cannot be applied via keywords_, but rather is the result of a 
+validation process implemented on the widget. In the **Cookbook** you will find 
+an example of [how to apply validation](cookbook.md#validate-user-input) to an 
+`Entry` based widget.
 
 ---
 ## Floodgauge
