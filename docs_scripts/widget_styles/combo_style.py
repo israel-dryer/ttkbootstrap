@@ -9,17 +9,11 @@ style = ttk.Style()
 frame = ttk.Frame(padding=5)
 frame.pack(padx=5, pady=5, fill=tk.X)
 
-lbl1 = ttk.Label(frame, text='Normal Colors')
 frame1 = ttk.Frame(frame)
 frame2 = ttk.Frame(frame)
-
-lbl2 = ttk.Label(frame, text='State Colors')
 frame3 = ttk.Frame(frame)
-
-lbl1.pack(fill=tk.X)
 frame1.pack(fill=tk.X)
-frame2.pack(fill=tk.X, pady=(0, 10))
-lbl2.pack(fill=tk.X)
+frame2.pack(fill=tk.X)
 frame3.pack(fill=tk.X)
 
 for i, color in enumerate(['default', *style.colors]):

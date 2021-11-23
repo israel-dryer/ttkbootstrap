@@ -13,7 +13,7 @@ frame1 = ttk.Frame(frame)
 frame2 = ttk.Frame(frame)
 frame3 = ttk.Frame(frame)
 frame1.pack(fill=tk.X)
-frame2.pack(fill=tk.X, pady=(0, 10))
+frame2.pack(fill=tk.X)
 frame3.pack(fill=tk.X)
 
 for i, color in enumerate(['default', *style.colors]):
