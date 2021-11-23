@@ -2375,13 +2375,10 @@ class StyleBuilderTTK:
 
         STYLE = 'Date.TButton'
 
-
         if self.is_light_theme:
             disabled_fg = self.colors.border
-            disabled_bg = self.colors.inputbg
         else:
             disabled_fg = self.colors.selectbg
-            disabled_bg = Colors.update_hsv(disabled_fg, vd=-0.2)
 
         btn_foreground = Colors.get_foreground(self.colors, colorname)
         
@@ -2859,7 +2856,6 @@ class StyleBuilderTTK:
             focusthickness=0,
             focuscolor=foreground,
             padding=(10, 5),
-            anchor=tk.CENTER,
             arrowcolor=foreground,
             arrowpadding=(0, 0, 15, 0),
             arrowsize=3
