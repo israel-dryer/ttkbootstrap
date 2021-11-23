@@ -19,7 +19,7 @@ pip install ttkbootstrap
 ```
 
 ## Simple Usage
-The new API adds style keywords. Instead of using `style="info.Outline.TButton"`, 
+The new Version 1.0 API adds style keywords. Instead of using `style="info.Outline.TButton"`, 
 you can use `info-outline` to create an info colored outline button.
 
 ```python
