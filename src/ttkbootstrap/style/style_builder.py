@@ -744,10 +744,10 @@ class StyleBuilderTTK:
             A tuple of PhotoImage names.
         """
         if self.is_light_theme:
-            disabled_color = self.colors.inputbg
+            disabled_color = self.colors.border
             track_color = Colors.update_hsv(self.colors.inputbg, vd=-0.03)
         else:
-            disabled_color = Colors.update_hsv(self.colors.selectbg, vd=-0.2)
+            disabled_color = self.colors.selectbg
             track_color = self.colors.inputbg
 
         if any([colorname == DEFAULT, colorname == '']):
