@@ -9,6 +9,7 @@ nav:
   - 'Style Guide': styleguide.md
   - 'Themes': themes.md
   - 'Gallery': gallery.md
+  - 'Cookbook': cookbook.md
 markdown_extensions:
   - admonition
   - pymdownx.details
