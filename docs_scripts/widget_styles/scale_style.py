@@ -26,4 +26,11 @@ for i, color in enumerate(['default', *style.colors]):
     a.pack(fill=tk.X)
     f.pack(side=tk.LEFT, padx=3, pady=10, fill=tk.X)
 
+# disabled
+f = ttk.Frame(bot_frame)
+ttk.Label(f, text='disabled', width=20).pack(side=tk.TOP)
+a = ttk.Scale(f, state=tk.DISABLED, value=0.25)
+a.pack(fill=tk.X)
+f.pack(side=tk.LEFT, padx=3, pady=10, fill=tk.X)
+
 root.mainloop()
