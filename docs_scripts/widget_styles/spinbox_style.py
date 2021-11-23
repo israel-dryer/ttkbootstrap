@@ -8,18 +8,32 @@ style = ttk.Style()
 
 frame = ttk.Frame(padding=5)
 frame.pack(padx=5, pady=5, fill=tk.X)
-
-top_frame = ttk.Frame(frame)
-bot_frame = ttk.Frame(frame)
-top_frame.pack(fill=tk.X)
-bot_frame.pack(fill=tk.X)
+frame1 = ttk.Frame(frame)
+frame2 = ttk.Frame(frame)
+frame3 = ttk.Frame(frame)
+frame1.pack(fill=tk.X)
+frame2.pack(fill=tk.X)
+frame3.pack(fill=tk.X)
 
 for i, color in enumerate(['default', *style.colors]):
     if i < 5:
-        a = ttk.Spinbox(top_frame, bootstyle=color)
+        a = ttk.Spinbox(frame1, bootstyle=color)
     else:
-        a = ttk.Spinbox(bot_frame, bootstyle=color)
+        a = ttk.Spinbox(frame2, bootstyle=color)
     a.insert('end', color)
     a.pack(side=tk.LEFT, padx=3, pady=10)
+
+# disabled
+a = ttk.Spinbox(frame3)
+a.insert(tk.END, 'disabled')
+a.pack(side=tk.LEFT, padx=3, pady=10)
+a.configure(state=tk.DISABLED)
+
+# readonly
+a = ttk.Spinbox(frame3)
+a.insert(tk.END, 'readonly')
+a.pack(side=tk.LEFT, padx=3, pady=10)
+a.configure(state='readonly')
+
 
 root.mainloop()
