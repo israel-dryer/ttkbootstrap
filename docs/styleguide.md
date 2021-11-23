@@ -95,6 +95,21 @@ Button(bootstyle="link")
 Button(bootstyle="success-link")
 ```
 
+### Other button styles
+
+All of the button types above support a style reserved for the **disabled**
+state, which you can see in the exhibits above. This style _cannot be 
+applied via keywords_.  To apply the disabled button style:
+
+```python
+# create the button in a disabled state
+Button(state="disabled")
+
+# disable a button after creation
+b = Button()
+b.configure(state="disabled")
+```
+
 ---
 ## Checkbutton
 
@@ -181,6 +196,21 @@ Checkbutton(bootstyle="square-toggle")
 Checkbutton(bootstyle="success-square-toggle")
 ```
 
+### Other button styles
+
+All of the checkbutton types above support a style reserved for the **disabled**
+state, which you can see in the exhibits above. This style _cannot be applied via 
+keywords_.  To apply the disabled button style:
+
+```python
+# create the checkbutton in a disabled state
+Checkbutton(state="disabled")
+
+# disable a checkbutton after creation
+cb = Checkbutton()
+cb.configure(state="disabled")
+```
+
 ---
 ## Combobox
 
@@ -197,6 +227,42 @@ Combobox()
 # danger colored combobox style
 Combobox(bootstyle="danger")
 ```
+
+### Other styles
+
+##### Disabled
+
+This widget supports a style reserved for the **disabled** state, which you 
+can see in the exhibit above. This style _cannot be applied via keywords_. To 
+apply the disabled style:
+
+```python
+# create the combobox in a disabled state
+Combobox(state="disabled")
+
+# disable a combobox after creation
+cb = Combobox()
+cb.configure(state="disabled")
+```
+
+##### Readonly
+
+This widget supports a style reserved for the **readonly** state, which you 
+can see in the exhibit above. This style _cannot be applied via keywords_.  To 
+apply the readonly style:
+
+```python
+# create the combobox in a readonly state
+Combobox(state="readonly")
+
+# set the combobox readonly state after creation
+cb = Combobox()
+cb.configure(state="readonly")
+```
+
+##### Invalid
+
+Add content here.
 
 ---
 ## DateEntry
@@ -217,6 +283,42 @@ DateEntry()
 # success colored dateentry
 DateEntry(bootstyle="success")
 ```
+
+### Other styles
+
+##### Disabled
+
+This widget supports a style reserved for the **disabled** state, which you 
+can see in the exhibit above. This style _cannot be applied via keywords_. To 
+apply the disabled style:
+
+```python
+# create the dateentry in a disabled state
+DateEntry(state="disabled")
+
+# disable a dateentry after creation
+d = DateEntry()
+d.configure(state="disabled")
+```
+
+##### Readonly
+
+This widget supports a style reserved for the **readonly** state, which you 
+can see in the exhibit above. This style _cannot be applied via keywords_.  To 
+apply the readonly style:
+
+```python
+# create the dateentry in a readonly state
+DateEntry(state="readonly")
+
+# set the dateentry readonly state after creation
+d = DateEntry()
+d.configure(state="readonly")
+```
+
+##### Invalid
+
+Add content here.
 
 ---
 ## DatePickerPopup
@@ -251,6 +353,42 @@ Entry()
 # danger colored entry style
 Entry(bootstyle="danger")
 ```
+
+### Other styles
+
+##### Disabled
+
+This widget supports a style reserved for the **disabled** state, which you 
+can see in the exhibit above. This style _cannot be applied via keywords_. To 
+apply the disabled style:
+
+```python
+# create the widget in a disabled state
+Entry(state="disabled")
+
+# disable the widget after creation
+e = Entry()
+e.configure(state="disabled")
+```
+
+##### Readonly
+
+This widget supports a style reserved for the **readonly** state, which you 
+can see in the exhibit above. This style _cannot be applied via keywords_.  To 
+apply the readonly style:
+
+```python
+# create the widget in a readonly state
+Entry(state="readonly")
+
+# set the widget readonly state after creation
+e = Entry()
+e.configure(state="readonly")
+```
+
+##### Invalid
+
+Add content here.
 
 ---
 ## Floodgauge
@@ -564,6 +702,42 @@ Spinbox()
 # danger colored spinbox style
 Spinbox(bootstyle="danger")
 ```
+
+### Other styles
+
+##### Disabled
+
+This widget supports a style reserved for the **disabled** state, which you 
+can see in the exhibit above. This style _cannot be applied via keywords_. To 
+apply the disabled style:
+
+```python
+# create the widget in a disabled state
+Spinbox(state="disabled")
+
+# disable the widget after creation
+e = Spinbox()
+e.configure(state="disabled")
+```
+
+##### Readonly
+
+This widget supports a style reserved for the **readonly** state, which you 
+can see in the exhibit above. This style _cannot be applied via keywords_.  To 
+apply the readonly style:
+
+```python
+# create the widget in a readonly state
+Spinbox(state="readonly")
+
+# set the widget readonly state after creation
+e = Spinbox()
+e.configure(state="readonly")
+```
+
+##### Invalid
+
+Add content here.
 
 ## Treeview
 
