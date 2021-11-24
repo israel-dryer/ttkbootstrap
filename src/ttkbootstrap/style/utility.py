@@ -26,7 +26,8 @@ TYPES = [
     'focus',
     'input',
     'date',
-    'meter'
+    'metersubtxt',
+    'meter',
 ]
 
 CLASSES = [

@@ -9,13 +9,14 @@ FULL = 'full'
 SEMI = 'semi'
 PRIMARY = 'primary'
 DEFAULT = 'default'
+SECONDARY = 'secondary'
 
 class Meter(ttk.Frame):
     
     def __init__(
         self,
         master=None,
-        bootstyle=PRIMARY,
+        bootstyle=DEFAULT,
         arcrange=None,
         arcoffset=None,
         amounttotal=100,
@@ -186,7 +187,7 @@ class Meter(ttk.Frame):
             master=self.textframe,
             text=self._textleft,
             font=self._subtextfont,
-            bootstyle=(self._subtextstyle, 'meter'),
+            bootstyle=(self._subtextstyle, 'metersubtxt'),
             anchor=tk.S,
             padding=(0, 5)
         )
@@ -200,14 +201,14 @@ class Meter(ttk.Frame):
             master=self.textframe,
             text=self._textright,
             font=self._subtextfont,
-            bootstyle=(self._subtextstyle, 'meter'),
+            bootstyle=(self._subtextstyle, 'metersubtxt'),
             anchor=tk.S,
             padding=(0, 5)            
         )
         self.subtext = ttk.Label(
             master=self.meterframe,
             text=self._subtext,
-            bootstyle=(self._subtextstyle, 'meter'),
+            bootstyle=(self._subtextstyle, 'metersubtxt'),
             font=self._subtextfont
         )
 
@@ -225,12 +226,12 @@ class Meter(ttk.Frame):
     def _set_widget_colors(self):
         bootstyle = (self._bootstyle, 'meter', 'label')
         ttkstyle = util.ttkstyle_name(string='-'.join(bootstyle))
-        fg = self._lookup_style_option(ttkstyle, 'foreground')
-        bg = self._lookup_style_option(ttkstyle, 'background')
-        tc = self._lookup_style_option(ttkstyle, 'space')
-        self._meterforeground = fg
-        self._meterbackground = Colors.update_hsv(bg, vd=-0.1)
-        self._metertrough = tc
+        textcolor = self._lookup_style_option(ttkstyle, 'foreground')
+        background = self._lookup_style_option(ttkstyle, 'background')
+        troughcolor = self._lookup_style_option(ttkstyle, 'space')
+        self._meterforeground = textcolor
+        self._meterbackground = Colors.update_hsv(background, vd=-0.1)
+        self._metertrough = troughcolor
 
     def _set_meter_text(self):
         """Setup and pack the widget labels in the appropriate order"""
