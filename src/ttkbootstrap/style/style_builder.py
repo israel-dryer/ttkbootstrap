@@ -2515,33 +2515,60 @@ class StyleBuilderTTK:
         self.style.register_ttkstyle(ttkstyle)
         self.style.register_ttkstyle(chevron_style)
 
-    def create_meter_label_style(self, colorname=DEFAULT):
-        """Create label style for meter widget"""
-        
-        STYLE = 'Meter.TLabel'
-        
+    def create_metersubtxt_label_style(self, colorname=DEFAULT):
+        """Create default style for meter subtext label"""
+        STYLE = 'Metersubtxt.TLabel'
+
         if any([colorname == DEFAULT, colorname == '']):
             ttkstyle = STYLE
             if self.is_light_theme:
                 foreground = self.colors.secondary
             else:
-                foreground = self.colors.selectbg
-            background = self.colors.bg
+                foreground = self.colors.light
         else:
             ttkstyle = f'{colorname}.{STYLE}'
             foreground = self.colors.get(colorname)
-            background = self.colors.bg
 
-        if self.is_light_theme:
-            troughcolor = Colors.update_hsv(self.colors.light, vd=-0.01)
-        else:
-            troughcolor = self.colors.inputbg
+        background = self.colors.bg
 
         self.style.configure(
             ttkstyle,
             foreground=foreground,
+            background=background
+        )
+        # register ttkstyle
+        self.style.register_ttkstyle(ttkstyle)        
+
+    def create_meter_label_style(self, colorname=DEFAULT):
+        """Create label style for meter widget"""
+        
+        STYLE = 'Meter.TLabel'
+        
+        # text color = `foreground`
+        # trough color = `space`
+
+        if self.is_light_theme:
+            if colorname == LIGHT:
+                troughcolor = self.colors.bg
+            else:
+                troughcolor = self.colors.light
+        else:
+            troughcolor = Colors.update_hsv(self.colors.selectbg, vd=-0.2)        
+
+        if any([colorname == DEFAULT, colorname == '']):
+            ttkstyle = STYLE
+            background = self.colors.bg
+            textcolor = self.colors.primary
+        else:
+            ttkstyle = f'{colorname}.{STYLE}'
+            textcolor = self.colors.get(colorname)
+            background = self.colors.bg
+
+        self.style.configure(
+            ttkstyle,
+            foreground=textcolor,
             background=background,
-            space=troughcolor
+            space=troughcolor,
         )
         # register ttkstyle
         self.style.register_ttkstyle(ttkstyle)        

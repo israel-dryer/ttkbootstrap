@@ -562,14 +562,10 @@ b.configure(state="disabled")
 
 ## Meter
 
-By default, the background color for this widget is the same as the theme 
-background color, the _indicator_ and _text_ are set to `primary`. 
-The _subtext_ is set to `secondary` if the theme is _light_ or `selectbg` 
-if the theme is _dark_, which is a color not accessible via keywords. 
-
-In the widget constructor, use the `bootstyle` parameter to customize the 
-_indicator_ and _text_ element colors. Use the `subtextstyle` to customize 
-the _subtext_ element color.
+The indicator and main label on this widget are **primary*** colored by 
+default. The subtext can be styled as well, and is **secondary** by default,
+however, all of these elements can be configured to any of the
+[available colors](#colors).
 
 ![meter](./assets/widget-styles/meter.png)
 
