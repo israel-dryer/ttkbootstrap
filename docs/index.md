@@ -75,8 +75,8 @@ effects, etc... Only the styles actually used are created.
 ## Legacy support
 
 Some of the ttk widgets utilize existing tkinter widgets underneath. For 
-example: there is a tkinter popdown list in the `Combobox`, and a legacy 
-tkinter widget inside the `OptionMenu`. To make sure these widgets don't 
+example: there is a tkinter popdown list in the **Combobox**, and a legacy 
+tkinter widget inside the **OptionMenu**. To make sure these widgets don't 
 stick out like a sore thumb, I have applied default styling to these widgets
 to ensure the look and feel is consistent across the board.
 
@@ -208,7 +208,7 @@ transformed from a **solid** to an **outline** button type.
 
 ##### Keyword usage
 
-On final note on using keywords... the `bootstyle` parameter is VERY flexible. 
+On final note on using keywords... the **bootstyle** parameter is VERY flexible. 
 It doesn't really matter how the keyword looks. There is a regex expression in 
 the background that parses the input and converts it into the appropriate ttk 
 style.
@@ -217,6 +217,7 @@ All of the following variations are legal and will result in the same style.
 
 * `"info-outline"`
 * `"infooutline"`
+* `"info outline"`
 * `"outline-info"`
 * `("info", "outline")`
 
