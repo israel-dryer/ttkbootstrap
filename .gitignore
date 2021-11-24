@@ -9,3 +9,4 @@ dist
 .vscode
 __pycache__
 experiment
+testing_notes.txt
