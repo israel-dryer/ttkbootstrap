@@ -590,7 +590,9 @@ Meter(bootstyle="success", subtextstyle="warning")
 
 ## Notebook
 
-**add detail here**
+This container widget has minimal styling by default. However, you can add some
+flair to the _inactive_ tab by using any of the [available colors](#colors) as 
+demonstrated in the exhibit below.
 
 ![notebook](./assets/widget-styles/notebook.png)
 
@@ -604,7 +606,10 @@ Notebook(bootstyle="info")
 
 ## Panedwindow
 
-**add detail here**
+This container widget has a background color that is the same as the default **bg**
+color for the seleted theme. The sash is a light-gray typically. However, you can add 
+some flair to the _sash_ by using any of the [available colors](#colors) as 
+demonstrated in the exhibit below.
 
 ![paned widow](./assets/widget-styles/panedwindow.gif)
 
@@ -618,19 +623,15 @@ Panedwindow(bootstyle="info")
 
 ## Progressbar
 
-**add detail here**
+This widget has a **primary** colored indicator by default, but can be colored
+any of the [available colors](#colors).
 
 ### Solid (default)
 
-**add detail here**
+The default style for a progressbar; has as solid color indicator which is either
+**primary** by default or the [selected color](#colors).
 
 ![solid progressbar](./assets/widget-styles/solid-progressbar.gif)
-
-### Striped
-
-**add detail here**
-
-![striped progressbar](./assets/widget-styles/striped-progressbar.gif)
 
 ```python
 # default solid progressbar style
@@ -638,7 +639,18 @@ Progressbar()
 
 # success colored solid progressbar style
 Progressbar(bootstyle="success")
+```
 
+
+### Striped
+
+A striped indicator where the dark line uses **primary** or the 
+[selected color](#colors), and the light line uses a desaturated version of the 
+same color.
+
+![striped progressbar](./assets/widget-styles/striped-progressbar.gif)
+
+```python
 # default striped progressbar style
 Progressbar(bootstyle="striped")
 
@@ -648,25 +660,20 @@ Progressbar(bootstyle="danger-striped")
 
 ## Radiobutton
 
-**add detail here**
+ttkbootstrap includes several radiobutton types that can be styled using
+any of the [available colors](#colors).   
+This widget supports a special style for 
+[disabled state](#other-radiobutton-styles).
 
 ### Radio (default)
 
-**add detail here**
+The default radiobutton type is the traditional **radiobutton** which has a
+round indicator that is **primary** by default when selected with a small
+white circle in the center that matches the **selectfg** color for the
+selected theme. However, any of the [available colors](#colors) can be used
+to style the selected indicator as shown in the exhibit below.
 
 ![radiobutton](./assets/widget-styles/radiobuttons.png)
-
-### Solid toolbutton
-
-**add detail here**
-
-![toolbutton](./assets/widget-styles/radio-toolbutton.gif)
-
-### Outline toolbutton
-
-**add detail here**
-
-![outline toolbutton](./assets/widget-styles/outline-radio-toolbutton.gif)
 
 ```python
 # default radiobutton style
@@ -674,13 +681,34 @@ Radiobutton()
 
 # secondary colored radiobutton style
 Radiobutton(bootstyle="secondary")
+```
 
+### Solid toolbutton
+
+When selected, the color is **primary** by default or the 
+[selected color](#colors). When deselected, the button color is typically
+a muted gray, but can vary by theme.
+
+![toolbutton](./assets/widget-styles/radio-toolbutton.gif)
+
+```python
 # default toolbutton style
 Radiobutton(bootstyle="toolbutton")
 
 # danger colored radio toolbutton style
 Radiobutton(bootstyle="danger-toolbutton")
+```
 
+### Outline toolbutton
+
+When selected, the background color is **primary** by default, or the
+[selected color](#colors). When deselected, the background color matches
+the selected theme default, and there is a thin border that matches the
+default or selected color.
+
+![outline toolbutton](./assets/widget-styles/outline-radio-toolbutton.gif)
+
+```python
 # default outline radio toolbutton style
 Radiobutton(bootstyle="outline-toolbutton")
 
@@ -688,9 +716,29 @@ Radiobutton(bootstyle="outline-toolbutton")
 Radiobutton(bootstyle="info-outline-toolbutton")
 ```
 
+### Other radiobutton styles
+
+##### Disabled radiobutton
+This style _cannot be applied via keywords_; it is configured through widget 
+settings.
+
+```python
+# create the radiobutton in a disabled state
+Radiobutton(state="disabled")
+
+# disable a radiobutton after creation
+rb = Radiobutton()
+rb.configure(state="disabled")
+```
+
 ## Scale
 
-**add detail here**
+This widget has a slider handle that is **primary** by default or the 
+[selected color](#colors). When _hovering_, the color lightens slightly and
+darkens when _pressed_.
+
+This widget supports a special style for 
+[disabled state](#other-scale-styles).
 
 ![scale](./assets/widget-styles/scale.gif)
 
@@ -700,6 +748,21 @@ Scale()
 
 # info colored label style
 Scale(bootstyle="info")
+```
+
+### Other scale styles
+
+##### Disabled scale
+This style _cannot be applied via keywords_; it is configured through widget 
+settings.
+
+```python
+# create the scale in a disabled state
+Scale(state="disabled")
+
+# disable a scale after creation
+scale = Scale()
+scale.configure(state="disabled")
 ```
 
 ## Scrollbar
