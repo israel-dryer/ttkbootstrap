@@ -562,10 +562,15 @@ b.configure(state="disabled")
 
 ## Meter
 
-The indicator and main label on this widget are **primary*** colored by 
-default. The subtext can be styled as well, and is **secondary** by default,
-however, all of these elements can be configured to any of the
-[available colors](#colors).
+The indicator and main label on this widget are **primary** colored by 
+default. The subtext can be styled as well, and is **secondary** by default
+for light themes and **light** for dark themes. However, all of these 
+elements can be configured to any of the [available colors](#colors).
+
+![meter colors](./assets/widget-styles/meter.gif)
+
+The meter widget is highly configurable, and can produce a diversity of
+interesting meters by mixing colors and other widget specific settings.
 
 ![meter](./assets/widget-styles/meter.png)
 
