@@ -1,93 +1,100 @@
-# Home
+# ttkbootstrap
 
-**ttkbootstrap** is a collection of modern, flat themes inspired by 
-[Bootstrap](https://getbootstrap.com/) for tkinter/ttk. Each widget 
-includes pre-defined widget styles that are easily accessible with 
-easy to remember keywords that change the widget color and form.
+A collection of modern, flat themes inspired by [Bootstrap](https://getbootstrap.com/) 
+for tkinter. Each widget includes [pre-defined widget styles](styleguide.md) 
+that are easily accessible with easy to remember keywords that change the 
+widget color and type.
 
 ![themes](./assets/themes/themes.gif)
 
 ## Installation
 
-Installing ttkbootstrap is easy!
+Easy peezy.
 
-### PyPI
+!!! note "Version 1.0 - Github Installation"
+    This version includes the new API, but it is not 100% finished and is not
+    yet published to PyPI. Don't worry, it's coming soon.
+    ```bash
+    python -m pip install git+https://github.com/israel-dryer/ttkbootstrap
+    ```
 
-!!! warning "Currently Unpublished!!"
-    ttkbootstrap version 1.0 has not yet been published to PyPI, so 
-    installing from source is currently the only option.
+Lemon squeezy.
 
-The best method for installing ttkbootstrap is from PyPI. 
+!!! note "Version 0.5 - PyPI Installation"
+    This version does not use the new keyword api. See the 0.5 
+    [documentation](https://ttkbootstrap.readthedocs.io/en/version-0.5/)
+    for examples, usage, and tutorials.
+    ```bash
+    python -m pip install ttkbootstrap
+    ```
 
-```bash
-python -m pip install ttkbootstrap
-```
 
-This also installed the required dependency `pillow`, which is used for image
-processing.
+## Project goals
+  
+I set the following goals for myself when creating and updating this project;
+especially for version 1.0. It is a work in progress, but hopefully I've 
+achieved most or all of these.
 
-### Source
+#### Create a set of beautifully designed and easy-to-use styles
 
-You may also install directly from the GitHub repository.
+As you may know, creating ttk styles can be _very time-consuming_. This library 
+takes the pain out of creating a modern look and feel so that you can focus on 
+_designing your application_ instead of adjusting 25 style settings on a submit 
+button.
 
-```bash
-python -m pip install git+https://github.com/israel-dryer/ttkbootstrap
-```
+#### Set the widget style with keywords
 
-<!-- !!! warning "Installing from GitHub"
-    GitHub contains the most recent development version of this project, but 
-    it may also contain potential bugs and other issues that you would not want 
-    in a production project. -->
+Keep it simple. Set the style with keywords. Stop using convoluted ttk style 
+classes such as **success.Horizontal.TProgressbar**. Instead, use **success**, 
+which is a keyword that can indicate the same semantic color meaning for _all_ 
+widgets.
 
-## Overview
-
-### Why does this project exist?
-
-The purpose of this project is create a set of beautifully designed and easy to 
-apply styles for your tkinter applications. Tkinter/ttk can be very time-consuming to 
-style if you are just a casual user. This project takes the pain out of getting 
-a modern look and feel so that you can focus on _designing your application_. 
-
-This project was created to harness the power of ttk’s (and thus Python’s) 
-existing built-in theme engine to create modern and professional-looking user 
-interfaces which are inspired by, and in many cases, whole-sale rip-off’s of the 
-themes found on [Bootswatch](https://bootswatch.com/). 
-
-### A bootstrap approach to style
-
-Many people are familiar with bootstrap for web developement, as it comes 
+Many people are familiar with bootstrap for web developement; it comes 
 pre-packaged with built-in css style classes that provide a professional and 
 consistent api for quick development. I took a similar approach with this 
-project by pre-defining styles for nearly all ttk widgets. 
+project by pre-defining styles for nearly all ttk widgets that can be accessed
+with _simple keywords_.
 
-Instead of having to subclass a button style using something that looks like 
-**danger.Outline.TButton**, you can pass in the keywords **danger-outline** 
-to create a red colored outline `Button`. Or, use **info** to create a blue 
-colored solid `Button`. Or, use **success-striped** to create a green striped 
-`Progressbar`. This simple keyword  based style api makes working with tkinter 
-SO MUCH EASIER! 
+#### Only create themes and styles that are actually used
 
-### What about the old tkinter widgets?
+If you're not using it, then it shouldn't be taking up memory in your
+application. Nothing bogs down your application more than a bunch of 
+boilerplate predefined assets that you may or may not use. 
 
-Some of the ttk widgets utilize existing tkinter widgets. For example: there is 
-a tkinter popdown list in the `Combobox` and a legacy tkinter widget inside 
-the `OptionMenu`. To make sure these widgets didn’t stick out like a sore 
-thumb, I have applied styling to these widgets as well, in order to make sure
-the look and feel is consistent as much as possible. 
+To fix this, I've designed a styling engine for ttk that creates ttk styles and 
+themes _on demand_. If a style is not used, it will not be created. This adds a 
+tremendous amount of flexibility in theme and style design as I am no longer 
+limited by the memory limits of _pre-loaded image-based widget styles_. 
 
-## Tutorial
+To put this into perspective... in version 0.5, if I had a single scale widget 
+in my application, I would still need to load 288 images to account for all 
+potential theme and color combinations!! This is how styles are handled 
+traditionally in ttk. Now, all I need to load is 3 or 4 images for hover 
+effects, etc... Only the styles actually used are created.
 
-**ttkbootstrap** turns style keywords into a ttk style that is created 
-_on demand_ as needed and then applies that style to your widget.
+## Legacy support
 
-### Basic usage
+Some of the ttk widgets utilize existing tkinter widgets underneath. For 
+example: there is a tkinter popdown list in the `Combobox`, and a legacy 
+tkinter widget inside the `OptionMenu`. To make sure these widgets don't 
+stick out like a sore thumb, I have applied default styling to these widgets
+to ensure the look and feel is consistent across the board.
+
+## Quickstart
+
+#### Creating an application
+If you have used **tkinter** and **ttk** the following example will look 
+familiar. I'll explain a few of the differences.
+
+- import `ttkbootstrap` instead of `ttk`
+- use the `bootstyle` parameter to add keywords instead of `style`
 
 ```python
 import tkinter as tk
 import ttkbootstrap as ttk
 
 root = tk.Tk()
-style = ttk.Style()  # use default style 'flatly'
+style = ttk.Style()
 
 b1 = ttk.Button(root, text="Button 1", bootstyle="success")
 b1.pack(side=tk.LEFT, padx=5, pady=10)
@@ -98,60 +105,34 @@ b2.pack(side=tk.LEFT, padx=5, pady=10)
 root.mainloop()
 ```
 
-This results in the window below:
+The code above will produce this window with two buttons.
 
 ![simple usage window](./assets/tutorial/simple-usage.png)
 
-### Choose a theme
+#### Choosing a theme
 
-By default, the **flatly** theme is applied to the application. If you prefer
-to instantiate the application with another theme, you can pass the name of the
-theme into the `Style` funtion.
-
-```python
->>> style = Style(theme="darkly")
-```
-
-If the application has already been created, you can change the theme with the 
-`theme_use` method:
+The default theme is **flatly**, but you can start the application with any of 
+the [built-in themes](#themes.md) by passing in the theme name when you create 
+the style object.
 
 ```python
->>> style.theme_use("superhero")
+>>> style = Style("darkly")
 ```
 
-You can see screenshots of all built-in themes [here](themes.md).
+!!! danger "Style is not a class in **ttkbootstrap**!"
+    In ttkbootstrap, `Style` is a function that returns an instance of a 
+    `StyleManager` class which manages the themes and predefined styles. This
+    class is not intended to be inherited.
 
-To see a list of all available themes:
+#### Use themed widgets
 
-```python
->>> style = Style()
->>> style.theme_name()
-['cosmo', 'flatly', 'litera', 'minty', 'lumen', 'sandstone', 'yeti', 'pulse', 
-'united', 'journal', 'darkly', 'superhero', 'solar', 'cyborg']
-```
+All widgets have [dozens of predefined styles](styleguide.md) which are applied
+using **keywords** that modify both the **type** and **color** of the widget. 
+The actual color values are defined for each theme.
 
-!!! warning "Style is not a class!"
-    In ttkbootstrap, `Style` is _not_ a class as it is in `ttk` but rather 
-    a function that  returns a singleton instance of the `StyleManager` class, 
-    which itself inherits from the `ttk.Style` class. `StyleManger` is not 
-    intended to be inherited.
 
-### Use themed widgets
-
-**ttkbootstrap** includes many [pre-defined widget styles](styleguide.md) that you 
-can apply with the `bootstyle` parameter. All widgets can be colored using one of 
-several color keywords that are defined for each theme.
-
-- primary
-- secondary
-- success
-- info
-- warning
-- danger
-- light
-- dark
-
-These color keywords produce the following look and feel on a `ttk.Button`
+##### Style Colors
+The example below shows a button for every color.
 
 ```python
 import tkinter as tk
@@ -160,24 +141,57 @@ import ttkbootstrap as ttk
 root = tk.Tk()
 style = ttk.Style()
 
-for color in style.colors:
-    b = ttk.Button(root, text=color, bootstyle=color)
-    b.pack(side=tk.LEFT, padx=5, pady=5)
+b1 = ttk.Button(root, text='primary', bootstyle='primary')
+b1.pack(side=tk.LEFT, padx=5, pady=5)
+
+b2 = ttk.Button(root, text='secondary', bootstyle='secondary')
+b2.pack(side=tk.LEFT, padx=5, pady=5)
+
+b3 = ttk.Button(root, text='success', bootstyle='success')
+b3.pack(side=tk.LEFT, padx=5, pady=5)
+
+b4 = ttk.Button(root, text='info', bootstyle='info')
+b4.pack(side=tk.LEFT, padx=5, pady=5)
+
+b5 = ttk.Button(root, text='warning', bootstyle='warning')
+b5.pack(side=tk.LEFT, padx=5, pady=5)
+
+b6 = ttk.Button(root, text='danger', bootstyle='danger')
+b6.pack(side=tk.LEFT, padx=5, pady=5)
+
+b7 = ttk.Button(root, text='light', bootstyle='light')
+b7.pack(side=tk.LEFT, padx=5, pady=5)
+
+b8 = ttk.Button(root, text='dark', bootstyle='dark')
+b8.pack(side=tk.LEFT, padx=5, pady=5)
 
 root.mainloop()
 ```
 
 ![button colors](./assets/tutorial/button-colors.png)
 
-Consider the following example, which also shows the _outline_ style that is 
-available for `Button`, and `Menubutton`
+I could have created those buttons in a simpler fashion by using the 
+`Style.colors` object, which contains a reference to all colors used in the 
+theme, and which is also an _iterator_.
+
+```python
+for color in style.colors:
+    b = ttk.Button(root, text=color, bootstyle=color)
+    b.pack(side=tk.LEFT, padx=5, pady=5)
+```
+
+##### Style Types
+
+The **keyword** can control the **type** of widget that is presented. Consider 
+the following example, which shows a **solid** and an **outline** button. They
+are both buttons, but of different **types**.
 
 ```python
 import tkinter as tk
 import ttkbootstrap as ttk
 
 root = tk.Tk()
-style = ttk.Style()  # use default style 'flatly'
+style = ttk.Style()
 
 b1 = ttk.Button(root, text="Solid Button", bootstyle="success")
 b1.pack(side=tk.LEFT, padx=5, pady=10)
@@ -187,41 +201,26 @@ b2.pack(side=tk.LEFT, padx=5, pady=10)
 
 root.mainloop()
 ```
+As you can see, by adding the **outline** keyword, the button has been
+transformed from a **solid** to an **outline** button type.
+
 ![button styles](./assets/tutorial/solid-outline-button-styles.png)
 
-### Use themed colors
+##### Keyword usage
 
-When you call the `Style` method a `StyleManager` object is returned. This
-object is what you use to managed the styles and themes of the application.
-This object also has access to the color palette of the theme currently being
-used via a `Color` object, which can come in handy when you want to use those 
-colors for something.
+On final note on using keywords... the `bootstyle` parameter is VERY flexible. 
+It doesn't really matter how the keyword looks. There is a regex expression in 
+the background that parses the input and converts it into the appropriate ttk 
+style.
 
-The colors can be access via dot notation, or use the `get` method.
+All of the following variations are legal and will result in the same style.
 
-```python
-# create a style manager object
-style = Style()
+* `"info-outline"`
+* `"infooutline"`
+* `"outline-info"`
+* `("info", "outline")`
 
-# dot notation
-style.colors.primary
-
-# get method
-style.colors.get('border')
-```
-
-The `Color` object is an iterator, so you can iterate over the bootstyle colors
-such as 'primary', 'secondary', etc...
-
-```python
-for color_name in style.colors:
-    color_value = style.colors.get(color_name)
-```
-
-If for some reason you want to iterate over _all_ theme colors, including
-'border', 'bg', 'fg', etc..., you can use the `label_iter` method:
-
-```python
-for color_name in style.colors.label_iter():
-    color_value = style.colors.get(color_name)
-```
+!!! note "The recommended syntax is to use a dash"
+    While you can use any convention that you want as long as it works, it is
+    recommended to separate the keywords using a dash when possible. Otherwise,
+    it may sometimes be necessary or more convenient to use a `list` or `tuple`.
