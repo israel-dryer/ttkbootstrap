@@ -16,14 +16,14 @@ descriptions below are what you can expect typically from each color keyword.
 
 | Keyword      | Description                           | Example |
 | ---          | ---                                   | ---      |
-| `primary`    | The default color for most widgets    | ![primary](./assets/colors/primary.png) |
-| `secondary`  | Typically a _gray_ color              | ![secondary](./assets/colors/secondary.png) |
-| `success`    | Typically a _green_ color             | ![success](./assets/colors/success.png) |
-| `info`       | Typically a _blue_ color              | ![info](./assets/colors/info.png) |
-| `warning`    | Typically an _orange_ color           | ![warning](./assets/colors/warning.png) |
-| `danger`     | Typically a _red_ color               | ![danger](./assets/colors/danger.png) |
-| `light`      | Typically a _light gray_ color        | ![light](./assets/colors/light.png) |
-| `dark`       | Typically a _dark gray_ color         | ![dark](./assets/colors/dark.png) |
+| primary    | The default color for most widgets    | ![primary](./assets/colors/primary.png) |
+| secondary  | Typically a _gray_ color              | ![secondary](./assets/colors/secondary.png) |
+| success    | Typically a _green_ color             | ![success](./assets/colors/success.png) |
+| info       | Typically a _blue_ color              | ![info](./assets/colors/info.png) |
+| warning    | Typically an _orange_ color           | ![warning](./assets/colors/warning.png) |
+| danger     | Typically a _red_ color               | ![danger](./assets/colors/danger.png) |
+| light      | Typically a _light gray_ color        | ![light](./assets/colors/light.png) |
+| dark       | Typically a _dark gray_ color         | ![dark](./assets/colors/dark.png) |
 
 
 ```python
@@ -46,7 +46,7 @@ application design.
 
 This widget supports a special style for [disabled state](#other-button-styles).
 
-### Solid buttons (default)
+### Solid button (default)
 
 A solid background color that lightens on _hover_ and darkens on _press_. When
 the widget has focus, a dashed focus ring appears in the same color as the
@@ -62,7 +62,7 @@ Button()
 Button(bootstyle="success")
 ```
 
-### Outline buttons
+### Outline button
 
 A thin outline with a background color that matches the theme default. When the
 widget has focus, a dashed focus ring appears in the same color as the text 
@@ -78,7 +78,7 @@ Button(bootstyle="outline")
 Button(bootstyle="success-outline")
 ```
 
-### Link buttons
+### Link button
 
 A button with the appearance of a label. The text color changes to **info** on 
 _hover_. When the widget has focus, a dashed focus ring appears in the same color 
@@ -411,7 +411,12 @@ an example of [how to apply validation](cookbook.md#validate-user-input) to an
 ---
 ## Floodgauge
 
-**add detail here**
+A progressbar with an optional display text.
+
+The indicator is **primary** color by default or the [selected color](#colors).
+The trough color is a desaturated variation of the indicator color. This 
+ensures that, for the most part, the text is still visible when the indicator 
+is not underneath directly underneath text.
 
 ![floodguage](./assets/widget-styles/floodgauge.gif)
 
@@ -426,7 +431,9 @@ Floodgauge(bootstyle="success")
 ---
 ## Frame
 
-**add detail here**
+This widget container has a default background color that matches the **bg**
+color for the selected theme; however any of the [available colors](#colors)
+can be used to style the background color.
 
 ![frame](./assets/widget-styles/frame.png)
 
@@ -441,13 +448,18 @@ Frame(bootstyle="info")
 ---
 ## Label
 
-**add detail here**
+A standard textual widget that can be customized with **type** and **color** 
+keywords in order to adjust the background and foreground colors. By default
+the foreground and background colors are defined by the theme using the 
+**bg** and **fg** theme colors.
 
-### Normal (default)
+### Default label
+
+The foreground can be customized with any of the [available colors](#colors). 
+The background color for this style is the default theme defined background 
+color.
+
 ![normal label](./assets/widget-styles/label.png)
-
-### Inverse
-![inverse label](./assets/widget-styles/inverse-label.png)
 
 ```python
 # default label style
@@ -455,7 +467,19 @@ Label()
 
 # danger colored label style
 Label(bootstyle="danger")
+```
 
+### Inverse label
+
+The colors for this style are an inverted version of the _normal_ style. The 
+foreground color becomes the background color, and vice versa. This is
+especially useful when you are adding labels to a colored `Frame`, or you want
+to add a [label heading](gallery.md#media-player) that does not have a default 
+background color.
+
+![inverse label](./assets/widget-styles/inverse-label.png)
+
+```python
 # default inverse label style
 Label(bootstyle="inverse")
 
@@ -466,7 +490,12 @@ Label(bootstyle="inverse-danger")
 ---
 ## Labelframe
 
-**add detail here**
+This widget container has a border and a label. The default color for the
+border is typically the themed defined border color. The default text color
+is the same as the [default label](#default-label).
+
+If any of the [color keywords](#colors) are used, both the border and the 
+label will use the same color, as illustrated in the exhibit below.
 
 ![labelframe](./assets/widget-styles/labelframe.png)
 
@@ -480,19 +509,18 @@ Labelframe(bootstyle="info")
 
 ## Menubutton
 
-**add detail here**
+A button with an arrow. The default background color is **primary**, but any 
+of the [available colors](#colors) can be used to modify the background color. 
+The foreground color is the theme defined **selectbg** color unless otherwise 
+specified in the style builder, and styles both the text and the arrow.
+
+This widget supports a special style for [disabled state](#disabled-menubutton).
 
 ### Solid (default)
 
-**add detail here**
+A solid background color that lightens on _hover_ and darkens on _press_. 
 
 ![solid menubutton](./assets/widget-styles/menubutton.gif)
-
-### Outline
-
-**add detail here**
-
-![outline menubutton](./assets/widget-styles/outline-menubutton.gif)
 
 ```python
 # default solid menubutton style
@@ -500,12 +528,36 @@ Menubutton()
 
 # success colored solid menubutton style
 Menubutton(bootstyle="success")
+```
 
+### Outline
+
+A thin outline with a background color that matches the theme default. When 
+the widget is active, the foreground and background colors reverse.
+
+![outline menubutton](./assets/widget-styles/outline-menubutton.gif)
+
+```python
 # default outline menubutton style
 Menubutton(bootstyle="outline")
 
 # info colored outline menubutton style
 Menubutton(bootstyle="info-outline")
+```
+
+### Other menubutton styles
+
+##### Disabled menubutton
+This style _cannot be applied via keywords_; it is configured through widget 
+settings.
+
+```python
+# create the menubutton in a disabled state
+Menubutton(state="disabled")
+
+# disable a menubutton after creation
+b = Menubutton()
+b.configure(state="disabled")
 ```
 
 ## Meter

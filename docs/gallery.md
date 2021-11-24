@@ -17,12 +17,13 @@ The theme used in this example is **journal**.
 
 ### Style Summary
 
-| Item | Class | Bootstyle |
-|---|---|---|
-| Browse | `Button` | primary |
-| Search | `Button` | primary-outline |
-| Treeview | `Treeview` | info |
-| Progressbar | `Progressbar` | success |
+| Item          | Class         | Bootstyle         |
+| ---           | ---           | ---               |
+| User Input    | `Entry`       | default           |
+| Browse        | `Button`      | primary           |
+| Search        | `Button`      | primary-outline   |
+| Treeview      | `Treeview`    | info              |
+| Progressbar   | `Progressbar` | success           |
 
 ### Example Code
 
@@ -375,10 +376,10 @@ if __name__ == '__main__':
 ## File Backup Utility
 
 In this example, I demonstrate how to use various styles to build a UI for a 
-File Backup UI. I use a `CollapsingFrame` class to contain the left-side info 
-panels as well as the output on the bottom right. These contain indicator 
-buttons on the right-side of the header which collapse and expand the `Frame` 
-with a mouse-click action. 
+File Backup Utility application. I use a `CollapsingFrame` class to contain 
+the left-side info panels as well as the output on the bottom right. These 
+contain indicator buttons on the right-side of the header which collapse and 
+expand the `Frame` with a mouse-click action. 
 
 The theme used in this example is **flatly**.
 
@@ -386,14 +387,14 @@ The theme used in this example is **flatly**.
 
 ### Style Summary
 
-| Item | Class | Bootstyle |
-|---|---|---|
-| Top button bar | `Button` | primary |
-| Collapsible frames | `CollapsingFrame` | secondary |
-| Separators | `Separator` | secondary |
-| Progressbar | `Progressbar` | success |
-| Properties, stop, add to backup | `Button` | link |
-| File Open | `Button` | secondary-link |
+| Item                              | Class             | Bootstyle |
+| ---                               | ---               | ---|
+| Top button bar                    | `Button`          | primary |
+| Collapsible frames                | `CollapsingFrame` | secondary |
+| Separators                        | `Separator`       | secondary |
+| Progressbar                       | `Progressbar`     | success |
+| Properties, stop, add to backup   | `Button`          | link |
+| File Open                         | `Button`          | secondary-link |
 
 ### Example Code
 
@@ -968,11 +969,11 @@ The theme used is **flatly**.
 
 ### Style Summary
 
-| Item | Class | Bootstyle |
-|---|---|---|
-| Volume Scale | `Scale` | success |
-| Gain Scale  | `Scale` | success |
-| Other Scales | `Scale` | info |
+| Item          | Class     | Bootstyle |
+| ---           | ---       | ---       |
+| Volume Scale  | `Scale`   | success   |
+| Gain Scale    | `Scale`   | success   |
+| Other Scales  | `Scale`   | info      |
 
 !!! note
     For a vertical orientation, the `from_` parameter corresponds to the top 
@@ -1069,11 +1070,11 @@ The theme used is **flatly**.
 
 ### Style Summary
 
-| Item | Class | Bootstyle |
-|---|---|---|
-| Option group 1 | `CollapsingFrame` | primary |
-| Option group 2 | `CollapsingFrame` | danger |
-| Option group 3 | `CollapsingFrame` | success |
+| Item              | Class             | Bootstyle |
+| ---               | ---               | --- |
+| Option group 1    | `CollapsingFrame` | primary |
+| Option group 2    | `CollapsingFrame` | danger |
+| Option group 3    | `CollapsingFrame` | success |
 
 ### Example Code
 
@@ -1216,11 +1217,11 @@ The theme used in this example is **flatly**.
 
 ### Style Summary
 
-| Item | Class | Bootstyle |
-|---|---|---|
-| Digits | `Button` | primary |
-| Operators | `Button` | secondary |
-| Equals | `Treeview` | success |
+| Item      | Class     | Bootstyle |
+| ---       | ---       |---        |
+| Digits    | `Button`  | primary   |
+| Operators | `Button`  | secondary |
+| Equals    | `Button`  | success   |
 
 ### Example Code
 
@@ -1383,11 +1384,11 @@ The two examples below used the themes **flatly** and **superhero**.
 
 ### Style Summary
 
-| Item | Class | Bootstyle |
-|---|---|---|
-| Submit Button | `Button` | success |
-| Cancel Button | `Button` | danger |
-| Inputs | `Entry` | primary |
+| Item          | Class     | Bootstyle |
+| ---           | ---       | ---|
+| Submit Button | `Button`  | success |
+| Cancel Button | `Button`  | danger |
+| Inputs        | `Entry`   | default |
 
 ### Example Code
 
@@ -1482,12 +1483,12 @@ The theme applied is **cosmo**.
 
 ### Style Summary
 
-| Item | Class | Bootstyle |
-|---|---|---|
-| Start | `Button` | info |
-| Pause | `Button` | info-outline |
-| Reset | `Button` | success |
-| Exit | `Button` | danger |
+| Item      | Class     | Bootstyle |
+| ---       | ---       | --- |
+| Start     | `Button`  | info |
+| Pause     | `Button`  | info-outline |
+| Reset     | `Button`  | success |
+| Exit      | `Button`  | danger |
 
 ### Example Code
 
@@ -1579,10 +1580,10 @@ The theme applied is **sandstone**.
 
 ### Style Summary
 
-| Item | Class | Bootstyle |
-|---|---|---|
-| file entry | `Entry` | primary |
-| Browe button | `Button` | primary |
+| Item          | Class     | Bootstyle |
+| ---           | ---       | --- |
+| file entry    | `Entry`   | default |
+| Browe button  | `Button`  | default |
 
 ### Example Code
 
