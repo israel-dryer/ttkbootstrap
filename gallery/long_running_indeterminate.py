@@ -4,6 +4,7 @@ from threading import Thread
 from time import sleep
 import tkinter as tk
 import ttkbootstrap as ttk
+from ttkbootstrap.style import utility
 from tkinter.messagebox import showinfo
 
 
@@ -11,6 +12,7 @@ class Application(tk.Tk):
 
     def __init__(self):
         super().__init__()
+        utility.enable_high_dpi_awareness(self)
         self.title('Long Running Operation - Indeterminate')
         self.style = ttk.Style('lumen')
 

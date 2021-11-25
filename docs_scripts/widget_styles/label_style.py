@@ -1,9 +1,9 @@
 import tkinter as tk
 import ttkbootstrap as ttk
-from ctypes import windll
-windll.shcore.SetProcessDpiAwareness(1)
+from ttkbootstrap.style import utility
 
 root = tk.Tk()
+utility.enable_high_dpi_awareness(root)
 style = ttk.Style()
 
 # # normal label

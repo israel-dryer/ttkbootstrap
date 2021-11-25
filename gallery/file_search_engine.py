@@ -10,15 +10,14 @@ from queue import Queue
 from threading import Thread
 import tkinter as tk
 from tkinter.filedialog import askdirectory, asksaveasfilename
+from ttkbootstrap.style import utility
 import ttkbootstrap as ttk
-# from ctypes import windll
-# windll.shcore.SetProcessDpiAwareness(1)
-
 
 class Application(tk.Tk):
 
     def __init__(self):
         super().__init__()
+        utility.enable_high_dpi_awareness(self)
         self.title('File Search Engine')
         self.style = ttk.Style("journal")
         self.search = SearchEngine(self, padding=10)

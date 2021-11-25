@@ -1,14 +1,15 @@
 import tkinter as tk
 import ttkbootstrap as ttk
-from ctypes import windll
-windll.shcore.SetProcessDpiAwareness(1)
-
+from ttkbootstrap.style import utility
 
 root = tk.Tk()
+utility.enable_high_dpi_awareness(root)
 style = ttk.Style()
 
-row_one = ttk.Frame()
-row_two = ttk.Frame()
+frame = ttk.Frame(root, padding=10)
+frame.pack(fill=tk.BOTH, expand=tk.YES)
+row_one = ttk.Frame(frame)
+row_two = ttk.Frame(frame)
 
 for i, color in enumerate(style.colors):
     if i < 4:

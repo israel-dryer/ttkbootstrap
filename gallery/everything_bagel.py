@@ -1,7 +1,6 @@
 import tkinter as tk
 import ttkbootstrap as ttk
-from ctypes import windll
-windll.shcore.SetProcessDpiAwareness(1)
+from ttkbootstrap.style import utility
 
 ZEN = """Beautiful is better than ugly. 
 Explicit is better than implicit. 
@@ -25,7 +24,9 @@ Namespaces are one honking great idea -- let's do more of those!"""
 
 
 root = tk.Tk()
+utility.enable_high_dpi_awareness(root, 2.0)
 root.title("ttkbootstrap widget demo")
+
 root.minsize(1, 525)
 style = ttk.Style('superhero')
 theme_names = style.theme_names()

@@ -1,10 +1,9 @@
 import tkinter as tk
 import ttkbootstrap as ttk
-from random import choice
-from ctypes import windll
-windll.shcore.SetProcessDpiAwareness(1)
+from ttkbootstrap.style import utility
 
 root = tk.Tk()
+utility.enable_high_dpi_awareness(root)
 style = ttk.Style()
 
 frame = ttk.Frame(root, padding=10)
