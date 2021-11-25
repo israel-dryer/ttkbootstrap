@@ -40,17 +40,16 @@ Progressbar(bootstyle="success")
 ---
 ## Button
 
-ttkbootstrap includes many predefined button styles that provide quick 
-access to a varied [color palette](#colors) and adds semantic meaning to your 
-application design. 
+This widget features a variety of button style types that have a **primary**
+color by default, or the [selected color](#colors).
 
 This widget supports a special style for [disabled state](#other-button-styles).
 
 ### Solid button (default)
 
-A solid background color that lightens on _hover_ and darkens on _press_. When
-the widget has focus, a dashed focus ring appears in the same color as the
-text foreground.
+The default style features a solid background that lightens on _hover_ and 
+darkens when _pressed_. A dashed ring appears inside the button when the widget
+has focus.
 
 ![solid button](./assets/widget-styles/solid-buttons.gif)
 
@@ -64,9 +63,9 @@ Button(bootstyle="success")
 
 ### Outline button
 
-A thin outline with a background color that matches the theme default. When the
-widget has focus, a dashed focus ring appears in the same color as the text 
-foreground.
+This style features a thin styled outline. When _pressed_ or on _hover_, the
+button changes to a solid color similar to the default button style. A dashed
+ring appears inside the button when the widget has focus.
 
 ![outline buttons](./assets/widget-styles/outline-buttons.gif)
 
@@ -80,9 +79,11 @@ Button(bootstyle="success-outline")
 
 ### Link button
 
-A button with the appearance of a label. The text color changes to **info** on 
-_hover_. When the widget has focus, a dashed focus ring appears in the same color 
-as the foreground. On _press_ the text has a slight shift-relief.
+This style features a button with the appearance of a label. The text color changes
+to **info** on _hover_ or when _pressed_ to simulate the effect you would expect on
+an HTML hyperlink. There is a slight shift-relief when the button is pressed that 
+gives the appearance of movement. A dashed ring appears inside the button when the
+widget has focus.
 
 ![link buttons](./assets/widget-styles/link-buttons.gif)
 
@@ -112,18 +113,17 @@ b.configure(state="disabled")
 ---
 ## Checkbutton
 
-ttkbootstrap includes many checkbutton types. In addition to the traditional 
-[checkbutton](#checkbutton) and [toolbutton](#toolbutton) styles, 
-[round](#round-toggle-button) and [square](#square-toggle-button) toggle 
-button styles have been added. 
+This widget features a variety of checkbutton style types that are **primary**
+colored by default or the [selected color](#colors).
 
 This widget supports a special style for 
 [disabled state](#other-checkbutton-styles).
 
 ### Checkbutton (default)
 
-A standard checkbutton which displays a checkmark when invoked. The indicator
-color is set by the selected [color keyword](#colors). 
+The default style features a square checkbox and label. The checkbox has a
+muted color outline when not selected, and a filled square with checkmark when
+selected.
 
 ![checkbutton](./assets/widget-styles/checkbuttons.gif)
 
@@ -137,9 +137,9 @@ Checkbutton(bootstyle="success")
 
 ### Toolbutton
 
-A solid color toolbutton with a background that alternates between colors when 
-invoked. The _off_ state color is fixed, but the _on_ state color is based on the 
-[color keyword](#colors) selected as indicated below.
+This style features a solid rectangular button that toggles between an _off_ 
+and _on_ color. The background is a muted gray when _off_ and a default
+or [selected color](#colors) when _on_ or _active_.
 
 ![solid toolbuttons](./assets/widget-styles/solid-toolbuttons.gif)
 
@@ -153,9 +153,9 @@ Checkbutton(bootstyle="success-toolbutton")
 
 ### Outline toolbutton
 
-A thin outlined button with a background color that alternates between the theme
-background color and the outline color. The _on_ state color is based on the 
-[color keyword](#colors) as indicated below.
+This style features a rectangular button that toggles between a styled 
+**outline** when _off_ and a **solid** background when _on_ or 
+_active_.
 
 ![outline toolbuttons](./assets/widget-styles/outline-toolbuttons.gif)
 
@@ -169,9 +169,10 @@ Checkbutton(bootstyle="success-outline-toolbutton")
 
 ### Round toggle button
 
-A rounded toggle button with an indicator that shifts left and right as it is 
-toggled _on_ and _off_. The background color alternates between the theme 
-background color and the [color keyword](#colors) selected as indicated below.
+This style features a rounded button with a **round** indicator that changes
+color and position when toggled _off_ and _on_. The button is a muted outline
+with a muted color indicator when _off_. The button is filled with the default
+or [selected color](#colors) with an accented indicator when _on_.
 
 ![round toggles](./assets/widget-styles/round-toggles.gif)
 
@@ -185,9 +186,10 @@ Checkbutton(bootstyle="success-round-toggle")
 
 ### Square toggle button
 
-A square toggle button with an indicator that shifts left and right as it is 
-toggled _on_ and _off_. The background color alternates between the theme 
-background color and the [color keyword](#colors) selected as indicated below.
+This style features a squared button with a **square** indicator that changes
+color and position when toggled _off_ and _on_. The button is a muted outline
+with a muted color indicator when _off_. The button is filled with the default
+or [selected color](#colors) with an accented indicator when _on_.
 
 ![square toggles](./assets/widget-styles/square-toggles.gif)
 
@@ -217,9 +219,11 @@ cb.configure(state="disabled")
 ---
 ## Combobox
 
-This widget has a colored border that has _hover_ and _focus_ effects. When 
-hovering, this border changes to a thin **primary** color by default or the 
-selected [color](#colors). When focused, the border becomes twice a thick. 
+This widget style features a input box with a styled border and arrow. The 
+border color is muted by default and changes to **primary** or the 
+[selected color](#colors) on _hover_. The border increases in thickness on 
+_focus_. The arrow color changes to the default or [selected color](#colors) 
+on _hover_ or on _focus_.
 
 This widget also supports special styles for [disabled state](#disabled-combobox), 
 [readonly state](#readonly-combobox), and [invalid state](#invalid-combobox).
@@ -275,9 +279,10 @@ an example of [how to apply validation](cookbook.md#validate-user-input) to an
 ---
 ## DateEntry
 
-This widget is composed of two widgets, the `Entry` widget and the `Button` 
-widget. Both the `Entry` widget and the `Button` widget use the same default
-styles as their independent versions. 
+This widget is composed of two widgets, the **Entry** widget and the **Button**
+widget. The **Entry** component behaves identically to the 
+[default entry widget](#entry), and the calendar button behaves as the 
+[default solid button](#button).
 
 The [DatePickerPopup](#datepickerpopup) is invoked when the calendar
 button is pressed. The default color applied to the popup is **primary**.
@@ -335,11 +340,10 @@ an example of [how to apply validation](cookbook.md#validate-user-input) to an
 ---
 ## DatePickerPopup
 
-By default, this widget uses the `primary` color for the _header_ and
-_active date_. The _weekdays header_ and _current date_ use the `secondary`
-color by default.
-
-**add detail here**
+This widget style encomposses a collection of button and label widgets. The 
+_header_ and _active date_ are **primary** colored (default) or the 
+[selected color](#colors). The _weekdays header_ and _current date_ use the 
+`secondary` color.
 
 ![date picker](./assets/widget-styles/date-picker-popup.gif)
 
@@ -354,9 +358,9 @@ DatePickerPopup(bootstyle="warning")
 ---
 ## Entry
 
-This widget has a colored border that has _hover_ and _focus_ effects. When 
-hovering, this border changes to a thin **primary** color by default or the 
-selected [color](#colors). When focused, the border becomes twice a thick. 
+This widget style features a input box with a styled border. The border color 
+is muted by default and changes to **primary** or the [selected color](#colors) 
+on _hover_. The border increases in thickness on _focus_. 
 
 This widget also supports special styles for [disabled state](#disabled-entry), 
 [readonly state](#readonly-entry), and [invalid state](#invalid-entry).
@@ -413,10 +417,9 @@ an example of [how to apply validation](cookbook.md#validate-user-input) to an
 
 A progressbar with an optional display text.
 
-The indicator is **primary** color by default or the [selected color](#colors).
-The trough color is a desaturated variation of the indicator color. This 
-ensures that, for the most part, the text is still visible when the indicator 
-is not underneath directly underneath text.
+This widget style features an indicator that is **primary** colored (default) 
+or the [selected color](#colors). The trough color is a desaturated variation 
+of the indicator color. 
 
 ![floodguage](./assets/widget-styles/floodgauge.gif)
 
@@ -431,9 +434,8 @@ Floodgauge(bootstyle="success")
 ---
 ## Frame
 
-This widget container has a default background color that matches the **bg**
-color for the selected theme; however any of the [available colors](#colors)
-can be used to style the background color.
+This widget style features a default background color that matches the theme
+background by default, or the [selected color](#colors).
 
 ![frame](./assets/widget-styles/frame.png)
 
@@ -448,16 +450,13 @@ Frame(bootstyle="info")
 ---
 ## Label
 
-A standard textual widget that can be customized with **type** and **color** 
-keywords in order to adjust the background and foreground colors. By default
-the foreground and background colors are defined by the theme using the 
-**bg** and **fg** theme colors.
+This widget features two style types that can both be customized using any of
+the [available colors].
 
 ### Default label
 
-The foreground can be customized with any of the [available colors](#colors). 
-The background color for this style is the default theme defined background 
-color.
+The default style features a default theme defined foreground and background
+color. The foreground can be changed using a [selected color](#colors).
 
 ![normal label](./assets/widget-styles/label.png)
 
@@ -471,10 +470,12 @@ Label(bootstyle="danger")
 
 ### Inverse label
 
-The colors for this style are an inverted version of the _normal_ style. The 
-foreground color becomes the background color, and vice versa. This is
-especially useful when you are adding labels to a colored `Frame`, or you want
-to add a [label heading](gallery.md#media-player) that does not have a default 
+This style features a label with colors that are inverted versions of the default
+colors. The [selected color](#colors) changes the background color instead of the
+foreground color. 
+
+This is especially useful when you are adding labels to a styled `Frame`, or you 
+want to add a [label heading](gallery.md#media-player) that does not have a default 
 background color.
 
 ![inverse label](./assets/widget-styles/inverse-label.png)
@@ -490,12 +491,10 @@ Label(bootstyle="inverse-danger")
 ---
 ## Labelframe
 
-This widget container has a border and a label. The default color for the
-border is typically the themed defined border color. The default text color
-is the same as the [default label](#default-label).
-
-If any of the [color keywords](#colors) are used, both the border and the 
-label will use the same color, as illustrated in the exhibit below.
+This widget style features a styled border and label. By default, the border 
+and label use theme defined defaults for border and foreground colors. When a
+[selected color](#colors) is used, both the label text and the border use this
+color.
 
 ![labelframe](./assets/widget-styles/labelframe.png)
 
@@ -509,16 +508,15 @@ Labelframe(bootstyle="info")
 
 ## Menubutton
 
-A button with an arrow. The default background color is **primary**, but any 
-of the [available colors](#colors) can be used to modify the background color. 
-The foreground color is the theme defined **selectbg** color unless otherwise 
-specified in the style builder, and styles both the text and the arrow.
+This widget features a styled button with an arrow that can be styled using
+any of the [available colors](#colors). 
 
 This widget supports a special style for [disabled state](#disabled-menubutton).
 
 ### Solid (default)
 
-A solid background color that lightens on _hover_ and darkens on _press_. 
+This widget style features a solid background color that lightens on _hover_ 
+and darkens when _pressed_. 
 
 ![solid menubutton](./assets/widget-styles/menubutton.gif)
 
@@ -532,8 +530,8 @@ Menubutton(bootstyle="success")
 
 ### Outline
 
-A thin outline with a background color that matches the theme default. When 
-the widget is active, the foreground and background colors reverse.
+This style features a thin styled outline. When _pressed_ or on _hover_, the
+button changes to a solid color similar to the default menubutton style. 
 
 ![outline menubutton](./assets/widget-styles/outline-menubutton.gif)
 
@@ -562,10 +560,11 @@ b.configure(state="disabled")
 
 ## Meter
 
-The indicator and main label on this widget are **primary** colored by 
-default. The subtext can be styled as well, and is **secondary** by default
-for light themes and **light** for dark themes. However, all of these 
-elements can be configured to any of the [available colors](#colors).
+This widget style encompasses a collection of components. The indicator and 
+main label are **primary** by default, or the [selected color](#colors).
+If provided, the subtext is **secondary** for light themes and **light** for 
+dark themes. However, all of these elements can be configured using the 
+[available colors](#colors).
 
 ![meter colors](./assets/widget-styles/meter.gif)
 
@@ -590,7 +589,7 @@ Meter(bootstyle="success", subtextstyle="warning")
 
 ## Notebook
 
-This container widget has minimal styling by default. However, you can add some
+This widget style features minimal styling by default. However, you can add some
 flair to the _inactive_ tab by using any of the [available colors](#colors) as 
 demonstrated in the exhibit below.
 
@@ -606,10 +605,9 @@ Notebook(bootstyle="info")
 
 ## Panedwindow
 
-This container widget has a background color that is the same as the default **bg**
-color for the seleted theme. The sash is a light-gray typically. However, you can add 
-some flair to the _sash_ by using any of the [available colors](#colors) as 
-demonstrated in the exhibit below.
+This widget style features containers with the themed defined background color 
+separated by a styled sash that is grayish by default or of the
+[selected color](#Colors).
 
 ![paned widow](./assets/widget-styles/panedwindow.gif)
 
@@ -623,13 +621,12 @@ Panedwindow(bootstyle="info")
 
 ## Progressbar
 
-This widget has a **primary** colored indicator by default, but can be colored
-any of the [available colors](#colors).
+This widget features a few style types that have **primary** colored indicator
+bars by default, but can by styled using any of the [available colors](#colors).
 
 ### Solid (default)
 
-The default style for a progressbar; has as solid color indicator which is either
-**primary** by default or the [selected color](#colors).
+The default widget style features a solid color indicator bar.
 
 ![solid progressbar](./assets/widget-styles/solid-progressbar.gif)
 
@@ -644,9 +641,9 @@ Progressbar(bootstyle="success")
 
 ### Striped
 
-A striped indicator where the dark line uses **primary** or the 
-[selected color](#colors), and the light line uses a desaturated version of the 
-same color.
+This widget style features a striped indicator bar that uses the default or 
+[selected color](#colors) for the main color, and a desaturated version of
+this color for the alternating stripe.
 
 ![striped progressbar](./assets/widget-styles/striped-progressbar.gif)
 
@@ -660,18 +657,17 @@ Progressbar(bootstyle="danger-striped")
 
 ## Radiobutton
 
-ttkbootstrap includes several radiobutton types that can be styled using
-any of the [available colors](#colors).   
+This widget features a variety of radiobutton style types that are **primary**
+colored by default or the [selected color](#colors).
+
 This widget supports a special style for 
 [disabled state](#other-radiobutton-styles).
 
 ### Radio (default)
 
-The default radiobutton type is the traditional **radiobutton** which has a
-round indicator that is **primary** by default when selected with a small
-white circle in the center that matches the **selectfg** color for the
-selected theme. However, any of the [available colors](#colors) can be used
-to style the selected indicator as shown in the exhibit below.
+The default widget style features the traditional **radiobutton** which has a
+round indicator. The indicator is filled with the default or selected color 
+when in a _selected state_.
 
 ![radiobutton](./assets/widget-styles/radiobuttons.png)
 
@@ -685,9 +681,9 @@ Radiobutton(bootstyle="secondary")
 
 ### Solid toolbutton
 
-When selected, the color is **primary** by default or the 
-[selected color](#colors). When deselected, the button color is typically
-a muted gray, but can vary by theme.
+This style features a solid rectangular button that has a muted gray background
+when _not selected_ and a default or [selected color](#colors) when _selected_
+or _active_.
 
 ![toolbutton](./assets/widget-styles/radio-toolbutton.gif)
 
@@ -701,10 +697,9 @@ Radiobutton(bootstyle="danger-toolbutton")
 
 ### Outline toolbutton
 
-When selected, the background color is **primary** by default, or the
-[selected color](#colors). When deselected, the background color matches
-the selected theme default, and there is a thin border that matches the
-default or selected color.
+This style features a rectangular button that has an **outline** 
+when _not selected_ and a **solid** background when _selected_ or 
+_active_.
 
 ![outline toolbutton](./assets/widget-styles/outline-radio-toolbutton.gif)
 
@@ -733,9 +728,9 @@ rb.configure(state="disabled")
 
 ## Scale
 
-This widget has a slider handle that is **primary** by default or the 
-[selected color](#colors). When _hovering_, the color lightens slightly and
-darkens when _pressed_.
+This widget style features a thin gray trough with a round slider handle that is 
+**primary** color by default or the [selected color](#colors). The 
+slider handle lightens on _hover_ and darkens when _pressed_. 
 
 This widget supports a special style for 
 [disabled state](#other-scale-styles).
@@ -767,19 +762,15 @@ scale.configure(state="disabled")
 
 ## Scrollbar
 
-**add detail here**
+This widget style features a light gray trough with a styled thumb and arrow 
+buttons. The thumb and arrows lighten on _hover_ and darken on _press_. The
+thumb and arrows can be styled with any of the [available colors](#colors). 
 
 ### Square (default)
 
-**add detail here**
+The default style features a thumb with squared edges.
 
 ![scrollbar](./assets/widget-styles/square-scrollbars.png)
-
-### Round
-
-**add detail here**
-
-![round scrollbar](./assets/widget-styles/round-scrollbars.png)
 
 ```python
 # default scrollbar style
@@ -787,7 +778,15 @@ Scrollbar()
 
 # success colored default scrollbar style
 Scrollbar(bootstyle="success")
+```
 
+### Round
+
+The **round** style features a thumb with rounded edges.
+
+![round scrollbar](./assets/widget-styles/round-scrollbars.png)
+
+```python
 # default round scrollbar style
 Scrollbar(bootstyle="round")
 
@@ -797,7 +796,8 @@ Scrollbar(bootstyle="danger-round")
 
 ## Separator
 
-**add detail here**
+This widget style features a thin horizontal _or_ vertical line drawn in the 
+default color (typically gray) or the [selected color](#colors).
 
 ![separator](./assets/widget-styles/separator.png)
 
@@ -811,7 +811,8 @@ Separator(bootstyle="info")
 
 ## Sizegrip
 
-**add detail here**
+This widget style features a pattern of squares in a default muted color
+by default, or the [selected color](#colors).
 
 ![sizegrip](./assets/widget-styles/sizegrip.gif)
 
@@ -825,7 +826,14 @@ Sizegrip(bootstyle="info")
 
 ## Spinbox
 
-**add detail here**
+This widget style features a input box with a styled border and arrows. The 
+border color is muted by default and changes to **primary** or the 
+[selected color](#colors) on _hover_. The border increases in thickness on 
+_focus_. The arrow color changes to the default or [selected color](#colors) 
+on _hover_ or on _focus_.
+
+This widget also supports special styles for [disabled state](#disabled-spinbox), 
+[readonly state](#readonly-spinbox), and [invalid state](#invalid-combobox).
 
 ![spinbox](./assets/widget-styles/spinbox.gif)
 
@@ -839,7 +847,7 @@ Spinbox(bootstyle="danger")
 
 ### Other styles
 
-##### Disabled
+##### Disabled spinbox
 
 This widget supports a style reserved for the **disabled** state, which you 
 can see in the exhibit above. This style _cannot be applied via keywords_. To 
@@ -854,7 +862,7 @@ e = Spinbox()
 e.configure(state="disabled")
 ```
 
-##### Readonly
+##### Readonly spinbox
 
 This widget supports a style reserved for the **readonly** state, which you 
 can see in the exhibit above. This style _cannot be applied via keywords_.  To 
@@ -869,13 +877,21 @@ e = Spinbox()
 e.configure(state="readonly")
 ```
 
-##### Invalid
+##### Invalid spinbox
 
-Add content here.
+This style _cannot be applied via keywords_, but rather is the result of a 
+validation process implemented on the widget. In the **Cookbook** you will find 
+an example of [how to apply validation](cookbook.md#validate-user-input) to an 
+`Entry` based widget.
 
 ## Treeview
 
-**add detail here**
+This widget style features a solid background header that is the default theme
+background by default or the [selected color](#colors). 
+
+The border color is muted by default and changes to **primary** or the 
+[selected color](#colors) on _hover_. The border increases in thickness on 
+_focus_. 
 
 ![treeview](./assets/widget-styles/treeview.gif)
 
