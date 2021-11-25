@@ -7,19 +7,19 @@ from datetime import datetime
 from random import choices
 import tkinter as tk
 import ttkbootstrap as ttk
-from ttkbootstrap.style.utility import ttkstyle_widget_color
+from ttkbootstrap.style import utility
 from tkinter.filedialog import askdirectory
 from tkinter.messagebox import showinfo
 from tkinter.scrolledtext import ScrolledText
 from pathlib import Path
-# from ctypes import windll
-# windll.shcore.SetProcessDpiAwareness(1)
 
 
 class Application(tk.Tk):
 
     def __init__(self):
         super().__init__()
+        utility.enable_high_dpi_awareness(self)
+
         self.title('Back Me Up')
 
         self.style = ttk.Style()
@@ -359,7 +359,7 @@ class CollapsingFrame(ttk.Frame):
         """
         if child.winfo_class() != 'TFrame':
             return
-        style_color = ttkstyle_widget_color(bootstyle)
+        style_color = utility.ttkstyle_widget_color(bootstyle)
         frm = ttk.Frame(self, bootstyle=style_color)
         frm.grid(row=self.cumulative_rows, column=0, sticky=tk.EW)
 

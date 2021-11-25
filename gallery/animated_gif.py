@@ -4,12 +4,14 @@ from itertools import cycle
 import tkinter as tk
 import ttkbootstrap as ttk
 from PIL import Image, ImageTk, ImageSequence
-
+from ttkbootstrap.style import utility
 
 class AnimatedGif(tk.Tk):
 
     def __init__(self):
         super().__init__()
+        utility.enable_high_dpi_awareness(self)
+        
         self.geometry('400x300')
 
         # remove the window decorations, titlebar, etc...

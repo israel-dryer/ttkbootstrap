@@ -4,13 +4,13 @@
 """
 import tkinter as tk
 import ttkbootstrap as ttk
-# from ctypes import windll
-# windll.shcore.SetProcessDpiAwareness(1)
+from ttkbootstrap.style import utility
 
 class Application(tk.Tk):
 
     def __init__(self):
         super().__init__()
+        utility.enable_high_dpi_awareness(self)
         self.title('Simple data entry form')
         self.style = ttk.Style()
         self.form = EntryForm(self)

@@ -6,13 +6,13 @@ import tkinter as tk
 import ttkbootstrap as ttk
 from tkinter.filedialog import askopenfilename
 from tkinter.scrolledtext import ScrolledText
-# from ctypes import windll
-# windll.shcore.SetProcessDpiAwareness(1)
+from ttkbootstrap.style import utility
 
 class Application(tk.Tk):
 
     def __init__(self):
         super().__init__()
+        utility.enable_high_dpi_awareness(self)
         self.title('Text Reader')
         self.style = ttk.Style("sandstone")
         self.reader = Reader(self)

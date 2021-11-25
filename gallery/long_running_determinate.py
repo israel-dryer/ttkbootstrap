@@ -5,12 +5,14 @@ from time import sleep
 import tkinter as tk
 import ttkbootstrap as ttk
 from tkinter.messagebox import showinfo
+from ttkbootstrap.style import utility
 
 
 class Application(tk.Tk):
 
     def __init__(self):
         super().__init__()
+        utility.enable_high_dpi_awareness(self)
         self.title('Long Running Operation - Determinate')
         self.style = ttk.Style('lumen')
 

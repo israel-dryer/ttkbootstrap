@@ -195,3 +195,10 @@ def tkupdate_method_name(widget):
 
     method_name = f'update{widget_class}_style'
     return method_name          
+
+def enable_high_dpi_awareness(root, scaling=1.25):
+    """Enable high dpi awareness. Currently for Windows Only."""
+    if root._windowingsystem == 'win32':
+        from ctypes import windll
+        windll.user32.SetProcessDPIAware()
+        root.tk.call('tk', 'scaling', scaling)    

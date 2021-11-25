@@ -7,6 +7,7 @@ from pathlib import Path
 import tkinter as tk
 from tkinter import PhotoImage
 import ttkbootstrap as ttk
+from ttkbootstrap.style import utility
 from tkinter.messagebox import showinfo
 
 
@@ -15,6 +16,7 @@ class Application(tk.Tk):
 
     def __init__(self):
         super().__init__()
+        utility.enable_high_dpi_awareness(self)
         self.title('Magic Mouse')
         self.style = ttk.Style('yeti')
 
