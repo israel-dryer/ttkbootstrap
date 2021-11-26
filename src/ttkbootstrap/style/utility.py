@@ -196,9 +196,25 @@ def tkupdate_method_name(widget):
     method_name = f'update{widget_class}_style'
     return method_name          
 
-def enable_high_dpi_awareness(root, scaling=1.25):
+def enable_high_dpi_awareness():
     """Enable high dpi awareness. Currently for Windows Only."""
-    if root._windowingsystem == 'win32':
+    try:
         from ctypes import windll
         windll.user32.SetProcessDPIAware()
-        root.tk.call('tk', 'scaling', scaling)    
+    except:
+        pass
+
+def scale_size(widget, size):
+    """Scale the size based on the scaling factor of ttk
+    
+    size : Union[int, List, Tuple]
+        A single integer or an iterable of integers
+    """
+    BASELINE = 1.33398982438864281
+    scaling = widget.tk.call('tk', 'scaling')
+    factor = scaling / BASELINE
+
+    if isinstance(size, int):
+        return int(size * factor)
+    elif isinstance(size, tuple) or isinstance(size, list):
+        return [int(x * factor) for x in size]
