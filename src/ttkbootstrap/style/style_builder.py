@@ -329,6 +329,21 @@ class StyleBuilderTTK:
     def theme(self) -> ThemeDefinition:
         return self.style.theme
 
+    def scale_size(self, size):
+        """Scale the size based on the scaling factor of ttk
+        
+        size : Union[int, List, Tuple]
+            A single integer or an iterable of integers
+        """
+        BASELINE = 1.33398982438864281
+        scaling = self.style.master.tk.call('tk', 'scaling')
+        factor = scaling / BASELINE
+
+        if isinstance(size, int) or isinstance(size, float):
+            return int(size * factor)
+        elif isinstance(size, tuple) or isinstance(size, list):
+            return [int(x * factor) for x in size]
+
     def create_theme(self):
         """Create and style a new ttk theme. A wrapper around internal
         style methods.
@@ -412,7 +427,7 @@ class StyleBuilderTTK:
             insertcolor=self.colors.inputfg,
             relief=tk.FLAT,
             padding=5,
-            arrowsize=13
+            arrowsize=self.scale_size(13)
         )
         self.style.map(
             ttkstyle,
@@ -489,7 +504,7 @@ class StyleBuilderTTK:
 
         # horizontal separator
         h_element = h_ttkstyle.replace('.TS', '.S')
-        h_img = ImageTk.PhotoImage(Image.new("RGB", (40, 1), background))
+        h_img = ImageTk.PhotoImage(Image.new("RGB", self.scale_size((40, 1)), background))
         h_name = get_image_name(h_img)
         self.theme_images[h_name] = h_img
 
@@ -501,7 +516,7 @@ class StyleBuilderTTK:
 
         # vertical separator
         v_element = v_ttkstyle.replace('.TS', '.S')
-        v_img = ImageTk.PhotoImage(Image.new("RGB", (1, 40), background))
+        v_img = ImageTk.PhotoImage(Image.new("RGB", self.scale_size((1, 40)), background))
         v_name = get_image_name(v_img)
         self.theme_images[v_name] = v_img
         self.style.element_create(f'{v_element}.separator', 'image', v_name)
@@ -569,7 +584,7 @@ class StyleBuilderTTK:
         HSTYLE = 'Striped.Horizontal.TProgressbar'
         VSTYLE = 'Striped.Vertical.TProgressbar'
 
-        thickness = 12
+        thickness = self.scale_size(12)
 
         if any([colorname == DEFAULT, colorname == '']):
             h_ttkstyle = HSTYLE
@@ -652,7 +667,7 @@ class StyleBuilderTTK:
         H_STYLE = 'Horizontal.TProgressbar'
         V_STYLE = 'Vertical.TProgressbar'
 
-        thickness = 12
+        thickness = self.scale_size(10)
 
         if self.is_light_theme:
             if colorname == LIGHT:
@@ -746,6 +761,7 @@ class StyleBuilderTTK:
         Tuple[str]
             A tuple of PhotoImage names.
         """
+        size = self.scale_size(size)
         if self.is_light_theme:
             disabled_color = self.colors.border
             track_color = Colors.update_hsv(self.colors.inputbg, vd=-0.03)
@@ -803,14 +819,14 @@ class StyleBuilderTTK:
 
         # vertical track
         h_track_img = ImageTk.PhotoImage(
-            Image.new("RGB", (40, 5), track_color)
+            Image.new("RGB", self.scale_size((40, 5)), track_color)
         )
         h_track_name = get_image_name(h_track_img)
         self.theme_images[h_track_name] = h_track_img
 
         # horizontal track
         v_track_img = ImageTk.PhotoImage(
-            Image.new("RGB", (5, 40), track_color)
+            Image.new("RGB", self.scale_size((5, 40)), track_color)
         )
         v_track_name = get_image_name(v_track_img)
         self.theme_images[v_track_name] = v_track_img
@@ -970,6 +986,7 @@ class StyleBuilderTTK:
 
             img = Image.new("RGBA", (11, 11))
             draw = ImageDraw.Draw(img)
+            size = self.scale_size([11, 11])
 
             draw.line([2, 6, 2, 9], fill=color)
             draw.line([3, 5, 3, 8], fill=color)
@@ -978,6 +995,8 @@ class StyleBuilderTTK:
             draw.line([6, 4, 6, 7], fill=color)
             draw.line([7, 5, 7, 8], fill=color)
             draw.line([8, 6, 8, 9], fill=color)
+
+            img = img.resize(size, Image.CUBIC)
 
             up_img = ImageTk.PhotoImage(img)
             up_name = get_image_name(up_img)
@@ -1003,10 +1022,12 @@ class StyleBuilderTTK:
 
         return normal_names, pressed_names, active_names
 
+
+
     def create_round_scrollbar_assets(self, thumbcolor, pressed, active, thickness):
         
-        x = thickness * 10
-        y = int(thickness * 3.5 * 10)
+        x = self.scale_size(thickness) * 10
+        y = thickness * self.scale_size(self.scale_size(3.5)*10)
         
         def rounded_rect(x: int, y: int, fill: str):
             _img = Image.new('RGBA', (x, y))
@@ -1039,7 +1060,7 @@ class StyleBuilderTTK:
         layout.
         """
         STYLE = 'TScrollbar'
-        thickness = 9 # TODO consider making this configurable
+        thickness = self.scale_size(9) # TODO consider making this configurable
         
         troughcolor = Colors.update_hsv(self.colors.bg, vd=-0.04)            
 
@@ -1166,47 +1187,73 @@ class StyleBuilderTTK:
         self.style.register_ttkstyle(h_ttkstyle)
         self.style.register_ttkstyle(v_ttkstyle)
 
-    def create_scrollbar_assets(
-        self, thumbcolor, pressed, active, troughcolor, thickness
-    ):
+    # def create_scrollbar_assets(
+    #     self, thumbcolor, pressed, active, troughcolor, thickness
+    # ):
         
-        x = thickness * 10
-        y = int(thickness * 3.5 * 10)
+    #     x = self.scale_size(thickness * 10)
+    #     y = int(thickness * 3.5 * 10)
         
-        def rounded_rect(x: int, y: int, fill: str):
-            _img = Image.new('RGBA', (x, y))
-            draw = ImageDraw.Draw(_img)
-            xy = (1, 1, x-1, y-1)
-            draw.rectangle(xy, fill, troughcolor, 1)
-            image = ImageTk.PhotoImage(_img.resize((x//10, y//10)), Image.CUBIC)
+    #     def rounded_rect(x: int, y: int, fill: str):
+    #         _img = Image.new('RGBA', (x, y))
+    #         draw = ImageDraw.Draw(_img)
+    #         xy = (1, 1, x-1, y-1)
+    #         draw.rectangle(xy, fill, troughcolor, 1)
+    #         image = ImageTk.PhotoImage(_img.resize((x//10, y//10)), Image.CUBIC)
+    #         name = get_image_name(image)
+    #         self.theme_images[name] = image
+    #         return name
+
+    #     # create images
+    #     h_normal_img = rounded_rect(x, y, thumbcolor)
+    #     h_pressed_img = rounded_rect(x, y, pressed)
+    #     h_active_img = rounded_rect(x, y, active)
+
+    #     v_normal_img = rounded_rect(y, x, thumbcolor)
+    #     v_pressed_img = rounded_rect(y, x, pressed)
+    #     v_active_img = rounded_rect(y, x, active)
+
+    #     return (
+    #         h_normal_img, h_pressed_img, h_active_img,
+    #         v_normal_img, v_pressed_img, v_active_img
+    #     )
+
+    def create_scrollbar_assets(self, thumbcolor, pressed, active):
+        vsize = self.scale_size([9, 28])
+        hsize = self.scale_size([28, 9])
+        
+        def draw_rect(size, color):
+            x = size[0] * 10
+            y = size[1] * 10
+            img = Image.new('RGBA', (x, y))
+            draw = ImageDraw.Draw(img)
+            draw.rectangle([0, 0, x-1, y-1], color)
+            image = ImageTk.PhotoImage(img.resize(size), Image.CUBIC)
             name = get_image_name(image)
             self.theme_images[name] = image
             return name
 
-        # create images
-        h_normal_img = rounded_rect(x, y, thumbcolor)
-        h_pressed_img = rounded_rect(x, y, pressed)
-        h_active_img = rounded_rect(x, y, active)
+        h_normal_img = draw_rect(hsize, thumbcolor)
+        h_pressed_img = draw_rect(hsize, pressed)
+        h_active_img = draw_rect(hsize, active)
 
-        v_normal_img = rounded_rect(y, x, thumbcolor)
-        v_pressed_img = rounded_rect(y, x, pressed)
-        v_active_img = rounded_rect(y, x, active)
+        v_normal_img = draw_rect(vsize, thumbcolor)
+        v_pressed_img = draw_rect(vsize, pressed)
+        v_active_img = draw_rect(vsize, active)
 
         return (
             h_normal_img, h_pressed_img, h_active_img,
             v_normal_img, v_pressed_img, v_active_img
         )
 
+
     def create_scrollbar_style(self, colorname=DEFAULT):
         """Create style configuration for ttk scrollbar: *ttk.Scrollbar* 
-        This theme uses elements from the *alt* theme tobuild the widget 
+        This theme uses elements from the *alt* theme to build the widget 
         layout.
         """
         STYLE = 'TScrollbar'
-        thickness = 9 # TODO consider making this configurable
         
-        troughcolor = Colors.update_hsv(self.colors.bg, vd=-0.04)              
-
         if any([colorname == DEFAULT, colorname == '']):
             h_ttkstyle = f'Horizontal.{STYLE}'
             v_ttkstyle = f'Vertical.{STYLE}'
@@ -1221,111 +1268,79 @@ class StyleBuilderTTK:
             v_ttkstyle = f'{colorname}.Vertical.{STYLE}'
             background = self.colors.get(colorname)
 
+        if self.is_light_theme:
+            if colorname == LIGHT:
+                troughcolor = self.colors.bg
+            else:
+                troughcolor = self.colors.light
+        else:
+            troughcolor = Colors.update_hsv(self.colors.selectbg, vd=-0.2)                  
+
         pressed = Colors.update_hsv(background, vd=-0.05)
         active = Colors.update_hsv(background, vd=0.05)
 
-        h_borders = (thickness, 0)
-        v_borders = (0, thickness)
-
-        # ( h_normal, h_pressed, h_active, v_normal, v_pressed, v_active )
-        scroll_images = self.create_scrollbar_assets(
-            background, pressed, active, troughcolor, thickness
-        )
-        # ( normal, pressed, active ) ( up, down, left, right )
-        arrow_images = self.create_arrow_assets(background, pressed, active)
-
-        # vertical scrollbar
-        v_element = v_ttkstyle.replace('.TS', '.S')
-        self.style.element_create(f'{v_element}.thumb', 'image',
-            scroll_images[0], 
-            ('pressed', scroll_images[1]), ('active', scroll_images[2]),
-            border=v_borders, 
-            sticky=tk.NS, 
-            width=thickness
-        )
-        self.style.element_create(f'{v_element}.trough', 'from', TTK_ALT)
-        self.style.element_create(f'{v_element}.uparrow', 'image',
-                                  arrow_images[0][0],
-                                  ('pressed', arrow_images[1][0]),
-                                  ('active', arrow_images[2][0]))
-        self.style.element_create(f'{v_element}.downarrow', 'image',
-                                  arrow_images[0][1],
-                                  ('pressed', arrow_images[1][1]),
-                                  ('active', arrow_images[2][1]))
-        self.style.configure(
-            v_ttkstyle,
-            troughrelief=tk.FLAT,
-            relief=tk.FLAT,
-            troughborderwidth=0.5,
-            troughcolor=troughcolor,
-            background=background,
-            arrowsize=thickness
-        )
-        self.style.map(
-            v_ttkstyle,
-            background=[('pressed', pressed), ('active', active)]
-        )
-        self.style.layout(
-            v_ttkstyle,
-            [
-                (f'{v_element}.trough', {
-                    'sticky': tk.NS, 'children': [
-                        (f'{v_element}.uparrow',
-                            {'side': tk.TOP, 'sticky': ''}),
-                        (f'{v_element}.downarrow',
-                            {'side': 'bottom', 'sticky': ''}),
-                        (f'{v_element}.thumb',
-                            {'expand': True, 'sticky': tk.NSEW})
-                    ]}
-                 )
-            ]
-        )
+        scroll_images = self.create_scrollbar_assets(background, pressed, active)
 
         # horizontal scrollbar
-        h_element = h_ttkstyle.replace('.T', '.')
-        self.style.element_create(f'{h_element}.thumb', 'image',
-            scroll_images[3], 
-            ('pressed', scroll_images[4]), ('active', scroll_images[5]),
-            border=h_borders,
-            sticky=tk.EW,
-            height=thickness
-        )        
-        self.style.element_create(f'{h_element}.trough', 'from', TTK_ALT)
-        self.style.element_create(f'{h_element}.leftarrow', 'image',
-                                  arrow_images[0][2],
-                                  ('pressed', arrow_images[1][2]),
-                                  ('active', arrow_images[2][2]))
-        self.style.element_create(f'{h_element}.rightarrow', 'image',
-                                  arrow_images[0][3],
-                                  ('pressed', arrow_images[1][3]),
-                                  ('active', arrow_images[2][3]))
         self.style.configure(
             h_ttkstyle,
-            troughrelief=tk.FLAT,
-            relief=tk.FLAT,
-            troughborderwidth=1,
             troughcolor=troughcolor,
-            background=background,
-            arrowsize=thickness
+            darkcolor=troughcolor,
+            bordercolor=troughcolor,
+            lightcolor=troughcolor,
+            arrowcolor=background,
+            arrowsize=self.scale_size(11),
+            background=troughcolor,
+            relief=tk.FLAT,
+            borderwidth=0
         )
-        self.style.map(
-            h_ttkstyle,
-            background=[('pressed', pressed), ('active', active)]
+        self.style.element_create(
+            f'{h_ttkstyle}.thumb', 'image', scroll_images[0],
+            ('pressed', scroll_images[1]),
+            ('active', scroll_images[2]),
+            border=(3, 0),
+            sticky=tk.NSEW,
         )
-        self.style.layout(
-            h_ttkstyle,
-            [
-                (f'{h_element}.trough', {
-                    'sticky': tk.EW, 'children': [
-                        (f'{h_element}.leftarrow',
-                         {'side': tk.LEFT, 'sticky': ''}),
-                        (f'{h_element}.rightarrow',
-                         {'side': tk.RIGHT, 'sticky': ''}),
-                        (f'{h_element}.thumb',
-                         {'expand': True, 'sticky': tk.NSEW})]
-                })
+        self.style.layout(h_ttkstyle, [
+            ('Horizontal.Scrollbar.trough', {'sticky': 'we', 'children': [
+                ('Horizontal.Scrollbar.leftarrow', {'side': 'left', 'sticky': ''}), 
+                ('Horizontal.Scrollbar.rightarrow', {'side': 'right', 'sticky': ''}), 
+                (f'{h_ttkstyle}.thumb', {'expand': '1', 'sticky': 'nswe'})]})
             ]
         )
+        self.style.configure(h_ttkstyle, arrowcolor=background)        
+        self.style.map(h_ttkstyle, arrowcolor=[('pressed', pressed), ('active', active)])
+        
+        # vertical scrollbar
+        self.style.configure(
+            v_ttkstyle,
+            troughcolor=troughcolor,
+            darkcolor=troughcolor,
+            bordercolor=troughcolor,
+            lightcolor=troughcolor,
+            arrowcolor=background,
+            arrowsize=self.scale_size(11),
+            background=troughcolor,
+            relief=tk.FLAT,
+            borderwidth=0
+        )
+        self.style.element_create(
+            f'{v_ttkstyle}.thumb', 'image', scroll_images[3],
+            ('pressed', scroll_images[4]),
+            ('active', scroll_images[5]),
+            border=(0, 3),
+            sticky=tk.NSEW,
+         )
+        self.style.layout(v_ttkstyle, [
+            ('Vertical.Scrollbar.trough', {'sticky': 'ns', 'children': [
+                ('Vertical.Scrollbar.uparrow', {'side': 'top', 'sticky': ''}), 
+                ('Vertical.Scrollbar.downarrow', {'side': 'bottom', 'sticky': ''}), 
+                (f'{v_ttkstyle}.thumb', {'expand': '1', 'sticky': 'nswe'})]})
+            ]
+        )
+        self.style.configure(v_ttkstyle, arrowcolor=background)        
+        self.style.map(v_ttkstyle, arrowcolor=[('pressed', pressed), ('active', active)])
+
         # register ttkstyles
         self.style.register_ttkstyle(h_ttkstyle)
         self.style.register_ttkstyle(v_ttkstyle)        
@@ -1407,7 +1422,7 @@ class StyleBuilderTTK:
             relief=tk.FLAT,
             arrowcolor=self.colors.inputfg,
             insertcolor=self.colors.inputfg,
-            arrowsize=13,
+            arrowsize=self.scale_size(13),
             padding=(10, 5),
         )
         self.style.map(
@@ -1748,6 +1763,7 @@ class StyleBuilderTTK:
         Tuple[str]
             A tuple of PhotoImage names.
         """
+        size = self.scale_size([24, 15])
         if any([colorname == DEFAULT, colorname == '']):
             colorname = PRIMARY
 
@@ -1785,7 +1801,8 @@ class StyleBuilderTTK:
             fill=off_fill
         )
         draw.rectangle([18, 18, 110, 110], fill=off_indicator)
-        off_img = ImageTk.PhotoImage(_off.resize((24, 15), Image.LANCZOS))
+        
+        off_img = ImageTk.PhotoImage(_off.resize(size, Image.LANCZOS))
         off_name = get_image_name(off_img)
         self.theme_images[off_name] = off_img
 
@@ -1800,7 +1817,7 @@ class StyleBuilderTTK:
         )
         draw.rectangle([18, 18, 110, 110], fill=on_indicator)
         _on = toggle_on.transpose(Image.ROTATE_180)
-        on_img = ImageTk.PhotoImage(_on.resize((24, 15), Image.LANCZOS))
+        on_img = ImageTk.PhotoImage(_on.resize(size, Image.LANCZOS))
         on_name = get_image_name(on_img)
         self.theme_images[on_name] = on_img
 
@@ -1810,7 +1827,7 @@ class StyleBuilderTTK:
         draw.rectangle([1, 1, 225, 129], outline=disabled_fg, width=6)
         draw.rectangle([18, 18, 110, 110], fill=disabled_fg)
         disabled_img = ImageTk.PhotoImage(
-            _disabled.resize((24, 15), Image.LANCZOS)
+            _disabled.resize(size, Image.LANCZOS)
         )
         disabled_name = get_image_name(disabled_img)
         self.theme_images[disabled_name] = disabled_img
@@ -1838,6 +1855,8 @@ class StyleBuilderTTK:
         Tuple[str]
             A tuple of PhotoImage names
         """
+        size = self.scale_size([24, 15])
+
         if any([colorname == DEFAULT, colorname == '']):
             colorname = PRIMARY
 
@@ -1876,7 +1895,7 @@ class StyleBuilderTTK:
             fill=off_fill,
         )
         draw.ellipse([20, 18, 112, 110], fill=off_indicator)
-        off_img = ImageTk.PhotoImage(_off.resize((24, 15), Image.LANCZOS))
+        off_img = ImageTk.PhotoImage(_off.resize(size, Image.LANCZOS))
         off_name = get_image_name(off_img)
         self.theme_images[off_name] = off_img
 
@@ -1892,7 +1911,7 @@ class StyleBuilderTTK:
         )
         draw.ellipse([20, 18, 112, 110], fill=on_indicator)
         _on = _on.transpose(Image.ROTATE_180)
-        on_img = ImageTk.PhotoImage(_on.resize((24, 15), Image.LANCZOS))
+        on_img = ImageTk.PhotoImage(_on.resize(size, Image.LANCZOS))
         on_name = get_image_name(on_img)
         self.theme_images[on_name] = on_img
 
@@ -1907,7 +1926,7 @@ class StyleBuilderTTK:
         )
         draw.ellipse([20, 18, 112, 110], fill=disabled_fg)
         disabled_img = ImageTk.PhotoImage(
-            _disabled.resize((24, 15), Image.LANCZOS)
+            _disabled.resize(size, Image.LANCZOS)
         )
         disabled_name = get_image_name(disabled_img)
         self.theme_images[disabled_name] = disabled_img
@@ -1935,11 +1954,13 @@ class StyleBuilderTTK:
         images = self.create_round_toggle_assets(colorname)
 
         try:
+            width = self.scale_size(28)
+            borderpad = self.scale_size(4)
             self.style.element_create(
                 f'{ttkstyle}.indicator', 'image', images[1],
                 ('disabled', images[2]),
                 ('!selected', images[0]),
-                width=28, border=4, sticky=tk.W
+                width=width, border=borderpad, sticky=tk.W
             )
         except:
             """This method is used as the default Toggle style, so it
@@ -1994,11 +2015,14 @@ class StyleBuilderTTK:
         # ( off, on, disabled )
         images = self.create_square_toggle_assets(colorname)
 
+        width = self.scale_size(28)
+        borderpad = self.scale_size(4)
+
         self.style.element_create(
             f'{ttkstyle}.indicator', 'image', images[1],
             ('disabled', images[2]),
             ('!selected', images[0]),
-            width=28, border=4, sticky=tk.W
+            width=width, border=borderpad, sticky=tk.W
         )
         self.style.layout(
             ttkstyle,
@@ -2246,6 +2270,7 @@ class StyleBuilderTTK:
         on_fill = prime_color
         off_fill = self.colors.bg
         on_indicator = self.colors.selectfg
+        size = self.scale_size([14, 14])
 
         if self.is_light_theme:
             off_border = self.colors.border
@@ -2265,7 +2290,7 @@ class StyleBuilderTTK:
             width=6,
             fill=off_fill
         )
-        off_img = ImageTk.PhotoImage(_off.resize((14, 14), Image.LANCZOS))
+        off_img = ImageTk.PhotoImage(_off.resize(size, Image.LANCZOS))
         off_name = get_image_name(off_img)
         self.theme_images[off_name] = off_img
 
@@ -2277,7 +2302,7 @@ class StyleBuilderTTK:
         else:
             draw.ellipse(xy=[1, 1, 133, 133], fill=on_fill)
         draw.ellipse([40, 40, 94, 94], fill=on_indicator)
-        on_img = ImageTk.PhotoImage(_on.resize((14, 14), Image.LANCZOS))
+        on_img = ImageTk.PhotoImage(_on.resize(size, Image.LANCZOS))
         on_name = get_image_name(on_img)
         self.theme_images[on_name] = on_img
 
@@ -2291,7 +2316,7 @@ class StyleBuilderTTK:
             fill=off_fill
         )
         disabled_img = ImageTk.PhotoImage(
-            _disabled.resize((14, 14), Image.LANCZOS)
+            _disabled.resize(size, Image.LANCZOS)
         )
         disabled_name = get_image_name(disabled_img)
         self.theme_images[disabled_name] = disabled_img
@@ -2316,12 +2341,13 @@ class StyleBuilderTTK:
 
         # ( off, on, disabled )
         images = self.create_radiobutton_assets(colorname)
-
+        width = self.scale_size(20)
+        borderpad = self.scale_size(4)
         self.style.element_create(
             f'{ttkstyle}.indicator', 'image', images[1],
             ('disabled', images[2]),
             ('!selected', images[0]),
-            width=20, border=4, sticky=tk.W
+            width=width, border=borderpad, sticky=tk.W
         )
         self.style.map(ttkstyle, foreground=[('disabled', disabled_fg)]
         )
@@ -2373,7 +2399,8 @@ class StyleBuilderTTK:
         for xy in calendar_image_coordinates:
             draw.rectangle(xy=xy, fill=fill)
 
-        tk_img = ImageTk.PhotoImage(image)
+        size = self.scale_size([21, 22])
+        tk_img = ImageTk.PhotoImage(image.resize(size, Image.LANCZOS))
         tk_name = get_image_name(tk_img)
         self.theme_images[tk_name] = tk_img
         return tk_name
@@ -2677,10 +2704,12 @@ class StyleBuilderTTK:
         images = self.create_checkbutton_assets(colorname)
 
         element = ttkstyle.replace('.TC', '.C')
+        width = self.scale_size(20)
+        borderpad = self.scale_size(4)
         self.style.element_create(f'{element}.indicator', 'image', images[1],
                                   ('disabled', images[2]),
                                   ('!selected', images[0]),
-                                  width=20, border=4, sticky=tk.W
+                                  width=width, border=borderpad, sticky=tk.W
                                   )
         self.style.configure(ttkstyle, foreground=self.colors.fg)
         self.style.map(ttkstyle, foreground=[('disabled', disabled_fg)])
@@ -2744,6 +2773,8 @@ class StyleBuilderTTK:
         else:
             check_color = self.colors.selectfg
 
+        size = self.scale_size([14, 14])
+
         # checkbutton off
         checkbutton_off = Image.new("RGBA", (134, 134))
         draw = ImageDraw.Draw(checkbutton_off)
@@ -2755,7 +2786,7 @@ class StyleBuilderTTK:
             fill=off_fill,
         )
         off_img = ImageTk.PhotoImage(
-            checkbutton_off.resize((14, 14), Image.LANCZOS)
+            checkbutton_off.resize(size, Image.LANCZOS)
         )
         off_name = get_image_name(off_img)
         self.theme_images[off_name] = off_img
@@ -2773,7 +2804,7 @@ class StyleBuilderTTK:
         
         draw.text((20, font_offset), "✓", font=fnt, fill=check_color)
         on_img = ImageTk.PhotoImage(
-            checkbutton_on.resize((14, 14), Image.LANCZOS)
+            checkbutton_on.resize(size, Image.LANCZOS)
         )
         on_name = get_image_name(on_img)
         self.theme_images[on_name] = on_img
@@ -2788,7 +2819,7 @@ class StyleBuilderTTK:
             width=3
         )
         disabled_img = ImageTk.PhotoImage(
-            checkbutton_disabled.resize((14, 14), Image.LANCZOS)
+            checkbutton_disabled.resize(size, Image.LANCZOS)
         )
         disabled_name = get_image_name(disabled_img)
         self.theme_images[disabled_name] = disabled_img
@@ -2826,7 +2857,7 @@ class StyleBuilderTTK:
             bordercolor=background,
             darkcolor=background,
             lightcolor=background,
-            arrowsize=3,
+            arrowsize=self.scale_size(3),
             arrowcolor=foreground,
             arrowpadding=(0, 0, 15, 0),
             relief=tk.RAISED,
@@ -2894,7 +2925,7 @@ class StyleBuilderTTK:
             padding=(10, 5),
             arrowcolor=foreground,
             arrowpadding=(0, 0, 15, 0),
-            arrowsize=3
+            arrowsize=self.scale_size(3)
         )        
         self.style.map(
             ttkstyle,
@@ -3002,7 +3033,7 @@ class StyleBuilderTTK:
             h_ttkstyle = f'{colorname}.{H_STYLE}'
             v_ttkstyle = f'{colorname}.{V_STYLE}'
 
-        self.style.configure('Sash', gripcount=0, sashthickness=3)
+        self.style.configure('Sash', gripcount=0, sashthickness=self.scale_size(3))
         self.style.configure(h_ttkstyle, background=sashcolor)
         self.style.configure(v_ttkstyle, background=sashcolor)
 
