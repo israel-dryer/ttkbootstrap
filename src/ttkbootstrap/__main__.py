@@ -1,5 +1,7 @@
 import tkinter as tk
 import ttkbootstrap as ttk
+from ttkbootstrap.style import utility
+utility.enable_high_dpi_awareness()
 
 ZEN = """Beautiful is better than ugly. 
 Explicit is better than implicit. 
@@ -21,10 +23,8 @@ If the implementation is hard to explain, it's a bad idea.
 If the implementation is easy to explain, it may be a good idea.
 Namespaces are one honking great idea -- let's do more of those!"""
 
-
 root = tk.Tk()
 root.title("ttkbootstrap widget demo")
-root.minsize(1, 525)
 style = ttk.Style()
 theme_names = style.theme_names()
 
@@ -50,9 +50,10 @@ cbo.current(theme_names.index(style.theme.name))
 
 def change_theme(e):
     t = cbo.get()
-    cbo.selection_clear()    
+    cbo.selection_clear()
     style.theme_use(t)
     default.focus_set()
+
 
 cbo.bind('<<ComboboxSelected>>', change_theme)
 
@@ -83,7 +84,8 @@ for color in style.colors:
     cb = ttk.Button(color_group, text=color, bootstyle=color)
     cb.pack(side=tk.LEFT, expand=tk.YES, padx=5, fill=tk.X)
 
-rb_group = ttk.Labelframe(lframe, text="Checkbuttons & radiobuttons", padding=10)
+rb_group = ttk.Labelframe(
+    lframe, text="Checkbuttons & radiobuttons", padding=10)
 rb_group.pack(fill=tk.X, pady=10, side=tk.TOP)
 
 check1 = ttk.Checkbutton(rb_group, text="selected")
@@ -137,7 +139,8 @@ txt.pack(side=tk.RIGHT, anchor=tk.NW, padx=(5, 0), fill=tk.BOTH, expand=tk.YES)
 nb = ttk.Notebook(lframe)
 nb.pack(pady=5, fill=tk.BOTH, expand=True)
 nb_text = "This is a notebook tab.\nYou can put any widget you want here."
-nb.add(ttk.Label(nb, text=nb_text), text="Tab 1", sticky=tk.NW)
+nb.add(ttk.Label(nb, text=nb_text), text="Tab 1",
+       sticky=tk.NW, padding=(0, 0, 0, 100))
 nb.add(
     child=ttk.Label(nb, text="A notebook tab."),
     text="Tab 2",
