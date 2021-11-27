@@ -24,7 +24,14 @@ class StyleManager(ttk.Style):
         Parameters
         ----------
         theme : str
-            The name of the theme to use at runtime; default="flatly".
+            The name of the theme to use at runtime; default="flatly"
+
+        highdpi : bool
+            Enables high dpi awareness for Windows.
+
+        scaling : float
+            Controls the pixel density used to draw the widgets. The 
+            default scaling of 1.0 is 72ppi.
         """
         self._theme_objects = {}
         self._theme_definitions = {}
@@ -33,6 +40,7 @@ class StyleManager(ttk.Style):
         self._theme_names = set()
         self._load_themes()
         super().__init__(**kwargs)
+
         StyleManager.instance = self
         self.theme_use(theme)
 
@@ -158,8 +166,27 @@ class StyleManager(ttk.Style):
                 method: Callable = builder.name_to_method(method_name)
                 method(builder, color)
 
+    def set_window_scaling(self, scaling):
+        """Scale widget dpi"""
+        self.master.tk.call('tk', 'scaling', scaling)    
+
+    def get_window_scaling(self):
+        return self.master.tk.call('tk', 'scaling')                   
+
+    def enable_high_dpi_awareness(self):
+        """Enable high dpi awareness. Currently for Windows Only."""
+        root = self.master
+        if root._windowingsystem == 'win32':
+            from ctypes import windll
+            windll.user32.SetProcessDPIAware()
+
 def Style(theme=DEFAULT_THEME, **kwargs):
     """Returns a singleton instance of the `BootStyle` class.
+
+    Parameters
+    ----------
+    theme : str
+        The name of the theme.
 
     Examples
     --------
@@ -171,10 +198,8 @@ def Style(theme=DEFAULT_THEME, **kwargs):
     """
     if StyleManager.instance is None:
         StyleManager(theme, **kwargs)
-        return StyleManager.instance
-    else:
-        if theme == DEFAULT_THEME:
-            return StyleManager.instance
-        else:
-            StyleManager.instance.theme_use(theme)
-            return StyleManager.instance
+    
+    elif theme != DEFAULT_THEME:
+        StyleManager.instance.theme_use(theme)
+  
+    return StyleManager.instance

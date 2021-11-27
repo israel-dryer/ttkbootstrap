@@ -5,12 +5,12 @@ import tkinter as tk
 import ttkbootstrap as ttk
 from PIL import Image, ImageTk, ImageSequence
 from ttkbootstrap.style import utility
+utility.enable_high_dpi_awareness()
 
 class AnimatedGif(tk.Tk):
 
     def __init__(self):
         super().__init__()
-        utility.enable_high_dpi_awareness(self)
         
         self.geometry('400x300')
 

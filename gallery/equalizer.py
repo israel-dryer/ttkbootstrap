@@ -6,13 +6,13 @@ import tkinter as tk
 import ttkbootstrap as ttk
 from ttkbootstrap.style import utility
 from random import randint
+utility.enable_high_dpi_awareness()
 
 
 class Application(tk.Tk):
 
     def __init__(self):
         super().__init__()
-        utility.enable_high_dpi_awareness(self)
         self.title('Equalizer')
         self.style = ttk.Style()
         self.eq = Equalizer(self)

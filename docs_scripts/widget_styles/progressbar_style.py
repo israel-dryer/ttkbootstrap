@@ -1,9 +1,9 @@
 import tkinter as tk
 import ttkbootstrap as ttk
 from ttkbootstrap.style import utility
+utility.enable_high_dpi_awareness()
 
 root = tk.Tk()
-utility.enable_high_dpi_awareness(root)
 style = ttk.Style()
 
 frame = ttk.Frame(padding=5)
@@ -15,18 +15,6 @@ bot_frame = ttk.Frame(frame)
 top_frame.pack(fill=tk.X)
 bot_frame.pack(fill=tk.X)
 
-for i, color in enumerate(['default', *style.colors]):
-    if i < 5:
-        f = ttk.Frame(top_frame)
-    else:
-        f = ttk.Frame(bot_frame)
-
-    ttk.Label(f, text=color, width=20).pack(side=tk.TOP)
-    a = ttk.Progressbar(f, bootstyle=color, orient=tk.HORIZONTAL)
-    a.pack(fill=tk.X)
-    a.start()
-    f.pack(side=tk.LEFT, padx=3, pady=10, fill=tk.X)
-
 # for i, color in enumerate(['default', *style.colors]):
 #     if i < 5:
 #         f = ttk.Frame(top_frame)
@@ -34,9 +22,21 @@ for i, color in enumerate(['default', *style.colors]):
 #         f = ttk.Frame(bot_frame)
 
 #     ttk.Label(f, text=color, width=20).pack(side=tk.TOP)
-#     a = ttk.Progressbar(f, bootstyle=color+'striped', orient=tk.HORIZONTAL)
+#     a = ttk.Progressbar(f, bootstyle=color, orient=tk.HORIZONTAL)
 #     a.pack(fill=tk.X)
 #     a.start()
 #     f.pack(side=tk.LEFT, padx=3, pady=10, fill=tk.X)
+
+for i, color in enumerate(['default', *style.colors]):
+    if i < 5:
+        f = ttk.Frame(top_frame)
+    else:
+        f = ttk.Frame(bot_frame)
+
+    ttk.Label(f, text=color, width=20).pack(side=tk.TOP)
+    a = ttk.Progressbar(f, bootstyle=color+'striped', orient=tk.HORIZONTAL)
+    a.pack(fill=tk.X)
+    a.start()
+    f.pack(side=tk.LEFT, padx=3, pady=10, fill=tk.X)
 
 root.mainloop()

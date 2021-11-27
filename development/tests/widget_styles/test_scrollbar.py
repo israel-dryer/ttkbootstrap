@@ -1,6 +1,8 @@
 import tkinter as tk
 import ttkbootstrap as ttk
 from random import choice
+from ttkbootstrap.style import utility
+utility.enable_high_dpi_awareness()
 
 DARK = 'superhero'
 LIGHT = 'flatly'
@@ -16,7 +18,7 @@ def create_scrollbar_frame(style, orient, bootstyle=''):
     # default
     ttk.Label(frame, text='default').pack(fill=tk.X)
     sb = ttk.Scrollbar(frame, orient=orient, bootstyle=bootstyle)
-    sb.set(0.1, 0.3)
+    sb.set(0.1, 0.9)
     if orient == tk.HORIZONTAL:
         sb.pack(padx=5, pady=5, fill=tk.X)
     else:

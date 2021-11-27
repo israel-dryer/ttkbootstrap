@@ -7,12 +7,12 @@ import ttkbootstrap as ttk
 from tkinter.filedialog import askopenfilename
 from tkinter.scrolledtext import ScrolledText
 from ttkbootstrap.style import utility
+utility.enable_high_dpi_awareness()
 
 class Application(tk.Tk):
 
     def __init__(self):
         super().__init__()
-        utility.enable_high_dpi_awareness(self)
         self.title('Text Reader')
         self.style = ttk.Style("sandstone")
         self.reader = Reader(self)
