@@ -81,7 +81,6 @@ class StyleManager(ttk.Style):
                 ThemeDefinition(
                     name=name,
                     themetype=definition["type"],
-                    font=definition.get("font") or DEFAULT_FONT,
                     colors=definition["colors"],
                 )
             )
