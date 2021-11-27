@@ -1,4 +1,5 @@
 import tkinter as tk
+from tkinter import font
 from tkinter import ttk
 from ttkbootstrap.constants import *
 from ttkbootstrap.style.colors import Colors
@@ -275,7 +276,8 @@ class StyleBuilderTK:
             highlightthickness=1,
             relief=tk.FLAT,
             padx=5,
-            pady=5
+            pady=5,
+            font='TkDefaultFont'
         )
 
 
@@ -1413,6 +1415,9 @@ class StyleBuilderTTK:
         """Create style configuration for ttk treeview"""
         STYLE = 'Treeview'
 
+        f = font.nametofont('TkDefaultFont')
+        rowheight = f.metrics()['linespace']
+
         if self.is_light_theme:
             disabled_fg = Colors.update_hsv(self.colors.inputbg, vd=-0.2)
             bordercolor = self.colors.border
@@ -1465,6 +1470,7 @@ class StyleBuilderTTK:
             darkcolor=self.colors.inputbg,
             borderwidth=2,
             padding=0,
+            rowheight=rowheight,
             relief=tk.RAISED
         )
         self.style.map(
