@@ -2,6 +2,8 @@ import tkinter as tk
 import ttkbootstrap as ttk
 from ttkbootstrap.style import utility
 
+utility.enable_high_dpi_awareness()
+
 ZEN = """Beautiful is better than ugly. 
 Explicit is better than implicit. 
 Simple is better than complex. 
@@ -24,9 +26,8 @@ Namespaces are one honking great idea -- let's do more of those!"""
 
 
 root = tk.Tk()
-utility.enable_high_dpi_awareness(root, 2.0)
-root.title("ttkbootstrap widget demo")
 
+root.title("ttkbootstrap widget demo")
 root.minsize(1, 525)
 style = ttk.Style('superhero')
 theme_names = style.theme_names()

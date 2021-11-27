@@ -12,13 +12,13 @@ from tkinter.filedialog import askdirectory
 from tkinter.messagebox import showinfo
 from tkinter.scrolledtext import ScrolledText
 from pathlib import Path
+utility.enable_high_dpi_awareness()
 
 
 class Application(tk.Tk):
 
     def __init__(self):
         super().__init__()
-        utility.enable_high_dpi_awareness(self)
 
         self.title('Back Me Up')
 

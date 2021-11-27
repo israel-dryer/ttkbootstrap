@@ -6,12 +6,12 @@
 import tkinter as tk
 import ttkbootstrap as ttk
 from ttkbootstrap.style import utility
+utility.enable_high_dpi_awareness()
 
 class Application(tk.Tk):
 
     def __init__(self):
         super().__init__()
-        utility.enable_high_dpi_awareness(self)
         self.title('Stopwatch')
         self.style = ttk.Style("cosmo")
         self.timer = TimerWidget(self)

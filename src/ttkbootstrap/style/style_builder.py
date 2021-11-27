@@ -3,6 +3,7 @@ from tkinter import ttk
 from ttkbootstrap.constants import *
 from ttkbootstrap.style.colors import Colors
 from PIL import Image, ImageDraw, ImageTk, ImageFont
+from math import ceil
 
 
 def get_image_name(image):
@@ -340,9 +341,9 @@ class StyleBuilderTTK:
         factor = scaling / BASELINE
 
         if isinstance(size, int) or isinstance(size, float):
-            return int(size * factor)
+            return ceil(size * factor)
         elif isinstance(size, tuple) or isinstance(size, list):
-            return [int(x * factor) for x in size]
+            return [ceil(x * factor) for x in size]
 
     def create_theme(self):
         """Create and style a new ttk theme. A wrapper around internal
@@ -398,7 +399,6 @@ class StyleBuilderTTK:
             bordercolor = self.colors.selectbg
             readonly = bordercolor
 
-
         if any([colorname == DEFAULT, colorname == '']):
             ttkstyle = STYLE
             element = f"{ttkstyle.replace('TC','C')}"
@@ -427,7 +427,7 @@ class StyleBuilderTTK:
             insertcolor=self.colors.inputfg,
             relief=tk.FLAT,
             padding=5,
-            arrowsize=self.scale_size(13)
+            arrowsize=self.scale_size(12)
         )
         self.style.map(
             ttkstyle,
@@ -487,6 +487,9 @@ class StyleBuilderTTK:
         HSTYLE = 'Horizontal.TSeparator'
         VSTYLE = 'Vertical.TSeparator'
 
+        hsize = self.scale_size([40, 1])
+        vsize = self.scale_size([1, 40])
+
         # style colors
         if self.is_light_theme:
             default_color = self.colors.border
@@ -504,7 +507,7 @@ class StyleBuilderTTK:
 
         # horizontal separator
         h_element = h_ttkstyle.replace('.TS', '.S')
-        h_img = ImageTk.PhotoImage(Image.new("RGB", self.scale_size((40, 1)), background))
+        h_img = ImageTk.PhotoImage(Image.new("RGB", self.scale_size(hsize), background))
         h_name = get_image_name(h_img)
         self.theme_images[h_name] = h_img
 
@@ -516,7 +519,7 @@ class StyleBuilderTTK:
 
         # vertical separator
         v_element = v_ttkstyle.replace('.TS', '.S')
-        v_img = ImageTk.PhotoImage(Image.new("RGB", self.scale_size((1, 40)), background))
+        v_img = ImageTk.PhotoImage(Image.new("RGB", self.scale_size(vsize), background))
         v_name = get_image_name(v_img)
         self.theme_images[v_name] = v_img
         self.style.element_create(f'{v_element}.separator', 'image', v_name)
@@ -921,7 +924,6 @@ class StyleBuilderTTK:
             troughcolor = Colors.update_hsv(background, sd=-0.3, vd=0.8)
             foreground = self.colors.selectfg
         
-
         # horizontal floodgauge
         h_element = h_ttkstyle.replace('.TF', '.F')
         self.style.element_create(f'{h_element}.trough', 'from', TTK_CLAM)
@@ -1022,32 +1024,30 @@ class StyleBuilderTTK:
 
         return normal_names, pressed_names, active_names
 
-
-
-    def create_round_scrollbar_assets(self, thumbcolor, pressed, active, thickness):
+    def create_round_scrollbar_assets(self, thumbcolor, pressed, active):
+        vsize = self.scale_size([9, 28])
+        hsize = self.scale_size([28, 9])
         
-        x = self.scale_size(thickness) * 10
-        y = thickness * self.scale_size(self.scale_size(3.5)*10)
-        
-        def rounded_rect(x: int, y: int, fill: str):
-            _img = Image.new('RGBA', (x, y))
-            draw = ImageDraw.Draw(_img)
-            xy = (1, 1, x-1, y-1)
+        def rounded_rect(size, fill):
+            x = size[0] * 10
+            y = size[1] * 10
+            img = Image.new('RGBA', (x, y))
+            draw = ImageDraw.Draw(img)
             radius = min([x, y]) // 2
-            draw.rounded_rectangle(xy, radius, fill)
-            image = ImageTk.PhotoImage(_img.resize((x//10, y//10)), Image.CUBIC)
+            draw.rounded_rectangle([0, 0, x-1, y-1], radius, fill)
+            image = ImageTk.PhotoImage(img.resize(size, Image.CUBIC))
             name = get_image_name(image)
             self.theme_images[name] = image
             return name
 
         # create images
-        h_normal_img = rounded_rect(x, y, thumbcolor)
-        h_pressed_img = rounded_rect(x, y, pressed)
-        h_active_img = rounded_rect(x, y, active)
+        h_normal_img = rounded_rect(hsize, thumbcolor)
+        h_pressed_img = rounded_rect(hsize, pressed)
+        h_active_img = rounded_rect(hsize, active)
 
-        v_normal_img = rounded_rect(y, x, thumbcolor)
-        v_pressed_img = rounded_rect(y, x, pressed)
-        v_active_img = rounded_rect(y, x, active)
+        v_normal_img = rounded_rect(vsize, thumbcolor)
+        v_pressed_img = rounded_rect(vsize, pressed)
+        v_active_img = rounded_rect(vsize, active)
 
         return (
             h_normal_img, h_pressed_img, h_active_img,
@@ -1056,14 +1056,11 @@ class StyleBuilderTTK:
 
     def create_round_scrollbar_style(self, colorname=DEFAULT):
         """Create style configuration for ttk scrollbar: *ttk.Scrollbar* 
-        This theme uses elements from the *alt* theme tobuild the widget 
+        This theme uses elements from the *alt* theme to build the widget 
         layout.
         """
         STYLE = 'TScrollbar'
-        thickness = self.scale_size(9) # TODO consider making this configurable
         
-        troughcolor = Colors.update_hsv(self.colors.bg, vd=-0.04)            
-
         if any([colorname == DEFAULT, colorname == '']):
             h_ttkstyle = f'Round.Horizontal.{STYLE}'
             v_ttkstyle = f'Round.Vertical.{STYLE}'
@@ -1078,114 +1075,85 @@ class StyleBuilderTTK:
             v_ttkstyle = f'{colorname}.Round.Vertical.{STYLE}'
             background = self.colors.get(colorname)
 
+        if self.is_light_theme:
+            if colorname == LIGHT:
+                troughcolor = self.colors.bg
+            else:
+                troughcolor = self.colors.light
+        else:
+            troughcolor = Colors.update_hsv(self.colors.selectbg, vd=-0.2)                  
+
         pressed = Colors.update_hsv(background, vd=-0.05)
         active = Colors.update_hsv(background, vd=0.05)
 
-        h_borders = (thickness, 0)
-        v_borders = (0, thickness)
-
-        # ( h_normal, h_pressed, h_active, v_normal, v_pressed, v_active )
         scroll_images = self.create_round_scrollbar_assets(
-            background, pressed, active, thickness
-        )
-        # ( normal, pressed, active ) ( up, down, left, right )
-        arrow_images = self.create_arrow_assets(background, pressed, active)
-
-        # vertical scrollbar
-        v_element = v_ttkstyle.replace('.TS', '.S')
-        self.style.element_create(f'{v_element}.thumb', 'image',
-            scroll_images[0], 
-            ('pressed', scroll_images[1]), ('active', scroll_images[2]),
-            border=v_borders, 
-            sticky=tk.NS, 
-            width=thickness
-        )
-        self.style.element_create(f'{v_element}.trough', 'from', TTK_ALT)
-        self.style.element_create(f'{v_element}.uparrow', 'image',
-                                  arrow_images[0][0],
-                                  ('pressed', arrow_images[1][0]),
-                                  ('active', arrow_images[2][0]))
-        self.style.element_create(f'{v_element}.downarrow', 'image',
-                                  arrow_images[0][1],
-                                  ('pressed', arrow_images[1][1]),
-                                  ('active', arrow_images[2][1]))
-        self.style.configure(
-            v_ttkstyle,
-            troughrelief=tk.FLAT,
-            relief=tk.FLAT,
-            troughborderwidth=1,
-            troughcolor=troughcolor,
-            background=background,
-            arrowsize=thickness
-        )
-        self.style.map(
-            v_ttkstyle,
-            background=[('pressed', pressed), ('active', active)]
-        )
-        self.style.layout(
-            v_ttkstyle,
-            [
-                (f'{v_element}.trough', {
-                    'sticky': tk.NS, 'children': [
-                        (f'{v_element}.uparrow',
-                            {'side': tk.TOP, 'sticky': ''}),
-                        (f'{v_element}.downarrow',
-                            {'side': 'bottom', 'sticky': ''}),
-                        (f'{v_element}.thumb',
-                            {'expand': True, 'sticky': tk.NSEW})
-                    ]}
-                 )
-            ]
+            background, pressed, active
         )
 
         # horizontal scrollbar
-        h_element = h_ttkstyle.replace('.T', '.')
-        self.style.element_create(f'{h_element}.thumb', 'image',
-            scroll_images[3], 
-            ('pressed', scroll_images[4]), ('active', scroll_images[5]),
-            border=h_borders,
-            sticky=tk.EW,
-            height=thickness
-        )        
-        self.style.element_create(f'{h_element}.trough', 'from', TTK_ALT)
-        self.style.element_create(f'{h_element}.leftarrow', 'image',
-                                  arrow_images[0][2],
-                                  ('pressed', arrow_images[1][2]),
-                                  ('active', arrow_images[2][2]))
-        self.style.element_create(f'{h_element}.rightarrow', 'image',
-                                  arrow_images[0][3],
-                                  ('pressed', arrow_images[1][3]),
-                                  ('active', arrow_images[2][3]))
         self.style.configure(
             h_ttkstyle,
-            troughrelief=tk.FLAT,
-            relief=tk.FLAT,
-            troughborderwidth=0.5,
             troughcolor=troughcolor,
-            background=background,
-            arrowsize=thickness
+            darkcolor=troughcolor,
+            bordercolor=troughcolor,
+            lightcolor=troughcolor,
+            arrowcolor=background,
+            arrowsize=self.scale_size(11),
+            background=troughcolor,
+            relief=tk.FLAT,
+            borderwidth=0
         )
-        self.style.map(
-            h_ttkstyle,
-            background=[('pressed', pressed), ('active', active)]
+        self.style.element_create(
+            f'{h_ttkstyle}.thumb', 'image', scroll_images[0],
+            ('pressed', scroll_images[1]),
+            ('active', scroll_images[2]),
+            border=self.scale_size(9),
+            padding=0,
+            sticky=tk.EW,
         )
-        self.style.layout(
-            h_ttkstyle,
-            [
-                (f'{h_element}.trough', {
-                    'sticky': tk.EW, 'children': [
-                        (f'{h_element}.leftarrow',
-                         {'side': tk.LEFT, 'sticky': ''}),
-                        (f'{h_element}.rightarrow',
-                         {'side': tk.RIGHT, 'sticky': ''}),
-                        (f'{h_element}.thumb',
-                         {'expand': True, 'sticky': tk.NSEW})]
-                })
+        self.style.layout(h_ttkstyle, [
+            ('Horizontal.Scrollbar.trough', {'sticky': 'we', 'children': [
+                ('Horizontal.Scrollbar.leftarrow', {'side': 'left', 'sticky': ''}), 
+                ('Horizontal.Scrollbar.rightarrow', {'side': 'right', 'sticky': ''}), 
+                (f'{h_ttkstyle}.thumb', {'expand': '1', 'sticky': 'nswe'})]})
             ]
         )
+        self.style.configure(h_ttkstyle, arrowcolor=background)        
+        self.style.map(h_ttkstyle, arrowcolor=[('pressed', pressed), ('active', active)])
+        
+        # vertical scrollbar
+        self.style.configure(
+            v_ttkstyle,
+            troughcolor=troughcolor,
+            darkcolor=troughcolor,
+            bordercolor=troughcolor,
+            lightcolor=troughcolor,
+            arrowcolor=background,
+            arrowsize=self.scale_size(11),
+            background=troughcolor,
+            relief=tk.FLAT,
+        )
+        self.style.element_create(
+            f'{v_ttkstyle}.thumb', 'image', scroll_images[3],
+            ('pressed', scroll_images[4]),
+            ('active', scroll_images[5]),
+            border=self.scale_size(9),
+            padding=0,
+            sticky=tk.NS,
+         )
+        self.style.layout(v_ttkstyle, [
+            ('Vertical.Scrollbar.trough', {'sticky': 'ns', 'children': [
+                ('Vertical.Scrollbar.uparrow', {'side': 'top', 'sticky': ''}), 
+                ('Vertical.Scrollbar.downarrow', {'side': 'bottom', 'sticky': ''}), 
+                (f'{v_ttkstyle}.thumb', {'expand': '1', 'sticky': 'nswe'})]})
+            ]
+        )
+        self.style.configure(v_ttkstyle, arrowcolor=background)        
+        self.style.map(v_ttkstyle, arrowcolor=[('pressed', pressed), ('active', active)])
+
         # register ttkstyles
         self.style.register_ttkstyle(h_ttkstyle)
-        self.style.register_ttkstyle(v_ttkstyle)
+        self.style.register_ttkstyle(v_ttkstyle)  
 
     # def create_scrollbar_assets(
     #     self, thumbcolor, pressed, active, troughcolor, thickness
@@ -1222,17 +1190,18 @@ class StyleBuilderTTK:
         vsize = self.scale_size([9, 28])
         hsize = self.scale_size([28, 9])
         
-        def draw_rect(size, color):
+        def draw_rect(size, fill):
             x = size[0] * 10
             y = size[1] * 10
             img = Image.new('RGBA', (x, y))
             draw = ImageDraw.Draw(img)
-            draw.rectangle([0, 0, x-1, y-1], color)
+            draw.rectangle([0, 0, x-1, y-1], fill)
             image = ImageTk.PhotoImage(img.resize(size), Image.CUBIC)
             name = get_image_name(image)
             self.theme_images[name] = image
             return name
 
+        # create images
         h_normal_img = draw_rect(hsize, thumbcolor)
         h_pressed_img = draw_rect(hsize, pressed)
         h_active_img = draw_rect(hsize, active)
@@ -1245,7 +1214,6 @@ class StyleBuilderTTK:
             h_normal_img, h_pressed_img, h_active_img,
             v_normal_img, v_pressed_img, v_active_img
         )
-
 
     def create_scrollbar_style(self, colorname=DEFAULT):
         """Create style configuration for ttk scrollbar: *ttk.Scrollbar* 
@@ -1422,7 +1390,7 @@ class StyleBuilderTTK:
             relief=tk.FLAT,
             arrowcolor=self.colors.inputfg,
             insertcolor=self.colors.inputfg,
-            arrowsize=self.scale_size(13),
+            arrowsize=self.scale_size(12),
             padding=(10, 5),
         )
         self.style.map(
@@ -2857,7 +2825,7 @@ class StyleBuilderTTK:
             bordercolor=background,
             darkcolor=background,
             lightcolor=background,
-            arrowsize=self.scale_size(3),
+            arrowsize=self.scale_size(4),
             arrowcolor=foreground,
             arrowpadding=(0, 0, 15, 0),
             relief=tk.RAISED,
@@ -2925,7 +2893,7 @@ class StyleBuilderTTK:
             padding=(10, 5),
             arrowcolor=foreground,
             arrowpadding=(0, 0, 15, 0),
-            arrowsize=self.scale_size(3)
+            arrowsize=self.scale_size(4)
         )        
         self.style.map(
             ttkstyle,
@@ -3033,7 +3001,7 @@ class StyleBuilderTTK:
             h_ttkstyle = f'{colorname}.{H_STYLE}'
             v_ttkstyle = f'{colorname}.{V_STYLE}'
 
-        self.style.configure('Sash', gripcount=0, sashthickness=self.scale_size(3))
+        self.style.configure('Sash', gripcount=0, sashthickness=self.scale_size(2))
         self.style.configure(h_ttkstyle, background=sashcolor)
         self.style.configure(v_ttkstyle, background=sashcolor)
 
@@ -3054,14 +3022,28 @@ class StyleBuilderTTK:
         str
             The PhotoImage name.
         """
-        im = Image.new("RGBA", (14, 14))
+        from math import ceil
+        
+        box = self.scale_size(1)
+        pad = box * 2
+        chunk = box + pad # 4
+
+        w = chunk * 3 + pad # 14
+        h = chunk * 3 + pad # 14
+
+        size = [w, h]
+
+        im = Image.new("RGBA", size)
         draw = ImageDraw.Draw(im)
-        draw.rectangle((9, 3, 10, 4), fill=color)  # top
-        draw.rectangle((6, 6, 7, 7), fill=color)   # middle
-        draw.rectangle((9, 6, 10, 7), fill=color)
-        draw.rectangle((3, 9, 4, 10), fill=color)  # bottom
-        draw.rectangle((6, 9, 7, 10), fill=color)
-        draw.rectangle((9, 9, 10, 10), fill=color)
+
+        draw.rectangle((chunk*2+pad, pad, chunk*3, chunk), fill=color)
+        draw.rectangle((chunk*2+pad, chunk+pad, chunk*3, chunk*2), fill=color)
+        draw.rectangle((chunk*2+pad, chunk*2+pad, chunk*3, chunk*3), fill=color)
+
+        draw.rectangle((chunk+pad, chunk+pad, chunk*2, chunk*2), fill=color)
+        draw.rectangle((chunk+pad, chunk*2+pad, chunk*2, chunk*3), fill=color)
+
+        draw.rectangle((pad, chunk*2+pad, chunk, chunk*3), fill=color)
 
         _img = ImageTk.PhotoImage(im)
         _name = get_image_name(_img)

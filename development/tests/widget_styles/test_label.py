@@ -1,10 +1,11 @@
 import tkinter as tk
 import ttkbootstrap as ttk
 from random import choice
+from ttkbootstrap.style import utility
+utility.enable_high_dpi_awareness()
 
 DARK = 'superhero'
 LIGHT = 'flatly'
-
 
 def create_label_style(bootstyle, style, test_name):
     frame = ttk.Frame(root, padding=5)

@@ -157,8 +157,8 @@ class Meter(ttk.Frame):
         # misc settings
         self._set_arc_offset_range(metertype, arcoffset, arcrange)
         self._towardsmaximum = True
-        self._metersize = metersize
-        self._meterthickness = meterthickness
+        self._metersize = util.scale_size(self, metersize)
+        self._meterthickness = util.scale_size(self, meterthickness)
         self._stripethickness = stripethickness
         self._showtext = showtext
         self._wedgesize = wedgesize
@@ -540,7 +540,7 @@ class Meter(ttk.Frame):
             self._subtextstyle = kwargs.pop('subtextstyle')
             self.subtext.configure(bootstyle=[self._subtextstyle, 'meter'])
         if 'metersize' in kwargs:
-            self._metersize = kwargs.pop('metersize')
+            self._metersize = util.scale_size(kwargs.pop('metersize'))
             self.meterframe.configure(height=self._metersize, width=self._metersize)
         if 'bootstyle' in kwargs:
             self._bootstyle = kwargs.pop('bootstyle')
@@ -548,7 +548,7 @@ class Meter(ttk.Frame):
         if 'metertype' in kwargs:
             self._metertype = kwargs.pop('metertype')
         if 'meterthickness' in kwargs:
-            self._meterthickness = kwargs.pop('meterthickness')
+            self._meterthickness = self.scale_size(kwargs.pop('meterthickness'))
         if 'stripethickness' in kwargs:
             self._stripethickness = kwargs.pop('stripethickness')
         if 'subtext' in kwargs:

@@ -1,6 +1,8 @@
 import tkinter as tk
 import ttkbootstrap as ttk
 from random import choice
+from ttkbootstrap.style import utility
+utility.enable_high_dpi_awareness()
 
 root = tk.Tk()
 style = ttk.Style()

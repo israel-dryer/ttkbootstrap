@@ -3,16 +3,16 @@
     Modified: 2021-11-10
     Adapted for ttkbootstrap from: https://github.com/israel-dryer/Mini-VLC-Player
 """
+from pathlib import Path
 import tkinter as tk
 import ttkbootstrap as ttk
 from ttkbootstrap.style import utility
-from pathlib import Path
+utility.enable_high_dpi_awareness()
 
 class Application(tk.Tk):
 
     def __init__(self):
         super().__init__()
-        utility.enable_high_dpi_awareness(self)
         self.title('Media Player')
 
         self.style = ttk.Style()

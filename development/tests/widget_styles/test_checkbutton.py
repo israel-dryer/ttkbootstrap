@@ -1,6 +1,8 @@
 import tkinter as tk
 import ttkbootstrap as ttk
 from random import choice
+from ttkbootstrap.style import utility
+utility.enable_high_dpi_awareness()
 
 DARK = 'superhero'
 LIGHT = 'flatly'
@@ -23,7 +25,8 @@ def create_checkbutton_test(bootstyle, style, name):
         cb = ttk.Checkbutton(
             master=frame, 
             text=color, 
-            bootstyle=color + bootstyle
+            bootstyle=color + bootstyle,
+            width=15
         )
         cb.pack(padx=5, pady=5, fill=tk.BOTH)
         cb.invoke()

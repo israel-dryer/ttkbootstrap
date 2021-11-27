@@ -7,6 +7,7 @@ from pathlib import Path
 import tkinter as tk
 import ttkbootstrap as ttk
 from ttkbootstrap.style import utility
+utility.enable_high_dpi_awareness()
 
 
 PATH = Path(__file__)
@@ -15,7 +16,6 @@ class Application(tk.Tk):
 
     def __init__(self):
         super().__init__()
-        utility.enable_high_dpi_awareness(self)
         self.title('PC Cleaner')
         self.style = ttk.Style('pulse')
         self.cleaner = Cleaner(self)
