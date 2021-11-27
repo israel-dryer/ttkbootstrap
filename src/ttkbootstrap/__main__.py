@@ -24,6 +24,9 @@ If the implementation is easy to explain, it may be a good idea.
 Namespaces are one honking great idea -- let's do more of those!"""
 
 root = tk.Tk()
+if root.tk.call('tk', 'windowingsystem') == 'x11':
+    utility.enable_high_dpi_awareness(root=root, scaling=1.25)
+
 root.title("ttkbootstrap widget demo")
 style = ttk.Style()
 theme_names = style.theme_names()

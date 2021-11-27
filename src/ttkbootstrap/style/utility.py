@@ -196,13 +196,62 @@ def tkupdate_method_name(widget):
     method_name = f'update{widget_class}_style'
     return method_name          
 
-def enable_high_dpi_awareness():
-    """Enable high dpi awareness. Currently for Windows Only."""
+def enable_high_dpi_awareness(**kwargs):
+    """Enable high dpi awareness.
+
+    WINDOWS
+    -------
+        Call the method BEFORE creating the `Tk` object. No parameters
+        required.
+
+    LINUX
+    -----
+        Call the method AFTER creating the `Tk` object. `root` and 
+        `scaling` are required keyword arguments (described below).
+        A number between 1.6 and 2.0 is usually suffient to scale
+        for high-dpi screen.
+
+    Other Parameters
+    ----------------
+    root : Tk
+        The root widget
+
+    scaling : float
+        Sets and queries the current scaling factor used by Tk to 
+        convert between physical units (for example, points, inches, or 
+        millimeters) and pixels. The number argument is a floating 
+        point number that specifies the number of pixels per point on 
+        window's display. If the window argument is omitted, it defaults 
+        to the main window. If the number argument is omitted, the 
+        current value of the scaling factor is returned.
+    
+        A “point” is a unit of measurement equal to 1/72 inch. A scaling 
+        factor of 1.0 corresponds to 1 pixel per point, which is 
+        equivalent to a standard 72 dpi monitor. A scaling factor of 
+        1.25 would mean 1.25 pixels per point, which is the setting for 
+        a 90 dpi monitor; setting the scaling factor to 1.25 on a 72 dpi 
+        monitor would cause everything in the application to be displayed 
+        1.25 times as large as normal. The initial value for the scaling 
+        factor is set when the application starts, based on properties 
+        of the installed monitor, but it can be changed at any time. 
+        Measurements made after the scaling factor is changed will use 
+        the new scaling factor, but it is undefined whether existing 
+        widgets will resize themselves dynamically to accommodate the 
+        new scaling factor.
+
+    """
     try:
         from ctypes import windll
         windll.user32.SetProcessDPIAware()
     except:
         pass
+
+    try:
+        root = kwargs['root']
+        root.tk.call('tk', 'scaling', kwargs['scaling'])
+    except:
+        pass
+    
 
 def scale_size(widget, size):
     """Scale the size based on the scaling factor of ttk
