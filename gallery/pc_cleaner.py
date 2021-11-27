@@ -20,8 +20,6 @@ class Application(tk.Tk):
         self.style = ttk.Style('pulse')
         self.cleaner = Cleaner(self)
         self.cleaner.pack(fill=tk.BOTH, expand=tk.YES)
-        self.resizable(False, False)
-
 
 class Cleaner(ttk.Frame):
 

@@ -42,7 +42,7 @@ class Player(ttk.Frame):
         header = ttk.Label(
             master=self,
             textvariable=self.track_info,
-            font='Helvetica 12',
+            font='-size 12',
             bootstyle='light-inverse',
             padding=(5, 10)
         )
@@ -59,7 +59,7 @@ class Player(ttk.Frame):
         self.time_elapsed = ttk.Label(
             master=progress_frame,
             text='00:00',
-            font='Helvetica 12'
+            font='-size 12'
         )
         self.time_elapsed.pack(side=tk.LEFT)
 
@@ -73,7 +73,7 @@ class Player(ttk.Frame):
         self.time_remaining = ttk.Label(
             master=progress_frame,
             text='00:00',
-            font='Helvetica 12'
+            font='-size 12'
         )
         self.time_remaining.pack(side=tk.RIGHT)
 

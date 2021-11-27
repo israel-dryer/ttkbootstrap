@@ -15,7 +15,7 @@ top_frame.pack(fill=tk.BOTH)
 bot_frame = ttk.Frame(frame)
 bot_frame.pack(fill=tk.BOTH)
 
-width = 150
+width = 200
 
 for i, color in enumerate(['default', *style.colors]):
     

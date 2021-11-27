@@ -16,17 +16,17 @@ bot_frame.pack(fill=tk.X)
 
 # --- Testing below ---
 
-# checkbutton
-for i, color in enumerate(['default', *style.colors]):
-    if i < 5:
-        a = ttk.Checkbutton(top_frame, text=color, bootstyle=color, width=12)
-    else:
-        a = ttk.Checkbutton(bot_frame, text=color, bootstyle=color, width=12)
+# # checkbutton
+# for i, color in enumerate(['default', *style.colors]):
+#     if i < 5:
+#         a = ttk.Checkbutton(top_frame, text=color, bootstyle=color, width=12)
+#     else:
+#         a = ttk.Checkbutton(bot_frame, text=color, bootstyle=color, width=12)
     
-    a.pack(side=tk.LEFT, padx=3, pady=10)
-    a.invoke()
-a = ttk.Checkbutton(bot_frame, text='disabled', width=12, state=tk.DISABLED)
-a.pack(side=tk.LEFT, padx=3, pady=10)
+#     a.pack(side=tk.LEFT, padx=3, pady=10)
+#     a.invoke()
+# a = ttk.Checkbutton(bot_frame, text='disabled', width=12, state=tk.DISABLED)
+# a.pack(side=tk.LEFT, padx=3, pady=10)
 
 # # solid toolbutton
 # for i, color in enumerate(['default', *style.colors]):
@@ -40,7 +40,7 @@ a.pack(side=tk.LEFT, padx=3, pady=10)
 # a = ttk.Checkbutton(bot_frame, text='disabled', width=12, bootstyle="toolbutton", state=tk.DISABLED)
 # a.pack(side=tk.LEFT, padx=3, pady=10)
 
-# # outline toolbutton
+# outline toolbutton
 # for i, color in enumerate(['default', *style.colors]):
 #     if i < 5:
 #         a = ttk.Checkbutton(top_frame, text=color, bootstyle=color + 'outline-toolbutton', width=12)
@@ -63,15 +63,15 @@ a.pack(side=tk.LEFT, padx=3, pady=10)
 # a = ttk.Checkbutton(bot_frame, text='disabled', width=12, bootstyle="round-toggle", state=tk.DISABLED)
 # a.pack(side=tk.LEFT, padx=3, pady=10)
 
-# # square toggle
-# for i, color in enumerate(['default', *style.colors]):
-#     if i < 5:
-#         a = ttk.Checkbutton(top_frame, text=color, bootstyle=color + 'square-toggle', width=12)
-#     else:
-#         a = ttk.Checkbutton(bot_frame, text=color, bootstyle=color + 'square-toggle', width=12)
-#     a.pack(side=tk.LEFT, padx=3, pady=10)
-#     a.invoke()
-# a = ttk.Checkbutton(bot_frame, text='disabled', width=12, bootstyle="square-toggle", state=tk.DISABLED)
-# a.pack(side=tk.LEFT, padx=3, pady=10)
+# square toggle
+for i, color in enumerate(['default', *style.colors]):
+    if i < 5:
+        a = ttk.Checkbutton(top_frame, text=color, bootstyle=color + 'square-toggle', width=12)
+    else:
+        a = ttk.Checkbutton(bot_frame, text=color, bootstyle=color + 'square-toggle', width=12)
+    a.pack(side=tk.LEFT, padx=3, pady=10)
+    a.invoke()
+a = ttk.Checkbutton(bot_frame, text='disabled', width=12, bootstyle="square-toggle", state=tk.DISABLED)
+a.pack(side=tk.LEFT, padx=3, pady=10)
 
 root.mainloop()

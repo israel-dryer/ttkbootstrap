@@ -6,7 +6,7 @@ utility.enable_high_dpi_awareness()
 root = tk.Tk()
 style = ttk.Style()
 
-frame = ttk.Frame()
+frame = ttk.Frame(padding=10)
 frame.pack(padx=10, pady=10)
 
 top_frame = ttk.Frame(frame)

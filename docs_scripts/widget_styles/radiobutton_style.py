@@ -16,7 +16,7 @@ bot_frame.pack(fill=tk.X)
 
 # --- Testing below ---
 
-# # radiobutton
+# radiobutton
 # for i, color in enumerate(['default', *style.colors]):
 #     if i < 5:
 #         a = ttk.Radiobutton(top_frame, text=color, bootstyle=color, width=12, value=1)
