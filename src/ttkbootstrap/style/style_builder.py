@@ -15,8 +15,7 @@ class ThemeDefinition:
     ttkbootstrap theme."""
 
     def __init__(
-        self, name, colors, themetype=LIGHT, font=DEFAULT_FONT,
-    ):
+        self, name, colors, themetype=LIGHT):
         """
         Parameters
         ----------
@@ -28,15 +27,10 @@ class ThemeDefinition:
 
         themetype : str
             The type of theme: *light* or *dark*; default='light'.
-
-        font : str
-            The default font to use for the application;
-            default='helvetica'.
         """
         self.name = name
         self.colors = Colors(**colors)
         self.type = themetype
-        self.font = font
 
     def __repr__(self):
 
@@ -44,7 +38,6 @@ class ThemeDefinition:
             [
                 f"name={self.name},",
                 f"type={self.type},",
-                f"font={self.font},",
                 f"colors={self.colors}",
             ]
         )
@@ -281,7 +274,6 @@ class StyleBuilderTK:
             insertwidth=1,
             highlightthickness=1,
             relief=tk.FLAT,
-            font=self.theme.font,
             padx=5,
             pady=5
         )
@@ -378,7 +370,6 @@ class StyleBuilderTTK:
             selectforeground=self.colors.selectfg,
             selectbackground=self.colors.selectbg,
             fieldbg="white",
-            font=self.theme.font,
             borderwidth=1,
             focuscolor=''
         )
@@ -906,7 +897,7 @@ class StyleBuilderTTK:
         """
         HSTYLE = 'Horizontal.TFloodgauge'
         VSTYLE = 'Vertical.TFloodgauge'
-        FLOOD_FONT = 'helvetica 14'
+        FLOOD_FONT = '-size 14'
 
         if any([colorname == DEFAULT, colorname == '']):
             h_ttkstyle = HSTYLE
@@ -1681,7 +1672,6 @@ class StyleBuilderTTK:
             darkcolor=self.colors.bg,
             lightcolor=self.colors.bg,
             relief=tk.RAISED,
-            font=self.theme.font,
             focusthickness=0,
             focuscolor=foreground,
             anchor=tk.CENTER,
@@ -2319,7 +2309,7 @@ class StyleBuilderTTK:
         )
         self.style.map(ttkstyle, foreground=[('disabled', disabled_fg)]
         )
-        self.style.configure(ttkstyle, font=self.theme.font)
+        self.style.configure(ttkstyle)
         self.style.layout(
             ttkstyle,
             [
@@ -2504,7 +2494,7 @@ class StyleBuilderTTK:
                 ("selected !disabled", pressed),
                 ("hover !disabled", pressed)],
         )
-        self.style.configure(chevron_style, font='helvetica 14', focuscolor='')
+        self.style.configure(chevron_style, font='-size 14', focuscolor='')
 
         # register ttkstyle
         self.style.register_ttkstyle(ttkstyle)
