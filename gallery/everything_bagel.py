@@ -129,7 +129,8 @@ for row in table_data:
 tv.selection_set('I001')
 tv.heading(0, text='City')
 tv.heading(1, text='Rank')
-tv.column(1, width=50, anchor=tk.CENTER)
+tv.column(0, width=300)
+tv.column(1, width=70, anchor=tk.CENTER)
 tv.pack(side=tk.LEFT, anchor=tk.NE, fill=tk.X)
 
 # text widget

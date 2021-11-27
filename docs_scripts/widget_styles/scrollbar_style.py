@@ -23,7 +23,7 @@ bot_frame.pack(fill=tk.X)
 
 #     ttk.Label(f, text=color, width=20).pack(side=tk.TOP)
 #     a = ttk.Scrollbar(f, bootstyle=color, orient=tk.HORIZONTAL)
-#     a.set(0.1, 0.9)
+#     a.set(0, 1.0)
 #     a.pack(fill=tk.X)
 #     f.pack(side=tk.LEFT, padx=3, pady=10, fill=tk.X)
 
@@ -35,7 +35,7 @@ for i, color in enumerate(['default', *style.colors]):
 
     ttk.Label(f, text=color, width=20).pack(side=tk.TOP)
     a = ttk.Scrollbar(f, bootstyle=color+'round', orient=tk.HORIZONTAL)
-    a.set(0.1, 0.9)
+    a.set(0, 1.0)
     a.pack(fill=tk.X)
     f.pack(side=tk.LEFT, padx=3, pady=10, fill=tk.X)
 

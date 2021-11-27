@@ -11,19 +11,23 @@ def change_style():
     theme = choice(style.theme_names())
     style.theme_use(theme)
 
+frame = ttk.Frame(padding=10)    
+frame.pack(padx=10, pady=10)
+
 ttk.Meter(
-    master=root,
+    master=frame,
     metersize=180,
-    padding=20,
+    padding=5,
     amountused=25,
     metertype='semi',
     subtext='miles per hour',
     interactive=True
-).grid(row=0, column=0)
+).pack(side=tk.LEFT)
 
 ttk.Meter(
+    master=frame,
     metersize=180,
-    padding=20,
+    padding=5,
     amountused=1800,
     amounttotal=2600,
     subtext='storage used',
@@ -31,22 +35,24 @@ ttk.Meter(
     bootstyle='info',
     stripethickness=10,
     interactive=True
-).grid(row=0, column=1)
+).pack(side=tk.LEFT)
 
 ttk.Meter(
+    master=frame,
     metersize=180,
-    padding=20,
+    padding=5,
     stripethickness=2,
     amountused=40,
     subtext='project capacity',
     textright='%',
     bootstyle='success',
     interactive=True
-).grid(row=1, column=0)
+).pack(side=tk.LEFT)
 
 ttk.Meter(
+    master=frame,
     metersize=180,
-    padding=20,
+    padding=5,
     amounttotal=280,
     arcrange=180,
     arcoffset=-180,
@@ -56,9 +62,9 @@ ttk.Meter(
     wedgesize=5,
     bootstyle='danger',
     interactive=True
-).grid(row=1, column=1)
+).pack(side=tk.LEFT)
 
-btn = ttk.Button(text="Change Theme", command=change_style)
-btn.grid(row=3, column=0, columnspan=2, padx=10, pady=10)
+# btn = ttk.Button(text="Change Theme", command=change_style)
+# btn.grid(row=3, column=0, columnspan=2, padx=10, pady=10)
 
 root.mainloop()

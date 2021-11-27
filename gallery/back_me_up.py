@@ -269,18 +269,18 @@ class BackMeUp(ttk.Frame):
         btn.pack(side=tk.RIGHT)
 
         ## Treeview
-        tv = ttk.Treeview(right_panel, show='headings')
+        tv = ttk.Treeview(right_panel, show='headings', height=5)
         tv.configure(columns=(
             'name', 'state', 'last-modified', 
             'last-run-time', 'size'
         ))
         tv.column('name', width=150, stretch=True)
         
-        # for col in ['last-modified', 'last-run-time', 'size']:
-        #     tv.column(col, stretch=False)
+        for col in ['last-modified', 'last-run-time', 'size']:
+            tv.column(col, stretch=False)
         
-        # for col in tv['columns']:
-        #     tv.heading(col, text=col.title(), anchor=tk.W)
+        for col in tv['columns']:
+            tv.heading(col, text=col.title(), anchor=tk.W)
         
         tv.pack(fill=tk.X, pady=1)
 
@@ -291,7 +291,7 @@ class BackMeUp(ttk.Frame):
         output_container = ttk.Frame(scroll_cf, padding=1)
         _value = 'Log: Backing up... [Uploading file: D:/sample_file_35.txt]'
         self.setvar('scroll-message', _value)
-        st = ScrolledText(output_container)
+        st = ScrolledText(output_container, height=20)
         st.pack(fill=tk.BOTH, expand=tk.YES)
         scroll_cf.add(output_container, textvariable='scroll-message')
 

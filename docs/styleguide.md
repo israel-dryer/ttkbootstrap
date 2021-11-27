@@ -571,7 +571,7 @@ dark themes. However, all of these elements can be configured using the
 The meter widget is highly configurable, and can produce a diversity of
 interesting meters by mixing colors and other widget specific settings.
 
-![meter](./assets/widget-styles/meter.png)
+![meter](./assets/widget-styles/meter-2.gif)
 
 ```python
 # default meter style
