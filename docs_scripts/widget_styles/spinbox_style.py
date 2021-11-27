@@ -17,20 +17,20 @@ frame3.pack(fill=tk.X)
 
 for i, color in enumerate(['default', *style.colors]):
     if i < 5:
-        a = ttk.Spinbox(frame1, bootstyle=color)
+        a = ttk.Spinbox(frame1, bootstyle=color, width=12)
     else:
-        a = ttk.Spinbox(frame2, bootstyle=color)
+        a = ttk.Spinbox(frame2, bootstyle=color, width=12)
     a.insert('end', color)
     a.pack(side=tk.LEFT, padx=3, pady=10)
 
 # disabled
-a = ttk.Spinbox(frame3)
+a = ttk.Spinbox(frame3, width=12)
 a.insert(tk.END, 'disabled')
 a.pack(side=tk.LEFT, padx=3, pady=10)
 a.configure(state=tk.DISABLED)
 
 # readonly
-a = ttk.Spinbox(frame3)
+a = ttk.Spinbox(frame3, width=12)
 a.insert(tk.END, 'readonly')
 a.pack(side=tk.LEFT, padx=3, pady=10)
 a.configure(state='readonly')

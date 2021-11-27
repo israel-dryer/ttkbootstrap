@@ -2345,20 +2345,20 @@ class StyleBuilderTTK:
             The PhotoImage name.
         """
         fill = foreground
-        image = Image.new('RGBA', (21, 22))
+        image = Image.new('RGBA', (210, 220))
         draw = ImageDraw.Draw(image)
 
-        draw.rounded_rectangle([1, 3, 20, 21], radius=2, outline=fill, width=1)
+        draw.rounded_rectangle([10, 30, 200, 210], radius=20, outline=fill, width=10)
 
         calendar_image_coordinates = [
             # page spirals
-            [4, 1, 5, 5], [10, 1, 11, 5], [16, 1, 17, 5],
+            [40, 10, 50, 50], [100, 10, 110, 50], [160, 10, 170, 50],
             # row 1
-            [7, 9, 9, 11], [11, 9, 13, 11], [15, 9, 17, 11],
+            [70, 90, 90, 110], [110, 90, 130, 110], [150, 90, 170, 110],
             # row 2
-            [3, 13, 5, 15], [7, 13, 9, 15], [11, 13, 13, 15], [15, 13, 17, 15],
+            [30, 130, 50, 150], [70, 130, 90, 150], [110, 130, 130, 150], [150, 130, 170, 150],
             # row 3
-            [3, 17, 5, 19], [7, 17, 9, 19], [11, 17, 13, 19]
+            [30, 170, 50, 190], [70, 170, 90, 190], [110, 170, 130, 190]
         ]
         for xy in calendar_image_coordinates:
             draw.rectangle(xy=xy, fill=fill)

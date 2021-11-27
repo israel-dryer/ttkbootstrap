@@ -17,9 +17,9 @@ style = ttk.Style()
 
 # for i, color in enumerate(['default', *style.colors]):
 #     if i < 5:
-#         a = ttk.Label(top_frame, text=color, bootstyle=color, width=10)
+#         a = ttk.Label(top_frame, text=color, bootstyle=color, width=12)
 #     else:
-#         a = ttk.Label(bot_frame, text=color, bootstyle=color, width=10)
+#         a = ttk.Label(bot_frame, text=color, bootstyle=color, width=12)
     
 #     a.pack(side=tk.LEFT, padx=3, pady=10)    
 
@@ -35,9 +35,9 @@ bot_frame.pack(fill=tk.X)
 
 for i, color in enumerate(['default', *style.colors]):
     if i < 5:
-        a = ttk.Label(top_frame, text=color, bootstyle=color + "inverse", width=10)
+        a = ttk.Label(top_frame, text=color, bootstyle=color + "inverse", width=12)
     else:
-        a = ttk.Label(bot_frame, text=color, bootstyle=color + "inverse", width=10)
+        a = ttk.Label(bot_frame, text=color, bootstyle=color + "inverse", width=12)
     
     a.pack(side=tk.LEFT, padx=3, pady=10)    
 

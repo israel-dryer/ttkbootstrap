@@ -30,10 +30,10 @@ class Meter(ttk.Frame):
         stripethickness=0,
         textleft=None,
         textright=None,
-        textfont='helvetica 25 bold',
+        textfont='-size 25 -weight bold',
         subtext=None,
         subtextstyle=DEFAULT,
-        subtextfont='helvetica 10 bold',
+        subtextfont='-size 10',
         **kwargs
     ):
         """A radial meter that can be used to show progress of long 
@@ -127,7 +127,7 @@ class Meter(ttk.Frame):
 
         textfont : Union[str, Font]
             The font used to render the center text.
-            Default = 'helvetica 25 bold'
+            Default = '-size 25 -weight bold'
 
         subtext : str
             Supplemental text that appears below the center text.
@@ -140,7 +140,7 @@ class Meter(ttk.Frame):
 
         subtextfont : Union[str, Font]
             The font used to render the subtext.
-            Default = 'helvetica 10 bold'
+            Default = '-size 10'
 
         **kwargs : Dict[str, Any]
             Other keyword arguments that are passed directly to the 

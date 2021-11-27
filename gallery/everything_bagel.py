@@ -28,12 +28,12 @@ Namespaces are one honking great idea -- let's do more of those!"""
 root = tk.Tk()
 
 root.title("ttkbootstrap widget demo")
-root.minsize(1, 525)
+root.minsize(1, 550)
 style = ttk.Style('superhero')
 theme_names = style.theme_names()
 
 lframe = ttk.Frame(root, padding=10)
-lframe.pack(side=tk.LEFT, fill=tk.BOTH)
+lframe.pack(side=tk.LEFT, fill=tk.BOTH, expand=tk.YES)
 
 rframe = ttk.Frame(root, padding=10)
 rframe.pack(side=tk.RIGHT, fill=tk.BOTH)
