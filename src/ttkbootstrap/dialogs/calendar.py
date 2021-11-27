@@ -183,7 +183,7 @@ class DatePickerPopup:
             master=self.frm_title,
             textvariable=self.titlevar,
             anchor=tk.CENTER,
-            font='helvetica 11 bold'
+            font='-size 10 -weight bold'
         )
         self.title.pack(side=tk.LEFT, fill=tk.X, expand=tk.YES)
 
