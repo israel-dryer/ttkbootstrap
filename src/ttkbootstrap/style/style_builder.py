@@ -272,6 +272,8 @@ class StyleBuilderTK:
             highlightcolor=self.colors.primary,
             highlightbackground=bordercolor,
             insertbackground=self.colors.inputfg,
+            selectbackground=self.colors.selectbg,
+            selectforeground=self.colors.selectfg,
             insertwidth=1,
             highlightthickness=1,
             relief=tk.FLAT,
@@ -594,7 +596,7 @@ class StyleBuilderTTK:
                 troughcolor = self.colors.bg
                 bordercolor = self.colors.light
             else:
-                troughcolor = Colors.update_hsv(self.colors.inputbg, vd=-0.03)
+                troughcolor = self.colors.light
                 bordercolor = troughcolor
         else:
             troughcolor = Colors.update_hsv(self.colors.selectbg, vd=-0.2)
@@ -670,7 +672,7 @@ class StyleBuilderTTK:
                 troughcolor = self.colors.bg
                 bordercolor = self.colors.light
             else:
-                troughcolor = Colors.update_hsv(self.colors.inputbg, vd=-0.03)
+                troughcolor = self.colors.light
                 bordercolor = troughcolor
         else:
             troughcolor = Colors.update_hsv(self.colors.selectbg, vd=-0.2)        
@@ -760,10 +762,13 @@ class StyleBuilderTTK:
         size = self.scale_size(size)
         if self.is_light_theme:
             disabled_color = self.colors.border
-            track_color = Colors.update_hsv(self.colors.inputbg, vd=-0.03)
+            if colorname == LIGHT:
+                track_color = self.colors.bg
+            else:
+                track_color = self.colors.light
         else:
             disabled_color = self.colors.selectbg
-            track_color = self.colors.inputbg
+            track_color = Colors.update_hsv(self.colors.selectbg, vd=-0.2) 
 
         if any([colorname == DEFAULT, colorname == '']):
             normal_color = self.colors.primary

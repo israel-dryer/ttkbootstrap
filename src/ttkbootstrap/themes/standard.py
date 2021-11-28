@@ -3,7 +3,7 @@ STANDARD_THEMES = {
         "type": "light",
         "colors": {
             "primary": "#2780e3",
-            "secondary": "#373a3c",
+            "secondary": "#7E8081",
             "success": "#3fb618",
             "info": "#9954bb",
             "warning": "#ff7518",
@@ -12,7 +12,7 @@ STANDARD_THEMES = {
             "dark": "#373A3C",
             "bg": "#ffffff",
             "fg": "#373a3c",
-            "selectbg": "#373a3c",
+            "selectbg": "#7e8081",
             "selectfg": "#ffffff",
             "border": "#ced4da",
             "inputfg": "#373a3c",
@@ -56,7 +56,7 @@ STANDARD_THEMES = {
             "selectfg": "#ffffff",
             "border": "#e5e5e5",
             "inputfg": "#343a40",
-            "inputbg": "#f8f9fa"
+            "inputbg": "#fff"
         },
     },
     "minty": {
@@ -76,14 +76,14 @@ STANDARD_THEMES = {
             "selectfg": "#ffffff",
             "border": "#ced4da",
             "inputfg": "#696969",
-            "inputbg": "#f8f9fa"
+            "inputbg": "#fff"
         },
     },
     "lumen": {
         "type": "light",
         "colors": {
             "primary": "#158cba",
-            "secondary": "#555555",
+            "secondary": "#919191",
             "success": "#28b62c",
             "info": "#75caeb",
             "warning": "#ff851b",
@@ -92,17 +92,17 @@ STANDARD_THEMES = {
             "dark": "#555555",
             "bg": "#ffffff",
             "fg": "#555555",
-            "selectbg": "#555555",
+            "selectbg": "#919191",
             "selectfg": "#ffffff",
             "border": "#ced4da",
             "inputfg": "#555555",
-            "inputbg": "#f6f6f6"
+            "inputbg": "#fff"
         },
     },
     "sandstone": {
         "type": "light",
         "colors": {
-            "primary": "#3e3f3a",
+            "primary": "#325D88",
             "secondary": "#8e8c84",
             "success": "#93c54b",
             "info": "#29abe0",
@@ -116,14 +116,14 @@ STANDARD_THEMES = {
             "selectfg": "#ffffff",
             "border": "#ced4da",
             "inputfg": "#6E6D69",
-            "inputbg": "#fdfcfb"
+            "inputbg": "#fff"
         },
     },
     "yeti": {
         "type": "light",
         "colors": {
             "primary": "#008cba",
-            "secondary": "#333333",
+            "secondary": "#707070",
             "success": "#43ac6a",
             "info": "#5bc0de",
             "warning": "#e99002",
@@ -132,18 +132,18 @@ STANDARD_THEMES = {
             "dark": "#222222",
             "bg": "#ffffff",
             "fg": "#222222",
-            "selectbg": "#333333",
+            "selectbg": "#707070",
             "selectfg": "#ffffff",
             "border": "#cccccc",
             "inputfg": "#222222",
-            "inputbg": "#eeeeee"
+            "inputbg": "#fff"
         }
     },
     "pulse": {
         "type": "light",
         "colors": {
             "primary": "#593196",
-            "secondary": "#17141f",
+            "secondary": "#69676E",
             "success": "#13b955",
             "info": "#009cdc",
             "warning": "#efa31d",
@@ -152,7 +152,7 @@ STANDARD_THEMES = {
             "dark": "#17141F",
             "bg": "#ffffff",
             "fg": "#444444",
-            "selectbg": "#17141f",
+            "selectbg": "#69676e",
             "selectfg": "#ffffff",
             "border": "#cbc8d0",
             "inputfg": "#444444",
@@ -176,9 +176,29 @@ STANDARD_THEMES = {
             "selectfg": "#ffffff",
             "border": "#ced4da",
             "inputfg": "#333333",
-            "inputbg": "#f9fafb"
+            "inputbg": "#fff"
         },
     },
+    "morph": {
+        "type": "light",
+        "colors": {
+            "primary": "#378DFC",
+            "secondary": "#aaaaaa",
+            "success": "#43cc29",
+            "info": "#5B62F4",
+            "warning": "#FFC107",
+            "danger": "#E52527",
+            "light": "#F0F5FA",
+            "dark": "#212529",
+            "bg": "#D9E3F1",
+            "fg": "#7B8AB8",
+            "selectbg": "#aaaaaa",
+            "selectfg": "#FBFDFF",
+            "border": "#B9C7DA",
+            "inputfg": "#7F8EBA",
+            "inputbg": "#F0F5FA"
+        },
+    },    
     "journal": {
         "type": "light",
         "colors": {
@@ -196,7 +216,7 @@ STANDARD_THEMES = {
             "selectfg": "#ffffff",
             "border": "#ced4da",
             "inputfg": "#565656",
-            "inputbg": "#f9fafb"
+            "inputbg": "#fff"
         },
     },
     "darkly": {
@@ -212,7 +232,7 @@ STANDARD_THEMES = {
             "dark": "#303030",
             "bg": "#222222",
             "fg": "#ffffff",
-            "selectbg": "#7c8287",
+            "selectbg": "#444444",
             "selectfg": "#ffffff",
             "border": "#222222",
             "inputfg": "#ffffff",
@@ -232,7 +252,7 @@ STANDARD_THEMES = {
             "dark": "#20374C",
             "bg": "#2b3e50",
             "fg": "#ffffff",
-            "selectbg": "#748391",
+            "selectbg": "#4e5d6c",
             "selectfg": "#ffffff",
             "border": "#222222",
             "inputfg": "#ebebeb",
@@ -252,7 +272,7 @@ STANDARD_THEMES = {
             "dark": "#073642",
             "bg": "#002B36",
             "fg": "#ffffff",
-            "selectbg": "#627378",
+            "selectbg": "#94a2a4",
             "selectfg": "#ffffff",
             "border": "#00252e",
             "inputfg": "#A9BDBD",
