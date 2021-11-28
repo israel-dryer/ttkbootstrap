@@ -125,7 +125,7 @@ The default style features a square checkbox and label. The checkbox has a
 muted color outline when not selected, and a filled square with checkmark when
 selected.
 
-![checkbutton](./assets/widget-styles/checkbuttons.gif)
+![checkbutton](./assets/widget-styles/checkbuttons.png)
 
 ```python
 # default checkbutton style
@@ -571,7 +571,7 @@ dark themes. However, all of these elements can be configured using the
 The meter widget is highly configurable, and can produce a diversity of
 interesting meters by mixing colors and other widget specific settings.
 
-![meter](./assets/widget-styles/meter-2.gif)
+![meter](./assets/widget-styles/meter.png)
 
 ```python
 # default meter style
