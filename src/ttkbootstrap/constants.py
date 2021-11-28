@@ -1,6 +1,5 @@
 DEFAULT = 'default'
-DEFAULT_FONT = 'Helvetica 10'
-DEFAULT_THEME = 'flatly'
+DEFAULT_THEME = 'litera'
 TTK_CLAM = 'clam'
 TTK_ALT = 'alt'
 TTK_DEFAULT = 'default'
