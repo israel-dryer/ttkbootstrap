@@ -1746,11 +1746,11 @@ class StyleBuilderTTK:
         if self.is_light_theme:
             off_border = self.colors.selectbg
             off_indicator = self.colors.selectbg
-            disabled_fg = Colors.update_hsv(self.colors.inputbg, vd=-0.2)
+            disabled_fg = self.colors.border
         else:
             off_border = self.colors.selectbg
             off_indicator = self.colors.selectbg
-            disabled_fg = self.colors.inputbg
+            disabled_fg = Colors.update_hsv(self.colors.selectbg, vd=-0.3)
 
         # override defaults for light and dark colors
         if colorname == LIGHT:
@@ -1839,11 +1839,11 @@ class StyleBuilderTTK:
         if self.is_light_theme:
             off_border = self.colors.selectbg
             off_indicator = self.colors.selectbg
-            disabled_fg = Colors.update_hsv(self.colors.inputbg, vd=-0.2)
+            disabled_fg = self.colors.border
         else:
             off_border = self.colors.selectbg
             off_indicator = self.colors.selectbg
-            disabled_fg = self.colors.inputbg
+            disabled_fg = Colors.update_hsv(self.colors.selectbg, vd=-0.3)
 
         # override defaults for light and dark colors
         if colorname == LIGHT:
@@ -1909,9 +1909,9 @@ class StyleBuilderTTK:
         STYLE = 'Round.Toggle'
 
         if self.is_light_theme:
-            disabled_fg = Colors.update_hsv(self.colors.inputbg, vd=-0.2)
+            disabled_fg = self.colors.border
         else:
-            disabled_fg = self.colors.inputbg
+            disabled_fg = Colors.update_hsv(self.colors.selectbg, vd=-0.3)
 
         if any([colorname == DEFAULT, colorname == '']):
             ttkstyle = STYLE
@@ -1972,9 +1972,9 @@ class StyleBuilderTTK:
         STYLE = 'Square.Toggle'
 
         if self.is_light_theme:
-            disabled_fg = Colors.update_hsv(self.colors.inputbg, vd=-0.2)
+            disabled_fg = self.colors.border
         else:
-            disabled_fg = self.colors.inputbg
+            disabled_fg = Colors.update_hsv(self.colors.selectbg, vd=-0.3)
 
         if any([colorname == DEFAULT, colorname == '']):
             ttkstyle = STYLE
@@ -2247,7 +2247,7 @@ class StyleBuilderTTK:
             if colorname == LIGHT:
                 on_indicator =  self.colors.dark
         else:
-            disabled = self.colors.selectbg
+            disabled = Colors.update_hsv(self.colors.selectbg, vd=-0.3)
             off_border = self.colors.selectbg
 
         # radio off
@@ -2298,9 +2298,9 @@ class StyleBuilderTTK:
         STYLE = 'TRadiobutton'
 
         if self.is_light_theme:
-            disabled_fg = Colors.update_hsv(self.colors.inputbg, vd=-0.2)
+            disabled_fg = self.colors.border
         else:
-            disabled_fg = self.colors.inputbg
+            disabled_fg = Colors.update_hsv(self.colors.selectbg, vd=-0.3)
 
         if any([colorname == DEFAULT, colorname == '']):
             ttkstyle = STYLE
