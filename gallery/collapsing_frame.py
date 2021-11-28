@@ -14,6 +14,7 @@ class Application(tk.Tk):
         super().__init__()
         self.title('Collapsing Frame')
         self.style = ttk.Style()
+        self.minsize(300, 1)
 
         cf = CollapsingFrame(self)
         cf.pack(fill='both')
