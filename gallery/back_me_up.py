@@ -291,7 +291,7 @@ class BackMeUp(ttk.Frame):
         output_container = ttk.Frame(scroll_cf, padding=1)
         _value = 'Log: Backing up... [Uploading file: D:/sample_file_35.txt]'
         self.setvar('scroll-message', _value)
-        st = ScrolledText(output_container, height=20)
+        st = ScrolledText(output_container)
         st.pack(fill=tk.BOTH, expand=tk.YES)
         scroll_cf.add(output_container, textvariable='scroll-message')
 
