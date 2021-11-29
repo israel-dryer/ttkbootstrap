@@ -1,9 +1,21 @@
 # ttkbootstrap
 
-A collection of modern, flat themes inspired by [Bootstrap](https://getbootstrap.com/) 
-for tkinter. Each widget includes [pre-defined widget styles](styleguide.md) 
-that are easily accessible with easy to remember keywords that change the 
-widget color and type.
+A supercharged theme extension for tkinter that enables on-demand modern 
+flat style themes inspired by [Bootstrap](https://getbootstrap.com/).
+
+**_Features include_:**
+
+- customizable pre-defined styles
+
+- simple keyword API (`bootstyle`) similar to **Bootstrap**
+
+- new widgets: **Meter**, **DateEntry**, **Floodgauge**, **DatePickerPopup**
+
+- many new styles for existing widgets, such as **Striped progressbar**, or **Toggle button**
+
+- a built-in [theme creator]() if you want to create your own customized themed
+
+**_Theme samples_:**<br>
 
 ![themes](./assets/themes/themes.gif)
 
@@ -49,11 +61,11 @@ classes such as **success.Horizontal.TProgressbar**. Instead, use **success**,
 which is a keyword that can indicate the same semantic color meaning for _all_ 
 widgets.
 
-Many people are familiar with bootstrap for web developement; it comes 
+Many people are familiar with bootstrap for web developement which comes 
 pre-packaged with built-in css style classes that provide a professional and 
 consistent api for quick development. I took a similar approach with this 
-project by pre-defining styles for nearly all ttk widgets that can be accessed
-with _simple keywords_.
+project by pre-defining styles for nearly all ttk widgets, and which can be 
+customized with simple _simple keywords_.
 
 #### Only create themes and styles that are actually used
 
@@ -61,30 +73,30 @@ If you're not using it, then it shouldn't be taking up memory in your
 application. Nothing bogs down your application more than a bunch of 
 boilerplate predefined assets that you may or may not use. 
 
-To fix this, I've designed a styling engine for ttk that creates ttk styles and 
+To fix this, I've designed a styling engine for ttk that builds ttk styles and 
 themes _on demand_. If a style is not used, it will not be created. This adds a 
 tremendous amount of flexibility in theme and style design as I am no longer 
 limited by the memory limits of _pre-loaded image-based widget styles_. 
 
 To put this into perspective... in version 0.5, if I had a single scale widget 
-in my application, I would still need to load 288 images to account for all 
-potential theme and color combinations!! This is how styles are handled 
-traditionally in ttk. Now, all I need to load is 3 or 4 images for hover 
-effects, etc... Only the styles actually used are created.
+in my application, I would need to load 288 images to account for all potential 
+theme and color combinations!! This is how styles are handled traditionally in 
+ttk. In version 1.0, I only need to load 3 or 4 images for this example to 
+account for hover effects, etc...  Only the styles actually used are built. 
 
 ## Legacy support
 
-Some of the ttk widgets utilize existing tkinter widgets underneath. For 
-example: there is a tkinter popdown list in the **Combobox**, and a legacy 
-tkinter widget inside the **OptionMenu**. To make sure these widgets don't 
-stick out like a sore thumb, I have applied default styling to these widgets
-to ensure the look and feel is consistent across the board.
+Some ttk widgets utilize existing tkinter widgets under the hood. For example: 
+there is a tkinter popdown list in the **Combobox**, and a legacy tkinter widget 
+inside the **OptionMenu**. To make sure these widgets don't stick out like a 
+sore thumb, I have applied default styling to ensure the look and feel is 
+consistent across the board.
 
 ## Quickstart
 
 #### Creating an application
-If you have used **tkinter** and **ttk** the following example will look 
-familiar. I'll explain a few of the differences.
+If you've used **tkinter** and **ttk**, the following example will look familiar. 
+I'll explain a few of the differences.
 
 - import `ttkbootstrap` instead of `ttk`
 - use the `bootstyle` parameter to add keywords instead of `style`
@@ -111,8 +123,8 @@ The code above will produce this window with two buttons.
 
 #### Choosing a theme
 
-The default theme is **flatly**, but you can start the application with any of 
-the [built-in themes](#themes.md) by passing in the theme name when you create 
+The default theme is **litera**, but you can start the application with any of 
+the [built-in themes](themes.md) by passing in the theme name when you create 
 the style object.
 
 ```python
@@ -126,10 +138,13 @@ the style object.
 
 #### Use themed widgets
 
-All widgets have [dozens of predefined styles](styleguide.md) which are applied
-using **keywords** that modify both the **type** and **color** of the widget. 
-The actual color values are defined for each theme.
+ttkbootstrap widgets have [dozens of predefined styles](styleguide.md) which are 
+applied using **keywords** that modify both the **type** and **color** of the 
+widget. The actual color values are defined for each theme.
 
+For example, using the keyword **outline** would draw a button with an outline 
+_type_, but using the keyword **info** would change the _color_ of the outline
+and text.
 
 ##### Style Colors
 The example below shows a button for every color.
@@ -221,7 +236,7 @@ All of the following variations are legal and will result in the same style.
 * `"outline-info"`
 * `("info", "outline")`
 
-!!! note "The recommended syntax is to use a dash"
+!!! note "The recommended keyword separator is a dash"
     While you can use any convention that you want as long as it works, it is
     recommended to separate the keywords using a dash when possible. Otherwise,
     it may sometimes be necessary or more convenient to use a `list` or `tuple`.
