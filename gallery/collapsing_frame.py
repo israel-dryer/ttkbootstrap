@@ -5,7 +5,8 @@
 from pathlib import Path
 import tkinter as tk
 import ttkbootstrap as ttk
-from ttkbootstrap.style import utility
+from ttkbootstrap import utility
+from ttkbootstrap.bootstyle import ttkstyle_widget_color
 utility.enable_high_dpi_awareness()
 
 class Application(tk.Tk):
@@ -75,7 +76,7 @@ class CollapsingFrame(ttk.Frame):
         """
         if child.winfo_class() != 'TFrame':
             return
-        style_color = utility.ttkstyle_widget_color(bootstyle)
+        style_color = ttkstyle_widget_color(bootstyle)
         frm = ttk.Frame(self, bootstyle=style_color)
         frm.grid(row=self.cumulative_rows, column=0, sticky=tk.EW)
 

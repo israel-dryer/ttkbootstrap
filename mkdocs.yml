@@ -1,6 +1,6 @@
 site_name: ttkbootstrap
 theme:
-  name: flatly
+  name: material
   features:
     - navigation.tracking
     - navigation.tabs
@@ -10,8 +10,29 @@ nav:
   - 'Themes': themes.md
   - 'Gallery': gallery.md
   - 'Cookbook': cookbook.md
+  - 'API': 
+    - 'style module': 
+      - api/style/bootstyle.md
+      - api/style/colors.md
+      - api/style/keywords.md
+      - api/style/style.md
+      - api/style/stylebuildertk.md
+      - api/style/stylebuilderttk.md
+      - api/style/stylemanager.md
+      - api/style/themedefinition.md
+    - 'widgets module':
+      - api/widgets/dateentry.md
+      - api/widgets/floodgauge.md
+      - api/widgets/meter.md
+    - 'dialogs module': 
+      - api/dialogs/askdate.md
+      - api/dialogs/datepickerpopup.md
+plugins:
+  - search
+  - mkdocstrings
 markdown_extensions:
   - admonition
+  - def_list
   - pymdownx.details
   - pymdownx.superfences
   - pymdownx.keys

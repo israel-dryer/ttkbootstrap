@@ -10,7 +10,7 @@ from queue import Queue
 from threading import Thread
 import tkinter as tk
 from tkinter.filedialog import askdirectory, asksaveasfilename
-from ttkbootstrap.style import utility
+from ttkbootstrap import utility
 import ttkbootstrap as ttk
 utility.enable_high_dpi_awareness()
 

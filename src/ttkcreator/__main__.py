@@ -3,11 +3,11 @@ from tkinter.messagebox import showinfo, showerror
 from tkinter.filedialog import askopenfilename, asksaveasfilename
 from tkinter.messagebox import askokcancel
 import ttkbootstrap as ttk
-from ttkbootstrap.style import utility
+from ttkbootstrap import utility
 from tkinter.colorchooser import askcolor
 from ttkbootstrap.themes import standard
 from ttkbootstrap.themes import user
-from ttkbootstrap.style.style import ThemeDefinition
+from ttkbootstrap.style import ThemeDefinition
 from pathlib import Path
 from uuid import uuid4
 import shutil
@@ -152,8 +152,12 @@ class ThemeCreator(tk.Tk):
         standard.STANDARD_THEMES[name] = theme[name]
         output = f'USER_THEMES={str(user.USER_THEMES)}'
         filepath.write_text(output, encoding='utf-8')
-        self.base_theme.configure(values=self.style.theme_names())
+        
+        definition = ThemeDefinition(name, colors, self.style.theme.type)
+        self.style.register_theme(definition)
         self.style.theme_use(name)
+        self.base_theme.configure(values=self.style.theme_names())
+
         showinfo(title='Save Theme',
                  message=f'The theme {name} has been created')
 

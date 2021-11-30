@@ -5,7 +5,31 @@ import ttkbootstrap as ttk
 
 
 class DatePickerPopup:
+    """A widget that displays a calendar popup and returns the 
+    selected date as a datetime object.
+
+    The current date is displayed by default unless the `startdate`
+    parameter is provided.  
     
+    The month can be changed by clicking the chevrons to the left 
+    and right of the month-year title.
+
+    Left-click the arrow to move the calendar by one month.
+    Right-click the arrow to move the calendar by one year.
+    Right-click the title to reset the calendar to the start date.
+
+    The starting weekday can be changed with the `firstweekday`
+    parameter for geographies that do not start the calendar on 
+    Sunday, which is the default.
+
+    The widget grabs focus and all screen events until released.
+    If you want to cancel a date selection, click the 'X' button
+    at the top-right corner of the widget.
+
+    The bootstyle api may be used to change the style of the widget.
+    The available colors include -> primary, secondary, success, 
+    info, warning, danger, light, dark.     
+    """
     def __init__(
         self,
         parent=None,
@@ -14,53 +38,29 @@ class DatePickerPopup:
         startdate=None,
         bootstyle='primary',
     ):
-        """A widget that displays a calendar popup and returns the 
-        selected date as a datetime object.
-
-        The current date is displayed by default unless the `startdate`
-        parameter is provided.  
+        """
+        Parameters:
         
-        The month can be changed by clicking the chevrons to the left 
-        and right of the month-year title.
+            parent (Widget):
+                The parent widget; the popup will appear to the 
+                bottom-right of the parent widget. If no parent is 
+                provided, the widget is centered on the screen.
 
-        Left-click the arrow to move the calendar by one month.
-        Right-click the arrow to move the calendar by one year.
-        Right-click the title to reset the calendar to the start date.
+            title (str):
+                The text that appears on the titlebar.
 
-        The starting weekday can be changed with the `firstweekday`
-        parameter for geographies that do not start the calendar on 
-        Sunday, which is the default.
+            firstweekday (int):
+                Specifies the first day of the week. 0=Monday, 
+                1=Tuesday, etc...
 
-        The widget grabs focus and all screen events until released.
-        If you want to cancel a date selection, click the 'X' button
-        at the top-right corner of the widget.
+            startdate (datetime):
+                The date to be in focus when the widget is 
+                displayed.
 
-        The bootstyle api may be used to change the style of the widget.
-        The available colors include -> primary, secondary, success, 
-        info, warning, danger, light, dark.     
-
-        Parameters
-        ----------
-        parent : Widget
-            The parent widget; the popup will appear to the bottom-right
-            of the parent widget. If no parent is provided, the widget
-            is centered on the screen.
-
-        title : str
-            The text that appears on the titlebar. By default = ''.
-
-        firstweekday : int
-            Specifies the first day of the week. 0=Monday, 1=Tuesday, 
-            etc.... Default = 6 (Sunday).
-
-        startdate : datetime
-            The date to be in focus when the widget is displayed.
-            Default = Current date.
-
-        bootstyle : str
-            The following colors can be used to change the color of the
-            title and hover / pressed color -> primary, secondary, info,
-            warning, success, danger, light, dark.            
+            bootstyle (str):
+                The following colors can be used to change the color of 
+                the title and hover / pressed color -> primary, 
+                secondary, info, warning, success, danger, light, dark.            
         """
         self.parent = parent
         self.root = tk.Toplevel()
@@ -76,11 +76,11 @@ class DatePickerPopup:
         self.titlevar = tk.StringVar()
         self.datevar = tk.IntVar()
         
-        self.setup_calendar()
+        self._setup_calendar()
         self.root.grab_set()
         self.root.wait_window()
 
-    def setup_calendar(self):
+    def _setup_calendar(self):
         """Setup the calendar widget"""
         # create the widget containers
         self.frm_calendar = ttk.Frame(
@@ -103,25 +103,25 @@ class DatePickerPopup:
         self.frm_calendar.update_idletasks() # actualize geometry
 
         # create visual components
-        self.draw_titlebar()
-        self.draw_calendar()
+        self._draw_titlebar()
+        self._draw_calendar()
         
         # make toplevel visible
-        self.set_window_position()
+        self._set_window_position()
         self.root.deiconify()
         self.root.attributes('-topmost', True)
 
-    def update_widget_bootstyle(self):
+    def _update_widget_bootstyle(self):
         self.frm_title.configure(bootstyle=self.bootstyle)
         self.title.configure(bootstyle=f'{self.bootstyle}-inverse')
         self.prev_period.configure(style=f'Chevron.{self.bootstyle}.TButton')
         self.next_period.configure(style=f'Chevron.{self.bootstyle}.TButton')
 
-    def draw_calendar(self):
-        self.update_widget_bootstyle()
+    def _draw_calendar(self):
+        self._update_widget_bootstyle()
         self.root.minsize(width=226, height=1)
-        self.set_title()
-        self.current_month_days()
+        self._set_title()
+        self._current_month_days()
         self.frm_dates = ttk.Frame(self.frm_calendar)
         self.frm_dates.pack(fill=tk.BOTH, expand=tk.YES)
 
@@ -148,7 +148,7 @@ class DatePickerPopup:
                     else:
                         day_style = f'{self.bootstyle}-calendar'
 
-                    def selected(x=row, y=col): self.on_date_selected(x, y)
+                    def selected(x=row, y=col): self._on_date_selected(x, y)
 
                     btn = ttk.Radiobutton(
                         master=self.frm_dates,
@@ -161,7 +161,7 @@ class DatePickerPopup:
                     )
                     btn.grid(row=row, column=col, sticky=tk.NSEW)
 
-    def draw_titlebar(self):
+    def _draw_titlebar(self):
         """Draw the calendar title bar which includes the month title
         and the buttons that increment and decrement the selected
         month.
@@ -200,7 +200,7 @@ class DatePickerPopup:
         self.title.bind('<Button-1>', self.on_reset_date)
 
         # create and pack days of the week header
-        for col in self.header_columns():
+        for col in self._header_columns():
             ttk.Label(
                 master=self.frm_header,
                 text=col,
@@ -213,11 +213,11 @@ class DatePickerPopup:
                 expand=tk.YES
             )
 
-    def set_title(self):
+    def _set_title(self):
         _titledate = f'{self.date.strftime("%B %Y")}'
         self.titlevar.set(value=_titledate)
 
-    def current_month_days(self):
+    def _current_month_days(self):
         """Fetch the day numbers and dates for all days in the current
         month. `monthdays` is a list of days as integers, and 
         `monthdates` is a list of `datetime` objects.
@@ -231,21 +231,21 @@ class DatePickerPopup:
             month=self.date.month
         )
 
-    def header_columns(self):
+    def _header_columns(self):
         """Create and return a list of weekdays to be used as a header
         in the calendar. The order of the weekdays is based on the 
         `firstweekday` property.
         
-        Returns
-        -------
-        List[str]
-            A list of weekday column names for the calendar header.
+        Returns:
+
+            List[str]:
+                A list of weekday column names for the calendar header.
         """
         weekdays = ['Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa', 'Su']
         header = weekdays[self.firstweekday:] + weekdays[:self.firstweekday]
         return header
 
-    def on_date_selected(self, row, col):
+    def _on_date_selected(self, row, col):
         """Callback for selecting a date.
         
         An index is assigned to each date button that corresponds to
@@ -255,21 +255,21 @@ class DatePickerPopup:
         column index reference. This value is saved in the 
         `date_selected` property and the `Toplevel` is destroyed.
 
-        Parameters
-        ----------
-        index : Tuple[int, int]
-            A row and column index of the date selected; to be found
-            in the `monthdates` matrix.
+        Parameters:
 
-        Returns
-        -------
-        datetime
-            The date selected
+            index (Tuple[int, int]):
+                A row and column index of the date selected; to be 
+                found in the `monthdates` matrix.
+
+        Returns:
+
+            datetime:
+                The date selected
         """
         self.date_selected = self.monthdates[row][col]
         self.root.destroy()
 
-    def selection_callback(func):
+    def _selection_callback(func):
         """Calls the decorated `func` and redraws the calendar."""
         def inner(self, *args):
             func(self, *args)
@@ -277,37 +277,37 @@ class DatePickerPopup:
             self.draw_calendar()
         return inner
 
-    @selection_callback
+    @_selection_callback
     def on_next_month(self):
         """Increment the calendar data to the next month"""
         year, month = calendar._nextmonth(self.date.year, self.date.month)
         self.date = datetime(year=year, month=month, day=1).date()
 
-    @selection_callback
+    @_selection_callback
     def on_next_year(self, *_):
         """Increment the calendar data to the next year"""
         year = self.date.year + 1
         month = self.date.month
         self.date = datetime(year=year, month=month, day=1).date()
 
-    @selection_callback
+    @_selection_callback
     def on_prev_month(self):
         """Decrement the calendar to the previous year"""
         year, month = calendar._prevmonth(self.date.year, self.date.month)
         self.date = datetime(year=year, month=month, day=1).date()        
 
-    @selection_callback
+    @_selection_callback
     def on_prev_year(self, *_):
         year = self.date.year - 1
         month = self.date.month
         self.date = datetime(year=year, month=month, day=1).date()
 
-    @selection_callback
+    @_selection_callback
     def on_reset_date(self, *_):
         """Set the calendar to the start date"""
         self.date = self.startdate
 
-    def set_window_position(self):
+    def _set_window_position(self):
         """Move the window the to bottom-right of the parent widget, or
         to the middle of the screen if no parent is provided.
         """
@@ -332,33 +332,32 @@ def ask_date(
 ):
     """Shows a calendar popup and returns the selection.
 
-    Parameters
-    ----------
-    parent : Widget
-        The parent widget; the popup will appear to the bottom-right of 
-        the parent widget. If no parent is provided, the widget is 
-        centered on the screen. 
+    Parameters:
 
-    title: str
-        The text that appears on the popup titlebar. By default = ''.
+        parent (Widget):
+            The parent widget; the popup will appear to the 
+            bottom-right of the parent widget. If no parent is 
+            provided, the widget is centered on the screen. 
 
-    firstweekday : int
-        Specifies the first day of the week. ``0`` is Monday, ``6`` is 
-        Sunday (the default). 
+        title (str):
+            The text that appears on the popup titlebar.
 
-    startdate : datetime
-        The date to be in focus when the widget is displayed; 
-        Default = `datetime.today().date()`
+        firstweekday (int):
+            Specifies the first day of the week. `0` is Monday, `6` is 
+            Sunday (the default). 
 
-    bootstyle : str
-        The following colors can be used to change the color of the
-        title and hover / pressed color -> primary, secondary, info,
-        warning, success, danger, light, dark.       
+        startdate (datetime):
+            The date to be in focus when the widget is displayed; 
+
+        bootstyle (str):
+            The following colors can be used to change the color of the
+            title and hover / pressed color -> primary, secondary, info,
+            warning, success, danger, light, dark.       
         
-    Returns
-    -------
-    datetime
-        The date selected; the current date if no date is selected.
+    Returns:
+
+        datetime:
+            The date selected; the current date if no date is selected.
     """
     chooser = DatePickerPopup(
         parent=parent,
