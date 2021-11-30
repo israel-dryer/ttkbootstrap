@@ -14,10 +14,54 @@ from ttkbootstrap import utility as util
 
 
 class Colors:
-    """A class that contains the theme colors as well as several
-    helper methods for manipulating colors.
-    """
+    """A class that defines the color scheme for a theme as well as
+    provides several static methods for manipulating colors.
 
+    A `Colors` object is attached to a `ThemeDefinition` and can also
+    be accessed through the `StyleManager.colors` property for the 
+    current theme.
+
+    Examples:
+
+        ```python
+        style = Style()
+
+        # dot-notation
+        style.colors.primary
+
+        # get method
+        style.colors.get('primary')
+        ```
+
+        This class is an iterator, so you can iterate over the main
+        style color labels (primary, secondary, success, info, warning,
+        danger):
+
+        ```python
+        for color_label in style.colors:
+            color = style.colors.get(color_label)
+            print(color_label, color)
+        ```
+
+        If, for some reason, you need to iterate over all theme color
+        labels, then you can use the `Colors.label_iter` method. This
+        will include all theme colors.
+
+        ```python
+        for color_label in style.colors.label_iter():
+            color = Colors.get(color_label)
+            print(color_label, color)
+        ```    
+
+        If you want to adjust the hsv values of an existing color by a
+        specific percentage (delta), you can use the `update_hsv` method,
+        which is static. In the example below, the "value delta" or `vd`
+        is increased by 15%, which will lighten the color:
+
+        ```python
+        Colors.update_hsv("#9954bb", vd=0.15)
+        ```
+    """
     def __init__(
         self,
         primary,
@@ -36,41 +80,7 @@ class Colors:
         inputfg,
         inputbg,
     ):
-        """This class is attached to the `StyleManager` object at run-time
-        for the selected theme, and so is available to use with
-        `StyleManager.colors`. The colors can be accessed via dot notation
-        or get method:
-
-        Examples:
-
-            ```python
-            # dot-notation
-            Colors.primary
-
-            # get method
-            Colors.get('primary')
-            ```
-
-            This class is an iterator, so you can iterate over the main
-            style color labels (primary, secondary, success, info, warning,
-            danger):
-
-            ```python
-            for color_label in Colors:
-                color = Colors.get(color_label)
-                print(color_label, color)
-            ```
-
-            If, for some reason, you need to iterate over all theme color
-            labels, then you can use the `Colors.label_iter` method. This
-            will include all theme colors.
-
-            ```python
-            for color_label in Colors.label_iter():
-                color = Colors.get(color_label)
-                print(color_label, color)
-            ```
-
+        """
         Parameters:
 
             primary (str):
@@ -136,6 +146,7 @@ class Colors:
 
     def rgb_to_hsv(r, g, b):
         """Convert an rgb to hsv color value.
+        
         Parameters:
             r (float):
                 red
@@ -154,6 +165,7 @@ class Colors:
         color_label.
 
         Parameters:
+
             color_label (str):
                 A color label corresponding to a class property
         """
@@ -168,11 +180,14 @@ class Colors:
         """Lookup a color property
 
         Parameters:
+
             color_label (str):
                 A color label corresponding to a class propery
 
         Returns:
-            str: A hexadecimal color value.
+            
+            str: 
+                A hexadecimal color value.
         """
         return self.__dict__.get(color_label)
 
@@ -204,6 +219,7 @@ class Colors:
         """Iterate over all color label properties in the Color class
 
         Returns:
+            
             iter:
                 An iterator representing the name of the color properties
         """
@@ -232,10 +248,12 @@ class Colors:
         """Convert hexadecimal color to rgb color value
 
         Parameters:
+
             color (str):
                 A hexadecimal color value
 
         Returns:
+
             tuple[int, int, int]: 
                 An rgb color value.
         """
@@ -256,6 +274,7 @@ class Colors:
         """Convert rgb to hexadecimal color value
 
         Parameters:
+
             r (int):
                 red
 
@@ -266,6 +285,7 @@ class Colors:
                 blue
 
         Returns:
+
             str:
                 A hexadecimal color value
         """
@@ -277,22 +297,24 @@ class Colors:
     @staticmethod
     def update_hsv(color, hd=0, sd=0, vd=0):
         """Modify the hue, saturation, and/or value of a given hex
-        color value.
+        color value by specifying the _delta_.
 
         Parameters:
+
             color (str):
                 A hexadecimal color value to adjust.
 
             hd (float):
-                % change in hue
+                % change in hue, _hue delta_.
 
             sd (float):
-                % change in saturation
+                % change in saturation, _saturation delta_.
 
             vd (float):
-                % change in value
+                % change in value, _value delta_.
 
         Returns:
+
             str:
                 The resulting hexadecimal color value
         """
@@ -327,17 +349,17 @@ class Colors:
         return Colors.rgb_to_hex(r, g, b)
 
 
-class StyleManager(ttk.Style):
-    """A class for creating and managing the application theme and
-    widget styles.
-
-    Sets the theme of the `tkinter.Tk` instance and supports all
-    ttkbootstrap and ttk themes provided. This class is meant to be a
-    drop-in replacement for `ttk.Style` and inherits all of it's
-    methods and properties.For more details on the `ttk.Style` class, 
-    see the python documentation.
+class Style(ttk.Style):
+    """A singleton class for creating and managing the application 
+    theme and widget styles.
     """
     instance = None
+
+    def __new__(cls, theme=None):
+        if Style.instance is None:
+            return object.__new__(cls)
+        else:
+            return Style.instance
 
     def __init__(self, theme=DEFAULT_THEME):
         """
@@ -346,6 +368,10 @@ class StyleManager(ttk.Style):
             theme (str):
                 The name of the theme to use when styling the widget.
         """
+        if Style.instance is not None:
+            if theme != DEFAULT_THEME:
+                Style.instance.theme_use(theme)
+            return
         self._theme_objects = {}
         self._theme_definitions = {}
         self._style_registry = set()  # all styles used
@@ -354,7 +380,7 @@ class StyleManager(ttk.Style):
         self._load_themes()
         super().__init__()
 
-        StyleManager.instance = self
+        Style.instance = self
         self.theme_use(theme)
 
     @property
@@ -474,7 +500,7 @@ class StyleManager(ttk.Style):
                 The theme builder object that builds the ttk styles for
                 the current theme.
         """
-        style: StyleManager = Style()
+        style: Style = Style()
         theme_name = style.theme.name
         return style._theme_objects[theme_name]
 
@@ -489,7 +515,7 @@ class StyleManager(ttk.Style):
                 The theme builder object that builds the ttk styles for
                 the current theme.
         """
-        builder = StyleManager._get_builder()
+        builder = Style._get_builder()
         return builder.builder_tk
 
     def _load_themes(self):
@@ -533,52 +559,6 @@ class StyleManager(ttk.Style):
                 method: Callable = builder.name_to_method(method_name)
                 method(builder, color)
 
-    # def set_window_scaling(self, scaling):
-    #     """Scale widget dpi"""
-    #     self.master.tk.call('tk', 'scaling', scaling)
-
-    # def get_window_scaling(self):
-    #     return self.master.tk.call('tk', 'scaling')
-
-    # def enable_high_dpi_awareness(self):
-    #     """Enable high dpi awareness. Currently for Windows Only."""
-    #     root = self.master
-    #     if root._windowingsystem == 'win32':
-    #         from ctypes import windll
-    #         windll.user32.SetProcessDPIAware()
-
-
-def Style(theme=DEFAULT_THEME):
-    """Creates and returns an instance of the `StyleManager` class. If
-    an instance already exists, that is returns, otherwise one is
-    created and returned.
-
-    Parameters:
-
-        theme (str):
-            The name of the theme to use.
-
-    Returns:
-
-        StyleManager:
-            A singleton instance.
-
-    Examples:
-
-        Return an instance of the StyleManger class
-        >>> style = Style()
-
-        Return instance with defined theme
-        >>> style = Style(theme='superhero')
-    """
-    if StyleManager.instance is None:
-        StyleManager(theme)
-
-    elif theme != DEFAULT_THEME:
-        StyleManager.instance.theme_use(theme)
-
-    return StyleManager.instance
-
 
 class ThemeDefinition:
     """A class to provide defined name, colors, and font settings for a
@@ -593,10 +573,10 @@ class ThemeDefinition:
                 The name of the theme.
 
             colors (Colors):
-                A dictionary containing the theme colors.
+                An object that defines the color scheme for a theme.
 
             themetype (str):
-                The type of theme: *light* or *dark*.
+                Specifies whether the theme is **light** or **dark**.
         """
         self.name = name
         self.colors = Colors(**colors)
