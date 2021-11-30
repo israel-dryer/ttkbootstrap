@@ -1,13 +1,31 @@
-"""
-    Author: Israel Dryer
-    Modified: 2021-11-10
-"""
+# Collapsing Frame
+This example demonstrates how to build a collapsing frame widget. Each `Frame` 
+added to the widget can be assigned a title and style. Various bootstyles are
+applied to each option group. 
+
+The theme used is **litera**.
+
+![file search image example](../assets/gallery/collapsing_frame.png)
+
+## Style Summary
+
+| Item              | Class             | Bootstyle |
+| ---               | ---               | --- |
+| Option group 1    | `CollapsingFrame` | primary |
+| Option group 2    | `CollapsingFrame` | danger |
+| Option group 3    | `CollapsingFrame` | success |
+
+## Example Code
+
+[Run this code live]() on repl.it
+
+```python
 from pathlib import Path
 import tkinter as tk
 import ttkbootstrap as ttk
 from ttkbootstrap import utility
 from ttkbootstrap.style import Bootstyle
-utility.enable_high_dpi_awareness()
+
 
 class Application(tk.Tk):
 
@@ -112,10 +130,10 @@ class CollapsingFrame(ttk.Frame):
         """Open or close the section and change the toggle button image 
         accordingly
 
-        Parameters
-        ----------
-        child : Frame
-            The child element to add or remove from grid manager
+        Parameters:
+        
+            child (Frame):
+                The child element to add or remove from grid manager
         """
         if child.winfo_viewable():
             child.grid_remove()
@@ -128,3 +146,4 @@ class CollapsingFrame(ttk.Frame):
 if __name__ == '__main__':
 
     Application().mainloop()
+```
