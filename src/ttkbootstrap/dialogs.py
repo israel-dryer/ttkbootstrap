@@ -353,7 +353,7 @@ def ask_date(
             The following colors can be used to change the color of the
             title and hover / pressed color -> primary, secondary, info,
             warning, success, danger, light, dark.       
-        
+
     Returns:
 
         datetime:
