@@ -1,5 +1,5 @@
 # utility module
 
-## ::: ttkbootstrap.utility
+<!-- ## ::: ttkbootstrap.utility
     selection:
-        filters: ["!^_", "^__init__"]
+        filters: ["!^_", "^__init__"] -->
