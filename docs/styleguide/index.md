@@ -1,4 +1,4 @@
-# Overview
+# Style guide
 
 This is a style guide for applying ttkbootstrap styles. All ttkbootstrap styles
 are applied using the **bootstyle** parameter that has been injected into the
