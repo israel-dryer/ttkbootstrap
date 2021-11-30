@@ -52,5 +52,5 @@ e.configure(state="readonly")
 
 This style _cannot be applied via keywords_, but rather is the result of a 
 validation process implemented on the widget. In the **Cookbook** you will find 
-an example of [how to apply validation](../cookbook.md#validate-user-input) to an 
+an example of [how to apply validation](../cookbook/validate-user-input.md) to an 
 `Entry` based widget.
