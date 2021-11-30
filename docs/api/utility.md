@@ -1,6 +1,5 @@
-# Keywords
+# utility module
 
-## ::: ttkbootstrap.style.Keywords
+## ::: ttkbootstrap.utility
     selection:
         filters: ["!^_", "^__init__"]
-

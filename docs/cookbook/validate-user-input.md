@@ -1,13 +1,9 @@
-# Cookbook
-
-A growing collection of recipes that demonstrate how to do particular things in ttkbootstrap.
-
-## Validate user input
+# Validate user input
 
 Any widget that derives from `Entry` has the ability to validate the user input. When 
 the widget is in an **invalid** state, the border color changes to a **danger** color.
 
-![invalid entry](./assets/cookbook/entry-validation.gif)
+![invalid entry](../assets/cookbook/entry-validation.gif)
 
 In this example, the validation type is `focus`, which means that the validation
 function is run everytime the widget receives or loses focus. There are several
@@ -58,19 +54,3 @@ let_entry.pack(padx=10, pady=10, expand=True)
 
 root.mainloop()
 ```
-
-## GIF animation
-Add content here
-
-## Multi-threaded applications
-Add content here
-
-## Dials and meters
-Add content here
-
-## Pagination using frames
-Add content here
-
-## Capture OpenCV output
-Add content here
-

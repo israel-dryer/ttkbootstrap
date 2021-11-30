@@ -5,21 +5,59 @@ theme:
     - navigation.tracking
     - navigation.tabs
 nav:
-  - 'Home': index.md
-  - 'Style Guide': styleguide.md
-  - 'Themes': themes.md
-  - 'Gallery': gallery.md
-  - 'Cookbook': cookbook.md
+  - 'Getting started':
+    - 'Installation': gettingstarted/installation.md
+    - 'Tutorial': gettingstarted/tutorial.md
+    - 'Project Goals': gettingstarted/goals.md
+    - 'Legacy Widgets': gettingstarted/legacy.md
+  - 'Style Guide':
+    - 'Overview': 'styleguide/index.md'
+    - 'Button': 'styleguide/button.md'
+    - 'Checkbutton': 'styleguide/checkbutton.md'
+    - 'Combobox': 'styleguide/combobox.md'
+    - 'DateEntry': 'styleguide/dateentry.md'
+    - 'DatePickerPopup': 'styleguide/datepickerpopup.md'
+    - 'Entry': 'styleguide/entry.md'
+    - 'Floodgauge': 'styleguide/floodgauge.md'
+    - 'Frame': 'styleguide/frame.md'
+    - 'Label': 'styleguide/label.md'
+    - 'Labelframe': 'styleguide/labelframe.md'
+    - 'Menubutton': 'styleguide/menubutton.md'
+    - 'Meter': 'styleguide/meter.md'
+    - 'Notebook': 'styleguide/notebook.md'
+    - 'Panedwindow': 'styleguide/panedwindow.md'
+    - 'Progressbar': 'styleguide/progressbar.md'
+    - 'Radiobutton': 'styleguide/radiobutton.md'
+    - 'Scale': 'styleguide/scale.md'
+    - 'Scrollbar': 'styleguide/scrollbar.md'
+    - 'Separator': 'styleguide/separator.md'
+    - 'Sizegrip': 'styleguide/sizegrip.md'
+    - 'Spinbox': 'styleguide/spinbox.md'
+    - 'Treeview': 'styleguide/treeview.md'
+  - 'Themes':
+    - 'Overview': themes/index.md
+    - 'Light themes': themes/light.md
+    - 'Dark themes': themes/dark.md
+    - 'Definitions': themes/definitions.md
+    - 'TTK Creator': themes/themecreator.md
+  - 'Gallery':
+    - 'Overview': gallery/index.md
+    - 'Calculator': gallery/calculator.md
+    - 'Collapsing Frame': gallery/collapsingframe.md
+    - 'Data Entry': gallery/dataentry.md
+    - 'Equalizer': gallery/equalizer.md
+    - 'File Backup': gallery/filebackup.md
+    - 'File Search Engine': gallery/filesearchengine.md
+    - 'Magic Mouse': gallery/magicmouse.md
+    - 'Media Player': gallery/mediaplayer.md
+    - 'PC Cleaner': gallery/pccleaner.md
+    - 'Stop Watch': gallery/stopwatch.md
+    - 'Text Reader': gallery/textreader.md
+  - 'Cookbook': 
+    - 'Overview': cookbook/index.md
+    - 'Entry Validation': cookbook/validate-user-input.md
+    - 'GIF Animation': cookbook/gif-animation.md
   - 'API': 
-    - 'style module': 
-      - api/style/bootstyle.md
-      - api/style/colors.md
-      - api/style/keywords.md
-      - api/style/style.md
-      - api/style/stylebuildertk.md
-      - api/style/stylebuilderttk.md
-      - api/style/stylemanager.md
-      - api/style/themedefinition.md
     - 'widgets module':
       - api/widgets/dateentry.md
       - api/widgets/floodgauge.md
@@ -27,6 +65,14 @@ nav:
     - 'dialogs module': 
       - api/dialogs/askdate.md
       - api/dialogs/datepickerpopup.md
+    - 'utility module': api/utility.md
+    - 'style module': 
+      - api/style/bootstyle.md
+      - api/style/colors.md
+      - api/style/style.md
+      - api/style/stylebuildertk.md
+      - api/style/stylebuilderttk.md
+      - api/style/themedefinition.md
 plugins:
   - search
   - mkdocstrings
