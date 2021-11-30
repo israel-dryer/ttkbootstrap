@@ -17,4 +17,4 @@ flat style themes inspired by [Bootstrap](https://getbootstrap.com/).
 
 **_Theme samples_:**<br>
 
-![themes](../assets/themes/themes.gif)
+![themes](./assets/themes/themes.gif)
