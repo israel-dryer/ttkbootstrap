@@ -4,13 +4,15 @@ theme:
   features:
     - navigation.tracking
     - navigation.tabs
+    - navigation.indexes
 nav:
+  - 'Home': index.md
   - 'Getting started':
     - 'Installation': gettingstarted/installation.md
     - 'Tutorial': gettingstarted/tutorial.md
     - 'Project Goals': gettingstarted/goals.md
     - 'Legacy Widgets': gettingstarted/legacy.md
-  - 'Style Guide':
+  - 'Style guide':
     - 'Overview': 'styleguide/index.md'
     - 'Button': 'styleguide/button.md'
     - 'Checkbutton': 'styleguide/checkbutton.md'
