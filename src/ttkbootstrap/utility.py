@@ -1,17 +1,20 @@
-def enable_high_dpi_awareness(**kwargs):
+def enable_high_dpi_awareness(root=None, scaling=None):
     """Enable high dpi awareness.
 
-    **Windows**  
+    **Windows OS**  
     Call the method BEFORE creating the `Tk` object. No parameters
     required.
 
-    **Linux**  
-    Call the method AFTER creating the `Tk` object. `root` and 
-    `scaling` are required keyword arguments (described below).
-    A number between 1.6 and 2.0 is usually suffient to scale
-    for high-dpi screen.
+    **Linux OS**  
+    Must provided the `root` and `scaling` parameters. Call the method 
+    AFTER creating the `Tk` object. A number between 1.6 and 2.0 is 
+    usually suffient to scale for high-dpi screen.
 
-    Other Parameters:
+    !!! warning
+        If the `root` argument is provided, then `scaling` must also
+        be provided. Otherwise, there is no effect.
+
+    Parameters:
     
         root (tk.Tk):
             The root widget
@@ -25,7 +28,7 @@ def enable_high_dpi_awareness(**kwargs):
             omitted, it defaults to the main window. If the number 
             argument is omitted, the current value of the scaling 
             factor is returned.
-        
+
             A “point” is a unit of measurement equal to 1/72 inch. A 
             scaling factor of 1.0 corresponds to 1 pixel per point, 
             which is equivalent to a standard 72 dpi monitor. A scaling 
@@ -48,11 +51,11 @@ def enable_high_dpi_awareness(**kwargs):
         pass
 
     try:
-        root = kwargs['root']
-        root.tk.call('tk', 'scaling', kwargs['scaling'])
+        if root and scaling:
+            root.tk.call('tk', 'scaling', scaling)
     except:
         pass
-    
+
 def get_image_name(image):
     """Extract and return the tcl/tk image name from a PhotoImage 
     object.
@@ -73,18 +76,18 @@ def scale_size(widget, size):
     """Scale the size based on the scaling factor of tkinter. 
     This is used most frequently to adjust the assets for 
     image-based widget layouts and font sizes.
-    
+
     Parameters:
 
         widget (Widget):
             The widget object.
-        
+
         size (Union[int, List, Tuple]):
             A single integer or an iterable of integers
 
     Returns:
 
-        Union[int, Tuple[int, ...]]:
+        Union[int, List]:
             An integer or list of integers representing the new size.
     """
     BASELINE = 1.33398982438864281

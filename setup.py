@@ -5,8 +5,7 @@ figure out another method for importing package resources.
 import setuptools
 
 long_description = """
-A collection of modern flat themes inspired by Bootstrap. There are more than a dozen built-in themes, and you also have 
-the ability to easily create your own.
+A supercharged theme extension for tkinter that enables on-demand modern flat style themes inspired by Bootstrap.
 
 ## Links
 - **Documentation:** https://ttkbootstrap.readthedocs.io/en/latest/  
@@ -15,10 +14,10 @@ the ability to easily create your own.
 
 setuptools.setup(
     name="ttkbootstrap",
-    version="1.0.0",
+    version="1.0.1",
     author="Israel Dryer",
     author_email="israel.dryer@gmail.com",
-    description="A collection of modern ttk themes inspired by Bootstrap",
+    description="A supercharged theme extension for tkinter that enables on-demand modern flat style themes inspired by Bootstrap.",
     long_description=long_description,
     long_description_content_type="text/markdown",
     classifiers=[

@@ -86,6 +86,7 @@ class DateEntry(ttk.Frame):
     The `Entry` and `Button` widgets are accessible from the 
     `DateEntry.Entry` and `DateEntry.Button` properties.
     """
+
     def __init__(
         self,
         master=None,
@@ -95,10 +96,9 @@ class DateEntry(ttk.Frame):
         bootstyle='',
         **kwargs
     ):
-        """Create a `DateEntry` object.
-
+        """
         Parameters:
-            
+
             master (Widget, optional):
                 The parent widget.
 
@@ -126,7 +126,7 @@ class DateEntry(ttk.Frame):
         """
         self._dateformat = dateformat
         self._firstweekday = firstweekday
-        
+
         self._startdate = startdate or datetime.today()
         self._bootstyle = bootstyle
         super().__init__(master, **kwargs)
@@ -135,13 +135,13 @@ class DateEntry(ttk.Frame):
         entry_kwargs = {'bootstyle': self._bootstyle}
         if 'width' in kwargs:
             entry_kwargs['width'] = kwargs.pop('width')
-        
+
         self.entry = ttk.Entry(self, **entry_kwargs)
         self.entry.pack(side=tk.LEFT, fill=tk.X, expand=tk.YES)
 
         self.button = ttk.Button(
-            master=self, 
-            command=self._on_date_ask, 
+            master=self,
+            command=self._on_date_ask,
             bootstyle=f'{self._bootstyle}-date'
         )
         self.button.pack(side=tk.LEFT)
@@ -203,7 +203,7 @@ class DateEntry(ttk.Frame):
 
     def configure(self, cnf=None, **kwargs):
         """Configure the options for this widget.
-        
+
         Parameters:
 
             cnf (Dict[str, Any], optional):
@@ -226,10 +226,11 @@ class DateEntry(ttk.Frame):
             print("Date entry text does not match", self._dateformat)
             self._startdate = datetime.today()
             self.entry.delete(first=0, last=tk.END)
-            self.entry.insert(tk.END, self._startdate.strftime(self._dateformat))
+            self.entry.insert(
+                tk.END, self._startdate.strftime(self._dateformat))
 
         old_date = datetime.strptime(_val or self._startdate, self._dateformat)
-        
+
         # get the new date and insert into the entry
         new_date = ask_date(
             parent=self.entry,
@@ -256,6 +257,7 @@ class Floodgauge(Progressbar):
     linked to other widgets by referencing them via the 
     `textvariable` and `variable` attributes.
     """
+
     def __init__(
         self,
         master=None,
@@ -272,8 +274,7 @@ class Floodgauge(Progressbar):
         mask=None,
         **kwargs
     ):
-        """Create a `Floodgauge` object.
-
+        """
         Parameters:
 
             master (Widget, optional):
@@ -424,7 +425,7 @@ class Floodgauge(Progressbar):
 
     def configure(self, cnf=None, **kwargs):
         """Configure the options for this widget.
-        
+
         Parameters:
 
             cnf (Dict[str, Any], optional):
@@ -432,7 +433,7 @@ class Floodgauge(Progressbar):
 
             **kwargs: 
                 Optional keyword arguments.
-        """        
+        """
         if cnf is not None:
             return self._configure_get(cnf)
         else:
@@ -467,7 +468,7 @@ class Meter(ttk.Frame):
     and the `labelvar`. The value of these properties can also be
     retrieved via the `configure` method.    
     """
-    
+
     def __init__(
         self,
         master=None,
@@ -568,7 +569,7 @@ class Meter(ttk.Frame):
             **kwargs: 
                 Other keyword arguments that are passed directly to the 
                 `Frame` widget that contains the meter components.
-        """    
+        """
         super().__init__(master=master, **kwargs)
 
         # widget variables
@@ -585,7 +586,7 @@ class Meter(ttk.Frame):
         self._stripethickness = stripethickness
         self._showtext = showtext
         self._wedgesize = wedgesize
-        
+
         self._textleft = textleft
         self._textright = textright
         self._textfont = textfont
@@ -595,13 +596,13 @@ class Meter(ttk.Frame):
         self._bootstyle = bootstyle
         self._interactive = interactive
         self._bindids = {}
-       
+
         self._setup_widget()
 
     def _setup_widget(self):
         self.meterframe = ttk.Frame(
             master=self,
-            width=self._metersize, 
+            width=self._metersize,
             height=self._metersize
         )
         self.indicator = ttk.Label(self.meterframe)
@@ -626,7 +627,7 @@ class Meter(ttk.Frame):
             font=self._subtextfont,
             bootstyle=(self._subtextstyle, 'metersubtxt'),
             anchor=tk.S,
-            padding=(0, 5)            
+            padding=(0, 5)
         )
         self.subtext = ttk.Label(
             master=self.meterframe,
@@ -683,7 +684,7 @@ class Meter(ttk.Frame):
 
         self._set_text_left()
         self._set_text_center()
-        self._set_text_right()            
+        self._set_text_right()
         self._set_subtext()
 
     def _set_text_left(self):
@@ -704,10 +705,12 @@ class Meter(ttk.Frame):
         seq2 = '<Button-1>'
 
         if self._interactive:
-            self._bindids[seq1] = self.indicator.bind(seq1, self._on_dial_interact)
-            self._bindids[seq2] = self.indicator.bind(seq2, self._on_dial_interact)
+            self._bindids[seq1] = self.indicator.bind(
+                seq1, self._on_dial_interact)
+            self._bindids[seq2] = self.indicator.bind(
+                seq2, self._on_dial_interact)
             return
-        
+
         if seq1 in self._bindids:
             self.indicator.unbind(seq1, self._bindids.get(seq1))
             self.indicator.unbind(seq2, self._bindids.get(seq2))
@@ -730,12 +733,12 @@ class Meter(ttk.Frame):
             self._draw_striped_meter(draw)
         else:
             self._draw_solid_meter(draw)
-        
+
         self._meterimage = ImageTk.PhotoImage(
             img.resize((self._metersize, self._metersize), Image.CUBIC)
         )
         self.indicator.configure(image=self._meterimage)
-    
+
     def _draw_base_image(self):
         """Draw base image to be used for subsequent updates"""
         self._set_widget_colors()
@@ -774,7 +777,7 @@ class Meter(ttk.Frame):
         """Draw a solid meter"""
         x1 = y1 = self._metersize * 5 - 20
         width = self._meterthickness * 5
-        
+
         if self._wedgesize > 0:
             meter_value = self._meter_value()
             draw.arc(
@@ -824,8 +827,8 @@ class Meter(ttk.Frame):
         """Calculate the value to be used to draw the arc length of the 
         progress meter."""
         value = int(
-            (self['amountused'] / self['amounttotal']) * 
-            self._arcrange + 
+            (self['amountused'] / self['amounttotal']) *
+            self._arcrange +
             self._arcoffset
         )
         return value
@@ -931,14 +934,16 @@ class Meter(ttk.Frame):
             self.subtext.configure(bootstyle=[self._subtextstyle, 'meter'])
         if 'metersize' in kwargs:
             self._metersize = util.scale_size(kwargs.pop('metersize'))
-            self.meterframe.configure(height=self._metersize, width=self._metersize)
+            self.meterframe.configure(
+                height=self._metersize, width=self._metersize)
         if 'bootstyle' in kwargs:
             self._bootstyle = kwargs.pop('bootstyle')
             self.textcenter.configure(bootstyle=[self._bootstyle, 'meter'])
         if 'metertype' in kwargs:
             self._metertype = kwargs.pop('metertype')
         if 'meterthickness' in kwargs:
-            self._meterthickness = self.scale_size(kwargs.pop('meterthickness'))
+            self._meterthickness = self.scale_size(
+                kwargs.pop('meterthickness'))
         if 'stripethickness' in kwargs:
             self._stripethickness = kwargs.pop('stripethickness')
         if 'subtext' in kwargs:
@@ -967,16 +972,16 @@ class Meter(ttk.Frame):
         try:
             if self._metertype:
                 self._set_arc_offset_range(
-                    metertype=self._metertype, 
-                    arcoffset=self._arcoffset, 
+                    metertype=self._metertype,
+                    arcoffset=self._arcoffset,
                     arcrange=self._arcrange
                 )
         except AttributeError:
             return
-        
+
         self._draw_base_image()
         self._draw_meter()
-        
+
         # pass remaining configurations to `ttk.Frame.configure`
         super(ttk.Frame, self).configure(**kwargs)
 
@@ -988,13 +993,13 @@ class Meter(ttk.Frame):
 
     def configure(self, cnf=None, **kwargs):
         """Configure the options for this widget.
-        
+
         Parameters:
             cnf (Dict[str, Any], optional):
                 A dictionary of configuration options.
 
             **kwargs: Optional keyword arguments.
-        """         
+        """
         if cnf is not None:
             return self._configure_get(cnf)
         else:
@@ -1002,7 +1007,7 @@ class Meter(ttk.Frame):
 
     def step(self, delta=1):
         """Increase the indicator value by `delta`
-        
+
         The indicator will reverse direction and count down once it 
         reaches the maximum value.
 
