@@ -6,7 +6,7 @@
 from pathlib import Path
 import tkinter as tk
 import ttkbootstrap as ttk
-from ttkbootstrap.style import utility
+from ttkbootstrap import utility
 utility.enable_high_dpi_awareness()
 
 class Application(tk.Tk):

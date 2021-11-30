@@ -7,10 +7,9 @@ from pathlib import Path
 import tkinter as tk
 from tkinter import PhotoImage
 import ttkbootstrap as ttk
-from ttkbootstrap.style import utility
+from ttkbootstrap import utility
 from tkinter.messagebox import showinfo
 utility.enable_high_dpi_awareness()
-
 
 
 class Application(tk.Tk):

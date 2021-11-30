@@ -5,7 +5,7 @@ from time import sleep
 import tkinter as tk
 import ttkbootstrap as ttk
 from tkinter.messagebox import showinfo
-from ttkbootstrap.style import utility
+from ttkbootstrap import utility
 utility.enable_high_dpi_awareness()
 
 

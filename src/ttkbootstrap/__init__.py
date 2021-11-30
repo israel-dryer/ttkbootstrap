@@ -44,7 +44,7 @@
     .. _Bootswatch: https://bootswatch.com/
 
 """
-from ttkbootstrap.style.style import Style
-from ttkbootstrap.style import bootstyle
+from ttkbootstrap.style import Style
+from ttkbootstrap.style import Bootstyle
 from ttkbootstrap.widgets import *
-bootstyle.setup_ttkbootstap_api()
+Bootstyle.setup_ttkbootstap_api()

@@ -4,7 +4,7 @@ from itertools import cycle
 import tkinter as tk
 import ttkbootstrap as ttk
 from PIL import Image, ImageTk, ImageSequence
-from ttkbootstrap.style import utility
+from ttkbootstrap import utility
 utility.enable_high_dpi_awareness()
 
 class AnimatedGif(tk.Tk):
