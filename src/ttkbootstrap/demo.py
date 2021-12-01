@@ -6,6 +6,7 @@ Copyright (c) 2021 Israel Dryer
 from ttkbootstrap import Style
 import tkinter
 from tkinter import ttk
+from . import widgets
 
 # for taking screenshots
 from PIL import ImageGrab
@@ -38,12 +39,17 @@ class Demo(Style):
         sb.set(0.1, 0.55)
 
         sb.pack(side='right', fill='y')
-        self.nb = ttk.Notebook(self.root)
+        self.nb = widgets.InteractiveNotebook(self.root, newtab=self.addtab)
+        # Uncomment to use the Flat notebook style instead
+        # self.nb = widgets.InteractiveNotebook(self.root, newtab=self.addtab, style="Flat.Interactive.TNotebook")
         self.nb.pack(fill='both', expand='yes')
         self.tab = self.create_themed_tab()
         self.nb.add(self.tab, text='Tab 1')
         self.nb.add(ttk.Frame(self.nb), text='Tab 2')
         self.nb.add(ttk.Frame(self.nb), text='Tab 3')
+
+    def addtab(self):
+        self.nb.add(ttk.Frame(self.nb), text='New Tab')
 
     def change_theme(self, new_theme):
         """

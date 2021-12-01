@@ -617,6 +617,9 @@ class StylerTTK:
         self._style_label()
         self._style_meter()
         self._style_notebook()
+        self._style_flat_notebook()
+        self._style_interactive_notebook()
+        self._style_flat_interactive_notebook()
         self._style_outline_buttons()
         self._style_outline_menubutton()
         self._style_outline_toolbutton()
@@ -2700,18 +2703,46 @@ class StylerTTK:
         fg_color = self.theme.colors.inputfg if self.theme.type == 'light' else self.theme.colors.inputbg
         bg_color = self.theme.colors.inputbg if self.theme.type == 'light' else border_color
 
+        disabled_fg = (Colors.update_hsv(self.theme.colors.inputbg, vd=-0.2) if self.theme.type == 'light' else
+                       Colors.update_hsv(self.theme.colors.inputbg, vd=-0.3))
+
+        self.theme_images.update({
+            'blank_image': self._create_blank_image()
+        })
+
         self.settings.update({
+            # To separate the tabs from each other, we set the expand option to
+            # -1. However, that cuts off one pixel from the content of the tab.
+            # To overcome this, we add a blank 0x0 image element to every tab
+            # with 1 px padding on the right, which will be cut off by the
+            # expand option.
+            'TNotebook.paddingpixel': {
+                'element create': ('image', self.theme_images['blank_image'],
+                                   {'padding': '0 0 1 0', 'sticky': ''})},
             'TNotebook': {
                 'configure': {
                     'bordercolor': border_color,
                     'lightcolor': self.theme.colors.bg,
-                    'darkcolor': self.theme.colors.bg,
-                    'borderwidth': 1}},
+                    'darkcolor': self.theme.colors.bg}},
             'TNotebook.Tab': {
+                'layout': [
+                    ('TNotebook.tab', {'sticky': 'nswe', 'children': [
+                        ('TNotebook.padding', {'side': 'top', 'sticky': 'nswe', 'children': [
+                            ('TNotebook.focus', {'side': 'top', 'sticky': 'nswe', 'children': [
+                                ('TNotebook.label', {'side': 'left', 'sticky': ''}),
+                                ('TNotebook.paddingpixel', {'side': 'right', 'sticky': ''}),
+                            ]})
+                        ]})
+                    ]})
+                ],
                 'configure': {
                     'bordercolor': border_color,
                     'lightcolor': self.theme.colors.bg,
                     'foreground': self.theme.colors.fg,
+                    # Expand -1 on the right to separate the tabs, so that each
+                    # tab has a fully visible border that can be highlighted
+                    # when mouse is over it.
+                    'expand': (0, 0, -1, 0),
                     'padding': (10, 5)},
                 'map': {
                     'background': [
@@ -2721,9 +2752,301 @@ class StylerTTK:
                     'darkcolor': [
                         ('!selected', bg_color)],
                     'bordercolor': [
+                        ('active', '!selected', '!disabled', self.theme.colors.primary),
                         ('!selected', border_color)],
                     'foreground': [
+                        ('disabled', disabled_fg),
                         ('!selected', fg_color)]}}})
+
+        for color in self.theme.colors:
+            self.settings.update({
+                f'{color}.TNotebook.Tab': {
+                    'map': {
+                        'bordercolor': [
+                            ('active', '!selected', '!disabled', self.theme.colors.get(color))]}}})
+
+    def _create_blank_image(self):
+        """Create a blank image to separate elements
+
+        Returns:
+            ImageTk.PhotoImage: a blank 0x0 image
+        """
+        im = Image.new('RGBA', (0, 0))
+        return ImageTk.PhotoImage(im)
+
+    def _style_flat_notebook(self):
+        """Create style configuration with a flat look for ttk notebook: *ttk.Notebook*
+
+        The options available in this widget include:
+
+            - Notebook.client: background, bordercolor, lightcolor, darkcolor
+            - Notebook.tab: background, bordercolor, lightcolor, darkcolor
+            - Notebook.padding: padding, relief, shiftrelief
+            - Notebook.focus: focuscolor, focusthickness
+            - Notebook.label: compound, space, text, font, foreground, underline, width, anchor, justify, wraplength,
+                embossed, image, stipple, background
+        """
+        # based on the Bootstrap style: https://getbootstrap.com/docs/5.0/components/navs-tabs/#tabs
+        border_color = self.theme.colors.border if self.theme.type == 'light' else self.theme.colors.selectbg
+
+        disabled_fg = (Colors.update_hsv(self.theme.colors.inputbg, vd=-0.2) if self.theme.type == 'light' else
+                       Colors.update_hsv(self.theme.colors.inputbg, vd=-0.3))
+
+        self.settings.update({
+            'Flat.TNotebook.Tab': {
+                'configure': {
+                    'bordercolor': border_color,
+                    'lightcolor': self.theme.colors.bg,
+                    # Need to set bottom expand to -1 to prevent the border
+                    # from overlapping the horizontal line below the tabs.
+                    # Interestingly, as long as the -1 on the right is only
+                    # cutting into the paddingpixel, the -1 on the bottom
+                    # does not cut into the label, only into the border, so no
+                    # extra paddingpixel on the bottom is needed.
+                    'expand': (0, 0, -1, -1),
+                    'foreground': self.theme.colors.fg},
+                'map': {
+                    # remove the 1 px gap between the leftmost tab border and
+                    # the frame, as the frame has a rounded corner
+                    'expand': [
+                        ('selected', (0, 0, -1, 0))],
+                    # overwrite the default TNotebook style to make all tabs
+                    # have the same background color
+                    'background': [],
+                    'lightcolor': [
+                        ('!selected', self.theme.colors.bg)],
+                    'darkcolor': [
+                        ('!selected', self.theme.colors.bg)],
+                    'bordercolor': [
+                        ('active', '!selected', '!disabled', disabled_fg),
+                        ('!selected', self.theme.colors.bg)],
+                    'foreground': [
+                        ('disabled', disabled_fg),
+                        ('!selected', self.theme.colors.primary)]}}})
+
+        for color in self.theme.colors:
+            self.settings.update({
+                f'{color}.Flat.TNotebook.Tab': {
+                    'map': {
+                        'foreground': [
+                            ('disabled', disabled_fg),
+                            ('!selected', self.theme.colors.get(color))]}}})
+
+    def _style_interactive_notebook(self):
+        """Create style configuration for interactive notebook: *ttkbootstrap.widgets.InteractiveNotebook*
+
+        The options available in this widget include:
+
+            - Notebook.client: background, bordercolor, lightcolor, darkcolor
+            - Notebook.tab: background, bordercolor, lightcolor, darkcolor
+            - Notebook.padding: padding, relief, shiftrelief
+            - Notebook.focus: focuscolor, focusthickness
+            - Notebook.label: compound, space, text, font, foreground, underline, width, anchor, justify, wraplength,
+                embossed, image, stipple, background
+        """
+        border_color = self.theme.colors.border if self.theme.type == 'light' else self.theme.colors.selectbg
+
+        self.theme_images.update({
+            'close_button': self._create_closebutton_images(self.theme.colors.fg),
+            'close_button_pressed': self._create_closebutton_images(self.theme.colors.primary),
+            'newtab_button': self._create_plusbutton_images(self.theme.colors.fg),
+            'newtab_button_pressed': self._create_plusbutton_images(self.theme.colors.primary)
+        })
+        self.settings.update({
+            'Interactive.TNotebook.closebutton': {
+                'element create': ('image', self.theme_images['close_button'],
+                                   ('active', 'pressed', '!disabled', self.theme_images['close_button_pressed']),
+                                   ('active', 'pressed', 'disabled', self.theme_images['newtab_button_pressed']),
+                                   ('disabled', self.theme_images['newtab_button']),
+                                   {'padding': '8 8 8 8', 'sticky': ''})},
+            'Interactive.TNotebook.Tab': {
+                'layout': [
+                    ('Interactive.TNotebook.tab', {'sticky': 'nswe', 'children': [
+                        ('Interactive.TNotebook.padding', {'side': 'top', 'sticky': 'nswe', 'children': [
+                            ('Interactive.TNotebook.focus', {'side': 'top', 'sticky': 'nswe', 'children': [
+                                ('Interactive.TNotebook.closebutton', {'side': 'right', 'sticky': ''}),
+                                ('Interactive.TNotebook.label', {'side': 'left', 'sticky': ''}),
+                                ('Interactive.TNotebook.paddingpixel', {'side': 'right', 'sticky': ''})
+                            ]})
+                        ]})
+                    ]})
+                ],
+                'map': {
+                    'bordercolor': [
+                        ('active', '!selected', self.theme.colors.primary),
+                        ('!selected', border_color)]}}})
+
+        for color in self.theme.colors:
+            self.theme_images.update({
+                f'{color}_close_button_pressed': self._create_closebutton_images(self.theme.colors.get(color)),
+                f'{color}_newtab_button_pressed': self._create_plusbutton_images(self.theme.colors.get(color))
+            })
+            self.settings.update({
+                f'{color}.Interactive.TNotebook.closebutton': {
+                    'element create': ('image', self.theme_images['close_button'],
+                                       ('active', 'pressed', '!disabled', self.theme_images[f'{color}_close_button_pressed']),
+                                       ('active', 'pressed', 'disabled', self.theme_images[f'{color}_newtab_button_pressed']),
+                                       ('disabled', self.theme_images['newtab_button']),
+                                       {'padding': '8 8 8 8', 'sticky': ''})},
+                f'{color}.Interactive.TNotebook.Tab': {
+                    'layout': [
+                        (f'{color}.Interactive.TNotebook.tab', {'sticky': 'nswe', 'children': [
+                            (f'{color}.Interactive.TNotebook.padding', {'side': 'top', 'sticky': 'nswe', 'children': [
+                                (f'{color}.Interactive.TNotebook.focus', {'side': 'top', 'sticky': 'nswe', 'children': [
+                                    (f'{color}.Interactive.TNotebook.closebutton', {'side': 'right', 'sticky': ''}),
+                                    (f'{color}.Interactive.TNotebook.label', {'side': 'left', 'sticky': ''}),
+                                    (f'{color}.Interactive.TNotebook.paddingpixel', {'side': 'right', 'sticky': ''})
+                                ]})
+                            ]})
+                        ]})
+                    ],
+                    'map': {
+                        'bordercolor': [
+                            ('active', '!selected', self.theme.colors.get(color))]}}})
+
+    def _style_flat_interactive_notebook(self):
+        """Create style configuration with a flat look for interactive notebook: *ttkbootstrap.widgets.InteractiveNotebook*
+
+        The options available in this widget include:
+
+            - Notebook.client: background, bordercolor, lightcolor, darkcolor
+            - Notebook.tab: background, bordercolor, lightcolor, darkcolor
+            - Notebook.padding: padding, relief, shiftrelief
+            - Notebook.focus: focuscolor, focusthickness
+            - Notebook.label: compound, space, text, font, foreground, underline, width, anchor, justify, wraplength,
+                embossed, image, stipple, background
+        """
+        border_color = self.theme.colors.border if self.theme.type == 'light' else self.theme.colors.selectbg
+
+        disabled_fg = (Colors.update_hsv(self.theme.colors.inputbg, vd=-0.2) if self.theme.type == 'light' else
+                       Colors.update_hsv(self.theme.colors.inputbg, vd=-0.3))
+
+        self.settings.update({
+            'Flat.Interactive.TNotebook.closebutton': {
+                'element create': ('image', self.theme_images['close_button'],
+                                   ('selected', 'active', 'pressed', '!disabled', self.theme_images['close_button_pressed']),
+                                   ('!selected', 'active', 'pressed', '!disabled', self.theme_images['close_button']),
+                                   ('!selected', '!disabled', self.theme_images['close_button_pressed']),
+                                   ('active', 'pressed', 'disabled', self.theme_images['newtab_button']),
+                                   ('disabled', self.theme_images['newtab_button_pressed']),
+                                   # need 1 extra pixel of padding at the bottom to keep positioning the same as Interactive.TNotebook
+                                   {'padding': '8 8 8 9', 'sticky': ''})},
+            'Flat.Interactive.TNotebook.Tab': {
+                'layout': [
+                    ('Flat.Interactive.TNotebook.tab', {'sticky': 'nswe', 'children': [
+                        ('Flat.Interactive.TNotebook.padding', {'side': 'top', 'sticky': 'nswe', 'children': [
+                            ('Flat.Interactive.TNotebook.focus', {'side': 'top', 'sticky': 'nswe', 'children': [
+                                ('Flat.Interactive.TNotebook.closebutton', {'side': 'right', 'sticky': ''}),
+                                ('Flat.Interactive.TNotebook.label', {'side': 'left', 'sticky': ''}),
+                                ('Flat.Interactive.TNotebook.paddingpixel', {'side': 'right', 'sticky': ''})
+                            ]})
+                        ]})
+                    ]})
+                ],
+                'configure': {
+                    'bordercolor': border_color,
+                    'lightcolor': self.theme.colors.bg,
+                    # need to set bottom expand to -1 to prevent the border
+                    # from overlapping the horizontal line below the tabs
+                    'expand': (0, 0, -1, -1),
+                    # reduce the bottom padding by 1 to make up for the
+                    # increase in the closebutton padding, to keep the style
+                    # identical to the other notebook layouts
+                    'padding': (10, 5, 10, 4),
+                    'foreground': self.theme.colors.fg},
+                'map': {
+                    # remove the 1 px gap between the leftmost tab border and
+                    # the frame, as the frame has a rounded corner
+                    'expand': [
+                        ('selected', (0, 0, -1, 0))],
+                    # overwrite the default TNotebook style to make all tabs
+                    # have the same background color
+                    'background': [],
+                    'lightcolor': [
+                        ('!selected', self.theme.colors.bg)],
+                    'darkcolor': [
+                        ('!selected', self.theme.colors.bg)],
+                    'bordercolor': [
+                        ('active', '!selected', disabled_fg),
+                        ('!selected', self.theme.colors.bg)],
+                    'foreground': [
+                        ('!selected', self.theme.colors.primary)]}}})
+
+        for color in self.theme.colors:
+            self.settings.update({
+                f'{color}.Flat.Interactive.TNotebook.closebutton': {
+                    'element create': ('image', self.theme_images['close_button'],
+                                       ('selected', 'active', 'pressed', '!disabled', self.theme_images[f'{color}_close_button_pressed']),
+                                       ('!selected', 'active', 'pressed', '!disabled', self.theme_images['close_button']),
+                                       ('!selected', '!disabled', self.theme_images[f'{color}_close_button_pressed']),
+                                       ('active', 'pressed', 'disabled', self.theme_images['newtab_button']),
+                                       ('disabled', self.theme_images[f'{color}_newtab_button_pressed']),
+                                       {'padding': '8 8 8 9', 'sticky': ''})},
+                f'{color}.Flat.Interactive.TNotebook.Tab': {
+                    'layout': [
+                        (f'{color}.Flat.Interactive.TNotebook.tab', {'sticky': 'nswe', 'children': [
+                            (f'{color}.Flat.Interactive.TNotebook.padding', {'side': 'top', 'sticky': 'nswe', 'children': [
+                                (f'{color}.Flat.Interactive.TNotebook.focus', {'side': 'top', 'sticky': 'nswe', 'children': [
+                                    (f'{color}.Flat.Interactive.TNotebook.closebutton', {'side': 'right', 'sticky': ''}),
+                                    (f'{color}.Flat.Interactive.TNotebook.label', {'side': 'left', 'sticky': ''}),
+                                    (f'{color}.Flat.Interactive.TNotebook.paddingpixel', {'side': 'right', 'sticky': ''})
+                                ]})
+                            ]})
+                        ]})
+                    ],
+                    'map': {
+                        'foreground': [
+                            ('disabled', disabled_fg),
+                            ('!selected', self.theme.colors.get(color))]}}})
+
+    def _create_closebutton_images(self, color):
+        """Create assets for the close tab button
+
+        Args:
+            color (str): a hexadecimal color value.
+
+        Returns:
+            ImageTk.PhotoImage: an image drawn in the theme color specified.
+        """
+        size = 8
+        factor = 4
+        fullsize = size * factor
+
+        im = Image.new('RGBA', (fullsize, fullsize))
+        draw = ImageDraw.Draw(im)
+
+        imin = 0
+        imax = fullsize - 1
+
+        draw.line(((imin, imin), (imax, imax)), fill=color, width=factor)
+        draw.line(((imin, imax), (imax, imin)), fill=color, width=factor)
+
+        return ImageTk.PhotoImage(im.resize((size, size), Image.LANCZOS))
+
+    def _create_plusbutton_images(self, color):
+        """Create assets for the new tab button
+
+        Args:
+            color (str): a hexadecimal color value.
+
+        Returns:
+            ImageTk.PhotoImage: an image drawn in the theme color specified.
+        """
+        size = 9
+        factor = 5
+        fullsize = size * factor
+
+        im = Image.new('RGBA', (fullsize, fullsize))
+        draw = ImageDraw.Draw(im)
+
+        imin = 0
+        imax = fullsize - 1
+        center = imax / 2
+
+        draw.line(((center, imin), (center, imax)), fill=color, width=factor)
+        draw.line(((imin, center), (imax, center)), fill=color, width=factor)
+
+        return ImageTk.PhotoImage(im.resize((size, size), Image.LANCZOS))
 
     def _style_panedwindow(self):
         """Create style configuration for ttk paned window: *ttk.PanedWindow*
