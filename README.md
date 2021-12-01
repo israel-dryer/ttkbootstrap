@@ -14,7 +14,7 @@ sudo apt-get install fonts-symbola
 
 ### Documentation
 Read for more information about how to use along with full-size screenshots, and other useful information.
-https://ttkbootstrap.readthedocs.io/en/0.5/
+https://ttkbootstrap.readthedocs.io/en/version-0.5/
 
 ### Sample of themes
 Play with a live demo after installing the package
