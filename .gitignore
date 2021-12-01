@@ -1,4 +1,4 @@
-*venv
+venv
 .idea
 build
 dist
@@ -10,3 +10,4 @@ dist
 __pycache__
 experiment
 testing_notes.txt
+docsenv
