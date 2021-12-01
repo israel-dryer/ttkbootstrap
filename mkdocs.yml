@@ -11,80 +11,6 @@ theme:
   icon:
     logo: material/view-dashboard
 
-nav:
-  - 'Home': 
-    - 'Overview': index.md
-    - 'About': about.md
-    - 'Changelog': changelog.md
-    - 'License': license.md
-  - 'Getting started':
-    - 'Installation': gettingstarted/installation.md
-    - 'Tutorial': gettingstarted/tutorial.md
-    - 'Legacy Widgets': gettingstarted/legacy.md
-  - 'Style guide':
-    - 'Overview': 'styleguide/index.md'
-    - 'Button': 'styleguide/button.md'
-    - 'Checkbutton': 'styleguide/checkbutton.md'
-    - 'Combobox': 'styleguide/combobox.md'
-    - 'DateEntry': 'styleguide/dateentry.md'
-    - 'DatePickerPopup': 'styleguide/datepickerpopup.md'
-    - 'Entry': 'styleguide/entry.md'
-    - 'Floodgauge': 'styleguide/floodgauge.md'
-    - 'Frame': 'styleguide/frame.md'
-    - 'Label': 'styleguide/label.md'
-    - 'Labelframe': 'styleguide/labelframe.md'
-    - 'Menubutton': 'styleguide/menubutton.md'
-    - 'Meter': 'styleguide/meter.md'
-    - 'Notebook': 'styleguide/notebook.md'
-    - 'Panedwindow': 'styleguide/panedwindow.md'
-    - 'Progressbar': 'styleguide/progressbar.md'
-    - 'Radiobutton': 'styleguide/radiobutton.md'
-    - 'Scale': 'styleguide/scale.md'
-    - 'Scrollbar': 'styleguide/scrollbar.md'
-    - 'Separator': 'styleguide/separator.md'
-    - 'Sizegrip': 'styleguide/sizegrip.md'
-    - 'Spinbox': 'styleguide/spinbox.md'
-    - 'Treeview': 'styleguide/treeview.md'
-  - 'Themes':
-    - 'Overview': themes/index.md
-    - 'Light themes': themes/light.md
-    - 'Dark themes': themes/dark.md
-    - 'Definitions': themes/definitions.md
-    - 'TTK Creator': themes/themecreator.md
-  - 'Gallery':
-    - 'Overview': gallery/index.md
-    - 'Calculator': gallery/calculator.md
-    - 'Collapsing Frame': gallery/collapsingframe.md
-    - 'Data Entry': gallery/dataentry.md
-    - 'Equalizer': gallery/equalizer.md
-    - 'File Backup': gallery/filebackup.md
-    - 'File Search Engine': gallery/filesearchengine.md
-    - 'Magic Mouse': gallery/magicmouse.md
-    - 'Media Player': gallery/mediaplayer.md
-    - 'PC Cleaner': gallery/pccleaner.md
-    - 'Stop Watch': gallery/stopwatch.md
-    - 'Text Reader': gallery/textreader.md
-  - 'Cookbook': 
-    - 'Overview': cookbook/index.md
-    - 'Entry Validation': cookbook/validate-user-input.md
-    - 'GIF Animation': cookbook/gif-animation.md
-  - 'API': 
-    - 'widgets module':
-      - api/widgets/dateentry.md
-      - api/widgets/floodgauge.md
-      - api/widgets/meter.md
-    - 'dialogs module': 
-      - api/dialogs/askdate.md
-      - api/dialogs/datepickerpopup.md
-    - 'utility module': api/utility.md
-    - 'style module': 
-      - api/style/bootstyle.md
-      - api/style/colors.md
-      - api/style/style.md
-      - api/style/stylebuildertk.md
-      - api/style/stylebuilderttk.md
-      - api/style/themedefinition.md
-
 plugins:
   - search
   - mkdocstrings:
@@ -108,3 +34,77 @@ extra:
     link: https://github.com/israel-dryer/ttkbootstrap
   - icon: fontawesome/brands/twitter
     link: https://twitter.com/IDryer
+
+nav:
+  - Home: 
+    - index.md
+    - about.md
+    - changelog.md
+    - license.md
+  - 'Getting started':
+    - gettingstarted/installation.md
+    - gettingstarted/tutorial.md
+    - gettingstarted/legacy.md
+  - 'Style guide':
+    - styleguide/index.md
+    - styleguide/button.md
+    - styleguide/checkbutton.md
+    - styleguide/combobox.md
+    - styleguide/dateentry.md
+    - styleguide/datepickerpopup.md
+    - styleguide/entry.md
+    - styleguide/floodgauge.md
+    - styleguide/frame.md
+    - styleguide/label.md
+    - styleguide/labelframe.md
+    - styleguide/menubutton.md'
+    - styleguide/meter.md
+    - styleguide/notebook.md
+    - styleguide/panedwindow.md
+    - styleguide/progressbar.md
+    - styleguide/radiobutton.md
+    - styleguide/scale.md
+    - styleguide/scrollbar.md
+    - styleguide/separator.md
+    - styleguide/sizegrip.md
+    - styleguide/spinbox.md
+    - styleguide/treeview.md
+  - Themes:
+    - themes/index.md
+    - themes/light.md
+    - themes/dark.md
+    - themes/definitions.md
+    - themes/themecreator.md
+  - Gallery:
+    - gallery/index.md
+    - gallery/calculator.md
+    - gallery/collapsingframe.md
+    - gallery/dataentry.md
+    - gallery/equalizer.md
+    - gallery/filebackup.md
+    - gallery/filesearchengine.md
+    - gallery/magicmouse.md
+    - gallery/mediaplayer.md
+    - gallery/pccleaner.md
+    - gallery/stopwatch.md
+    - gallery/textreader.md
+  - Cookbook: 
+    - cookbook/index.md
+    - cookbook/validate-user-input.md
+    - cookbook/gif-animation.md
+  - API: 
+    - 'widgets module':
+      - api/widgets/dateentry.md
+      - api/widgets/floodgauge.md
+      - api/widgets/meter.md
+    - 'dialogs module': 
+      - api/dialogs/askdate.md
+      - api/dialogs/datepickerpopup.md
+    - 'utility module': api/utility.md
+    - 'style module': 
+      - api/style/bootstyle.md
+      - api/style/colors.md
+      - api/style/style.md
+      - api/style/stylebuildertk.md
+      - api/style/stylebuilderttk.md
+      - api/style/themedefinition.md    
