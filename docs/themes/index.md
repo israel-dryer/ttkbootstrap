@@ -1,11 +1,11 @@
 # Themes
 
-ttkbootstrap comes packages with a LOT of beautifully styled light and
-dark themes, which you can view in a demo by python this command into
+ttkbootstrap comes packaged with a LOT of beautifully styled light and
+dark themes, which you can view in a demo by typing this command into
 your terminal _after installing ttkbootstrap_.
 
 ```shell
->>> python -m ttkboostrap
+>>> python -m ttkbootstrap
 ```
 
 You will see a demo screen that looks like the image below. Change the
