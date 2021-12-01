@@ -28,7 +28,7 @@ frame.
 
 4. Click the **Save** button
 
-You theme is now saved in the file `ttkbootstrap.themes.user.py`
+Your theme is now saved in the file `ttkbootstrap.themes.user.py`
 
 !!! tip "Reset your theme"
     If you want to reset your color choices, you can click the 
@@ -40,17 +40,17 @@ You theme is now saved in the file `ttkbootstrap.themes.user.py`
 If you have a user themes file that is in the format specified below, you can 
 import that file into ttkbootstrap. 
 
-1. Click the **Import** button on the top menu.
+1. Click the **Import** button on the top menu
 
-2. Select the themes file you wish to import, then click **Ok** to import.
+2. Select the themes file you wish to import, then click **Ok** to import
 
 !!! warning
     Importing a user themes file will overwrite the existing user defined
-    themes within ttkbootstrap. So, make sure you **export** your existing
-    theme set if you wish to keep it.
+    themes within ttkbootstrap; so make sure you **export** your existing
+    theme set if you wish to keep it
 
 The `user.py` file contains a dictionary of user defined themes. The file that
-you import must match the same pattern illustrated below.
+you import must match the pattern illustrated below.
 
 ```python
 USER_THEMES = {
