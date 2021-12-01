@@ -1,4 +1,4 @@
-# Project goals
+# About this project
   
 I set the following goals for myself when creating and updating this project;
 especially for version 1.0. It is a work in progress, but hopefully I've 
