@@ -5,7 +5,7 @@ dark themes, which you can view in a demo by python this command into
 your terminal _after installing ttkbootstrap_.
 
 ```shell
->>> python -m ttkboostrap
+>>> python -m ttkbootstrap
 ```
 
 You will see a demo screen that looks like the image below. Change the
