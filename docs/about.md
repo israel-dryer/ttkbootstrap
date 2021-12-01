@@ -13,22 +13,22 @@ button.
 
 ## Set the widget style with keywords
 
-Keep it simple. Set the style with keywords. Stop using convoluted ttk style 
-classes such as **success.Horizontal.TProgressbar**. Instead, use **success**, 
-which is a keyword that can indicate the same semantic color meaning for _all_ 
+Keep it simple. Set styles with keywords. Instead of using ttk style 
+classes such as **success.Horizontal.TProgressbar**, use **success**, 
+which is a keyword that can indicate the same semantic meaning for _all_ 
 widgets.
 
-Many people are familiar with bootstrap for web developement which comes 
+Many people are familiar with bootstrap for web development which comes 
 pre-packaged with built-in css style classes that provide a professional and 
 consistent api for quick development. I took a similar approach with this 
-project by pre-defining styles for nearly all ttk widgets, and which can be 
-customized with simple _simple keywords_.
+project by pre-defining styles for nearly all ttk widgets and by enabling
+style customization with _simple keywords_.
 
 ## Only create themes and styles that are actually used
 
 If you're not using it, then it shouldn't be taking up memory in your
 application. Nothing bogs down your application more than a bunch of 
-boilerplate predefined assets that you may or may not use. 
+boilerplate assets that you may or may not use. 
 
 To fix this, I've designed a styling engine for ttk that builds ttk styles and 
 themes _on demand_. If a style is not used, it will not be created. This adds a 
