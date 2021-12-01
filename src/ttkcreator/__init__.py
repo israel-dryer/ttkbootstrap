@@ -10,7 +10,12 @@ import tkinter as tk
 from tkinter import ttk
 from tkinter.colorchooser import askcolor
 from tkinter.messagebox import showinfo, showerror
-import importlib.resources
+
+try:
+    import importlib.resources as importlib_resources
+except ImportError:
+    import importlib_resources
+
 from PIL import Image, ImageGrab, ImageDraw, ImageFont, ImageTk
 from tkinter.filedialog import asksaveasfilename
 from tkinter.messagebox import showwarning
@@ -113,7 +118,7 @@ class CreatorDesignWindow(tk.Toplevel):
         Draw the selector image using the packaged `Symbola` font.
         """
         font_size = 16
-        with importlib.resources.open_binary('ttkbootstrap', 'Symbola.ttf') as font_path:
+        with importlib_resources.open_binary('ttkbootstrap', 'Symbola.ttf') as font_path:
             fnt = ImageFont.truetype(font_path, font_size)
 
         im = Image.new('RGBA', (font_size, font_size))
@@ -210,7 +215,7 @@ class CreatorDesignWindow(tk.Toplevel):
         """
         name = self.getvar('name').lower().replace(' ', '')
 
-        raw_json = importlib.resources.read_text('ttkbootstrap', 'themes.json')
+        raw_json = importlib_resources.read_text('ttkbootstrap', 'themes.json')
         settings = json.loads(raw_json)
 
         with open(settings['userpath'], encoding='utf-8') as f:
@@ -536,7 +541,7 @@ class CreatorBaseChooser(tk.Tk):
         :returns: is there a valid path for themes or not?
         :rtype: bool
         """
-        json_string = importlib.resources.read_text('ttkbootstrap', 'themes.json')
+        json_string = importlib_resources.read_text('ttkbootstrap', 'themes.json')
         settings = json.loads(json_string)
 
         if settings['userpath'] and Path(settings['userpath']).exists():
@@ -551,7 +556,7 @@ class CreatorBaseChooser(tk.Tk):
         else:
             # set the new userpath
             settings['userpath'] = userpath
-            with importlib.resources.path('ttkbootstrap', 'themes.json') as path:
+            with importlib_resources.path('ttkbootstrap', 'themes.json') as path:
                 with open(path, 'w', encoding='utf-8') as f:
                     json.dump(settings, f, indent='\t')
             # create the new file if not exists

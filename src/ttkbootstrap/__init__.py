@@ -31,10 +31,14 @@
 
 """
 import colorsys
-import importlib.resources
 import json
 from pathlib import Path
 from tkinter import ttk
+
+try:
+    import importlib.resources as importlib_resources
+except ImportError:
+    import importlib_resources
 
 from PIL import ImageTk, Image, ImageDraw, ImageFont
 
@@ -97,7 +101,7 @@ class Style(ttk.Style):
             themes_file (str): the path of the `themes.json` file.
         """
         # pre-defined themes
-        json_data = importlib.resources.read_text('ttkbootstrap', 'themes.json')
+        json_data = importlib_resources.read_text('ttkbootstrap', 'themes.json')
         builtin_themes = json.loads(json_data)
 
         # application-defined or user-defined themes
@@ -997,7 +1001,7 @@ class StylerTTK:
     def _create_scrollbar_images(self):
         """Create assets needed for scrollbar arrows. The assets are saved to the ``theme_images`` property."""
         font_size = 13
-        with importlib.resources.open_binary('ttkbootstrap', 'Symbola.ttf') as font_path:
+        with importlib_resources.open_binary('ttkbootstrap', 'Symbola.ttf') as font_path:
             fnt = ImageFont.truetype(font_path, font_size)
 
         # up arrow
@@ -2468,7 +2472,7 @@ class StylerTTK:
         draw.rounded_rectangle([2, 2, 132, 132], radius=16, outline=off_border, width=3, fill=off_fill)
 
         # checkbutton on
-        with importlib.resources.open_binary('ttkbootstrap', 'Symbola.ttf') as font_path:
+        with importlib_resources.open_binary('ttkbootstrap', 'Symbola.ttf') as font_path:
             fnt = ImageFont.truetype(font_path, 130)
         checkbutton_on = Image.new('RGBA', (134, 134))
         draw = ImageDraw.Draw(checkbutton_on)
