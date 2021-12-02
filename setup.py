@@ -27,9 +27,6 @@ setuptools.setup(
     packages=setuptools.find_packages(where="src"),
     package_data={"": ["*.json", "*.ttf"]},
     include_package_data=True,
-    install_requires=[
-        "pillow>=8.2.0",
-        "importlib_resources; python_version < '3.7'"
-    ],
+    install_requires=["pillow>=8.2.0"],
     python_requires=">=3.6",
 )
