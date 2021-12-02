@@ -6,9 +6,10 @@ Copyright (c) 2021 Israel Dryer
 from ttkbootstrap import Style
 import tkinter
 from tkinter import ttk
-from . import widgets
+from ttkbootstrap import widgets
 
 # for taking screenshots
+from pathlib import Path
 from PIL import ImageGrab
 
 
@@ -21,7 +22,6 @@ class Demo(Style):
         super().__init__()
         self.theme_use('lumen')
         self.root = self.master
-        self.root.geometry('500x695')
         self.root.protocol("WM_DELETE_WINDOW", self.quit)
         self.root.title('TTK Bootstrap')
         self.theme_name = tkinter.StringVar()
@@ -214,7 +214,8 @@ class Demo(Style):
         img = ImageGrab.grab(bbox=bbox)
 
         # image name
-        filename = f'../../docs/images/{self.theme_name.get()}.png'
+        p = Path(__file__).parent.parent.parent / 'docs/images/'
+        filename = f'{p}\\{self.theme_name.get()}.png'
         img.save(filename, 'png')
         print(filename)  # print for confirmation
 
