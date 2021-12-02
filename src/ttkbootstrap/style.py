@@ -4462,6 +4462,7 @@ class Bootstyle:
                 _configure = Bootstyle.override_ttk_widget_configure(
                     widget.configure)
                 widget.configure = _configure
+                widget.config = widget.configure
 
                 # override get and set methods
                 def __setitem(self, key, val): return _configure(
