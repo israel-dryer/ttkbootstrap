@@ -142,10 +142,11 @@ class Style(ttk.Style):
         Keyword Args:
             themename (str): the theme to apply when creating new widgets
         """
-        self.theme = self._theme_definitions.get(themename)
-
         if not themename:
             return super().theme_use()
+
+        self.theme = self._theme_definitions.get(themename)
+
 
         if all([themename, themename not in self._theme_names]):
             print(f"{themename} is not a valid theme name. Please try one of the following:")
