@@ -2921,7 +2921,7 @@ class StylerTTK:
                                    ('active', 'pressed', '!disabled', self.theme_images['close_button_pressed']),
                                    ('active', 'pressed', 'disabled', self.theme_images['newtab_button_pressed']),
                                    ('disabled', self.theme_images['newtab_button']),
-                                   {'padding': '8 8 8 8', 'sticky': ''})},
+                                   {'padding': '8 7 8 7', 'sticky': ''})},
             'Interactive.TNotebook.Tab': {
                 'layout': [
                     ('Interactive.TNotebook.tab', {'sticky': 'nswe', 'children': [
@@ -2993,7 +2993,7 @@ class StylerTTK:
                                    ('active', 'pressed', 'disabled', self.theme_images['newtab_button']),
                                    ('disabled', self.theme_images['newtab_button_pressed']),
                                    # need 1 extra pixel of padding at the bottom to keep positioning the same as Interactive.TNotebook
-                                   {'padding': '8 8 8 9', 'sticky': ''})},
+                                   {'padding': '8 7 8 8', 'sticky': ''})},
             'Flat.Interactive.TNotebook.Tab': {
                 'layout': [
                     ('Flat.Interactive.TNotebook.tab', {'sticky': 'nswe', 'children': [
