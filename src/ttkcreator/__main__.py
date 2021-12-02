@@ -7,23 +7,16 @@ import pathlib
 from tkinter import messagebox
 import uuid
 import json
-from ttkbootstrap import Style, Colors,  StylerTTK, ThemeDefinition
+from ttkbootstrap import Style, Colors,  ThemeDefinition
 import tkinter as tk
 from tkinter import ttk
 from tkinter.colorchooser import askcolor
 from tkinter.messagebox import showinfo, showerror
 
-# try:
-#     import importlib.resources as importlib_resources
-# except ImportError:
-#     import importlib_resources
-
 from PIL import Image, ImageGrab, ImageDraw, ImageFont, ImageTk
 from tkinter.filedialog import askopenfile, asksaveasfilename
-from tkinter.messagebox import showwarning
 from pathlib import Path
 from copy import deepcopy
-import ttkbootstrap
 from ttkbootstrap.themes import STANDARD_THEMES
 from ttkbootstrap import themes_custom
 
@@ -44,6 +37,7 @@ class CreatorDesignWindow(tk.Tk):
         self.protocol('WM_DELETE_WINDOW', self.quit)
         self.geometry_set = False
         self.bind("<Insert>", self.get_bounding_box)
+        self.setvar('type', 'light')
 
         # setup application window
         self.window = ttk.Frame(self, name='window', padding=5)
@@ -77,14 +71,17 @@ class CreatorDesignWindow(tk.Tk):
         # Theme name
         name_frame = ttk.Frame(chooser)
         name_frame.pack(fill='x', pady=(5, 2))
-        ttk.Label(name_frame, text='name', width=10).pack(side='left', padx=(0, 10))
+        ttk.Label(name_frame, text='name', width=10).pack(
+            side='left', padx=(0, 10))
         ttk.Entry(name_frame, textvariable='name').pack(fill='x', side='top')
 
         # Theme base
         base_frame = ttk.Frame(chooser)
         base_frame.pack(fill='x', pady=(2, 5))
-        ttk.Label(base_frame, text='base', width=10).pack(side='left', padx=(0, 10))
-        self.theme_names = list(STANDARD_THEMES.keys()) + list(themes_custom.USER_THEMES.keys())
+        ttk.Label(base_frame, text='base', width=10).pack(
+            side='left', padx=(0, 10))
+        self.theme_names = list(STANDARD_THEMES.keys()) + \
+            list(themes_custom.USER_THEMES.keys())
         self.base_theme = ttk.Combobox(base_frame, values=self.theme_names)
         self.base_theme.set('flatly')
         self.base_theme.pack(fill='x', side='top')
@@ -94,26 +91,35 @@ class CreatorDesignWindow(tk.Tk):
         selector_frame = ttk.Frame(chooser, name='selectors')
         selector_frame.pack(fill='x', pady=5)
         for color in self.style.colors.label_iter():
-            self.color_selector(selector_frame, color).pack(fill='x', pady=2, side='top')
+            self.color_selector(selector_frame, color).pack(
+                fill='x', pady=2, side='top')
 
         # Action Buttons
         button_frame = ttk.Frame(chooser)
-        import_btn = ttk.Button(button_frame, text="Import", style='primary.TButton', command=self.import_themes)
-        import_btn.pack(side='left',padx=2)
-        export_btn = ttk.Button(button_frame, text="Export", style='primary.TButton', command=self.export_themes)
+        import_btn = ttk.Button(button_frame, text="Import",
+                                style='primary.TButton', command=self.import_themes)
+        import_btn.pack(side='left', padx=2)
+        export_btn = ttk.Button(button_frame, text="Export",
+                                style='primary.TButton', command=self.export_themes)
         export_btn.pack(side='left', padx=2)
-        reset_btn = ttk.Button(button_frame, text="Reset", style='danger.TButton', command=self.reset_theme)
+        reset_btn = ttk.Button(button_frame, text="Reset",
+                               style='danger.TButton', command=self.reset_theme)
         reset_btn.pack(side='left', fill='x', expand='yes', padx=2)
-        save_btn = ttk.Button(button_frame, text="Save", style='success.TButton', command=self.save_theme)
+        save_btn = ttk.Button(button_frame, text="Save",
+                              style='success.TButton', command=self.save_theme)
         save_btn.pack(side='left', fill='x', expand='yes', padx=2)
-
 
         button_frame.pack(fill='x', pady=10)
         return chooser
 
     def change_base_theme(self, *_):
-        theme = self.base_theme.get()
-        self.style.theme_use(theme)
+        self.theme_name = self.base_theme.get()
+        self.style.theme_use(self.theme_name)
+        self.fallback_colors = deepcopy(self.style.theme.colors)
+        self.style._theme_objects[self.theme_name].styler_tk.style_tkinter_widgets(
+        )
+        self.reset_variables()
+        self.setvar('type', self.style.theme.type)
 
     def set_geometry(self):
         """
@@ -149,15 +155,19 @@ class CreatorDesignWindow(tk.Tk):
         """
         selector = ttk.Frame(master, name=color_label)
         color_value = self.style.colors.get(color_label)
-        ttk.Label(selector, text=color_label, name='label', width=10).pack(side='left')
-        tk.Frame(selector, name='patch', width=10, background=color_value).pack(side='left', fill='y', padx=2)
+        ttk.Label(selector, text=color_label,
+                  name='label', width=10).pack(side='left')
+        tk.Frame(selector, name='patch', width=10, background=color_value).pack(
+            side='left', fill='y', padx=2)
         # entry = ttk.Entry(selector, name='entry', textvariable=color_label)
         entry = ttk.Entry(selector, name='entry')
         entry.insert(tk.END, color_value)
         entry.pack(side='left', fill='x', expand='yes')
-        entry.bind('<FocusOut>', lambda event, selector=selector: self.select_color(selector, event))
+        entry.bind('<FocusOut>', lambda event,
+                   selector=selector: self.select_color(selector, event))
         # btn = ttk.Button(selector, name='button', image=self.image, style='secondary.TButton')
-        btn = ttk.Button(selector, name='button', text='...', style='secondary.TButton')
+        btn = ttk.Button(selector, name='button', text='...',
+                         style='secondary.TButton')
         btn.configure(command=lambda s=selector: self.select_color(s))
         btn.pack(side='right', padx=2)
         return selector
@@ -211,13 +221,14 @@ class CreatorDesignWindow(tk.Tk):
         self.vars['type'] = tk.StringVar(name='type', value=themesettings.type)
 
         for color in self.style.colors.label_iter():
-            self.vars[color] = tk.StringVar(name=color, value=self.style.colors.get(color))
+            self.vars[color] = tk.StringVar(
+                name=color, value=self.style.colors.get(color))
             self.vars[color].trace_add('write', self.update_theme)
 
     def export_themes(self):
         """Export all user defined themes"""
         path = asksaveasfilename(
-            title="Where to save user themes?", 
+            title="Where to save user themes?",
             filetypes=[("python", "*.py")],
             initialfile="user_themes.py"
         )
@@ -233,12 +244,14 @@ class CreatorDesignWindow(tk.Tk):
             if file:
                 text = file.read()
                 if not text.startswith("USER_THEMES="):
-                    messagebox.showerror(title="Import themes", message="Not a valid user themes file.")
+                    messagebox.showerror(
+                        title="Import themes", message="Not a valid user themes file.")
                 else:
                     p = pathlib.Path(themes_custom.__file__)
                     with open(p, 'w') as f:
                         f.write(text)
-                    messagebox.showinfo(title="Import themes", message="User themes imported.")
+                    messagebox.showinfo(
+                        title="Import themes", message="User themes imported.")
 
     def save_theme(self):
         """
@@ -247,12 +260,11 @@ class CreatorDesignWindow(tk.Tk):
         name = self.getvar('name').lower().replace(' ', '')
 
         if name in self.theme_names:
-            showerror(title='Save Theme', message=f'The theme {name} already exists.')
+            showerror(title='Save Theme',
+                      message=f'The theme {name} already exists.')
             return
 
         self.theme_names.append(name)
-        # self.base_theme.configure(values=self.theme_names)
-
         settings = {
             "type": self.getvar('type'),
             "colors": {
@@ -269,15 +281,15 @@ class CreatorDesignWindow(tk.Tk):
                 "border": self.getvar('border'),
                 "inputfg": self.getvar('inputfg'),
                 "inputbg": self.getvar('inputbg')
-                }
+            }
         }
 
         themes_custom.USER_THEMES[name] = settings
 
         with open(Path(themes_custom.__file__), 'w', encoding='utf-8') as f:
             f.write('USER_THEMES=' + str(themes_custom.USER_THEMES))
-        showinfo(title='Save Theme', message=f'The theme {name} has been created')
-        
+        showinfo(title='Save Theme',
+                 message=f'The theme {name} has been created')
 
     def reset_theme(self):
         """
@@ -285,7 +297,6 @@ class CreatorDesignWindow(tk.Tk):
         """
         self.style.theme_use(themename=self.theme_name)
         self.reset_variables()
-        # self.update_selector_image()
         self.reset_color_patches()
 
     def reset_variables(self):
@@ -307,8 +318,8 @@ class CreatorDesignWindow(tk.Tk):
         """
         selectors = self.get_selectors()
         for color in self.style.colors.label_iter():
-            selectors[color].children['patch'].configure(background=self.style.colors.get(color))
-            # selectors[color].children['button'].configure(image=self.image)
+            selectors[color].children['patch'].configure(
+                background=self.style.colors.get(color))
 
     def update_theme(self, var, index, mode):
         """
@@ -319,8 +330,8 @@ class CreatorDesignWindow(tk.Tk):
         :param index: the index of the item (if an array)
         :param mode: the mode of the trace observer
         """
-        theme_id = str(uuid.uuid4())  # a unique (and temporary) identifier for the new theme
-        # self.update_selector_image()
+        theme_id = str(
+            uuid.uuid4())  # a unique (and temporary) identifier for the new theme
 
         try:
             colors = Colors(
@@ -399,21 +410,26 @@ class EverythingBagel(ttk.Notebook):
         """
         Create all widgets contained in Tab 1
         """
-        colors = ['Primary', 'Secondary', 'Success', 'Info', 'Warning', 'Danger']
+        colors = ['Primary', 'Secondary',
+                  'Success', 'Info', 'Warning', 'Danger']
 
         # Available Colors
-        color_frame = ttk.Labelframe(self.tab, text='Colors available in this theme', padding=15)
+        color_frame = ttk.Labelframe(
+            self.tab, text='Colors available in this theme', padding=15)
         for color in colors:
-            btn = ttk.Button(color_frame, text=color.title(), style=f'{color.lower()}.TButton')
+            btn = ttk.Button(color_frame, text=color.title(),
+                             style=f'{color.lower()}.TButton')
             btn.pack(side='left', fill='x', expand='yes', padx=2)
         color_frame.pack(side='top', fill='x', pady=5)
 
         # Widget images
-        widget_frame = ttk.Labelframe(self.tab, text='Styled widgets', padding=15)
+        widget_frame = ttk.Labelframe(
+            self.tab, text='Styled widgets', padding=15)
         widget_frame.pack(fill='both')
 
         # Label
-        ttk.Label(widget_frame, text='This is a label').pack(side='top', fill='x')
+        ttk.Label(widget_frame, text='This is a label').pack(
+            side='top', fill='x')
 
         entry_spin_frame = ttk.Frame(widget_frame)
         entry_spin_frame.pack(fill='x', pady=5)
@@ -424,7 +440,8 @@ class EverythingBagel(ttk.Notebook):
         entry.pack(side='left', fill='x', expand='yes')
 
         # Spinbox
-        spinner_options = ['Spinner option 1', 'Spinner option 2', 'Spinner option 3']
+        spinner_options = ['Spinner option 1',
+                           'Spinner option 2', 'Spinner option 3']
         spinner = ttk.Spinbox(entry_spin_frame, values=spinner_options)
         spinner.set('Spinner option 1')
         spinner.pack(side='left', fill='x', expand='yes', padx=(5, 0))
@@ -434,13 +451,15 @@ class EverythingBagel(ttk.Notebook):
         b1 = ttk.Button(btn_frame, text='Solid Button')
         b1.pack(side='left', fill='x', expand='yes', padx=(0, 5))
 
-        b2 = ttk.Button(btn_frame, text='Outline Button', style='Outline.TButton')
+        b2 = ttk.Button(btn_frame, text='Outline Button',
+                        style='Outline.TButton')
         b2.pack(side='left', fill='x', expand='yes')
         btn_frame.pack(fill='x', pady=(10, 5))
 
         # Option Menu
         om_var = tk.StringVar()
-        om = ttk.OptionMenu(btn_frame, om_var, 'Option Menu', 'One', 'Two', 'Three')
+        om = ttk.OptionMenu(btn_frame, om_var,
+                            'Option Menu', 'One', 'Two', 'Three')
         om.pack(side='right', fill='x', padx=(5, 0), pady=5)
 
         # Labelframe
@@ -451,7 +470,8 @@ class EverythingBagel(ttk.Notebook):
         r1 = ttk.Radiobutton(options_frame, value=1, text='Radio 1')
         r1.pack(side='left', fill='x', expand='yes')
         r1.invoke()
-        ttk.Radiobutton(options_frame, value=2, text='Radio 2').pack(side='left', fill='x', expand='yes')
+        ttk.Radiobutton(options_frame, value=2, text='Radio 2').pack(
+            side='left', fill='x', expand='yes')
 
         # Checkbutton
         cb1 = ttk.Checkbutton(options_frame, text='Check 1')
@@ -475,8 +495,10 @@ class EverythingBagel(ttk.Notebook):
 
         # Scale
         scale_frame = ttk.Frame(widget_frame)
-        self.scale_var = tk.StringVar(value=25)  # assign to self so that it's not garbage collected
-        scale = ttk.Scale(scale_frame, variable=self.scale_var, from_=0, to=100)
+        # assign to self so that it's not garbage collected
+        self.scale_var = tk.StringVar(value=25)
+        scale = ttk.Scale(
+            scale_frame, variable=self.scale_var, from_=0, to=100)
         scale.pack(side='left', fill='x', expand='yes', padx=(0, 2))
         scale_frame.pack(side='top', fill='x', pady=5)
         entry = ttk.Entry(scale_frame, textvariable=self.scale_var, width=4)
@@ -488,109 +510,9 @@ class EverythingBagel(ttk.Notebook):
         cbo.pack(fill='x', pady=5)
 
         # Progressbar
-        ttk.Progressbar(widget_frame, variable=self.scale_var).pack(fill='x', pady=(10, 0))
+        ttk.Progressbar(widget_frame, variable=self.scale_var).pack(
+            fill='x', pady=(10, 0))
 
-
-# class CreatorBaseChooser(tk.Tk):
-#     def __init__(self):
-#         super().__init__()
-#         self.style = Style()
-#         self.title('TTK Creator')
-#         self.geometry(f'819x543')
-#         self.frame = ttk.Frame(self)
-#         self.setup()
-#         # self.eval('tk::PlaceWindow . center')
-#         self.bind("<Insert>", self.get_bounding_box)
-
-#     def setup(self):
-#         self.frame.pack(fill='both', expand='yes')
-
-#         lbl = ttk.Label(self.frame, text='What kind of theme do you want to create?', font='-size 16 -slant italic')
-#         lbl.pack(side='top', pady=(35, 40))
-
-#         self.style.configure('light.Outline.TButton', font='-size 20')
-#         self.style.configure('dark.TButton', font='-size 20')
-#         light = ttk.Button(self.frame, text='Light', style='light.Outline.TButton', command=self.create_light_theme)
-#         light.pack(side='left', expand='yes', fill='both')
-
-#         dark = ttk.Button(self.frame, text='Dark', style='dark.TButton', command=self.create_dark_theme)
-#         dark.pack(side='right', expand='yes', fill='both')
-
-#     def create_dark_theme(self):
-#         """
-#         Startup the design window with the 'flatly' theme
-#         """
-#         # valid_user_path = self.check_user_themes_path()
-#         # if not valid_user_path:
-#         #     return
-
-#         self.style.theme_use(themename='darkly')
-#         CreatorDesignWindow(self)
-#         self.withdraw()
-
-#     def create_light_theme(self):
-#         """
-#         Startup the design window with the 'superhero' theme
-#         """
-#         # valid_user_path = self.check_user_themes_path()
-#         # if not valid_user_path:
-#         #     return
-
-#         CreatorDesignWindow(self)
-#         self.withdraw()
-
-#     def save_screenshot(self, bbox):
-#         # screenshot
-#         img = ImageGrab.grab(bbox=bbox)
-
-#         # image name
-#         filename = '../../docs/images/ttkcreator-splash.png'
-#         print(filename)
-#         img.save(filename, 'png')
-
-#     def get_bounding_box(self, event):
-#         """
-#         Take a screenshot of the current demo window and save to images
-#         """
-#         # bounding box
-#         titlebar = 31
-#         x1 = self.winfo_rootx() - 1
-#         y1 = self.winfo_rooty() - titlebar
-#         x2 = x1 + self.winfo_width() + 2
-#         y2 = y1 + self.winfo_height() + titlebar + 1
-#         self.save_screenshot([x1, y1, x2, y2])
-
-#     def check_user_themes_path(self):
-#         """
-#         If the user defined themes path does not exists, ask for one
-
-#         :returns: is there a valid path for themes or not?
-#         :rtype: bool
-#         """
-#         json_string = importlib_resources.read_text('ttkbootstrap', 'themes.json')
-#         settings = json.loads(json_string)
-
-#         if settings['userpath'] and Path(settings['userpath']).exists():
-#             return True
-
-#         showwarning(title="User Defined Themes", message='Please supply a path to save user-defined themes')
-#         userpath = asksaveasfilename(parent=self, title='User Defined Themes', defaultextension='json',
-#                                      initialfile='ttkbootstrap_themes.json', confirmoverwrite=False, )
-#         if not userpath:
-#             showwarning(title='User Defined Themes', message='Cannot save user-defined themes without a valid path')
-#             return False
-#         else:
-#             # set the new userpath
-#             settings['userpath'] = userpath
-#             with importlib_resources.path('ttkbootstrap', 'themes.json') as path:
-#                 with open(path, 'w', encoding='utf-8') as f:
-#                     json.dump(settings, f, indent='\t')
-#             # create the new file if not exists
-#             if not Path(userpath).exists():
-#                 template = {"themes": []}
-#                 with open(userpath, 'w', encoding='utf-8') as f:
-#                     json.dump(template, f, indent='\t')
-#             return True
 
 if __name__ == '__main__':
     CreatorDesignWindow().mainloop()
