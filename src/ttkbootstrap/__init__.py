@@ -311,14 +311,14 @@ class Colors:
         """
         if len(color) == 4:
             # 3 digit hexadecimal colors
-            r = round(int(color[1], 16) / 255, 2)
-            g = round(int(color[2], 16) / 255, 2)
-            b = round(int(color[3], 16) / 255, 2)
+            r = int(color[1], 16) / 15
+            g = int(color[2], 16) / 15
+            b = int(color[3], 16) / 15
         else:
             # 6 digit hexadecimal colors
-            r = round(int(color[1:3], 16) / 255, 2)
-            g = round(int(color[3:5], 16) / 255, 2)
-            b = round(int(color[5:], 16) / 255, 2)
+            r = int(color[1:3], 16) / 255
+            g = int(color[3:5], 16) / 255
+            b = int(color[5:], 16) / 255
         return r, g, b
 
     @staticmethod
