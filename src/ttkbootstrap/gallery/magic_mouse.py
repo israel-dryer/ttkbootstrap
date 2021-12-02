@@ -7,7 +7,7 @@ import tkinter
 from tkinter import PhotoImage
 from tkinter import ttk
 from tkinter.messagebox import showinfo
-
+from pathlib import Path
 from ttkbootstrap import Style
 
 
@@ -33,15 +33,16 @@ class MouseUtilities(ttk.Frame):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        p = Path(__file__).parent
         self.images = {
-            'reset': PhotoImage(name='reset', file='assets/magic_mouse/icons8_reset_24px.png'),
-            'reset-small': PhotoImage(name='reset-small', file='assets/magic_mouse/icons8_reset_16px.png'),
-            'submit': PhotoImage(name='submit', file='assets/magic_mouse/icons8_submit_progress_24px.png'),
-            'question': PhotoImage(name='question', file='assets/magic_mouse/icons8_question_mark_16px.png'),
-            'direction': PhotoImage(name='direction', file='assets/magic_mouse/icons8_move_16px.png'),
-            'bluetooth': PhotoImage(name='bluetooth', file='assets/magic_mouse/icons8_bluetooth_2_16px.png'),
-            'buy': PhotoImage(name='buy', file='assets/magic_mouse/icons8_buy_26px_2.png'),
-            'mouse': PhotoImage(name='mouse', file='assets/magic_mouse/magic_mouse.png')
+            'reset': PhotoImage(name='reset', file=p/'assets/magic_mouse/icons8_reset_24px.png'),
+            'reset-small': PhotoImage(name='reset-small', file=p/'assets/magic_mouse/icons8_reset_16px.png'),
+            'submit': PhotoImage(name='submit', file=p/'assets/magic_mouse/icons8_submit_progress_24px.png'),
+            'question': PhotoImage(name='question', file=p/'assets/magic_mouse/icons8_question_mark_16px.png'),
+            'direction': PhotoImage(name='direction', file=p/'assets/magic_mouse/icons8_move_16px.png'),
+            'bluetooth': PhotoImage(name='bluetooth', file=p/'assets/magic_mouse/icons8_bluetooth_2_16px.png'),
+            'buy': PhotoImage(name='buy', file=p/'assets/magic_mouse/icons8_buy_26px_2.png'),
+            'mouse': PhotoImage(name='mouse', file=p/'assets/magic_mouse/magic_mouse.png')
         }
 
         for i in range(3):

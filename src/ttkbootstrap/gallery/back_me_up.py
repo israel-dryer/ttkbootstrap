@@ -10,6 +10,7 @@ from tkinter import ttk
 from tkinter.filedialog import askdirectory
 from tkinter.messagebox import showinfo
 from tkinter.scrolledtext import ScrolledText
+from pathlib import Path
 
 from ttkbootstrap import Style
 
@@ -32,18 +33,19 @@ class BackMeUp(ttk.Frame):
         super().__init__(*args, **kwargs)
 
         # images
-        self.img_properties_d = tkinter.PhotoImage(name='properties-dark', file='assets/icons8_settings_24px.png')
-        self.img_properties_l = tkinter.PhotoImage(name='properties-light', file='assets/icons8_settings_24px_2.png')
-        self.img_addtobackup_d = tkinter.PhotoImage(name='add-to-backup-dark', file='assets/icons8_add_folder_24px.png')
-        self.img_addtobackup_l = tkinter.PhotoImage(name='add-to-backup-light', file='assets/icons8_add_book_24px.png')
-        self.img_stopbackup_d = tkinter.PhotoImage(name='stop-backup-dark', file='assets/icons8_cancel_24px.png')
-        self.img_stopbackup_l = tkinter.PhotoImage(name='stop-backup-light', file='assets/icons8_cancel_24px_1.png')
-        self.img_play = tkinter.PhotoImage(name='play', file='assets/icons8_play_24px_1.png')
-        self.img_refresh = tkinter.PhotoImage(name='refresh', file='assets/icons8_refresh_24px_1.png')
-        self.img_stop_d = tkinter.PhotoImage(name='stop-dark', file='assets/icons8_stop_24px.png')
-        self.img_stop_l = tkinter.PhotoImage(name='stop-light', file='assets/icons8_stop_24px_1.png')
-        self.img_opened_folder = tkinter.PhotoImage(name='opened-folder', file='assets/icons8_opened_folder_24px.png')
-        self.img_logo = tkinter.PhotoImage(name='logo', file='assets/backup.png')
+        p = Path(__file__).parent
+        self.img_properties_d = tkinter.PhotoImage(name='properties-dark', file=p / 'assets/icons8_settings_24px.png')
+        self.img_properties_l = tkinter.PhotoImage(name='properties-light', file=p / 'assets/icons8_settings_24px_2.png')
+        self.img_addtobackup_d = tkinter.PhotoImage(name='add-to-backup-dark', file=p / 'assets/icons8_add_folder_24px.png')
+        self.img_addtobackup_l = tkinter.PhotoImage(name='add-to-backup-light', file=p / 'assets/icons8_add_book_24px.png')
+        self.img_stopbackup_d = tkinter.PhotoImage(name='stop-backup-dark', file=p / 'assets/icons8_cancel_24px.png')
+        self.img_stopbackup_l = tkinter.PhotoImage(name='stop-backup-light', file=p / 'assets/icons8_cancel_24px_1.png')
+        self.img_play = tkinter.PhotoImage(name='play', file=p / 'assets/icons8_play_24px_1.png')
+        self.img_refresh = tkinter.PhotoImage(name='refresh', file=p / 'assets/icons8_refresh_24px_1.png')
+        self.img_stop_d = tkinter.PhotoImage(name='stop-dark', file=p / 'assets/icons8_stop_24px.png')
+        self.img_stop_l = tkinter.PhotoImage(name='stop-light', file=p / 'assets/icons8_stop_24px_1.png')
+        self.img_opened_folder = tkinter.PhotoImage(name='opened-folder', file=p / 'assets/icons8_opened_folder_24px.png')
+        self.img_logo = tkinter.PhotoImage(name='logo', file=p / 'assets/backup.png')
 
         # ----- buttonbar
         buttonbar = ttk.Frame(self, style='primary.TFrame')
@@ -230,8 +232,9 @@ class CollapsingFrame(ttk.Frame):
         super().__init__(*args, **kwargs)
         self.columnconfigure(0, weight=1)
         self.cumulative_rows = 0
-        self.images = [tkinter.PhotoImage(name='open', file='assets/icons8_double_up_24px.png'),
-                       tkinter.PhotoImage(name='closed', file='assets/icons8_double_right_24px.png')]
+        p = Path(__file__).parent
+        self.images = [tkinter.PhotoImage(name='open', file=p / 'assets/icons8_double_up_24px.png'),
+                       tkinter.PhotoImage(name='closed', file=p / 'assets/icons8_double_right_24px.png')]
 
     def add(self, child, title="", style='primary.TButton', **kwargs):
         """Add a child to the collapsible frame

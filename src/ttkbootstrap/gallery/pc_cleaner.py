@@ -5,7 +5,7 @@
 """
 import tkinter
 from tkinter import ttk
-
+from pathlib import Path
 from ttkbootstrap import Style
 
 
@@ -31,14 +31,15 @@ class Cleaner(ttk.Frame):
         super().__init__(*args, **kwargs)
 
         # application images
-        self.logo_img = tkinter.PhotoImage(name='logo', file='assets/icons8_broom_64px_1.png')
-        self.brush_img = tkinter.PhotoImage(name='cleaner', file='assets/icons8_broom_64px.png')
-        self.registry_img = tkinter.PhotoImage(name='registry', file='assets/icons8_registry_editor_64px.png')
-        self.tools_img = tkinter.PhotoImage(name='tools', file='assets/icons8_wrench_64px.png')
-        self.options_img = tkinter.PhotoImage(name='options', file='assets/icons8_settings_64px.png')
-        self.privacy_img = tkinter.PhotoImage(name='privacy', file='assets/icons8_spy_80px.png')
-        self.junk_img = tkinter.PhotoImage(name='junk', file='assets/icons8_trash_can_80px.png')
-        self.protect_img = tkinter.PhotoImage(name='protect', file='assets/icons8_protect_40px.png')
+        p = Path(__file__).parent
+        self.logo_img = tkinter.PhotoImage(name='logo', file=p/'assets/icons8_broom_64px_1.png')
+        self.brush_img = tkinter.PhotoImage(name='cleaner', file=p/'assets/icons8_broom_64px.png')
+        self.registry_img = tkinter.PhotoImage(name='registry', file=p/'assets/icons8_registry_editor_64px.png')
+        self.tools_img = tkinter.PhotoImage(name='tools', file=p/'assets/icons8_wrench_64px.png')
+        self.options_img = tkinter.PhotoImage(name='options', file=p/'assets/icons8_settings_64px.png')
+        self.privacy_img = tkinter.PhotoImage(name='privacy', file=p/'assets/icons8_spy_80px.png')
+        self.junk_img = tkinter.PhotoImage(name='junk', file=p/'assets/icons8_trash_can_80px.png')
+        self.protect_img = tkinter.PhotoImage(name='protect', file=p/'assets/icons8_protect_40px.png')
 
         # header
         header_frame = ttk.Frame(self, padding=20, style='secondary.TFrame')

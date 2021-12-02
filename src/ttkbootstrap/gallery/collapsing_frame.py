@@ -4,6 +4,7 @@
 """
 import tkinter
 from tkinter import ttk
+from pathlib import Path
 
 from ttkbootstrap import Style
 
@@ -46,8 +47,9 @@ class CollapsingFrame(ttk.Frame):
         super().__init__(*args, **kwargs)
         self.columnconfigure(0, weight=1)
         self.cumulative_rows = 0
-        self.images = [tkinter.PhotoImage(name='open', file='assets/icons8_double_up_24px.png'),
-                       tkinter.PhotoImage(name='closed', file='assets/icons8_double_right_24px.png')]
+        p = Path(__file__).parent
+        self.images = [tkinter.PhotoImage(name='open', file=p/'assets/icons8_double_up_24px.png'),
+                       tkinter.PhotoImage(name='closed', file=p/'assets/icons8_double_right_24px.png')]
 
     def add(self, child, title="", style='primary.TButton', **kwargs):
         """Add a child to the collapsible frame

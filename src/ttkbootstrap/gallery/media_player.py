@@ -5,7 +5,7 @@
 """
 import tkinter
 from tkinter import ttk
-
+from pathlib import Path
 from ttkbootstrap import Style
 
 
@@ -30,7 +30,7 @@ class Player(ttk.Frame):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.configure(padding=1)
-        self.background = tkinter.PhotoImage(file='assets/mp_background.png')
+        self.background = tkinter.PhotoImage(file=Path(__file__).parent/'assets/mp_background.png')
         self.controls = {
             'skip-previous': '\u23EE',
             'play': '\u23F5',

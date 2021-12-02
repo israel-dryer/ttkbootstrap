@@ -2,6 +2,7 @@
 import tkinter
 from itertools import cycle
 from tkinter import ttk
+from pathlib import Path
 
 from PIL import Image, ImageTk, ImageSequence
 
@@ -22,7 +23,8 @@ class AnimatedGif(tkinter.Tk):
         self.bind('<Escape>', lambda _: self.quit())
 
         # open the GIF and create a cycle iterator
-        with Image.open('images/spinners.gif') as im:
+        p = Path(__file__)
+        with Image.open(p / '../images/spinners.gif') as im:
             # create a sequence
             sequence = ImageSequence.Iterator(im)
 
@@ -43,4 +45,4 @@ class AnimatedGif(tkinter.Tk):
 
 
 if __name__ == '__main__':
-    Animation().mainloop()
+    AnimatedGif().mainloop()
