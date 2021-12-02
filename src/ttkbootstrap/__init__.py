@@ -33,12 +33,9 @@
 import colorsys
 import json
 from pathlib import Path
+from ttkbootstrap.themes import STANDARD_THEMES
+from ttkbootstrap.themes_custom import USER_THEMES
 from tkinter import ttk
-
-try:
-    import importlib.resources as importlib_resources
-except ImportError:
-    import importlib_resources
 
 from PIL import ImageTk, Image, ImageDraw, ImageFont
 
@@ -100,30 +97,27 @@ class Style(ttk.Style):
         Args:
             themes_file (str): the path of the `themes.json` file.
         """
-        # pre-defined themes
-        json_data = importlib_resources.read_text('ttkbootstrap', 'themes.json')
-        builtin_themes = json.loads(json_data)
 
         # application-defined or user-defined themes
-        if themes_file is None:
-            themes_file = builtin_themes['userpath']
-        user_path = Path(themes_file)
-        if user_path.exists():
-            with user_path.open(encoding='utf-8') as f:
-                user_themes = json.load(f)
+        if themes_file:
+            user_path = Path(themes_file)
+            if user_path.exists():
+                with user_path.open(encoding='utf-8') as f:
+                    user_themes = json.load(f)
+            else:
+                user_themes = {}
         else:
-            user_themes = {'themes': []}
+            user_themes = {}
 
         # create a theme definition object for each theme, this will be used to generate
         #  the theme in tkinter along with any assets at run-time
-        theme_settings = {'themes': builtin_themes['themes'] + user_themes['themes']}
-        for theme in theme_settings['themes']:
+        theme_settings = {**STANDARD_THEMES, **user_themes, **USER_THEMES}
+        for name, settings in theme_settings.items():
             self.register_theme(
                 ThemeDefinition(
-                    name=theme['name'],
-                    themetype=theme['type'],
-                    font=theme['font'],
-                    colors=Colors(**theme['colors'])))
+                    name=name,
+                    themetype=settings['type'],
+                    colors=Colors(**settings['colors'])))
 
     def register_theme(self, definition):
         """Registers a theme definition for use by the ``Style`` class.
@@ -187,11 +181,11 @@ class ThemeDefinition:
         """
         self.name = name
         self.type = themetype
-        self.font = font
+        # self.font = font
         self.colors = colors if colors else Colors()
 
     def __repr__(self):
-        return f'name={self.name}, type={self.type}, font={self.font}, colors={self.colors}'
+        return f'name={self.name}, type={self.type}, colors={self.colors}'
 
 
 class Colors:
@@ -228,7 +222,7 @@ class Colors:
     """
 
     def __init__(self, primary, secondary, success, info, warning, danger, bg, fg, selectbg, selectfg,
-                 border, inputfg, inputbg):
+                 border, inputfg, inputbg, light='#ddd', dark='#333'):
         """
             Args:
                 primary (str): the primary theme color; used by default for all widgets.
@@ -244,6 +238,8 @@ class Colors:
                 border (str): the color used for widget borders.
                 inputfg (str): the text color for input widgets: ie. ``Entry``, ``Combobox``, etc...
                 inputbg (str): the text background color for input widgets.
+                light (str): a light color
+                dark (str): a dark color
         """
         self.primary = primary
         self.secondary = secondary
@@ -258,6 +254,8 @@ class Colors:
         self.border = border
         self.inputfg = inputfg
         self.inputbg = inputbg
+        self.light = light
+        self.dark = dark
 
     def get(self, color_label):
         """Lookup a color property
@@ -298,7 +296,7 @@ class Colors:
                 iter: an iterator representing the name of the color properties
         """
         return iter(['primary', 'secondary', 'success', 'info', 'warning', 'danger', 'bg', 'fg', 'selectbg', 'selectfg',
-                     'border', 'inputfg', 'inputbg'])
+                     'border', 'inputfg', 'inputbg', 'light', 'dark'])
 
     @staticmethod
     def hex_to_rgb(color):
@@ -433,7 +431,7 @@ class StylerTK:
         """Apply global options to all matching ``tkinter`` widgets"""
         self.master.configure(background=self.theme.colors.bg)
         self._set_option('*background', self.theme.colors.bg, 60)
-        self._set_option('*font', self.theme.font, 60)
+        # self._set_option('*font', self.theme.font, 60)
         self._set_option('*activeBackground', self.theme.colors.selectbg, 60)
         self._set_option('*activeForeground', self.theme.colors.selectfg, 60)
         self._set_option('*selectBackground', self.theme.colors.selectbg, 60)
@@ -538,7 +536,7 @@ class StylerTK:
         self._set_option('*Menu.tearOff', 0)
         self._set_option('*Menu.foreground', self.theme.colors.fg)
         self._set_option('*Menu.selectColor', self.theme.colors.primary)
-        self._set_option('*Menu.font', self.theme.font)
+        # self._set_option('*Menu.font', self.theme.font)
         self._set_option('*Menu.background', (
             self.theme.colors.inputbg if self.theme.type == 'light' else
             self.theme.colors.bg))
@@ -547,7 +545,7 @@ class StylerTK:
 
     def _style_labelframe(self):
         """Apply style to ``tkinter.Labelframe``"""
-        self._set_option('*Labelframe.font', self.theme.font)
+        # self._set_option('*Labelframe.font', self.theme.font)
         self._set_option('*Labelframe.foreground', self.theme.colors.fg)
         self._set_option('*Labelframe.highlightColor', self.theme.colors.border)
         self._set_option('*Labelframe.borderWidth', 1)
@@ -562,7 +560,7 @@ class StylerTK:
         self._set_option('*Text.borderColor', self.theme.colors.border)
         self._set_option('*Text.highlightThickness', 1)
         self._set_option('*Text.relief', 'flat')
-        self._set_option('*Text.font', self.theme.font)
+        self._set_option('*Text.font', 'TkDefaultFont')
         self._set_option('*Text.padX', 5)
         self._set_option('*Text.padY', 5)
 
@@ -655,7 +653,7 @@ class StylerTTK:
                     'selectforeground': self.theme.colors.selectfg,
                     'selectbackground': self.theme.colors.selectbg,
                     'fieldbg': 'white',
-                    'font': self.theme.font,
+                    # 'font': self.theme.font,
                     'borderwidth': 1,
                     'focuscolor': ''}}})
 
@@ -679,9 +677,14 @@ class StylerTTK:
         disabled_fg = (Colors.update_hsv(self.theme.colors.inputbg, vd=-0.2) if self.theme.type == 'light' else
                        Colors.update_hsv(self.theme.colors.inputbg, vd=-0.3))
 
-        if self.theme.type == 'dark':
-            self.settings.update({
-                'combo.Spinbox.field': {'element create': ('from', 'default')}})
+        # if self.theme.type == 'dark':
+        #     self.settings.update({
+        #         'combo.Spinbox.field': {'element create': ('from', 'default')}})
+
+        if self.theme.type == 'light':
+            bordercolor = self.theme.colors.border
+        else:
+            bordercolor = self.theme.colors.selectbg
 
         self.settings.update({
             'Combobox.downarrow': {'element create': ('from', 'default')},
@@ -693,7 +696,7 @@ class StylerTTK:
                     ('Combobox.padding', {'expand': '1', 'sticky': 'nswe', 'children': [
                         ('Combobox.textarea', {'sticky': 'nswe'})]})]})],
                 'configure': {
-                    'bordercolor': self.theme.colors.border,
+                    'bordercolor': bordercolor,
                     'darkcolor': self.theme.colors.inputbg,
                     'lightcolor': self.theme.colors.inputbg,
                     'arrowcolor': self.theme.colors.inputfg,
@@ -701,7 +704,7 @@ class StylerTTK:
                     'fieldbackground ': self.theme.colors.inputbg,
                     'background ': self.theme.colors.inputbg,
                     'relief': 'flat',
-                    'borderwidth ': 0,  # only applies to dark theme border
+                    # 'borderwidth ': 0,  # only applies to dark theme border
                     'padding': 5,
                     'arrowsize ': 14},
                 'map': {
@@ -934,9 +937,11 @@ class StylerTTK:
         disabled_fg = (Colors.update_hsv(self.theme.colors.inputbg, vd=-0.2) if self.theme.type == 'light' else
                        Colors.update_hsv(self.theme.colors.inputbg, vd=-0.3))
 
-        trough_color = (self.theme.colors.inputbg if self.theme.type == 'dark' else
-                        Colors.update_hsv(self.theme.colors.inputbg, vd=-0.03))
-
+        if self.theme.type == 'light':
+            trough_color = self.theme.colors.light
+        else:
+            trough_color = Colors.update_hsv(self.theme.colors.selectbg, vd=-0.2)        
+        
         pressed_vd = -0.2
         hover_vd = -0.1
 
@@ -1001,130 +1006,10 @@ class StylerTTK:
                          ('pressed', self.theme_images[f'{color}_pressed']),
                          ('hover', self.theme_images[f'{color}_hover']))}})
 
-    def _create_scrollbar_images(self):
-        """Create assets needed for scrollbar arrows. The assets are saved to the ``theme_images`` property."""
-        font_size = 13
-        with importlib_resources.open_binary('ttkbootstrap', 'Symbola.ttf') as font_path:
-            fnt = ImageFont.truetype(font_path, font_size)
-
-        # up arrow
-        vs_upim = Image.new('RGBA', (font_size, font_size))
-        up_draw = ImageDraw.Draw(vs_upim)
-        up_draw.text((1, 5), "🞁", font=fnt,
-                     fill=self.theme.colors.inputfg if self.theme.type == 'light' else
-                     Colors.update_hsv(self.theme.colors.selectbg, vd=0.35, sd=-0.1))
-        self.theme_images['vsup'] = ImageTk.PhotoImage(vs_upim)
-
-        # down arrow
-        hsdown_im = Image.new('RGBA', (font_size, font_size))
-        down_draw = ImageDraw.Draw(hsdown_im)
-        down_draw.text((1, -4), "🞃", font=fnt,
-                       fill=self.theme.colors.inputfg if self.theme.type == 'light' else
-                       Colors.update_hsv(self.theme.colors.selectbg, vd=0.35, sd=-0.1))
-        self.theme_images['vsdown'] = ImageTk.PhotoImage(hsdown_im)
-
-        # left arrow
-        vs_upim = Image.new('RGBA', (font_size, font_size))
-        up_draw = ImageDraw.Draw(vs_upim)
-        up_draw.text((1, 1), "🞀", font=fnt,
-                     fill=self.theme.colors.inputfg if self.theme.type == 'light' else
-                     Colors.update_hsv(self.theme.colors.selectbg, vd=0.35, sd=-0.1))
-        self.theme_images['hsleft'] = ImageTk.PhotoImage(vs_upim)
-
-        # right arrow
-        vs_upim = Image.new('RGBA', (font_size, font_size))
-        up_draw = ImageDraw.Draw(vs_upim)
-        up_draw.text((1, 1), "🞂", font=fnt,
-                     fill=self.theme.colors.inputfg if self.theme.type == 'light' else
-                     Colors.update_hsv(self.theme.colors.selectbg, vd=0.35, sd=-0.1))
-        self.theme_images['hsright'] = ImageTk.PhotoImage(vs_upim)
-
-    def _style_floodgauge(self):
-        """Create a style configuration for the *ttk.Progressbar* that makes it into a floodgauge. Which is essentially
-        a very large progress bar with text in the middle.
-
-        The options available in this widget include:
-
-            - Floodgauge.trough: borderwidth, troughcolor, troughrelief
-            - Floodgauge.pbar: orient, thickness, barsize, pbarrelief, borderwidth, background
-            - Floodgauge.text: 'text', 'font', 'foreground', 'underline', 'width', 'anchor', 'justify', 'wraplength',
-                'embossed'
-        """
-        self.settings.update({
-            'Floodgauge.trough': {'element create': ('from', 'clam')},
-            'Floodgauge.pbar': {'element create': ('from', 'default')},
-            'Horizontal.TFloodgauge': {
-                'layout': [('Floodgauge.trough', {'children': [
-                    ('Floodgauge.pbar', {'sticky': 'ns'}),
-                    ("Floodgauge.label", {"sticky": ""})],
-                    'sticky': 'nswe'})],
-                'configure': {
-                    'thickness': 50,
-                    'borderwidth': 1,
-                    'bordercolor': self.theme.colors.primary,
-                    'lightcolor': self.theme.colors.primary,
-                    'pbarrelief': 'flat',
-                    'troughcolor': Colors.update_hsv(self.theme.colors.primary, sd=-0.3, vd=0.8),
-                    'background': self.theme.colors.primary,
-                    'foreground': self.theme.colors.selectfg,
-                    'justify': 'center',
-                    'anchor': 'center',
-                    'font': 'helvetica 14'}},
-            'Vertical.TFloodgauge': {
-                'layout': [('Floodgauge.trough', {'children': [
-                    ('Floodgauge.pbar', {'sticky': 'we'}),
-                    ("Floodgauge.label", {"sticky": ""})],
-                    'sticky': 'nswe'})],
-                'configure': {
-                    'thickness': 50,
-                    'borderwidth': 1,
-                    'bordercolor': self.theme.colors.primary,
-                    'lightcolor': self.theme.colors.primary,
-                    'pbarrelief': 'flat',
-                    'troughcolor': Colors.update_hsv(self.theme.colors.primary, sd=-0.3, vd=0.8),
-                    'background': self.theme.colors.primary,
-                    'foreground': self.theme.colors.selectfg,
-                    'justify': 'center',
-                    'anchor': 'center',
-                    'font': 'helvetica 14'}
-            }})
-
-        for color in self.theme.colors:
-            self.settings.update({
-                f'{color}.Horizontal.TFloodgauge': {
-                    'configure': {
-                        'thickness': 50,
-                        'borderwidth': 1,
-                        'bordercolor': self.theme.colors.get(color),
-                        'lightcolor': self.theme.colors.get(color),
-                        'pbarrelief': 'flat',
-                        'troughcolor': Colors.update_hsv(self.theme.colors.get(color), sd=-0.3, vd=0.8),
-                        'background': self.theme.colors.get(color),
-                        'foreground': self.theme.colors.selectfg,
-                        'justify': 'center',
-                        'anchor': 'center',
-                        'font': 'helvetica 14'}},
-                f'{color}.Vertical.TFloodgauge': {
-                    'configure': {
-                        'thickness': 50,
-                        'borderwidth': 1,
-                        'bordercolor': self.theme.colors.get(color),
-                        'lightcolor': self.theme.colors.get(color),
-                        'pbarrelief': 'flat',
-                        'troughcolor': Colors.update_hsv(self.theme.colors.get(color), sd=-0.3, vd=0.8),
-                        'background': self.theme.colors.get(color),
-                        'foreground': self.theme.colors.selectfg,
-                        'justify': 'center',
-                        'anchor': 'center',
-                        'font': 'helvetica 14'}
-                }})
-
     def _style_scrollbar(self):
         """Create style configuration for ttk scrollbar: *ttk.Scrollbar*. This theme uses elements from the *alt* theme
         tobuild the widget layout.
-
         The options available in this widget include:
-
             - Scrollbar.trough: orient, troughborderwidth, troughcolor, troughrelief, groovewidth
             - Scrollbar.uparrow: arrowsize, background, bordercolor, relief, arrowcolor
             - Scrollbar.downarrow: arrowsize, background, bordercolor, relief, arrowcolor
@@ -1168,6 +1053,131 @@ class StylerTTK:
                          Colors.update_hsv(self.theme.colors.bg, vd=-0.25) if self.theme.type == 'light' else
                          Colors.update_hsv(self.theme.colors.selectbg, vd=0.15))]}}})
 
+    def _create_scrollbar_images(self):
+        """Create assets needed for scrollbar arrows. The assets are saved to the ``theme_images`` property."""
+        winsys = self.style.tk.call("tk", "windowingsystem")
+        if winsys == "win32":
+            fnt = ImageFont.truetype("seguisym.ttf", 13)
+        elif winsys == "x11":
+            fnt = ImageFont.truetype("FreeSerif.ttf", 13)
+        else:
+            fnt = ImageFont.truetype("LucidaGrande.ttc", 13)
+
+        # up arrow
+        vs_upim = Image.new('RGBA', (13, 13))
+        up_draw = ImageDraw.Draw(vs_upim)
+        up_draw.text((1, 1), "🞁", font=fnt,
+                     fill=self.theme.colors.inputfg if self.theme.type == 'light' else
+                     Colors.update_hsv(self.theme.colors.selectbg, vd=0.35, sd=-0.1))
+        self.theme_images['vsup'] = ImageTk.PhotoImage(vs_upim)
+
+        # down arrow
+        hsdown_im = Image.new('RGBA', (13, 13))
+        down_draw = ImageDraw.Draw(hsdown_im)
+        down_draw.text((1, -4), "🞃", font=fnt,
+                       fill=self.theme.colors.inputfg if self.theme.type == 'light' else
+                       Colors.update_hsv(self.theme.colors.selectbg, vd=0.35, sd=-0.1))
+        self.theme_images['vsdown'] = ImageTk.PhotoImage(hsdown_im)
+
+        # left arrow
+        vs_upim = Image.new('RGBA', (13, 13))
+        up_draw = ImageDraw.Draw(vs_upim)
+        up_draw.text((1, 1), "🞀", font=fnt,
+                     fill=self.theme.colors.inputfg if self.theme.type == 'light' else
+                     Colors.update_hsv(self.theme.colors.selectbg, vd=0.35, sd=-0.1))
+        self.theme_images['hsleft'] = ImageTk.PhotoImage(vs_upim)
+
+        # right arrow
+        vs_upim = Image.new('RGBA', (13, 13))
+        up_draw = ImageDraw.Draw(vs_upim)
+        up_draw.text((1, 1), "🞂", font=fnt,
+                     fill=self.theme.colors.inputfg if self.theme.type == 'light' else
+                     Colors.update_hsv(self.theme.colors.selectbg, vd=0.35, sd=-0.1))
+        self.theme_images['hsright'] = ImageTk.PhotoImage(vs_upim)
+
+
+    def _style_floodgauge(self):
+        """Create a style configuration for the *ttk.Progressbar* that makes it into a floodgauge. Which is essentially
+        a very large progress bar with text in the middle.
+
+        The options available in this widget include:
+
+            - Floodgauge.trough: borderwidth, troughcolor, troughrelief
+            - Floodgauge.pbar: orient, thickness, barsize, pbarrelief, borderwidth, background
+            - Floodgauge.text: 'text', 'font', 'foreground', 'underline', 'width', 'anchor', 'justify', 'wraplength',
+                'embossed'
+        """
+        self.settings.update({
+            'Floodgauge.trough': {'element create': ('from', 'clam')},
+            'Floodgauge.pbar': {'element create': ('from', 'default')},
+            'Horizontal.TFloodgauge': {
+                'layout': [('Floodgauge.trough', {'children': [
+                    ('Floodgauge.pbar', {'sticky': 'ns'}),
+                    ("Floodgauge.label", {"sticky": ""})],
+                    'sticky': 'nswe'})],
+                'configure': {
+                    'thickness': 50,
+                    'borderwidth': 1,
+                    'bordercolor': self.theme.colors.primary,
+                    'lightcolor': self.theme.colors.primary,
+                    'pbarrelief': 'flat',
+                    'troughcolor': Colors.update_hsv(self.theme.colors.primary, sd=-0.3, vd=0.8),
+                    'background': self.theme.colors.primary,
+                    'foreground': self.theme.colors.selectfg,
+                    'justify': 'center',
+                    'anchor': 'center',
+                    'font': '-size 14'}},
+            'Vertical.TFloodgauge': {
+                'layout': [('Floodgauge.trough', {'children': [
+                    ('Floodgauge.pbar', {'sticky': 'we'}),
+                    ("Floodgauge.label", {"sticky": ""})],
+                    'sticky': 'nswe'})],
+                'configure': {
+                    'thickness': 50,
+                    'borderwidth': 1,
+                    'bordercolor': self.theme.colors.primary,
+                    'lightcolor': self.theme.colors.primary,
+                    'pbarrelief': 'flat',
+                    'troughcolor': Colors.update_hsv(self.theme.colors.primary, sd=-0.3, vd=0.8),
+                    'background': self.theme.colors.primary,
+                    'foreground': self.theme.colors.selectfg,
+                    'justify': 'center',
+                    'anchor': 'center',
+                    'font': '-size 14'}
+            }})
+
+        for color in self.theme.colors:
+            self.settings.update({
+                f'{color}.Horizontal.TFloodgauge': {
+                    'configure': {
+                        'thickness': 50,
+                        'borderwidth': 1,
+                        'bordercolor': self.theme.colors.get(color),
+                        'lightcolor': self.theme.colors.get(color),
+                        'pbarrelief': 'flat',
+                        'troughcolor': Colors.update_hsv(self.theme.colors.get(color), sd=-0.3, vd=0.8),
+                        'background': self.theme.colors.get(color),
+                        'foreground': self.theme.colors.selectfg,
+                        'justify': 'center',
+                        'anchor': 'center',
+                        'font': '-size 14'}},
+                f'{color}.Vertical.TFloodgauge': {
+                    'configure': {
+                        'thickness': 50,
+                        'borderwidth': 1,
+                        'bordercolor': self.theme.colors.get(color),
+                        'lightcolor': self.theme.colors.get(color),
+                        'pbarrelief': 'flat',
+                        'troughcolor': Colors.update_hsv(self.theme.colors.get(color), sd=-0.3, vd=0.8),
+                        'background': self.theme.colors.get(color),
+                        'foreground': self.theme.colors.selectfg,
+                        'justify': 'center',
+                        'anchor': 'center',
+                        'font': '-size 14'}
+                }})
+
+
+
     def _style_spinbox(self):
         """Create style configuration for ttk spinbox: *ttk.Spinbox*
 
@@ -1186,8 +1196,13 @@ class StylerTTK:
         disabled_fg = (Colors.update_hsv(self.theme.colors.inputbg, vd=-0.2) if self.theme.type == 'light' else
                        Colors.update_hsv(self.theme.colors.inputbg, vd=-0.3))
 
-        if self.theme.type == 'dark':
-            self.settings.update({'custom.Spinbox.field': {'element create': ('from', 'default')}})
+        # if self.theme.type == 'dark':
+        #     self.settings.update({'custom.Spinbox.field': {'element create': ('from', 'default')}})
+
+        if self.theme.type == 'light':
+            bordercolor = self.theme.colors.border
+        else:
+            bordercolor = self.theme.colors.selectbg
 
         self.settings.update({
             'Spinbox.uparrow': {'element create': ('from', 'default')},
@@ -1201,12 +1216,12 @@ class StylerTTK:
                         ('Spinbox.padding', {'sticky': 'nswe', 'children': [
                             ('Spinbox.textarea', {'sticky': 'nswe'})]})]})],
                 'configure': {
-                    'bordercolor': self.theme.colors.border,
+                    'bordercolor': bordercolor,
                     'darkcolor': self.theme.colors.inputbg,
                     'lightcolor': self.theme.colors.inputbg,
                     'fieldbackground': self.theme.colors.inputbg,
                     'foreground': self.theme.colors.inputfg,
-                    'borderwidth': 0,
+                    # 'borderwidth': 0,
                     'background': self.theme.colors.inputbg,
                     'relief': 'flat',
                     'arrowcolor': self.theme.colors.inputfg,
@@ -1367,7 +1382,7 @@ class StylerTTK:
                     'bordercolor': self.theme.colors.primary,
                     'darkcolor': self.theme.colors.primary,
                     'lightcolor': self.theme.colors.primary,
-                    'font': self.theme.font,
+                    # 'font': self.theme.font,
                     'anchor': 'center',
                     'relief': 'raised',
                     'focusthickness': 0,
@@ -1453,7 +1468,7 @@ class StylerTTK:
                     'darkcolor': self.theme.colors.bg,
                     'lightcolor': self.theme.colors.bg,
                     'relief': 'raised',
-                    'font': self.theme.font,
+                    # 'font': self.theme.font,
                     'focusthickness': 0,
                     'focuscolor': '',
                     'padding': (10, 5)},
@@ -1536,7 +1551,7 @@ class StylerTTK:
                     'darkcolor': self.theme.colors.bg,
                     'lightcolor': self.theme.colors.bg,
                     'relief': 'raised',
-                    'font': self.theme.font,
+                    # 'font': self.theme.font,
                     'focusthickness': 0,
                     'focuscolor': '',
                     'padding': (10, 5)},
@@ -1571,7 +1586,7 @@ class StylerTTK:
                         'darkcolor': self.theme.colors.bg,
                         'lightcolor': self.theme.colors.bg,
                         'relief': 'raised',
-                        'font': self.theme.font,
+                        # 'font': self.theme.font,
                         'focusthickness': 0,
                         'focuscolor': '',
                         'padding': (10, 5)},
@@ -1833,7 +1848,7 @@ class StylerTTK:
                     'bordercolor': Colors.update_hsv(self.theme.colors.primary, sd=normal_sd, vd=normal_vd),
                     'darkcolor': Colors.update_hsv(self.theme.colors.primary, sd=normal_sd, vd=normal_vd),
                     'lightcolor': Colors.update_hsv(self.theme.colors.primary, sd=normal_sd, vd=normal_vd),
-                    'font': self.theme.font,
+                    # 'font': self.theme.font,
                     'anchor': 'center',
                     'relief': 'raised',
                     'focusthickness': 0,
@@ -1928,7 +1943,7 @@ class StylerTTK:
                     'darkcolor': self.theme.colors.bg,
                     'lightcolor': self.theme.colors.bg,
                     'relief': 'raised',
-                    'font': self.theme.font,
+                    # 'font': self.theme.font,
                     'focusthickness': 0,
                     'focuscolor': '',
                     'borderwidth': 1,
@@ -2007,18 +2022,22 @@ class StylerTTK:
         disabled_fg = (Colors.update_hsv(self.theme.colors.inputbg, vd=-0.2) if self.theme.type == 'light' else
                        Colors.update_hsv(self.theme.colors.inputbg, vd=-0.3))
 
-        if self.theme.type == 'dark':
-            self.settings.update({'Entry.field': {'element create': ('from', 'default')}})
+        # if self.theme.type == 'dark':
+        #     self.settings.update({'Entry.field': {'element create': ('from', 'default')}})
+        if self.theme.type == 'light':
+            bordercolor = self.theme.colors.border
+        else:
+            bordercolor = self.theme.colors.selectbg
 
         self.settings.update({
             'TEntry': {
                 'configure': {
-                    'bordercolor': self.theme.colors.border,
+                    'bordercolor': bordercolor,
                     'darkcolor': self.theme.colors.inputbg,
                     'lightcolor': self.theme.colors.inputbg,
                     'fieldbackground': self.theme.colors.inputbg,
                     'foreground': self.theme.colors.inputfg,
-                    'borderwidth': 0,  # only applies to border on darktheme
+                    # 'borderwidth': 0,  # only applies to border on darktheme
                     'padding': 5},
                 'map': {
                     'foreground': [('disabled', disabled_fg)],
@@ -2059,6 +2078,7 @@ class StylerTTK:
             - Radiobutton.label: compound, space, text, font, foreground, underline, width, anchor, justify, wraplength,
                 embossed, image, stipple, background
         """
+        
         disabled_fg = (Colors.update_hsv(self.theme.colors.inputbg, vd=-0.2) if self.theme.type == 'light' else
                        Colors.update_hsv(self.theme.colors.inputbg, vd=-0.3))
         disabled_bg = self.theme.colors.inputbg if self.theme.type == 'light' else disabled_fg
@@ -2077,8 +2097,8 @@ class StylerTTK:
                         ('Radiobutton.focus', {'children': [
                             ('Radiobutton.label', {'sticky': 'nswe'})], 'side': 'left', 'sticky': ''})],
                         'sticky': 'nswe'})],
-                'configure': {
-                    'font': self.theme.font},
+                # 'configure': {
+                #     'font': self.theme.font},
                 'map': {
                     'foreground': [
                         ('disabled', disabled_fg),
@@ -2103,8 +2123,8 @@ class StylerTTK:
                             ('Radiobutton.focus', {'children': [
                                 ('Radiobutton.label', {'sticky': 'nswe'})], 'side': 'left', 'sticky': ''})],
                             'sticky': 'nswe'})],
-                    'configure': {
-                        'font': self.theme.font},
+                    # 'configure': {
+                    #     'font': self.theme.font},
                     'map': {
                         'foreground': [
                             ('disabled', disabled_fg),
@@ -2123,34 +2143,43 @@ class StylerTTK:
             Tuple[PhotoImage]: a tuple of widget images.
         """
         prime_color = self.theme.colors.get(colorname)
-        on_border = prime_color if self.theme.type == 'light' else self.theme.colors.selectbg
-        on_indicator = self.theme.colors.selectfg if self.theme.type == 'light' else prime_color
-        on_fill = prime_color if self.theme.type == 'light' else self.theme.colors.selectfg
-        off_border = self.theme.colors.selectbg
-        off_fill = self.theme.colors.inputbg if self.theme.type == 'light' else self.theme.colors.selectfg
-        disabled_fg = (Colors.update_hsv(self.theme.colors.inputbg, vd=-0.2) if self.theme.type == 'light' else
-                       Colors.update_hsv(self.theme.colors.inputbg, vd=-0.3))
-        disabled_bg = self.theme.colors.inputbg if self.theme.type == 'light' else disabled_fg
+        on_fill = prime_color
+        off_fill = self.theme.colors.bg
+        on_indicator = self.theme.colors.selectfg
+
+        if self.theme.type == 'light':
+            off_border = self.theme.colors.border
+            disabled = self.theme.colors.border
+        else:
+            disabled = Colors.update_hsv(self.theme.colors.selectbg, vd=-0.3)
+            off_border = self.theme.colors.selectbg
 
         # radio off
-        radio_off = Image.new('RGBA', (134, 134))
+        radio_off = Image.new("RGBA", (134, 134))
         draw = ImageDraw.Draw(radio_off)
-        draw.ellipse([2, 2, 132, 132], outline=off_border, width=3, fill=off_fill)
+        draw.ellipse(
+            xy=[1, 1, 133, 133],
+            outline=off_border,
+            width=6,
+            fill=off_fill
+        )
 
         # radio on
-        radio_on = Image.new('RGBA', (134, 134))
+        radio_on = Image.new("RGBA", (134, 134))
         draw = ImageDraw.Draw(radio_on)
-        draw.ellipse([2, 2, 132, 132], outline=on_border, width=12 if self.theme.type == 'light' else 6, fill=on_fill)
-        if self.theme.type == 'light':
-            draw.ellipse([40, 40, 94, 94], fill=on_indicator)  # small indicator for light theme
-        else:
-            draw.ellipse([30, 30, 104, 104], fill=on_indicator)  # large indicator for dark theme
+        draw.ellipse(xy=[1, 1, 133, 133], fill=on_fill)
+        draw.ellipse([40, 40, 94, 94], fill=on_indicator)
 
         # radio disabled
-        radio_disabled = Image.new('RGBA', (134, 134))
+        radio_disabled = Image.new("RGBA", (134, 134))
         draw = ImageDraw.Draw(radio_disabled)
-        draw.ellipse([2, 2, 132, 132], outline=disabled_fg, width=3, fill=off_fill)
-
+        draw.ellipse(
+            xy=[1, 1, 133, 133],
+            outline=disabled,
+            width=3,
+            fill=off_fill
+        )
+        
         return {
             f'{colorname}_radio_off': ImageTk.PhotoImage(radio_off.resize((14, 14), Image.LANCZOS)),
             f'{colorname}_radio_on': ImageTk.PhotoImage(radio_on.resize((14, 14), Image.LANCZOS)),
@@ -2186,7 +2215,7 @@ class StylerTTK:
                     'darkcolor': self.theme.colors.bg,
                     'lightcolor': self.theme.colors.bg,
                     'relief': 'raised',
-                    'font': self.theme.font,
+                    # 'font': self.theme.font,
                     'focusthickness': 0,
                     'focuscolor': '',
                     'borderwidth': 1,
@@ -2216,7 +2245,7 @@ class StylerTTK:
                         ('selected !disabled', Colors.update_hsv(self.theme.colors.primary, vd=pressed_vd)),
                         ('hover !disabled', self.theme.colors.primary)]}},
         'chevron.TButton': {
-            'configure': {'font': 'helvetica 14'}}})
+            'configure': {'font': '-size 14'}}})
 
         for color in self.theme.colors:
             self.settings.update({
@@ -2256,7 +2285,7 @@ class StylerTTK:
                             ('selected !disabled', Colors.update_hsv(self.theme.colors.get(color), vd=pressed_vd)),
                             ('hover !disabled', self.theme.colors.get(color))]}},
             f'chevron.{color}.TButton': {
-                'configure': {'font': 'helvetica 14'}}})
+                'configure': {'font': '-size 14'}}})
 
     def _style_exit_button(self):
         """Create style configuration for the toolbutton exit button"""
@@ -2268,7 +2297,7 @@ class StylerTTK:
             'exit.TButton': {
                 'configure': {
                     'relief': 'flat',
-                    'font': 'helvetica 12'},
+                    'font': '-size 12'},
                 'map': {
                     'background': [
                         ('disabled', disabled_bg),
@@ -2280,7 +2309,7 @@ class StylerTTK:
                 f'exit.{color}.TButton': {
                     'configure': {
                         'relief': 'flat',
-                        'font': 'helvetica 12'},
+                        'font': '-size 12'},
                     'map': {
                         'background': [
                             ('disabled', disabled_bg),
@@ -2459,33 +2488,63 @@ class StylerTTK:
         Returns:
             Tuple[PhotoImage]: a tuple of widget images.
         """
+        winsys = self.style.tk.call("tk", "windowingsystem")
+        if winsys == "win32":
+            fnt = ImageFont.truetype("seguisym.ttf", 120)
+            font_offset = -20
+        elif winsys == "x11":
+            fnt = ImageFont.truetype("FreeSerif.ttf", 130)
+            font_offset = 10
+        else:
+            fnt = ImageFont.truetype("LucidaGrande.ttc", 120)
+            font_offset = -10
+
         prime_color = self.theme.colors.get(colorname)
         on_border = prime_color
-        on_indicator = self.theme.colors.selectbg
         on_fill = prime_color
         off_border = self.theme.colors.selectbg
-        off_fill = self.theme.colors.inputbg if self.theme.type == 'light' else self.theme.colors.selectfg
-        disabled_fg = (Colors.update_hsv(self.theme.colors.inputbg, vd=-0.2) if self.theme.type == 'light' else
-                       Colors.update_hsv(self.theme.colors.inputbg, vd=-0.3))
-        disabled_bg = self.theme.colors.inputbg if self.theme.type == 'light' else disabled_fg
+        off_fill = self.theme.colors.bg
+
+        if self.theme.type == 'light':
+            disabled_bg = self.theme.colors.border
+        else:
+            disabled_bg = self.theme.colors.selectbg
+
+        check_color = self.theme.colors.selectfg
 
         # checkbutton off
-        checkbutton_off = Image.new('RGBA', (134, 134))
+        checkbutton_off = Image.new("RGBA", (134, 134))
         draw = ImageDraw.Draw(checkbutton_off)
-        draw.rounded_rectangle([2, 2, 132, 132], radius=16, outline=off_border, width=3, fill=off_fill)
+        draw.rounded_rectangle(
+            [2, 2, 132, 132],
+            radius=16,
+            outline=off_border,
+            width=6,
+            fill=off_fill,
+        )
 
         # checkbutton on
-        with importlib_resources.open_binary('ttkbootstrap', 'Symbola.ttf') as font_path:
-            fnt = ImageFont.truetype(font_path, 130)
-        checkbutton_on = Image.new('RGBA', (134, 134))
+        checkbutton_on = Image.new("RGBA", (134, 134))
         draw = ImageDraw.Draw(checkbutton_on)
-        draw.rounded_rectangle([2, 2, 132, 132], radius=16, fill=on_fill, outline=on_border, width=3)
-        draw.text((20, 8), "✓", font=fnt, fill=self.theme.colors.selectfg)
+        draw.rounded_rectangle(
+            [2, 2, 132, 132],
+            radius=16,
+            fill=on_fill,
+            outline=on_border,
+            width=3,
+        )
+
+        draw.text((20, font_offset), "✓", font=fnt, fill=check_color)
 
         # checkbutton disabled
-        checkbutton_disabled = Image.new('RGBA', (134, 134))
+        checkbutton_disabled = Image.new("RGBA", (134, 134))
         draw = ImageDraw.Draw(checkbutton_disabled)
-        draw.rounded_rectangle([2, 2, 132, 132], radius=16, outline=disabled_fg, width=3, fill=disabled_bg)
+        draw.rounded_rectangle(
+            [2, 2, 132, 132],
+            radius=16,
+            outline=disabled_bg,
+            width=3
+        )
 
         return {
             f'{colorname}_checkbutton_off':
@@ -2614,7 +2673,7 @@ class StylerTTK:
         self.settings.update({
             'Outline.TMenubutton': {
                 'configure': {
-                    'font': self.theme.font,
+                    # 'font': self.theme.font,
                     'foreground': self.theme.colors.primary,
                     'background': self.theme.colors.bg,
                     'bordercolor': self.theme.colors.primary,
@@ -2700,7 +2759,7 @@ class StylerTTK:
                 embossed, image, stipple, background
         """
         border_color = self.theme.colors.border if self.theme.type == 'light' else self.theme.colors.selectbg
-        fg_color = self.theme.colors.inputfg if self.theme.type == 'light' else self.theme.colors.inputbg
+        selectfg = self.theme.colors.fg if self.theme.type == 'light' else self.theme.colors.selectfg
         bg_color = self.theme.colors.inputbg if self.theme.type == 'light' else border_color
 
         disabled_fg = (Colors.update_hsv(self.theme.colors.inputbg, vd=-0.2) if self.theme.type == 'light' else
@@ -2756,7 +2815,7 @@ class StylerTTK:
                         ('!selected', border_color)],
                     'foreground': [
                         ('disabled', disabled_fg),
-                        ('!selected', fg_color)]}}})
+                        ('!selected', selectfg)]}}})
 
         for color in self.theme.colors:
             self.settings.update({

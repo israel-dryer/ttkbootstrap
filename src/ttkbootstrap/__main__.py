@@ -1,4 +1,4 @@
-from .demo import Demo
+from ttkbootstrap.demo import Demo
 
 if __name__ == '__main__':
     Demo().run()
