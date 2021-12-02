@@ -268,7 +268,7 @@ STANDARD_THEMES = {
             "info": "#3f98d7",
             "warning": "#d05e2f",
             "danger": "#d95092",
-            "light": "#FDF6E3",
+            "light": "#A9BDBD",
             "dark": "#073642",
             "bg": "#002B36",
             "fg": "#ffffff",
