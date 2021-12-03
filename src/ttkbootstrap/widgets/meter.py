@@ -119,7 +119,7 @@ class Meter(Frame):
             self.meterbackground = Colors.update_hsv(self.convert_system_color(
                 self.lookup(meterstyle, 'background')), vd=-0.1)
         else:
-            self.meterbackground = Colors.update_hsv(self.lookup(meterstyle, 'background'), vd=-0.1)
+            self.meterbackground = Colors.update_hsv(self.lookup(meterstyle, 'space'), vd=-0.1)
 
         # meter image
         self.meter = ttk.Label(self.box)
