@@ -554,11 +554,15 @@ class StylerTK:
 
     def _style_textwidget(self):
         """Apply style to ``tkinter.Text``"""
+        if self.theme.type == 'light':
+            bordercolor = self.theme.colors.border
+        else:
+            bordercolor = self.theme.colors.selectbg        
         self._set_option('*Text.background', self.theme.colors.inputbg)
         self._set_option('*Text.foreground', self.theme.colors.inputfg)
         self._set_option('*Text.highlightColor', self.theme.colors.primary)
-        self._set_option('*Text.highlightBackground', self.theme.colors.border)
-        self._set_option('*Text.borderColor', self.theme.colors.border)
+        self._set_option('*Text.highlightBackground', bordercolor)
+        self._set_option('*Text.borderColor', bordercolor)
         self._set_option('*Text.highlightThickness', 1)
         self._set_option('*Text.relief', 'flat')
         self._set_option('*Text.font', 'TkDefaultFont')
@@ -1018,6 +1022,11 @@ class StylerTTK:
         """
         self._create_scrollbar_images()
 
+        if self.theme.type == 'light':
+            trough_color = self.theme.colors.light
+        else:
+            trough_color = Colors.update_hsv(self.theme.colors.selectbg, vd=-0.2)
+
         self.settings.update({
             'Vertical.Scrollbar.trough': {
                 'element create': ('from', 'alt')},
@@ -1040,7 +1049,7 @@ class StylerTTK:
                     'troughrelief': 'flat',
                     'relief': 'flat',
                     'troughborderwidth': 2,
-                    'troughcolor': Colors.update_hsv(self.theme.colors.bg, vd=-0.05),
+                    'troughcolor': trough_color,
                     'background':
                         Colors.update_hsv(self.theme.colors.bg, vd=-0.15) if self.theme.type == 'light' else
                         Colors.update_hsv(self.theme.colors.selectbg, vd=0.25, sd=-0.1),
@@ -1083,7 +1092,7 @@ class StylerTTK:
         # left arrow
         vs_upim = Image.new('RGBA', (13, 13))
         up_draw = ImageDraw.Draw(vs_upim)
-        up_draw.text((1, 1), "🞀", font=fnt,
+        up_draw.text((1, -4), "🞀", font=fnt,
                      fill=self.theme.colors.inputfg if self.theme.type == 'light' else
                      Colors.update_hsv(self.theme.colors.selectbg, vd=0.35, sd=-0.1))
         self.theme_images['hsleft'] = ImageTk.PhotoImage(vs_upim)
@@ -1091,7 +1100,7 @@ class StylerTTK:
         # right arrow
         vs_upim = Image.new('RGBA', (13, 13))
         up_draw = ImageDraw.Draw(vs_upim)
-        up_draw.text((1, 1), "🞂", font=fnt,
+        up_draw.text((4, -4), "🞂", font=fnt,
                      fill=self.theme.colors.inputfg if self.theme.type == 'light' else
                      Colors.update_hsv(self.theme.colors.selectbg, vd=0.35, sd=-0.1))
         self.theme_images['hsright'] = ImageTk.PhotoImage(vs_upim)
@@ -2329,6 +2338,11 @@ class StylerTTK:
             - Label.label: compound, space, text, font, foreground, underline, width, anchor, justify, wraplength,
                 embossed, image, stipple, background
         """
+        if self.theme.type == 'light':
+            troughcolor = self.theme.colors.light
+        else:
+            troughcolor = Colors.update_hsv(self.theme.colors.selectbg, vd=-0.2)
+
         self.settings.update({
             'TMeter': {
                 'layout': [
@@ -2337,7 +2351,8 @@ class StylerTTK:
                             ('Label.label', {'sticky': 'nswe'})]})]})],
                 'configure': {
                     'foreground': self.theme.colors.fg,
-                    'background': self.theme.colors.bg}}})
+                    'background': self.theme.colors.bg,
+                    'space': troughcolor}}})
 
         for color in self.theme.colors:
             self.settings.update({
