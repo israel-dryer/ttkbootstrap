@@ -199,7 +199,7 @@ class ColorRow(ttk.Frame):
         if color[1]:
             self.color_value = color[1]
             self.update_patch_color()
-            self.event_generate("<<ColorSelected>>")
+        self.event_generate("<<ColorSelected>>")
 
     def enter_color(self, *args):
         try:
@@ -208,6 +208,7 @@ class ColorRow(ttk.Frame):
         except:
             self.color_value = self.style.colors.get(self.label['text'])
             self.update_patch_color()
+        self.event_generate("<<ColorSelected>>")
 
     def update_patch_color(self):
         self.entry.delete(0, tk.END)
