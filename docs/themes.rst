@@ -62,6 +62,11 @@ Light themes
 
     inspired by https://bootswatch.com/yeti/
 
+.. figure:: images/morph.png
+    :alt: an example image of theme yeti
+
+    inspired by https://bootswatch.com/morph/    
+
 Dark themes
 ...........
 .. figure:: images/darkly.png
