@@ -54,7 +54,7 @@ STANDARD_THEMES = {
             "fg": "#343a40",
             "selectbg": "#adb5bd",
             "selectfg": "#ffffff",
-            "border": "#e5e5e5",
+            "border": "#bfbfbf",
             "inputfg": "#343a40",
             "inputbg": "#fff"
         },
