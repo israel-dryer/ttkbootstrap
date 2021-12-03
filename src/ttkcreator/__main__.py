@@ -169,7 +169,7 @@ class ThemeCreator(tk.Tk):
 
         colors = {}
         for row in self.color_patches:
-            colors[row.label['text']] = row.color_value
+            colors[row.label['text']] = row.entry.get()
 
         theme = {
             name: {
@@ -184,7 +184,7 @@ class ThemeCreator(tk.Tk):
         output = f'USER_THEMES={str(themes_custom.USER_THEMES)}'
         filepath.write_text(output, encoding='utf-8')
 
-        definition = ThemeDefinition(name, colors, self.style.theme.type)
+        definition = ThemeDefinition(name, self.style.theme.type, colors=Colors(**colors))
         self.style.register_theme(definition)
         self.style.theme_use(name)
         self.base_theme.configure(values=self.style.theme_names())
