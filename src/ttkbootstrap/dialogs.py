@@ -274,7 +274,7 @@ class DatePickerPopup:
         def inner(self, *args):
             func(self, *args)
             self.frm_dates.destroy()
-            self.draw_calendar()
+            self._draw_calendar()
         return inner
 
     @_selection_callback
