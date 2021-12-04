@@ -58,7 +58,7 @@ class ThemeCreator(tk.Tk):
         f2 = ttk.Frame(self.configure_frame, padding=(5, 2))
         ttk.Label(f2, text="base theme", width=12).pack(side=tk.LEFT)
         self.base_theme = ttk.Combobox(f2, values=self.style.theme_names())
-        self.base_theme.insert(tk.END, 'flatly')
+        self.base_theme.insert(tk.END, 'litera')
         self.base_theme.pack(side=tk.LEFT, fill=tk.X, expand=tk.YES)
         f2.pack(fill=tk.X, expand=tk.YES, pady=(0, 15))
         self.base_theme.bind('<<ComboboxSelected>>', self.change_base_theme)
