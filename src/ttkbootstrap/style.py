@@ -4451,8 +4451,8 @@ class Bootstyle:
         """Setup ttkbootstrap for use with tkinter and ttk. This method
         is called when ttkbootstrap is imported to perform all of the 
         necessary method overrides that implement the bootstyle api."""
-        from ttkbootstrap.widgets.widgets import TTK_WIDGETS
-        from ttkbootstrap.widgets.widgets import TK_WIDGETS
+        from ttkbootstrap.widgets import TTK_WIDGETS
+        from ttkbootstrap.widgets import TK_WIDGETS
 
         # TTK WIDGETS
         for widget in TTK_WIDGETS:
