@@ -146,7 +146,8 @@ Namespaces are one honking great idea -- let's do more of those!"""
         master=lframe,
         height=5,
         width=50,
-        wrap='none'
+        wrap='none',
+        highlightbackground=style.colors.primary,
     )
     txt.insert(tk.END, ZEN)
     txt.pack(
