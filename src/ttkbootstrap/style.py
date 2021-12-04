@@ -4437,8 +4437,10 @@ class Bootstyle:
         # subscribe popdown style to theme changes
         if widget.winfo_class() == 'TCombobox':
             builder: StyleBuilderTTK = style._get_builder()
+            winfo_id = hex(widget.winfo_id())
+            winfo_pathname = widget.winfo_pathname(winfo_id)
             Publisher.subscribe(
-                name=widget._name,
+                name=winfo_pathname,
                 func=lambda w=widget: builder.update_combobox_popdown_style(w),
                 channel=Channel.STD
             )
