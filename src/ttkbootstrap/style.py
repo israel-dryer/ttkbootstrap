@@ -944,10 +944,16 @@ class StyleBuilderTK:
             bordercolor = self.colors.border
         else:
             bordercolor = self.colors.selectbg
+
+        focuscolor = widget.cget('highlightbackground')
+        
+        if focuscolor in ['SystemButtonFace', bordercolor]:
+            focuscolor = bordercolor
+
         widget.configure(
             background=self.colors.inputbg,
             foreground=self.colors.inputfg,
-            highlightcolor=self.colors.primary,
+            highlightcolor=focuscolor,
             highlightbackground=bordercolor,
             insertbackground=self.colors.inputfg,
             selectbackground=self.colors.selectbg,
@@ -1931,9 +1937,7 @@ class StyleBuilderTTK:
         def draw_rect(size, fill):
             x = size[0] * 10
             y = size[1] * 10
-            img = Image.new('RGBA', (x, y))
-            draw = ImageDraw.Draw(img)
-            draw.rectangle([0, 0, x-1, y-1], fill)
+            img = Image.new('RGBA', (x, y), fill)
             image = ImageTk.PhotoImage(img.resize(size), Image.CUBIC)
             name = util.get_image_name(image)
             self.theme_images[name] = image
@@ -4447,8 +4451,8 @@ class Bootstyle:
         """Setup ttkbootstrap for use with tkinter and ttk. This method
         is called when ttkbootstrap is imported to perform all of the 
         necessary method overrides that implement the bootstyle api."""
-        from ttkbootstrap.widgets import TTK_WIDGETS
-        from ttkbootstrap.widgets import TK_WIDGETS
+        from ttkbootstrap.widgets.widgets import TTK_WIDGETS
+        from ttkbootstrap.widgets.widgets import TK_WIDGETS
 
         # TTK WIDGETS
         for widget in TTK_WIDGETS:
