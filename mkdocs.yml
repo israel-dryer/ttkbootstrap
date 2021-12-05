@@ -97,11 +97,12 @@ nav:
       - api/widgets/dateentry.md
       - api/widgets/floodgauge.md
       - api/widgets/meter.md
-    - 'dialogs module': 
-      - api/dialogs/dialogs.md
-      - api/dialogs/message.md
-      - api/dialogs/input.md
-      - api/dialogs/file.md
+    - 'dialogs module':
+      - api/dialogs/dialog.md
+      - api/dialogs/messagedialog.md
+      - api/dialogs/datepickerdialog.md
+      - api/dialogs/messagebox.md
+      - api/dialogs/querybox.md
     - 'utility module': api/utility.md
     - 'style module': 
       - api/style/bootstyle.md

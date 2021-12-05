@@ -1,9 +1,10 @@
 """
-    This module contains various dialog base classes that can be used
-    to create custom dialogs for the end user. 
+    This module contains various base dialog base classes that can be 
+    used to create custom dialogs for the end user. 
 
-    These classes serve as the basis for the pre-defined helper
-    functions in the `file`, `input`, and `message` dialog modules.
+    These classes serve as the basis for the pre-defined static helper
+    methods in the `Filebox`, `Messagebox`, and `Inputbox` container
+    classes.
 """
 
 import calendar
@@ -18,6 +19,7 @@ from ttkbootstrap.constants import *
 
 class Dialog:
     """A simple dialog base class."""
+
     def __init__(
         self,
         parent=None,
@@ -46,7 +48,7 @@ class Dialog:
         self._title = title
         self._result = None
         self._alert = alert
-        self._default_button = None
+        self._initial_focus = None
 
     def _locate(self):
         toplevel = self._toplevel
@@ -84,26 +86,42 @@ class Dialog:
         self._result = None
         self.build()
         self._locate()
-        try:
-            self._default_button.focus()
-        except:
-            pass
         self._toplevel.deiconify()
         if self._alert:
             self._toplevel.bell()
+
+        if self._initial_focus:
+            self._initial_focus.focus_force()
+
         self._toplevel.grab_set()
         self._toplevel.wait_window()
 
     def create_body(self, master):
         """Create the dialog body.
 
-        Return the widget that should have initial focus. This method
-        should be overriden and is called by the `build` method.
+        This method should be overridden and is called by the `build` 
+        method. Set the `self._initial_focus` for the widget that
+        should receive the initial focus.
+
+        Parameters:
+
+            master (Widget):
+                The parent widget.
         """
         raise NotImplementedError
 
     def create_buttonbox(self, master):
-        """Create the dialog button box"""
+        """Create the dialog button box.
+
+        This method should be overridden and is called by the `build`
+        method. Set the `self._initial_focus` for the button that
+        should receive the intial focus.
+
+        Parameters:
+
+            master (Widget):
+                The parent widget.
+        """
         raise NotImplementedError
 
     def build(self):
@@ -130,12 +148,8 @@ class Dialog:
         # self._locate()
 
         # create widgets
-        initial_focus = self.create_body(self._toplevel)
+        self.create_body(self._toplevel)
         self.create_buttonbox(self._toplevel)
-
-        # set initial focus
-        if initial_focus is not None:
-            initial_focus.focus_set()
 
         # update the window before showing
         self._toplevel.update_idletasks()
@@ -247,7 +261,6 @@ class MessageDialog(Dialog):
                 message_label = ttk.Label(frame, text=message)
                 message_label.pack(pady=(0, 5), fill=X, anchor=N)
         frame.pack(fill=X, expand=True)
-        return frame
 
     def create_buttonbox(self, master):
         """Overrides the parent method; adds the message buttonbox"""
@@ -271,11 +284,9 @@ class MessageDialog(Dialog):
             button_list.append(btn)
 
             if self._default is not None and text == self._default:
-                self._default_button = btn
+                self._initial_focus = btn
             elif self._default is None and i == 0:
-                self._default_button = btn
-            else:
-                self._default_button = button_list[0]
+                self._initial_focus = btn
 
         # bind default button to return key press and set focus
         self._toplevel.bind('<Return>', lambda _, b=btn: b.invoke())
@@ -283,6 +294,9 @@ class MessageDialog(Dialog):
 
         ttk.Separator(self._toplevel).pack(fill=X)
         frame.pack(side=BOTTOM, fill=X, anchor=S)
+
+        if not self._initial_focus:
+            self._initial_focus = button_list[0]
 
     def on_button_press(self, button):
         """Save result, destroy the toplevel, and execute command."""
@@ -297,7 +311,7 @@ class MessageDialog(Dialog):
         super().show()
 
 
-class DatePickerPopup:
+class DatePickerDialog:
     """A widget that displays a calendar popup and returns the 
     selected date as a datetime object.
 
@@ -616,3 +630,260 @@ class DatePickerPopup:
             xpos = self.root.winfo_screenwidth() // 2 - width
             ypos = self.root.winfo_screenheight() // 2 - height
             self.root.geometry(f'+{xpos}+{ypos}')
+
+
+class Messagebox:
+    """This class contains various static methods that show popups with 
+    a message to the end user with various arrangments of buttons
+    and alert options."""
+
+    @staticmethod
+    def ok(message, title=None, alert=False, parent=None, **kwargs):
+        """Display a modal dialog box with an OK button and and optional
+        bell alert. 
+
+        Parameters:
+
+            message (str):
+                A message to display in the message box.
+
+            title (str):
+                The string displayed as the title of the messagebox. This
+                option is ignored on Mac OS X, where platform guidelines
+                forbid the use of a title on this kind of dialog.
+
+            alert (bool):
+                Specified whether to ring the display bell.
+
+            parent (Union[Window, Toplevel]):
+                Makes the window the logical parent of the message box. The
+                message box is displayed on top of its parent window.
+
+            **kwargs (Dict): 
+                Other optional keyword arguments.
+        """
+        sd = MessageDialog(
+            title=title,
+            message=message,
+            parent=parent,
+            alert=alert,
+            buttons=['OK:primary'],
+            **kwargs
+        )
+        sd.show()
+
+    @staticmethod
+    def okcancel(message, title=None, alert=False, parent=None, **kwargs):
+        """Displays a modal dialog box with OK and Cancel buttons and
+        return the symbolic name of the button pressed.
+
+        Parameters:
+
+            message (str):
+                A message to display in the message box.
+
+            title (str):
+                The string displayed as the title of the messagebox. This
+                option is ignored on Mac OS X, where platform guidelines
+                forbid the use of a title on this kind of dialog.
+
+            alert (bool):
+                Specified whether to ring the display bell.
+
+            parent (Union[Window, Toplevel]):
+                Makes the window the logical parent of the message box. The
+                message box is displayed on top of its parent window.
+
+            **kwargs (Dict): 
+                Other optional keyword arguments.
+
+        Returns:
+
+            Union[str, None]:
+                The symbolic name of the button pressed, or None if the
+                window is closed without pressing a button.
+        """
+        sd = MessageDialog(
+            title=title,
+            message=message,
+            parent=parent,
+            alert=alert,
+            **kwargs
+        )
+        sd.show()
+        return sd.result
+
+    @staticmethod
+    def yesno(message, title=None, alert=False, parent=None, **kwargs):
+        """Display a modal dialog box with YES and NO buttons and return
+        the symbolic name of the button pressed.
+
+        Parameters:
+
+            message (str):
+                A message to display in the message box.
+
+            title (str):
+                The string displayed as the title of the messagebox. This
+                option is ignored on Mac OS X, where platform guidelines
+                forbid the use of a title on this kind of dialog.
+
+            alert (bool):
+                Specified whether to ring the display bell.
+
+            parent (Union[Window, Toplevel]):
+                Makes the window the logical parent of the message box. The
+                message box is displayed on top of its parent window.
+
+            **kwargs (Dict): 
+                Other optional keyword arguments.
+
+        Returns:
+
+            Union[str, None]:
+                The symbolic name of the button pressed, or None if the
+                window is closed without pressing a button.
+        """
+        sd = MessageDialog(
+            title=title,
+            message=message,
+            parent=parent,
+            buttons=['No', 'Yes:primary'],
+            alert=alert,
+            **kwargs
+        )
+        sd.show()
+        return sd.result
+
+    @staticmethod
+    def yesnocancel(message, title=None, alert=False, parent=None, **kwargs):
+        """Display a modal dialog box with YES, NO, and Cancel buttons,
+        and return the symbolic name of the button pressed.
+
+        Parameters:
+
+            message (str):
+                A message to display in the message box.
+
+            title (str):
+                The string displayed as the title of the messagebox. This
+                option is ignored on Mac OS X, where platform guidelines
+                forbid the use of a title on this kind of dialog.
+
+            alert (bool):
+                Specified whether to ring the display bell.
+
+            parent (Union[Window, Toplevel]):
+                Makes the window the logical parent of the message box. The
+                message box is displayed on top of its parent window.
+
+        Returns:
+
+            Union[str, None]:
+                The symbolic name of the button pressed, or None if the
+                window is closed without pressing a button.
+        """
+        sd = MessageDialog(
+            title=title,
+            message=message,
+            parent=parent,
+            alert=alert,
+            buttons=['Cancel', 'No', 'Yes:primary'],
+            **kwargs
+        )
+        sd.show()
+        return sd.result
+
+    @staticmethod
+    def retrycancel(message, title=None, alert=False, parent=None, **kwargs):
+        """Display a modal dialog box with RETRY and Cancel buttons;
+        returns the symbolic name of the button pressed.
+
+        Parameters:
+
+            message (str):
+                A message to display in the message box.
+
+            title (str):
+                The string displayed as the title of the messagebox. This
+                option is ignored on Mac OS X, where platform guidelines
+                forbid the use of a title on this kind of dialog.
+
+            alert (bool):
+                Specified whether to ring the display bell.
+
+            parent (Union[Window, Toplevel]):
+                Makes the window the logical parent of the message box. The
+                message box is displayed on top of its parent window.
+
+            **kwargs (Dict): 
+                Other optional keyword arguments.
+
+        Returns:
+
+            Union[str, None]:
+                The symbolic name of the button pressed, or None if the
+                window is closed without pressing a button.
+        """
+        sd = MessageDialog(
+            title=title,
+            message=message,
+            parent=parent,
+            alert=alert,
+            buttons=['Cancel', 'Retry:primary'],
+            **kwargs
+        )
+        sd.show()
+        return sd.result
+
+
+class Querybox:
+    """This class contains various static methods that request data 
+    from the end user."""
+
+    @staticmethod
+    def get_date(
+        parent=None,
+        title='',
+        firstweekday=6,
+        startdate=None,
+        bootstyle='primary'
+    ):
+        """Shows a calendar popup and returns the selection.
+
+        Parameters:
+
+            parent (Widget):
+                The parent widget; the popup will appear to the 
+                bottom-right of the parent widget. If no parent is 
+                provided, the widget is centered on the screen. 
+
+            title (str):
+                The text that appears on the popup titlebar.
+
+            firstweekday (int):
+                Specifies the first day of the week. `0` is Monday, `6` is 
+                Sunday (the default). 
+
+            startdate (datetime):
+                The date to be in focus when the widget is displayed; 
+
+            bootstyle (str):
+                The following colors can be used to change the color of the
+                title and hover / pressed color -> primary, secondary, info,
+                warning, success, danger, light, dark.       
+
+        Returns:
+
+            datetime:
+                The date selected; the current date if no date is selected.
+        """
+        chooser = DatePickerDialog(
+            parent=parent,
+            title=title,
+            firstweekday=firstweekday,
+            startdate=startdate,
+            bootstyle=bootstyle
+        )
+        return chooser.date_selected
+
