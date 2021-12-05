@@ -1,6 +1,6 @@
-# dialog classes
+# DatePickerDialog
 
-::: ttkbootstrap.dialogs.__init__
+::: ttkbootstrap.dialogs.DatePickerDialog
     selection:
         filters: ["!^_", "^__init__"]
     rendering:

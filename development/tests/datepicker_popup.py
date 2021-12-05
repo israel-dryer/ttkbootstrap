@@ -1,8 +1,8 @@
 import tkinter as tk
-from ttkbootstrap.dialogs import DatePickerPopup
+from ttkbootstrap.dialogs import DatePickerDialog
 
 root = tk.Tk()
 
-dp = DatePickerPopup()
+dp = DatePickerDialog()
 
 root.mainloop()

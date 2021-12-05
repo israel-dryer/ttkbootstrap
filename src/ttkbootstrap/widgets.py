@@ -10,7 +10,7 @@ from tkinter.ttk import Sizegrip, Spinbox, Treeview
 from ttkbootstrap.constants import *
 
 # date entry imports
-from ttkbootstrap.dialogs.input import ask_date
+from ttkbootstrap.dialogs import Querybox
 from datetime import datetime
 
 # floodgauge imports
@@ -232,7 +232,7 @@ class DateEntry(ttk.Frame):
         old_date = datetime.strptime(_val or self._startdate, self._dateformat)
 
         # get the new date and insert into the entry
-        new_date = ask_date(
+        new_date = Querybox.get_date(
             parent=self.entry,
             startdate=old_date,
             firstweekday=self._firstweekday,

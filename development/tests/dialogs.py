@@ -1,8 +1,8 @@
 import tkinter as tk
 import ttkbootstrap as ttk
-from ttkbootstrap import dialogs
+from ttkbootstrap.dialogs import message
 
 root = tk.Tk()
-dialogs.ask_question("Do you want to continue?")
-dialogs.ask_retrycancel("Should I retry?")
-dialogs.ask_okcancel("A message here")
+message.ok("Do you want to continue?")
+message.retrycancel("Should I retry?")
+message.okcancel("A message here")
