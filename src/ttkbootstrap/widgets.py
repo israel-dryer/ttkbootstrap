@@ -10,7 +10,7 @@ from tkinter.ttk import Sizegrip, Spinbox, Treeview
 from ttkbootstrap.constants import *
 
 # date entry imports
-from ttkbootstrap.dialogs import ask_date
+from ttkbootstrap.dialogs.input import ask_date
 from datetime import datetime
 
 # floodgauge imports
@@ -66,7 +66,7 @@ TK_WIDGETS = (
 
 class DateEntry(ttk.Frame):
     """A date entry widget combines the `Combobox` and a `Button` 
-    with a callback attached to the `ask_date` function.
+    with a callback attached to the `get_date` function.
 
     When pressed, a date chooser popup is displayed. The returned 
     value is inserted into the combobox.
