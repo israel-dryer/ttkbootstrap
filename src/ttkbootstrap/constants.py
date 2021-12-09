@@ -23,3 +23,9 @@ WARNING = 'warning'
 INFO = 'info'
 LIGHT = 'light'
 DARK = 'dark'
+
+
+# treeview constants
+TREE = 'tree'
+HEADINGS = 'headings'
+TREEHEADINGS = 'tree headings'
