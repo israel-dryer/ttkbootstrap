@@ -3,8 +3,7 @@
     used to create custom dialogs for the end user. 
 
     These classes serve as the basis for the pre-defined static helper
-    methods in the `Filebox`, `Messagebox`, and `Inputbox` container
-    classes.
+    methods in the `Messagebox`, and `Querybox` container classes.
 """
 
 import calendar
