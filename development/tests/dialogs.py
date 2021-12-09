@@ -1,8 +1,10 @@
 import tkinter as tk
 import ttkbootstrap as ttk
-from ttkbootstrap.dialogs import message
+from ttkbootstrap.dialogs import Querybox, Messagebox
 
 root = tk.Tk()
-message.ok("Do you want to continue?")
-message.retrycancel("Should I retry?")
-message.okcancel("A message here")
+Messagebox.ok("Do you want to continue?")
+Messagebox.retrycancel("Should I retry?")
+Messagebox.okcancel("A message here")
+Querybox.get_date()
+Querybox.get_font()
