@@ -102,6 +102,7 @@ nav:
       - api/dialogs/messagedialog.md
       - api/dialogs/querydialog.md
       - api/dialogs/datepickerdialog.md
+      - api/dialogs/fontdialog.md
       - api/dialogs/messagebox.md
       - api/dialogs/querybox.md
     - 'utility module': api/utility.md
