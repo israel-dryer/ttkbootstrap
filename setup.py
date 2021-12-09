@@ -14,7 +14,7 @@ A supercharged theme extension for tkinter that enables on-demand modern flat st
 
 setuptools.setup(
     name="ttkbootstrap",
-    version="1.0.3",
+    version="1.0.0",
     author="Israel Dryer",
     author_email="israel.dryer@gmail.com",
     description="A supercharged theme extension for tkinter that enables on-demand modern flat style themes inspired by Bootstrap.",
