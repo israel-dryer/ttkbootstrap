@@ -1451,7 +1451,7 @@ class Querybox:
 
         Parameters:
 
-            master (Widget):
+            parent (Widget):
                 Makes the window the logical parent of the dialog box. The
                 dialog is displayed on top of its parent window.
 
