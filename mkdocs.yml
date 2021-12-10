@@ -93,10 +93,6 @@ nav:
     - cookbook/validate-user-input.md
     - cookbook/gif-animation.md
   - API: 
-    - 'widgets module':
-      - api/widgets/dateentry.md
-      - api/widgets/floodgauge.md
-      - api/widgets/meter.md
     - 'dialogs module':
       - api/dialogs/dialog.md
       - api/dialogs/messagedialog.md
@@ -105,7 +101,6 @@ nav:
       - api/dialogs/fontdialog.md
       - api/dialogs/messagebox.md
       - api/dialogs/querybox.md
-    - 'utility module': api/utility.md
     - 'style module': 
       - api/style/bootstyle.md
       - api/style/colors.md
@@ -113,3 +108,9 @@ nav:
       - api/style/stylebuildertk.md
       - api/style/stylebuilderttk.md
       - api/style/themedefinition.md    
+    - 'utility module': api/utility.md
+    - 'widgets module':
+      - api/widgets/dateentry.md
+      - api/widgets/floodgauge.md
+      - api/widgets/meter.md
+    - api/window.md
