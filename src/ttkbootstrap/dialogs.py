@@ -346,14 +346,14 @@ class QueryDialog(Dialog):
                 guidelines forbid the use of a title on this kind of 
                 dialog.
 
-            initial_value (Any):
+            initialvalue (Any):
                 The initial value in the entry widget.
 
-            min_value (Any):
+            minvalue (Any):
                 The minimum allowed value. Only valid for int and float
                 data types.
 
-            max_value (Any):
+            maxvalue (Any):
                 The maximum allowed value. Only valid for int and float
                 data types.
 
@@ -371,7 +371,7 @@ class QueryDialog(Dialog):
                 The amount of space between the border and the widget
                 contents.                
 
-            data_type (Union[int, str, float]):
+            datatype (Union[int, str, float]):
                 The data type used to validate the entry value.
         """
         super().__init__(parent, title)
@@ -1460,7 +1460,7 @@ class Querybox:
 
         Returns:
 
-            Font
+            Font:
                 A font object.
         """
         dialog = FontDialog(parent=parent, **kwargs)
