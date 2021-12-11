@@ -145,5 +145,5 @@ if __name__ == "__main__":
         size=(350, 450),
         resizable=(False, False),
     )
-    calc = Calculator(app)
+    Calculator(app)
     app.mainloop()
