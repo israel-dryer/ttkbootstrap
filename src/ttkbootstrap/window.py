@@ -22,8 +22,8 @@ class Window(tkinter.Tk):
     Examples:
 
         ```python
-        root = Window(title="My Application", themename="superhero")
-        root.mainloop()
+        app = Window(title="My Application", themename="superhero")
+        app.mainloop()
         ```
     """
 
@@ -36,7 +36,9 @@ class Window(tkinter.Tk):
         position=None,
         minsize=None,
         maxsize=None,
-        resizable=None
+        resizable=None,
+        hdpi=True,
+        scaling=None
         ):
         """
         Parameters:
@@ -79,8 +81,26 @@ class Window(tkinter.Tk):
                 this flag for _horizontal_ and _vertical_ dimensions.
                 This can be adjusted after the window is created by using
                 the `Window.resizable` method.
+
+            hdpi (bool):
+                Enable high-dpi support for Windows OS. This option is
+                enabled by default.
+
+            scaling (float):
+                Sets the current scaling factor used by Tk to convert 
+                between physical units (for example, points, inches, or 
+                millimeters) and pixels. The number argument is a 
+                floating point number that specifies the number of pixels 
+                per point on window's display. 
         """
+        if hdpi:
+            utility.enable_high_dpi_awareness()
+        
         super().__init__()
+        
+        if scaling:
+            utility.enable_high_dpi_awareness(self, scaling)
+
         self._icon = iconphoto or tkinter.PhotoImage(data=Icon.icon)
         self.iconphoto(True, self._icon)
         self.title(title)
