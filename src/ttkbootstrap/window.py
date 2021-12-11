@@ -8,7 +8,7 @@
 """
 import tkinter
 from ttkbootstrap.style import Style
-from ttkbootstrap.icons import IconImage
+from ttkbootstrap.icons import Icon
 from ttkbootstrap import utility
 
 
@@ -81,7 +81,7 @@ class Window(tkinter.Tk):
                 the `Window.resizable` method.
         """
         super().__init__()
-        self._icon = iconphoto or tkinter.PhotoImage(data=IconImage.ICON)
+        self._icon = iconphoto or tkinter.PhotoImage(data=Icon.icon)
         self.iconphoto(True, self._icon)
         self.title(title)
 
