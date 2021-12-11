@@ -1,124 +1,116 @@
 """
-    Author: Israe Dryer
-    Modified: 2021-11-10
+    Author: Israel Dryer
+    Modified: 2021-12-11
     Adapted for ttkbootstrap from: https://github.com/PySimpleGUI/PySimpleGUI/blob/master/DemoPrograms/Demo_Desktop_Widget_Timer.py
 """
-import tkinter as tk
 import ttkbootstrap as ttk
-from ttkbootstrap import utility
-utility.enable_high_dpi_awareness()
-
-class Application(tk.Tk):
-
-    def __init__(self):
-        super().__init__()
-        self.title('Stopwatch')
-        self.style = ttk.Style("cosmo")
-        self.timer = TimerWidget(self)
-        self.timer.pack(fill=tk.BOTH, expand=tk.YES)
+from ttkbootstrap.constants import *
 
 
-class TimerWidget(ttk.Frame):
+class Stopwatch(ttk.Frame):
+    def __init__(self, master):
+        super().__init__(master)
+        self.pack(fill=BOTH, expand=YES)
+        self.running = ttk.BooleanVar(value=False)
+        self.afterid = ttk.StringVar()
+        self.elapsed = ttk.IntVar()
+        self.stopwatch_text = ttk.StringVar(value="00:00:00")
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+        self.create_stopwatch_label()
+        self.create_stopwatch_controls()
 
-        # variables
-        self.running = tk.BooleanVar(value=False)
-        self.after_id = tk.StringVar()
-        self.time_elapsed = tk.IntVar()
-        self.time_text = tk.StringVar(value='00:00:00')
-
-        # timer label
-        self.timer_lbl = ttk.Label(
+    def create_stopwatch_label(self):
+        """Create the stopwatch number display"""
+        lbl = ttk.Label(
             master=self,
-            font='-size 32',
-            anchor=tk.CENTER,
-            textvariable=self.time_text
+            font="-size 32",
+            anchor=CENTER,
+            textvariable=self.stopwatch_text,
         )
-        self.timer_lbl.pack(
-            side=tk.TOP,
-            fill=tk.X,
-            padx=60,
-            pady=20
-        )
-        # control buttons
-        self.toggle_btn = ttk.Button(
-            master=self,
-            text='Start',
-            width=10,
-            bootstyle='info',
-            command=self.toggle
-        )
-        self.toggle_btn.pack(
-            side=tk.LEFT,
-            fill=tk.X,
-            expand=tk.YES,
-            padx=10,
-            pady=10
-        )
-        self.reset_btn = ttk.Button(
-            master=self,
-            text='Reset',
-            width=10,
-            bootstyle='success',
-            command=self.reset
-        )
-        self.reset_btn.pack(
-            side=tk.LEFT,
-            fill=tk.X,
-            expand=tk.YES,
-            pady=10
-        )
-        self.quit_btn = ttk.Button(
-            master=self,
-            text='Quit',
-            width=10,
-            bootstyle='danger',
-            command=self.quit
-        )
-        self.quit_btn.pack(
-            side=tk.LEFT,
-            fill=tk.X,
-            expand=tk.YES,
-            padx=10,
-            pady=10
-        )
+        lbl.pack(side=TOP, fill=X, padx=60, pady=20)
 
-    def toggle(self):
+    def create_stopwatch_controls(self):
+        """Create the control frame with buttons"""
+        container = ttk.Frame(self, padding=10)
+        container.pack(fill=X)
+        self.buttons = []
+        self.buttons.append(
+            ttk.Button(
+                master=container,
+                text="Start",
+                width=10,
+                bootstyle=INFO,
+                command=self.on_toggle,
+            )
+        )
+        self.buttons.append(
+            ttk.Button(
+                master=container,
+                text="Reset",
+                width=10,
+                bootstyle=SUCCESS,
+                command=self.on_reset,
+            )
+        )
+        self.buttons.append(
+            ttk.Button(
+                master=container,
+                text="Quit",
+                width=10,
+                bootstyle=DANGER,
+                command=self.on_quit,
+            )
+        )
+        for button in self.buttons:
+            button.pack(side=LEFT, fill=X, expand=YES, pady=10, padx=5)
+
+    def on_toggle(self):
+        """Toggle the start and pause button."""
+        button = self.buttons[0]
         if self.running.get():
             self.pause()
             self.running.set(False)
-            self.toggle_btn.configure(text='Start', bootstyle='info')
+            button.configure(bootstyle=INFO, text="Start")
         else:
             self.start()
             self.running.set(True)
-            self.toggle_btn.configure(
-                text='Pause',
-                bootstyle=('info', 'outline')
-            )
+            button.configure(bootstyle=(INFO, OUTLINE), text="Pause")
 
-    def pause(self):
-        self.after_cancel(self.after_id.get())
+    def on_quit(self):
+        """Quit the application."""
+        self.quit()
+
+    def on_reset(self):
+        """Reset the stopwatch number display."""
+        self.elapsed.set(0)
+        self.stopwatch_text.set("00:00:00")
 
     def start(self):
-        self.after_id.set(self.after(1, self.increment))
+        """Start the stopwatch and update the display."""
+        self.afterid.set(self.after(1, self.increment))
+
+    def pause(self):
+        """Pause the stopwatch"""
+        self.after_cancel(self.afterid.get())
 
     def increment(self):
-        current = self.time_elapsed.get() + 1
-        self.time_elapsed.set(current)
-        time_str = '{:02d}:{:02d}:{:02d}'.format(
-            (current // 100) // 60,
-            (current // 100) % 60,
-            current % 100
+        """Increment the stopwatch value. This method continues to
+        schedule itself every 1 second until stopped or paused."""
+        current = self.elapsed.get() + 1
+        self.elapsed.set(current)
+        formatted = "{:02d}:{:02d}:{:02d}".format(
+            (current // 100) // 60, (current // 100) % 60, (current % 100)
         )
-        self.time_text.set(time_str)
-        self.after_id.set(self.after(100, self.increment))
-
-    def reset(self):
-        self.time_elapsed.set(0)
-        self.time_text.set('00:00:00')
+        self.stopwatch_text.set(formatted)
+        self.afterid.set(self.after(100, self.increment))
 
 
-if __name__ == '__main__':
-    Application().mainloop()
+if __name__ == "__main__":
+
+    app = ttk.Window(
+        title="Stopwatch", 
+        themename="cosmo", 
+        resizable=(False, False)
+    )
+    Stopwatch(app)
+    app.mainloop()
