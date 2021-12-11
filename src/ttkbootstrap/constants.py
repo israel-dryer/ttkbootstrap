@@ -24,6 +24,11 @@ INFO = 'info'
 LIGHT = 'light'
 DARK = 'dark'
 
+# bootstyle types
+OUTLINE = 'outline'
+LINK = 'link'
+TOGGLE = 'toggle'
+
 
 # treeview constants
 TREE = 'tree'
