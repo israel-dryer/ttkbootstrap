@@ -1,78 +1,78 @@
 """
     Author: Israel Dryer
-    Modified: 2021-11-10
+    Modified: 2021-12-10
 """
-import tkinter as tk
 import ttkbootstrap as ttk
-from ttkbootstrap import utility
+from ttkbootstrap.constants import *
 from random import randint
-utility.enable_high_dpi_awareness()
-
-
-class Application(tk.Tk):
-
-    def __init__(self):
-        super().__init__()
-        self.title('Equalizer')
-        self.style = ttk.Style()
-        self.eq = Equalizer(self)
-        self.eq.pack(fill=tk.BOTH, expand=tk.YES)
 
 
 class Equalizer(ttk.Frame):
+    
+    def __init__(self, master):
+        super().__init__(master, padding=20)
+        self.pack(fill=BOTH, expand=YES)
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.configure(padding=20)
         controls = [
-            'VOL', '31.25', '62.5', '125',
-            '250', '500', '1K', '2K',
-            '4K', '8K', '16K', 'GAIN'
+            "VOL",
+            "31.25",
+            "62.5",
+            "125",
+            "250",
+            "500",
+            "1K",
+            "2K",
+            "4K",
+            "8K",
+            "16K",
+            "GAIN",
         ]
+        for control in controls:
+            self.create_band(self, control)
 
-        # create band widgets
-        for c in controls:
-            # starting random value
-            value = randint(1, 99)
-            self.setvar(c, value)
+    def create_band(self, master, text):
+        """Create and pack an equalizer band"""
+        value = randint(1, 99)
+        self.setvar(text, value)
 
-            # container
-            frame = ttk.Frame(self, padding=5)
-            frame.pack(side=tk.LEFT, fill=tk.Y, padx=10)
+        container = ttk.Frame(master)
+        container.pack(side=LEFT, fill=Y, padx=10)
 
-            # header
-            lbl = ttk.Label(
-                master=frame,
-                text=c,
-                anchor=tk.CENTER,
-                font=('Helvetica 10 bold')
-            )
-            lbl.pack(side=tk.TOP, fill=tk.X, pady=10)
+        # header label
+        ttk.Label(
+            master=container,
+            text=text,
+            anchor=CENTER,
+        ).pack(side=TOP, fill=X, pady=10)
 
-            # slider
+        # volume scale
+        if text in ["VOL", "GAIN"]:
+            bootstyle = SUCCESS
+        else:
+            bootstyle = INFO
+        ttk.Scale(
+            master=container,
+            orient=VERTICAL,
+            from_=99,
+            to=1,
+            value=value,
+            command=lambda x=value, y=text: self.update_value(x, y),
+            bootstyle=bootstyle,
+        ).pack(fill=Y)
 
-            if c in ['VOL', 'GAIN']:
-                _bootstyle = 'success'
-            else:
-                _bootstyle = 'info'
+        # value label
+        ttk.Label(master=container, textvariable=text).pack(pady=10)
 
-            def _func(val, name=c): return self.setvar(
-                name, f'{float(val):.0f}')
-
-            scale = ttk.Scale(
-                master=frame,
-                orient=tk.VERTICAL,
-                from_=99,
-                to=1,
-                value=value,
-                command=_func,
-                bootstyle=_bootstyle
-            )
-            scale.pack(fill=tk.Y)
-
-            # slider value label
-            ttk.Label(frame, textvariable=c).pack(pady=10)
+    def update_value(self, value, name):
+        self.setvar(name, f"{float(value):.0f}")
 
 
-if __name__ == '__main__':
-    Application().mainloop()
+if __name__ == "__main__":
+
+    app = ttk.Window(
+        title="Equalizer",
+        themename="litera",
+        resizable=(False, False),
+    )
+    Equalizer(app)
+    app.mainloop()
