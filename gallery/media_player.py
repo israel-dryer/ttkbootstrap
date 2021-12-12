@@ -1,122 +1,138 @@
 """
     Author: Israel Dryer
-    Modified: 2021-11-10
-    Adapted for ttkbootstrap from: https://github.com/israel-dryer/Mini-VLC-Player
+    Modified: 2021-12-11
+    Adapted from: https://github.com/israel-dryer/Mini-VLC-Player
 """
 from pathlib import Path
-import tkinter as tk
 import ttkbootstrap as ttk
-from ttkbootstrap import utility
-utility.enable_high_dpi_awareness()
+from ttkbootstrap.constants import *
+from ttkbootstrap.icons import Emoji
 
-class Application(tk.Tk):
 
-    def __init__(self):
-        super().__init__()
-        self.title('Media Player')
+class MediaPlayer(ttk.Frame):
 
-        self.style = ttk.Style()
-        self.style.theme_use('minty')
-
-        self.player = Player(self)
-        self.player.pack(fill=tk.BOTH, expand=tk.YES)
-
-class Player(ttk.Frame):
-    """An interface for a media player"""
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.configure(padding=1)
-        _path = Path(__file__).parent / 'assets'
-        self.background = tk.PhotoImage(file=_path / 'mp_background.png')
-        self.controls = {
-            'skip-previous': '\u23EE',
-            'play': '\u23F5',
-            'pause': '\u23F8',
-            'stop': '\u23F9',
-            'skip-next': '\u23ED',
-            'open-file': '\U0001f4c2'}
-
-        # track information header
-        self.track_info = tk.StringVar(value='Open a file to begin playback')
-        header = ttk.Label(
-            master=self,
-            textvariable=self.track_info,
-            font='-size 12',
-            bootstyle='light-inverse',
-            padding=(5, 10)
+    def __init__(self, master):
+        super().__init__(master)
+        self.pack(fill=BOTH, expand=YES)
+        self.hdr_var = ttk.StringVar()
+        self.elapsed_var = ttk.DoubleVar(value=0)
+        self.remain_var = ttk.DoubleVar(value=190)
+        
+        self.create_header()
+        self.create_media_window()
+        self.create_progress_meter()
+        self.create_buttonbox()
+    
+    def create_header(self):
+        """The application header to display user messages"""
+        self.hdr_var.set("Open a file to begin playback")
+        lbl = ttk.Label(
+            master=self, 
+            textvariable=self.hdr_var, 
+            bootstyle=(LIGHT, INVERSE),
+            padding=10
         )
-        header.pack(fill=tk.X, padx=2)
+        lbl.pack(fill=X, expand=YES)
 
-        # media container
-        self.container = ttk.Label(self, image=self.background)
-        self.container.pack(fill=tk.BOTH, expand=tk.YES)
+    def create_media_window(self):
+        """Create frame to contain media"""
+        img_path = Path(__file__).parent / 'assets/mp_background.png'
+        self.demo_media = ttk.PhotoImage(file=img_path)
+        self.media = ttk.Label(self, image=self.demo_media)
+        self.media.pack(fill=BOTH, expand=YES)
 
-        # progress bar
-        progress_frame = ttk.Frame(self, padding=10)
-        progress_frame.pack(fill=tk.X, expand=tk.YES)
+    def create_progress_meter(self):
+        """Create frame with progress meter with lables"""
+        container = ttk.Frame(self)
+        container.pack(fill=X, expand=YES, pady=10)
+        
+        self.elapse = ttk.Label(container, text='00:00')
+        self.elapse.pack(side=LEFT, padx=10)
 
-        self.time_elapsed = ttk.Label(
-            master=progress_frame,
-            text='00:00',
-            font='-size 12'
+        self.scale = ttk.Scale(
+            master=container, 
+            command=self.on_progress, 
+            bootstyle=SECONDARY
         )
-        self.time_elapsed.pack(side=tk.LEFT)
+        self.scale.pack(side=LEFT, fill=X, expand=YES)
 
-        self.time_scale = ttk.Scale(
-            master=progress_frame,
-            orient=tk.HORIZONTAL,
-            bootstyle='info'
+        self.remain = ttk.Label(container, text='03:10')
+        self.remain.pack(side=LEFT, fill=X, padx=10)
+
+    def create_buttonbox(self):
+        """Create buttonbox with media controls"""
+        container = ttk.Frame(self)
+        container.pack(fill=X, expand=YES)
+        ttk.Style().configure('TButton', font="-size 14")
+
+        rev_btn = ttk.Button(
+            master=container,
+            text=Emoji.get('black left-pointing double triangle with vertical bar'),
+            padding=10,
         )
-        self.time_scale.pack(side=tk.LEFT, fill=tk.X, expand=tk.YES, padx=10)
+        rev_btn.pack(side=LEFT, fill=X, expand=YES)
 
-        self.time_remaining = ttk.Label(
-            master=progress_frame,
-            text='00:00',
-            font='-size 12'
+        play_btn = ttk.Button(
+            master=container,
+            text=Emoji.get('black right-pointing triangle'),
+            padding=10,
         )
-        self.time_remaining.pack(side=tk.RIGHT)
+        play_btn.pack(side=LEFT, fill=X, expand=YES)
 
-        # button controls
-        control_frame = ttk.Frame(self)
-        control_frame.pack(fill=tk.X, expand=tk.YES)
+        fwd_btn = ttk.Button(
+            master=container,
+            text=Emoji.get('black right-pointing double triangle with vertical bar'),
+            padding=10,
+        )
+        fwd_btn.pack(side=LEFT, fill=X, expand=YES)
 
-        self.buttons = {
-            'play': ttk.Button(
-                master=control_frame,
-                text=self.controls['play']),
-            'skip-previous': ttk.Button(
-                master=control_frame,
-                text=self.controls['skip-previous']),
-            'skip-next': ttk.Button(
-                master=control_frame,
-                text=self.controls['skip-next']),
-            'pause': ttk.Button(
-                master=control_frame,
-                text=self.controls['pause']),
-            'stop': ttk.Button(
-                master=control_frame,
-                text=self.controls['stop']),
-            'open-file': ttk.Button(
-                master=control_frame,
-                text=self.controls['open-file'],
-                bootstyle='secondary')
-        }
+        pause_btn = ttk.Button(
+            master=container,
+            text=Emoji.get('double vertical bar'),
+            padding=10,
+        )
+        pause_btn.pack(side=LEFT, fill=X, expand=YES)        
 
-        for button in [
-            'skip-previous', 'play', 'skip-next',
-            'pause', 'stop', 'open-file'
-        ]:
-            self.buttons[button].pack(
-                side=tk.LEFT,
-                fill=tk.X,
-                expand=tk.YES,
-                ipadx=5,
-                ipady=5,
-                padx=2,
-                pady=2
-            )
+        stop_btn = ttk.Button(
+            master=container,
+            text=Emoji.get('black square for stop'),
+            padding=10,
+        )
+        stop_btn.pack(side=LEFT, fill=X, expand=YES)          
 
+        stop_btn = ttk.Button(
+            master=container,
+            text=Emoji.get('open file folder'),
+            bootstyle=SECONDARY,
+            padding=10
+        )
+        stop_btn.pack(side=LEFT, fill=X, expand=YES)             
+
+
+    def on_progress(self, val: float):
+        """Update progress labels when the scale is updated."""
+        elapsed = self.elapsed_var.get()
+        remaining = self.remain_var.get()
+        total = int(elapsed + remaining)
+        
+        elapse = int(float(val) * total)
+        elapse_min = elapse // 60
+        elapse_sec = elapse % 60
+        
+        remain_tot = total - elapse
+        remain_min = remain_tot // 60
+        remain_sec = remain_tot % 60
+
+        self.elapsed_var.set(elapse)
+        self.remain_var.set(remain_tot)
+
+        self.elapse.configure(text=f'{elapse_min:02d}:{elapse_sec:02d}')
+        self.remain.configure(text=f'{remain_min:02d}:{remain_sec:02d}')
+        
 
 if __name__ == '__main__':
-    Application().mainloop()
+
+    app = ttk.Window("Media Player", "yeti")
+    mp = MediaPlayer(app)
+    mp.scale.set(0.35)  # set default
+    app.mainloop()
