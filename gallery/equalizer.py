@@ -13,20 +13,9 @@ class Equalizer(ttk.Frame):
         super().__init__(master, padding=20)
         self.pack(fill=BOTH, expand=YES)
 
-        controls = [
-            "VOL",
-            "31.25",
-            "62.5",
-            "125",
-            "250",
-            "500",
-            "1K",
-            "2K",
-            "4K",
-            "8K",
-            "16K",
-            "GAIN",
-        ]
+        controls = ["VOL", "31.25", "62.5", "125", "250",
+                    "500", "1K", "2K", "4K", "8K", "16K", "GAIN"]
+
         for control in controls:
             self.create_band(self, control)
 
@@ -39,18 +28,16 @@ class Equalizer(ttk.Frame):
         container.pack(side=LEFT, fill=Y, padx=10)
 
         # header label
-        ttk.Label(
-            master=container,
-            text=text,
-            anchor=CENTER,
-        ).pack(side=TOP, fill=X, pady=10)
+        hdr = ttk.Label(container, text=text, anchor=CENTER)
+        hdr.pack(side=TOP, fill=X, pady=10)
 
         # volume scale
         if text in ["VOL", "GAIN"]:
             bootstyle = SUCCESS
         else:
             bootstyle = INFO
-        ttk.Scale(
+
+        scale = ttk.Scale(
             master=container,
             orient=VERTICAL,
             from_=99,
@@ -58,10 +45,12 @@ class Equalizer(ttk.Frame):
             value=value,
             command=lambda x=value, y=text: self.update_value(x, y),
             bootstyle=bootstyle,
-        ).pack(fill=Y)
+        )
+        scale.pack(fill=Y)
 
         # value label
-        ttk.Label(master=container, textvariable=text).pack(pady=10)
+        val = ttk.Label(master=container, textvariable=text)
+        val.pack(pady=10)
 
     def update_value(self, value, name):
         self.setvar(name, f"{float(value):.0f}")
@@ -69,10 +58,6 @@ class Equalizer(ttk.Frame):
 
 if __name__ == "__main__":
 
-    app = ttk.Window(
-        title="Equalizer",
-        themename="litera",
-        resizable=(False, False),
-    )
+    app = ttk.Window("Equalizer", "litera", resizable=(False, False))
     Equalizer(app)
     app.mainloop()
