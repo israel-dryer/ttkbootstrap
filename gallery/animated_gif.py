@@ -1,27 +1,24 @@
 # https://dribbble.com/shots/1237618--Gif-Spinner
 from pathlib import Path
 from itertools import cycle
-import tkinter as tk
 import ttkbootstrap as ttk
 from PIL import Image, ImageTk, ImageSequence
-from ttkbootstrap import utility
-utility.enable_high_dpi_awareness()
 
-class AnimatedGif(tk.Tk):
+
+class AnimatedGif(ttk.Toplevel):
 
     def __init__(self):
-        super().__init__()
-        
-        self.geometry('400x300')
-
-        # remove the window decorations, titlebar, etc...
-        self.overrideredirect(True)
-
-        # center the window in the center of the screen
-        self.eval('tk::PlaceWindow . center')
+        super().__init__(
+            title="Animated GIF", 
+            width=400, 
+            height=300, 
+            overrideredirect=True,
+        )
+        self.withdraw()
+        self.position_center()
 
         # bind the escape key to exit the application
-        self.bind('<Escape>', lambda _: self.quit())
+        self.bind('<Escape>', lambda _: self.destroy())
 
         # open the GIF and create a cycle iterator
         file_path = Path(__file__).parent / 'images/spinners.gif'
@@ -45,4 +42,11 @@ class AnimatedGif(tk.Tk):
 
 
 if __name__ == '__main__':
-    AnimatedGif().mainloop()
+    
+    app = ttk.Window('Animated GIF Demo', themename="superhero")
+
+    btn = ttk.Button(app, text="Play GIF", command=lambda:AnimatedGif())
+    btn.pack(padx=20, pady=20)
+
+    app.mainloop()
+
