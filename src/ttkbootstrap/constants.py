@@ -28,6 +28,7 @@ DARK = 'dark'
 OUTLINE = 'outline'
 LINK = 'link'
 TOGGLE = 'toggle'
+INVERSE = 'inverse'
 
 
 # treeview constants
