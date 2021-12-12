@@ -3,4 +3,5 @@ from ttkbootstrap.style import Bootstyle
 from ttkbootstrap.widgets import *
 from ttkbootstrap.window import Window
 from tkinter import Variable, StringVar, IntVar, BooleanVar, DoubleVar
+from tkinter import PhotoImage
 Bootstyle.setup_ttkbootstap_api()
