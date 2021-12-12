@@ -19,7 +19,7 @@ import math
 # meter imports
 from PIL import Image, ImageTk, ImageDraw
 from ttkbootstrap.style import Colors
-import ttkbootstrap.utility as util
+from ttkbootstrap import utility
 from ttkbootstrap.style import Bootstyle
 
 TTK_WIDGETS = (
@@ -581,8 +581,8 @@ class Meter(ttk.Frame):
         # misc settings
         self._set_arc_offset_range(metertype, arcoffset, arcrange)
         self._towardsmaximum = True
-        self._metersize = util.scale_size(self, metersize)
-        self._meterthickness = util.scale_size(self, meterthickness)
+        self._metersize = utility.scale_size(self, metersize)
+        self._meterthickness = utility.scale_size(self, meterthickness)
         self._stripethickness = stripethickness
         self._showtext = showtext
         self._wedgesize = wedgesize
@@ -933,7 +933,7 @@ class Meter(ttk.Frame):
             self._subtextstyle = kwargs.pop('subtextstyle')
             self.subtext.configure(bootstyle=[self._subtextstyle, 'meter'])
         if 'metersize' in kwargs:
-            self._metersize = util.scale_size(kwargs.pop('metersize'))
+            self._metersize = utility.scale_size(kwargs.pop('metersize'))
             self.meterframe.configure(
                 height=self._metersize, width=self._metersize)
         if 'bootstyle' in kwargs:
