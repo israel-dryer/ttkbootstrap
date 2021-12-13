@@ -19,144 +19,149 @@ The theme used in this example is **flatly**.
 [Run this code live]() on repl.it
 
 ```python
-import tkinter as tk
 import ttkbootstrap as ttk
-
-class Application(tk.Tk):
-
-    def __init__(self):
-        super().__init__()
-        self.title('Calculator')
-        self.style = ttk.Style('flatly')
-        self.style.configure('.', font='TkFixedFont 16')
-        self.calc = Calculator(self)
-        self.calc.pack(fill=tk.BOTH, expand=tk.YES)
+from ttkbootstrap.constants import *
 
 
 class Calculator(ttk.Frame):
+    def __init__(self, master, **kwargs):
+        super().__init__(master, padding=10, **kwargs)
+        ttk.Style().configure("TButton", font="TkFixedFont 12")
+        self.pack(fill=BOTH, expand=YES)
+        self.digitsvar = ttk.StringVar(value=0)
+        self.xnum = ttk.DoubleVar()
+        self.ynum = ttk.DoubleVar()
+        self.operator = ttk.StringVar(value="+")
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.configure(padding=3)
+        if "bootstyle" in kwargs:
+            self.bootstyle = kwargs.pop("bootstyle")
+        else:
+            self.bootstyle = None
+        self.create_num_display()
+        self.create_num_pad()
 
-        # number display
-        self.display_var = tk.StringVar(value=0)
-        self.display = ttk.Label(
-            master=self, 
-            textvariable=self.display_var,
-            font='TkFixedFont 20', 
-            anchor=tk.E
+    def create_num_display(self):
+        container = ttk.Frame(master=self, padding=2, bootstyle=self.bootstyle)
+        container.pack(fill=X, pady=20)
+        digits = ttk.Label(
+            master=container,
+            font="TkFixedFont 14",
+            textvariable=self.digitsvar,
+            anchor=E,
         )
-        self.display.grid(
-            row=0, 
-            column=0, 
-            columnspan=4, 
-            sticky=tk.EW,
-            pady=15, 
-            padx=10
+        digits.pack(fill=X)
+
+    def create_num_pad(self):
+        container = ttk.Frame(master=self, padding=2, bootstyle=self.bootstyle)
+        container.pack(fill=BOTH, expand=YES)
+        matrix = [
+            ("%", "C", "CE", "/"),
+            (7, 8, 9, "*"),
+            (4, 5, 6, "-"),
+            (1, 2, 3, "+"),
+            ("±", 0, ".", "="),
+        ]
+        for i, row in enumerate(matrix):
+            container.rowconfigure(i, weight=1)
+            for j, num_txt in enumerate(row):
+                container.columnconfigure(j, weight=1)
+                btn = self.create_button(master=container, text=num_txt)
+                btn.grid(row=i, column=j, sticky=NSEW, padx=1, pady=1)
+
+    def create_button(self, master, text):
+        if text == "=":
+            bootstyle = SUCCESS
+        elif not isinstance(text, int):
+            bootstyle = SECONDARY
+        else:
+            bootstyle = PRIMARY
+        return ttk.Button(
+            master=master,
+            text=text,
+            command=lambda x=text: self.on_button_pressed(x),
+            bootstyle=bootstyle,
+            width=2,
+            padding=10,
         )
-
-        # button layout
-        button_matrix = [
-            ('%', 'C', 'CE', '/'),
-            (7, 8, 9, '*'),
-            (4, 5, 6, '-'),
-            (1, 2, 3, '+'),
-            ('±', 0, '.', '=')]
-
-        # create buttons with various styling
-        for i, row in enumerate(button_matrix):
-            for j, lbl in enumerate(row):
-                if isinstance(lbl, int):
-                    btn = ttk.Button(
-                        master=self, 
-                        text=lbl, 
-                        width=2,
-                        bootstyle='primary'
-                    )
-                elif lbl == '=':
-                    btn = ttk.Button(
-                        master=self, 
-                        text=lbl, 
-                        width=2,
-                        bootstyle='success'
-                    )
-                else:
-                    btn = ttk.Button(
-                        master=self, 
-                        text=lbl, 
-                        width=2,
-                        bootstyle='secondary'
-                    )
-                btn.grid(
-                    row=i + 1, 
-                    column=j, 
-                    sticky=tk.NSEW, 
-                    padx=1, 
-                    pady=1,
-                    ipadx=10, 
-                    ipady=10
-                )
-
-                # bind button press
-                btn.bind("<Button-1>", self.press_button)
-
-        # variables used for collecting button input
-        self.position_left = ''
-        self.position_right = '0'
-        self.position_is_left = True
-        self.running_total = 0.0
-
-    def press_button(self, event):
-        value = event.widget['text']
-
-        if isinstance(value, int):
-            if self.position_is_left:
-                self.position_left = f'{self.position_left}{value}'
-            else:
-                if self.position_right == '0':
-                    self.position_right = str(value)
-                else:
-                    self.position_right = f'{self.position_right}{value}'
-        elif value == '.':
-            self.position_is_left = False
-        elif value in ['/', '-', '+', '*']:
-            self.operator = value
-            self.running_total = float(self.display_var.get())
-            self.reset_variables()
-        elif value == '=':
-            operation = ''.join(
-                map(
-                    str,
-                    [
-                        self.running_total, 
-                        self.operator, 
-                        self.display_var.get()
-                    ]
-                )
-            )
-            result = eval(operation)
-            self.display_var.set(result)
-            return
-
-        elif value in ['CE', 'C']:
-            self.reset_variables()
-            self.operator = None
-            self.running_total = 0
-            return
-
-        # update the number display
-        self.display_var.set('.'.join(
-            [self.position_left, self.position_right]))
 
     def reset_variables(self):
-        self.display_var.set(0)
-        self.position_is_left = True
-        self.position_left = ''
-        self.position_right = '0'
+        self.xnum.set(value=0)
+        self.ynum.set(value=0)
+        self.operator.set("+")
+
+    def on_button_pressed(self, txt):
+        """Handles and routes all button press events."""
+        display = self.digitsvar.get()
+
+        # remove operator from screen after button is pressed
+        if len(display) > 0:
+            if display[0] in ["/", "*", "-", "+"]:
+                display = display[1:]
+
+        if txt in ["CE", "C"]:
+            self.digitsvar.set("")
+            self.reset_variables()
+        elif isinstance(txt, int):
+            self.press_number(display, txt)
+        elif txt == "." and "." not in display:
+            self.digitsvar.set(f"{display}{txt}")
+        elif txt == "±":
+            self.press_inverse(display)
+        elif txt in ["/", "*", "-", "+"]:
+            self.press_operator(txt)
+        elif txt == "=":
+            self.press_equals(display)
+
+    def press_number(self, display, txt):
+        """A digit button is pressed"""
+        if display == "0":
+            self.digitsvar.set(txt)
+        else:
+            self.digitsvar.set(f"{display}{txt}")
+
+    def press_inverse(self, display):
+        """The inverse number button is pressed"""
+        if display.startswith("-"):
+            if len(display) > 1:
+                self.digitsvar.set(display[1:])
+            else:
+                self.digitsvar.set("")
+        else:
+            self.digitsvar.set(f"-{display}")
+
+    def press_operator(self, txt):
+        """An operator button is pressed"""
+        self.operator.set(txt)
+        display = float(self.digitsvar.get())
+        if self.xnum.get() != 0:
+            self.ynum.set(display)
+        else:
+            self.xnum.set(display)
+        self.digitsvar.set(txt)
+
+    def press_equals(self, display):
+        """The equals button is pressed."""
+        if self.xnum.get() != 0:
+            self.ynum.set(display)
+        else:
+            self.xnum.set(display)
+        x = self.xnum.get()
+        y = self.ynum.get()
+        op = self.operator.get()
+        if all([x, y, op]):
+            result = eval(f"{x}{op}{y}")
+            self.digitsvar.set(result)
+            self.reset_variables()
 
 
-if __name__ == '__main__':
-    
-    Application().mainloop()
+if __name__ == "__main__":
+
+    app = ttk.Window(
+        title="Calculator",
+        themename="flatly",
+        size=(350, 450),
+        resizable=(False, False),
+    )
+    Calculator(app)
+    app.mainloop()
 ```
