@@ -5,8 +5,7 @@ flat style themes inspired by [Bootstrap](https://getbootstrap.com/).
 
 ## Features
 
-- [**Built-in Themes:**](themes/index.md) the standard ttk library has included the same
-    few outdated styles _forever_. However, ttkbootstrap includes over a dozen
+- [**Built-in Themes:**](themes/index.md) ttkbootstrap includes over a dozen
     curated dark and light themes that you can use with little to no effort.
 
 - [**Pre-defined Styles:**](styleguide/index.md) while the ttk style engine is powerful, it 
@@ -19,8 +18,8 @@ flat style themes inspired by [Bootstrap](https://getbootstrap.com/).
     classes or _keywords_ to set the style of various web components. 
     ttkbootstrap uses simple style keywords such as **primary**,
     **secondary**, **outline**, and others to customize the style of widgets.
-    This is a LOT easier than using the long, hard-to-remember ttk style
-    classes such as **primary.Striped.Horizontal.TProgressbar**.
+    This is a LOT easier than using regular ttk style classes such as 
+    **primary.Striped.Horizontal.TProgressbar**.
 
 - [**Lots of new Widgets:**](api/widgets/dateentry) a lot beautifully designed 
     widgets have been added to your toolkit such as [Meter](api/widgets/meter), 
