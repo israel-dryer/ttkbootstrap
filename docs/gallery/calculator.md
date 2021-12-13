@@ -2,11 +2,10 @@
 This basic calculator UI demonstrates how to use different colors to 
 differentiate button functions. 
 
-The theme used in this example is **flatly**.
-
 ![file search image example](../assets/gallery/calculator.png)
 
 ## Style Summary
+The theme used in this example is **flatly**.
 
 | Item      | Class     | Bootstyle |
 | ---       | ---       |---        |
@@ -15,7 +14,6 @@ The theme used in this example is **flatly**.
 | Equals    | `Button`  | success   |
 
 ## Example Code
-
 [Run this code live]() on repl.it
 
 ```python
