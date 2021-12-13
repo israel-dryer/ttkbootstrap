@@ -3,18 +3,36 @@
 A supercharged theme extension for tkinter that enables on-demand modern 
 flat style themes inspired by [Bootstrap](https://getbootstrap.com/).
 
-**_Features include_:**
+## Features
 
-- customizable pre-defined styles
+- [**Built-in Themes:**](themes/index.md) the standard ttk library has included the same
+    few outdated styles _forever_. However, ttkbootstrap includes over a dozen
+    curated dark and light themes that you can use with little to no effort.
 
-- simple keyword API (`bootstyle`) similar to **Bootstrap**
+- [**Pre-defined Styles:**](styleguide/index.md) while the ttk style engine is powerful, it 
+    requires a lot of effort to define styles for every application. 
+    ttkbootstrap includes many beautiful, pre-defined styles such as **outline**
+    buttons or **rounded-toggle** buttons.
 
-- new widgets: **Meter**, **DateEntry**, **Floodgauge**, **DatePickerPopup**
+- [**Simple keyword API:**](gettingstarted/tutorial/#use-themed-widgets) if you 
+    have used Bootstrap, then you are familiar with the idea of using css 
+    classes or _keywords_ to set the style of various web components. 
+    ttkbootstrap uses simple style keywords such as **primary**,
+    **secondary**, **outline**, and others to customize the style of widgets.
+    This is a LOT easier than using the long, hard-to-remember ttk style
+    classes such as **primary.Striped.Horizontal.TProgressbar**.
 
-- many new styles for existing widgets, such as **Striped progressbar**, or **Toggle button**
+- [**Lots of new Widgets:**](api/widgets/dateentry) a lot beautifully designed 
+    widgets have been added to your toolkit such as [Meter](api/widgets/meter), 
+    [DateEntry](api/widgets/dateentry), [Floodgauge](api/widgets/floodgauge),
+    and several theme and custom [dialogs](api/dialogs/dialog) that you can 
+    customize to your hearts content.
 
-- a built-in [theme creator](themes/themecreator.md) if you want to create your own customized themed
+- [**Built-in Theme Creator:**](themes/themecreator.md) if you want to customize 
+    your own theme, you can. ttkboostrap includes a built-in 
+    [theme creator](themes/themecreator.md) that enables you to easily build, 
+    load, and use your own custom themes.
 
-**_Theme samples_:**<br>
+## Sample Themes
 
 ![themes](./assets/themes/themes.gif)
