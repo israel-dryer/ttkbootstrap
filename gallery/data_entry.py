@@ -9,7 +9,7 @@ from ttkbootstrap.constants import *
 class DataEntryForm(ttk.Frame):
     
     def __init__(self, master):
-        super().__init__(master, padding=(20, 10))
+        super().__init__(master, padding=(10, 5))
         self.pack(fill=BOTH, expand=YES)
 
         # form variables
@@ -77,6 +77,6 @@ class DataEntryForm(ttk.Frame):
 
 if __name__ == "__main__":
 
-    app = ttk.Window("Data Entry", "superhero", resizable=(False, False))
+    app = ttk.Window("Data Entry", "flatly", resizable=(False, False))
     DataEntryForm(app)
     app.mainloop()
