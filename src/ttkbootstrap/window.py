@@ -2,9 +2,6 @@
     This module contains a class of the same name that wraps the 
     tkinter.Tk and ttkbootstrap.style.Style classes to provide a more
     consolidated api for initial application startup.
-
-    !!! warning
-        This module is experimental.
 """
 import tkinter
 from ttkbootstrap.style import Style
