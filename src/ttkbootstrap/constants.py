@@ -30,7 +30,9 @@ LINK = 'link'
 TOGGLE = 'toggle'
 INVERSE = 'inverse'
 STRIPED = 'striped'
-
+TOOLBUTTON = 'toolbutton'
+ROUND = 'round'
+SQUARE = 'square'
 
 # treeview constants
 TREE = 'tree'
