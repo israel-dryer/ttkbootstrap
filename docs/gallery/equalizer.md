@@ -1,5 +1,4 @@
 # Equalizer
-
 This example demonstrates the use of styles to differentiate scale functions. 
 Now for some comments on the code; because I wanted the scale value to be 
 reflected in a label below the scale, this application is a lot more 
@@ -10,11 +9,10 @@ when updated. Fortunately, the scale widget has a command parameter for setting
 a callback. The callback will get the scale value, which can then be converted 
 into a nice clean format. 
 
-The theme used is **litera**.
-
 ![file search image example](../assets/gallery/equalizer.png)
 
 ## Style Summary
+The theme used is **litera**.
 
 | Item          | Class     | Bootstyle |
 | ---           | ---       | ---       |
@@ -29,80 +27,66 @@ The theme used is **litera**.
     scale range.
 
 ## Example Code
-
 [Run this code live]() on repl.it
 
 ```python
-import tkinter as tk
 import ttkbootstrap as ttk
+from ttkbootstrap.constants import *
 from random import randint
 
 
-class Application(tk.Tk):
-
-    def __init__(self):
-        super().__init__()
-        self.title('Equalizer')
-        self.style = ttk.Style()
-        self.eq = Equalizer(self)
-        self.eq.pack(fill=tk.BOTH, expand=tk.YES)
-
-
 class Equalizer(ttk.Frame):
+    
+    def __init__(self, master):
+        super().__init__(master, padding=20)
+        self.pack(fill=BOTH, expand=YES)
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.configure(padding=20)
-        controls = [
-            'VOL', '31.25', '62.5', '125',
-            '250', '500', '1K', '2K',
-            '4K', '8K', '16K', 'GAIN'
-        ]
+        controls = ["VOL", "31.25", "62.5", "125", "250",
+                    "500", "1K", "2K", "4K", "8K", "16K", "GAIN"]
 
-        # create band widgets
-        for c in controls:
-            # starting random value
-            value = randint(1, 99)
-            self.setvar(c, value)
+        for control in controls:
+            self.create_band(self, control)
 
-            # container
-            frame = ttk.Frame(self, padding=5)
-            frame.pack(side=tk.LEFT, fill=tk.Y, padx=10)
+    def create_band(self, master, text):
+        """Create and pack an equalizer band"""
+        value = randint(1, 99)
+        self.setvar(text, value)
 
-            # header
-            lbl = ttk.Label(
-                master=frame,
-                text=c,
-                anchor=tk.CENTER,
-                font=('Helvetica 10 bold')
-            )
-            lbl.pack(side=tk.TOP, fill=tk.X, pady=10)
+        container = ttk.Frame(master)
+        container.pack(side=LEFT, fill=Y, padx=10)
 
-            # slider
+        # header label
+        hdr = ttk.Label(container, text=text, anchor=CENTER)
+        hdr.pack(side=TOP, fill=X, pady=10)
 
-            if c in ['VOL', 'GAIN']:
-                _bootstyle = 'success'
-            else:
-                _bootstyle = 'info'
+        # volume scale
+        if text in ["VOL", "GAIN"]:
+            bootstyle = SUCCESS
+        else:
+            bootstyle = INFO
 
-            def _func(val, name=c): return self.setvar(
-                name, f'{float(val):.0f}')
+        scale = ttk.Scale(
+            master=container,
+            orient=VERTICAL,
+            from_=99,
+            to=1,
+            value=value,
+            command=lambda x=value, y=text: self.update_value(x, y),
+            bootstyle=bootstyle,
+        )
+        scale.pack(fill=Y)
 
-            scale = ttk.Scale(
-                master=frame,
-                orient=tk.VERTICAL,
-                from_=99,
-                to=1,
-                value=value,
-                command=_func,
-                bootstyle=_bootstyle
-            )
-            scale.pack(fill=tk.Y)
+        # value label
+        val = ttk.Label(master=container, textvariable=text)
+        val.pack(pady=10)
 
-            # slider value label
-            ttk.Label(frame, textvariable=c).pack(pady=10)
+    def update_value(self, value, name):
+        self.setvar(name, f"{float(value):.0f}")
 
 
-if __name__ == '__main__':
-    Application().mainloop()
+if __name__ == "__main__":
+
+    app = ttk.Window("Equalizer", "litera", resizable=(False, False))
+    Equalizer(app)
+    app.mainloop()
 ```

@@ -1,15 +1,13 @@
 # Simple Data Entry
-
 This simple data entry form accepts user input and then prints it to the screen 
 when submitted. 
-
-The two examples below used the themes **litera** and **superhero**.
 
 ![file search image example](../assets/gallery/simple_data_entry_light.png)
 
 ![file search image example](../assets/gallery/simple_data_entry_dark.png)
 
 ## Style Summary
+The two examples above use the themes **litera** and **superhero**.
 
 | Item          | Class     | Bootstyle |
 | ---           | ---       | ---|
@@ -18,82 +16,85 @@ The two examples below used the themes **litera** and **superhero**.
 | Inputs        | `Entry`   | default |
 
 ## Example Code
-
 [Run this code live]() on repl.it
 
 ```python
-import tkinter as tk
 import ttkbootstrap as ttk
+from ttkbootstrap.constants import *
 
 
-class Application(tk.Tk):
-
-    def __init__(self):
-        super().__init__()
-        self.title('Simple data entry form')
-        self.style = ttk.Style('superhero')
-        self.form = EntryForm(self)
-        self.form.pack(fill='both', expand='yes')
-
-
-class EntryForm(ttk.Frame):
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.configure(padding=(20, 10))
-        self.columnconfigure(2, weight=1)
+class DataEntryForm(ttk.Frame):
+    
+    def __init__(self, master):
+        super().__init__(master, padding=(20, 10))
+        self.pack(fill=BOTH, expand=YES)
 
         # form variables
-        self.name = tk.StringVar(value='', name='name')
-        self.address = tk.StringVar(value='', name='address')
-        self.phone = tk.StringVar(value='', name='phone')
+        self.name = ttk.StringVar(value="")
+        self.address = ttk.StringVar(value="")
+        self.phone = ttk.StringVar(value="")
 
-        # form headers
-        ttk.Label(
-            master=self, 
-            text='Please enter your contact information', 
-            width=60
-        ).grid(columnspan=3, pady=10)
+        # form header
+        hdr_txt = "Please enter your contact information" 
+        hdr = ttk.Label(master=self, text=hdr_txt, width=50)
+        hdr.pack(fill=X, pady=10)
 
-        # create label/entry rows
-        for i, label in enumerate(['name', 'address', 'phone']):
-            ttk.Label(
-                master=self, 
-                text=label.title()
-            ).grid(row=i + 1, column=0, sticky='ew', pady=10, padx=(0, 10))
-            
-            ttk.Entry(
-                master=self, 
-                textvariable=label
-            ).grid(row=i + 1, column=1, columnspan=2, sticky=tk.EW)
+        # form entries
+        self.create_form_entry("name", self.name)
+        self.create_form_entry("address", self.address)
+        self.create_form_entry("phone", self.phone)
+        self.create_buttonbox()
 
-        # submit button
-        self.submit = ttk.Button(
-            master=self, 
-            text='Submit', 
-            bootstyle='success', 
-            command=self.print_form_data
-        ).grid(
-            row=4, 
-            column=0, 
-            sticky=tk.EW, 
-            pady=10, 
-            padx=(0, 10)
+    def create_form_entry(self, label, variable):
+        """Create a single form entry"""
+        container = ttk.Frame(self)
+        container.pack(fill=X, expand=YES, pady=5)
+
+        lbl = ttk.Label(master=container, text=label.title(), width=10)
+        lbl.pack(side=LEFT, padx=5)
+
+        ent = ttk.Entry(master=container, textvariable=variable)
+        ent.pack(side=LEFT, padx=5, fill=X, expand=YES)
+
+    def create_buttonbox(self):
+        """Create the application buttonbox"""
+        container = ttk.Frame(self)
+        container.pack(fill=X, expand=YES, pady=(15, 10))
+
+        sub_btn = ttk.Button(
+            master=container,
+            text="Submit",
+            command=self.on_submit,
+            bootstyle=SUCCESS,
+            width=6,
         )
+        sub_btn.pack(side=RIGHT, padx=5)
+        sub_btn.focus_set()
 
-        # cancel button
-        self.cancel = ttk.Button(
-            master=self, 
-            text='Cancel', 
-            bootstyle='danger', 
-            command=self.quit
-        ).grid(row=4, column=1, sticky=tk.EW)
+        cnl_btn = ttk.Button(
+            master=container,
+            text="Cancel",
+            command=self.on_cancel,
+            bootstyle=DANGER,
+            width=6,
+        )
+        cnl_btn.pack(side=RIGHT, padx=5)
 
-    def print_form_data(self):
-        print(self.name.get(), self.address.get(), self.phone.get())
+    def on_submit(self):
+        """Print the contents to console and return the values."""
+        print("Name:", self.name.get())
+        print("Address:", self.address.get())
+        print("Phone:", self.phone.get())
+        return self.name.get(), self.address.get(), self.phone.get()
+
+    def on_cancel(self):
+        """Cancel and close the application."""
+        self.quit()
 
 
-if __name__ == '__main__':
-    Application().mainloop()
+if __name__ == "__main__":
 
+    app = ttk.Window("Data Entry", "superhero", resizable=(False, False))
+    DataEntryForm(app)
+    app.mainloop()
 ```
