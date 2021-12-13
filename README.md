@@ -23,17 +23,16 @@ The new Version 1.0 API adds style keywords. Instead of using `style="info.Outli
 you can use `info-outline` to create an info colored outline button.
 
 ```python
-import tkinter as tk
 import ttkbootstrap as ttk
+from ttkbootstrap.constants import *
 
-root = tk.Tk()
-style = ttk.Style()
+root = ttk.Window(themename="superhero")
 
-b1 = ttk.Button(root, text="Submit", bootstyle='success')
-b1.pack(side=tk.LEFT, padx=5, pady=10)
+b1 = ttk.Button(root, text="Submit", bootstyle=SUCCESS)
+b1.pack(side=LEFT, padx=5, pady=10)
 
-b2 = ttk.Button(root, text="Submit", bootstyle='info-outline')
-b2.pack(side=tk.LEFT, padx=5, pady=10)
+b2 = ttk.Button(root, text="Submit", bootstyle=(INFO, OUTLINE))
+b2.pack(side=LEFT, padx=5, pady=10)
 
 root.mainloop()
 ```
@@ -42,3 +41,4 @@ The new keyword API is very flexible. The following examples all produce the sam
 - `bootstyle="info-outline"`
 - `bootstyle="info outline"`
 - `bootstyle=("info", "outline")`
+- `bootstyle=(INFO, OUTLINE)`
