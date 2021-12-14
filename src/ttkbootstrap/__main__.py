@@ -1,3 +1,9 @@
+"""
+    ttkbootstrap demo
+
+    ISSUES:
+        - the legacy tk widgets do not update after DateDialog is used.
+"""
 import ttkbootstrap as ttk
 from ttkbootstrap.constants import *
 
