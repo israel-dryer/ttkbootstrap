@@ -9,11 +9,9 @@
 import calendar
 import textwrap
 from datetime import datetime
-import tkinter as tk
 from tkinter import font
 import ttkbootstrap as ttk
 from ttkbootstrap import utility
-from tkinter import Toplevel, Variable
 from tkinter import _get_default_root
 from ttkbootstrap.constants import *
 
@@ -43,7 +41,7 @@ class Dialog:
             alert (bool):
                 Ring the display's bell when the dialog is shown. 
         """
-        self.master = parent or _get_default_root('Dialog')
+        self.master = parent or _get_default_root()
         self._winsys = self.master.tk.call('tk', 'windowingsystem')
         self._toplevel = None
         self._title = title
@@ -130,17 +128,21 @@ class Dialog:
 
         # setup toplevel based on widowing system
         if self._winsys == 'win32':
-            self._toplevel = Toplevel(self.master)
-            self._toplevel.attributes('-toolwindow')
-            self._toplevel.minsize(250, 15)
+            self._toplevel = ttk.Toplevel(
+                transient=self.master,
+                title=self._title,
+                resizable=(0, 0),
+                minsize=(250, 15),
+            )
         else:
-            self._toplevel = Toplevel(self.master)
-            self._toplevel.attributes('-type', 'dialog')
+            self._toplevel = ttk.Toplevel(
+                transient=self.master,
+                title=self._title,
+                resizable=(0, 0),
+                windowtype='dialog'
+            )
 
         self._toplevel.withdraw()  # hide until drawn
-        self._toplevel.resizable(0, 0)
-        self._toplevel.transient(self.master)
-        self._toplevel.title(self._title)
 
         # bind <Escape> event to window close
         self._toplevel.bind("<Escape>", lambda _: self._toplevel.destroy())
@@ -526,7 +528,7 @@ class DatePickerDialog:
         title='',
         firstweekday=6,
         startdate=None,
-        bootstyle='primary',
+        bootstyle=PRIMARY,
     ):
         """
         Parameters:
@@ -553,18 +555,23 @@ class DatePickerDialog:
                 secondary, info, warning, success, danger, light, dark.            
         """
         self.parent = parent
-        self.root = tk.Toplevel()
-        self.root.title(title)
+        self.root = ttk.Toplevel(
+            title=title,
+            transient=self.parent,
+            resizable=(False, False),
+            topmost=True,
+            minsize=(226, 1)
+        )
         self.firstweekday = firstweekday
         self.startdate = startdate or datetime.today().date()
-        self.bootstyle = bootstyle or 'primary'
+        self.bootstyle = bootstyle or PRIMARY
 
         self.date_selected = self.startdate
         self.date = startdate or self.date_selected
         self.calendar = calendar.Calendar(firstweekday=firstweekday)
 
-        self.titlevar = tk.StringVar()
-        self.datevar = tk.IntVar()
+        self.titlevar = ttk.StringVar()
+        self.datevar = ttk.IntVar()
 
         self._setup_calendar()
         self.root.grab_set()
@@ -577,19 +584,16 @@ class DatePickerDialog:
             master=self.root,
             padding=0,
             borderwidth=1,
-            relief=tk.RAISED
+            relief=RAISED
         )
-        self.frm_calendar.pack(fill=tk.BOTH, expand=tk.YES)
+        self.frm_calendar.pack(fill=BOTH, expand=YES)
         self.frm_title = ttk.Frame(self.frm_calendar, padding=(3, 3))
-        self.frm_title.pack(fill=tk.X)
-        self.frm_header = ttk.Frame(self.frm_calendar, bootstyle='secondary')
-        self.frm_header.pack(fill=tk.X)
+        self.frm_title.pack(fill=X)
+        self.frm_header = ttk.Frame(self.frm_calendar, bootstyle=SECONDARY)
+        self.frm_header.pack(fill=X)
 
         # setup the toplevel widget
         self.root.withdraw()
-        self.root.transient(self.parent)
-        # self.root.overrideredirect(True)
-        self.root.resizable(False, False)
         self.frm_calendar.update_idletasks()  # actualize geometry
 
         # create visual components
@@ -599,7 +603,6 @@ class DatePickerDialog:
         # make toplevel visible
         self._set_window_position()
         self.root.deiconify()
-        self.root.attributes('-topmost', True)
 
     def _update_widget_bootstyle(self):
         self.frm_title.configure(bootstyle=self.bootstyle)
@@ -609,11 +612,10 @@ class DatePickerDialog:
 
     def _draw_calendar(self):
         self._update_widget_bootstyle()
-        self.root.minsize(width=226, height=1)
         self._set_title()
         self._current_month_days()
         self.frm_dates = ttk.Frame(self.frm_calendar)
-        self.frm_dates.pack(fill=tk.BOTH, expand=tk.YES)
+        self.frm_dates.pack(fill=BOTH, expand=YES)
 
         for row, weekday_list in enumerate(self.monthdays):
             for col, day in enumerate(weekday_list):
@@ -622,11 +624,11 @@ class DatePickerDialog:
                     ttk.Label(
                         master=self.frm_dates,
                         text=self.monthdates[row][col].day,
-                        anchor=tk.CENTER,
+                        anchor=CENTER,
                         padding=5,
-                        bootstyle='secondary'
+                        bootstyle=SECONDARY
                     ).grid(
-                        row=row, column=col, sticky=tk.NSEW
+                        row=row, column=col, sticky=NSEW
                     )
                 else:
                     if all([
@@ -649,7 +651,7 @@ class DatePickerDialog:
                         padding=5,
                         command=selected
                     )
-                    btn.grid(row=row, column=col, sticky=tk.NSEW)
+                    btn.grid(row=row, column=col, sticky=NSEW)
 
     def _draw_titlebar(self):
         """Draw the calendar title bar which includes the month title
@@ -667,22 +669,22 @@ class DatePickerDialog:
             text='«',
             command=self.on_prev_month
         )
-        self.prev_period.pack(side=tk.LEFT)
+        self.prev_period.pack(side=LEFT)
 
         self.title = ttk.Label(
             master=self.frm_title,
             textvariable=self.titlevar,
-            anchor=tk.CENTER,
+            anchor=CENTER,
             font='-size 10 -weight bold'
         )
-        self.title.pack(side=tk.LEFT, fill=tk.X, expand=tk.YES)
+        self.title.pack(side=LEFT, fill=X, expand=YES)
 
         self.next_period = ttk.Button(
             master=self.frm_title,
             text='»',
             command=self.on_next_month,
         )
-        self.next_period.pack(side=tk.LEFT)
+        self.next_period.pack(side=LEFT)
 
         # bind "year" callbacks to action buttons
         self.prev_period.bind('<Button-3>', self.on_prev_year, '+')
@@ -694,13 +696,13 @@ class DatePickerDialog:
             ttk.Label(
                 master=self.frm_header,
                 text=col,
-                anchor=tk.CENTER,
+                anchor=CENTER,
                 padding=5,
-                bootstyle='secondary-inverse'
+                bootstyle=(SECONDARY, INVERSE)
             ).pack(
-                side=tk.LEFT,
-                fill=tk.X,
-                expand=tk.YES
+                side=LEFT,
+                fill=X,
+                expand=YES
             )
 
     def _set_title(self):
@@ -832,12 +834,12 @@ class FontDialog(Dialog):
         self._style = ttk.Style()
         self._default = font.nametofont('TkDefaultFont')
         self._actual = self._default.actual()
-        self._size = Variable(value=self._actual['size'])
-        self._family = Variable(value=self._actual['family'])
-        self._slant = Variable(value=self._actual['slant'])
-        self._weight = Variable(value=self._actual['weight'])
-        self._overstrike = Variable(value=self._actual['overstrike'])
-        self._underline = Variable(value=self._actual['underline'])
+        self._size = ttk.Variable(value=self._actual['size'])
+        self._family = ttk.Variable(value=self._actual['family'])
+        self._slant = ttk.Variable(value=self._actual['slant'])
+        self._weight = ttk.Variable(value=self._actual['weight'])
+        self._overstrike = ttk.Variable(value=self._actual['overstrike'])
+        self._underline = ttk.Variable(value=self._actual['underline'])
         self._preview_font = font.Font()
         self._slant.trace_add("write", self._update_font_preview)
         self._weight.trace_add("write", self._update_font_preview)
@@ -936,7 +938,7 @@ class FontDialog(Dialog):
 
         sizes = [*range(8, 12), *range(12, 30, 2), 36, 48, 72]
         for s in sizes:
-            sizes_listbox.insert('', iid=s, index=tk.END, values=[s])
+            sizes_listbox.insert('', iid=s, index=END, values=[s])
 
         iid = self._size.get()
         sizes_listbox.selection_set(iid)
@@ -1017,7 +1019,7 @@ class FontDialog(Dialog):
         header.pack(fill=X, pady=2, anchor=N)
 
         content = "The quick brown fox jumped over the lazy dog."
-        self._preview_text = tk.Text(
+        self._preview_text = ttk.Text(
             master=container,
             height=3,
             font=self._preview_font,
