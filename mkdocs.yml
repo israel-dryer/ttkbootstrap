@@ -69,6 +69,30 @@ nav:
     - styleguide/sizegrip.md
     - styleguide/spinbox.md
     - styleguide/treeview.md
+  - API: 
+    - api/index.md
+    - 'dialogs module':
+      - api/dialogs/dialog.md
+      - api/dialogs/messagedialog.md
+      - api/dialogs/querydialog.md
+      - api/dialogs/datepickerdialog.md
+      - api/dialogs/fontdialog.md
+      - api/dialogs/messagebox.md
+      - api/dialogs/querybox.md
+    - 'icons module': api/icons.md
+    - 'style module': 
+      - api/style/bootstyle.md
+      - api/style/colors.md
+      - api/style/style.md
+      - api/style/stylebuildertk.md
+      - api/style/stylebuilderttk.md
+      - api/style/themedefinition.md    
+    - 'utility module': api/utility.md
+    - 'widgets module':
+      - api/widgets/dateentry.md
+      - api/widgets/floodgauge.md
+      - api/widgets/meter.md
+    - api/window.md
   - Themes:
     - themes/index.md
     - themes/light.md
@@ -92,26 +116,3 @@ nav:
     - cookbook/index.md
     - cookbook/validate-user-input.md
     - cookbook/gif-animation.md
-  - API: 
-    - 'dialogs module':
-      - api/dialogs/dialog.md
-      - api/dialogs/messagedialog.md
-      - api/dialogs/querydialog.md
-      - api/dialogs/datepickerdialog.md
-      - api/dialogs/fontdialog.md
-      - api/dialogs/messagebox.md
-      - api/dialogs/querybox.md
-    - 'icons module': api/icons.md
-    - 'style module': 
-      - api/style/bootstyle.md
-      - api/style/colors.md
-      - api/style/style.md
-      - api/style/stylebuildertk.md
-      - api/style/stylebuilderttk.md
-      - api/style/themedefinition.md    
-    - 'utility module': api/utility.md
-    - 'widgets module':
-      - api/widgets/dateentry.md
-      - api/widgets/floodgauge.md
-      - api/widgets/meter.md
-    - api/window.md
