@@ -4,7 +4,7 @@
 
 You can use two approaches when building a ttkbootstrap application. The first 
 is familiar if you've used **tkinter** and **ttk**. The second uses a new 
-[Window](../../api/window) class to simplify the whole process.
+[Window](../../api/window/window) class to simplify the whole process.
 
 ### The traditional approach
 
@@ -13,10 +13,10 @@ This approach uses a familiar pattern. However, there are a few differences:
 - import `ttkbootstrap` instead of `ttk`
 - use the `bootstyle` parameter to add keywords instead of using the `style` parameter.
 
-!!! note "Use constants when available"
-    You will see that constants are used in these examples. This is not required.
-    Feel free to use strings if you wish, but it may be easier to debug or refactor
-    your code if using defined constants.
+!!! note "Constants are preferred"
+    I prefer constants in the code over over strings. However, feel free to 
+    use a coding style that you feel comfortable with. The bootstyle keyword 
+    API is very flexible, so make sure you [check out the syntax options](#keyword-usage).
 
 ```python
 import tkinter as tk
@@ -40,7 +40,7 @@ The code above will produce this window with two buttons.
 
 ### A new approach
 
-The same result can be produced by using the new [Window](../../api/window) 
+The same result can be produced by using the new [Window](../../api/window/window) 
 class, which you can read about in the API documentation. The difference may 
 seem small at first, but as you will see, the `Window` class uses parameters to 
 set many of the attributes and qualities that you can only set with methods
@@ -130,8 +130,10 @@ root.mainloop()
 
 I could have created those buttons in a simpler fashion by using the 
 `Style.colors` object, which contains a reference to all colors used in the 
-theme, and which is also an _iterator_. You can either create the style object
-using the `Style` class, or use the one attached to the `Window` object.
+theme, and which is also an _iterator_. 
+
+As for the `Style` object, you can either create the style object using the 
+`Style` class, or use the `style` property on the `Window` object.
 
 ```python
 import ttkbootstrap as ttk
@@ -187,6 +189,8 @@ All of the following variations are legal and will result in the same style.
 * `(INFO, OUTLINE)`
 
 !!! note "The recommended keyword separator is a dash"
-    If you choose not to use constants, it is recommended to separate the 
-    keywords using a dash when possible. Otherwise, it may sometimes be 
-    necessary or more convenient to use a `list` or `tuple`.
+    If using **strings** for keywords, it is recommended to separate the 
+    keywords using a dash when possible, as in the _first_ example above. 
+    
+    If using **constants**, and you are using more than one keyword, you will use 
+    a `list` or `tuple` as in the _last_ example above.
