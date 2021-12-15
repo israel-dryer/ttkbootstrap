@@ -8,18 +8,19 @@ class Channel(Enum):
 
     Attributes:
 
-        STD (1): 
+        STD (1):
             Legacy tkinter widgets.
-        
-        TTK (2): 
+
+        TTK (2):
             Themed tkinter widgets.
     """
+
     STD = 1
     TTK = 2
 
 
 class Subscriber:
-    """A subcriber data class used to store information about a specific 
+    """A subcriber data class used to store information about a specific
     subcriber to the `Publisher`."""
 
     def __init__(self, name, func, channel):
@@ -33,7 +34,7 @@ class Subscriber:
             func (Callable):
                 The function to call when messaging.
 
-            channel (Channel): 
+            channel (Channel):
                 The subscription channel.
         """
         self.name = name
@@ -46,6 +47,10 @@ class Publisher:
     or configurations"""
 
     __subscribers = {}
+
+    @staticmethod
+    def subscriber_count():
+        return len(Publisher.__subscribers)
 
     @staticmethod
     def subscribe(name, func, channel):
@@ -76,7 +81,7 @@ class Publisher:
         """
         subs = Publisher.__subscribers
         try:
-            del(subs[name])
+            del subs[name]
         except:
             pass
 
@@ -86,7 +91,7 @@ class Publisher:
         Returns:
 
             List:
-                List of key-value tuples        
+                List of key-value tuples
         """
         subs = Publisher.__subscribers.values()
         channel_subs = [s for s in subs if s.channel == channel]
@@ -100,7 +105,7 @@ class Publisher:
             channel (Channel):
                 The name of the channel to subscribe.
 
-            **args: 
+            **args:
                 optional arguments to pass to the subscribers.
         """
         subs: List[Subscriber] = Publisher.get_subscribers(channel)
