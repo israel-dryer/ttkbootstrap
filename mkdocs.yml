@@ -92,7 +92,9 @@ nav:
       - api/widgets/dateentry.md
       - api/widgets/floodgauge.md
       - api/widgets/meter.md
-    - api/window.md
+    - 'window module':
+      - api/window/window.md
+      - api/window/toplevel.md
   - Themes:
     - themes/index.md
     - themes/light.md
