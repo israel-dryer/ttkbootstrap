@@ -19,32 +19,27 @@ from ttkbootstrap.constants import *
 class Dialog:
     """A simple dialog base class."""
 
-    def __init__(
-        self,
-        parent=None,
-        title=None,
-        alert=False
-    ):
+    def __init__(self, parent=None, title=None, alert=False):
         """
         Parameters:
 
             parent (Widget):
-                Makes the window the logical parent of the message box. 
+                Makes the window the logical parent of the message box.
                 The messagebox is displayed on top of its parent window.
 
             title (str):
-                The string displayed as the title of the message box. 
-                This option is ignored on Mac OS X, where platform 
-                guidelines forbid the use of a title on this kind of 
+                The string displayed as the title of the message box.
+                This option is ignored on Mac OS X, where platform
+                guidelines forbid the use of a title on this kind of
                 dialog.
 
             alert (bool):
-                Ring the display's bell when the dialog is shown. 
+                Ring the display's bell when the dialog is shown.
         """
         self.master = parent or _get_default_root()
-        self._winsys = self.master.tk.call('tk', 'windowingsystem')
+        self._winsys = self.master.tk.call("tk", "windowingsystem")
         self._toplevel = None
-        self._title = title
+        self._title = title or ""
         self._result = None
         self._alert = alert
         self._initial_focus = None
@@ -69,15 +64,15 @@ class Dialog:
         w_height = toplevel.winfo_reqheight()
         x = int(m_x + (m_width - w_width) * 0.45)
         y = int(m_y + (m_height - w_height) * 0.3)
-        if x+w_width > screen_width:
+        if x + w_width > screen_width:
             x = screen_width - w_width
         elif x < 0:
             x = 0
-        if y+w_height > screen_height:
+        if y + w_height > screen_height:
             y = screen_height - w_height
         elif y < 0:
             y = 0
-        toplevel.geometry(f'+{x}+{y}')
+        toplevel.geometry(f"+{x}+{y}")
 
     def show(self):
         """Show the popup dialog"""
@@ -98,7 +93,7 @@ class Dialog:
     def create_body(self, master):
         """Create the dialog body.
 
-        This method should be overridden and is called by the `build` 
+        This method should be overridden and is called by the `build`
         method. Set the `self._initial_focus` for the widget that
         should receive the initial focus.
 
@@ -127,7 +122,7 @@ class Dialog:
         """Build the dialog from settings"""
 
         # setup toplevel based on widowing system
-        if self._winsys == 'win32':
+        if self._winsys == "win32":
             self._toplevel = ttk.Toplevel(
                 transient=self.master,
                 title=self._title,
@@ -139,7 +134,7 @@ class Dialog:
                 transient=self.master,
                 title=self._title,
                 resizable=(0, 0),
-                windowtype='dialog'
+                windowtype="dialog",
             )
 
         self._toplevel.withdraw()  # hide until drawn
@@ -164,28 +159,28 @@ class Dialog:
 
 
 class MessageDialog(Dialog):
-    """A simple modal dialog class that can be used to build simple 
+    """A simple modal dialog class that can be used to build simple
     message dialogs.
 
-    Displays a message and a set of buttons. Each of the buttons in the 
-    message window is identified by a unique symbolic name. After the 
-    message window is popped up, the message box awaits for the user to 
-    select one of the buttons. Then it returns the symbolic name of the 
-    selected button. Use a `Toplevel` widget for more advanced modal 
-    dialog designs.    
+    Displays a message and a set of buttons. Each of the buttons in the
+    message window is identified by a unique symbolic name. After the
+    message window is popped up, the message box awaits for the user to
+    select one of the buttons. Then it returns the symbolic name of the
+    selected button. Use a `Toplevel` widget for more advanced modal
+    dialog designs.
     """
 
     def __init__(
         self,
         message,
         title=None,
-        buttons=['Cancel:secondary', 'OK:primary'],
+        buttons=["Cancel:secondary", "OK:primary"],
         command=None,
         width=50,
         parent=None,
         alert=False,
         default=None,
-        padding=(20, 20)
+        padding=(20, 20),
     ):
         """
         Parameters:
@@ -194,25 +189,25 @@ class MessageDialog(Dialog):
                 A message to display in the message box.
 
             title (str):
-                The string displayed as the title of the message box. 
-                This option is ignored on Mac OS X, where platform 
-                guidelines forbid the use of a title on this kind of 
+                The string displayed as the title of the message box.
+                This option is ignored on Mac OS X, where platform
+                guidelines forbid the use of a title on this kind of
                 dialog.
 
             buttons (List[str]):
                 A list of buttons to appear at the bottom of the popup
-                messagebox. The buttons can be a list of strings which 
+                messagebox. The buttons can be a list of strings which
                 will define the symbolic name and the button text.
                 `['OK', 'Cancel']`. Alternatively, you can assign a
                 bootstyle to each button by using the colon to separate the
                 button text and the bootstyle. If no colon is found, then
-                the style is set to 'primary' by default. 
-                `['OK:success','Cancel:danger']`. 
+                the style is set to 'primary' by default.
+                `['OK:success','Cancel:danger']`.
 
             command (Tuple[Callable, str]):
-                The function to invoke when the user closes the dialog. 
-                The actual command is a tuple that consists of the 
-                function to call and the symbolic name of the button that 
+                The function to invoke when the user closes the dialog.
+                The actual command is a tuple that consists of the
+                function to call and the symbolic name of the button that
                 closes the dialog.
 
             width (int):
@@ -221,16 +216,16 @@ class MessageDialog(Dialog):
                 at the word.
 
             parent (Widget):
-                Makes the window the logical parent of the message box. 
+                Makes the window the logical parent of the message box.
                 The messagebox is displayed on top of its parent window.
 
             alert (bool):
-                Ring the display's bell when the dialog is shown. 
+                Ring the display's bell when the dialog is shown.
 
             default (str):
-                The symbolic name of the default button. The default 
-                button is invoked when the the <Return> key is pressed. 
-                If no default is provided, the right-most button in the 
+                The symbolic name of the default button. The default
+                button is invoked when the the <Return> key is pressed.
+                If no default is provided, the right-most button in the
                 button list will be set as the default.,
 
             padding  (Union[int, Tuple[int]]):
@@ -252,15 +247,15 @@ class MessageDialog(Dialog):
         self._command = command
         self._width = width
         self._alert = alert
-        self._default = default,
+        self._default = (default,)
         self._padding = padding
 
     def create_body(self, master):
         """Overrides the parent method; adds the message section."""
         frame = ttk.Frame(master, padding=self._padding)
         if self._message:
-            for i, msg in enumerate(self._message.split('\n')):
-                message = '\n'.join(textwrap.wrap(msg, width=self._width))
+            for i, msg in enumerate(self._message.split("\n")):
+                message = "\n".join(textwrap.wrap(msg, width=self._width))
                 message_label = ttk.Label(frame, text=message)
                 message_label.pack(pady=(0, 5), fill=X, anchor=N)
         frame.pack(fill=X, expand=True)
@@ -272,15 +267,15 @@ class MessageDialog(Dialog):
         button_list = []
 
         for i, button in enumerate(self._buttons[::-1]):
-            cnf = button.split(':')
+            cnf = button.split(":")
             if len(cnf) == 2:
                 text, bootstyle = cnf
             else:
                 text = cnf[0]
-                bootstyle = 'secondary'
+                bootstyle = "secondary"
 
             btn = ttk.Button(frame, bootstyle=bootstyle, text=text)
-            btn.bind('<Return>', lambda _: btn.invoke())
+            btn.bind("<Return>", lambda _: btn.invoke())
             btn.configure(command=lambda b=btn: self.on_button_press(b))
             btn.pack(padx=5, side=RIGHT)
             btn.lower()  # set focus traversal left-to-right
@@ -292,8 +287,8 @@ class MessageDialog(Dialog):
                 self._initial_focus = btn
 
         # bind default button to return key press and set focus
-        self._toplevel.bind('<Return>', lambda _, b=btn: b.invoke())
-        self._toplevel.bind('<KP_Enter>', lambda _, b=btn: b.invoke())
+        self._toplevel.bind("<Return>", lambda _, b=btn: b.invoke())
+        self._toplevel.bind("<KP_Enter>", lambda _, b=btn: b.invoke())
 
         ttk.Separator(self._toplevel).pack(fill=X)
         frame.pack(side=BOTTOM, fill=X, anchor=S)
@@ -303,7 +298,7 @@ class MessageDialog(Dialog):
 
     def on_button_press(self, button):
         """Save result, destroy the toplevel, and execute command."""
-        self._result = button['text']
+        self._result = button["text"]
         command = self._command
         if command is not None:
             command()
@@ -315,10 +310,10 @@ class MessageDialog(Dialog):
 
 
 class QueryDialog(Dialog):
-    """A simple modal dialog class that can be used to build simple 
-    data input dialogs. Displays a prompt, and input box, and a set of 
+    """A simple modal dialog class that can be used to build simple
+    data input dialogs. Displays a prompt, and input box, and a set of
     buttons. Additional data manipulation can be performed on the
-    user input post-hoc by overriding the `apply` method. 
+    user input post-hoc by overriding the `apply` method.
 
     Use a `Toplevel` widget for more advanced modal dialog designs.
     """
@@ -327,7 +322,7 @@ class QueryDialog(Dialog):
         self,
         prompt,
         title=None,
-        initialvalue='',
+        initialvalue="",
         minvalue=None,
         maxvalue=None,
         width=65,
@@ -339,13 +334,13 @@ class QueryDialog(Dialog):
         Parameters:
 
             prompt (str):
-                A message to display in the message box above the entry 
+                A message to display in the message box above the entry
                 widget.
 
             title (str):
-                The string displayed as the title of the message box. 
-                This option is ignored on Mac OS X, where platform 
-                guidelines forbid the use of a title on this kind of 
+                The string displayed as the title of the message box.
+                This option is ignored on Mac OS X, where platform
+                guidelines forbid the use of a title on this kind of
                 dialog.
 
             initialvalue (Any):
@@ -360,18 +355,18 @@ class QueryDialog(Dialog):
                 data types.
 
             width (int):
-                The maximum number of characters per line in the 
-                message. If the text stretches beyond the limit, the 
+                The maximum number of characters per line in the
+                message. If the text stretches beyond the limit, the
                 line will break at the word.
 
             parent (Widget):
-                Makes the window the logical parent of the message box. 
-                The messagebox is displayed on top of its parent 
+                Makes the window the logical parent of the message box.
+                The messagebox is displayed on top of its parent
                 window.
 
             padding (Union[int, Tuple[int]]):
                 The amount of space between the border and the widget
-                contents.                
+                contents.
 
             datatype (Union[int, str, float]):
                 The data type used to validate the entry value.
@@ -387,12 +382,12 @@ class QueryDialog(Dialog):
         self._result = None
 
     def create_body(self, master):
-        """Overrides the parent method; adds the message and input 
+        """Overrides the parent method; adds the message and input
         section."""
         frame = ttk.Frame(master, padding=self._padding)
         if self._prompt:
-            for p in self._prompt.split('\n'):
-                prompt = '\n'.join(textwrap.wrap(p, width=self._width))
+            for p in self._prompt.split("\n"):
+                prompt = "\n".join(textwrap.wrap(p, width=self._width))
                 prompt_label = ttk.Label(frame, text=prompt)
                 prompt_label.pack(pady=(0, 5), fill=X, anchor=N)
 
@@ -411,18 +406,18 @@ class QueryDialog(Dialog):
 
         submit = ttk.Button(
             master=frame,
-            bootstyle='primary',
-            text='Submit',
-            command=self.on_submit
+            bootstyle="primary",
+            text="Submit",
+            command=self.on_submit,
         )
         submit.pack(padx=5, side=RIGHT)
         submit.lower()  # set focus traversal left-to-right
 
         cancel = ttk.Button(
             master=frame,
-            bootstyle='secondary',
-            text='Cancel',
-            command=self.on_cancel
+            bootstyle="secondary",
+            text="Cancel",
+            command=self.on_cancel,
         )
         cancel.pack(padx=5, side=RIGHT)
         cancel.lower()  # set focus traversal left-to-right
@@ -431,7 +426,7 @@ class QueryDialog(Dialog):
         frame.pack(side=BOTTOM, fill=X, anchor=S)
 
     def on_submit(self, *_):
-        """Save result, destroy the toplevel, and apply any post-hoc 
+        """Save result, destroy the toplevel, and apply any post-hoc
         data manipulations."""
         self._result = self._initial_focus.get()
         valid_result = self.validate()
@@ -461,7 +456,7 @@ class QueryDialog(Dialog):
         except ValueError:
             Messagebox.ok(
                 message=f"Should be of data type `{self._datatype}`",
-                title="Invalid data type"
+                title="Invalid data type",
             )
             return False
 
@@ -470,7 +465,7 @@ class QueryDialog(Dialog):
             if self._result > self._maxvalue:
                 Messagebox.ok(
                     message=f"Number cannot be greater than {self._maxvalue}",
-                    title="Out of Range"
+                    title="Out of Range",
                 )
                 return False
 
@@ -479,7 +474,7 @@ class QueryDialog(Dialog):
             if self._result < self._minvalue:
                 Messagebox.ok(
                     message=f"Number cannot be less than {self._minvalue}",
-                    title="Out of Range"
+                    title="Out of Range",
                 )
                 return False
 
@@ -496,13 +491,13 @@ class QueryDialog(Dialog):
 
 
 class DatePickerDialog:
-    """A dialog that displays a calendar popup and returns the 
+    """A dialog that displays a calendar popup and returns the
     selected date as a datetime object.
 
     The current date is displayed by default unless the `startdate`
-    parameter is provided.  
+    parameter is provided.
 
-    The month can be changed by clicking the chevrons to the left 
+    The month can be changed by clicking the chevrons to the left
     and right of the month-year title.
 
     Left-click the arrow to move the calendar by one month.
@@ -510,7 +505,7 @@ class DatePickerDialog:
     Right-click the title to reset the calendar to the start date.
 
     The starting weekday can be changed with the `firstweekday`
-    parameter for geographies that do not start the calendar on 
+    parameter for geographies that do not start the calendar on
     Sunday, which is the default.
 
     The widget grabs focus and all screen events until released.
@@ -518,14 +513,14 @@ class DatePickerDialog:
     at the top-right corner of the widget.
 
     The bootstyle api may be used to change the style of the widget.
-    The available colors include -> primary, secondary, success, 
-    info, warning, danger, light, dark.     
+    The available colors include -> primary, secondary, success,
+    info, warning, danger, light, dark.
     """
 
     def __init__(
         self,
         parent=None,
-        title='',
+        title="",
         firstweekday=6,
         startdate=None,
         bootstyle=PRIMARY,
@@ -534,33 +529,33 @@ class DatePickerDialog:
         Parameters:
 
             parent (Widget):
-                The parent widget; the popup will appear to the 
-                bottom-right of the parent widget. If no parent is 
+                The parent widget; the popup will appear to the
+                bottom-right of the parent widget. If no parent is
                 provided, the widget is centered on the screen.
 
             title (str):
                 The text that appears on the titlebar.
 
             firstweekday (int):
-                Specifies the first day of the week. 0=Monday, 
+                Specifies the first day of the week. 0=Monday,
                 1=Tuesday, etc...
 
             startdate (datetime):
-                The date to be in focus when the widget is 
+                The date to be in focus when the widget is
                 displayed.
 
             bootstyle (str):
-                The following colors can be used to change the color of 
-                the title and hover / pressed color -> primary, 
-                secondary, info, warning, success, danger, light, dark.            
+                The following colors can be used to change the color of
+                the title and hover / pressed color -> primary,
+                secondary, info, warning, success, danger, light, dark.
         """
-        self.parent = parent
+        self.parent = parent or _get_default_root()
         self.root = ttk.Toplevel(
             title=title,
             transient=self.parent,
             resizable=(False, False),
             topmost=True,
-            minsize=(226, 1)
+            minsize=(226, 1),
         )
         self.firstweekday = firstweekday
         self.startdate = startdate or datetime.today().date()
@@ -581,10 +576,7 @@ class DatePickerDialog:
         """Setup the calendar widget"""
         # create the widget containers
         self.frm_calendar = ttk.Frame(
-            master=self.root,
-            padding=0,
-            borderwidth=1,
-            relief=RAISED
+            master=self.root, padding=0, borderwidth=1, relief=RAISED
         )
         self.frm_calendar.pack(fill=BOTH, expand=YES)
         self.frm_title = ttk.Frame(self.frm_calendar, padding=(3, 3))
@@ -606,9 +598,9 @@ class DatePickerDialog:
 
     def _update_widget_bootstyle(self):
         self.frm_title.configure(bootstyle=self.bootstyle)
-        self.title.configure(bootstyle=f'{self.bootstyle}-inverse')
-        self.prev_period.configure(style=f'Chevron.{self.bootstyle}.TButton')
-        self.next_period.configure(style=f'Chevron.{self.bootstyle}.TButton')
+        self.title.configure(bootstyle=f"{self.bootstyle}-inverse")
+        self.prev_period.configure(style=f"Chevron.{self.bootstyle}.TButton")
+        self.next_period.configure(style=f"Chevron.{self.bootstyle}.TButton")
 
     def _draw_calendar(self):
         self._update_widget_bootstyle()
@@ -626,21 +618,22 @@ class DatePickerDialog:
                         text=self.monthdates[row][col].day,
                         anchor=CENTER,
                         padding=5,
-                        bootstyle=SECONDARY
-                    ).grid(
-                        row=row, column=col, sticky=NSEW
-                    )
+                        bootstyle=SECONDARY,
+                    ).grid(row=row, column=col, sticky=NSEW)
                 else:
-                    if all([
-                        day == self.date_selected.day,
-                        self.date.month == self.date_selected.month,
-                        self.date.year == self.date_selected.year
-                    ]):
-                        day_style = 'secondary-toolbutton'
+                    if all(
+                        [
+                            day == self.date_selected.day,
+                            self.date.month == self.date_selected.month,
+                            self.date.year == self.date_selected.year,
+                        ]
+                    ):
+                        day_style = "secondary-toolbutton"
                     else:
-                        day_style = f'{self.bootstyle}-calendar'
+                        day_style = f"{self.bootstyle}-calendar"
 
-                    def selected(x=row, y=col): self._on_date_selected(x, y)
+                    def selected(x=row, y=col):
+                        self._on_date_selected(x, y)
 
                     btn = ttk.Radiobutton(
                         master=self.frm_dates,
@@ -649,7 +642,7 @@ class DatePickerDialog:
                         text=day,
                         bootstyle=day_style,
                         padding=5,
-                        command=selected
+                        command=selected,
                     )
                     btn.grid(row=row, column=col, sticky=NSEW)
 
@@ -660,14 +653,12 @@ class DatePickerDialog:
 
         In addition to the previous and next MONTH commands that are
         assigned to the button press, a "right-click" event is assigned
-        to each button that causes the calendar to move to the previous 
+        to each button that causes the calendar to move to the previous
         and next YEAR.
         """
         # create and pack the title and action buttons
         self.prev_period = ttk.Button(
-            master=self.frm_title,
-            text='«',
-            command=self.on_prev_month
+            master=self.frm_title, text="«", command=self.on_prev_month
         )
         self.prev_period.pack(side=LEFT)
 
@@ -675,21 +666,21 @@ class DatePickerDialog:
             master=self.frm_title,
             textvariable=self.titlevar,
             anchor=CENTER,
-            font='-size 10 -weight bold'
+            font="-size 10 -weight bold",
         )
         self.title.pack(side=LEFT, fill=X, expand=YES)
 
         self.next_period = ttk.Button(
             master=self.frm_title,
-            text='»',
+            text="»",
             command=self.on_next_month,
         )
         self.next_period.pack(side=LEFT)
 
         # bind "year" callbacks to action buttons
-        self.prev_period.bind('<Button-3>', self.on_prev_year, '+')
-        self.next_period.bind('<Button-3>', self.on_next_year, '+')
-        self.title.bind('<Button-1>', self.on_reset_date)
+        self.prev_period.bind("<Button-3>", self.on_prev_year, "+")
+        self.next_period.bind("<Button-3>", self.on_next_year, "+")
+        self.title.bind("<Button-1>", self.on_reset_date)
 
         # create and pack days of the week header
         for col in self._header_columns():
@@ -698,12 +689,8 @@ class DatePickerDialog:
                 text=col,
                 anchor=CENTER,
                 padding=5,
-                bootstyle=(SECONDARY, INVERSE)
-            ).pack(
-                side=LEFT,
-                fill=X,
-                expand=YES
-            )
+                bootstyle=(SECONDARY, INVERSE),
+            ).pack(side=LEFT, fill=X, expand=YES)
 
     def _set_title(self):
         _titledate = f'{self.date.strftime("%B %Y")}'
@@ -711,21 +698,19 @@ class DatePickerDialog:
 
     def _current_month_days(self):
         """Fetch the day numbers and dates for all days in the current
-        month. `monthdays` is a list of days as integers, and 
+        month. `monthdays` is a list of days as integers, and
         `monthdates` is a list of `datetime` objects.
         """
         self.monthdays = self.calendar.monthdayscalendar(
-            year=self.date.year,
-            month=self.date.month
+            year=self.date.year, month=self.date.month
         )
         self.monthdates = self.calendar.monthdatescalendar(
-            year=self.date.year,
-            month=self.date.month
+            year=self.date.year, month=self.date.month
         )
 
     def _header_columns(self):
         """Create and return a list of weekdays to be used as a header
-        in the calendar. The order of the weekdays is based on the 
+        in the calendar. The order of the weekdays is based on the
         `firstweekday` property.
 
         Returns:
@@ -733,24 +718,24 @@ class DatePickerDialog:
             List[str]:
                 A list of weekday column names for the calendar header.
         """
-        weekdays = ['Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa', 'Su']
-        header = weekdays[self.firstweekday:] + weekdays[:self.firstweekday]
+        weekdays = ["Mo", "Tu", "We", "Th", "Fr", "Sa", "Su"]
+        header = weekdays[self.firstweekday :] + weekdays[: self.firstweekday]
         return header
 
     def _on_date_selected(self, row, col):
         """Callback for selecting a date.
 
         An index is assigned to each date button that corresponds to
-        the dates in the `monthdates` matrix. When the user clicks a 
-        button to select a date, the index from this button is used 
-        to lookup the date value of the button based on the row and 
-        column index reference. This value is saved in the 
+        the dates in the `monthdates` matrix. When the user clicks a
+        button to select a date, the index from this button is used
+        to lookup the date value of the button based on the row and
+        column index reference. This value is saved in the
         `date_selected` property and the `Toplevel` is destroyed.
 
         Parameters:
 
             index (Tuple[int, int]):
-                A row and column index of the date selected; to be 
+                A row and column index of the date selected; to be
                 found in the `monthdates` matrix.
 
         Returns:
@@ -768,6 +753,7 @@ class DatePickerDialog:
             func(self, *args)
             self.frm_dates.destroy()
             self._draw_calendar()
+
         return inner
 
     @_selection_callback
@@ -809,11 +795,11 @@ class DatePickerDialog:
         if self.parent:
             xpos = self.parent.winfo_rootx() + self.parent.winfo_width()
             ypos = self.parent.winfo_rooty() + self.parent.winfo_height()
-            self.root.geometry(f'+{xpos}+{ypos}')
+            self.root.geometry(f"+{xpos}+{ypos}")
         else:
             xpos = self.root.winfo_screenwidth() // 2 - width
             ypos = self.root.winfo_screenheight() // 2 - height
-            self.root.geometry(f'+{xpos}+{ypos}')
+            self.root.geometry(f"+{xpos}+{ypos}")
 
 
 class FontDialog(Dialog):
@@ -821,45 +807,45 @@ class FontDialog(Dialog):
     """A dialog that displays a variety of options for choosing a font.
 
     This dialog constructs and returns a `Font` object based on the
-    options selected by the user. The initial font is based on OS 
+    options selected by the user. The initial font is based on OS
     settings and will vary.
 
-    The font object is returned when the **Ok** button is pressed and 
+    The font object is returned when the **Ok** button is pressed and
     can be passed to any widget that accepts a _font_ configuration
-    option.       
+    option.
     """
 
-    def __init__(self, title='Font Selector', parent=None):
+    def __init__(self, title="Font Selector", parent=None):
         super().__init__(parent=parent, title=title)
         self._style = ttk.Style()
-        self._default = font.nametofont('TkDefaultFont')
+        self._default = font.nametofont("TkDefaultFont")
         self._actual = self._default.actual()
-        self._size = ttk.Variable(value=self._actual['size'])
-        self._family = ttk.Variable(value=self._actual['family'])
-        self._slant = ttk.Variable(value=self._actual['slant'])
-        self._weight = ttk.Variable(value=self._actual['weight'])
-        self._overstrike = ttk.Variable(value=self._actual['overstrike'])
-        self._underline = ttk.Variable(value=self._actual['underline'])
+        self._size = ttk.Variable(value=self._actual["size"])
+        self._family = ttk.Variable(value=self._actual["family"])
+        self._slant = ttk.Variable(value=self._actual["slant"])
+        self._weight = ttk.Variable(value=self._actual["weight"])
+        self._overstrike = ttk.Variable(value=self._actual["overstrike"])
+        self._underline = ttk.Variable(value=self._actual["underline"])
         self._preview_font = font.Font()
         self._slant.trace_add("write", self._update_font_preview)
         self._weight.trace_add("write", self._update_font_preview)
         self._overstrike.trace_add("write", self._update_font_preview)
         self._underline.trace_add("write", self._update_font_preview)
 
-        _headingfont = font.nametofont('TkHeadingFont')
-        _headingfont.configure(weight='bold')
+        _headingfont = font.nametofont("TkHeadingFont")
+        _headingfont.configure(weight="bold")
 
         self._update_font_preview()
 
         self._families = []
         for f in font.families():
-            if f and not f.startswith('@') and 'emoji' not in f.lower():
+            if f and not f.startswith("@") and "emoji" not in f.lower():
                 self._families.append(f)
 
     def create_body(self, master):
         width = utility.scale_size(master, 600)
         height = utility.scale_size(master, 375)
-        self._toplevel.geometry(f'{width}x{height}')
+        self._toplevel.geometry(f"{width}x{height}")
 
         family_size_frame = ttk.Frame(master, padding=10)
         family_size_frame.pack(fill=X, anchor=N)
@@ -874,18 +860,18 @@ class FontDialog(Dialog):
 
         ok_btn = ttk.Button(
             master=container,
-            bootstyle='primary',
-            text='OK',
-            command=self._on_submit
+            bootstyle="primary",
+            text="OK",
+            command=self._on_submit,
         )
         ok_btn.pack(side=RIGHT, padx=5)
         ok_btn.bind("<Return>", lambda _: ok_btn.invoke())
 
         cancel_btn = ttk.Button(
             master=container,
-            bootstyle='secondary',
-            text='Cancel',
-            command=self._on_cancel
+            bootstyle="secondary",
+            text="Cancel",
+            command=self._on_cancel,
         )
         cancel_btn.pack(side=RIGHT, padx=5)
         cancel_btn.bind("<Return>", lambda _: cancel_btn.invoke())
@@ -894,13 +880,13 @@ class FontDialog(Dialog):
         container = ttk.Frame(master)
         container.pack(fill=BOTH, expand=YES, side=LEFT)
 
-        header = ttk.Label(container, text='Font Family', font='TkHeadingFont')
+        header = ttk.Label(container, text="Font Family", font="TkHeadingFont")
         header.pack(fill=X, pady=(0, 2), anchor=N)
 
         listbox = ttk.Treeview(
             master=container,
             height=5,
-            show='',
+            show="",
             columns=[0],
         )
         listbox.column(0, width=utility.scale_size(listbox, 250))
@@ -910,47 +896,49 @@ class FontDialog(Dialog):
             container,
             command=listbox.yview,
             orient=VERTICAL,
-            bootstyle='rounded'
+            bootstyle="rounded",
         )
         listbox_vbar.pack(side=RIGHT, fill=Y)
         listbox.configure(yscrollcommand=listbox_vbar.set)
 
         for f in self._families:
-            listbox.insert('', iid=f, index=END, tags=[f], values=[f])
+            listbox.insert("", iid=f, index=END, tags=[f], values=[f])
             listbox.tag_configure(f, font=(f, self._size.get()))
 
         iid = self._family.get()
         listbox.selection_set(iid)  # select default value
         listbox.see(iid)  # ensure default is visible
-        listbox.bind("<<TreeviewSelect>>",
-                     lambda e: self._on_select_font_family(e))
+        listbox.bind(
+            "<<TreeviewSelect>>", lambda e: self._on_select_font_family(e)
+        )
         return listbox
 
     def _font_size_selector(self, master):
         container = ttk.Frame(master)
         container.pack(side=LEFT, fill=Y, padx=(10, 0))
 
-        header = ttk.Label(container, text='Size', font='TkHeadingFont')
+        header = ttk.Label(container, text="Size", font="TkHeadingFont")
         header.pack(fill=X, pady=(0, 2), anchor=N)
 
-        sizes_listbox = ttk.Treeview(container, height=7, columns=[0], show='')
+        sizes_listbox = ttk.Treeview(container, height=7, columns=[0], show="")
         sizes_listbox.column(0, width=utility.scale_size(sizes_listbox, 24))
 
         sizes = [*range(8, 12), *range(12, 30, 2), 36, 48, 72]
         for s in sizes:
-            sizes_listbox.insert('', iid=s, index=END, values=[s])
+            sizes_listbox.insert("", iid=s, index=END, values=[s])
 
         iid = self._size.get()
         sizes_listbox.selection_set(iid)
         sizes_listbox.see(iid)
-        sizes_listbox.bind("<<TreeviewSelect>>",
-                           lambda e: self._on_select_font_size(e))
+        sizes_listbox.bind(
+            "<<TreeviewSelect>>", lambda e: self._on_select_font_size(e)
+        )
 
         sizes_listbox_vbar = ttk.Scrollbar(
             master=container,
             orient=VERTICAL,
             command=sizes_listbox.yview,
-            bootstyle='round'
+            bootstyle="round",
         )
         sizes_listbox.configure(yscrollcommand=sizes_listbox_vbar.set)
         sizes_listbox.pack(side=LEFT, fill=Y, expand=YES, anchor=N)
@@ -964,17 +952,17 @@ class FontDialog(Dialog):
         weight_lframe.pack(side=LEFT, fill=X, expand=YES)
         opt_normal = ttk.Radiobutton(
             master=weight_lframe,
-            text='normal',
-            value='normal',
-            variable=self._weight
+            text="normal",
+            value="normal",
+            variable=self._weight,
         )
         opt_normal.invoke()
         opt_normal.pack(side=LEFT, padx=5, pady=5)
         opt_bold = ttk.Radiobutton(
             master=weight_lframe,
-            text='bold',
-            value='bold',
-            variable=self._weight
+            text="bold",
+            value="bold",
+            variable=self._weight,
         )
         opt_bold.pack(side=LEFT, padx=5, pady=5)
 
@@ -982,32 +970,28 @@ class FontDialog(Dialog):
         slant_lframe.pack(side=LEFT, fill=X, padx=10, expand=YES)
         opt_roman = ttk.Radiobutton(
             master=slant_lframe,
-            text='roman',
-            value='roman',
-            variable=self._slant
+            text="roman",
+            value="roman",
+            variable=self._slant,
         )
         opt_roman.invoke()
         opt_roman.pack(side=LEFT, padx=5, pady=5)
         opt_italic = ttk.Radiobutton(
             master=slant_lframe,
-            text='italic',
-            value='italic',
-            variable=self._slant
+            text="italic",
+            value="italic",
+            variable=self._slant,
         )
         opt_italic.pack(side=LEFT, padx=5, pady=5)
 
         effects_lframe = ttk.Labelframe(container, text="Effects", padding=5)
         effects_lframe.pack(side=LEFT, padx=(2, 0), fill=X, expand=YES)
         opt_underline = ttk.Checkbutton(
-            master=effects_lframe,
-            text='underline',
-            variable=self._underline
+            master=effects_lframe, text="underline", variable=self._underline
         )
         opt_underline.pack(side=LEFT, padx=5, pady=5)
         opt_overstrike = ttk.Checkbutton(
-            master=effects_lframe,
-            text='overstrike',
-            variable=self._overstrike
+            master=effects_lframe, text="overstrike", variable=self._overstrike
         )
         opt_overstrike.pack(side=LEFT, padx=5, pady=5)
 
@@ -1023,7 +1007,7 @@ class FontDialog(Dialog):
             master=container,
             height=3,
             font=self._preview_font,
-            highlightbackground=self._style.colors.primary
+            highlightbackground=self._style.colors.primary,
         )
         self._preview_text.insert(END, content)
         self._preview_text.pack(fill=BOTH, expand=YES)
@@ -1060,7 +1044,7 @@ class FontDialog(Dialog):
             size=size,
             slant=slant,
             overstrike=overstrike,
-            underline=underline
+            underline=underline,
         )
         try:
             self._preview_text.configure(font=self._preview_font)
@@ -1070,14 +1054,14 @@ class FontDialog(Dialog):
 
 
 class Messagebox:
-    """This class contains various static methods that show popups with 
+    """This class contains various static methods that show popups with
     a message to the end user with various arrangments of buttons
     and alert options."""
 
     @staticmethod
     def ok(message, title=None, alert=False, parent=None, **kwargs):
         """Display a modal dialog box with an OK button and and optional
-        bell alert. 
+        bell alert.
 
         Parameters:
 
@@ -1096,7 +1080,7 @@ class Messagebox:
                 Makes the window the logical parent of the message box. The
                 message box is displayed on top of its parent window.
 
-            **kwargs (Dict): 
+            **kwargs (Dict):
                 Other optional keyword arguments.
         """
         sd = MessageDialog(
@@ -1104,8 +1088,8 @@ class Messagebox:
             message=message,
             parent=parent,
             alert=alert,
-            buttons=['OK:primary'],
-            **kwargs
+            buttons=["OK:primary"],
+            **kwargs,
         )
         sd.show()
 
@@ -1131,7 +1115,7 @@ class Messagebox:
                 Makes the window the logical parent of the message box. The
                 message box is displayed on top of its parent window.
 
-            **kwargs (Dict): 
+            **kwargs (Dict):
                 Other optional keyword arguments.
 
         Returns:
@@ -1141,11 +1125,7 @@ class Messagebox:
                 window is closed without pressing a button.
         """
         sd = MessageDialog(
-            title=title,
-            message=message,
-            parent=parent,
-            alert=alert,
-            **kwargs
+            title=title, message=message, parent=parent, alert=alert, **kwargs
         )
         sd.show()
         return sd.result
@@ -1172,7 +1152,7 @@ class Messagebox:
                 Makes the window the logical parent of the message box. The
                 message box is displayed on top of its parent window.
 
-            **kwargs (Dict): 
+            **kwargs (Dict):
                 Other optional keyword arguments.
 
         Returns:
@@ -1185,9 +1165,9 @@ class Messagebox:
             title=title,
             message=message,
             parent=parent,
-            buttons=['No', 'Yes:primary'],
+            buttons=["No", "Yes:primary"],
             alert=alert,
-            **kwargs
+            **kwargs,
         )
         sd.show()
         return sd.result
@@ -1225,8 +1205,8 @@ class Messagebox:
             message=message,
             parent=parent,
             alert=alert,
-            buttons=['Cancel', 'No', 'Yes:primary'],
-            **kwargs
+            buttons=["Cancel", "No", "Yes:primary"],
+            **kwargs,
         )
         sd.show()
         return sd.result
@@ -1253,7 +1233,7 @@ class Messagebox:
                 Makes the window the logical parent of the message box. The
                 message box is displayed on top of its parent window.
 
-            **kwargs (Dict): 
+            **kwargs (Dict):
                 Other optional keyword arguments.
 
         Returns:
@@ -1267,48 +1247,48 @@ class Messagebox:
             message=message,
             parent=parent,
             alert=alert,
-            buttons=['Cancel', 'Retry:primary'],
-            **kwargs
+            buttons=["Cancel", "Retry:primary"],
+            **kwargs,
         )
         sd.show()
         return sd.result
 
 
 class Querybox:
-    """This class contains various static methods that request data 
+    """This class contains various static methods that request data
     from the end user."""
 
     @staticmethod
     def get_date(
         parent=None,
-        title='',
+        title="",
         firstweekday=6,
         startdate=None,
-        bootstyle='primary'
+        bootstyle="primary",
     ):
         """Shows a calendar popup and returns the selection.
 
         Parameters:
 
             parent (Widget):
-                The parent widget; the popup will appear to the 
-                bottom-right of the parent widget. If no parent is 
-                provided, the widget is centered on the screen. 
+                The parent widget; the popup will appear to the
+                bottom-right of the parent widget. If no parent is
+                provided, the widget is centered on the screen.
 
             title (str):
                 The text that appears on the popup titlebar.
 
             firstweekday (int):
-                Specifies the first day of the week. `0` is Monday, `6` is 
-                Sunday (the default). 
+                Specifies the first day of the week. `0` is Monday, `6` is
+                Sunday (the default).
 
             startdate (datetime):
-                The date to be in focus when the widget is displayed; 
+                The date to be in focus when the widget is displayed;
 
             bootstyle (str):
                 The following colors can be used to change the color of the
                 title and hover / pressed color -> primary, secondary, info,
-                warning, success, danger, light, dark.       
+                warning, success, danger, light, dark.
 
         Returns:
 
@@ -1320,19 +1300,20 @@ class Querybox:
             title=title,
             firstweekday=firstweekday,
             startdate=startdate,
-            bootstyle=bootstyle
+            bootstyle=bootstyle,
         )
         return chooser.date_selected
 
     @staticmethod
-    def get_string(prompt='', title=None, initialvalue=None, parent=None,
-                   **kwargs):
+    def get_string(
+        prompt="", title=None, initialvalue=None, parent=None, **kwargs
+    ):
         """Request a string type input from the user.
 
         Parameters:
 
             prompt (str):
-                A message to display in the message box above the entry 
+                A message to display in the message box above the entry
                 widget.
 
             title (str):
@@ -1355,21 +1336,29 @@ class Querybox:
             str:
                 The string value of the entry widget.
         """
-        initialvalue = initialvalue or ''
-        dialog = QueryDialog(prompt, title, initialvalue, parent=parent,
-                             **kwargs)
+        initialvalue = initialvalue or ""
+        dialog = QueryDialog(
+            prompt, title, initialvalue, parent=parent, **kwargs
+        )
         dialog.show()
         return dialog._result
 
     @staticmethod
-    def get_integer(prompt='', title=None, initialvalue=None, minvalue=None,
-                    maxvalue=None, parent=None, **kwargs):
+    def get_integer(
+        prompt="",
+        title=None,
+        initialvalue=None,
+        minvalue=None,
+        maxvalue=None,
+        parent=None,
+        **kwargs,
+    ):
         """Request an integer type input from the user.
 
         Parameters:
 
             prompt (str):
-                A message to display in the message box above the entry 
+                A message to display in the message box above the entry
                 widget.
 
             title (str):
@@ -1398,21 +1387,36 @@ class Querybox:
             int:
                 The integer value of the entry widget.
         """
-        initialvalue = initialvalue or ''
-        dialog = QueryDialog(prompt, title, initialvalue, minvalue, maxvalue,
-                             datatype=int, parent=parent, **kwargs)
+        initialvalue = initialvalue or ""
+        dialog = QueryDialog(
+            prompt,
+            title,
+            initialvalue,
+            minvalue,
+            maxvalue,
+            datatype=int,
+            parent=parent,
+            **kwargs,
+        )
         dialog.show()
         return dialog._result
 
     @staticmethod
-    def get_float(prompt='', title=None, initialvalue=None, minvalue=None,
-                  maxvalue=None, parent=None, **kwargs):
+    def get_float(
+        prompt="",
+        title=None,
+        initialvalue=None,
+        minvalue=None,
+        maxvalue=None,
+        parent=None,
+        **kwargs,
+    ):
         """Request a float type input from the user.
 
         Parameters:
 
             prompt (str):
-                A message to display in the message box above the entry 
+                A message to display in the message box above the entry
                 widget.
 
             title (str):
@@ -1441,9 +1445,17 @@ class Querybox:
             float:
                 The float value of the entry widget.
         """
-        initialvalue = initialvalue or ''
-        dialog = QueryDialog(prompt, title, initialvalue, minvalue, maxvalue,
-                             datatype=float, parent=parent, **kwargs)
+        initialvalue = initialvalue or ""
+        dialog = QueryDialog(
+            prompt,
+            title,
+            initialvalue,
+            minvalue,
+            maxvalue,
+            datatype=float,
+            parent=parent,
+            **kwargs,
+        )
         dialog.show()
         return dialog._result
 
