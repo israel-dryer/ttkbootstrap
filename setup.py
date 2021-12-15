@@ -1,7 +1,3 @@
-"""
-Because I'm using importlib.resources, which did not exist until python 3.7, this does not support < 3.7 unless I can
-figure out another method for importing package resources.
-"""
 import setuptools
 
 long_description = """
@@ -29,6 +25,6 @@ setuptools.setup(
     package_dir={"": "src"},
     packages=setuptools.find_packages(where="src"),
     include_package_data=True,
-    install_requires=["pillow>=8.2.0"],
+    install_requires=["pillow>=8.2.0", "black>=21.12b0"],
     python_requires=">=3.6",
 )
