@@ -13,6 +13,7 @@ from tkinter import font
 import ttkbootstrap as ttk
 from ttkbootstrap import utility
 from tkinter import _get_default_root
+from ttkbootstrap.icons import Icon
 from ttkbootstrap.constants import *
 
 
@@ -181,6 +182,7 @@ class MessageDialog(Dialog):
         alert=False,
         default=None,
         padding=(20, 20),
+        icon=None,
     ):
         """
         Parameters:
@@ -232,6 +234,10 @@ class MessageDialog(Dialog):
                 The amount of space between the border and the widget
                 contents.
 
+            icon (str): 
+                A base64 image from the icons Property. `Icons.warning`,
+                `Icons.info`, etc...
+
         Example:
 
             ```python
@@ -249,20 +255,26 @@ class MessageDialog(Dialog):
         self._alert = alert
         self._default = (default,)
         self._padding = padding
+        self._icon = icon
 
     def create_body(self, master):
         """Overrides the parent method; adds the message section."""
-        frame = ttk.Frame(master, padding=self._padding)
+        if self._icon:
+            container = ttk.Frame(master, padding=self._padding)
+            self._img = ttk.PhotoImage(data=self._icon)
+            icon_lbl = ttk.Label(container, image=self._img)
+            icon_lbl.pack(side=LEFT, padx=5)
+
         if self._message:
-            for i, msg in enumerate(self._message.split("\n")):
+            for msg in self._message.split("\n"):
                 message = "\n".join(textwrap.wrap(msg, width=self._width))
-                message_label = ttk.Label(frame, text=message)
-                message_label.pack(pady=(0, 5), fill=X, anchor=N)
-        frame.pack(fill=X, expand=True)
+                message_label = ttk.Label(container, text=message)
+                message_label.pack(pady=(0, 3), fill=X, anchor=N)
+        container.pack(fill=X, expand=True)
 
     def create_buttonbox(self, master):
         """Overrides the parent method; adds the message buttonbox"""
-        frame = ttk.Frame(master, padding=(5, 10))
+        frame = ttk.Frame(master, padding=(5, 5))
 
         button_list = []
 
@@ -277,7 +289,7 @@ class MessageDialog(Dialog):
             btn = ttk.Button(frame, bootstyle=bootstyle, text=text)
             btn.bind("<Return>", lambda _: btn.invoke())
             btn.configure(command=lambda b=btn: self.on_button_press(b))
-            btn.pack(padx=5, side=RIGHT)
+            btn.pack(padx=2, side=RIGHT)
             btn.lower()  # set focus traversal left-to-right
             button_list.append(btn)
 
@@ -1480,3 +1492,7 @@ class Querybox:
         dialog = FontDialog(parent=parent, **kwargs)
         dialog.show()
         return dialog.result
+
+
+if __name__ == '__main__':
+    MessageDialog("You are ok", icon=Icon.info).show()
