@@ -182,7 +182,7 @@ class MessageDialog(Dialog):
         alert=False,
         default=None,
         padding=(20, 20),
-        icon=None,
+        icon=None
     ):
         """
         Parameters:
@@ -234,7 +234,7 @@ class MessageDialog(Dialog):
                 The amount of space between the border and the widget
                 contents.
 
-            icon (str): 
+            icon (str):
                 A base64 image from the icons Property. `Icons.warning`,
                 `Icons.info`, etc...
 
@@ -259,8 +259,8 @@ class MessageDialog(Dialog):
 
     def create_body(self, master):
         """Overrides the parent method; adds the message section."""
+        container = ttk.Frame(master, padding=self._padding)
         if self._icon:
-            container = ttk.Frame(master, padding=self._padding)
             self._img = ttk.PhotoImage(data=self._icon)
             icon_lbl = ttk.Label(container, image=self._img)
             icon_lbl.pack(side=LEFT, padx=5)
@@ -1071,6 +1071,153 @@ class Messagebox:
     and alert options."""
 
     @staticmethod
+    def show_info(message, title=None, parent=None, **kwargs):
+        """Display a modal dialog box with an OK button and an INFO
+        icon.
+
+        Parameters:
+
+            message (str):
+                A message to display in the message box.
+
+            title (str):
+                The string displayed as the title of the messagebox. This
+                option is ignored on Mac OS X, where platform guidelines
+                forbid the use of a title on this kind of dialog.
+
+            parent (Union[Window, Toplevel]):
+                Makes the window the logical parent of the message box. The
+                message box is displayed on top of its parent window.
+
+            **kwargs (Dict):
+                Other optional keyword arguments.
+        """
+        sd = MessageDialog(
+            message=message,
+            title=title,
+            parent=parent,
+            buttons=["OK:primary"],
+            icon=Icon.info,
+            **kwargs,
+        )
+        sd.show()
+
+    @staticmethod
+    def show_warning(message, title=None, parent=None, **kwargs):
+        """Display a modal dialog box with an OK button and a
+        warning icon. Also will ring the display bell.
+
+        Parameters:
+
+            message (str):
+                A message to display in the message box.
+
+            title (str):
+                The string displayed as the title of the messagebox. This
+                option is ignored on Mac OS X, where platform guidelines
+                forbid the use of a title on this kind of dialog.
+
+            parent (Union[Window, Toplevel]):
+                Makes the window the logical parent of the message box. The
+                message box is displayed on top of its parent window.
+
+            **kwargs (Dict):
+                Other optional keyword arguments.
+        """
+        sd = MessageDialog(
+            message=message,
+            title=title,
+            parent=parent,
+            buttons=["OK:primary"],
+            icon=Icon.warning,
+            alert=True,
+            **kwargs,
+        )
+        sd.show()
+
+    @staticmethod
+    def show_error(message, title=None, parent=None, **kwargs):
+        """Display a modal dialog box with an OK button and an
+        error icon. Also will ring the display bell.
+
+        Parameters:
+
+            message (str):
+                A message to display in the message box.
+
+            title (str):
+                The string displayed as the title of the messagebox. This
+                option is ignored on Mac OS X, where platform guidelines
+                forbid the use of a title on this kind of dialog.
+
+            parent (Union[Window, Toplevel]):
+                Makes the window the logical parent of the message box. The
+                message box is displayed on top of its parent window.
+
+            **kwargs (Dict):
+                Other optional keyword arguments.
+        """
+        sd = MessageDialog(
+            message=message,
+            title=title,
+            parent=parent,
+            buttons=["OK:primary"],
+            icon=Icon.error,
+            alert=True,
+            **kwargs,
+        )
+        sd.show()
+
+    @staticmethod
+    def show_question(
+        message,
+        title=None,
+        parent=None,
+        buttons=["No:secondary", "Yes:primary"],
+        **kwargs,
+    ):
+        """Display a modal dialog box with an OK button and an
+        error icon. Also will ring the display bell.
+
+        Parameters:
+
+            message (str):
+                A message to display in the message box.
+
+            title (str):
+                The string displayed as the title of the messagebox. This
+                option is ignored on Mac OS X, where platform guidelines
+                forbid the use of a title on this kind of dialog.
+
+            parent (Union[Window, Toplevel]):
+                Makes the window the logical parent of the message box. The
+                message box is displayed on top of its parent window.
+
+            buttons (List[str]):
+                A list of buttons to appear at the bottom of the popup
+                messagebox. The buttons can be a list of strings which
+                will define the symbolic name and the button text.
+                `['OK', 'Cancel']`. Alternatively, you can assign a
+                bootstyle to each button by using the colon to separate the
+                button text and the bootstyle. If no colon is found, then
+                the style is set to 'primary' by default.
+                `['Yes:success','No:danger']`.
+
+            **kwargs (Dict):
+                Other optional keyword arguments.
+        """
+        sd = MessageDialog(
+            message=message,
+            title=title,
+            parent=parent,
+            buttons=buttons,
+            icon=Icon.question,
+            alert=True,
+            **kwargs,
+        )
+        sd.show()
+
+    @staticmethod
     def ok(message, title=None, alert=False, parent=None, **kwargs):
         """Display a modal dialog box with an OK button and and optional
         bell alert.
@@ -1494,5 +1641,5 @@ class Querybox:
         return dialog.result
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     MessageDialog("You are ok", icon=Icon.info).show()
