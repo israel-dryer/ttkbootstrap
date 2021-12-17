@@ -1,12 +1,20 @@
+from tkinter import Message
 from ttkbootstrap.dialogs import Querybox, Messagebox
 from ttkbootstrap.icons import Icon
 
-Messagebox.ok("Do you want to continue?", icon=Icon.question)
-Messagebox.retrycancel("Should I retry?")
-Messagebox.okcancel("A message here")
-Messagebox.show_error("You did this wrong!")
-Messagebox.show_info("This is an info message")
-Messagebox.show_warning("This is a warning message")
-Messagebox.show_question("Do you want to continue?")
-Querybox.get_date()
-Querybox.get_font()
+Messagebox.ok("Messagebox.ok")
+# Messagebox.okcancel("Messagebox.okcancel")
+# Messagebox.retrycancel("Messagebox.retrycancel")
+# Messagebox.yesno("Messagebox.yesno")
+# Messagebox.yesnocancel("Messagebox.yesnocancel")
+
+# Messagebox.show_error("Messagebox.show_error")
+# Messagebox.show_info("Messagebox.show_info")
+# Messagebox.show_question("Messagebox.show_question")
+# Messagebox.show_warning("Messagebox.show_warning")
+
+# Querybox.get_date(title="Querybox.get_date")
+# Querybox.get_float("Querybox.get_float")
+# Querybox.get_integer("Querybox.get_integer")
+# Querybox.get_string("Querybox.get_string")
+# Querybox.get_font(title="Querybox.get_font")
