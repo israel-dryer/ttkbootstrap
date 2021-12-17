@@ -589,7 +589,7 @@ class DatePickerDialog:
         """Setup the calendar widget"""
         # create the widget containers
         self.frm_calendar = ttk.Frame(
-            master=self.root, padding=0, borderwidth=1, relief=RAISED
+            master=self.root, padding=0, borderwidth=0, relief=FLAT
         )
         self.frm_calendar.pack(fill=BOTH, expand=YES)
         self.frm_title = ttk.Frame(self.frm_calendar, padding=(3, 3))
@@ -732,7 +732,7 @@ class DatePickerDialog:
                 A list of weekday column names for the calendar header.
         """
         weekdays = ["Mo", "Tu", "We", "Th", "Fr", "Sa", "Su"]
-        header = weekdays[self.firstweekday :] + weekdays[: self.firstweekday]
+        header = weekdays[self.firstweekday:] + weekdays[: self.firstweekday]
         return header
 
     def _on_date_selected(self, row, col):
