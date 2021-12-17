@@ -25,9 +25,9 @@ class Window(tkinter.Tk):
     """
 
     def __init__(
-        self, 
-        title='ttkbootstrap', 
-        themename='litera', 
+        self,
+        title='ttkbootstrap',
+        themename='litera',
         iconphoto=None,
         size=None,
         position=None,
@@ -39,7 +39,7 @@ class Window(tkinter.Tk):
         transient=None,
         overrideredirect=False,
         alpha=1.0
-        ):
+    ):
         """
         Parameters:
 
@@ -53,7 +53,7 @@ class Window(tkinter.Tk):
             iconphoto (PhotoImage):
                 The titlebar icon. This image is applied to all future
                 toplevels as well.    
-           
+
             size (Tuple[int, int]):
                 The width and height of the application window. 
                 Internally, this argument is passed to the 
@@ -110,9 +110,9 @@ class Window(tkinter.Tk):
         """
         if hdpi:
             utility.enable_high_dpi_awareness()
-        
+
         super().__init__()
-        
+
         if scaling:
             utility.enable_high_dpi_awareness(self, scaling)
 
@@ -126,7 +126,7 @@ class Window(tkinter.Tk):
         if position:
             xpos, ypos = position
             self.geometry(f'+{xpos}+{ypos}')
-        if minsize: 
+        if minsize:
             width, height = minsize
             self.minsize(width, height)
         if maxsize:
@@ -140,8 +140,7 @@ class Window(tkinter.Tk):
         if overrideredirect:
             self.overrideredirect(1)
         if alpha:
-            self.attributes('-alpha', alpha)                             
-
+            self.attributes('-alpha', alpha)
 
         self._style = Style(themename)
 
@@ -173,8 +172,8 @@ class Toplevel(tkinter.Toplevel):
     """
 
     def __init__(
-        self, 
-        title='ttkbootstrap', 
+        self,
+        title='ttkbootstrap',
         iconphoto=None,
         height=None,
         width=None,
@@ -187,8 +186,9 @@ class Toplevel(tkinter.Toplevel):
         windowtype=None,
         topmost=False,
         toolwindow=False,
-        alpha=1.0
-        ):
+        alpha=1.0,
+        **kwargs
+    ):
         """
         Parameters:
 
@@ -198,7 +198,7 @@ class Toplevel(tkinter.Toplevel):
             iconphoto (PhotoImage):
                 The titlebar icon. This image is applied to all future
                 toplevels as well.
-           
+
             height (int):
                 Specifies the desired height for the window.
 
@@ -259,8 +259,11 @@ class Toplevel(tkinter.Toplevel):
                 On Windows, specifies the alpha transparency level of the 
                 toplevel. Where not supported, alpha remains at 1.0. Internally,
                 this is processed as `Toplevel.attributes('-alpha', alpha)`.
+
+            **kwargs (Dict):
+                Other optional keyword arguments.
         """
-        super().__init__()
+        super().__init__(**kwargs)
         self._icon = iconphoto or tkinter.PhotoImage(data=Icon.icon)
         self.iconphoto(True, self._icon)
         self.title(title)
@@ -268,7 +271,7 @@ class Toplevel(tkinter.Toplevel):
         if position:
             xpos, ypos = position
             self.geometry(f'+{xpos}+{ypos}')
-        if minsize: 
+        if minsize:
             width, height = minsize
             self.minsize(width, height)
         if maxsize:
@@ -312,5 +315,5 @@ if __name__ == '__main__':
 
     top = Toplevel(title="My Toplevel", toolwindow=True, alpha=0.4)
     top.position_center()
-    
+
     root.mainloop()
