@@ -182,7 +182,7 @@ class MessageDialog(Dialog):
         alert=False,
         default=None,
         padding=(20, 20),
-        icon=None
+        icon=None,
     ):
         """
         Parameters:
@@ -527,6 +527,7 @@ class DatePickerDialog:
     The bootstyle api may be used to change the style of the widget.
     The available colors include -> primary, secondary, success,
     info, warning, danger, light, dark.
+
     """
 
     def __init__(
@@ -825,6 +826,8 @@ class FontDialog(Dialog):
     The font object is returned when the **Ok** button is pressed and
     can be passed to any widget that accepts a _font_ configuration
     option.
+
+    ![](../../assets/dialogs/querybox-get-font.png)
     """
 
     def __init__(self, title="Font Selector", parent=None):
@@ -1075,6 +1078,8 @@ class Messagebox:
         """Display a modal dialog box with an OK button and an INFO
         icon.
 
+        ![](../../assets/dialogs/messagebox-show-info.png)
+
         Parameters:
 
             message (str):
@@ -1106,6 +1111,8 @@ class Messagebox:
     def show_warning(message, title=None, parent=None, **kwargs):
         """Display a modal dialog box with an OK button and a
         warning icon. Also will ring the display bell.
+
+        ![](../../assets/dialogs/messagebox-show-warning.png)
 
         Parameters:
 
@@ -1139,6 +1146,8 @@ class Messagebox:
     def show_error(message, title=None, parent=None, **kwargs):
         """Display a modal dialog box with an OK button and an
         error icon. Also will ring the display bell.
+
+        ![](../../assets/dialogs/messagebox-show-error.png)
 
         Parameters:
 
@@ -1176,8 +1185,11 @@ class Messagebox:
         buttons=["No:secondary", "Yes:primary"],
         **kwargs,
     ):
-        """Display a modal dialog box with an OK button and an
-        error icon. Also will ring the display bell.
+        """Display a modal dialog box with yes, no buttons and a
+        question icon. Also will ring the display bell. You may also
+        change the button scheme using the `buttons` parameter.
+
+        ![](../../assets/dialogs/messagebox-show-question.png)
 
         Parameters:
 
@@ -1205,6 +1217,12 @@ class Messagebox:
 
             **kwargs (Dict):
                 Other optional keyword arguments.
+
+        Returns:
+
+            Union[str, None]:
+                The symbolic name of the button pressed, or None if the
+                window is closed without pressing a button.
         """
         sd = MessageDialog(
             message=message,
@@ -1216,11 +1234,14 @@ class Messagebox:
             **kwargs,
         )
         sd.show()
+        return sd.result
 
     @staticmethod
     def ok(message, title=None, alert=False, parent=None, **kwargs):
         """Display a modal dialog box with an OK button and and optional
         bell alert.
+
+        ![](../../assets/dialogs/messagebox-ok.png)
 
         Parameters:
 
@@ -1256,6 +1277,8 @@ class Messagebox:
     def okcancel(message, title=None, alert=False, parent=None, **kwargs):
         """Displays a modal dialog box with OK and Cancel buttons and
         return the symbolic name of the button pressed.
+
+        ![](../../assets/dialogs/messagebox-ok-cancel.png)
 
         Parameters:
 
@@ -1293,6 +1316,8 @@ class Messagebox:
     def yesno(message, title=None, alert=False, parent=None, **kwargs):
         """Display a modal dialog box with YES and NO buttons and return
         the symbolic name of the button pressed.
+
+        ![](../../assets/dialogs/messagebox-yes-no.png)
 
         Parameters:
 
@@ -1336,6 +1361,8 @@ class Messagebox:
         """Display a modal dialog box with YES, NO, and Cancel buttons,
         and return the symbolic name of the button pressed.
 
+        ![](../../assets/dialogs/messagebox-yes-no-cancel.png)
+
         Parameters:
 
             message (str):
@@ -1374,6 +1401,8 @@ class Messagebox:
     def retrycancel(message, title=None, alert=False, parent=None, **kwargs):
         """Display a modal dialog box with RETRY and Cancel buttons;
         returns the symbolic name of the button pressed.
+
+        ![](../../assets/dialogs/messagebox-retry-cancel.png)
 
         Parameters:
 
@@ -1427,6 +1456,8 @@ class Querybox:
     ):
         """Shows a calendar popup and returns the selection.
 
+        ![](../../assets/dialogs/querybox-get-date.png)
+
         Parameters:
 
             parent (Widget):
@@ -1468,6 +1499,8 @@ class Querybox:
         prompt="", title=None, initialvalue=None, parent=None, **kwargs
     ):
         """Request a string type input from the user.
+
+        ![](../../assets/dialogs/querybox-get-string.png)
 
         Parameters:
 
@@ -1513,6 +1546,8 @@ class Querybox:
         **kwargs,
     ):
         """Request an integer type input from the user.
+
+        ![](../../assets/dialogs/querybox-get-integer.png)
 
         Parameters:
 
@@ -1572,6 +1607,8 @@ class Querybox:
     ):
         """Request a float type input from the user.
 
+        ![](../../assets/dialogs/querybox-get-float.png)
+
         Parameters:
 
             prompt (str):
@@ -1621,6 +1658,8 @@ class Querybox:
     @staticmethod
     def get_font(parent=None, **kwargs):
         """Request a customized font
+
+        ![](../../assets/dialogs/querybox-get-font.png)
 
         Parameters:
 
