@@ -11,8 +11,8 @@ from ttkbootstrap import utility
 
 class Window(tkinter.Tk):
     """A class that wraps the tkinter.Tk class in order to provide a
-    more convenient api with additional bells and whistles. For more 
-    information on how to use the inherited `Tk` methods, see the 
+    more convenient api with additional bells and whistles. For more
+    information on how to use the inherited `Tk` methods, see the
     [tcl/tk documentation](https://tcl.tk/man/tcl8.6/TkCmd/wm.htm)
     and the [Python documentation](https://docs.python.org/3/library/tkinter.html#tkinter.Tk).
 
@@ -26,8 +26,8 @@ class Window(tkinter.Tk):
 
     def __init__(
         self,
-        title='ttkbootstrap',
-        themename='litera',
+        title="ttkbootstrap",
+        themename="litera",
         iconphoto=None,
         size=None,
         position=None,
@@ -38,7 +38,7 @@ class Window(tkinter.Tk):
         scaling=None,
         transient=None,
         overrideredirect=False,
-        alpha=1.0
+        alpha=1.0,
     ):
         """
         Parameters:
@@ -47,32 +47,32 @@ class Window(tkinter.Tk):
                 The title that appears on the application titlebar.
 
             themename (str):
-                The name of the ttkbootstrap theme to apply to the 
+                The name of the ttkbootstrap theme to apply to the
                 application.
 
             iconphoto (PhotoImage):
                 The titlebar icon. This image is applied to all future
-                toplevels as well.    
+                toplevels as well.
 
             size (Tuple[int, int]):
-                The width and height of the application window. 
-                Internally, this argument is passed to the 
+                The width and height of the application window.
+                Internally, this argument is passed to the
                 `Window.geometry` method.
 
             position (Tuple[int, int]):
-                The horizontal and vertical position of the window on 
+                The horizontal and vertical position of the window on
                 the screen relative to the top-left coordinate.
-                Internally this is passed to the `Window.geometry` 
+                Internally this is passed to the `Window.geometry`
                 method.
 
             minsize (Tuple[int, int]):
                 Specifies the minimum permissible dimensions for the
-                window. Internally, this argument is passed to the 
+                window. Internally, this argument is passed to the
                 `Window.minsize` method.
 
             maxsize (Tuple[int, int]):
                 Specifies the maximum permissible dimensions for the
-                window. Internally, this argument is passed to the 
+                window. Internally, this argument is passed to the
                 `Window.maxsize` method.
 
             resizable (Tuple[bool, bool]):
@@ -87,11 +87,11 @@ class Window(tkinter.Tk):
                 enabled by default.
 
             scaling (float):
-                Sets the current scaling factor used by Tk to convert 
-                between physical units (for example, points, inches, or 
-                millimeters) and pixels. The number argument is a 
-                floating point number that specifies the number of pixels 
-                per point on window's display. 
+                Sets the current scaling factor used by Tk to convert
+                between physical units (for example, points, inches, or
+                millimeters) and pixels. The number argument is a
+                floating point number that specifies the number of pixels
+                per point on window's display.
 
             transient (Union[Tk, Widget]):
                 Instructs the window manager that this widget is
@@ -100,13 +100,13 @@ class Window(tkinter.Tk):
 
             overrideredirect (bool):
                 Instructs the window manager to ignore this widget if
-                True. Internally, this argument is passed to the 
-                `Window.overrideredirect(1)` method.   
+                True. Internally, this argument is passed to the
+                `Window.overrideredirect(1)` method.
 
             alpha (float):
-                On Windows, specifies the alpha transparency level of the 
+                On Windows, specifies the alpha transparency level of the
                 toplevel. Where not supported, alpha remains at 1.0. Internally,
-                this is processed as `Toplevel.attributes('-alpha', alpha)`.        
+                this is processed as `Toplevel.attributes('-alpha', alpha)`.
         """
         if hdpi:
             utility.enable_high_dpi_awareness()
@@ -122,10 +122,10 @@ class Window(tkinter.Tk):
 
         if size:
             width, height = size
-            self.geometry(f'{width}x{height}')
+            self.geometry(f"{width}x{height}")
         if position:
             xpos, ypos = position
-            self.geometry(f'+{xpos}+{ypos}')
+            self.geometry(f"+{xpos}+{ypos}")
         if minsize:
             width, height = minsize
             self.minsize(width, height)
@@ -140,7 +140,7 @@ class Window(tkinter.Tk):
         if overrideredirect:
             self.overrideredirect(1)
         if alpha:
-            self.attributes('-alpha', alpha)
+            self.attributes("-alpha", alpha)
 
         self._style = Style(themename)
 
@@ -153,13 +153,13 @@ class Window(tkinter.Tk):
         """Position the window in the center of the screen. Does not
         account for the titlebar when placing the window.
         """
-        self.eval('tk::PlaceWindow . center')
+        self.eval("tk::PlaceWindow . center")
 
 
 class Toplevel(tkinter.Toplevel):
-    """A class that wraps the tkinter.Toplevel class in order to 
-    provide a more convenient api with additional bells and whistles. 
-    For more information on how to use the inherited `Toplevel` 
+    """A class that wraps the tkinter.Toplevel class in order to
+    provide a more convenient api with additional bells and whistles.
+    For more information on how to use the inherited `Toplevel`
     methods, see the [tcl/tk documentation](https://tcl.tk/man/tcl8.6/TkCmd/toplevel.htm)
     and the [Python documentation](https://docs.python.org/3/library/tkinter.html#tkinter.Toplevel).
 
@@ -173,7 +173,7 @@ class Toplevel(tkinter.Toplevel):
 
     def __init__(
         self,
-        title='ttkbootstrap',
+        title="ttkbootstrap",
         iconphoto=None,
         height=None,
         width=None,
@@ -187,7 +187,7 @@ class Toplevel(tkinter.Toplevel):
         topmost=False,
         toolwindow=False,
         alpha=1.0,
-        **kwargs
+        **kwargs,
     ):
         """
         Parameters:
@@ -206,19 +206,19 @@ class Toplevel(tkinter.Toplevel):
                 Specifies the desired width for the window.
 
             position (Tuple[int, int]):
-                The horizontal and vertical position of the window on 
+                The horizontal and vertical position of the window on
                 the screen relative to the top-left coordinate.
-                Internally this is passed to the `Toplevel.geometry` 
+                Internally this is passed to the `Toplevel.geometry`
                 method.
 
             minsize (Tuple[int, int]):
                 Specifies the minimum permissible dimensions for the
-                window. Internally, this argument is passed to the 
+                window. Internally, this argument is passed to the
                 `Toplevel.minsize` method.
 
             maxsize (Tuple[int, int]):
                 Specifies the maximum permissible dimensions for the
-                window. Internally, this argument is passed to the 
+                window. Internally, this argument is passed to the
                 `Toplevel.maxsize` method.
 
             resizable (Tuple[bool, bool]):
@@ -239,7 +239,7 @@ class Toplevel(tkinter.Toplevel):
                 `Toplevel.overrideredirect(1)`.
 
             windowtype (str):
-                On X11, requests that the window should be interpreted by 
+                On X11, requests that the window should be interpreted by
                 the window manager as being of the specified type. Internally,
                 this is passed to the `Toplevel.attributes('-type', windowtype)`.
 
@@ -247,16 +247,16 @@ class Toplevel(tkinter.Toplevel):
                 for a list of available options.
 
             topmost (bool):
-                Specifies whether this is a topmost window (displays above all 
+                Specifies whether this is a topmost window (displays above all
                 other windows). Internally, this processed by the window as
                 `Toplevel.attributes('-topmost', 1)`.
 
             toolwindow (bool):
-                On Windows, specifies a toolwindow style. Internally, this is 
+                On Windows, specifies a toolwindow style. Internally, this is
                 processed as `Toplevel.attributes('-toolwindow', 1)`.
 
             alpha (float):
-                On Windows, specifies the alpha transparency level of the 
+                On Windows, specifies the alpha transparency level of the
                 toplevel. Where not supported, alpha remains at 1.0. Internally,
                 this is processed as `Toplevel.attributes('-alpha', alpha)`.
 
@@ -264,13 +264,15 @@ class Toplevel(tkinter.Toplevel):
                 Other optional keyword arguments.
         """
         super().__init__(**kwargs)
-        self._icon = iconphoto or tkinter.PhotoImage(data=Icon.icon)
-        self.iconphoto(True, self._icon)
+        if iconphoto:
+            self._icon = iconphoto or tkinter.PhotoImage(data=Icon.icon)
+            self.iconphoto(False, self._icon)
+
         self.title(title)
 
         if position:
             xpos, ypos = position
-            self.geometry(f'+{xpos}+{ypos}')
+            self.geometry(f"+{xpos}+{ypos}")
         if minsize:
             width, height = minsize
             self.minsize(width, height)
@@ -285,13 +287,13 @@ class Toplevel(tkinter.Toplevel):
         if overrideredirect:
             self.overrideredirect(1)
         if windowtype:
-            self.attributes('-type', windowtype)
+            self.attributes("-type", windowtype)
         if topmost:
-            self.attributes('-topmost', 1)
+            self.attributes("-topmost", 1)
         if toolwindow:
-            self.attributes('-toolwindow', 1)
+            self.attributes("-toolwindow", 1)
         if alpha:
-            self.attributes('-alpha', alpha)
+            self.attributes("-alpha", alpha)
 
     @property
     def style(self):
@@ -304,12 +306,12 @@ class Toplevel(tkinter.Toplevel):
         """
         winfoid = hex(self.winfo_id())
         pathname = self.winfo_pathname(winfoid)
-        self.tk.eval(f'tk::PlaceWindow {pathname} center')
+        self.tk.eval(f"tk::PlaceWindow {pathname} center")
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
 
-    root = Window(themename='superhero')
+    root = Window(themename="superhero")
     root.update_idletasks()
     root.position_center()
 
