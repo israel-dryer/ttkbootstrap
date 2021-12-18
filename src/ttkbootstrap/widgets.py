@@ -55,12 +55,13 @@ TK_WIDGETS = (
     tk.Radiobutton,
     tk.Entry,
     tk.Scale,
-    tk.Spinbox,
     tk.Listbox,
     tk.Menu,
     tk.Menubutton,
     tk.LabelFrame,
     tk.Canvas,
+    tk.OptionMenu,
+    tk.Spinbox,
 )
 
 
