@@ -1379,6 +1379,9 @@ class Messagebox:
             parent (Union[Window, Toplevel]):
                 Makes the window the logical parent of the message box. The
                 message box is displayed on top of its parent window.
+                
+            **kwargs (Dict):
+                Optional keyword arguments.
 
         Returns:
 
