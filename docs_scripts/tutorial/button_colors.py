@@ -1,16 +1,13 @@
-import tkinter as tk
 import ttkbootstrap as ttk
-from ttkbootstrap import utility
-utility.enable_high_dpi_awareness()
+from ttkbootstrap.constants import *
 
-root = tk.Tk()
-style = ttk.Style()
+app = ttk.Window()
 
 frame = ttk.Frame(padding=10)
 frame.pack(padx=10, pady=10)
 
-for color in style.colors:
+for color in app.style.colors:
     b = ttk.Button(frame, text=color, bootstyle=color)
-    b.pack(side=tk.LEFT, padx=5, pady=5)
+    b.pack(side=LEFT, padx=5, pady=5)
 
-root.mainloop()
+app.mainloop()
