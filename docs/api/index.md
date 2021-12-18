@@ -43,8 +43,8 @@ and [Style](style/style.md) classes to provide a more
 convenient api for initial application startup. This also applies to the
 `Toplevel` class.  
 
-❯ [Window](window/#ttkbootstrap.window.Window)  
-❯ [Toplevel](window/#ttkbootstrap.window.Toplevel)  
+❯ [Window](window/window)  
+❯ [Toplevel](window/toplevel)   
 
 ## 😉 [icons module](icons.md)
 This module contains classes that provide emojis or image icons for your
