@@ -2,26 +2,16 @@
 from pathlib import Path
 from itertools import cycle
 import ttkbootstrap as ttk
+from ttkbootstrap.constants import *
 from PIL import Image, ImageTk, ImageSequence
 
 
-class AnimatedGif(ttk.Toplevel):
-
-    def __init__(self):
-        super().__init__(
-            title="Animated GIF", 
-            width=400, 
-            height=300, 
-            overrideredirect=True,
-        )
-        self.withdraw()
-        self.position_center()
-
-        # bind the escape key to exit the application
-        self.bind('<Escape>', lambda _: self.destroy())
+class AnimatedGif(ttk.Frame):
+    def __init__(self, master):
+        super().__init__(master, width=400, height=300)
 
         # open the GIF and create a cycle iterator
-        file_path = Path(__file__).parent / 'images/spinners.gif'
+        file_path = Path(__file__).parent / "assets/spinners.gif"
         with Image.open(file_path) as im:
             # create a sequence
             sequence = ImageSequence.Iterator(im)
@@ -29,10 +19,10 @@ class AnimatedGif(ttk.Toplevel):
             self.image_cycle = cycle(images)
 
             # length of each frame
-            self.framerate = im.info['duration']
+            self.framerate = im.info["duration"]
 
         self.img_container = ttk.Label(self, image=next(self.image_cycle))
-        self.img_container.pack(fill='both', expand='yes')
+        self.img_container.pack(fill="both", expand="yes")
         self.after(self.framerate, self.next_frame)
 
     def next_frame(self):
@@ -41,12 +31,11 @@ class AnimatedGif(ttk.Toplevel):
         self.after(self.framerate, self.next_frame)
 
 
-if __name__ == '__main__':
-    
-    app = ttk.Window('Animated GIF Demo', themename="superhero")
+if __name__ == "__main__":
 
-    btn = ttk.Button(app, text="Play GIF", command=lambda:AnimatedGif())
-    btn.pack(padx=20, pady=20)
+    app = ttk.Window("Animated GIF", themename="superhero")
+
+    gif = AnimatedGif(app)
+    gif.pack(fill=BOTH, expand=YES)
 
     app.mainloop()
-
