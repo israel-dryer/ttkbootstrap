@@ -1,18 +1,3 @@
-# Validate user input
-
-Any widget that derives from `Entry` has the ability to validate the user input. When 
-the widget is in an **invalid** state, the border color changes to a **danger** color.
-
-![invalid entry](../assets/cookbook/entry-validation.gif)
-
-In this example, the validation type is `focus`, which means that the validation
-function is run everytime the widget receives or loses focus. There are several
-other types of validation, and many ways to configure the validation. A future
-tutorial will discuss this in more detail, but in the meantime, you can consult
-the [tcl/tk documentation](https://tcl.tk/man/tcl8.6/TkCmd/ttk_entry.htm) for more 
-information on what is available for validation.
-
-```python
 import ttkbootstrap as ttk
 from ttkbootstrap.constants import *
 
@@ -54,4 +39,3 @@ let_entry = ttk.Entry(frame, validate="focus", validatecommand=(alpha_func, '%P'
 let_entry.pack(padx=10, pady=10, expand=True)
 
 root.mainloop()
-```
