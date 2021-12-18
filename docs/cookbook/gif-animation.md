@@ -4,7 +4,7 @@ This example demonstrates how to animate a gif in the window while
 keeping the window responsive to user input by scheduling updates
 to the label image from a list of images.
 
-![gif animation](../assets/cookbook/gif-animation.gif)
+![gif animation](../assets/cookbook/animated-gif.gif)
 
 ```python
 # https://dribbble.com/shots/1237618--Gif-Spinner

@@ -116,5 +116,5 @@ nav:
     - gallery/textreader.md
   - Cookbook: 
     - cookbook/index.md
-    - cookbook/validate-user-input.md
     - cookbook/gif-animation.md
+    - cookbook/validate-user-input.md
