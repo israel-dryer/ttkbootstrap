@@ -7,7 +7,7 @@ utility.enable_high_dpi_awareness()
 root = tk.Tk()
 root.geometry('500x500')
 root.title('ttkbootstrap')
-style = ttk.Style('superhero')
+style = ttk.Style()
 
 def change_style():
     theme = choice(style.theme_names())

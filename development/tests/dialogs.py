@@ -2,7 +2,7 @@ from tkinter import Message
 from ttkbootstrap.dialogs import Querybox, Messagebox
 from ttkbootstrap.icons import Icon
 
-Messagebox.ok("Messagebox.ok")
+# Messagebox.ok("Messagebox.ok")
 # Messagebox.okcancel("Messagebox.okcancel")
 # Messagebox.retrycancel("Messagebox.retrycancel")
 # Messagebox.yesno("Messagebox.yesno")
@@ -10,7 +10,8 @@ Messagebox.ok("Messagebox.ok")
 
 # Messagebox.show_error("Messagebox.show_error")
 # Messagebox.show_info("Messagebox.show_info")
-# Messagebox.show_question("Messagebox.show_question")
+result = Messagebox.show_question("Messagebox.show_question")
+print(result)
 # Messagebox.show_warning("Messagebox.show_warning")
 
 # Querybox.get_date(title="Querybox.get_date")
