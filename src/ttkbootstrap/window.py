@@ -16,6 +16,8 @@ class Window(tkinter.Tk):
     [tcl/tk documentation](https://tcl.tk/man/tcl8.6/TkCmd/wm.htm)
     and the [Python documentation](https://docs.python.org/3/library/tkinter.html#tkinter.Tk).
 
+    ![](../../assets/window/window-toplevel.png)        
+
     Examples:
 
         ```python
@@ -162,6 +164,8 @@ class Toplevel(tkinter.Toplevel):
     For more information on how to use the inherited `Toplevel`
     methods, see the [tcl/tk documentation](https://tcl.tk/man/tcl8.6/TkCmd/toplevel.htm)
     and the [Python documentation](https://docs.python.org/3/library/tkinter.html#tkinter.Toplevel).
+
+    ![](../../assets/window/window-toplevel.png)    
 
     Examples:
 
