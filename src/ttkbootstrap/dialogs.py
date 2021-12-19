@@ -535,7 +535,7 @@ class DatePickerDialog:
     def __init__(
         self,
         parent=None,
-        title="",
+        title=" ",
         firstweekday=6,
         startdate=None,
         bootstyle=PRIMARY,
@@ -1454,7 +1454,7 @@ class Querybox:
     @staticmethod
     def get_date(
         parent=None,
-        title="",
+        title=" ",
         firstweekday=6,
         startdate=None,
         bootstyle="primary",
