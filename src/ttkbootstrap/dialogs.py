@@ -40,7 +40,7 @@ class Dialog(BaseWidget):
         BaseWidget._setup(self, parent, {})
         self._winsys = self.master.tk.call("tk", "windowingsystem")
         self._toplevel = None
-        self._title = title or ""
+        self._title = title or " "
         self._result = None
         self._alert = alert
         self._initial_focus = None
@@ -174,7 +174,7 @@ class MessageDialog(Dialog):
     def __init__(
         self,
         message,
-        title="",
+        title=" ",
         buttons=["Cancel:secondary", "OK:primary"],
         command=None,
         width=50,
@@ -333,7 +333,7 @@ class QueryDialog(Dialog):
     def __init__(
         self,
         prompt,
-        title="",
+        title=" ",
         initialvalue="",
         minvalue=None,
         maxvalue=None,
