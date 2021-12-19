@@ -12,15 +12,15 @@ from datetime import datetime
 from tkinter import font
 import ttkbootstrap as ttk
 from ttkbootstrap import utility
-from tkinter import _get_default_root
 from ttkbootstrap.icons import Icon
 from ttkbootstrap.constants import *
+from tkinter import BaseWidget
 
 
-class Dialog:
+class Dialog(BaseWidget):
     """A simple dialog base class."""
 
-    def __init__(self, parent=None, title=None, alert=False):
+    def __init__(self, parent=None, title="", alert=False):
         """
         Parameters:
 
@@ -37,10 +37,10 @@ class Dialog:
             alert (bool):
                 Ring the display's bell when the dialog is shown.
         """
-        self.master = parent or _get_default_root()
+        BaseWidget._setup(self, parent, {})
         self._winsys = self.master.tk.call("tk", "windowingsystem")
         self._toplevel = None
-        self._title = title or ""
+        self._title = title or " "
         self._result = None
         self._alert = alert
         self._initial_focus = None
@@ -174,7 +174,7 @@ class MessageDialog(Dialog):
     def __init__(
         self,
         message,
-        title=None,
+        title=" ",
         buttons=["Cancel:secondary", "OK:primary"],
         command=None,
         width=50,
@@ -247,7 +247,7 @@ class MessageDialog(Dialog):
             md.show()
             ```
         """
-        super().__init__(parent, title)
+        super().__init__(parent, title, alert)
         self._message = message
         self._buttons = buttons
         self._command = command
@@ -333,7 +333,7 @@ class QueryDialog(Dialog):
     def __init__(
         self,
         prompt,
-        title=None,
+        title=" ",
         initialvalue="",
         minvalue=None,
         maxvalue=None,
@@ -535,7 +535,7 @@ class DatePickerDialog:
     def __init__(
         self,
         parent=None,
-        title="",
+        title=" ",
         firstweekday=6,
         startdate=None,
         bootstyle=PRIMARY,
@@ -564,7 +564,7 @@ class DatePickerDialog:
                 the title and hover / pressed color -> primary,
                 secondary, info, warning, success, danger, light, dark.
         """
-        self.parent = parent or _get_default_root()
+        self.parent = parent
         self.root = ttk.Toplevel(
             title=title,
             transient=self.parent,
@@ -734,7 +734,7 @@ class DatePickerDialog:
                 A list of weekday column names for the calendar header.
         """
         weekdays = ["Mo", "Tu", "We", "Th", "Fr", "Sa", "Su"]
-        header = weekdays[self.firstweekday:] + weekdays[: self.firstweekday]
+        header = weekdays[self.firstweekday :] + weekdays[: self.firstweekday]
         return header
 
     def _on_date_selected(self, row, col):
@@ -1076,7 +1076,7 @@ class Messagebox:
     and alert options."""
 
     @staticmethod
-    def show_info(message, title=None, parent=None, **kwargs):
+    def show_info(message, title=" ", parent=None, **kwargs):
         """Display a modal dialog box with an OK button and an INFO
         icon.
 
@@ -1110,7 +1110,7 @@ class Messagebox:
         sd.show()
 
     @staticmethod
-    def show_warning(message, title=None, parent=None, **kwargs):
+    def show_warning(message, title=" ", parent=None, **kwargs):
         """Display a modal dialog box with an OK button and a
         warning icon. Also will ring the display bell.
 
@@ -1145,7 +1145,7 @@ class Messagebox:
         sd.show()
 
     @staticmethod
-    def show_error(message, title=None, parent=None, **kwargs):
+    def show_error(message, title=" ", parent=None, **kwargs):
         """Display a modal dialog box with an OK button and an
         error icon. Also will ring the display bell.
 
@@ -1182,7 +1182,7 @@ class Messagebox:
     @staticmethod
     def show_question(
         message,
-        title=None,
+        title=" ",
         parent=None,
         buttons=["No:secondary", "Yes:primary"],
         **kwargs,
@@ -1239,7 +1239,7 @@ class Messagebox:
         return sd.result
 
     @staticmethod
-    def ok(message, title=None, alert=False, parent=None, **kwargs):
+    def ok(message, title=" ", alert=False, parent=None, **kwargs):
         """Display a modal dialog box with an OK button and and optional
         bell alert.
 
@@ -1276,7 +1276,7 @@ class Messagebox:
         sd.show()
 
     @staticmethod
-    def okcancel(message, title=None, alert=False, parent=None, **kwargs):
+    def okcancel(message, title=" ", alert=False, parent=None, **kwargs):
         """Displays a modal dialog box with OK and Cancel buttons and
         return the symbolic name of the button pressed.
 
@@ -1315,7 +1315,7 @@ class Messagebox:
         return sd.result
 
     @staticmethod
-    def yesno(message, title=None, alert=False, parent=None, **kwargs):
+    def yesno(message, title=" ", alert=False, parent=None, **kwargs):
         """Display a modal dialog box with YES and NO buttons and return
         the symbolic name of the button pressed.
 
@@ -1359,7 +1359,7 @@ class Messagebox:
         return sd.result
 
     @staticmethod
-    def yesnocancel(message, title=None, alert=False, parent=None, **kwargs):
+    def yesnocancel(message, title=" ", alert=False, parent=None, **kwargs):
         """Display a modal dialog box with YES, NO, and Cancel buttons,
         and return the symbolic name of the button pressed.
 
@@ -1403,7 +1403,7 @@ class Messagebox:
         return sd.result
 
     @staticmethod
-    def retrycancel(message, title=None, alert=False, parent=None, **kwargs):
+    def retrycancel(message, title=" ", alert=False, parent=None, **kwargs):
         """Display a modal dialog box with RETRY and Cancel buttons;
         returns the symbolic name of the button pressed.
 
@@ -1454,7 +1454,7 @@ class Querybox:
     @staticmethod
     def get_date(
         parent=None,
-        title="",
+        title=" ",
         firstweekday=6,
         startdate=None,
         bootstyle="primary",
@@ -1501,7 +1501,7 @@ class Querybox:
 
     @staticmethod
     def get_string(
-        prompt="", title=None, initialvalue=None, parent=None, **kwargs
+        prompt="", title=" ", initialvalue=None, parent=None, **kwargs
     ):
         """Request a string type input from the user.
 
@@ -1543,7 +1543,7 @@ class Querybox:
     @staticmethod
     def get_integer(
         prompt="",
-        title=None,
+        title=" ",
         initialvalue=None,
         minvalue=None,
         maxvalue=None,
@@ -1603,7 +1603,7 @@ class Querybox:
     @staticmethod
     def get_float(
         prompt="",
-        title=None,
+        title=" ",
         initialvalue=None,
         minvalue=None,
         maxvalue=None,

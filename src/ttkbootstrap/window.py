@@ -16,7 +16,7 @@ class Window(tkinter.Tk):
     [tcl/tk documentation](https://tcl.tk/man/tcl8.6/TkCmd/wm.htm)
     and the [Python documentation](https://docs.python.org/3/library/tkinter.html#tkinter.Tk).
 
-    ![](../../assets/window/window-toplevel.png)        
+    ![](../../assets/window/window-toplevel.png)
 
     Examples:
 
@@ -118,8 +118,13 @@ class Window(tkinter.Tk):
         if scaling:
             utility.enable_high_dpi_awareness(self, scaling)
 
-        self._icon = iconphoto or tkinter.PhotoImage(data=Icon.icon)
-        self.iconphoto(True, self._icon)
+        try:
+            self._icon = iconphoto or tkinter.PhotoImage(data=Icon.icon)
+            self.iconphoto(True, self._icon)
+        except tkinter.TclError:
+            # icon photo has already been applied in previous window creation
+            pass
+
         self.title(title)
 
         if size:
@@ -165,7 +170,7 @@ class Toplevel(tkinter.Toplevel):
     methods, see the [tcl/tk documentation](https://tcl.tk/man/tcl8.6/TkCmd/toplevel.htm)
     and the [Python documentation](https://docs.python.org/3/library/tkinter.html#tkinter.Toplevel).
 
-    ![](../../assets/window/window-toplevel.png)    
+    ![](../../assets/window/window-toplevel.png)
 
     Examples:
 
