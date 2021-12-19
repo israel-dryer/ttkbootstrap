@@ -177,7 +177,10 @@ class ColorRow(ttk.Frame):
         self.entry.pack(side=LEFT, fill=X, expand=YES)
         self.entry.bind("<FocusOut>", self.enter_color)
         self.color_picker = ttk.Button(
-            master=self, text="🎨", bootstyle=SECONDARY, command=self.pick_color
+            master=self,
+            text="...",
+            bootstyle=SECONDARY,
+            command=self.pick_color,
         )
         self.color_picker.pack(side=LEFT, padx=2)
 
