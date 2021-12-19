@@ -25,7 +25,7 @@ and [Floodgauge](api/widgets/floodgauge). Additionally, [dialogs](api/dialogs/di
 are now themed and fully customizable.
 
 ✔️ [**Built-in Theme Creator:**](themes/themecreator.md)  
-Want to create your own theme? Easy! ttkboostrap includes a built-in 
+Want to create your own theme? Easy! ttkbootstrap includes a built-in 
 [theme creator](themes/themecreator.md) that enables you to easily build, 
 load, expore, and apply your own custom themes.
 
