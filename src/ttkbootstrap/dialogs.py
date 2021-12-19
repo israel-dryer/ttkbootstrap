@@ -20,7 +20,7 @@ from tkinter import BaseWidget
 class Dialog(BaseWidget):
     """A simple dialog base class."""
 
-    def __init__(self, parent=None, title=None, alert=False):
+    def __init__(self, parent=None, title="", alert=False):
         """
         Parameters:
 
@@ -174,7 +174,7 @@ class MessageDialog(Dialog):
     def __init__(
         self,
         message,
-        title=None,
+        title="",
         buttons=["Cancel:secondary", "OK:primary"],
         command=None,
         width=50,
@@ -247,7 +247,7 @@ class MessageDialog(Dialog):
             md.show()
             ```
         """
-        super().__init__(parent, title)
+        super().__init__(parent, title, alert)
         self._message = message
         self._buttons = buttons
         self._command = command
@@ -333,7 +333,7 @@ class QueryDialog(Dialog):
     def __init__(
         self,
         prompt,
-        title=None,
+        title="",
         initialvalue="",
         minvalue=None,
         maxvalue=None,
