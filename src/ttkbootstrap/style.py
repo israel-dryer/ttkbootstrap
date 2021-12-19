@@ -1030,7 +1030,11 @@ class StyleBuilderTTK:
             size (Union[int, List, Tuple]):
                 A single integer or an iterable of integers
         """
-        BASELINE = 1.33398982438864281
+        winsys = self.style.master.tk.call('tk', 'windowingsystem')
+        if winsys == 'aqua':
+            BASELINE = 1.000492368291482
+        else:
+            BASELINE = 1.33398982438864281
         scaling = self.style.master.tk.call("tk", "scaling")
         factor = scaling / BASELINE
 
