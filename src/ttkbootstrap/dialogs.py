@@ -1076,7 +1076,7 @@ class Messagebox:
     and alert options."""
 
     @staticmethod
-    def show_info(message, title=None, parent=None, **kwargs):
+    def show_info(message, title=" ", parent=None, **kwargs):
         """Display a modal dialog box with an OK button and an INFO
         icon.
 
@@ -1110,7 +1110,7 @@ class Messagebox:
         sd.show()
 
     @staticmethod
-    def show_warning(message, title=None, parent=None, **kwargs):
+    def show_warning(message, title=" ", parent=None, **kwargs):
         """Display a modal dialog box with an OK button and a
         warning icon. Also will ring the display bell.
 
@@ -1145,7 +1145,7 @@ class Messagebox:
         sd.show()
 
     @staticmethod
-    def show_error(message, title=None, parent=None, **kwargs):
+    def show_error(message, title=" ", parent=None, **kwargs):
         """Display a modal dialog box with an OK button and an
         error icon. Also will ring the display bell.
 
@@ -1182,7 +1182,7 @@ class Messagebox:
     @staticmethod
     def show_question(
         message,
-        title=None,
+        title=" ",
         parent=None,
         buttons=["No:secondary", "Yes:primary"],
         **kwargs,
@@ -1239,7 +1239,7 @@ class Messagebox:
         return sd.result
 
     @staticmethod
-    def ok(message, title=None, alert=False, parent=None, **kwargs):
+    def ok(message, title=" ", alert=False, parent=None, **kwargs):
         """Display a modal dialog box with an OK button and and optional
         bell alert.
 
@@ -1276,7 +1276,7 @@ class Messagebox:
         sd.show()
 
     @staticmethod
-    def okcancel(message, title=None, alert=False, parent=None, **kwargs):
+    def okcancel(message, title=" ", alert=False, parent=None, **kwargs):
         """Displays a modal dialog box with OK and Cancel buttons and
         return the symbolic name of the button pressed.
 
@@ -1315,7 +1315,7 @@ class Messagebox:
         return sd.result
 
     @staticmethod
-    def yesno(message, title=None, alert=False, parent=None, **kwargs):
+    def yesno(message, title=" ", alert=False, parent=None, **kwargs):
         """Display a modal dialog box with YES and NO buttons and return
         the symbolic name of the button pressed.
 
@@ -1359,7 +1359,7 @@ class Messagebox:
         return sd.result
 
     @staticmethod
-    def yesnocancel(message, title=None, alert=False, parent=None, **kwargs):
+    def yesnocancel(message, title=" ", alert=False, parent=None, **kwargs):
         """Display a modal dialog box with YES, NO, and Cancel buttons,
         and return the symbolic name of the button pressed.
 
@@ -1403,7 +1403,7 @@ class Messagebox:
         return sd.result
 
     @staticmethod
-    def retrycancel(message, title=None, alert=False, parent=None, **kwargs):
+    def retrycancel(message, title=" ", alert=False, parent=None, **kwargs):
         """Display a modal dialog box with RETRY and Cancel buttons;
         returns the symbolic name of the button pressed.
 
@@ -1501,7 +1501,7 @@ class Querybox:
 
     @staticmethod
     def get_string(
-        prompt="", title=None, initialvalue=None, parent=None, **kwargs
+        prompt="", title=" ", initialvalue=None, parent=None, **kwargs
     ):
         """Request a string type input from the user.
 
@@ -1543,7 +1543,7 @@ class Querybox:
     @staticmethod
     def get_integer(
         prompt="",
-        title=None,
+        title=" ",
         initialvalue=None,
         minvalue=None,
         maxvalue=None,
@@ -1603,7 +1603,7 @@ class Querybox:
     @staticmethod
     def get_float(
         prompt="",
-        title=None,
+        title=" ",
         initialvalue=None,
         minvalue=None,
         maxvalue=None,
