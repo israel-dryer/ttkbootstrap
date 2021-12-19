@@ -495,7 +495,7 @@ class Meter(ttk.Frame):
         stripethickness=0,
         textleft=None,
         textright=None,
-        textfont="-size 25 -weight bold",
+        textfont="-size 20 -weight bold",
         subtext=None,
         subtextstyle=DEFAULT,
         subtextfont="-size 10",
