@@ -1,9 +1,14 @@
-## Legacy support
+# Legacy support
 
-Some ttk widgets utilize existing tkinter widgets under the hood. For example: 
-there is a tkinter popdown list in the **Combobox**, and a legacy tkinter widget 
-inside the **OptionMenu**. To make sure these widgets don't stick out like a 
-sore thumb, I have applied default styling to ensure the look and feel is 
-consistent across the board.
+While `tkinter` widgets are not the focus of the library, I applied some default
+styling for each theme to legacy widgets so that they didn't stick out. A large
+reason for this is that several `ttk` widgets use `tkinter` widget components
+under the hood. So it was necessary to style these as well so that, for example, 
+the popdown list in the **Combobox**, or the **Menu** in the menubutton are
+styled appropriate.
 
-... add images here ...
+Below are examples of a light and dark themes using legacy `tkinter` widgets.
+
+![legacy light theme](../assets/themes/legacy_light.png)
+
+![legacy dark theme](../assets/themes/legacy_dark.png)
