@@ -681,7 +681,7 @@ class DatePickerDialog:
             master=self.frm_title,
             textvariable=self.titlevar,
             anchor=CENTER,
-            font="-size 10 -weight bold",
+            font="-weight bold",
         )
         self.title.pack(side=LEFT, fill=X, expand=YES)
 
