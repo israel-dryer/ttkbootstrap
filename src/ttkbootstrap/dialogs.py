@@ -12,12 +12,12 @@ from datetime import datetime
 from tkinter import font
 import ttkbootstrap as ttk
 from ttkbootstrap import utility
-from tkinter import _get_default_root
 from ttkbootstrap.icons import Icon
 from ttkbootstrap.constants import *
+from tkinter import BaseWidget
 
 
-class Dialog:
+class Dialog(BaseWidget):
     """A simple dialog base class."""
 
     def __init__(self, parent=None, title=None, alert=False):
@@ -37,7 +37,7 @@ class Dialog:
             alert (bool):
                 Ring the display's bell when the dialog is shown.
         """
-        self.master = parent or _get_default_root()
+        BaseWidget._setup(self, parent, {})
         self._winsys = self.master.tk.call("tk", "windowingsystem")
         self._toplevel = None
         self._title = title or ""
@@ -564,7 +564,7 @@ class DatePickerDialog:
                 the title and hover / pressed color -> primary,
                 secondary, info, warning, success, danger, light, dark.
         """
-        self.parent = parent or _get_default_root()
+        self.parent = parent
         self.root = ttk.Toplevel(
             title=title,
             transient=self.parent,
@@ -734,7 +734,7 @@ class DatePickerDialog:
                 A list of weekday column names for the calendar header.
         """
         weekdays = ["Mo", "Tu", "We", "Th", "Fr", "Sa", "Su"]
-        header = weekdays[self.firstweekday:] + weekdays[: self.firstweekday]
+        header = weekdays[self.firstweekday :] + weekdays[: self.firstweekday]
         return header
 
     def _on_date_selected(self, row, col):
