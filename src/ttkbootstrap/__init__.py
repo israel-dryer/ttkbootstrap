@@ -1076,7 +1076,7 @@ class StylerTTK:
         # up arrow
         vs_upim = Image.new('RGBA', (13, 13))
         up_draw = ImageDraw.Draw(vs_upim)
-        up_draw.text((1, 1), "▲", font=fnt,
+        up_draw.text((1, 1), "🞁", font=fnt,
                      fill=self.theme.colors.inputfg if self.theme.type == 'light' else
                      Colors.update_hsv(self.theme.colors.selectbg, vd=0.35, sd=-0.1))
         self.theme_images['vsup'] = ImageTk.PhotoImage(vs_upim)
@@ -1084,7 +1084,7 @@ class StylerTTK:
         # down arrow
         vsdown_im = Image.new('RGBA', (13, 13))
         down_draw = ImageDraw.Draw(vsdown_im)
-        down_draw.text((1, 1), "▼", font=fnt,
+        down_draw.text((1, 1), "🞃", font=fnt,
                        fill=self.theme.colors.inputfg if self.theme.type == 'light' else
                        Colors.update_hsv(self.theme.colors.selectbg, vd=0.35, sd=-0.1))
         self.theme_images['vsdown'] = ImageTk.PhotoImage(vsdown_im)
@@ -1092,7 +1092,7 @@ class StylerTTK:
         # left arrow
         hs_lfim = Image.new('RGBA', (13, 13))
         up_draw = ImageDraw.Draw(hs_lfim)
-        up_draw.text((1, 2), "◀", font=fnt,
+        up_draw.text((1, 2), "🞀", font=fnt,
                      fill=self.theme.colors.inputfg if self.theme.type == 'light' else
                      Colors.update_hsv(self.theme.colors.selectbg, vd=0.35, sd=-0.1))
         self.theme_images['hsleft'] = ImageTk.PhotoImage(hs_lfim)
@@ -1100,7 +1100,7 @@ class StylerTTK:
         # right arrow
         hs_rtim = Image.new('RGBA', (13, 13))
         up_draw = ImageDraw.Draw(hs_rtim)
-        up_draw.text((4, 1), "▶", font=fnt,
+        up_draw.text((4, 1), "🞂", font=fnt,
                      fill=self.theme.colors.inputfg if self.theme.type == 'light' else
                      Colors.update_hsv(self.theme.colors.selectbg, vd=0.35, sd=-0.1))
         self.theme_images['hsright'] = ImageTk.PhotoImage(hs_rtim)
