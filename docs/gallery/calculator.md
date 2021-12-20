@@ -14,7 +14,7 @@ The theme used in this example is **flatly**.
 | Equals    | `Button`  | success   |
 
 ## Example Code
-[Run this code live]() on repl.it
+[Run this code live](https://replit.com/@israel-dryer/calculator#main.py) on repl.it
 
 ```python
 import ttkbootstrap as ttk

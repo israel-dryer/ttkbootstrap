@@ -15,7 +15,7 @@ The theme used is **litera**.
 | Option group 3    | `CollapsingFrame` | success |
 
 ## Example Code
-[Run this code live]() on repl.it
+[Run this code live](https://replit.com/@israel-dryer/collapsing-frame#main.py) on repl.it
 
 ```python
 from pathlib import Path
