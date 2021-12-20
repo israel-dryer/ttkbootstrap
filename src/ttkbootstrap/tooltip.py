@@ -6,7 +6,7 @@ from ttkbootstrap import utility
 class Tooltip:
     """A tooltip popup window that shows text when the mouse is hovering
     over the widget and closes when the mouse is no longer hovering over
-    the widget. Clicking a mouse button will also
+    the widget. Clicking a mouse button will also close the tooltip.
 
     ![](../../assets/tooltip/tooltip.gif)
     """
