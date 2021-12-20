@@ -34,3 +34,9 @@ Source of [inspiration](https://bootswatch.com/yeti/)
 
 ![morph theme](../assets/themes/morph.png)
 Source of [inspiration](https://bootswatch.com/morph/)
+
+![simplex theme](../assets/themes/simplex.png)
+Source of [inspiration](https://bootswatch.com/simplex/)
+
+![cerculean theme](../assets/themes/cerculean.png)
+Source of [inspiration](https://bootswatch.com/cerulean/)
