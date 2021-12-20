@@ -497,7 +497,7 @@ class ColorRow(ttk.Frame):
 
         self.color_picker = ttk.Button(
             master=self,
-            text='🎨',
+            text='...',
             style='secondary.TButton',
             command=self.pick_color
         )
