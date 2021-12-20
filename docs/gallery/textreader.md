@@ -13,7 +13,7 @@ The theme applied is **sandstone**.
 | Browe button  | `Button`  | default |
 
 ## Example Code
-[Run this code live]() on repl.it
+[Run this code live](https://replit.com/@israel-dryer/text-reader#main.py) on repl.it
 
 ```python
 import ttkbootstrap as ttk

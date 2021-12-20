@@ -14,7 +14,7 @@ The theme used in this example is **pulse**.
 | Progressbar           | `Progressbar` | success-striped |
 
 ## Example Code
-[Run this code live]() on repl.it
+[Run this code live](https://replit.com/@israel-dryer/pc-cleaner#main.py) on repl.it
 
 ```python
 from pathlib import Path
