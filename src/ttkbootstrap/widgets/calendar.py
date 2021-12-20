@@ -266,7 +266,7 @@ class DateChooserPopup:
 
         # month and year title
         self.title_label = ttk.Label(self.tframe, textvariable=self.titlevar, anchor='center')
-        self.title_label.configure(style=self.styles['title'], font='helvetica 11')
+        self.title_label.configure(style=self.styles['title'])
         self.title_label.pack(side='left', fill='x', expand='yes')
         self.title_label.bind('<Button-1>', self.on_reset_date)
 
