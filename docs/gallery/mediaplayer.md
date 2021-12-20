@@ -16,7 +16,7 @@ The theme used in this example is **yeti**.
 
 
 ## Example Code
-[Run this code live]() on repl.it
+[Run this code live](https://replit.com/@israel-dryer/media-player#main.py) on repl.it
 
 ```python
 from pathlib import Path

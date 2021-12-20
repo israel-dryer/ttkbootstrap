@@ -18,7 +18,7 @@ The theme used in this example is **journal**.
 | Progressbar   | `Progressbar` | success           |
 
 ## Example Code
-[Run this code live]() on repl.it
+[Run this code live](https://replit.com/@israel-dryer/file-search-engine#main.py) on repl.it
 
 ```python
 import datetime

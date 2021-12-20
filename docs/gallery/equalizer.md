@@ -27,7 +27,7 @@ The theme used is **litera**.
     scale range.
 
 ## Example Code
-[Run this code live]() on repl.it
+[Run this code live](https://replit.com/@israel-dryer/equalizer#main.py) on repl.it
 
 ```python
 import ttkbootstrap as ttk
