@@ -29,6 +29,10 @@ Want to create your own theme? Easy! ttkbootstrap includes a built-in
 [theme creator](themes/themecreator.md) that enables you to easily build, 
 load, expore, and apply your own custom themes.
 
+!!! warning "Breaking changes in 1.0"
+    Version 1.0 is a complete rebuild of the library. If you are using [version 0.5](https://github.com/israel-dryer/ttkbootstrap/tree/version-0.5) you may run into issues trying to import themes with the themes.json as this has been removed from 1.0. You can now import and save themes directly using the ttkcreator.
+
+
 ## 🎨 Sample Themes
 
 ![themes](./assets/themes/themes.gif)
