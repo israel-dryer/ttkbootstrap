@@ -6,15 +6,15 @@ from ttkbootstrap import utility
 class Tooltip:
     """A tooltip popup window that shows text when the mouse is hovering
     over the widget and closes when the mouse is no longer hovering over
-    the widget.
+    the widget. Clicking a mouse button will also
 
-    [tooltip]()
+    ![](../../assets/tooltip/tooltip.gif)
     """
 
     def __init__(
         self,
         widget,
-        text,
+        text="widget info",
         bootstyle=None,
         wraplength=None,
         **kwargs,
@@ -46,6 +46,7 @@ class Tooltip:
             ```python
             import ttkbootstrap as ttk
             from ttkbootstrap.constants import *
+            from ttkbootstrap.tooltip import Tooltip
 
             app = ttk.Window()
             b1 = ttk.Button(app, text="default tooltip")
