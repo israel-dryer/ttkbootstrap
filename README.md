@@ -3,7 +3,7 @@ A collection of modern flat themes inspired by Bootstrap. Also includes **TTK Cr
 
 ### How to install
 ```python
-pip install ttkbootstrap
+python -m pip install ttkbootstrap==0.5.3
 ```
 
 ### Documentation
