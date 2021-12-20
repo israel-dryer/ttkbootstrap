@@ -10,7 +10,7 @@ distribution:
 
 .. code-block:: python
 
-    python -m pip install ttkbootstrap
+    python -m pip install ttkbootstrap==0.5.3
 
 This also installs ``pillow`` as a required dependency if it is not already installed. This library is used to handle
 some of the image processing used in ttkbootstrap.
@@ -20,17 +20,3 @@ some of the image processing used in ttkbootstrap.
     
     ``sudo apt-get install fonts-symbola``
     
-
-
-Source
-------
-You may also install using git.
-
-.. code-block:: python
-
-    python -m pip install git+https://github.com/israel-dryer/ttkbootstrap
-
-.. warning::
-
-    While installing from Source will give you the most up-to-date features, it is also more likely
-    to include developing and untested changes.
