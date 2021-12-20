@@ -482,12 +482,12 @@ class ColorRow(ttk.Frame):
         self.label = ttk.Label(self, text=color, width=12)
         self.label.pack(side=tk.LEFT)
 
-        colorvalue = self.style.theme.colors.get(color)
-        self.label.setvar(color, colorvalue)
+        self.color_value = self.style.theme.colors.get(color)
+        self.label.setvar(color, self.color_value)
 
         # patch frame with background of color value
         self.patch = tk.Frame(
-            self, background=colorvalue, width=15)
+            self, background=self.color_value, width=15)
         self.patch.pack(side=tk.LEFT, fill=tk.BOTH, padx=2)
 
         # entry for storing color value
@@ -508,7 +508,9 @@ class ColorRow(ttk.Frame):
 
     def pick_color(self):
         color = askcolor(color=self.getvar(self.colorname))
-        if not color:
+        if not color[0]:
+            return
+        if color[0] == self.color_value:
             return
         self.entry.delete(0, tk.END)
         self.entry.insert(tk.END, color[1])
@@ -516,7 +518,12 @@ class ColorRow(ttk.Frame):
             self.color_value = color[1]
             self.update_patch_color()
 
-    def enter_color(self, *args):
+    def enter_color(self, event):
+        color = event.widget.get()
+        if not color:
+            return
+        if color == self.color_value:
+            return
         try:
             self.update_patch_color()
         except:
