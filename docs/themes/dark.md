@@ -14,3 +14,6 @@ Source of [inspiration](https://bootswatch.com/darkly/)
 ![cyborg theme](../assets/themes/cyborg.png)
 Source of [inspiration](https://bootswatch.com/cyborg/)
 
+![vapor theme](../assets/themes/vapor.png)
+Source of [inspiration](https://bootswatch.com/vapor/)
+

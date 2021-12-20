@@ -16,7 +16,7 @@ The two examples above use the themes **litera** and **superhero**.
 | Inputs        | `Entry`   | default |
 
 ## Example Code
-[Run this code live]() on repl.it
+[Run this code live](https://replit.com/@israel-dryer/data-entry#main.py) on repl.it
 
 ```python
 import ttkbootstrap as ttk

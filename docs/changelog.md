@@ -4,6 +4,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.0.1](https://github.com/israel-dryer/ttkbootstrap/compare/v1.0.0...v1.0.1) - 2021-12-19
+### Added
+- added new themes [cerculean](https://github.com/israel-dryer/ttkbootstrap/blob/master/docs/assets/themes/cerculean.png) and [simplex](https://github.com/israel-dryer/ttkbootstrap/blob/master/docs/assets/themes/simplex.png)
+
+
+### Fixed
+- fixed several linux-related bugs noticed from repli.it by @israel-dryer in https://github.com/israel-dryer/ttkbootstrap/pull/94
 
 ## [1.0.0](https://github.com/israel-dryer/ttkbootstrap/compare/v0.5.1...v1.0.0) - 2021-12-19
 ### Added

@@ -14,7 +14,7 @@ The theme used is **lumen**.
 | License number    | `Label`      | primary    |
 
 ## Example Code
-[Run this code live]() on repl.it
+[Run this code live](https://replit.com/@israel-dryer/magic-mouse#main.py) on repl.it
 
 ```python
 from pathlib import Path

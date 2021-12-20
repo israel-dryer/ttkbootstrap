@@ -18,7 +18,7 @@ The theme applied is **cosmo**.
 | Quit      | `Button`  | danger |
 
 ## Example Code
-[Run this code live]() on repl.it
+[Run this code live](https://replit.com/@israel-dryer/stopwatch#main.py) on repl.it
 
 ```python
 import ttkbootstrap as ttk
