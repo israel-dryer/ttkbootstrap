@@ -87,6 +87,7 @@ nav:
       - api/style/stylebuildertk.md
       - api/style/stylebuilderttk.md
       - api/style/themedefinition.md    
+    - 'toast module': api/toast.md
     - 'tooltip module': api/tooltip.md
     - 'utility module': api/utility.md
     - 'widgets module':
