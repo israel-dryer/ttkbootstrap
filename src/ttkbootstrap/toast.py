@@ -219,7 +219,7 @@ if __name__ == "__main__":
 
     ToastNotification(
         "ttkbootstrap toast message",
-        "This is a toast message;",
+        "This is a toast message; you can place a symbol on the top-left that is supported by the selected font. You can either make it appear for a specified period of time, or click to close.",
     ).show_toast()
 
     app.mainloop()
