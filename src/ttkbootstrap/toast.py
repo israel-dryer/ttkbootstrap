@@ -63,10 +63,10 @@ class ToastNotification:
                 Linux (FreeSerif), MacOS (Apple Symbol)
 
             position (Tuple[int, int, str]):
-                A tuple that controls the position of the toast. Default 
+                A tuple that controls the position of the toast. Default
                 is OS specific. The tuple cooresponds to
                 (horizontal, vertical, anchor), where the horizontal and
-                vertical elements represent the position of the toplevel 
+                vertical elements represent the position of the toplevel
                 releative to the anchor, which is "ne" or top-left by
                 default. Acceptable anchors include: n, e, s, w, nw, ne,
                 sw, se. For example: (100, 100, 'ne').
@@ -173,7 +173,7 @@ class ToastNotification:
             self.iconfont["family"] = "Segoe UI Symbol"
             self.icon = DEFAULT_ICON_WIN32 if self.icon is None else self.icon
             if self.position is None:
-                x, y = utility.scale_size(self.toplevel, [5, 45])
+                x, y = utility.scale_size(self.toplevel, [5, 50])
                 self.position = (x, y, SE)
         elif winsys == "x11":
             self.iconfont["family"] = "FreeSerif"
@@ -188,29 +188,28 @@ class ToastNotification:
                 x, y = utility.scale_size(self.toplevel, [10, 75])
                 self.position = (x, y, NE)
 
-        
         self.set_geometry()
 
     def set_geometry(self):
         anchor = self.position[-1]
-        x_anchor = '-' if 'w' not in anchor else '+'
-        y_anchor = '-' if 'n' not in anchor else '+'
+        x_anchor = "-" if "w" not in anchor else "+"
+        y_anchor = "-" if "n" not in anchor else "+"
         screen_w = self.toplevel.winfo_screenwidth() // 2
         screen_h = self.toplevel.winfo_screenheight() // 2
-        self.toplevel.update_idletasks() # actualize geometry
-        top_w = self.toplevel.winfo_width() // 2 
+        self.toplevel.update_idletasks()  # actualize geometry
+        top_w = self.toplevel.winfo_width() // 2
         top_h = self.toplevel.winfo_height() // 2
 
-        if all(['e' not in anchor, 'w' not in anchor]):
+        if all(["e" not in anchor, "w" not in anchor]):
             xpos = screen_w - top_w
         else:
             xpos = self.position[0]
-        if all(['n' not in anchor, 's' not in anchor]):
+        if all(["n" not in anchor, "s" not in anchor]):
             ypos = screen_h - top_h
         else:
             ypos = self.position[1]
 
-        self.toplevel.geometry(f'{x_anchor}{xpos}{y_anchor}{ypos}')
+        self.toplevel.geometry(f"{x_anchor}{xpos}{y_anchor}{ypos}")
 
 
 if __name__ == "__main__":
