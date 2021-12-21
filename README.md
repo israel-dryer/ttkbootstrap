@@ -1,8 +1,15 @@
-# ttkbootstrap
+![](https://img.shields.io/github/release/israel-dryer/ttkbootstrap.svg)
+[![Downloads](https://pepy.tech/badge/ttkbootstrap)](https://pepy.tech/project/ttkbootstrap)
+[![Downloads](https://pepy.tech/badge/ttkbootstrap/month)](https://pepy.tech/project/ttkbootstrap)
+![](https://img.shields.io/github/issues/israel-dryer/ttkbootstrap.svg)
+![](https://img.shields.io/github/issues-closed/israel-dryer/ttkbootstrap.svg)
+![](https://img.shields.io/github/license/israel-dryer/ttkbootstrap.svg)
 
+# ttkbootstrap
 A supercharged theme extension for tkinter that enables on-demand modern flat style themes inspired by Bootstrap. 
 
 👀 Check out the [documentation](https://ttkbootstrap.readthedocs.io/en/latest/).
+
 
 > **1.0+ is a complete rebuild of the library.** If you are using [version 0.5](https://github.com/israel-dryer/ttkbootstrap/tree/version-0.5)
    you may run into issues trying to import themes with the themes.json as this 
