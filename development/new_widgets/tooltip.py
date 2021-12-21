@@ -8,7 +8,6 @@ class Tooltip:
     over the widget and closes when the mouse is no longer hovering over
     the widget.
 
-    [tooltip]()
     """
 
     def __init__(
@@ -88,12 +87,12 @@ class Tooltip:
         )
 
         # event binding
-        self.widget.bind("<Enter>", self.showtip)
-        self.widget.bind("<Leave>", self.hidetip)
-        self.widget.bind("<Motion>", self.movetip)
-        self.widget.bind("<ButtonPress>", self.hidetip)
+        self.widget.bind("<Enter>", self.show_tip)
+        self.widget.bind("<Leave>", self.hide_tip)
+        self.widget.bind("<Motion>", self.move_tip)
+        self.widget.bind("<ButtonPress>", self.hide_tip)
 
-    def showtip(self, *_):
+    def show_tip(self, *_):
         """Create a show the tooltip window"""
         if self.toplevel:
             return
@@ -114,7 +113,7 @@ class Tooltip:
         else:
             lbl.configure(style="tooltip.TLabel")
 
-    def movetip(self, *_):
+    def move_tip(self, *_):
         """Move the tooltip window to the current mouse position within the
         widget.
         """
@@ -123,7 +122,7 @@ class Tooltip:
             y = self.widget.winfo_pointery() + 10
             self.toplevel.geometry(f"+{x}+{y}")
 
-    def hidetip(self, *_):
+    def hide_tip(self, *_):
         """Destroy the tooltip window."""
         if self.toplevel:
             self.toplevel.destroy()
