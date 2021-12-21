@@ -183,20 +183,21 @@ class ToastNotification:
                 self.position = (x, y, SE)
         else:
             self.iconfont["family"] = "Apple Symbols"
+            self.toplevel.update_idletasks()
             self.icon = DEFAULT_ICON if self.icon is None else self.icon
             if self.position is None:
-                x, y = utility.scale_size(self.toplevel, [10, 75])
+                x, y = utility.scale_size(self.toplevel, [50, 50])
                 self.position = (x, y, NE)
 
         self.set_geometry()
 
     def set_geometry(self):
+        self.toplevel.update_idletasks()  # actualize geometry
         anchor = self.position[-1]
         x_anchor = "-" if "w" not in anchor else "+"
         y_anchor = "-" if "n" not in anchor else "+"
         screen_w = self.toplevel.winfo_screenwidth() // 2
         screen_h = self.toplevel.winfo_screenheight() // 2
-        self.toplevel.update_idletasks()  # actualize geometry
         top_w = self.toplevel.winfo_width() // 2
         top_h = self.toplevel.winfo_height() // 2
 
