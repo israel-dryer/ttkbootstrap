@@ -1,6 +1,13 @@
 import setuptools
 
 long_description = """
+![](https://img.shields.io/github/release/israel-dryer/ttkbootstrap.svg)
+[![Downloads](https://pepy.tech/badge/ttkbootstrap)](https://pepy.tech/project/ttkbootstrap)
+[![Downloads](https://pepy.tech/badge/ttkbootstrap/month)](https://pepy.tech/project/ttkbootstrap)
+![](https://img.shields.io/github/issues/israel-dryer/ttkbootstrap.svg)
+![](https://img.shields.io/github/issues-closed/israel-dryer/ttkbootstrap.svg)
+![](https://img.shields.io/github/license/israel-dryer/ttkbootstrap.svg)
+
 A supercharged theme extension for tkinter that enables on-demand modern flat style themes inspired by Bootstrap. 
 
 👀 Check out the [documentation](https://ttkbootstrap.readthedocs.io/en/latest/).
