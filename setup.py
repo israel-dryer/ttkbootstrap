@@ -7,6 +7,8 @@ long_description = """
 ![](https://img.shields.io/github/issues/israel-dryer/ttkbootstrap.svg)
 ![](https://img.shields.io/github/issues-closed/israel-dryer/ttkbootstrap.svg)
 ![](https://img.shields.io/github/license/israel-dryer/ttkbootstrap.svg)
+![](https://img.shields.io/github/stars/israel-dryer/ttkbootstrap.svg)
+![](https://img.shields.io/github/forks/israel-dryer/ttkbootstrap.svg)
 
 A supercharged theme extension for tkinter that enables on-demand modern flat style themes inspired by Bootstrap. 
 
