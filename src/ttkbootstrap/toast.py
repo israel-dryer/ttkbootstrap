@@ -76,8 +76,6 @@ class ToastNotification:
         self.kwargs = kwargs
         self.alert = alert
 
-        if "minsize" not in self.kwargs:
-            self.kwargs["minsize"] = (300, 75)
         if "overrideredirect" not in self.kwargs:
             self.kwargs["overrideredirect"] = True
         if "alpha" not in self.kwargs:
@@ -90,8 +88,7 @@ class ToastNotification:
         self.toplevel = ttk.Toplevel(**self.kwargs)
         self._setup(self.toplevel)
 
-        self.container = ttk.Frame(
-            self.toplevel, bootstyle=self.bootstyle)
+        self.container = ttk.Frame(self.toplevel, bootstyle=self.bootstyle)
         self.container.pack(fill=BOTH, expand=YES)
         ttk.Label(
             self.container,
@@ -143,6 +140,11 @@ class ToastNotification:
 
         self.toplevel.configure(relief=RAISED)
 
+        # minsize
+        if "minsize" not in self.kwargs:
+            w, h = utility.scale_size(self.toplevel, [300, 75])
+            self.toplevel.minsize(w, h)
+
         # heading font
         _font = font.nametofont("TkDefaultFont")
         self.titlefont = font.Font(
@@ -155,20 +157,21 @@ class ToastNotification:
         if winsys == "win32":
             self.iconfont["family"] = "Segoe UI Symbol"
             self.icon = DEFAULT_ICON_WIN32 if self.icon is None else self.icon
-            if 'position' not in self.kwargs:
-                self.geometry('-2-75')
+            if "position" not in self.kwargs:
+                self.toplevel.geometry("-2-75")
 
         elif winsys == "x11":
             self.iconfont["family"] = "FreeSerif"
             self.icon = DEFAULT_ICON if self.icon is None else self.icon
-            if 'position' not in self.kwargs:
-                self.geometry('-2-75')
+            if "position" not in self.kwargs:
+                self.toplevel.geometry("-2-75")
         else:
             self.iconfont["family"] = "Apple Symbols"
             self.icon = DEFAULT_ICON if self.icon is None else self.icon
-            if 'position' not in self.kwargs:
+            if "position" not in self.kwargs:
                 self.toplevel.update_idletasks()
                 self.toplevel.geometry(f"-5+30")
+
 
 if __name__ == "__main__":
 
@@ -176,7 +179,7 @@ if __name__ == "__main__":
 
     ToastNotification(
         "ttkbootstrap toast message",
-        "This is a toast message; you can place a symbol on the top-left that is supported by the selected font. You can either make it appear for a specified period of time, or click to close.",
-     ).show_toast()
+        "This is a toast message;",
+    ).show_toast()
 
     app.mainloop()
