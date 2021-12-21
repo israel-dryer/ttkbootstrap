@@ -3,17 +3,19 @@ from ttkbootstrap.constants import *
 from ttkbootstrap import utility
 
 
-class Tooltip:
-    """A tooltip popup window that shows text when the mouse is hovering
-    over the widget and closes when the mouse is no longer hovering over
-    the widget.
+class ToolTip:
+    """A semi-transparent tooltip popup window that shows text when the
+    mouse is hovering over the widget and closes when the mouse is no
+    longer hovering over the widget. Clicking a mouse button will also
+    close the tooltip.
 
+    ![](../assets/tooltip/tooltip.gif)
     """
 
     def __init__(
         self,
         widget,
-        text,
+        text="widget info",
         bootstyle=None,
         wraplength=None,
         **kwargs,
@@ -45,6 +47,7 @@ class Tooltip:
             ```python
             import ttkbootstrap as ttk
             from ttkbootstrap.constants import *
+            from ttkbootstrap.tooltip import ToolTip
 
             app = ttk.Window()
             b1 = ttk.Button(app, text="default tooltip")
@@ -53,10 +56,10 @@ class Tooltip:
             b2.pack()
 
             # default tooltip
-            Tooltip(b1, text="This is the default style")
+            ToolTip(b1, text="This is the default style")
 
             # styled tooltip
-            Tooltip(b2, text="This is dangerous", bootstyle=(DANGER, INVERSE))
+            ToolTip(b2, text="This is dangerous", bootstyle=(DANGER, INVERSE))
 
             app.mainloop()
             ```
@@ -139,11 +142,11 @@ if __name__ == "__main__":
     l1 = ttk.Label(app, text="styled tooltip")
     l1.pack(side=LEFT, padx=20, pady=20, fill=X, expand=YES)
 
-    Tooltip(
+    ToolTip(
         b1,
         text="This is the default tooltip style",
     )
-    Tooltip(
+    ToolTip(
         l1,
         text="Do not touch this label unless you are sure you want to do something dangerous.",
         bootstyle="danger-inverse",
