@@ -1,6 +1,7 @@
 from tkinter import font
 import ttkbootstrap as ttk
 from ttkbootstrap.constants import *
+from ttkbootstrap import utility
 
 # https://www.fontspace.com/freeserif-font-f13277
 
@@ -76,7 +77,7 @@ class ToastNotification:
         self.alert = alert
 
         if "minsize" not in self.kwargs:
-            self.kwargs["minsize"] = (400, 150)
+            self.kwargs["minsize"] = (300, 75)
         if "overrideredirect" not in self.kwargs:
             self.kwargs["overrideredirect"] = True
         if "alpha" not in self.kwargs:
@@ -87,14 +88,10 @@ class ToastNotification:
 
         # build toast
         self.toplevel = ttk.Toplevel(**self.kwargs)
-        self.toplevel.configure(relief=RAISED)
-        if "position" not in self.kwargs:
-            self.toplevel.geometry("-2-75")
         self._setup(self.toplevel)
 
         self.container = ttk.Frame(
-            self.toplevel, bootstyle=self.bootstyle, padding=10
-        )
+            self.toplevel, bootstyle=self.bootstyle)
         self.container.pack(fill=BOTH, expand=YES)
         ttk.Label(
             self.container,
@@ -102,21 +99,21 @@ class ToastNotification:
             font=self.iconfont,
             bootstyle=f"{self.bootstyle}-inverse",
             anchor=NW,
-        ).grid(row=0, column=0, rowspan=2, sticky=NSEW, padx=(10, 0))
+        ).grid(row=0, column=0, rowspan=2, sticky=NSEW, padx=(5, 0))
         ttk.Label(
             self.container,
             text=self.title,
             font=self.titlefont,
             bootstyle=f"{self.bootstyle}-inverse",
             anchor=NW,
-        ).grid(row=0, column=1, sticky=NSEW, padx=10, pady=(10, 0))
+        ).grid(row=0, column=1, sticky=NSEW, padx=10, pady=(5, 0))
         ttk.Label(
             self.container,
             text=self.message,
-            wraplength=375,
+            wraplength=utility.scale_size(self.toplevel, 300),
             bootstyle=f"{self.bootstyle}-inverse",
             anchor=NW,
-        ).grid(row=1, column=1, sticky=NSEW, padx=10, pady=(0, 10))
+        ).grid(row=1, column=1, sticky=NSEW, padx=10, pady=(0, 5))
 
         self.toplevel.bind("<ButtonPress>", self.hide_toast)
 
@@ -144,6 +141,8 @@ class ToastNotification:
     def _setup(self, window: ttk.Toplevel):
         winsys = window.tk.call("tk", "windowingsystem")
 
+        self.toplevel.configure(relief=RAISED)
+
         # heading font
         _font = font.nametofont("TkDefaultFont")
         self.titlefont = font.Font(
@@ -156,13 +155,20 @@ class ToastNotification:
         if winsys == "win32":
             self.iconfont["family"] = "Segoe UI Symbol"
             self.icon = DEFAULT_ICON_WIN32 if self.icon is None else self.icon
+            if 'position' not in self.kwargs:
+                self.geometry('-2-75')
+
         elif winsys == "x11":
             self.iconfont["family"] = "FreeSerif"
             self.icon = DEFAULT_ICON if self.icon is None else self.icon
+            if 'position' not in self.kwargs:
+                self.geometry('-2-75')
         else:
             self.iconfont["family"] = "Apple Symbols"
             self.icon = DEFAULT_ICON if self.icon is None else self.icon
-
+            if 'position' not in self.kwargs:
+                self.toplevel.update_idletasks()
+                self.toplevel.geometry(f"-5+30")
 
 if __name__ == "__main__":
 
@@ -171,6 +177,6 @@ if __name__ == "__main__":
     ToastNotification(
         "ttkbootstrap toast message",
         "This is a toast message; you can place a symbol on the top-left that is supported by the selected font. You can either make it appear for a specified period of time, or click to close.",
-    ).show_toast()
+     ).show_toast()
 
     app.mainloop()
