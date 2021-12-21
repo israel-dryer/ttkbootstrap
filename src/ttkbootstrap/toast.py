@@ -26,6 +26,7 @@ class ToastNotification:
         alert=False,
         icon=None,
         iconfont=None,
+        position=None,
         **kwargs,
     ):
         """
@@ -61,6 +62,15 @@ class ToastNotification:
                 want to use. Windows (Segoe UI Symbol),
                 Linux (FreeSerif), MacOS (Apple Symbol)
 
+            position (Tuple[int, int, str]):
+                A tuple that controls the position of the toast. Default 
+                is OS specific. The tuple cooresponds to
+                (horizontal, vertical, anchor), where the horizontal and
+                vertical elements represent the position of the toplevel 
+                releative to the anchor, which is "ne" or top-left by
+                default. Acceptable anchors include: n, e, s, w, nw, ne,
+                sw, se. For example: (100, 100, 'ne').
+
             **kwargs (Dict):
                 Other keyword arguments passed to the `Toplevel` window.
         """
@@ -75,11 +85,16 @@ class ToastNotification:
         self.toplevel = None
         self.kwargs = kwargs
         self.alert = alert
+        self.position = position
 
         if "overrideredirect" not in self.kwargs:
             self.kwargs["overrideredirect"] = True
         if "alpha" not in self.kwargs:
             self.kwargs["alpha"] = 0.95
+
+        if position is not None:
+            if len(position) != 3:
+                self.position = None
 
     def show_toast(self, *_):
         """Create and show the toast window."""
@@ -157,20 +172,45 @@ class ToastNotification:
         if winsys == "win32":
             self.iconfont["family"] = "Segoe UI Symbol"
             self.icon = DEFAULT_ICON_WIN32 if self.icon is None else self.icon
-            if "position" not in self.kwargs:
-                self.toplevel.geometry("-2-75")
-
+            if self.position is None:
+                x, y = utility.scale_size(self.toplevel, [5, 45])
+                self.position = (x, y, SE)
         elif winsys == "x11":
             self.iconfont["family"] = "FreeSerif"
             self.icon = DEFAULT_ICON if self.icon is None else self.icon
-            if "position" not in self.kwargs:
-                self.toplevel.geometry("-2-75")
+            if self.position is None:
+                x, y = utility.scale_size(self.toplevel, [0, 0])
+                self.position = (x, y, SE)
         else:
             self.iconfont["family"] = "Apple Symbols"
             self.icon = DEFAULT_ICON if self.icon is None else self.icon
-            if "position" not in self.kwargs:
-                self.toplevel.update_idletasks()
-                self.toplevel.geometry(f"-5+30")
+            if self.position is None:
+                x, y = utility.scale_size(self.toplevel, [10, 75])
+                self.position = (x, y, NE)
+
+        
+        self.set_geometry()
+
+    def set_geometry(self):
+        anchor = self.position[-1]
+        x_anchor = '-' if 'w' not in anchor else '+'
+        y_anchor = '-' if 'n' not in anchor else '+'
+        screen_w = self.toplevel.winfo_screenwidth() // 2
+        screen_h = self.toplevel.winfo_screenheight() // 2
+        self.toplevel.update_idletasks() # actualize geometry
+        top_w = self.toplevel.winfo_width() // 2 
+        top_h = self.toplevel.winfo_height() // 2
+
+        if all(['e' not in anchor, 'w' not in anchor]):
+            xpos = screen_w - top_w
+        else:
+            xpos = self.position[0]
+        if all(['n' not in anchor, 's' not in anchor]):
+            ypos = screen_h - top_h
+        else:
+            ypos = self.position[1]
+
+        self.toplevel.geometry(f'{x_anchor}{xpos}{y_anchor}{ypos}')
 
 
 if __name__ == "__main__":
