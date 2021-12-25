@@ -4,7 +4,7 @@ import tkinter as tk
 from tkinter import font
 from math import ceil
 from tkinter import TclError, ttk
-from typing import Callable
+from typing import Any, Callable
 from PIL import ImageTk, ImageDraw, Image, ImageFont
 from ttkbootstrap.constants import *
 from ttkbootstrap.themes.standard import STANDARD_THEMES
@@ -469,6 +469,9 @@ class Style(ttk.Style):
         else:
             return []  # TODO refactor this
 
+    def configure(self, style, query_opt: Any=None, **kw):
+        return super().configure(style, query_opt=query_opt, **kw)
+
     def theme_names(self):
         """Return a list of all ttkbootstrap themes.
 
@@ -556,6 +559,11 @@ class Style(ttk.Style):
         return exists_in_theme and exists_in_registry
 
     @staticmethod
+    def get_instance():
+        """Returns and instance of the style class"""
+        return Style.instance
+
+    @staticmethod
     def _get_builder():
         """Get the object that builds the widget styles for the current
         theme.
@@ -566,7 +574,7 @@ class Style(ttk.Style):
                 The theme builder object that builds the ttk styles for
                 the current theme.
         """
-        style: Style = Style()
+        style: Style = Style.get_instance()
         theme_name = style.theme.name
         return style._theme_objects[theme_name]
 
@@ -645,7 +653,7 @@ class StyleBuilderTK:
     """
 
     def __init__(self):
-        self.style = Style()
+        self.style = Style.get_instance()
         self.master = self.style.master
 
     @property
@@ -981,7 +989,7 @@ class StyleBuilderTTK:
     """
 
     def __init__(self):
-        self.style = Style()
+        self.style = Style.get_instance()
         self.theme_images = {}
         self.builder_tk = StyleBuilderTK()
         self.create_theme()
@@ -4758,7 +4766,7 @@ class Bootstyle:
             str:
                 The ttkstyle or empty string if there is none.
         """
-        style = Style()
+        style = Style.get_instance()
 
         # get existing widget style if not provided
         if style_string is None:
@@ -4852,7 +4860,7 @@ class Bootstyle:
                 The tcl/tk name given by `tkinter.Widget.winfo_name()`
         """
         try:
-            style = Style()
+            style = Style.get_instance()
             method_name = Bootstyle.tkupdate_method_name(widget)
             builder = style._get_builder_tk()
             builder_method = getattr(StyleBuilderTK, method_name)
