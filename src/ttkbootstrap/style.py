@@ -4913,15 +4913,22 @@ class Bootstyle:
 
         def __init__wrapper(self, *args, **kwargs):
 
+            # check for autostyle flag
+            if 'autostyle' in kwargs:
+                autostyle = kwargs.pop('autostyle')
+            else:
+                autostyle = True
+            
             # instantiate the widget
             func(self, *args, **kwargs)
 
-            Publisher.subscribe(
-                name=str(self),
-                func=lambda w=self: Bootstyle.update_tk_widget_style(w),
-                channel=Channel.STD,
-            )
-            Bootstyle.update_tk_widget_style(self)
+            if autostyle:
+                Publisher.subscribe(
+                    name=str(self),
+                    func=lambda w=self: Bootstyle.update_tk_widget_style(w),
+                    channel=Channel.STD,
+                )
+                Bootstyle.update_tk_widget_style(self)
 
         return __init__wrapper
 
