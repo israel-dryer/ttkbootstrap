@@ -470,9 +470,22 @@ class Style(ttk.Style):
             return []  # TODO refactor this
 
     def configure(self, style, query_opt: Any = None, **kw):
+        if query_opt:
+            return super().configure(style, query_opt=query_opt, **kw)
+        
         if not self.style_exists_in_theme(style):
-            Bootstyle.update_ttk_widget_style(None, style)
-        return super().configure(style, query_opt=query_opt, **kw)
+            ttkstyle = Bootstyle.update_ttk_widget_style(None, style)
+        else:
+            ttkstyle = style
+
+        if ttkstyle == style:
+            # configure an existing ttkbootrap theme
+            return super().configure(style, query_opt=query_opt, **kw)
+        else:
+            # subclass a ttkbootstrap theme
+            result = super().configure(style, query_opt=query_opt, **kw)
+            self._register_ttkstyle(style)
+            return result
 
     def theme_names(self):
         """Return a list of all ttkbootstrap themes.
@@ -4695,10 +4708,11 @@ class Bootstyle:
             #    in the `get_ttkstyle_name` method
 
             if style:
-                ttkstyle = Bootstyle.update_ttk_widget_style(
-                    self, style, **kwargs
-                )
-                self.configure(style=ttkstyle)
+                if Style.get_instance().style_exists_in_theme(style):
+                    self.configure(style=style)
+                else:
+                    ttkstyle = Bootstyle.update_ttk_widget_style(self, style, **kwargs)
+                    self.configure(style=ttkstyle)
             elif bootstyle:
                 ttkstyle = Bootstyle.update_ttk_widget_style(
                     self, bootstyle, **kwargs
