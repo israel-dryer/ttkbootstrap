@@ -1,4 +1,4 @@
-# Legacy Widgets
+# Legacy widgets
 
 ttkbootstrap applies a default style to legacy tkinter widgets so that they do
 not look out-of-place when used with themed ttk widgets. The `Text` and `Canvas`
