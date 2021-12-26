@@ -4,6 +4,8 @@ This is a style guide for applying ttkbootstrap styles. All ttkbootstrap styles
 are applied using the **bootstyle** parameter that has been injected into the
 **ttk** widget constructor.
 
+ℹ️ [Learn more about styling legacy widgets](legacywidgets.md).
+
 ## Colors
 
 The following color options are available on _all_ widgets, except where 

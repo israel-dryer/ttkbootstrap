@@ -69,6 +69,7 @@ nav:
     - styleguide/sizegrip.md
     - styleguide/spinbox.md
     - styleguide/treeview.md
+    - styleguide/legacywidgets.md
   - API: 
     - api/index.md
     - 'dialogs module':
