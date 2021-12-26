@@ -4788,7 +4788,7 @@ class Bootstyle:
             str:
                 The ttkstyle or empty string if there is none.
         """
-        style = Style.get_instance()
+        style: Style = Style.get_instance() or Style()
 
         # get existing widget style if not provided
         if style_string is None:
