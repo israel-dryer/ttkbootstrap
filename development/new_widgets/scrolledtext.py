@@ -1,70 +1,64 @@
-"""
-    This widget is adapted from `tkinter.scrolledtext.ScrolledText`
+import ttkbootstrap as ttk
+from ttkbootstrap.constants import *
 
-    The ttkbootstrap.widgets.scrolledtext module provides a class of 
-    the same name which implements a text widget with a vertical
-    scrollbar that can be styled using the `bootstyle` parameter.
-"""
 
-from tkinter import Pack, Grid, Place
-from ttkbootstrap import Frame, Text, Scrollbar
-from tkinter.constants import RIGHT, LEFT, Y, BOTH
+class ScrolledText(ttk.Frame):
 
-class ScrolledText(Text):
-    """A text widget that contains a vertical scrollbar on the right
-    which can be styled with the `bootstyle` parameter. You can add
-    a focus color border effect by setting the `highlightbackground` 
-    option.
+    """A text widget with a vertical scrollbar."""
 
-    Configuration options are passed to the `Text` widget. A `Frame` 
-    widget is inserted between the `master` and the `Text` to hold the 
-    `Scrollbar` widget. Most method calls are inherited from the `Text` 
-    widget; however, `Pack`, `Grid`, and `Place` methods are redirected
-    to the `Frame` widget.
+    def __init__(self, master=None, padding=2, bootstyle=DEFAULT, **kwargs):
+        """
+        Parameters:
 
-    See the original [Python documentation](https://docs.python.org/3/library/tkinter.scrolledtext.html)
-    for additional information on usage and settings.
+            master (Widget):
+                The parent widget.
 
-    _This widget is adapted from `tkinter.scrolledtext.ScrolledText`_
-    """
-    def __init__(self, master=None, **kw):
-        if 'bootstyle' in kw:
-            bootstyle = kw.pop('bootstyle')
-        else:
-            bootstyle = None
-        self.frame = Frame(master)
-        self.vbar = Scrollbar(self.frame, bootstyle=bootstyle)
-        self.vbar.pack(side=RIGHT, fill=Y)
+            padding (int):
+                The amount of empty space to create on the outside of the 
+                widget.
 
-        kw.update({'yscrollcommand': self.vbar.set})
-        #if 'font' not in 
-        Text.__init__(self, self.frame, highlightthickness=0, **kw)
-        self.pack(side=LEFT, fill=BOTH, expand=True)
-        self.vbar['command'] = self.yview
+            bootstyle (str):
+                A style keyword used to set the color and style of the vertical 
+                scrollbar. Available options include -> primary, secondary, 
+                success, info, warning, danger, dark, light.
 
-        text_meths = vars(Text).keys()
-        methods = vars(Pack).keys() | vars(Grid).keys() | vars(Place).keys()
-        methods = methods.difference(text_meths)
+            **kwargs (Dict[str, Any]):
+                Other keyword arguments passed to the `Text` widget.
+        """
+        super().__init__(master, padding=padding)
 
-        for m in methods:
-            if m[0] != '_' and m != 'config' and m != 'configure':
-                setattr(self, m, getattr(self.frame, m))
+        # setup text widget
+        kwargs['master'] = self
+        self._text = ttk.Text(**kwargs)
+        self._text.pack(side=LEFT, fill=BOTH, expand=YES)
 
-        self.config = self.configure # alias
+        # delegate text methods to frame widget
+        for method in vars(ttk.Text).keys():
+            if any(['pack' in method, 'grid' in method, 'place' in method]):
+                pass
+            else:
+                setattr(self, method, getattr(self._text, method))
 
-    def __str__(self):
-        return str(self.frame)
+        # setup scrollbar
+        self._scrollbar = ttk.Scrollbar(
+            master=self, 
+            bootstyle=bootstyle,
+            command=self._text.yview
+        )
+        self._scrollbar.pack(side=RIGHT, fill=Y)
+        self._text.configure(yscrollcommand=self._scrollbar.set)
 
-    def configure(self, cnf=None, **kwargs):
-        # get configuration
-        if cnf == 'bootstyle':
-            return self.vbar.cget('style')
-        elif cnf is not None:
-            return self.cget(cnf)
 
-        # set configuration
-        if 'bootstyle' in kwargs:
-            bootstyle = kwargs.pop('bootstyle')
-        self.vbar.configure(bootstyle=bootstyle)
-        self.configure(cnf=cnf, **kwargs)
+if __name__ == '__main__':
 
+    app = ttk.Window()
+
+    nb = ttk.Notebook(app)
+    t = ScrolledText(nb, padding=20, bootstyle='info-round')
+    t.insert(END, 'What is this?')
+    nb.add(t, text="My Text")
+    nb.pack()
+    app.mainloop()
+
+
+    

@@ -719,15 +719,15 @@ class StyleBuilderTK:
             widget (tkinter.Canvas):
                 The canvas object to update.
         """
-        if self.is_light_theme:
-            bordercolor = self.colors.border
-        else:
-            bordercolor = self.colors.selectbg
+        # if self.is_light_theme:
+        #     bordercolor = self.colors.border
+        # else:
+        #     bordercolor = self.colors.selectbg
 
         widget.configure(
             background=self.colors.bg,
-            highlightthickness=1,
-            highlightbackground=bordercolor,
+            highlightthickness=0,
+            # highlightbackground=bordercolor,
         )
 
     def update_button_style(self, widget: tk.Button):
