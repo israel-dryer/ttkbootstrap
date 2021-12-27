@@ -220,6 +220,7 @@ class ScrolledFrame(ttk.Frame):
         self._canvas.configure(yscrollcommand=self._vbar.set)
 
         super().__init__(self._canvas, **kwargs)
+        self._winsys = self.tk.call('tk', 'windowingsystem')
         self._wid = self._canvas.create_window((0, 0), anchor=NW, window=self)
 
         # delegate text methods to frame
@@ -271,7 +272,14 @@ class ScrolledFrame(ttk.Frame):
         self.container.bind("<Leave>", self.hide_scrollbars)
 
     def _on_mousewheel(self, event):
-        delta = -int(event.delta / 120)
+        if self._winsys.lower() == 'win32':
+            delta = -int(event.delta / 120)
+        elif self._winsys.lower() == 'aqua':
+            delta = event.delta
+        elif event.num == 4:
+            delta = event.delta / 120
+        elif event.num == 5:
+            delta = event.delta / -120
         self._canvas.yview_scroll(delta, UNITS)
 
     def _enable_scrolling(self, *_):
@@ -279,11 +287,21 @@ class ScrolledFrame(ttk.Frame):
         children."""
         children = self.winfo_children()
         for widget in [self, *children]:
-            widget.bind("<MouseWheel>", self._on_mousewheel, "+")
+            if self._winsys.lower() == 'x11':
+                widget.bind("<Button-4>", self._on_mousewheel, "+")
+                widget.bind("<Button-5>", self._on_mousewheel, "+")
+            else:
+                widget.bind("<MouseWheel>", self._on_mousewheel, "+")
 
     def _disable_scrolling(self, *_):
         """Disabled mousewheel scrolling on the frame and all of its
         children."""
         children = self.winfo_children()
         for widget in [self, *children]:
-            widget.unbind("<MouseWheel>")
+            if self._winsys.lower() == 'x11':
+                widget.unbind("<Button-4>")
+                widget.unbind("<Button-5>")
+            else:
+                widget.unbind("<MouseWheel>")
+
+
