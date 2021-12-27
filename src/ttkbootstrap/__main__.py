@@ -142,7 +142,7 @@ Namespaces are one honking great idea -- let's do more of those!"""
     nb.add(ttk.Frame(nb), text="Tab 5")
 
     # text widget
-    txt = ScrolledText(master=lframe, height=5, width=50, hbar=True)
+    txt = ScrolledText(master=lframe, height=5, width=50, autohide=True)
     txt.insert(END, ZEN)
     txt.pack(side=LEFT, anchor=NW, pady=5, fill=BOTH, expand=YES)
     lframe_inner = ttk.Frame(lframe)

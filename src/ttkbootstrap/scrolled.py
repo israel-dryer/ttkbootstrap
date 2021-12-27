@@ -58,6 +58,8 @@ class ScrolledText(ttk.Frame):
 
         # setup text widget
         self._text = ttk.Text(self, padx=50, **kwargs)
+        self._hbar = None
+        self._vbar = None
 
         # delegate text methods to frame
         for method in vars(ttk.Text).keys():
@@ -90,9 +92,11 @@ class ScrolledText(ttk.Frame):
         self._text.pack(side=LEFT, fill=BOTH, expand=YES)
 
         # position scrollbars
-        self.update_idletasks()
-        self._text_width = self.winfo_reqwidth()
-        self._scroll_width = self.winfo_reqwidth()
+        if self._hbar:
+            self.update_idletasks()
+            self._text_width = self.winfo_reqwidth()
+            self._scroll_width = self.winfo_reqwidth()
+
         self.bind("<Configure>", self._on_configure)
 
         if autohide:
@@ -101,11 +105,12 @@ class ScrolledText(ttk.Frame):
 
     def _on_configure(self, *_):
         """Callback for when the configure method is used"""
-        self.update_idletasks()
-        text_width = self.winfo_width()
-        vbar_width = self._vbar.winfo_width()
-        relx = (text_width - vbar_width) / text_width
-        self._hbar.place(rely=1.0, relwidth=relx)
+        if self._hbar:
+            self.update_idletasks()
+            text_width = self.winfo_width()
+            vbar_width = self._vbar.winfo_width()
+            relx = (text_width - vbar_width) / text_width
+            self._hbar.place(rely=1.0, relwidth=relx)
 
     def hide_scrollbars(self, *_):
         """Hide the scrollbars."""
