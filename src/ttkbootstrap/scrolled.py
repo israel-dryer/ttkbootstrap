@@ -2,24 +2,17 @@
     This module contains various custom scrolling widgets, including 
     `ScrolledText` and `ScrolledFrame`.
 """
-
 import ttkbootstrap as ttk
 from ttkbootstrap.constants import *
 from tkinter import Pack, Place, Grid
 
 
-"""
-    # TODO reconfigure autohide implementation
-    - Use the place manager to set the scrollbar to (relx=1, relheight=1, anchor=NE)
-    - Allow the text to fill 100% of the space
-    - Lower the scrollbar to hide, Raise the scrollbar to make visible
-    - hide the scrollbar is at 100% of height or width
-    - Show the scrollbar when the mousewheel is used, then hide again on button click.
-    - ANOTHER option is to have a *hidden* style that is applied whenever the scrollbar is inactive
-"""
-
 class ScrolledText(ttk.Frame):
-    """A text widget with a vertical scrollbar."""
+    """A text widget with optional vertical and horizontal scrollbars.
+    Setting `autohide=True` will cause the scrollbars to hide when the
+    mouse is not over the widget. The vertical scrollbar is on by
+    default, but can be turned off. The horizontal scrollbar can be
+    enabled by setting `vbar=True`."""
 
     def __init__(
         self,
@@ -64,7 +57,7 @@ class ScrolledText(ttk.Frame):
         super().__init__(master, padding=padding)
 
         # setup text widget
-        self._text = ttk.Text(self, **kwargs)
+        self._text = ttk.Text(self, padx=50, **kwargs)
 
         # delegate text methods to frame
         for method in vars(ttk.Text).keys():
@@ -81,7 +74,7 @@ class ScrolledText(ttk.Frame):
                 command=self._text.yview,
                 orient=VERTICAL,
             )
-            self._vbar.pack(side=RIGHT, fill=Y)
+            self._vbar.place(relx=1.0, relheight=1.0, anchor=NE)
             self._text.configure(yscrollcommand=self._vbar.set)
 
         if hbar:
@@ -91,34 +84,48 @@ class ScrolledText(ttk.Frame):
                 command=self._text.xview,
                 orient=HORIZONTAL,
             )
-            self._hbar.pack(side=BOTTOM, fill=X)
+            self._hbar.place(rely=1.0, relwidth=1.0, anchor=SW)
             self._text.configure(xscrollcommand=self._hbar.set, wrap="none")
 
         self._text.pack(side=LEFT, fill=BOTH, expand=YES)
+
+        # position scrollbars
+        self.update_idletasks()
+        self._text_width = self.winfo_reqwidth()
+        self._scroll_width = self.winfo_reqwidth()
+        self.bind("<Configure>", self._on_configure)
 
         if autohide:
             self.autohide_scrollbar()
             self.hide_scrollbars()
 
+    def _on_configure(self, *_):
+        """Callback for when the configure method is used"""
+        self.update_idletasks()
+        text_width = self.winfo_width()
+        vbar_width = self._vbar.winfo_width()
+        relx = (text_width - vbar_width) / text_width
+        self._hbar.place(rely=1.0, relwidth=relx)
+
     def hide_scrollbars(self, *_):
         """Hide the scrollbars."""
         try:
-            self._vbar.pack_forget()
+            self._vbar.lower(self._text)
         except:
             pass
         try:
-            self._hbar.pack_forget()
+            self._hbar.lower(self._text)
         except:
             pass
 
     def show_scrollbars(self, *_):
         """Show the scrollbars."""
         try:
-            self._vbar.pack(side=RIGHT, fill=Y)
+            self._vbar.lift(self._text)
         except:
             pass
         try:
-            self._hbar.pack(side=BOTTOM, fill=X)
+            self._hbar.lift(self._text)
         except:
             pass
 
@@ -129,65 +136,100 @@ class ScrolledText(ttk.Frame):
         self.bind("<Leave>", self.hide_scrollbars)
 
 
-# TODO refactor <MouseWheel> to include only canvas children
-
 class ScrolledFrame(ttk.Frame):
     """A widget container with a vertical scrollbar.
-    
-    !!! note "Note on implementation
-        There is unfortunately not a clean way to implement this feature
-        in tkinter. A common implementation is to reference an internal
-        frame as the master for objects to be packed, placed, etc... I've
-        chosen to expose the internal container first, so that you can
-        use this `ScrolledFrame` just as you would a normal frame. This
-        is more natural. However, there are cases when you need to have
-        the actual parent container, and for that reason, you can access
-        this parent container object via `ScrolledFrame.container`. 
-        Specifically, you will need this object when adding a 
-        `ScrolledFrame` to a `Notebook` or `Panedwindow`. For example, 
-        `mynotebook.add(myscrolledframe.container)`.
-    """
+
+    The scrollbar has an autohide feature that can be turned on by
+    setting `autohide=True`.
+
+    There is unfortunately not a clean way to implement this megawidget
+    in tkinter. A common implementation is to reference an internal
+    frame as the master for objects to be packed, placed, etc... I've
+    chosen to expose the internal container foremost, so that you can
+    use this `ScrolledFrame` just as you would a normal frame. This
+    is more natural. However, there are cases when you need to have
+    the actual parent container, and for that reason, you can access
+    this parent container object via `ScrolledFrame.container`.
+    Specifically, you will need this object when adding a
+    `ScrolledFrame` to a `Notebook` or `Panedwindow`. For example,
+    `mynotebook.add(myscrolledframe.container)`.
+"""
 
     def __init__(
         self,
         master=None,
         padding=2,
-        width=None,
-        height=None,
         bootstyle=DEFAULT,
+        autohide=False,
+        height=None,
+        width=None,
+        **kwargs,
     ):
-        self.container = ttk.Frame(master, padding=padding, relief=FLAT, borderwidth=0)
+        """
+        Parameters:
+
+            master (Widget):
+                The parent widget.
+
+            padding (int):
+                The amount of empty space to create on the outside of
+                the widget.
+
+            bootstyle (str):
+                A style keyword used to set the color and style of the
+                vertical scrollbar. Available options include -> primary,
+                secondary, success, info, warning, danger, dark, light.
+
+            autohide (bool):
+                When **True**, the scrollbars will hide when the mouse
+                is not within the frame bbox.
+
+            height (int):
+                The height of the frame in screen units.
+
+            width (int):
+                The widget of the frame in screen units.
+
+            **kwargs (Dict[str, Any]):
+                Other keyword arguments.
+        """
+        self.container = ttk.Frame(
+            master=master, padding=padding, relief=FLAT, borderwidth=0
+        )
         self._canvas = ttk.Canvas(
-            master=self.container,
+            self.container,
             relief=FLAT,
             borderwidth=0,
             highlightthickness=0,
             height=height,
             width=width,
         )
-        self._canvas.pack(side=LEFT, fill=BOTH, expand=YES)
+        self._canvas.pack(fill=BOTH, expand=YES)
         self._vbar = ttk.Scrollbar(
             master=self.container,
-            orient=VERTICAL,
-            command=self._canvas.yview,
             bootstyle=bootstyle,
+            command=self._canvas.yview,
+            orient=VERTICAL,
         )
-        self._vbar.pack(side=RIGHT, fill=Y)
+        self._vbar.place(relx=1.0, relheight=1.0, anchor=NE)
         self._canvas.configure(yscrollcommand=self._vbar.set)
 
-        super().__init__(self._canvas)
+        super().__init__(self._canvas, **kwargs)
         self._wid = self._canvas.create_window((0, 0), anchor=NW, window=self)
 
-        # delegate geometry methods to outer frame
-        for method in (
-            vars(Pack).keys() | vars(Place).keys() | vars(Grid).keys()
-        ):
+        # delegate text methods to frame
+        _methods = vars(Pack).keys() | vars(Grid).keys() | vars(Place).keys()
+        for method in _methods:
             if any(["pack" in method, "grid" in method, "place" in method]):
                 setattr(self, method, getattr(self.container, method))
 
-        self._canvas.bind("<Configure>", self._resize_canvas, "+")
+        self.container.bind("<Configure>", self._resize_canvas)
         self._canvas.bind("<Enter>", self._enable_scrolling, "+")
         self._canvas.bind("<Leave>", self._disable_scrolling, "+")
+
+        if autohide:
+            self.autohide_scrollbar()
+            self.hide_scrollbars()
 
     def _resize_canvas(self, *_):
         """Resize the canvas when frame is resized"""
@@ -195,31 +237,48 @@ class ScrolledFrame(ttk.Frame):
         self._canvas.config(scrollregion=self._canvas.bbox(ALL))
         self._canvas.itemconfig(self._wid, width=self._canvas.winfo_width())
 
+    def hide_scrollbars(self, *_):
+        """Hide the scrollbars."""
+        try:
+            self._vbar.lower(self._canvas)
+        except:
+            pass
+        try:
+            self._hbar.lower(self._canvas)
+        except:
+            pass
+
+    def show_scrollbars(self, *_):
+        """Show the scrollbars."""
+        try:
+            self._vbar.lift(self._canvas)
+        except:
+            pass
+        try:
+            self._hbar.lift(self._canvas)
+        except:
+            pass
+
+    def autohide_scrollbar(self, *_):
+        """Show the scrollbars when the mouse enters the widget frame,
+        and hide when it leaves the frame."""
+        self.container.bind("<Enter>", self.show_scrollbars)
+        self.container.bind("<Leave>", self.hide_scrollbars)
+
     def _on_mousewheel(self, event):
         delta = -int(event.delta / 120)
         self._canvas.yview_scroll(delta, UNITS)
 
     def _enable_scrolling(self, *_):
-        self.bind_all("<MouseWheel>", self._on_mousewheel)
+        """Enable mousewheel scrolling on the frame and all of its
+        children."""
+        children = self.winfo_children()
+        for widget in [self, *children]:
+            widget.bind("<MouseWheel>", self._on_mousewheel, "+")
 
     def _disable_scrolling(self, *_):
-        self.unbind_all("<MouseWheel>")
-
-
-if __name__ == "__main__":
-
-    app = ttk.Window()
-
-    # TEST SCROLLED TEXT
-    # st = ScrolledText(app, hbar=True, padding=20)
-    # st.pack(fill=BOTH, expand=YES)
-
-    # TEST SCROLLED FRAME
-    nb = ttk.Notebook()
-    nb.pack()
-    sf = ScrolledFrame(app)
-    nb.add(sf.container, text="ScrolledFrame", padding=10)
-    for x in range(20):
-        ttk.Button(sf, text=f"button {x}").pack(anchor=W)
-
-    app.mainloop()
+        """Disabled mousewheel scrolling on the frame and all of its
+        children."""
+        children = self.winfo_children()
+        for widget in [self, *children]:
+            widget.unbind("<MouseWheel>")
