@@ -4,8 +4,8 @@
 """
 import ttkbootstrap as ttk
 from ttkbootstrap.constants import *
+from ttkbootstrap.scrolled import ScrolledText
 from tkinter.filedialog import askopenfilename
-from tkinter.scrolledtext import ScrolledText
 
 
 class TextReader(ttk.Frame):
@@ -23,7 +23,8 @@ class TextReader(ttk.Frame):
             master=self,
             highlightcolor=style.colors.primary,
             highlightbackground=style.colors.border,
-            highlightthickness=1
+            highlightthickness=1,
+            autohide=True
         )
         self.textbox.pack(fill=BOTH)
         default_txt = "Click the browse button to open a new text file."
