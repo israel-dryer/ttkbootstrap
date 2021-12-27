@@ -8,6 +8,16 @@ from ttkbootstrap.constants import *
 from tkinter import Pack, Place, Grid
 
 
+"""
+    # TODO reconfigure autohide implementation
+    - Use the place manager to set the scrollbar to (relx=1, relheight=1, anchor=NE)
+    - Allow the text to fill 100% of the space
+    - Lower the scrollbar to hide, Raise the scrollbar to make visible
+    - hide the scrollbar is at 100% of height or width
+    - Show the scrollbar when the mousewheel is used, then hide again on button click.
+    - ANOTHER option is to have a *hidden* style that is applied whenever the scrollbar is inactive
+"""
+
 class ScrolledText(ttk.Frame):
     """A text widget with a vertical scrollbar."""
 
@@ -119,11 +129,24 @@ class ScrolledText(ttk.Frame):
         self.bind("<Leave>", self.hide_scrollbars)
 
 
-# TODO cannot currently be added to notebook using `add` method
 # TODO refactor <MouseWheel> to include only canvas children
 
 class ScrolledFrame(ttk.Frame):
-    """A widget container with a vertical scrollbar."""
+    """A widget container with a vertical scrollbar.
+    
+    !!! note "Note on implementation
+        There is unfortunately not a clean way to implement this feature
+        in tkinter. A common implementation is to reference an internal
+        frame as the master for objects to be packed, placed, etc... I've
+        chosen to expose the internal container first, so that you can
+        use this `ScrolledFrame` just as you would a normal frame. This
+        is more natural. However, there are cases when you need to have
+        the actual parent container, and for that reason, you can access
+        this parent container object via `ScrolledFrame.container`. 
+        Specifically, you will need this object when adding a 
+        `ScrolledFrame` to a `Notebook` or `Panedwindow`. For example, 
+        `mynotebook.add(myscrolledframe.container)`.
+    """
 
     def __init__(
         self,
@@ -133,9 +156,9 @@ class ScrolledFrame(ttk.Frame):
         height=None,
         bootstyle=DEFAULT,
     ):
-        self._outer = ttk.Frame(master, padding=padding, relief=FLAT, borderwidth=0)
+        self.container = ttk.Frame(master, padding=padding, relief=FLAT, borderwidth=0)
         self._canvas = ttk.Canvas(
-            master=self._outer,
+            master=self.container,
             relief=FLAT,
             borderwidth=0,
             highlightthickness=0,
@@ -144,14 +167,13 @@ class ScrolledFrame(ttk.Frame):
         )
         self._canvas.pack(side=LEFT, fill=BOTH, expand=YES)
         self._vbar = ttk.Scrollbar(
-            master=self._outer,
+            master=self.container,
             orient=VERTICAL,
             command=self._canvas.yview,
             bootstyle=bootstyle,
         )
         self._vbar.pack(side=RIGHT, fill=Y)
         self._canvas.configure(yscrollcommand=self._vbar.set)
-        print(self._canvas.configure())
 
         super().__init__(self._canvas)
         self._wid = self._canvas.create_window((0, 0), anchor=NW, window=self)
@@ -161,7 +183,7 @@ class ScrolledFrame(ttk.Frame):
             vars(Pack).keys() | vars(Place).keys() | vars(Grid).keys()
         ):
             if any(["pack" in method, "grid" in method, "place" in method]):
-                setattr(self, method, getattr(self._outer, method))
+                setattr(self, method, getattr(self.container, method))
 
         self._canvas.bind("<Configure>", self._resize_canvas, "+")
         self._canvas.bind("<Enter>", self._enable_scrolling, "+")
@@ -193,10 +215,10 @@ if __name__ == "__main__":
     # st.pack(fill=BOTH, expand=YES)
 
     # TEST SCROLLED FRAME
-    frame = ttk.Frame(app)
-    frame.pack()
-    sf = ScrolledFrame(frame)
-    sf.pack(fill=BOTH, expand=YES, padx=20, pady=20)
+    nb = ttk.Notebook()
+    nb.pack()
+    sf = ScrolledFrame(app)
+    nb.add(sf.container, text="ScrolledFrame", padding=10)
     for x in range(20):
         ttk.Button(sf, text=f"button {x}").pack(anchor=W)
 
