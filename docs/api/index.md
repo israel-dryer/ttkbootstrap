@@ -3,7 +3,7 @@
 ttkbootstrap is a wrapper on tkinter. Any widget or function not defined
 specifically in this library can be found in [other references](#other-references).
 
-## 📟 dialogs module
+## 💬 dialogs module
 This module contains various base dialog base classes (ending in "Dialog") 
 that can be used to create custom dialogs for the end user. These base 
 classes serve as the basis for the pre-defined static helper methods in 
@@ -17,6 +17,22 @@ pre-defined message and query dialog configurations.
 ❯ [MessageBox](dialogs/messagebox.md)  
 ❯ [QueryBox](dialogs/querybox.md)  
 
+## 😉 icons module
+This module contains classes that provide emojis or image icons for your
+application. They can be used in text as `Emoji` or in the 
+`PhotoImage` class as `Icon`.
+
+❯ [Emoji](icons/icons/emoji.md)  
+❯ [Icon](icons/icon.md)  
+
+## 📜 scrolled module
+This module contains various scrolled widgets such as `ScrolledText` and
+`ScrolledFrame`.
+
+❯ [ScrolledFrame](scrolled/scrolledframe.md)  
+❯ [ScrolledText](scrolled/scrolledtext.md)  
+
+
 ## 🎨 style module
 This module contains the classes that make up the ttkbootstrap theme and
 style engine. Depending on how you use ttkbootstrap, you may never need
@@ -29,6 +45,16 @@ docs are here for your reference.
 ❯ [StyleBuilderTk](style/stylebuildertk.md)  
 ❯ [StyleBuilderTTK](style/stylebuilderttk.md)  
 ❯ [Bootstyle](style/bootstyle.md)  
+
+## 🛎️ [toast module](toast.md)
+This module has a class called `ToastNotification` which provides a 
+semi-transparent popup window for temporary alerts or messages.
+
+## 📝 [tooltip module](tooltip.md)
+This module contains a class of the same name that provides a 
+semi-transparent tooltip popup window that shows text when the
+mouse is hovering over the widget and closes when the mouse is no
+longer hovering over the widget.
 
 ## ☑️ widgets module
 This module contains the custom ttkbootstrap widgets linked below.  
@@ -46,14 +72,7 @@ convenient api for initial application startup. This also applies to the
 ❯ [Window](window/window)  
 ❯ [Toplevel](window/toplevel)   
 
-## 😉 [icons module](icons.md)
-This module contains classes that provide emojis or image icons for your
-application. They can be used in text as `Emoji` or in the 
-`PhotoImage` class as `Icon`.
 
-❯ [Icon](icons/#ttkbootstrap.icons.Icon)  
-❯ [Emoji](icons/#ttkbootstrap.icons.Emoji)  
-  
 ## ⚙️ [utility module](utility.md)
 This module includes various utility functions that may or may not be useful
 to the end user. Click the header to read more.

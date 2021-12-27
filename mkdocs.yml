@@ -80,7 +80,12 @@ nav:
       - api/dialogs/fontdialog.md
       - api/dialogs/messagebox.md
       - api/dialogs/querybox.md
-    - 'icons module': api/icons.md
+    - 'icons module':
+      - api/icons/emoji.md
+      - api/icons/icon.md
+    - 'scrolled module':
+      - api/scrolled/scrolledframe.md
+      - api/scrolled/scrolledtext.md
     - 'style module': 
       - api/style/bootstyle.md
       - api/style/colors.md
