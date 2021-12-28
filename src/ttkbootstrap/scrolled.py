@@ -275,7 +275,7 @@ class ScrolledFrame(ttk.Frame):
         if self._winsys.lower() == 'win32':
             delta = -int(event.delta / 120)
         elif self._winsys.lower() == 'aqua':
-            delta = event.delta
+            delta = -event.delta
         elif event.num == 4:
             delta = -1
         elif event.num == 5:
