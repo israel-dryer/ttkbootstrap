@@ -38,3 +38,6 @@ SQUARE = 'square'
 TREE = 'tree'
 HEADINGS = 'headings'
 TREEHEADINGS = 'tree headings'
+
+# state constants
+READONLY = 'readonly'
