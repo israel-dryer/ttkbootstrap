@@ -277,9 +277,9 @@ class ScrolledFrame(ttk.Frame):
         elif self._winsys.lower() == 'aqua':
             delta = event.delta
         elif event.num == 4:
-            delta = event.delta / 120
+            delta = -1
         elif event.num == 5:
-            delta = event.delta / -120
+            delta = 1
         self._canvas.yview_scroll(delta, UNITS)
 
     def _enable_scrolling(self, *_):
