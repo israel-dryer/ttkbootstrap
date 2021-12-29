@@ -100,6 +100,7 @@ nav:
       - api/widgets/dateentry.md
       - api/widgets/floodgauge.md
       - api/widgets/meter.md
+      - api/widgets/tableview.md
     - 'window module':
       - api/window/window.md
       - api/window/toplevel.md

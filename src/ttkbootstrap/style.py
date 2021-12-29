@@ -472,7 +472,7 @@ class Style(ttk.Style):
     def configure(self, style, query_opt: Any = None, **kw):
         if query_opt:
             return super().configure(style, query_opt=query_opt, **kw)
-        
+
         if not self.style_exists_in_theme(style):
             ttkstyle = Bootstyle.update_ttk_widget_style(None, style)
         else:
@@ -609,7 +609,7 @@ class Style(ttk.Style):
 
     def _build_configure(self, style, **kw):
         """Calls configure of superclass; used by style builder classes."""
-        super().configure(style, **kw)        
+        super().configure(style, **kw)
 
     def _load_themes(self):
         """Load all ttkbootstrap defined themes"""
@@ -1105,6 +1105,9 @@ class StyleBuilderTTK:
             borderwidth=1,
             focuscolor="",
         )
+        # this is general style applied to the tableview
+        self.create_link_button_style()
+        self.style.configure("symbol.Link.TButton", font="-size 16")
 
     def create_combobox_style(self, colorname=DEFAULT):
         """Create a style for the ttk.Combobox widget.
@@ -1248,9 +1251,7 @@ class StyleBuilderTTK:
 
         # horizontal separator
         h_element = h_ttkstyle.replace(".TS", ".S")
-        h_img = ImageTk.PhotoImage(
-            Image.new("RGB", hsize, background)
-        )
+        h_img = ImageTk.PhotoImage(Image.new("RGB", hsize, background))
         h_name = util.get_image_name(h_img)
         self.theme_images[h_name] = h_img
 
@@ -1261,9 +1262,7 @@ class StyleBuilderTTK:
 
         # vertical separator
         v_element = v_ttkstyle.replace(".TS", ".S")
-        v_img = ImageTk.PhotoImage(
-            Image.new("RGB", vsize, background)
-        )
+        v_img = ImageTk.PhotoImage(Image.new("RGB", vsize, background))
         v_name = util.get_image_name(v_img)
         self.theme_images[v_name] = v_img
         self.style.element_create(f"{v_element}.separator", "image", v_name)
@@ -2393,6 +2392,104 @@ class StyleBuilderTTK:
         )
         # register ttkstyles
         self.style._register_ttkstyle(ttkstyle)
+
+    def create_table_treeview_style(self, colorname=DEFAULT):
+        """Create a style for the Tableview widget.
+
+        Parameters:
+
+            colorname (str):
+                The color label used to style the widget.
+        """
+        STYLE = "Table.Treeview"
+
+        f = font.nametofont("TkDefaultFont")
+        rowheight = f.metrics()["linespace"]
+
+        if self.is_light_theme:
+            disabled_fg = Colors.update_hsv(self.colors.inputbg, vd=-0.2)
+            bordercolor = self.colors.border
+        else:
+            disabled_fg = Colors.update_hsv(self.colors.inputbg, vd=-0.3)
+            bordercolor = self.colors.selectbg
+
+        if any([colorname == DEFAULT, colorname == ""]):
+            background = self.colors.inputbg
+            foreground = self.colors.inputfg
+            body_style = STYLE
+            header_style = f"{STYLE}.Heading"
+        elif colorname == LIGHT and self.is_light_theme:
+            background = self.colors.get(colorname)
+            foreground = self.colors.fg
+            body_style = f"{colorname}.{STYLE}"
+            header_style = f"{colorname}.{STYLE}.Heading"
+        else:
+            background = self.colors.get(colorname)
+            foreground = self.colors.selectfg
+            body_style = f"{colorname}.{STYLE}"
+            header_style = f"{colorname}.{STYLE}.Heading"
+
+        # treeview header
+        self.style._build_configure(
+            header_style,
+            background=background,
+            foreground=foreground,
+            relief=tk.FLAT,
+            padding=5,
+        )
+        self.style.map(
+            header_style,
+            foreground=[("disabled", disabled_fg)],
+        )
+        self.style._build_configure(
+            body_style,
+            background=self.colors.inputbg,
+            fieldbackground=self.colors.inputbg,
+            foreground=self.colors.inputfg,
+            bordercolor=bordercolor,
+            lightcolor=self.colors.inputbg,
+            darkcolor=self.colors.inputbg,
+            borderwidth=2,
+            padding=0,
+            rowheight=rowheight,
+            relief=tk.RAISED,
+        )
+        self.style.map(
+            body_style,
+            background=[("selected", self.colors.selectbg)],
+            foreground=[
+                ("disabled", disabled_fg),
+                ("selected", self.colors.selectfg),
+            ],
+        )
+        self.style.layout(
+            body_style,
+            [
+                (
+                    "Button.border",
+                    {
+                        "sticky": tk.NSEW,
+                        "border": "1",
+                        "children": [
+                            (
+                                "Treeview.padding",
+                                {
+                                    "sticky": tk.NSEW,
+                                    "children": [
+                                        (
+                                            "Treeview.treearea",
+                                            {"sticky": tk.NSEW},
+                                        )
+                                    ],
+                                },
+                            )
+                        ],
+                    },
+                )
+            ],
+        )
+        # register ttkstyles
+        self.style._register_ttkstyle(body_style)
 
     def create_treeview_style(self, colorname=DEFAULT):
         """Create a style for the ttk.Treeview widget.
@@ -4411,6 +4508,7 @@ class Keywords:
         "date",
         "metersubtxt",
         "meter",
+        "table"
     ]
     CLASSES = [
         "button",
@@ -4711,7 +4809,9 @@ class Bootstyle:
                 if Style.get_instance().style_exists_in_theme(style):
                     self.configure(style=style)
                 else:
-                    ttkstyle = Bootstyle.update_ttk_widget_style(self, style, **kwargs)
+                    ttkstyle = Bootstyle.update_ttk_widget_style(
+                        self, style, **kwargs
+                    )
                     self.configure(style=ttkstyle)
             elif bootstyle:
                 ttkstyle = Bootstyle.update_ttk_widget_style(
@@ -4914,11 +5014,11 @@ class Bootstyle:
         def __init__wrapper(self, *args, **kwargs):
 
             # check for autostyle flag
-            if 'autostyle' in kwargs:
-                autostyle = kwargs.pop('autostyle')
+            if "autostyle" in kwargs:
+                autostyle = kwargs.pop("autostyle")
             else:
                 autostyle = True
-            
+
             # instantiate the widget
             func(self, *args, **kwargs)
 

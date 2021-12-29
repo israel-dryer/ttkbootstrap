@@ -22,7 +22,7 @@ This module contains classes that provide emojis or image icons for your
 application. They can be used in text as `Emoji` or in the 
 `PhotoImage` class as `Icon`.
 
-❯ [Emoji](icons/icons/emoji.md)  
+❯ [Emoji](icons/emoji.md)  
 ❯ [Icon](icons/icon.md)  
 
 ## 📜 scrolled module
@@ -62,6 +62,8 @@ This module contains the custom ttkbootstrap widgets linked below.
 ❯ [DateEntry](widgets/dateentry.md)  
 ❯ [Floodgauge](widgets/floodgauge.md)  
 ❯ [Meter](widgets/meter.md)  
+❯ [Tableview](widgets/tableview.md)  
+
 
 ## 🗔 window module
 This module contains a class of the same name that wraps the `tkinter.Tk` 
