@@ -1,11 +1,5 @@
 import ttkbootstrap as ttk
 from ttkbootstrap.constants import *
-from uuid import uuid4
-
-testdata = []
-
-for x in range(1000000):
-    testdata.append([y + x for y in range(5)])
 
 
 # https://kivymd.readthedocs.io/en/0.104.1/components/datatables/index.html
@@ -14,6 +8,7 @@ for x in range(1000000):
 
 UPARROW = "🔺"
 DOWNARROW = "🔻"
+
 
 class DataTableRow:
     def __init__(self):
@@ -86,69 +81,95 @@ class DataTable(ttk.Frame):
     def __init__(
         self,
         master=None,
+        bootstyle=PRIMARY,
         coldata=[],
         rowdata=[],
         paginated=False,
+        searchable=False,
         pagesize=5,
         height=10,
     ):
         super().__init__(master)
         self.tablecols = []
         self.tablerows = []
+        self.tablerows_filtered = []
         self.viewdata = []
-        self.pageindex = 0
+        self.rowindex = ttk.IntVar(value=0)
+        self.pageindex = ttk.IntVar(value=0)
+        self.pagelimit = ttk.IntVar(value=0)
         self.height = height
         self.pagesize = pagesize
         self.paginated = paginated
+        self.searchable = searchable
         self.reversed = False
+        self.filtered = False
+        self.criteria = ttk.StringVar()
 
         if not paginated:
             self.pagesize = len(rowdata)
         else:
             self.height = self.pagesize
 
+        # create searchbar
+        if self.searchable:
+            self.build_searchbar()
+
+        # create data table
         self._tableview = ttk.Treeview(
             master=self,
             columns=[x for x in range(len(coldata))],
             height=self.height,
             show=HEADINGS,
-            bootstyle=PRIMARY,
+            bootstyle=bootstyle,
         )
         self._tableview.pack(fill=BOTH, expand=YES)
 
+        # configure table columns
         for cid, col in enumerate(coldata):
             self.tablecols.append(
                 DataTableColumn(
-                    table=self._tableview, 
-                    cid=cid, 
-                    headertext=col, 
-                    headercommand=lambda x=cid: self.column_sort(x)
+                    table=self._tableview,
+                    cid=cid,
+                    headertext=col,
+                    headercommand=lambda x=cid: self.column_sort(x),
                 )
             )
 
+        # build table row objects
         for val in rowdata:
             self.tablerows.append(DataTableRow(self._tableview, val))
 
+        # build the data table
         self.build_table()
 
     def first_page(self):
         """Update table with first page of data"""
-        self.pageindex = 0
+        self.rowindex.set(0)
         self.load_data()
 
     def last_page(self):
         """Update the table with the last page of data"""
-        self.pageindex = len(self.tablerows) - self.pagesize
+        if self.filtered:
+            self.rowindex.set(len(self.tablerows_filtered) - self.pagesize)
+        else:
+            self.rowindex.set(len(self.tablerows) - self.pagesize)
         self.load_data()
 
     def next_page(self):
         """Update table with next page of data"""
-        self.pageindex += self.pagesize
+        pageindex = self.rowindex.get()
+        self.rowindex.set(pageindex + self.pagesize)
         self.load_data()
 
     def prev_page(self):
         """Update table with prev page of data"""
-        self.pageindex -= self.pagesize
+        pageindex = self.rowindex.get()
+        self.rowindex.set(pageindex - self.pagesize)
+        self.load_data()
+
+    def goto_page(self, *_):
+        pageindex = self.pageindex.get()
+        self.rowindex.set(pageindex * self.pagesize)
         self.load_data()
 
     def column_sort(self, key):
@@ -158,15 +179,23 @@ class DataTable(ttk.Frame):
         self.update_sorted_header(key)
 
         # update table data
-        tablerows = self.tablerows
+        if self.filtered:
+            tablerows = self.tablerows_filtered
+        else:
+            tablerows = self.tablerows
+
         sortedrows = sorted(
             tablerows, reverse=self.reversed, key=lambda x: x.values[key]
         )
-        self.tablerows = sortedrows
+        if self.filtered:
+            self.tablerows_filtered = sortedrows
+        else:
+            self.tablerows = sortedrows
+
         self.reversed = not self.reversed
         self.unload_data()
         self.load_data()
-    
+
     def reset_header_labels(self):
         for col in self.tablecols:
             self._tableview.heading(col.cid, text=col.headertext)
@@ -186,6 +215,19 @@ class DataTable(ttk.Frame):
         if self.paginated:
             self.build_pageframe()
 
+    def build_searchbar(self):
+        """Build the table searchbar"""
+        frame = ttk.Frame(self, padding=5)
+        frame.pack(fill=X, side=TOP)
+        ttk.Label(frame, text="Search").pack(side=LEFT, padx=5)
+        searchterm = ttk.Entry(frame, textvariable=self.criteria)
+        searchterm.pack(fill=X, side=LEFT, expand=YES)
+        searchterm.bind("<Return>", self.search_table_data)
+        ttk.Button(frame, text="⤵", command=self.clear_table_filter,
+        style='symbol.Link.TButton').pack(
+            side=LEFT
+        )
+
     def unload_data(self):
         for row in self.viewdata:
             row.hide()
@@ -194,41 +236,112 @@ class DataTable(ttk.Frame):
     def load_data(self):
         """Load table data"""
         self.unload_data()
-        page_start = self.pageindex
-        page_end = self.pageindex + self.pagesize
-        row_data = self.tablerows[page_start:page_end]
-        for row in row_data:
+        page_start = self.rowindex.get()
+        page_end = self.rowindex.get() + self.pagesize
+
+        if self.filtered:
+            rowdata = self.tablerows_filtered[page_start:page_end]
+            rowcount = len(self.tablerows_filtered)
+        else:
+            rowdata = self.tablerows[page_start:page_end]
+            rowcount = len(self.tablerows)
+
+        if len(rowdata) % self.pagesize == 0:
+            self.pagelimit.set(rowcount // self.pagesize)
+        else:
+            self.pagelimit.set((rowcount // self.pagesize) + 1)
+
+        self.pageindex.set(self.rowindex.get() // self.pagesize)
+
+        for row in rowdata:
             row.show()
             self.viewdata.append(row)
+
+    def clear_table_filter(self):
+        self.filtered = False
+        self.criteria.set("")
+        self.unload_data()
+        self.load_data()
+
+    def search_table_data(self, _):
+        """Search the table for criteria and return the results"""
+        criteria = self.criteria.get()
+        self.filtered = True
+        self.tablerows_filtered.clear()
+        self.unload_data()
+        data = self.tablerows
+        for row in data:
+            for col in row.values:
+                if str(criteria).lower() in str(col).lower():
+                    self.tablerows_filtered.append(row)
+                    break
+        self.rowindex.set(0)
+        self.load_data()
 
     def build_pageframe(self):
         pageframe = ttk.Frame(self)
         pageframe.pack(fill=X, expand=YES)
         ttk.Button(
-            master=pageframe, text=">>", width=4, command=self.last_page
-        ).pack(side=RIGHT)
+            master=pageframe,
+            text="»",
+            command=self.last_page,
+            style="symbol.Link.TButton",
+        ).pack(side=RIGHT, fill=Y)
         ttk.Button(
-            master=pageframe, text=">", width=4, command=self.next_page
-        ).pack(side=RIGHT, padx=5)
+            master=pageframe,
+            text="›",
+            command=self.next_page,
+            style="symbol.Link.TButton",
+        ).pack(side=RIGHT, fill=Y)
+
+        ttk.Separator(pageframe, orient=VERTICAL).pack(side=RIGHT)
+        ttk.Label(pageframe, textvariable=self.pagelimit).pack(
+            side=RIGHT, padx=(0, 5)
+        )
+        ttk.Label(pageframe, text="of").pack(side=RIGHT, padx=(5, 0))
+        index = ttk.Entry(pageframe, textvariable=self.pageindex, width=6)
+        index.pack(side=RIGHT)
+        index.bind("<Return>", self.goto_page)
+        ttk.Label(pageframe, text="Page").pack(side=RIGHT, padx=5)
+        ttk.Separator(pageframe, orient=VERTICAL).pack(side=RIGHT)
+
         ttk.Button(
-            master=pageframe, text="<", width=4, command=self.prev_page
-        ).pack(side=RIGHT)
+            master=pageframe,
+            text="‹",
+            command=self.prev_page,
+            style="symbol.Link.TButton",
+        ).pack(side=RIGHT, fill=Y)
         ttk.Button(
-            master=pageframe, text="<<", width=4, command=self.first_page
-        ).pack(side=RIGHT, padx=5)
+            master=pageframe,
+            text="«",
+            command=self.first_page,
+            style="symbol.Link.TButton",
+        ).pack(side=RIGHT, fill=Y)
+
 
 
 if __name__ == "__main__":
 
-    app = ttk.Window()
+    import csv
+    from pathlib import Path
 
+    p = Path(".") / "development/new_widgets/Sample1000.csv"
+
+    with open(p, encoding="utf-8") as f:
+        reader = csv.reader(f)
+        coldata = next(reader)
+        rowdata = list(reader)
+
+    app = ttk.Window(themename="flatly")
+    app.style.configure("symbol.Link.TButton", font="-size 16")
     dt = DataTable(
         master=app,
-        coldata=["Col1", "Col2", "Col3", "Col4", "Col5"],
-        rowdata=testdata,
-        pagesize=15,
+        coldata=coldata,
+        rowdata=rowdata,
+        pagesize=20,
         paginated=True,
+        searchable=True,
     )
-    dt.pack()
+    dt.pack(fill=BOTH, expand=YES)
 
     app.mainloop()
