@@ -1228,8 +1228,8 @@ class StyleBuilderTTK:
         HSTYLE = "Horizontal.TSeparator"
         VSTYLE = "Vertical.TSeparator"
 
-        hsize = self.scale_size([40, 1])
-        vsize = self.scale_size([1, 40])
+        hsize = [40, 1]
+        vsize = [1, 40]
 
         # style colors
         if self.is_light_theme:
@@ -1249,7 +1249,7 @@ class StyleBuilderTTK:
         # horizontal separator
         h_element = h_ttkstyle.replace(".TS", ".S")
         h_img = ImageTk.PhotoImage(
-            Image.new("RGB", self.scale_size(hsize), background)
+            Image.new("RGB", hsize, background)
         )
         h_name = util.get_image_name(h_img)
         self.theme_images[h_name] = h_img
@@ -1262,7 +1262,7 @@ class StyleBuilderTTK:
         # vertical separator
         v_element = v_ttkstyle.replace(".TS", ".S")
         v_img = ImageTk.PhotoImage(
-            Image.new("RGB", self.scale_size(vsize), background)
+            Image.new("RGB", vsize, background)
         )
         v_name = util.get_image_name(v_img)
         self.theme_images[v_name] = v_img
@@ -2688,7 +2688,7 @@ class StyleBuilderTTK:
         hover = self.colors.info
 
         if any([colorname == DEFAULT, colorname == ""]):
-            foreground = self.colors.primary
+            foreground = self.colors.fg
             ttkstyle = STYLE
         elif colorname == LIGHT:
             foreground = self.colors.fg
