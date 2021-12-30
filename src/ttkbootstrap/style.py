@@ -8,10 +8,14 @@ from typing import Any, Callable
 from PIL import ImageTk, ImageDraw, Image, ImageFont
 from ttkbootstrap.constants import *
 from ttkbootstrap.themes.standard import STANDARD_THEMES
-from ttkbootstrap.themes.user import USER_THEMES
 from ttkbootstrap.publisher import Publisher, Channel
 from ttkbootstrap import utility as util
 
+try:
+    # prevent app from failing if user.py gets corrupted
+    from ttkbootstrap.themes.user import USER_THEMES
+except:
+    USER_THEMES = {}
 
 class Colors:
     """A class that defines the color scheme for a theme as well as
