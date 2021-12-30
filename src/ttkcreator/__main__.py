@@ -1,12 +1,11 @@
 import shutil
+import json
 from uuid import uuid4
 from pathlib import Path
-import black
 import ttkbootstrap as ttk
 from tkinter import Frame
 from tkinter.colorchooser import askcolor
 from tkinter.filedialog import askopenfilename, asksaveasfilename
-from ttkbootstrap import utility
 from ttkbootstrap.themes import standard, user
 from ttkbootstrap.style import ThemeDefinition
 from ttkbootstrap.constants import *
@@ -143,12 +142,12 @@ class ThemeCreator(ttk.Window):
         user.USER_THEMES.update(theme)
         standard.STANDARD_THEMES[name] = theme[name]
 
-        # save user themes to file; the python code is formatted by black
-        code_string = "USER_THEMES=" + str(user.USER_THEMES)
-        formatted = black.format_str(code_string, mode=black.Mode())
+        # save user themes to file
+        formatted = json.dumps(user.USER_THEMES, indent=4)
+        out = 'USER_THEMES = ' + formatted
         filepath = user.__file__
-        with open(filepath, "w", encoding="utf-8") as f:
-            f.write(formatted)
+        with open(filepath, 'w', encoding='utf-8') as f:
+            f.write(out)
 
         definition = ThemeDefinition(name, colors, self.style.theme.type)
         self.style.register_theme(definition)

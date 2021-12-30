@@ -84,6 +84,6 @@ setuptools.setup(
     url="https://github.com/israel-dryer/ttkbootstrap",
     package_dir={"": "src"},
     packages=setuptools.find_packages(where="src"),
-    install_requires=["pillow>=8.2.0", "black>=21.12b0"],
+    install_requires=["pillow>=8.2.0"],
     python_requires=">=3.7",
 )
