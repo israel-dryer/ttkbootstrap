@@ -9,6 +9,7 @@ from tkinter.ttk import Panedwindow, Progressbar, Radiobutton
 from tkinter.ttk import Scale, Scrollbar, Separator
 from tkinter.ttk import Sizegrip, Spinbox, Treeview
 from ttkbootstrap.constants import *
+from math import ceil
 
 # date entry imports
 from ttkbootstrap.dialogs import Querybox
@@ -1208,7 +1209,7 @@ class Tableview(ttk.Frame):
         self.autoalign = autoalign
         self.filtered = False
         self.criteria = tk.StringVar()
-        self.rightclickmenu = None
+        self.rightclickmenu_cell = None
 
         if not paginated:
             self.pagesize = len(rowdata)
@@ -1237,12 +1238,11 @@ class Tableview(ttk.Frame):
             rowdata = self.tablerows[page_start:page_end]
             rowcount = len(self.tablerows)
 
-        if len(rowdata) % self.pagesize == 0:
-            self.pagelimit.set(rowcount // self.pagesize)
-        else:
-            self.pagelimit.set((rowcount // self.pagesize) + 1)
-
-        self.pageindex.set((self.rowindex.get() // self.pagesize) + 1)
+        self.pagelimit.set(ceil(rowcount / self.pagesize))
+        
+        pageindex = ceil(page_end / self.pagesize)
+        pagelimit = self.pagelimit.get()
+        self.pageindex.set(min([pagelimit, pageindex]))
 
         for i, row in enumerate(rowdata):
             if self.stripecolor is not None and i % 2 == 0:
@@ -1286,7 +1286,8 @@ class Tableview(ttk.Frame):
         if self.stripecolor is not None:
             self.configure_table_stripes(self.stripecolor)
 
-        self.rightclickmenu = TableRightClickMenu(self)
+        self.rightclickmenu_cell = TableCellRightClickMenu(self)
+        self.rightclickmenu_head = TableHeaderRightClickMenu(self)
         self.widget_binding()
 
     # def build_horizontal_scrollbar(self):
@@ -1408,10 +1409,7 @@ class Tableview(ttk.Frame):
 
     def last_page(self):
         """Update the table with the last page of data"""
-        if self.filtered:
-            self.rowindex.set(len(self.tablerows_filtered) - self.pagesize)
-        else:
-            self.rowindex.set(len(self.tablerows) - self.pagesize)
+        self.rowindex.set(self.pagesize * (self.pagelimit.get() - 1))
         self.load_table_data()
 
     def next_page(self):
@@ -1556,12 +1554,12 @@ class Tableview(ttk.Frame):
                 self.tableview.column(i, anchor=E)
                 self.tableview.heading(i, anchor=E)
 
-    # Widget binding
+    # WIDGET BINDING
 
     def widget_binding(self):
         self.tableview.bind("<Double-Button-1>", self.header_double_leftclick)
         self.tableview.bind("<Button-1>", self.header_leftclick)
-        self.tableview.bind("<Button-3>", self.rightclickmenu.post)
+        self.tableview.bind("<Button-3>", self.table_rightclick)
 
     def header_double_leftclick(self, event):
         region = self.tableview.identify_region(event.x, event.y)
@@ -1574,6 +1572,13 @@ class Tableview(ttk.Frame):
             col = self.tableview.identify_column(event.x)
             cid = int(self.tableview.column(col, "id"))
             self.column_sort_data(cid)
+
+    def table_rightclick(self, event):
+        region = self.tableview.identify_region(event.x, event.y)
+        if region == "heading":
+            self.rightclickmenu_head.post(event)
+        elif region != "separator":
+            self.rightclickmenu_cell.post(event)
 
 
 class TableColumn:
@@ -1655,32 +1660,45 @@ class TableRow:
         self.iid = self.table.insert("", END, values=self.values)
 
 
-class TableRightClickMenu(tk.Menu):
+class TableCellRightClickMenu(tk.Menu):
     def __init__(self, master):
         super().__init__(master, tearoff=False)
         self.table: ttk.Treeview = master.tableview
         self.cid = None
         self.iid = None
 
-        self.add_command(
-            label="⬆  Sort Ascending", command=self.sort_ascending
+        # SORT MENU
+        sort_menu = tk.Menu(self, tearoff=False)
+        sort_menu.add_command(
+            label="⬆  Sort Ascending", 
+            command=self.sort_ascending
         )
-        self.add_command(
-            label="⬇  Sort Descending", command=self.sort_descending
+        sort_menu.add_command(
+            label="⬇  Sort Descending", 
+            command=self.sort_descending
         )
-
+        self.add_cascade(menu=sort_menu, label="⇅ Sort")
         filter_menu = tk.Menu(self, tearoff=False)
         filter_menu.add_command(
-            label="To cell value", command=self.filter_to_cell_value
+            label="Clear filter", 
+            command=self.master.clear_table_filter
+        )
+        filter_menu.add_separator()
+        filter_menu.add_command(
+            label="Filter by cell's value", 
+            command=self.filter_to_cell_value
         )
         filter_menu.add_command(
-            label="To selected rows", command=self.filter_to_selected_rows
+            label="Hide select rows", 
+            command=self.hide_select_rows
         )
         filter_menu.add_command(
-            label="Clear filter", command=self.master.clear_table_filter
+            label="Show only select rows", 
+            command=self.filter_to_selected_rows
         )
         self.add_cascade(menu=filter_menu, label="⧨  Filter")
 
+        # EXPORT MENU
         export_menu = tk.Menu(self, tearoff=False)
         export_menu.add_command(
             label="Export all records", command=self.export_all_records
@@ -1698,35 +1716,21 @@ class TableRightClickMenu(tk.Menu):
         )
         self.add_cascade(menu=export_menu, label="↔  Export")
 
-        hide_menu = tk.Menu(self, tearoff=False)
-        hide_menu.add_command(label="Hide row")
-        hide_menu.add_command(label="Hide column")
-        hide_menu.add_command(label="Unhide rows")
-        hide_menu.add_command(label="Unhide column")
-        self.add_cascade(menu=hide_menu, label="◐  Hide")
-
-        delete_menu = tk.Menu(self, tearoff=False)
-        delete_menu.add_command(label="Delete row")
-        delete_menu.add_command(label="Delete column")
-        self.add_cascade(menu=delete_menu, label="⨯  Delete")
-
-        insert_menu = tk.Menu(self, tearoff=False)
-        insert_menu.add_command(label="Insert row")
-        insert_menu.add_command(label="Insert column")
-        self.add_cascade(menu=insert_menu, label="⤮  Insert")
-
+        # MOVE MENU
         move_menu = tk.Menu(self, tearoff=False)
-        move_menu.add_command(label="Move up one")
-        move_menu.add_command(label="Move down one")
-        move_menu.add_command(label="Move to top")
-        move_menu.add_command(label="Move to bottom")
-        self.add_cascade(menu=move_menu, label="⇄  Move")
+        move_menu.add_command(label="↑ Move up")
+        move_menu.add_command(label="↓ Move down")
+        move_menu.add_command(label="⤒ Move to top")
+        move_menu.add_command(label="⤓ Move to bottom")
+        self.add_cascade(menu=move_menu, label="⇵  Move")
 
+        # ALIGN MENU
         align_menu = tk.Menu(self, tearoff=False)
-        align_menu.add_command(label="Align left")
-        align_menu.add_command(label="Align center")
-        align_menu.add_command(label="Align right")
+        align_menu.add_command(label="◧  Align left", command=self.align_left)
+        align_menu.add_command(label="◫  Align center", command=self.align_center)
+        align_menu.add_command(label="◨  Align right", command=self.align_right)
         self.add_cascade(menu=align_menu, label="↦  Align")
+
 
     def post(self, event):
         # capture the column and item that invoked the menu
@@ -1753,7 +1757,7 @@ class TableRightClickMenu(tk.Menu):
     def filter_to_cell_value(self):
         """Hide all records except for records where the current
         column exactly matches teh current cell value."""
-        criteria = self.item["values"][self.cid]
+        criteria = str(self.item["values"][self.cid])
         table = self.master
         table.filtered = True
         table.tablerows_filtered.clear()
@@ -1840,3 +1844,174 @@ class TableRightClickMenu(tk.Menu):
         records = [row.values for row in table.tablerows_filtered]
         self.save_data_to_csv(headers, records)
 
+    def hide_select_rows(self):
+        """Hide the selected rows"""
+        table: Tableview = self.master
+        selected = self.table.selection()
+        self.table.detach(*selected)
+        tablerows = [row for row in table.viewdata if row.iid in selected]
+
+        if not table.filtered:
+            table.filtered = True
+            table.tablerows_filtered = table.tablerows
+
+        for row in tablerows:
+            if table.filtered:
+                table.tablerows_filtered.remove(row)
+
+        table.load_table_data()
+
+    def hide_select_columns(self):
+        """Hide the selected columns"""
+        displaycols = list(self.table.configure('displaycolumns'))
+        cols = list(self.table.configure('columns'))
+        if '#all' in displaycols:
+            displaycols = cols
+        displaycols.remove(str(self.cid))
+        self.table.configure(displaycolumns=displaycols)
+
+    def align_left(self):
+        self.table.column(self.cid, anchor=W)
+
+    def align_right(self):
+        self.table.column(self.cid, anchor=E)
+
+    def align_center(self):
+        self.table.column(self.cid, anchor=CENTER)
+
+class TableHeaderRightClickMenu(tk.Menu):
+
+    def __init__(self, master):
+        super().__init__(master, tearoff=False)
+        self.table: ttk.Treeview = master.tableview
+        self.cid = None
+        self.iid = None
+
+        # HIDE & SHOW
+        show_menu = tk.Menu(self, tearoff=False)
+        for column in self.master.tablecols:
+            variable = f'column_{column.cid}'
+            self.table.setvar(variable, True)
+            show_menu.add_checkbutton(
+                label=column.headertext, 
+                command=lambda w=column: self.toggle_columns(w.cid),
+                variable=variable,
+                indicatoron=True,
+                onvalue=True,
+                offvalue=False
+             )
+        self.add_cascade(menu=show_menu, label='±  Columns')
+
+        # MOVE MENU
+        move_menu = tk.Menu(self, tearoff=False)
+        move_menu.add_command(label="←  Move to left", command=self.move_to_left)
+        move_menu.add_command(label="→  Move to right", command=self.move_to_right)
+        move_menu.add_command(label="⇤  Move to first", command=self.move_to_first)
+        move_menu.add_command(label="⇥  Move to last", command=self.move_to_last)
+        self.add_cascade(menu=move_menu, label="⇄  Move")
+
+        # ALIGN MENU
+        align_menu = tk.Menu(self, tearoff=False)
+        align_menu.add_command(label="◧  Align left", command=self.align_left)
+        align_menu.add_command(label="◫  Align center", command=self.align_center)
+        align_menu.add_command(label="◨  Align right", command=self.align_right)
+        self.add_cascade(menu=align_menu, label="↦  Align")
+
+    def post(self, event):
+        # capture the column and item that invoked the menu
+        self.element = self.table.identify_element(event.x, event.y)
+        col = self.table.identify_column(event.x)
+        self.cid = int(self.table.column(col, "id"))
+
+        # show the menu below the invoking cell
+        rootx = self.table.winfo_rootx()
+        rooty = self.table.winfo_rooty()
+        super().post(rootx + event.x, rooty + event.y + 10)
+
+    def move_to_left(self):
+        displaycols = list(self.table.configure('displaycolumns'))
+        cols = list(self.table.configure('columns'))
+        if '#all' in displaycols:
+            displaycols = cols
+        old_index = displaycols.index(str(self.cid))
+        if old_index == 0:
+            return
+        new_index = old_index - 1
+        displaycols.insert(new_index, displaycols.pop(old_index))
+        self.table.configure(displaycolumns=displaycols)
+
+    def move_to_right(self):
+        displaycols = list(self.table.configure('displaycolumns'))
+        cols = list(self.table.configure('columns'))
+        if '#all' in displaycols:
+            displaycols = cols
+        old_index = displaycols.index(str(self.cid))
+        if old_index == len(cols)-1:
+            return
+        new_index = old_index + 1
+        displaycols.insert(new_index, displaycols.pop(old_index))
+        self.table.configure(displaycolumns=displaycols)
+
+    def move_to_first(self):
+        displaycols = list(self.table.configure('displaycolumns'))
+        cols = list(self.table.configure('columns'))
+        if '#all' in displaycols:
+            displaycols = cols
+        old_index = displaycols.index(str(self.cid))
+        if old_index == 0:
+            return
+        displaycols.insert(0, displaycols.pop(old_index))
+        self.table.configure(displaycolumns=displaycols)
+
+    def move_to_last(self):
+        displaycols = list(self.table.configure('displaycolumns'))
+        cols = list(self.table.configure('columns'))
+        if '#all' in displaycols:
+            displaycols = cols
+        old_index = displaycols.index(str(self.cid))
+        if old_index == len(cols)-1:
+            return
+        new_index = len(cols)-1
+        displaycols.insert(new_index, displaycols.pop(old_index))
+        self.table.configure(displaycolumns=displaycols)
+
+    def align_left(self):
+        """Left align the column header"""
+        self.table.heading(self.cid, anchor=W)
+
+    def align_right(self):
+        """Right align the column header"""
+        self.table.heading(self.cid, anchor=E)
+
+    def align_center(self):
+        """Center align the column header"""
+        self.table.heading(self.cid, anchor=CENTER)
+
+    def toggle_columns(self, cid):
+        """Toggles the visibility of the selected column"""
+        variable = f'column_{cid}'
+        toggled = self.getvar(variable)
+        if toggled:
+            self.show_column(cid)
+        else:
+            self.hide_column(cid)
+
+    def hide_column(self, cid):
+        """Detach the selected column from the tableview"""
+        displaycols = list(self.table.configure('displaycolumns'))
+        cols = list(self.table.configure('columns'))
+        if '#all' in displaycols:
+            displaycols = cols
+        displaycols.remove(str(cid))
+        self.table.configure(displaycolumns=displaycols)
+
+    def show_column(self, cid):
+        """Attach the selected column to the tableview"""
+        displaycols = list(self.table.configure('displaycolumns'))
+        if '#all' in displaycols:
+            return
+        if str(cid) in displaycols:
+            return
+        index = displaycols.index(str(self.cid))
+        displaycols.insert(index, str(cid))
+        self.table.configure(displaycolumns=displaycols)
