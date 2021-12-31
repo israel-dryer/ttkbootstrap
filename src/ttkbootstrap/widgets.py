@@ -1718,10 +1718,10 @@ class TableCellRightClickMenu(tk.Menu):
 
         # MOVE MENU
         move_menu = tk.Menu(self, tearoff=False)
-        move_menu.add_command(label="↑ Move up")
-        move_menu.add_command(label="↓ Move down")
-        move_menu.add_command(label="⤒ Move to top")
-        move_menu.add_command(label="⤓ Move to bottom")
+        move_menu.add_command(label="↑ Move up", command=self.move_row_up)
+        move_menu.add_command(label="↓ Move down", command=self.move_row_down)
+        move_menu.add_command(label="⤒ Move to top", command=self.move_row_to_top)
+        move_menu.add_command(label="⤓ Move to bottom", command=self.move_row_to_bottom)
         self.add_cascade(menu=move_menu, label="⇵  Move")
 
         # ALIGN MENU
@@ -1871,13 +1871,165 @@ class TableCellRightClickMenu(tk.Menu):
         self.table.configure(displaycolumns=displaycols)
 
     def align_left(self):
+        "Left align the column text"
         self.table.column(self.cid, anchor=W)
 
     def align_right(self):
+        """Right align the column text"""
         self.table.column(self.cid, anchor=E)
 
     def align_center(self):
+        """Center align the column text"""
         self.table.column(self.cid, anchor=CENTER)
+
+    def move_row_to_top(self):
+        """Move record to the top of the data set.
+
+        TODO consider adding top of page function?
+        """
+        table = self.master
+        if table.filtered:
+            tablerows = table.tablerows_filtered
+        else:
+            tablerows = table.tablerows
+
+        # find row object
+        row_item = None
+        old_index = None
+        for i, row in enumerate(tablerows):
+            if row.iid == self.iid:
+                row_item = row
+                old_index = i
+                break
+        
+        if row_item is None:
+            return # couldn't find the item
+        
+        if old_index == 0: # already at the top
+            return
+        
+        # set the new item index
+        new_index = 0
+        tablerows.insert(new_index, tablerows.pop(old_index))
+
+        if table.filtered:
+            table.tablerows_filtered = tablerows
+        else:
+            table.tablerows = tablerows
+
+        # refresh the table data
+        table.unload_table_data()
+        table.load_table_data()  
+
+    def move_row_to_bottom(self):
+        """Move the row to the bottom of the dataset.
+        
+        TODO consider adding bottom of page function?
+        """
+        table = self.master
+        if table.filtered:
+            tablerows = table.tablerows_filtered
+        else:
+            tablerows = table.tablerows
+
+        # find row object
+        row_item = None
+        old_index = None
+        for i, row in enumerate(tablerows):
+            if row.iid == self.iid:
+                row_item = row
+                old_index = i
+                break
+        
+        if row_item is None:
+            return # couldn't find the item
+        
+        if old_index == len(tablerows)-1: # already at the bottom
+            return
+        
+        # set the new item index
+        new_index = len(tablerows)-1
+        tablerows.insert(new_index, tablerows.pop(old_index))
+
+        if table.filtered:
+            table.tablerows_filtered = tablerows
+        else:
+            table.tablerows = tablerows
+
+        # refresh the table data
+        table.unload_table_data()
+        table.load_table_data()  
+
+    def move_row_up(self):
+        """Move the selected above the previous row"""
+        table = self.master
+        if table.filtered:
+            tablerows = table.tablerows_filtered
+        else:
+            tablerows = table.tablerows
+
+        # find row object
+        row_item = None
+        old_index = None
+        for i, row in enumerate(tablerows):
+            if row.iid == self.iid:
+                row_item = row
+                old_index = i
+                break
+        
+        if row_item is None:
+            return # couldn't find the item
+        
+        if old_index == 0: # already at the top
+            return
+        
+        # set the new item index
+        new_index = old_index - 1
+        tablerows.insert(new_index, tablerows.pop(old_index))
+
+        if table.filtered:
+            table.tablerows_filtered = tablerows
+        else:
+            table.tablerows = tablerows
+
+        # refresh the table data
+        table.unload_table_data()
+        table.load_table_data()        
+
+    def move_row_down(self):
+        table = self.master
+        if table.filtered:
+            tablerows = table.tablerows_filtered
+        else:
+            tablerows = table.tablerows
+
+        # find row object
+        row_item = None
+        old_index = None
+        for i, row in enumerate(tablerows):
+            if row.iid == self.iid:
+                row_item = row
+                old_index = i
+                break
+        
+        if row_item is None:
+            return # couldn't find the item
+        
+        if old_index == len(tablerows)-1: # already at the bottom
+            return
+        
+        # set the new item index
+        new_index = old_index + 1
+        tablerows.insert(new_index, tablerows.pop(old_index))
+
+        if table.filtered:
+            table.tablerows_filtered = tablerows
+        else:
+            table.tablerows = tablerows
+
+        # refresh the table data
+        table.unload_table_data()
+        table.load_table_data()  
 
 class TableHeaderRightClickMenu(tk.Menu):
 
@@ -1904,10 +2056,10 @@ class TableHeaderRightClickMenu(tk.Menu):
 
         # MOVE MENU
         move_menu = tk.Menu(self, tearoff=False)
-        move_menu.add_command(label="←  Move to left", command=self.move_to_left)
-        move_menu.add_command(label="→  Move to right", command=self.move_to_right)
-        move_menu.add_command(label="⇤  Move to first", command=self.move_to_first)
-        move_menu.add_command(label="⇥  Move to last", command=self.move_to_last)
+        move_menu.add_command(label="←  Move to left", command=self.move_column_to_left)
+        move_menu.add_command(label="→  Move to right", command=self.move_column_to_right)
+        move_menu.add_command(label="⇤  Move to first", command=self.move_column_to_first)
+        move_menu.add_command(label="⇥  Move to last", command=self.move_column_to_last)
         self.add_cascade(menu=move_menu, label="⇄  Move")
 
         # ALIGN MENU
@@ -1928,7 +2080,7 @@ class TableHeaderRightClickMenu(tk.Menu):
         rooty = self.table.winfo_rooty()
         super().post(rootx + event.x, rooty + event.y + 10)
 
-    def move_to_left(self):
+    def move_column_to_left(self):
         displaycols = list(self.table.configure('displaycolumns'))
         cols = list(self.table.configure('columns'))
         if '#all' in displaycols:
@@ -1940,7 +2092,7 @@ class TableHeaderRightClickMenu(tk.Menu):
         displaycols.insert(new_index, displaycols.pop(old_index))
         self.table.configure(displaycolumns=displaycols)
 
-    def move_to_right(self):
+    def move_column_to_right(self):
         displaycols = list(self.table.configure('displaycolumns'))
         cols = list(self.table.configure('columns'))
         if '#all' in displaycols:
@@ -1952,7 +2104,7 @@ class TableHeaderRightClickMenu(tk.Menu):
         displaycols.insert(new_index, displaycols.pop(old_index))
         self.table.configure(displaycolumns=displaycols)
 
-    def move_to_first(self):
+    def move_column_to_first(self):
         displaycols = list(self.table.configure('displaycolumns'))
         cols = list(self.table.configure('columns'))
         if '#all' in displaycols:
@@ -1963,7 +2115,7 @@ class TableHeaderRightClickMenu(tk.Menu):
         displaycols.insert(0, displaycols.pop(old_index))
         self.table.configure(displaycolumns=displaycols)
 
-    def move_to_last(self):
+    def move_column_to_last(self):
         displaycols = list(self.table.configure('displaycolumns'))
         cols = list(self.table.configure('columns'))
         if '#all' in displaycols:
