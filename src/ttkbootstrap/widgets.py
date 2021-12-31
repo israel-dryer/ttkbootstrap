@@ -1066,7 +1066,7 @@ class Tableview(ttk.Frame):
     name is use for one column, and a dictionary of settings is used
     for another.
 
-    ![](../../assets/widgets/tableview.gif)    
+    ![](../../assets/widgets/tableview.gif)
 
     Examples:
 
@@ -1208,7 +1208,8 @@ class Tableview(ttk.Frame):
         self.autoalign = autoalign
         self.filtered = False
         self.criteria = tk.StringVar()
-       
+        self.rightclickmenu = None
+
         if not paginated:
             self.pagesize = len(rowdata)
         else:
@@ -1261,6 +1262,7 @@ class Tableview(ttk.Frame):
             master=self,
             columns=[x for x in range(len(coldata))],
             height=self.height,
+            selectmode=EXTENDED,
             show=HEADINGS,
             bootstyle=f"{bootstyle}-table",
         )
@@ -1284,6 +1286,7 @@ class Tableview(ttk.Frame):
         if self.stripecolor is not None:
             self.configure_table_stripes(self.stripecolor)
 
+        self.rightclickmenu = TableRightClickMenu(self)
         self.widget_binding()
 
     # def build_horizontal_scrollbar(self):
@@ -1337,7 +1340,8 @@ class Tableview(ttk.Frame):
 
         index = ttk.Entry(pageframe, textvariable=self.pageindex, width=6)
         index.pack(side=RIGHT)
-        index.bind("<Return>", self.goto_page)
+        index.bind("<Return>", self.goto_page, "+")
+        index.bind("<KP_Enter>", self.goto_page, "+")
 
         ttk.Label(pageframe, text="Page").pack(side=RIGHT, padx=5)
         ttk.Separator(pageframe, orient=VERTICAL).pack(side=RIGHT)
@@ -1434,20 +1438,23 @@ class Tableview(ttk.Frame):
 
     # COLUMN SORTING
 
-    def column_sort_data(self, cid):
+    def column_sort_data(self, cid, sort=None):
         """Sort the table rows by the specified column id"""
-        # update headers
-        self.column_sort_header_reset()
-        self.column_sort_header_update(cid)
-
         # update table data
         if self.filtered:
             tablerows = self.tablerows_filtered
         else:
             tablerows = self.tablerows
 
-        colsort = self.tablecols[cid].sort
-        self.tablecols[cid].sort = 1 if colsort == 0 else 0
+        if sort is not None:
+            colsort = sort
+        else:
+            colsort = self.tablecols[cid].sort
+
+        if colsort == ASCENDING:
+            self.tablecols[cid].sort = DESCENDING
+        else:
+            self.tablecols[cid].sort = ASCENDING
 
         sortedrows = sorted(
             tablerows, reverse=colsort, key=lambda x: x.values[cid]
@@ -1456,6 +1463,10 @@ class Tableview(ttk.Frame):
             self.tablerows_filtered = sortedrows
         else:
             self.tablerows = sortedrows
+
+        # update headers
+        self.column_sort_header_reset()
+        self.column_sort_header_update(cid)
 
         self.unload_table_data()
         self.load_table_data()
@@ -1468,7 +1479,7 @@ class Tableview(ttk.Frame):
     def column_sort_header_update(self, cid):
         """Add sort character to the sorted column"""
         col = self.tablecols[cid]
-        arrow = UPARROW if col.sort else DOWNARROW
+        arrow = UPARROW if col.sort == ASCENDING else DOWNARROW
         headertext = f"{col.headertext} {arrow}"
         self.tableview.heading(col.cid, text=headertext)
 
@@ -1508,9 +1519,9 @@ class Tableview(ttk.Frame):
             bg, fg = stripecolor
             kw = {}
             if bg is not None:
-                kw['background'] = bg
+                kw["background"] = bg
             if fg is not None:
-                kw['foreground'] = fg
+                kw["foreground"] = fg
             self.tableview.tag_configure("striped", **kw)
 
     def autosize_columns(self):
@@ -1548,21 +1559,20 @@ class Tableview(ttk.Frame):
     # Widget binding
 
     def widget_binding(self):
-        self.tableview.bind("<Double-Button-1>", self.header_doubleclick)
-        self.tableview.bind("<Button-1>", self.header_click)
+        self.tableview.bind("<Double-Button-1>", self.header_double_leftclick)
+        self.tableview.bind("<Button-1>", self.header_leftclick)
+        self.tableview.bind("<Button-3>", self.rightclickmenu.post)
 
-    def header_doubleclick(self, event):
+    def header_double_leftclick(self, event):
         region = self.tableview.identify_region(event.x, event.y)
         if region == "separator":
             self.autosize_columns()
 
-    def header_click(self, event):
+    def header_leftclick(self, event):
         region = self.tableview.identify_region(event.x, event.y)
         if region == "heading":
-            cid = (
-                int(self.tableview.identify_column(event.x).replace("#", ""))
-                - 1
-            )
+            col = self.tableview.identify_column(event.x)
+            cid = int(self.tableview.column(col, "id"))
             self.column_sort_data(cid)
 
 
@@ -1643,3 +1653,190 @@ class TableRow:
 
     def build_row(self):
         self.iid = self.table.insert("", END, values=self.values)
+
+
+class TableRightClickMenu(tk.Menu):
+    def __init__(self, master):
+        super().__init__(master, tearoff=False)
+        self.table: ttk.Treeview = master.tableview
+        self.cid = None
+        self.iid = None
+
+        self.add_command(
+            label="⬆  Sort Ascending", command=self.sort_ascending
+        )
+        self.add_command(
+            label="⬇  Sort Descending", command=self.sort_descending
+        )
+
+        filter_menu = tk.Menu(self, tearoff=False)
+        filter_menu.add_command(
+            label="To cell value", command=self.filter_to_cell_value
+        )
+        filter_menu.add_command(
+            label="To selected rows", command=self.filter_to_selected_rows
+        )
+        filter_menu.add_command(
+            label="Clear filter", command=self.master.clear_table_filter
+        )
+        self.add_cascade(menu=filter_menu, label="⧨  Filter")
+
+        export_menu = tk.Menu(self, tearoff=False)
+        export_menu.add_command(
+            label="Export all records", command=self.export_all_records
+        )
+        export_menu.add_command(
+            label="Export current page", command=self.export_current_page
+        )
+        export_menu.add_command(
+            label="Export current selection",
+            command=self.export_current_selection,
+        )
+        export_menu.add_command(
+            label="Export records in filter",
+            command=self.export_records_in_filter,
+        )
+        self.add_cascade(menu=export_menu, label="↔  Export")
+
+        hide_menu = tk.Menu(self, tearoff=False)
+        hide_menu.add_command(label="Hide row")
+        hide_menu.add_command(label="Hide column")
+        hide_menu.add_command(label="Unhide rows")
+        hide_menu.add_command(label="Unhide column")
+        self.add_cascade(menu=hide_menu, label="◐  Hide")
+
+        delete_menu = tk.Menu(self, tearoff=False)
+        delete_menu.add_command(label="Delete row")
+        delete_menu.add_command(label="Delete column")
+        self.add_cascade(menu=delete_menu, label="⨯  Delete")
+
+        insert_menu = tk.Menu(self, tearoff=False)
+        insert_menu.add_command(label="Insert row")
+        insert_menu.add_command(label="Insert column")
+        self.add_cascade(menu=insert_menu, label="⤮  Insert")
+
+        move_menu = tk.Menu(self, tearoff=False)
+        move_menu.add_command(label="Move up one")
+        move_menu.add_command(label="Move down one")
+        move_menu.add_command(label="Move to top")
+        move_menu.add_command(label="Move to bottom")
+        self.add_cascade(menu=move_menu, label="⇄  Move")
+
+        align_menu = tk.Menu(self, tearoff=False)
+        align_menu.add_command(label="Align left")
+        align_menu.add_command(label="Align center")
+        align_menu.add_command(label="Align right")
+        self.add_cascade(menu=align_menu, label="↦  Align")
+
+    def post(self, event):
+        # capture the column and item that invoked the menu
+        self.element = self.table.identify_element(event.x, event.y)
+        self.iid = self.table.identify_row(event.y)
+        self.item = self.table.item(self.iid)
+        col = self.table.identify_column(event.x)
+        self.cid = int(self.table.column(col, "id"))
+
+        # show the menu below the invoking cell
+        rootx = self.table.winfo_rootx()
+        rooty = self.table.winfo_rooty()
+        bbox = self.table.bbox(self.iid, col)
+        super().post(rootx + bbox[0] + 10, rooty + bbox[1] + 10)
+
+    def sort_ascending(self):
+        """Sort the column in ascending order."""
+        self.master.column_sort_data(self.cid, ASCENDING)
+
+    def sort_descending(self):
+        """Sort the column in descending order."""
+        self.master.column_sort_data(self.cid, DESCENDING)
+
+    def filter_to_cell_value(self):
+        """Hide all records except for records where the current
+        column exactly matches teh current cell value."""
+        criteria = self.item["values"][self.cid]
+        table = self.master
+        table.filtered = True
+        table.tablerows_filtered.clear()
+        table.unload_table_data()
+        data = table.tablerows
+        for row in data:
+            if row.values[self.cid] == criteria:
+                table.tablerows_filtered.append(row)
+        table.rowindex.set(0)
+        table.load_table_data()
+
+    def filter_to_selected_rows(self):
+        """Hide all records except for the selected rows."""
+        criteria = self.table.selection()
+        table: Tableview = self.master
+        if table.filtered:
+            for row in table.viewdata:
+                if row.iid not in criteria:
+                    row.hide()
+                    table.tablerows_filtered.remove(row)
+        else:
+            table.filtered = True
+            table.tablerows_filtered.clear()
+            for row in table.viewdata:
+                if row.iid in criteria:
+                    table.tablerows_filtered.append(row)
+        table.rowindex.set(0)
+        table.load_table_data()
+
+    def save_data_to_csv(self, headers, records):
+        from tkinter.filedialog import asksaveasfilename
+        import csv
+
+        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+        initialfile = f"tabledata_{timestamp}.csv"
+        filetypes = [
+            ("CSV UTF-8 (Comma delimited)", "*.csv"),
+            ("All file types", "*.*"),
+        ]
+        filename = asksaveasfilename(
+            confirmoverwrite=True,
+            filetypes=filetypes,
+            defaultextension="csv",
+            initialfile=initialfile,
+        )
+        if filename:
+            with open(filename, "w", encoding="utf-8", newline="") as f:
+                writer = csv.writer(f)
+                writer.writerow(headers)
+                writer.writerows(records)
+
+    def export_all_records(self):
+        """Export all records to a csv file"""
+        table: Tableview = self.master
+        headers = [col.headertext for col in table.tablecols]
+        records = [row.values for row in table.tablerows]
+        self.save_data_to_csv(headers, records)
+
+    def export_current_page(self):
+        """Export records on current page"""
+        table: Tableview = self.master
+        headers = [col.headertext for col in table.tablecols]
+        records = [row.values for row in table.viewdata]
+        self.save_data_to_csv(headers, records)
+
+    def export_current_selection(self):
+        """Export rows currently selected
+        TODO currently does not export selections on different pages
+        """
+        table: Tableview = self.master
+        headers = [col.headertext for col in table.tablecols]
+        selected = self.table.selection()
+        records = []
+        for iid in selected:
+            records.append(self.table.item(iid)["values"])
+        self.save_data_to_csv(headers, records)
+
+    def export_records_in_filter(self):
+        """Export rows currently filtered"""
+        table: Tableview = self.master
+        headers = [col.headertext for col in table.tablecols]
+        if not table.filtered:
+            return
+        records = [row.values for row in table.tablerows_filtered]
+        self.save_data_to_csv(headers, records)
+

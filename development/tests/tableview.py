@@ -1,20 +1,28 @@
 import ttkbootstrap as ttk
 from ttkbootstrap.constants import *
+from pathlib import Path
+import csv
 
 app = ttk.Window()
 colors = app.style.colors
 
+p = Path(".") / "development/new_widgets/Sample1000.csv"
+with open(p, encoding="utf-8") as f:
+    reader = csv.reader(f)
+    next(reader)
+    rowdata = list(reader)
+
+
+# column configuration options
+# text, image, command, anchor, width, minwidth, maxwidth, stretch
 coldata = [
-    {"text": "LicenseNumber", "stretch": False},
+    {"text": "SerialNumber", "stretch": False},
     "CompanyName",
-    {"text": "UserCount", "stretch": False},
+    "Employee",
+    "Description",
+    {"text": "Leave", "stretch": False},
 ]
 
-rowdata = [
-    ('A123', 'IzzyCo', 12),
-    ('A136', 'Kimdee Inc.', 45),
-    ('A158', 'Farmadding Co.', 36)
-]
 
 dt = ttk.Tableview(
     master=app,
