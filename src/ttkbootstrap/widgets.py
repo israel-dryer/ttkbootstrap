@@ -1727,38 +1727,28 @@ class Tableview(ttk.Frame):
 
     # ROW MOVEMENT
 
-    def move_row_to_top(self, event):
-        """Move the row to the top of the data set.
+    def move_selected_rows_to_top(self):
+        """Move the selected rows to the top of the data set."""
+        selected = self.tableview.selection()
+        if len(selected) == 0:
+            return
 
-        Parameters:
-
-            event (Event):
-                A window event.
-        """
-        eo = self._get_event_objects(event)
         if self.filtered:
             tablerows = self.tablerows_filtered
         else:
             tablerows = self.tablerows
 
-        # find row object
-        row_item = None
-        old_index = None
-        for i, row in enumerate(tablerows):
-            if row.iid == eo.get("iid"):
-                row_item = row
-                old_index = i
-                break
+        row_items = []       
+        
+        for iid in selected:
+            for row in tablerows:
+                if row.iid == iid:
+                    row_items.append(row)
+                    break
 
-        if row_item is None:
-            return  # couldn't find the item
-
-        if old_index == 0:  # already at the top
-            return
-
-        # set the new item index
-        new_index = 0
-        tablerows.insert(new_index, tablerows.pop(old_index))
+        for i, item in enumerate(row_items):
+            tablerows.remove(item)
+            tablerows.insert(i, item)
 
         if self.filtered:
             self.tablerows_filtered = tablerows
@@ -1769,38 +1759,28 @@ class Tableview(ttk.Frame):
         self.unload_table_data()
         self.load_table_data()
 
-    def move_row_to_bottom(self, event):
-        """Move the row to the bottom of the dataset.
+    def move_selected_rows_to_bottom(self):
+        """Move the row to the bottom of the dataset."""
+        selected = self.tableview.selection()
+        if len(selected) == 0:
+            return
 
-        Parameters:
-
-            event (Event):
-                A window event.
-        """
-        eo = self._get_event_objects(event)
         if self.filtered:
             tablerows = self.tablerows_filtered
         else:
             tablerows = self.tablerows
 
-        # find row object
-        row_item = None
-        old_index = None
-        for i, row in enumerate(tablerows):
-            if row.iid == eo.get("iid"):
-                row_item = row
-                old_index = i
-                break
+        row_items = []       
+        
+        for iid in selected:
+            for row in tablerows:
+                if row.iid == iid:
+                    row_items.append(row)
+                    break
 
-        if row_item is None:
-            return  # couldn't find the item
-
-        if old_index == len(tablerows) - 1:  # already at the bottom
-            return
-
-        # set the new item index
-        new_index = len(tablerows) - 1
-        tablerows.insert(new_index, tablerows.pop(old_index))
+        for item in row_items:
+            tablerows.remove(item)
+            tablerows.append(item)
 
         if self.filtered:
             self.tablerows_filtered = tablerows
@@ -1811,38 +1791,28 @@ class Tableview(ttk.Frame):
         self.unload_table_data()
         self.load_table_data()
 
-    def move_row_up(self, event):
-        """Move the selected above the previous sibling.
-        
-        Parameters:
-        
-            event (Event):
-                A window event.
-        """
-        eo = self._get_event_objects(event)
+    def move_selected_row_up(self):
+        """Move the selected above the previous sibling."""
+        selected = self.tableview.selection()
+        if len(selected) == 0:
+            return
+
         if self.filtered:
             tablerows = self.tablerows_filtered
         else:
             tablerows = self.tablerows
 
-        # find row object
-        row_item = None
-        old_index = None
-        for i, row in enumerate(tablerows):
-            if row.iid == eo.get("iid"):
-                row_item = row
-                old_index = i
-                break
+        row_items = []       
+        
+        for iid in selected:
+            for i, row in enumerate(tablerows):
+                if row.iid == iid:
+                    row_items.append([i, row])
+                    break
 
-        if row_item is None:
-            return  # couldn't find the item
-
-        if old_index == 0:  # already at the top
-            return
-
-        # set the new item index
-        new_index = old_index - 1
-        tablerows.insert(new_index, tablerows.pop(old_index))
+        for index, item in row_items:
+            tablerows.remove(item)
+            tablerows.insert(index-1, item)
 
         if self.filtered:
             self.tablerows_filtered = tablerows
@@ -1853,38 +1823,28 @@ class Tableview(ttk.Frame):
         self.unload_table_data()
         self.load_table_data()
 
-    def move_row_down(self, event):
-        """Move the selected row below the next sibling.
-        
-        Parameters:
-        
-            event (Event):
-                A window event.
-        """
-        eo = self._get_event_objects(event)
+    def move_row_down(self):
+        """Move the selected rows below the next sibling"""
+        selected = self.tableview.selection()
+        if len(selected) == 0:
+            return
+
         if self.filtered:
             tablerows = self.tablerows_filtered
         else:
             tablerows = self.tablerows
 
-        # find row object
-        row_item = None
-        old_index = None
-        for i, row in enumerate(tablerows):
-            if row.iid == eo.get("iid"):
-                row_item = row
-                old_index = i
-                break
+        row_items = []       
+        
+        for iid in selected:
+            for i, row in enumerate(tablerows):
+                if row.iid == iid:
+                    row_items.append([i, row])
+                    break
 
-        if row_item is None:
-            return  # couldn't find the item
-
-        if old_index == len(tablerows) - 1:  # already at the bottom
-            return
-
-        # set the new item index
-        new_index = old_index + 1
-        tablerows.insert(new_index, tablerows.pop(old_index))
+        for index, item in reversed(row_items):
+            tablerows.remove(item)
+            tablerows.insert(index+1, item)
 
         if self.filtered:
             self.tablerows_filtered = tablerows
@@ -2489,19 +2449,19 @@ class TableCellRightClickMenu(tk.Menu):
 
     def move_row_to_top(self):
         """Move the row to the top of the data set"""
-        self.tableview.move_row_to_top(self.event)
+        self.tableview.move_selected_rows_to_top()
 
     def move_row_to_bottom(self):
         """Move the row to the bottom of the dataset"""
-        self.tableview.move_row_to_bottom(self.event)
+        self.tableview.move_selected_rows_to_bottom()
 
     def move_row_up(self):
         """Move the selected above the previous sibling"""
-        self.tableview.move_row_up(self.event)
+        self.tableview.move_selected_row_up()
 
     def move_row_down(self):
         """Move the selected row below the next sibling"""
-        self.tableview.move_row_down(self.event)
+        self.tableview.move_row_down()
 
     def align_column_left(self):
         "Left align the column text"
