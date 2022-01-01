@@ -1041,8 +1041,8 @@ class Meter(ttk.Frame):
             self.amountusedvar.set(amountused + delta)
 
 
-UPARROW = "⯅"
-DOWNARROW = "⯆"
+UPARROW = "⬆"
+DOWNARROW = "⬇"
 ASCENDING = 0
 DESCENDING = 1
 
@@ -2022,7 +2022,7 @@ class Tableview(ttk.Frame):
                 A unique column identifier; typically the index of the
                 column relative to the original dataset.
         """
-        if event is None:
+        if event is not None:
             eo = self._get_event_objects(event)
             cid = eo.get("cid")
         elif cid is None:

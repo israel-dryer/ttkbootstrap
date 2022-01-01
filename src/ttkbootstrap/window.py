@@ -188,13 +188,15 @@ class Window(tkinter.Tk):
     def _disabled_state_cursor(self, event):
         """Change the cursor of entry type widgets to 'arrow' if in a disabled
         or readonly state."""
-        widget = self.nametowidget(event.widget)
-        state = str(widget.cget('state'))
-        if state in (DISABLED, READONLY):
-            widget['cursor'] = 'arrow'
-        else:
-            widget['cursor'] = None
-
+        try:
+            widget = self.nametowidget(event.widget)
+            state = str(widget.cget('state'))
+            if state in (DISABLED, READONLY):
+                widget['cursor'] = 'arrow'
+            else:
+                widget['cursor'] = None
+        except:
+            pass
         
 
 class Toplevel(tkinter.Toplevel):
