@@ -3,7 +3,7 @@ from ttkbootstrap.constants import *
 from pathlib import Path
 import csv
 
-app = ttk.Window()
+app = ttk.Window(themename='flatly')
 colors = app.style.colors
 
 p = Path(".") / "development/new_widgets/Sample1000.csv"
@@ -33,6 +33,6 @@ dt = ttk.Tableview(
     bootstyle=PRIMARY,
     stripecolor=(colors.light, None),
 )
-dt.pack(fill=BOTH, expand=YES, padx=10, pady=10)
+dt.pack(fill=BOTH, expand=YES, padx=5, pady=5)
 
 app.mainloop()

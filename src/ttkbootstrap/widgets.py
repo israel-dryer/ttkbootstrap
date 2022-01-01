@@ -1070,7 +1070,8 @@ class Tableview(ttk.Frame):
     The object has a right-click menu on the header and the cells that
     allow you to configure various settings.
 
-    ![](../../assets/widgets/tableview.gif)
+    ![](../../assets/widgets/tableview-1.png)
+    ![](../../assets/widgets/tableview-2.png)
 
     Examples:
 
