@@ -1117,10 +1117,10 @@ class Tableview(ttk.Frame):
         rowdata=[],
         paginated=False,
         searchable=False,
-        autosize=True,
+        autofit=False,
         autoalign=True,
         stripecolor=None,
-        pagesize=15,
+        pagesize=10,
         height=10,
     ):
         """
@@ -1153,8 +1153,7 @@ class Tableview(ttk.Frame):
 
             pagesize (int):
                 When `paginated=True`, this specifies the number of rows
-                to show per page. This is the same as setting `height`
-                for non-paginated tables.
+                to show per page. 
 
             searchable (bool):
                 If `True`, a searchbar will be created above the table.
@@ -1165,11 +1164,9 @@ class Tableview(ttk.Frame):
                 that contains the search text. The filtered results
                 are displayed in the table view.
 
-            autosize (bool):
+            autofit (bool):
                 If `True`, the table columns will be automatically sized
-                based on the records presently in the viewport. You
-                may also initiate an adhoc autosize by double-clicking
-                the separator between each column header.
+                when loaded based on the records in the current view.
 
             autoalign (bool):
                 If `True`, the column headers and data are automatically
@@ -1205,20 +1202,15 @@ class Tableview(ttk.Frame):
         self.pageindex = tk.IntVar(value=1)
         self.pagelimit = tk.IntVar(value=0)
         self.height = height
-        self.pagesize = pagesize
+        self.pagesize = tk.IntVar(value=pagesize)
         self.paginated = paginated
         self.searchable = searchable
         self.stripecolor = stripecolor
-        self.autosize = autosize
+        self.autofit = autofit
         self.autoalign = autoalign
         self.filtered = False
         self.criteria = tk.StringVar()
         self.rightclickmenu_cell = None
-
-        if not paginated:
-            self.pagesize = len(rowdata)
-        else:
-            self.height = self.pagesize
 
         self._build_table(coldata, rowdata, bootstyle)
 
@@ -1234,7 +1226,7 @@ class Tableview(ttk.Frame):
         """Load all data into the table"""
         self.unload_table_data()
         page_start = self.rowindex.get()
-        page_end = self.rowindex.get() + self.pagesize
+        page_end = self.rowindex.get() + self.pagesize.get()
 
         if self.filtered:
             rowdata = self.tablerows_filtered[page_start:page_end]
@@ -1243,9 +1235,9 @@ class Tableview(ttk.Frame):
             rowdata = self.tablerows[page_start:page_end]
             rowcount = len(self.tablerows)
 
-        self.pagelimit.set(ceil(rowcount / self.pagesize))
+        self.pagelimit.set(ceil(rowcount / self.pagesize.get()))
 
-        pageindex = ceil(page_end / self.pagesize)
+        pageindex = ceil(page_end / self.pagesize.get())
         pagelimit = self.pagelimit.get()
         self.pageindex.set(min([pagelimit, pageindex]))
 
@@ -1289,6 +1281,13 @@ class Tableview(ttk.Frame):
             bootstyle=f"{bootstyle}-table",
         )
         self.tableview.pack(fill=BOTH, expand=YES, side=TOP)
+        self.hbar = ttk.Scrollbar(
+            master=self, 
+            command=self.tableview.xview, 
+            orient=HORIZONTAL
+        )
+        self.hbar.pack(fill=X)
+        self.tableview.configure(xscrollcommand=self.hbar.set)
 
         self._build_table_columns(coldata)
         self._build_table_rows(rowdata)
@@ -1296,8 +1295,8 @@ class Tableview(ttk.Frame):
 
         self.load_table_data()
 
-        if self.autosize:
-            self.autosize_columns()
+        if self.autofit:
+            self.autofit_columns()
 
         if self.autoalign:
             self.autoalign_columns()
@@ -1357,7 +1356,7 @@ class Tableview(ttk.Frame):
         lbl.pack(side=RIGHT, padx=(0, 5))
         ttk.Label(pageframe, text="of").pack(side=RIGHT, padx=(5, 0))
 
-        index = ttk.Entry(pageframe, textvariable=self.pageindex, width=6)
+        index = ttk.Entry(pageframe, textvariable=self.pageindex, width=4)
         index.pack(side=RIGHT)
         index.bind("<Return>", self.goto_page, "+")
         index.bind("<KP_Enter>", self.goto_page, "+")
@@ -1377,6 +1376,18 @@ class Tableview(ttk.Frame):
             command=self.goto_first_page,
             style="symbol.Link.TButton",
         ).pack(side=RIGHT, fill=Y)
+
+        ttk.Label(pageframe, text="Pagesize").pack(side=LEFT, padx=5, fill=Y)
+        values = [5, 10, 25, 50, 75, 100]
+        cbo = ttk.Combobox(
+            master=pageframe, 
+            values=values, 
+            textvariable=self.pagesize,
+            width=4,
+            state=READONLY
+        )
+        cbo.pack(side=LEFT)
+        cbo.bind("<<ComboboxSelected>>", self._select_pagesize)
 
     def _build_table_rows(self, rowdata):
         """Build, load, and configure the DataTableRow objects
@@ -1427,7 +1438,7 @@ class Tableview(ttk.Frame):
 
     def goto_last_page(self):
         """Update table with the last page of data"""
-        self.rowindex.set(self.pagesize * (self.pagelimit.get() - 1))
+        self.rowindex.set(self.pagesize.get() * (self.pagelimit.get() - 1))
         self.load_table_data()
 
     def goto_next_page(self):
@@ -1435,7 +1446,7 @@ class Tableview(ttk.Frame):
         if self.pageindex.get() >= self.pagelimit.get():
             return
         rowindex = self.rowindex.get()
-        self.rowindex.set(rowindex + self.pagesize)
+        self.rowindex.set(rowindex + self.pagesize.get())
         self.load_table_data()
 
     def goto_prev_page(self):
@@ -1443,13 +1454,13 @@ class Tableview(ttk.Frame):
         if self.pageindex.get() <= 1:
             return
         rowindex = self.rowindex.get()
-        self.rowindex.set(rowindex - self.pagesize)
+        self.rowindex.set(rowindex - self.pagesize.get())
         self.load_table_data()
 
     def goto_page(self, *_):
         """Go to a specific page indicated by the page entry widget."""
         pageindex = self.pageindex.get() - 1
-        self.rowindex.set(pageindex * self.pagesize)
+        self.rowindex.set(pageindex * self.pagesize.get())
         self.load_table_data()
 
     # COLUMN SORTING
@@ -1975,27 +1986,26 @@ class Tableview(ttk.Frame):
                 kw["foreground"] = fg
             self.tableview.tag_configure("striped", **kw)
 
-    def autosize_columns(self):
-        """Fit the column to the data in the current view, bounded by the
-        maxsize and minsize"""
-        f = font.Font()
-        column_widths = []
+    def autofit_columns(self):
+        """Autofit all columns in the current view"""
+        f = font.nametofont("TkDefaultFont")
+        pad = utility.scale_size(self, 10)
+        col_widths = []
 
-        for i, row in enumerate(self.viewdata):
-            if i == 0:
-                for col in self.tablecols:
-                    column_widths.append(
-                        f.measure(f"{col.headertext} {DOWNARROW}")
-                    )
+        # measure header sizes
+        for col in self.tablecols:
+            width = f.measure(f'{col.headertext} {DOWNARROW}') + pad
+            col_widths.append(width)
 
-            for j, value in enumerate(row.values):
-                measure = f.measure(str(value) + " ")
-                if column_widths[j] > measure:
-                    pass
-                elif measure < self.tablecols[j].colmaxwidth:
-                    column_widths[j] = measure
-
-        for i, width in enumerate(column_widths):
+        for row in self.viewdata:
+            values = row.values
+            for i, value in enumerate(values):
+                old_width = col_widths[i]
+                new_width = f.measure(str(value)) + pad
+                width = max(old_width, new_width)
+                col_widths[i] = width
+        
+        for i, width in enumerate(col_widths):
             self.tableview.column(i, width=width)
 
     # COLUMN AND HEADER ALIGNMENT
@@ -2147,18 +2157,32 @@ class Tableview(ttk.Frame):
             sequence = "<Button-3>"
         self.tableview.bind(sequence, self._table_rightclick)
 
+        # add trace to track pagesize changes
+        # self.pagesize.trace_add('write', self._trace_pagesize)
+
+    def _select_pagesize(self, event):
+        cbo: ttk.Combobox = self.nametowidget(event.widget)
+        cbo.select_clear()
+        self.goto_first_page()
+
+    def _trace_pagesize(self, *_):
+        """Callback for changes to page size"""
+        #pagesize = self.pagesize.get()
+        #self.tableview.configure(height=pagesize)
+        self.goto_first_page()
+
     def _header_double_leftclick(self, event):
         """Callback for double-click events on the tableview header"""
         region = self.tableview.identify_region(event.x, event.y)
         if region == "separator":
-            self.autosize_columns()
+            self.autofit_columns()
 
     def _header_leftclick(self, event):
         """Callback for left-click events"""
         region = self.tableview.identify_region(event.x, event.y)
         if region == "heading":
-            col = self.tableview.identify_column(event.x)
-            cid = int(self.tableview.column(col, "id"))
+            # col = self.tableview.identify_column(event.x)
+            # cid = int(self.tableview.column(col, "id"))
             self.sort_column_data(event)
 
     def _table_rightclick(self, event):
@@ -2181,10 +2205,10 @@ class TableColumn:
         image="",
         command="",
         anchor=W,
-        width=None,
-        minwidth=None,
+        width=200,
+        minwidth=20,
         maxwidth=400,
-        stretch=True,
+        stretch=False,
     ):
         """
         Parameters:
@@ -2231,8 +2255,8 @@ class TableColumn:
         self.hbar = None
         self.table.column(
             self.cid,
-            width=width or 200,
-            minwidth=minwidth or 20,
+            width=width,
+            minwidth=minwidth,
             stretch=stretch,
             anchor=anchor,
         )
