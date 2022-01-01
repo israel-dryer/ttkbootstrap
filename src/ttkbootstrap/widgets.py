@@ -2140,7 +2140,11 @@ class Tableview(ttk.Frame):
         """Setup the widget binding"""
         self.tableview.bind("<Double-Button-1>", self._header_double_leftclick)
         self.tableview.bind("<Button-1>", self._header_leftclick)
-        self.tableview.bind("<Button-3>", self._table_rightclick)
+        if self.tk.call('tk', 'windowingsystem') == 'aqua':
+            sequence = "<Button-2>"
+        else:
+            sequence = "<Button-3>"
+        self.tableview.bind(sequence, self._table_rightclick)
 
     def _header_double_leftclick(self, event):
         """Callback for double-click events on the tableview header"""
