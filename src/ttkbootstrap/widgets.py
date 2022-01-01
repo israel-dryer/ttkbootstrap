@@ -1224,12 +1224,13 @@ class Tableview(ttk.Frame):
     # DATA LOADING
 
     def unload_table_data(self):
+        """Unload all data from the table"""
         for row in self.viewdata:
             row.hide()
         self.viewdata.clear()
 
     def load_table_data(self):
-        """Load table data"""
+        """Load all data into the table"""
         self.unload_table_data()
         page_start = self.rowindex.get()
         page_end = self.rowindex.get() + self.pagesize
@@ -1424,7 +1425,7 @@ class Tableview(ttk.Frame):
         self.load_table_data()
 
     def goto_last_page(self):
-        """Update the table with the last page of data"""
+        """Update table with the last page of data"""
         self.rowindex.set(self.pagesize * (self.pagelimit.get() - 1))
         self.load_table_data()
 
@@ -1445,7 +1446,7 @@ class Tableview(ttk.Frame):
         self.load_table_data()
 
     def goto_page(self, *_):
-        """Go to a specific page indicate in the page entry widget."""
+        """Go to a specific page indicated by the page entry widget."""
         pageindex = self.pageindex.get() - 1
         self.rowindex.set(pageindex * self.pagesize)
         self.load_table_data()
@@ -1453,7 +1454,21 @@ class Tableview(ttk.Frame):
     # COLUMN SORTING
 
     def sort_column_data(self, event=None, cid=None, sort=None):
-        """Sort the table rows by the specified column id"""
+        """Sort the table rows by the specified column. This method 
+        may be trigged by an event or manually.
+        
+        Parameters:
+
+            event (Event):
+                A window event.
+
+            cid (int):
+                A unique column identifier; typically the numerical
+                index of the column relative to the original data set.
+
+            sort (int):
+                Determines the sort direction. 0 = ASCENDING. 1 = DESCENDING.
+        """
         if event is not None:
             eo = self._get_event_objects(event)
             cid = eo.get('cid')
@@ -1492,7 +1507,7 @@ class Tableview(ttk.Frame):
         self.load_table_data()
 
     def _column_sort_header_reset(self):
-        """Remove sort character from column headers"""
+        """Remove the sort character from the column headers"""
         for col in self.tablecols:
             self.tableview.heading(col.cid, text=col.headertext)
 
@@ -1506,7 +1521,7 @@ class Tableview(ttk.Frame):
     # DATA SEARCH & FILTERING
 
     def clear_table_filters(self):
-        """Remove all filters from table data and resetset filtered 
+        """Remove all filters from table data and reset the filtered 
         flag.
         """
         self.filtered = False
@@ -1548,10 +1563,7 @@ class Tableview(ttk.Frame):
         self.load_table_data()
 
     def filter_to_selected_rows(self):
-        """Hide all records except for the selected rows. This method
-        may be triggered by a window event or by specifying the column
-        id.
-        """
+        """Hide all records except for the selected rows"""
         criteria = self.tableview.selection()
         if len(criteria) == 0:
             return # nothing is selected
@@ -1571,9 +1583,7 @@ class Tableview(ttk.Frame):
         self.load_table_data()
 
     def hide_selected_rows(self):
-        """Hide the currently selected rows. This method may be 
-        triggered by a window event or by specifying the column id.
-        """
+        """Hide the currently selected rows"""
         selected = self.tableview.selection()
         self.tableview.detach(*selected)
         tablerows = [row for row in self.viewdata if row.iid in selected]
@@ -1646,7 +1656,7 @@ class Tableview(ttk.Frame):
 
     def _search_table_data(self, _):
         """Search the table data for records that meet search criteria.
-        Currently, this search locates any records that contains the
+        Currently, this search locates any records that contain the
         specified text; it is also case insensitive.
         """
         criteria = self.criteria.get()
@@ -1671,13 +1681,13 @@ class Tableview(ttk.Frame):
         self.save_data_to_csv(headers, records)
 
     def export_current_page(self):
-        """Export records on current page"""
+        """Export records on current page to csv file"""
         headers = [col.headertext for col in self.tablecols]
         records = [row.values for row in self.viewdata]
         self.save_data_to_csv(headers, records)
 
     def export_current_selection(self):
-        """Export rows currently selected"""
+        """Export rows currently selected to csv file"""
         headers = [col.headertext for col in self.tablecols]
         selected = self.tableview.selection()
         records = []
@@ -1686,7 +1696,7 @@ class Tableview(ttk.Frame):
         self.save_data_to_csv(headers, records)
 
     def export_records_in_filter(self):
-        """Export rows currently filtered"""
+        """Export rows currently filtered to csv file"""
         headers = [col.headertext for col in self.tablecols]
         if not self.filtered:
             return
@@ -1728,7 +1738,7 @@ class Tableview(ttk.Frame):
     # ROW MOVEMENT
 
     def move_selected_rows_to_top(self):
-        """Move the selected rows to the top of the data set."""
+        """Move the selected rows to the top of the data set"""
         selected = self.tableview.selection()
         if len(selected) == 0:
             return
@@ -1760,7 +1770,7 @@ class Tableview(ttk.Frame):
         self.load_table_data()
 
     def move_selected_rows_to_bottom(self):
-        """Move the row to the bottom of the dataset."""
+        """Move the selected rows to the bottom of the dataset"""
         selected = self.tableview.selection()
         if len(selected) == 0:
             return
@@ -1792,7 +1802,7 @@ class Tableview(ttk.Frame):
         self.load_table_data()
 
     def move_selected_row_up(self):
-        """Move the selected above the previous sibling."""
+        """Move the selected rows up one position in the dataset"""
         selected = self.tableview.selection()
         if len(selected) == 0:
             return
@@ -1824,7 +1834,7 @@ class Tableview(ttk.Frame):
         self.load_table_data()
 
     def move_row_down(self):
-        """Move the selected rows below the next sibling"""
+        """Move the selected rows down one position in the dataset"""
         selected = self.tableview.selection()
         if len(selected) == 0:
             return
@@ -1920,7 +1930,7 @@ class Tableview(ttk.Frame):
         self.tableview.configure(displaycolumns=displaycols)
 
     def move_column_to_last(self, event):
-        """Move column to the leftmost position
+        """Move column to the rightmost position
         
         Parameters:
         
@@ -1943,7 +1953,16 @@ class Tableview(ttk.Frame):
     # OTHER FORMATTING
 
     def configure_table_stripes(self, stripecolor):
-        """Add stripes to even-numbered table rows"""
+        """Add stripes to even-numbered table rows as indicated by the
+        `stripecolor` of (background, foreground). Either element may be
+        specified as `None`, but both elements must be present.
+        
+        Parameters:
+
+            stripecolor (Tuple[str, str]):
+                A tuple of colors to apply to the table stripe. The
+                tuple represents (background, foreground).
+        """
         if len(stripecolor) == 2:
             self.stripecolor = stripecolor
             bg, fg = stripecolor
@@ -1956,7 +1975,7 @@ class Tableview(ttk.Frame):
 
     def autosize_columns(self):
         """Fit the column to the data in the current view, bounded by the
-        max size and minsize"""
+        maxsize and minsize"""
         f = font.Font()
         column_widths = []
 
@@ -1981,7 +2000,7 @@ class Tableview(ttk.Frame):
 
     def autoalign_columns(self):
         """Align the columns and headers based on the data type of the
-        values. Text is left-aligned, numbers are right-aligned."""
+        values. Text is left-aligned; numbers are right-aligned."""
         values = self.tablerows[0].values
         for i, value in enumerate(values):
             if str(value).isnumeric():
