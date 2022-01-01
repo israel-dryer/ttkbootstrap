@@ -1529,6 +1529,7 @@ class Tableview(ttk.Frame):
         self.criteria.set("")
         self.unload_table_data()
         self.load_table_data()
+        self._column_sort_header_reset()
 
     def filter_column_to_value(self, event=None, cid=None, value=None):
         """Hide all records except for records where the current
