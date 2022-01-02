@@ -202,8 +202,7 @@ class Toplevel(tkinter.Toplevel):
         self,
         title="ttkbootstrap",
         iconphoto=None,
-        height=None,
-        width=None,
+        size=None,
         position=None,
         minsize=None,
         maxsize=None,
@@ -226,11 +225,10 @@ class Toplevel(tkinter.Toplevel):
                 The titlebar icon. This image is applied to all future
                 toplevels as well.
 
-            height (int):
-                Specifies the desired height for the window.
-
-            width (int):
-                Specifies the desired width for the window.
+            size (Tuple[int, int]):
+                The width and height of the application window.
+                Internally, this argument is passed to the
+                `Toplevel.geometry` method.
 
             position (Tuple[int, int]):
                 The horizontal and vertical position of the window on
@@ -299,6 +297,10 @@ class Toplevel(tkinter.Toplevel):
 
         self.title(title)
 
+        if size is not None:
+            width, height = size
+            self.geometry(f'{width}x{height}')
+
         if position is not None:
             xpos, ypos = position
             self.geometry(f"+{xpos}+{ypos}")
@@ -359,10 +361,12 @@ class Toplevel(tkinter.Toplevel):
 
 if __name__ == "__main__":
 
-    root = Window(themename="superhero", alpha=0.5)
+    root = Window(themename="superhero", alpha=0.5, size=(1000, 500))
+    root.withdraw()
     root.place_window_center()
+    root.deiconify()
 
-    top = Toplevel(title="My Toplevel", alpha=0.4)
+    top = Toplevel(title="My Toplevel", alpha=0.4, size=(1000, 500))
     top.place_window_center()
 
     root.mainloop()
