@@ -115,7 +115,7 @@ class Window(tkinter.Tk):
 
         super().__init__()
 
-        if scaling:
+        if scaling is not None:
             utility.enable_high_dpi_awareness(self, scaling)
 
         try:
@@ -127,26 +127,35 @@ class Window(tkinter.Tk):
 
         self.title(title)
 
-        if size:
+        if size is not None:
             width, height = size
             self.geometry(f"{width}x{height}")
-        if position:
+        
+        if position is not None:
             xpos, ypos = position
             self.geometry(f"+{xpos}+{ypos}")
-        if minsize:
+        
+        if minsize is not None:
             width, height = minsize
             self.minsize(width, height)
-        if maxsize:
+        
+        if maxsize is not None:
             width, height
             self.maxsize(width, height)
-        if resizable:
+        
+        if resizable is not None:
             width, height = resizable
             self.resizable(width, height)
-        if transient:
+        
+        if transient is not None:
             self.transient(transient)
+        
         if overrideredirect:
             self.overrideredirect(1)
-        if alpha:
+        
+        if alpha is not None:
+            if self.tk.call('tk', 'windowingsystem') == 'x11':
+                self.wait_visibility()
             self.attributes("-alpha", alpha)
 
         self._style = Style(themename)
@@ -273,35 +282,47 @@ class Toplevel(tkinter.Toplevel):
                 Other optional keyword arguments.
         """
         super().__init__(**kwargs)
+
         if iconphoto:
             self._icon = iconphoto or tkinter.PhotoImage(data=Icon.icon)
             self.iconphoto(False, self._icon)
 
         self.title(title)
 
-        if position:
+        if position is not None:
             xpos, ypos = position
             self.geometry(f"+{xpos}+{ypos}")
-        if minsize:
+        
+        if minsize is not None:
             width, height = minsize
             self.minsize(width, height)
-        if maxsize:
+        
+        if maxsize is not None:
             width, height
             self.maxsize(width, height)
-        if resizable:
+
+        if resizable is not None:
             width, height = resizable
             self.resizable(width, height)
-        if transient:
+        
+        if transient is not None:
             self.transient(transient)
+        
         if overrideredirect:
             self.overrideredirect(1)
-        if windowtype:
+        
+        if windowtype is not None:
             self.attributes("-type", windowtype)
+        
         if topmost:
             self.attributes("-topmost", 1)
+        
         if toolwindow:
             self.attributes("-toolwindow", 1)
-        if alpha:
+        
+        if alpha is not None:
+            if self.tk.call('tk', 'windowingsystem') == 'x11':
+                self.wait_visibility()
             self.attributes("-alpha", alpha)
 
     @property
@@ -313,15 +334,13 @@ class Toplevel(tkinter.Toplevel):
         """Position the toplevel in the center of the screen. Does not
         account for the titlebar when placing the window.
         """
-        winfoid = hex(self.winfo_id())
-        pathname = self.winfo_pathname(winfoid)
-        self.tk.eval(f"tk::PlaceWindow {pathname} center")
+        self.tk.eval(f"tk::PlaceWindow {self._w} center")
 
 
 if __name__ == "__main__":
 
     root = Window(themename="superhero")
-    root.update_idletasks()
+    #root.update_idletasks()
     root.position_center()
 
     top = Toplevel(title="My Toplevel", toolwindow=True, alpha=0.4)
