@@ -114,6 +114,7 @@ class Window(tkinter.Tk):
             utility.enable_high_dpi_awareness()
 
         super().__init__()
+        winsys = self.tk.call('tk', 'windowingsystem')
 
         if scaling is not None:
             utility.enable_high_dpi_awareness(self, scaling)
@@ -154,8 +155,8 @@ class Window(tkinter.Tk):
             self.overrideredirect(1)
         
         if alpha is not None:
-            if self.tk.call('tk', 'windowingsystem') == 'x11':
-                self.wait_visibility()
+            if winsys == 'x11':
+                self.wait_visibility(self)
             self.attributes("-alpha", alpha)
 
         self._style = Style(themename)
@@ -165,11 +166,19 @@ class Window(tkinter.Tk):
         """Return a reference to the `ttkbootstrap.style.Style` object."""
         return self._style
 
-    def position_center(self):
-        """Position the window in the center of the screen. Does not
-        account for the titlebar when placing the window.
-        """
-        self.eval("tk::PlaceWindow . center")
+    def place_window_center(self):
+        """Position the toplevel in the center of the screen."""
+        self.update_idletasks()
+        tbar_height = self.winfo_rooty() - self.winfo_y()
+        w_height = self.winfo_height()
+        w_width = self.winfo_width()
+        s_height = self.winfo_screenheight()
+        s_width = self.winfo_screenwidth()
+        xpos = (s_width - w_width) // 2
+        ypos = (s_height - w_height - tbar_height) // 2
+        self.geometry(f'+{xpos}+{ypos}')
+
+    position_center = place_window_center # alias
 
 
 class Toplevel(tkinter.Toplevel):
@@ -282,6 +291,7 @@ class Toplevel(tkinter.Toplevel):
                 Other optional keyword arguments.
         """
         super().__init__(**kwargs)
+        winsys = self.tk.call('tk', 'windowingsystem')
 
         if iconphoto:
             self._icon = iconphoto or tkinter.PhotoImage(data=Icon.icon)
@@ -312,17 +322,20 @@ class Toplevel(tkinter.Toplevel):
             self.overrideredirect(1)
         
         if windowtype is not None:
-            self.attributes("-type", windowtype)
+            if winsys == 'x11':
+                self.attributes("-type", windowtype)
         
         if topmost:
             self.attributes("-topmost", 1)
         
         if toolwindow:
-            self.attributes("-toolwindow", 1)
+            if winsys == 'win32':
+                self.attributes("-toolwindow", 1)
         
         if alpha is not None:
-            if self.tk.call('tk', 'windowingsystem') == 'x11':
-                self.wait_visibility()
+            print(winsys)
+            if winsys == 'x11':
+                self.wait_visibility(self)
             self.attributes("-alpha", alpha)
 
     @property
@@ -330,20 +343,26 @@ class Toplevel(tkinter.Toplevel):
         """Return a reference to the `ttkbootstrap.style.Style` object."""
         return Style()
 
-    def position_center(self):
-        """Position the toplevel in the center of the screen. Does not
-        account for the titlebar when placing the window.
-        """
-        self.tk.eval(f"tk::PlaceWindow {self._w} center")
+    def place_window_center(self):
+        """Position the toplevel in the center of the screen."""
+        self.update_idletasks()
+        tbar_height = self.winfo_rooty() - self.winfo_y()
+        w_height = self.winfo_height()
+        w_width = self.winfo_width()
+        s_height = self.winfo_screenheight()
+        s_width = self.winfo_screenwidth()
+        xpos = (s_width - w_width) // 2
+        ypos = (s_height - w_height - tbar_height) // 2
+        self.geometry(f'+{xpos}+{ypos}')
 
+    position_center = place_window_center # alias
 
 if __name__ == "__main__":
 
-    root = Window(themename="superhero")
-    #root.update_idletasks()
-    root.position_center()
+    root = Window(themename="superhero", alpha=0.5)
+    root.place_window_center()
 
-    top = Toplevel(title="My Toplevel", toolwindow=True, alpha=0.4)
-    top.position_center()
+    top = Toplevel(title="My Toplevel", alpha=0.4)
+    top.place_window_center()
 
     root.mainloop()
