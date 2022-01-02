@@ -114,8 +114,9 @@ class Window(tkinter.Tk):
             utility.enable_high_dpi_awareness()
 
         super().__init__()
+        winsys = self.tk.call('tk', 'windowingsystem')
 
-        if scaling:
+        if scaling is not None:
             utility.enable_high_dpi_awareness(self, scaling)
 
         try:
@@ -127,26 +128,35 @@ class Window(tkinter.Tk):
 
         self.title(title)
 
-        if size:
+        if size is not None:
             width, height = size
             self.geometry(f"{width}x{height}")
-        if position:
+        
+        if position is not None:
             xpos, ypos = position
             self.geometry(f"+{xpos}+{ypos}")
-        if minsize:
+        
+        if minsize is not None:
             width, height = minsize
             self.minsize(width, height)
-        if maxsize:
+        
+        if maxsize is not None:
             width, height
             self.maxsize(width, height)
-        if resizable:
+        
+        if resizable is not None:
             width, height = resizable
             self.resizable(width, height)
-        if transient:
+        
+        if transient is not None:
             self.transient(transient)
+        
         if overrideredirect:
             self.overrideredirect(1)
-        if alpha:
+        
+        if alpha is not None:
+            if winsys == 'x11':
+                self.wait_visibility(self)
             self.attributes("-alpha", alpha)
 
         self._style = Style(themename)
@@ -156,11 +166,19 @@ class Window(tkinter.Tk):
         """Return a reference to the `ttkbootstrap.style.Style` object."""
         return self._style
 
-    def position_center(self):
-        """Position the window in the center of the screen. Does not
-        account for the titlebar when placing the window.
-        """
-        self.eval("tk::PlaceWindow . center")
+    def place_window_center(self):
+        """Position the toplevel in the center of the screen. Does not
+        account for titlebar height."""
+        self.update_idletasks()
+        w_height = self.winfo_height()
+        w_width = self.winfo_width()
+        s_height = self.winfo_screenheight()
+        s_width = self.winfo_screenwidth()
+        xpos = (s_width - w_width) // 2
+        ypos = (s_height - w_height) // 2
+        self.geometry(f'+{xpos}+{ypos}')
+
+    position_center = place_window_center # alias
 
 
 class Toplevel(tkinter.Toplevel):
@@ -184,8 +202,7 @@ class Toplevel(tkinter.Toplevel):
         self,
         title="ttkbootstrap",
         iconphoto=None,
-        height=None,
-        width=None,
+        size=None,
         position=None,
         minsize=None,
         maxsize=None,
@@ -208,11 +225,10 @@ class Toplevel(tkinter.Toplevel):
                 The titlebar icon. This image is applied to all future
                 toplevels as well.
 
-            height (int):
-                Specifies the desired height for the window.
-
-            width (int):
-                Specifies the desired width for the window.
+            size (Tuple[int, int]):
+                The width and height of the application window.
+                Internally, this argument is passed to the
+                `Toplevel.geometry` method.
 
             position (Tuple[int, int]):
                 The horizontal and vertical position of the window on
@@ -273,35 +289,54 @@ class Toplevel(tkinter.Toplevel):
                 Other optional keyword arguments.
         """
         super().__init__(**kwargs)
+        winsys = self.tk.call('tk', 'windowingsystem')
+
         if iconphoto:
             self._icon = iconphoto or tkinter.PhotoImage(data=Icon.icon)
             self.iconphoto(False, self._icon)
 
         self.title(title)
 
-        if position:
+        if size is not None:
+            width, height = size
+            self.geometry(f'{width}x{height}')
+
+        if position is not None:
             xpos, ypos = position
             self.geometry(f"+{xpos}+{ypos}")
-        if minsize:
+        
+        if minsize is not None:
             width, height = minsize
             self.minsize(width, height)
-        if maxsize:
+        
+        if maxsize is not None:
             width, height
             self.maxsize(width, height)
-        if resizable:
+
+        if resizable is not None:
             width, height = resizable
             self.resizable(width, height)
-        if transient:
+        
+        if transient is not None:
             self.transient(transient)
+        
         if overrideredirect:
             self.overrideredirect(1)
-        if windowtype:
-            self.attributes("-type", windowtype)
+        
+        if windowtype is not None:
+            if winsys == 'x11':
+                self.attributes("-type", windowtype)
+        
         if topmost:
             self.attributes("-topmost", 1)
+        
         if toolwindow:
-            self.attributes("-toolwindow", 1)
-        if alpha:
+            if winsys == 'win32':
+                self.attributes("-toolwindow", 1)
+        
+        if alpha is not None:
+            if winsys == 'x11':
+                self.wait_visibility(self)
             self.attributes("-alpha", alpha)
 
     @property
@@ -309,22 +344,28 @@ class Toplevel(tkinter.Toplevel):
         """Return a reference to the `ttkbootstrap.style.Style` object."""
         return Style()
 
-    def position_center(self):
+    def place_window_center(self):
         """Position the toplevel in the center of the screen. Does not
-        account for the titlebar when placing the window.
-        """
-        winfoid = hex(self.winfo_id())
-        pathname = self.winfo_pathname(winfoid)
-        self.tk.eval(f"tk::PlaceWindow {pathname} center")
+        account for titlebar height."""
+        self.update_idletasks()
+        w_height = self.winfo_height()
+        w_width = self.winfo_width()
+        s_height = self.winfo_screenheight()
+        s_width = self.winfo_screenwidth()
+        xpos = (s_width - w_width) // 2
+        ypos = (s_height - w_height) // 2
+        self.geometry(f'+{xpos}+{ypos}')
 
+    position_center = place_window_center # alias
 
 if __name__ == "__main__":
 
-    root = Window(themename="superhero")
-    root.update_idletasks()
-    root.position_center()
+    root = Window(themename="superhero", alpha=0.5, size=(1000, 1000))
+    #root.withdraw()
+    root.place_window_center()
+    #root.deiconify()
 
-    top = Toplevel(title="My Toplevel", toolwindow=True, alpha=0.4)
-    top.position_center()
+    top = Toplevel(title="My Toplevel", alpha=0.4, size=(1000, 1000))
+    top.place_window_center()
 
     root.mainloop()
