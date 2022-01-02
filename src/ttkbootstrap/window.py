@@ -167,20 +167,15 @@ class Window(tkinter.Tk):
         return self._style
 
     def place_window_center(self):
-        """Position the toplevel in the center of the screen."""
+        """Position the toplevel in the center of the screen. Does not
+        account for titlebar height."""
         self.update_idletasks()
-        # get height of titlebar
-        _y1 = int(self.geometry().split('+')[-1])
-        _y2 = self.winfo_rooty()
-        t_height = _y2 - _y1
-        
-        # get window and widget height
         w_height = self.winfo_height()
         w_width = self.winfo_width()
         s_height = self.winfo_screenheight()
         s_width = self.winfo_screenwidth()
         xpos = (s_width - w_width) // 2
-        ypos = (s_height - w_height - t_height) // 2
+        ypos = (s_height - w_height) // 2
         self.geometry(f'+{xpos}+{ypos}')
 
     position_center = place_window_center # alias
@@ -350,20 +345,15 @@ class Toplevel(tkinter.Toplevel):
         return Style()
 
     def place_window_center(self):
-        """Position the toplevel in the center of the screen."""
+        """Position the toplevel in the center of the screen. Does not
+        account for titlebar height."""
         self.update_idletasks()
-        # get height of titlebar
-        _y1 = int(self.geometry().split('+')[-1])
-        _y2 = self.winfo_rooty()
-        t_height = _y2 - _y1
-        
-        # get window and widget height
         w_height = self.winfo_height()
         w_width = self.winfo_width()
         s_height = self.winfo_screenheight()
         s_width = self.winfo_screenwidth()
         xpos = (s_width - w_width) // 2
-        ypos = (s_height - w_height - t_height) // 2
+        ypos = (s_height - w_height) // 2
         self.geometry(f'+{xpos}+{ypos}')
 
     position_center = place_window_center # alias
@@ -371,9 +361,9 @@ class Toplevel(tkinter.Toplevel):
 if __name__ == "__main__":
 
     root = Window(themename="superhero", alpha=0.5, size=(1000, 1000))
-    root.withdraw()
+    #root.withdraw()
     root.place_window_center()
-    root.deiconify()
+    #root.deiconify()
 
     top = Toplevel(title="My Toplevel", alpha=0.4, size=(1000, 1000))
     top.place_window_center()
