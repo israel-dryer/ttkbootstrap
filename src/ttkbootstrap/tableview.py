@@ -320,6 +320,7 @@ class Tableview(ttk.Frame):
         stripecolor=None,
         pagesize=10,
         height=10,
+        delimiter=","
     ):
         """
         Parameters:
@@ -394,6 +395,10 @@ class Tableview(ttk.Frame):
                 If the number of records extends beyond the table height,
                 the user may use the mousewheel or scrollbar to navigate
                 the data.
+
+            delimiter (str):
+                The character to use as a delimiter when exporting data
+                to CSV.
         """
         super().__init__(master)
         self._tablecols = []
@@ -413,6 +418,7 @@ class Tableview(ttk.Frame):
         self._filtered = False
         self._searchcriteria = tk.StringVar()
         self._rightclickmenu_cell = None
+        self._delimiter = delimiter
         
         self.view: ttk.Treeview = None
         self._build_table(coldata, rowdata, bootstyle)
@@ -1026,13 +1032,13 @@ class Tableview(ttk.Frame):
         """Export all records to a csv file"""
         headers = [col._headertext for col in self._tablecols]
         records = [row._values for row in self._tablerows]
-        self.save_data_to_csv(headers, records)
+        self.save_data_to_csv(headers, records, self._delimiter)
 
     def export_current_page(self):
         """Export records on current page to csv file"""
         headers = [col._headertext for col in self._tablecols]
         records = [row._values for row in self._viewdata]
-        self.save_data_to_csv(headers, records)
+        self.save_data_to_csv(headers, records, self._delimiter)
 
     def export_current_selection(self):
         """Export rows currently selected to csv file"""
@@ -1041,7 +1047,7 @@ class Tableview(ttk.Frame):
         records = []
         for iid in selected:
             records.append(self.view.item(iid)["values"])
-        self.save_data_to_csv(headers, records)
+        self.save_data_to_csv(headers, records, self._delimiter)
 
     def export_records_in_filter(self):
         """Export rows currently filtered to csv file"""
@@ -1049,9 +1055,9 @@ class Tableview(ttk.Frame):
         if not self._filtered:
             return
         records = [row.values for row in self._tablerows_filtered]
-        self.save_data_to_csv(headers, records)
+        self.save_data_to_csv(headers, records, self._delimiter)
 
-    def save_data_to_csv(self, headers, records):
+    def save_data_to_csv(self, headers, records, delimiter=","):
         """Save data records to a csv file.
 
         Parameters:
@@ -1061,6 +1067,9 @@ class Tableview(ttk.Frame):
 
             records (List[Tuple[...]]):
                 A list of table records.
+
+            delimiter (str):
+                The character to use for delimiting the values.
         """
         from tkinter.filedialog import asksaveasfilename
         import csv
@@ -1079,7 +1088,7 @@ class Tableview(ttk.Frame):
         )
         if filename:
             with open(filename, "w", encoding="utf-8", newline="") as f:
-                writer = csv.writer(f)
+                writer = csv.writer(f, delimiter=delimiter)
                 writer.writerow(headers)
                 writer.writerows(records)
 
