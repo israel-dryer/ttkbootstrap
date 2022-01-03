@@ -962,7 +962,7 @@ class Tableview(ttk.Frame):
 
         if not self._filtered:
             self._filtered = True
-            self._tablerows_filtered = self._tablerows
+            self._tablerows_filtered = self._tablerows.copy()
 
         for row in tablerows:
             if self._filtered:
