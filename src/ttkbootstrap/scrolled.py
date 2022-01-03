@@ -16,6 +16,8 @@ class ScrolledText(ttk.Frame):
     
     This widget is identical in configuration to the `Text` widget other
     than the scrolling frame. https://tcl.tk/man/tcl8.6/TkCmd/text.htm
+
+    ![](../assets/scrolled/scrolledtext.gif)    
     """
 
     def __init__(
