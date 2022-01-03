@@ -12,7 +12,11 @@ class ScrolledText(ttk.Frame):
     Setting `autohide=True` will cause the scrollbars to hide when the
     mouse is not over the widget. The vertical scrollbar is on by
     default, but can be turned off. The horizontal scrollbar can be
-    enabled by setting `vbar=True`."""
+    enabled by setting `vbar=True`.
+    
+    This widget is identical in configuration to the `Text` widget other
+    than the scrolling frame. https://tcl.tk/man/tcl8.6/TkCmd/text.htm
+    """
 
     def __init__(
         self,
