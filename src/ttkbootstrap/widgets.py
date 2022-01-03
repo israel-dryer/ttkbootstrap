@@ -1,5 +1,6 @@
 import tkinter as tk
 from tkinter import ttk
+from tkinter import font
 from tkinter.ttk import Button, Checkbutton, Combobox
 from tkinter.ttk import Entry, Frame, Label
 from tkinter.ttk import Labelframe, LabelFrame, Menubutton
@@ -8,6 +9,7 @@ from tkinter.ttk import Panedwindow, Progressbar, Radiobutton
 from tkinter.ttk import Scale, Scrollbar, Separator
 from tkinter.ttk import Sizegrip, Spinbox, Treeview
 from ttkbootstrap.constants import *
+from math import ceil
 
 # date entry imports
 from ttkbootstrap.dialogs import Querybox

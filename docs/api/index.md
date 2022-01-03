@@ -22,7 +22,7 @@ This module contains classes that provide emojis or image icons for your
 application. They can be used in text as `Emoji` or in the 
 `PhotoImage` class as `Icon`.
 
-❯ [Emoji](icons/icons/emoji.md)  
+❯ [Emoji](icons/emoji.md)  
 ❯ [Icon](icons/icon.md)  
 
 ## 📜 scrolled module
@@ -31,7 +31,6 @@ This module contains various scrolled widgets such as `ScrolledText` and
 
 ❯ [ScrolledFrame](scrolled/scrolledframe.md)  
 ❯ [ScrolledText](scrolled/scrolledtext.md)  
-
 
 ## 🎨 style module
 This module contains the classes that make up the ttkbootstrap theme and
@@ -45,6 +44,11 @@ docs are here for your reference.
 ❯ [StyleBuilderTk](style/stylebuildertk.md)  
 ❯ [StyleBuilderTTK](style/stylebuilderttk.md)  
 ❯ [Bootstyle](style/bootstyle.md)  
+
+## 🪟 [tableview module](tableview/tableview.md)
+❯ [Tableview](tableview/tableview.md)  
+❯ [TableColumn](tableview/tablecolumn.md)  
+❯ [TableRow](tableview/tablerow.md)
 
 ## 🛎️ [toast module](toast.md)
 This module has a class called `ToastNotification` which provides a 

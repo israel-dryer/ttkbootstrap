@@ -1,8 +1,7 @@
 import tkinter as tk
 import ttkbootstrap as ttk
+from ttkbootstrap.constants import *
 from random import choice
-from ttkbootstrap import utility
-utility.enable_high_dpi_awareness()
 
 DARK = 'superhero'
 LIGHT = 'flatly'
@@ -27,28 +26,33 @@ def create_entry_test(bootstyle, style):
         entry.pack(padx=5, pady=5, fill=tk.BOTH)
         entry.insert(tk.END, color)
 
+    # readonly
+    entry = ttk.Entry(frame, bootstyle=bootstyle)
+    entry.insert(tk.END, 'readonly')
+    entry.configure(state=READONLY)
+    entry.pack(padx=5, pady=5, fill=tk.BOTH)        
+
     # disabled
     entry = ttk.Entry(frame, bootstyle=bootstyle)
-    entry.insert(tk.END, bootstyle)
-    entry.configure(state=tk.DISABLED)
+    entry.insert(tk.END, 'disabled')
+    entry.configure(state=DISABLED)
     entry.pack(padx=5, pady=5, fill=tk.BOTH)
 
     return frame
 
 
 def change_style():
-    theme = choice(style.theme_names())
-    style.theme_use(theme)    
+    theme = choice(root.style.theme_names())
+    root.style.theme_use(theme)    
 
 
 if __name__ == '__main__':
     # create visual widget style tests
-    root = tk.Tk()
-    style = ttk.Style()
+    root = ttk.Window(themename='sandstone')
 
     ttk.Button(text="Change Theme", command=change_style).pack(padx=10, pady=10)
 
-    test1 = create_entry_test('TEntry', style)
+    test1 = create_entry_test('TEntry', root.style)
     test1.pack(side=tk.LEFT, fill=tk.BOTH)
 
     root.mainloop()
