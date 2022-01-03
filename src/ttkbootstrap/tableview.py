@@ -1819,7 +1819,7 @@ class TableCellRightClickMenu(tk.Menu):
                 "command": self.sort_column_descending,
             },
             "clearfilter": {
-                "label": "Clear filter",
+                "label": "⎌ Clear filters",
                 "command": self.master.clear_filters,
             },
             "filterbyvalue": {
@@ -2056,6 +2056,10 @@ class TableHeaderRightClickMenu(tk.Menu):
                 "label": "◫  Align center",
                 "command": self.align_heading_center,
             },
+            "resettable": {
+                "label": "⎌  Reset Table",
+                "command": self.master.clear_filters
+            }
         }
 
         # MOVE MENU
@@ -2071,6 +2075,8 @@ class TableHeaderRightClickMenu(tk.Menu):
         align_menu.add_command(cnf=config["aligncenter"])
         align_menu.add_command(cnf=config["alignright"])
         self.add_cascade(menu=align_menu, label="↦  Align")
+
+        self.add_command(cnf=config["resettable"])
 
     def post(self, event):
         # capture the column and item that invoked the menu
