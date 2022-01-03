@@ -1824,9 +1824,9 @@ class Tableview(ttk.Frame):
         """Callback for right-click events"""
         region = self.view.identify_region(event.x, event.y)
         if region == "heading":
-            self.rightclickmenu_head.post(event)
+            self.rightclickmenu_head.tk_popup(event)
         elif region != "separator":
-            self._rightclickmenu_cell.post(event)
+            self._rightclickmenu_cell.tk_popup(event)
 
 
 class TableCellRightClickMenu(tk.Menu):
@@ -1945,7 +1945,7 @@ class TableCellRightClickMenu(tk.Menu):
         align_menu.add_command(cnf=config["alignright"])
         self.add_cascade(menu=align_menu, label="↦  Align")
 
-    def post(self, event):
+    def tk_popup(self, event):
         """Display the menu below the selected cell.
 
         Parameters:
@@ -1963,7 +1963,7 @@ class TableCellRightClickMenu(tk.Menu):
         rooty = self.view.winfo_rooty()
         bbox = self.view.bbox(iid, col)
         try:
-            super().post(rootx + bbox[0], rooty + bbox[1] + bbox[3])
+            super().tk_popup(rootx + bbox[0], rooty + bbox[1] + bbox[3])
         except IndexError:
             pass
 
@@ -2114,14 +2114,14 @@ class TableHeaderRightClickMenu(tk.Menu):
 
         self.add_command(cnf=config["resettable"])
 
-    def post(self, event):
+    def tk_popup(self, event):
         # capture the column and item that invoked the menu
         self.event = event
 
         # show the menu below the invoking cell
         rootx = self.view.winfo_rootx()
         rooty = self.view.winfo_rooty()
-        super().post(rootx + event.x, rooty + event.y + 10)
+        super().tk_popup(rootx + event.x, rooty + event.y + 10)
 
     def toggle_columns(self, cid):
         """Toggles the visibility of the selected column"""
