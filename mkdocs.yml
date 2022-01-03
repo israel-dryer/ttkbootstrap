@@ -93,6 +93,10 @@ nav:
       - api/style/stylebuildertk.md
       - api/style/stylebuilderttk.md
       - api/style/themedefinition.md    
+    - 'tableview module':
+      - api/tableview/tableview.md
+      - api/tableview/tablecolumn.md
+      - api/tableview/tablerow.md
     - 'toast module': api/toast.md
     - 'tooltip module': api/tooltip.md
     - 'utility module': api/utility.md

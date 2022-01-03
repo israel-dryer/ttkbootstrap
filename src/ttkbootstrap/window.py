@@ -4,6 +4,7 @@
     consolidated api for initial application startup.
 """
 import tkinter
+from ttkbootstrap.constants import *
 from ttkbootstrap.style import Style
 from ttkbootstrap.icons import Icon
 from ttkbootstrap import utility
