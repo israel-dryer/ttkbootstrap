@@ -142,7 +142,7 @@ class Window(tkinter.Tk):
             self.minsize(width, height)
         
         if maxsize is not None:
-            width, height
+            width, height = maxsize
             self.maxsize(width, height)
         
         if resizable is not None:
@@ -353,7 +353,7 @@ class Toplevel(tkinter.Toplevel):
             self.minsize(width, height)
         
         if maxsize is not None:
-            width, height
+            width, height = maxsize
             self.maxsize(width, height)
 
         if resizable is not None:
