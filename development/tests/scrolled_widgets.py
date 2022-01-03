@@ -4,11 +4,9 @@ from ttkbootstrap.scrolled import ScrolledText, ScrolledFrame
 
 app = ttk.Window()
 
-st = ScrolledText(app, padding=20, width=30, height=10, hbar=True, autohide=True)
+st = ScrolledText(app, padding=5, height=10, hbar=True, autohide=True)
 st.pack(fill=BOTH, expand=YES)
 
-for x in range(25):
-    st.insert(END, f'This is a really long line of text... it is {x+1} of 25!\n')
 
 app.mainloop()
 
