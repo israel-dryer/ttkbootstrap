@@ -33,6 +33,12 @@ def create_spinbox_test(bootstyle, style):
     spinbox.configure(state=tk.DISABLED)
     spinbox.pack(padx=5, pady=5, fill=tk.BOTH)
 
+    # readonly
+    spinbox = ttk.Spinbox(frame)
+    spinbox.insert(tk.END, 'readonly')
+    spinbox.configure(state='readonly')
+    spinbox.pack(padx=5, pady=5, fill=tk.BOTH)    
+
     return frame
 
 
