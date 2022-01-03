@@ -164,6 +164,8 @@ class TableColumn:
 class TableRow:
     """Represents a row in a Tableview object"""
 
+    _cnt = 0
+
     def __init__(self, table, values):
         """
         Parameters:
@@ -176,7 +178,11 @@ class TableRow:
         """
         self._values = values
         self._iid = None
+        self._sort = TableRow._cnt + 1
         self.view: ttk.Treeview = table
+
+        # increment cnt
+        TableRow._cnt += 1
 
     @property
     def iid(self):
@@ -320,6 +326,7 @@ class Tableview(ttk.Frame):
         stripecolor=None,
         pagesize=10,
         height=10,
+        delimiter=","
     ):
         """
         Parameters:
@@ -394,6 +401,10 @@ class Tableview(ttk.Frame):
                 If the number of records extends beyond the table height,
                 the user may use the mousewheel or scrollbar to navigate
                 the data.
+
+            delimiter (str):
+                The character to use as a delimiter when exporting data
+                to CSV.
         """
         super().__init__(master)
         self._tablecols = []
@@ -413,6 +424,7 @@ class Tableview(ttk.Frame):
         self._filtered = False
         self._searchcriteria = tk.StringVar()
         self._rightclickmenu_cell = None
+        self._delimiter = delimiter
         
         self.view: ttk.Treeview = None
         self._build_table(coldata, rowdata, bootstyle)
@@ -437,6 +449,10 @@ class Tableview(ttk.Frame):
                 The value of cnf or None.
         """    
         try:
+            if 'pagesize' in kwargs:
+                pagesize = kwargs.pop('pagesize')
+                self._pagesize.set(value=pagesize)
+            
             self.view.configure(cnf, **kwargs)
         except:
             super().configure(cnf, **kwargs)
@@ -538,7 +554,7 @@ class Tableview(ttk.Frame):
             TableColumn:
                 A table column object.
         """
-        self.clear_filters()
+        self.reset_table()
         colcount = len(self._tablecols)
         cid = colcount
         if index == END:
@@ -616,7 +632,7 @@ class Tableview(ttk.Frame):
             return
 
         if clear_filters:
-            self.clear_filters()
+            self.reset_table()
         self.unload_table_data()
         page_start = self._rowindex.get()
         page_end = self._rowindex.get() + self._pagesize.get()
@@ -887,10 +903,22 @@ class Tableview(ttk.Frame):
 
     # DATA SEARCH & FILTERING
 
-    def clear_filters(self):
-        """Remove all table data filters"""
+    def reset_table(self):
+        """Remove all table data filters and column sorts"""
         self._filtered = False
         self._searchcriteria.set("")
+        try:
+            sortedrows = sorted(
+                self._tablerows, 
+                key=lambda x: x._sort
+            )
+        except IndexError:
+            self.fill_empty_columns()
+            sortedrows = sorted(
+                self._tablerows, 
+                key=lambda x: x._sort
+            )            
+        self._tablerows = sortedrows
         self.unload_table_data()
         self.load_table_data()
         self._column_sort_header_reset()
@@ -956,7 +984,7 @@ class Tableview(ttk.Frame):
 
         if not self._filtered:
             self._filtered = True
-            self._tablerows_filtered = self._tablerows
+            self._tablerows_filtered = self._tablerows.copy()
 
         for row in tablerows:
             if self._filtered:
@@ -1026,13 +1054,13 @@ class Tableview(ttk.Frame):
         """Export all records to a csv file"""
         headers = [col._headertext for col in self._tablecols]
         records = [row._values for row in self._tablerows]
-        self.save_data_to_csv(headers, records)
+        self.save_data_to_csv(headers, records, self._delimiter)
 
     def export_current_page(self):
         """Export records on current page to csv file"""
         headers = [col._headertext for col in self._tablecols]
         records = [row._values for row in self._viewdata]
-        self.save_data_to_csv(headers, records)
+        self.save_data_to_csv(headers, records, self._delimiter)
 
     def export_current_selection(self):
         """Export rows currently selected to csv file"""
@@ -1041,7 +1069,7 @@ class Tableview(ttk.Frame):
         records = []
         for iid in selected:
             records.append(self.view.item(iid)["values"])
-        self.save_data_to_csv(headers, records)
+        self.save_data_to_csv(headers, records, self._delimiter)
 
     def export_records_in_filter(self):
         """Export rows currently filtered to csv file"""
@@ -1049,9 +1077,9 @@ class Tableview(ttk.Frame):
         if not self._filtered:
             return
         records = [row.values for row in self._tablerows_filtered]
-        self.save_data_to_csv(headers, records)
+        self.save_data_to_csv(headers, records, self._delimiter)
 
-    def save_data_to_csv(self, headers, records):
+    def save_data_to_csv(self, headers, records, delimiter=","):
         """Save data records to a csv file.
 
         Parameters:
@@ -1061,6 +1089,9 @@ class Tableview(ttk.Frame):
 
             records (List[Tuple[...]]):
                 A list of table records.
+
+            delimiter (str):
+                The character to use for delimiting the values.
         """
         from tkinter.filedialog import asksaveasfilename
         import csv
@@ -1079,7 +1110,7 @@ class Tableview(ttk.Frame):
         )
         if filename:
             with open(filename, "w", encoding="utf-8", newline="") as f:
-                writer = csv.writer(f)
+                writer = csv.writer(f, delimiter=delimiter)
                 writer.writerow(headers)
                 writer.writerows(records)
 
@@ -1360,7 +1391,7 @@ class Tableview(ttk.Frame):
     def autofit_columns(self):
         """Autofit all columns in the current view"""
         f = font.nametofont("TkDefaultFont")
-        pad = utility.scale_size(self, 10)
+        pad = utility.scale_size(self, 20)
         col_widths = []
 
         # measure header sizes
@@ -1629,12 +1660,13 @@ class Tableview(ttk.Frame):
         searchterm.pack(fill=X, side=LEFT, expand=YES)
         searchterm.bind("<Return>", self._search_table_data)
         searchterm.bind("<KP_Enter>", self._search_table_data)
-        ttk.Button(
-            frame,
-            text="⎌",
-            command=self.clear_filters,
-            style="symbol.Link.TButton",
-        ).pack(side=LEFT)
+        if not self._paginated:
+            ttk.Button(
+                frame,
+                text="⎌",
+                command=self.reset_table,
+                style="symbol.Link.TButton",
+            ).pack(side=LEFT)
 
     def _build_pagination_frame(self):
         """Build the frame containing the pagination widgets. This
@@ -1643,6 +1675,15 @@ class Tableview(ttk.Frame):
         """
         pageframe = ttk.Frame(self)
         pageframe.pack(fill=X, anchor=N)
+
+        ttk.Button(
+            pageframe,
+            text="⎌",
+            command=self.reset_table,
+            style="symbol.Link.TButton",
+        ).pack(side=RIGHT)      
+
+        ttk.Separator(pageframe, orient=VERTICAL).pack(side=RIGHT, padx=10)          
 
         ttk.Button(
             master=pageframe,
@@ -1657,19 +1698,6 @@ class Tableview(ttk.Frame):
             style="symbol.Link.TButton",
         ).pack(side=RIGHT, fill=Y)
 
-        ttk.Separator(pageframe, orient=VERTICAL).pack(side=RIGHT)
-        lbl = ttk.Label(pageframe, textvariable=self._pagelimit)
-        lbl.pack(side=RIGHT, padx=(0, 5))
-        ttk.Label(pageframe, text="of").pack(side=RIGHT, padx=(5, 0))
-
-        index = ttk.Entry(pageframe, textvariable=self._pageindex, width=4)
-        index.pack(side=RIGHT)
-        index.bind("<Return>", self.goto_page, "+")
-        index.bind("<KP_Enter>", self.goto_page, "+")
-
-        ttk.Label(pageframe, text="Page").pack(side=RIGHT, padx=5)
-        ttk.Separator(pageframe, orient=VERTICAL).pack(side=RIGHT)
-
         ttk.Button(
             master=pageframe,
             text="‹",
@@ -1681,19 +1709,36 @@ class Tableview(ttk.Frame):
             text="«",
             command=self.goto_first_page,
             style="symbol.Link.TButton",
-        ).pack(side=RIGHT, fill=Y)
+        ).pack(side=RIGHT, fill=Y)   
 
-        ttk.Label(pageframe, text="Pagesize").pack(side=LEFT, padx=5, fill=Y)
-        values = [5, 10, 25, 50, 75, 100]
-        cbo = ttk.Combobox(
-            master=pageframe,
-            values=values,
-            textvariable=self._pagesize,
-            width=4,
-            state=READONLY,
-        )
-        cbo.pack(side=LEFT)
-        cbo.bind("<<ComboboxSelected>>", self._select_pagesize)
+        ttk.Separator(pageframe, orient=VERTICAL).pack(side=RIGHT, padx=10)
+
+        lbl = ttk.Label(pageframe, textvariable=self._pagelimit)
+        lbl.pack(side=RIGHT, padx=(0, 5))
+        ttk.Label(pageframe, text="of").pack(side=RIGHT, padx=(5, 0))
+
+        index = ttk.Entry(pageframe, textvariable=self._pageindex, width=4)
+        index.pack(side=RIGHT)
+        index.bind("<Return>", self.goto_page, "+")
+        index.bind("<KP_Enter>", self.goto_page, "+")
+
+        ttk.Label(pageframe, text="Page").pack(side=RIGHT, padx=5)
+
+        # I'm removing this widget for now; the pageframe was getting too 
+        #   cluttered and this is configurable with `configure`
+
+        # values = [5, 10, 25, 50, 75, 100]
+        # cbo = ttk.Combobox(
+        #     master=pageframe,
+        #     values=values,
+        #     textvariable=self._pagesize,
+        #     width=4,
+        #     state=READONLY,
+        # )
+        # cbo.pack(side=RIGHT)
+        # cbo.bind("<<ComboboxSelected>>", self._select_pagesize)
+        # ttk.Label(pageframe, text="Rows per page").pack(side=RIGHT, padx=5, fill=Y)
+
 
     def _build_table_rows(self, rowdata):
         """Build, load, and configure the DataTableRow objects
@@ -1748,12 +1793,12 @@ class Tableview(ttk.Frame):
         self.view.bind(sequence, self._table_rightclick)
 
         # add trace to track pagesize changes
-        # self.pagesize.trace_add('write', self._trace_pagesize)
+        self._pagesize.trace_add('write', self._trace_pagesize)
 
-    def _select_pagesize(self, event):
-        cbo: ttk.Combobox = self.nametowidget(event.widget)
-        cbo.select_clear()
-        self.goto_first_page()
+    # def _select_pagesize(self, event):
+    #     cbo: ttk.Combobox = self.nametowidget(event.widget)
+    #     cbo.select_clear()
+    #     self.goto_first_page()
 
     def _trace_pagesize(self, *_):
         """Callback for changes to page size"""
@@ -1779,9 +1824,9 @@ class Tableview(ttk.Frame):
         """Callback for right-click events"""
         region = self.view.identify_region(event.x, event.y)
         if region == "heading":
-            self.rightclickmenu_head.post(event)
+            self.rightclickmenu_head.tk_popup(event)
         elif region != "separator":
-            self._rightclickmenu_cell.post(event)
+            self._rightclickmenu_cell.tk_popup(event)
 
 
 class TableCellRightClickMenu(tk.Menu):
@@ -1810,8 +1855,8 @@ class TableCellRightClickMenu(tk.Menu):
                 "command": self.sort_column_descending,
             },
             "clearfilter": {
-                "label": "Clear filter",
-                "command": self.master.clear_filters,
+                "label": "⎌ Clear filters",
+                "command": self.master.reset_table,
             },
             "filterbyvalue": {
                 "label": "Filter by cell's value",
@@ -1900,7 +1945,7 @@ class TableCellRightClickMenu(tk.Menu):
         align_menu.add_command(cnf=config["alignright"])
         self.add_cascade(menu=align_menu, label="↦  Align")
 
-    def post(self, event):
+    def tk_popup(self, event):
         """Display the menu below the selected cell.
 
         Parameters:
@@ -1918,7 +1963,7 @@ class TableCellRightClickMenu(tk.Menu):
         rooty = self.view.winfo_rooty()
         bbox = self.view.bbox(iid, col)
         try:
-            super().post(rootx + bbox[0], rooty + bbox[1] + bbox[3])
+            super().tk_popup(rootx + bbox[0], rooty + bbox[1] + bbox[3])
         except IndexError:
             pass
 
@@ -2047,6 +2092,10 @@ class TableHeaderRightClickMenu(tk.Menu):
                 "label": "◫  Align center",
                 "command": self.align_heading_center,
             },
+            "resettable": {
+                "label": "⎌  Reset Table",
+                "command": self.master.reset_table
+            }
         }
 
         # MOVE MENU
@@ -2063,14 +2112,16 @@ class TableHeaderRightClickMenu(tk.Menu):
         align_menu.add_command(cnf=config["alignright"])
         self.add_cascade(menu=align_menu, label="↦  Align")
 
-    def post(self, event):
+        self.add_command(cnf=config["resettable"])
+
+    def tk_popup(self, event):
         # capture the column and item that invoked the menu
         self.event = event
 
         # show the menu below the invoking cell
         rootx = self.view.winfo_rootx()
         rooty = self.view.winfo_rooty()
-        super().post(rootx + event.x, rooty + event.y + 10)
+        super().tk_popup(rootx + event.x, rooty + event.y + 10)
 
     def toggle_columns(self, cid):
         """Toggles the visibility of the selected column"""
