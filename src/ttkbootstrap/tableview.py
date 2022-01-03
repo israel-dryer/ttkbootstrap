@@ -1638,12 +1638,13 @@ class Tableview(ttk.Frame):
         searchterm.pack(fill=X, side=LEFT, expand=YES)
         searchterm.bind("<Return>", self._search_table_data)
         searchterm.bind("<KP_Enter>", self._search_table_data)
-        ttk.Button(
-            frame,
-            text="⎌",
-            command=self.clear_filters,
-            style="symbol.Link.TButton",
-        ).pack(side=LEFT)
+        if not self._paginated:
+            ttk.Button(
+                frame,
+                text="⎌",
+                command=self.clear_filters,
+                style="symbol.Link.TButton",
+            ).pack(side=LEFT)
 
     def _build_pagination_frame(self):
         """Build the frame containing the pagination widgets. This
@@ -1652,6 +1653,15 @@ class Tableview(ttk.Frame):
         """
         pageframe = ttk.Frame(self)
         pageframe.pack(fill=X, anchor=N)
+
+        ttk.Button(
+            pageframe,
+            text="⎌",
+            command=self.clear_filters,
+            style="symbol.Link.TButton",
+        ).pack(side=RIGHT)      
+
+        ttk.Separator(pageframe, orient=VERTICAL).pack(side=RIGHT, padx=10)          
 
         ttk.Button(
             master=pageframe,
@@ -1666,19 +1676,6 @@ class Tableview(ttk.Frame):
             style="symbol.Link.TButton",
         ).pack(side=RIGHT, fill=Y)
 
-        ttk.Separator(pageframe, orient=VERTICAL).pack(side=RIGHT)
-        lbl = ttk.Label(pageframe, textvariable=self._pagelimit)
-        lbl.pack(side=RIGHT, padx=(0, 5))
-        ttk.Label(pageframe, text="of").pack(side=RIGHT, padx=(5, 0))
-
-        index = ttk.Entry(pageframe, textvariable=self._pageindex, width=4)
-        index.pack(side=RIGHT)
-        index.bind("<Return>", self.goto_page, "+")
-        index.bind("<KP_Enter>", self.goto_page, "+")
-
-        ttk.Label(pageframe, text="Page").pack(side=RIGHT, padx=5)
-        ttk.Separator(pageframe, orient=VERTICAL).pack(side=RIGHT)
-
         ttk.Button(
             master=pageframe,
             text="‹",
@@ -1690,19 +1687,36 @@ class Tableview(ttk.Frame):
             text="«",
             command=self.goto_first_page,
             style="symbol.Link.TButton",
-        ).pack(side=RIGHT, fill=Y)
+        ).pack(side=RIGHT, fill=Y)   
 
-        ttk.Label(pageframe, text="Pagesize").pack(side=LEFT, padx=5, fill=Y)
-        values = [5, 10, 25, 50, 75, 100]
-        cbo = ttk.Combobox(
-            master=pageframe,
-            values=values,
-            textvariable=self._pagesize,
-            width=4,
-            state=READONLY,
-        )
-        cbo.pack(side=LEFT)
-        cbo.bind("<<ComboboxSelected>>", self._select_pagesize)
+        ttk.Separator(pageframe, orient=VERTICAL).pack(side=RIGHT, padx=10)
+
+        lbl = ttk.Label(pageframe, textvariable=self._pagelimit)
+        lbl.pack(side=RIGHT, padx=(0, 5))
+        ttk.Label(pageframe, text="of").pack(side=RIGHT, padx=(5, 0))
+
+        index = ttk.Entry(pageframe, textvariable=self._pageindex, width=4)
+        index.pack(side=RIGHT)
+        index.bind("<Return>", self.goto_page, "+")
+        index.bind("<KP_Enter>", self.goto_page, "+")
+
+        ttk.Label(pageframe, text="Page").pack(side=RIGHT, padx=5)
+
+        # I'm removing this widget for now; the pageframe was getting too 
+        #   cluttered and this is configurable with `configure`
+
+        # values = [5, 10, 25, 50, 75, 100]
+        # cbo = ttk.Combobox(
+        #     master=pageframe,
+        #     values=values,
+        #     textvariable=self._pagesize,
+        #     width=4,
+        #     state=READONLY,
+        # )
+        # cbo.pack(side=RIGHT)
+        # cbo.bind("<<ComboboxSelected>>", self._select_pagesize)
+        # ttk.Label(pageframe, text="Rows per page").pack(side=RIGHT, padx=5, fill=Y)
+
 
     def _build_table_rows(self, rowdata):
         """Build, load, and configure the DataTableRow objects
