@@ -2413,9 +2413,11 @@ class StyleBuilderTTK:
         if self.is_light_theme:
             disabled_fg = Colors.update_hsv(self.colors.inputbg, vd=-0.2)
             bordercolor = self.colors.border
+            hover = Colors.update_hsv(self.colors.light, vd=-0.1)
         else:
             disabled_fg = Colors.update_hsv(self.colors.inputbg, vd=-0.3)
             bordercolor = self.colors.selectbg
+            hover = Colors.update_hsv(self.colors.dark, vd=0.1)
 
         if any([colorname == DEFAULT, colorname == ""]):
             background = self.colors.inputbg
@@ -2427,23 +2429,39 @@ class StyleBuilderTTK:
             foreground = self.colors.fg
             body_style = f"{colorname}.{STYLE}"
             header_style = f"{colorname}.{STYLE}.Heading"
+            hover = Colors.update_hsv(background, vd=-0.1)
         else:
             background = self.colors.get(colorname)
             foreground = self.colors.selectfg
             body_style = f"{colorname}.{STYLE}"
             header_style = f"{colorname}.{STYLE}.Heading"
+            hover = Colors.update_hsv(background, vd=0.1)
+
 
         # treeview header
         self.style._build_configure(
             header_style,
             background=background,
             foreground=foreground,
-            relief=tk.FLAT,
+            relief=RAISED,
+            borderwidth=1,
+            darkcolor=background,
+            bordercolor=bordercolor,
+            lightcolor=background,
             padding=5,
         )
         self.style.map(
             header_style,
             foreground=[("disabled", disabled_fg)],
+            background=[
+                ("active !disabled", hover),
+            ],
+            darkcolor=[
+                ("active !disabled", hover),
+            ],
+            lightcolor=[
+                ("active !disabled", hover),
+            ],
         )
         self.style._build_configure(
             body_style,
