@@ -1360,7 +1360,7 @@ class Tableview(ttk.Frame):
     def autofit_columns(self):
         """Autofit all columns in the current view"""
         f = font.nametofont("TkDefaultFont")
-        pad = utility.scale_size(self, 10)
+        pad = utility.scale_size(self, 20)
         col_widths = []
 
         # measure header sizes
