@@ -164,6 +164,8 @@ class TableColumn:
 class TableRow:
     """Represents a row in a Tableview object"""
 
+    _cnt = 0
+
     def __init__(self, table, values):
         """
         Parameters:
@@ -176,7 +178,11 @@ class TableRow:
         """
         self._values = values
         self._iid = None
+        self._sort = TableRow._cnt + 1
         self.view: ttk.Treeview = table
+
+        # increment cnt
+        TableRow._cnt += 1
 
     @property
     def iid(self):
@@ -443,6 +449,10 @@ class Tableview(ttk.Frame):
                 The value of cnf or None.
         """    
         try:
+            if 'pagesize' in kwargs:
+                pagesize = kwargs.pop('pagesize')
+                self._pagesize.set(value=pagesize)
+            
             self.view.configure(cnf, **kwargs)
         except:
             super().configure(cnf, **kwargs)
@@ -544,7 +554,7 @@ class Tableview(ttk.Frame):
             TableColumn:
                 A table column object.
         """
-        self.clear_filters()
+        self.reset_table()
         colcount = len(self._tablecols)
         cid = colcount
         if index == END:
@@ -622,7 +632,7 @@ class Tableview(ttk.Frame):
             return
 
         if clear_filters:
-            self.clear_filters()
+            self.reset_table()
         self.unload_table_data()
         page_start = self._rowindex.get()
         page_end = self._rowindex.get() + self._pagesize.get()
@@ -893,10 +903,22 @@ class Tableview(ttk.Frame):
 
     # DATA SEARCH & FILTERING
 
-    def clear_filters(self):
-        """Remove all table data filters"""
+    def reset_table(self):
+        """Remove all table data filters and column sorts"""
         self._filtered = False
         self._searchcriteria.set("")
+        try:
+            sortedrows = sorted(
+                self._tablerows, 
+                key=lambda x: x._sort
+            )
+        except IndexError:
+            self.fill_empty_columns()
+            sortedrows = sorted(
+                self._tablerows, 
+                key=lambda x: x._sort
+            )            
+        self._tablerows = sortedrows
         self.unload_table_data()
         self.load_table_data()
         self._column_sort_header_reset()
@@ -1642,7 +1664,7 @@ class Tableview(ttk.Frame):
             ttk.Button(
                 frame,
                 text="⎌",
-                command=self.clear_filters,
+                command=self.reset_table,
                 style="symbol.Link.TButton",
             ).pack(side=LEFT)
 
@@ -1657,7 +1679,7 @@ class Tableview(ttk.Frame):
         ttk.Button(
             pageframe,
             text="⎌",
-            command=self.clear_filters,
+            command=self.reset_table,
             style="symbol.Link.TButton",
         ).pack(side=RIGHT)      
 
@@ -1771,12 +1793,12 @@ class Tableview(ttk.Frame):
         self.view.bind(sequence, self._table_rightclick)
 
         # add trace to track pagesize changes
-        # self.pagesize.trace_add('write', self._trace_pagesize)
+        self._pagesize.trace_add('write', self._trace_pagesize)
 
-    def _select_pagesize(self, event):
-        cbo: ttk.Combobox = self.nametowidget(event.widget)
-        cbo.select_clear()
-        self.goto_first_page()
+    # def _select_pagesize(self, event):
+    #     cbo: ttk.Combobox = self.nametowidget(event.widget)
+    #     cbo.select_clear()
+    #     self.goto_first_page()
 
     def _trace_pagesize(self, *_):
         """Callback for changes to page size"""
@@ -1834,7 +1856,7 @@ class TableCellRightClickMenu(tk.Menu):
             },
             "clearfilter": {
                 "label": "⎌ Clear filters",
-                "command": self.master.clear_filters,
+                "command": self.master.reset_table,
             },
             "filterbyvalue": {
                 "label": "Filter by cell's value",
@@ -2072,7 +2094,7 @@ class TableHeaderRightClickMenu(tk.Menu):
             },
             "resettable": {
                 "label": "⎌  Reset Table",
-                "command": self.master.clear_filters
+                "command": self.master.reset_table
             }
         }
 
