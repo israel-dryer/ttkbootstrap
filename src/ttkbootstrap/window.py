@@ -160,7 +160,9 @@ class Window(tkinter.Tk):
                 self.wait_visibility(self)
             self.attributes("-alpha", alpha)
 
+        self._apply_entry_type_class_binding()
         self._style = Style(themename)
+
 
     @property
     def style(self):
@@ -181,6 +183,46 @@ class Window(tkinter.Tk):
 
     position_center = place_window_center # alias
 
+    def _apply_entry_type_class_binding(self):
+        self.bind_class(
+            className="TEntry", 
+            sequence="<Configure>", 
+            func=self._disabled_state_cursor,
+            add="+"
+        )
+        self.bind_class(
+            className="TSpinbox", 
+            sequence="<Configure>", 
+            func=self._disabled_state_cursor,
+            add="+"
+        )
+        self.bind_class(
+            className="TCombobox", 
+            sequence="<Configure>", 
+            func=self._disabled_state_cursor,
+            add="+"
+        )
+
+    def _disabled_state_cursor(self, event):
+        """Change the cursor of entry type widgets to 'arrow' if in a disabled
+        or readonly state."""
+        try:
+            widget = self.nametowidget(event.widget)
+            state = str(widget.cget('state'))
+            cursor = str(widget.cget('cursor'))
+            if state in (DISABLED, READONLY):
+                if cursor == 'arrow':
+                    return
+                else:
+                    widget['cursor'] = 'arrow'
+            else:
+                if cursor in ('ibeam', ''):
+                    return
+                else:
+                    widget['cursor'] = None
+        except:
+            pass
+        
 
 class Toplevel(tkinter.Toplevel):
     """A class that wraps the tkinter.Toplevel class in order to
