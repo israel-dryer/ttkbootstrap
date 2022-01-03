@@ -22,8 +22,8 @@ The following standard themes are defined in the
             "selectfg": "#ffffff",
             "border": "#ced4da",
             "inputfg": "#373a3c",
-            "inputbg": "#fdfdfe"
-        }
+            "inputbg": "#fdfdfe",
+        },
     },
     "flatly": {
         "type": "light",
@@ -42,7 +42,7 @@ The following standard themes are defined in the
             "selectfg": "#ffffff",
             "border": "#ced4da",
             "inputfg": "#212529",
-            "inputbg": "#ffffff"
+            "inputbg": "#ffffff",
         },
     },
     "litera": {
@@ -62,7 +62,7 @@ The following standard themes are defined in the
             "selectfg": "#ffffff",
             "border": "#bfbfbf",
             "inputfg": "#343a40",
-            "inputbg": "#fff"
+            "inputbg": "#fff",
         },
     },
     "minty": {
@@ -82,7 +82,7 @@ The following standard themes are defined in the
             "selectfg": "#ffffff",
             "border": "#ced4da",
             "inputfg": "#696969",
-            "inputbg": "#fff"
+            "inputbg": "#fff",
         },
     },
     "lumen": {
@@ -102,7 +102,7 @@ The following standard themes are defined in the
             "selectfg": "#ffffff",
             "border": "#ced4da",
             "inputfg": "#555555",
-            "inputbg": "#fff"
+            "inputbg": "#fff",
         },
     },
     "sandstone": {
@@ -122,7 +122,7 @@ The following standard themes are defined in the
             "selectfg": "#ffffff",
             "border": "#ced4da",
             "inputfg": "#6E6D69",
-            "inputbg": "#fff"
+            "inputbg": "#fff",
         },
     },
     "yeti": {
@@ -142,8 +142,8 @@ The following standard themes are defined in the
             "selectfg": "#ffffff",
             "border": "#cccccc",
             "inputfg": "#222222",
-            "inputbg": "#fff"
-        }
+            "inputbg": "#fff",
+        },
     },
     "pulse": {
         "type": "light",
@@ -162,7 +162,7 @@ The following standard themes are defined in the
             "selectfg": "#ffffff",
             "border": "#cbc8d0",
             "inputfg": "#444444",
-            "inputbg": "#fdfdfe"
+            "inputbg": "#fdfdfe",
         },
     },
     "united": {
@@ -182,7 +182,7 @@ The following standard themes are defined in the
             "selectfg": "#ffffff",
             "border": "#ced4da",
             "inputfg": "#333333",
-            "inputbg": "#fff"
+            "inputbg": "#fff",
         },
     },
     "morph": {
@@ -202,7 +202,7 @@ The following standard themes are defined in the
             "selectfg": "#FBFDFF",
             "border": "#B9C7DA",
             "inputfg": "#7F8EBA",
-            "inputbg": "#F0F5FA"
+            "inputbg": "#F0F5FA",
         },
     },
     "journal": {
@@ -222,7 +222,7 @@ The following standard themes are defined in the
             "selectfg": "#ffffff",
             "border": "#ced4da",
             "inputfg": "#565656",
-            "inputbg": "#fff"
+            "inputbg": "#fff",
         },
     },
     "darkly": {
@@ -242,28 +242,28 @@ The following standard themes are defined in the
             "selectfg": "#ffffff",
             "border": "#222222",
             "inputfg": "#ffffff",
-            "inputbg": "#2f2f2f"
+            "inputbg": "#2f2f2f",
         },
     },
     "superhero": {
         "type": "dark",
-        'colors': {
-            'primary': '#4c9be8',
-            'secondary': '#4e5d6c',
-            'success': '#5cb85c',
-            'info': '#5bc0de',
-            'warning': '#f0ad4e',
-            'danger': '#d9534f',
-            'light': '#ABB6C2',
-            'dark': '#20374C',
-            'bg': '#2b3e50',
-            'fg': '#ffffff',
-            'selectbg': '#526170',
-            'selectfg': '#ffffff',
-            'border': '#222222',
-            'inputfg': '#ebebeb',
-            'inputbg': '#32465a'
-        }
+        "colors": {
+            "primary": "#4c9be8",
+            "secondary": "#4e5d6c",
+            "success": "#5cb85c",
+            "info": "#5bc0de",
+            "warning": "#f0ad4e",
+            "danger": "#d9534f",
+            "light": "#ABB6C2",
+            "dark": "#20374C",
+            "bg": "#2b3e50",
+            "fg": "#ffffff",
+            "selectbg": "#526170",
+            "selectfg": "#ffffff",
+            "border": "#222222",
+            "inputfg": "#ebebeb",
+            "inputbg": "#32465a",
+        },
     },
     "solar": {
         "type": "dark",
@@ -282,49 +282,88 @@ The following standard themes are defined in the
             "selectfg": "#ffffff",
             "border": "#00252e",
             "inputfg": "#A9BDBD",
-            "inputbg": "#073642"
+            "inputbg": "#073642",
         },
     },
     "cyborg": {
         "type": "dark",
-        'colors': {
-            'primary': '#2a9fd6',
-            'secondary': '#555555',
-            'success': '#77b300',
-            'info': '#9933cc',
-            'warning': '#ff8800',
-            'danger': '#cc0000',
-            'light': '#ADAFAE',
-            'dark': '#222222',
-            'bg': '#060606',
-            'fg': '#ffffff',
-            'selectbg': '#454545',
-            'selectfg': '#ffffff',
-            'border': '#060606',
-            'inputfg': '#ffffff',
-            'inputbg': '#191919'
-        }
+        "colors": {
+            "primary": "#2a9fd6",
+            "secondary": "#555555",
+            "success": "#77b300",
+            "info": "#9933cc",
+            "warning": "#ff8800",
+            "danger": "#cc0000",
+            "light": "#ADAFAE",
+            "dark": "#222222",
+            "bg": "#060606",
+            "fg": "#ffffff",
+            "selectbg": "#454545",
+            "selectfg": "#ffffff",
+            "border": "#060606",
+            "inputfg": "#ffffff",
+            "inputbg": "#191919",
+        },
     },
     "vapor": {
-        'type': 'dark',
-        'colors': {
-            'primary': '#6e40c0',
-            'secondary': '#ea38b8',
-            'success': '#3af180',
-            'info': '#1da2f2',
-            'warning': '#ffbd05',
-            'danger': '#e34b54',
-            'light': '#44d7e8',
-            'dark': '#170229',
-            'bg': '#190831',
-            'fg': '#32fbe2',
-            'selectbg': '#461a8a',
-            'selectfg': '#ffffff',
-            'border': '#060606',
-            'inputfg': '#bfb6cd',
-            'inputbg': '#30115e'
-        }
-    }
+        "type": "dark",
+        "colors": {
+            "primary": "#6e40c0",
+            "secondary": "#ea38b8",
+            "success": "#3af180",
+            "info": "#1da2f2",
+            "warning": "#ffbd05",
+            "danger": "#e34b54",
+            "light": "#44d7e8",
+            "dark": "#170229",
+            "bg": "#190831",
+            "fg": "#32fbe2",
+            "selectbg": "#461a8a",
+            "selectfg": "#ffffff",
+            "border": "#060606",
+            "inputfg": "#bfb6cd",
+            "inputbg": "#30115e",
+        },
+    },
+    "simplex": {
+        "type": "light",
+        "colors": {
+            "primary": "#d8220e",
+            "secondary": "#858e96",
+            "success": "#469307",
+            "info": "#0099ce",
+            "warning": "#d88220",
+            "danger": "#9a479e",
+            "light": "#f2f2f2",
+            "dark": "#3b3d3f",
+            "bg": "#fcfcfc",
+            "fg": "#3b3d3f",
+            "selectbg": "#a9afb6",
+            "selectfg": "#ffffff",
+            "border": "#858e96",
+            "inputfg": "#3b3d3f",
+            "inputbg": "#fcfcfc",
+        },
+    },
+    "cerculean": {
+        "type": "light",
+        "colors": {
+            "primary": "#4bb1ea",
+            "secondary": "#a9b4be",
+            "success": "#84b251",
+            "info": "#225384",
+            "warning": "#e16e25",
+            "danger": "#cf3c40",
+            "light": "#eceef1",
+            "dark": "#33383e",
+            "bg": "#ffffff",
+            "fg": "#2ea4e7",
+            "selectbg": "#adb5bd",
+            "selectfg": "#ffffff",
+            "border": "#a9b4be",
+            "inputfg": "#495057",
+            "inputbg": "#ffffff",
+        },
+    },
 }
-
 ```
