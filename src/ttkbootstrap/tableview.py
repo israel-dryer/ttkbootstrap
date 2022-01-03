@@ -5,7 +5,7 @@ from math import ceil
 from datetime import datetime
 from tkinter import font
 from ttkbootstrap import utility
-from typing import List, Union
+from typing import Any, List, Union
 
 UPARROW = "⬆"
 DOWNARROW = "⬇"
@@ -14,7 +14,7 @@ DESCENDING = 1
 
 
 class TableColumn:
-    """Represents a column in a Tableview object - INTERNAL"""
+    """Represents a column in a Tableview object"""
 
     def __init__(
         self,
@@ -64,6 +64,8 @@ class TableColumn:
         self._cid = cid
         self._headertext = text
         self._sort = ASCENDING
+        self._settings_column = {}
+        self._settings_heading = {}
         
         self.view: ttk.Treeview = view
         self.view.column(
@@ -80,6 +82,7 @@ class TableColumn:
             image=image,
             command=command,
         )
+        self._capture_settings()
 
     @property
     def cid(self):
@@ -111,17 +114,13 @@ class TableColumn:
                 return
 
         # configure column and heading
-        column_kw = {}
-        heading_kw = {}
         for k, v in kwargs.items():
             if k in ("anchor", "width", "minwidth", "stretch"):
-                column_kw[k] = v
+                self._settings_column[k] = v
             elif k in ("command", "text", "image"):
-                heading_kw[k] = v
-        if column_kw:
-            self.view.column(self._cid, **column_kw)
-        if heading_kw:
-            self.view.heading(self._cid, **heading_kw)
+                self._settings_heading[k] = v
+        self.view.column(self._cid, **self._settings_column)
+        self.view.heading(self._cid, **self._settings_heading)
         if "text" in kwargs:
             self._headertext = kwargs["text"]
 
@@ -144,11 +143,26 @@ class TableColumn:
         if "#all" in displaycols:
             displaycols = cols
         displaycols.remove(str(self._cid))
-        self.view.configure(displaycolumns=displaycols)                 
+        self.view.configure(displaycolumns=displaycols)         
+
+    def restore_settings(self):
+        """Update the configuration based on stored settings"""
+        self.view.column(self.cid, **self._settings_column)
+        self.view.heading(self.cid, **self._settings_heading)        
+
+    def _capture_settings(self):
+        """Udpate the stored settings for the column and heading.
+        This is required because the settings are erased whenever
+        the `columns` parameter is configured in the underlying
+        Treeview widget."""
+        self._settings_heading = self.view.heading(self.cid)
+        self._settings_heading.pop('state')
+        self._settings_column = self.view.column(self.cid)
+        self._settings_column.pop('id')                
 
 
 class TableRow:
-    """Represents a row in a Tableview object - INTERNAL"""
+    """Represents a row in a Tableview object"""
 
     def __init__(self, table, values):
         """
@@ -323,11 +337,12 @@ class Tableview(ttk.Frame):
                 An iterable containing either the heading name or a
                 dictionary of column settings. Configurable settings
                 include >> text, image, command, anchor, width, minwidth,
-                maxwidth, stretch
+                maxwidth, stretch. Also see `Tableview.insert_column`.
 
             rowdata (List):
                 An iterable of row data. The lenth of each row of data
-                must match the number of columns.
+                must match the number of columns. Also see
+                `Tableview.insert_row`.
 
             paginated (bool):
                 Specifies that the data is to be paginated. A pagination
@@ -351,13 +366,15 @@ class Tableview(ttk.Frame):
             autofit (bool):
                 If `True`, the table columns will be automatically sized
                 when loaded based on the records in the current view.
+                Also see `Tableview.autofit_columns`.
 
             autoalign (bool):
                 If `True`, the column headers and data are automatically
                 aligned. Numbers and number headers are right-aligned
                 and all other data types are left-aligned. The auto
                 align method evaluates the first record in each column
-                to determine the data type for alignment.
+                to determine the data type for alignment. Also see
+                `Tableview.autoalign_columns`.
 
             stripecolor (Tuple[str, str]):
                 If provided, even numbered rows will be color using the
@@ -369,7 +386,8 @@ class Tableview(ttk.Frame):
                 color codes, or bootstyle color keywords. For example,
                 ('light', '#222') will set the background to the "light"
                 themed ttkbootstrap color and the foreground to the
-                specified hexadecimal color.
+                specified hexadecimal color. Also see 
+                `Tableview.apply_table_stripes`.
 
             height (int):
                 Specifies how many rows will appear in the table's viewport.
@@ -398,6 +416,30 @@ class Tableview(ttk.Frame):
         
         self.view: ttk.Treeview = None
         self._build_table(coldata, rowdata, bootstyle)
+
+    def configure(self, cnf=None, **kwargs) -> Union[Any, None]:
+        """Configure the internal `Treeview` widget. If cnf is provided, 
+        value of the option is return. Otherwise the widget is 
+        configured via kwargs.
+
+        Parameters:
+
+            cnf (Any):
+                An option to query.
+
+            **kwargs (Dict):
+                Optional keyword arguments used to configure the internal
+                Treeview widget.
+
+        Returns:
+
+            Union[Any, None]:
+                The value of cnf or None.
+        """    
+        try:
+            self.view.configure(cnf, **kwargs)
+        except:
+            super().configure(cnf, **kwargs)
 
     # DATA HANDLING
 
@@ -547,6 +589,11 @@ class Tableview(ttk.Frame):
         # must be called to show the header after initially creating it
         # ad hoc, not sure why this should be the case;
         self._column_sort_header_reset()
+
+        # update settings after they are erased when a column is 
+        #   inserted
+        for column in self._tablecols:
+            column.restore_settings()
 
         return column
 

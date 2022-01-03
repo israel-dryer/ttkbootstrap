@@ -32,7 +32,6 @@ This module contains various scrolled widgets such as `ScrolledText` and
 ❯ [ScrolledFrame](scrolled/scrolledframe.md)  
 ❯ [ScrolledText](scrolled/scrolledtext.md)  
 
-
 ## 🎨 style module
 This module contains the classes that make up the ttkbootstrap theme and
 style engine. Depending on how you use ttkbootstrap, you may never need
@@ -45,6 +44,11 @@ docs are here for your reference.
 ❯ [StyleBuilderTk](style/stylebuildertk.md)  
 ❯ [StyleBuilderTTK](style/stylebuilderttk.md)  
 ❯ [Bootstyle](style/bootstyle.md)  
+
+## 🪟 [tableview module](tableview/tableview.md)
+❯ [Tableview](tableview/tableview.md)  
+❯ [TableColumn](tableview/tablecolumn.md)  
+❯ [TableRow](tableview/tablerow.md)
 
 ## 🛎️ [toast module](toast.md)
 This module has a class called `ToastNotification` which provides a 
@@ -62,8 +66,6 @@ This module contains the custom ttkbootstrap widgets linked below.
 ❯ [DateEntry](widgets/dateentry.md)  
 ❯ [Floodgauge](widgets/floodgauge.md)  
 ❯ [Meter](widgets/meter.md)  
-❯ [Tableview](widgets/tableview.md)  
-
 
 ## 🗔 window module
 This module contains a class of the same name that wraps the `tkinter.Tk` 
