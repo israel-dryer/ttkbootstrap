@@ -1124,7 +1124,7 @@ class StyleBuilderTTK:
         STYLE = "TCombobox"
 
         if self.is_light_theme:
-            disabled_fg = Colors.update_hsv(self.colors.inputbg, vd=-0.2)
+            disabled_fg = self.colors.border
             bordercolor = self.colors.border
             readonly = self.colors.light
         else:
@@ -2281,7 +2281,7 @@ class StyleBuilderTTK:
         STYLE = "TSpinbox"
 
         if self.is_light_theme:
-            disabled_fg = Colors.update_hsv(self.colors.inputbg, vd=-0.2)
+            disabled_fg = self.colors.border
             bordercolor = self.colors.border
             readonly = self.colors.light
         else:
@@ -3369,7 +3369,7 @@ class StyleBuilderTTK:
 
         # general default colors
         if self.is_light_theme:
-            disabled_fg = Colors.update_hsv(self.colors.inputbg, vd=-0.2)
+            disabled_fg = self.colors.border
             bordercolor = self.colors.border
             readonly = self.colors.light
         else:
