@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 **Full Changelog**: 
 
+## [1.3.1](https://github.com/israel-dryer/ttkbootstrap/compare/v1.3.0...v1.3.1) - 2022-01-04
+### Fixed
+- Internal resizing issue, missing args in internal frame on ScrolledFrame by @israel-dryer in [#120](https://github.com/israel-dryer/ttkbootstrap/pull/120)
+
 ## [1.3.0](https://github.com/israel-dryer/ttkbootstrap/compare/v1.2.0...v1.3.0) - 2022-01-03
 ### Added
 - ScrolledFrame and ScrolledText by @israel-dryer in [#102](https://github.com/israel-dryer/ttkbootstrap/pull/102), [#104](https://github.com/israel-dryer/ttkbootstrap/pull/104)
