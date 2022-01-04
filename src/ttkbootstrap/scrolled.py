@@ -273,7 +273,7 @@ class ScrolledFrame(ttk.Frame):
             if any(["pack" in method, "grid" in method, "place" in method]):
                 setattr(self, method, getattr(self.container, method))
 
-        self.container.bind("<Configure>", self._resize_canvas)
+        self.bind("<Configure>", self._resize_canvas)
         self._canvas.bind("<Enter>", self._enable_scrolling, "+")
         self._canvas.bind("<Leave>", self._disable_scrolling, "+")
 
