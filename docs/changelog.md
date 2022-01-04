@@ -6,6 +6,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 **Full Changelog**: 
 
+## [1.3.0](https://github.com/israel-dryer/ttkbootstrap/compare/v1.2.0...v1.3.0) - 2022-01-03
+### Added
+- ScrolledFrame and ScrolledText by @israel-dryer in [#102](https://github.com/israel-dryer/ttkbootstrap/pull/102), [#104](https://github.com/israel-dryer/ttkbootstrap/pull/104)
+- Tableview by @israel-dryer in [#110](https://github.com/israel-dryer/ttkbootstrap/pull/110), [#117](https://github.com/israel-dryer/ttkbootstrap/pull/117)
+- disabled and readonly state cursor for entry type widgets by @israel-dryer in [#111](https://github.com/israel-dryer/ttkbootstrap/pull/111)
+
+### Fixed
+- window module api issues by @israel-dryer in [#109](https://github.com/israel-dryer/ttkbootstrap/pull/109)
+- disabled fg color for entry, combobox, spinbox by @israel-dryer in [#112](https://github.com/israel-dryer/ttkbootstrap/pull/112)
+
+### Changed
+Removed black dependency with json formatter by @israel-dryer in [#107](https://github.com/israel-dryer/ttkbootstrap/pull/107)
+
 ## [1.2.0](https://github.com/israel-dryer/ttkbootstrap/compare/v1.1.0...v1.2.0) - 2021-12-25
 ### Added
 - `autostyle` flag added to legacy tkinter widgets by @israel-dryer in [#101](https://github.com/israel-dryer/ttkbootstrap/pull/101).
