@@ -921,6 +921,11 @@ class Tableview(ttk.Frame):
             )            
         self._tablerows = sortedrows
         self.unload_table_data()
+        
+        # reset the columns
+        cols = sorted([col.cid for col in self._tablecols])
+        self.view.configure(displaycolumns=cols)
+        
         self.load_table_data()
         self._column_sort_header_reset()
 
