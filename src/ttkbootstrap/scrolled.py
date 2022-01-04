@@ -243,7 +243,9 @@ class ScrolledFrame(ttk.Frame):
                 Other keyword arguments.
         """
         self.container = ttk.Frame(
-            master=master, padding=padding, relief=FLAT, borderwidth=0
+            master=master, 
+            relief=FLAT, 
+            borderwidth=0
         )
         self._canvas = ttk.Canvas(
             self.container,
@@ -263,7 +265,12 @@ class ScrolledFrame(ttk.Frame):
         self._vbar.place(relx=1.0, relheight=1.0, anchor=NE)
         self._canvas.configure(yscrollcommand=self._vbar.set)
 
-        super().__init__(self._canvas, **kwargs)
+        super().__init__(
+            master=self._canvas, 
+            padding=padding, 
+            bootstyle=bootstyle, 
+            **kwargs
+        )
         self._winsys = self.tk.call('tk', 'windowingsystem')
         self._wid = self._canvas.create_window((0, 0), anchor=NW, window=self)
 
