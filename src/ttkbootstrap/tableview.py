@@ -1967,7 +1967,10 @@ class TableCellRightClickMenu(tk.Menu):
         # show the menu below the invoking cell
         rootx = self.view.winfo_rootx()
         rooty = self.view.winfo_rooty()
-        bbox = self.view.bbox(iid, col)
+        try:
+            bbox = self.view.bbox(iid, col)
+        except:
+            return
         try:
             super().tk_popup(rootx + bbox[0], rooty + bbox[1] + bbox[3])
         except IndexError:
