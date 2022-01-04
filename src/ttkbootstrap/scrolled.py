@@ -17,7 +17,26 @@ class ScrolledText(ttk.Frame):
     This widget is identical in configuration to the `Text` widget other
     than the scrolling frame. https://tcl.tk/man/tcl8.6/TkCmd/text.htm
 
-    ![](../assets/scrolled/scrolledtext.gif)    
+    ![scrolled text](../../../assets/scrolled/scrolledtext.gif)  
+
+    Examples:
+
+        ```python
+        import ttkbootstrap as ttk
+        from ttkbootstrap.constants import *
+        from ttkbootstrap.scrolled import ScrolledText
+
+        app = ttk.Window()
+
+        # scrolled text with autohide vertical scrollbar
+        st = ScrolledText(app, padding=5, height=10, autohide=True)
+        st.pack(fill=BOTH, expand=YES)
+
+        # add text
+        st.insert(END, 'Insert your text here.')
+
+        app.mainloop()        
+        ```
     """
 
     def __init__(
@@ -164,6 +183,25 @@ class ScrolledFrame(ttk.Frame):
     Specifically, you will need this object when adding a
     `ScrolledFrame` to a `Notebook` or `Panedwindow`. For example,
     `mynotebook.add(myscrolledframe.container)`.
+
+    Examples:
+
+        ```python
+        import ttkbootstrap as ttk
+        from ttkbootstrap.constants import *
+        from ttkbootstrap.scrolled import ScrolledFrame
+
+        app = ttk.Window()
+
+        sf = ScrolledFrame(app, autohide=True)
+        sf.pack(fill=BOTH, expand=YES, padx=10, pady=10)
+
+        # add a large number of checkbuttons into the scrolled frame
+        for x in range(20):
+            ttk.Checkbutton(sf, text=f"Checkbutton {x}").pack(anchor=W)
+
+        app.mainloop()        
+        ```
 """
 
     def __init__(

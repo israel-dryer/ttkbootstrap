@@ -264,6 +264,36 @@ class Floodgauge(Progressbar):
     `textvariable` and `variable` attributes.
 
     ![](../../assets/widgets/floodgauge.gif)
+
+    Examples:
+
+        ```python
+        import ttkbootstrap as ttk
+        from ttkbootstrap.constants import *
+
+        app = ttk.Window(size=(500, 500))
+
+        gauge = ttk.Floodgauge(
+            bootstyle=INFO,
+            font=(None, 24, 'bold'),
+            mask='Memory Used {}%',
+        )
+        gauge.pack(fill=BOTH, expand=YES, padx=10, pady=10)
+
+        # autoincrement the gauge
+        gauge.start()
+
+        # stop the autoincrement
+        gauge.stop()
+
+        # manually update the gauge value
+        gauge.configure(value=25)
+
+        # increment the value by 10 steps
+        gauge.step(10)
+
+        app.mainloop()
+        ```
     """
 
     def __init__(
@@ -478,6 +508,43 @@ class Meter(ttk.Frame):
     retrieved via the `configure` method.
 
     ![](../../assets/widgets/meter.gif)
+
+    Examples:
+
+        ```python
+        import ttkbootstrap as ttk
+        from ttkbootstrap.constants import *
+
+        app = ttk.Window()
+
+        meter = ttk.Meter(
+            metersize=180,
+            padding=5,
+            amountused=25,
+            metertype="semi",
+            subtext="miles per hour",
+            interactive=True,
+        )
+        meter.pack()
+
+        # update the amount used directly
+        meter.configure(amountused = 50)
+
+        # update the amount used with another widget
+        entry = ttk.Entry(textvariable=meter.amountusedvar)
+        entry.pack(fill=X)
+
+        # increment the amount by 10 steps
+        meter.step(10)
+
+        # decrement the amount by 15 steps
+        meter.step(-15)
+
+        # update the subtext
+        meter.configure(subtext="loading...")
+
+        app.mainloop()
+        ```
     """
 
     def __init__(
