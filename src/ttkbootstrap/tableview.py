@@ -276,6 +276,7 @@ class Tableview(ttk.Frame):
         Adding data with the constructor
         ```python
         import ttkbootstrap as ttk
+        from ttkbootstrap.tableview import Tableview
         from ttkbootstrap.constants import *
 
         app = ttk.Window()
@@ -293,7 +294,7 @@ class Tableview(ttk.Frame):
             ('A158', 'Farmadding Co.', 36)
         ]
 
-        dt = ttk.Tableview(
+        dt = Tableview(
             master=app,
             coldata=coldata,
             rowdata=rowdata,
