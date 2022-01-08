@@ -10,6 +10,7 @@ from ttkbootstrap.constants import *
 from ttkbootstrap.themes.standard import STANDARD_THEMES
 from ttkbootstrap.publisher import Publisher, Channel
 from ttkbootstrap import utility as util
+from PIL import ImageColor
 
 try:
     # prevent app from failing if user.py gets corrupted
@@ -154,6 +155,33 @@ class Colors:
         self.inputbg = inputbg
         self.active = active
 
+    @staticmethod
+    def make_transparent(alpha, foreground, background='#ffffff'):
+        """Simulate color transparency.
+        
+        Parameters:
+
+            alpha (float):
+                The amount of transparency; a number between 0 and 1.
+
+            foreground (str):
+                The foreground color.
+
+            background (str):
+                The background color.
+
+        Returns:
+
+            Tuple:
+                An rgb color representing the "transparent" version of the
+                foreground color against the background color.
+        """
+        fg = ImageColor.getrgb(foreground)
+        bg = ImageColor.getrgb(background)
+        new = [alpha * c1 + (1 - alpha) * c2 for (c1, c2) in zip(fg, bg)]
+        return tuple([int(x) for x in new])        
+
+    @staticmethod
     def rgb_to_hsv(r, g, b):
         """Convert an rgb to hsv color value.
 
