@@ -5,7 +5,7 @@ import csv
 from ttkbootstrap.tableview import Tableview
 from ttkbootstrap.utility import scale_size
 
-app = ttk.Window(themename='sandstone')
+app = ttk.Window(themename='darkly')
 colors = app.style.colors
 
 p = Path(".") / "development/new_widgets/Sample1000.csv"
@@ -27,14 +27,17 @@ coldata = [
 
 dt = Tableview(
     master=app,
-    coldata=coldata,
-    rowdata=rowdata,
+#    coldata=coldata,
+#    rowdata=rowdata,
     paginated=True,
     searchable=True,
-    bootstyle=DARK,
-    stripecolor=('#eee', None),
+    bootstyle=PRIMARY,
+    stripecolor=(None, None),
     autofit=False
 )
 dt.pack(fill=BOTH, expand=YES, padx=5, pady=5)
+
+dt.build_table_data(coldata, rowdata)
+#dt.delete_columns(indices=[2, 3])
 
 app.mainloop()

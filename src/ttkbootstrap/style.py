@@ -84,6 +84,7 @@ class Colors:
         border,
         inputfg,
         inputbg,
+        active,
     ):
         """
         Parameters:
@@ -132,6 +133,9 @@ class Colors:
 
             inputbg (str):
                 The text background color for input widgets.
+
+            active (str):
+                An accent color.
         """
         self.primary = primary
         self.secondary = secondary
@@ -148,6 +152,7 @@ class Colors:
         self.border = border
         self.inputfg = inputfg
         self.inputbg = inputbg
+        self.active = active
 
     def rgb_to_hsv(r, g, b):
         """Convert an rgb to hsv color value.
@@ -255,6 +260,7 @@ class Colors:
                 "border",
                 "inputfg",
                 "inputbg",
+                "active",
             ]
         )
 

@@ -5,7 +5,7 @@ from math import ceil
 from datetime import datetime
 from tkinter import font
 from ttkbootstrap import utility
-from typing import Any, List, Union
+from typing import Any, Dict, List, Union
 
 UPARROW = "⬆"
 DOWNARROW = "⬇"
@@ -18,7 +18,7 @@ class TableColumn:
 
     def __init__(
         self,
-        view,
+        tableview,
         cid,
         text,
         image="",
@@ -31,8 +31,8 @@ class TableColumn:
         """
         Parameters:
 
-            view (Treeview):
-                The internal Treeview object of the Tableview.
+            tableview (Tableview):
+                The parent tableview object.
 
             cid (str):
                 The column id.
@@ -61,13 +61,14 @@ class TableColumn:
                 adjusted whenever the widget is resized or the user
                 drags the column separator.
         """
+        self._table = tableview
         self._cid = cid
         self._headertext = text
         self._sort = ASCENDING
         self._settings_column = {}
         self._settings_heading = {}
-        
-        self.view: ttk.Treeview = view
+
+        self.view: ttk.Treeview = tableview.view
         self.view.column(
             self._cid,
             width=width,
@@ -83,15 +84,51 @@ class TableColumn:
             command=command,
         )
         self._capture_settings()
+        self._table._cidmap[self._cid] = self
+
+    @property
+    def headertext(self):
+        """The text on the header label"""
+        return self._headertext
+
+    @property
+    def columnsort(self):
+        """Indicates how the column is to be sorted when the sorting
+        method is invoked."""
+        return self._sort
+
+    @columnsort.setter
+    def columnsort(self, value):
+        self._sort = value
 
     @property
     def cid(self):
         """A unique column identifier"""
-        return self._cid
+        return str(self._cid)
+
+    @property
+    def tableindex(self):
+        """The index of the column as it is in the table configuration."""
+        cols = self.view.configure("columns")
+        if cols is None:
+            return
+        try:
+            return cols.index(self.cid)
+        except IndexError:
+            return
+
+    @property
+    def displayindex(self):
+        """The index of the column as it is displayed"""
+        cols = self.view.configure("displaycolumns")
+        if "#all" in cols:
+            return self.tableindex
+        else:
+            return cols.index(self.cid)
 
     def configure(self, opt=None, **kwargs):
-        """Configure the column. If opt is provided, the 
-        current value is returned, otherwise, sets the widget 
+        """Configure the column. If opt is provided, the
+        current value is returned, otherwise, sets the widget
         options specified in kwargs. See the documentation for
         `Tableview.insert_column` for configurable options.
 
@@ -107,9 +144,9 @@ class TableColumn:
         # return queried options
         if opt is not None:
             if opt in ("anchor", "width", "minwidth", "stretch"):
-                return self.view.column(self._cid, opt)
+                return self.view.column(self.cid, opt)
             elif opt in ("command", "text", "image"):
-                return self.view.heading(self._cid, opt)
+                return self.view.heading(self.cid, opt)
             else:
                 return
 
@@ -129,12 +166,12 @@ class TableColumn:
         displaycols = list(self.view.configure("displaycolumns"))
         if "#all" in displaycols:
             return
-        if str(self._cid) in displaycols:
+        if self.cid in displaycols:
             return
         columns = list(self.view.configure("columns"))
-        index = columns.index(str(self._cid))
-        displaycols.insert(index, str(self._cid))
-        self.view.configure(displaycolumns=displaycols)   
+        index = columns.index(self.cid)
+        displaycols.insert(index, self.cid)
+        self.view.configure(displaycolumns=displaycols)
 
     def hide(self):
         """Hide the column in the tableview"""
@@ -142,23 +179,59 @@ class TableColumn:
         cols = list(self.view.configure("columns"))
         if "#all" in displaycols:
             displaycols = cols
-        displaycols.remove(str(self._cid))
-        self.view.configure(displaycolumns=displaycols)         
+        displaycols.remove(self.cid)
+        self.view.configure(displaycolumns=displaycols)
+
+    def delete(self):
+        """Remove the column from the tableview permanently."""
+        # update the tablerow columns
+        index = self.tableindex
+        if index is None:
+            return
+
+        for row in self._table.tablerows:
+            row.values.pop(index)
+            row.refresh()
+
+        # actual columns
+        cols = list(self.view.cget("columns"))
+        cols.remove(self.cid)
+        self._table.tablecolumns.remove(self)
+
+        # visible columns
+        dcols = list(self.view.cget("displaycolumns"))
+        if "#all" in dcols:
+            dcols = cols
+        else:
+            dcols.remove(self.cid)
+
+        # remove cid mapping
+        self._table.cidmap.pop(self._cid)
+
+        # reconfigure the tableview column and displaycolumns
+        self.view.configure(columns=cols, displaycolumns=dcols)
+
+        # remove the internal object references
+        for i, column in enumerate(self._table.tablecolumns):
+            if column.cid == self.cid:
+                self._table.tablecolumns.pop(i)
+            else:
+                column.restore_settings()
 
     def restore_settings(self):
         """Update the configuration based on stored settings"""
         self.view.column(self.cid, **self._settings_column)
-        self.view.heading(self.cid, **self._settings_heading)        
+        self.view.heading(self.cid, **self._settings_heading)
 
     def _capture_settings(self):
-        """Udpate the stored settings for the column and heading.
+        """Update the stored settings for the column and heading.
         This is required because the settings are erased whenever
         the `columns` parameter is configured in the underlying
         Treeview widget."""
         self._settings_heading = self.view.heading(self.cid)
-        self._settings_heading.pop('state')
+        self._settings_heading.pop("state")
         self._settings_column = self.view.column(self.cid)
-        self._settings_column.pop('id')                
+        self._settings_column.pop("id")
 
 
 class TableRow:
@@ -166,31 +239,37 @@ class TableRow:
 
     _cnt = 0
 
-    def __init__(self, table, values):
+    def __init__(self, tableview, values):
         """
         Parameters:
 
-            table (Treeview):
-                The inner Treeview object within the Tableview
+            tableview (Tableview):
+                The Tableview widget that contains this row
 
             values (List[Any, ...]):
                 A list of values to display in the row
         """
+        self.view: ttk.Treeview = tableview.view
         self._values = values
         self._iid = None
         self._sort = TableRow._cnt + 1
-        self.view: ttk.Treeview = table
+        self._table = tableview
 
         # increment cnt
         TableRow._cnt += 1
 
     @property
+    def values(self):
+        """The table row values"""
+        return self._values
+
+    @property
     def iid(self):
         """A unique record identifier"""
-        return self._iid
+        return str(self._iid)
 
     def configure(self, opt=None, **kwargs):
-        """Configure the row. If opt is provided, the 
+        """Configure the row. If opt is provided, the
         current value is returned, otherwise, sets the widget
         options specified in kwargs. See the documentation for
         `Tableview.insert_row` for configurable options.
@@ -206,7 +285,7 @@ class TableRow:
         """
         if self._iid is None:
             self.build()
-        
+
         if opt is not None:
             return self.view.item(self.iid, opt)
         else:
@@ -216,10 +295,10 @@ class TableRow:
         """Show the row in the data table view"""
         if self._iid is None:
             self.build()
-        self.view.reattach(self._iid, "", END)
+        self.view.reattach(self.iid, "", END)
 
         # remove existing stripes
-        tags = list(self.view.item(self._iid, "tags"))
+        tags = list(self.view.item(self.iid, "tags"))
         try:
             tags.remove("striped")
         except ValueError:
@@ -228,18 +307,40 @@ class TableRow:
         # add stripes (if needed)
         if striped:
             tags.append("striped")
-        self.view.item(self._iid, tags=tags)
+        self.view.item(self.iid, tags=tags)
+
+    def delete(self):
+        """Delete the row from the dataset"""
+        if self.iid:
+            self._table.iidmap.pop(self.iid)
+            self._table._tablerows.remove(self)
+            self._table.load_table_data()
+            self.view.delete(self.iid)
 
     def hide(self):
         """Remove the row from the data table view"""
-        self.view.detach(self._iid)
+        self.view.detach(self.iid)
+
+    def refresh(self):
+        """Syncs the tableview values with the object values"""
+        if self._iid:
+            self.view.item(self.iid, values=self.values)
 
     def build(self):
         """Create the row object in the `Treeview` and capture
         the resulting item id (iid).
         """
         if self._iid is None:
-            self._iid = self.view.insert("", END, values=self._values)
+            self._iid = self.view.insert("", END, values=self.values)
+            self._table.iidmap[self.iid] = self
+
+
+class TableEvent:
+    """A container class for holding table event objects"""
+
+    def __init__(self, column: TableColumn, row: TableRow):
+        self.column = column
+        self.row = row
 
 
 class Tableview(ttk.Frame):
@@ -327,7 +428,7 @@ class Tableview(ttk.Frame):
         stripecolor=None,
         pagesize=10,
         height=10,
-        delimiter=","
+        delimiter=",",
     ):
         """
         Parameters:
@@ -394,7 +495,7 @@ class Tableview(ttk.Frame):
                 color codes, or bootstyle color keywords. For example,
                 ('light', '#222') will set the background to the "light"
                 themed ttkbootstrap color and the foreground to the
-                specified hexadecimal color. Also see 
+                specified hexadecimal color. Also see
                 `Tableview.apply_table_stripes`.
 
             height (int):
@@ -423,16 +524,85 @@ class Tableview(ttk.Frame):
         self._autofit = autofit
         self._autoalign = autoalign
         self._filtered = False
+        self._sorted = False
         self._searchcriteria = tk.StringVar()
         self._rightclickmenu_cell = None
         self._delimiter = delimiter
-        
+        self._iidmap = {}  # maps iid to row object
+        self._cidmap = {}  # maps cid to col object
+
         self.view: ttk.Treeview = None
-        self._build_table(coldata, rowdata, bootstyle)
+        self._build_tableview_widget(coldata, rowdata, bootstyle)
+
+    @property
+    def tablerows(self):
+        """A list of all tablerow objects"""
+        return self._tablerows
+
+    @property
+    def tablerows_filtered(self):
+        """A list of filtered tablerow objects"""
+        return self._tablerows_filtered
+
+    @property
+    def tablerows_visible(self):
+        """A list of visible tablerow objects"""
+        return self._viewdata
+
+    @property
+    def tablecolumns(self):
+        """A list of table column objects"""
+        return self._tablecols
+
+    @property
+    def tablecolumns_visible(self):
+        """A list of visible table column objects"""
+        cids = list(self.view.cget("displaycolumns"))
+        if "all" in cids:
+            return self.tablecolumns
+        columns = []
+        for cid in cids:
+            # the cidmap expects an integer
+            columns.append(self.cidmap.get(int(cid)))
+        return columns
+
+    @property
+    def is_filtered(self):
+        """Indicates whether the table is currently filtered"""
+        return self._filtered
+
+    @property
+    def searchcriteria(self):
+        """The criteria used to filter the records when the search
+        method is invoked"""
+        return self._searchcriteria.get()
+
+    @searchcriteria.setter
+    def searchcriteria(self, value):
+        self._searchcriteria.set(value)
+
+    @property
+    def pagesize(self):
+        """The number of records visible on a single page"""
+        return self._pagesize.get()
+
+    @pagesize.setter
+    def pagesize(self, value):
+        self._pagesize.set(value)
+
+    @property
+    def iidmap(self) -> Dict[str, TableRow]:
+        """A map of iid to tablerow object"""
+        return self._iidmap
+
+    @property
+    def cidmap(self) -> Dict[str, TableColumn]:
+        """A map of cid to tablecolumn object"""
+        return self._cidmap
 
     def configure(self, cnf=None, **kwargs) -> Union[Any, None]:
-        """Configure the internal `Treeview` widget. If cnf is provided, 
-        value of the option is return. Otherwise the widget is 
+        """Configure the internal `Treeview` widget. If cnf is provided,
+        value of the option is return. Otherwise the widget is
         configured via kwargs.
 
         Parameters:
@@ -448,17 +618,69 @@ class Tableview(ttk.Frame):
 
             Union[Any, None]:
                 The value of cnf or None.
-        """    
+        """
         try:
-            if 'pagesize' in kwargs:
-                pagesize = kwargs.pop('pagesize')
+            if "pagesize" in kwargs:
+                pagesize = kwargs.pop("pagesize")
                 self._pagesize.set(value=pagesize)
-            
+
             self.view.configure(cnf, **kwargs)
         except:
             super().configure(cnf, **kwargs)
 
     # DATA HANDLING
+
+    def build_table_data(self, coldata, rowdata):
+        """Insert the specified column and row data.
+
+        The coldata can be either a string column name or a dictionary
+        of column settings that are passed to the `insert_column`
+        method. You may use a mixture of string and dictionary in
+        the list of coldata.
+
+        !!!warning "Existing table data will be erased.
+            This method will completely rebuild the underlying table
+            with the new column and row data. Any existing data will
+            be lost.
+
+        Parameters:
+
+            coldata (List[Union[str, Dict]]):
+                An iterable of column names and/or settings.
+
+            rowdata (List):
+                An iterable of row values.
+        """
+        # destroy the existing data if existing
+        self.purge_table_data()
+
+        # build the table columns
+        for i, col in enumerate(coldata):
+            if isinstance(col, str):
+                # just a column name
+                self.insert_column(i, col)
+            else:
+                # a dictionary of column settings
+                self.insert_column(i, **col)
+
+        # build the table rows
+        for values in rowdata:
+            self.insert_row(values=values)
+
+        # load the table data
+        self.load_table_data()
+
+        # apply table formatting
+        if self._autofit:
+            self.autofit_columns()
+
+        if self._autoalign:
+            self.autoalign_columns()
+
+        if self._stripecolor is not None:
+            self.apply_table_stripes(self._stripecolor)
+
+        self._select_first_visible_item()
 
     def insert_row(self, index=END, values=[]) -> TableRow:
         """Insert a row into the tableview at index.
@@ -497,13 +719,174 @@ class Tableview(ttk.Frame):
         elif index > rowcount - 1:
             index = -1
 
-        record = TableRow(self.view, values)
+        record = TableRow(self, values)
         if rowcount == 0 or index == -1:
             self._tablerows.append(record)
         else:
             self._tablerows.insert(index, record)
-        
+
         return record
+
+    def insert_rows(self, index, rowdata):
+        """Insert row after index for each row in *row. If index does
+        not exist then the records are appended to the end of the table.
+        You can also use the string 'end' to append records at the end
+        of the table.
+
+        Parameters:
+
+            index (Union[int, str]):
+                The location in the data set after where the records
+                will be inserted. You may use a numerical index or
+                the string 'end', which will append the records to the
+                end of the data set.
+
+            rowdata (List[Any, List]):
+                A list of row values to be inserted into the table.
+
+        Examples:
+
+            ```python
+            Tableview.insert_rows('end', ['one', 1], ['two', 2])
+            ```
+        """
+        if len(rowdata) == 0:
+            return
+        for values in reversed(rowdata):
+            self.insert_row(index, values)
+
+    def delete_column(self, index=None, cid=None, visible=True):
+        """Delete the specified column based on the column index or the
+        unique cid.
+
+        Unless otherwise specified, the index refers to the column index
+        as displayed in the tableview.
+
+        If cid is provided, the column associated with the cid is deleted
+        regardless of whether it is in the visible data sets.
+
+        Parameters:
+
+            index (int):
+                The numerical index of the column.
+
+            cid (str):
+                A unique column indentifier.
+
+            visible (bool):
+                Specifies that the index should refer to the visible
+                columns. Otherwise, if False, the original column
+                position is used.
+        """
+        if cid is not None:
+            column: TableColumn = self.cidmap(int(cid))
+            column.delete()
+
+        elif index is not None and visible:
+            self.tablecolumns_visible[int(index)].delete()
+
+        elif index is None and not visible:
+            self.tablecolumns[int(index)].delete()
+
+    def delete_columns(self, indices=None, cids=None, visible=True):
+        """Delete columns specified by indices or cids.
+
+        Unless specified otherwise, the index refers to the position
+        of the columns in the table from left to right starting with
+        index 0.
+
+        !!!Warning "Use this method with caution!
+            This method may or may not suffer performance issues.
+            Internally, this method calls the `delete_column` method
+            on each column specified in the list. The `delete_column`
+            method deletes the related column from each record in
+            the table data. So, if there are a lot of records this
+            could be problematic. It may be more beneficial to use
+            the `build_table_data` if you plan on changing the
+            structure of the table dramatically.
+
+        Parameters:
+
+            indices (List[int]):
+                A list of column indices to delete from the table.
+
+            cids (List[str]):
+                A list of unique column identifiers to delete from the
+                table.
+
+            visible (bool):
+                If True, the index refers to the visible position of the
+                column in the stable, from left to right starting at
+                index 0.
+        """
+        if cids is not None:
+            for cid in cids:
+                self.delete_column(cid=cid)
+        elif indices is not None:
+            for index in indices:
+                self.delete_column(index=index, visible=visible)
+
+    def delete_row(self, index=None, iid=None, visible=True):
+        """Delete a record from the data set.
+
+        Unless specified otherwise, the index refers to the record
+        position within the visible data set from top to bottom
+        starting with index 0.
+
+        If iid is provided, the record associated with the cid is deleted
+        regardless of whether it is in the visible data set.
+
+        Parameters:
+
+            index (int):
+                The numerical index of the record within the data set.
+
+            iid (str):
+                A unique record identifier.
+
+            visible (bool):
+                Indicates that the record index is relative to the current
+                records in view, otherwise, the original data set index is
+                used if False.
+        """
+        # delete from iid
+        if iid is not None:
+            record: TableRow = self.iidmap.get(iid)
+            record.delete()
+        elif index is not None:
+            # visible index
+            if visible:
+                record = self.tablerows_visible[index]
+                record.delete()
+            # original index
+            else:
+                for record in self.tablerows:
+                    if record.self._sort == index:
+                        record.delete()
+
+    def delete_rows(self, indices=None, iids=None, visible=True):
+        """Delete rows specified by indices or iids.
+
+        If both indices and iids are None, then all records in the
+        table will be deleted.
+        """
+        # remove records by iid
+        if iids is not None:
+            for iid in iids:
+                self.delete_row(iid=iid)
+        # remove records by index
+        elif indices is not None:
+            for index in indices:
+                self.delete_row(index=index, visible=visible)
+        # remove ALL records
+        else:
+            self._tablerows.clear()
+            self._tablerows_filtered.clear()
+            self._viewdata.clear()
+            self._cidmap.clear()
+            self._iidmap.clear()
+            records = self.view.get_children("")
+            self.view.delete(*records)
 
     def insert_column(
         self,
@@ -556,7 +939,7 @@ class Tableview(ttk.Frame):
                 A table column object.
         """
         self.reset_table()
-        colcount = len(self._tablecols)
+        colcount = len(self.tablecolumns)
         cid = colcount
         if index == END:
             index = -1
@@ -568,10 +951,6 @@ class Tableview(ttk.Frame):
         if len(cols) > 0:
             cols = [int(x) for x in cols]
             cols.append(cid)
-            # if index == -1:
-            #     cols.append(cid)
-            # else:
-            #     cols.insert(index, cid)
         else:
             cols = [cid]
 
@@ -592,7 +971,7 @@ class Tableview(ttk.Frame):
 
         # configure new column
         column = TableColumn(
-            view=self.view,
+            tableview=self,
             cid=cid,
             text=text,
             image=image,
@@ -607,18 +986,31 @@ class Tableview(ttk.Frame):
         # ad hoc, not sure why this should be the case;
         self._column_sort_header_reset()
 
-        # update settings after they are erased when a column is 
+        # update settings after they are erased when a column is
         #   inserted
         for column in self._tablecols:
             column.restore_settings()
 
         return column
 
+    def purge_table_data(self):
+        """Erase all table and column data.
+
+        This method will completely destroy the table data structure.
+        The table will need to be completely rebuilt after using this
+        method.
+        """
+        TableRow._cnt
+        self.delete_rows()
+        self.cidmap.clear()
+        self.tablecolumns.clear()
+        self.view.configure(columns=[], displaycolumns=[])
+
     def unload_table_data(self):
         """Unload all data from the table"""
-        for row in self._viewdata:
+        for row in self.tablerows_visible:
             row.hide()
-        self._viewdata.clear()
+        self.tablerows_visible.clear()
 
     def load_table_data(self, clear_filters=False):
         """Load records into the tableview.
@@ -629,11 +1021,12 @@ class Tableview(ttk.Frame):
                 Specifies that the table filters should be cleared
                 before loading the data into the view.
         """
-        if len(self._tablerows) == 0:
+        if len(self.tablerows) == 0:
             return
 
         if clear_filters:
             self.reset_table()
+
         self.unload_table_data()
         page_start = self._rowindex.get()
         page_end = self._rowindex.get() + self._pagesize.get()
@@ -658,13 +1051,13 @@ class Tableview(ttk.Frame):
                 row.show(False)
             self._viewdata.append(row)
 
-    def fill_empty_columns(self, fillvalue=''):
+    def fill_empty_columns(self, fillvalue=""):
         """Fill empty columns with the fillvalue.
 
         This method can be used to fill in missing values when a column
         column is inserted after data has already been inserted into
         the tableview.
-        
+
         Parameters:
 
             fillvalue (Any):
@@ -686,14 +1079,21 @@ class Tableview(ttk.Frame):
     # CONFIGURATION
 
     def get_columns(self) -> List[TableColumn]:
-        """Returns a list of all column objects"""
+        """Returns a list of all column objects. Same as using the
+        `Tableview.tablecolumns` property."""
         return self._tablecols
 
-    def get_column(self, index, visible=False) -> Union[TableColumn, None]:
-        """Returns the `TableColumn` object for the column at index
-        within the current data set. Unless specified otherwise,
-        the column index refers to the index within the original
-        dataset.
+    def get_column(
+        self, index=None, visible=False, cid=None
+    ) -> Union[TableColumn, None]:
+        """Returns the `TableColumn` object from an index or a cid.
+
+        If index is specified, the column index refers to the index
+        within the original, unless the visible flag is set, in which
+        case the index is relative to the visible columns in view.
+
+        If cid is specified, the column associated with the cid is
+        return regardless of whether it is visible.
 
         Parameters:
 
@@ -707,9 +1107,11 @@ class Tableview(ttk.Frame):
         Returns:
 
             Union[TableColumn, None]:
-                The table column object at index or None if no object
-                exists.
+                The table column object if found, otherwise None.
         """
+        if cid is not None:
+            return self._cidmap.get(cid)
+
         if not visible:
             # original column index
             try:
@@ -738,7 +1140,7 @@ class Tableview(ttk.Frame):
 
     def get_rows(self, visible=False, filtered=False) -> List[TableRow]:
         """Return a list of TableRow objects.
-        
+
         Parameters:
 
             visible (bool):
@@ -759,19 +1161,25 @@ class Tableview(ttk.Frame):
         else:
             return self._tablerows
 
-    def get_row(self, index, visible=False, filtered=False):
-        """Returns the `TableRow` object for the row at index
-        within the current data set. Unless specified otherwise,
-        the row index refers to the index within the original
-        dataset.
+    def get_row(self, index=None, visible=False, filtered=False, iid=None):
+        """Returns the `TableRow` object from an index or the iid.
 
-        When choosing a subset of data, the visible data takes
-        priority over filtered if both flags are set.
+        If an index is specified, the row index refers to the index
+        within the original dataset. When choosing a subset of data,
+        the visible data takes priority over filtered if both flags
+        are set.
+
+        If an iid is specified, the object attached to that iid is
+        returned regardless of whether or not it is visible or
+        filtered.
 
         Parameters:
 
             index (int):
                 The numerical index of the column.
+
+            iid (str):
+                A unique column identifier.
 
             visible (bool):
                 Use the index of the visible rows as they appear
@@ -784,58 +1192,79 @@ class Tableview(ttk.Frame):
         Returns:
 
             Union[TableRow, None]:
-                The table column object at index or None if no object
-                exists.
+                The table column object if found, otherwise None
         """
+        if iid is not None:
+            return self.iidmap.get(iid)
+
         if visible:
             try:
-                return self._viewdata[index]
+                return self.tablerows_visible[index]
             except IndexError:
                 return None
         elif filtered:
             try:
-                return self._tablerows_filtered[index]
+                return self.tablerows_filtered[index]
             except IndexError:
                 return None
         else:
             try:
-                return self._tablerows[index]
+                return self.tablerows[index]
             except IndexError:
                 return None
 
     # PAGE NAVIGATION
 
+    def _select_first_visible_item(self):
+        try:
+            self.view.selection_set(self.tablerows_visible[0].iid)
+        except:
+            pass
+
     def goto_first_page(self):
         """Update table with first page of data"""
         self._rowindex.set(0)
         self.load_table_data()
+        self._select_first_visible_item()
 
     def goto_last_page(self):
         """Update table with the last page of data"""
-        self._rowindex.set(self._pagesize.get() * (self._pagelimit.get() - 1))
+        pagelimit = self._pagelimit.get() - 1
+        self._rowindex.set(self.pagesize * pagelimit)
         self.load_table_data()
+        self._select_first_visible_item()
 
     def goto_next_page(self):
         """Update table with next page of data"""
         if self._pageindex.get() >= self._pagelimit.get():
             return
         rowindex = self._rowindex.get()
-        self._rowindex.set(rowindex + self._pagesize.get())
+        self._rowindex.set(rowindex + self.pagesize)
         self.load_table_data()
+        self._select_first_visible_item()
 
     def goto_prev_page(self):
         """Update table with prev page of data"""
         if self._pageindex.get() <= 1:
             return
         rowindex = self._rowindex.get()
-        self._rowindex.set(rowindex - self._pagesize.get())
+        self._rowindex.set(rowindex - self.pagesize)
         self.load_table_data()
+        self._select_first_visible_item()
 
     def goto_page(self, *_):
         """Go to a specific page indicated by the page entry widget."""
-        pageindex = self._pageindex.get() - 1
-        self._rowindex.set(pageindex * self._pagesize.get())
+        pagelimit = self._pagelimit.get()
+        pageindex = self._pageindex.get()
+        if pageindex > pagelimit:
+            pageindex = pagelimit - 1
+            self._pageindex.set(pageindex)
+        elif pageindex < 0:
+            pageindex = 0
+            self._pageindex.set(pageindex)
+        self._rowindex.set(pageindex * self.pagesize)
         self.load_table_data()
+        self._select_first_visible_item()
 
     # COLUMN SORTING
 
@@ -857,75 +1286,90 @@ class Tableview(ttk.Frame):
         """
         if event is not None:
             eo = self._get_event_objects(event)
-            cid = eo.get("cid")
-        elif cid is None:
+            column = eo.column
+            index = column.tableindex
+        elif cid is not None:
+            column: TableColumn = self.cidmap.get(int(cid))
+            index = column.tableindex
+        else:
             return
 
         # update table data
-        if self._filtered:
-            tablerows = self._tablerows_filtered
+        if self.is_filtered:
+            tablerows = self.tablerows_filtered
         else:
-            tablerows = self._tablerows
+            tablerows = self.tablerows
 
         if sort is not None:
-            colsort = sort
+            columnsort = sort
         else:
-            colsort = self._tablecols[cid]._sort
+            columnsort = self.tablecolumns[index].columnsort
 
-        if colsort == ASCENDING:
-            self._tablecols[cid]._sort = DESCENDING
+        if columnsort == ASCENDING:
+            self._tablecols[index].columnsort = DESCENDING
         else:
-            self._tablecols[cid]._sort = ASCENDING
+            self._tablecols[index].columnsort = ASCENDING
 
         try:
             sortedrows = sorted(
-                tablerows, 
-                reverse=colsort, 
-                key=lambda x: x._values[cid]
+                tablerows, reverse=columnsort, key=lambda x: x._values[index]
             )
         except IndexError:
             self.fill_empty_columns()
             sortedrows = sorted(
-                tablerows, 
-                reverse=colsort, 
-                key=lambda x: x._values[cid]
-            )            
-        if self._filtered:
+                tablerows, reverse=columnsort, key=lambda x: x._values[index]
+            )
+        if self.is_filtered:
             self._tablerows_filtered = sortedrows
         else:
             self._tablerows = sortedrows
 
         # update headers
         self._column_sort_header_reset()
-        self._column_sort_header_update(cid)
+        self._column_sort_header_update(column.cid)
 
         self.unload_table_data()
         self.load_table_data()
 
     # DATA SEARCH & FILTERING
 
+    def reset_row_filters(self):
+        """Remove all row level filters; unhide all rows."""
+        self._filtered = False
+        self.searchcriteria = ""
+        self.unload_table_data()
+        self.load_table_data()
+
+    def reset_column_filters(self):
+        """Remove all column level filters; unhide all columns."""
+        cols = [col.cid for col in self.tablecolumns]
+        self.view.configure(displaycolumns=cols)
+
+    def reset_row_sort(self):
+        """Display all table rows by original insert index"""
+        ...
+
+    def reset_column_sort(self):
+        """Display all columns by original insert index"""
+        cols = sorted([col.cid for col in self.tablecolumns_visible])
+        self.view.configure(displaycolumns=cols)
+
     def reset_table(self):
         """Remove all table data filters and column sorts"""
         self._filtered = False
-        self._searchcriteria.set("")
+        self.searchcriteria = ""
         try:
-            sortedrows = sorted(
-                self._tablerows, 
-                key=lambda x: x._sort
-            )
+            sortedrows = sorted(self.tablerows, key=lambda x: x.original_index)
         except IndexError:
             self.fill_empty_columns()
-            sortedrows = sorted(
-                self._tablerows, 
-                key=lambda x: x._sort
-            )            
+            sortedrows = sorted(self.tablerows, key=lambda x: x.original_index)
         self._tablerows = sortedrows
         self.unload_table_data()
-        
+
         # reset the columns
-        cols = sorted([col.cid for col in self._tablecols])
-        self.view.configure(displaycolumns=cols)
-        
+        self.reset_column_filters()
+        self.reset_column_sort()
+
         self.load_table_data()
         self._column_sort_header_reset()
 
@@ -948,17 +1392,22 @@ class Tableview(ttk.Frame):
         """
         if event is not None:
             eo = self._get_event_objects(event)
-            cid = eo.get("cid")
-            value = eo.get("value") or value
-        elif cid is None:
+            index = eo.column.tableindex
+            value = value or eo.row.values[index]
+        elif cid is not None:
+            column: TableColumn = self.cidmap.get(cid)
+            index = column.tableindex
+        else:
             return
+
         self._filtered = True
-        self._tablerows_filtered.clear()
+        self.tablerows_filtered.clear()
         self.unload_table_data()
-        data = self._tablerows
-        for row in data:
-            if row._values[cid] == value:
-                self._tablerows_filtered.append(row)
+
+        for row in self.tablerows:
+            if row.values[index] == value:
+                self.tablerows_filtered.append(row)
+
         self._rowindex.set(0)
         self.load_table_data()
 
@@ -968,17 +1417,17 @@ class Tableview(ttk.Frame):
         if len(criteria) == 0:
             return  # nothing is selected
 
-        if self._filtered:
-            for row in self._viewdata:
+        if self.is_filtered:
+            for row in self.tablerows_visible:
                 if row.iid not in criteria:
                     row.hide()
-                    self._tablerows_filtered.remove(row)
+                    self.tablerows_filtered.remove(row)
         else:
             self._filtered = True
-            self._tablerows_filtered.clear()
-            for row in self._viewdata:
+            self.tablerows_filtered.clear()
+            for row in self.tablerows_visible:
                 if row.iid in criteria:
-                    self._tablerows_filtered.append(row)
+                    self.tablerows_filtered.append(row)
         self._rowindex.set(0)
         self.load_table_data()
 
@@ -986,15 +1435,19 @@ class Tableview(ttk.Frame):
         """Hide the currently selected rows"""
         selected = self.view.selection()
         self.view.detach(*selected)
-        tablerows = [row for row in self._viewdata if row.iid in selected]
 
-        if not self._filtered:
+        tablerows = []
+        for row in self.tablerows_visible:
+            if row.iid in selected:
+                tablerows.append(row)
+
+        if not self.is_filtered:
             self._filtered = True
-            self._tablerows_filtered = self._tablerows.copy()
+            self._tablerows_filtered = self.tablerows.copy()
 
         for row in tablerows:
-            if self._filtered:
-                self._tablerows_filtered.remove(row)
+            if self.is_filtered:
+                self.tablerows_filtered.remove(row)
 
         self.load_table_data()
 
@@ -1014,15 +1467,10 @@ class Tableview(ttk.Frame):
         """
         if event is not None:
             eo = self._get_event_objects(event)
-            cid = eo.get("cid")
-        elif cid is None:
-            return
-        displaycols = list(self.view.configure("displaycolumns"))
-        cols = list(self.view.configure("columns"))
-        if "#all" in displaycols:
-            displaycols = cols
-        displaycols.remove(str(cid))
-        self.view.configure(displaycolumns=displaycols)
+            column = eo.column.hide()
+        elif cid is not None:
+            column: TableColumn = self.cidmap.get(cid)
+            column.hide()
 
     def unhide_selected_column(self, event=None, cid=None):
         """Attach the selected column to the tableview. This method
@@ -1041,48 +1489,41 @@ class Tableview(ttk.Frame):
         """
         if event is not None:
             eo = self._get_event_objects(event)
-            cid = eo.get("cid")
-        elif cid is None:
-            return
-        displaycols = list(self.view.configure("displaycolumns"))
-        if "#all" in displaycols:
-            return
-        if str(cid) in displaycols:
-            return
-        columns = list(self.view.configure("columns"))
-        index = columns.index(str(cid))
-        displaycols.insert(index, str(cid))
-        self.view.configure(displaycolumns=displaycols)
+            eo.column.show()
+        elif cid is not None:
+            column = self.cidmap.get(cid)
+            column.show()
 
     # DATA EXPORT
 
     def export_all_records(self):
         """Export all records to a csv file"""
-        headers = [col._headertext for col in self._tablecols]
-        records = [row._values for row in self._tablerows]
+        headers = [col.headertext for col in self.tablecolumns]
+        records = [row.values for row in self.tablerows]
         self.save_data_to_csv(headers, records, self._delimiter)
 
     def export_current_page(self):
         """Export records on current page to csv file"""
-        headers = [col._headertext for col in self._tablecols]
-        records = [row._values for row in self._viewdata]
+        headers = [col.headertext for col in self.tablecolumns]
+        records = [row.values for row in self.tablerows_visible]
         self.save_data_to_csv(headers, records, self._delimiter)
 
     def export_current_selection(self):
         """Export rows currently selected to csv file"""
-        headers = [col._headertext for col in self._tablecols]
+        headers = [col.headertext for col in self.tablecolumns]
         selected = self.view.selection()
         records = []
         for iid in selected:
-            records.append(self.view.item(iid)["values"])
+            record: TableRow = self.iidmap.get(iid)
+            records.append(record.values)
         self.save_data_to_csv(headers, records, self._delimiter)
 
     def export_records_in_filter(self):
         """Export rows currently filtered to csv file"""
-        headers = [col._headertext for col in self._tablecols]
-        if not self._filtered:
+        headers = [col.headertext for col in self.tablecolumns]
+        if not self.is_filtered:
             return
-        records = [row.values for row in self._tablerows_filtered]
+        records = [row.values for row in self.tablerows_filtered]
         self.save_data_to_csv(headers, records, self._delimiter)
 
     def save_data_to_csv(self, headers, records, delimiter=","):
@@ -1128,24 +1569,17 @@ class Tableview(ttk.Frame):
         if len(selected) == 0:
             return
 
-        if self._filtered:
-            tablerows = self._tablerows_filtered
+        if self.is_filtered:
+            tablerows = self.tablerows_filtered.copy()
         else:
-            tablerows = self._tablerows
+            tablerows = self.tablerows.copy()
 
-        row_items = []
+        for i, iid in enumerate(selected):
+            row = self.iidmap.get(iid)
+            tablerows.remove(row)
+            tablerows.insert(i, row)
 
-        for iid in selected:
-            for row in tablerows:
-                if row.iid == iid:
-                    row_items.append(row)
-                    break
-
-        for i, item in enumerate(row_items):
-            tablerows.remove(item)
-            tablerows.insert(i, item)
-
-        if self._filtered:
+        if self.is_filtered:
             self._tablerows_filtered = tablerows
         else:
             self._tablerows = tablerows
@@ -1160,24 +1594,17 @@ class Tableview(ttk.Frame):
         if len(selected) == 0:
             return
 
-        if self._filtered:
-            tablerows = self._tablerows_filtered
+        if self.is_filtered:
+            tablerows = self.tablerows_filtered.copy()
         else:
-            tablerows = self._tablerows
-
-        row_items = []
+            tablerows = self.tablerows.copy()
 
         for iid in selected:
-            for row in tablerows:
-                if row.iid == iid:
-                    row_items.append(row)
-                    break
+            row = self.iidmap.get(iid)
+            tablerows.remove(row)
+            tablerows.append(row)
 
-        for item in row_items:
-            tablerows.remove(item)
-            tablerows.append(item)
-
-        if self._filtered:
+        if self.is_filtered:
             self._tablerows_filtered = tablerows
         else:
             self._tablerows = tablerows
@@ -1192,24 +1619,18 @@ class Tableview(ttk.Frame):
         if len(selected) == 0:
             return
 
-        if self._filtered:
-            tablerows = self._tablerows_filtered
+        if self.is_filtered:
+            tablerows = self._tablerows_filtered.copy()
         else:
-            tablerows = self._tablerows
-
-        row_items = []
+            tablerows = self.tablerows.copy()
 
         for iid in selected:
-            for i, row in enumerate(tablerows):
-                if row.iid == iid:
-                    row_items.append([i, row])
-                    break
+            row = self.iidmap.get(iid)
+            index = tablerows.index(row) - 1
+            tablerows.remove(row)
+            tablerows.insert(index, row)
 
-        for index, item in row_items:
-            tablerows.remove(item)
-            tablerows.insert(index - 1, item)
-
-        if self._filtered:
+        if self.is_filtered:
             self._tablerows_filtered = tablerows
         else:
             self._tablerows = tablerows
@@ -1229,17 +1650,11 @@ class Tableview(ttk.Frame):
         else:
             tablerows = self._tablerows
 
-        row_items = []
-
         for iid in selected:
-            for i, row in enumerate(tablerows):
-                if row.iid == iid:
-                    row_items.append([i, row])
-                    break
-
-        for index, item in reversed(row_items):
-            tablerows.remove(item)
-            tablerows.insert(index + 1, item)
+            row = self.iidmap.get(iid)
+            index = tablerows.index(row) + 1
+            tablerows.remove(row)
+            tablerows.insert(index, row)
 
         if self._filtered:
             self._tablerows_filtered = tablerows
@@ -1268,17 +1683,18 @@ class Tableview(ttk.Frame):
         """
         if event is not None:
             eo = self._get_event_objects(event)
-            cid = str(eo.get("cid"))
-        elif cid is None:
+            column = eo.column
+        elif cid is not None:
+            column = self.cidmap(cid)
+        else:
             return
-        displaycols = list(self.view.configure("displaycolumns"))
-        cols = list(self.view.configure("columns"))
-        if "#all" in displaycols:
-            displaycols = cols
-        old_index = displaycols.index(cid)
+
+        displaycols = [x.cid for x in self.tablecolumns_visible]
+        old_index = column.displayindex
         if old_index == 0:
             return
-        new_index = old_index - 1
+
+        new_index = column.displayindex - 1
         displaycols.insert(new_index, displaycols.pop(old_index))
         self.view.configure(displaycolumns=displaycols)
 
@@ -1298,16 +1714,17 @@ class Tableview(ttk.Frame):
         """
         if event is not None:
             eo = self._get_event_objects(event)
-            cid = str(eo.get("cid"))
-        elif cid is None:
+            column = eo.column
+        elif cid is not None:
+            column = self.cidmap.get(cid)
+        else:
             return
-        displaycols = list(self.view.configure("displaycolumns"))
-        cols = list(self.view.configure("columns"))
-        if "#all" in displaycols:
-            displaycols = cols
-        old_index = displaycols.index(cid)
-        if old_index == len(cols) - 1:
+
+        displaycols = [x.cid for x in self.tablecolumns_visible]
+        old_index = column.displayindex
+        if old_index == len(displaycols) - 1:
             return
+
         new_index = old_index + 1
         displaycols.insert(new_index, displaycols.pop(old_index))
         self.view.configure(displaycolumns=displaycols)
@@ -1328,16 +1745,17 @@ class Tableview(ttk.Frame):
         """
         if event is not None:
             eo = self._get_event_objects(event)
-            cid = str(eo.get("cid"))
-        elif cid is None:
+            column = eo.column
+        elif cid is not None:
+            column = self.cidmap.get(cid)
+        else:
             return
-        displaycols = list(self.view.configure("displaycolumns"))
-        cols = list(self.view.configure("columns"))
-        if "#all" in displaycols:
-            displaycols = cols
-        old_index = displaycols.index(cid)
+
+        displaycols = [x.cid for x in self.tablecolumns_visible]
+        old_index = column.displayindex
         if old_index == 0:
             return
+
         displaycols.insert(0, displaycols.pop(old_index))
         self.view.configure(displaycolumns=displaycols)
 
@@ -1357,17 +1775,18 @@ class Tableview(ttk.Frame):
         """
         if event is not None:
             eo = self._get_event_objects(event)
-            cid = str(eo.get("cid"))
-        elif cid is None:
+            column = eo.column
+        elif cid is not None:
+            column = self.cidmap.get(cid)
+        else:
             return
-        displaycols = list(self.view.configure("displaycolumns"))
-        cols = list(self.view.configure("columns"))
-        if "#all" in displaycols:
-            displaycols = cols
-        old_index = displaycols.index(cid)
-        if old_index == len(cols) - 1:
+
+        displaycols = [x.cid for x in self.tablecolumns_visible]
+        old_index = column.displayindex
+        if old_index == len(displaycols) - 1:
             return
-        new_index = len(cols) - 1
+
+        new_index = len(displaycols) - 1
         displaycols.insert(new_index, displaycols.pop(old_index))
         self.view.configure(displaycolumns=displaycols)
 
@@ -1384,14 +1803,16 @@ class Tableview(ttk.Frame):
                 A tuple of colors to apply to the table stripe. The
                 tuple represents (background, foreground).
         """
+        style: ttk.Style = ttk.Style.get_instance()
+        colors = style.colors
         if len(stripecolor) == 2:
             self._stripecolor = stripecolor
             bg, fg = stripecolor
             kw = {}
-            if bg is not None:
-                kw["background"] = bg
-            if fg is not None:
-                kw["foreground"] = fg
+            if bg is None:
+                kw["background"] = colors.active
+            if fg is None:
+                kw["foreground"] = colors.inputfg
             self.view.tag_configure("striped", **kw)
 
     def autofit_columns(self):
@@ -1401,12 +1822,12 @@ class Tableview(ttk.Frame):
         col_widths = []
 
         # measure header sizes
-        for col in self._tablecols:
+        for col in self.tablecolumns:
             width = f.measure(f"{col._headertext} {DOWNARROW}") + pad
             col_widths.append(width)
 
-        for row in self._viewdata:
-            values = row._values
+        for row in self.tablerows_visible:
+            values = row.values
             for i, value in enumerate(values):
                 old_width = col_widths[i]
                 new_width = f.measure(str(value)) + pad
@@ -1424,6 +1845,7 @@ class Tableview(ttk.Frame):
         method will have no effect if there is no data in the tables."""
         if len(self._tablerows) == 0:
             return
+
         values = self._tablerows[0]._values
         for i, value in enumerate(values):
             if str(value).isnumeric():
@@ -1449,10 +1871,9 @@ class Tableview(ttk.Frame):
         """
         if event is not None:
             eo = self._get_event_objects(event)
-            cid = eo.get("cid")
-        elif cid is None:
-            return
-        self.view.column(cid, anchor=W)
+            self.view.column(eo.column.cid, anchor=W)
+        elif cid is not None:
+            self.view.column(cid, anchor=W)
 
     def align_column_right(self, event=None, cid=None):
         """Right align the column text. This can be triggered by
@@ -1470,10 +1891,9 @@ class Tableview(ttk.Frame):
         """
         if event is not None:
             eo = self._get_event_objects(event)
-            cid = eo.get("cid")
-        elif cid is None:
-            return
-        self.view.column(cid, anchor=E)
+            self.view.column(eo.column.cid, anchor=E)
+        elif cid is not None:
+            self.view.column(cid, anchor=E)
 
     def align_column_center(self, event=None, cid=None):
         """Center align the column text. This can be triggered by
@@ -1491,10 +1911,9 @@ class Tableview(ttk.Frame):
         """
         if event is not None:
             eo = self._get_event_objects(event)
-            cid = eo.get("cid")
-        elif cid is None:
-            return
-        self.view.column(cid, anchor=CENTER)
+            self.view.column(eo.column.cid, anchor=CENTER)
+        elif cid is not None:
+            self.view.column(cid, anchor=CENTER)
 
     def align_heading_left(self, event=None, cid=None):
         """Left align the heading text. This can be triggered by
@@ -1512,10 +1931,9 @@ class Tableview(ttk.Frame):
         """
         if event is not None:
             eo = self._get_event_objects(event)
-            cid = eo.get("cid")
-        elif cid is None:
-            return
-        self.view.heading(cid, anchor=W)
+            self.view.heading(eo.column.cid, anchor=W)
+        elif cid is not None:
+            self.view.heading(cid, anchor=W)
 
     def align_heading_right(self, event=None, cid=None):
         """Right align the heading text. This can be triggered by
@@ -1533,10 +1951,9 @@ class Tableview(ttk.Frame):
         """
         if event is not None:
             eo = self._get_event_objects(event)
-            cid = eo.get("cid")
-        elif cid is None:
-            return
-        self.view.heading(cid, anchor=E)
+            self.view.heading(eo.column.cid, anchor=E)
+        elif cid is not None:
+            self.view.heading(cid, anchor=E)
 
     def align_heading_center(self, event=None, cid=None):
         """Center align the heading text. This can be triggered by
@@ -1554,28 +1971,19 @@ class Tableview(ttk.Frame):
         """
         if event is not None:
             eo = self._get_event_objects(event)
-            cid = eo.get("cid")
-        elif cid is None:
-            return
-        self.view.heading(cid, anchor=CENTER)
+            self.view.heading(eo.column.cid, anchor=CENTER)
+        elif cid is not None:
+            self.view.heading(cid, anchor=CENTER)
 
     # PRIVATE METHODS
 
     def _get_event_objects(self, event):
         iid = self.view.identify_row(event.y)
-        item = self.view.item(iid)
         col = self.view.identify_column(event.x)
         cid = int(self.view.column(col, "id"))
-        values = item.get("values")
-        data = {
-            "iid": iid,
-            "cid": cid,
-            "col": col,
-            "item": item,
-            "values": values,
-        }
-        if values:
-            data["value"] = values[cid]
+        column: TableColumn = self.cidmap.get(cid)
+        row: TableRow = self.iidmap.get(iid)
+        data = TableEvent(column, row)
         return data
 
     def _search_table_data(self, _):
@@ -1585,34 +1993,33 @@ class Tableview(ttk.Frame):
         """
         criteria = self._searchcriteria.get()
         self._filtered = True
-        self._tablerows_filtered.clear()
+        self.tablerows_filtered.clear()
         self.unload_table_data()
-        data = self._tablerows
-        for row in data:
-            for col in row._values:
+        for row in self.tablerows:
+            for col in row.values:
                 if str(criteria).lower() in str(col).lower():
-                    self._tablerows_filtered.append(row)
+                    self.tablerows_filtered.append(row)
                     break
         self._rowindex.set(0)
-        self.load_table_data()        
-    
+        self.load_table_data()
+
     # PRIVATE METHODS - SORTING
 
     def _column_sort_header_reset(self):
         """Remove the sort character from the column headers"""
-        for col in self._tablecols:
-            self.view.heading(col.cid, text=col._headertext)
+        for col in self.tablecolumns:
+            self.view.heading(col.cid, text=col.headertext)
 
     def _column_sort_header_update(self, cid):
         """Add sort character to the sorted column"""
-        col = self._tablecols[cid]
-        arrow = UPARROW if col._sort == ASCENDING else DOWNARROW
-        headertext = f"{col._headertext} {arrow}"
-        self.view.heading(col.cid, text=headertext)        
+        column: TableColumn = self.cidmap.get(int(cid))
+        arrow = UPARROW if column.columnsort == ASCENDING else DOWNARROW
+        headertext = f"{column.headertext} {arrow}"
+        self.view.heading(column.cid, text=headertext)
 
     # PRIVATE METHODS - WIDGET BUILDERS
 
-    def _build_table(self, coldata, rowdata, bootstyle):
+    def _build_tableview_widget(self, coldata, rowdata, bootstyle):
         """Build the data table"""
         if self._searchable:
             self._build_search_frame()
@@ -1632,26 +2039,13 @@ class Tableview(ttk.Frame):
         self.hbar.pack(fill=X)
         self.view.configure(xscrollcommand=self.hbar.set)
 
-        self._build_table_columns(coldata)
-        self._build_table_rows(rowdata)
-        # self.build_horizontal_scrollbar()
-
-        self.load_table_data()
-
-        if self._autofit:
-            self.autofit_columns()
-
-        if self._autoalign:
-            self.autoalign_columns()
-
         if self._paginated:
             self._build_pagination_frame()
 
-        if self._stripecolor is not None:
-            self.apply_table_stripes(self._stripecolor)
+        self.build_table_data(coldata, rowdata)
 
         self._rightclickmenu_cell = TableCellRightClickMenu(self)
-        self.rightclickmenu_head = TableHeaderRightClickMenu(self)
+        self._rightclickmenu_head = TableHeaderRightClickMenu(self)
         self._set_widget_binding()
 
     def _build_search_frame(self):
@@ -1687,9 +2081,9 @@ class Tableview(ttk.Frame):
             text="⎌",
             command=self.reset_table,
             style="symbol.Link.TButton",
-        ).pack(side=RIGHT)      
+        ).pack(side=RIGHT)
 
-        ttk.Separator(pageframe, orient=VERTICAL).pack(side=RIGHT, padx=10)          
+        ttk.Separator(pageframe, orient=VERTICAL).pack(side=RIGHT, padx=10)
 
         ttk.Button(
             master=pageframe,
@@ -1715,7 +2109,7 @@ class Tableview(ttk.Frame):
             text="«",
             command=self.goto_first_page,
             style="symbol.Link.TButton",
-        ).pack(side=RIGHT, fill=Y)   
+        ).pack(side=RIGHT, fill=Y)
 
         ttk.Separator(pageframe, orient=VERTICAL).pack(side=RIGHT, padx=10)
 
@@ -1730,7 +2124,7 @@ class Tableview(ttk.Frame):
 
         ttk.Label(pageframe, text="Page").pack(side=RIGHT, padx=5)
 
-        # I'm removing this widget for now; the pageframe was getting too 
+        # I'm removing this widget for now; the pageframe was getting too
         #   cluttered and this is configurable with `configure`
 
         # values = [5, 10, 25, 50, 75, 100]
@@ -1744,7 +2138,6 @@ class Tableview(ttk.Frame):
         # cbo.pack(side=RIGHT)
         # cbo.bind("<<ComboboxSelected>>", self._select_pagesize)
         # ttk.Label(pageframe, text="Rows per page").pack(side=RIGHT, padx=5, fill=Y)
-
 
     def _build_table_rows(self, rowdata):
         """Build, load, and configure the DataTableRow objects
@@ -1768,9 +2161,9 @@ class Tableview(ttk.Frame):
         """
         for cid, col in enumerate(coldata):
             if isinstance(col, str):
-                self._tablecols.append(
+                self.tablecolumns.append(
                     TableColumn(
-                        view=self.view,
+                        tableview=self,
                         cid=cid,
                         text=col,
                     )
@@ -1778,13 +2171,9 @@ class Tableview(ttk.Frame):
             else:
                 if "text" not in col:
                     col["text"] = f"Column {cid}"
-                self._tablecols.append(
-                    TableColumn(
-                        view=self.view,
-                        cid=cid,
-                        **col,
-                    )
-                )        
+                self.tablecolumns.append(
+                    TableColumn(tableview=self, cid=cid, **col)
+                )
 
     # PRIVATE METHODS - WIDGET BINDING
 
@@ -1799,7 +2188,7 @@ class Tableview(ttk.Frame):
         self.view.bind(sequence, self._table_rightclick)
 
         # add trace to track pagesize changes
-        self._pagesize.trace_add('write', self._trace_pagesize)
+        self._pagesize.trace_add("write", self._trace_pagesize)
 
     # def _select_pagesize(self, event):
     #     cbo: ttk.Combobox = self.nametowidget(event.widget)
@@ -1808,8 +2197,6 @@ class Tableview(ttk.Frame):
 
     def _trace_pagesize(self, *_):
         """Callback for changes to page size"""
-        # pagesize = self.pagesize.get()
-        # self.tableview.configure(height=pagesize)
         self.goto_first_page()
 
     def _header_double_leftclick(self, event):
@@ -1822,15 +2209,13 @@ class Tableview(ttk.Frame):
         """Callback for left-click events"""
         region = self.view.identify_region(event.x, event.y)
         if region == "heading":
-            # col = self.tableview.identify_column(event.x)
-            # cid = int(self.tableview.column(col, "id"))
             self.sort_column_data(event)
 
     def _table_rightclick(self, event):
         """Callback for right-click events"""
         region = self.view.identify_region(event.x, event.y)
         if region == "heading":
-            self.rightclickmenu_head.tk_popup(event)
+            self._rightclickmenu_head.tk_popup(event)
         elif region != "separator":
             self._rightclickmenu_cell.tk_popup(event)
 
@@ -1862,7 +2247,7 @@ class TableCellRightClickMenu(tk.Menu):
             },
             "clearfilter": {
                 "label": "⎌ Clear filters",
-                "command": self.master.reset_table,
+                "command": self.master.reset_row_filters,
             },
             "filterbyvalue": {
                 "label": "Filter by cell's value",
@@ -1917,11 +2302,15 @@ class TableCellRightClickMenu(tk.Menu):
                 "label": "◨  Align right",
                 "command": self.align_column_right,
             },
+            "deleterows": {
+                "label": "🞨  Delete selected rows",
+                "command": self.delete_selected_rows,
+            },
         }
         sort_menu = tk.Menu(self, tearoff=False)
         sort_menu.add_command(cnf=config["sortascending"])
         sort_menu.add_command(cnf=config["sortdescending"])
-        self.add_cascade(menu=sort_menu, label="⇅ Sort")
+        self.add_cascade(menu=sort_menu, label="⇅  Sort")
 
         filter_menu = tk.Menu(self, tearoff=False)
         filter_menu.add_command(cnf=config["clearfilter"])
@@ -1950,6 +2339,7 @@ class TableCellRightClickMenu(tk.Menu):
         align_menu.add_command(cnf=config["aligncenter"])
         align_menu.add_command(cnf=config["alignright"])
         self.add_cascade(menu=align_menu, label="↦  Align")
+        self.add_command(cnf=config["deleterows"])
 
     def tk_popup(self, event):
         """Display the menu below the selected cell.
@@ -2041,6 +2431,12 @@ class TableCellRightClickMenu(tk.Menu):
         """Center align the column text"""
         self.master.align_column_center(self.event)
 
+    def delete_selected_rows(self):
+        """Delete the selected rows"""
+        iids = self.view.selection()
+        if len(iids) > 0:
+            self.master.delete_rows(iids=iids)
+
 
 class TableHeaderRightClickMenu(tk.Menu):
     """A right-click menu object for the tableview header - INTERNAL"""
@@ -2056,21 +2452,8 @@ class TableHeaderRightClickMenu(tk.Menu):
         self.master: Tableview = self.master
         self.view: ttk.Treeview = master.view
         self.event = None
-
-        # HIDE & SHOW
-        show_menu = tk.Menu(self, tearoff=False)
-        for column in self.master._tablecols:
-            variable = f"column_{column.cid}"
-            self.view.setvar(variable, True)
-            show_menu.add_checkbutton(
-                label=column._headertext,
-                command=lambda w=column: self.toggle_columns(w.cid),
-                variable=variable,
-                indicatoron=True,
-                onvalue=True,
-                offvalue=False,
-            )
-        self.add_cascade(menu=show_menu, label="±  Columns")
+        self.columnvars = []
+        self._show_menu = None
 
         config = {
             "movetoright": {
@@ -2102,10 +2485,25 @@ class TableHeaderRightClickMenu(tk.Menu):
                 "command": self.align_heading_center,
             },
             "resettable": {
-                "label": "⎌  Reset Table",
-                "command": self.master.reset_table
-            }
+                "label": "⎌  Reset table",
+                "command": self.master.reset_table,
+            },
+            "deletecolumn": {
+                "label": "🞨  Delete column",
+                "command": self.delete_column,
+            },
+            "hidecolumn": {
+                "label": "◑  Hide column",
+                "command": self.hide_column,
+            },
         }
+
+        self.add_command(cnf=config["resettable"])
+
+        # HIDE & SHOW
+        self._build_show_menu()
+        self.add_cascade(menu=self._show_menu, label="±  Columns")
+        self.add_separator()
 
         # MOVE MENU
         move_menu = tk.Menu(self, tearoff=False)
@@ -2120,26 +2518,61 @@ class TableHeaderRightClickMenu(tk.Menu):
         align_menu.add_command(cnf=config["aligncenter"])
         align_menu.add_command(cnf=config["alignright"])
         self.add_cascade(menu=align_menu, label="↦  Align")
-
-        self.add_command(cnf=config["resettable"])
+        self.add_command(cnf=config["hidecolumn"])
+        self.add_command(cnf=config["deletecolumn"])
 
     def tk_popup(self, event):
         # capture the column and item that invoked the menu
         self.event = event
+        self._build_show_menu()
 
         # show the menu below the invoking cell
         rootx = self.view.winfo_rootx()
         rooty = self.view.winfo_rooty()
         super().tk_popup(rootx + event.x, rooty + event.y + 10)
 
+    def _build_show_menu(self):
+        """Build the show menu based on currently available columns"""
+        if self._show_menu is not None:
+            self._show_menu.delete(0, END)
+        else:
+            self._show_menu = tk.Menu(self, tearoff=False)
+
+        self._show_menu.add_command(
+            label="Show All", command=self.show_all_columns
+        )
+        self._show_menu.add_separator()
+
+        displaycolumns = [x.cid for x in self.master.tablecolumns_visible]
+        for column in self.master.tablecolumns:
+            varname = f"column_{column.cid}"
+            # self.columnvars.append(tk.Variable(name=varname, value=True))
+            self._show_menu.add_checkbutton(
+                label=column._headertext,
+                command=lambda w=column: self.toggle_columns(w.cid),
+                variable=varname,
+                onvalue=True,
+                offvalue=False,
+            )
+            if column.cid in displaycolumns:
+                self.setvar(varname, True)
+            else:
+                self.setvar(varname, False)
+
     def toggle_columns(self, cid):
         """Toggles the visibility of the selected column"""
         variable = f"column_{cid}"
         toggled = self.getvar(variable)
         if toggled:
-            self.master.unhide_selected_column(cid=cid)
+            self.master.unhide_selected_column(cid=int(cid))
         else:
-            self.master.hide_selected_column(cid=cid)
+            self.master.hide_selected_column(cid=int(cid))
+
+    def show_all_columns(self):
+        """Show all columns"""
+        for var in self.columnvars:
+            var.set(value=True)
+        self.master.reset_column_filters()
 
     def move_column_left(self):
         """Move column one position to the left"""
@@ -2168,3 +2601,13 @@ class TableHeaderRightClickMenu(tk.Menu):
     def align_heading_center(self):
         """Center align the column header"""
         self.master.align_heading_center(self.event)
+
+    def delete_column(self):
+        """Delete the selected column"""
+        eo = self.master._get_event_objects(self.event)
+        eo.column.delete()
+
+    def hide_column(self):
+        """Hide the selected column"""
+        eo = self.master._get_event_objects(self.event)
+        eo.column.hide()
