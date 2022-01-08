@@ -1367,10 +1367,10 @@ class Tableview(ttk.Frame):
         self._filtered = False
         self.searchcriteria = ""
         try:
-            sortedrows = sorted(self.tablerows, key=lambda x: x.original_index)
+            sortedrows = sorted(self.tablerows, key=lambda x: x._sort)
         except IndexError:
             self.fill_empty_columns()
-            sortedrows = sorted(self.tablerows, key=lambda x: x.original_index)
+            sortedrows = sorted(self.tablerows, key=lambda x: x._sort)
         self._tablerows = sortedrows
         self.unload_table_data()
 
