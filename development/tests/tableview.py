@@ -2,10 +2,10 @@ import ttkbootstrap as ttk
 from ttkbootstrap.constants import *
 from pathlib import Path
 import csv
-from ttkbootstrap.tableview import Tableview
+from ttkbootstrap.tableview import TableRow, Tableview
 from ttkbootstrap.utility import scale_size
 
-app = ttk.Window(themename='darkly')
+app = ttk.Window(themename='flatly')
 colors = app.style.colors
 
 p = Path(".") / "development/new_widgets/Sample1000.csv"
@@ -39,5 +39,14 @@ dt.pack(fill=BOTH, expand=YES, padx=5, pady=5)
 
 dt.build_table_data(coldata, rowdata)
 #dt.delete_columns(indices=[2, 3])
+
+# modify the contents of a single cell
+row = dt.get_row(0)
+row.values[2] = "Israel"
+row.refresh()
+
+# modify an entire row
+row = dt.get_row(1)
+row.values = ['123456', 'My Company', 'Israel', 'Something here', 45]
 
 app.mainloop()

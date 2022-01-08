@@ -263,6 +263,11 @@ class TableRow:
         """The table row values"""
         return self._values
 
+    @values.setter
+    def values(self, values):
+        self._values = values
+        self.refresh()
+
     @property
     def iid(self):
         """A unique record identifier"""
@@ -288,6 +293,9 @@ class TableRow:
 
         if opt is not None:
             return self.view.item(self.iid, opt)
+        elif 'values' in kwargs:
+            values = kwargs.pop('values')
+            self.values = values
         else:
             self.view.item(self.iid, **kwargs)
 
@@ -1085,7 +1093,7 @@ class Tableview(ttk.Frame):
 
     def get_column(
         self, index=None, visible=False, cid=None
-    ) -> Union[TableColumn, None]:
+    ) -> TableColumn:
         """Returns the `TableColumn` object from an index or a cid.
 
         If index is specified, the column index refers to the index
@@ -1161,7 +1169,7 @@ class Tableview(ttk.Frame):
         else:
             return self._tablerows
 
-    def get_row(self, index=None, visible=False, filtered=False, iid=None):
+    def get_row(self, index=None, visible=False, filtered=False, iid=None) -> TableRow:
         """Returns the `TableRow` object from an index or the iid.
 
         If an index is specified, the row index refers to the index
@@ -1359,10 +1367,10 @@ class Tableview(ttk.Frame):
         self._filtered = False
         self.searchcriteria = ""
         try:
-            sortedrows = sorted(self.tablerows, key=lambda x: x.original_index)
+            sortedrows = sorted(self.tablerows, key=lambda x: x._sort)
         except IndexError:
             self.fill_empty_columns()
-            sortedrows = sorted(self.tablerows, key=lambda x: x.original_index)
+            sortedrows = sorted(self.tablerows, key=lambda x: x._sort)
         self._tablerows = sortedrows
         self.unload_table_data()
 
