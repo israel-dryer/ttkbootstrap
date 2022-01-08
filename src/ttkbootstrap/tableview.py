@@ -264,11 +264,6 @@ class TableRow:
         return self._values
 
     @property
-    def original_index(self):
-        """The original insert position of the record"""
-        return self._sort
-
-    @property
     def iid(self):
         """A unique record identifier"""
         return str(self._iid)
@@ -866,7 +861,7 @@ class Tableview(ttk.Frame):
             # original index
             else:
                 for record in self.tablerows:
-                    if record.original_index == index:
+                    if record.self._sort == index:
                         record.delete()
 
     def delete_rows(self, indices=None, iids=None, visible=True):
