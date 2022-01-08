@@ -6,6 +6,29 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 **Full Changelog**: 
 
+## [1.4.0](https://github.com/israel-dryer/ttkbootstrap/compare/v1.3.1...v1.4.0) - 2022-01-08
+* Tableview bug fixes and feature upgrades by @israel-dryer in [#124](https://github.com/israel-dryer/ttkbootstrap/pull/124)
+* Enable tableview value updates with property setter by @israel-dryer in [#125](https://github.com/israel-dryer/ttkbootstrap/pull/125)
+
+### Fixed
+- Entering a page less than 1 or greater than the max in the page entry no longer returns an empty or invalid page
+- The +/- column options in the right-click menu now update when columns are deleted or inserted into the table
+- Other miscellaneous not worthy of a write-up
+
+### Added
+- Default stripe colors are added for all themes
+- Bulk delete and insert is now available via the `Tableview.purge_table_data` and `Tableview.build_table_data` methods. Along with the existing insert methods, delete methods have been added for columns and rows to make the data handling full-featured.
+- New command in the right-click cell menu
+  * delete selected rows
+- New commands in the right-click header menu
+  * delete column
+  * hide column
+  * show all columns
+- Table rows [can now be updated](https://github.com/israel-dryer/ttkbootstrap/issues/121) with the TableRows.values property 
+
+### Changed
+- The `stripecolor` parameter is enhanced so that passing in a tuple with `None` for background and foreground colors will now cause that element to use a default color. For example: `stripecolor=(None, None)` will cause a default foreground and background color while `stripecolor=('yellow', None)` will cause a yellow background and default foreground color. The default setting of `stripecolor=None` will disabled stripecolors altogether.
+
 ## [1.3.1](https://github.com/israel-dryer/ttkbootstrap/compare/v1.3.0...v1.3.1) - 2022-01-04
 ### Fixed
 - Internal resizing issue, missing args in internal frame on ScrolledFrame by @israel-dryer in [#120](https://github.com/israel-dryer/ttkbootstrap/pull/120)
