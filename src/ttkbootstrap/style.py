@@ -10,6 +10,7 @@ from ttkbootstrap.constants import *
 from ttkbootstrap.themes.standard import STANDARD_THEMES
 from ttkbootstrap.publisher import Publisher, Channel
 from ttkbootstrap import utility as util
+from PIL import ImageColor
 
 try:
     # prevent app from failing if user.py gets corrupted
@@ -154,6 +155,35 @@ class Colors:
         self.inputbg = inputbg
         self.active = active
 
+    @staticmethod
+    def make_transparent(alpha, foreground, background='#ffffff'):
+        """Simulate color transparency.
+        
+        Parameters:
+
+            alpha (float):
+                The amount of transparency; a number between 0 and 1.
+
+            foreground (str):
+                The foreground color.
+
+            background (str):
+                The background color.
+
+        Returns:
+
+            str:
+                A hexadecimal color representing the "transparent" 
+                version of the foreground color against the background 
+                color.
+        """
+        fg = ImageColor.getrgb(foreground)
+        bg = ImageColor.getrgb(background)
+        rgb_float = [alpha * c1 + (1 - alpha) * c2 for (c1, c2) in zip(fg, bg)]
+        rgb_int = [int(x) for x in rgb_float]
+        return '#{:02x}{:02x}{:02x}'.format(*rgb_int)    
+
+    @staticmethod
     def rgb_to_hsv(r, g, b):
         """Convert an rgb to hsv color value.
 
@@ -2670,13 +2700,6 @@ class StyleBuilderTTK:
         """
         STYLE = "TButton"
 
-        if self.is_light_theme:
-            disabled_fg = self.colors.border
-            disabled_bg = self.colors.inputbg
-        else:
-            disabled_fg = self.colors.selectbg
-            disabled_bg = Colors.update_hsv(disabled_fg, vd=-0.2)
-
         if any([colorname == DEFAULT, colorname == ""]):
             ttkstyle = STYLE
             foreground = self.colors.get_foreground(PRIMARY)
@@ -2687,8 +2710,10 @@ class StyleBuilderTTK:
             background = self.colors.get(colorname)
 
         bordercolor = background
-        pressed = Colors.update_hsv(background, vd=-0.1)
-        hover = Colors.update_hsv(background, vd=0.10)
+        disabled_bg = Colors.make_transparent(0.10, self.colors.fg, self.colors.bg)
+        disabled_fg = Colors.make_transparent(0.30, self.colors.fg, self.colors.bg)
+        pressed = Colors.make_transparent(0.80, background, self.colors.bg)
+        hover = Colors.make_transparent(0.90, background, self.colors.bg)        
 
         self.style._build_configure(
             ttkstyle,
@@ -2736,10 +2761,7 @@ class StyleBuilderTTK:
         """
         STYLE = "Outline.TButton"
 
-        if self.is_light_theme:
-            disabled_fg = self.colors.border
-        else:
-            disabled_fg = Colors.update_hsv(self.colors.selectbg, vd=-0.3)
+        disabled_fg = Colors.make_transparent(0.30, self.colors.fg, self.colors.bg)
 
         if any([colorname == DEFAULT, colorname == ""]):
             ttkstyle = STYLE
@@ -2822,10 +2844,7 @@ class StyleBuilderTTK:
             foreground = self.colors.get(colorname)
             ttkstyle = f"{colorname}.{STYLE}"
 
-        if self.is_light_theme:
-            disabled_fg = self.colors.border
-        else:
-            disabled_fg = Colors.update_hsv(self.colors.selectbg, vd=-0.3)
+        disabled_fg = Colors.make_transparent(0.30, self.colors.fg, self.colors.bg)  
 
         self.style._build_configure(
             ttkstyle,
@@ -2900,15 +2919,9 @@ class StyleBuilderTTK:
         on_indicator = self.colors.selectfg
         on_fill = prime_color
         off_fill = self.colors.bg
-
-        if self.is_light_theme:
-            off_border = self.colors.selectbg
-            off_indicator = self.colors.selectbg
-            disabled_fg = self.colors.border
-        else:
-            off_border = self.colors.selectbg
-            off_indicator = self.colors.selectbg
-            disabled_fg = Colors.update_hsv(self.colors.selectbg, vd=-0.3)
+        disabled_fg = Colors.make_transparent(0.3, self.colors.fg, self.colors.bg)  
+        off_border = Colors.make_transparent(0.4, self.colors.fg, self.colors.bg)
+        off_indicator = Colors.make_transparent(0.4, self.colors.fg, self.colors.bg)     
 
         # override defaults for light and dark colors
         if colorname == LIGHT:
@@ -2989,14 +3002,9 @@ class StyleBuilderTTK:
         on_fill = prime_color
         off_fill = self.colors.bg
 
-        if self.is_light_theme:
-            off_border = self.colors.selectbg
-            off_indicator = self.colors.selectbg
-            disabled_fg = self.colors.border
-        else:
-            off_border = self.colors.selectbg
-            off_indicator = self.colors.selectbg
-            disabled_fg = Colors.update_hsv(self.colors.selectbg, vd=-0.3)
+        disabled_fg = Colors.make_transparent(0.3, self.colors.fg, self.colors.bg)  
+        off_border = Colors.make_transparent(0.4, self.colors.fg, self.colors.bg)
+        off_indicator = Colors.make_transparent(0.4, self.colors.fg, self.colors.bg)  
 
         # override defaults for light and dark colors
         if colorname == LIGHT:
@@ -3062,10 +3070,7 @@ class StyleBuilderTTK:
         """
         STYLE = "Round.Toggle"
 
-        if self.is_light_theme:
-            disabled_fg = self.colors.border
-        else:
-            disabled_fg = Colors.update_hsv(self.colors.selectbg, vd=-0.3)
+        disabled_fg = Colors.make_transparent(0.30, self.colors.fg, self.colors.bg)  
 
         if any([colorname == DEFAULT, colorname == ""]):
             ttkstyle = STYLE
@@ -3152,10 +3157,7 @@ class StyleBuilderTTK:
 
         STYLE = "Square.Toggle"
 
-        if self.is_light_theme:
-            disabled_fg = self.colors.border
-        else:
-            disabled_fg = Colors.update_hsv(self.colors.selectbg, vd=-0.3)
+        disabled_fg = Colors.make_transparent(0.30, self.colors.fg, self.colors.bg)  
 
         if any([colorname == DEFAULT, colorname == ""]):
             ttkstyle = STYLE
@@ -3246,12 +3248,8 @@ class StyleBuilderTTK:
         else:
             toggle_off = self.colors.selectbg
 
-        if self.is_light_theme:
-            disabled_fg = self.colors.border
-            disabled_bg = self.colors.inputbg
-        else:
-            disabled_fg = self.colors.selectbg
-            disabled_bg = Colors.update_hsv(disabled_fg, vd=-0.2)
+        disabled_bg = Colors.make_transparent(0.10, self.colors.fg, self.colors.bg)
+        disabled_fg = Colors.make_transparent(0.30, self.colors.fg, self.colors.bg)
 
         self.style._build_configure(
             ttkstyle,
@@ -3312,10 +3310,7 @@ class StyleBuilderTTK:
         """
         STYLE = "Outline.Toolbutton"
 
-        if self.is_light_theme:
-            disabled_fg = self.colors.border
-        else:
-            disabled_fg = Colors.update_hsv(self.colors.selectbg, vd=-0.3)
+        disabled_fg = Colors.make_transparent(0.30, self.colors.fg, self.colors.bg)   
 
         if any([colorname == DEFAULT, colorname == ""]):
             ttkstyle = STYLE
@@ -3461,15 +3456,12 @@ class StyleBuilderTTK:
         off_fill = self.colors.bg
         on_indicator = self.colors.selectfg
         size = self.scale_size([14, 14])
+        off_border = Colors.make_transparent(0.4, self.colors.fg, self.colors.bg)
+        disabled = Colors.make_transparent(0.3, self.colors.fg, self.colors.bg)
 
         if self.is_light_theme:
-            off_border = self.colors.border
-            disabled = self.colors.border
             if colorname == LIGHT:
                 on_indicator = self.colors.dark
-        else:
-            disabled = Colors.update_hsv(self.colors.selectbg, vd=-0.3)
-            off_border = self.colors.selectbg
 
         # radio off
         _off = Image.new("RGBA", (134, 134))
@@ -3518,10 +3510,7 @@ class StyleBuilderTTK:
 
         STYLE = "TRadiobutton"
 
-        if self.is_light_theme:
-            disabled_fg = self.colors.border
-        else:
-            disabled_fg = Colors.update_hsv(self.colors.selectbg, vd=-0.3)
+        disabled_fg = Colors.make_transparent(0.30, self.colors.fg, self.colors.bg)
 
         if any([colorname == DEFAULT, colorname == ""]):
             ttkstyle = STYLE
@@ -3982,10 +3971,7 @@ class StyleBuilderTTK:
         """
         STYLE = "TCheckbutton"
 
-        if self.is_light_theme:
-            disabled_fg = self.colors.border
-        else:
-            disabled_fg = Colors.update_hsv(self.colors.selectbg, vd=-0.3)
+        disabled_fg = Colors.make_transparent(0.3, self.colors.fg, self.colors.bg)
 
         if any([colorname == DEFAULT, colorname == ""]):
             colorname = PRIMARY
@@ -4073,13 +4059,10 @@ class StyleBuilderTTK:
         prime_color = self.colors.get(colorname)
         on_border = prime_color
         on_fill = prime_color
-        off_border = self.colors.selectbg
         off_fill = self.colors.bg
-
-        if self.is_light_theme:
-            disabled_bg = self.colors.border
-        else:
-            disabled_bg = self.colors.selectbg
+        off_border = self.colors.selectbg
+        off_border = Colors.make_transparent(0.4, self.colors.fg, self.colors.bg)
+        disabled_bg = Colors.make_transparent(0.3, self.colors.fg, self.colors.bg)
 
         if colorname == LIGHT:
             check_color = self.colors.dark
@@ -4150,13 +4133,6 @@ class StyleBuilderTTK:
 
         foreground = self.colors.get_foreground(colorname)
 
-        if self.is_light_theme:
-            disabled_fg = self.colors.border
-            disabled_bg = self.colors.inputbg
-        else:
-            disabled_fg = self.colors.selectbg
-            disabled_bg = Colors.update_hsv(disabled_fg, vd=-0.2)
-
         if any([colorname == DEFAULT, colorname == ""]):
             ttkstyle = STYLE
             background = self.colors.primary
@@ -4164,8 +4140,10 @@ class StyleBuilderTTK:
             ttkstyle = f"{colorname}.{STYLE}"
             background = self.colors.get(colorname)
 
-        pressed = Colors.update_hsv(background, vd=-0.1)
-        hover = Colors.update_hsv(background, vd=0.1)
+        disabled_bg = Colors.make_transparent(0.10, self.colors.fg, self.colors.bg)
+        disabled_fg = Colors.make_transparent(0.30, self.colors.fg, self.colors.bg)
+        pressed = Colors.make_transparent(0.80, background, self.colors.bg)
+        hover = Colors.make_transparent(0.90, background, self.colors.bg)    
 
         self.style._build_configure(
             ttkstyle,
@@ -4220,10 +4198,7 @@ class StyleBuilderTTK:
         """
         STYLE = "Outline.TMenubutton"
 
-        if self.is_light_theme:
-            disabled_fg = self.colors.border
-        else:
-            disabled_fg = Colors.update_hsv(self.colors.selectbg, vd=-0.3)
+        disabled_fg = Colors.make_transparent(0.30, self.colors.fg, self.colors.bg)
 
         if any([colorname == DEFAULT, colorname == ""]):
             ttkstyle = STYLE
