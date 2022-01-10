@@ -6,6 +6,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 **Full Changelog**: 
 
+## [1.5.0](https://github.com/israel-dryer/ttkbootstrap/compare/v1.4.0...v1.5.0) - 2022-01-09
+New `validation` module and several bug-fixes for the `Tableview` widget.
+
+### Added
+- Add validation module by @israel-dryer in [#129](https://github.com/israel-dryer/ttkbootstrap/pull/129). The user can now easily add validation to any Entry type widget such as Entry, Combobox, and Spinbox. Several pre-defined validation functions are included by default, but instructions are in the API for how to easily build new custom validations.
+- Add `Colors.make_transparent` method to improve color handling. This will eventually replace the `Colors.update_hsv` method for building various widget colors that are not in the standard color scheme.
+
+### Fixed
+- Fix disabled widget colors by @israel-dryer in [#128](https://github.com/israel-dryer/ttkbootstrap/pull/128)
+- Custom stripecolors were not being applied in Tableview [#130](https://github.com/israel-dryer/ttkbootstrap/issues/130) 
+- Tableview now reverts to prev page if all rows are hidden or deleted on current page [#130](https://github.com/israel-dryer/ttkbootstrap/issues/130) 
+- Page number entered into Entry was adding 1 page to number [#130](https://github.com/israel-dryer/ttkbootstrap/issues/130)
+
 ## [1.4.0](https://github.com/israel-dryer/ttkbootstrap/compare/v1.3.1...v1.4.0) - 2022-01-08
 * Tableview bug fixes and feature upgrades by @israel-dryer in [#124](https://github.com/israel-dryer/ttkbootstrap/pull/124)
 * Enable tableview value updates with property setter by @israel-dryer in [#125](https://github.com/israel-dryer/ttkbootstrap/pull/125)
