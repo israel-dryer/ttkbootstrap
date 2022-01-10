@@ -1225,7 +1225,12 @@ class Tableview(ttk.Frame):
 
     def _select_first_visible_item(self):
         try:
-            self.view.selection_set(self.tablerows_visible[0].iid)
+            iid = self.tablerows_visible[0].iid
+            self.view.selection_set(iid)
+            # must force focus, sometimes just focus on iid doesn't work
+            self.view.focus_force()
+            # this sets the focus on the specific row item
+            self.view.focus(iid)
         except:
             pass
 
@@ -1321,12 +1326,15 @@ class Tableview(ttk.Frame):
 
         try:
             sortedrows = sorted(
-                tablerows, reverse=columnsort, key=lambda x: x._values[index]
+                tablerows, reverse=columnsort, key=lambda x: x.values[index]
             )
-        except IndexError:
+        except:
+            # when data is missing, or sometimes with numbers
+            # this is still not right, but it works most of the time
+            # fix sometime down the road when I have time 
             self.fill_empty_columns()
             sortedrows = sorted(
-                tablerows, reverse=columnsort, key=lambda x: x._values[index]
+                tablerows, reverse=columnsort, key=lambda x: int(x.values[index])
             )
         if self.is_filtered:
             self._tablerows_filtered = sortedrows
@@ -1339,6 +1347,7 @@ class Tableview(ttk.Frame):
 
         self.unload_table_data()
         self.load_table_data()
+        # self._select_first_visible_item()
 
     # DATA SEARCH & FILTERING
 
