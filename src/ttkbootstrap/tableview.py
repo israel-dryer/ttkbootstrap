@@ -566,8 +566,8 @@ class Tableview(ttk.Frame):
     def tablecolumns_visible(self):
         """A list of visible table column objects"""
         cids = list(self.view.cget("displaycolumns"))
-        if "all" in cids:
-            return self.tablecolumns
+        if "#all" in cids:
+            return self._tablecols
         columns = []
         for cid in cids:
             # the cidmap expects an integer
@@ -895,7 +895,9 @@ class Tableview(ttk.Frame):
             self._iidmap.clear()
             records = self.view.get_children("")
             self.view.delete(*records)
-        self.goto_page()
+        # route to new page if no records visible
+        if len(self._viewdata) == 0:
+            self.goto_page()        
 
     def insert_column(
         self,
@@ -1396,7 +1398,6 @@ class Tableview(ttk.Frame):
         self.reset_column_filters()
         self.reset_column_sort()
 
-        self.load_table_data()
         self._column_sort_header_reset()
         self.goto_first_page() # needed?
 
@@ -1461,6 +1462,8 @@ class Tableview(ttk.Frame):
     def hide_selected_rows(self):
         """Hide the currently selected rows"""
         selected = self.view.selection()
+        view_cnt = len(self._viewdata)
+        hide_cnt = len(selected)
         self.view.detach(*selected)
 
         tablerows = []
@@ -1476,7 +1479,17 @@ class Tableview(ttk.Frame):
             if self.is_filtered:
                 self.tablerows_filtered.remove(row)
 
-        self.load_table_data()
+        if hide_cnt == view_cnt:
+            # assuming that if the count of the records on the page are
+            #   selected for hiding, then need to go to the next page
+            # The call to `load_table_data` is duplicative, but currently
+            #   this is the only way to get this to work until I've 
+            #   refactored this bit.
+            self.load_table_data()
+            self.goto_page()
+        else:
+            self.load_table_data()
+        
 
     def hide_selected_column(self, event=None, cid=None):
         """Detach the selected column from the tableview. This method
@@ -2466,7 +2479,11 @@ class TableCellRightClickMenu(tk.Menu):
         """Delete the selected rows"""
         iids = self.view.selection()
         if len(iids) > 0:
+            # setting to prev should be in master?
+            prev_item = self.view.prev(iids[0])
             self.master.delete_rows(iids=iids)
+            self.view.focus(prev_item)
+            self.view.selection_set(prev_item)
 
 
 class TableHeaderRightClickMenu(tk.Menu):
