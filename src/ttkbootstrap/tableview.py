@@ -1265,12 +1265,13 @@ class Tableview(ttk.Frame):
         pagelimit = self._pagelimit.get()
         pageindex = self._pageindex.get()
         if pageindex > pagelimit:
-            pageindex = pagelimit - 1
+            pageindex = pagelimit
             self._pageindex.set(pageindex)
         elif pageindex < 0:
-            pageindex = 0
+            pageindex = 1
             self._pageindex.set(pageindex)
-        self._rowindex.set(pageindex * self.pagesize)
+        rowindex = (pageindex * self.pagesize) - self.pagesize
+        self._rowindex.set(rowindex)
         self.load_table_data()
         self._select_first_visible_item()
 
