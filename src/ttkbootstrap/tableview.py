@@ -688,7 +688,7 @@ class Tableview(ttk.Frame):
         if self._stripecolor is not None:
             self.apply_table_stripes(self._stripecolor)
 
-        self._select_first_visible_item()
+        self.goto_first_page()
 
     def insert_row(self, index=END, values=[]) -> TableRow:
         """Insert a row into the tableview at index.
@@ -895,6 +895,7 @@ class Tableview(ttk.Frame):
             self._iidmap.clear()
             records = self.view.get_children("")
             self.view.delete(*records)
+        self.goto_page()
 
     def insert_column(
         self,
@@ -1390,6 +1391,7 @@ class Tableview(ttk.Frame):
 
         self.load_table_data()
         self._column_sort_header_reset()
+        self.goto_first_page() # needed?
 
     def filter_column_to_value(self, event=None, cid=None, value=None):
         """Hide all records except for records where the current
