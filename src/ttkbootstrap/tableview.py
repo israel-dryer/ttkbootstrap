@@ -1820,8 +1820,12 @@ class Tableview(ttk.Frame):
             kw = {}
             if bg is None:
                 kw["background"] = colors.active
+            else:
+                kw["background"] = bg
             if fg is None:
                 kw["foreground"] = colors.inputfg
+            else:
+                kw["foreground"] = fg
             self.view.tag_configure("striped", **kw)
 
     def autofit_columns(self):
