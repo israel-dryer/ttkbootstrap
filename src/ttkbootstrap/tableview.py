@@ -1037,8 +1037,13 @@ class Tableview(ttk.Frame):
             self.reset_table()
 
         self.unload_table_data()
-        page_start = self._rowindex.get()
-        page_end = self._rowindex.get() + self._pagesize.get()
+
+        if self._paginated:
+            page_start = self._rowindex.get()
+            page_end = self._rowindex.get() + self._pagesize.get()
+        else:
+            page_start = 0
+            page_end = len(self._tablerows)
 
         if self._filtered:
             rowdata = self._tablerows_filtered[page_start:page_end]
@@ -1232,6 +1237,8 @@ class Tableview(ttk.Frame):
             self.view.focus_force()
             # this sets the focus on the specific row item
             self.view.focus(iid)
+            # make sure the row is visible
+            self.view.see(iid)
         except:
             pass
 
@@ -1348,7 +1355,7 @@ class Tableview(ttk.Frame):
 
         self.unload_table_data()
         self.load_table_data()
-        # self._select_first_visible_item()
+        self._select_first_visible_item()
 
     # DATA SEARCH & FILTERING
 
