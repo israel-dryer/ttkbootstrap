@@ -538,7 +538,7 @@ class Tableview(ttk.Frame):
         self._delimiter = delimiter
         self._iidmap = {}  # maps iid to row object
         self._cidmap = {}  # maps cid to col object
-
+        
         self.view: ttk.Treeview = None
         self._build_tableview_widget(coldata, rowdata, bootstyle)
 
@@ -672,8 +672,14 @@ class Tableview(ttk.Frame):
                 self.insert_column(i, **col)
 
         # build the table rows
-        for values in rowdata:
-            self.insert_row(values=values)
+        if rowdata == [] or rowdata is None: #<-- Resets pagination, if rowdata is an empty list (ex: sql query does not match)
+            self._pageindex.set(0)
+            self._pagelimit.set(0)
+            self.index.configure(state='disabled')
+
+        else:
+            for values in rowdata:
+                self.insert_row(values=values)
 
         # load the table data
         self.load_table_data()
@@ -688,7 +694,8 @@ class Tableview(ttk.Frame):
         if self._stripecolor is not None:
             self.apply_table_stripes(self._stripecolor)
 
-        self.goto_first_page()
+        self._select_first_visible_item()
+        #self.goto_first_page()  #<-- load_table_data() runs again here
 
     def insert_row(self, index=END, values=[]) -> TableRow:
         """Insert a row into the tableview at index.
@@ -1066,7 +1073,7 @@ class Tableview(ttk.Frame):
             else:
                 row.show(False)
             self._viewdata.append(row)
-
+        
     def fill_empty_columns(self, fillvalue=""):
         """Fill empty columns with the fillvalue.
 
@@ -1246,34 +1253,38 @@ class Tableview(ttk.Frame):
 
     def goto_first_page(self):
         """Update table with first page of data"""
-        self._rowindex.set(0)
-        self.load_table_data()
-        self._select_first_visible_item()
+        if self._pagelimit.get() != 1:  #<-- Only executes the action if there is more than one page
+            self._rowindex.set(0)
+            self.load_table_data()
+            self._select_first_visible_item()
 
     def goto_last_page(self):
         """Update table with the last page of data"""
-        pagelimit = self._pagelimit.get() - 1
-        self._rowindex.set(self.pagesize * pagelimit)
-        self.load_table_data()
-        self._select_first_visible_item()
+        if self._pagelimit.get() != 1:  #<-- Only executes the action if there is more than one page
+            pagelimit = self._pagelimit.get() - 1
+            self._rowindex.set(self.pagesize * pagelimit)
+            self.load_table_data()
+            self._select_first_visible_item()
 
     def goto_next_page(self):
         """Update table with next page of data"""
-        if self._pageindex.get() >= self._pagelimit.get():
-            return
-        rowindex = self._rowindex.get()
-        self._rowindex.set(rowindex + self.pagesize)
-        self.load_table_data()
-        self._select_first_visible_item()
+        if self._pagelimit.get() != 1:  #<-- Only executes the action if there is more than one page
+            if self._pageindex.get() >= self._pagelimit.get():
+                return
+            rowindex = self._rowindex.get()
+            self._rowindex.set(rowindex + self.pagesize)
+            self.load_table_data()
+            self._select_first_visible_item()
 
     def goto_prev_page(self):
         """Update table with prev page of data"""
-        if self._pageindex.get() <= 1:
-            return
-        rowindex = self._rowindex.get()
-        self._rowindex.set(rowindex - self.pagesize)
-        self.load_table_data()
-        self._select_first_visible_item()
+        if self._pagelimit.get() != 1:  #<-- Only executes the action if there is more than one page
+            if self._pageindex.get() <= 1:
+                return
+            rowindex = self._rowindex.get()
+            self._rowindex.set(rowindex - self.pagesize)
+            self.load_table_data()
+            self._select_first_visible_item()
 
     def goto_page(self, *_):
         """Go to a specific page indicated by the page entry widget."""
@@ -1282,7 +1293,7 @@ class Tableview(ttk.Frame):
         if pageindex > pagelimit:
             pageindex = pagelimit
             self._pageindex.set(pageindex)
-        elif pageindex < 0:
+        elif pageindex <= 0:    #<-- if you type 0 in the 'paging entry' it goes to the first page
             pageindex = 1
             self._pageindex.set(pageindex)
         rowindex = (pageindex * self.pagesize) - self.pagesize
@@ -1399,7 +1410,9 @@ class Tableview(ttk.Frame):
         self.reset_column_sort()
 
         self._column_sort_header_reset()
-        self.goto_first_page() # needed?
+        #self.goto_first_page() # needed?
+        self.load_table_data()              #<-- reset tableview even when there is only one page
+        self._select_first_visible_item()   #<-- reset tableview even when there is only one page
 
     def filter_column_to_value(self, event=None, cid=None, value=None):
         """Hide all records except for records where the current
@@ -2107,7 +2120,7 @@ class Tableview(ttk.Frame):
         if not self._paginated:
             ttk.Button(
                 frame,
-                text="⎌",
+                text="↺",
                 command=self.reset_table,
                 style="symbol.Link.TButton",
             ).pack(side=LEFT)
@@ -2120,40 +2133,45 @@ class Tableview(ttk.Frame):
         pageframe = ttk.Frame(self)
         pageframe.pack(fill=X, anchor=N)
 
-        ttk.Button(
+        self.reset = ttk.Button(
             pageframe,
-            text="⎌",
+            text="↺",
             command=self.reset_table,
             style="symbol.Link.TButton",
-        ).pack(side=RIGHT)
+        )
+        self.reset.pack(side=RIGHT)
 
         ttk.Separator(pageframe, orient=VERTICAL).pack(side=RIGHT, padx=10)
 
-        ttk.Button(
+        self.last = ttk.Button(
             master=pageframe,
             text="»",
             command=self.goto_last_page,
             style="symbol.Link.TButton",
-        ).pack(side=RIGHT, fill=Y)
-        ttk.Button(
+        )
+        self.last.pack(side=RIGHT, fill=Y)
+        self.next = ttk.Button(
             master=pageframe,
             text="›",
             command=self.goto_next_page,
             style="symbol.Link.TButton",
-        ).pack(side=RIGHT, fill=Y)
+        )
+        self.next.pack(side=RIGHT, fill=Y)
 
-        ttk.Button(
+        self.prev = ttk.Button(
             master=pageframe,
             text="‹",
             command=self.goto_prev_page,
             style="symbol.Link.TButton",
-        ).pack(side=RIGHT, fill=Y)
-        ttk.Button(
+        )
+        self.prev.pack(side=RIGHT, fill=Y)
+        self.first = ttk.Button(
             master=pageframe,
             text="«",
             command=self.goto_first_page,
             style="symbol.Link.TButton",
-        ).pack(side=RIGHT, fill=Y)
+        )
+        self.first.pack(side=RIGHT, fill=Y)
 
         ttk.Separator(pageframe, orient=VERTICAL).pack(side=RIGHT, padx=10)
 
@@ -2161,13 +2179,12 @@ class Tableview(ttk.Frame):
         lbl.pack(side=RIGHT, padx=(0, 5))
         ttk.Label(pageframe, text="of").pack(side=RIGHT, padx=(5, 0))
 
-        index = ttk.Entry(pageframe, textvariable=self._pageindex, width=4)
-        index.pack(side=RIGHT)
-        index.bind("<Return>", self.goto_page, "+")
-        index.bind("<KP_Enter>", self.goto_page, "+")
+        self.index = ttk.Entry(pageframe, textvariable=self._pageindex, width=4)
+        self.index.pack(side=RIGHT)
+        self.index.bind("<Return>", self.goto_page, "+")
+        self.index.bind("<KP_Enter>", self.goto_page, "+")
 
         ttk.Label(pageframe, text="Page").pack(side=RIGHT, padx=5)
-
         # I'm removing this widget for now; the pageframe was getting too
         #   cluttered and this is configurable with `configure`
 
@@ -2290,7 +2307,7 @@ class TableCellRightClickMenu(tk.Menu):
                 "command": self.sort_column_descending,
             },
             "clearfilter": {
-                "label": "⎌ Clear filters",
+                "label": "↺ Clear filters",
                 "command": self.master.reset_row_filters,
             },
             "filterbyvalue": {
@@ -2533,7 +2550,7 @@ class TableHeaderRightClickMenu(tk.Menu):
                 "command": self.align_heading_center,
             },
             "resettable": {
-                "label": "⎌  Reset table",
+                "label": "↺  Reset table",
                 "command": self.master.reset_table,
             },
             "deletecolumn": {
