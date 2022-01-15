@@ -1280,6 +1280,7 @@ class Tableview(ttk.Frame):
         """Update table with prev page of data"""
         if self._pagelimit.get() != 1:  #<-- Only executes the action if there is more than one page
             if self._pageindex.get() <= 1:
+                self._select_first_visible_item()
                 return
             rowindex = self._rowindex.get()
             self._rowindex.set(rowindex - self.pagesize)
