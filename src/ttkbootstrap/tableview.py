@@ -1278,13 +1278,13 @@ class Tableview(ttk.Frame):
 
     def goto_prev_page(self):
         """Update table with prev page of data"""
+        self._select_first_visible_item()
         if self._pagelimit.get() != 1:  #<-- Only executes the action if there is more than one page
             if self._pageindex.get() <= 1:
                 return
             rowindex = self._rowindex.get()
             self._rowindex.set(rowindex - self.pagesize)
             self.load_table_data()
-            self._select_first_visible_item()
 
     def goto_page(self, *_):
         """Go to a specific page indicated by the page entry widget."""
