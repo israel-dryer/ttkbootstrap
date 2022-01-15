@@ -676,8 +676,8 @@ class Tableview(ttk.Frame):
             self._pageindex.set(0)
             self._pagelimit.set(0)
             self.index.configure(state='disabled')
-
         else:
+            self.index.configure(state='normal')
             for values in rowdata:
                 self.insert_row(values=values)
 
