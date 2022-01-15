@@ -1914,6 +1914,12 @@ class Tableview(ttk.Frame):
                 self.view.column(i, anchor=W)
                 self.view.heading(i, anchor=W)
 
+    def fit_to_screen_columns(self):
+        width = int(self.winfo_width()/3)-1
+
+        for i in range(len(self.tablecolumns)):
+            self.view.column(i, width=width)   
+                
     def align_column_left(self, event=None, cid=None):
         """Left align the column text. This can be triggered by
         either an event, or by passing in the `cid`, which is the index
@@ -2135,6 +2141,14 @@ class Tableview(ttk.Frame):
         pageframe = ttk.Frame(self)
         pageframe.pack(fill=X, anchor=N)
 
+        self.fit_to_screen = ttk.Button(
+            pageframe,
+            text="⇹",
+            command=self.fit_to_screen_columns,
+            style="symbol.Link.TButton",
+        )
+        self.fit_to_screen.pack(side=RIGHT)
+        
         self.reset = ttk.Button(
             pageframe,
             text="↺",
