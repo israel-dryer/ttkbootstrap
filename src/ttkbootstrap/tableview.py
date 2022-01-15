@@ -1915,7 +1915,7 @@ class Tableview(ttk.Frame):
                 self.view.column(i, anchor=W)
                 self.view.heading(i, anchor=W)
 
-    def fit_to_screen_columns(self):
+    def fit_to_table_columns(self):
         width = int(self.winfo_width()/3)-1
 
         for i in range(len(self.tablecolumns)):
@@ -2142,13 +2142,13 @@ class Tableview(ttk.Frame):
         pageframe = ttk.Frame(self)
         pageframe.pack(fill=X, anchor=N)
 
-        self.fit_to_screen = ttk.Button(
+        self.fit_to_table = ttk.Button(
             pageframe,
             text="⇹",
-            command=self.fit_to_screen_columns,
+            command=self.fit_to_table_columns,
             style="symbol.Link.TButton",
         )
-        self.fit_to_screen.pack(side=RIGHT)
+        self.fit_to_table.pack(side=RIGHT)
         
         self.reset = ttk.Button(
             pageframe,
@@ -2573,8 +2573,8 @@ class TableHeaderRightClickMenu(tk.Menu):
                 "command": self.master.reset_table,
             },
             "fittoscreen": {
-                "label": "⇹  Fit columns to screen",
-                "command": self.master.fit_to_screen_columns,
+                "label": "⇹  Fit columns to table",
+                "command": self.master.fit_to_table_columns,
             },
             "deletecolumn": {
                 "label": "🞨  Delete column",
