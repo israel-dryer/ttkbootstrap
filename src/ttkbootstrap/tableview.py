@@ -2569,6 +2569,10 @@ class TableHeaderRightClickMenu(tk.Menu):
                 "label": "↺  Reset table",
                 "command": self.master.reset_table,
             },
+            "fittoscreen": {
+                "label": "⇹  Fit columns to screen",
+                "command": self.master.fit_to_screen_columns,
+            },
             "deletecolumn": {
                 "label": "🞨  Delete column",
                 "command": self.delete_column,
@@ -2578,6 +2582,7 @@ class TableHeaderRightClickMenu(tk.Menu):
                 "command": self.hide_column,
             },
         }
+        self.add_command(cnf=config["fittoscreen"])
 
         self.add_command(cnf=config["resettable"])
 
