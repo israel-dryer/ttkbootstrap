@@ -1270,6 +1270,7 @@ class Tableview(ttk.Frame):
         """Update table with next page of data"""
         if self._pagelimit.get() != 1:  #<-- Only executes the action if there is more than one page
             if self._pageindex.get() >= self._pagelimit.get():
+                self._select_first_visible_item()
                 return
             rowindex = self._rowindex.get()
             self._rowindex.set(rowindex + self.pagesize)
@@ -2166,6 +2167,7 @@ class Tableview(ttk.Frame):
             style="symbol.Link.TButton",
         )
         self.last.pack(side=RIGHT, fill=Y)
+
         self.next = ttk.Button(
             master=pageframe,
             text="›",
@@ -2181,6 +2183,7 @@ class Tableview(ttk.Frame):
             style="symbol.Link.TButton",
         )
         self.prev.pack(side=RIGHT, fill=Y)
+        
         self.first = ttk.Button(
             master=pageframe,
             text="«",
