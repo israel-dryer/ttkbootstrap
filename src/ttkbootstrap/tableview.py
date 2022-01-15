@@ -1411,6 +1411,7 @@ class Tableview(ttk.Frame):
 
         self._column_sort_header_reset()
         #self.goto_first_page() # needed?
+        self._rowindex.set(0)
         self.load_table_data()              #<-- reset tableview even when there is only one page
         self._select_first_visible_item()   #<-- reset tableview even when there is only one page
 
