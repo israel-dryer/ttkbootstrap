@@ -530,6 +530,7 @@ class Tableview(ttk.Frame):
         self._searchable = searchable
         self._stripecolor = stripecolor
         self._autofit = autofit
+        self._autofit_state = autofit
         self._autoalign = autoalign
         self._filtered = False
         self._sorted = False
@@ -1876,26 +1877,39 @@ class Tableview(ttk.Frame):
             self.view.tag_configure("striped", **kw)
 
     def autofit_columns(self):
-        """Autofit all columns in the current view"""
-        f = font.nametofont("TkDefaultFont")
-        pad = utility.scale_size(self, 20)
-        col_widths = []
+        if self._autofit_state == False:
+            """Autofit all columns in the current view"""
+            f = font.nametofont("TkDefaultFont")
+            pad = utility.scale_size(self, 20)
+            col_widths = []
 
-        # measure header sizes
-        for col in self.tablecolumns:
-            width = f.measure(f"{col._headertext} {DOWNARROW}") + pad
-            col_widths.append(width)
+            # measure header sizes
+            for col in self.tablecolumns:
+                width = f.measure(f"{col._headertext} {DOWNARROW}") + pad
+                col_widths.append(width)
 
-        for row in self.tablerows_visible:
-            values = row.values
-            for i, value in enumerate(values):
-                old_width = col_widths[i]
-                new_width = f.measure(str(value)) + pad
-                width = max(old_width, new_width)
-                col_widths[i] = width
+            for row in self.tablerows_visible:
+                values = row.values
+                for i, value in enumerate(values):
+                    old_width = col_widths[i]
+                    new_width = f.measure(str(value)) + pad
+                    width = max(old_width, new_width)
+                    col_widths[i] = width
 
-        for i, width in enumerate(col_widths):
-            self.view.column(i, width=width)
+            for i, width in enumerate(col_widths):
+                self.view.column(i, width=width)
+                
+            self._autofit_state = True
+        else:
+            self.fit_to_table_columns()
+            
+
+    def fit_to_table_columns(self):
+        width = int(self.winfo_width()/3)-1
+
+        for i in range(len(self.tablecolumns)):
+            self.view.column(i, width=width) 
+        self._autofit_state = False  
 
     # COLUMN AND HEADER ALIGNMENT
 
@@ -1914,12 +1928,6 @@ class Tableview(ttk.Frame):
             else:
                 self.view.column(i, anchor=W)
                 self.view.heading(i, anchor=W)
-
-    def fit_to_table_columns(self):
-        width = int(self.winfo_width()/3)-1
-
-        for i in range(len(self.tablecolumns)):
-            self.view.column(i, width=width)   
                 
     def align_column_left(self, event=None, cid=None):
         """Left align the column text. This can be triggered by
