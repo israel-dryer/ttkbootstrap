@@ -90,8 +90,9 @@ class ColorChooser(ttk.Frame):
         xf = yf = self.spectrum_point
 
         # create canvas widget and binding
-        canvas = ttk.Canvas(master, width=width, height=height)
+        canvas = ttk.Canvas(master, width=width, height=height, cursor='plus')
         canvas.bind("<B1-Motion>", self.on_spectrum_interaction, add="+")
+        canvas.bind("<Button-1>", self.on_spectrum_interaction, add="+")
 
         # add color points
         for x, colorx in enumerate(range(0, width, xf)):
@@ -308,6 +309,7 @@ class ColorChooser(ttk.Frame):
             tag = f'color{x}'
             canvas.create_rectangle(*bbox, fill=fill, width=0, tags=[tag])
             canvas.bind("<B1-Motion>", self.on_luminance_interaction, add="+")
+            canvas.bind("<Button-1>", self.on_luminance_interaction, add="+")
         return canvas
 
     def create_luminance_indicator(self):
