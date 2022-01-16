@@ -292,7 +292,11 @@ class ScrolledFrame(ttk.Frame):
         """Resize the canvas when frame is resized"""
         self.update_idletasks()
         self._canvas.config(scrollregion=self._canvas.bbox(ALL))
-        self._canvas.itemconfig(self._wid, width=self._canvas.winfo_width())
+        self._canvas.itemconfig(
+            self._wid, 
+            width=self._canvas.winfo_width(),
+            height=self._canvas.winfo_height()
+        )
 
     def hide_scrollbars(self, *_):
         """Hide the scrollbars."""
