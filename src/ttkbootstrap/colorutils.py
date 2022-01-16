@@ -160,7 +160,7 @@ def contrast_color(color, model=RGB, darkcolor='#000', lightcolor='#fff'):
         r, g, b = color
 
     luminance = ((0.299 * r) + (0.587 * g) + (0.114 * b))/255
-    if luminance < 0.5:
+    if luminance > 0.5:
         return darkcolor
     else:
         return lightcolor
