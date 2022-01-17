@@ -8,6 +8,7 @@ from collections import namedtuple
 from ttkbootstrap import colorutils
 from ttkbootstrap.colorutils import RGB, HSL, HEX, HUE, SAT, LUM
 from PIL import ImageColor
+from ttkbootstrap.dialogs.colordropper import ColorDropperDialog
 
 STD_SHADES = [0.9, 0.8, 0.7, 0.4, 0.3]
 STD_COLORS = [
@@ -17,6 +18,8 @@ STD_COLORS = [
 
 ColorValues = namedtuple('ColorValues', 'h s l r g b hex')
 ColorChoice = namedtuple('ColorChoice', 'rgb hsl hex')
+
+PEN = '🖊'
 
 
 @validator
@@ -90,7 +93,7 @@ class ColorChooser(ttk.Frame):
         xf = yf = self.spectrum_point
 
         # create canvas widget and binding
-        canvas = ttk.Canvas(master, width=width, height=height, cursor='plus')
+        canvas = ttk.Canvas(master, width=width, height=height, cursor='tcross')
         canvas.bind("<B1-Motion>", self.on_spectrum_interaction, add="+")
         canvas.bind("<Button-1>", self.on_spectrum_interaction, add="+")
 
@@ -497,12 +500,13 @@ class ColorChooserDialog(Dialog):
         >>> colors[0]
         (95, 176, 79)
         ```
-    
     """
 
     def __init__(self, parent=None, title="Color Chooser", initialcolor=None):
         super().__init__(parent=parent, title=title)
         self.initialcolor = initialcolor
+        self.dropper = ColorDropperDialog()
+        self.dropper.result.trace_add('write', self.trace_dropper_color)
 
     def create_body(self, master):
         self.colorchooser = ColorChooser(master, self.initialcolor)
@@ -510,7 +514,7 @@ class ColorChooserDialog(Dialog):
 
     def create_buttonbox(self, master):
         frame = ttk.Frame(master, padding=(5, 5))
-
+        
         # OK button
         ok = ttk.Button(frame, bootstyle=PRIMARY, width=10, text='OK')
         ok.bind("<Return>", lambda _: ok.invoke())
@@ -522,8 +526,21 @@ class ColorChooserDialog(Dialog):
         cancel.bind("<Return>", lambda _: cancel.invoke())
         cancel.configure(command=lambda b=cancel: self.on_button_press(b))
         cancel.pack(padx=2, side=RIGHT)
+
+        # color dropper
+        dropper = ttk.Button(frame, bootstyle='link', text=PEN)
+        dropper.pack(side=RIGHT, padx=2)
+        dropper['command'] = self.on_show_colordropper
                 
         frame.pack(side=BOTTOM, fill=X, anchor=S)
+
+    def on_show_colordropper(self):
+        self.dropper.show()
+
+    def trace_dropper_color(self, *_):
+        values = self.dropper.result.get()
+        self.colorchooser.hex.set(values[2])
+        self.colorchooser.sync_color_values('hex')
 
     def on_button_press(self, button):
         if button.cget('text') == 'OK':
