@@ -235,8 +235,8 @@ class MessageDialog(Dialog):
                 contents.
 
             icon (str):
-                A base64 image from the icons Property. `Icons.warning`,
-                `Icons.info`, etc...
+                An image path, path-like object or image data to be
+                displayed to the left of the text.
 
         Example:
 
@@ -261,9 +261,20 @@ class MessageDialog(Dialog):
         """Overrides the parent method; adds the message section."""
         container = ttk.Frame(master, padding=self._padding)
         if self._icon:
-            self._img = ttk.PhotoImage(data=self._icon)
-            icon_lbl = ttk.Label(container, image=self._img)
-            icon_lbl.pack(side=LEFT, padx=5)
+            try:
+                # assume this is image data
+                self._img = ttk.PhotoImage(data=self._icon)
+                icon_lbl = ttk.Label(container, image=self._img)
+                icon_lbl.pack(side=LEFT, padx=5)
+            except:
+                try:
+                    # assume this is a file path
+                    self._img = ttk.PhotoImage(file=self._icon)
+                    icon_lbl = ttk.Label(container, image=self._img)
+                    icon_lbl.pack(side=LEFT, padx=5)
+                except:
+                    # icon is neither data nor a valid file path
+                    print('MessageDialog icon is invalid')
 
         if self._message:
             for msg in self._message.split("\n"):
