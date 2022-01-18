@@ -49,7 +49,6 @@ class ColorDropperDialog:
         text_xoffset = utility.scale_size(self.toplevel, 50)
         text_yoffset = utility.scale_size(self.toplevel, 50)
         toplevel = ttk.Toplevel(master)
-        self._winsys = toplevel.tk.call('tk', 'windowingsystem')                
         toplevel.transient(master)
         toplevel.overrideredirect(True)
         toplevel.geometry(f'{width}x{height}')
@@ -90,6 +89,12 @@ class ColorDropperDialog:
         self.toplevel.grab_release()
         return self.result.get()
 
+    def on_right_click(self, _):
+        """Close the color dropper without saving any color information"""
+        self.zoom_toplevel.destroy()
+        self.toplevel.grab_release()
+        self.toplevel.destroy()
+
     def on_mouse_motion(self, event=None):
         """Callback for mouse motion"""
         if event is None:
@@ -123,11 +128,13 @@ class ColorDropperDialog:
         """Show the toplevel window"""
         self.toplevel = ttk.Toplevel()
         self.toplevel.wm_attributes('-fullscreen', True, '-alpha', 0.01)
+        self._winsys = self.toplevel.tk.call('tk', 'windowingsystem')          
         self.build_screenshot_canvas()
 
         # event binding
         self.toplevel.bind("<Motion>", self.on_mouse_motion, "+")
         self.toplevel.bind("<Button-1>", self.on_left_click, "+")
+        self.toplevel.bind("<Button-3>", self.on_right_click, "+")
 
         if self._winsys.lower() == 'x11':
             self.toplevel.bind("<Button-4>", self.on_mouse_wheel, "+")
