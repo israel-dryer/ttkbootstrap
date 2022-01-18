@@ -4046,13 +4046,36 @@ class StyleBuilderTTK:
         """
         # set platform specific checkfont
         winsys = self.style.tk.call("tk", "windowingsystem")
+        indicator = "✓"
         if winsys == "win32":
+            # Windows font
             fnt = ImageFont.truetype("seguisym.ttf", 120)
             font_offset = -20
+            # TODO consider using ImageFont.getsize for offsets
         elif winsys == "x11":
-            fnt = ImageFont.truetype("FreeSerif.ttf", 130)
-            font_offset = 10
+            # Linux fonts
+            try:
+                # this should be available on most Linux distros
+                fnt = ImageFont.truetype("FreeSerif.ttf", 130)
+                font_offset = 10
+            except:
+                pass # don't like nested try/block statements, so pass
+            try:
+                # this should be available as a backup on Linux 
+                # distros that don't have the FreeSerif.ttf file
+                fnt = ImageFont.truetype("DejaVuSans.ttf", 160)
+                font_offset = -15
+            except:
+                # If all else fails, use the default ImageFont
+                # this won't actually show anything in practice 
+                # because of how I'm scaling the image, but it 
+                # will prevent the program from crashing. I need 
+                # a better solution for a missing font
+                ImageFont.load_default()
+                font_offset = 0        
+                indicator = "x"
         else:
+            # Mac OS font
             fnt = ImageFont.truetype("LucidaGrande.ttc", 120)
             font_offset = -10
 
@@ -4102,7 +4125,7 @@ class StyleBuilderTTK:
             width=3,
         )
 
-        draw.text((20, font_offset), "✓", font=fnt, fill=check_color)
+        draw.text((20, font_offset), indicator, font=fnt, fill=check_color)
         on_img = ImageTk.PhotoImage(checkbutton_on.resize(size, Image.LANCZOS))
         on_name = util.get_image_name(on_img)
         self.theme_images[on_name] = on_img
