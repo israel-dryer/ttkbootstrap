@@ -31,7 +31,6 @@ class ColorDropperDialog:
         self.toplevel: ttk.Toplevel = None
         self.result = ttk.Variable()
 
-
     def build_screenshot_canvas(self):
         """Build the screenshot canvas"""
         self.screenshot_canvas = ttk.Canvas(
@@ -50,6 +49,7 @@ class ColorDropperDialog:
         text_xoffset = utility.scale_size(self.toplevel, 50)
         text_yoffset = utility.scale_size(self.toplevel, 50)
         toplevel = ttk.Toplevel(master)
+        self._winsys = toplevel.tk.call('tk', 'windowingsystem')                
         toplevel.transient(master)
         toplevel.overrideredirect(True)
         toplevel.geometry(f'{width}x{height}')
@@ -66,11 +66,15 @@ class ColorDropperDialog:
         """Zoom in and out on the image underneath the mouse
         TODO Cross platform testing needed
         """
-        delta = event.delta / -120
-        if delta > 0 and self.zoom_level < 10:
-            self.zoom_level += delta
-        elif delta < 0 and self.zoom_level > 0:
-            self.zoom_level += delta
+        if self._winsys.lower() == 'win32':
+            delta = -int(event.delta / 120)
+        elif self._winsys.lower() == 'aqua':
+            delta = -event.delta
+        elif event.num == 4:
+            delta = -1
+        elif event.num == 5:
+            delta = 1
+        self.zoom_level += delta
         self.on_mouse_motion()
 
     def on_left_click(self, _):
@@ -117,15 +121,19 @@ class ColorDropperDialog:
 
     def show(self):
         """Show the toplevel window"""
-        # TODO needs to be cross-platform for MAC & LINUX
         self.toplevel = ttk.Toplevel()
         self.toplevel.wm_attributes('-fullscreen', True, '-alpha', 0.01)
         self.build_screenshot_canvas()
 
         # event binding
-        self.toplevel.bind("<Motion>", self.on_mouse_motion, add="+")
-        self.toplevel.bind("<Button-1>", self.on_left_click, add="+")
-        self.toplevel.bind("<MouseWheel>", self.on_mouse_wheel, add="+")
+        self.toplevel.bind("<Motion>", self.on_mouse_motion, "+")
+        self.toplevel.bind("<Button-1>", self.on_left_click, "+")
+
+        if self._winsys.lower() == 'x11':
+            self.toplevel.bind("<Button-4>", self.on_mouse_wheel, "+")
+            self.toplevel.bind("<Button-5>", self.on_mouse_wheel, "+")
+        else:
+            self.toplevel.bind("<MouseWheel>", self.on_mouse_wheel, "+")
 
         # initial snip setup
         self.zoom_level = 2
@@ -141,6 +149,5 @@ class ColorDropperDialog:
         self.toplevel.grab_set()
         self.toplevel.lift('.')
         self.zoom_toplevel.lift(self.toplevel)
-        #self.toplevel.focus_force()   
 
         self.on_mouse_motion()
