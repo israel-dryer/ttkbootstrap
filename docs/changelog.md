@@ -6,6 +6,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 **Full Changelog**: 
 
+## [1.5.1](https://github.com/israel-dryer/ttkbootstrap/compare/v1.5.0...v1.5.1) - 2022-01-18
+Miscellaneous bug fixes
+
+### Fixed
+- Irregular behavior when mixing pack and place geometry managers inside the `ScrolledFrame` widget [#140](https://github.com/israel-dryer/ttkbootstrap/issues/140)
+- Missing font caused failure on certain linux distributions when drawing the checkbutton assets [#143](https://github.com/israel-dryer/ttkbootstrap/issues/143).
+
 ## [1.5.0](https://github.com/israel-dryer/ttkbootstrap/compare/v1.4.0...v1.5.0) - 2022-01-09
 New `validation` module and several bug-fixes for the `Tableview` widget.
 
