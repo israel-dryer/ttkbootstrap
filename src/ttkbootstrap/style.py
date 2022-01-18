@@ -4059,21 +4059,20 @@ class StyleBuilderTTK:
                 fnt = ImageFont.truetype("FreeSerif.ttf", 130)
                 font_offset = 10
             except:
-                pass # don't like nested try/block statements, so pass
-            try:
-                # this should be available as a backup on Linux 
-                # distros that don't have the FreeSerif.ttf file
-                fnt = ImageFont.truetype("DejaVuSans.ttf", 160)
-                font_offset = -15
-            except:
-                # If all else fails, use the default ImageFont
-                # this won't actually show anything in practice 
-                # because of how I'm scaling the image, but it 
-                # will prevent the program from crashing. I need 
-                # a better solution for a missing font
-                ImageFont.load_default()
-                font_offset = 0        
-                indicator = "x"
+                try:
+                    # this should be available as a backup on Linux 
+                    # distros that don't have the FreeSerif.ttf file
+                    fnt = ImageFont.truetype("DejaVuSans.ttf", 160)
+                    font_offset = -15
+                except:
+                    # If all else fails, use the default ImageFont
+                    # this won't actually show anything in practice 
+                    # because of how I'm scaling the image, but it 
+                    # will prevent the program from crashing. I need 
+                    # a better solution for a missing font
+                    ImageFont.load_default()
+                    font_offset = 0        
+                    indicator = "x"
         else:
             # Mac OS font
             fnt = ImageFont.truetype("LucidaGrande.ttc", 120)
