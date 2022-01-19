@@ -687,8 +687,9 @@ class Tableview(ttk.Frame):
 
         # apply table formatting
         if self._autofit:
-            self.autofit_columns()
             self._autofit_state = self._autofit
+            self.autofit_columns()
+
 
         if self._autoalign:
             self.autoalign_columns()
