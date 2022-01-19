@@ -1905,7 +1905,7 @@ class Tableview(ttk.Frame):
             
 
     def fit_to_table_columns(self):
-        width = int(self.winfo_width()/3)-1
+        width = int(self.winfo_width()/len(self.tablecolumns))-1
 
         for i in range(len(self.tablecolumns)):
             self.view.column(i, width=width) 
