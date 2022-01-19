@@ -691,6 +691,7 @@ class Tableview(ttk.Frame):
 
         if self._autoalign:
             self.autoalign_columns()
+            self._autofit_state = self._autofit
 
         if self._stripecolor is not None:
             self.apply_table_stripes(self._stripecolor)
@@ -1877,7 +1878,7 @@ class Tableview(ttk.Frame):
             self.view.tag_configure("striped", **kw)
 
     def autofit_columns(self):
-        if self._autofit_state == False:
+        if self._autofit_state == True:
             """Autofit all columns in the current view"""
             f = font.nametofont("TkDefaultFont")
             pad = utility.scale_size(self, 20)
@@ -1895,11 +1896,11 @@ class Tableview(ttk.Frame):
                     new_width = f.measure(str(value)) + pad
                     width = max(old_width, new_width)
                     col_widths[i] = width
-
+            
             for i, width in enumerate(col_widths):
                 self.view.column(i, width=width)
-                
-            self._autofit_state = True
+
+            self._autofit_state = False
         else:
             self.fit_to_table_columns()
             
@@ -1908,8 +1909,9 @@ class Tableview(ttk.Frame):
         width = int(self.winfo_width()/len(self.tablecolumns))-1
 
         for i in range(len(self.tablecolumns)):
-            self.view.column(i, width=width) 
-        self._autofit_state = False  
+            self.view.column(i, width=width)
+
+        self._autofit_state = True
 
     # COLUMN AND HEADER ALIGNMENT
 
