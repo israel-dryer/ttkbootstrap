@@ -1418,6 +1418,10 @@ class Tableview(ttk.Frame):
         self._rowindex.set(0)
         self.load_table_data()              #<-- reset tableview even when there is only one page
         self._select_first_visible_item()   #<-- reset tableview even when there is only one page
+        
+        if self._autofit:
+            self._autofit_state = self._autofit
+            self.autofit_columns()
 
     def filter_column_to_value(self, event=None, cid=None, value=None):
         """Hide all records except for records where the current
