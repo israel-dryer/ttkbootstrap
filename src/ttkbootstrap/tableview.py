@@ -690,7 +690,6 @@ class Tableview(ttk.Frame):
             self._autofit_state = self._autofit
             self.autofit_columns()
 
-
         if self._autoalign:
             self.autoalign_columns()
 
