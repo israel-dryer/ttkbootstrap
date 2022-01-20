@@ -2590,10 +2590,6 @@ class TableHeaderRightClickMenu(tk.Menu):
                 "label": "⇹  Fit columns to table",
                 "command": self.master.fit_to_table_columns,
             },
-            "fittocontent": {
-                "label": "↹  Fit columns to content",
-                "command": self.master.autofit_columns,
-            },
             "deletecolumn": {
                 "label": "🞨  Delete column",
                 "command": self.delete_column,
@@ -2604,8 +2600,6 @@ class TableHeaderRightClickMenu(tk.Menu):
             },
         }
         self.add_command(cnf=config["fittoscreen"])
-        self.add_command(cnf=config["fittocontent"])
-
         self.add_command(cnf=config["resettable"])
 
         # HIDE & SHOW
