@@ -347,6 +347,7 @@ class Toplevel(tkinter.Toplevel):
         """
         super().__init__(**kwargs)
         winsys = self.tk.call('tk', 'windowingsystem')
+        self.winsys = winsys
 
         if iconphoto != '':
             try:

@@ -73,6 +73,8 @@ nav:
   - API: 
     - api/index.md
     - 'dialogs module':
+      - api/dialogs/colorchooser.md
+      - api/dialogs/colordropper.md
       - api/dialogs/dialog.md
       - api/dialogs/messagedialog.md
       - api/dialogs/querydialog.md
