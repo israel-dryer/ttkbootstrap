@@ -1,7 +1,6 @@
-# Definitions
+# 定义
 
-The following standard themes are defined in the 
-`ttkbootstrap.themes.standard` module.
+以下标准主题在 `ttkbootstrap.themes.standard` 模块中定义。
 
 ```json
 {
