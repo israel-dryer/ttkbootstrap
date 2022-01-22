@@ -50,7 +50,10 @@ class ColorDropperDialog:
         text_yoffset = utility.scale_size(self.toplevel, 50)
         toplevel = ttk.Toplevel(master)
         toplevel.transient(master)
-        toplevel.overrideredirect(True)
+        if self._winsys == 'x11':
+            toplevel.attributes('-type', 'tooltip')
+        else:
+            toplevel.overrideredirect(True)
         toplevel.geometry(f'{width}x{height}')
         toplevel.lift()
         self.zoom_canvas = ttk.Canvas(
@@ -119,8 +122,10 @@ class ColorDropperDialog:
 
     def get_hover_color(self):
         """Get the color that is hovered over by the mouse cursor."""
-        r, g, b = self.zoom_data.getpixel(
-            (self.zoom_xoffset, self.zoom_yoffset))
+        x1, y1, x2, y2 = self.zoom_canvas.bbox('indicator')
+        x = x1 + (x2-x1)//2
+        y = y1 + (y2-y2)//2
+        r, g, b = self.zoom_data.getpixel((x, y))
         hx = colorutils.color_to_hex((r, g, b))
         return hx
 
@@ -128,7 +133,7 @@ class ColorDropperDialog:
         """Show the toplevel window"""
         self.toplevel = ttk.Toplevel()
         self.toplevel.wm_attributes('-fullscreen', True, '-alpha', 0.01)
-        self._winsys = self.toplevel.tk.call('tk', 'windowingsystem')          
+        self._winsys = self.toplevel.tk.call('tk', 'windowingsystem')   
         self.build_screenshot_canvas()
 
         # event binding
