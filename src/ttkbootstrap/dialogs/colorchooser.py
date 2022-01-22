@@ -518,13 +518,13 @@ class ColorChooserDialog(Dialog):
         frame = ttk.Frame(master, padding=(5, 5))
         
         # OK button
-        ok = ttk.Button(frame, bootstyle=PRIMARY, width=5, text='OK')
+        ok = ttk.Button(frame, bootstyle=PRIMARY, width=6, text='OK')
         ok.bind("<Return>", lambda _: ok.invoke())
         ok.configure(command=lambda b=ok: self.on_button_press(b))
         ok.pack(padx=2, side=RIGHT)
 
         # Cancel button
-        cancel = ttk.Button(frame, bootstyle=SECONDARY, width=5, text='Cancel')
+        cancel = ttk.Button(frame, bootstyle=SECONDARY, width=6, text='Cancel')
         cancel.bind("<Return>", lambda _: cancel.invoke())
         cancel.configure(command=lambda b=cancel: self.on_button_press(b))
         cancel.pack(padx=2, side=RIGHT)
