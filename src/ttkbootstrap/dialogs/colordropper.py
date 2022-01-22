@@ -23,7 +23,9 @@ class ColorDropperDialog:
 
     Zoom in and out on the zoom window by using the mouse wheel.
 
-    !!!warning "high resolution displays
+    ![](../../assets/dialogs/color-dropper.png)       
+
+    !!! warning "high resolution displays
         This widget may not function properly on high resolution
         displays if you are not using the application in high
         resolution mode. This is enabled automatically on Windows.
@@ -70,9 +72,9 @@ class ColorDropperDialog:
         """Zoom in and out on the image underneath the mouse
         TODO Cross platform testing needed
         """
-        if self._winsys.lower() == 'win32':
+        if self.toplevel.winsys.lower() == 'win32':
             delta = -int(event.delta / 120)
-        elif self._winsys.lower() == 'aqua':
+        elif self.toplevel.winsys.lower() == 'aqua':
             delta = -event.delta
         elif event.num == 4:
             delta = -1
