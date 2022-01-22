@@ -1,7 +1,5 @@
-# Gallery
+# 图库
 
-In this section you will find a growing list of ttkbootstrap projects meant to 
-provide inspiration or direction when creating your own applications. These are 
-meant to demonstrate design and are not necessarily fully functional applications.
+在本节中，您会发现越来越多的 ttkbootstrap 项目旨在创建自己的应用程序时提供灵感或方向。 这些旨在展示设计，不一定是功能齐全的应用程序。
 
-![file search image example](../assets/gallery/back_me_up.png)
+![文件搜索图像示例](../assets/gallery/back_me_up.png)
