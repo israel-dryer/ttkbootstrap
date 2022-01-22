@@ -8,39 +8,29 @@
 ![](https://img.shields.io/github/stars/israel-dryer/ttkbootstrap.svg)
 ![](https://img.shields.io/github/forks/israel-dryer/ttkbootstrap.svg)
 
-A supercharged theme extension for tkinter that enables on-demand modern 
-flat style themes inspired by [Bootstrap](https://getbootstrap.com/).
+tkinter的超强主题扩展，可实现受[Bootstrap](https://getbootstrap.com/)启发的按需现代平面风格主题。
 
-## 📦 Features
+## 📦 特点
 
-✔️ [**Built-in Themes**](themes/index.md)   
-Over a dozen curated [dark](themes/dark.md) and [light](themes/light.md) themes  
+✔️ [**内置主题**](themes/index.md)   
+十几个精心策划的[深色](themes/dark.md)和[浅色](themes/light.md)主题
 
-✔️ [**Pre-defined Styles:**](styleguide/index.md)  
-Loads of beautiful [pre-defined widget styles](styleguide/index.md) such 
-as **outline** and **round toggle** buttons.
+✔️ [**预定义样式：**](styleguide/index.md)  
+大量漂亮的[预定义构件样式](styleguide/index.md)，如**轮廓**和**圆形切换**按钮。
 
-✔️ [**Simple keyword API:**](gettingstarted/tutorial/#use-themed-widgets)  
-Apply colors and types using [simple keywords](gettingstarted/tutorial/#use-themed-widgets) 
-such as **primary** and **striped** instead of the legacy approach of 
-**primary.Striped.Horizontal.TProgressbar**. If you've used Bootstrap for
-web development, you are already familiar with this approach using css classes.
+✔️ [**简单的关键字 API：**](gettingstarted/tutorial/#use-themed-widgets)  
+使用[简单的关键字](gettingstarted/tutorial/#use-themed-widgets)（如**primary**和**striped**）应用颜色和类型，而不是使用主要的旧方法**Striped.Horizontal.TProgressbar**。如果您已经使用Bootstrap进行Web开发，那么您已经熟悉了使用css类的这种方法。
 
-✔️ [**Lots of new Widgets:**](api/widgets/dateentry)  
-ttkbootstrap comes with several new beautifully designed widgets such 
-as [Meter](api/widgets/meter), [DateEntry](api/widgets/dateentry), 
-and [Floodgauge](api/widgets/floodgauge). Additionally, [dialogs](api/dialogs/dialog) 
-are now themed and fully customizable.
+✔️ [**许多新的小部件：**](api/widgets/dateentry)  
+ttkbootstrap附带了几个设计精美的新小部件，如[Meter](api/widgets/meter)，[DateEntry](api/widgets/dateentry)和[Floodgauge](api/widgets/floodgauge)。 此外，[对话框](api/dialogs/dialog)现在具有主题和完全可自定义性。
 
-✔️ [**Built-in Theme Creator:**](themes/themecreator.md)  
-Want to create your own theme? Easy! ttkbootstrap includes a built-in 
-[theme creator](themes/themecreator.md) that enables you to easily build, 
-load, expore, and apply your own custom themes.
+✔️ [**内置主题创建器：**](themes/themecreator.md)  
+想要创建自己的主题？容易！ttkbootstrap附带一个内置的[主题创建器](themes/themecreator.md)，使您能够轻松构建，加载，浏览和应用自己的自定义主题。
 
-!!! warning "Breaking changes in 1.0"
-    Version 1.0 is a complete rebuild of the library. If you are using [version 0.5](https://github.com/israel-dryer/ttkbootstrap/tree/version-0.5) you may run into issues trying to import themes with the themes.json as this has been removed from 1.0. You can now import and save themes directly using the ttkcreator.
+!!! warning "1.0 中的重大更改"
+	版本 1.0 是库的完全重建。如果您使用的是[0.5版本(https://github.com/israel-dryer/ttkbootstrap/tree/version-0.5)，则在尝试使用themes.json导入主题时可能会遇到问题，因为这已从1.0中删除。现在，您可以使用 ttkcreator 直接导入和保存主题。
 
 
-## 🎨 Sample Themes
+## 🎨 示例主题
 
-![themes](./assets/themes/themes.gif)
+![主题](./assets/themes/themes.gif)
