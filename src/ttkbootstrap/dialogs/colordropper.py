@@ -1,5 +1,7 @@
 """
-    https://stackoverflow.com/questions/25467288/pils-imagegrab-is-capturing-at-the-wrong-resolution
+    NOTE: https://stackoverflow.com/questions/25467288/pils-imagegrab-is-capturing-at-the-wrong-resolution
+
+    !! This widget is not currently supported on Mac OS
 """
 import tkinter as tk
 import ttkbootstrap as ttk
@@ -50,7 +52,7 @@ class ColorDropperDialog:
         text_yoffset = utility.scale_size(self.toplevel, 50)
         toplevel = ttk.Toplevel(master)
         toplevel.transient(master)
-        if self._winsys == 'x11':
+        if self.toplevel.winsys == 'x11':
             toplevel.attributes('-type', 'tooltip')
         else:
             toplevel.overrideredirect(True)
@@ -131,9 +133,8 @@ class ColorDropperDialog:
 
     def show(self):
         """Show the toplevel window"""
-        self.toplevel = ttk.Toplevel()
-        self.toplevel.wm_attributes('-fullscreen', True, '-alpha', 0.01)
-        self._winsys = self.toplevel.tk.call('tk', 'windowingsystem')   
+        self.toplevel = ttk.Toplevel(alpha=0.01)
+        self.toplevel.wm_attributes('-fullscreen', True)
         self.build_screenshot_canvas()
 
         # event binding
@@ -141,7 +142,7 @@ class ColorDropperDialog:
         self.toplevel.bind("<Button-1>", self.on_left_click, "+")
         self.toplevel.bind("<Button-3>", self.on_right_click, "+")
 
-        if self._winsys.lower() == 'x11':
+        if self.toplevel.winsys.lower() == 'x11':
             self.toplevel.bind("<Button-4>", self.on_mouse_wheel, "+")
             self.toplevel.bind("<Button-5>", self.on_mouse_wheel, "+")
         else:
