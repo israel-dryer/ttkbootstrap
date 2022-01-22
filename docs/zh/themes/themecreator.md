@@ -1,56 +1,53 @@
-# TTK Creator
+# TTK创建器
 
-TTK Creator is packaged with ttkbootstrap so that you can modify, save, 
-export, and import themes that you have created.
+TTK创建器 与 ttkbootstrap 打包，以便您可以修改、保存、导出和导入您创建的主题。
 
-To run the program, type the following command in the console _after_ you
-have installed **ttkbootstrap**:
+要运行该程序，请 _在您安装**ttkbootstrap**后_ 在控制台中键入以下命令：
 
 ```shell
 python -m ttkcreator
 ```
 
-![creator](../assets/ttkcreator/creator.png)
+![TTK创建器](../assets/ttkcreator/creator.png)
 
-## Create a new theme
+## 创建一个新主题
 
-All of the controls for changing the theme are on the left-side control 
-frame. 
+所有用于更改主题的控件都在左侧控制框架上。
 
-1. Name your theme using the **name** entry
+1. 使用 **name** 条目命名您的主题
 
-2. Select a **base theme**; this will setup the _initial_ colors
+2. 选择一个**基础主题**；这将设置 _初始_ 颜色
 
-3. Select a color for each color _keyword_ using one of two options
+3. 使用两个选项之一为每个颜色 _关键字_ 选择一种颜色
     
-    * Click the 🎨 button to choose a color from the color dialog
-    * Or, type a _hexadecimal_ or valid color _name_ 
+    *单击🎨按钮从颜色对话框中选择一种颜色
+    * 或者，输入 _十六进制_ 或有效颜色 _名称_
 
-4. Click the **Save** button
+4. 点击**保存**按钮
 
-Your theme is now saved in the file `ttkbootstrap.themes.user.py`
+您的主题现在保存在文件“ttkbootstrap.themes.user.py”中
 
-!!! tip "Reset your theme"
-    If you want to reset your color choices, you can click the 
-    **Reset** option from the top menu to reset all of the colors
-    to the **base theme** colors.
+!!! tip "重置主题"
+    如果要重置颜色选择，可以单击
+    **重置**选项从顶部菜单重置所有颜色
+    到**基本主题**颜色。
 
-## Import user themes
+## 导入用户主题
 
-If you have a user themes file that is in the format specified below, you can 
-import that file into ttkbootstrap. 
+如果您有以下指定格式的用户主题文件，您可以
+将该文件导入 ttkbootstrap。
 
-1. Click the **Import** button on the top menu
+1.单击顶部菜单上的**导入**按钮
 
-2. Select the themes file you wish to import, then click **Ok** to import
+2.选择你要导入的主题文件，然后点击**确定**导入
 
 !!! warning
-    Importing a user themes file will overwrite the existing user defined
-    themes within ttkbootstrap; so make sure you **export** your existing
-    theme set if you wish to keep it
+    导入用户主题文件将覆盖现有的用户定义
+    ttkbootstrap 中的主题；所以确保先**导出**现有的
+    你想要保留的主题
 
-The `user.py` file contains a dictionary of user defined themes. The file that
-you import must match the pattern illustrated below.
+`user.py` 文件包含用户定义主题的字典。
+您导入的那个文件必须符合下图所示的模式。
 
 ```python
 USER_THEMES = {
@@ -77,15 +74,14 @@ USER_THEMES = {
 }
 ```
 
-## Export user themes
+## 导出用户主题
 
-User defined themes can be exported into the format specified above
+用户定义的主题可以导出为上面指定的格式
 
-1. Click the **Export** button from the top menu
+1.单击顶部菜单中的**导出**按钮
 
-2. Navigate to the location that you wish to export
+2. 导航到您要导出的位置
 
-3. Select a valid file name; the extension is `.py` by default
+3.选择一个有效的文件名；默认情况下，扩展名是`.py`
 
-4. Click **Ok** to save the exported settings
-    
+4.点击**确定**保存导出的设置
