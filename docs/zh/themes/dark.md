@@ -1,19 +1,18 @@
-# Dark themes
+# 深色主题
 
-The following dark themes are largly inspired by [https://bootswatch.com/](https://bootswatch.com/)
+以下深色主题很大程度上受到 [https://bootswatch.com/](https://bootswatch.com/) 的启发
 
-![solar theme](../assets/themes/solar.png)
-Source of [inspiration](https://bootswatch.com/solar/)
+![solar 主题](../assets/themes/solar.png)
+[灵感来源](https://bootswatch.com/solar/)
 
-![superhero theme](../assets/themes/superhero.png)
-Source of [inspiration](https://bootswatch.com/superhero/)
+![superhero 主题](../assets/themes/superhero.png)
+[灵感来源](https://bootswatch.com/superhero/)
 
-![darkly theme](../assets/themes/darkly.png)
-Source of [inspiration](https://bootswatch.com/darkly/)
+![darkly 主题](../assets/themes/darkly.png)
+[灵感来源](https://bootswatch.com/darkly/)
 
-![cyborg theme](../assets/themes/cyborg.png)
-Source of [inspiration](https://bootswatch.com/cyborg/)
+![cyborg 主题](../assets/themes/cyborg.png)
+[灵感来源](https://bootswatch.com/cyborg/)
 
-![vapor theme](../assets/themes/vapor.png)
-Source of [inspiration](https://bootswatch.com/vapor/)
-
+![vapor 主题](../assets/themes/vapor.png)
+[灵感来源](https://bootswatch.com/vapor/)
