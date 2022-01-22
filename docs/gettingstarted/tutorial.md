@@ -1,22 +1,18 @@
-# Tutorial
+# 教程
 
-## Creating an application
+## 创建应用程序
 
-You can use two approaches when building a ttkbootstrap application. The first 
-is familiar if you've used **tkinter** and **ttk**. The second uses a new 
-[Window](../../api/window/window) class to simplify the whole process.
+在构建 ttkbootstrap 应用程序时，可以使用两种方法。如果您使用过**tkinter**和**ttk**，则第一个是熟悉的。第二个使用新的[Window](../../api/window/window)类来简化整个过程。
 
-### The traditional approach
+### 传统方法
 
-This approach uses a familiar pattern. However, there are a few differences:
+此方法使用熟悉的模式。但是，存在一些差异：
 
-- import `ttkbootstrap` instead of `ttk`
-- use the `bootstyle` parameter to add keywords instead of using the `style` parameter.
+- 导入`ttkbootstrap`而不是`ttk`
+- 使用`bootstyle`参数添加关键字，而不是使用`style`参数。
 
-!!! note "Constants are preferred"
-    I prefer constants in the code over over strings. However, feel free to 
-    use a coding style that you feel comfortable with. The bootstyle keyword 
-    API is very flexible, so make sure you [check out the syntax options](#keyword-usage).
+!!! note "常量是首选"
+    我更喜欢代码中的常量而不是字符串。但是，请随意使用您觉得舒服的编码风格。bootstyle关键字API非常灵活，因此请务必[查看语法选项](#keyword-usage)。
 
 ```python
 import tkinter as tk
@@ -34,19 +30,12 @@ b2.pack(side=LEFT, padx=5, pady=10)
 root.mainloop()
 ```
 
-The code above will produce this window with two buttons.
+上面的代码将生成带有两个按钮的此窗口。
 
-![simple usage window](../assets/tutorial/simple-usage.png)
+![简单窗口示例](../assets/tutorial/simple-usage.png)
 
-### A new approach
-
-The same result can be produced by using the new [Window](../../api/window/window) 
-class, which you can read about in the API documentation. The difference may 
-seem small at first, but as you will see, the `Window` class uses parameters to 
-set many of the attributes and qualities that you can only set with methods
-when using the `Tk` class. Additionally, the `Style` object is 
-automatically attached to the `Window` object as you will see in later 
-examples.
+### 新方法
+可以使用新的[Window](../../api/window/window)类生成相同的结果，您可以在 API 文档中阅读有关该类的信息。起初，差异可能看起来很小，但正如您将看到的，`Window`类使用参数来设置许多属性和质量，而这些属性和质量只能在使用`Tk`类时使用方法进行设置。此外，`Style`对象会自动附加到`Window`对象，如后面的示例所示。
 
 ```python
 import ttkbootstrap as ttk
@@ -63,35 +52,28 @@ b2.pack(side=LEFT, padx=5, pady=10)
 root.mainloop()
 ```
 
-## Choosing a theme
-
-The default theme is **litera**, but you can start the application with any of 
-the [built-in themes](../themes/index.md) by using the `Style` object 
-independently or via the `Window` class.
+## 选择主题
+默认主题是**litera**，但您可以通过单独使用`Style`对象或通过`Window`类使用任何[内置主题](../themes/index.md)来启动应用程序。
 
 ```python
 import ttkbootstrap as ttk
 
-# traditional approach
+# 传统方法
 root = ttk.Tk()
 style = ttk.Style("darkly")
 
-# new approach
+# 新方法
 root = ttk.Window(themename="darkly")
 ```
 
-## Use themed widgets
+## 使用主题小部件
 
-ttkbootstrap widgets have [dozens of predefined styles](../styleguide/index.md) 
-which are applied using **keywords** that modify both the **type** and **color** 
-of the widget. The actual color values are defined for each theme.
+ttkbootstrap 小部件具有[数十种预定义的样式](../styleguide/index.md) ，这些样式使用修改小部件**类型**和**颜色***的**关键字**进行应用。每个主题都定义了实际的颜色值。
 
-For example, using the keyword **outline** would draw a button with an outline 
-_type_, but using the keyword **info** would change the _color_ of the outline
-and text.
+例如，使用关键字**outline**将绘制一个具有外框_类型_的按钮，但使用关键字**info**将更改外框和文本的_颜色_。
 
-### Style Colors
-The example below shows a button for every color.
+### 样式颜色
+下面的示例显示了每种颜色的按钮。
 
 ```python
 import ttkbootstrap as ttk
@@ -126,14 +108,11 @@ b8.pack(side=LEFT, padx=5, pady=5)
 root.mainloop()
 ```
 
-![button colors](../assets/tutorial/button-colors.png)
+![按钮颜色]](../assets/tutorial/button-colors.png)
 
-I could have created those buttons in a simpler fashion by using the 
-`Style.colors` object, which contains a reference to all colors used in the 
-theme, and which is also an _iterator_. 
+我可以通过`Style.colors`对象使用更简单的方式创建这些按钮，其中包含对所有颜色的引用主题，它也是一个_迭代器_。
 
-As for the `Style` object, you can either create the style object using the 
-`Style` class, or use the `style` property on the `Window` object.
+至于`Style`对象，您可以使用`Style`类，或使用`Window`对象的`style`属性。
 
 ```python
 import ttkbootstrap as ttk
@@ -146,11 +125,11 @@ for color in root.style.colors:
     b.pack(side=LEFT, padx=5, pady=5)
 ```
 
-### Style Types
+### 样式类型
 
-The **keyword** can control the **type** of widget that is presented. Consider 
-the following example, which shows a **solid** and an **outline** button. They
-are both buttons, but of different **types**.
+**keyword**可以控制显示的小部件的**类型**。考虑
+以下示例显示了一个**solid**和一个**outline**按钮。它们
+都是按钮，但具有不同的**类型**。
 
 ```python
 import ttkbootstrap as ttk
@@ -166,20 +145,16 @@ b2.pack(side=LEFT, padx=5, pady=10)
 
 root.mainloop()
 ```
-As you can see, by adding the **outline** keyword, the button has been
-transformed from a **solid** to an **outline** button type.
+如您所见，通过添加**outline**关键字，按钮已
+从**solid**转换为**outline**按钮类型。
 
-![button styles](../assets/tutorial/solid-outline-button-styles.png)
+![按钮样式](../assets/tutorial/solid-outline-button-styles.png)
 
-### Keyword usage
+### 关键字用法
 
-On final note on using keywords... the **bootstyle** parameter is VERY flexible. 
-It doesn't really matter how the keyword looks. There is a regex expression in 
-the background that parses the input and converts it into the appropriate ttk 
-style. You can pass in a _string_ of keywords, or an _iterable_ of keywords
-such as with a `list` or `tuple`.
+关于使用关键字的最后一点……**bootstyle**参数非常灵活。关键字的外观并不重要。后台有一个正则表达式，用于分析输入并将其转换为适当的 ttk 样式。您可以传入一串关键字，也可以传入可迭代的关键字，例如使用`列表`或`元组`。
 
-All of the following variations are legal and will result in the same style.
+以下所有变体都是合法的，并且将产生相同的样式。
 
 * `"info-outline"`
 * `"infooutline"`
@@ -188,9 +163,7 @@ All of the following variations are legal and will result in the same style.
 * `("info", "outline")`
 * `(INFO, OUTLINE)`
 
-!!! note "The recommended keyword separator is a dash"
-    If using **strings** for keywords, it is recommended to separate the 
-    keywords using a dash when possible, as in the _first_ example above. 
-    
-    If using **constants**, and you are using more than one keyword, you will use 
-    a `list` or `tuple` as in the _last_ example above.
+!!! note "建议的关键字分隔符为短划线"
+    如果使用**字符串**作为关键字，建议尽可能使用短划线分隔关键字，如上面的_第一个_示例所示。
+
+    如果使用**常量**，并且您使用的是多个关键字，则您应该使用`列表`或`元组`，如上面的_最后一个_示例所示。
