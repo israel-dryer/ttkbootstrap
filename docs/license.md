@@ -1,6 +1,6 @@
-# License
+# 授权许可
 
-**MIT License**
+**MIT 许可**
 
 Copyright © 2021-2022 Israel Dryer
 
