@@ -1,26 +1,16 @@
-# Legacy widgets
+# 旧版小部件
 
-ttkbootstrap applies a default style to legacy tkinter widgets so that they do
-not look out-of-place when used with themed ttk widgets. The `Text` and `Canvas`
-widgets are commonly used with themed `ttk` widgets for example.
+ttkbootstrap 将默认样式应用于旧版 tkinter 小部件，以便它们与主题化的 ttk 小部件一起使用时不会显得格格不入。 
+例如，`Text` 和 `Canvas`小部件通常与主题化的`ttk`小部件一起使用。
 
-## Themed legacy widgets
+## 主题化旧版小部件
 
-To ensure the styles are updated when the theme is changed, each legacy widget
-is registered with the `Publisher` which sends an update message to each legacy
-widget when the theme is changed in order to initiate a theme configuration on
-the widget. 
+为了确保在主题更改时更新样式，每个旧版小部件都向“发布者”注册，当主题更改时，发布者会向每个旧版小部件发送更新消息，以便在小部件上启动主题配置的修改。
 
-## Customizing legacy widgets
-While the theming functionality is appropriate in most cases, it also prevents
-the user from making custom changes to the widget. However, in version 1.2 an
-`autostyle` parameter was added to all legacy widgets. By default, `autostyle`
-is implicitly **True**. This means, that ttkbootstrap will handle all of the
-styling on legacy widgets. However, if you set the `autostyle` parameter to
-**False**, the widget styling will be delegated to the user. This will enable
-you to make custom changes to legacy widgets.
+## 自定义旧版小部件
+虽然主题功能在大多数情况下是合适的，但它也会阻止用户对小部件进行自定义更改。但是，在 1.2 版中，所有旧版小部件都添加了一个 `autostyle` 参数。默认情况下，`autostyle` 是隐含的 **True**。这意味着，ttkbootstrap 将处理遗留小部件上的所有样式。但是，如果您将 `autostyle` 参数设置为 **False**，则小部件样式将委托给用户。这将使您能够对旧版小部件进行自定义更改。
 
-!!! warning "Turning off autostyle should be used with caution"
-    If you turn off autostyle on a widget, it will no longer receive theme
-    change updates; no styling will be applied by default, including fonts,
-    relief, etc...
+!!! warning "应谨慎使用关闭自动样式"
+    如果您在小部件上关闭自动样式，它将不再接收主题
+    更改更新；默认情况下不会应用任何样式，包括字体，
+    浮雕之类的……
