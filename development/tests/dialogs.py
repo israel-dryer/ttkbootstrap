@@ -10,8 +10,8 @@ from ttkbootstrap.icons import Icon
 
 # Messagebox.show_error("Messagebox.show_error")
 # Messagebox.show_info("Messagebox.show_info")
-result = Messagebox.show_question("Messagebox.show_question")
-print(result)
+# result = Messagebox.show_question("Messagebox.show_question")
+
 # Messagebox.show_warning("Messagebox.show_warning")
 
 # Querybox.get_date(title="Querybox.get_date")
@@ -19,3 +19,5 @@ print(result)
 # Querybox.get_integer("Querybox.get_integer")
 # Querybox.get_string("Querybox.get_string")
 # Querybox.get_font(title="Querybox.get_font")
+result = Querybox.get_color()
+print(result)
