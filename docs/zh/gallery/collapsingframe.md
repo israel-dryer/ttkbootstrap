@@ -1,21 +1,19 @@
-# Collapsing Frame
-This example demonstrates how to build a collapsing frame widget. Each `Frame` 
-added to the widget can be assigned a title and style. Various bootstyles are
-applied to each option group. 
+# 折叠框架
+此示例演示如何构建折叠框架小部件。 添加到小部件的每个`框架`都可以分配一个标题和样式。 各种引导样式应用于每个选项组。
 
-![file search image example](../assets/gallery/collapsing_frame.png)
+![文件搜索图像示例](../assets/gallery/collapsing_frame.png)
  
-## Style Summary
-The theme used is **litera**.
+## 风格总结
+使用的主题是**litera**。
 
-| Item              | Class             | Bootstyle |
-| ---               | ---               | --- |
-| Option group 1    | `CollapsingFrame` | primary |
-| Option group 2    | `CollapsingFrame` | danger |
-| Option group 3    | `CollapsingFrame` | success |
+| 项目 | 类 | 配色风格 |
+| --- | --- | --- |
+| 选项组 1 | `CollapsingFrame` | primary |
+| 选项组 2 | `CollapsingFrame` | danger |
+| 选项组 3 | `CollapsingFrame` | success|
 
-## Example Code
-[Run this code live](https://replit.com/@israel-dryer/collapsing-frame#main.py) on repl.it
+## 示例代码
+[在 repl.it 上实时运行此代码](https://replit.com/@israel-dryer/collapsing-frame#main.py)
 
 ```python
 from pathlib import Path
