@@ -1452,6 +1452,37 @@ class Querybox:
     from the end user."""
 
     @staticmethod
+    def get_color(
+        parent=None,
+        title="Color Chooser",
+        initialcolor=None,
+    ):
+        """Show a color picker and return the select color when the 
+        user pressed OK.
+
+        Parameters:
+
+            parent (Widget):
+                The parent widget.
+
+            title (str):
+                Optional text that appears on the titlebar.
+
+            initialcolor (str):
+                The initial color to display in the 'Current' color 
+                frame.
+
+        Returns:
+
+            Tuple[rgb, hsl, hex]                
+                The selected color in various colors models.
+        """
+        from ttkbootstrap.dialogs.colorchooser import ColorChooserDialog
+        cd = ColorChooserDialog(parent, title, initialcolor)
+        cd.show()
+        return cd.result
+
+    @staticmethod
     def get_date(
         parent=None,
         title=" ",
