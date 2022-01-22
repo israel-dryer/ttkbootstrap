@@ -1,40 +1,38 @@
-# Style guide
+# 样式指南
 
-This is a style guide for applying ttkbootstrap styles. All ttkbootstrap styles
-are applied using the **bootstyle** parameter that has been injected into the
-**ttk** widget constructor.
+这是应用 ttkbootstrap 样式的样式指南。所有 ttkbootstrap 样式
+使用已注入的 **bootstyle** 参数应用
+**ttk** 小部件构造函数。
 
-ℹ️ [Learn more about styling legacy widgets](legacywidgets.md).
+ℹ️ [了解更多关于样式化遗留小部件的信息](legacywidgets.md)。
 
-## Colors
+## 颜色
 
-The following color options are available on _all_ widgets, except where 
-excluded, and can be used along with widget specific style keywords which 
-are described for each widget. Keywords are not required for default styles. 
+以下颜色选项可用于 _所有_ 小部件，除非说明，并且可以与小部件特定的已被描述的样式关键字一起使用。默认样式不需要关键字。
 
-The actual color value of the keywords below are 
-[defined in each specific theme](../themes/definitions.md), but the 
-descriptions below are what you can expect typically from each color keyword.
+下面关键字的实际颜色值为
+[在每个特定主题中定义](../themes/definitions.md)，但是
+下面的描述是您通常可以从每个颜色关键字中获得的内容。
 
-| Keyword      | Description                           | Example |
-| ---          | ---                                   | ---      |
-| primary    | The default color for most widgets    | ![primary](../assets/colors/primary.png) |
-| secondary  | Typically a _gray_ color              | ![secondary](../assets/colors/secondary.png) |
-| success    | Typically a _green_ color             | ![success](../assets/colors/success.png) |
-| info       | Typically a _blue_ color              | ![info](../assets/colors/info.png) |
-| warning    | Typically an _orange_ color           | ![warning](../assets/colors/warning.png) |
-| danger     | Typically a _red_ color               | ![danger](../assets/colors/danger.png) |
-| light      | Typically a _light gray_ color        | ![light](../assets/colors/light.png) |
-| dark       | Typically a _dark gray_ color         | ![dark](../assets/colors/dark.png) |
+|关键字 |说明 |示例 |
+| --- | --- | --- |
+|主要 |大多数小部件的默认颜色 | ![主要](../assets/colors/primary.png) |
+|次要 |通常是 _灰色_ | ![次要](../assets/colors/secondary.png) |
+|成功|通常是 _绿色_  | ![成功](../assets/colors/success.png) |
+|信息 |通常是 _蓝色_| ![信息](../assets/colors/info.png) |
+|警告 |通常是 _橙色_  | ![警告](../assets/colors/warning.png) |
+|危险 |通常是 _红色_ | ![危险](../assets/colors/danger.png) |
+|亮色 |通常是 _浅灰色_  | ![亮色](../assets/colors/light.png) |
+|深色 |通常是 _深灰色_ | ![深色](../assets/colors/dark.png) |
 
 
 ```python
-# info colored button style
+# 信息彩色按钮样式
 Button(bootstyle="info")
 
-# warning colored scale style
+# 警告彩色刻度样式
 Scale(bootstyle="warning")
 
-# success colored progressbar
+# 成功彩色进度条
 Progressbar(bootstyle="success")
 ```
