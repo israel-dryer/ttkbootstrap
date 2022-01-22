@@ -1460,6 +1460,8 @@ class Querybox:
         """Show a color picker and return the select color when the 
         user pressed OK.
 
+        ![](../../assets/dialogs/querybox-get-color.png)        
+
         Parameters:
 
             parent (Widget):

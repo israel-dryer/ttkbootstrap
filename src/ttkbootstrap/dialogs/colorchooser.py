@@ -33,7 +33,10 @@ def validate_color(event):
 
 
 class ColorChooser(ttk.Frame):
-    """A class which creates a color chooser widget"""
+    """A class which creates a color chooser widget
+    
+    ![](../../assets/dialogs/querybox-get-color.png)    
+    """
 
     def __init__(self, master, initialcolor=None, padding=None):
         super().__init__(master, padding=padding)
@@ -486,6 +489,8 @@ class ColorChooserDialog(Dialog):
     return a namedtuple that contains the color values for rgb, hsl, and
     hex. These values can be accessed by indexing the tuple or by using
     the named fields.
+
+    ![](../../assets/dialogs/querybox-get-color.png)        
     
     Examples:
 
