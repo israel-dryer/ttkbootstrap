@@ -1,22 +1,21 @@
-# Simple Data Entry
-This simple data entry form accepts user input and then prints it to the screen 
-when submitted. 
+# 简单的数据输入
+这个简单的数据输入表单接受用户输入，然后在提交时将其打印到屏幕上。
 
-![file search image example](../assets/gallery/simple_data_entry_light.png)
+![文件搜索图像示例](../assets/gallery/simple_data_entry_light.png)
 
-![file search image example](../assets/gallery/simple_data_entry_dark.png)
+![文件搜索图像示例](../assets/gallery/simple_data_entry_dark.png)
 
-## Style Summary
-The two examples above use the themes **litera** and **superhero**.
+## 风格总结
+上面的两个示例使用了 **litera** 和 **superhero** 主题。
 
-| Item          | Class     | Bootstyle |
-| ---           | ---       | ---|
-| Submit Button | `Button`  | success |
-| Cancel Button | `Button`  | danger |
-| Inputs        | `Entry`   | default |
+| 项目 | 类 | 配色风格 |
+| --- | --- | ---|
+| 提交按钮 | `Button` | success|
+| 取消按钮 | `Button` | danger |
+| 输入 | `Entry` | default |
 
-## Example Code
-[Run this code live](https://replit.com/@israel-dryer/data-entry#main.py) on repl.it
+## 示例代码
+[在 repl.it 上实时运行此代码](https://replit.com/@israel-dryer/data-entry#main.py)
 
 ```python
 import ttkbootstrap as ttk
