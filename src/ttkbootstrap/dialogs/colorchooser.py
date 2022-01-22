@@ -60,7 +60,8 @@ class ColorChooser(ttk.Frame):
 
         # widget sizes (adjusted by widget scaling)
         self.spectrum_height = utility.scale_size(self, 240)
-        self.spectrum_width = utility.scale_size(self, 480)
+        self.spectrum_width = utility.scale_size(self, 530) # looks better on Mac OS
+        #self.spectrum_width = utility.scale_size(self, 480)
         self.spectrum_point = utility.scale_size(self, 12)
 
         # build widgets
@@ -517,23 +518,23 @@ class ColorChooserDialog(Dialog):
         frame = ttk.Frame(master, padding=(5, 5))
         
         # OK button
-        ok = ttk.Button(frame, bootstyle=PRIMARY, width=10, text='OK')
+        ok = ttk.Button(frame, bootstyle=PRIMARY, width=5, text='OK')
         ok.bind("<Return>", lambda _: ok.invoke())
         ok.configure(command=lambda b=ok: self.on_button_press(b))
         ok.pack(padx=2, side=RIGHT)
 
         # Cancel button
-        cancel = ttk.Button(frame, bootstyle=SECONDARY, width=10, text='Cancel')
+        cancel = ttk.Button(frame, bootstyle=SECONDARY, width=5, text='Cancel')
         cancel.bind("<Return>", lambda _: cancel.invoke())
         cancel.configure(command=lambda b=cancel: self.on_button_press(b))
         cancel.pack(padx=2, side=RIGHT)
 
-        # color dropper
-        dropper = ttk.Label(frame, text=PEN, font=('-size 16'))
-        ToolTip(dropper, 'color dropper') # add tooltip
-        dropper.pack(side=RIGHT, padx=2)
-        #dropper['command'] = self.on_show_colordropper
-        dropper.bind("<Button-1>", self.on_show_colordropper)
+        # color dropper (not supported on Mac OS)
+        if self._toplevel.winsys != 'aqua':
+            dropper = ttk.Label(frame, text=PEN, font=('-size 16'))
+            ToolTip(dropper, 'color dropper') # add tooltip
+            dropper.pack(side=RIGHT, padx=2)
+            dropper.bind("<Button-1>", self.on_show_colordropper)
                 
         frame.pack(side=BOTTOM, fill=X, anchor=S)
 
