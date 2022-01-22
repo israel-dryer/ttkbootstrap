@@ -1,33 +1,22 @@
-# Equalizer
-This example demonstrates the use of styles to differentiate scale functions. 
-Now for some comments on the code; because I wanted the scale value to be 
-reflected in a label below the scale, this application is a lot more 
-complicated than it really needs to be due to some oddities of the `Scale` 
-implementation. The `Scale` widget outputs a double type, which means that 
-in order to display a nice rounded integer, that number has to be converted 
-when updated. Fortunately, the scale widget has a command parameter for setting 
-a callback. The callback will get the scale value, which can then be converted 
-into a nice clean format. 
+# 均衡器
+此示例演示了使用样式来区分scale函数。现在对代码进行一些评论；因为我希望比例值反映在比例下方的标签中，所以这个应用程序比它真正需要的复杂得多，因为 `Scale` 实现的一些奇怪之处。 `Scale` 小部件输出一个 double 类型，这意味着为了显示一个漂亮的舍入整数，该数字必须在更新时进行转换。幸运的是，scale 小部件有一个用于设置回调的命令参数。回调将获取比例值，然后可以将其转换为干净的格式。
 
-![file search image example](../assets/gallery/equalizer.png)
+![文件搜索图像示例](../assets/gallery/equalizer.png)
 
-## Style Summary
-The theme used is **litera**.
+## 风格总结
+使用的主题是**litera**。
 
-| Item          | Class     | Bootstyle |
-| ---           | ---       | ---       |
-| Volume Scale  | `Scale`   | success   |
-| Gain Scale    | `Scale`   | success   |
-| Other Scales  | `Scale`   | info      |
+|项目 |类 |配色风格 |
+| --- | --- | --- |
+|音量滑动块 | `Scale` |success|
+|总滑动块 | `Scale` |success|
+|其它滑动块 | `Scale` |info |
 
 !!! note
-    For a vertical orientation, the `from_` parameter corresponds to the top 
-    and `to` corresponds to the bottom of the widget, so you’ll need to take 
-    this into account when you set the minimum and maximum numbers for your 
-    scale range.
+    对于垂直方向，`from_` 参数对应于顶部，而 `to` 对应于小部件的底部，因此在设置缩放范围的最小和最大数字时需要考虑到这一点。
 
-## Example Code
-[Run this code live](https://replit.com/@israel-dryer/equalizer#main.py) on repl.it
+## 示例代码
+[在 repl.it 上实时运行此代码](https://replit.com/@israel-dryer/equalizer#main.py)
 
 ```python
 import ttkbootstrap as ttk
