@@ -9,6 +9,7 @@ from ttkbootstrap import colorutils
 from ttkbootstrap.colorutils import RGB, HSL, HEX, HUE, SAT, LUM
 from PIL import ImageColor
 from ttkbootstrap.dialogs.colordropper import ColorDropperDialog
+from ttkbootstrap.tooltip import ToolTip
 
 STD_SHADES = [0.9, 0.8, 0.7, 0.4, 0.3]
 STD_COLORS = [
@@ -19,7 +20,7 @@ STD_COLORS = [
 ColorValues = namedtuple('ColorValues', 'h s l r g b hex')
 ColorChoice = namedtuple('ColorChoice', 'rgb hsl hex')
 
-PEN = '🖊'
+PEN = '✛'
 
 
 @validator
@@ -528,13 +529,15 @@ class ColorChooserDialog(Dialog):
         cancel.pack(padx=2, side=RIGHT)
 
         # color dropper
-        dropper = ttk.Button(frame, bootstyle='link', text=PEN)
+        dropper = ttk.Label(frame, text=PEN, font=('-size 16'))
+        ToolTip(dropper, 'color dropper') # add tooltip
         dropper.pack(side=RIGHT, padx=2)
-        dropper['command'] = self.on_show_colordropper
+        #dropper['command'] = self.on_show_colordropper
+        dropper.bind("<Button-1>", self.on_show_colordropper)
                 
         frame.pack(side=BOTTOM, fill=X, anchor=S)
 
-    def on_show_colordropper(self):
+    def on_show_colordropper(self, event):
         self.dropper.show()
 
     def trace_dropper_color(self, *_):
