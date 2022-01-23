@@ -24,10 +24,7 @@ plugins:
 markdown_extensions:
   - admonition
   - def_list
-  - pymdownx.superfences
-  - pymdownx.keys
-  - pymdownx.snippets
-
+  
 extra:
   social:
   - icon: fontawesome/brands/github
