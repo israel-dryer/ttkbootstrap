@@ -1,14 +1,24 @@
 """
     A partial wrapper on the tcl/tk msgcat (Tcl message catalog)
-    https://www.tcl.tk/man/tcl/TclCmd/msgcat.html#M7    
+
+    The MessageCatalog provides a set of functions that can be used to 
+    manage multi-lingual user interfaces. Text strings are defined in a 
+    “message catalog” which is independent from the application, and 
+    which can be edited or localized without modifying the application 
+    source code. New languages or locales may be provided by adding a 
+    new file to the message catalog.
+
+    https://www.tcl.tk/man/tcl/TclCmd/msgcat.html    
 """
 import tkinter as tk
 from pathlib import Path
 from tkinter import _get_default_root as default_root
 
-CUSTOM_MSGS = ['zh_cn', ]
-CUSTOM_PATH = Path(__file__).parent / 'msgs'
+MSGS_PATH = (Path(__file__).parent / 'msgs').as_posix()
 
+def load_custom_localities():
+    """Check if in a locality with custom messages. If so, load."""
+    MessageCatalog.load(MSGS_PATH)
 
 class MessageCatalog:
 
@@ -47,9 +57,9 @@ class MessageCatalog:
 
     @staticmethod
     def locale(newlocale=None):
-        """"This function sets the locale to newLocale. If newLocale is 
+        """"This function sets the locale to newlocale. If newlocale is 
         omitted, the current locale is returned, otherwise the current 
-        locale is set to newLocale. The initial locale defaults to the 
+        locale is set to newlocale. The initial locale defaults to the 
         locale specified in the user's environment. See LOCALE AND 
         SUBLOCALE SPECIFICATION for a description of the locale string 
         format.
@@ -92,10 +102,10 @@ class MessageCatalog:
 
     def load(dirname):
         """Searches the specified directory for files that match the 
-        language specifications returned by `msgcat_mcpreferences`. Each 
-        file located is sourced. The file extension is .msg. The number 
-        of message files which matched the specification and were loaded is 
-        returned.
+        language specifications returned by `msgcat_mcpreferences`. 
+        Each file located is sourced. The file extension is .msg. The 
+        number of message files which matched the specification and 
+        were loaded is returned.
 
         Parameters:
 
@@ -107,9 +117,9 @@ class MessageCatalog:
         root.tk.eval(f'{command} {dirname}')
 
     def set(locale, src, translated=None):
-        """Sets the translation for src-string to translate-string in the 
-        specified locale. If translate-string is not specified, src-string 
-        is used for both. The function returns translate-string.
+        """Sets the translation for src to translated in the specified 
+        locale. If translated is not specified, src is used for both. 
+        The function returns translated.
 
         Parameters:
 
@@ -148,19 +158,16 @@ class MessageCatalog:
         command = 'namespace eval ::tk ::msgcat::mcmset'
         return int(root.tk.eval(f'{command} {locale} {" ".join(args)}'))
 
-    def max(src1, src2):
-        """Given several source strings, `msgcat_mcmax` returns the length 
-        of the longest translated string. This is useful when designing 
-        localized GUIs, which may require that all buttons, for example, 
-        be a fixed width (which will be the width of the widest button).
+    def max(*src):
+        """Given several source strings, max returns the length of the 
+        longest translated string. This is useful when designing localized 
+        GUIs, which may require that all buttons, for example, be a fixed 
+        width (which will be the width of the widest button).
 
         Parameters:
 
-            src1 (str):
-                The first string to compare.
-
-            src2 (str):
-                The second string to compare.
+            *src (str):
+                A series of strings to compare
 
         Returns:
 
@@ -169,20 +176,40 @@ class MessageCatalog:
         """
         root = default_root("max")
         command = 'namespace eval ::tk ::msgcat::mcmax'
-        return int(root.tk.eval(f'{command} {src1} {src2}'))
+        return int(root.tk.eval(f'{command} {" ".join(src)}'))
 
 
 if __name__ == '__main__':
 
-    # set the locale to chinese
 
     app = tk.Tk()
     
-    MessageCatalog.load(CUSTOM_PATH.as_posix())
-    MessageCatalog.locale('zh_cn')
+    MessageCatalog.locale('es')
+    load_custom_localities()
 
-    text = MessageCatalog.translate('yes')
-    tk.Button(text=text).pack()
+    words = [
+        "Ok",
+        "Cancel",
+        "Continue",
+        "Retry",
+        "Delete",
+        "Next",
+        "Prev",
+        "Yes",
+        "No",
+        "Open",
+        "Close",
+        "Add",
+        "Remove",
+        "Submit",
+        "Family",
+        "Weight",
+        "Slant",
+        "Effects",
+        "Preview",
+        "Size",
+    ]
 
-    app.mainloop()
-    
+    for word in words:
+        t = MessageCatalog.translate(word)
+        print(word, t)
