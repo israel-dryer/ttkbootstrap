@@ -3,7 +3,7 @@ repo_url: https://github.com/israel-dryer/ttkbootstrap
 repo_name: israel-dryer/ttkbootstrap
 
 theme:
-  name: material
+  name: mkdocs
   features:
     - navigation.tracking
     - navigation.tabs
@@ -20,17 +20,10 @@ theme:
 
 plugins:
   - search
-  - mkdocstrings:
-      handlers:
-          python:
-              setup_commands:
-                - import sys
-                - sys.path.append("src")
 
 markdown_extensions:
   - admonition
   - def_list
-  - pymdownx.details
   - pymdownx.superfences
   - pymdownx.keys
   - pymdownx.snippets
