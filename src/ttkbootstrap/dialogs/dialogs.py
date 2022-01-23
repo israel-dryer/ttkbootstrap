@@ -898,14 +898,14 @@ class FontDialog(Dialog):
 
         self._update_font_preview()
 
-        self._families = []
+        self._families = set()
         for f in font.families():
             if f and not f.startswith("@") and "emoji" not in f.lower():
-                self._families.append(f)
+                self._families.add(f)
 
     def create_body(self, master):
         width = utility.scale_size(master, 600)
-        height = utility.scale_size(master, 375)
+        height = utility.scale_size(master, 415)
         self._toplevel.geometry(f"{width}x{height}")
 
         family_size_frame = ttk.Frame(master, padding=10)
