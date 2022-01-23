@@ -15,6 +15,7 @@ from ttkbootstrap import utility
 from ttkbootstrap.icons import Icon
 from ttkbootstrap.constants import *
 from tkinter import BaseWidget
+from ttkbootstrap.localization import MessageCatalog
 
 
 class Dialog(BaseWidget):
@@ -175,7 +176,7 @@ class MessageDialog(Dialog):
         self,
         message,
         title=" ",
-        buttons=["Cancel:secondary", "OK:primary"],
+        buttons=None,
         command=None,
         width=50,
         parent=None,
@@ -183,6 +184,7 @@ class MessageDialog(Dialog):
         default=None,
         padding=(20, 20),
         icon=None,
+        **kwargs
     ):
         """
         Parameters:
@@ -235,8 +237,11 @@ class MessageDialog(Dialog):
                 contents.
 
             icon (str):
-                A base64 image from the icons Property. `Icons.warning`,
-                `Icons.info`, etc...
+                An image path, path-like object or image data to be
+                displayed to the left of the text.
+
+            **kwargs (Dict):
+                Other optional keyword arguments.
 
         Example:
 
@@ -249,21 +254,40 @@ class MessageDialog(Dialog):
         """
         super().__init__(parent, title, alert)
         self._message = message
-        self._buttons = buttons
         self._command = command
         self._width = width
         self._alert = alert
         self._default = (default,)
         self._padding = padding
         self._icon = icon
+        self._localize = kwargs.get('localize')
+
+        if buttons is None:
+            self._buttons = [
+                f"{MessageCatalog.translate('Cancel')}:secondary",
+                f"{MessageCatalog.translate('OK')}:primary"
+            ]
+        else:
+            self._buttons = buttons
 
     def create_body(self, master):
         """Overrides the parent method; adds the message section."""
         container = ttk.Frame(master, padding=self._padding)
         if self._icon:
-            self._img = ttk.PhotoImage(data=self._icon)
-            icon_lbl = ttk.Label(container, image=self._img)
-            icon_lbl.pack(side=LEFT, padx=5)
+            try:
+                # assume this is image data
+                self._img = ttk.PhotoImage(data=self._icon)
+                icon_lbl = ttk.Label(container, image=self._img)
+                icon_lbl.pack(side=LEFT, padx=5)
+            except:
+                try:
+                    # assume this is a file path
+                    self._img = ttk.PhotoImage(file=self._icon)
+                    icon_lbl = ttk.Label(container, image=self._img)
+                    icon_lbl.pack(side=LEFT, padx=5)
+                except:
+                    # icon is neither data nor a valid file path
+                    print('MessageDialog icon is invalid')
 
         if self._message:
             for msg in self._message.split("\n"):
@@ -285,6 +309,9 @@ class MessageDialog(Dialog):
             else:
                 text = cnf[0]
                 bootstyle = "secondary"
+
+            if self._localize == True:
+                text = MessageCatalog.translate(text)
 
             btn = ttk.Button(frame, bootstyle=bootstyle, text=text)
             btn.bind("<Return>", lambda _: btn.invoke())
@@ -419,7 +446,7 @@ class QueryDialog(Dialog):
         submit = ttk.Button(
             master=frame,
             bootstyle="primary",
-            text="Submit",
+            text=MessageCatalog.translate("Submit"),
             command=self.on_submit,
         )
         submit.pack(padx=5, side=RIGHT)
@@ -428,7 +455,7 @@ class QueryDialog(Dialog):
         cancel = ttk.Button(
             master=frame,
             bootstyle="secondary",
-            text="Cancel",
+            text=MessageCatalog.translate("Cancel"),
             command=self.on_cancel,
         )
         cancel.pack(padx=5, side=RIGHT)
@@ -466,8 +493,9 @@ class QueryDialog(Dialog):
         try:
             self._result = self._datatype(self._result)
         except ValueError:
+            msg = 'Should be of data type'
             Messagebox.ok(
-                message=f"Should be of data type `{self._datatype}`",
+                message=f"{msg} `{self._datatype}`",
                 title="Invalid data type",
             )
             return False
@@ -475,8 +503,9 @@ class QueryDialog(Dialog):
         # max value range
         if self._maxvalue is not None:
             if self._result > self._maxvalue:
+                msg = 'Number cannot be greater than'
                 Messagebox.ok(
-                    message=f"Number cannot be greater than {self._maxvalue}",
+                    message=f"{msg} {self._maxvalue}",
                     title="Out of Range",
                 )
                 return False
@@ -484,8 +513,9 @@ class QueryDialog(Dialog):
         # min value range
         if self._minvalue is not None:
             if self._result < self._minvalue:
+                msg = 'Number cannot be less than'
                 Messagebox.ok(
-                    message=f"Number cannot be less than {self._minvalue}",
+                    message=f"{msg} {self._minvalue}",
                     title="Out of Range",
                 )
                 return False
@@ -774,7 +804,7 @@ class DatePickerDialog:
     @_selection_callback
     def on_next_month(self):
         """Increment the calendar data to the next month"""
-        year, month = calendar._nextmonth(self.date.year, self.date.month)
+        year, month = self._nextmonth(self.date.year, self.date.month)
         self.date = datetime(year=year, month=month, day=1).date()
 
     @_selection_callback
@@ -787,7 +817,7 @@ class DatePickerDialog:
     @_selection_callback
     def on_prev_month(self):
         """Decrement the calendar to the previous year"""
-        year, month = calendar._prevmonth(self.date.year, self.date.month)
+        year, month = self._prevmonth(self.date.year, self.date.month)
         self.date = datetime(year=year, month=month, day=1).date()
 
     @_selection_callback
@@ -815,6 +845,20 @@ class DatePickerDialog:
             xpos = self.root.winfo_screenwidth() // 2 - width
             ypos = self.root.winfo_screenheight() // 2 - height
             self.root.geometry(f"+{xpos}+{ypos}")
+
+    @staticmethod
+    def _nextmonth(year, month):
+        if month == 12:
+            return year+1, 1
+        else:
+            return year, month+1
+
+    @staticmethod
+    def _prevmonth(year, month):
+        if month == 1:
+            return year-1, 12
+        else:
+            return year, month-1            
 
 
 class FontDialog(Dialog):
@@ -878,7 +922,7 @@ class FontDialog(Dialog):
         ok_btn = ttk.Button(
             master=container,
             bootstyle="primary",
-            text="OK",
+            text=MessageCatalog.translate("OK"),
             command=self._on_submit,
         )
         ok_btn.pack(side=RIGHT, padx=5)
@@ -887,7 +931,7 @@ class FontDialog(Dialog):
         cancel_btn = ttk.Button(
             master=container,
             bootstyle="secondary",
-            text="Cancel",
+            text=MessageCatalog.translate("Cancel"),
             command=self._on_cancel,
         )
         cancel_btn.pack(side=RIGHT, padx=5)
@@ -897,7 +941,7 @@ class FontDialog(Dialog):
         container = ttk.Frame(master)
         container.pack(fill=BOTH, expand=YES, side=LEFT)
 
-        header = ttk.Label(container, text="Font Family", font="TkHeadingFont")
+        header = ttk.Label(container, text=MessageCatalog.translate("Family"), font="TkHeadingFont")
         header.pack(fill=X, pady=(0, 2), anchor=N)
 
         listbox = ttk.Treeview(
@@ -934,7 +978,7 @@ class FontDialog(Dialog):
         container = ttk.Frame(master)
         container.pack(side=LEFT, fill=Y, padx=(10, 0))
 
-        header = ttk.Label(container, text="Size", font="TkHeadingFont")
+        header = ttk.Label(container, text=MessageCatalog.translate("Size"), font="TkHeadingFont")
         header.pack(fill=X, pady=(0, 2), anchor=N)
 
         sizes_listbox = ttk.Treeview(container, height=7, columns=[0], show="")
@@ -965,7 +1009,7 @@ class FontDialog(Dialog):
         container = ttk.Frame(master, padding=padding)
         container.pack(fill=X, padx=2, pady=2, anchor=N)
 
-        weight_lframe = ttk.Labelframe(container, text="Weight", padding=5)
+        weight_lframe = ttk.Labelframe(container, text=MessageCatalog.translate("Weight"), padding=5)
         weight_lframe.pack(side=LEFT, fill=X, expand=YES)
         opt_normal = ttk.Radiobutton(
             master=weight_lframe,
@@ -983,7 +1027,7 @@ class FontDialog(Dialog):
         )
         opt_bold.pack(side=LEFT, padx=5, pady=5)
 
-        slant_lframe = ttk.Labelframe(container, text="Slant", padding=5)
+        slant_lframe = ttk.Labelframe(container, text=MessageCatalog.translate("Slant"), padding=5)
         slant_lframe.pack(side=LEFT, fill=X, padx=10, expand=YES)
         opt_roman = ttk.Radiobutton(
             master=slant_lframe,
@@ -1001,7 +1045,7 @@ class FontDialog(Dialog):
         )
         opt_italic.pack(side=LEFT, padx=5, pady=5)
 
-        effects_lframe = ttk.Labelframe(container, text="Effects", padding=5)
+        effects_lframe = ttk.Labelframe(container, text=MessageCatalog.translate("Effects"), padding=5)
         effects_lframe.pack(side=LEFT, padx=(2, 0), fill=X, expand=YES)
         opt_underline = ttk.Checkbutton(
             master=effects_lframe, text="underline", variable=self._underline
@@ -1016,7 +1060,7 @@ class FontDialog(Dialog):
         container = ttk.Frame(master, padding=padding)
         container.pack(fill=BOTH, expand=YES, anchor=N)
 
-        header = ttk.Label(container, text="Preview", font="TkHeadingFont")
+        header = ttk.Label(container, text=MessageCatalog.translate("Preview"), font="TkHeadingFont")
         header.pack(fill=X, pady=2, anchor=N)
 
         content = "The quick brown fox jumped over the lazy dog."
@@ -1105,7 +1149,7 @@ class Messagebox:
             parent=parent,
             buttons=["OK:primary"],
             icon=Icon.info,
-            **kwargs,
+            localize=True
         )
         sd.show()
 
@@ -1140,6 +1184,7 @@ class Messagebox:
             buttons=["OK:primary"],
             icon=Icon.warning,
             alert=True,
+            localize=True,
             **kwargs,
         )
         sd.show()
@@ -1175,6 +1220,7 @@ class Messagebox:
             buttons=["OK:primary"],
             icon=Icon.error,
             alert=True,
+            localize=True,
             **kwargs,
         )
         sd.show()
@@ -1233,6 +1279,7 @@ class Messagebox:
             buttons=buttons,
             icon=Icon.question,
             alert=True,
+            localize=True,
             **kwargs,
         )
         sd.show()
@@ -1271,6 +1318,7 @@ class Messagebox:
             parent=parent,
             alert=alert,
             buttons=["OK:primary"],
+            localize=True,
             **kwargs,
         )
         sd.show()
@@ -1309,7 +1357,7 @@ class Messagebox:
                 window is closed without pressing a button.
         """
         sd = MessageDialog(
-            title=title, message=message, parent=parent, alert=alert, **kwargs
+            title=title, message=message, parent=parent, alert=alert, localize=True, **kwargs
         )
         sd.show()
         return sd.result
@@ -1353,6 +1401,7 @@ class Messagebox:
             parent=parent,
             buttons=["No", "Yes:primary"],
             alert=alert,
+            localize=True,
             **kwargs,
         )
         sd.show()
@@ -1397,6 +1446,7 @@ class Messagebox:
             parent=parent,
             alert=alert,
             buttons=["Cancel", "No", "Yes:primary"],
+            localize=True,
             **kwargs,
         )
         sd.show()
@@ -1441,6 +1491,7 @@ class Messagebox:
             parent=parent,
             alert=alert,
             buttons=["Cancel", "Retry:primary"],
+            localize=True,
             **kwargs,
         )
         sd.show()
@@ -1450,6 +1501,39 @@ class Messagebox:
 class Querybox:
     """This class contains various static methods that request data
     from the end user."""
+
+    @staticmethod
+    def get_color(
+        parent=None,
+        title="Color Chooser",
+        initialcolor=None,
+    ):
+        """Show a color picker and return the select color when the 
+        user pressed OK.
+
+        ![](../../assets/dialogs/querybox-get-color.png)        
+
+        Parameters:
+
+            parent (Widget):
+                The parent widget.
+
+            title (str):
+                Optional text that appears on the titlebar.
+
+            initialcolor (str):
+                The initial color to display in the 'Current' color 
+                frame.
+
+        Returns:
+
+            Tuple[rgb, hsl, hex]                
+                The selected color in various colors models.
+        """
+        from ttkbootstrap.dialogs.colorchooser import ColorChooserDialog
+        cd = ColorChooserDialog(parent, title, initialcolor)
+        cd.show()
+        return cd.result
 
     @staticmethod
     def get_date(
@@ -1683,7 +1767,3 @@ class Querybox:
         dialog = FontDialog(parent=parent, **kwargs)
         dialog.show()
         return dialog.result
-
-
-if __name__ == "__main__":
-    MessageDialog("You are ok", icon=Icon.info).show()

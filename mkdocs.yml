@@ -4,12 +4,20 @@ repo_name: israel-dryer/ttkbootstrap
 
 theme:
   name: material
+  language: en
   features:
     - navigation.tracking
     - navigation.tabs
     - navigation.indexes
   icon:
     logo: material/view-dashboard
+  alternate:
+    - name: English
+      link: /en/ 
+      lang: en
+    - name: 简体中文
+      link: /zh/
+      lang: zh
 
 plugins:
   - search
@@ -19,6 +27,20 @@ plugins:
               setup_commands:
                 - import sys
                 - sys.path.append("src")
+  - i18n:
+      default_language: en
+      languages:
+        en: English
+        zh: 简体中文      
+      nav_translations:
+        zh:
+          Home: 家
+          "Getting started": 开始
+          "Style guide": 样式指南
+          "API": 应用程序接口
+          "Themes": 主题
+          "Gallery": 画廊
+          "Cookbook": 食谱
 
 markdown_extensions:
   - admonition
@@ -73,6 +95,8 @@ nav:
   - API: 
     - api/index.md
     - 'dialogs module':
+      - api/dialogs/colorchooser.md
+      - api/dialogs/colordropper.md
       - api/dialogs/dialog.md
       - api/dialogs/messagedialog.md
       - api/dialogs/querydialog.md

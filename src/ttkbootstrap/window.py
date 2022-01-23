@@ -31,7 +31,7 @@ class Window(tkinter.Tk):
         self,
         title="ttkbootstrap",
         themename="litera",
-        iconphoto=None,
+        iconphoto='',
         size=None,
         position=None,
         minsize=None,
@@ -53,9 +53,13 @@ class Window(tkinter.Tk):
                 The name of the ttkbootstrap theme to apply to the
                 application.
 
-            iconphoto (PhotoImage):
-                The titlebar icon. This image is applied to all future
-                toplevels as well.
+            iconphoto (str):
+                A path to the image used for the titlebar icon.
+                Internally this is passed to the `Tk.iconphoto` method
+                and the image will be the default icon for all windows.
+                A ttkbootstrap image is used by default. To disable
+                this default behavior, set the value to `None` and use
+                the `Tk.iconphoto` or `Tk.iconbitmap` methods directly.
 
             size (Tuple[int, int]):
                 The width and height of the application window.
@@ -115,17 +119,26 @@ class Window(tkinter.Tk):
             utility.enable_high_dpi_awareness()
 
         super().__init__()
-        winsys = self.tk.call('tk', 'windowingsystem')
+        self.winsys = self.tk.call('tk', 'windowingsystem')
 
         if scaling is not None:
             utility.enable_high_dpi_awareness(self, scaling)
 
-        try:
-            self._icon = iconphoto or tkinter.PhotoImage(data=Icon.icon)
-            self.iconphoto(True, self._icon)
-        except tkinter.TclError:
-            # icon photo has already been applied in previous window creation
-            pass
+        if iconphoto is not None:
+            if iconphoto == '':
+                # the default ttkbootstrap icon
+                self._icon = tkinter.PhotoImage(data=Icon.icon)
+                self.iconphoto(True, self._icon)
+            else:
+                try:
+                    # the user provided an image path
+                    self._icon = tkinter.PhotoImage(file=iconphoto)
+                    self.iconphoto(True, self._icon)
+                except tkinter.TclError:
+                    # The fallback icon if the user icon fails.
+                    print('iconphoto path is bad; using default image.')
+                    self._icon = tkinter.PhotoImage(data=Icon.icon)
+                    self.iconphoto(True, self._icon)
 
         self.title(title)
 
@@ -156,7 +169,7 @@ class Window(tkinter.Tk):
             self.overrideredirect(1)
         
         if alpha is not None:
-            if winsys == 'x11':
+            if self.winsys == 'x11':
                 self.wait_visibility(self)
             self.attributes("-alpha", alpha)
 
@@ -244,7 +257,7 @@ class Toplevel(tkinter.Toplevel):
     def __init__(
         self,
         title="ttkbootstrap",
-        iconphoto=None,
+        iconphoto='',
         size=None,
         position=None,
         minsize=None,
@@ -264,9 +277,10 @@ class Toplevel(tkinter.Toplevel):
             title (str):
                 The title that appears on the application titlebar.
 
-            iconphoto (PhotoImage):
-                The titlebar icon. This image is applied to all future
-                toplevels as well.
+            iconphoto (str):
+                A path to the image used for the titlebar icon.
+                Internally this is passed to the `Tk.iconphoto` method.
+                By default the application icon is used.
 
             size (Tuple[int, int]):
                 The width and height of the application window.
@@ -332,11 +346,17 @@ class Toplevel(tkinter.Toplevel):
                 Other optional keyword arguments.
         """
         super().__init__(**kwargs)
-        winsys = self.tk.call('tk', 'windowingsystem')
+        self.winsys = self.tk.call('tk', 'windowingsystem')
 
-        if iconphoto:
-            self._icon = iconphoto or tkinter.PhotoImage(data=Icon.icon)
-            self.iconphoto(False, self._icon)
+        if iconphoto != '':
+            try:
+                # the user provided an image path
+                self._icon = tkinter.PhotoImage(file=iconphoto)
+                self.iconphoto(True, self._icon)
+            except tkinter.TclError:
+                # The fallback icon if the user icon fails.
+                print('iconphoto path is bad; using default image.')
+                pass
 
         self.title(title)
 
@@ -367,18 +387,18 @@ class Toplevel(tkinter.Toplevel):
             self.overrideredirect(1)
         
         if windowtype is not None:
-            if winsys == 'x11':
+            if self.winsys == 'x11':
                 self.attributes("-type", windowtype)
         
         if topmost:
             self.attributes("-topmost", 1)
         
         if toolwindow:
-            if winsys == 'win32':
+            if self.winsys == 'win32':
                 self.attributes("-toolwindow", 1)
         
         if alpha is not None:
-            if winsys == 'x11':
+            if self.winsys == 'x11':
                 self.wait_visibility(self)
             self.attributes("-alpha", alpha)
 
