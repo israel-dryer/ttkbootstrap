@@ -804,7 +804,7 @@ class DatePickerDialog:
     @_selection_callback
     def on_next_month(self):
         """Increment the calendar data to the next month"""
-        year, month = calendar._nextmonth(self.date.year, self.date.month)
+        year, month = self._nextmonth(self.date.year, self.date.month)
         self.date = datetime(year=year, month=month, day=1).date()
 
     @_selection_callback
@@ -817,7 +817,7 @@ class DatePickerDialog:
     @_selection_callback
     def on_prev_month(self):
         """Decrement the calendar to the previous year"""
-        year, month = calendar._prevmonth(self.date.year, self.date.month)
+        year, month = self._prevmonth(self.date.year, self.date.month)
         self.date = datetime(year=year, month=month, day=1).date()
 
     @_selection_callback
@@ -845,6 +845,20 @@ class DatePickerDialog:
             xpos = self.root.winfo_screenwidth() // 2 - width
             ypos = self.root.winfo_screenheight() // 2 - height
             self.root.geometry(f"+{xpos}+{ypos}")
+
+    @staticmethod
+    def _nextmonth(year, month):
+        if month == 12:
+            return year+1, 1
+        else:
+            return year, month+1
+
+    @staticmethod
+    def _prevmonth(year, month):
+        if month == 1:
+            return year-1, 12
+        else:
+            return year, month-1            
 
 
 class FontDialog(Dialog):
