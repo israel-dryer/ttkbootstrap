@@ -8,7 +8,7 @@
 ![](https://img.shields.io/github/forks/israel-dryer/ttkbootstrap.svg)
 
 # ttkbootstrap
-English | [中文](https://github.com/israel-dryer/ttkbootstrap/blob/master/README_zh.md)
+English | [中文](README_zh.md)
 
 A supercharged theme extension for tkinter that enables on-demand modern flat style themes inspired by Bootstrap. 
 
