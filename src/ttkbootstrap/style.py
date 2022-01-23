@@ -489,6 +489,10 @@ class Style(ttk.Style):
         Style.instance = self
         self.theme_use(theme)
 
+        # apply localization
+        from ttkbootstrap import localization
+        localization.initialize_localities()        
+
     @property
     def colors(self):
         """An object that contains the colors used for the current
