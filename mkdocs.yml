@@ -4,6 +4,7 @@ repo_name: israel-dryer/ttkbootstrap
 
 theme:
   name: material
+  language: en
   features:
     - navigation.tracking
     - navigation.tabs
@@ -26,6 +27,21 @@ plugins:
               setup_commands:
                 - import sys
                 - sys.path.append("src")
+  - i18n:
+      default_language: !ENV [DEFAULT_LANGUAGE, "en"]
+      default_language_only: !ENV [DEFAULT_LANGUAGE_ONLY, false]
+      languages:
+        en: English
+        zh: 简体中文      
+      nav_translations:
+        zh:
+          Home: 家
+          "Getting started": 开始
+          "Style guide": 样式指南
+          "API": 应用程序接口
+          "Themes": 主题
+          "Gallery": 画廊
+          "Cookbook": 食谱
 
 markdown_extensions:
   - admonition
