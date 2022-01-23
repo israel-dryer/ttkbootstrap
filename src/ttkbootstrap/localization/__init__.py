@@ -16,6 +16,7 @@ from tkinter import _get_default_root as default_root
 
 MSGS_PATH = (Path(__file__).parent / 'msgs').as_posix()
 
+
 def initialize_localities():
     """Check if in a locality with custom messages. If so, load."""
     MessageCatalog.load(MSGS_PATH)
