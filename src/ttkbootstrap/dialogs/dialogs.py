@@ -1753,9 +1753,3 @@ class Querybox:
         dialog = FontDialog(parent=parent, **kwargs)
         dialog.show()
         return dialog.result
-
-
-if __name__ == "__main__":
-    
-    # testing
-    MessageDialog("testing", icon=Icon.info).show()
