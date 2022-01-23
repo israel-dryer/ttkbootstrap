@@ -10,7 +10,6 @@
 
     https://www.tcl.tk/man/tcl/TclCmd/msgcat.html    
 """
-import tkinter as tk
 from pathlib import Path
 from tkinter import _get_default_root as default_root
 
@@ -53,8 +52,8 @@ class MessageCatalog:
                 The translated string.
         """
         root = default_root()
-        command = 'namespace eval ::tk ::msgcat::mc'
-        return root.tk.eval(f'{command} {src} {" ".join(args)}')
+        command = '::msgcat::mc'
+        return root.tk.eval(f'{command} "{src}"')
 
     @staticmethod
     def locale(newlocale=None):
@@ -78,7 +77,7 @@ class MessageCatalog:
                 string.
         """
         root = default_root()
-        command = 'namespace eval ::tk ::msgcat::mclocale'
+        command = '::msgcat::mclocale'
         return root.tk.eval(f'{command} {newlocale or ""}')
 
     def preferences():
@@ -94,7 +93,7 @@ class MessageCatalog:
                 Locales preferred by the user.
         """
         root = default_root("preferences")
-        command = 'namespace eval ::tk ::msgcat::mcpreferences'
+        command = '::msgcat::mcpreferences'
         items = root.tk.eval(command).split(' ')
         if len(items) > 0:
             return items[0:-1]
@@ -113,8 +112,8 @@ class MessageCatalog:
             dirname (str):
                 The directory path of the msg files.
         """
-        root = default_root("load")
-        command = 'namespace eval ::tk ::msgcat::mcload'
+        root = default_root()
+        command = '::msgcat::mcload'
         root.tk.eval(f'{command} {dirname}')
 
     def set(locale, src, translated=None):
@@ -133,8 +132,8 @@ class MessageCatalog:
             translated (str):
                 The translated string.
         """
-        root = default_root("set")
-        command = 'namespace eval ::tk ::msgcat::mcset'
+        root = default_root()
+        command = '::msgcat::mcset'
         root.tk.eval(f'{command} {locale} {src} {translated or ""}')
 
     def set_many(locale, *args):
@@ -155,8 +154,8 @@ class MessageCatalog:
             int:
                 The number of translation sets.
         """
-        root = default_root("set_many")
-        command = 'namespace eval ::tk ::msgcat::mcmset'
+        root = default_root()
+        command = '::msgcat::mcmset'
         return int(root.tk.eval(f'{command} {locale} {" ".join(args)}'))
 
     def max(*src):
@@ -175,6 +174,14 @@ class MessageCatalog:
             int:
                 The length of the longest str.
         """
-        root = default_root("max")
-        command = 'namespace eval ::tk ::msgcat::mcmax'
+        root = default_root()
+        command = '::msgcat::mcmax'
         return int(root.tk.eval(f'{command} {" ".join(src)}'))
+
+
+if __name__ == '__main__':
+
+    initialize_localities()
+    MessageCatalog.locale('zh_cn')
+    result = MessageCatalog.translate('Skip Messages')
+    print(result)

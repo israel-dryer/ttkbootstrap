@@ -493,30 +493,30 @@ class QueryDialog(Dialog):
         try:
             self._result = self._datatype(self._result)
         except ValueError:
-            msg = 'Should be of data type'
+            msg = MessageCatalog.translate('Should be of data type')
             Messagebox.ok(
                 message=f"{msg} `{self._datatype}`",
-                title="Invalid data type",
+                title=MessageCatalog.translate("Invalid data type"),
             )
             return False
 
         # max value range
         if self._maxvalue is not None:
             if self._result > self._maxvalue:
-                msg = 'Number cannot be greater than'
+                msg = MessageCatalog.translate('Number cannot be greater than')
                 Messagebox.ok(
                     message=f"{msg} {self._maxvalue}",
-                    title="Out of Range",
+                    title=MessageCatalog.translate("Out of range"),
                 )
                 return False
 
         # min value range
         if self._minvalue is not None:
             if self._result < self._minvalue:
-                msg = 'Number cannot be less than'
+                msg = MessageCatalog.translate('Number cannot be less than')
                 Messagebox.ok(
                     message=f"{msg} {self._minvalue}",
-                    title="Out of Range",
+                    title=MessageCatalog.translate("Out of range"),
                 )
                 return False
 
@@ -1063,7 +1063,7 @@ class FontDialog(Dialog):
         header = ttk.Label(container, text=MessageCatalog.translate("Preview"), font="TkHeadingFont")
         header.pack(fill=X, pady=2, anchor=N)
 
-        content = "The quick brown fox jumped over the lazy dog."
+        content = MessageCatalog.translate("The quick brown fox jumps over the lazy dog.")
         self._preview_text = ttk.Text(
             master=container,
             height=3,
