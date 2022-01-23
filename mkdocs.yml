@@ -28,8 +28,7 @@ plugins:
                 - import sys
                 - sys.path.append("src")
   - i18n:
-      default_language: !ENV [DEFAULT_LANGUAGE, "en"]
-      default_language_only: !ENV [DEFAULT_LANGUAGE_ONLY, false]
+      default_language: en
       languages:
         en: English
         zh: 简体中文      
