@@ -8,8 +8,8 @@
 ![](https://img.shields.io/github/forks/israel-dryer/ttkbootstrap.svg)
 
 # ttkbootstrap
-
 [English](https://github.com/israel-dryer/ttkbootstrap/blob/master/README.md) | 中文
+
 tkinter的超强主题扩展，可实现受[Bootstrap](https://getbootstrap.com/)启发的按需现代平面风格主题。 
 
 👀 阅读[文档](https://ttkbootstrap.readthedocs.io/en/latest/)。
