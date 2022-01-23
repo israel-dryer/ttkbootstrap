@@ -16,7 +16,7 @@ from tkinter import _get_default_root as default_root
 
 MSGS_PATH = (Path(__file__).parent / 'msgs').as_posix()
 
-def load_custom_localities():
+def initialize_localities():
     """Check if in a locality with custom messages. If so, load."""
     MessageCatalog.load(MSGS_PATH)
 
@@ -51,7 +51,7 @@ class MessageCatalog:
             str:
                 The translated string.
         """
-        root = default_root("translate")
+        root = default_root()
         command = 'namespace eval ::tk ::msgcat::mc'
         return root.tk.eval(f'{command} {src} {" ".join(args)}')
 
@@ -76,7 +76,7 @@ class MessageCatalog:
                 The current locale name if newlocale is None or an empty 
                 string.
         """
-        root = default_root("locale")
+        root = default_root()
         command = 'namespace eval ::tk ::msgcat::mclocale'
         return root.tk.eval(f'{command} {newlocale or ""}')
 
@@ -177,39 +177,3 @@ class MessageCatalog:
         root = default_root("max")
         command = 'namespace eval ::tk ::msgcat::mcmax'
         return int(root.tk.eval(f'{command} {" ".join(src)}'))
-
-
-if __name__ == '__main__':
-
-
-    app = tk.Tk()
-    
-    MessageCatalog.locale('es')
-    load_custom_localities()
-
-    words = [
-        "Ok",
-        "Cancel",
-        "Continue",
-        "Retry",
-        "Delete",
-        "Next",
-        "Prev",
-        "Yes",
-        "No",
-        "Open",
-        "Close",
-        "Add",
-        "Remove",
-        "Submit",
-        "Family",
-        "Weight",
-        "Slant",
-        "Effects",
-        "Preview",
-        "Size",
-    ]
-
-    for word in words:
-        t = MessageCatalog.translate(word)
-        print(word, t)
