@@ -119,7 +119,7 @@ class Window(tkinter.Tk):
             utility.enable_high_dpi_awareness()
 
         super().__init__()
-        winsys = self.tk.call('tk', 'windowingsystem')
+        self.winsys = self.tk.call('tk', 'windowingsystem')
 
         if scaling is not None:
             utility.enable_high_dpi_awareness(self, scaling)
@@ -169,7 +169,7 @@ class Window(tkinter.Tk):
             self.overrideredirect(1)
         
         if alpha is not None:
-            if winsys == 'x11':
+            if self.winsys == 'x11':
                 self.wait_visibility(self)
             self.attributes("-alpha", alpha)
 
@@ -346,7 +346,7 @@ class Toplevel(tkinter.Toplevel):
                 Other optional keyword arguments.
         """
         super().__init__(**kwargs)
-        winsys = self.tk.call('tk', 'windowingsystem')
+        self.winsys = self.tk.call('tk', 'windowingsystem')
 
         if iconphoto != '':
             try:
@@ -387,18 +387,18 @@ class Toplevel(tkinter.Toplevel):
             self.overrideredirect(1)
         
         if windowtype is not None:
-            if winsys == 'x11':
+            if self.winsys == 'x11':
                 self.attributes("-type", windowtype)
         
         if topmost:
             self.attributes("-topmost", 1)
         
         if toolwindow:
-            if winsys == 'win32':
+            if self.winsys == 'win32':
                 self.attributes("-toolwindow", 1)
         
         if alpha is not None:
-            if winsys == 'x11':
+            if self.winsys == 'x11':
                 self.wait_visibility(self)
             self.attributes("-alpha", alpha)
 
