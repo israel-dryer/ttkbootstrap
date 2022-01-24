@@ -135,7 +135,7 @@ class ColorDropperDialog:
 
     def show(self):
         """Show the toplevel window"""
-        self.toplevel = ttk.Toplevel(alpha=0.01)
+        self.toplevel = ttk.Toplevel(alpha=1)
         self.toplevel.wm_attributes('-fullscreen', True)
         self.build_screenshot_canvas()
 
