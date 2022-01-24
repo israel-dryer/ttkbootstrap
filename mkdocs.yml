@@ -34,12 +34,12 @@ plugins:
         zh: 简体中文      
       nav_translations:
         zh:
-          Home: 家
+          Home: 主页
           "Getting started": 开始
           "Style guide": 样式指南
           "API": 应用程序接口
           "Themes": 主题
-          "Gallery": 画廊
+          "Gallery": 图库
           "Cookbook": 食谱
 
 markdown_extensions:
