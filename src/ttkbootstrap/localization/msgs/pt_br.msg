@@ -1,6 +1,6 @@
 ::msgcat::mcset pt_br "Ok" "Ok"
 ::msgcat::mcset pt_br "Retry" "Repetir"
-::msgcat::mcset pt_br "Delete" "Exlcuir"
+::msgcat::mcset pt_br "Delete" "Excluir"
 ::msgcat::mcset pt_br "Next" "Próximo"
 ::msgcat::mcset pt_br "Prev" "Anterior"
 ::msgcat::mcset pt_br "Yes" "Sim"
