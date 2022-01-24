@@ -130,6 +130,7 @@ class Dialog(BaseWidget):
                 title=self._title,
                 resizable=(0, 0),
                 minsize=(250, 15),
+                iconify=True,
             )
         else:
             self._toplevel = ttk.Toplevel(
@@ -137,15 +138,16 @@ class Dialog(BaseWidget):
                 title=self._title,
                 resizable=(0, 0),
                 windowtype="dialog",
+                iconify=True,
             )
 
-        self._toplevel.withdraw()  # hide until drawn
+        self._toplevel.withdraw()  # reset the iconify state
 
         # bind <Escape> event to window close
         self._toplevel.bind("<Escape>", lambda _: self._toplevel.destroy())
 
         # set position of popup from parent window
-        # self._locate()
+        #self._locate()
 
         # create widgets
         self.create_body(self._toplevel)
@@ -601,6 +603,7 @@ class DatePickerDialog:
             resizable=(False, False),
             topmost=True,
             minsize=(226, 1),
+            iconify=True
         )
         self.firstweekday = firstweekday
         self.startdate = startdate or datetime.today().date()
@@ -630,7 +633,7 @@ class DatePickerDialog:
         self.frm_header.pack(fill=X)
 
         # setup the toplevel widget
-        self.root.withdraw()
+        self.root.withdraw() # reset the iconify state
         self.frm_calendar.update_idletasks()  # actualize geometry
 
         # create visual components
