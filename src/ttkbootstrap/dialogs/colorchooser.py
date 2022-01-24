@@ -235,13 +235,13 @@ class ColorChooser(ttk.Frame):
 
         # value labels
         lbl_cnf = {'master': container, 'anchor': E}
-        ttk.Label(**lbl_cnf, text=MessageCatalog.translate('Hue:')).grid(row=0, column=0, sticky=E)
-        ttk.Label(**lbl_cnf, text=MessageCatalog.translate('Sat:')).grid(row=1, column=0, sticky=E)
-        ttk.Label(**lbl_cnf, text=MessageCatalog.translate('Lum:')).grid(row=2, column=0, sticky=E)
-        ttk.Label(**lbl_cnf, text=MessageCatalog.translate('Hex:')).grid(row=3, column=0, sticky=E)
-        ttk.Label(**lbl_cnf, text=MessageCatalog.translate('Red:')).grid(row=0, column=2, sticky=E)
-        ttk.Label(**lbl_cnf, text=MessageCatalog.translate('Green:')).grid(row=1, column=2, sticky=E)
-        ttk.Label(**lbl_cnf, text=MessageCatalog.translate('Blue:')).grid(row=2, column=2, sticky=E)
+        ttk.Label(**lbl_cnf, text=f'''{MessageCatalog.translate('Hue')}:''').grid(row=0, column=0, sticky=E)
+        ttk.Label(**lbl_cnf, text=f'''{MessageCatalog.translate('Sat')}:''').grid(row=1, column=0, sticky=E)
+        ttk.Label(**lbl_cnf, text=f'''{MessageCatalog.translate('Lum')}:''').grid(row=2, column=0, sticky=E)
+        ttk.Label(**lbl_cnf, text=f'''{MessageCatalog.translate('Hex')}:''').grid(row=3, column=0, sticky=E)
+        ttk.Label(**lbl_cnf, text=f'''{MessageCatalog.translate('Red')}:''').grid(row=0, column=2, sticky=E)
+        ttk.Label(**lbl_cnf, text=f'''{MessageCatalog.translate('Green')}:''').grid(row=1, column=2, sticky=E)
+        ttk.Label(**lbl_cnf, text=f'''{MessageCatalog.translate('Blue')}:''').grid(row=2, column=2, sticky=E)
 
         # value spinners and entry widgets
         rgb_cnf = {'master': container, 'from_': 0, 'to': 255, 'width': 3}
