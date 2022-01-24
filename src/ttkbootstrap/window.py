@@ -345,8 +345,16 @@ class Toplevel(tkinter.Toplevel):
             **kwargs (Dict):
                 Other optional keyword arguments.
         """
+        if 'iconify' in kwargs:
+            iconify = kwargs.pop('iconify')
+        else:
+            iconify = None
+
         super().__init__(**kwargs)
         self.winsys = self.tk.call('tk', 'windowingsystem')
+        
+        if iconify:
+            self.iconify()
 
         if iconphoto != '':
             try:
