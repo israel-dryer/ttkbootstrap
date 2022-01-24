@@ -897,15 +897,14 @@ class FontDialog(Dialog):
         _headingfont.configure(weight="bold")
 
         self._update_font_preview()
-
-        self._families = set()
+        self._families = set([self._family.get()])
         for f in font.families():
-            if f and not f.startswith("@") and "emoji" not in f.lower():
+            if all([f, not f.startswith("@"), "emoji" not in f.lower()]):
                 self._families.add(f)
 
     def create_body(self, master):
         width = utility.scale_size(master, 600)
-        height = utility.scale_size(master, 415)
+        height = utility.scale_size(master, 500)
         self._toplevel.geometry(f"{width}x{height}")
 
         family_size_frame = ttk.Frame(master, padding=10)
@@ -984,7 +983,7 @@ class FontDialog(Dialog):
         sizes_listbox = ttk.Treeview(container, height=7, columns=[0], show="")
         sizes_listbox.column(0, width=utility.scale_size(sizes_listbox, 24))
 
-        sizes = [*range(8, 12), *range(12, 30, 2), 36, 48, 72]
+        sizes = [*range(8, 13), *range(13, 30, 2), 36, 48, 72]
         for s in sizes:
             sizes_listbox.insert("", iid=s, index=END, values=[s])
 
