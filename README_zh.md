@@ -68,5 +68,5 @@ root.mainloop()
 - `bootstyle=(INFO, OUTLINE)`
 
 ## 链接：
-- **文档：** https://ttkbootstrap.readthedocs.io/zh/latest/  
+- **文档：** https://ttkbootstrap.readthedocs.io/en/latest/zh/  
 - **GitHub：** https://github.com/israel-dryer/ttkbootstrap
