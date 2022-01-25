@@ -16,6 +16,8 @@ Instructions for setting up a message catalog file for ttkbootstrap
 
 3. The following words / phrases should be translated for a new language in ttkbootstrap at a minimum:
 
+
+    - "OK"
     - "Ok"
     - "Retry"
     - "Delete"
