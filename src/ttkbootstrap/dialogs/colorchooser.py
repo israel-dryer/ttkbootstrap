@@ -299,7 +299,6 @@ class ColorChooser(ttk.Frame):
                     func=self.on_select_all
                 )    
 
-
         for sequence in ['<Return>', '<KP_Enter>']:
             ent_hex.bind(
                 sequence=sequence,
@@ -504,7 +503,7 @@ class ColorChooser(ttk.Frame):
         event.widget.select_range(0, END)
         event.widget.icursor(END)
         return 'break'
-        
+
 from ttkbootstrap.dialogs import Dialog
 
 class ColorChooserDialog(Dialog):
