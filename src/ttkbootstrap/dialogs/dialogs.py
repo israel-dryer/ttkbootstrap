@@ -766,7 +766,13 @@ class DatePickerDialog:
             List[str]:
                 A list of weekday column names for the calendar header.
         """
-        weekdays = ["Mo", "Tu", "We", "Th", "Fr", "Sa", "Su"]
+        weekdays = [MessageCatalog.translate("Mo"), 
+                    MessageCatalog.translate("Tu"),
+                    MessageCatalog.translate("We"), 
+                    MessageCatalog.translate("Th"), 
+                    MessageCatalog.translate("Fr"), 
+                    MessageCatalog.translate("Sa"), 
+                    MessageCatalog.translate("Su")]
         header = weekdays[self.firstweekday :] + weekdays[: self.firstweekday]
         return header
 
