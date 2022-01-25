@@ -279,6 +279,12 @@ class ColorChooser(ttk.Frame):
                         w, HSL),
                     add="+"
                 )
+            for sequence in ['<Control-a>', '<Control-A>']:
+                sb.bind(
+                    sequence=sequence,
+                    func=self.select_all
+                )    
+
         for sb in [sb_red, sb_grn, sb_blu]:
             for sequence in ['<<Increment>>', '<<Decrement>>', '<Return>', '<KP_Enter>']:
                 sb.bind(
@@ -287,6 +293,13 @@ class ColorChooser(ttk.Frame):
                         w, RGB),
                     add="+"
                 )
+            for sequence in ['<Control-a>', '<Control-A>']:
+                sb.bind(
+                    sequence=sequence,
+                    func=self.select_all
+                )    
+
+
         for sequence in ['<Return>', '<KP_Enter>']:
             ent_hex.bind(
                 sequence=sequence,
@@ -294,7 +307,18 @@ class ColorChooser(ttk.Frame):
                     w, HEX),
                 add="+"
             )
+        for sequence in ['<Control-a>', '<Control-A>']:
+            ent_hex.bind(
+                sequence=sequence,
+                func=self.select_all
+            )    
+
         return container
+
+    def select_all(self, event=None):
+        event.widget.select_range(0, END)
+        event.widget.icursor(END)
+        return 'break'
 
     def create_luminance_scale(self, master):
         """Create the color luminance canvas"""
