@@ -547,7 +547,7 @@ class ColorChooserDialog(Dialog):
         frame = ttk.Frame(master, padding=(5, 5))
         
         # OK button
-        ok = ttk.Button(frame, bootstyle=PRIMARY, width=6, text='OK')
+        ok = ttk.Button(frame, bootstyle=PRIMARY, width=6, text=MessageCatalog.translate('OK'))
         ok.bind("<Return>", lambda _: ok.invoke())
         ok.configure(command=lambda b=ok: self.on_button_press(b))
         ok.pack(padx=2, side=RIGHT)
