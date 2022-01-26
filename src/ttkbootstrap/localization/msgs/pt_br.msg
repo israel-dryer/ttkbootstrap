@@ -1,3 +1,4 @@
+::msgcat::mcset pt_br "OK" "OK"
 ::msgcat::mcset pt_br "Ok" "Ok"
 ::msgcat::mcset pt_br "Retry" "Repetir"
 ::msgcat::mcset pt_br "Delete" "Excluir"

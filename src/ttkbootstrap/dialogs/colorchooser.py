@@ -279,6 +279,12 @@ class ColorChooser(ttk.Frame):
                         w, HSL),
                     add="+"
                 )
+            for sequence in ['<Control-a>', '<Control-A>']:
+                sb.bind(
+                    sequence=sequence,
+                    func=self.on_select_all
+                )    
+
         for sb in [sb_red, sb_grn, sb_blu]:
             for sequence in ['<<Increment>>', '<<Decrement>>', '<Return>', '<KP_Enter>']:
                 sb.bind(
@@ -287,6 +293,12 @@ class ColorChooser(ttk.Frame):
                         w, RGB),
                     add="+"
                 )
+            for sequence in ['<Control-a>', '<Control-A>']:
+                sb.bind(
+                    sequence=sequence,
+                    func=self.on_select_all
+                )    
+
         for sequence in ['<Return>', '<KP_Enter>']:
             ent_hex.bind(
                 sequence=sequence,
@@ -294,6 +306,12 @@ class ColorChooser(ttk.Frame):
                     w, HEX),
                 add="+"
             )
+        for sequence in ['<Control-a>', '<Control-A>']:
+            ent_hex.bind(
+                sequence=sequence,
+                func=self.on_select_all
+            )    
+
         return container
 
     def create_luminance_scale(self, master):
@@ -481,6 +499,10 @@ class ColorChooser(ttk.Frame):
         self.lum.set(l)
         self.sync_color_values(HSL)
 
+    def on_select_all(self, event):
+        event.widget.select_range(0, END)
+        event.widget.icursor(END)
+        return 'break'
 
 from ttkbootstrap.dialogs import Dialog
 
@@ -525,7 +547,7 @@ class ColorChooserDialog(Dialog):
         frame = ttk.Frame(master, padding=(5, 5))
         
         # OK button
-        ok = ttk.Button(frame, bootstyle=PRIMARY, width=6, text='OK')
+        ok = ttk.Button(frame, bootstyle=PRIMARY, width=6, text=MessageCatalog.translate('OK'))
         ok.bind("<Return>", lambda _: ok.invoke())
         ok.configure(command=lambda b=ok: self.on_button_press(b))
         ok.pack(padx=2, side=RIGHT)
