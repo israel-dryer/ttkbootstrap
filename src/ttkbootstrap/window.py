@@ -197,26 +197,14 @@ class Window(tkinter.Tk):
     position_center = place_window_center # alias
 
     def _apply_entry_type_class_binding(self):
-        self.bind_class(
-            className="TEntry", 
-            sequence="<Configure>", 
-            func=self._disabled_state_cursor,
-            add="+"
-        )
-        self.bind_class(
-            className="TSpinbox", 
-            sequence="<Configure>", 
-            func=self._disabled_state_cursor,
-            add="+"
-        )
-        self.bind_class(
-            className="TCombobox", 
-            sequence="<Configure>", 
-            func=self._disabled_state_cursor,
-            add="+"
-        )
-
         for className in ["TEntry", "TSpinbox", "TCombobox"]:
+            self.bind_class(
+                className=className, 
+                sequence="<Configure>", 
+                func=self._disabled_state_cursor,
+                add="+"
+            )
+
             for sequence in ["<Control-a>", "<Control-A>"]:
                 self.bind_class(
                     className=className, 
