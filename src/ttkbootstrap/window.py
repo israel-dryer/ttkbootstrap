@@ -212,7 +212,6 @@ class Window(tkinter.Tk):
                     func=self.on_select_all
             )
 
-
     def _disabled_state_cursor(self, event):
         """Change the cursor of entry type widgets to 'arrow' if in a disabled
         or readonly state."""
