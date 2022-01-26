@@ -151,6 +151,12 @@ class DateEntry(ttk.Frame):
         )
         self.button.pack(side=tk.LEFT)
 
+        for sequence in ['<Control-a>', '<Control-A>']:
+            self.entry.bind(
+                sequence=sequence,
+                func=self.on_select_all
+            ) 
+
         # starting value
         self.entry.insert(tk.END, self._startdate.strftime(self._dateformat))
 
@@ -247,6 +253,11 @@ class DateEntry(ttk.Frame):
         self.entry.delete(first=0, last=tk.END)
         self.entry.insert(tk.END, new_date.strftime(self._dateformat))
         self.entry.focus_force()
+
+    def on_select_all(self, event):
+        event.widget.select_range(0, END)
+        event.widget.icursor(END)
+        return 'break'
 
 
 class Floodgauge(Progressbar):
