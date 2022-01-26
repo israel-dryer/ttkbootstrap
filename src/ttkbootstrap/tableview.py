@@ -1283,7 +1283,7 @@ class Tableview(ttk.Frame):
         if pageindex > pagelimit:
             pageindex = pagelimit
             self._pageindex.set(pageindex)
-        elif pageindex < 0:
+        elif pageindex <= 0:
             pageindex = 1
             self._pageindex.set(pageindex)
         rowindex = (pageindex * self.pagesize) - self.pagesize
@@ -2108,7 +2108,7 @@ class Tableview(ttk.Frame):
         if not self._paginated:
             ttk.Button(
                 frame,
-                text="⎌",
+                text=MessageCatalog.translate("⎌"),
                 command=self.reset_table,
                 style="symbol.Link.TButton",
             ).pack(side=LEFT)

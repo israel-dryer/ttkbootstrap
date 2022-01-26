@@ -1,3 +1,4 @@
+::msgcat::mcset pt "OK"
 ::msgcat::mcset pt "Ok"
 ::msgcat::mcset pt "Retry"
 ::msgcat::mcset pt "Delete"
