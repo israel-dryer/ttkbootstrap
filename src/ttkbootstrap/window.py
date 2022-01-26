@@ -197,24 +197,21 @@ class Window(tkinter.Tk):
     position_center = place_window_center # alias
 
     def _apply_entry_type_class_binding(self):
-        self.bind_class(
-            className="TEntry", 
-            sequence="<Configure>", 
-            func=self._disabled_state_cursor,
-            add="+"
-        )
-        self.bind_class(
-            className="TSpinbox", 
-            sequence="<Configure>", 
-            func=self._disabled_state_cursor,
-            add="+"
-        )
-        self.bind_class(
-            className="TCombobox", 
-            sequence="<Configure>", 
-            func=self._disabled_state_cursor,
-            add="+"
-        )
+        for class_name in ["TEntry", "TSpinbox", "TCombobox"]:
+            self.bind_class(
+                className=class_name, 
+                sequence="<Configure>", 
+                func=self._disabled_state_cursor,
+                add="+"
+            )
+
+            for sequence in ["<Control-a>", "<Control-A>"]:
+                self.bind_class(
+                    className=class_name, 
+                    sequence=sequence,
+                    func=self.on_select_all
+            )
+
 
     def _disabled_state_cursor(self, event):
         """Change the cursor of entry type widgets to 'arrow' if in a disabled
@@ -236,6 +233,11 @@ class Window(tkinter.Tk):
         except:
             pass
         
+    def on_select_all(self, event):
+        event.widget.select_range(0, END)
+        event.widget.icursor(END)
+        return 'break'
+
 
 class Toplevel(tkinter.Toplevel):
     """A class that wraps the tkinter.Toplevel class in order to
