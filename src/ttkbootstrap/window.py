@@ -197,19 +197,31 @@ class Window(tkinter.Tk):
     position_center = place_window_center # alias
 
     def _apply_entry_type_class_binding(self):
-        for class_name in ["TEntry", "TSpinbox", "TCombobox"]:
-            self.bind_class(
-                className=class_name, 
-                sequence="<Configure>", 
-                func=self._disabled_state_cursor,
-                add="+"
-            )
+        self.bind_class(
+            className="TEntry", 
+            sequence="<Configure>", 
+            func=self._disabled_state_cursor,
+            add="+"
+        )
+        self.bind_class(
+            className="TSpinbox", 
+            sequence="<Configure>", 
+            func=self._disabled_state_cursor,
+            add="+"
+        )
+        self.bind_class(
+            className="TCombobox", 
+            sequence="<Configure>", 
+            func=self._disabled_state_cursor,
+            add="+"
+        )
 
+        for className in ["TEntry", "TSpinbox", "TCombobox"]:
             for sequence in ["<Control-a>", "<Control-A>"]:
                 self.bind_class(
-                    className=class_name, 
+                    className=className, 
                     sequence=sequence,
-                    func=self.on_select_all
+                    func=self._on_select_all
             )
 
     def _disabled_state_cursor(self, event):
@@ -232,7 +244,7 @@ class Window(tkinter.Tk):
         except:
             pass
         
-    def on_select_all(self, event):
+    def _on_select_all(self, event):
         event.widget.select_range(0, END)
         event.widget.icursor(END)
         return 'break'
