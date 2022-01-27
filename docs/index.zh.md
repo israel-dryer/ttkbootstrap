@@ -28,7 +28,7 @@ ttkbootstrap附带了几个设计精美的新小部件，如[Meter](api/widgets/
 想要创建自己的主题？容易！ttkbootstrap附带一个内置的[主题创建器](themes/themecreator.md)，使您能够轻松构建，加载，浏览和应用自己的自定义主题。
 
 !!! warning "1.0 中的重大更改"
-	版本 1.0 是库的完全重建。如果您使用的是[0.5版本(https://github.com/israel-dryer/ttkbootstrap/tree/version-0.5)，则在尝试使用themes.json导入主题时可能会遇到问题，因为这已从1.0中删除。现在，您可以使用 ttkcreator 直接导入和保存主题。
+	版本 1.0 是库的完全重建。如果您使用的是[0.5版本](https://github.com/israel-dryer/ttkbootstrap/tree/version-0.5)，则在尝试使用themes.json导入主题时可能会遇到问题，因为这已从1.0中删除。现在，您可以使用 ttkcreator 直接导入和保存主题。
 
 
 ## 🎨 示例主题
