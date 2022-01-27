@@ -8,12 +8,11 @@ from ttkbootstrap.utility import scale_size
 app = ttk.Window(themename='flatly')
 colors = app.style.colors
 
-p = Path(".") / "development/new_widgets/Sample1000.csv"
+p = Path(__file__).parent / "Sample1000.csv"
 with open(p, encoding="utf-8") as f:
     reader = csv.reader(f)
     next(reader)
     rowdata = list(reader)
-
 
 # column configuration options
 # text, image, command, anchor, width, minwidth, maxwidth, stretch

@@ -130,6 +130,7 @@ class Dialog(BaseWidget):
                 title=self._title,
                 resizable=(0, 0),
                 minsize=(250, 15),
+                iconify=True,
             )
         else:
             self._toplevel = ttk.Toplevel(
@@ -137,15 +138,16 @@ class Dialog(BaseWidget):
                 title=self._title,
                 resizable=(0, 0),
                 windowtype="dialog",
+                iconify=True,
             )
 
-        self._toplevel.withdraw()  # hide until drawn
+        self._toplevel.withdraw()  # reset the iconify state
 
         # bind <Escape> event to window close
         self._toplevel.bind("<Escape>", lambda _: self._toplevel.destroy())
 
         # set position of popup from parent window
-        # self._locate()
+        #self._locate()
 
         # create widgets
         self.create_body(self._toplevel)
@@ -601,6 +603,7 @@ class DatePickerDialog:
             resizable=(False, False),
             topmost=True,
             minsize=(226, 1),
+            iconify=True
         )
         self.firstweekday = firstweekday
         self.startdate = startdate or datetime.today().date()
@@ -630,7 +633,7 @@ class DatePickerDialog:
         self.frm_header.pack(fill=X)
 
         # setup the toplevel widget
-        self.root.withdraw()
+        self.root.withdraw() # reset the iconify state
         self.frm_calendar.update_idletasks()  # actualize geometry
 
         # create visual components
@@ -763,7 +766,13 @@ class DatePickerDialog:
             List[str]:
                 A list of weekday column names for the calendar header.
         """
-        weekdays = ["Mo", "Tu", "We", "Th", "Fr", "Sa", "Su"]
+        weekdays = [MessageCatalog.translate("Mo"), 
+                    MessageCatalog.translate("Tu"),
+                    MessageCatalog.translate("We"), 
+                    MessageCatalog.translate("Th"), 
+                    MessageCatalog.translate("Fr"), 
+                    MessageCatalog.translate("Sa"), 
+                    MessageCatalog.translate("Su")]
         header = weekdays[self.firstweekday :] + weekdays[: self.firstweekday]
         return header
 
@@ -877,6 +886,7 @@ class FontDialog(Dialog):
     """
 
     def __init__(self, title="Font Selector", parent=None):
+        title = MessageCatalog.translate(title)
         super().__init__(parent=parent, title=title)
         self._style = ttk.Style()
         self._default = font.nametofont("TkDefaultFont")
@@ -1012,7 +1022,7 @@ class FontDialog(Dialog):
         weight_lframe.pack(side=LEFT, fill=X, expand=YES)
         opt_normal = ttk.Radiobutton(
             master=weight_lframe,
-            text="normal",
+            text=MessageCatalog.translate("normal"),
             value="normal",
             variable=self._weight,
         )
@@ -1020,7 +1030,7 @@ class FontDialog(Dialog):
         opt_normal.pack(side=LEFT, padx=5, pady=5)
         opt_bold = ttk.Radiobutton(
             master=weight_lframe,
-            text="bold",
+            text=MessageCatalog.translate("bold"),
             value="bold",
             variable=self._weight,
         )
@@ -1030,7 +1040,7 @@ class FontDialog(Dialog):
         slant_lframe.pack(side=LEFT, fill=X, padx=10, expand=YES)
         opt_roman = ttk.Radiobutton(
             master=slant_lframe,
-            text="roman",
+            text=MessageCatalog.translate("roman"),
             value="roman",
             variable=self._slant,
         )
@@ -1038,7 +1048,7 @@ class FontDialog(Dialog):
         opt_roman.pack(side=LEFT, padx=5, pady=5)
         opt_italic = ttk.Radiobutton(
             master=slant_lframe,
-            text="italic",
+            text=MessageCatalog.translate("italic"),
             value="italic",
             variable=self._slant,
         )
@@ -1047,11 +1057,11 @@ class FontDialog(Dialog):
         effects_lframe = ttk.Labelframe(container, text=MessageCatalog.translate("Effects"), padding=5)
         effects_lframe.pack(side=LEFT, padx=(2, 0), fill=X, expand=YES)
         opt_underline = ttk.Checkbutton(
-            master=effects_lframe, text="underline", variable=self._underline
+            master=effects_lframe, text=MessageCatalog.translate("underline"), variable=self._underline
         )
         opt_underline.pack(side=LEFT, padx=5, pady=5)
         opt_overstrike = ttk.Checkbutton(
-            master=effects_lframe, text="overstrike", variable=self._overstrike
+            master=effects_lframe, text=MessageCatalog.translate("overstrike"), variable=self._overstrike
         )
         opt_overstrike.pack(side=LEFT, padx=5, pady=5)
 

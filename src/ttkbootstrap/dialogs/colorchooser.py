@@ -10,6 +10,7 @@ from ttkbootstrap.colorutils import RGB, HSL, HEX, HUE, SAT, LUM
 from PIL import ImageColor
 from ttkbootstrap.dialogs.colordropper import ColorDropperDialog
 from ttkbootstrap.tooltip import ToolTip
+from ttkbootstrap.localization import MessageCatalog
 
 STD_SHADES = [0.9, 0.8, 0.7, 0.4, 0.3]
 STD_COLORS = [
@@ -73,15 +74,15 @@ class ColorChooser(ttk.Frame):
         self.color_spectrum.pack(fill=X, side=TOP)
         self.luminance_scale = self.create_luminance_scale(self.tframe)
         self.luminance_scale.pack(fill=X)
-        self.notebook.add(spectrum_frame, text='Advanced')
+        self.notebook.add(spectrum_frame, text=MessageCatalog.translate('Advanced'))
 
         themed_colors = [self.colors.get(c) for c in self.style.colors]
         self.themed_swatches = self.create_swatches(
             self.notebook, themed_colors)
         self.standard_swatches = self.create_swatches(
             self.notebook, STD_COLORS)
-        self.notebook.add(self.themed_swatches, text='Themed')
-        self.notebook.add(self.standard_swatches, text='Standard')
+        self.notebook.add(self.themed_swatches, text=MessageCatalog.translate('Themed'))
+        self.notebook.add(self.standard_swatches, text=MessageCatalog.translate('Standard'))
         preview_frame = self.create_preview(self.bframe)
         preview_frame.pack(side=LEFT, fill=BOTH, expand=YES, padx=(0, 5))
         self.color_entries = self.create_value_inputs(self.bframe)
@@ -196,7 +197,7 @@ class ColorChooser(ttk.Frame):
         )
         tkLabel(
             master=old,
-            text='Current',
+            text=MessageCatalog.translate('Current'),
             background=self.initialcolor,
             foreground=contrastfg,
             autostyle=False,
@@ -216,7 +217,7 @@ class ColorChooser(ttk.Frame):
         self.preview.pack(side=LEFT, fill=BOTH, expand=YES, padx=(2, 0))
         self.preview_lbl = tkLabel(
             master=self.preview,
-            text='New',
+            text=MessageCatalog.translate('New'),
             background=self.initialcolor,
             foreground=contrastfg,
             autostyle=False,
@@ -234,13 +235,13 @@ class ColorChooser(ttk.Frame):
 
         # value labels
         lbl_cnf = {'master': container, 'anchor': E}
-        ttk.Label(**lbl_cnf, text='Hue:').grid(row=0, column=0, sticky=E)
-        ttk.Label(**lbl_cnf, text='Sat:').grid(row=1, column=0, sticky=E)
-        ttk.Label(**lbl_cnf, text='Lum:').grid(row=2, column=0, sticky=E)
-        ttk.Label(**lbl_cnf, text='Hex:').grid(row=3, column=0, sticky=E)
-        ttk.Label(**lbl_cnf, text='Red:').grid(row=0, column=2, sticky=E)
-        ttk.Label(**lbl_cnf, text='Green:').grid(row=1, column=2, sticky=E)
-        ttk.Label(**lbl_cnf, text='Blue:').grid(row=2, column=2, sticky=E)
+        ttk.Label(**lbl_cnf, text=f'''{MessageCatalog.translate('Hue')}:''').grid(row=0, column=0, sticky=E)
+        ttk.Label(**lbl_cnf, text=f'''{MessageCatalog.translate('Sat')}:''').grid(row=1, column=0, sticky=E)
+        ttk.Label(**lbl_cnf, text=f'''{MessageCatalog.translate('Lum')}:''').grid(row=2, column=0, sticky=E)
+        ttk.Label(**lbl_cnf, text=f'''{MessageCatalog.translate('Hex')}:''').grid(row=3, column=0, sticky=E)
+        ttk.Label(**lbl_cnf, text=f'''{MessageCatalog.translate('Red')}:''').grid(row=0, column=2, sticky=E)
+        ttk.Label(**lbl_cnf, text=f'''{MessageCatalog.translate('Green')}:''').grid(row=1, column=2, sticky=E)
+        ttk.Label(**lbl_cnf, text=f'''{MessageCatalog.translate('Blue')}:''').grid(row=2, column=2, sticky=E)
 
         # value spinners and entry widgets
         rgb_cnf = {'master': container, 'from_': 0, 'to': 255, 'width': 3}
@@ -292,7 +293,8 @@ class ColorChooser(ttk.Frame):
                 func=lambda _, w=ent_hex: self.on_entry_value_change(
                     w, HEX),
                 add="+"
-            )
+            )  
+
         return container
 
     def create_luminance_scale(self, master):
@@ -510,6 +512,7 @@ class ColorChooserDialog(Dialog):
     """
 
     def __init__(self, parent=None, title="Color Chooser", initialcolor=None):
+        title = MessageCatalog.translate(title)
         super().__init__(parent=parent, title=title)
         self.initialcolor = initialcolor
         self.dropper = ColorDropperDialog()
@@ -523,13 +526,13 @@ class ColorChooserDialog(Dialog):
         frame = ttk.Frame(master, padding=(5, 5))
         
         # OK button
-        ok = ttk.Button(frame, bootstyle=PRIMARY, width=6, text='OK')
+        ok = ttk.Button(frame, bootstyle=PRIMARY, width=6, text=MessageCatalog.translate('OK'))
         ok.bind("<Return>", lambda _: ok.invoke())
         ok.configure(command=lambda b=ok: self.on_button_press(b))
         ok.pack(padx=2, side=RIGHT)
 
         # Cancel button
-        cancel = ttk.Button(frame, bootstyle=SECONDARY, width=6, text='Cancel')
+        cancel = ttk.Button(frame, bootstyle=SECONDARY, width=6, text=MessageCatalog.translate('Cancel'))
         cancel.bind("<Return>", lambda _: cancel.invoke())
         cancel.configure(command=lambda b=cancel: self.on_button_press(b))
         cancel.pack(padx=2, side=RIGHT)
@@ -537,7 +540,7 @@ class ColorChooserDialog(Dialog):
         # color dropper (not supported on Mac OS)
         if self._toplevel.winsys != 'aqua':
             dropper = ttk.Label(frame, text=PEN, font=('-size 16'))
-            ToolTip(dropper, 'color dropper') # add tooltip
+            ToolTip(dropper, MessageCatalog.translate('color dropper')) # add tooltip
             dropper.pack(side=RIGHT, padx=2)
             dropper.bind("<Button-1>", self.on_show_colordropper)
                 

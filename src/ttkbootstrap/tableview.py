@@ -6,6 +6,7 @@ from datetime import datetime
 from tkinter import font
 from ttkbootstrap import utility
 from typing import Any, Dict, List, Union
+from ttkbootstrap.localization import MessageCatalog
 
 UPARROW = "⬆"
 DOWNARROW = "⬇"
@@ -1282,7 +1283,7 @@ class Tableview(ttk.Frame):
         if pageindex > pagelimit:
             pageindex = pagelimit
             self._pageindex.set(pageindex)
-        elif pageindex < 0:
+        elif pageindex <= 0:
             pageindex = 1
             self._pageindex.set(pageindex)
         rowindex = (pageindex * self.pagesize) - self.pagesize
@@ -2099,7 +2100,7 @@ class Tableview(ttk.Frame):
         """
         frame = ttk.Frame(self, padding=5)
         frame.pack(fill=X, side=TOP)
-        ttk.Label(frame, text="Search").pack(side=LEFT, padx=5)
+        ttk.Label(frame, text=MessageCatalog.translate("Search")).pack(side=LEFT, padx=5)
         searchterm = ttk.Entry(frame, textvariable=self._searchcriteria)
         searchterm.pack(fill=X, side=LEFT, expand=YES)
         searchterm.bind("<Return>", self._search_table_data)
@@ -2107,7 +2108,7 @@ class Tableview(ttk.Frame):
         if not self._paginated:
             ttk.Button(
                 frame,
-                text="⎌",
+                text=MessageCatalog.translate("⎌"),
                 command=self.reset_table,
                 style="symbol.Link.TButton",
             ).pack(side=LEFT)
@@ -2122,7 +2123,7 @@ class Tableview(ttk.Frame):
 
         ttk.Button(
             pageframe,
-            text="⎌",
+            text=MessageCatalog.translate("⎌"),
             command=self.reset_table,
             style="symbol.Link.TButton",
         ).pack(side=RIGHT)
@@ -2159,14 +2160,14 @@ class Tableview(ttk.Frame):
 
         lbl = ttk.Label(pageframe, textvariable=self._pagelimit)
         lbl.pack(side=RIGHT, padx=(0, 5))
-        ttk.Label(pageframe, text="of").pack(side=RIGHT, padx=(5, 0))
+        ttk.Label(pageframe, text=MessageCatalog.translate("of")).pack(side=RIGHT, padx=(5, 0))
 
         index = ttk.Entry(pageframe, textvariable=self._pageindex, width=4)
         index.pack(side=RIGHT)
         index.bind("<Return>", self.goto_page, "+")
         index.bind("<KP_Enter>", self.goto_page, "+")
 
-        ttk.Label(pageframe, text="Page").pack(side=RIGHT, padx=5)
+        ttk.Label(pageframe, text=MessageCatalog.translate("Page")).pack(side=RIGHT, padx=5)
 
         # I'm removing this widget for now; the pageframe was getting too
         #   cluttered and this is configurable with `configure`
@@ -2282,79 +2283,82 @@ class TableCellRightClickMenu(tk.Menu):
 
         config = {
             "sortascending": {
-                "label": "⬆  Sort Ascending",
+                "label": f'''⬆  {MessageCatalog.translate("Sort Ascending")}''',
                 "command": self.sort_column_ascending,
             },
             "sortdescending": {
-                "label": "⬇  Sort Descending",
+                "label": f'''⬇  {MessageCatalog.translate("Sort Descending")}''',
                 "command": self.sort_column_descending,
             },
             "clearfilter": {
-                "label": "⎌ Clear filters",
+                "label": f'''{MessageCatalog.translate("⎌")} {MessageCatalog.translate("Clear filters")}''',
                 "command": self.master.reset_row_filters,
             },
             "filterbyvalue": {
-                "label": "Filter by cell's value",
+                "label": f'''{MessageCatalog.translate("Filter by cell's value")}''',
                 "command": self.filter_to_cell_value,
             },
             "hiderows": {
-                "label": "Hide select rows",
+                "label": f'''{MessageCatalog.translate("Hide select rows")}''',
                 "command": self.hide_selected_rows,
             },
             "showrows": {
-                "label": "Show only select rows",
+                "label": f'''{MessageCatalog.translate("Show only select rows")}''',
                 "command": self.filter_to_selected_rows,
             },
             "exportall": {
-                "label": "Export all records",
+                "label": f'''{MessageCatalog.translate("Export all records")}''',
                 "command": self.export_all_records,
             },
             "exportpage": {
-                "label": "Export current page",
+                "label": f'''{MessageCatalog.translate("Export current page")}''',
                 "command": self.export_current_page,
             },
             "exportselection": {
-                "label": "Export current selection",
+                "label": f'''{MessageCatalog.translate("Export current selection")}''',
                 "command": self.export_current_selection,
             },
             "exportfiltered": {
-                "label": "Export records in filter",
+                "label": f'''{MessageCatalog.translate("Export records in filter")}''',
                 "command": self.export_records_in_filter,
             },
-            "moveup": {"label": "↑ Move up", "command": self.move_row_up},
+            "moveup": {
+                "label": f'''↑ {MessageCatalog.translate("Move up")}''',
+                "command": self.move_row_up
+            },
             "movedown": {
-                "label": "↓ Move down",
+                "label": f'''↓ {MessageCatalog.translate("Move down")}''',
                 "command": self.move_row_down,
             },
             "movetotop": {
-                "label": "⤒ Move to top",
+                "label": f'''⤒ {MessageCatalog.translate("Move to top")}''',
                 "command": self.move_row_to_top,
             },
             "movetobottom": {
-                "label": "⤓ Move to bottom",
+                "label": f'''⤓ {MessageCatalog.translate("Move to bottom")}''',
                 "command": self.move_row_to_bottom,
             },
             "alignleft": {
-                "label": "◧  Align left",
+                "label": f'''◧  {MessageCatalog.translate("Align left")}''',
                 "command": self.align_column_left,
             },
             "aligncenter": {
-                "label": "◫  Align center",
+                "label": f'''◫  {MessageCatalog.translate("Align center")}''',
                 "command": self.align_column_center,
             },
             "alignright": {
-                "label": "◨  Align right",
+                "label": f'''◨  {MessageCatalog.translate("Align right")}''',
                 "command": self.align_column_right,
             },
             "deleterows": {
-                "label": "🞨  Delete selected rows",
+                "label": f'''🞨  {MessageCatalog.translate("Delete selected rows")}''',
                 "command": self.delete_selected_rows,
             },
         }
         sort_menu = tk.Menu(self, tearoff=False)
         sort_menu.add_command(cnf=config["sortascending"])
         sort_menu.add_command(cnf=config["sortdescending"])
-        self.add_cascade(menu=sort_menu, label="⇅  Sort")
+        self.add_cascade(menu=sort_menu, label=f'''⇅  {MessageCatalog.translate("Sort")}''')
 
         filter_menu = tk.Menu(self, tearoff=False)
         filter_menu.add_command(cnf=config["clearfilter"])
@@ -2362,27 +2366,27 @@ class TableCellRightClickMenu(tk.Menu):
         filter_menu.add_command(cnf=config["filterbyvalue"])
         filter_menu.add_command(cnf=config["hiderows"])
         filter_menu.add_command(cnf=config["showrows"])
-        self.add_cascade(menu=filter_menu, label="⧨  Filter")
+        self.add_cascade(menu=filter_menu, label=f'''⧨  {MessageCatalog.translate("Filter")}''')
 
         export_menu = tk.Menu(self, tearoff=False)
         export_menu.add_command(cnf=config["exportall"])
         export_menu.add_command(cnf=config["exportpage"])
         export_menu.add_command(cnf=config["exportselection"])
         export_menu.add_command(cnf=config["exportfiltered"])
-        self.add_cascade(menu=export_menu, label="↔  Export")
+        self.add_cascade(menu=export_menu, label=f'''↔  {MessageCatalog.translate("Export")}''')
 
         move_menu = tk.Menu(self, tearoff=False)
         move_menu.add_command(cnf=config["moveup"])
         move_menu.add_command(cnf=config["movedown"])
         move_menu.add_command(cnf=config["movetotop"])
         move_menu.add_command(cnf=config["movetobottom"])
-        self.add_cascade(menu=move_menu, label="⇵  Move")
+        self.add_cascade(menu=move_menu, label=f'''⇵  {MessageCatalog.translate("Move")}''')
 
         align_menu = tk.Menu(self, tearoff=False)
         align_menu.add_command(cnf=config["alignleft"])
         align_menu.add_command(cnf=config["aligncenter"])
         align_menu.add_command(cnf=config["alignright"])
-        self.add_cascade(menu=align_menu, label="↦  Align")
+        self.add_cascade(menu=align_menu, label=f'''↦  {MessageCatalog.translate("Align")}''')
         self.add_command(cnf=config["deleterows"])
 
     def tk_popup(self, event):
@@ -2505,43 +2509,43 @@ class TableHeaderRightClickMenu(tk.Menu):
 
         config = {
             "movetoright": {
-                "label": "→  Move to right",
+                "label": f'''→  {MessageCatalog.translate("Move to right")}''',
                 "command": self.move_column_right,
             },
             "movetoleft": {
-                "label": "←  Move to left",
+                "label": f'''←  {MessageCatalog.translate("Move to left")}''',
                 "command": self.move_column_left,
             },
             "movetofirst": {
-                "label": "⇤  Move to first",
+                "label": f'''⇤  {MessageCatalog.translate("Move to first")}''',
                 "command": self.move_column_to_first,
             },
             "movetolast": {
-                "label": "⇥  Move to last",
+                "label": f'''⇥  {MessageCatalog.translate("Move to last")}''',
                 "command": self.move_column_to_last,
             },
             "alignleft": {
-                "label": "◧  Align left",
+                "label": f'''◧  {MessageCatalog.translate("Align left")}''',
                 "command": self.align_heading_left,
             },
             "alignright": {
-                "label": "◨  Align right",
+                "label": f'''◨  {MessageCatalog.translate("Align right")}''',
                 "command": self.align_heading_right,
             },
             "aligncenter": {
-                "label": "◫  Align center",
+                "label": f'''◫  {MessageCatalog.translate("Align center")}''',
                 "command": self.align_heading_center,
             },
             "resettable": {
-                "label": "⎌  Reset table",
+                "label": f'''{MessageCatalog.translate("⎌")}  {MessageCatalog.translate("Reset table")}''',
                 "command": self.master.reset_table,
             },
             "deletecolumn": {
-                "label": "🞨  Delete column",
+                "label": f'''🞨  {MessageCatalog.translate("Delete column")}''',
                 "command": self.delete_column,
             },
             "hidecolumn": {
-                "label": "◑  Hide column",
+                "label": f'''◑  {MessageCatalog.translate("Hide column")}''',
                 "command": self.hide_column,
             },
         }
@@ -2550,7 +2554,7 @@ class TableHeaderRightClickMenu(tk.Menu):
 
         # HIDE & SHOW
         self._build_show_menu()
-        self.add_cascade(menu=self._show_menu, label="±  Columns")
+        self.add_cascade(menu=self._show_menu, label=f'''±  {MessageCatalog.translate("Columns")}''')
         self.add_separator()
 
         # MOVE MENU
@@ -2559,13 +2563,13 @@ class TableHeaderRightClickMenu(tk.Menu):
         move_menu.add_command(cnf=config["movetoright"])
         move_menu.add_command(cnf=config["movetofirst"])
         move_menu.add_command(cnf=config["movetolast"])
-        self.add_cascade(menu=move_menu, label="⇄  Move")
+        self.add_cascade(menu=move_menu, label=f'''⇄  {MessageCatalog.translate("Move")}''')
 
         align_menu = tk.Menu(self, tearoff=False)
         align_menu.add_command(cnf=config["alignleft"])
         align_menu.add_command(cnf=config["aligncenter"])
         align_menu.add_command(cnf=config["alignright"])
-        self.add_cascade(menu=align_menu, label="↦  Align")
+        self.add_cascade(menu=align_menu, label=f'''↦  {MessageCatalog.translate("Align")}''')
         self.add_command(cnf=config["hidecolumn"])
         self.add_command(cnf=config["deletecolumn"])
 
@@ -2587,7 +2591,7 @@ class TableHeaderRightClickMenu(tk.Menu):
             self._show_menu = tk.Menu(self, tearoff=False)
 
         self._show_menu.add_command(
-            label="Show All", command=self.show_all_columns
+            label=MessageCatalog.translate("Show All"), command=self.show_all_columns
         )
         self._show_menu.add_separator()
 
