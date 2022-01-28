@@ -1,6 +1,6 @@
 # toast module
 
-## TostNotification
+## `ToastNotification`
 
 A semi-transparent popup window for temporary alerts or messages. You may choose to display the toast for a specified period of time, otherwise you must click the toast to close it.
 
@@ -24,7 +24,8 @@ toast.show_toast()
 app.mainloop()
 ```
 
-### `__init__(self, title, message, duration=None, bootstyle='light', alert=False, icon=None, position=None, **kwargs)`
+### `__init__`
+    (self, title, message, duration=None, bootstyle='light', alert=False, icon=None, position=None, **kwargs)
 
 **Parameters:**
 
@@ -38,10 +39,12 @@ Name        |Type                   |Description|Default
 `icon`      |`str`                  |A unicode character to display on the top-left hand border of the toast. The default symbol is OS specific. Pass an empty string to remove the symbol.|`None`
 `iconfont`  |`Union[str, Font]`     |The font used to render the icon. By default, this is OS specific. You may need to change the font to enable better character or emoji support for the icon you want to use. Windows (Segoe UI), Linux (FreeSerif), MacOS (Apple Symbol).|`None`
 `position`  |`Tuple[int, int, str]` |A tuple that controls the position of the toast. Default is OS specific. The tuple corresponds to (horizontal, vertical, anchor), where the horizontal and vertical elements represent the position of the toplevel relative to the anchor, which is 'ne' or top-left by default. Acceptable anchors include: n, e, s, w, nw, ne, sw, se. For example: (100, 100, 'ne').|`None`
-`**kwargs`  |`Dict`                 |Other keyword arguemnts passed to the `Toplevel` window|`{}`
+`**kwargs`  |`Dict`                 |Other keyword arguments passed to the `Toplevel` window|`{}`
 
-### `hide_toast(self, *_)`
+### `hide_toast`
+    (self, *_)
 Destroy and close the toast window.
 
-### `show_toast(self, *_)`
+### `show_toast`
+    (self, *_)
 Create and show the toast window.
