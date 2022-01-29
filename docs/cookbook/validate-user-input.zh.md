@@ -1,16 +1,10 @@
-# Validate user input
+# 验证用户输入
 
-Any widget that derives from `Entry` has the ability to validate the user input. When 
-the widget is in an **invalid** state, the border color changes to a **danger** color.
+任何基于 `Entry` 的小部件都可以验证用户输入。 当小部件处于 **invalid** 状态时，边框颜色将变为 **danger** 颜色。
 
-![invalid entry](../assets/cookbook/entry-validation.gif)
+![无效条目](../assets/cookbook/entry-validation.gif)
 
-In this example, the validation type is `focus`, which means that the validation
-function is run everytime the widget receives or loses focus. There are several
-other types of validation, and many ways to configure the validation. A future
-tutorial will discuss this in more detail, but in the meantime, you can consult
-the [tcl/tk documentation](https://tcl.tk/man/tcl8.6/TkCmd/ttk_entry.htm) for more 
-information on what is available for validation.
+在此示例中，验证类型为`focus`，这意味着每次小部件接收或失去焦点时都会运行验证函数。 还有几种其他类型的验证，以及许多配置验证的方法。 未来的教程将对此进行更详细的讨论，但与此同时，您可以查阅 [tcl/tk 文档](https://tcl.tk/man/tcl8.6/TkCmd/ttk_entry.htm) 了解更多关于什么可用于验证的信息。
 
 ```python
 import ttkbootstrap as ttk
