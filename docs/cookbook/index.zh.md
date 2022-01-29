@@ -1,6 +1,6 @@
-# Cookbook
+# 食谱
 
-A growing collection of recipes that demonstrate how to do particular things in ttkbootstrap.
-<br><br> 
+越来越多的食谱展示了如何在 ttkbootstrap 中做特定的事情。
+<br><br>
 
-![recipes](../assets/cookbook/code-cooking.jfif)
+![食谱](../assets/cookbook/code-cooking.jfif)

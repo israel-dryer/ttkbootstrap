@@ -1,20 +1,18 @@
-# Magic Mouse
-This application demonstrates a complicated design with many options and 
-several label frames. A **link** button style is used on all buttons
-that use images.
+# 魔术鼠标
+此应用程序演示了一个具有许多选项和多个标签框架的复杂设计。 **link** 按钮样式用于所有使用图像的按钮。
 
-![file search image example](../assets/gallery/magic_mouse.png)
+![文件搜索图像示例](../assets/gallery/magic_mouse.png)
 
-## Style Summary
-The theme used is **lumen**.
+## 风格总结
+使用的主题是**lumen**。
 
-| Item              | Class        | Bootstyle  |
+| 项目              | 类        | 配色风格  |
 | ---               | ---          | ---        |
-| Image buttons     | `Button`     | link       |
-| License number    | `Label`      | primary    |
+| 图像按钮     | `Button`     | link       |
+| 许可号    | `Label`      | primary    |
 
-## Example Code
-[Run this code live](https://replit.com/@israel-dryer/magic-mouse#main.py) on repl.it
+## 示例代码
+[在 repl.it 上实时运行此代码](https://replit.com/@israel-dryer/magic-mouse#main.py)
 
 ```python
 from pathlib import Path

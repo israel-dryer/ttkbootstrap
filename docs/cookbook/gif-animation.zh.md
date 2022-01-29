@@ -1,10 +1,8 @@
-# Gif Animation
+# Gif 动画
 
-This example demonstrates how to animate a gif in the window while
-keeping the window responsive to user input by scheduling updates
-to the label image from a list of images.
+此示例演示如何在窗口中设置 gif 动画，同时通过安排从图像列表中对标签图像的更新来保持窗口对用户输入的响应。
 
-![gif animation](../assets/cookbook/animated-gif.gif)
+![gif 动画](../assets/cookbook/animated-gif.gif)
 
 ```python
 # https://dribbble.com/shots/1237618--Gif-Spinner
