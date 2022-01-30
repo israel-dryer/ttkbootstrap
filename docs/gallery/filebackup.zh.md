@@ -1,26 +1,22 @@
-# File Backup Utility
-This example demonstrates how to use various styles to build a UI for a 
-File Backup Utility application. A custom `CollapsingFrame` class contains 
-the left-side info panels as well as the output on the bottom right. These 
-contain indicator buttons on the right-side of the header which collapse and 
-expand the `Frame` with a mouse-click action. 
+# 文件备份实用程序
+此示例演示如何使用各种样式为文件备份实用程序应用程序构建 UI。自定义的 `CollapsingFrame` 类包含左侧信息面板以及右下角的输出。这些包含标题右侧的指示器按钮，可通过鼠标单击操作折叠和展开“框架”。
 
-![file search image example](../assets/gallery/back_me_up.png)
+![文件搜索图像示例](../assets/gallery/back_me_up.png)
 
-## Style Summary
-The theme used in this example is **litera**.
+## 风格总结
+此示例中使用的主题是 **litera**。
 
-| Item                              | Class             | Bootstyle |
-| ---                               | ---               | ---|
-| Top button bar                    | `Button`          | primary |
-| Collapsible frames                | `CollapsingFrame` | secondary |
-| Separators                        | `Separator`       | secondary |
-| Progressbar                       | `Progressbar`     | success |
-| Properties, stop, add to backup   | `Button`          | link |
-| File Open                         | `Button`          | secondary-link |
+|项目 |类 |配色风格 |
+| --- | --- | ---|
+|顶部按钮栏 | `Button` |primary |
+|可折叠框架 | `CollapsingFrame` |secondary |
+|分隔符 | `Separator` |secondary |
+|进度条 | `Progressbar` |success|
+|属性、停止、添加到备份 | `Button` |link |
+|打开文件 | `Button` |secondary-link |
 
-## Example Code
-[Run this code live](https://replit.com/@israel-dryer/file-backup-utility#main.py) on repl.it
+## 示例代码
+[在 repl.it 上实时运行此代码](https://replit.com/@israel-dryer/file-backup-utility#main.py)
 
 ```python
 from datetime import datetime

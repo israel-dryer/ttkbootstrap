@@ -111,7 +111,7 @@
 ::msgcat::mcset zh_cn "The quick brown fox jumps over the lazy dog." "敏捷的棕色狐狸跳过懒惰的狗。"
 
 ::msgcat::mcset  zh_cn "Print" "输出"
-::msgcat::mcset  zh_cn "Printer" "输出器"
+::msgcat::mcset  zh_cn "Printer" "打印机"
 ::msgcat::mcset  zh_cn "Letter " "信 "
 ::msgcat::mcset  zh_cn "Legal " "合法的 "
 ::msgcat::mcset  zh_cn "A4" "A4"

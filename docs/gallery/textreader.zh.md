@@ -1,19 +1,18 @@
-# Text Reader
-This application opens a text file and puts the data into a scrolled `Text` 
-widget. 
+# 文本阅读器
+此应用程序打开一个文本文件并将数据放入滚动的`文本`小部件中。
 
-![file search image example](../assets/gallery/text_reader.png)  
+![文件搜索图像示例](../assets/gallery/text_reader.png)
 
-## Style Summary
-The theme applied is **sandstone**.
+## 风格总结
+应用的主题是**sandstone**。
 
-| Item          | Class     | Bootstyle |
+| 项目          | 类     | 配色样式 |
 | ---           | ---       | --- |
-| file entry    | `Entry`   | default |
-| Browe button  | `Button`  | default |
+| 文件文本框    | `Entry`   | default |
+| 选择文件按钮  | `Button`  | default |
 
-## Example Code
-[Run this code live](https://replit.com/@israel-dryer/text-reader#main.py) on repl.it
+## 示例代码
+[在 repl.it 上实时运行此代码](https://replit.com/@israel-dryer/text-reader#main.py)
 
 ```python
 import ttkbootstrap as ttk
