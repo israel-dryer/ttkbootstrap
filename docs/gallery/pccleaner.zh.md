@@ -1,5 +1,5 @@
 # 电脑垃圾清理器
-此示例演示如何使用各种样式为电脑垃圾清理器应用程序构建 UI。 这是改编自您可以在[此处]（https://images.idgesg.net/images/article/2018/08/cw_win10_utilities_ss_02-100769136-orig.jpg）找到的图像。
+此示例演示如何使用各种样式为电脑垃圾清理器应用程序构建 UI。 这是改编自您可以在[此处](https://images.idgesg.net/images/article/2018/08/cw_win10_utilities_ss_02-100769136-orig.jpg)找到的图像。
 
 <font size=2><s>CCleaner：你叫我？（译者注）</s></font>
 
