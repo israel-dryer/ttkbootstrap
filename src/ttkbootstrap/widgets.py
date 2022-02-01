@@ -92,7 +92,7 @@ class DateEntry(ttk.Frame):
 
     ![](../../assets/widgets/date-entry.png)
     """
-    
+
     def __init__(
         self,
         master=None,
