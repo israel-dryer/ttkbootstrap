@@ -1,22 +1,21 @@
-# Media Player
-This example demonstrates how to build a media player GUI. The buttons are 
-simple unicode characters. 
+# 媒体播放器
+此示例演示如何构建媒体播放器 GUI。 这些按钮是简单的 Unicode 字符。
 
-![file search image example](../assets/gallery/media_player.png)
+![文件搜索图像示例](../assets/gallery/media_player.png)
 
-## Style Summary
-The theme used in this example is **yeti**.
+## 风格总结
+此示例中使用的主题是 **yeti**。
 
-| Item                  | Class     | Bootstyle |
+| 项目                  | 类     | 配色样式 |
 | ---                   | ---       | --- |
-| Header                | `Label`   | light-inverse |
-| Media Controls        | `Button`  | primary |
-| File Open             | `Button`  | secondary |
-| Time Elapsed Slider   | `Scale`   | secondary |
+| 顶部栏                | `Label`   | light-inverse |
+| 媒体控制        | `Button`  | primary |
+| 打开文件             | `Button`  | secondary |
+| 时间滑块   | `Scale`   | secondary |
 
 
-## Example Code
-[Run this code live](https://replit.com/@israel-dryer/media-player#main.py) on repl.it
+## 示例代码
+[在 repl.it 上实时运行此代码](https://replit.com/@israel-dryer/media-player#main.py)
 
 ```python
 from pathlib import Path

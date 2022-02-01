@@ -1,20 +1,20 @@
-# PC Cleaner
-This example demonstrates how to use various styles to build a UI for a PC 
-Cleaner application. This is adapted from an image you can find 
-[here](https://images.idgesg.net/images/article/2018/08/cw_win10_utilities_ss_02-100769136-orig.jpg).
+# 电脑垃圾清理器
+此示例演示如何使用各种样式为电脑垃圾清理器应用程序构建 UI。 这是改编自您可以在[此处](https://images.idgesg.net/images/article/2018/08/cw_win10_utilities_ss_02-100769136-orig.jpg)找到的图像。
 
-![file search image example](../assets/gallery/pc_cleaner.png)
+<font size=2><s>CCleaner：你叫我？（译者注）</s></font>
 
-## Style Summary
-The theme used in this example is **pulse**.
+![文件搜索图像示例](../assets/gallery/pc_cleaner.png)
 
-| Item                  | Class         | Bootstyle |
+## 风格总结
+此示例中使用的主题是 **pulse**。
+
+| 项目                  | 类         | 配色样式 |
 | ---                   | ---           | --- |
-| Action buttons        | `Button`      | info |
-| Progressbar           | `Progressbar` | success-striped |
+| 操作按钮        | `Button`      | info |
+| 进度条           | `Progressbar` | success-striped |
 
-## Example Code
-[Run this code live](https://replit.com/@israel-dryer/pc-cleaner#main.py) on repl.it
+## 示例代码
+[在 repl.it 上实时运行此代码](https://replit.com/@israel-dryer/pc-cleaner#main.py)
 
 ```python
 from pathlib import Path

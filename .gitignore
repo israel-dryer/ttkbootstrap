@@ -8,8 +8,8 @@ dist
 *_static
 .vscode
 __pycache__
-experiment
 testing_notes.txt
 docsenv
 errors
-development*
+development/archived
+development/issues

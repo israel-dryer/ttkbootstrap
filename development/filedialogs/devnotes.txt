@@ -1,0 +1,44 @@
+Top activity bar
+
+back and forward navigation buttons
+- keep a record of folders navigated to and iterate through this pathlist
+
+breadcrumbs widget
+- each crumb is a button that takes you to that level
+- the crumbs match the current folder
+- only the top x crumbs are displayed as they fit on the screen
+- lower levels are cut off as they no longer fit on the screen
+- these buttons should be predefined to fit the screen size
+- the crumb button text and command will be updated when the view changes
+- the crumb button will be unpacked if not needed, and packed when needed
+- use the link-button style on the crumbs, separated by a '>' symbol
+- remove the style padding from the link buttons on these buttons
+
+Left folder treeview (tree)
+- icon + name
+- initial depth is 2 levels
+- another level is added only when drilled into
+- clicking on a folder in this treeview will update the right-folder treeview and the breadcrumbs
+
+Right folder treeview (headers)
+- icon + name
+- values (Date modified, Type, Size)
+- clicking on a folder in this view will update the breadcrumbs
+- add alternating stripes
+
+File name entry
+File type combo
+
+button box (Open, Cancel)
+
+Other design options
+- Use a paned window between the left treeview and right treeview.
+- Use a vertical scrollbar in the left treeview.
+- Use a vertical and horizontal scrollbar in the right treeview.
+- Set the window as a standard size.
+- Add a sizegrip to the button right of the window so that it is resizable
+
+Other options
+- save as dialog
+- open dialog
+- show only folders (directories)
