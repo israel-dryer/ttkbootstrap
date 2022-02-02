@@ -41,6 +41,7 @@ plugins:
           "Themes": 主题
           "Gallery": 图库
           "Cookbook": 食谱
+          "Changelog": 更新日志
 
 markdown_extensions:
   - admonition
@@ -61,7 +62,7 @@ nav:
   - Home: 
     - index.md
     - about.md
-    - changelog.md
+    - 'Changelog': https://github.com/israel-dryer/ttkbootstrap/releases
     - license.md
   - 'Getting started':
     - gettingstarted/installation.md
