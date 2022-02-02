@@ -11,7 +11,7 @@
     https://www.tcl.tk/man/tcl/TclCmd/msgcat.html    
 """
 from pathlib import Path
-from tkinter import _get_default_root as default_root
+from ttkbootstrap.window import get_default_root
 
 MSGS_PATH = (Path(__file__).parent / 'msgs').as_posix()
 
@@ -51,7 +51,7 @@ class MessageCatalog:
             str:
                 The translated string.
         """
-        root = default_root()
+        root = get_default_root()
         command = '::msgcat::mc'
         return root.tk.eval(f'{command} "{src}"')
 
@@ -76,7 +76,7 @@ class MessageCatalog:
                 The current locale name if newlocale is None or an empty 
                 string.
         """
-        root = default_root()
+        root = get_default_root()
         command = '::msgcat::mclocale'
         return root.tk.eval(f'{command} {newlocale or ""}')
 
@@ -92,7 +92,7 @@ class MessageCatalog:
             List[str]:
                 Locales preferred by the user.
         """
-        root = default_root("preferences")
+        root = get_default_root()
         command = '::msgcat::mcpreferences'
         items = root.tk.eval(command).split(' ')
         if len(items) > 0:
@@ -112,7 +112,7 @@ class MessageCatalog:
             dirname (str):
                 The directory path of the msg files.
         """
-        root = default_root()
+        root = get_default_root()
         command = '::msgcat::mcload'
         root.tk.eval(f'{command} {dirname}')
 
@@ -132,7 +132,7 @@ class MessageCatalog:
             translated (str):
                 The translated string.
         """
-        root = default_root()
+        root = get_default_root()
         command = '::msgcat::mcset'
         root.tk.eval(f'{command} {locale} {src} {translated or ""}')
 
@@ -154,7 +154,7 @@ class MessageCatalog:
             int:
                 The number of translation sets.
         """
-        root = default_root()
+        root = get_default_root()
         command = '::msgcat::mcmset'
         return int(root.tk.eval(f'{command} {locale} {" ".join(args)}'))
 
@@ -174,7 +174,7 @@ class MessageCatalog:
             int:
                 The length of the longest str.
         """
-        root = default_root()
+        root = get_default_root()
         command = '::msgcat::mcmax'
         return int(root.tk.eval(f'{command} {" ".join(src)}'))
 

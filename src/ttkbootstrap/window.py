@@ -10,6 +10,17 @@ from ttkbootstrap.icons import Icon
 from ttkbootstrap import utility
 
 
+def get_default_root(what=None):
+    if not tkinter._support_default_root:
+        raise RuntimeError("No master specified and tkinter is "
+                           "configured to not support default root")
+    if not tkinter._default_root:
+        if what:
+            raise RuntimeError(f"Too early to {what}: no default root window")
+        root = tkinter.Tk()
+        assert tkinter._default_root is root
+    return tkinter._default_root
+
 class Window(tkinter.Tk):
     """A class that wraps the tkinter.Tk class in order to provide a
     more convenient api with additional bells and whistles. For more
