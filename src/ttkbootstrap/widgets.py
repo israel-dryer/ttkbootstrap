@@ -10,7 +10,6 @@ from tkinter.ttk import Scale, Scrollbar, Separator
 from tkinter.ttk import Sizegrip, Spinbox, Treeview
 from ttkbootstrap.constants import *
 from math import ceil
-import locale
 
 # date entry imports
 from ttkbootstrap.dialogs import Querybox
@@ -77,7 +76,7 @@ class DateEntry(ttk.Frame):
 
     The date chooser popup will use the date in the combobox as the
     date of focus if it is in the format specified by the
-    `dateformat` parameter. By default, this format is "locale.D_FMT".
+    `dateformat` parameter. By default, this format is "%Y-%m-%d".
 
     The bootstyle api may be used to change the style of the widget.
     The available colors include -> primary, secondary, success,
@@ -96,7 +95,7 @@ class DateEntry(ttk.Frame):
     def __init__(
         self,
         master=None,
-        dateformat=locale.nl_langinfo(locale.D_FMT),
+        dateformat=r"%Y-%m-%d",
         firstweekday=6,
         startdate=None,
         bootstyle="",
@@ -110,7 +109,7 @@ class DateEntry(ttk.Frame):
 
             dateformat (str, optional):
                 The format string used to render the text in the entry
-                widget "%Y/%m/%d". For more information on acceptable formats, see https://strftime.org/
+                widget. For more information on acceptable formats, see https://strftime.org/
 
             firstweekday (int, optional):
                 Specifies the first day of the week. 0=Monday, 1=Tuesday,
