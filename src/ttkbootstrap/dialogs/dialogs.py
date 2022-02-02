@@ -147,7 +147,7 @@ class Dialog(BaseWidget):
         self._toplevel.bind("<Escape>", lambda _: self._toplevel.destroy())
 
         # set position of popup from parent window
-        #self._locate()
+        # self._locate()
 
         # create widgets
         self.create_body(self._toplevel)
@@ -633,7 +633,7 @@ class DatePickerDialog:
         self.frm_header.pack(fill=X)
 
         # setup the toplevel widget
-        self.root.withdraw() # reset the iconify state
+        self.root.withdraw()  # reset the iconify state
         self.frm_calendar.update_idletasks()  # actualize geometry
 
         # create visual components
@@ -741,7 +741,10 @@ class DatePickerDialog:
             ).pack(side=LEFT, fill=X, expand=YES)
 
     def _set_title(self):
-        _titledate = f'{self.date.strftime("%B %Y")}'
+        _month = f'{self.date.strftime("%B")}'
+        _month = MessageCatalog.translate(_month)
+        _year = f'{self.date.strftime("%Y")}'
+        _titledate = _month + " " + _year
         self.titlevar.set(value=_titledate)
 
     def _current_month_days(self):
@@ -766,14 +769,14 @@ class DatePickerDialog:
             List[str]:
                 A list of weekday column names for the calendar header.
         """
-        weekdays = [MessageCatalog.translate("Mo"), 
+        weekdays = [MessageCatalog.translate("Mo"),
                     MessageCatalog.translate("Tu"),
-                    MessageCatalog.translate("We"), 
-                    MessageCatalog.translate("Th"), 
-                    MessageCatalog.translate("Fr"), 
-                    MessageCatalog.translate("Sa"), 
+                    MessageCatalog.translate("We"),
+                    MessageCatalog.translate("Th"),
+                    MessageCatalog.translate("Fr"),
+                    MessageCatalog.translate("Sa"),
                     MessageCatalog.translate("Su")]
-        header = weekdays[self.firstweekday :] + weekdays[: self.firstweekday]
+        header = weekdays[self.firstweekday:] + weekdays[: self.firstweekday]
         return header
 
     def _on_date_selected(self, row, col):
@@ -867,7 +870,7 @@ class DatePickerDialog:
         if month == 1:
             return year-1, 12
         else:
-            return year, month-1            
+            return year, month-1
 
 
 class FontDialog(Dialog):
@@ -950,7 +953,8 @@ class FontDialog(Dialog):
         container = ttk.Frame(master)
         container.pack(fill=BOTH, expand=YES, side=LEFT)
 
-        header = ttk.Label(container, text=MessageCatalog.translate("Family"), font="TkHeadingFont")
+        header = ttk.Label(container, text=MessageCatalog.translate(
+            "Family"), font="TkHeadingFont")
         header.pack(fill=X, pady=(0, 2), anchor=N)
 
         listbox = ttk.Treeview(
@@ -987,7 +991,8 @@ class FontDialog(Dialog):
         container = ttk.Frame(master)
         container.pack(side=LEFT, fill=Y, padx=(10, 0))
 
-        header = ttk.Label(container, text=MessageCatalog.translate("Size"), font="TkHeadingFont")
+        header = ttk.Label(container, text=MessageCatalog.translate(
+            "Size"), font="TkHeadingFont")
         header.pack(fill=X, pady=(0, 2), anchor=N)
 
         sizes_listbox = ttk.Treeview(container, height=7, columns=[0], show="")
@@ -1018,7 +1023,8 @@ class FontDialog(Dialog):
         container = ttk.Frame(master, padding=padding)
         container.pack(fill=X, padx=2, pady=2, anchor=N)
 
-        weight_lframe = ttk.Labelframe(container, text=MessageCatalog.translate("Weight"), padding=5)
+        weight_lframe = ttk.Labelframe(
+            container, text=MessageCatalog.translate("Weight"), padding=5)
         weight_lframe.pack(side=LEFT, fill=X, expand=YES)
         opt_normal = ttk.Radiobutton(
             master=weight_lframe,
@@ -1036,7 +1042,8 @@ class FontDialog(Dialog):
         )
         opt_bold.pack(side=LEFT, padx=5, pady=5)
 
-        slant_lframe = ttk.Labelframe(container, text=MessageCatalog.translate("Slant"), padding=5)
+        slant_lframe = ttk.Labelframe(
+            container, text=MessageCatalog.translate("Slant"), padding=5)
         slant_lframe.pack(side=LEFT, fill=X, padx=10, expand=YES)
         opt_roman = ttk.Radiobutton(
             master=slant_lframe,
@@ -1054,7 +1061,8 @@ class FontDialog(Dialog):
         )
         opt_italic.pack(side=LEFT, padx=5, pady=5)
 
-        effects_lframe = ttk.Labelframe(container, text=MessageCatalog.translate("Effects"), padding=5)
+        effects_lframe = ttk.Labelframe(
+            container, text=MessageCatalog.translate("Effects"), padding=5)
         effects_lframe.pack(side=LEFT, padx=(2, 0), fill=X, expand=YES)
         opt_underline = ttk.Checkbutton(
             master=effects_lframe, text=MessageCatalog.translate("underline"), variable=self._underline
@@ -1069,10 +1077,12 @@ class FontDialog(Dialog):
         container = ttk.Frame(master, padding=padding)
         container.pack(fill=BOTH, expand=YES, anchor=N)
 
-        header = ttk.Label(container, text=MessageCatalog.translate("Preview"), font="TkHeadingFont")
+        header = ttk.Label(container, text=MessageCatalog.translate(
+            "Preview"), font="TkHeadingFont")
         header.pack(fill=X, pady=2, anchor=N)
 
-        content = MessageCatalog.translate("The quick brown fox jumps over the lazy dog.")
+        content = MessageCatalog.translate(
+            "The quick brown fox jumps over the lazy dog.")
         self._preview_text = ttk.Text(
             master=container,
             height=3,
