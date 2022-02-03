@@ -17,29 +17,22 @@ MSGS_PATH = (Path(__file__).parent / 'msgs').as_posix()
 
 
 def initialize_localities():
-    """Check if in a locality with custom messages. If so, load."""
+    """Load all custom msg files."""
     MessageCatalog.load(MSGS_PATH)
 
 class MessageCatalog:
 
     @staticmethod
-    def translate(src, *args):
+    def translate(src):
         """Returns a translation of src according to the user's current 
-        locale. If additional arguments past src are given, the format 
-        command is used to substitute the additional arguments in the 
-        translation of src. `msgcat_mc` will search the messages defined 
-        in the current namespace for a translation of src; if none is 
-        found, it will search in the parent of the current namespace, 
-        and so on until it reaches the global namespace. If no translation 
-        string exists, `msgcat_mcunknown` is called and the string 
-        returned from `msgcat_mcunknown` is returned.
+        locale. 
 
-        The main function used to localize an application. Instead of 
-        using an English string directly, an applicaton can pass the 
-        English string through `msgcat_mc` and use the result. If an 
-        application is written for a single language in this fashion, 
-        then it is easy to add support for additional languages later 
-        simply by defining new message catalog entries.
+        This is the main function used to localize an application. 
+        Instead of using an English string directly, an applicaton can 
+        pass the English string through `translate` and use the result. 
+        If an application is written for a single language in this 
+        fashion, then it is easy to add support for additional languages 
+        later simply by defining new message catalog entries.
 
         Parameters:
 
@@ -60,9 +53,7 @@ class MessageCatalog:
         """"This function sets the locale to newlocale. If newlocale is 
         omitted, the current locale is returned, otherwise the current 
         locale is set to newlocale. The initial locale defaults to the 
-        locale specified in the user's environment. See LOCALE AND 
-        SUBLOCALE SPECIFICATION for a description of the locale string 
-        format.
+        locale specified in the user's environment. 
 
         Parameters:
 
@@ -72,7 +63,7 @@ class MessageCatalog:
 
         Returns:
 
-            Union[str]:
+            str:
                 The current locale name if newlocale is None or an empty 
                 string.
         """
@@ -84,12 +75,11 @@ class MessageCatalog:
         """Returns an ordered list of the locales preferred by the user, 
         based on the user's language specification. The list is ordered 
         from most specific to least preference. If the user has specified 
-        LANG=en_US_funky, this procedure would return 
-        {en_US_funky en_US en}.
+        LANG=en_US_funky, this method would return {en_US_funky en_US en}.
 
         Returns:
 
-            List[str]:
+            List[str, ...]:
                 Locales preferred by the user.
         """
         root = get_default_root()
@@ -102,28 +92,32 @@ class MessageCatalog:
 
     def load(dirname):
         """Searches the specified directory for files that match the 
-        language specifications returned by `msgcat_mcpreferences`. 
-        Each file located is sourced. The file extension is .msg. The 
-        number of message files which matched the specification and 
-        were loaded is returned.
+        language specifications returned by `preferences`. Each file 
+        located is sourced.
 
         Parameters:
 
             dirname (str):
                 The directory path of the msg files.
+
+        Returns:
+
+            int:
+                Then number of message files which matched the
+                specification and were loaded.
         """
         root = get_default_root()
         command = '::msgcat::mcload'
-        root.tk.eval(f'{command} {dirname}')
+        return int(root.tk.eval(f'{command} {dirname}'))
 
     def set(locale, src, translated=None):
-        """Sets the translation for src to translated in the specified 
-        locale. If translated is not specified, src is used for both. 
-        The function returns translated.
+        """Sets the translation for 'src' to 'translated' in the 
+        specified locale. If translated is not specified, src is used 
+        for both.
 
         Parameters:
 
-            local (str):
+            locale (str):
                 The local code used when translating the src.
 
             src (str):
@@ -143,7 +137,7 @@ class MessageCatalog:
 
         Parameters:
 
-            local (str):
+            locale (str):
                 The local code used when translating the src.
 
             *args (str):

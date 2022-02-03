@@ -1536,7 +1536,7 @@ class Querybox:
 
         Returns:
 
-            Tuple[rgb, hsl, hex]                
+            Tuple[rgb, hsl, hex]:                
                 The selected color in various colors models.
         """
         from ttkbootstrap.dialogs.colorchooser import ColorChooserDialog

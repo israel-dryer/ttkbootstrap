@@ -77,7 +77,7 @@ def color_to_hsl(color, model=HEX):
     
     Returns:
     
-        Tuple:
+        Tuple[int, int, int]:
             The hsl color values.
     """
     r, g, b = color_to_rgb(color, model)
@@ -112,6 +112,11 @@ def update_hsl_value(color, hue=None, sat=None, lum=None, inmodel=HSL, outmodel=
         outmodel (str):
             The color value model to be returned when the color is
             changed. One of hsl, rgb, hex.
+
+    Returns:
+
+        Union[Tuple[int, int, int], str]:
+            The color value based on the selected color model.
     """
     h, s, l = color_to_hsl(color, inmodel)
     if hue is not None:
@@ -153,6 +158,11 @@ def contrast_color(color, model=RGB, darkcolor='#000', lightcolor='#fff'):
         lightcolor (Any):
             The color value to be returned when the constrasting color
             should be light.
+
+    Returns:
+
+        str:
+            The matching color value.
     """
     if model != RGB:
         r, g, b = color_to_rgb(color, model)
@@ -169,6 +179,20 @@ def contrast_color(color, model=RGB, darkcolor='#000', lightcolor='#fff'):
 def conform_color_model(color, model):
     """Conform the color values to a string that can be interpreted
     by the `PIL.ImageColor.getrgb method`.
+
+    Parameters:
+
+        color (Union[Tuple[int, int, int], str]):
+            The color value to conform.
+
+        model (str):
+            One of 'HSL', 'RGB', or 'HEX'
+
+    Returns:
+
+        str:
+            A color value string that can be used as a parameter in the
+            PIL.ImageColor.getrgb method.
     """    
     if model == HSL:
         h, s, l = color
