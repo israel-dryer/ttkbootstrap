@@ -203,7 +203,6 @@ class ScrolledFrame(ttk.Frame):
         app.mainloop()        
         ```
 """
-
     def __init__(
         self,
         master=None,
@@ -280,23 +279,40 @@ class ScrolledFrame(ttk.Frame):
             if any(["pack" in method, "grid" in method, "place" in method]):
                 setattr(self, method, getattr(self.container, method))
 
-        self.bind("<Configure>", self._resize_canvas)
-        self._canvas.bind("<Enter>", self._enable_scrolling, "+")
-        self._canvas.bind("<Leave>", self._disable_scrolling, "+")
-
+        self.container.bind("<Configure>", self._on_configure, "+")
+        self.container.bind("<Map>", self._on_map, "+")
+        self.container.bind("<Enter>", self._enable_scrolling, "+")
+        self.container.bind("<Leave>", self._disable_scrolling, "+")
+        self.refresh_geometry()
+        
         if autohide:
             self.autohide_scrollbar()
-            self.hide_scrollbars()
+            self.hide_scrollbars()  
 
-    def _resize_canvas(self, *_):
-        """Resize the canvas when frame is resized"""
+    def _on_configure(self, _):
+        """Callback for when container is configured"""
         self.update_idletasks()
+        height = max([self.winfo_height(), self.winfo_reqheight()])
+        if self.container.winfo_ismapped():
+            width = self.container.winfo_width()
+            cheight = self.container.winfo_height()
+        else:
+            width = self.container.winfo_reqwidth()
+            cheight = self.container.winfo_reqheight()
+        height = cheight if height == 1 else height
         self._canvas.config(scrollregion=self._canvas.bbox(ALL))
-        self._canvas.itemconfig(
-            self._wid, 
-            width=self._canvas.winfo_width(),
-            height=self._canvas.winfo_height()
-        )
+        self._canvas.itemconfig(self._wid, width=width, height=height)
+
+    def _on_map(self, _):
+        """Callback for when the widget is mapped"""
+        self.refresh_geometry()
+
+    def refresh_geometry(self):
+        """Force the frame to refresh its height based on the frame 
+        contents. This is necessary if you've added widgets to the frame 
+        after the screen has already been drawn.
+        """
+        self._on_configure(None)
 
     def hide_scrollbars(self, *_):
         """Hide the scrollbars."""
