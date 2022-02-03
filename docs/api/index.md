@@ -3,6 +3,9 @@
 ttkbootstrap is a wrapper on tkinter. Any widget or function not defined
 specifically in this library can be found in [other references](#other-references).
 
+## 🌈 [colorutils module](colorutils.md)
+This module contains various helper methods for manipulating colors.
+
 ## 💬 dialogs module
 This module contains various base dialog base classes (ending in "Dialog") 
 that can be used to create custom dialogs for the end user. These base 
@@ -10,12 +13,14 @@ classes serve as the basis for the pre-defined static helper methods in
 the `Messagebox`, and `Querybox` container classes, which include many
 pre-defined message and query dialog configurations.
 
+❯ [ColorChooserDialog](dialogs/colorchooser.md)  
+❯ [ColorDropperDialog](dialogs/colordropper.md)  
 ❯ [Dialog](dialogs/dialog.md)  
-❯ [MessageDialog](dialogs/messagedialog.md)  
-❯ [QueryDialog](dialogs/querydialog.md)  
 ❯ [FontDialog](dialogs/fontdialog.md)  
 ❯ [MessageBox](dialogs/messagebox.md)  
+❯ [MessageDialog](dialogs/messagedialog.md)  
 ❯ [QueryBox](dialogs/querybox.md)  
+❯ [QueryDialog](dialogs/querydialog.md)  
 
 ## 😉 icons module
 This module contains classes that provide emojis or image icons for your
@@ -24,6 +29,11 @@ application. They can be used in text as `Emoji` or in the
 
 ❯ [Emoji](icons/emoji.md)  
 ❯ [Icon](icons/icon.md)  
+
+## 🈚 localization module
+The module includes methods and classes for localizing the text in gui
+widgets. [Your help is needed](https://github.com/israel-dryer/ttkbootstrap/blob/master/src/ttkbootstrap/localization/msgs/README.md) 
+to add to the msg files used to translate the text!
 
 ## 📜 scrolled module
 This module contains various scrolled widgets such as `ScrolledText` and

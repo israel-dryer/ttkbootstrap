@@ -41,6 +41,7 @@ plugins:
           "Themes": 主题
           "Gallery": 图库
           "Cookbook": 食谱
+          "Changelog": 更新日志
 
 markdown_extensions:
   - admonition
@@ -61,7 +62,7 @@ nav:
   - Home: 
     - index.md
     - about.md
-    - changelog.md
+    - 'Changelog': https://github.com/israel-dryer/ttkbootstrap/releases
     - license.md
   - 'Getting started':
     - gettingstarted/installation.md
@@ -94,19 +95,21 @@ nav:
     - styleguide/legacywidgets.md
   - API: 
     - api/index.md
+    - api/colorutils.md
     - 'dialogs module':
       - api/dialogs/colorchooser.md
       - api/dialogs/colordropper.md
-      - api/dialogs/dialog.md
-      - api/dialogs/messagedialog.md
-      - api/dialogs/querydialog.md
       - api/dialogs/datepickerdialog.md
+      - api/dialogs/dialog.md
       - api/dialogs/fontdialog.md
       - api/dialogs/messagebox.md
+      - api/dialogs/messagedialog.md
       - api/dialogs/querybox.md
+      - api/dialogs/querydialog.md
     - 'icons module':
       - api/icons/emoji.md
       - api/icons/icon.md
+    - api/localization.md
     - 'scrolled module':
       - api/scrolled/scrolledframe.md
       - api/scrolled/scrolledtext.md
