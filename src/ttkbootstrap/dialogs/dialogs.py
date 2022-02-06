@@ -8,6 +8,7 @@
 
 import calendar
 import textwrap
+import locale
 from datetime import datetime
 from tkinter import font
 import ttkbootstrap as ttk
@@ -563,7 +564,8 @@ class DatePickerDialog:
     ![](../../assets/dialogs/date-picker-dialog.png)
 
     """
-
+    
+    locale.setlocale(locale.LC_ALL, locale.setlocale(locale.LC_TIME,''))
     def __init__(
         self,
         parent=None,
@@ -742,7 +744,7 @@ class DatePickerDialog:
 
     def _set_title(self):
         _titledate = f'{self.date.strftime("%B %Y")}'
-        self.titlevar.set(value=_titledate)
+        self.titlevar.set(value=_titledate.capitalize())
 
     def _current_month_days(self):
         """Fetch the day numbers and dates for all days in the current

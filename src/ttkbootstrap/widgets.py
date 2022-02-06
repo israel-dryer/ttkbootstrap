@@ -95,7 +95,7 @@ class DateEntry(ttk.Frame):
     def __init__(
         self,
         master=None,
-        dateformat=r"%Y-%m-%d",
+        dateformat=r"%x",
         firstweekday=6,
         startdate=None,
         bootstyle="",
