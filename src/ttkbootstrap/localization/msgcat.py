@@ -134,7 +134,7 @@ class MessageCatalog:
         """
         root = get_default_root()
         command = "::msgcat::mcmset"
-        return int(root.tk.eval(f'{command} {locale} {" ".join(args)}'))
+        return int(root.tk.eval(f'{command} {locale} {{{" ".join(args)}}}'))
 
     @staticmethod
     def max(*src):
@@ -159,8 +159,8 @@ class MessageCatalog:
 
 
 if __name__ == "__main__":
-
-    initialize_localities()
+    from ttkbootstrap import localization
+    localization.initialize_localities()
     MessageCatalog.locale("zh_cn")
     result = MessageCatalog.translate("Skip Messages")
     print(result)
