@@ -159,8 +159,8 @@ class MessageCatalog:
 
 
 if __name__ == "__main__":
-
-    initialize_localities()
+    from ttkbootstrap import localization
+    localization.initialize_localities()
     MessageCatalog.locale("zh_cn")
     result = MessageCatalog.translate("Skip Messages")
     print(result)
