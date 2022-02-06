@@ -134,7 +134,7 @@ class MessageCatalog:
         """
         root = get_default_root()
         command = "::msgcat::mcmset"
-        return int(root.tk.eval(f'{command} {locale} {" ".join(args)}'))
+        return int(root.tk.eval(f'{command} {locale} {{{" ".join(args)}}}'))
 
     @staticmethod
     def max(*src):
