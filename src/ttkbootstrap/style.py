@@ -491,7 +491,7 @@ class Style(ttk.Style):
 
         # apply localization
         from ttkbootstrap import localization
-        localization.initialize_localities()        
+        localization.initialize_localities()
 
     @property
     def colors(self):

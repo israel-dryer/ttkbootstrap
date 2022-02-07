@@ -23,9 +23,11 @@ class ColorDropperDialog:
 
     Zoom in and out on the zoom window by using the mouse wheel.
 
+    This widget is implemented for **Windows** and **Linux** only.
+
     ![](../../assets/dialogs/color-dropper.png)       
 
-    !!! warning "high resolution displays
+    !!! warning "high resolution displays"
         This widget may not function properly on high resolution
         displays if you are not using the application in high
         resolution mode. This is enabled automatically on Windows.
