@@ -50,39 +50,32 @@ class Dialog(BaseWidget):
     def _locate(self):
         toplevel = self._toplevel
         master = toplevel.master
-        screen_height = toplevel.winfo_screenheight()
-        screen_width = toplevel.winfo_screenwidth()
+        x = master.winfo_rootx()
+        y = master.winfo_rooty()
+        toplevel.geometry(f'+{x}+{y}')
 
-        toplevel.update_idletasks()
-        if master.winfo_viewable():
-            m_width = master.winfo_width()
-            m_height = master.winfo_height()
-            m_x = master.winfo_rootx()
-            m_y = master.winfo_rooty()
-        else:
-            m_width = screen_width
-            m_height = screen_height
-            m_x = m_y = 0
-        w_width = toplevel.winfo_reqwidth()
-        w_height = toplevel.winfo_reqheight()
-        x = int(m_x + (m_width - w_width) * 0.45)
-        y = int(m_y + (m_height - w_height) * 0.3)
-        if x + w_width > screen_width:
-            x = screen_width - w_width
-        elif x < 0:
-            x = 0
-        if y + w_height > screen_height:
-            y = screen_height - w_height
-        elif y < 0:
-            y = 0
-        toplevel.geometry(f"+{x}+{y}")
+    def show(self, position=None):
+        """Show the popup dialog
+        
+        Parameters:
 
-    def show(self):
-        """Show the popup dialog"""
-
+            position: Tuple[int, int]
+                The x and y coordinates used to position the dialog. By
+                default the dialog will anchor at the NW corner of the
+                parent window.
+        """
         self._result = None
         self.build()
-        self._locate()
+
+        if position is None:
+            self._locate()
+        else:
+            try:
+                x, y = position
+                self._toplevel.geometry(f'+{x}+{y}')
+            except:
+                self._locate()
+
         self._toplevel.deiconify()
         if self._alert:
             self._toplevel.bell()
@@ -844,17 +837,16 @@ class DatePickerDialog:
 
     def _set_window_position(self):
         """Move the window the to bottom-right of the parent widget, or
-        to the middle of the screen if no parent is provided.
+        the top-left corner of the master window if no parent is 
+        provided.
         """
-        width = self.root.winfo_reqwidth()
-        height = self.root.winfo_reqheight()
         if self.parent:
             xpos = self.parent.winfo_rootx() + self.parent.winfo_width()
             ypos = self.parent.winfo_rooty() + self.parent.winfo_height()
             self.root.geometry(f"+{xpos}+{ypos}")
         else:
-            xpos = self.root.winfo_screenwidth() // 2 - width
-            ypos = self.root.winfo_screenheight() // 2 - height
+            xpos = self.root.master.winfo_rootx()
+            ypos = self.root.master.winfo_rooty()
             self.root.geometry(f"+{xpos}+{ypos}")
 
     @staticmethod
