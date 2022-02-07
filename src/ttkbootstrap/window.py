@@ -11,6 +11,8 @@ from ttkbootstrap import utility
 
 
 def get_default_root(what=None):
+    """Returns the default root if it has been created, otherwise
+    returns a new instance."""
     if not tkinter._support_default_root:
         raise RuntimeError("No master specified and tkinter is "
                            "configured to not support default root")
@@ -20,6 +22,74 @@ def get_default_root(what=None):
         root = tkinter.Tk()
         assert tkinter._default_root is root
     return tkinter._default_root
+
+
+def apply_class_bindings(window: tkinter.Widget):
+    """Add class level event bindings in application"""
+    for className in ["TEntry", "TSpinbox", "TCombobox"]:
+        window.bind_class(
+            className=className, 
+            sequence="<Configure>", 
+            func=on_disabled_readonly_state,
+            add="+"
+        )
+
+        for sequence in ["<Control-a>", "<Control-A>"]:
+            window.bind_class(
+                className=className, 
+                sequence=sequence,
+                func=on_select_all
+        )
+
+
+def apply_all_bindings(window: tkinter.Widget):
+    """Add bindings to all widgets in the application"""
+    window.bind_all('<Map>', on_map_child, '+')
+
+
+def on_disabled_readonly_state(event):
+    """Change the cursor of entry type widgets to 'arrow' if in a 
+    disabled or readonly state."""
+    try:
+        widget = event.widget
+        state = str(widget.cget('state'))
+        cursor = str(widget.cget('cursor'))
+        if state in (DISABLED, READONLY):
+            if cursor == 'arrow':
+                return
+            else:
+                widget['cursor'] = 'arrow'
+        else:
+            if cursor in ('ibeam', ''):
+                return
+            else:
+                widget['cursor'] = None
+    except:
+        pass
+
+
+def on_map_child(event):
+    """Callback for <Map> event which generates a <<MapChild>> virtual
+    event on the parent"""
+    widget: tkinter.Widget = event.widget
+    try:
+        if widget.master is None: # root widget
+            return
+        else:
+            widget.master.event_generate('<<MapChild>>')
+    except:
+        # not a tkinter widget that I'm handling (ex. Combobox.popdown)
+        return
+
+
+def on_select_all(event):
+    """Callback to select all text in the input widget when an event is
+    executed."""
+    widget = event.widget
+    widget.select_range(0, END)
+    widget.icursor(END)
+    return 'break'    
+
 
 class Window(tkinter.Tk):
     """A class that wraps the tkinter.Tk class in order to provide a
@@ -184,7 +254,8 @@ class Window(tkinter.Tk):
                 self.wait_visibility(self)
             self.attributes("-alpha", alpha)
 
-        self._apply_entry_type_class_binding()
+        apply_class_bindings(self)
+        apply_all_bindings(self)
         self._style = Style(themename)
 
 
@@ -206,47 +277,6 @@ class Window(tkinter.Tk):
         self.geometry(f'+{xpos}+{ypos}')
 
     position_center = place_window_center # alias
-
-    def _apply_entry_type_class_binding(self):
-        for className in ["TEntry", "TSpinbox", "TCombobox"]:
-            self.bind_class(
-                className=className, 
-                sequence="<Configure>", 
-                func=self._disabled_state_cursor,
-                add="+"
-            )
-
-            for sequence in ["<Control-a>", "<Control-A>"]:
-                self.bind_class(
-                    className=className, 
-                    sequence=sequence,
-                    func=self._on_select_all
-            )
-
-    def _disabled_state_cursor(self, event):
-        """Change the cursor of entry type widgets to 'arrow' if in a disabled
-        or readonly state."""
-        try:
-            widget = self.nametowidget(event.widget)
-            state = str(widget.cget('state'))
-            cursor = str(widget.cget('cursor'))
-            if state in (DISABLED, READONLY):
-                if cursor == 'arrow':
-                    return
-                else:
-                    widget['cursor'] = 'arrow'
-            else:
-                if cursor in ('ibeam', ''):
-                    return
-                else:
-                    widget['cursor'] = None
-        except:
-            pass
-        
-    def _on_select_all(self, event):
-        event.widget.select_range(0, END)
-        event.widget.icursor(END)
-        return 'break'
 
 
 class Toplevel(tkinter.Toplevel):
