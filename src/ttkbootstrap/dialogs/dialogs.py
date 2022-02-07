@@ -339,9 +339,9 @@ class MessageDialog(Dialog):
             command()
         self._toplevel.destroy()
 
-    def show(self):
+    def show(self, position=None):
         """Create and display the popup messagebox."""
-        super().show()
+        super().show(position)
 
 
 class QueryDialog(Dialog):
@@ -1692,13 +1692,13 @@ class Querybox:
                 The string value of the entry widget.
         """
         initialvalue = initialvalue or ""
-        dialog = QueryDialog(
-            prompt, title, initialvalue, parent=parent, **kwargs
-        )
         if "position" in kwargs:
             position = kwargs.pop("position")
         else:
             position = None
+        dialog = QueryDialog(
+            prompt, title, initialvalue, parent=parent, **kwargs
+        )
         dialog.show(position)
         return dialog._result
 
@@ -1749,6 +1749,10 @@ class Querybox:
                 The integer value of the entry widget.
         """
         initialvalue = initialvalue or ""
+        if "position" in kwargs:
+            position = kwargs.pop("position")
+        else:
+            position = None
         dialog = QueryDialog(
             prompt,
             title,
@@ -1759,10 +1763,6 @@ class Querybox:
             parent=parent,
             **kwargs,
         )
-        if "position" in kwargs:
-            position = kwargs.pop("position")
-        else:
-            position = None
         dialog.show(position)
         return dialog._result
 
@@ -1813,6 +1813,10 @@ class Querybox:
                 The float value of the entry widget.
         """
         initialvalue = initialvalue or ""
+        if "position" in kwargs:
+            position = kwargs.pop("position")
+        else:
+            position = None
         dialog = QueryDialog(
             prompt,
             title,
@@ -1823,10 +1827,6 @@ class Querybox:
             parent=parent,
             **kwargs,
         )
-        if "position" in kwargs:
-            position = kwargs.pop("position")
-        else:
-            position = None
         dialog.show(position)
         return dialog._result
 
@@ -1850,10 +1850,10 @@ class Querybox:
             Font:
                 A font object.
         """
-        dialog = FontDialog(parent=parent, **kwargs)
         if "position" in kwargs:
             position = kwargs.pop("position")
         else:
             position = None
+        dialog = FontDialog(parent=parent, **kwargs)
         dialog.show(position)
         return dialog.result
