@@ -41,6 +41,7 @@ class Dialog(BaseWidget):
         """
         BaseWidget._setup(self, parent, {})
         self._winsys = self.master.tk.call("tk", "windowingsystem")
+        self._parent = parent
         self._toplevel = None
         self._title = title or " "
         self._result = None
@@ -49,7 +50,10 @@ class Dialog(BaseWidget):
 
     def _locate(self):
         toplevel = self._toplevel
-        master = toplevel.master
+        if self._parent is None:
+            master = toplevel.master
+        else:
+            master = self._parent
         x = master.winfo_rootx()
         y = master.winfo_rooty()
         toplevel.geometry(f"+{x}+{y}")
@@ -492,6 +496,7 @@ class QueryDialog(Dialog):
             Messagebox.ok(
                 message=f"{msg} `{self._datatype}`",
                 title=MessageCatalog.translate("Invalid data type"),
+                parent=self._toplevel
             )
             return False
 
@@ -502,6 +507,7 @@ class QueryDialog(Dialog):
                 Messagebox.ok(
                     message=f"{msg} {self._maxvalue}",
                     title=MessageCatalog.translate("Out of range"),
+                    parent=self._toplevel
                 )
                 return False
 
@@ -512,6 +518,7 @@ class QueryDialog(Dialog):
                 Messagebox.ok(
                     message=f"{msg} {self._minvalue}",
                     title=MessageCatalog.translate("Out of range"),
+                    parent=self._toplevel
                 )
                 return False
 
