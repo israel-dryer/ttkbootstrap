@@ -56,7 +56,6 @@ class Dialog(BaseWidget):
 
     def show(self, position=None):
         """Show the popup dialog
-
         Parameters:
 
             position: Tuple[int, int]
@@ -72,7 +71,7 @@ class Dialog(BaseWidget):
         else:
             try:
                 x, y = position
-                self._toplevel.geometry(f"+{x}+{y}")
+                self._toplevel.geometry(f'+{x}+{y}')
             except:
                 self._locate()
 
@@ -840,7 +839,7 @@ class DatePickerDialog:
 
     def _set_window_position(self):
         """Move the window the to bottom-right of the parent widget, or
-        the top-left corner of the master window if no parent is
+        the top-left corner of the master window if no parent is 
         provided.
         """
         if self.parent:
