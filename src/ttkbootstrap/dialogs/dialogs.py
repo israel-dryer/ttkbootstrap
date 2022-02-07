@@ -52,11 +52,11 @@ class Dialog(BaseWidget):
         master = toplevel.master
         x = master.winfo_rootx()
         y = master.winfo_rooty()
-        toplevel.geometry(f'+{x}+{y}')
+        toplevel.geometry(f"+{x}+{y}")
 
     def show(self, position=None):
         """Show the popup dialog
-        
+
         Parameters:
 
             position: Tuple[int, int]
@@ -72,7 +72,7 @@ class Dialog(BaseWidget):
         else:
             try:
                 x, y = position
-                self._toplevel.geometry(f'+{x}+{y}')
+                self._toplevel.geometry(f"+{x}+{y}")
             except:
                 self._locate()
 
@@ -141,7 +141,7 @@ class Dialog(BaseWidget):
         self._toplevel.bind("<Escape>", lambda _: self._toplevel.destroy())
 
         # set position of popup from parent window
-        #self._locate()
+        # self._locate()
 
         # create widgets
         self.create_body(self._toplevel)
@@ -180,7 +180,7 @@ class MessageDialog(Dialog):
         default=None,
         padding=(20, 20),
         icon=None,
-        **kwargs
+        **kwargs,
     ):
         """
         Parameters:
@@ -256,12 +256,12 @@ class MessageDialog(Dialog):
         self._default = (default,)
         self._padding = padding
         self._icon = icon
-        self._localize = kwargs.get('localize')
+        self._localize = kwargs.get("localize")
 
         if buttons is None:
             self._buttons = [
                 f"{MessageCatalog.translate('Cancel')}:secondary",
-                f"{MessageCatalog.translate('OK')}:primary"
+                f"{MessageCatalog.translate('OK')}:primary",
             ]
         else:
             self._buttons = buttons
@@ -283,7 +283,7 @@ class MessageDialog(Dialog):
                     icon_lbl.pack(side=LEFT, padx=5)
                 except:
                     # icon is neither data nor a valid file path
-                    print('MessageDialog icon is invalid')
+                    print("MessageDialog icon is invalid")
 
         if self._message:
             for msg in self._message.split("\n"):
@@ -489,7 +489,7 @@ class QueryDialog(Dialog):
         try:
             self._result = self._datatype(self._result)
         except ValueError:
-            msg = MessageCatalog.translate('Should be of data type')
+            msg = MessageCatalog.translate("Should be of data type")
             Messagebox.ok(
                 message=f"{msg} `{self._datatype}`",
                 title=MessageCatalog.translate("Invalid data type"),
@@ -499,7 +499,7 @@ class QueryDialog(Dialog):
         # max value range
         if self._maxvalue is not None:
             if self._result > self._maxvalue:
-                msg = MessageCatalog.translate('Number cannot be greater than')
+                msg = MessageCatalog.translate("Number cannot be greater than")
                 Messagebox.ok(
                     message=f"{msg} {self._maxvalue}",
                     title=MessageCatalog.translate("Out of range"),
@@ -509,7 +509,7 @@ class QueryDialog(Dialog):
         # min value range
         if self._minvalue is not None:
             if self._result < self._minvalue:
-                msg = MessageCatalog.translate('Number cannot be less than')
+                msg = MessageCatalog.translate("Number cannot be less than")
                 Messagebox.ok(
                     message=f"{msg} {self._minvalue}",
                     title=MessageCatalog.translate("Out of range"),
@@ -557,8 +557,9 @@ class DatePickerDialog:
     ![](../../assets/dialogs/date-picker-dialog.png)
 
     """
-    
-    locale.setlocale(locale.LC_ALL, locale.setlocale(locale.LC_TIME,''))
+
+    locale.setlocale(locale.LC_ALL, locale.setlocale(locale.LC_TIME, ""))
+
     def __init__(
         self,
         parent=None,
@@ -598,7 +599,7 @@ class DatePickerDialog:
             resizable=(False, False),
             topmost=True,
             minsize=(226, 1),
-            iconify=True
+            iconify=True,
         )
         self.firstweekday = firstweekday
         self.startdate = startdate or datetime.today().date()
@@ -628,7 +629,7 @@ class DatePickerDialog:
         self.frm_header.pack(fill=X)
 
         # setup the toplevel widget
-        self.root.withdraw() # reset the iconify state
+        self.root.withdraw()  # reset the iconify state
         self.frm_calendar.update_idletasks()  # actualize geometry
 
         # create visual components
@@ -761,13 +762,15 @@ class DatePickerDialog:
             List[str]:
                 A list of weekday column names for the calendar header.
         """
-        weekdays = [MessageCatalog.translate("Mo"), 
-                    MessageCatalog.translate("Tu"),
-                    MessageCatalog.translate("We"), 
-                    MessageCatalog.translate("Th"), 
-                    MessageCatalog.translate("Fr"), 
-                    MessageCatalog.translate("Sa"), 
-                    MessageCatalog.translate("Su")]
+        weekdays = [
+            MessageCatalog.translate("Mo"),
+            MessageCatalog.translate("Tu"),
+            MessageCatalog.translate("We"),
+            MessageCatalog.translate("Th"),
+            MessageCatalog.translate("Fr"),
+            MessageCatalog.translate("Sa"),
+            MessageCatalog.translate("Su"),
+        ]
         header = weekdays[self.firstweekday :] + weekdays[: self.firstweekday]
         return header
 
@@ -837,7 +840,7 @@ class DatePickerDialog:
 
     def _set_window_position(self):
         """Move the window the to bottom-right of the parent widget, or
-        the top-left corner of the master window if no parent is 
+        the top-left corner of the master window if no parent is
         provided.
         """
         if self.parent:
@@ -852,16 +855,16 @@ class DatePickerDialog:
     @staticmethod
     def _nextmonth(year, month):
         if month == 12:
-            return year+1, 1
+            return year + 1, 1
         else:
-            return year, month+1
+            return year, month + 1
 
     @staticmethod
     def _prevmonth(year, month):
         if month == 1:
-            return year-1, 12
+            return year - 1, 12
         else:
-            return year, month-1            
+            return year, month - 1
 
 
 class FontDialog(Dialog):
@@ -944,7 +947,11 @@ class FontDialog(Dialog):
         container = ttk.Frame(master)
         container.pack(fill=BOTH, expand=YES, side=LEFT)
 
-        header = ttk.Label(container, text=MessageCatalog.translate("Family"), font="TkHeadingFont")
+        header = ttk.Label(
+            container,
+            text=MessageCatalog.translate("Family"),
+            font="TkHeadingFont",
+        )
         header.pack(fill=X, pady=(0, 2), anchor=N)
 
         listbox = ttk.Treeview(
@@ -981,7 +988,11 @@ class FontDialog(Dialog):
         container = ttk.Frame(master)
         container.pack(side=LEFT, fill=Y, padx=(10, 0))
 
-        header = ttk.Label(container, text=MessageCatalog.translate("Size"), font="TkHeadingFont")
+        header = ttk.Label(
+            container,
+            text=MessageCatalog.translate("Size"),
+            font="TkHeadingFont",
+        )
         header.pack(fill=X, pady=(0, 2), anchor=N)
 
         sizes_listbox = ttk.Treeview(container, height=7, columns=[0], show="")
@@ -1012,7 +1023,9 @@ class FontDialog(Dialog):
         container = ttk.Frame(master, padding=padding)
         container.pack(fill=X, padx=2, pady=2, anchor=N)
 
-        weight_lframe = ttk.Labelframe(container, text=MessageCatalog.translate("Weight"), padding=5)
+        weight_lframe = ttk.Labelframe(
+            container, text=MessageCatalog.translate("Weight"), padding=5
+        )
         weight_lframe.pack(side=LEFT, fill=X, expand=YES)
         opt_normal = ttk.Radiobutton(
             master=weight_lframe,
@@ -1030,7 +1043,9 @@ class FontDialog(Dialog):
         )
         opt_bold.pack(side=LEFT, padx=5, pady=5)
 
-        slant_lframe = ttk.Labelframe(container, text=MessageCatalog.translate("Slant"), padding=5)
+        slant_lframe = ttk.Labelframe(
+            container, text=MessageCatalog.translate("Slant"), padding=5
+        )
         slant_lframe.pack(side=LEFT, fill=X, padx=10, expand=YES)
         opt_roman = ttk.Radiobutton(
             master=slant_lframe,
@@ -1048,14 +1063,20 @@ class FontDialog(Dialog):
         )
         opt_italic.pack(side=LEFT, padx=5, pady=5)
 
-        effects_lframe = ttk.Labelframe(container, text=MessageCatalog.translate("Effects"), padding=5)
+        effects_lframe = ttk.Labelframe(
+            container, text=MessageCatalog.translate("Effects"), padding=5
+        )
         effects_lframe.pack(side=LEFT, padx=(2, 0), fill=X, expand=YES)
         opt_underline = ttk.Checkbutton(
-            master=effects_lframe, text=MessageCatalog.translate("underline"), variable=self._underline
+            master=effects_lframe,
+            text=MessageCatalog.translate("underline"),
+            variable=self._underline,
         )
         opt_underline.pack(side=LEFT, padx=5, pady=5)
         opt_overstrike = ttk.Checkbutton(
-            master=effects_lframe, text=MessageCatalog.translate("overstrike"), variable=self._overstrike
+            master=effects_lframe,
+            text=MessageCatalog.translate("overstrike"),
+            variable=self._overstrike,
         )
         opt_overstrike.pack(side=LEFT, padx=5, pady=5)
 
@@ -1063,10 +1084,16 @@ class FontDialog(Dialog):
         container = ttk.Frame(master, padding=padding)
         container.pack(fill=BOTH, expand=YES, anchor=N)
 
-        header = ttk.Label(container, text=MessageCatalog.translate("Preview"), font="TkHeadingFont")
+        header = ttk.Label(
+            container,
+            text=MessageCatalog.translate("Preview"),
+            font="TkHeadingFont",
+        )
         header.pack(fill=X, pady=2, anchor=N)
 
-        content = MessageCatalog.translate("The quick brown fox jumps over the lazy dog.")
+        content = MessageCatalog.translate(
+            "The quick brown fox jumps over the lazy dog."
+        )
         self._preview_text = ttk.Text(
             master=container,
             height=3,
@@ -1146,15 +1173,19 @@ class Messagebox:
             **kwargs (Dict):
                 Other optional keyword arguments.
         """
-        sd = MessageDialog(
+        dialog = MessageDialog(
             message=message,
             title=title,
             parent=parent,
             buttons=["OK:primary"],
             icon=Icon.info,
-            localize=True
+            localize=True,
         )
-        sd.show()
+        if "position" in kwargs:
+            position = kwargs.pop("position")
+        else:
+            position = None
+        dialog.show(position)
 
     @staticmethod
     def show_warning(message, title=" ", parent=None, **kwargs):
@@ -1180,7 +1211,7 @@ class Messagebox:
             **kwargs (Dict):
                 Other optional keyword arguments.
         """
-        sd = MessageDialog(
+        dialog = MessageDialog(
             message=message,
             title=title,
             parent=parent,
@@ -1190,7 +1221,11 @@ class Messagebox:
             localize=True,
             **kwargs,
         )
-        sd.show()
+        if "position" in kwargs:
+            position = kwargs.pop("position")
+        else:
+            position = None
+        dialog.show(position)
 
     @staticmethod
     def show_error(message, title=" ", parent=None, **kwargs):
@@ -1216,7 +1251,7 @@ class Messagebox:
             **kwargs (Dict):
                 Other optional keyword arguments.
         """
-        sd = MessageDialog(
+        dialog = MessageDialog(
             message=message,
             title=title,
             parent=parent,
@@ -1226,7 +1261,11 @@ class Messagebox:
             localize=True,
             **kwargs,
         )
-        sd.show()
+        if "position" in kwargs:
+            position = kwargs.pop("position")
+        else:
+            position = None
+        dialog.show(position)
 
     @staticmethod
     def show_question(
@@ -1275,7 +1314,7 @@ class Messagebox:
                 The symbolic name of the button pressed, or None if the
                 window is closed without pressing a button.
         """
-        sd = MessageDialog(
+        dialog = MessageDialog(
             message=message,
             title=title,
             parent=parent,
@@ -1285,8 +1324,12 @@ class Messagebox:
             localize=True,
             **kwargs,
         )
-        sd.show()
-        return sd.result
+        if "position" in kwargs:
+            position = kwargs.pop("position")
+        else:
+            position = None
+        dialog.show(position)
+        return dialog.result
 
     @staticmethod
     def ok(message, title=" ", alert=False, parent=None, **kwargs):
@@ -1315,7 +1358,7 @@ class Messagebox:
             **kwargs (Dict):
                 Other optional keyword arguments.
         """
-        sd = MessageDialog(
+        dialog = MessageDialog(
             title=title,
             message=message,
             parent=parent,
@@ -1324,7 +1367,11 @@ class Messagebox:
             localize=True,
             **kwargs,
         )
-        sd.show()
+        if "position" in kwargs:
+            position = kwargs.pop("position")
+        else:
+            position = None
+        dialog.show(position)
 
     @staticmethod
     def okcancel(message, title=" ", alert=False, parent=None, **kwargs):
@@ -1359,11 +1406,20 @@ class Messagebox:
                 The symbolic name of the button pressed, or None if the
                 window is closed without pressing a button.
         """
-        sd = MessageDialog(
-            title=title, message=message, parent=parent, alert=alert, localize=True, **kwargs
+        dialog = MessageDialog(
+            title=title,
+            message=message,
+            parent=parent,
+            alert=alert,
+            localize=True,
+            **kwargs,
         )
-        sd.show()
-        return sd.result
+        if "position" in kwargs:
+            position = kwargs.pop("position")
+        else:
+            position = None
+        dialog.show(position)
+        return dialog.result
 
     @staticmethod
     def yesno(message, title=" ", alert=False, parent=None, **kwargs):
@@ -1398,7 +1454,7 @@ class Messagebox:
                 The symbolic name of the button pressed, or None if the
                 window is closed without pressing a button.
         """
-        sd = MessageDialog(
+        dialog = MessageDialog(
             title=title,
             message=message,
             parent=parent,
@@ -1407,8 +1463,12 @@ class Messagebox:
             localize=True,
             **kwargs,
         )
-        sd.show()
-        return sd.result
+        if "position" in kwargs:
+            position = kwargs.pop("position")
+        else:
+            position = None
+        dialog.show(position)
+        return dialog.result
 
     @staticmethod
     def yesnocancel(message, title=" ", alert=False, parent=None, **kwargs):
@@ -1443,7 +1503,7 @@ class Messagebox:
                 The symbolic name of the button pressed, or None if the
                 window is closed without pressing a button.
         """
-        sd = MessageDialog(
+        dialog = MessageDialog(
             title=title,
             message=message,
             parent=parent,
@@ -1452,8 +1512,12 @@ class Messagebox:
             localize=True,
             **kwargs,
         )
-        sd.show()
-        return sd.result
+        if "position" in kwargs:
+            position = kwargs.pop("position")
+        else:
+            position = None
+        dialog.show(position)
+        return dialog.result
 
     @staticmethod
     def retrycancel(message, title=" ", alert=False, parent=None, **kwargs):
@@ -1488,7 +1552,7 @@ class Messagebox:
                 The symbolic name of the button pressed, or None if the
                 window is closed without pressing a button.
         """
-        sd = MessageDialog(
+        dialog = MessageDialog(
             title=title,
             message=message,
             parent=parent,
@@ -1497,8 +1561,12 @@ class Messagebox:
             localize=True,
             **kwargs,
         )
-        sd.show()
-        return sd.result
+        if "position" in kwargs:
+            position = kwargs.pop("position")
+        else:
+            position = None
+        dialog.show(position)
+        return dialog.result
 
 
 class Querybox:
@@ -1507,14 +1575,12 @@ class Querybox:
 
     @staticmethod
     def get_color(
-        parent=None,
-        title="Color Chooser",
-        initialcolor=None,
+        parent=None, title="Color Chooser", initialcolor=None, **kwargs
     ):
-        """Show a color picker and return the select color when the 
+        """Show a color picker and return the select color when the
         user pressed OK.
 
-        ![](../../assets/dialogs/querybox-get-color.png)        
+        ![](../../assets/dialogs/querybox-get-color.png)
 
         Parameters:
 
@@ -1525,18 +1591,23 @@ class Querybox:
                 Optional text that appears on the titlebar.
 
             initialcolor (str):
-                The initial color to display in the 'Current' color 
+                The initial color to display in the 'Current' color
                 frame.
 
         Returns:
 
-            Tuple[rgb, hsl, hex]:                
+            Tuple[rgb, hsl, hex]:
                 The selected color in various colors models.
         """
         from ttkbootstrap.dialogs.colorchooser import ColorChooserDialog
-        cd = ColorChooserDialog(parent, title, initialcolor)
-        cd.show()
-        return cd.result
+
+        dialog = ColorChooserDialog(parent, title, initialcolor)
+        if "position" in kwargs:
+            position = kwargs.pop("position")
+        else:
+            position = None
+        dialog.show(position)
+        return dialog.result
 
     @staticmethod
     def get_date(
@@ -1624,7 +1695,11 @@ class Querybox:
         dialog = QueryDialog(
             prompt, title, initialvalue, parent=parent, **kwargs
         )
-        dialog.show()
+        if "position" in kwargs:
+            position = kwargs.pop("position")
+        else:
+            position = None
+        dialog.show(position)
         return dialog._result
 
     @staticmethod
@@ -1684,7 +1759,11 @@ class Querybox:
             parent=parent,
             **kwargs,
         )
-        dialog.show()
+        if "position" in kwargs:
+            position = kwargs.pop("position")
+        else:
+            position = None
+        dialog.show(position)
         return dialog._result
 
     @staticmethod
@@ -1744,7 +1823,11 @@ class Querybox:
             parent=parent,
             **kwargs,
         )
-        dialog.show()
+        if "position" in kwargs:
+            position = kwargs.pop("position")
+        else:
+            position = None
+        dialog.show(position)
         return dialog._result
 
     @staticmethod
@@ -1768,5 +1851,9 @@ class Querybox:
                 A font object.
         """
         dialog = FontDialog(parent=parent, **kwargs)
-        dialog.show()
+        if "position" in kwargs:
+            position = kwargs.pop("position")
+        else:
+            position = None
+        dialog.show(position)
         return dialog.result
