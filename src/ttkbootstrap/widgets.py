@@ -568,6 +568,7 @@ class Meter(ttk.Frame):
         subtext=None,
         subtextstyle=DEFAULT,
         subtextfont="-size 10",
+        stepsize=1,
         **kwargs,
     ):
         """
@@ -644,6 +645,10 @@ class Meter(ttk.Frame):
             subtextfont (Union[str, Font]):
                 The font used to render the subtext.
 
+            stepsize (int):
+                Sets the amount by which to change the meter indicator
+                when incremented by mouse interaction.
+
             **kwargs:
                 Other keyword arguments that are passed directly to the
                 `Frame` widget that contains the meter components.
@@ -664,7 +669,7 @@ class Meter(ttk.Frame):
         self._stripethickness = stripethickness
         self._showtext = showtext
         self._wedgesize = wedgesize
-
+        self._stepsize = stepsize        
         self._textleft = textleft
         self._textright = textright
         self._textfont = textfont
@@ -926,8 +931,19 @@ class Meter(ttk.Frame):
             factor = 360 + degs - self._arcoffset
 
         # clamp the value between 0 and `amounttotal`
-        amounttotal = self.amounttotalvar.get()
-        amountused = int(amounttotal / self._arcrange * factor)
+        amounttotal = self.amounttotalvar.get() 
+        lastused = self.amountusedvar.get()
+        amountused = (amounttotal / self._arcrange * factor)
+
+        # calculate amount used given stepsize
+        if amountused > self._stepsize//2:
+            amountused = amountused // self._stepsize * self._stepsize + self._stepsize
+        else:
+            amountused = 0
+        # if the number is the name, then do not redraw
+        if lastused == amountused:
+            return
+        # set the amount used variable
         if amountused < 0:
             self.amountusedvar.set(0)
         elif amountused > amounttotal:
@@ -980,6 +996,8 @@ class Meter(ttk.Frame):
             return self._textfont
         elif cnf == "wedgesize":
             return self._wedgesize
+        elif cnf == "stepsize":
+            return self._stepsize
         else:
             return super(ttk.Frame, self).configure(cnf)
 
@@ -1043,7 +1061,8 @@ class Meter(ttk.Frame):
             self.textcenter.configure(font=self._textfont)
         if "wedgesize" in kwargs:
             self._wedgesize = kwargs.pop("wedgesize")
-
+        if "stepsize" in kwargs:
+            self._stepsize = kwargs.pop("stepsize")
         if meter_text_changed:
             self._set_meter_text()
 
