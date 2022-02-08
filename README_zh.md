@@ -22,20 +22,20 @@ tkinter的超强主题扩展，可实现受[Bootstrap](https://getbootstrap.com/
 
 ## 📦 特点
 
-✔️ [**内置主题**](themes/index.md)   
-十几个精心策划的[深色](themes/dark.md)和[浅色](themes/light.md)主题
+✔️ [**内置主题**](https://ttkbootstrap.readthedocs.io/en/latest/zh/themes/index.md)   
+十几个精心策划的[深色](https://ttkbootstrap.readthedocs.io/en/latest/zh/themes/dark.md)和[浅色](https://ttkbootstrap.readthedocs.io/en/latest/zh/themes/light.md)主题
 
-✔️ [**预定义样式：**](styleguide/index.md)  
-大量漂亮的[预定义构件样式](styleguide/index.md)，如**轮廓**和**圆形切换**按钮。
+✔️ [**预定义样式：**](https://ttkbootstrap.readthedocs.io/en/latest/zh/styleguide/index.md)  
+大量漂亮的[预定义构件样式](https://ttkbootstrap.readthedocs.io/en/latest/zh/styleguide/index.md)，如**轮廓**和**圆形切换**按钮。
 
-✔️ [**简单的关键字 API：**](gettingstarted/tutorial/#use-themed-widgets)  
-使用[简单的关键字](gettingstarted/tutorial/#use-themed-widgets)（如**primary**和**striped**）应用颜色和类型，而不是使用主要的旧方法**Striped.Horizontal.TProgressbar**。如果您已经使用Bootstrap进行Web开发，那么您已经熟悉了使用css类的这种方法。
+✔️ [**简单的关键字 API：**](https://ttkbootstrap.readthedocs.io/en/latest/zh/gettingstarted/tutorial/#use-themed-widgets)  
+使用[简单的关键字](https://ttkbootstrap.readthedocs.io/en/latest/zh/gettingstarted/tutorial/#use-themed-widgets)（如**primary**和**striped**）应用颜色和类型，而不是使用主要的旧方法**Striped.Horizontal.TProgressbar**。如果您已经使用Bootstrap进行Web开发，那么您已经熟悉了使用css类的这种方法。
 
-✔️ [**许多新的小部件：**](api/widgets/dateentry)  
-ttkbootstrap附带了几个设计精美的新小部件，如[Meter](api/widgets/meter)，[DateEntry](api/widgets/dateentry)和[Floodgauge](api/widgets/floodgauge)。 此外，[对话框](api/dialogs/dialog)现在具有主题和完全可自定义性。
+✔️ [**许多新的小部件：**](https://ttkbootstrap.readthedocs.io/en/latest/zh/api/widgets/dateentry)  
+ttkbootstrap附带了几个设计精美的新小部件，如[Meter](https://ttkbootstrap.readthedocs.io/en/latest/zh/api/widgets/meter)，[DateEntry](https://ttkbootstrap.readthedocs.io/en/latest/zh/api/widgets/dateentry)和[Floodgauge](https://ttkbootstrap.readthedocs.io/en/latest/zh/api/widgets/floodgauge)。 此外，[对话框](https://ttkbootstrap.readthedocs.io/en/latest/zh/api/dialogs/dialog)现在具有主题和完全可自定义性。
 
-✔️ [**内置主题创建器：**](themes/themecreator.md)  
-想要创建自己的主题？容易！ttkbootstrap附带一个内置的[主题创建器](themes/themecreator.md)，使您能够轻松构建，加载，浏览和应用自己的自定义主题。
+✔️ [**内置主题创建器：**](https://ttkbootstrap.readthedocs.io/en/latest/zh/themes/themecreator.md)  
+想要创建自己的主题？容易！ttkbootstrap附带一个内置的[主题创建器](https://ttkbootstrap.readthedocs.io/en/latest/zh/themes/themecreator.md)，使您能够轻松构建，加载，浏览和应用自己的自定义主题。
 
 ## 安装
 
