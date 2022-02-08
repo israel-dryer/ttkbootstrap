@@ -9,7 +9,6 @@ from tkinter.ttk import Panedwindow, Progressbar, Radiobutton
 from tkinter.ttk import Scale, Scrollbar, Separator
 from tkinter.ttk import Sizegrip, Spinbox, Treeview
 from ttkbootstrap.constants import *
-from math import ceil
 
 # date entry imports
 from ttkbootstrap.dialogs import Querybox
@@ -23,6 +22,8 @@ from PIL import Image, ImageTk, ImageDraw
 from ttkbootstrap.style import Colors
 from ttkbootstrap import utility
 from ttkbootstrap.style import Bootstyle
+
+M = 3 # meter image scale, higher number increases resolution
 
 TTK_WIDGETS = (
     ttk.Button,
@@ -478,7 +479,6 @@ class Floodgauge(Progressbar):
         else:
             self._configure_set(**kwargs)
 
-
 class Meter(ttk.Frame):
     """A radial meter that can be used to show progress of long
     running operations or the amount of work completed; can also be
@@ -568,6 +568,7 @@ class Meter(ttk.Frame):
         subtext=None,
         subtextstyle=DEFAULT,
         subtextfont="-size 10",
+        stepsize=1,
         **kwargs,
     ):
         """
@@ -644,6 +645,10 @@ class Meter(ttk.Frame):
             subtextfont (Union[str, Font]):
                 The font used to render the subtext.
 
+            stepsize (int):
+                Sets the amount by which to change the meter indicator
+                when incremented by mouse interaction.
+
             **kwargs:
                 Other keyword arguments that are passed directly to the
                 `Frame` widget that contains the meter components.
@@ -664,7 +669,7 @@ class Meter(ttk.Frame):
         self._stripethickness = stripethickness
         self._showtext = showtext
         self._wedgesize = wedgesize
-
+        self._stepsize = stepsize        
         self._textleft = textleft
         self._textright = textright
         self._textfont = textfont
@@ -821,12 +826,12 @@ class Meter(ttk.Frame):
         """Draw base image to be used for subsequent updates"""
         self._set_widget_colors()
         self._base_image = Image.new(
-            mode="RGBA", size=(self._metersize * 5, self._metersize * 5)
+            mode="RGBA", size=(self._metersize * M, self._metersize * M)
         )
         draw = ImageDraw.Draw(self._base_image)
 
-        x1 = y1 = self._metersize * 5 - 20
-        width = self._meterthickness * 5
+        x1 = y1 = self._metersize * M - 20
+        width = self._meterthickness * M
         # striped meter
         if self._stripethickness > 0:
             _from = self._arcoffset
@@ -852,8 +857,8 @@ class Meter(ttk.Frame):
 
     def _draw_solid_meter(self, draw: ImageDraw.Draw):
         """Draw a solid meter"""
-        x1 = y1 = self._metersize * 5 - 20
-        width = self._meterthickness * 5
+        x1 = y1 = self._metersize * M - 20
+        width = self._meterthickness * M
 
         if self._wedgesize > 0:
             meter_value = self._meter_value()
@@ -876,8 +881,8 @@ class Meter(ttk.Frame):
     def _draw_striped_meter(self, draw: ImageDraw.Draw):
         """Draw a striped meter"""
         meter_value = self._meter_value()
-        x1 = y1 = self._metersize * 5 - 20
-        width = self._meterthickness * 5
+        x1 = y1 = self._metersize * M - 20
+        width = self._meterthickness * M
 
         if self._wedgesize > 0:
             draw.arc(
@@ -926,8 +931,19 @@ class Meter(ttk.Frame):
             factor = 360 + degs - self._arcoffset
 
         # clamp the value between 0 and `amounttotal`
-        amounttotal = self.amounttotalvar.get()
-        amountused = int(amounttotal / self._arcrange * factor)
+        amounttotal = self.amounttotalvar.get() 
+        lastused = self.amountusedvar.get()
+        amountused = (amounttotal / self._arcrange * factor)
+
+        # calculate amount used given stepsize
+        if amountused > self._stepsize//2:
+            amountused = amountused // self._stepsize * self._stepsize + self._stepsize
+        else:
+            amountused = 0
+        # if the number is the name, then do not redraw
+        if lastused == amountused:
+            return
+        # set the amount used variable
         if amountused < 0:
             self.amountusedvar.set(0)
         elif amountused > amounttotal:
@@ -980,6 +996,8 @@ class Meter(ttk.Frame):
             return self._textfont
         elif cnf == "wedgesize":
             return self._wedgesize
+        elif cnf == "stepsize":
+            return self._stepsize
         else:
             return super(ttk.Frame, self).configure(cnf)
 
@@ -1043,7 +1061,8 @@ class Meter(ttk.Frame):
             self.textcenter.configure(font=self._textfont)
         if "wedgesize" in kwargs:
             self._wedgesize = kwargs.pop("wedgesize")
-
+        if "stepsize" in kwargs:
+            self._stepsize = kwargs.pop("stepsize")
         if meter_text_changed:
             self._set_meter_text()
 
