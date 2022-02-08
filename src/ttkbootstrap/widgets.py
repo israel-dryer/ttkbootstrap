@@ -9,7 +9,6 @@ from tkinter.ttk import Panedwindow, Progressbar, Radiobutton
 from tkinter.ttk import Scale, Scrollbar, Separator
 from tkinter.ttk import Sizegrip, Spinbox, Treeview
 from ttkbootstrap.constants import *
-from math import ceil
 
 # date entry imports
 from ttkbootstrap.dialogs import Querybox
@@ -23,6 +22,8 @@ from PIL import Image, ImageTk, ImageDraw
 from ttkbootstrap.style import Colors
 from ttkbootstrap import utility
 from ttkbootstrap.style import Bootstyle
+
+M = 3 # meter image scale, higher number increases resolution
 
 TTK_WIDGETS = (
     ttk.Button,
@@ -478,7 +479,6 @@ class Floodgauge(Progressbar):
         else:
             self._configure_set(**kwargs)
 
-
 class Meter(ttk.Frame):
     """A radial meter that can be used to show progress of long
     running operations or the amount of work completed; can also be
@@ -826,12 +826,12 @@ class Meter(ttk.Frame):
         """Draw base image to be used for subsequent updates"""
         self._set_widget_colors()
         self._base_image = Image.new(
-            mode="RGBA", size=(self._metersize * 5, self._metersize * 5)
+            mode="RGBA", size=(self._metersize * M, self._metersize * M)
         )
         draw = ImageDraw.Draw(self._base_image)
 
-        x1 = y1 = self._metersize * 5 - 20
-        width = self._meterthickness * 5
+        x1 = y1 = self._metersize * M - 20
+        width = self._meterthickness * M
         # striped meter
         if self._stripethickness > 0:
             _from = self._arcoffset
@@ -857,8 +857,8 @@ class Meter(ttk.Frame):
 
     def _draw_solid_meter(self, draw: ImageDraw.Draw):
         """Draw a solid meter"""
-        x1 = y1 = self._metersize * 5 - 20
-        width = self._meterthickness * 5
+        x1 = y1 = self._metersize * M - 20
+        width = self._meterthickness * M
 
         if self._wedgesize > 0:
             meter_value = self._meter_value()
@@ -881,8 +881,8 @@ class Meter(ttk.Frame):
     def _draw_striped_meter(self, draw: ImageDraw.Draw):
         """Draw a striped meter"""
         meter_value = self._meter_value()
-        x1 = y1 = self._metersize * 5 - 20
-        width = self._meterthickness * 5
+        x1 = y1 = self._metersize * M - 20
+        width = self._meterthickness * M
 
         if self._wedgesize > 0:
             draw.arc(
