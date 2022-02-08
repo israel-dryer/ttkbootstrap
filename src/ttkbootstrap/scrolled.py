@@ -383,11 +383,11 @@ class ScrolledFrame(ttk.Frame):
 
     def hide_scrollbars(self):
         """Hide the scrollbars."""
-        self.vscroll.lower(self)
+        self.vscroll.pack_forget()
 
     def show_scrollbars(self):
         """Show the scrollbars."""
-        self.vscroll.lift(self)
+        self.vscroll.pack(side=RIGHT, fill=Y)
 
     def autohide_scrollbar(self):
         """Toggle the autohide funtionality. Show the scrollbars when
