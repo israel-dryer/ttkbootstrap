@@ -89,8 +89,13 @@ Namespaces are one honking great idea -- let's do more of those!"""
     check1.pack(side=LEFT, expand=YES, padx=5)
     check1.invoke()
 
-    check2 = ttk.Checkbutton(rb_group, text="deselected")
+    check2 = ttk.Checkbutton(rb_group, text="alternate")
     check2.pack(side=LEFT, expand=YES, padx=5)
+
+    check4 = ttk.Checkbutton(rb_group, text="deselected")
+    check4.pack(side=LEFT, expand=YES, padx=5)    
+    check4.invoke()
+    check4.invoke()    
 
     check3 = ttk.Checkbutton(rb_group, text="disabled", state=DISABLED)
     check3.pack(side=LEFT, expand=YES, padx=5)
