@@ -13,11 +13,11 @@ class ScrolledText(ttk.Frame):
     mouse is not over the widget. The vertical scrollbar is on by
     default, but can be turned off. The horizontal scrollbar can be
     enabled by setting `vbar=True`.
-    
+
     This widget is identical in configuration to the `Text` widget other
     than the scrolling frame. https://tcl.tk/man/tcl8.6/TkCmd/text.htm
 
-    ![scrolled text](../../../assets/scrolled/scrolledtext.gif)  
+    ![scrolled text](../../../assets/scrolled/scrolledtext.gif)
 
     Examples:
 
@@ -35,7 +35,7 @@ class ScrolledText(ttk.Frame):
         # add text
         st.insert(END, 'Insert your text here.')
 
-        app.mainloop()        
+        app.mainloop()
         ```
     """
 
@@ -169,20 +169,18 @@ class ScrolledText(ttk.Frame):
 class ScrolledFrame(ttk.Frame):
     """A widget container with a vertical scrollbar.
 
+    The ScrolledFrame fills the width of its container. The height is
+    either set explicitly or is determined by the content frame's
+    contents.
+
+    This widget behaves mostly like a normal frame other than the
+    exceptions stated already. Another exception is when packing it
+    into a Notebook or Panedwindow. In this case, you'll need to add
+    the container instead of the content frame. For example,
+    `mynotebook.add(myscrolledframe.container)`.
+
     The scrollbar has an autohide feature that can be turned on by
     setting `autohide=True`.
-
-    There is unfortunately not a clean way to implement this megawidget
-    in tkinter. A common implementation is to reference an internal
-    frame as the master for objects to be packed, placed, etc... I've
-    chosen to expose the internal container foremost, so that you can
-    use this `ScrolledFrame` just as you would a normal frame. This
-    is more natural. However, there are cases when you need to have
-    the actual parent container, and for that reason, you can access
-    this parent container object via `ScrolledFrame.container`.
-    Specifically, you will need this object when adding a
-    `ScrolledFrame` to a `Notebook` or `Panedwindow`. For example,
-    `mynotebook.add(myscrolledframe.container)`.
 
     Examples:
 
@@ -200,17 +198,18 @@ class ScrolledFrame(ttk.Frame):
         for x in range(20):
             ttk.Checkbutton(sf, text=f"Checkbutton {x}").pack(anchor=W)
 
-        app.mainloop()        
-        ```
-"""
+        app.mainloop()
+        ```"""
+
     def __init__(
         self,
         master=None,
         padding=2,
         bootstyle=DEFAULT,
         autohide=False,
-        height=None,
-        width=None,
+        height=200,
+        width=300,
+        scrollheight=None,
         **kwargs,
     ):
         """
@@ -233,146 +232,213 @@ class ScrolledFrame(ttk.Frame):
                 is not within the frame bbox.
 
             height (int):
-                The height of the frame in screen units.
+                The height of the container frame in screen units.
 
             width (int):
-                The widget of the frame in screen units.
+                The width of the container frame in screen units.
+
+            scrollheight (int):
+                The height of the content frame in screen units. If None,
+                the height is determined by the frame contents.
 
             **kwargs (Dict[str, Any]):
-                Other keyword arguments.
+                Other keyword arguments passed to the content frame.
         """
+        # content frame container
         self.container = ttk.Frame(
-            master=master, 
-            relief=FLAT, 
-            borderwidth=0
-        )
-        self._canvas = ttk.Canvas(
-            self.container,
+            master=master,
             relief=FLAT,
             borderwidth=0,
-            highlightthickness=0,
-            height=height,
             width=width,
+            height=height,
         )
-        self._canvas.pack(fill=BOTH, expand=YES)
-        self._vbar = ttk.Scrollbar(
-            master=self.container,
-            bootstyle=bootstyle,
-            command=self._canvas.yview,
-            orient=VERTICAL,
-        )
-        self._vbar.place(relx=1.0, relheight=1.0, anchor=NE)
-        self._canvas.configure(yscrollcommand=self._vbar.set)
+        self.container.bind("<Configure>", lambda _: self.yview())
+        self.container.propagate(0)
 
+        # content frame
         super().__init__(
-            master=self._canvas, 
-            padding=padding, 
-            bootstyle=bootstyle, 
-            **kwargs
+            master=self.container,
+            padding=padding,
+            bootstyle=bootstyle,
+            **kwargs,
         )
-        self._winsys = self.tk.call('tk', 'windowingsystem')
-        self._wid = self._canvas.create_window((0, 0), anchor=NW, window=self)
+        self.place(rely=0.0, relwidth=1.0, height=scrollheight)
 
-        # delegate text methods to frame
+        # vertical scrollbar
+        self.vscroll = ttk.Scrollbar(
+            master=self.container,
+            command=self.yview,
+            orient=VERTICAL,
+            bootstyle=bootstyle,
+        )
+        self.vscroll.pack(side=RIGHT, fill=Y)
+
+        self.winsys = self.tk.call("tk", "windowingsystem")
+
+        # setup autohide scrollbar
+        self.autohide = autohide
+        if self.autohide:
+            self.hide_scrollbars()
+
+        # widget event binding
+        self.container.bind("<Enter>", self._on_enter, "+")
+        self.container.bind("<Leave>", self._on_leave, "+")
+        self.container.bind("<Map>", self._on_map, "+")
+        self.bind("<<MapChild>>", self._on_map_child, "+")
+
+        # delegate content geometry methods to container frame
         _methods = vars(Pack).keys() | vars(Grid).keys() | vars(Place).keys()
         for method in _methods:
             if any(["pack" in method, "grid" in method, "place" in method]):
+                # prefix content frame methods with 'content_'
+                setattr(self, f"content_{method}", getattr(self, method))
+                # overwrite content frame methods from container frame
                 setattr(self, method, getattr(self.container, method))
 
-        self.container.bind("<Configure>", self._on_configure, "+")
-        self.container.bind("<Map>", self._on_map, "+")
-        self.container.bind("<Enter>", self._enable_scrolling, "+")
-        self.container.bind("<Leave>", self._disable_scrolling, "+")
-        self.refresh_geometry()
-        
-        if autohide:
-            self.autohide_scrollbar()
-            self.hide_scrollbars()  
+    def yview(self, *args):
+        """Update the vertical position of the content frame within the
+        container.
 
-    def _on_configure(self, _):
-        """Callback for when container is configured"""
-        self.update_idletasks()
-        height = max([self.winfo_height(), self.winfo_reqheight()])
-        if self.container.winfo_ismapped():
-            width = self.container.winfo_width()
-            cheight = self.container.winfo_height()
-        else:
-            width = self.container.winfo_reqwidth()
-            cheight = self.container.winfo_reqheight()
-        height = cheight if height == 1 else height
-        self._canvas.config(scrollregion=self._canvas.bbox(ALL))
-        self._canvas.itemconfig(self._wid, width=width, height=height)
+        Parameters:
 
-    def _on_map(self, _):
-        """Callback for when the widget is mapped"""
-        self.refresh_geometry()
-
-    def refresh_geometry(self):
-        """Force the frame to refresh its height based on the frame 
-        contents. This is necessary if you've added widgets to the frame 
-        after the screen has already been drawn.
+            *args (List[Any, ...]):
+                Optional arguments passed to yview in order to move the
+                content frame within the container frame.
         """
-        self._on_configure(None)
+        if not args:
+            first, _ = self.vscroll.get()
+            self.yview_moveto(fraction=first)
+        elif args[0] == "moveto":
+            self.yview_moveto(fraction=float(args[1]))
+        elif args[0] == "scroll":
+            self.yview_scroll(number=int(args[1]), what=args[2])
+        else:
+            return
 
-    def hide_scrollbars(self, *_):
-        """Hide the scrollbars."""
-        try:
-            self._vbar.lower(self._canvas)
-        except:
-            pass
-        try:
-            self._hbar.lower(self._canvas)
-        except:
-            pass
+    def yview_moveto(self, fraction: float):
+        """Update the vertical position of the content frame within the
+        container.
 
-    def show_scrollbars(self, *_):
-        """Show the scrollbars."""
-        try:
-            self._vbar.lift(self._canvas)
-        except:
-            pass
-        try:
-            self._hbar.lift(self._canvas)
-        except:
-            pass
+        Parameters:
 
-    def autohide_scrollbar(self, *_):
-        """Show the scrollbars when the mouse enters the widget frame,
-        and hide when it leaves the frame."""
-        self.container.bind("<Enter>", self.show_scrollbars)
-        self.container.bind("<Leave>", self.hide_scrollbars)
+            fraction (float):
+                The relative position of the content frame within the
+                container.
+        """
+        base, thumb = self._measures()
+        if fraction < 0:
+            first = 0.0
+        elif (fraction + thumb) > 1:
+            first = 1 - thumb
+        else:
+            first = fraction
+        self.vscroll.set(first, first + thumb)
+        self.content_place(rely=-first * base)
 
-    def _on_mousewheel(self, event):
-        if self._winsys.lower() == 'win32':
-            delta = -int(event.delta / 120)
-        elif self._winsys.lower() == 'aqua':
-            delta = -event.delta
-        elif event.num == 4:
-            delta = -1
-        elif event.num == 5:
-            delta = 1
-        self._canvas.yview_scroll(delta, UNITS)
+    def yview_scroll(self, number: int, what: str):
+        """Update the vertical position of the content frame within the
+        container.
 
-    def _enable_scrolling(self, *_):
+        Parameters:
+
+            number (int):
+                The amount by which the content frame will be moved
+                within the container frame by 'what' units.
+
+            what (str):
+                The type of units by which the number is to be interpeted.
+                This parameter is currently not used and is assumed to be
+                'units'.
+        """
+        first, _ = self.vscroll.get()
+        fraction = (number / 100) + first
+        self.yview_moveto(fraction)
+
+    def enable_scrolling(self):
         """Enable mousewheel scrolling on the frame and all of its
         children."""
         children = self.winfo_children()
         for widget in [self, *children]:
-            if self._winsys.lower() == 'x11':
-                widget.bind("<Button-4>", self._on_mousewheel, "+")
-                widget.bind("<Button-5>", self._on_mousewheel, "+")
+            bindings = widget.bind()
+            if self.winsys.lower() == "x11":
+                if "<Button-4>" in bindings or "<Button-5>" in bindings:
+                    continue
+                else:
+                    widget.bind("<Button-4>", self._on_mousewheel, "+")
+                    widget.bind("<Button-5>", self._on_mousewheel, "+")
             else:
-                widget.bind("<MouseWheel>", self._on_mousewheel, "+")
+                if "<MouseWheel>" not in bindings:
+                    widget.bind("<MouseWheel>", self._on_mousewheel, "+")
 
-    def _disable_scrolling(self, *_):
-        """Disabled mousewheel scrolling on the frame and all of its
+    def disable_scrolling(self):
+        """Disable mousewheel scrolling on the frame and all of its
         children."""
         children = self.winfo_children()
         for widget in [self, *children]:
-            if self._winsys.lower() == 'x11':
+            if self.winsys.lower() == "x11":
                 widget.unbind("<Button-4>")
                 widget.unbind("<Button-5>")
             else:
                 widget.unbind("<MouseWheel>")
 
+    def hide_scrollbars(self):
+        """Hide the scrollbars."""
+        self.vscroll.lower(self)
 
+    def show_scrollbars(self):
+        """Show the scrollbars."""
+        self.vscroll.lift(self)
+
+    def autohide_scrollbar(self):
+        """Toggle the autohide funtionality. Show the scrollbars when
+        the mouse enters the widget frame, and hide when it leaves the
+        frame."""
+        self.autohide = not self.autohide
+
+    def _measures(self):
+        """Measure the base size of the container and the thumb size
+        for use in the yview methods"""
+        outer = self.container.winfo_height()
+        inner = max([self.winfo_height(), outer])
+        base = inner / outer
+        if inner == outer:
+            thumb = 1.0
+        else:
+            thumb = outer / inner
+        return base, thumb
+
+    def _on_map_child(self, event):
+        """Callback for when a widget is mapped to the content frame."""
+        if self.container.winfo_ismapped():
+            self.yview()
+
+    def _on_enter(self, event):
+        """Callback for when the mouse enters the widget."""
+        self.enable_scrolling()
+        if self.autohide:
+            self.show_scrollbars()
+
+    def _on_leave(self, event):
+        """Callback for when the mouse leaves the widget."""
+        self.disable_scrolling()
+        if self.autohide:
+            self.hide_scrollbars()
+
+    def _on_configure(self, event):
+        """Callback for when the widget is configured"""
+        self.yview()
+
+    def _on_map(self, event):
+        self.yview()
+
+    def _on_mousewheel(self, event):
+        """Callback for when the mouse wheel is scrolled."""
+        if self.winsys.lower() == "win32":
+            delta = -int(event.delta / 120)
+        elif self.winsys.lower() == "aqua":
+            delta = -event.delta
+        elif event.num == 4:
+            delta = -10
+        elif event.num == 5:
+            delta = 10
+        self.yview_scroll(delta, UNITS)
