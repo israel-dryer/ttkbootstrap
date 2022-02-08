@@ -1,0 +1,5 @@
+blank_issues_enabled: true
+contact_links:
+  - name: Wiki
+    url: https://ttkbootstrap.readthedocs.io/en/latest/
+    about: "ttkbootstrap's wiki."
