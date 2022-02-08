@@ -3994,6 +3994,7 @@ class StyleBuilderTTK:
             "image",
             images[1],
             ("disabled", images[2]),
+            ("alternate", images[3]),
             ("!selected", images[0]),
             width=width,
             border=borderpad,
@@ -4133,6 +4134,23 @@ class StyleBuilderTTK:
         on_name = util.get_image_name(on_img)
         self.theme_images[on_name] = on_img
 
+        # checkbutton alt
+        checkbutton_alt = Image.new("RGBA", (134, 134))
+        draw = ImageDraw.Draw(checkbutton_alt)
+        draw.rounded_rectangle(
+            [2, 2, 132, 132],
+            radius=16,
+            fill=on_fill,
+            outline=on_border,
+            width=3,
+        )        
+        draw.line([36, 67, 100, 67], fill=check_color, width=12)
+        alt_img = ImageTk.PhotoImage(
+            checkbutton_alt.resize(size, Image.LANCZOS)
+        )
+        alt_name = util.get_image_name(alt_img)
+        self.theme_images[alt_name] = alt_img
+
         # checkbutton disabled
         checkbutton_disabled = Image.new("RGBA", (134, 134))
         draw = ImageDraw.Draw(checkbutton_disabled)
@@ -4145,7 +4163,7 @@ class StyleBuilderTTK:
         disabled_name = util.get_image_name(disabled_img)
         self.theme_images[disabled_name] = disabled_img
 
-        return off_name, on_name, disabled_name
+        return off_name, on_name, disabled_name, alt_name
 
     def create_menubutton_style(self, colorname=DEFAULT):
         """Create a solid style for the ttk.Menubutton widget.
