@@ -2513,7 +2513,7 @@ class StyleBuilderTTK:
             darkcolor=self.colors.inputbg,
             borderwidth=2,
             padding=0,
-            rowheight=rowheight,
+            #rowheight=rowheight,
             relief=tk.RAISED,
         )
         self.style.map(
