@@ -24,7 +24,7 @@ body:
       required: true
 
   - type: textarea
-    id: extra
+    id: want
     attributes:
       label: "Describe alternatives you've considered"
       description: |
@@ -33,7 +33,7 @@ body:
       required: true
 
   - type: textarea
-    id: extra
+    id: add
     attributes:
       label: "Additional context"
       description: |
