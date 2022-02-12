@@ -2,6 +2,9 @@
 
 ttkbootstrap 是 tkinter 的封装。任何未在此库中专门定义的小部件或功能都可以在 [其他参考](#other-references) 中找到。
 
+##🌈[Colorutils模块]（Colorutils.md）
+此模块包含用于帮助操纵颜色的各种方法。
+
 ## 💬 对话模块
 该模块包含各种基本对话框基类（以“Dialog”结尾），可用于为最终用户创建自定义对话框。这些基类作为 `Messagebox` 和 `Querybox` 容器类中预定义的静态帮助方法的基础，其中包括许多预定义的消息和查询对话框配置。
 
@@ -10,7 +13,9 @@ ttkbootstrap 是 tkinter 的封装。任何未在此库中专门定义的小部�
 ❯ [对话框](dialogs/dialog.md)
 ❯ [字体对话框](dialogs/fontdialog.md)
 ❯ [消息框](dialogs/messagebox.md)
+❯ [消息对话框](dialogs/messagedialog.md)  
 ❯ [查询框](dialogs/querybox.md)
+❯ [查询对话框](dialogs/querydialog.md)  
 
 ## 😉 图标模块
 此模块包含为您的应用程序提供表情符号或图像图标的类。它们可以在文本中用作`图标`或在`PhotoImage`类中用作`图标`。
