@@ -1,6 +1,0 @@
-files:
-  - source: '*/*.md'
-    ignore:
-      - src
-      - '*/*.zh.md'
-    translation: '%original_path%/%file_name%.%two_letters_code%.%file_extension%'
