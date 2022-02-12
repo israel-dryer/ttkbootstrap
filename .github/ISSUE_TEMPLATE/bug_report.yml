@@ -15,7 +15,7 @@ body:
       required: true
 
   - type: textarea
-    id: desc
+    id: des
     attributes:
       label: Describe the bug
       description: |
