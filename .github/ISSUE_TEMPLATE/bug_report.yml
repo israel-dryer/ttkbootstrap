@@ -1,5 +1,5 @@
-name: 漏洞反馈
-description: 反馈问题，帮助我们改进
+name: BUG report
+description: Create a report to help us improve
 title: "[BUG] "
 labels: ["bug"]
 
