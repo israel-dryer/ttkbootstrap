@@ -90,7 +90,7 @@ class MessageCatalog:
         """
         root = get_default_root()
         command = "::msgcat::mcload"
-        return int(root.tk.eval(f"{command} {dirname}"))
+        return int(root.tk.eval(f"{command} [list {dirname}]"))
 
     @staticmethod
     def set(locale, src, translated=None):
