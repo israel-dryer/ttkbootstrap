@@ -12,7 +12,7 @@
     python -m pip install -i https://pypi.tuna.tsinghua.edu.cn/simple ttkbootstrap
     ```
 
-挤柠檬。<s>（注：译者并没有看懂这句话）</s>
+未经过测试的版本（可能会出错）<s>（注：译者可能翻译有误）</s>
 
 !!! note "通过Github安装"
     ```bash
