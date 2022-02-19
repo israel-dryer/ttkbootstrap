@@ -1,19 +1,18 @@
-## Treeview
+## 树形菜单
 
-This widget style features a solid background header that is the default theme
-background by default or the [selected color](index.md#colors). 
+树形菜单可以应用默认主题的纯色背景或[选定的颜色](index.md#colors)。
 
-The border color is muted by default and changes to **primary** or the 
-[selected color](index.md#colors) on _hover_. The border increases in thickness on 
-_focus_. 
+此小部件具有带各式各样颜色边框的输入框。
+边框颜色默认为 __muted__ 并更改为 **primary** 或 _hover_ 上的 [选定颜色](index.md#colors)。
+边框厚度将通过 _focus_ 增加。
 
 ![treeview](../assets/widget-styles/treeview.gif)
 
 ```python
-# default Treeview style
+# 默认的树形图样式
 Treeview()
 
-# info colored treeview style
+# 应用了info彩色样式的树形菜单
 Treeview(bootstyle='info')
 ```
 
