@@ -17,17 +17,17 @@ Entry()
 Entry(bootstyle="danger")
 ```
 
-## 其他输入框样式
+## 其他文本框样式
 
-#### 被禁用的输入框
+#### 被禁用的文本框
 
 此样式 _不能通过关键字来创建_；它是通过小部件设置进行配置的。
 
 ```python
-# 创建一个被禁用的输入框
+# 创建一个被禁用的文本框
 Entry(state="disabled")
 
-# 创建之后再设置输入框为禁用
+# 创建之后再设置文本框为禁用
 e = Entry()
 e.configure(state="disabled")
 ```
@@ -37,10 +37,10 @@ e.configure(state="disabled")
 此样式 _不能通过关键字来创建_；它是通过小部件设置进行配置的。
 
 ```python
-# 创建一个只读的输入框
+# 创建一个只读的文本框
 Entry(state="readonly")
 
-# 创建之后再设置输入框为只读
+# 创建之后再设置文本框为只读
 e = Entry()
 e.configure(state="readonly")
 ```
@@ -48,4 +48,4 @@ e.configure(state="readonly")
 #### 验证无效输入
 
 此样式 _不能通过关键字来创建_；你需要在输入框上实施验证。
-在**Cookbook**中,你将会找到一个名为[如何验证无效输入并且应用到到输入框](../cookbook/validate-user-input.md)的事例。
+在**Cookbook**中,你将会找到一个名为[如何验证无效输入并且应用到到文本框](../cookbook/validate-user-input.md)的事例。
