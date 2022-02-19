@@ -1,56 +1,51 @@
-# Entry
+# 输入框
 
-This widget style features a input box with a styled border. The border color 
-is muted by default and changes to **primary** or the 
-[selected color](index.md#colors) on _hover_. The border increases in thickness 
-on _focus_. 
+此小部件具有带各式各样颜色边框的输入框。
+边框颜色默认为 __muted__ 并更改为 **primary** 或 _hover_ 上的 [选定颜色](index.md#colors)。
+边框厚度将通过 _focus_ 增加。
 
-This widget also supports special styles for [disabled state](#disabled-entry), 
-[readonly state](#readonly-entry), and [invalid state](#invalid-entry).
+此小部件还支持 [禁用状态](#disabled-entry)的特殊样式,
+[只读状态](#readonly-entry)和[无效状态](#invalid-entry)。
 
 ![entry](../assets/widget-styles/entries.gif)
 
 ```python
-# default entry style
+# 默认的输入框(样式)
 Entry()
 
-# danger colored entry style
+# 红色的输入框(样式)
 Entry(bootstyle="danger")
 ```
 
-## Other entry styles
+## 其他输入框样式
 
-#### Disabled entry
+#### 被禁用的输入框
 
-This style _cannot be applied via keywords_; it is configured through widget 
-settings.
+此样式 _不能通过关键字来创建_; 它是通过小部件设置进行配置的。
 
 ```python
-# create the widget in a disabled state
+# 创建一个被禁用的输入框
 Entry(state="disabled")
 
-# disable the widget after creation
+# 创建之后再设置输入框为禁用
 e = Entry()
 e.configure(state="disabled")
 ```
 
-#### Readonly entry
+#### 只读输入框
 
-This style _cannot be applied via keywords_; it is configured through widget 
-settings.
+此样式 _不能通过关键字来创建_; 它是通过小部件设置进行配置的。
 
 ```python
-# create the widget in a readonly state
+# 创建一个只读的输入框
 Entry(state="readonly")
 
-# set the widget readonly state after creation
+# 创建之后再设置输入框为只读
 e = Entry()
 e.configure(state="readonly")
 ```
 
-#### Invalid entry
+#### 验证无效输入
 
-This style _cannot be applied via keywords_, but rather is the result of a 
-validation process implemented on the widget. In the **Cookbook** you will find 
-an example of [how to apply validation](../cookbook/validate-user-input.md) to an 
-`Entry` based widget.
+此样式 _不能通过关键字来创建_;是在小部件上实施的验证过程的结果。 在**事例**中,
+你将会找到一个名为 [如何验证无效输入到输入框](../cookbook/validate-user-input.md)的事例
