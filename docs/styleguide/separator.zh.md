@@ -8,6 +8,6 @@
 # 默认分隔线样式
 Separator()
 
-# 彩色分隔符样式 _info_
+# 彩色分隔符样式 'info'
 Separator(bootstyle="info")
 ```
