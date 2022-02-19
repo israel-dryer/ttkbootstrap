@@ -48,4 +48,4 @@ e.configure(state="readonly")
 #### 验证无效输入
 
 此样式 _不能通过关键字来创建_；你需要在输入框上实施验证。
-在**事例**中,你将会找到一个名为[如何验证无效输入并且应用到到输入框](../cookbook/validate-user-input.md)的事例。
+在**Cookbook**中,你将会找到一个名为[如何验证无效输入并且应用到到输入框](../cookbook/validate-user-input.md)的事例。
