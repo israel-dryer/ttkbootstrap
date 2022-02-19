@@ -1,14 +1,13 @@
-# Separator
+# 分隔线
 
-This widget style features a thin horizontal _or_ vertical line drawn in the 
-default color (typically gray) or the [selected color](index.md#colors).
+此小部件样式可以用默认颜色（通常为灰色）或[选定颜色](index.md#colors)来绘制细直线或垂线。 
 
 ![separator](../assets/widget-styles/separator.png)
 
 ```python
-# default separator style
+# 默认分隔线样式
 Separator()
 
-# info colored separator style - handle color
+# 彩色分隔符样式 'info'
 Separator(bootstyle="info")
 ```
