@@ -6,9 +6,9 @@ by default, or the [selected color](index.md#colors).
 ![sizegrip](../assets/widget-styles/sizegrip.gif)
 
 ```python
-# default separator style
+# default sizegrip style
 Sizegrip()
 
-# info colored separator style - handle color
+# info colored sizegrip style - handle color
 Sizegrip(bootstyle="info")
 ```
