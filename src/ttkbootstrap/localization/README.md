@@ -1,20 +1,22 @@
-# Message Catalog Setup
+# Message Catalog
 
-Instructions for setting up a message catalog file for ttkbootstrap
+Instructions for adding to the ttkbootstrap message catalog
 
-1. Create a new .msg file with the language prefix codes. See the zh_cn.msg file as an example of this. The codes should be separated with an underscore '\_' as in 'zh_cn' >>
-    https://wiki.freepascal.org/Language_Codes
+1. Open the file **src/ttkbootstrap/localization/msgs.py**
+2. If adding to an existing catalog, locate the language and add the message as a tuple `("original", "translated")`
+3. If adding a new language to the catalog, append a new instance of `LocaleMsgs` to the `MESSAGES` list using the same pattern demonstrated in the file for other languages:
+```python
+MESSAGES.append(
+    LocaleMsgs(
+        "language_code",
+        ("original", "translated"),
+        ("original", "translated")
+    )
+)
+```
+4. Use the language code as presented in the **LCID string** [on this site](https://wiki.freepascal.org/Language_Codes), except replace the dash with an undercore. For example: **zh-cn** should be **zh_cn**.
 
-2. Add the following pattern for each word you want to translate:
-
-    ::msgcat::mcset  zh_cn "Letter " "信 "
-
-    - The first item is "::msgcat::mcset"
-    - The second item is the language code
-    - The third item is the source English word
-    - The last item is the English word translated into the target language
-
-3. The following words / phrases should be translated for a new language in ttkbootstrap at a minimum:
+5. The following words / phrases should be translated for a new language in ttkbootstrap at a minimum:
 
     - "OK"
     - "Ok"
