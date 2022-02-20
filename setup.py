@@ -70,7 +70,7 @@ The new keyword API is very flexible. The following examples all produce the sam
 
 setuptools.setup(
     name="ttkbootstrap",
-    version="1.7.1.2",
+    version="1.7.1.3",
     author="Israel Dryer",
     author_email="israel.dryer@gmail.com",
     description="A supercharged theme extension for tkinter that enables on-demand modern flat style themes inspired by Bootstrap.",
@@ -86,6 +86,6 @@ setuptools.setup(
     packages=setuptools.find_packages(where="src"),
     install_requires=["pillow>=8.2.0"],
     python_requires=">=3.7",
-    include_package_data=True,
-    package_data={'ttkbootstrap': ['localization/msgs/*.msg']}
+    # include_package_data=True,
+    # package_data={'ttkbootstrap': ['localization/msgs/*.msg']}
 )

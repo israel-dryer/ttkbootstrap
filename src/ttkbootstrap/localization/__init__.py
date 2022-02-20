@@ -10,15 +10,9 @@
 
     https://www.tcl.tk/man/tcl/TclCmd/msgcat.html    
 """
-from ttkbootstrap.localization import msgs
+from ttkbootstrap.localization.msgs import initialize_localities
 from ttkbootstrap.localization.msgcat import MessageCatalog
-import importlib.resources
 
-with importlib.resources.path(msgs, 'en.msg') as f:
-    MSGS_PATH = f.parent.as_posix()
 
-def initialize_localities():
-    """Load all custom msg files."""
-    MessageCatalog.load(MSGS_PATH)    
 
 
