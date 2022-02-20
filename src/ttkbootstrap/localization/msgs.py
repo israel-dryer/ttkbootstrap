@@ -28,6 +28,7 @@ class LocaleMsgs:
 
 
 MESSAGES.append(
+    # CZECH translation
     LocaleMsgs(
         "cs",
         ("Continue", "Pokračovat"),
@@ -51,6 +52,7 @@ MESSAGES.append(
     )
 )
 MESSAGES.append(
+    # DANISH translation
     LocaleMsgs(
         "da",
         ("Continue", "Fortsætte"),
@@ -73,6 +75,7 @@ MESSAGES.append(
     )
 )
 MESSAGES.append(
+    # SPANISH translation
     LocaleMsgs(
         "es",
         ("Cancel", "Cancelar"),
@@ -95,6 +98,7 @@ MESSAGES.append(
     )
 )
 MESSAGES.append(
+    # PORTUGUESE - BRAZIL translation   
     LocaleMsgs(
         "pt_br",
         ("Retry", "Repetir"),
@@ -191,6 +195,7 @@ MESSAGES.append(
     )
 )
 MESSAGES.append(
+    # CHINESE - CHINA translation
     LocaleMsgs(
         "zh_cn",
         ("&Abort", "&中止"),
