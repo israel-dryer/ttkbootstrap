@@ -892,9 +892,9 @@ class Tableview(ttk.Frame):
             self._tablerows.clear()
             self._tablerows_filtered.clear()
             self._viewdata.clear()
-            self._cidmap.clear()
+            #self._cidmap.clear()
             self._iidmap.clear()
-            records = self.view.get_children("")
+            records = self.view.get_children()
             self.view.delete(*records)
         # route to new page if no records visible
         if len(self._viewdata) == 0:
