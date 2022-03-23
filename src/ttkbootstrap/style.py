@@ -4075,7 +4075,7 @@ class StyleBuilderTTK:
                     # because of how I'm scaling the image, but it 
                     # will prevent the program from crashing. I need 
                     # a better solution for a missing font
-                    ImageFont.load_default()
+                    fnt = ImageFont.load_default()
                     font_offset = 0        
                     indicator = "x"
         else:
