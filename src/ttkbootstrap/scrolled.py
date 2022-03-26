@@ -275,6 +275,8 @@ class ScrolledFrame(ttk.Frame):
             master=self.container,
             padding=padding,
             bootstyle=bootstyle.replace('round', ''),
+            width=width,
+            height=height,
             **kwargs,
         )
         self.place(rely=0.0, relwidth=1.0, height=scrollheight)
