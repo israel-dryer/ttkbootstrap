@@ -313,7 +313,6 @@ class MessageDialog(Dialog):
                 text = MessageCatalog.translate(text)
 
             btn = ttk.Button(frame, bootstyle=bootstyle, text=text)
-            btn.bind("<Return>", lambda _: btn.invoke())
             btn.configure(command=lambda b=btn: self.on_button_press(b))
             btn.pack(padx=2, side=RIGHT)
             btn.lower()  # set focus traversal left-to-right
