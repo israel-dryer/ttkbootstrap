@@ -371,11 +371,10 @@ class ScrolledFrame(ttk.Frame):
         fraction = (number / 100) + first
         self.yview_moveto(fraction)
 
-    def enable_scrolling(self):
-        """Enable mousewheel scrolling on the frame and all of its
-        children."""
-        children = self.winfo_children()
-        for widget in [self, *children]:
+    def _add_scroll_binding(self, parent):
+        """Recursive adding of scroll binding to all descendants."""
+        children = parent.winfo_children()
+        for widget in [parent, *children]:
             bindings = widget.bind()
             if self.winsys.lower() == "x11":
                 if "<Button-4>" in bindings or "<Button-5>" in bindings:
@@ -386,17 +385,33 @@ class ScrolledFrame(ttk.Frame):
             else:
                 if "<MouseWheel>" not in bindings:
                     widget.bind("<MouseWheel>", self._on_mousewheel, "+")
+            if widget.winfo_children() and widget != parent:
+                self._add_scroll_binding(widget)
 
-    def disable_scrolling(self):
-        """Disable mousewheel scrolling on the frame and all of its
-        children."""
-        children = self.winfo_children()
-        for widget in [self, *children]:
+
+    def _del_scroll_binding(self, parent):
+        """Recursive removal of scrolling binding for all descendants"""
+        children = parent.winfo_children()
+        for widget in [parent, *children]:
             if self.winsys.lower() == "x11":
                 widget.unbind("<Button-4>")
                 widget.unbind("<Button-5>")
             else:
                 widget.unbind("<MouseWheel>")
+            if widget.winfo_children() and widget != parent:
+                self._del_scroll_binding(widget)
+
+
+    def enable_scrolling(self):
+        """Enable mousewheel scrolling on the frame and all of its
+        children."""
+        self._add_scroll_binding(self)
+
+
+    def disable_scrolling(self):
+        """Disable mousewheel scrolling on the frame and all of its
+        children."""
+        self._del_scroll_binding(self)
 
     def hide_scrollbars(self):
         """Hide the scrollbars."""
