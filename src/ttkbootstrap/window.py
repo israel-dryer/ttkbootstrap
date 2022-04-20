@@ -40,7 +40,8 @@ def apply_class_bindings(window: tkinter.Widget):
                 sequence=sequence,
                 func=on_select_all
         )
-
+    window.unbind_class("TButton", "<Key-space>")
+    window.bind_class("TButton", "<Key-Return>", lambda event: event.widget.invoke())
 
 def apply_all_bindings(window: tkinter.Widget):
     """Add bindings to all widgets in the application"""
