@@ -1894,7 +1894,7 @@ class StyleBuilderTTK:
             draw.line([7, 5, 7, 8], fill=color)
             draw.line([8, 6, 8, 9], fill=color)
 
-            img = img.resize(size, Image.CUBIC)
+            img = img.resize(size, Image.BICUBIC)
 
             up_img = ImageTk.PhotoImage(img)
             up_name = util.get_image_name(up_img)
@@ -1946,7 +1946,7 @@ class StyleBuilderTTK:
             draw = ImageDraw.Draw(img)
             radius = min([x, y]) // 2
             draw.rounded_rectangle([0, 0, x - 1, y - 1], radius, fill)
-            image = ImageTk.PhotoImage(img.resize(size, Image.CUBIC))
+            image = ImageTk.PhotoImage(img.resize(size, Image.BICUBIC))
             name = util.get_image_name(image)
             self.theme_images[name] = image
             return name
@@ -2140,7 +2140,7 @@ class StyleBuilderTTK:
             x = size[0] * 10
             y = size[1] * 10
             img = Image.new("RGBA", (x, y), fill)
-            image = ImageTk.PhotoImage(img.resize(size), Image.CUBIC)
+            image = ImageTk.PhotoImage(img.resize(size), Image.BICUBIC)
             name = util.get_image_name(image)
             self.theme_images[name] = image
             return name
