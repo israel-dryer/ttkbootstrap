@@ -54,13 +54,17 @@ class ColorChooser(ttk.Frame):
         self.initialcolor = initialcolor or self.colors.bg
 
         # color variables
-        self.hue = ttk.IntVar(value=0)
-        self.sat = ttk.IntVar(value=0)
-        self.lum = ttk.IntVar(value=100)
-        self.red = ttk.IntVar(value=255)
-        self.grn = ttk.IntVar(value=255)
-        self.blu = ttk.IntVar(value=255)
-        self.hex = ttk.StringVar(value='#FFFFFF')
+        r, g, b = ImageColor.getrgb(self.initialcolor)
+        h, s, l = colorutils.color_to_hsl((r, g, b), RGB)
+        hx = colorutils.color_to_hex((r, g, b), RGB)
+        
+        self.hue = ttk.IntVar(value=h)
+        self.sat = ttk.IntVar(value=s)
+        self.lum = ttk.IntVar(value=l)
+        self.red = ttk.IntVar(value=r)
+        self.grn = ttk.IntVar(value=g)
+        self.blu = ttk.IntVar(value=b)
+        self.hex = ttk.StringVar(value=hx)
 
         # widget sizes (adjusted by widget scaling)
         self.spectrum_height = utility.scale_size(self, 240)
