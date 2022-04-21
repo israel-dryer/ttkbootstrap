@@ -209,17 +209,17 @@ class Window(tkinter.Tk):
         if iconphoto is not None:
             if iconphoto == '':
                 # the default ttkbootstrap icon
-                self._icon = tkinter.PhotoImage(data=Icon.icon)
+                self._icon = tkinter.PhotoImage(master=self, data=Icon.icon)
                 self.iconphoto(True, self._icon)
             else:
                 try:
                     # the user provided an image path
-                    self._icon = tkinter.PhotoImage(file=iconphoto)
+                    self._icon = tkinter.PhotoImage(file=iconphoto, master=self)
                     self.iconphoto(True, self._icon)
                 except tkinter.TclError:
                     # The fallback icon if the user icon fails.
                     print('iconphoto path is bad; using default image.')
-                    self._icon = tkinter.PhotoImage(data=Icon.icon)
+                    self._icon = tkinter.PhotoImage(data=Icon.icon, master=self)
                     self.iconphoto(True, self._icon)
 
         self.title(title)
@@ -402,7 +402,7 @@ class Toplevel(tkinter.Toplevel):
         if iconphoto != '':
             try:
                 # the user provided an image path
-                self._icon = tkinter.PhotoImage(file=iconphoto)
+                self._icon = tkinter.PhotoImage(file=iconphoto, master=self)
                 self.iconphoto(True, self._icon)
             except tkinter.TclError:
                 # The fallback icon if the user icon fails.
