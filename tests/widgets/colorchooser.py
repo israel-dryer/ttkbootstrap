@@ -1,12 +1,10 @@
 import ttkbootstrap as ttk
-from ttkbootstrap.constants import *
-
 from ttkbootstrap.dialogs.colorchooser import ColorChooserDialog
 
 
-app = ttk.Window(hdpi=0)
+app = ttk.Window()
 
-cd = ColorChooserDialog(app)
+cd = ColorChooserDialog(app, initialcolor='#adadad')
 cd.show()
 
 app.mainloop()
