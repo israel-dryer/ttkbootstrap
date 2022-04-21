@@ -2970,7 +2970,20 @@ class StyleBuilderTTK:
         disabled_name = util.get_image_name(disabled_img)
         self.theme_images[disabled_name] = disabled_img
 
-        return off_name, on_name, disabled_name
+        # toggle on / disabled
+        toggle_on_disabled = Image.new("RGBA", (226, 130))
+        draw = ImageDraw.Draw(toggle_on_disabled)
+        draw.rectangle(
+            xy=[1, 1, 225, 129], outline=disabled_fg, width=6, fill=off_fill
+        )
+        draw.rectangle([18, 18, 110, 110], fill=disabled_fg)
+        _on_disabled = toggle_on_disabled.transpose(Image.ROTATE_180)
+        on_dis_img = ImageTk.PhotoImage(_on_disabled.resize(size, Image.LANCZOS))
+        on_disabled_name = util.get_image_name(on_dis_img)
+        self.theme_images[on_disabled_name] = on_dis_img
+
+
+        return off_name, on_name, disabled_name, on_disabled_name
 
     def create_toggle_style(self, colorname=DEFAULT):
         """Create a round toggle style for the ttk.Checkbutton widget.
@@ -3049,6 +3062,22 @@ class StyleBuilderTTK:
         on_name = util.get_image_name(on_img)
         self.theme_images[on_name] = on_img
 
+        # toggle on / disabled
+        _on_disabled = Image.new("RGBA", (226, 130))
+        draw = ImageDraw.Draw(_on_disabled)
+        draw.rounded_rectangle(
+            xy=[1, 1, 225, 129],
+            radius=(128 / 2),
+            outline=disabled_fg,
+            width=6,
+            fill=off_fill,
+        )
+        draw.ellipse([20, 18, 112, 110], fill=disabled_fg)
+        _on_disabled = _on_disabled.transpose(Image.ROTATE_180)
+        on_dis_img = ImageTk.PhotoImage(_on_disabled.resize(size, Image.LANCZOS))
+        on_disabled_name = util.get_image_name(on_dis_img)
+        self.theme_images[on_disabled_name] = on_dis_img        
+
         # toggle disabled
         _disabled = Image.new("RGBA", (226, 130))
         draw = ImageDraw.Draw(_disabled)
@@ -3062,7 +3091,7 @@ class StyleBuilderTTK:
         disabled_name = util.get_image_name(disabled_img)
         self.theme_images[disabled_name] = disabled_img
 
-        return off_name, on_name, disabled_name
+        return off_name, on_name, disabled_name, on_disabled_name
 
     def create_round_toggle_style(self, colorname=DEFAULT):
         """Create a round toggle style for the ttk.Checkbutton widget.
@@ -3092,6 +3121,7 @@ class StyleBuilderTTK:
                 f"{ttkstyle}.indicator",
                 "image",
                 images[1],
+                ("disabled selected", images[3]),
                 ("disabled", images[2]),
                 ("!selected", images[0]),
                 width=width,
@@ -3178,6 +3208,7 @@ class StyleBuilderTTK:
             f"{ttkstyle}.indicator",
             "image",
             images[1],
+            ("disabled selected", images[3]),
             ("disabled", images[2]),
             ("!selected", images[0]),
             width=width,
@@ -3489,6 +3520,18 @@ class StyleBuilderTTK:
         on_name = util.get_image_name(on_img)
         self.theme_images[on_name] = on_img
 
+        # radio on/disabled
+        _on_dis = Image.new("RGBA", (134, 134))
+        draw = ImageDraw.Draw(_on_dis)
+        if colorname == LIGHT and self.is_light_theme:
+            draw.ellipse(xy=[1, 1, 133, 133], outline=off_border, width=6)
+        else:
+            draw.ellipse(xy=[1, 1, 133, 133], fill=disabled)
+        draw.ellipse([40, 40, 94, 94], fill=off_fill)
+        on_dis_img = ImageTk.PhotoImage(_on_dis.resize(size, Image.LANCZOS))
+        on_disabled_name = util.get_image_name(on_dis_img)
+        self.theme_images[on_disabled_name] = on_dis_img        
+
         # radio disabled
         _disabled = Image.new("RGBA", (134, 134))
         draw = ImageDraw.Draw(_disabled)
@@ -3501,7 +3544,7 @@ class StyleBuilderTTK:
         disabled_name = util.get_image_name(disabled_img)
         self.theme_images[disabled_name] = disabled_img
 
-        return off_name, on_name, disabled_name
+        return off_name, on_name, disabled_name, on_disabled_name
 
     def create_radiobutton_style(self, colorname=DEFAULT):
         """Create a style for the ttk.Radiobutton widget.
@@ -3530,6 +3573,7 @@ class StyleBuilderTTK:
             f"{ttkstyle}.indicator",
             "image",
             images[1],
+            ("disabled selected", images[3]),
             ("disabled", images[2]),
             ("!selected", images[0]),
             width=width,
@@ -3993,6 +4037,8 @@ class StyleBuilderTTK:
             f"{element}.indicator",
             "image",
             images[1],
+            ("disabled selected", images[4]),
+            ("disabled alternate", images[5]),
             ("disabled", images[2]),
             ("alternate", images[3]),
             ("!selected", images[0]),
@@ -4089,7 +4135,7 @@ class StyleBuilderTTK:
         off_fill = self.colors.bg
         off_border = self.colors.selectbg
         off_border = Colors.make_transparent(0.4, self.colors.fg, self.colors.bg)
-        disabled_bg = Colors.make_transparent(0.3, self.colors.fg, self.colors.bg)
+        disabled_fg = Colors.make_transparent(0.3, self.colors.fg, self.colors.bg)        
 
         if colorname == LIGHT:
             check_color = self.colors.dark
@@ -4134,6 +4180,22 @@ class StyleBuilderTTK:
         on_name = util.get_image_name(on_img)
         self.theme_images[on_name] = on_img
 
+       # checkbutton on/disabled
+        checkbutton_on_disabled = Image.new("RGBA", (134, 134))
+        draw = ImageDraw.Draw(checkbutton_on_disabled)
+        draw.rounded_rectangle(
+            [2, 2, 132, 132],
+            radius=16,
+            fill=disabled_fg,
+            outline=disabled_fg,
+            width=3,
+        )
+
+        draw.text((20, font_offset), indicator, font=fnt, fill=off_fill)
+        on_dis_img = ImageTk.PhotoImage(checkbutton_on_disabled.resize(size, Image.LANCZOS))
+        on_dis_name = util.get_image_name(on_dis_img)
+        self.theme_images[on_dis_name] = on_dis_img
+
         # checkbutton alt
         checkbutton_alt = Image.new("RGBA", (134, 134))
         draw = ImageDraw.Draw(checkbutton_alt)
@@ -4151,11 +4213,28 @@ class StyleBuilderTTK:
         alt_name = util.get_image_name(alt_img)
         self.theme_images[alt_name] = alt_img
 
+        # checkbutton alt/disabled
+        checkbutton_alt_disabled = Image.new("RGBA", (134, 134))
+        draw = ImageDraw.Draw(checkbutton_alt_disabled)
+        draw.rounded_rectangle(
+            [2, 2, 132, 132],
+            radius=16,
+            fill=disabled_fg,
+            outline=disabled_fg,
+            width=3,
+        )        
+        draw.line([36, 67, 100, 67], fill=off_fill, width=12)
+        alt_dis_img = ImageTk.PhotoImage(
+            checkbutton_alt_disabled.resize(size, Image.LANCZOS)
+        )
+        alt_dis_name = util.get_image_name(alt_dis_img)
+        self.theme_images[alt_dis_name] = alt_dis_img        
+
         # checkbutton disabled
         checkbutton_disabled = Image.new("RGBA", (134, 134))
         draw = ImageDraw.Draw(checkbutton_disabled)
         draw.rounded_rectangle(
-            [2, 2, 132, 132], radius=16, outline=disabled_bg, width=3
+            [2, 2, 132, 132], radius=16, outline=disabled_fg, width=3
         )
         disabled_img = ImageTk.PhotoImage(
             checkbutton_disabled.resize(size, Image.LANCZOS)
@@ -4163,7 +4242,7 @@ class StyleBuilderTTK:
         disabled_name = util.get_image_name(disabled_img)
         self.theme_images[disabled_name] = disabled_img
 
-        return off_name, on_name, disabled_name, alt_name
+        return off_name, on_name, disabled_name, alt_name, on_dis_name, alt_dis_name
 
     def create_menubutton_style(self, colorname=DEFAULT):
         """Create a solid style for the ttk.Menubutton widget.
