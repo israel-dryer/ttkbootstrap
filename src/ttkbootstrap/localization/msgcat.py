@@ -79,7 +79,7 @@ class MessageCatalog:
 
         Parameters:
 
-            dirname (str):
+            dirname (str or Pathlike object):
                 The directory path of the msg files.
 
         Returns:
@@ -88,9 +88,12 @@ class MessageCatalog:
                 Then number of message files which matched the
                 specification and were loaded.
         """
+        from pathlib import Path
+        msgs = Path(dirname).as_posix() # format path for tcl/tk
+        
         root = get_default_root()
         command = "::msgcat::mcload"
-        return int(root.tk.eval(f"{command} [list {dirname}]"))
+        return int(root.tk.eval(f"{command} [list {msgs}]"))
 
     @staticmethod
     def set(locale, src, translated=None):
