@@ -5,6 +5,7 @@
 """
 import tkinter
 from ttkbootstrap.constants import *
+from ttkbootstrap.publisher import Publisher
 from ttkbootstrap.style import Style
 from ttkbootstrap.icons import Icon
 from ttkbootstrap import utility
@@ -43,9 +44,11 @@ def apply_class_bindings(window: tkinter.Widget):
     window.unbind_class("TButton", "<Key-space>")
     window.bind_class("TButton", "<Key-Return>", lambda event: event.widget.invoke())
 
+
 def apply_all_bindings(window: tkinter.Widget):
     """Add bindings to all widgets in the application"""
     window.bind_all('<Map>', on_map_child, '+')
+    window.bind_all('<Destroy>', lambda e: Publisher.unsubscribe(e.widget))
 
 
 def on_disabled_readonly_state(event):
