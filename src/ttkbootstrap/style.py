@@ -5092,15 +5092,12 @@ class Bootstyle:
                 # this may fail in python 3.6 for ttk widgets that do not exist
                 #   in that version.
                 continue
+
         # TK WIDGETS
         for widget in TK_WIDGETS:
-
             # override widget constructor
             _init = Bootstyle.override_tk_widget_constructor(widget.__init__)
             widget.__init__ = _init
-
-            # override widget destroy method (quit for tk.Tk)
-            widget.destroy = Bootstyle.override_widget_destroy_method
 
     @staticmethod
     def update_tk_widget_style(widget):
@@ -5157,16 +5154,3 @@ class Bootstyle:
                 Bootstyle.update_tk_widget_style(self)
 
         return __init__wrapper
-
-    @staticmethod
-    def override_widget_destroy_method(self):
-        """Unsubscribe widget from publication and destroy."""
-        if isinstance(self, tk.Widget):
-            Publisher.unsubscribe(str(self))
-            super(tk.Widget, self).destroy()
-        elif isinstance(self, tk.Tk):
-            Publisher.clear_subscribers()
-            super(tk.Tk, self).quit()
-        elif isinstance(self, tk.Toplevel):
-            Publisher.unsubscribe(str(self))
-            super(tk.Toplevel, self).destroy()
