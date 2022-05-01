@@ -381,7 +381,7 @@ class Floodgauge(Progressbar):
             self._variable = kwargs.pop('variable')
         else:
             self._variable = tk.IntVar(value=value)
-        if 'textvariable':
+        if 'textvariable' in kwargs:
             self._textvariable = kwargs.pop('textvariable')
         else:
             self._textvariable = tk.StringVar(value=text)
