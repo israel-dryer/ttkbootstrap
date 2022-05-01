@@ -376,9 +376,15 @@ class Floodgauge(Progressbar):
             **kwargs:
                 Other configuration options from the option database.
         """
-        # progress bar value variable
-        self.variable = tk.IntVar(value=value)
-        self.textvariable = tk.StringVar(value=text)
+        # progress bar value variables
+        if 'variable' in kwargs:
+            self._variable = kwargs.pop('variable')
+        else:
+            self._variable = tk.IntVar(value=value)
+        if 'textvariable':
+            self._textvariable = kwargs.pop('textvariable')
+        else:
+            self._textvariable = tk.StringVar(value=text)
         self._bootstyle = bootstyle
         self._font = font or "helvetica 10"
         self._mask = mask
@@ -394,10 +400,10 @@ class Floodgauge(Progressbar):
             orient=orient,
             bootstyle=bootstyle,
             takefocus=takefocus,
-            variable=self.variable,
+            variable=self._variable,
             **kwargs,
         )
-        self._set_widget_text(self.textvariable.get())
+        self._set_widget_text(self._textvariable.get())
         self.bind("<<ThemeChanged>>", self._on_theme_change)
         self.bind("<<Configure>>", self._on_theme_change)
 
@@ -407,33 +413,33 @@ class Floodgauge(Progressbar):
     def _set_widget_text(self, *_):
         ttkstyle = self.cget("style")
         if self._mask is None:
-            text = self.textvariable.get()
+            text = self._textvariable.get()
         else:
-            value = self.variable.get()
+            value = self._variable.get()
             text = self._mask.format(value)
         self.tk.call("ttk::style", "configure", ttkstyle, "-text", text)
         self.tk.call("ttk::style", "configure", ttkstyle, "-font", self._font)
 
     def _set_mask(self):
         if self._traceid is None:
-            self._traceid = self.variable.trace_add(
+            self._traceid = self._variable.trace_add(
                 "write", self._set_widget_text
             )
 
     def _unset_mask(self):
         if self._traceid is not None:
-            self.variable.trace_remove("write", self._traceid)
+            self._variable.trace_remove("write", self._traceid)
         self._traceid = None
 
     def _on_theme_change(self, *_):
-        text = self.textvariable.get()
+        text = self._textvariable.get()
         self._set_widget_text(text)
 
     def _configure_get(self, cnf):
         if cnf == "value":
-            return self.variable.get()
+            return self._variable.get()
         if cnf == "text":
-            return self.textvariable.get()
+            return self._textvariable.get()
         if cnf == "bootstyle":
             return self._bootstyle
         if cnf == "mask":
@@ -445,17 +451,22 @@ class Floodgauge(Progressbar):
 
     def _configure_set(self, **kwargs):
         if "value" in kwargs:
-            self.variable.set(kwargs.pop("value"))
+            self._variable.set(kwargs.pop("value"))
         if "text" in kwargs:
-            self.textvariable.set(kwargs.pop("text"))
+            self._textvariable.set(kwargs.pop("text"))
         if "bootstyle" in kwargs:
             self._bootstyle = kwargs.get("bootstyle")
         if "mask" in kwargs:
             self._mask = kwargs.pop("mask")
         if "font" in kwargs:
             self._font = kwargs.pop("font")
+        if "variable" in kwargs:
+            self._variable = kwargs.get("variable")
+            Progressbar.configure(self, cnf=None, **kwargs)
+        if "textvariable" in kwargs:
+            self.textvariable = kwargs.pop("textvariable")
         else:
-            super(Progressbar, self).configure(cnf=None, **kwargs)
+            Progressbar.configure(self, cnf=None, **kwargs)
 
     def __getitem__(self, key: str):
         return self._configure_get(cnf=key)
@@ -478,6 +489,30 @@ class Floodgauge(Progressbar):
             return self._configure_get(cnf)
         else:
             self._configure_set(**kwargs)
+
+    @property
+    def textvariable(self):
+        """Returns the textvariable object"""
+        return self._textvariable
+
+    @textvariable.setter
+    def textvariable(self, value):
+        """Set the new textvariable property"""
+        self._textvariable = value
+        self._set_widget_text(self._textvariable.get())
+
+    @property
+    def variable(self):
+        """Returns the variable object"""
+        return self._variable
+
+    @variable.setter
+    def variable(self, value):
+        """Set the new variable object"""
+        self._variable = value
+        if self.cget('variable') != value:
+            self.configure(variable=self._variable)
+
 
 class Meter(ttk.Frame):
     """A radial meter that can be used to show progress of long
