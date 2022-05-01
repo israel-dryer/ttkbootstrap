@@ -41,4 +41,9 @@ assert p1['font'] == 'arial 18'
 p1['mask'] = '{}% Complete'
 assert p1.configure('mask') == '{}% Complete'
 
+var = ttk.IntVar(value=30)
+p1['variable'] = var
+assert p1['value'] == 30
+assert(str(var) == p1.cget('variable'))
+
 root.mainloop()
