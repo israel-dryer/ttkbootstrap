@@ -744,6 +744,8 @@ class StyleBuilderTK:
                 The tk object to update.
         """
         widget.configure(background=self.colors.bg)
+        # add default initial font for text widget
+        widget.option_add('*Text*Font', 'TkDefaultFont')
 
     def update_toplevel_style(self, widget: tk.Toplevel):
         """Update the toplevel style.
@@ -1038,7 +1040,7 @@ class StyleBuilderTK:
             relief=tk.FLAT,
             padx=5,
             pady=5,
-            font="TkDefaultFont",
+            #font="TkDefaultFont",
         )
 
 
