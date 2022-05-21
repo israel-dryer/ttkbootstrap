@@ -18,16 +18,16 @@ class TableColumn:
     """Represents a column in a Tableview object"""
 
     def __init__(
-        self,
-        tableview,
-        cid,
-        text,
-        image="",
-        command="",
-        anchor=W,
-        width=200,
-        minwidth=20,
-        stretch=False,
+            self,
+            tableview,
+            cid,
+            text,
+            image="",
+            command="",
+            anchor=W,
+            width=200,
+            minwidth=20,
+            stretch=False,
     ):
         """
         Parameters:
@@ -425,19 +425,19 @@ class Tableview(ttk.Frame):
     """
 
     def __init__(
-        self,
-        master=None,
-        bootstyle=DEFAULT,
-        coldata=[],
-        rowdata=[],
-        paginated=False,
-        searchable=False,
-        autofit=False,
-        autoalign=True,
-        stripecolor=None,
-        pagesize=10,
-        height=10,
-        delimiter=",",
+            self,
+            master=None,
+            bootstyle=DEFAULT,
+            coldata=[],
+            rowdata=[],
+            paginated=False,
+            searchable=False,
+            autofit=False,
+            autoalign=True,
+            stripecolor=None,
+            pagesize=10,
+            height=10,
+            delimiter=",",
     ):
         """
         Parameters:
@@ -630,7 +630,7 @@ class Tableview(ttk.Frame):
         """
         try:
             if "pagesize" in kwargs:
-                pagesize = kwargs.pop("pagesize")
+                pagesize: int = kwargs.pop("pagesize")
                 self._pagesize.set(value=pagesize)
 
             self.view.configure(cnf, **kwargs)
@@ -870,7 +870,7 @@ class Tableview(ttk.Frame):
             # original index
             else:
                 for record in self.tablerows:
-                    if record.self._sort == index:
+                    if record._sort == index:
                         record.delete()
 
     def delete_rows(self, indices=None, iids=None, visible=True):
@@ -892,24 +892,23 @@ class Tableview(ttk.Frame):
             self._tablerows.clear()
             self._tablerows_filtered.clear()
             self._viewdata.clear()
-            #self._cidmap.clear()
             self._iidmap.clear()
             records = self.view.get_children()
             self.view.delete(*records)
         # route to new page if no records visible
         if len(self._viewdata) == 0:
-            self.goto_page()        
+            self.goto_page()
 
     def insert_column(
-        self,
-        index,
-        text="",
-        image="",
-        command="",
-        anchor=W,
-        width=200,
-        minwidth=20,
-        stretch=False,
+            self,
+            index,
+            text="",
+            image="",
+            command="",
+            anchor=W,
+            width=200,
+            minwidth=20,
+            stretch=False,
     ) -> TableColumn:
         """
         Parameters:
@@ -1012,7 +1011,6 @@ class Tableview(ttk.Frame):
         The table will need to be completely rebuilt after using this
         method.
         """
-        TableRow._cnt
         self.delete_rows()
         self.cidmap.clear()
         self.tablecolumns.clear()
@@ -1101,7 +1099,7 @@ class Tableview(ttk.Frame):
         return self._tablecols
 
     def get_column(
-        self, index=None, visible=False, cid=None
+            self, index=None, visible=False, cid=None
     ) -> TableColumn:
         """Returns the `TableColumn` object from an index or a cid.
 
@@ -1342,7 +1340,7 @@ class Tableview(ttk.Frame):
         except:
             # when data is missing, or sometimes with numbers
             # this is still not right, but it works most of the time
-            # fix sometime down the road when I have time 
+            # fix sometime down the road when I have time
             self.fill_empty_columns()
             sortedrows = sorted(
                 tablerows, reverse=columnsort, key=lambda x: int(x.values[index])
@@ -1400,7 +1398,7 @@ class Tableview(ttk.Frame):
         self.reset_column_sort()
 
         self._column_sort_header_reset()
-        self.goto_first_page() # needed?
+        self.goto_first_page()  # needed?
 
     def filter_column_to_value(self, event=None, cid=None, value=None):
         """Hide all records except for records where the current
@@ -1484,13 +1482,12 @@ class Tableview(ttk.Frame):
             # assuming that if the count of the records on the page are
             #   selected for hiding, then need to go to the next page
             # The call to `load_table_data` is duplicative, but currently
-            #   this is the only way to get this to work until I've 
+            #   this is the only way to get this to work until I've
             #   refactored this bit.
             self.load_table_data()
             self.goto_page()
         else:
             self.load_table_data()
-        
 
     def hide_selected_column(self, event=None, cid=None):
         """Detach the selected column from the tableview. This method
@@ -1726,7 +1723,7 @@ class Tableview(ttk.Frame):
             eo = self._get_event_objects(event)
             column = eo.column
         elif cid is not None:
-            column = self.cidmap(cid)
+            column = self.cidmap.get(cid)
         else:
             return
 
@@ -2168,21 +2165,6 @@ class Tableview(ttk.Frame):
         index.bind("<KP_Enter>", self.goto_page, "+")
 
         ttk.Label(pageframe, text=MessageCatalog.translate("Page")).pack(side=RIGHT, padx=5)
-
-        # I'm removing this widget for now; the pageframe was getting too
-        #   cluttered and this is configurable with `configure`
-
-        # values = [5, 10, 25, 50, 75, 100]
-        # cbo = ttk.Combobox(
-        #     master=pageframe,
-        #     values=values,
-        #     textvariable=self._pagesize,
-        #     width=4,
-        #     state=READONLY,
-        # )
-        # cbo.pack(side=RIGHT)
-        # cbo.bind("<<ComboboxSelected>>", self._select_pagesize)
-        # ttk.Label(pageframe, text="Rows per page").pack(side=RIGHT, padx=5, fill=Y)
 
     def _build_table_rows(self, rowdata):
         """Build, load, and configure the DataTableRow objects
