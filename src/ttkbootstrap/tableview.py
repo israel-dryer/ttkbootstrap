@@ -18,45 +18,36 @@ class TableColumn:
     """Represents a column in a Tableview object"""
 
     def __init__(
-        self,
-        tableview,
-        cid,
-        text,
-        image="",
-        command="",
-        anchor=W,
-        width=200,
-        minwidth=20,
-        stretch=False,
+            self,
+            tableview,
+            cid,
+            text,
+            image="",
+            command="",
+            anchor=W,
+            width=200,
+            minwidth=20,
+            stretch=False,
     ):
         """
         Parameters:
-
             tableview (Tableview):
                 The parent tableview object.
-
             cid (str):
                 The column id.
-
             text (str):
                 The header text.
-
             image (PhotoImage):
                 An image that is displayed to the left of the header text.
-
             command (Callable):
                 A function called whenever the header button is clicked.
-
             anchor (str):
                 The position of the header text within the header. One
                 of "e", "w", "center".
-
             width (int):
                 Specifies the width of the column in pixels.
-
             minwidth (int):
                 Specifies the minimum width of the column in pixels.
-
             stretch (bool):
                 Specifies whether or not the column width should be
                 adjusted whenever the widget is resized or the user
@@ -132,12 +123,9 @@ class TableColumn:
         current value is returned, otherwise, sets the widget
         options specified in kwargs. See the documentation for
         `Tableview.insert_column` for configurable options.
-
         Parameters:
-
             opt (str):
                 A configuration option to query.
-
             **kwargs (Dict):
                 Optional keyword arguments used to configure the
                 column and headers.
@@ -243,10 +231,8 @@ class TableRow:
     def __init__(self, tableview, values):
         """
         Parameters:
-
             tableview (Tableview):
                 The Tableview widget that contains this row
-
             values (List[Any, ...]):
                 A list of values to display in the row
         """
@@ -279,12 +265,9 @@ class TableRow:
         current value is returned, otherwise, sets the widget
         options specified in kwargs. See the documentation for
         `Tableview.insert_row` for configurable options.
-
         Parameters:
-
             opt (str):
                 A configuration option to query.
-
             **kwargs { values, tags }:
                 Optional keyword arguments used to configure the
                 row.
@@ -356,54 +339,42 @@ class Tableview(ttk.Frame):
     """A class built on the `ttk.Treeview` widget for arranging data in
     rows and columns. The underlying Treeview object and its methods are
     exposed in the `Tableview.view` property.
-
     A Tableview object contains various features such has striped rows,
     pagination, and autosized and autoaligned columns.
-
     The pagination option is recommended when loading a lot of data as
     the table records are inserted on-demand. Table records are only
     created when requested to be in a page view. This allows the table
     to be loaded very quickly even with hundreds of thousands of
     records.
-
     All table columns are sortable. Clicking a column header will toggle
     between sorting "ascending" and "descending".
-
     Columns are configurable by passing a simple list of header names or
     by passing in a dictionary of column names with settings. You can
     use both as well, as in the example below, where a column header
     name is use for one column, and a dictionary of settings is used
     for another.
-
     The object has a right-click menu on the header and the cells that
     allow you to configure various settings.
-
     ![](../../assets/widgets/tableview-1.png)
     ![](../../assets/widgets/tableview-2.png)
-
     Examples:
-
         Adding data with the constructor
         ```python
         import ttkbootstrap as ttk
         from ttkbootstrap.tableview import Tableview
         from ttkbootstrap.constants import *
-
         app = ttk.Window()
         colors = app.style.colors
-
         coldata = [
             {"text": "LicenseNumber", "stretch": False},
             "CompanyName",
             {"text": "UserCount", "stretch": False},
         ]
-
         rowdata = [
             ('A123', 'IzzyCo', 12),
             ('A136', 'Kimdee Inc.', 45),
             ('A158', 'Farmadding Co.', 36)
         ]
-
         dt = Tableview(
             master=app,
             coldata=coldata,
@@ -414,10 +385,8 @@ class Tableview(ttk.Frame):
             stripecolor=(colors.light, None),
         )
         dt.pack(fill=BOTH, expand=YES, padx=10, pady=10)
-
         app.mainloop()
         ```
-
         Add data with methods
         ```python
         dt.insert_row('end', ['Marzale LLC', 26])
@@ -425,53 +394,47 @@ class Tableview(ttk.Frame):
     """
 
     def __init__(
-        self,
-        master=None,
-        bootstyle=DEFAULT,
-        coldata=[],
-        rowdata=[],
-        paginated=False,
-        searchable=False,
-        autofit=False,
-        autoalign=True,
-        stripecolor=None,
-        pagesize=10,
-        height=10,
-        delimiter=",",
+            self,
+            master=None,
+            bootstyle=DEFAULT,
+            coldata=[],
+            rowdata=[],
+            paginated=False,
+            searchable=False,
+            autofit=False,
+            autoalign=True,
+            stripecolor=None,
+            bottomscorllbar=False,
+            pagesize=10,
+            height=10,
+            delimiter=",",
     ):
         """
         Parameters:
-
             master (Widget):
                 The parent widget.
-
             bootstyle (str):
                 A style keyword used to set the focus color of the entry
                 and the background color of the date button. Available
                 options include -> primary, secondary, success, info,
                 warning, danger, dark, light.
-
             coldata (List[str | Dict]):
                 An iterable containing either the heading name or a
                 dictionary of column settings. Configurable settings
                 include >> text, image, command, anchor, width, minwidth,
                 maxwidth, stretch. Also see `Tableview.insert_column`.
-
             rowdata (List):
                 An iterable of row data. The lenth of each row of data
                 must match the number of columns. Also see
                 `Tableview.insert_row`.
-
             paginated (bool):
                 Specifies that the data is to be paginated. A pagination
                 frame will be created below the table with controls that
                 enable the user to page forward and backwards in the
                 data set.
-
             pagesize (int):
                 When `paginated=True`, this specifies the number of rows
                 to show per page.
-
             searchable (bool):
                 If `True`, a searchbar will be created above the table.
                 Press the <Return> key to initiate a search. Searching
@@ -480,12 +443,10 @@ class Tableview(ttk.Frame):
                 bar. Currently, the search method looks for any row
                 that contains the search text. The filtered results
                 are displayed in the table view.
-
             autofit (bool):
                 If `True`, the table columns will be automatically sized
                 when loaded based on the records in the current view.
                 Also see `Tableview.autofit_columns`.
-
             autoalign (bool):
                 If `True`, the column headers and data are automatically
                 aligned. Numbers and number headers are right-aligned
@@ -493,7 +454,6 @@ class Tableview(ttk.Frame):
                 align method evaluates the first record in each column
                 to determine the data type for alignment. Also see
                 `Tableview.autoalign_columns`.
-
             stripecolor (Tuple[str, str]):
                 If provided, even numbered rows will be color using the
                 (background, foreground) specified. You may specify one
@@ -506,13 +466,11 @@ class Tableview(ttk.Frame):
                 themed ttkbootstrap color and the foreground to the
                 specified hexadecimal color. Also see
                 `Tableview.apply_table_stripes`.
-
             height (int):
                 Specifies how many rows will appear in the table's viewport.
                 If the number of records extends beyond the table height,
                 the user may use the mousewheel or scrollbar to navigate
                 the data.
-
             delimiter (str):
                 The character to use as a delimiter when exporting data
                 to CSV.
@@ -526,6 +484,7 @@ class Tableview(ttk.Frame):
         self._pageindex = tk.IntVar(value=1)
         self._pagelimit = tk.IntVar(value=0)
         self._height = height
+        self._bottomscorllbar = bottomscorllbar
         self._pagesize = tk.IntVar(value=pagesize)
         self._paginated = paginated
         self._searchable = searchable
@@ -613,18 +572,13 @@ class Tableview(ttk.Frame):
         """Configure the internal `Treeview` widget. If cnf is provided,
         value of the option is return. Otherwise the widget is
         configured via kwargs.
-
         Parameters:
-
             cnf (Any):
                 An option to query.
-
             **kwargs (Dict):
                 Optional keyword arguments used to configure the internal
                 Treeview widget.
-
         Returns:
-
             Union[Any, None]:
                 The value of cnf or None.
         """
@@ -641,22 +595,17 @@ class Tableview(ttk.Frame):
 
     def build_table_data(self, coldata, rowdata):
         """Insert the specified column and row data.
-
         The coldata can be either a string column name or a dictionary
         of column settings that are passed to the `insert_column`
         method. You may use a mixture of string and dictionary in
         the list of coldata.
-
         !!!warning "Existing table data will be erased.
             This method will completely rebuild the underlying table
             with the new column and row data. Any existing data will
             be lost.
-
         Parameters:
-
             coldata (List[Union[str, Dict]]):
                 An iterable of column names and/or settings.
-
             rowdata (List):
                 An iterable of row values.
         """
@@ -693,28 +642,22 @@ class Tableview(ttk.Frame):
 
     def insert_row(self, index=END, values=[]) -> TableRow:
         """Insert a row into the tableview at index.
-
         You must call `Tableview.load_table_data()` to update the
         current view. If the data is filtered, you will need to call
         `Tableview.load_table_data(clear_filters=True)`.
-
         Parameters:
-
             index (Union[int, str]):
                 A numerical index that specifieds where to insert
                 the record in the dataset. You may also use the string
                 'end' to append the record to the end of the data set.
                 If the index exceeds the record count, it will be
                 appended to the end of the dataset.
-
             values (Iterable):
                 An iterable of values to insert into the data set.
                 The number of columns implied by the list of values
                 must match the number of columns in the data set for
                 the values to be visible.
-
         Returns:
-
             TableRow:
                 A table row object.
         """
@@ -741,20 +684,15 @@ class Tableview(ttk.Frame):
         not exist then the records are appended to the end of the table.
         You can also use the string 'end' to append records at the end
         of the table.
-
         Parameters:
-
             index (Union[int, str]):
                 The location in the data set after where the records
                 will be inserted. You may use a numerical index or
                 the string 'end', which will append the records to the
                 end of the data set.
-
             rowdata (List[Any, List]):
                 A list of row values to be inserted into the table.
-
         Examples:
-
             ```python
             Tableview.insert_rows('end', ['one', 1], ['two', 2])
             ```
@@ -767,21 +705,15 @@ class Tableview(ttk.Frame):
     def delete_column(self, index=None, cid=None, visible=True):
         """Delete the specified column based on the column index or the
         unique cid.
-
         Unless otherwise specified, the index refers to the column index
         as displayed in the tableview.
-
         If cid is provided, the column associated with the cid is deleted
         regardless of whether it is in the visible data sets.
-
         Parameters:
-
             index (int):
                 The numerical index of the column.
-
             cid (str):
                 A unique column indentifier.
-
             visible (bool):
                 Specifies that the index should refer to the visible
                 columns. Otherwise, if False, the original column
@@ -799,11 +731,9 @@ class Tableview(ttk.Frame):
 
     def delete_columns(self, indices=None, cids=None, visible=True):
         """Delete columns specified by indices or cids.
-
         Unless specified otherwise, the index refers to the position
         of the columns in the table from left to right starting with
         index 0.
-
         !!!Warning "Use this method with caution!
             This method may or may not suffer performance issues.
             Internally, this method calls the `delete_column` method
@@ -813,16 +743,12 @@ class Tableview(ttk.Frame):
             could be problematic. It may be more beneficial to use
             the `build_table_data` if you plan on changing the
             structure of the table dramatically.
-
         Parameters:
-
             indices (List[int]):
                 A list of column indices to delete from the table.
-
             cids (List[str]):
                 A list of unique column identifiers to delete from the
                 table.
-
             visible (bool):
                 If True, the index refers to the visible position of the
                 column in the stable, from left to right starting at
@@ -837,22 +763,16 @@ class Tableview(ttk.Frame):
 
     def delete_row(self, index=None, iid=None, visible=True):
         """Delete a record from the data set.
-
         Unless specified otherwise, the index refers to the record
         position within the visible data set from top to bottom
         starting with index 0.
-
         If iid is provided, the record associated with the cid is deleted
         regardless of whether it is in the visible data set.
-
         Parameters:
-
             index (int):
                 The numerical index of the record within the data set.
-
             iid (str):
                 A unique record identifier.
-
             visible (bool):
                 Indicates that the record index is relative to the current
                 records in view, otherwise, the original data set index is
@@ -875,7 +795,6 @@ class Tableview(ttk.Frame):
 
     def delete_rows(self, indices=None, iids=None, visible=True):
         """Delete rows specified by indices or iids.
-
         If both indices and iids are None, then all records in the
         table will be deleted.
         """
@@ -892,61 +811,51 @@ class Tableview(ttk.Frame):
             self._tablerows.clear()
             self._tablerows_filtered.clear()
             self._viewdata.clear()
-            #self._cidmap.clear()
+            # self._cidmap.clear()
             self._iidmap.clear()
             records = self.view.get_children()
             self.view.delete(*records)
         # route to new page if no records visible
         if len(self._viewdata) == 0:
-            self.goto_page()        
+            self.goto_page()
 
     def insert_column(
-        self,
-        index,
-        text="",
-        image="",
-        command="",
-        anchor=W,
-        width=200,
-        minwidth=20,
-        stretch=False,
+            self,
+            index,
+            text="",
+            image="",
+            command="",
+            anchor=W,
+            width=200,
+            minwidth=20,
+            stretch=False,
     ) -> TableColumn:
         """
         Parameters:
-
             index (Union[int, str]):
                 A numerical index that specifieds where to insert
                 the column. You may also use the string 'end' to
                 insert the column in the right-most position. If the
                 index exceeds the column count, it will be inserted
                 at the right-most position.
-
             text (str):
                 The header text.
-
             image (PhotoImage):
                 An image that is displayed to the left of the header text.
-
             command (Callable):
                 A function called whenever the header button is clicked.
-
             anchor (str):
                 The position of the header text within the header. One
                 of "e", "w", "center".
-
             width (int):
                 Specifies the width of the column in pixels.
-
             minwidth (int):
                 Specifies the minimum width of the column in pixels.
-
             stretch (bool):
                 Specifies whether or not the column width should be
                 adjusted whenever the widget is resized or the user
                 drags the column separator.
-
         Returns:
-
             TableColumn:
                 A table column object.
         """
@@ -1007,7 +916,6 @@ class Tableview(ttk.Frame):
 
     def purge_table_data(self):
         """Erase all table and column data.
-
         This method will completely destroy the table data structure.
         The table will need to be completely rebuilt after using this
         method.
@@ -1026,9 +934,7 @@ class Tableview(ttk.Frame):
 
     def load_table_data(self, clear_filters=False):
         """Load records into the tableview.
-
         Parameters:
-
             clear_filters (bool):
                 Specifies that the table filters should be cleared
                 before loading the data into the view.
@@ -1070,13 +976,10 @@ class Tableview(ttk.Frame):
 
     def fill_empty_columns(self, fillvalue=""):
         """Fill empty columns with the fillvalue.
-
         This method can be used to fill in missing values when a column
         column is inserted after data has already been inserted into
         the tableview.
-
         Parameters:
-
             fillvalue (Any):
                 A value to insert into an empty column
         """
@@ -1101,28 +1004,21 @@ class Tableview(ttk.Frame):
         return self._tablecols
 
     def get_column(
-        self, index=None, visible=False, cid=None
+            self, index=None, visible=False, cid=None
     ) -> TableColumn:
         """Returns the `TableColumn` object from an index or a cid.
-
         If index is specified, the column index refers to the index
         within the original, unless the visible flag is set, in which
         case the index is relative to the visible columns in view.
-
         If cid is specified, the column associated with the cid is
         return regardless of whether it is visible.
-
         Parameters:
-
             index (int):
                 The numerical index of the column.
-
             visible (bool):
                 Use the index of the visible columns as they appear
                 in the table.
-
         Returns:
-
             Union[TableColumn, None]:
                 The table column object if found, otherwise None.
         """
@@ -1157,17 +1053,12 @@ class Tableview(ttk.Frame):
 
     def get_rows(self, visible=False, filtered=False) -> List[TableRow]:
         """Return a list of TableRow objects.
-
         Parameters:
-
             visible (bool):
                 If true, only records in the current view will be returned.
-
             filtered (bool):
                 If True, only rows in the filtered dataset will be returned.
-
         Returns:
-
             List[TableRow]:
                 A list of TableRow objects.
         """
@@ -1180,34 +1071,25 @@ class Tableview(ttk.Frame):
 
     def get_row(self, index=None, visible=False, filtered=False, iid=None) -> TableRow:
         """Returns the `TableRow` object from an index or the iid.
-
         If an index is specified, the row index refers to the index
         within the original dataset. When choosing a subset of data,
         the visible data takes priority over filtered if both flags
         are set.
-
         If an iid is specified, the object attached to that iid is
         returned regardless of whether or not it is visible or
         filtered.
-
         Parameters:
-
             index (int):
                 The numerical index of the column.
-
             iid (str):
                 A unique column identifier.
-
             visible (bool):
                 Use the index of the visible rows as they appear
                 in the current table view.
-
             filtered (bool):
                 Use the index of the rows within the filtered data
                 set.
-
         Returns:
-
             Union[TableRow, None]:
                 The table column object if found, otherwise None
         """
@@ -1296,16 +1178,12 @@ class Tableview(ttk.Frame):
     def sort_column_data(self, event=None, cid=None, sort=None):
         """Sort the table rows by the specified column. This method
         may be trigged by an event or manually.
-
         Parameters:
-
             event (Event):
                 A window event.
-
             cid (int):
                 A unique column identifier; typically the numerical
                 index of the column relative to the original data set.
-
             sort (int):
                 Determines the sort direction. 0 = ASCENDING. 1 = DESCENDING.
         """
@@ -1331,9 +1209,9 @@ class Tableview(ttk.Frame):
             columnsort = self.tablecolumns[index].columnsort
 
         if columnsort == ASCENDING:
-            self._tablecols[index].columnsort = DESCENDING
-        else:
             self._tablecols[index].columnsort = ASCENDING
+        else:
+            self._tablecols[index].columnsort = DESCENDING
 
         try:
             sortedrows = sorted(
@@ -1400,22 +1278,18 @@ class Tableview(ttk.Frame):
         self.reset_column_sort()
 
         self._column_sort_header_reset()
-        self.goto_first_page() # needed?
+        self.goto_first_page()  # needed?
 
     def filter_column_to_value(self, event=None, cid=None, value=None):
         """Hide all records except for records where the current
         column exactly matches the provided value. This method may
         be triggered by a window event or by specifying the column id.
-
         Parameters:
-
             event (Event):
                 A window click event.
-
             cid (int):
                 A unique column identifier; typically the numerical
                 index of the column within the original dataset.
-
             value (Any):
                 The criteria used to filter the column.
         """
@@ -1490,18 +1364,14 @@ class Tableview(ttk.Frame):
             self.goto_page()
         else:
             self.load_table_data()
-        
 
     def hide_selected_column(self, event=None, cid=None):
         """Detach the selected column from the tableview. This method
         may be triggered by a window event or by specifying the column
         id.
-
         Parameters:
-
             event (Event):
                 A window click event
-
             cid (int):
                 A unique column identifier; typically the numerical
                 index of the column within the original dataset.
@@ -1518,12 +1388,9 @@ class Tableview(ttk.Frame):
         may be triggered by a window event or by specifying the column
         id. The column is reinserted at the index in the original data
         set.
-
         Parameters:
-
             event (Event):
                 An application click event
-
             cid (int):
                 A unique column identifier; typically the numerical
                 index of the column within the original dataset.
@@ -1569,15 +1436,11 @@ class Tableview(ttk.Frame):
 
     def save_data_to_csv(self, headers, records, delimiter=","):
         """Save data records to a csv file.
-
         Parameters:
-
             headers (List[str]):
                 A list of header labels.
-
             records (List[Tuple[...]]):
                 A list of table records.
-
             delimiter (str):
                 The character to use for delimiting the values.
         """
@@ -1712,12 +1575,9 @@ class Tableview(ttk.Frame):
         """Move column one position to the left. This can be triggered
         by either an event, or by passing in the `cid`, which is the
         index of the column relative to the original data set.
-
         Parameters:
-
             event (Event):
                 An application click event.
-
             cid (int):
                 A unique column identifier; typically the index of the
                 column relative to the original dataset.
@@ -1743,12 +1603,9 @@ class Tableview(ttk.Frame):
         """Move column one position to the right. This can be triggered
         by either an event, or by passing in the `cid`, which is the
         index of the column relative to the original data set.
-
         Parameters:
-
             event (Event):
                 An application click event.
-
             cid (int):
                 A unique column identifier; typically the index of the
                 column relative to the original dataset.
@@ -1774,12 +1631,9 @@ class Tableview(ttk.Frame):
         """Move column to leftmost position. This can be triggered by
         either an event, or by passing in the `cid`, which is the index
         of the column relative to the original data set.
-
         Parameters:
-
             event (Event):
                 An application click event.
-
             cid (int):
                 A unique column identifier; typically the index of the
                 column relative to the original dataset.
@@ -1804,12 +1658,9 @@ class Tableview(ttk.Frame):
         """Move column to the rightmost position. This can be triggered
         by either an event, or by passing in the `cid`, which is the
         index of the column relative to the original data set.
-
         Parameters:
-
             event (Event):
                 An application click event.
-
             cid (int):
                 A unique column identifier; typically the index of the
                 column relative to the original dataset.
@@ -1837,9 +1688,7 @@ class Tableview(ttk.Frame):
         """Add stripes to even-numbered table rows as indicated by the
         `stripecolor` of (background, foreground). Either element may be
         specified as `None`, but both elements must be present.
-
         Parameters:
-
             stripecolor (Tuple[str, str]):
                 A tuple of colors to apply to the table stripe. The
                 tuple represents (background, foreground).
@@ -1904,12 +1753,9 @@ class Tableview(ttk.Frame):
         """Left align the column text. This can be triggered by
         either an event, or by passing in the `cid`, which is the index
         of the column relative to the original data set.
-
         Parameters:
-
             event (Event):
                 An application click event.
-
             cid (int):
                 A unique column identifier; typically the index of the
                 column relative to the original dataset.
@@ -1924,12 +1770,9 @@ class Tableview(ttk.Frame):
         """Right align the column text. This can be triggered by
         either an event, or by passing in the `cid`, which is the index
         of the column relative to the original data set.
-
         Parameters:
-
             event (Event):
                 An application event.
-
             cid (int):
                 A unique column identifier; typically the index of the
                 column relative to the original dataset.
@@ -1944,12 +1787,9 @@ class Tableview(ttk.Frame):
         """Center align the column text. This can be triggered by
         either an event, or by passing in the `cid`, which is the index
         of the column relative to the original data set.
-
         Parameters:
-
             event (Event):
                 An application event.
-
             cid (int):
                 A unique column identifier; typically the index of the
                 column relative to the original dataset.
@@ -1964,12 +1804,9 @@ class Tableview(ttk.Frame):
         """Left align the heading text. This can be triggered by
         either an event, or by passing in the `cid`, which is the index
         of the heading relative to the original data set.
-
         Parameters:
-
             event (Event):
                 An application event.
-
             cid (int):
                 A unique heading identifier; typically the index of the
                 heading relative to the original dataset.
@@ -1984,12 +1821,9 @@ class Tableview(ttk.Frame):
         """Right align the heading text. This can be triggered by
         either an event, or by passing in the `cid`, which is the index
         of the heading relative to the original data set.
-
         Parameters:
-
             event (Event):
                 An application event.
-
             cid (int):
                 A unique heading identifier; typically the index of the
                 heading relative to the original dataset.
@@ -2004,12 +1838,9 @@ class Tableview(ttk.Frame):
         """Center align the heading text. This can be triggered by
         either an event, or by passing in the `cid`, which is the index
         of the heading relative to the original data set.
-
         Parameters:
-
             event (Event):
                 An application event.
-
             cid (int):
                 A unique heading identifier; typically the index of the
                 heading relative to the original dataset.
@@ -2078,11 +1909,12 @@ class Tableview(ttk.Frame):
             bootstyle=f"{bootstyle}-table",
         )
         self.view.pack(fill=BOTH, expand=YES, side=TOP)
-        self.hbar = ttk.Scrollbar(
-            master=self, command=self.view.xview, orient=HORIZONTAL
-        )
-        self.hbar.pack(fill=X)
-        self.view.configure(xscrollcommand=self.hbar.set)
+        if self._bottomscorllbar:
+            self.hbar = ttk.Scrollbar(
+                master=self, command=self.view.xview, orient=HORIZONTAL
+            )
+            self.hbar.pack(fill=X)
+            self.view.configure(xscrollcommand=self.hbar.set)
 
         if self._paginated:
             self._build_pagination_frame()
@@ -2186,9 +2018,7 @@ class Tableview(ttk.Frame):
 
     def _build_table_rows(self, rowdata):
         """Build, load, and configure the DataTableRow objects
-
         Parameters:
-
             rowdata (List):
                 An iterable of row data
         """
@@ -2197,9 +2027,7 @@ class Tableview(ttk.Frame):
 
     def _build_table_columns(self, coldata):
         """Build, load, and configure the DataTableColumn objects
-
         Parameters:
-
             coldata (List[str|Dict[str, Any]]):
                 An iterable of column names or a dictionary of column
                 configuration settings.
@@ -2271,7 +2099,6 @@ class TableCellRightClickMenu(tk.Menu):
     def __init__(self, master: Tableview):
         """
         Parameters:
-
             master (Tableview):
                 The parent object
         """
@@ -2391,9 +2218,7 @@ class TableCellRightClickMenu(tk.Menu):
 
     def tk_popup(self, event):
         """Display the menu below the selected cell.
-
         Parameters:
-
             event (Event):
                 The click event that triggers menu.
         """
@@ -2496,7 +2321,6 @@ class TableHeaderRightClickMenu(tk.Menu):
     def __init__(self, master: Tableview):
         """
         Parameters:
-
             master (Tableview):
                 The parent object
         """
