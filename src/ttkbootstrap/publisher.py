@@ -81,7 +81,7 @@ class Publisher:
         """
         subs = Publisher.__subscribers
         try:
-            del subs[name]
+            del subs[str(name)]
         except:
             pass
 
