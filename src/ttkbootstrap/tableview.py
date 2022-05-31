@@ -1153,8 +1153,12 @@ class Tableview(ttk.Frame):
                 except ValueError:
                     return None
 
-    def get_rows(self, visible=False, filtered=False) -> List[TableRow]:
+    def get_rows(self, visible=False, filtered=False, selected=False) -> List[TableRow]:
         """Return a list of TableRow objects.
+
+        Return a subset of rows based on optional flags. Only ONE flag can be used
+        at a time. If more than one flag is set to `True`, then the first flag will
+        be used to return the data.
 
         Parameters:
 
@@ -1163,6 +1167,9 @@ class Tableview(ttk.Frame):
 
             filtered (bool):
                 If True, only rows in the filtered dataset will be returned.
+
+            selected (bool):
+                If True, only rows that are currently selected will be returned.
 
         Returns:
 
@@ -1173,6 +1180,8 @@ class Tableview(ttk.Frame):
             return self._viewdata
         elif filtered:
             return self._tablerows_filtered
+        elif selected:
+            return [row for row in self._viewdata if row.iid in self.view.selection()]
         else:
             return self._tablerows
 
