@@ -322,6 +322,7 @@ class TableRow:
         """Delete the row from the dataset"""
         if self.iid:
             self._table.iidmap.pop(self.iid)
+            self._table.tablerows_visible.remove(self)
             self._table._tablerows.remove(self)
             self._table.load_table_data()
             self.view.delete(self.iid)
