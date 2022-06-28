@@ -40,7 +40,7 @@ class ToolTip:
         text="widget info",
         bootstyle=None,
         wraplength=None,
-        waitime=500,    # milliseconds
+        delay=250,    # milliseconds
         **kwargs,
     ):
         """
@@ -70,7 +70,7 @@ class ToolTip:
         self.bootstyle = bootstyle
         self.wraplength = wraplength or utility.scale_size(self.widget, 300)
         self.toplevel = None
-        self.waittime = waitime
+        self.delay = delay
         self.id = None
 
         # set keyword arguments
@@ -107,7 +107,7 @@ class ToolTip:
 
     def schedule(self):
         self.unschedule()
-        self.id = self.widget.after(self.waittime, self.show_tip)
+        self.id = self.widget.after(self.delay, self.show_tip)
 
     def unschedule(self):
         id = self.id
