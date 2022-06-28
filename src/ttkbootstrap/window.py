@@ -93,6 +93,7 @@ def on_select_all(event):
     if widget.__class__.__name__ == "Text":
         widget.tag_add(SEL, "1.0", END)
         widget.mark_set(INSERT, END)
+        widget.see(END)
     else:
         widget.select_range(0, END)
         widget.icursor(END)
