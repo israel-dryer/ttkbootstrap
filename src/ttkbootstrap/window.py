@@ -27,7 +27,7 @@ def get_default_root(what=None):
 
 def apply_class_bindings(window: tkinter.Widget):
     """Add class level event bindings in application"""
-    for className in ["TEntry", "TSpinbox", "TCombobox"]:
+    for className in ["TEntry", "TSpinbox", "TCombobox", "Text"]:
         window.bind_class(
             className=className, 
             sequence="<Configure>", 
@@ -90,8 +90,13 @@ def on_select_all(event):
     """Callback to select all text in the input widget when an event is
     executed."""
     widget = event.widget
-    widget.select_range(0, END)
-    widget.icursor(END)
+    if widget.__class__.__name__ == "Text":
+        widget.tag_add(SEL, "1.0", END)
+        widget.mark_set(INSERT, END)
+        widget.see(END)
+    else:
+        widget.select_range(0, END)
+        widget.icursor(END)
     return 'break'    
 
 
