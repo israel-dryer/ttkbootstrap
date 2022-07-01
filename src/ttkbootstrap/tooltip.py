@@ -40,6 +40,7 @@ class ToolTip:
         text="widget info",
         bootstyle=None,
         wraplength=None,
+        delay=250,    # milliseconds
         **kwargs,
     ):
         """
@@ -69,6 +70,8 @@ class ToolTip:
         self.bootstyle = bootstyle
         self.wraplength = wraplength or utility.scale_size(self.widget, 300)
         self.toplevel = None
+        self.delay = delay
+        self.id = None
 
         # set keyword arguments
         kwargs["overrideredirect"] = True
@@ -90,10 +93,27 @@ class ToolTip:
         )
 
         # event binding
-        self.widget.bind("<Enter>", self.show_tip)
-        self.widget.bind("<Leave>", self.hide_tip)
+        self.widget.bind("<Enter>", self.enter)
+        self.widget.bind("<Leave>", self.leave)
         self.widget.bind("<Motion>", self.move_tip)
-        self.widget.bind("<ButtonPress>", self.hide_tip)
+        self.widget.bind("<ButtonPress>", self.leave)
+
+    def enter(self, event=None):
+        self.schedule()
+
+    def leave(self, event=None):
+        self.unschedule()
+        self.hide_tip()
+
+    def schedule(self):
+        self.unschedule()
+        self.id = self.widget.after(self.delay, self.show_tip)
+
+    def unschedule(self):
+        id = self.id
+        self.id = None
+        if id:
+            self.widget.after_cancel(id)
 
     def show_tip(self, *_):
         """Create a show the tooltip window"""
