@@ -32,17 +32,22 @@ def apply_class_bindings(window: tkinter.Widget):
             className=className, 
             sequence="<Configure>", 
             func=on_disabled_readonly_state,
-            add="+"
-        )
+            add="+")
 
         for sequence in ["<Control-a>", "<Control-A>"]:
             window.bind_class(
                 className=className, 
                 sequence=sequence,
-                func=on_select_all
-        )
+                func=on_select_all)
+
     window.unbind_class("TButton", "<Key-space>")
-    window.bind_class("TButton", "<Key-Return>", lambda event: event.widget.invoke())
+
+    def on_button_enter(event):
+        widget = window.nametowidget(event.widget)
+        widget.invoke()
+
+    window.bind_class("TButton", "<Key-Return>", on_button_enter)
+    window.bind_class("TButton", "<KP_Enter>", on_button_enter)
 
 
 def apply_all_bindings(window: tkinter.Widget):
