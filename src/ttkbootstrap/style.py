@@ -10,13 +10,16 @@ from ttkbootstrap.constants import *
 from ttkbootstrap.themes.standard import STANDARD_THEMES
 from ttkbootstrap.publisher import Publisher, Channel
 from ttkbootstrap import utility as util
+from ttkbootstrap import colorutils
 from PIL import ImageColor
+
 
 try:
     # prevent app from failing if user.py gets corrupted
     from ttkbootstrap.themes.user import USER_THEMES
-except:
+except (ImportError, ModuleNotFoundError):
     USER_THEMES = {}
+
 
 class Colors:
     """A class that defines the color scheme for a theme as well as
@@ -308,17 +311,8 @@ class Colors:
             tuple[int, int, int]:
                 An rgb color value.
         """
-        if len(color) == 4:
-            # 3 digit hexadecimal colors
-            r = round(int(color[1], 16) / 255, 2)
-            g = round(int(color[2], 16) / 255, 2)
-            b = round(int(color[3], 16) / 255, 2)
-        else:
-            # 6 digit hexadecimal colors
-            r = round(int(color[1:3], 16) / 255, 2)
-            g = round(int(color[3:5], 16) / 255, 2)
-            b = round(int(color[5:], 16) / 255, 2)
-        return r, g, b
+        r, g, b = colorutils.color_to_rgb(color)
+        return r/255, g/255, b/255
 
     @staticmethod
     def rgb_to_hex(r: int, g: int, b: int):
@@ -343,7 +337,7 @@ class Colors:
         r_ = int(r * 255)
         g_ = int(g * 255)
         b_ = int(b * 255)
-        return "#{:02x}{:02x}{:02x}".format(r_, g_, b_)
+        return colorutils.color_to_hex((r_, g_, b_))
 
     @staticmethod
     def update_hsv(color, hd=0, sd=0, vd=0):
