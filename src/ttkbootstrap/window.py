@@ -43,8 +43,11 @@ def apply_class_bindings(window: tkinter.Widget):
     window.unbind_class("TButton", "<Key-space>")
 
     def on_button_enter(event):
-        widget = window.nametowidget(event.widget)
-        widget.invoke()
+        try:
+            widget = window.nametowidget(event.widget)
+            widget.invoke()
+        except (KeyError, AttributeError):
+            return
 
     window.bind_class("TButton", "<Key-Return>", on_button_enter)
     window.bind_class("TButton", "<KP_Enter>", on_button_enter)
