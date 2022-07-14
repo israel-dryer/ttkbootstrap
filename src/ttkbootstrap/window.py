@@ -42,12 +42,18 @@ def apply_class_bindings(window: tkinter.Widget):
 
     window.unbind_class("TButton", "<Key-space>")
 
-    def on_button_enter(event):
-        widget = window.nametowidget(event.widget)
-        widget.invoke()
+    def button_default_binding(event):
+        """The default keybind on a button when the return or enter key
+        is pressed and the button has focus or is the default button."""
+        try:
+            widget = window.nametowidget(event.widget)
+            widget.invoke()
+        except KeyError:
+            window.tk.call(event.widget, 'invoke')
 
-    window.bind_class("TButton", "<Key-Return>", on_button_enter)
-    window.bind_class("TButton", "<KP_Enter>", on_button_enter)
+    window.bind_class("TButton", "<Key-Return>", button_default_binding,
+                      add="+")
+    window.bind_class("TButton", "<KP_Enter>", button_default_binding, add="+")
 
 
 def apply_all_bindings(window: tkinter.Widget):
