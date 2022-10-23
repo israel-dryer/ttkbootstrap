@@ -4960,10 +4960,8 @@ class Bootstyle:
 
         def configure(self, cnf=None, **kwargs):
             # get configuration
-            if cnf == "bootstyle":
+            if cnf in ("bootstyle", "style"):
                 return self.cget("style")
-            elif cnf is not None:
-                return self.cget(cnf)
 
             # set configuration
             if "bootstyle" in kwargs:
@@ -4983,7 +4981,7 @@ class Bootstyle:
                 kwargs.update(style=ttkstyle)
 
             # update widget configuration
-            func(self, **kwargs)
+            func(self, cnf, **kwargs)
 
         return configure
 
@@ -5073,11 +5071,18 @@ class Bootstyle:
                 widget.config = widget.configure
 
                 # override get and set methods
+                _orig_getitem = widget.__getitem
+                _orig_setitem = widget.__setitem
+
                 def __setitem(self, key, val):
-                    return _configure(self, **{key: val})
+                    if key in ("bootstyle", "style"):
+                        return _configure(self, **{key: val})
+                    return _orig_setitem(key, val)
 
                 def __getitem(self, key):
-                    return _configure(self, cnf=key)
+                    if key in ("bootstyle", "style"):
+                        return _configure(self, cnf=key)
+                    return _orig_getitem(key)
 
                 if (
                     widget.__name__ != "OptionMenu"
