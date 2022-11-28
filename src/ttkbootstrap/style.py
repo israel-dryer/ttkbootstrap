@@ -5020,6 +5020,9 @@ class Bootstyle:
         if not style_string:
             return ""
 
+        if style_string == '.':
+            return '.'
+
         # build style if not existing (example: theme changed)
         ttkstyle = Bootstyle.ttkstyle_name(widget, style_string, **kwargs)
         if not style.style_exists_in_theme(ttkstyle):
