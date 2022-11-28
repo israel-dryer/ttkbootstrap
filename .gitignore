@@ -15,3 +15,6 @@ development/archived
 development/issues
 testenv
 pyvenv
+identifier.sqlite
+tests/dialog.py
+tests/themes.json
