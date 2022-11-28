@@ -70,7 +70,7 @@ The new keyword API is very flexible. The following examples all produce the sam
 
 setuptools.setup(
     name="ttkbootstrap",
-    version="1.9.0",
+    version="1.10.0",
     author="Israel Dryer",
     author_email="israel.dryer@gmail.com",
     description="A supercharged theme extension for tkinter that enables on-demand modern flat style themes inspired by Bootstrap.",
