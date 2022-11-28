@@ -384,7 +384,7 @@ MESSAGES.append(
         ("Blue", "Bleu"),
         ("color dropper", "Sélecteur de couleurs"),
         ("Cancel", "Annuler"),
-        ("Search", "Chercher),
+        ("Search", "Chercher"),
         ("Page", "Page"),
         ("of", "de"),
         ("⎌", "↺"),
