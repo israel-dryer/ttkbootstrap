@@ -225,7 +225,7 @@ class DateEntry(ttk.Frame):
 
     def _on_date_ask(self):
         """Callback for pushing the date button"""
-        _val = self.entry.get()
+        _val = self.entry.get() or datetime.today().strftime(self._dateformat)
         try:
             self._startdate = datetime.strptime(_val, self._dateformat)
         except Exception as e:
@@ -236,7 +236,7 @@ class DateEntry(ttk.Frame):
                 tk.END, self._startdate.strftime(self._dateformat)
             )
 
-        old_date = datetime.strptime(_val or self._startdate, self._dateformat)
+        old_date = datetime.strptime(_val, self._dateformat)
 
         # get the new date and insert into the entry
         new_date = Querybox.get_date(
