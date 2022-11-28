@@ -1,3 +1,4 @@
+import json
 import re
 import colorsys
 import tkinter as tk
@@ -689,6 +690,21 @@ class Style(ttk.Style):
                 builder: StyleBuilderTTK = self._get_builder()
                 method: Callable = builder.name_to_method(method_name)
                 method(builder, color)
+
+    def load_user_themes(self, file):
+        """Load user themes saved in json format"""
+        with open(file, encoding='utf-8') as f:
+            data = json.load(f)
+            themes = data['themes']
+        for theme in themes:
+            for name, definition in theme.items():
+                self.register_theme(
+                    ThemeDefinition(
+                        name=name,
+                        themetype=definition["type"],
+                        colors=definition["colors"],
+                    )
+                )
 
 
 class StyleBuilderTK:
