@@ -18,6 +18,7 @@ STANDARD_THEMES = {
             "inputfg": "#373a3c",
             "inputbg": "#fdfdfe",
             "active": "#efefef",
+            "track": "#F8F9FA",
         },
     },
     "flatly": {
@@ -39,6 +40,7 @@ STANDARD_THEMES = {
             "inputfg": "#212529",
             "inputbg": "#ffffff",
             "active": "#e2e2e2",
+            "track": "#ECF0F1",
         },
     },
     "litera": {
@@ -60,6 +62,7 @@ STANDARD_THEMES = {
             "inputfg": "#343a40",
             "inputbg": "#fff",
             "active": "#e5e5e5",
+            "track": "#F8F9FA",
         },
     },
     "minty": {
@@ -81,6 +84,7 @@ STANDARD_THEMES = {
             "inputfg": "#696969",
             "inputbg": "#fff",
             "active": "#e5e5e5",
+            "track": "#F8F9FA",
         },
     },
     "lumen": {
@@ -102,6 +106,7 @@ STANDARD_THEMES = {
             "inputfg": "#555555",
             "inputbg": "#fff",
             "active": "#e5e5e5",
+            "track": "#F6F6F6",
         },
     },
     "sandstone": {
@@ -123,6 +128,7 @@ STANDARD_THEMES = {
             "inputfg": "#6E6D69",
             "inputbg": "#fff",
             "active": "#e5e5e5",
+            "track": "#F8F5F0",
         },
     },
     "yeti": {
@@ -144,6 +150,7 @@ STANDARD_THEMES = {
             "inputfg": "#222222",
             "inputbg": "#fff",
             "active": "#e5e5e5",
+            "track": "#EEEEEE",
         },
     },
     "pulse": {
@@ -165,6 +172,7 @@ STANDARD_THEMES = {
             "inputfg": "#444444",
             "inputbg": "#fdfdfe",
             "active": "#e5e5e5",
+            "track": "#F9F8FC",
         },
     },
     "united": {
@@ -186,6 +194,7 @@ STANDARD_THEMES = {
             "inputfg": "#333333",
             "inputbg": "#fff",
             "active": "#e5e5e5",
+            "track": "#E9ECEF",
         },
     },
     "morph": {
@@ -207,6 +216,7 @@ STANDARD_THEMES = {
             "inputfg": "#7F8EBA",
             "inputbg": "#F0F5FA",
             "active": "#C3CCD8",
+            "track": "#F0F5FA",
         },
     },
     "journal": {
@@ -228,6 +238,7 @@ STANDARD_THEMES = {
             "inputfg": "#565656",
             "inputbg": "#fff",
             "active": "#e5e5e5",
+            "track": "#F8F9FA",
         },
     },
     "darkly": {
@@ -249,6 +260,7 @@ STANDARD_THEMES = {
             "inputfg": "#ffffff",
             "inputbg": "#2f2f2f",
             "active": "#1F1F1F",
+            "track": "#444444",
         },
     },
     "superhero": {
@@ -270,6 +282,7 @@ STANDARD_THEMES = {
             "inputfg": "#ebebeb",
             "inputbg": "#32465a",
             "active": "#2B4155",
+            "track": "#414d59",
         },
     },
     "solar": {
@@ -291,6 +304,7 @@ STANDARD_THEMES = {
             "inputfg": "#A9BDBD",
             "inputbg": "#073642",
             "active": "#002730",
+            "track": "#08404e",
         },
     },
     "cyborg": {
@@ -312,6 +326,7 @@ STANDARD_THEMES = {
             "inputfg": "#ffffff",
             "inputbg": "#191919",
             "active": "#282828",
+            "track": "#373737",
         },
     },
     "vapor": {
@@ -333,6 +348,7 @@ STANDARD_THEMES = {
             "inputfg": "#bfb6cd",
             "inputbg": "#30115e",
             "active": "#17082E",
+            "track": "#38146e",
         },
     },
     "simplex": {
@@ -354,6 +370,7 @@ STANDARD_THEMES = {
             "inputfg": "#3b3d3f",
             "inputbg": "#fcfcfc",
             "active": "#e2e2e2",
+            "track": "#f2f2f2",
         },
     },
     "cerculean": {
@@ -375,6 +392,7 @@ STANDARD_THEMES = {
             "inputfg": "#495057",
             "inputbg": "#ffffff",
             "active": "#e5e5e5",
+            "track": "#eceef1",
         },
     },
 }

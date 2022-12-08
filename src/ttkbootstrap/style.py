@@ -90,6 +90,7 @@ class Colors:
         inputfg,
         inputbg,
         active,
+        track,
     ):
         """
         Parameters:
@@ -141,6 +142,9 @@ class Colors:
 
             active (str):
                 An accent color.
+
+            track (str):
+                The color of the track for Scale and the background for Progressbar and Meter
         """
         self.primary = primary
         self.secondary = secondary
@@ -158,6 +162,7 @@ class Colors:
         self.inputfg = inputfg
         self.inputbg = inputbg
         self.active = active
+        self.track = track
 
     @staticmethod
     def make_transparent(alpha, foreground, background='#ffffff'):
@@ -295,6 +300,7 @@ class Colors:
                 "inputfg",
                 "inputbg",
                 "active",
+                "track",
             ]
         )
 
