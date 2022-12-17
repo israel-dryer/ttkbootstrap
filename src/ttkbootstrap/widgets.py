@@ -7,7 +7,16 @@ from tkinter.ttk import Labelframe, LabelFrame, Menubutton
 from tkinter.ttk import Notebook, OptionMenu, PanedWindow
 from tkinter.ttk import Panedwindow, Progressbar, Radiobutton
 from tkinter.ttk import Scale, Scrollbar, Separator
-from tkinter.ttk import Sizegrip, Spinbox, Treeview
+from tkinter.ttk import Sizegrip, Treeview
+
+###################################
+# Added for Python 3.6 support
+try:
+    from tkinter.ttk import Spinbox
+except:
+    from tkinter import Spinbox
+###################################
+
 from ttkbootstrap.constants import *
 
 # date entry imports
@@ -23,7 +32,7 @@ from ttkbootstrap.style import Colors
 from ttkbootstrap import utility
 from ttkbootstrap.style import Bootstyle
 
-M = 3 # meter image scale, higher number increases resolution
+M = 3  # meter image scale, higher number increases resolution
 
 TTK_WIDGETS = (
     ttk.Button,
@@ -42,7 +51,6 @@ TTK_WIDGETS = (
     ttk.Scrollbar,
     ttk.Separator,
     ttk.Sizegrip,
-    ttk.Spinbox,
     ttk.Treeview,
     ttk.OptionMenu,
 )
@@ -704,7 +712,7 @@ class Meter(ttk.Frame):
         self._stripethickness = stripethickness
         self._showtext = showtext
         self._wedgesize = wedgesize
-        self._stepsize = stepsize        
+        self._stepsize = stepsize
         self._textleft = textleft
         self._textright = textright
         self._textfont = textfont
@@ -966,7 +974,7 @@ class Meter(ttk.Frame):
             factor = 360 + degs - self._arcoffset
 
         # clamp the value between 0 and `amounttotal`
-        amounttotal = self.amounttotalvar.get() 
+        amounttotal = self.amounttotalvar.get()
         lastused = self.amountusedvar.get()
         amountused = (amounttotal / self._arcrange * factor)
 

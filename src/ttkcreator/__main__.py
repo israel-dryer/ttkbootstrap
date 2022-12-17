@@ -33,7 +33,7 @@ class ThemeCreator(ttk.Window):
         self.configure(menu=self.menu)
 
         # theme configuration settings
-        ## user theme name
+        # user theme name
         f1 = ttk.Frame(self.configure_frame, padding=(5, 2))
         ttk.Label(f1, text="name", width=12).pack(side=LEFT)
         self.theme_name = ttk.Entry(f1)
@@ -41,7 +41,7 @@ class ThemeCreator(ttk.Window):
         self.theme_name.pack(side=LEFT, fill=X, expand=YES)
         f1.pack(fill=X, expand=YES)
 
-        ## base theme
+        # base theme
         f2 = ttk.Frame(self.configure_frame, padding=(5, 2))
         ttk.Label(f2, text="base theme", width=12).pack(side=LEFT)
         self.base_theme = ttk.Combobox(f2, values=self.style.theme_names())
@@ -50,7 +50,7 @@ class ThemeCreator(ttk.Window):
         f2.pack(fill=X, expand=YES, pady=(0, 15))
         self.base_theme.bind("<<ComboboxSelected>>", self.change_base_theme)
 
-        ## color options
+        # color options
         self.color_rows = []
         for color in self.style.colors.label_iter():
             row = ColorRow(self.configure_frame, color, self.style)
@@ -328,9 +328,9 @@ class DemoWidgets(ttk.Frame):
         password.pack(fill=X, pady=5)
         password.insert(END, "password")
 
-        spinbox = ttk.Spinbox(master=input_group, from_=0, to=100)
-        spinbox.pack(fill=X)
-        spinbox.set(45)
+        # spinbox = ttk.Spinbox(master=input_group, from_=0, to=100)
+        # spinbox.pack(fill=X)
+        # spinbox.set(45)
 
         cbo = ttk.Combobox(
             master=input_group,

@@ -93,9 +93,9 @@ Namespaces are one honking great idea -- let's do more of those!"""
     check2.pack(side=LEFT, expand=YES, padx=5)
 
     check4 = ttk.Checkbutton(rb_group, text="deselected")
-    check4.pack(side=LEFT, expand=YES, padx=5)    
+    check4.pack(side=LEFT, expand=YES, padx=5)
     check4.invoke()
-    check4.invoke()    
+    check4.invoke()
 
     check3 = ttk.Checkbutton(rb_group, text="disabled", state=DISABLED)
     check3.pack(side=LEFT, expand=YES, padx=5)
@@ -272,9 +272,11 @@ Namespaces are one honking great idea -- let's do more of those!"""
     password.pack(fill=X, pady=5)
     password.insert(END, "password")
 
-    spinbox = ttk.Spinbox(master=input_group, from_=0, to=100)
-    spinbox.pack(fill=X)
-    spinbox.set(45)
+    # spinbox = ttk.Spinbox(master=input_group, from_=0, to=100)
+    # spinbox.pack(fill=X)
+    # spinbox.set(45)
+
+    # spinbox.insert(END, "spinbox")
 
     cbo = ttk.Combobox(
         master=input_group,
