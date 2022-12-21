@@ -1,13 +1,15 @@
 import tkinter as tk
 from tkinter import ttk
 from tkinter import font
-from tkinter.ttk import Button, Checkbutton, Combobox
+from tkinter.ttk import Widget, Button, Checkbutton, Combobox
 from tkinter.ttk import Entry, Frame, Label
 from tkinter.ttk import Labelframe, LabelFrame, Menubutton
 from tkinter.ttk import Notebook, OptionMenu, PanedWindow
 from tkinter.ttk import Panedwindow, Progressbar, Radiobutton
 from tkinter.ttk import Scale, Scrollbar, Separator
 from tkinter.ttk import Sizegrip, Spinbox, Treeview
+from typing import Optional, Callable
+
 from ttkbootstrap.constants import *
 
 # date entry imports
@@ -94,13 +96,15 @@ class DateEntry(ttk.Frame):
     """
 
     def __init__(
-        self,
-        master=None,
-        dateformat=r"%x",
-        firstweekday=6,
-        startdate=None,
-        bootstyle="",
-        **kwargs,
+            self,
+            master: Optional[Widget] = None,
+            dateformat: str = r'%x',
+            firstweekday: int = 6,
+            startdate: Optional[datetime] = None,
+            bootstyle: str = '',
+            change_date_title: str = 'Choose new date',
+            update_date_callback: Optional[Callable] = None,
+            **kwargs,
     ):
         """
         Parameters:
@@ -126,15 +130,24 @@ class DateEntry(ttk.Frame):
                 options include -> primary, secondary, success, info,
                 warning, danger, dark, light.
 
+            change_date_title (str, optional):
+                Title for PopUp window
+
+            update_date_callback (callable, optional):
+                Callback function, that will be triggered if date has changed successfully
+
             **kwargs (Dict[str, Any], optional):
                 Other keyword arguments passed to the frame containing the
                 entry and date button.
         """
-        self._dateformat = dateformat
+        self.__dateformat = dateformat # User should NOT be able to change this, therefore double underscores
         self._firstweekday = firstweekday
 
         self._startdate = startdate or datetime.today()
         self._bootstyle = bootstyle
+        self.__enabled = True  # User should NOT be able to change this, therefore double underscores
+        self._change_date_title = change_date_title
+        self._update_callback = update_date_callback if update_date_callback else lambda: True
         super().__init__(master, **kwargs)
 
         # add visual components
@@ -153,7 +166,7 @@ class DateEntry(ttk.Frame):
         self.button.pack(side=tk.LEFT)
 
         # starting value
-        self.entry.insert(tk.END, self._startdate.strftime(self._dateformat))
+        self.entry.insert(tk.END, self._startdate.strftime(self.__dateformat))
 
     def __getitem__(self, key: str):
         return self.configure(cnf=key)
@@ -175,7 +188,7 @@ class DateEntry(ttk.Frame):
             else:
                 kwargs[state] = state
         if "dateformat" in kwargs:
-            self._dateformat = kwargs.pop("dateformat")
+            self.__dateformat = kwargs.pop("dateformat")
         if "firstweekday" in kwargs:
             self._firstweekday = kwargs.pop("firstweekday")
         if "startdate" in kwargs:
@@ -197,7 +210,7 @@ class DateEntry(ttk.Frame):
             buttonstate = self.button.cget("state")
             return {"Entry": entrystate, "Button": buttonstate}
         if cnf == "dateformat":
-            return self._dateformat
+            return self.__dateformat
         if cnf == "firstweekday":
             return self._firstweekday
         if cnf == "startdate":
@@ -223,31 +236,78 @@ class DateEntry(ttk.Frame):
         else:
             return self._configure_set(**kwargs)
 
+    @property
+    def enabled(self) -> bool:
+        """
+        If ``True`` this date picker is enabled and user can pick a new date, if ``False`` user can't use this picker.
+
+        :return: ``True`` if usable, ``False`` otherwise
+        """
+        return self.__enabled
+
+    @property
+    def date_format(self) -> str:
+        """
+        Returns date format string, that is used to convert from strings to datetime objects respectively vice versa
+
+        :return: Date format as string
+        """
+        return self.__dateformat
+
+    def get_date(self) -> datetime:
+        """
+        Returns currently selected date as datetime object
+        """
+        return self.configure(cnf='startdate')
+
+    def set_date(self, new_date: datetime) -> None:
+        """
+        Sets given datetime object as currently selected date.
+
+        (NOTE: Hours, minutes, seconds, milliseconds, microseconds will be ignored)
+
+        :param new_date: New date that will become the currently selected one
+        """
+        if self.__enabled:
+            self.configure(startdate=new_date)
+            self.entry.delete(first=0, last=END)
+            self.entry.insert(END, new_date.strftime(self.__dateformat))
+        else:
+            self.enable()
+            self.configure(startdate=new_date)
+            self.entry.delete(first=0, last=END)
+            self.entry.insert(END, new_date.strftime(self.__dateformat))
+            self.disable()
+
+    def disable(self) -> None:
+        """ Disables this date picker """
+        self.__enabled = False
+        self.entry.state(['disabled'])
+        self.button.state(['disabled'])
+
+    def enable(self) -> None:
+        """ Enables this date picker """
+        self.__enabled = True
+        self.entry.state(['!disabled'])
+        self.button.state(['!disabled'])
+
     def _on_date_ask(self):
         """Callback for pushing the date button"""
-        _val = self.entry.get() or datetime.today().strftime(self._dateformat)
+        current_date = self.entry.get() or datetime.today().strftime(self.__dateformat)
         try:
-            self._startdate = datetime.strptime(_val, self._dateformat)
-        except Exception as e:
-            print("Date entry text does not match", self._dateformat)
-            self._startdate = datetime.today()
-            self.entry.delete(first=0, last=tk.END)
-            self.entry.insert(
-                tk.END, self._startdate.strftime(self._dateformat)
-            )
+            self._startdate = datetime.strptime(current_date, self.__dateformat)
+        except ValueError:
+            # Rollback to current date & reraise exception
+            self.entry.delete(first=0, last=END)
+            self.entry.insert(END, self._startdate.strftime(self.__dateformat))
+            raise
 
-        old_date = datetime.strptime(_val, self._dateformat)
-
-        # get the new date and insert into the entry
-        new_date = Querybox.get_date(
-            parent=self.entry,
-            startdate=old_date,
-            firstweekday=self._firstweekday,
-            bootstyle=self._bootstyle,
-        )
-        self.entry.delete(first=0, last=tk.END)
-        self.entry.insert(tk.END, new_date.strftime(self._dateformat))
+        old_date = datetime.strptime(current_date, self.__dateformat)
+        new_date = Querybox.get_date(self.entry, self._change_date_title, self._firstweekday, old_date, self._bootstyle)
+        self.entry.delete(first=0, last=END)
+        self.entry.insert(END, new_date.strftime(self.__dateformat))
         self.entry.focus_force()
+        self._update_callback()
 
 
 class Floodgauge(Progressbar):
