@@ -1,12 +1,12 @@
 """
 This module holds all predefined Bootstrap styles that are used within this library
 """
-from enum import StrEnum
+from enum import Enum
 
 
-class Theme(StrEnum):
+class Theme(Enum):
     """
-    Pre-defined ttkbootstrap themes
+    Predefined ttkbootstrap themes
 
     @see `ttkbootsrap documentation - Themes <https://ttkbootstrap.readthedocs.io/en/latest/themes/>`__
     """
@@ -29,10 +29,14 @@ class Theme(StrEnum):
     SIMPLEX = 'simplex'
     CERCULEAN = 'cerculean'
 
+    @property
+    def value(self) -> str:
+        return super().value
 
-class BootstrapStyle(StrEnum):
+
+class BootstrapStyle(Enum):
     """
-    Pre-defined ttkbootstrap styles
+    Predefined ttkbootstrap styles
 
     @see `ttkbootsrap documentation - Style guide <https://ttkbootstrap.readthedocs.io/en/latest/styleguide/>`__
     """
@@ -46,6 +50,10 @@ class BootstrapStyle(StrEnum):
     SUCCESS = 'success'
     WARNING = 'warning'
 
+    @property
+    def value(self) -> str:
+        return super().value
+
 
 class ParentBootstrapStyle:
     """
@@ -57,50 +65,50 @@ class ParentBootstrapStyle:
     @classmethod
     def default(cls, bootstrap_style: BootstrapStyle = BootstrapStyle.DEFAULT) -> str:
         """ Default style """
-        return bootstrap_style
+        return bootstrap_style.value
 
 
 class Button(ParentBootstrapStyle):
     """
-    This is a pure static class (meaning just class methods) with pre-defined ttkbootstrap styles for buttons
+    This is a pure static class (meaning just class methods) with predefined ttkbootstrap styles for buttons
 
     @see `ttkbootsrap documentation - Style guide <https://ttkbootstrap.readthedocs.io/en/latest/styleguide/button/>`__
     """
     @classmethod
     def outline_button(cls, bootstrap_style: BootstrapStyle = BootstrapStyle.DEFAULT) -> str:
-        return f'{bootstrap_style}-outline' if bootstrap_style is not BootstrapStyle.DEFAULT else 'outline'
+        return f'{bootstrap_style.value}-outline' if bootstrap_style is not BootstrapStyle.DEFAULT else 'outline'
 
     @classmethod
     def link_button(cls, bootstrap_style: BootstrapStyle = BootstrapStyle.DEFAULT) -> str:
-        return f'{bootstrap_style}-link' if bootstrap_style is not BootstrapStyle.DEFAULT else 'link'
+        return f'{bootstrap_style.value}-link' if bootstrap_style is not BootstrapStyle.DEFAULT else 'link'
 
 
 class Checkbutton(ParentBootstrapStyle):
     """
-    This is a pure static class (meaning just class methods) with pre-defined ttkbootstrap styles for check buttons
+    This is a pure static class (meaning just class methods) with predefined ttkbootstrap styles for check buttons
 
     @see `ttkbootsrap documentation - Style guide <https://ttkbootstrap.readthedocs.io/en/latest/styleguide/checkbutton/>`__
     """
     @classmethod
     def tool_button(cls, bootstrap_style: BootstrapStyle = BootstrapStyle.DEFAULT) -> str:
-        return f'{bootstrap_style}-toolbutton' if bootstrap_style is not BootstrapStyle.DEFAULT else 'toolbutton'
+        return f'{bootstrap_style.value}-toolbutton' if bootstrap_style is not BootstrapStyle.DEFAULT else 'toolbutton'
 
     @classmethod
     def outline_tool_button(cls, bootstrap_style: BootstrapStyle = BootstrapStyle.DEFAULT) -> str:
-        return f'{bootstrap_style}-outline-toolbutton' if bootstrap_style is not BootstrapStyle.DEFAULT else 'outline-toolbutton'
+        return f'{bootstrap_style.value}-outline-toolbutton' if bootstrap_style is not BootstrapStyle.DEFAULT else 'outline-toolbutton'
 
     @classmethod
     def round_toggle_button(cls, bootstrap_style: BootstrapStyle = BootstrapStyle.DEFAULT) -> str:
-        return f'{bootstrap_style}-round-toggle' if bootstrap_style is not BootstrapStyle.DEFAULT else 'round-toggle'
+        return f'{bootstrap_style.value}-round-toggle' if bootstrap_style is not BootstrapStyle.DEFAULT else 'round-toggle'
 
     @classmethod
     def square_toggle_button(cls, bootstrap_style: BootstrapStyle = BootstrapStyle.DEFAULT) -> str:
-        return f'{bootstrap_style}-square-toggle' if bootstrap_style is not BootstrapStyle.DEFAULT else 'square-toggle'
+        return f'{bootstrap_style.value}-square-toggle' if bootstrap_style is not BootstrapStyle.DEFAULT else 'square-toggle'
 
 
 class Combobox(ParentBootstrapStyle):
     """
-    This is a pure static class (meaning just class methods) with pre-defined ttkbootstrap styles for buttons
+    This is a pure static class (meaning just class methods) with predefined ttkbootstrap styles for buttons
 
     @see `ttkbootsrap documentation - Style guide <https://ttkbootstrap.readthedocs.io/en/latest/styleguide/combobox/>`__
     """
@@ -109,7 +117,7 @@ class Combobox(ParentBootstrapStyle):
 
 class DateEntry(ParentBootstrapStyle):
     """
-    This is a pure static class (meaning just class methods) with pre-defined ttkbootstrap styles for date entries
+    This is a pure static class (meaning just class methods) with predefined ttkbootstrap styles for date entries
 
     @see `ttkbootsrap documentation - Style guide <https://ttkbootstrap.readthedocs.io/en/latest/styleguide/dateentry/>`__
     """
@@ -118,7 +126,7 @@ class DateEntry(ParentBootstrapStyle):
 
 class DatePickerPopup(ParentBootstrapStyle):
     """
-    This is a pure static class (meaning just class methods) with pre-defined ttkbootstrap styles for date entries
+    This is a pure static class (meaning just class methods) with predefined ttkbootstrap styles for date entries
 
     @see `ttkbootsrap documentation - Style guide <https://ttkbootstrap.readthedocs.io/en/latest/styleguide/datepickerpopup/>`__
     """
@@ -127,7 +135,7 @@ class DatePickerPopup(ParentBootstrapStyle):
 
 class Entry(ParentBootstrapStyle):
     """
-    This is a pure static class (meaning just class methods) with pre-defined ttkbootstrap styles for date entries
+    This is a pure static class (meaning just class methods) with predefined ttkbootstrap styles for date entries
 
     @see `ttkbootsrap documentation - Style guide <https://ttkbootstrap.readthedocs.io/en/latest/styleguide/entry/>`__
     """
@@ -136,7 +144,7 @@ class Entry(ParentBootstrapStyle):
 
 class FloodGauge(ParentBootstrapStyle):
     """
-    This is a pure static class (meaning just class methods) with pre-defined ttkbootstrap styles for flood gouges
+    This is a pure static class (meaning just class methods) with predefined ttkbootstrap styles for flood gouges
 
     @see `ttkbootsrap documentation - Style guide <https://ttkbootstrap.readthedocs.io/en/latest/styleguide/floodgauge/>`__
     """
@@ -145,7 +153,7 @@ class FloodGauge(ParentBootstrapStyle):
 
 class Frame(ParentBootstrapStyle):
     """
-    This is a pure static class (meaning just class methods) with pre-defined ttkbootstrap styles for frames
+    This is a pure static class (meaning just class methods) with predefined ttkbootstrap styles for frames
 
     @see `ttkbootsrap documentation - Style guide <https://ttkbootstrap.readthedocs.io/en/latest/styleguide/frame/>`__
     """
@@ -154,18 +162,18 @@ class Frame(ParentBootstrapStyle):
 
 class Label(ParentBootstrapStyle):
     """
-    This is a pure static class (meaning just class methods) with pre-defined ttkbootstrap styles for labels
+    This is a pure static class (meaning just class methods) with predefined ttkbootstrap styles for labels
 
     @see `ttkbootsrap documentation - Style guide <https://ttkbootstrap.readthedocs.io/en/latest/styleguide/label/>`__
     """
     @classmethod
     def inverse_label(cls, bootstrap_style: BootstrapStyle = BootstrapStyle.DEFAULT) -> str:
-        return f'inverse-{bootstrap_style}' if bootstrap_style is not BootstrapStyle.DEFAULT else 'inverse'
+        return f'inverse-{bootstrap_style.value}' if bootstrap_style is not BootstrapStyle.DEFAULT else 'inverse'
 
 
 class Labelframe(ParentBootstrapStyle):
     """
-    This is a pure static class (meaning just class methods) with pre-defined ttkbootstrap styles for label frames
+    This is a pure static class (meaning just class methods) with predefined ttkbootstrap styles for label frames
 
     @see `ttkbootsrap documentation - Style guide <https://ttkbootstrap.readthedocs.io/en/latest/styleguide/labelframe/>`__
     """
@@ -174,18 +182,18 @@ class Labelframe(ParentBootstrapStyle):
 
 class MenuButton(ParentBootstrapStyle):
     """
-    This is a pure static class (meaning just class methods) with pre-defined ttkbootstrap styles for menu buttons
+    This is a pure static class (meaning just class methods) with predefined ttkbootstrap styles for menu buttons
 
     @see `ttkbootsrap documentation - Style guide <https://ttkbootstrap.readthedocs.io/en/latest/styleguide/menubutton/>`__
     """
     @classmethod
     def outline(cls, bootstrap_style: BootstrapStyle = BootstrapStyle.DEFAULT) -> str:
-        return f'{bootstrap_style}-outline' if bootstrap_style is not BootstrapStyle.DEFAULT else 'outline'
+        return f'{bootstrap_style.value}-outline' if bootstrap_style is not BootstrapStyle.DEFAULT else 'outline'
 
 
 class Meter(ParentBootstrapStyle):
     """
-    This is a pure static class (meaning just class methods) with pre-defined ttkbootstrap styles for meters
+    This is a pure static class (meaning just class methods) with predefined ttkbootstrap styles for meters
 
     @see `ttkbootsrap documentation - Style guide <https://ttkbootstrap.readthedocs.io/en/latest/styleguide/meter/>`__
     """
@@ -194,7 +202,7 @@ class Meter(ParentBootstrapStyle):
 
 class Notebook(ParentBootstrapStyle):
     """
-    This is a pure static class (meaning just class methods) with pre-defined ttkbootstrap styles for notebooks
+    This is a pure static class (meaning just class methods) with predefined ttkbootstrap styles for notebooks
 
     @see `ttkbootsrap documentation - Style guide <https://ttkbootstrap.readthedocs.io/en/latest/styleguide/notebook/>`__
     """
@@ -203,7 +211,7 @@ class Notebook(ParentBootstrapStyle):
 
 class PanedWindow(ParentBootstrapStyle):
     """
-    This is a pure static class (meaning just class methods) with pre-defined ttkbootstrap styles for paned windows
+    This is a pure static class (meaning just class methods) with predefined ttkbootstrap styles for paned windows
 
     @see `ttkbootsrap documentation - Style guide <https://ttkbootstrap.readthedocs.io/en/latest/styleguide/panedwindow/>`__
     """
@@ -212,33 +220,33 @@ class PanedWindow(ParentBootstrapStyle):
 
 class Progressbar(ParentBootstrapStyle):
     """
-    This is a pure static class (meaning just class methods) with pre-defined ttkbootstrap styles for progress bars
+    This is a pure static class (meaning just class methods) with predefined ttkbootstrap styles for progress bars
 
     @see `ttkbootsrap documentation - Style guide <https://ttkbootstrap.readthedocs.io/en/latest/styleguide/progressbar/>`__
     """
     @classmethod
     def striped(cls, bootstrap_style: BootstrapStyle = BootstrapStyle.DEFAULT) -> str:
-        return f'{bootstrap_style}-striped' if bootstrap_style is not BootstrapStyle.DEFAULT else 'striped'
+        return f'{bootstrap_style.value}-striped' if bootstrap_style is not BootstrapStyle.DEFAULT else 'striped'
 
 
 class Radiobutton(ParentBootstrapStyle):
     """
-    This is a pure static class (meaning just class methods) with pre-defined ttkbootstrap styles for radio buttons
+    This is a pure static class (meaning just class methods) with predefined ttkbootstrap styles for radio buttons
 
     @see `ttkbootsrap documentation - Style guide <https://ttkbootstrap.readthedocs.io/en/latest/styleguide/radiobutton/>`__
     """
     @classmethod
     def solid_tool_button(cls, bootstrap_style: BootstrapStyle = BootstrapStyle.DEFAULT) -> str:
-        return f'{bootstrap_style}-toolbutton' if bootstrap_style is not BootstrapStyle.DEFAULT else 'toolbutton'
+        return f'{bootstrap_style.value}-toolbutton' if bootstrap_style is not BootstrapStyle.DEFAULT else 'toolbutton'
 
     @classmethod
     def outline_tool_button(cls, bootstrap_style: BootstrapStyle = BootstrapStyle.DEFAULT) -> str:
-        return f'{bootstrap_style}-outline-toolbutton' if bootstrap_style is not BootstrapStyle.DEFAULT else 'outline-toolbutton'
+        return f'{bootstrap_style.value}-outline-toolbutton' if bootstrap_style is not BootstrapStyle.DEFAULT else 'outline-toolbutton'
 
 
 class Scale(ParentBootstrapStyle):
     """
-    This is a pure static class (meaning just class methods) with pre-defined ttkbootstrap styles for scales
+    This is a pure static class (meaning just class methods) with predefined ttkbootstrap styles for scales
 
     @see `ttkbootsrap documentation - Style guide <https://ttkbootstrap.readthedocs.io/en/latest/styleguide/scale/>`__
     """
@@ -247,18 +255,18 @@ class Scale(ParentBootstrapStyle):
 
 class Scrollbar(ParentBootstrapStyle):
     """
-    This is a pure static class (meaning just class methods) with pre-defined ttkbootstrap styles for scrollbars
+    This is a pure static class (meaning just class methods) with predefined ttkbootstrap styles for scrollbars
 
     @see `ttkbootsrap documentation - Style guide <https://ttkbootstrap.readthedocs.io/en/latest/styleguide/scrollbar/>`__
     """
     @classmethod
     def round(cls, bootstrap_style: BootstrapStyle = BootstrapStyle.DEFAULT) -> str:
-        return f'{bootstrap_style}-round' if bootstrap_style is not BootstrapStyle.DEFAULT else 'round'
+        return f'{bootstrap_style.value}-round' if bootstrap_style is not BootstrapStyle.DEFAULT else 'round'
 
 
 class Separator(ParentBootstrapStyle):
     """
-    This is a pure static class (meaning just class methods) with pre-defined ttkbootstrap styles for separators
+    This is a pure static class (meaning just class methods) with predefined ttkbootstrap styles for separators
 
     @see `ttkbootsrap documentation - Style guide <https://ttkbootstrap.readthedocs.io/en/latest/styleguide/separator/>`__
     """
@@ -267,7 +275,7 @@ class Separator(ParentBootstrapStyle):
 
 class SizeGrip(ParentBootstrapStyle):
     """
-    This is a pure static class (meaning just class methods) with pre-defined ttkbootstrap styles for size grips
+    This is a pure static class (meaning just class methods) with predefined ttkbootstrap styles for size grips
 
     @see `ttkbootsrap documentation - Style guide <https://ttkbootstrap.readthedocs.io/en/latest/styleguide/sizegrip/>`__
     """
@@ -276,7 +284,7 @@ class SizeGrip(ParentBootstrapStyle):
 
 class SpinBox(ParentBootstrapStyle):
     """
-    This is a pure static class (meaning just class methods) with pre-defined ttkbootstrap styles for spin boxes
+    This is a pure static class (meaning just class methods) with predefined ttkbootstrap styles for spin boxes
 
     @see `ttkbootsrap documentation - Style guide <https://ttkbootstrap.readthedocs.io/en/latest/styleguide/spinbox/>`__
     """
@@ -285,7 +293,7 @@ class SpinBox(ParentBootstrapStyle):
 
 class TreeView(ParentBootstrapStyle):
     """
-    This is a pure static class (meaning just class methods) with pre-defined ttkbootstrap styles for tree views
+    This is a pure static class (meaning just class methods) with predefined ttkbootstrap styles for tree views
 
     @see `ttkbootsrap documentation - Style guide <https://ttkbootstrap.readthedocs.io/en/latest/styleguide/treeview/>`__
     """
