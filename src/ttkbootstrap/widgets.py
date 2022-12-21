@@ -8,7 +8,7 @@ from tkinter.ttk import Notebook, OptionMenu, PanedWindow
 from tkinter.ttk import Panedwindow, Progressbar, Radiobutton
 from tkinter.ttk import Scale, Scrollbar, Separator
 from tkinter.ttk import Sizegrip, Spinbox, Treeview
-from typing import Optional, Callable
+from typing import Optional, Callable, Any
 
 from ttkbootstrap.constants import *
 
@@ -114,7 +114,9 @@ class DateEntry(ttk.Frame):
 
             dateformat (str, optional):
                 The format string used to render the text in the entry
-                widget. For more information on acceptable formats, see https://strftime.org/
+                widget. For more information on acceptable formats
+
+                @see https://docs.python.org/3/library/datetime.html#strftime-and-strptime-behavior
 
             firstweekday (int, optional):
                 Specifies the first day of the week. 0=Monday, 1=Tuesday,
@@ -140,10 +142,11 @@ class DateEntry(ttk.Frame):
                 Other keyword arguments passed to the frame containing the
                 entry and date button.
         """
-        self.__dateformat = dateformat # User should NOT be able to change this, therefore double underscores
+        self.__dateformat = dateformat  # User should NOT be able to change this, therefore double underscores
         self._firstweekday = firstweekday
 
-        self._startdate = startdate or datetime.today()
+        initial_date = startdate or datetime.today()
+        self._startdate = self.__clean_datetime__(initial_date)
         self._bootstyle = bootstyle
         self.__enabled = True  # User should NOT be able to change this, therefore double underscores
         self._change_date_title = change_date_title
@@ -174,9 +177,10 @@ class DateEntry(ttk.Frame):
     def __setitem__(self, key: str, value):
         self.configure(cnf=None, **{key: value})
 
-    def _configure_set(self, **kwargs):
-        """Override configure method to allow for setting custom
-        DateEntry parameters"""
+    def _configure_set(self, **kwargs) -> Any:
+        """
+        Override configure method to allow for setting custom DateEntry parameters
+        """
 
         if "state" in kwargs:
             state = kwargs.pop("state")
@@ -203,7 +207,7 @@ class DateEntry(ttk.Frame):
 
         super(ttk.Frame, self).configure(**kwargs)
 
-    def _configure_get(self, cnf):
+    def _configure_get(self, cnf) -> Any:
         """Override the configure get method"""
         if cnf == "state":
             entrystate = self.entry.cget("state")
@@ -220,7 +224,7 @@ class DateEntry(ttk.Frame):
         else:
             return super(ttk.Frame, self).configure(cnf=cnf)
 
-    def configure(self, cnf=None, **kwargs):
+    def configure(self, cnf=None, **kwargs) -> Any:
         """Configure the options for this widget.
 
         Parameters:
@@ -239,7 +243,7 @@ class DateEntry(ttk.Frame):
     @property
     def enabled(self) -> bool:
         """
-        If ``True`` this date picker is enabled and user can pick a new date, if ``False`` user can't use this picker.
+        If ``True`` this date picker is enabled and user can pick a new date, if ``False`` user can't use this picker
 
         :return: ``True`` if usable, ``False`` otherwise
         """
@@ -260,6 +264,11 @@ class DateEntry(ttk.Frame):
         """
         return self.configure(cnf='startdate')
 
+    @staticmethod
+    def __clean_datetime__(new_date: datetime) -> datetime:
+        """This is a date picker, therefore erase all unnecessary elements: hours, minutes, seconds, ..."""
+        return datetime(new_date.year, new_date.month, new_date.day, tzinfo=new_date.tzinfo)
+
     def set_date(self, new_date: datetime) -> None:
         """
         Sets given datetime object as currently selected date.
@@ -268,13 +277,14 @@ class DateEntry(ttk.Frame):
 
         :param new_date: New date that will become the currently selected one
         """
+        pure_date = self.__clean_datetime__(new_date)
         if self.__enabled:
-            self.configure(startdate=new_date)
+            self.configure(startdate=pure_date)
             self.entry.delete(first=0, last=END)
             self.entry.insert(END, new_date.strftime(self.__dateformat))
         else:
             self.enable()
-            self.configure(startdate=new_date)
+            self.configure(startdate=pure_date)
             self.entry.delete(first=0, last=END)
             self.entry.insert(END, new_date.strftime(self.__dateformat))
             self.disable()
@@ -291,8 +301,12 @@ class DateEntry(ttk.Frame):
         self.entry.state(['!disabled'])
         self.button.state(['!disabled'])
 
-    def _on_date_ask(self):
-        """Callback for pushing the date button"""
+    def _on_date_ask(self) -> None:
+        """
+        Callback for pushing the date button
+
+        :raise ValueError If entered string does NOT match with currently used date format
+        """
         current_date = self.entry.get() or datetime.today().strftime(self.__dateformat)
         try:
             self._startdate = datetime.strptime(current_date, self.__dateformat)
