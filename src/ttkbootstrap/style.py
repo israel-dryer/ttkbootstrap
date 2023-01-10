@@ -666,6 +666,21 @@ class Style(ttk.Style):
                     colors=definition["colors"],
                 )
             )
+    
+    def _load_local_themes(self, dictToLoad):
+        """ Load local theme file """
+        USER_THEMES = dictToLoad
+        if USER_THEMES:
+            STANDARD_THEMES.update(USER_THEMES)
+        theme_settings = {"themes": STANDARD_THEMES}
+        for name, definition in theme_settings["themes"].items():
+            self.register_theme(
+                ThemeDefinition(
+                    name=name,
+                    themetype=definition["type"],
+                    colors=definition["colors"],
+                )
+            )
 
     def _register_ttkstyle(self, ttkstyle):
         """Register that a ttk style name. This ensures that the
