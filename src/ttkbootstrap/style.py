@@ -667,11 +667,14 @@ class Style(ttk.Style):
                 )
             )
     
-    def _load_local_themes(self, dictToLoad):
+    def _load_local_themes(self, themeDict):
         """ Load local theme file """
-        USER_THEMES = dictToLoad
-        if USER_THEMES:
-            STANDARD_THEMES.update(USER_THEMES)
+        # Essentially a copy of above function with the added arg where
+        # the user can pass a dict instead of a hardcoded user.py file 
+        # within the package
+        LOCAL_THEMES = themeDict
+        if LOCAL_THEMES:
+            STANDARD_THEMES.update(LOCAL_THEMES)
         theme_settings = {"themes": STANDARD_THEMES}
         for name, definition in theme_settings["themes"].items():
             self.register_theme(
