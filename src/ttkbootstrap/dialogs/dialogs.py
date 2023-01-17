@@ -1189,6 +1189,7 @@ class Messagebox:
             buttons=["OK:primary"],
             icon=Icon.info,
             localize=True,
+            **kwargs
         )
         if "position" in kwargs:
             position = kwargs.pop("position")
