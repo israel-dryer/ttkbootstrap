@@ -1388,7 +1388,7 @@ class Tableview(ttk.Frame):
 
     def reset_column_sort(self):
         """Display all columns by original insert index"""
-        cols = sorted([col.cid for col in self.tablecolumns_visible])
+        cols = sorted([col.cid for col in self.tablecolumns_visible], key=int)
         self.view.configure(displaycolumns=cols)
 
     def reset_table(self):
