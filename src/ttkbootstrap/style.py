@@ -4985,6 +4985,9 @@ class Bootstyle:
             if cnf in ("bootstyle", "style"):
                 return self.cget("style")
 
+            if cnf is not None:
+                return func(self, cnf)
+
             # set configuration
             if "bootstyle" in kwargs:
                 bootstyle = kwargs.pop("bootstyle")
