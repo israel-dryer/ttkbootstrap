@@ -1,5 +1,5 @@
 import ttkbootstrap as ttk
-from ttkbootstrap.constants import *
+from ttkbootstrap import constants
 
 app = ttk.Window()
 
@@ -8,6 +8,6 @@ frame.pack(padx=10, pady=10)
 
 for color in app.style.colors:
     b = ttk.Button(frame, text=color, bootstyle=color)
-    b.pack(side=LEFT, padx=5, pady=5)
+    b.pack(side=constants.LEFT, padx=5, pady=5)
 
 app.mainloop()
