@@ -35,7 +35,7 @@ Your theme is now saved in the file `ttkbootstrap.themes.user.py`
     **Reset** option from the top menu to reset all of the colors
     to the **base theme** colors.
 
-## Import user themes
+## Import TTK Creator themes
 
 If you have a user themes file that is in the format specified below, you can 
 import that file into ttkbootstrap. 
@@ -77,7 +77,71 @@ USER_THEMES = {
 }
 ```
 
-## Export user themes
+
+## Import User Themes from JSON
+
+You can import themes using the `Style.load_user_themes` method. Importing themes
+with this method only affects the project at run-time and does not change the
+ttkbootstrap source files as does the previous example. This is handy if you have
+themes stored in JSON format, or if you want a theme available for a specific project
+but not others, etc...
+
+The format of the JSON file must match the following:
+```json
+{
+  "themes": [
+    {
+      "midnight": {
+        "type": "dark",
+        "colors": {
+          "primary": "#0a21f5",
+            "secondary": "#555555",
+            "success": "#77b300",
+            "info": "#c6c6c6",
+            "warning": "#ff8800",
+            "danger": "#cc0000",
+            "light": "#adafae",
+            "dark": "#000000",
+            "bg": "#000000",
+            "fg": "#ffffff",
+            "selectbg": "#454545",
+            "selectfg": "#ffffff",
+            "border": "#060606",
+            "inputfg": "#ffffff",
+            "inputbg": "#191919",
+            "active": "#282828"
+        }
+      }
+    },
+    {
+      "nightout": {
+        "type": "dark",
+        "colors": {
+          "primary": "#164fe2",
+            "secondary": "#555555",
+            "success": "#77b300",
+            "info": "#c0c0c0",
+            "warning": "#ff8800",
+            "danger": "#cc0000",
+            "light": "#ADAFAE",
+            "dark": "#222222",
+            "bg": "#000000",
+            "fg": "#ffffff",
+            "selectbg": "#454545",
+            "selectfg": "#ffffff",
+            "border": "#060606",
+            "inputfg": "#ffffff",
+            "inputbg": "#191919",
+            "active": "#282828"
+        }
+      }
+    }
+  ]
+}
+```
+
+
+## Export TTK Creator themes
 
 User defined themes can be exported into the format specified above
 
