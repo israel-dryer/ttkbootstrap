@@ -80,7 +80,7 @@ style = ttk.Style("darkly")
 root = ttk.Window(themename="darkly")
 ```
 
-## Use themed widgets
+## Using themed widgets
 
 ttkbootstrap widgets have [dozens of predefined styles](../styleguide/index.md) 
 which are applied using **keywords** that modify both the **type** and **color** 
@@ -173,13 +173,13 @@ transformed from a **solid** to an **outline** button type.
 
 ### Keyword usage
 
-On final note on using keywords... the **bootstyle** parameter is VERY flexible. 
+One final note on using keywords. The **bootstyle** parameter is VERY flexible. 
 It doesn't really matter how the keyword looks. There is a regex expression in 
 the background that parses the input and converts it into the appropriate ttk 
 style. You can pass in a _string_ of keywords, or an _iterable_ of keywords
 such as with a `list` or `tuple`.
 
-All of the following variations are legal and will result in the same style.
+All of the following variations are legal and will result in the same style:
 
 * `"info-outline"`
 * `"infooutline"`
@@ -189,8 +189,8 @@ All of the following variations are legal and will result in the same style.
 * `(INFO, OUTLINE)`
 
 !!! note "The recommended keyword separator is a dash"
-    If using **strings** for keywords, it is recommended to separate the 
+    If you are using **strings** for keywords, it is recommended to separate the 
     keywords using a dash when possible, as in the _first_ example above. 
     
-    If using **constants**, and you are using more than one keyword, you will use 
+    If you are using **constants**, and you are using more than one keyword, you will use 
     a `list` or `tuple` as in the _last_ example above.
