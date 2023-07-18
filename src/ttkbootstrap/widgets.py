@@ -851,9 +851,13 @@ class Meter(ttk.Frame):
             self._draw_striped_meter(draw)
         else:
             self._draw_solid_meter(draw)
-
+        try:
+            resampling = Image.CUBIC
+        except AttributeError:
+            # pillow>=10.0.0
+            resampling = Image.BICUBIC
         self._meterimage = ImageTk.PhotoImage(
-            img.resize((self._metersize, self._metersize), Image.CUBIC)
+            img.resize((self._metersize, self._metersize), resampling)
         )
         self.indicator.configure(image=self._meterimage)
 
