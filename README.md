@@ -68,6 +68,9 @@ b2.pack(side=LEFT, padx=5, pady=10)
 
 root.mainloop()
 ```
+Here is the desired result:
+
+
 ![Here is the result of the code used above:](beginningresult.png)
 
 For more detailed usage, please refer to the [**Getting Started page**](https://ttkbootstrap.readthedocs.io/en/latest/gettingstarted/tutorial/)
