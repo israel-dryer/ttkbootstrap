@@ -50,7 +50,7 @@ python -m pip install ttkbootstrap
 ## Simple Usage
 Instead of using long, complicated ttk style classes, you can use simple keywords with the "bootstyle" parameter.
 
-To get started, add the import statement
+To get started, add the import statement at the top of your file in your preferred IDE:
 ```python
 import ttkbootstrap as ttk
 ```
