@@ -68,9 +68,7 @@ b2.pack(side=LEFT, padx=5, pady=10)
 
 root.mainloop()
 ```
-Here is the result of the code used above:
-
-![](beginningresult.png)
+![Here is the result of the code used above:](beginningresult.png)
 
 For more detailed usage, please refer to the [**Getting Started page**](https://ttkbootstrap.readthedocs.io/en/latest/gettingstarted/tutorial/)
 This page includes creating buttons, adding widgets, different styles and more. 
