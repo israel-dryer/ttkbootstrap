@@ -135,7 +135,7 @@ class Dialog(BaseWidget):
                 title=self._title,
                 resizable=(0, 0),
                 windowtype="dialog",
-                iconify=True,
+                # iconify=True,  # Commented out because this iconify=True freezes tkinter on Ubuntu. No idea why.
             )
 
         self._toplevel.withdraw()  # reset the iconify state
