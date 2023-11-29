@@ -853,7 +853,7 @@ class Meter(ttk.Frame):
             self._draw_solid_meter(draw)
 
         self._meterimage = ImageTk.PhotoImage(
-            img.resize((self._metersize, self._metersize), Image.CUBIC)
+            img.resize((self._metersize, self._metersize), Image.BICUBIC)
         )
         self.indicator.configure(image=self._meterimage)
 

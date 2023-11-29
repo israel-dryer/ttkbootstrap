@@ -176,17 +176,17 @@ if __name__ == '__main__':
     TREEVIEW_IMG_SIZE = (24, 24)
 
     images = {
-        'File': ImageTk.PhotoImage(Image.open(img_path / 'assets/icons8_folder_40px.png').resize(TREEVIEW_IMG_SIZE, Image.ANTIALIAS)),
-        'Dir': ImageTk.PhotoImage(Image.open(img_path / 'assets/icons8_file_40px.png').resize(TREEVIEW_IMG_SIZE, Image.ANTIALIAS)),
+        'File': ImageTk.PhotoImage(Image.open(img_path / 'assets/icons8_folder_40px.png').resize(TREEVIEW_IMG_SIZE, Image.LANCZOS)),
+        'Dir': ImageTk.PhotoImage(Image.open(img_path / 'assets/icons8_file_40px.png').resize(TREEVIEW_IMG_SIZE, Image.LANCZOS)),
 
-        'Home': ImageTk.PhotoImage(Image.open(img_path / 'assets/icons8_home_40px.png').resize(SIDEBAR_IMG_SIZE, Image.ANTIALIAS)),
-        'User': ImageTk.PhotoImage(Image.open(img_path / 'assets/icons8_user_folder_40px.png').resize(SIDEBAR_IMG_SIZE, Image.ANTIALIAS)),        
-        'Desktop': ImageTk.PhotoImage(Image.open(img_path / 'assets/icons8_desktop_40px.png').resize(SIDEBAR_IMG_SIZE, Image.ANTIALIAS)),        
-        'Videos': ImageTk.PhotoImage(Image.open(img_path / 'assets/icons8_movies_folder_40px.png').resize(SIDEBAR_IMG_SIZE, Image.ANTIALIAS)),        
-        'Music': ImageTk.PhotoImage(Image.open(img_path / 'assets/icons8_music_folder_40px.png').resize(SIDEBAR_IMG_SIZE, Image.ANTIALIAS)),        
-        'Pictures': ImageTk.PhotoImage(Image.open(img_path / 'assets/icons8_pictures_folder_40px.png').resize(SIDEBAR_IMG_SIZE, Image.ANTIALIAS)),        
-        'Documents': ImageTk.PhotoImage(Image.open(img_path / 'assets/icons8_documents_folder_40px.png').resize(SIDEBAR_IMG_SIZE, Image.ANTIALIAS)),                
-        'Downloads': ImageTk.PhotoImage(Image.open(img_path / 'assets/icons8_downloads_folder_40px.png').resize(SIDEBAR_IMG_SIZE, Image.ANTIALIAS)),                
+        'Home': ImageTk.PhotoImage(Image.open(img_path / 'assets/icons8_home_40px.png').resize(SIDEBAR_IMG_SIZE, Image.LANCZOS)),
+        'User': ImageTk.PhotoImage(Image.open(img_path / 'assets/icons8_user_folder_40px.png').resize(SIDEBAR_IMG_SIZE, Image.LANCZOS)),        
+        'Desktop': ImageTk.PhotoImage(Image.open(img_path / 'assets/icons8_desktop_40px.png').resize(SIDEBAR_IMG_SIZE, Image.LANCZOS)),        
+        'Videos': ImageTk.PhotoImage(Image.open(img_path / 'assets/icons8_movies_folder_40px.png').resize(SIDEBAR_IMG_SIZE, Image.LANCZOS)),        
+        'Music': ImageTk.PhotoImage(Image.open(img_path / 'assets/icons8_music_folder_40px.png').resize(SIDEBAR_IMG_SIZE, Image.LANCZOS)),        
+        'Pictures': ImageTk.PhotoImage(Image.open(img_path / 'assets/icons8_pictures_folder_40px.png').resize(SIDEBAR_IMG_SIZE, Image.LANCZOS)),        
+        'Documents': ImageTk.PhotoImage(Image.open(img_path / 'assets/icons8_documents_folder_40px.png').resize(SIDEBAR_IMG_SIZE, Image.LANCZOS)),                
+        'Downloads': ImageTk.PhotoImage(Image.open(img_path / 'assets/icons8_downloads_folder_40px.png').resize(SIDEBAR_IMG_SIZE, Image.LANCZOS)),                
     }
 
 
