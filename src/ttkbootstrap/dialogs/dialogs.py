@@ -256,7 +256,7 @@ class MessageDialog(Dialog):
         self._command = command
         self._width = width
         self._alert = alert
-        self._default = (default,)
+        self._default = default
         self._padding = padding
         self._icon = icon
         self._localize = kwargs.get("localize")
@@ -1189,6 +1189,7 @@ class Messagebox:
             buttons=["OK:primary"],
             icon=Icon.info,
             localize=True,
+            **kwargs
         )
         if "position" in kwargs:
             position = kwargs.pop("position")

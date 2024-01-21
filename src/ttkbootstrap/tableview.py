@@ -110,7 +110,7 @@ class TableColumn:
     @property
     def tableindex(self):
         """The index of the column as it is in the table configuration."""
-        cols = self.view.configure("columns")
+        cols = self.view.cget("columns")
         if cols is None:
             return
         try:
@@ -121,7 +121,7 @@ class TableColumn:
     @property
     def displayindex(self):
         """The index of the column as it is displayed"""
-        cols = self.view.configure("displaycolumns")
+        cols = self.view.cget("displaycolumns")
         if "#all" in cols:
             return self.tableindex
         else:
@@ -164,20 +164,20 @@ class TableColumn:
 
     def show(self):
         """Make the column visible in the tableview"""
-        displaycols = list(self.view.configure("displaycolumns"))
+        displaycols = list(self.view.cget("displaycolumns"))
         if "#all" in displaycols:
             return
         if self.cid in displaycols:
             return
-        columns = list(self.view.configure("columns"))
+        columns = list(self.view.cget("columns"))
         index = columns.index(self.cid)
         displaycols.insert(index, self.cid)
         self.view.configure(displaycolumns=displaycols)
 
     def hide(self):
         """Hide the column in the tableview"""
-        displaycols = list(self.view.configure("displaycolumns"))
-        cols = list(self.view.configure("columns"))
+        displaycols = list(self.view.cget("displaycolumns"))
+        cols = list(self.view.cget("columns"))
         if "#all" in displaycols:
             displaycols = cols
         displaycols.remove(self.cid)
@@ -251,7 +251,7 @@ class TableRow:
                 A list of values to display in the row
         """
         self.view: ttk.Treeview = tableview.view
-        self._values = values
+        self._values = list(values)
         self._iid = None
         self._sort = TableRow._cnt + 1
         self._table = tableview
@@ -1388,7 +1388,7 @@ class Tableview(ttk.Frame):
 
     def reset_column_sort(self):
         """Display all columns by original insert index"""
-        cols = sorted([col.cid for col in self.tablecolumns_visible])
+        cols = sorted([col.cid for col in self.tablecolumns_visible], key=int)
         self.view.configure(displaycolumns=cols)
 
     def reset_table(self):
