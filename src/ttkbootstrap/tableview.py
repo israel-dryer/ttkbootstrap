@@ -433,6 +433,7 @@ class Tableview(ttk.Frame):
             rowdata=[],
             paginated=False,
             searchable=False,
+            yscrollbar=False,
             autofit=False,
             autoalign=True,
             stripecolor=None,
@@ -481,6 +482,10 @@ class Tableview(ttk.Frame):
                 bar. Currently, the search method looks for any row
                 that contains the search text. The filtered results
                 are displayed in the table view.
+                
+            yscrollbar (bool):
+                If `True`, a vertical scrollbar will be created to the right
+                of the table.
 
             autofit (bool):
                 If `True`, the table columns will be automatically sized
@@ -530,6 +535,7 @@ class Tableview(ttk.Frame):
         self._pagesize = tk.IntVar(value=pagesize)
         self._paginated = paginated
         self._searchable = searchable
+        self._yscrollbar = yscrollbar
         self._stripecolor = stripecolor
         self._autofit = autofit
         self._autoalign = autoalign
@@ -2075,16 +2081,27 @@ class Tableview(ttk.Frame):
         """Build the data table"""
         if self._searchable:
             self._build_search_frame()
+            
+        table_frame = ttk.Frame(self)
+        table_frame.pack(fill=BOTH, expand=YES, side=TOP)
 
         self.view = ttk.Treeview(
-            master=self,
+            master=table_frame,
             columns=[x for x in range(len(coldata))],
             height=self._height,
             selectmode=EXTENDED,
             show=HEADINGS,
             bootstyle=f"{bootstyle}-table",
         )
-        self.view.pack(fill=BOTH, expand=YES, side=TOP)
+        self.view.pack(fill=BOTH, expand=YES, side=LEFT)
+        
+        if self._yscrollbar:
+            self.ybar = ttk.Scrollbar(
+                master=table_frame, command=self.view.yview, orient=VERTICAL
+            )
+            self.ybar.pack(fill=Y, side=RIGHT)
+            self.view.configure(yscrollcommand=self.ybar.set)
+        
         self.hbar = ttk.Scrollbar(
             master=self, command=self.view.xview, orient=HORIZONTAL
         )
