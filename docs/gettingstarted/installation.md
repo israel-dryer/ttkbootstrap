@@ -7,7 +7,7 @@ Easy peezy.
     python -m pip install ttkbootstrap
     ```
 
-Lemon squeeze.
+Lemon squeezy.
 
 !!! note "Github Installation"
     ```bash
