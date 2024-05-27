@@ -1,6 +1,6 @@
 # Installation
 
-Easy peezy.
+Easy peezy.ck
 
 !!! note "PyPI Installation"
     ```bash
