@@ -948,6 +948,9 @@ class FontDialog(Dialog):
         cancel_btn.pack(side=RIGHT, padx=5)
         cancel_btn.bind("<Return>", lambda _: cancel_btn.invoke())
 
+        self._toplevel.bind("<Escape>", func=lambda _:cancel_btn.invoke())
+        self._toplevel.protocol("WM_DELETE_WINDOW", func=cancel_btn.invoke)
+
     def _font_families_selector(self, master):
         container = ttk.Frame(master)
         container.pack(fill=BOTH, expand=YES, side=LEFT)
