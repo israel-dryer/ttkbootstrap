@@ -41,6 +41,7 @@ class ToolTip:
         bootstyle=None,
         wraplength=None,
         delay=250,    # milliseconds
+        image=None,
         **kwargs,
     ):
         """
@@ -67,6 +68,7 @@ class ToolTip:
         """
         self.widget = widget
         self.text = text
+        self.image = image
         self.bootstyle = bootstyle
         self.wraplength = wraplength or utility.scale_size(self.widget, 300)
         self.toplevel = None
@@ -126,6 +128,8 @@ class ToolTip:
         lbl = ttk.Label(
             master=self.toplevel,
             text=self.text,
+            image=self.image,
+            compound='bottom',
             justify=LEFT,
             wraplength=self.wraplength,
             padding=10,
