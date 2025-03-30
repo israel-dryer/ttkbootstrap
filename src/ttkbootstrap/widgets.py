@@ -1072,9 +1072,7 @@ class Meter(ttk.Frame):
         if "metertype" in kwargs:
             self._metertype = kwargs.pop("metertype")
         if "meterthickness" in kwargs:
-            self._meterthickness = self.scale_size(
-                kwargs.pop("meterthickness")
-            )
+            self._meterthickness = kwargs.pop("meterthickness")
         if "stripethickness" in kwargs:
             self._stripethickness = kwargs.pop("stripethickness")
         if "subtext" in kwargs:
