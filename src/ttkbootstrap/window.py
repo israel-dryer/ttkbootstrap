@@ -284,6 +284,11 @@ class Window(tkinter.Tk):
         """Return a reference to the `ttkbootstrap.style.Style` object."""
         return self._style
 
+    def destroy(self):
+        """Destroy the window and all its children."""
+        self._style.instance = None
+        super().destroy()
+
     def place_window_center(self):
         """Position the toplevel in the center of the screen. Does not
         account for titlebar height."""
