@@ -31,14 +31,14 @@ assert m._arcoffset == 10
 assert m.configure('arcoffset') == 10
 
 m.configure(amounttotal=200)
-assert m.amounttotalvar.get() == 200
+assert m.amount_total_var.get() == 200
 assert m['amounttotal'] == 200
 assert m.configure('amounttotal') == 200
 
 m['amountused'] = 50
 assert m['amountused'] == 50
 assert m.configure('amountused') == 50
-assert m.amountusedvar.get() == 50
+assert m.amount_used_var.get() == 50
 
 m['interactive'] = False
 assert m['interactive'] == False
