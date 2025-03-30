@@ -54,12 +54,13 @@ ttk.Meter(
     metersize=180,
     padding=5,
     amounttotal=280,
+    meterthickness=50,
     arcrange=180,
     arcoffset=-180,
     amountused=75,
     textright='°',
     subtext='heat temperature',
-    wedgesize=5,
+    wedgesize=10,
     bootstyle='danger',
     interactive=True
 ).pack(side=tk.LEFT)
