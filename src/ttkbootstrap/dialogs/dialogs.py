@@ -887,11 +887,11 @@ class FontDialog(Dialog):
     ![](../../assets/dialogs/querybox-get-font.png)
     """
 
-    def __init__(self, title="Font Selector", parent=None):
+    def __init__(self, title="Font Selector", parent=None, default_font="TkDefaultFont"):
         title = MessageCatalog.translate(title)
         super().__init__(parent=parent, title=title)
         self._style = ttk.Style()
-        self._default = font.nametofont("TkDefaultFont")
+        self._default = font.nametofont(default_font)
         self._actual = self._default.actual()
         self._size = ttk.Variable(value=self._actual["size"])
         self._family = ttk.Variable(value=self._actual["family"])
