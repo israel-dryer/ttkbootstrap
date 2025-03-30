@@ -143,6 +143,7 @@ class Window(tkinter.Tk):
         transient=None,
         overrideredirect=False,
         alpha=1.0,
+        **kwargs,
     ):
         """
         Parameters:
@@ -215,11 +216,15 @@ class Window(tkinter.Tk):
                 On Windows, specifies the alpha transparency level of the
                 toplevel. Where not supported, alpha remains at 1.0. Internally,
                 this is processed as `Toplevel.attributes('-alpha', alpha)`.
+
+            **kwargs:
+                Any other keyword arguments that are passed through to tkinter.Tk() constructor
+                List of available keywords available at: https://docs.python.org/3/library/tkinter.html#tkinter.Tk
         """
         if hdpi:
             utility.enable_high_dpi_awareness()
 
-        super().__init__()
+        super().__init__(**kwargs)
         self.winsys = self.tk.call('tk', 'windowingsystem')
 
         if scaling is not None:
