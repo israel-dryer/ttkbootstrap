@@ -1,0 +1,3 @@
+* update version in setup.py
+* >> python setup.py sdist
+* >> twine upload dist/* (with api token)
