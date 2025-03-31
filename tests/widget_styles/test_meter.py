@@ -65,6 +65,17 @@ ttk.Meter(
     interactive=True
 ).pack(side=tk.LEFT)
 
+meter = ttk.Meter(
+    metersize = 100,
+    padding = 10,
+    amountused = 10,
+    metertype = "semi",
+    subtext = "Miles per hour",
+    interactive = True,
+    amounttotal = 100
+)
+meter.step(-50)
+meter.pack(side=tk.LEFT)
 # btn = ttk.Button(text="Change Theme", command=change_style)
 # btn.grid(row=3, column=0, columnspan=2, padx=10, pady=10)
 
