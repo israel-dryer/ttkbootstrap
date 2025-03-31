@@ -691,9 +691,9 @@ class Meter(ttk.Frame):
         super().__init__(master=master, **kwargs)
 
         # widget variables
-        self.amount_used_var = tk.IntVar(value=amountused)
-        self.amount_used_var.trace_add("write", self._draw_meter)
-        self.amount_total_var = tk.IntVar(value=amounttotal)
+        self.amountusedvar = tk.IntVar(value=amountused)
+        self.amountusedvar.trace_add("write", self._draw_meter)
+        self.amounttotalvar = tk.IntVar(value=amounttotal)
         self.labelvar = tk.StringVar(value=subtext)
 
         # misc settings
@@ -733,7 +733,7 @@ class Meter(ttk.Frame):
         )
         self.textcenter = ttk.Label(
             master=self.textframe,
-            textvariable=self.amount_used_var,
+            textvariable=self.amountusedvar,
             bootstyle=(self._bootstyle, "meter"),
             font=self._textfont,
         )
@@ -966,8 +966,8 @@ class Meter(ttk.Frame):
             factor = 360 + degs - self._arcoffset
 
         # clamp the value between 0 and `amounttotal`
-        amounttotal = self.amount_total_var.get()
-        lastused = self.amount_used_var.get()
+        amounttotal = self.amounttotalvar.get()
+        lastused = self.amountusedvar.get()
         amountused = (amounttotal / self._arcrange * factor)
 
         # calculate amount used given stepsize
@@ -980,11 +980,11 @@ class Meter(ttk.Frame):
             return
         # set the amount used variable
         if amountused < 0:
-            self.amount_used_var.set(0)
+            self.amountusedvar.set(0)
         elif amountused > amounttotal:
-            self.amount_used_var.set(amounttotal)
+            self.amountusedvar.set(amounttotal)
         else:
-            self.amount_used_var.set(amountused)
+            self.amountusedvar.set(amountused)
 
     def _lookup_style_option(self, style: str, option: str):
         """Wrapper around the tcl style lookup command"""
@@ -1000,9 +1000,9 @@ class Meter(ttk.Frame):
         elif cnf == "arcoffset":
             return self._arcoffset
         elif cnf == "amounttotal":
-            return self.amount_total_var.get()
+            return self.amounttotalvar.get()
         elif cnf == "amountused":
-            return self.amount_used_var.get()
+            return self.amountusedvar.get()
         elif cnf == "interactive":
             return self._interactive
         elif cnf == "subtextfont":
@@ -1046,10 +1046,10 @@ class Meter(ttk.Frame):
             self._arcoffset = kwargs.pop("arcoffset")
         if "amounttotal" in kwargs:
             amounttotal = kwargs.pop("amounttotal")
-            self.amount_total_var.set(amounttotal)
+            self.amounttotalvar.set(amounttotal)
         if "amountused" in kwargs:
             amountused = kwargs.pop("amountused")
-            self.amount_used_var.set(amountused)
+            self.amountusedvar.set(amountused)
         if "interactive" in kwargs:
             self._interactive = kwargs.pop("interactive")
             self._set_interactive_bind()
@@ -1146,8 +1146,8 @@ class Meter(ttk.Frame):
             delta (int):
                 The amount to change the indicator.
         """
-        amount_used = self.amount_used_var.get()
-        amount_total = self.amount_total_var.get()
+        amount_used = self.amountusedvar.get()
+        amount_total = self.amounttotalvar.get()
 
         if self._towards_maximum:
             amount_updated = amount_used + delta
@@ -1156,9 +1156,9 @@ class Meter(ttk.Frame):
 
         if amount_updated >= amount_total:
             self._towards_maximum = False
-            self.amount_used_var.set(amount_total - (amount_updated - amount_total))
+            self.amountusedvar.set(amount_total - (amount_updated - amount_total))
         elif amount_updated < 0:
             self._towards_maximum = True
-            self.amount_used_var.set(abs(amount_updated))
+            self.amountusedvar.set(abs(amount_updated))
         else:
-            self.amount_used_var.set(amount_updated)
+            self.amountusedvar.set(amount_updated)
