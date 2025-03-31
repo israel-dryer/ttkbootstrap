@@ -19,7 +19,9 @@ ttk.Meter(
     metersize=180,
     padding=5,
     amountused=25,
+    amountformat="{:0.1f}",
     metertype='semi',
+
     subtext='miles per hour',
     interactive=True
 ).pack(side=tk.LEFT)
