@@ -23,7 +23,7 @@ from ttkbootstrap.style import Colors
 from ttkbootstrap import utility
 from ttkbootstrap.style import Bootstyle
 
-M = 3 # meter image scale, higher number increases resolution
+M = 3  # meter image scale, higher number increases resolution
 
 TTK_WIDGETS = (
     ttk.Button,
@@ -94,13 +94,13 @@ class DateEntry(ttk.Frame):
     """
 
     def __init__(
-        self,
-        master=None,
-        dateformat=r"%x",
-        firstweekday=6,
-        startdate=None,
-        bootstyle="",
-        **kwargs,
+            self,
+            master=None,
+            dateformat=r"%x",
+            firstweekday=6,
+            startdate=None,
+            bootstyle="",
+            **kwargs,
     ):
         """
         Parameters:
@@ -298,20 +298,20 @@ class Floodgauge(Progressbar):
     """
 
     def __init__(
-        self,
-        master=None,
-        cursor=None,
-        font=None,
-        length=None,
-        maximum=100,
-        mode=DETERMINATE,
-        orient=HORIZONTAL,
-        bootstyle=PRIMARY,
-        takefocus=False,
-        text=None,
-        value=0,
-        mask=None,
-        **kwargs,
+            self,
+            master=None,
+            cursor=None,
+            font=None,
+            length=None,
+            maximum=100,
+            mode=DETERMINATE,
+            orient=HORIZONTAL,
+            bootstyle=PRIMARY,
+            takefocus=False,
+            text=None,
+            value=0,
+            mask=None,
+            **kwargs,
     ):
         """
         Parameters:
@@ -583,28 +583,28 @@ class Meter(ttk.Frame):
     """
 
     def __init__(
-        self,
-        master=None,
-        bootstyle=DEFAULT,
-        arcrange=None,
-        arcoffset=None,
-        amounttotal=100,
-        amountused=0,
-        wedgesize=0,
-        metersize=200,
-        metertype=FULL,
-        meterthickness=10,
-        showtext=True,
-        interactive=False,
-        stripethickness=0,
-        textleft=None,
-        textright=None,
-        textfont="-size 20 -weight bold",
-        subtext=None,
-        subtextstyle=DEFAULT,
-        subtextfont="-size 10",
-        stepsize=1,
-        **kwargs,
+            self,
+            master=None,
+            bootstyle=DEFAULT,
+            arcrange=None,
+            arcoffset=None,
+            amounttotal=100,
+            amountused=0,
+            wedgesize=0,
+            metersize=200,
+            metertype=FULL,
+            meterthickness=10,
+            showtext=True,
+            interactive=False,
+            stripethickness=0,
+            textleft=None,
+            textright=None,
+            textfont="-size 20 -weight bold",
+            subtext=None,
+            subtextstyle=DEFAULT,
+            subtextfont="-size 10",
+            stepsize=1,
+            **kwargs,
     ):
         """
         Parameters:
@@ -698,13 +698,13 @@ class Meter(ttk.Frame):
 
         # misc settings
         self._set_arc_offset_range(metertype, arcoffset, arcrange)
-        self._towardsmaximum = True
+        self._towards_maximum = True
         self._metersize = utility.scale_size(self, metersize)
         self._meterthickness = utility.scale_size(self, meterthickness)
         self._stripethickness = stripethickness
         self._showtext = showtext
         self._wedgesize = wedgesize
-        self._stepsize = stepsize        
+        self._stepsize = stepsize
         self._textleft = textleft
         self._textright = textright
         self._textfont = textfont
@@ -966,12 +966,12 @@ class Meter(ttk.Frame):
             factor = 360 + degs - self._arcoffset
 
         # clamp the value between 0 and `amounttotal`
-        amounttotal = self.amounttotalvar.get() 
+        amounttotal = self.amounttotalvar.get()
         lastused = self.amountusedvar.get()
         amountused = (amounttotal / self._arcrange * factor)
 
         # calculate amount used given stepsize
-        if amountused > self._stepsize//2:
+        if amountused > self._stepsize // 2:
             amountused = amountused // self._stepsize * self._stepsize + self._stepsize
         else:
             amountused = 0
@@ -1146,15 +1146,19 @@ class Meter(ttk.Frame):
             delta (int):
                 The amount to change the indicator.
         """
-        amountused = self.amountusedvar.get()
-        amounttotal = self.amounttotalvar.get()
-        if amountused >= amounttotal:
-            self._towardsmaximum = True
-            self.amountusedvar.set(amountused - delta)
-        elif amountused <= 0:
-            self._towardsmaximum = False
-            self.amountusedvar.set(amountused + delta)
-        elif self._towardsmaximum:
-            self.amountusedvar.set(amountused - delta)
+        amount_used = self.amountusedvar.get()
+        amount_total = self.amounttotalvar.get()
+
+        if self._towards_maximum:
+            amount_updated = amount_used + delta
         else:
-            self.amountusedvar.set(amountused + delta)
+            amount_updated = amount_used - delta
+
+        if amount_updated >= amount_total:
+            self._towards_maximum = False
+            self.amountusedvar.set(amount_total - (amount_updated - amount_total))
+        elif amount_updated < 0:
+            self._towards_maximum = True
+            self.amountusedvar.set(abs(amount_updated))
+        else:
+            self.amountusedvar.set(amount_updated)
