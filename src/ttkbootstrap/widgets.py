@@ -761,7 +761,6 @@ class Meter(ttk.Frame):
             text=self._subtext,
             bootstyle=(self._subtextstyle, "metersubtxt"),
             font=self._subtextfont,
-            textvariable=self.labelvar
         )
 
         self.bind("<<ThemeChanged>>", self._on_theme_change)
