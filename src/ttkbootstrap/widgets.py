@@ -590,6 +590,7 @@ class Meter(ttk.Frame):
             arcoffset=None,
             amounttotal=100,
             amountused=0,
+            amountformat="{:.0f}",
             wedgesize=0,
             metersize=200,
             metertype=FULL,
@@ -625,6 +626,9 @@ class Meter(ttk.Frame):
             amountused (int):
                 The current value of the meter; displayed in a center label
                 if the `showtext` property is set to True.
+
+            amountformat (str):
+                The format used to display the `amountused` value. Default is "{:.0f}"
 
             wedgesize (int):
                 Sets the length of the indicator wedge around the arc. If
@@ -692,11 +696,13 @@ class Meter(ttk.Frame):
 
         # widget variables
         self.amountusedvar = tk.IntVar(value=amountused)
-        self.amountusedvar.trace_add("write", self._draw_meter)
+        self.amountusedvar.trace_add("write", self._update_meter)
+        self.amountuseddisplayvar = tk.StringVar(value=amountformat.format(amountused))
         self.amounttotalvar = tk.IntVar(value=amounttotal)
         self.labelvar = tk.StringVar(value=subtext)
 
         # misc settings
+        self._amountformat = amountformat
         self._set_arc_offset_range(metertype, arcoffset, arcrange)
         self._towards_maximum = True
         self._metersize = utility.scale_size(self, metersize)
@@ -717,6 +723,11 @@ class Meter(ttk.Frame):
 
         self._setup_widget()
 
+    def _update_meter(self, *_):
+        self._draw_meter()
+        amount_used = self.amountusedvar.get()
+        self.amountuseddisplayvar.set(self._amountformat.format(amount_used))
+
     def _setup_widget(self):
         self.meterframe = ttk.Frame(
             master=self, width=self._metersize, height=self._metersize
@@ -733,7 +744,7 @@ class Meter(ttk.Frame):
         )
         self.textcenter = ttk.Label(
             master=self.textframe,
-            textvariable=self.amountusedvar,
+            textvariable=self.amountuseddisplayvar,
             bootstyle=(self._bootstyle, "meter"),
             font=self._textfont,
         )
@@ -750,6 +761,7 @@ class Meter(ttk.Frame):
             text=self._subtext,
             bootstyle=(self._subtextstyle, "metersubtxt"),
             font=self._subtextfont,
+            textvariable=self.labelvar
         )
 
         self.bind("<<ThemeChanged>>", self._on_theme_change)
