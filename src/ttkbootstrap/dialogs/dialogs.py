@@ -17,6 +17,7 @@ from ttkbootstrap.icons import Icon
 from ttkbootstrap.constants import *
 from tkinter import BaseWidget
 from ttkbootstrap.localization import MessageCatalog
+import ctypes
 
 
 class Dialog(BaseWidget):
@@ -563,7 +564,11 @@ class DatePickerDialog:
 
     """
 
-    locale.setlocale(locale.LC_ALL, locale.setlocale(locale.LC_TIME, ""))
+    windll = ctypes.windll.kernel32
+
+    defaultOSLanguage = ".".join((locale.windows_locale[windll.GetUserDefaultUILanguage()], "utf-8"))
+
+    locale.setlocale(locale.LC_ALL, locale.setlocale(locale.LC_TIME, defaultOSLanguage))
 
     def __init__(
         self,
