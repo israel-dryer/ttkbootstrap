@@ -90,6 +90,7 @@ class Colors:
         inputfg,
         inputbg,
         active,
+        track,
     ):
         """
         Parameters:
@@ -141,6 +142,9 @@ class Colors:
 
             active (str):
                 An accent color.
+
+            track (str):
+                The color of the track for Scale and the background for Progressbar and Meter
         """
         self.primary = primary
         self.secondary = secondary
@@ -158,6 +162,7 @@ class Colors:
         self.inputfg = inputfg
         self.inputbg = inputbg
         self.active = active
+        self.track = track
 
     @staticmethod
     def make_transparent(alpha, foreground, background='#ffffff'):
@@ -295,6 +300,7 @@ class Colors:
                 "inputfg",
                 "inputbg",
                 "active",
+                "track",
             ]
         )
 
@@ -1402,10 +1408,10 @@ class StyleBuilderTTK:
                 troughcolor = self.colors.bg
                 bordercolor = self.colors.light
             else:
-                troughcolor = self.colors.light
+                troughcolor = self.colors.track
                 bordercolor = troughcolor
         else:
-            troughcolor = Colors.update_hsv(self.colors.selectbg, vd=-0.2)
+            troughcolor = self.colors.track
             bordercolor = troughcolor
 
         # ( horizontal, vertical )
@@ -1499,10 +1505,10 @@ class StyleBuilderTTK:
                 troughcolor = self.colors.bg
                 bordercolor = self.colors.light
             else:
-                troughcolor = self.colors.light
+                troughcolor = self.colors.track
                 bordercolor = troughcolor
         else:
-            troughcolor = Colors.update_hsv(self.colors.selectbg, vd=-0.2)
+            troughcolor = self.colors.track
             bordercolor = troughcolor
 
         if any([colorname == DEFAULT, colorname == ""]):
@@ -1613,10 +1619,10 @@ class StyleBuilderTTK:
             if colorname == LIGHT:
                 track_color = self.colors.bg
             else:
-                track_color = self.colors.light
+                track_color = self.colors.track
         else:
             disabled_color = self.colors.selectbg
-            track_color = Colors.update_hsv(self.colors.selectbg, vd=-0.2)
+            track_color = self.colors.track
 
         if any([colorname == DEFAULT, colorname == ""]):
             normal_color = self.colors.primary
@@ -3901,9 +3907,9 @@ class StyleBuilderTTK:
             if colorname == LIGHT:
                 troughcolor = self.colors.bg
             else:
-                troughcolor = self.colors.light
+                troughcolor = self.colors.track
         else:
-            troughcolor = Colors.update_hsv(self.colors.selectbg, vd=-0.2)
+            troughcolor = self.colors.track
 
         if any([colorname == DEFAULT, colorname == ""]):
             ttkstyle = STYLE
