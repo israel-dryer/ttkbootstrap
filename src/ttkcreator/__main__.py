@@ -26,10 +26,12 @@ class ThemeCreator(ttk.Window):
     def setup_theme_creator(self):
         # application menu
         self.menu = ttk.Menu()
-        self.menu.add_command(label="Save", command=self.save_theme)
-        self.menu.add_command(label="Reset", command=self.change_base_theme)
-        self.menu.add_command(label="Import", command=self.import_user_themes)
-        self.menu.add_command(label="Export", command=self.export_user_themes)
+        self.file_submenu = ttk.Menu(self.menu)
+        self.file_submenu.add_command(label="Save", command=self.save_theme)
+        self.file_submenu.add_command(label="Reset", command=self.change_base_theme)
+        self.file_submenu.add_command(label="Import", command=self.import_user_themes)
+        self.file_submenu.add_command(label="Export", command=self.export_user_themes)
+        self.menu.add_cascade(menu=self.file_submenu, label="File")
         self.configure(menu=self.menu)
 
         # theme configuration settings
