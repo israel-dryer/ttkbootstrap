@@ -268,16 +268,16 @@ class Window(tkinter.Tk):
             width, height = resizable
             self.resizable(width, height)
         
+        if alpha is not None:
+            if self.winsys == 'x11':
+                self.wait_visibility(self)
+            self.attributes("-alpha", alpha)
+        
         if transient is not None:
             self.transient(transient)
         
         if overrideredirect:
             self.overrideredirect(1)
-        
-        if alpha is not None:
-            if self.winsys == 'x11':
-                self.wait_visibility(self)
-            self.attributes("-alpha", alpha)
 
         apply_class_bindings(self)
         apply_all_bindings(self)
@@ -424,9 +424,6 @@ class Toplevel(tkinter.Toplevel):
 
         super().__init__(**kwargs)
         self.winsys = self.tk.call('tk', 'windowingsystem')
-        
-        if iconify:
-            self.iconify()
 
         if iconphoto != '':
             try:
@@ -460,6 +457,14 @@ class Toplevel(tkinter.Toplevel):
             width, height = resizable
             self.resizable(width, height)
         
+        if alpha is not None:
+            if self.winsys == 'x11':
+                self.wait_visibility(self)
+            self.attributes("-alpha", alpha)
+        
+        if iconify:
+            self.iconify()
+        
         if transient is not None:
             self.transient(transient)
         
@@ -476,11 +481,6 @@ class Toplevel(tkinter.Toplevel):
         if toolwindow:
             if self.winsys == 'win32':
                 self.attributes("-toolwindow", 1)
-        
-        if alpha is not None:
-            if self.winsys == 'x11':
-                self.wait_visibility(self)
-            self.attributes("-alpha", alpha)
 
     @property
     def style(self):
