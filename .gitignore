@@ -20,3 +20,4 @@ tests/dialog.py
 tests/themes.json
 /tests/temp/
 /tests/issues/
+/.pypirc
