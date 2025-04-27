@@ -40,7 +40,7 @@
     learn about what is returned in this event.
 
     ```python
-    from ttkbootstrap import validator, add_validation
+    from ttkbootstrap.validation import validator, add_validation
 
     @validator
     def validate_long_text(event):
