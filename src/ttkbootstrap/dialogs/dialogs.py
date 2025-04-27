@@ -263,8 +263,8 @@ class MessageDialog(Dialog):
 
         if buttons is None:
             self._buttons = [
-                f"{MessageCatalog.translate('Cancel')}:secondary",
-                f"{MessageCatalog.translate('OK')}:primary",
+                f"{MessageCatalog.translate('Cancel')}",
+                f"{MessageCatalog.translate('OK')}",
             ]
         else:
             self._buttons = buttons
@@ -303,11 +303,20 @@ class MessageDialog(Dialog):
 
         for i, button in enumerate(self._buttons[::-1]):
             cnf = button.split(":")
+            text = cnf[0]
+
+            is_default = False
+            if self._default is not None and text == self._default:
+                is_default = True
+            elif self._default is None and i == 0:
+                is_default = True
+
             if len(cnf) == 2:
-                text, bootstyle = cnf
+                bootstyle = cnf[1]
+            elif is_default:
+                bootstyle = 'primary'
             else:
-                text = cnf[0]
-                bootstyle = "secondary"
+                bootstyle = 'secondary'
 
             if self._localize == True:
                 text = MessageCatalog.translate(text)
@@ -318,14 +327,20 @@ class MessageDialog(Dialog):
             btn.lower()  # set focus traversal left-to-right
             button_list.append(btn)
 
-            if self._default is not None and text == self._default:
-                self._initial_focus = btn
-            elif self._default is None and i == 0:
+            if is_default:
                 self._initial_focus = btn
 
-        # bind default button to return key press and set focus
-        self._toplevel.bind("<Return>", lambda _, b=btn: b.invoke())
-        self._toplevel.bind("<KP_Enter>", lambda _, b=btn: b.invoke())
+            # bind default button to return key press and set focus
+            btn.bind("<Return>", lambda _, b=btn: b.invoke())
+            btn.bind("<KP_Enter>", lambda _, b=btn: b.invoke())
+
+        for index, btn in enumerate(button_list):
+            if index > 0:
+                nbtn = button_list[index - 1]
+                btn.bind('<Right>', lambda _, b=nbtn:b.focus_set())
+            if index < len(button_list) - 1:
+                nbtn = button_list[index + 1]
+                btn.bind('<Left>', lambda _, b=nbtn:b.focus_set())
 
         ttk.Separator(self._toplevel).pack(fill=X)
         frame.pack(side=BOTTOM, fill=X, anchor=S)
@@ -845,7 +860,7 @@ class DatePickerDialog:
 
     def _set_window_position(self):
         """Move the window the to bottom-right of the parent widget, or
-        the top-left corner of the master window if no parent is 
+        the top-left corner of the master window if no parent is
         provided.
         """
         if self.parent:
@@ -1288,7 +1303,7 @@ class Messagebox:
         message,
         title=" ",
         parent=None,
-        buttons=["No:secondary", "Yes:primary"],
+        buttons=["No", "Yes"],
         alert=True,
         **kwargs,
     ):
@@ -1478,7 +1493,7 @@ class Messagebox:
             title=title,
             message=message,
             parent=parent,
-            buttons=["No", "Yes:primary"],
+            buttons=["No", "Yes"],
             alert=alert,
             localize=True,
             **kwargs,
@@ -1528,7 +1543,7 @@ class Messagebox:
             message=message,
             parent=parent,
             alert=alert,
-            buttons=["Cancel", "No", "Yes:primary"],
+            buttons=["Cancel", "No", "Yes"],
             localize=True,
             **kwargs,
         )
@@ -1577,7 +1592,7 @@ class Messagebox:
             message=message,
             parent=parent,
             alert=alert,
-            buttons=["Cancel", "Retry:primary"],
+            buttons=["Cancel", "Retry"],
             localize=True,
             **kwargs,
         )
