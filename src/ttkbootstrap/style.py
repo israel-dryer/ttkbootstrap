@@ -650,13 +650,17 @@ class Style(ttk.Style):
         """Calls configure of superclass; used by style builder classes."""
         super().configure(style, **kw)
 
-    def _load_themes(self):
+    def _load_themes(self, EXTERNAL_THEMES=None):
         """Load all ttkbootstrap defined themes"""
         # create a theme definition object for each theme, this will be
         # used to generate the theme in tkinter along with any assets
         # at run-time
         if USER_THEMES:
             STANDARD_THEMES.update(USER_THEMES)
+
+        if EXTERNAL_THEMES:
+            STANDARD_THEMES.update(EXTERNAL_THEMES)
+
         theme_settings = {"themes": STANDARD_THEMES}
         for name, definition in theme_settings["themes"].items():
             self.register_theme(
@@ -666,7 +670,7 @@ class Style(ttk.Style):
                     colors=definition["colors"],
                 )
             )
-
+    
     def _register_ttkstyle(self, ttkstyle):
         """Register that a ttk style name. This ensures that the
         builder will not attempt to build a style that has already
