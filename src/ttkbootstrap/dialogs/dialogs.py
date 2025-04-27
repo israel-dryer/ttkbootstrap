@@ -1144,6 +1144,7 @@ class FontDialog(Dialog):
         return self.result
 
     def _on_cancel(self):
+        self._result = None
         self._toplevel.destroy()
 
     def _update_font_preview(self, *_):
