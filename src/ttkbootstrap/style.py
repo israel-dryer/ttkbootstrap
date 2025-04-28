@@ -5073,7 +5073,7 @@ class Bootstyle:
         return ttkstyle
 
     @staticmethod
-    def setup_ttkbootstap_api():
+    def setup_ttkbootstrap_api():
         """Setup ttkbootstrap for use with tkinter and ttk. This method
         is called when ttkbootstrap is imported to perform all of the
         necessary method overrides that implement the bootstyle api."""
