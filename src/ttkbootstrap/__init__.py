@@ -8,4 +8,4 @@ from tkinter import Variable, StringVar, IntVar, BooleanVar, DoubleVar
 from tkinter import Canvas, Menu, Text
 from tkinter import PhotoImage
 
-Bootstyle.setup_ttkbootstap_api()
+Bootstyle.setup_ttkbootstrap_api()
