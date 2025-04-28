@@ -101,7 +101,7 @@ def on_select_all(event):
     """Callback to select all text in the input widget when an event is
     executed."""
     widget = event.widget
-    if widget.__class__.__name__ == "Text":
+    if widget.__class__.__name__ in ("Text", "ScrolledText"):
         widget.tag_add(SEL, "1.0", END)
         widget.mark_set(INSERT, END)
         widget.see(END)
