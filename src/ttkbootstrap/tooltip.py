@@ -1,3 +1,5 @@
+from typing import Literal
+
 import ttkbootstrap as ttk
 from ttkbootstrap.constants import *
 from ttkbootstrap import utility
@@ -38,6 +40,7 @@ class ToolTip:
         self,
         widget,
         text="widget info",
+        justify: Literal["left", "center", "right"] = "left",
         bootstyle=None,
         wraplength=None,
         delay=250,    # milliseconds
@@ -68,6 +71,7 @@ class ToolTip:
         """
         self.widget = widget
         self.text = text
+        self.justify = justify
         self.image = image
         self.bootstyle = bootstyle
         self.wraplength = wraplength or utility.scale_size(self.widget, 300)
@@ -130,7 +134,7 @@ class ToolTip:
             text=self.text,
             image=self.image,
             compound='bottom',
-            justify=LEFT,
+            justify=self.justify,
             wraplength=self.wraplength,
             padding=10,
         )
