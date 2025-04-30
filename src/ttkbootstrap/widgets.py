@@ -385,6 +385,8 @@ class Floodgauge(Progressbar):
             self._textvariable = kwargs.pop('textvariable')
         else:
             self._textvariable = tk.StringVar(value=text)
+
+        self._textvariable.trace_add("write", self._set_widget_text)
         self._bootstyle = bootstyle
         self._font = font or "helvetica 10"
         self._mask = mask
