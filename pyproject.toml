@@ -1,2 +1,47 @@
-[tool.black]
-line-length = 79
+[build-system]
+requires = ["setuptools>=61", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "ttkbootstrap"
+version = "1.12.2"
+description = "A supercharged theme extension for tkinter that enables on-demand modern flat style themes inspired by Bootstrap."
+readme = "README.md"
+requires-python = ">=3.7"
+license = { text = "MIT" }
+authors = [
+    { name="Israel Dryer", email="israel.dryer@gmail.com" }
+]
+keywords = ["tkinter", "theme", "bootstrap", "gui"]
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Environment :: Win32 (MS Windows)",
+    "Environment :: X11 Applications :: GTK",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.7",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Topic :: Software Development :: User Interfaces",
+    "Operating System :: OS Independent",
+]
+
+dependencies = [
+    "pillow>=9.5,<11",
+]
+
+[project.urls]
+Homepage = "https://github.com/israel-dryer/ttkbootstrap"
+Documentation = "https://ttkbootstrap.readthedocs.io/en/latest/"
+
+[tool.setuptools]
+package-dir = { "" = "src" }
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+"ttkbootstrap" = ["localization/msgs/*.msg", "themes/*.json", "assets/*"]
