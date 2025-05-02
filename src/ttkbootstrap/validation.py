@@ -120,8 +120,7 @@ def validator(func):
             The validation function to be decorated.
     """
 
-    def inner(*args, **kw):
-        event = ValidationEvent(*args)
+    def inner(event, **kw):
         return func(event, **kw)
 
     return inner
@@ -154,10 +153,73 @@ def add_validation(widget, func, when="focusout", **kwargs):
         kwargs (Dict):
             Optional arguments passed to the callback.
     """
-    f = widget.register(lambda *e: func(*e, **kwargs))
-    subs = (r"%d", r"%i", r"%P", r"%s", r"%S", r"%v", r"%V", r"%W")
-    widget.configure(validate=when, validatecommand=(f, *subs))
+    # Map each "when" to the reasons that should trigger it
+    triggers = {
+        "focus": ("focusin", "focusout", "forced"),
+        "focusin": ("focusin", "forced"),
+        "focusout": ("focusout", "forced"),
+        "key": ("key", "forced"),
+        "all": ()  # 'all' will be handled explicitly
+    }
 
+    # Initialize dispatcher once
+    if not hasattr(widget, '_validators'):
+        widget._validators = []
+
+        def _dispatch(*args):
+            event = ValidationEvent(*args)
+            results = []
+            for fn, reason, kw in widget._validators:
+                if reason == 'all' or event.validationreason in triggers.get(reason, ()):  # check trigger
+                    event.validationtype = reason  # preserve original "when"
+                    results.append(fn(event, **kw))
+            return all(results)
+
+        tid = widget.register(_dispatch)
+        widget.configure(
+            validate='all',
+            validatecommand=(tid, '%d', '%i', '%P', '%s', '%S', '%v', '%V', '%W')
+        )
+
+    widget._validators.append((func, when, kwargs))
+
+
+def remove_validation(widget, func=None, when=None):
+    """
+    Remove a specific validation func from a widget.
+
+    Parameters:
+
+        widget (Widget):
+            The widget on which validation will be applied.
+
+        func (Callable):
+            The function to be removed. If None, removes all
+
+        when:
+            Further specifies the validation to be removed. If None, removes all
+    """
+    if not hasattr(widget, '_validators'):
+        return
+    # Keep only those that don't match the filters
+    widget._validators = [
+        (fn, reason, kw)
+        for fn, reason, kw in widget._validators
+        if not ((func is None or fn == func) and (when is None or reason == when))
+    ]
+
+
+def clear_validations(widget):
+    """
+    Remove all validation funcs from a widget.
+
+    Parameters:
+
+        widget (Widget):
+            The widget on which validation will be removed.
+    """
+    if hasattr(widget, '_validators'):
+        widget._validators.clear()
 
 @validator
 def _validate_text(event: ValidationEvent):
@@ -316,7 +378,7 @@ if __name__ == "__main__":
     def myvalidation(event: ValidationEvent) -> bool:
         print(event.postchangetext)
         return True
-
+    """
     entry = ttk.Entry()
     entry.pack(padx=10, pady=10)
     entry2 = ttk.Entry()
@@ -328,4 +390,20 @@ if __name__ == "__main__":
     # add_option_validation(entry, ['red', 'blue', 'green'], 'focusout')
     # add_regex_validation(entry, r'\d{4}-\d{2}-\d{2}')
     ttk.Button(text="Other").pack(padx=10, pady=10)
+    app.mainloop()
+    """
+
+    @validator
+    def validate_length(event, min=0, max=float("inf")):
+        value = event.postchangetext or ""
+
+        return min <= len(value) <= max
+
+    entry = ttk.Entry()
+    entry.pack(padx=10, pady=10)
+
+    add_numeric_validation(entry, when="key")  # Restricts input to digits during typing
+    add_validation(entry, validate_length, min=5, max=10, when="focusout")  # Ensures length on focus loss
+
+    ttk.Button(text="Submit").pack(padx=10, pady=10)
     app.mainloop()
