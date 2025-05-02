@@ -173,7 +173,7 @@ def add_validation(widget, func, when="focusout", **kwargs):
                 if reason == 'all' or event.validationreason in triggers.get(reason, ()):  # check trigger
                     event.validationtype = reason  # preserve original "when"
                     results.append(fn(event, **kw))
-            return False if len(results) == 0 and len(widget._validators) != 0 else all(results)
+            return all(results)
 
         tid = widget.register(_dispatch)
         widget.configure(
