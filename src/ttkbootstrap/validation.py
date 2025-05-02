@@ -173,7 +173,7 @@ def add_validation(widget, func, when="focusout", **kwargs):
                 if reason == 'all' or event.validationreason in triggers.get(reason, ()):  # check trigger
                     event.validationtype = reason  # preserve original "when"
                     results.append(fn(event, **kw))
-            return all(results)
+            return False if len(results) == 0 and len(widget._validators) != 0 else all(results)
 
         tid = widget.register(_dispatch)
         widget.configure(
@@ -399,11 +399,13 @@ if __name__ == "__main__":
 
         return min <= len(value) <= max
 
-    entry = ttk.Entry()
+
+    entry = ttk.Entry(bootstyle="success")
     entry.pack(padx=10, pady=10)
 
     add_numeric_validation(entry, when="key")  # Restricts input to digits during typing
     add_validation(entry, validate_length, min=5, max=10, when="focusout")  # Ensures length on focus loss
+    entry.validate()
 
     ttk.Button(text="Submit").pack(padx=10, pady=10)
     app.mainloop()
