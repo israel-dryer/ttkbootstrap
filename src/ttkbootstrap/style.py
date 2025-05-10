@@ -1197,7 +1197,25 @@ class StyleBuilderTTK:
             element = f"{ttkstyle.replace('TC','C')}"
             focuscolor = self.colors.get(colorname)
 
-        self.style.element_create(f"{element}.downarrow", "from", TTK_DEFAULT)
+        # Create custom arrow assets since the default ones don't work with Tcl/Tk bundled in python 3.13
+        arrow_images = self.create_simple_arrow_assets(
+            self.colors.inputfg,
+            disabled_fg,
+            focuscolor,
+        )
+        downarrow_image = arrow_images[0][1]
+        downarrow_disabled_image = arrow_images[1][1]
+        downarrow_focused_image = arrow_images[2][1]
+        self.style.element_create(
+            f"{element}.downarrow",
+            "image",
+            downarrow_image,
+            ("disabled", downarrow_disabled_image),
+            ("pressed !disabled", downarrow_focused_image),
+            ("focus !disabled", downarrow_focused_image),
+            ("hover !disabled", downarrow_focused_image),
+        )
+        #  self.style.element_create(f"{element}.downarrow", "from", TTK_DEFAULT)  # doesn't work in python 3.13
         self.style.element_create(f"{element}.padding", "from", TTK_CLAM)
         self.style.element_create(f"{element}.textarea", "from", TTK_CLAM)
 
@@ -1209,14 +1227,12 @@ class StyleBuilderTTK:
             bordercolor=bordercolor,
             darkcolor=self.colors.inputbg,
             lightcolor=self.colors.inputbg,
-            arrowcolor=self.colors.inputfg,
             foreground=self.colors.inputfg,
             fieldbackground=self.colors.inputbg,
             background=self.colors.inputbg,
             insertcolor=self.colors.inputfg,
             relief=tk.FLAT,
             padding=5,
-            arrowsize=self.scale_size(12),
         )
         self.style.map(
             ttkstyle,
@@ -1240,12 +1256,6 @@ class StyleBuilderTTK:
                 ("pressed !disabled", focuscolor),
                 ("readonly", readonly),
             ],
-            arrowcolor=[
-                ("disabled", disabled_fg),
-                ("pressed !disabled", focuscolor),
-                ("focus !disabled", focuscolor),
-                ("hover !disabled", focuscolor),
-            ],
         )
         self.style.layout(
             ttkstyle,
@@ -1258,7 +1268,7 @@ class StyleBuilderTTK:
                         "children": [
                             (
                                 "Combobox.downarrow",
-                                {"side": tk.RIGHT, "sticky": tk.NS},
+                                {"side": tk.RIGHT, "sticky": tk.S},
                             ),
                             (
                                 "Combobox.padding",
