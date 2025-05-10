@@ -1877,6 +1877,59 @@ class StyleBuilderTTK:
         self.style._register_ttkstyle(h_ttkstyle)
         self.style._register_ttkstyle(v_ttkstyle)
 
+
+    def create_simple_arrow_assets(self, arrowcolor: str, disabledcolor: str, activecolor: str, y_offset: int = 0):
+        """
+        Create simple arrow assets (small triangles) that can be used for various widgets.
+        Originally created to replace Combobox.downarrow to fix layout issues in python 3.13.
+        Also used for the Spinbox widget.
+
+        Args:
+            arrowcolor: The color value to use as the arrow fill color.
+            disabledcolor: A second color value to use when the arrow is disabled.
+            activecolor: A third color value to use when the arrow has focus.
+            y_offset: (optional) The vertical padding to apply to the arrow images (useful in spinnboxes).
+        Returns:
+            A nested tuple containing the names of the created arrow images in the order (up, down, left, right)
+            for each color.
+        """
+
+        def draw_simple_arrow(color: str, y_offset: int = 0):
+
+            img = Image.new("RGBA", (13, 11))
+            draw = ImageDraw.Draw(img)
+            size = self.scale_size([13, 11])
+
+            # Draw the arrow shape (triangle) pointing upwards, offset by the specified y_offset
+            draw.polygon([(3, 6 + y_offset), (9, 6 + y_offset), (6, 3 + y_offset)], fill=color)
+
+            img = img.resize(size, Image.BICUBIC)
+
+            up_img = ImageTk.PhotoImage(img)
+            up_name = util.get_image_name(up_img)
+            self.theme_images[up_name] = up_img
+
+            down_img = ImageTk.PhotoImage(img.rotate(180))
+            down_name = util.get_image_name(down_img)
+            self.theme_images[down_name] = down_img
+
+            left_img = ImageTk.PhotoImage(img.rotate(90))
+            left_name = util.get_image_name(left_img)
+            self.theme_images[left_name] = left_img
+
+            right_img = ImageTk.PhotoImage(img.rotate(-90))
+            right_name = util.get_image_name(right_img)
+            self.theme_images[right_name] = right_img
+
+            return up_name, down_name, left_name, right_name
+
+        normal_names = draw_simple_arrow(arrowcolor, y_offset=y_offset)
+        pressed_names = draw_simple_arrow(disabledcolor, y_offset=y_offset)
+        active_names = draw_simple_arrow(activecolor, y_offset=y_offset)
+
+        return normal_names, pressed_names, active_names
+
+
     def create_arrow_assets(self, arrowcolor, pressed, active):
         """Create arrow assets used for various widget buttons.
 
