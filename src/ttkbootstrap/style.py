@@ -2424,8 +2424,32 @@ class StyleBuilderTTK:
             arrowfocus = focuscolor
 
         element = ttkstyle.replace(".TS", ".S")
-        self.style.element_create(f"{element}.uparrow", "from", TTK_DEFAULT)
-        self.style.element_create(f"{element}.downarrow", "from", TTK_DEFAULT)
+        arrow_images = self.create_simple_arrow_assets(
+            self.colors.inputfg, disabled_fg, arrowfocus, y_offset=2
+        )
+        uparrow_image = arrow_images[0][0]
+        uparrow_disabled_image = arrow_images[1][0]
+        uparrow_focus_image = arrow_images[2][0]
+        downarrow_image = arrow_images[0][1]
+        downarrow_disabled_image = arrow_images[1][1]
+        downarrow_focus_image = arrow_images[2][1]
+
+        self.style.element_create(
+            f"{element}.uparrow",
+            "image",
+            uparrow_image,
+            ("disabled", uparrow_disabled_image),
+            ("pressed !disabled", uparrow_focus_image),
+            ("hover !disabled", uparrow_focus_image),
+        )
+        self.style.element_create(
+            f"{element}.downarrow",
+            "image",
+            downarrow_image,
+            ("disabled", downarrow_disabled_image),
+            ("pressed !disabled", downarrow_focus_image),
+            ("hover !disabled", downarrow_focus_image),
+        )
         self.style.layout(
             ttkstyle,
             [
@@ -2482,9 +2506,7 @@ class StyleBuilderTTK:
             borderwidth=0,
             background=self.colors.inputbg,
             relief=tk.FLAT,
-            arrowcolor=self.colors.inputfg,
             insertcolor=self.colors.inputfg,
-            arrowsize=self.scale_size(12),
             padding=(10, 5),
         )
         self.style.map(
@@ -2506,11 +2528,6 @@ class StyleBuilderTTK:
                 ("invalid", self.colors.danger),
                 ("focus !disabled", focuscolor),
                 ("hover !disabled", focuscolor),
-            ],
-            arrowcolor=[
-                ("disabled !disabled", disabled_fg),
-                ("pressed !disabled", arrowfocus),
-                ("hover !disabled", arrowfocus),
             ],
         )
         # register ttkstyles
