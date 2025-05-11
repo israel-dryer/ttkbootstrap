@@ -27,10 +27,10 @@ btn.pack(padx=10, pady=10)
 
 p1['value'] = 50
 assert p1['value'] == 50
-assert p1.configure('value') == 50
+assert p1.configure('value')[-1] == 50
 
 p1['mask'] = None
-assert p1.configure('mask') is None
+assert p1.configure('mask')[-1] is None
 
 p1['text'] = "Updating the database"
 assert p1['text'] == "Updating the database"
@@ -39,7 +39,7 @@ p1['font'] = "arial 18"
 assert p1['font'] == 'arial 18'
 
 p1['mask'] = '{}% Complete'
-assert p1.configure('mask') == '{}% Complete'
+assert p1.configure('mask')[-1] == '{}% Complete'
 
 var = ttk.IntVar(value=30)
 p1['variable'] = var
