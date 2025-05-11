@@ -1197,7 +1197,25 @@ class StyleBuilderTTK:
             element = f"{ttkstyle.replace('TC','C')}"
             focuscolor = self.colors.get(colorname)
 
-        self.style.element_create(f"{element}.downarrow", "from", TTK_DEFAULT)
+        # Create custom arrow assets since the default ones don't work with Tcl/Tk bundled in python 3.13
+        arrow_images = self.create_simple_arrow_assets(
+            self.colors.inputfg,
+            disabled_fg,
+            focuscolor,
+        )
+        downarrow_image = arrow_images[0][1]
+        downarrow_disabled_image = arrow_images[1][1]
+        downarrow_focused_image = arrow_images[2][1]
+        self.style.element_create(
+            f"{element}.downarrow",
+            "image",
+            downarrow_image,
+            ("disabled", downarrow_disabled_image),
+            ("pressed !disabled", downarrow_focused_image),
+            ("focus !disabled", downarrow_focused_image),
+            ("hover !disabled", downarrow_focused_image),
+        )
+        #  self.style.element_create(f"{element}.downarrow", "from", TTK_DEFAULT)  # doesn't work in python 3.13
         self.style.element_create(f"{element}.padding", "from", TTK_CLAM)
         self.style.element_create(f"{element}.textarea", "from", TTK_CLAM)
 
@@ -1209,14 +1227,12 @@ class StyleBuilderTTK:
             bordercolor=bordercolor,
             darkcolor=self.colors.inputbg,
             lightcolor=self.colors.inputbg,
-            arrowcolor=self.colors.inputfg,
             foreground=self.colors.inputfg,
             fieldbackground=self.colors.inputbg,
             background=self.colors.inputbg,
             insertcolor=self.colors.inputfg,
             relief=tk.FLAT,
             padding=5,
-            arrowsize=self.scale_size(12),
         )
         self.style.map(
             ttkstyle,
@@ -1240,12 +1256,6 @@ class StyleBuilderTTK:
                 ("pressed !disabled", focuscolor),
                 ("readonly", readonly),
             ],
-            arrowcolor=[
-                ("disabled", disabled_fg),
-                ("pressed !disabled", focuscolor),
-                ("focus !disabled", focuscolor),
-                ("hover !disabled", focuscolor),
-            ],
         )
         self.style.layout(
             ttkstyle,
@@ -1258,7 +1268,7 @@ class StyleBuilderTTK:
                         "children": [
                             (
                                 "Combobox.downarrow",
-                                {"side": tk.RIGHT, "sticky": tk.NS},
+                                {"side": tk.RIGHT, "sticky": tk.S},
                             ),
                             (
                                 "Combobox.padding",
@@ -1877,6 +1887,59 @@ class StyleBuilderTTK:
         self.style._register_ttkstyle(h_ttkstyle)
         self.style._register_ttkstyle(v_ttkstyle)
 
+
+    def create_simple_arrow_assets(self, arrowcolor: str, disabledcolor: str, activecolor: str, y_offset: int = 0):
+        """
+        Create simple arrow assets (small triangles) that can be used for various widgets.
+        Originally created to replace Combobox.downarrow to fix layout issues in python 3.13.
+        Also used for the Spinbox widget.
+
+        Args:
+            arrowcolor: The color value to use as the arrow fill color.
+            disabledcolor: A second color value to use when the arrow is disabled.
+            activecolor: A third color value to use when the arrow has focus.
+            y_offset: (optional) The vertical padding to apply to the arrow images (useful in spinnboxes).
+        Returns:
+            A nested tuple containing the names of the created arrow images in the order (up, down, left, right)
+            for each color.
+        """
+
+        def draw_simple_arrow(color: str, y_offset: int = 0):
+
+            img = Image.new("RGBA", (13, 11))
+            draw = ImageDraw.Draw(img)
+            size = self.scale_size([13, 11])
+
+            # Draw the arrow shape (triangle) pointing upwards, offset by the specified y_offset
+            draw.polygon([(3, 6 + y_offset), (9, 6 + y_offset), (6, 3 + y_offset)], fill=color)
+
+            img = img.resize(size, Image.BICUBIC)
+
+            up_img = ImageTk.PhotoImage(img)
+            up_name = util.get_image_name(up_img)
+            self.theme_images[up_name] = up_img
+
+            down_img = ImageTk.PhotoImage(img.rotate(180))
+            down_name = util.get_image_name(down_img)
+            self.theme_images[down_name] = down_img
+
+            left_img = ImageTk.PhotoImage(img.rotate(90))
+            left_name = util.get_image_name(left_img)
+            self.theme_images[left_name] = left_img
+
+            right_img = ImageTk.PhotoImage(img.rotate(-90))
+            right_name = util.get_image_name(right_img)
+            self.theme_images[right_name] = right_img
+
+            return up_name, down_name, left_name, right_name
+
+        normal_names = draw_simple_arrow(arrowcolor, y_offset=y_offset)
+        pressed_names = draw_simple_arrow(disabledcolor, y_offset=y_offset)
+        active_names = draw_simple_arrow(activecolor, y_offset=y_offset)
+
+        return normal_names, pressed_names, active_names
+
+
     def create_arrow_assets(self, arrowcolor, pressed, active):
         """Create arrow assets used for various widget buttons.
 
@@ -2361,8 +2424,32 @@ class StyleBuilderTTK:
             arrowfocus = focuscolor
 
         element = ttkstyle.replace(".TS", ".S")
-        self.style.element_create(f"{element}.uparrow", "from", TTK_DEFAULT)
-        self.style.element_create(f"{element}.downarrow", "from", TTK_DEFAULT)
+        arrow_images = self.create_simple_arrow_assets(
+            self.colors.inputfg, disabled_fg, arrowfocus, y_offset=2
+        )
+        uparrow_image = arrow_images[0][0]
+        uparrow_disabled_image = arrow_images[1][0]
+        uparrow_focus_image = arrow_images[2][0]
+        downarrow_image = arrow_images[0][1]
+        downarrow_disabled_image = arrow_images[1][1]
+        downarrow_focus_image = arrow_images[2][1]
+
+        self.style.element_create(
+            f"{element}.uparrow",
+            "image",
+            uparrow_image,
+            ("disabled", uparrow_disabled_image),
+            ("pressed !disabled", uparrow_focus_image),
+            ("hover !disabled", uparrow_focus_image),
+        )
+        self.style.element_create(
+            f"{element}.downarrow",
+            "image",
+            downarrow_image,
+            ("disabled", downarrow_disabled_image),
+            ("pressed !disabled", downarrow_focus_image),
+            ("hover !disabled", downarrow_focus_image),
+        )
         self.style.layout(
             ttkstyle,
             [
@@ -2419,9 +2506,7 @@ class StyleBuilderTTK:
             borderwidth=0,
             background=self.colors.inputbg,
             relief=tk.FLAT,
-            arrowcolor=self.colors.inputfg,
             insertcolor=self.colors.inputfg,
-            arrowsize=self.scale_size(12),
             padding=(10, 5),
         )
         self.style.map(
@@ -2443,11 +2528,6 @@ class StyleBuilderTTK:
                 ("invalid", self.colors.danger),
                 ("focus !disabled", focuscolor),
                 ("hover !disabled", focuscolor),
-            ],
-            arrowcolor=[
-                ("disabled !disabled", disabled_fg),
-                ("pressed !disabled", arrowfocus),
-                ("hover !disabled", arrowfocus),
             ],
         )
         # register ttkstyles

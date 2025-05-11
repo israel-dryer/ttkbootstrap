@@ -16,11 +16,6 @@ ttkbootstrap is a Python library that enhances tkinter by providing modern, flat
 👀 Check out the [documentation](https://ttkbootstrap.readthedocs.io/en/latest/).
 
 
-> **1.0+ is a complete rebuild of the library.** If you are using [version 0.5](https://github.com/israel-dryer/ttkbootstrap/tree/version-0.5)
-   you may run into issues trying to import themes with the themes.json as this 
-   has been removed from 1.0. You can now import and save themes directly using 
-   the ttkcreator.
-
 ![](https://raw.githubusercontent.com/israel-dryer/ttkbootstrap/master/docs/assets/themes/themes.gif)
 
 ## Features
