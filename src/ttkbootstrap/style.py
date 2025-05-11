@@ -406,14 +406,14 @@ class ThemeDefinition:
             name (str):
                 The name of the theme.
 
-            colors (Colors):
-                An object that defines the color scheme for a theme.
+            colors (Colors or dict):
+                A Colors instance or a dict of color values.
 
             themetype (str):
                 Specifies whether the theme is **light** or **dark**.
         """
         self.name = name
-        self.colors = Colors(**colors)
+        self.colors = colors if isinstance(colors, Colors) else Colors(**colors)
         self.type = themetype
 
     def __repr__(self):
@@ -594,6 +594,58 @@ class Style(ttk.Style):
         else:
             raise TclError(themename, "is not a valid theme.")
 
+    def theme_create(self, themename: str, parent: str = None, settings: dict = None) -> None:
+        """
+        Create a new theme in the Tcl interpreter. If the parent is a registered
+        ttkbootstrap theme, the new theme will be registered with a copied
+        ThemeDefinition and builder. Duplicate registration is avoided.
+
+        Parameters:
+
+            themename (str):
+                The name of the new theme.
+
+            parent (str):
+                The name of the parent theme to inherit from.
+
+            settings (dict):
+                A dictionary of style settings (Tcl-style).
+        """
+        from tkinter.ttk import _script_from_settings  # type: ignore[attr-defined]
+
+        script = _script_from_settings(settings) if settings else ''
+
+        # Lazy-load parent if it's a known bootstrap theme
+        if parent:
+            if parent not in super().theme_names():
+                if parent in self._theme_names:
+                    self.theme_use(parent)
+                else:
+                    raise TclError(f"{parent!r} is not a valid theme name or parent theme.")
+
+        # Create the Tcl-level theme
+        if parent:
+            self.tk.call(self._name, "theme", "create", themename,
+                         "-parent", parent, "-settings", script)
+        else:
+            self.tk.call(self._name, "theme", "create", themename,
+                         "-settings", script)
+
+        # Register the new theme if copying from a ttkbootstrap theme
+        if parent in self._theme_definitions and themename not in self._theme_definitions:
+            parent_def = self._theme_definitions[parent]
+            copied_def = ThemeDefinition(
+                name=themename,
+                colors=parent_def.colors,
+                themetype=parent_def.type
+            )
+            self._theme_definitions[themename] = copied_def
+            self._theme_names.add(themename)
+            self._theme_styles[themename] = set()
+
+            if themename not in self._theme_objects:
+                self._theme_objects[themename] = StyleBuilderTTK(build=False)
+
     def style_exists_in_theme(self, ttkstyle: str):
         """Check if a style exists in the current theme.
 
@@ -607,7 +659,13 @@ class Style(ttk.Style):
             bool:
                 `True` if the style exists, otherwise `False`.
         """
+        if self.theme is None:
+            return False
+
         theme_styles = self._theme_styles.get(self.theme.name)
+        if theme_styles is None:
+            return False
+
         exists_in_theme = ttkstyle in theme_styles
         exists_in_registry = ttkstyle in self._style_registry
         return exists_in_theme and exists_in_registry
@@ -1067,11 +1125,13 @@ class StyleBuilderTTK:
     user.
     """
 
-    def __init__(self):
+    def __init__(self, build: bool = True):
         self.style: Style = Style.get_instance()
         self.theme_images = {}
         self.builder_tk = StyleBuilderTK()
-        self.create_theme()
+
+        if build:
+            self.create_theme()
 
     @staticmethod
     def name_to_method(method_name):
