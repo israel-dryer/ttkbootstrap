@@ -87,6 +87,7 @@ class ToolTip:
         # set keyword arguments
         kwargs["overrideredirect"] = True
         kwargs["master"] = self.widget
+        kwargs["windowtype"] = "tooltip"
         if "alpha" not in kwargs:
             kwargs["alpha"] = 0.95
         self.toplevel_kwargs = kwargs
