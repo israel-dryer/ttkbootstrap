@@ -578,8 +578,6 @@ class DatePickerDialog:
 
     """
 
-    locale.setlocale(locale.LC_ALL, locale.setlocale(locale.LC_TIME, ""))
-
     def __init__(
         self,
         parent=None,
@@ -612,6 +610,13 @@ class DatePickerDialog:
                 the title and hover / pressed color -> primary,
                 secondary, info, warning, success, danger, light, dark.
         """
+
+        # Safe locale setup
+        try:
+            locale.setlocale(locale.LC_TIME, "")
+        except locale.Error:
+            pass  # Fall back to default C locale or handle more gracefully
+
         self.parent = parent
         self.root = ttk.Toplevel(
             title=title,
