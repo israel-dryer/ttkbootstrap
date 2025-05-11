@@ -33,13 +33,14 @@ class ToolTip:
         ToolTip(b2, text="This is dangerous", bootstyle=(DANGER, INVERSE))
 
         app.mainloop()
-        ```    
+        ```
     """
 
     def __init__(
         self,
         widget,
         text="widget info",
+        padding=10,
         justify: Literal["left", "center", "right"] = "left",
         bootstyle=None,
         wraplength=None,
@@ -57,6 +58,9 @@ class ToolTip:
             text (str):
                 The text to display in the tooltip window.
 
+            padding (int):
+                The padding between the text and the border of the tooltip (default=10).
+
             bootstyle (str):
                 The style to apply to the tooltip label. You can use
                 any of the standard ttkbootstrap label styles.
@@ -71,6 +75,7 @@ class ToolTip:
         """
         self.widget = widget
         self.text = text
+        self.padding = padding
         self.justify = justify
         self.image = image
         self.bootstyle = bootstyle
@@ -136,7 +141,7 @@ class ToolTip:
             compound='bottom',
             justify=self.justify,
             wraplength=self.wraplength,
-            padding=10,
+            padding=self.padding,
         )
         lbl.pack(fill=BOTH, expand=YES)
         if self.bootstyle:
