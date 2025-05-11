@@ -111,14 +111,6 @@ def on_select_all(event):
     return 'break'
 
 
-def on_visibility(event):
-    """Set alpha value once visible."""
-    widget = event.widget
-    if isinstance(widget, Window) or isinstance(widget, Toplevel):
-        widget.attributes("-alpha", widget.alpha)
-        widget.unbind("<Visibility>", widget.alpha_bind)
-
-
 class Window(tkinter.Tk):
     """A class that wraps the tkinter.Tk class in order to provide a
     more convenient api with additional bells and whistles. For more
@@ -285,6 +277,7 @@ class Window(tkinter.Tk):
         if alpha is not None:
             if self.winsys == 'x11':
                 self.wait_visibility(self)
+            self.attributes("-alpha", alpha)
 
         apply_class_bindings(self)
         apply_all_bindings(self)
@@ -486,6 +479,7 @@ class Toplevel(tkinter.Toplevel):
         if alpha is not None:
             if self.winsys == 'x11':
                 self.wait_visibility(self)
+            self.attributes("-alpha", alpha)
 
     @property
     def style(self):
