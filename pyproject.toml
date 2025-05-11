@@ -12,7 +12,22 @@ license = { text = "MIT" }
 authors = [
     { name="Israel Dryer", email="israel.dryer@gmail.com" }
 ]
-keywords = ["tkinter", "theme", "bootstrap", "gui"]
+keywords = [
+    "tkinter",
+    "theme",
+    "ttk",
+    "bootstrap",
+    "gui",
+    "desktop",
+    "python3",
+    "ui",
+    "widgets",
+    "theming",
+    "cross-platform",
+    "modern",
+    "responsive",
+    "python-gui"
+]
 classifiers = [
     "Development Status :: 5 - Production/Stable",
     "Environment :: Win32 (MS Windows)",
