@@ -76,6 +76,9 @@ class DateEntry(ttk.Frame):
     When pressed, a date chooser popup is displayed. The returned
     value is inserted into the combobox.
 
+    The <<DateEntrySelected>> event is generated when a date is
+    selected.
+
     The date chooser popup will use the date in the combobox as the
     date of focus if it is in the format specified by the
     `dateformat` parameter. By default, this format is "%Y-%m-%d".
@@ -249,6 +252,7 @@ class DateEntry(ttk.Frame):
         self.entry.delete(first=0, last=tk.END)
         self.entry.insert(tk.END, new_date.strftime(self._dateformat))
         self.entry.focus_force()
+        self.event_generate("<<DateEntrySelected>>")
 
 
 class Floodgauge(tk.Canvas):
