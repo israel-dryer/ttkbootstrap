@@ -15,7 +15,8 @@ b2 = ttk.Button(app, text="styled tooltip")
 b2.pack(side=LEFT, padx=10, pady=10, fill=X, expand=YES)
 ToolTip(
     b2,
-    text="This is a styled tooltip. You can change this style by using the `bootstyle` parameter with label style keywords.",
+    text="This is a styled tooltip with less padding. You can change this style by using the `bootstyle` parameter with label style keywords.",
+    padding=1,
     bootstyle="danger-inverse",
 )
 
