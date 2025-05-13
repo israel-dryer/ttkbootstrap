@@ -86,8 +86,6 @@ class Dialog(BaseWidget):
         if self._initial_focus:
             self._initial_focus.focus_force()
 
-        self._toplevel.grab_set()
-        self._toplevel.wait_window()
 
     def create_body(self, master):
         """Create the dialog body.
@@ -354,7 +352,7 @@ class MessageDialog(Dialog):
         command = self._command
         if command is not None:
             command()
-        self._toplevel.destroy()
+        self._toplevel.after_idle(self._toplevel.destroy)
 
     def show(self, position=None):
         """Create and display the popup messagebox."""
