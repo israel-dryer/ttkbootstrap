@@ -35,8 +35,8 @@ def validate_color(event):
 
 class ColorChooser(ttk.Frame):
     """A class which creates a color chooser widget
-    
-    ![](../../assets/dialogs/querybox-get-color.png)    
+
+    ![](../../assets/dialogs/querybox-get-color.png)
     """
 
     def __init__(self, master, initialcolor=None, padding=None):
@@ -57,7 +57,7 @@ class ColorChooser(ttk.Frame):
         r, g, b = ImageColor.getrgb(self.initialcolor)
         h, s, l = colorutils.color_to_hsl((r, g, b), RGB)
         hx = colorutils.color_to_hex((r, g, b), RGB)
-        
+
         self.hue = ttk.IntVar(value=h)
         self.sat = ttk.IntVar(value=s)
         self.lum = ttk.IntVar(value=l)
@@ -117,7 +117,7 @@ class ColorChooser(ttk.Frame):
         return canvas
 
     def create_spectrum_indicator(self):
-        """Create a square indicator that displays in the position of 
+        """Create a square indicator that displays in the position of
         the selected color"""
         s = utility.scale_size(self, 10)
         width = utility.scale_size(self, 2)
@@ -207,7 +207,7 @@ class ColorChooser(ttk.Frame):
             autostyle=False,
             width=7
         ).pack(anchor=NW)
-        
+
         # the frame and label for the new color
         self.preview = tkFrame(
             master=container,
@@ -297,7 +297,7 @@ class ColorChooser(ttk.Frame):
                 func=lambda _, w=ent_hex: self.on_entry_value_change(
                     w, HEX),
                 add="+"
-            )  
+            )
 
         return container
 
@@ -342,7 +342,7 @@ class ColorChooser(ttk.Frame):
         self.luminance_scale.tag_lower(tag)
 
     def coords_from_color(self, hexcolor):
-        """Get the coordinates on the color spectrum from the color 
+        """Get the coordinates on the color spectrum from the color
         value"""
         h, s, _ = colorutils.color_to_hsl(hexcolor)
         x = (h / HUE) * self.spectrum_width
@@ -350,7 +350,7 @@ class ColorChooser(ttk.Frame):
         return x, y
 
     def color_from_coords(self, x, y):
-        """Get the color value from the mouse position in the color 
+        """Get the color value from the mouse position in the color
         spectrum"""
         HEIGHT = self.spectrum_height
         WIDTH = self.spectrum_width
@@ -372,7 +372,7 @@ class ColorChooser(ttk.Frame):
         self.hex.set(hx)
 
     def get_variables(self):
-        """Get the values of all color models and return a 
+        """Get the values of all color models and return a
         tuple of color values"""
         h = self.hue.get()
         s = self.sat.get()
@@ -431,7 +431,7 @@ class ColorChooser(ttk.Frame):
     # color events
     def sync_color_values(self, model):
         """Callback for when a color value changes. A change in one
-        value will automatically update the other values so that all 
+        value will automatically update the other values so that all
         color models remain in sync."""
         values = self.get_variables()
         if model == HEX:
@@ -451,7 +451,7 @@ class ColorChooser(ttk.Frame):
         self.update_luminance_indicator()
 
     def on_entry_value_change(self, widget: ttk.Spinbox, model):
-        """Update the widget colors when the color value input is 
+        """Update the widget colors when the color value input is
         changed"""
         is_valid = widget.validate()
         if is_valid:
@@ -496,8 +496,8 @@ class ColorChooserDialog(Dialog):
     hex. These values can be accessed by indexing the tuple or by using
     the named fields.
 
-    ![](../../assets/dialogs/querybox-get-color.png)        
-    
+    ![](../../assets/dialogs/querybox-get-color.png)
+
     Examples:
 
         ```python
@@ -528,15 +528,15 @@ class ColorChooserDialog(Dialog):
 
     def create_buttonbox(self, master):
         frame = ttk.Frame(master, padding=(5, 5))
-        
+
         # OK button
-        ok = ttk.Button(frame, bootstyle=PRIMARY, width=6, text=MessageCatalog.translate('OK'))
+        ok = ttk.Button(frame, bootstyle=PRIMARY, text=MessageCatalog.translate('OK'))
         ok.bind("<Return>", lambda _: ok.invoke())
         ok.configure(command=lambda b=ok: self.on_button_press(b))
         ok.pack(padx=2, side=RIGHT)
 
         # Cancel button
-        cancel = ttk.Button(frame, bootstyle=SECONDARY, width=6, text=MessageCatalog.translate('Cancel'))
+        cancel = ttk.Button(frame, bootstyle=SECONDARY, text=MessageCatalog.translate('Cancel'))
         cancel.bind("<Return>", lambda _: cancel.invoke())
         cancel.configure(command=lambda b=cancel: self.on_button_press(b))
         cancel.pack(padx=2, side=RIGHT)
@@ -547,7 +547,7 @@ class ColorChooserDialog(Dialog):
             ToolTip(dropper, MessageCatalog.translate('color dropper')) # add tooltip
             dropper.pack(side=RIGHT, padx=2)
             dropper.bind("<Button-1>", self.on_show_colordropper)
-                
+
         frame.pack(side=BOTTOM, fill=X, anchor=S)
 
     def on_show_colordropper(self, event):
@@ -562,9 +562,9 @@ class ColorChooserDialog(Dialog):
         if button.cget('text') == 'OK':
             values = self.colorchooser.get_variables()
             self._result = ColorChoice(
-                rgb=(values.r, values.g, values.b), 
-                hsl=(values.h, values.s, values.l), 
+                rgb=(values.r, values.g, values.b),
+                hsl=(values.h, values.s, values.l),
                 hex=values.hex
             )
-            self._toplevel.destroy()            
-        self._toplevel.destroy()            
+            self._toplevel.destroy()
+        self._toplevel.destroy()
