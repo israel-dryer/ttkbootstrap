@@ -62,6 +62,14 @@ def apply_all_bindings(window: tkinter.Widget):
     window.bind_all('<Destroy>', lambda e: Publisher.unsubscribe(e.widget))
 
 
+def on_visibility(event):
+    """Set Window or Toplevel alpha value on Visibility (X11)"""
+    widget = event.widget
+    if isinstance(widget, (Window, Toplevel)) and widget.alpha_bind:
+        widget.unbind(widget.alpha_bind)
+        widget.attributes("-alpha", widget.alpha)
+
+
 def on_disabled_readonly_state(event):
     """Change the cursor of entry type widgets to 'arrow' if in a
     disabled or readonly state."""
@@ -276,8 +284,10 @@ class Window(tkinter.Tk):
 
         if alpha is not None:
             if self.winsys == 'x11':
-                self.wait_visibility(self)
-            self.attributes("-alpha", alpha)
+                self.alpha = alpha
+                self.alpha_bind = self.bind("<Visibility>", on_visibility, '+')
+            else:
+                self.attributes("-alpha", alpha)
 
         apply_class_bindings(self)
         apply_all_bindings(self)
@@ -478,8 +488,10 @@ class Toplevel(tkinter.Toplevel):
 
         if alpha is not None:
             if self.winsys == 'x11':
-                self.wait_visibility(self)
-            self.attributes("-alpha", alpha)
+                self.alpha = alpha
+                self.alpha_bind = self.bind("<Visibility>", on_visibility, '+')
+            else:
+                self.attributes("-alpha", alpha)
 
     @property
     def style(self):
