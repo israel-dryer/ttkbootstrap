@@ -1,6 +1,6 @@
 """
-    This module contains various base dialog base classes that can be 
-    used to create custom dialogs for the end user. 
+    This module contains various base dialog base classes that can be
+    used to create custom dialogs for the end user.
 
     These classes serve as the basis for the pre-defined static helper
     methods in the `Messagebox`, and `Querybox` container classes.
@@ -1153,6 +1153,7 @@ class FontDialog(Dialog):
         slant = self._slant.get()
         overstrike = self._overstrike.get()
         underline = self._underline.get()
+        weight = self._weight.get()
 
         self._preview_font.config(
             family=family,
@@ -1160,6 +1161,7 @@ class FontDialog(Dialog):
             slant=slant,
             overstrike=overstrike,
             underline=underline,
+            weight=weight,
         )
         try:
             self._preview_text.configure(font=self._preview_font)
