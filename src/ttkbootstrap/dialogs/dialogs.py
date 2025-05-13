@@ -58,7 +58,7 @@ class Dialog(BaseWidget):
         y = master.winfo_rooty()
         toplevel.geometry(f"+{x}+{y}")
 
-    def show(self, position=None):
+    def show(self, position=None, wait_for_result=True):
         """Show the popup dialog
         Parameters:
 
@@ -85,6 +85,9 @@ class Dialog(BaseWidget):
 
         if self._initial_focus:
             self._initial_focus.focus_force()
+
+        if wait_for_result:
+            self._toplevel.wait_window()
 
 
     def create_body(self, master):
