@@ -23,13 +23,14 @@ plugins:
   - i18n:
       default_language: en
       languages:
-        en:
+        - locale: en
           name: English
           default: true
           build: true
-        zh:
+        - locale: zh
           name: 简体中文
           build: true
+
 
 markdown_extensions:
   - admonition
