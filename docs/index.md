@@ -20,7 +20,7 @@ Over a dozen curated [dark](themes/dark.md) and [light](themes/light.md) themes
 Loads of beautiful [pre-defined widget styles](styleguide/index.md) such 
 as **outline** and **round toggle** buttons.
 
-✔️ [**Simple keyword API:**](gettingstarted/tutorial/#use-themed-widgets)  
+✔️ [**Simple keyword API:**](gettingstarted/tutorial.md#use-themed-widgets)  
 Apply colors and types using [simple keywords](gettingstarted/tutorial/#use-themed-widgets) 
 such as **primary** and **striped** instead of the legacy approach of 
 **primary.Striped.Horizontal.TProgressbar**. If you've used Bootstrap for
@@ -36,10 +36,6 @@ are now themed and fully customizable.
 Want to create your own theme? Easy! ttkbootstrap includes a built-in 
 [theme creator](themes/themecreator.md) that enables you to easily build, 
 load, expore, and apply your own custom themes.
-
-!!! warning "Breaking changes in 1.0"
-    Version 1.0 is a complete rebuild of the library. If you are using [version 0.5](https://github.com/israel-dryer/ttkbootstrap/tree/version-0.5) you may run into issues trying to import themes with the themes.json as this has been removed from 1.0. You can now import and save themes directly using the ttkcreator.
-
 
 ## 🎨 Sample Themes
 
