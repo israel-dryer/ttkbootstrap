@@ -25,7 +25,7 @@ plugins:
         python:
           paths: [ "src" ]
   - i18n:
-      default_language: en
+      default: en
       languages:
         - locale: en
           name: English
@@ -43,6 +43,8 @@ markdown_extensions:
   - pymdownx.superfences
   - pymdownx.keys
   - pymdownx.snippets
+  - attr_list
+
 
 extra:
   social:
