@@ -2,8 +2,8 @@
 
 This widget style features a input box with a styled border and arrows. The 
 border color is muted by default and changes to **primary** or the 
-[selected color](index.md#colors) on _hover_. The border increases in thickness on 
-_focus_. The arrow color changes to the default or [selected color](index.md#colors) 
+[selected color](index.zh.md#颜色) on _hover_. The border increases in thickness on 
+_focus_. The arrow color changes to the default or [selected color](index.zh.md#颜色) 
 on _hover_ or on _focus_.
 
 This widget also supports special styles for [disabled state](#disabled-spinbox), 
@@ -55,5 +55,5 @@ e.configure(state="readonly")
 
 This style _cannot be applied via keywords_, but rather is the result of a 
 validation process implemented on the widget. In the **Cookbook** you will find 
-an example of [how to apply validation](../cookbook/validate-user-input.md) to an 
+an example of [how to apply validation](../cookbook/validate-user-input.zh.md) to an 
 `Entry` based widget.

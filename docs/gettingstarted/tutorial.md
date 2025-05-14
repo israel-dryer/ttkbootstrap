@@ -4,7 +4,7 @@
 
 You can use two approaches when building a ttkbootstrap application. The first 
 is familiar if you've used **tkinter** and **ttk**. The second uses a new 
-[Window](../../api/window/window) class to simplify the whole process.
+[Window](../api/window/window.md) class to simplify the whole process.
 
 ### The traditional approach
 
@@ -40,7 +40,7 @@ The code above will produce this window with two buttons.
 
 ### A new approach
 
-The same result can be produced by using the new [Window](../../api/window/window) 
+The same result can be produced by using the new [Window](../api/window/window.md) 
 class, which you can read about in the API documentation. The difference may 
 seem small at first, but as you will see, the `Window` class uses parameters to 
 set many of the attributes and qualities that you can only set with methods

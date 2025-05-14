@@ -83,8 +83,8 @@ and [Style](style/style.md) classes to provide a more
 convenient api for initial application startup. This also applies to the
 `Toplevel` class.  
 
-❯ [Window](window/window)  
-❯ [Toplevel](window/toplevel)   
+❯ [Window](window/window.md)  
+❯ [Toplevel](window/toplevel.md)   
 
 
 ## ⚙️ [utility module](utility.md)

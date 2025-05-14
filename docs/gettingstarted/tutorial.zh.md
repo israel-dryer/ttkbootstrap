@@ -2,7 +2,7 @@
 
 ## 创建应用程序
 
-在构建 ttkbootstrap 应用程序时，可以使用两种方法。如果您使用过**tkinter**和**ttk**，则第一个是熟悉的。第二个使用新的[Window](../../api/window/window)类来简化整个过程。
+在构建 ttkbootstrap 应用程序时，可以使用两种方法。如果您使用过**tkinter**和**ttk**，则第一个是熟悉的。第二个使用新的[Window](../api/window/window.zh.md)类来简化整个过程。
 
 ### 传统方法
 
@@ -35,7 +35,7 @@ root.mainloop()
 ![简单窗口示例](../assets/tutorial/simple-usage.png)
 
 ### 新方法
-可以使用新的[Window](../../api/window/window)类生成相同的结果，您可以在 API 文档中阅读有关该类的信息。起初，差异可能看起来很小，但正如您将看到的，`Window`类使用参数来设置许多属性和质量，而这些属性和质量只能在使用`Tk`类时使用方法进行设置。此外，`Style`对象会自动附加到`Window`对象，如后面的示例所示。
+可以使用新的[Window](../api/window/window.zh.md)类生成相同的结果，您可以在 API 文档中阅读有关该类的信息。起初，差异可能看起来很小，但正如您将看到的，`Window`类使用参数来设置许多属性和质量，而这些属性和质量只能在使用`Tk`类时使用方法进行设置。此外，`Style`对象会自动附加到`Window`对象，如后面的示例所示。
 
 ```python
 import ttkbootstrap as ttk
@@ -53,7 +53,7 @@ root.mainloop()
 ```
 
 ## 选择主题
-默认主题是**litera**，但您可以通过单独使用`Style`对象或通过`Window`类使用任何[内置主题](../themes/index.md)来启动应用程序。
+默认主题是**litera**，但您可以通过单独使用`Style`对象或通过`Window`类使用任何[内置主题](../themes/index.zh.md)来启动应用程序。
 
 ```python
 import ttkbootstrap as ttk
@@ -68,7 +68,7 @@ root = ttk.Window(themename="darkly")
 
 ## 使用主题小部件
 
-ttkbootstrap 小部件具有[数十种预定义的样式](../styleguide/index.md) ，这些样式使用修改小部件**类型**和**颜色***的**关键字**进行应用。每个主题都定义了实际的颜色值。
+ttkbootstrap 小部件具有[数十种预定义的样式](../styleguide/index.zh.md) ，这些样式使用修改小部件**类型**和**颜色***的**关键字**进行应用。每个主题都定义了实际的颜色值。
 
 例如，使用关键字**outline**将绘制一个具有外框 _类型_ 的按钮，但使用关键字**info**将更改外框和文本的 _颜色_ 。
 

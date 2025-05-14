@@ -20,6 +20,10 @@ theme:
       lang: zh
 
 plugins:
+  - mkdocstrings:
+      handlers:
+        python:
+          paths: [ "src" ]
   - i18n:
       default_language: en
       languages:

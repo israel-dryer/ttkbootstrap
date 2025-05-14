@@ -21,15 +21,15 @@ Loads of beautiful [pre-defined widget styles](styleguide/index.md) such
 as **outline** and **round toggle** buttons.
 
 ✔️ [**Simple keyword API:**](gettingstarted/tutorial.md#use-themed-widgets)  
-Apply colors and types using [simple keywords](gettingstarted/tutorial/#use-themed-widgets) 
+Apply colors and types using [simple keywords](gettingstarted/tutorial.md#use-themed-widgets) 
 such as **primary** and **striped** instead of the legacy approach of 
 **primary.Striped.Horizontal.TProgressbar**. If you've used Bootstrap for
 web development, you are already familiar with this approach using css classes.
 
-✔️ [**Lots of new Widgets:**](api/widgets/dateentry)  
+✔️ [**Lots of new Widgets:**](api/widgets/dateentry.md)  
 ttkbootstrap comes with several new beautifully designed widgets such 
-as [Meter](api/widgets/meter), [DateEntry](api/widgets/dateentry), 
-and [Floodgauge](api/widgets/floodgauge). Additionally, [dialogs](api/dialogs/dialog) 
+as [Meter](api/widgets/meter), [DateEntry](api/widgets/dateentry.md), 
+and [Floodgauge](api/widgets/floodgauge). Additionally, [dialogs](api/dialogs/dialog.md) 
 are now themed and fully customizable.
 
 ✔️ [**Built-in Theme Creator:**](themes/themecreator.md)  

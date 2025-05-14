@@ -2,7 +2,7 @@
 
 This widget style features a light gray trough with a styled thumb and arrow 
 buttons. The thumb and arrows lighten on _hover_ and darken on _press_. The
-thumb and arrows can be styled with any of the [available colors](index.md#colors). 
+thumb and arrows can be styled with any of the [available colors](index.zh.md#颜色). 
 
 ## Square (default)
 
