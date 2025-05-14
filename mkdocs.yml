@@ -36,16 +36,16 @@ plugins:
           name: 简体中文
           build: true
 
-        nav_translations:
-          zh:
-            Home: 主页
-            "Getting started": 开始
-            "Style guide": 样式指南
-            "API": 应用程序接口
-            "Themes": 主题
-            "Gallery": 图库
-            "Cookbook": 食谱
-            "Changelog": 更新日志
+      nav_translations:
+        zh:
+          Home: 主页
+          "Getting started": 开始
+          "Style guide": 样式指南
+          "API": 应用程序接口
+          "Themes": 主题
+          "Gallery": 图库
+          "Cookbook": 食谱
+          "Changelog": 更新日志
 
 markdown_extensions:
   - admonition
