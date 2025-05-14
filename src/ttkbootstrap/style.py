@@ -1349,6 +1349,7 @@ class StyleBuilderTTK:
             ],
         )
         self.style._register_ttkstyle(ttkstyle)
+        self.create_scrollbar_style()
 
     def create_separator_style(self, colorname=DEFAULT):
         """Create a style for the ttk.Separator widget.
