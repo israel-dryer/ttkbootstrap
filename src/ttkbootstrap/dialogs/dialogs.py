@@ -1,6 +1,6 @@
 """
-    This module contains various base dialog base classes that can be 
-    used to create custom dialogs for the end user. 
+    This module contains various base dialog base classes that can be
+    used to create custom dialogs for the end user.
 
     These classes serve as the basis for the pre-defined static helper
     methods in the `Messagebox`, and `Querybox` container classes.
@@ -58,7 +58,7 @@ class Dialog(BaseWidget):
         y = master.winfo_rooty()
         toplevel.geometry(f"+{x}+{y}")
 
-    def show(self, position=None):
+    def show(self, position=None, wait_for_result=True):
         """Show the popup dialog
         Parameters:
 
@@ -86,8 +86,9 @@ class Dialog(BaseWidget):
         if self._initial_focus:
             self._initial_focus.focus_force()
 
-        self._toplevel.grab_set()
-        self._toplevel.wait_window()
+        if wait_for_result:
+            self._toplevel.wait_window()
+
 
     def create_body(self, master):
         """Create the dialog body.
@@ -354,7 +355,7 @@ class MessageDialog(Dialog):
         command = self._command
         if command is not None:
             command()
-        self._toplevel.destroy()
+        self._toplevel.after_idle(self._toplevel.destroy)
 
     def show(self, position=None):
         """Create and display the popup messagebox."""
@@ -578,8 +579,6 @@ class DatePickerDialog:
 
     """
 
-    locale.setlocale(locale.LC_ALL, locale.setlocale(locale.LC_TIME, ""))
-
     def __init__(
         self,
         parent=None,
@@ -612,6 +611,13 @@ class DatePickerDialog:
                 the title and hover / pressed color -> primary,
                 secondary, info, warning, success, danger, light, dark.
         """
+
+        # Safe locale setup
+        try:
+            locale.setlocale(locale.LC_TIME, "")
+        except locale.Error:
+            pass  # Fall back to default C locale or handle more gracefully
+
         self.parent = parent
         self.root = ttk.Toplevel(
             title=title,
@@ -1153,6 +1159,7 @@ class FontDialog(Dialog):
         slant = self._slant.get()
         overstrike = self._overstrike.get()
         underline = self._underline.get()
+        weight = self._weight.get()
 
         self._preview_font.config(
             family=family,
@@ -1160,6 +1167,7 @@ class FontDialog(Dialog):
             slant=slant,
             overstrike=overstrike,
             underline=underline,
+            weight=weight,
         )
         try:
             self._preview_text.configure(font=self._preview_font)

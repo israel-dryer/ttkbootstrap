@@ -1,5 +1,5 @@
 """
-    This module contains a class of the same name that wraps the 
+    This module contains a class of the same name that wraps the
     tkinter.Tk and ttkbootstrap.style.Style classes to provide a more
     consolidated api for initial application startup.
 """
@@ -29,14 +29,14 @@ def apply_class_bindings(window: tkinter.Widget):
     """Add class level event bindings in application"""
     for className in ["TEntry", "TSpinbox", "TCombobox", "Text"]:
         window.bind_class(
-            className=className, 
-            sequence="<Configure>", 
+            className=className,
+            sequence="<Configure>",
             func=on_disabled_readonly_state,
             add="+")
 
         for sequence in ["<Control-a>", "<Control-A>"]:
             window.bind_class(
-                className=className, 
+                className=className,
                 sequence=sequence,
                 func=on_select_all)
 
@@ -62,8 +62,16 @@ def apply_all_bindings(window: tkinter.Widget):
     window.bind_all('<Destroy>', lambda e: Publisher.unsubscribe(e.widget))
 
 
+def on_visibility(event):
+    """Set Window or Toplevel alpha value on Visibility (X11)"""
+    widget = event.widget
+    if isinstance(widget, (Window, Toplevel)) and widget.alpha_bind:
+        widget.unbind(widget.alpha_bind)
+        widget.attributes("-alpha", widget.alpha)
+
+
 def on_disabled_readonly_state(event):
-    """Change the cursor of entry type widgets to 'arrow' if in a 
+    """Change the cursor of entry type widgets to 'arrow' if in a
     disabled or readonly state."""
     try:
         widget = event.widget
@@ -108,7 +116,7 @@ def on_select_all(event):
     else:
         widget.select_range(0, END)
         widget.icursor(END)
-    return 'break'    
+    return 'break'
 
 
 class Window(tkinter.Tk):
@@ -251,38 +259,39 @@ class Window(tkinter.Tk):
         if size is not None:
             width, height = size
             self.geometry(f"{width}x{height}")
-        
+
         if position is not None:
             xpos, ypos = position
             self.geometry(f"+{xpos}+{ypos}")
-        
+
         if minsize is not None:
             width, height = minsize
             self.minsize(width, height)
-        
+
         if maxsize is not None:
             width, height = maxsize
             self.maxsize(width, height)
-        
+
         if resizable is not None:
             width, height = resizable
             self.resizable(width, height)
-        
-        if alpha is not None:
-            if self.winsys == 'x11':
-                self.wait_visibility(self)
-            self.attributes("-alpha", alpha)
-        
+
         if transient is not None:
             self.transient(transient)
-        
+
         if overrideredirect:
             self.overrideredirect(1)
+
+        if alpha is not None:
+            if self.winsys == 'x11':
+                self.alpha = alpha
+                self.alpha_bind = self.bind("<Visibility>", on_visibility, '+')
+            else:
+                self.attributes("-alpha", alpha)
 
         apply_class_bindings(self)
         apply_all_bindings(self)
         self._style = Style(themename)
-
 
     @property
     def style(self):
@@ -444,11 +453,11 @@ class Toplevel(tkinter.Toplevel):
         if position is not None:
             xpos, ypos = position
             self.geometry(f"+{xpos}+{ypos}")
-        
+
         if minsize is not None:
             width, height = minsize
             self.minsize(width, height)
-        
+
         if maxsize is not None:
             width, height = maxsize
             self.maxsize(width, height)
@@ -456,31 +465,33 @@ class Toplevel(tkinter.Toplevel):
         if resizable is not None:
             width, height = resizable
             self.resizable(width, height)
-        
-        if alpha is not None:
-            if self.winsys == 'x11':
-                self.wait_visibility(self)
-            self.attributes("-alpha", alpha)
-        
+
         if iconify:
             self.iconify()
-        
+
         if transient is not None:
             self.transient(transient)
-        
+
         if overrideredirect:
             self.overrideredirect(1)
-        
+
         if windowtype is not None:
             if self.winsys == 'x11':
                 self.attributes("-type", windowtype)
-        
+
         if topmost:
             self.attributes("-topmost", 1)
-        
+
         if toolwindow:
             if self.winsys == 'win32':
                 self.attributes("-toolwindow", 1)
+
+        if alpha is not None:
+            if self.winsys == 'x11':
+                self.alpha = alpha
+                self.alpha_bind = self.bind("<Visibility>", on_visibility, '+')
+            else:
+                self.attributes("-alpha", alpha)
 
     @property
     def style(self):
