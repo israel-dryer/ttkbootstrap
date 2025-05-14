@@ -7,7 +7,7 @@ _focus_. The arrow color changes to the default or [selected color](index.md#col
 on _hover_ or on _focus_.
 
 This widget also supports special styles for [disabled state](#disabled-spinbox), 
-[readonly state](#readonly-spinbox), and [invalid state](#invalid-combobox).
+[readonly state](#readonly-spinbox), and [invalid state](#invalid-spinbox).
 
 ![spinbox](../assets/widget-styles/spinbox.gif)
 

@@ -1,7 +1,7 @@
 # Menubutton
 
 This widget features a styled button with an arrow that can be styled using
-any of the [available colors](index.md#colors). 
+any of the [available colors](index.zh.md#颜色). 
 
 This widget supports a special style for [disabled state](#disabled-menubutton).
 

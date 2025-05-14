@@ -2,8 +2,8 @@
 
 This widget is composed of two widgets, the **Entry** widget and the **Button**
 widget. The **Entry** component behaves identically to the 
-[default entry widget](entry.md), and the calendar button behaves as the 
-[default solid button](button.md).
+[default entry widget](entry.zh.md), and the calendar button behaves as the 
+[default solid button](button.zh.md).
 
 The [DatePickerPopup](datepickerpopup.md) is invoked when the calendar
 button is pressed. The default color applied to the popup is **primary**.
@@ -55,5 +55,5 @@ d.configure(state="readonly")
 
 This style _cannot be applied via keywords_, but rather is the result of a 
 validation process implemented on the widget. In the **Cookbook** you will find 
-an example of [how to apply validation](../cookbook/validate-user-input.md) to an 
+an example of [how to apply validation](../cookbook/validate-user-input.zh.md) to an 
 `Entry` based widget.

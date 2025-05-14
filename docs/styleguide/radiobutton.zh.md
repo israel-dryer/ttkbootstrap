@@ -1,7 +1,7 @@
 # Radiobutton
 
 This widget features a variety of radiobutton style types that are **primary**
-colored by default or the [selected color](index.md#colors).
+colored by default or the [selected color](index.zh.md#颜色).
 
 This widget supports a special style for 
 [disabled state](#other-radiobutton-styles).
@@ -25,7 +25,7 @@ Radiobutton(bootstyle="secondary")
 ## Solid toolbutton
 
 This style features a solid rectangular button that has a muted gray background
-when _not selected_ and a default or [selected color](index.md#colors) when _selected_
+when _not selected_ and a default or [selected color](index.zh.md#颜色) when _selected_
 or _active_.
 
 ![toolbutton](../assets/widget-styles/radio-toolbutton.gif)
