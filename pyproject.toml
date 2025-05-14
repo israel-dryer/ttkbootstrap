@@ -53,10 +53,6 @@ dependencies = [
 Homepage = "https://github.com/israel-dryer/ttkbootstrap"
 Documentation = "https://ttkbootstrap.readthedocs.io/en/latest/"
 
-[tool.setuptools]
-package-dir = { "" = "src" }
-packages = ["ttkbootstrap"]
-
 [tool.setuptools.packages.find]
 where = ["src"]
 
