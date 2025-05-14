@@ -1,9 +1,5 @@
 # About this project
   
-I set the following goals for myself when creating and updating this project;
-especially for version 1.0. It is a work in progress, but hopefully I've 
-achieved most or all of these.
-
 ## Create a set of beautifully designed and easy-to-use styles
 
 As you may know, creating ttk styles can be _very time-consuming_. This library 
