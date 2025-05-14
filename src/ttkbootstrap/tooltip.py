@@ -246,18 +246,18 @@ if __name__ == "__main__":
     b1 = ttk.Button(app, text="default tooltip")
     b1.pack(side=LEFT, padx=20, pady=20, fill=X, expand=YES)
 
-    l1 = ttk.Label(app, text="styled tooltip")
-    l1.pack(side=LEFT, padx=20, pady=20, fill=X, expand=YES)
+    b2 = ttk.Button(app, text="styled tooltip")
+    b2.pack(side=LEFT, padx=20, pady=20, fill=X, expand=YES)
 
     ToolTip(
         b1,
         text="Following the mouse pointer.",
     )
     ToolTip(
-        l1,
-        text="Anchored to the top left corner.",
+        b2,
+        text="Anchored to the top right corner.",
         bootstyle="danger-inverse",
-        position="top left"
+        position="top right"
     )
 
     app.mainloop()
