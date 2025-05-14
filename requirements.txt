@@ -1,1 +1,7 @@
-Pillow==10.0.1
+mkdocs>=1.5
+mkdocs-material>=9.5
+mkdocs-static-i18n==0.31
+mkdocstrings[python]>=0.24
+mkdocs-autorefs
+pymdown-extensions
+Pillow>=10.3.0,<11
