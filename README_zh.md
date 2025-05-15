@@ -14,10 +14,6 @@ tkinter的超强主题扩展，可实现受[Bootstrap](https://getbootstrap.com/
 
 👀 阅读[文档](https://ttkbootstrap.readthedocs.io/en/latest/zh/)。
 
-
-> **版本 1.0 是库的完全重建。** 如果您使用的是[0.5版本](https://github.com/israel-dryer/ttkbootstrap/tree/version-0.5)
-   ，则在尝试使用themes.json导入主题时可能会遇到问题，因为这已从1.0中删除。现在，您可以使用 ttkcreator 直接导入和保存主题。
-
 ![](https://raw.githubusercontent.com/israel-dryer/ttkbootstrap/master/docs/assets/themes/themes.gif)
 
 ## 📦 特点
