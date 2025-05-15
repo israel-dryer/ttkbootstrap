@@ -1,0 +1,57 @@
+import tkinter as tk
+from tkinter import ttk
+from tkinter import font
+from tkinter.ttk import Button, Checkbutton, Combobox
+from tkinter.ttk import Entry, Frame, Label
+from tkinter.ttk import Labelframe, LabelFrame, Menubutton
+from tkinter.ttk import Notebook, OptionMenu, PanedWindow
+from tkinter.ttk import Panedwindow, Progressbar, Radiobutton
+from tkinter.ttk import Scale, Scrollbar, Separator
+from tkinter.ttk import Sizegrip, Spinbox, Treeview
+
+from ttkbootstrap.constants import *
+from ttkbootstrap.widgets.floodgauge import Floodgauge, FloodgaugeLegacy
+from ttkbootstrap.widgets.meter import Meter
+from ttkbootstrap.widgets.dateentry import DateEntry
+
+TTK_WIDGETS = (
+    ttk.Button,
+    ttk.Checkbutton,
+    ttk.Combobox,
+    ttk.Entry,
+    ttk.Frame,
+    ttk.Labelframe,
+    ttk.Label,
+    ttk.Menubutton,
+    ttk.Notebook,
+    ttk.Panedwindow,
+    ttk.Progressbar,
+    ttk.Radiobutton,
+    ttk.Scale,
+    ttk.Scrollbar,
+    ttk.Separator,
+    ttk.Sizegrip,
+    ttk.Spinbox,
+    ttk.Treeview,
+    ttk.OptionMenu,
+)
+
+TK_WIDGETS = (
+    tk.Tk,
+    tk.Toplevel,
+    tk.Button,
+    tk.Label,
+    tk.Text,
+    tk.Frame,
+    tk.Checkbutton,
+    tk.Radiobutton,
+    tk.Entry,
+    tk.Scale,
+    tk.Listbox,
+    tk.Menu,
+    tk.Menubutton,
+    tk.LabelFrame,
+    tk.Canvas,
+    tk.OptionMenu,
+    tk.Spinbox,
+)
