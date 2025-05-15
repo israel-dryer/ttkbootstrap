@@ -2,7 +2,6 @@ site_name: ttkbootstrap
 repo_url: https://github.com/israel-dryer/ttkbootstrap
 repo_name: israel-dryer/ttkbootstrap
 site_url: https://ttkbootstrap.readthedocs.io/en/latest/
-use_directory_urls: false
 
 theme:
   name: material
