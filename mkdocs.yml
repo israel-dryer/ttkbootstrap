@@ -27,7 +27,7 @@ plugins:
 
   - i18n:
       default_language: en
-      docs_structure: suffix
+      docs_structure: folder
       reconfigure_material: true
       languages:
         - locale: en
