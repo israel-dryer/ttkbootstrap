@@ -9,7 +9,7 @@ from ttkbootstrap import colorutils
 from ttkbootstrap.colorutils import RGB, HSL, HEX, HUE, SAT, LUM
 from PIL import ImageColor
 from ttkbootstrap.dialogs.colordropper import ColorDropperDialog
-from ttkbootstrap.tooltip import ToolTip
+from ttkbootstrap.widgets.tooltip import ToolTip
 from ttkbootstrap.localization import MessageCatalog
 
 STD_SHADES = [0.9, 0.8, 0.7, 0.4, 0.3]

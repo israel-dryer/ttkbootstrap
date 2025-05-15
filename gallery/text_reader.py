@@ -4,7 +4,7 @@
 """
 import ttkbootstrap as ttk
 from ttkbootstrap.constants import *
-from ttkbootstrap.scrolled import ScrolledText
+from ttkbootstrap.widgets.scrolledtext import ScrolledText
 from tkinter.filedialog import askopenfilename
 
 

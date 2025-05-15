@@ -7,7 +7,8 @@ from ttkbootstrap.constants import *
 from ttkbootstrap.dialogs.colorchooser import ColorChooserDialog
 from ttkbootstrap.localization.msgcat import MessageCatalog
 from ttkbootstrap.dialogs.dialogs import QueryDialog, Querybox
-from ttkbootstrap.tableview import Tableview
+from ttkbootstrap.widgets.tableview import Tableview
+
 
 def show_tableview():
     """Show tableview."""

@@ -1,6 +1,7 @@
 import ttkbootstrap as ttk
 from ttkbootstrap.constants import *
-from ttkbootstrap.scrolled import ScrolledText, ScrolledFrame
+from ttkbootstrap.widgets.scrolledframe import ScrolledFrame
+from ttkbootstrap.widgets.scrolledtext import ScrolledText
 
 app = ttk.Window()
 

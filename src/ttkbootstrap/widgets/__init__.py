@@ -1,5 +1,6 @@
 import tkinter as tk
 from tkinter import ttk
+
 from tkinter import font
 from tkinter.ttk import Button, Checkbutton, Combobox
 from tkinter.ttk import Entry, Frame, Label
@@ -9,10 +10,14 @@ from tkinter.ttk import Panedwindow, Progressbar, Radiobutton
 from tkinter.ttk import Scale, Scrollbar, Separator
 from tkinter.ttk import Sizegrip, Spinbox, Treeview
 
-from ttkbootstrap.constants import *
 from ttkbootstrap.widgets.floodgauge import Floodgauge, FloodgaugeLegacy
 from ttkbootstrap.widgets.meter import Meter
 from ttkbootstrap.widgets.dateentry import DateEntry
+from ttkbootstrap.widgets.tableview import Tableview
+from ttkbootstrap.widgets.scrolledtext import ScrolledText
+from ttkbootstrap.widgets.scrolledframe import ScrolledFrame
+from ttkbootstrap.widgets.tooltip import ToolTip
+from ttkbootstrap.widgets.toast import ToastNotification
 
 TTK_WIDGETS = (
     ttk.Button,

@@ -2,8 +2,7 @@ import ttkbootstrap as ttk
 from ttkbootstrap.constants import *
 from pathlib import Path
 import csv
-from ttkbootstrap.tableview import TableRow, Tableview
-from ttkbootstrap.utility import scale_size
+from ttkbootstrap.widgets.tableview import TableRow, Tableview
 
 app = ttk.Window(themename='flatly')
 colors = app.style.colors

@@ -19,7 +19,7 @@ The theme applied is **sandstone**.
 import ttkbootstrap as ttk
 from ttkbootstrap.constants import *
 from tkinter.filedialog import askopenfilename
-from ttkbootstrap.scrolled import ScrolledText
+from ttkbootstrap.widgets.scrolledtext import ScrolledText
 
 
 class TextReader(ttk.Frame):
@@ -61,7 +61,6 @@ class TextReader(ttk.Frame):
 
 
 if __name__ == '__main__':
-    
     app = ttk.Window("Text Reader", "sandstone")
     TextReader(app)
     app.mainloop()
