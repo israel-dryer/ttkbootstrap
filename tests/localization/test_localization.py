@@ -4,9 +4,8 @@ from pathlib import Path
 
 import ttkbootstrap as ttk
 from ttkbootstrap.constants import *
-from ttkbootstrap.dialogs.colorchooser import ColorChooserDialog
-from ttkbootstrap.localization.msgcat import MessageCatalog
-from ttkbootstrap.dialogs.dialogs import QueryDialog, Querybox
+from ttkbootstrap.dialogs.colorpicker import ColorChooserDialog
+from ttkbootstrap.dialogs import QueryDialog, Querybox
 from ttkbootstrap.widgets.tableview import Tableview
 
 
@@ -79,14 +78,13 @@ def change_locale():
     locale_dialog = QueryDialog(
         prompt="Enter a locale to test:",
         title="Select Locale",
-        initialvalue=MessageCatalog.locale("")
+        initialvalue=""
         )
     locale_dialog.show()
 
     selected_locale = locale_dialog.result
     if selected_locale:
-        MessageCatalog.locale(selected_locale)
-        print(f"Selected locale: '{MessageCatalog.locale("")}'")
+        print("[Locale] Selected locale:", "")
 
 def create_window():
     """Create window."""

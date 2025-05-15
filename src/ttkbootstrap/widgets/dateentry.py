@@ -2,7 +2,7 @@ import tkinter as tk
 from datetime import datetime
 from tkinter import ttk
 
-from ttkbootstrap.dialogs import Querybox
+from ttkbootstrap.dialogs.query import Querybox
 
 
 class DateEntry(ttk.Frame):
