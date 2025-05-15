@@ -18,8 +18,8 @@ tkinter的超强主题扩展，可实现受[Bootstrap](https://getbootstrap.com/
 ✔️ [**预定义样式：**](styleguide/index.zh.md)  
 大量漂亮的[预定义构件样式](styleguide/index.zh.md)，如**轮廓**和**圆形切换**按钮。
 
-✔️ [**简单的关键字 API：**](gettingstarted/tutorial.zh.md#use-themed-widgets)  
-使用[简单的关键字](gettingstarted/tutorial.zh.md#use-themed-widgets)（如**primary**和**striped**）应用颜色和类型，而不是使用主要的旧方法**Striped.Horizontal.TProgressbar**。如果您已经使用Bootstrap进行Web开发，那么您已经熟悉了使用css类的这种方法。
+✔️ [**简单的关键字 API：**](gettingstarted/tutorial.zh.md)  
+使用[简单的关键字](gettingstarted/tutorial.zh.md)（如**primary**和**striped**）应用颜色和类型，而不是使用主要的旧方法**Striped.Horizontal.TProgressbar**。如果您已经使用Bootstrap进行Web开发，那么您已经熟悉了使用css类的这种方法。
 
 ✔️ [**许多新的小部件：**](api/widgets/dateentry.zh.md)  
 ttkbootstrap附带了几个设计精美的新小部件，如[Meter](api/widgets/meter.zh.md)，[DateEntry](api/widgets/dateentry.zh.md)和[Floodgauge](api/widgets/floodgauge.zh.md)。 此外，[对话框](api/dialogs/dialog.zh.md)现在具有主题和完全可自定义性。
