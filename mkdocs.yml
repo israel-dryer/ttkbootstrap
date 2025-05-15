@@ -67,6 +67,7 @@ extra:
 nav:
   - Home:
       - index.md
+      - index.zh.md
       - about.md
       - 'Changelog': https://github.com/israel-dryer/ttkbootstrap/releases
       - license.md
