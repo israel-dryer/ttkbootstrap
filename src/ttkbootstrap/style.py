@@ -1349,7 +1349,10 @@ class StyleBuilderTTK:
             ],
         )
         self.style._register_ttkstyle(ttkstyle)
-        self.create_scrollbar_style()
+        try:
+            self.create_scrollbar_style()
+        except Exception:
+            print('[Style] skipping scrollbar for combobox; already created')
 
     def create_separator_style(self, colorname=DEFAULT):
         """Create a style for the ttk.Separator widget.
