@@ -59,6 +59,8 @@ from tkinter.constants import (
     WORD,
     X,
     Y,
+    FLAT,
+    YES
 )
 
 DEFAULT = 'default'
