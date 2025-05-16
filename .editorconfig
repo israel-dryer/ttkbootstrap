@@ -1,0 +1,25 @@
+# EditorConfig is awesome: https://EditorConfig.org
+# Place this in the root of your project
+
+root = true
+
+[*.py]
+indent_style = space
+indent_size = 4
+charset = utf-8
+trim_trailing_whitespace = true
+insert_final_newline = true
+
+# Align multiline parameters under the `def`, not under the first param
+ij_python_align_multiline_parameters = false
+
+# Optional: wrap arguments when long
+ij_python_call_parameters_wrap = WRAP_AS_NEEDED
+ij_python_call_parameters_align = false
+
+# Optional: format dictionary items and lists
+ij_python_dict_alignment = false
+ij_python_list_alignment = false
+
+# Optional: set max line length to 88 (Black-compatible)
+ij_python_right_margin = 88
