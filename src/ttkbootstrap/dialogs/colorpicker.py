@@ -608,7 +608,7 @@ class ColorPickerDialog(Dialog):
         """
         Handle OK/Cancel button presses, set the result if confirmed.
         """
-        if button.cget('text') == 'OK':
+        if button.cget('text') == MessageCatalog.translate('OK'):
             values = self.colorchooser.get_variables()
             self._result = ColorChoice(
                 rgb=(values.r, values.g, values.b),
