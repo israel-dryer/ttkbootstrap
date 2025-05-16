@@ -128,3 +128,12 @@ class NotebookOptions(TypedDict, total=False):
     style: str
     takefocus: bool | str
     cursor: str
+
+
+class PanedWindowOptions(TypedDict, total=False):
+    orient: Literal["horizontal", "vertical"]
+    style: str
+    takefocus: bool | str
+    cursor: str
+    width: int
+    height: int
