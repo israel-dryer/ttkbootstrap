@@ -166,3 +166,18 @@ class RadiobuttonOptions(TypedDict, total=False):
     cursor: str
     style: str
     padding: int | str | tuple
+
+
+class ScaleOptions(TypedDict, total=False):
+    from_: float
+    to: float
+    orient: Literal["horizontal", "vertical"]
+    variable: str | Variable
+    value: float
+    command: Callable[[str], None]
+    length: int
+    resolution: float
+    state: Literal["normal", "disabled"]
+    style: str
+    takefocus: bool | str
+    cursor: str
