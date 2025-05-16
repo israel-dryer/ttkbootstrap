@@ -5,9 +5,10 @@ from ttkbootstrap.scrolled import ScrolledText, ScrolledFrame
 app = ttk.Window()
 
 st = ScrolledText(app, padding=5, height=10, hbar=True, autohide=True)
+st.text.configure(padx=15, pady=15)
 st.pack(fill=BOTH, expand=YES)
 st.insert(END, 'Insert your text here.')
-st.text.configure(state=DISABLED)
+#st.text.configure(state=DISABLED)
 st.vbar.configure(bootstyle=ROUND)
 
 app.mainloop()
