@@ -25,6 +25,7 @@ from ttkbootstrap.widgets.radiobutton import Radiobutton
 from ttkbootstrap.widgets.scale import Scale
 from ttkbootstrap.widgets.scrollbar import Scrollbar
 from ttkbootstrap.widgets.separator import Separator
+from ttkbootstrap.widgets.sizegrip import Sizegrip
 
 from ttkbootstrap.widgets.floodgauge import Floodgauge, FloodgaugeLegacy
 from ttkbootstrap.widgets.meter import Meter

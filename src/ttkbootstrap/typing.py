@@ -198,4 +198,7 @@ class SeparatorOptions(TypedDict, total=False):
     cursor: str
 
 
-
+class SizegripOptions(TypedDict, total=False):
+    style: str
+    takefocus: bool | str
+    cursor: str
