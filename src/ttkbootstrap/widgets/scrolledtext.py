@@ -1,98 +1,101 @@
 from tkinter import Text
-from tkinter.ttk import Frame
+from ttkbootstrap.widgets.frame import Frame
+from ttkbootstrap.widgets.scrollbar import Scrollbar
 from typing import Literal
+from ttkbootstrap.ttk_types import StyleColor, TextOptions
 
-from ttkbootstrap.widgets import Scrollbar
+try:
+    from typing import Unpack
+except ImportError:
+    from typing_extensions import Unpack
 
 
 class ScrolledText(Frame):
-    """A text widget with optional vertical and horizontal scrollbars.
-    Setting `autohide=True` will cause the scrollbars to hide when the
-    mouse is not over the widget. The vertical scrollbar is on by
-    default, but can be turned off. The horizontal scrollbar can be
-    enabled by setting `vbar=True`.
+    """
+    A styled `Text` widget with optional vertical and horizontal scrollbars.
 
-    This widget is identical in configuration to the `Text` widget other
-    than the scrolling frame. https://tcl.tk/man/tcl8.6/TkCmd/text.htm
+    This widget wraps the standard Tkinter `Text` widget with enhanced
+    scrollbar integration using themed `ttkbootstrap` scrollbars.
 
-    ![scrolled text](../../../assets/scrolled/scrolledtext.gif)
+    Features:
+    ---------
+    - Vertical and/or horizontal scrollbars
+    - Optional autohide behavior for scrollbars
+    - Scrollbar styling via `color` and `variant`
+    - Full `Text` widget API passthrough
+    - Customizable geometry and padding
+    - Wraps text by default unless horizontal scrollbar is used
 
-    Examples:
+    Notes:
+    ------
+    - This widget is functionally identical to `tkinter.Text` with
+      added scrollbars.
+    - See https://tcl.tk/man/tcl8.6/TkCmd/text.htm for full `Text` options.
 
-        ```python
-        import ttkbootstrap as ttk
-        from ttkbootstrap.constants import *
-        from ttkbootstrap.scrolled import ScrolledText
+    Example:
+    --------
+    ```python
+    import ttkbootstrap as ttk
+    from ttkbootstrap.constants import *
 
-        app = ttk.Window()
-
-        # scrolled text with autohide vertical scrollbar
-        st = ScrolledText(app, padding=5, height=10, autohide=True)
-        st.pack(fill=BOTH, expand=YES)
-
-        # add text
-        st.insert(END, 'Insert your text here.')
-
-        app.mainloop()
-        ```
+    app = ttk.Window()
+    st = ttk.ScrolledText(app, padding=5, height=10, autohide=True)
+    st.pack(fill=BOTH, expand=YES)
+    st.insert(END, 'Insert your text here.')
+    app.mainloop()
+    ```
     """
 
     def __init__(
         self,
         master=None,
         padding=2,
-        color=None,
+        color: StyleColor = None,
         variant: Literal['default', 'round'] = "default",
-        autohide=False,
-        vbar=True,
-        hbar=False,
-        **kwargs,
+        autohide: bool = False,
+        vbar: bool = True,
+        hbar: bool = False,
+        **kwargs: Unpack[TextOptions],
     ):
         """
+        Initialize a new `ScrolledText` widget.
+
         Parameters:
+            master (Widget, optional):
+                The parent container for the widget.
 
-            master (Widget):
-                The parent widget.
+            padding (int, optional):
+                Padding around the `Text` widget.
 
-            padding (int):
-                The amount of empty space to create on the outside of
-                the widget.
+            color (StyleColor, optional):
+                A ttkbootstrap color keyword for scrollbar and focus styling.
 
-            bootstyle (str):
-                A style keyword used to set the color and style of the
-                vertical scrollbar. Available options include -> primary,
-                secondary, success, info, warning, danger, dark, light.
+            variant (Literal['default', 'round'], optional):
+                Style variant for the scrollbars. Default is "default".
 
-            vbar (bool):
-                A vertical scrollbar is shown when **True** (default).
+            autohide (bool, optional):
+                If True, scrollbars will hide unless hovered over.
 
-            hbar (bool):
-                A horizontal scrollbar is shown when **True**. Turning
-                on this scrollbar will also set `wrap="none"`. This
-                scrollbar is _off_ by default.
+            vbar (bool, optional):
+                If True, show a vertical scrollbar. Default is True.
 
-            autohide (bool):
-                When **True**, the scrollbars will hide when the mouse
-                is not within the frame bbox.
+            hbar (bool, optional):
+                If True, show a horizontal scrollbar and disable wrapping.
 
-            **kwargs (Dict[str, Any]):
-                Other keyword arguments passed to the `Text` widget.
+            **kwargs (EntryOptions, optional):):
+                Additional keyword arguments passed to the underlying `Text` widget.
         """
         super().__init__(master, padding=padding)
 
-        # setup text widget
         self._text = Text(self, padx=50, **kwargs)
-        self._hbar = None
         self._vbar = None
+        self._hbar = None
 
-        # delegate text methods to frame
+        # Delegate all Text widget methods (excluding geometry) to self
         for method in vars(Text).keys():
-            if any(["pack" in method, "grid" in method, "place" in method]):
-                pass
-            else:
+            if not any(m in method for m in ("pack", "grid", "place")):
                 setattr(self, method, getattr(self._text, method))
 
-        # setup scrollbars
         if vbar:
             self._vbar = Scrollbar(
                 master=self,
@@ -117,7 +120,6 @@ class ScrolledText(Frame):
 
         self._text.pack(side="left", fill="both", expand=1)
 
-        # position scrollbars
         if self._hbar:
             self.update_idletasks()
             self._text_width = self.winfo_reqwidth()
@@ -130,53 +132,56 @@ class ScrolledText(Frame):
             self.hide_scrollbars()
 
     def _on_configure(self, *_):
-        """Callback for when the configure method is used"""
+        """Update the scrollbar position and width if horizontal bar is shown."""
         if self._hbar:
             self.update_idletasks()
             text_width = self.winfo_width()
-            vbar_width = self._vbar.winfo_width()
+            vbar_width = self._vbar.winfo_width() if self._vbar else 0
             relx = (text_width - vbar_width) / text_width
             self._hbar.place(rely=1.0, relwidth=relx)
 
     @property
     def text(self):
-        """Returns the internal text object"""
+        """Return the internal `Text` widget instance."""
         return self._text
 
     @property
     def hbar(self):
-        """Returns the internal horizontal scrollbar"""
+        """Return the internal horizontal scrollbar instance."""
         return self._hbar
 
     @property
     def vbar(self):
-        """Returns the internal vertical scrollbar"""
+        """Return the internal vertical scrollbar instance."""
         return self._vbar
 
     def hide_scrollbars(self, *_):
-        """Hide the scrollbars."""
-        try:
-            self._vbar.lower(self._text)
-        except:
-            pass
-        try:
-            self._hbar.lower(self._text)
-        except:
-            pass
+        """Hide both scrollbars (if present)."""
+        if self._vbar:
+            try:
+                self._vbar.lower(self._text)
+            except AttributeError:
+                pass
+        if self._hbar:
+            try:
+                self._hbar.lower(self._text)
+            except AttributeError:
+                pass
 
     def show_scrollbars(self, *_):
-        """Show the scrollbars."""
-        try:
-            self._vbar.lift(self._text)
-        except:
-            pass
-        try:
-            self._hbar.lift(self._text)
-        except:
-            pass
+        """Show both scrollbars (if present)."""
+        if self._vbar:
+            try:
+                self._vbar.lift(self._text)
+            except AttributeError:
+                pass
+        if self._hbar:
+            try:
+                self._hbar.lift(self._text)
+            except AttributeError:
+                pass
 
     def autohide_scrollbar(self, *_):
-        """Show the scrollbars when the mouse enters the widget frame,
-        and hide when it leaves the frame."""
+        """Enable autohide: show on mouse enter, hide on mouse leave."""
         self.bind("<Enter>", self.show_scrollbars)
         self.bind("<Leave>", self.hide_scrollbars)

@@ -65,19 +65,38 @@ class ComboboxOptions(TypedDict, total=False):
 
 
 class EntryOptions(TypedDict, total=False):
-    textvariable: str | Variable
-    show: str
-    validate: Literal["none", "focus", "focusin", "focusout", "key", "all"]
-    validatecommand: Callable[..., bool]
-    invalidcommand: Callable[[], None]
-    state: Literal["normal", "readonly", "disabled"]
-    exportselection: bool
-    font: str
-    justify: Literal["left", "center", "right"]
-    takefocus: bool | str
-    width: int
-    style: str
+    background: str
+    bd: int
+    bg: str
     cursor: str
+    exportselection: bool
+    font: str | tuple
+    fg: str
+    highlightbackground: str
+    highlightcolor: str
+    highlightthickness: int
+    insertbackground: str
+    insertborderwidth: int
+    insertofftime: int
+    insertontime: int
+    insertwidth: int
+    invalidcommand: Callable[[], None] | None
+    justify: Literal["left", "center", "right"]
+    relief: Literal["flat", "groove", "raised", "ridge", "solid", "sunken"]
+    selectbackground: str
+    selectborderwidth: int
+    selectforeground: str
+    show: str
+    state: Literal["normal", "readonly", "disabled"]
+    takefocus: bool | str
+    textvariable: str | Variable
+    validate: Literal["none", "focus", "focusin", "focusout", "key", "all"]
+    validatecommand: Callable[..., bool] | None
+    width: int
+    xscrollcommand: Callable[..., None] | None
+    name: str
+    class_: str
+    style: str
 
 
 class FrameOptions(TypedDict, total=False):
@@ -263,3 +282,48 @@ class OptionMenuOptions(TypedDict, total=False):
     cursor: str
     style: str
     takefocus: bool | str
+
+
+class TextOptions(TypedDict, total=False):
+    autoseparators: bool
+    background: str
+    bd: int
+    bg: str
+    blockcursor: bool
+    borderwidth: int
+    cursor: str
+    endline: str
+    exportselection: bool
+    font: str
+    fg: str
+    foreground: str
+    height: int
+    highlightbackground: str
+    highlightcolor: str
+    highlightthickness: int
+    insertbackground: str
+    insertborderwidth: int
+    insertofftime: int
+    insertontime: int
+    insertunfocussed: Literal["none", "hollow", "solid"]
+    insertwidth: int
+    maxundo: int
+    padx: int
+    pady: int
+    relief: Literal["flat", "groove", "raised", "ridge", "solid", "sunken"]
+    selectbackground: str
+    selectborderwidth: int
+    selectforeground: str
+    setgrid: bool
+    spacing1: int
+    spacing2: int
+    spacing3: int
+    startline: str
+    state: Literal["normal", "disabled"]
+    tabs: str
+    takefocus: bool | str
+    undo: bool
+    width: int
+    wrap: Literal["char", "none", "word"]
+    xscrollcommand: Callable[..., None]
+    yscrollcommand: Callable[..., None]
