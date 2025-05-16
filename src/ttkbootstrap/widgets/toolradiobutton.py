@@ -10,12 +10,23 @@ except ImportError:
 
 class ToolRadiobutton(Radiobutton):
     """
-    A styled toggleable toolbar button that behaves like a radiobutton.
-    Supports `color` and `variant` styling.
+    A themed toolbar radiobutton that functions as a toggleable tool button.
+
+    This widget behaves like a standard `Radiobutton` but is styled for use
+    in a compact toolbar layout. It supports both `color` and `variant`
+    parameters for visual customization, making it ideal for grouped toolbar
+    controls such as alignment, mode selection, or view toggles.
 
     Example:
         ToolRadiobutton(root, text="Align Left", value="left", variable=group, color="secondary")
+
+    Parameters:
+        master (Misc | None): The parent container widget.
+        color (Color): The button color theme (e.g., "secondary", "info").
+        variant (str): The visual style variant (e.g., "outline", "solid").
+        **kwargs (RadiobuttonOpts): Additional options accepted by `ttk.Radiobutton`.
     """
+
 
     def __init__(
         self,

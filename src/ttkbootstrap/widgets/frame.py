@@ -13,14 +13,23 @@ except ImportError:
 
 class Frame(StyledWidgetMixin, ttkFrame):
     """
-    A styled ttkbootstrap-compatible Frame that supports a `color` parameter
-    for background style theming.
+    A themed frame widget with support for background color styling.
 
-    This widget wraps tkinter.ttk.Frame and applies ttkbootstrap styles
-    dynamically. `color="default"` will apply the base container background.
+    This widget extends the standard `ttk.Frame` by applying a background
+    style based on the provided `color`. It allows for consistent visual theming
+    of container elements across your application. The `"default"` color uses
+    the base theme's standard background color for frames.
+
+    It behaves identically to `ttk.Frame`, supporting layout, nesting,
+    and padding, while allowing for custom appearance through dynamic styling.
 
     Example:
         Frame(root, color="light", padding=10)
+
+    Parameters:
+        master (Misc | None): The parent container widget.
+        color (Color): The background color theme (e.g., "light", "primary", "default").
+        **kwargs (FrameOpts): Additional options accepted by `ttk.Frame`.
     """
 
     def __init__(

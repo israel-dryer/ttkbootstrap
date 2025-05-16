@@ -13,11 +13,22 @@ except ImportError:
 
 class Radiobutton(StyledWidgetMixin, ttkRadiobutton):
     """
-    A styled ttkbootstrap-compatible Radiobutton that supports a `color`
-    parameter for dynamic style generation.
+    A themed radiobutton widget with support for dynamic color styling.
+
+    This widget extends the standard `ttk.Radiobutton` by applying a custom
+    style based on the provided `color`. The color affects the indicator and
+    text appearance when selected, allowing for visually distinct radio groups.
+
+    Ideal for grouped selections where consistent theming and visual clarity
+    are desired.
 
     Example:
         Radiobutton(root, text="Choice A", value="a", variable=var, color="info")
+
+    Parameters:
+        master (Misc | None): The parent container widget.
+        color (Color): The highlight color theme (e.g., "info", "primary").
+        **kwargs (RadiobuttonOpts): Additional options accepted by `ttk.Radiobutton`.
     """
 
     def __init__(

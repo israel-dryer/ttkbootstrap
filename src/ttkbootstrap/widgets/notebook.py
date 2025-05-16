@@ -13,12 +13,23 @@ except ImportError:
 
 class Notebook(StyledWidgetMixin, ttkNotebook):
     """
-    A styled ttkbootstrap-compatible Notebook that supports a `color` parameter
-    for applying dynamic themed tab styling.
+     A themed notebook widget with support for tab color styling.
 
-    Example:
-        Notebook(root, color="primary")
-    """
+     This widget extends the standard `ttk.Notebook` by applying a dynamic style
+     based on the provided `color` parameter. The color affects the tab background,
+     active state, and indicator to create a cohesive visual theme across tabs.
+
+     Useful for multi-tabbed interfaces where visual emphasis or categorization
+     is desired through color differentiation.
+
+     Example:
+         Notebook(root, color="primary")
+
+     Parameters:
+         master (Misc | None): The parent container widget.
+         color (Color): The tab color theme (e.g., "primary", "info").
+         **kwargs (NotebookOpts): Additional options accepted by `ttk.Notebook`.
+     """
 
     def __init__(
         self,

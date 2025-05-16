@@ -13,13 +13,22 @@ except ImportError:
 
 class Scale(StyledWidgetMixin, ttkScale):
     """
-    A styled ttkbootstrap-compatible Scale widget that supports a `color`
-    parameter for dynamic style generation.
+    A themed scale (slider) widget with support for dynamic color styling.
 
-    This widget allows users to select a numerical value by dragging a slider.
+    This widget extends the standard `ttk.Scale` by applying a style based on
+    the provided `color`. The color affects the slider trough and thumb,
+    allowing for visual consistency with the application’s theme.
+
+    The scale enables users to select a numerical value within a defined range
+    by dragging a slider horizontally or vertically.
 
     Example:
         Scale(root, from_=0, to=100, color="primary", orient="horizontal")
+
+    Parameters:
+        master (Misc | None): The parent container widget.
+        color (Color): The slider color theme (e.g., "primary", "warning").
+        **kwargs (ScaleOpts): Additional options accepted by `ttk.Scale`.
     """
 
     def __init__(

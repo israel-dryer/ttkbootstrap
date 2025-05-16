@@ -10,12 +10,23 @@ except ImportError:
 
 class ToolCheckbutton(Checkbutton):
     """
-    A styled toggleable toolbar button that behaves like a checkbutton.
-    Supports `color` and `variant` styling.
+    A themed toolbar checkbutton that functions as a toggleable tool button.
+
+    This widget behaves like a standard `Checkbutton` but is styled to match
+    the appearance of a compact toolbar button. It supports both `color` and
+    `variant` parameters for visual customization, making it ideal for toggling
+    formatting options, view modes, or feature states in a toolbar layout.
 
     Example:
         ToolCheckbutton(root, text="Bold", color="primary", variant="outline")
+
+    Parameters:
+        master (Misc | None): The parent container widget.
+        color (Color): The button color theme (e.g., "primary", "info").
+        variant (str): The visual style variant (e.g., "outline", "solid").
+        **kwargs (CheckbuttonOpts): Additional options accepted by `ttk.Checkbutton`.
     """
+
 
     def __init__(
         self,

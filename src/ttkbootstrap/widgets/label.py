@@ -15,15 +15,29 @@ LabelVariant = str  # Optional: could define Literal["default", "inverse"] if st
 
 class Label(StyledWidgetMixin, ttkLabel):
     """
-    A styled ttkbootstrap-compatible Label that supports `color` and `variant`
-    for foreground and background theming.
+    A themed label widget with support for foreground and background styling.
+
+    This widget extends the standard `ttk.Label` and allows you to customize
+    its appearance using a `color` and a `variant`. The `color` sets the
+    thematic color (such as "success", "info", or "danger"), while the
+    `variant` determines whether the color is applied to the text (`"default"`)
+    or used as a background with inverted foreground (`"inverse"`).
+
+    This is useful for context-sensitive labels such as status indicators,
+    badges, or callouts.
 
     Supported variants:
-        - "default": regular label with colored foreground
-        - "inverse": inverts foreground/background for contrast
+        - "default": Applies color to the foreground only.
+        - "inverse": Applies color to the background with contrasting text color.
 
     Example:
-        Label(root, text="Status OK", color="success", variant="inverse")
+        Label(root, text="Connected", color="success", variant="inverse")
+
+    Parameters:
+        master (Misc | None): The parent container widget.
+        color (Color, optional): A theme color name (e.g., "info", "danger").
+        variant (str): Either "default" (text color) or "inverse" (background).
+        **kwargs (LabelOpts): Additional options accepted by `ttk.Label`.
     """
 
     def __init__(

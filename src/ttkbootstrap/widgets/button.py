@@ -16,14 +16,24 @@ except ImportError:
 
 class Button(StyledWidgetMixin, ttkButton):
     """
-    A themed ttkbootstrap-compatible Button that supports `color` and `variant`
-    parameters for dynamic style generation.
+    A themed button widget with support for dynamic color and variant styling.
 
-    This widget wraps tkinter.ttk.Button and uses ttkbootstrap's styling system
-    to apply styles based on the provided `color` and `variant`.
+    This widget extends the standard `ttk.Button` by applying styles generated
+    from the `color` and `variant` parameters using the themed styling system.
+    These parameters determine the appearance of the button, such as its color
+    scheme and whether it is filled, outlined, or has other visual variants.
+
+    This button behaves exactly like a standard `ttk.Button`, with all the same
+    interactive features, but allows for consistent theming across an application.
 
     Example:
-        Button(root, text="Save", color="primary", variant="outline")
+        Button(root, text="Submit", color="primary", variant="outline")
+
+    Parameters:
+        master (Misc, optional): The parent container widget.
+        color (Color, optional): The color theme (e.g., "primary", "success").
+        variant (Variant): The button's visual variant (e.g., "default", "outline").
+        **kwargs (BtnOpts): Additional standard options accepted by `ttk.Button`.
     """
 
     def __init__(

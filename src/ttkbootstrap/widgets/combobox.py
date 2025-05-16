@@ -13,14 +13,24 @@ except ImportError:
 
 class Combobox(StyledWidgetMixin, ttkCombobox):
     """
-    A styled ttkbootstrap-compatible Combobox that supports a `color` parameter
-    for dynamic style generation.
+    A themed combobox widget with support for dynamic color styling.
 
-    This widget wraps tkinter.ttk.Combobox and applies ttkbootstrap theming
-    based on the provided `color`.
+    This widget extends the standard `ttk.Combobox` by applying a custom
+    style derived from the given `color`. This color affects the active
+    border, arrow button, and selected item styling to provide visual
+    consistency with the application's theme.
+
+    It behaves the same as a standard combobox, supporting value selection,
+    data binding, and editable input, while allowing for a more customized
+    appearance.
 
     Example:
-        Combobox(root, values=["One", "Two"], color="info")
+        Combobox(root, values=["One", "Two", "Three"], color="info")
+
+    Parameters:
+        master (Misc | None): The parent container widget.
+        color (Color, optional): The color theme (e.g., "info", "primary").
+        **kwargs (CbOpts): Additional options accepted by `ttk.Combobox`.
     """
 
     def __init__(

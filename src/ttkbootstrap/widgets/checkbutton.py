@@ -12,13 +12,24 @@ except ImportError:
 
 class Checkbutton(StyledWidgetMixin, ttkCheckbutton):
     """
-    A styled ttkbootstrap-compatible Checkbutton that supports a `color`
-    parameter for dynamic style generation.
+    A themed checkbutton widget with support for dynamic color styling.
 
-    This widget wraps tkinter.ttk.Checkbutton and applies ttkbootstrap styles
-    based on the specified `color`.
+    This widget extends the standard `ttk.Checkbutton` by allowing the `color`
+    parameter to determine the visual appearance using a themed styling system.
+    The `color` defines the highlight color used when the checkbutton is active
+    or selected.
 
-    Unlike Button or Toolbutton, this does not support a `variant`.
+    Functionally, it behaves identically to `ttk.Checkbutton`, supporting the
+    same variable bindings, command callbacks, and tristate logic, while enabling
+     a consistent appearance across themed applications.
+
+    Example:
+        Checkbutton(root, text="Enable feature", color="info", variable=var)
+
+    Parameters:
+        master (Misc, optional): The parent container widget.
+        color (Color, optional): The color theme (e.g., "info", "warning").
+        **kwargs (CbOpts): Additional options accepted by `ttk.Checkbutton`.
     """
 
     def __init__(

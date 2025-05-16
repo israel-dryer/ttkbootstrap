@@ -16,15 +16,27 @@ ScrollbarVariant = Literal["default", "round"]
 
 class Scrollbar(StyledWidgetMixin, ttkScrollbar):
     """
-    A styled ttkbootstrap-compatible Scrollbar that supports `color` and
-    `variant` options for customizing appearance.
+    A themed scrollbar widget with support for color and variant styling.
 
-    Variants:
-        - "default": rectangular thumb
-        - "round": circular/thumbed design
+    This widget extends the standard `ttk.Scrollbar` by applying custom styles
+    based on the provided `color` and `variant`. The `color` affects the thumb
+    and track appearance, while the `variant` determines the shape of the thumb.
+
+    Supported variants:
+        - "default": Standard rectangular thumb
+        - "round": Rounded thumb design
+
+    Useful for customizing scroll appearance to better match modern or
+    stylistically themed interfaces.
 
     Example:
         Scrollbar(root, orient="vertical", color="primary", variant="round")
+
+    Parameters:
+        master (Misc | None): The parent container widget.
+        color (Color): The scrollbar color theme (e.g., "primary", "secondary").
+        variant (str): Either "default" or "round".
+        **kwargs (ScrollbarOpts): Additional options accepted by `ttk.Scrollbar`.
     """
 
     def __init__(

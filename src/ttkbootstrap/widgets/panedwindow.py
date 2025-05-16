@@ -13,13 +13,22 @@ except ImportError:
 
 class PanedWindow(StyledWidgetMixin, ttkPanedWindow):
     """
-    A styled ttkbootstrap-compatible PanedWindow that supports a `color`
-    parameter for background styling of the sash and container.
+    A themed paned window widget with support for sash and background color styling.
 
-    This widget allows you to split the interface into resizable panes.
+    This widget extends the standard `ttk.PanedWindow` by applying a background
+    style to both the container and the sash using the provided `color`. It allows
+    you to divide the layout into resizable panes with a consistent themed appearance.
+
+    Ideal for building adjustable layouts where visual styling is desired for
+    the sash and background regions.
 
     Example:
         PanedWindow(root, orient="horizontal", color="light")
+
+    Parameters:
+        master (Misc | None): The parent container widget.
+        color (Color): The background color theme (e.g., "light", "secondary").
+        **kwargs (PanedWindowOpts): Additional options accepted by `ttk.PanedWindow`.
     """
 
     def __init__(

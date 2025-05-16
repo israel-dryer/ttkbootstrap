@@ -13,11 +13,23 @@ except ImportError:
 
 class LabelFrame(StyledWidgetMixin, ttkLabelFrame):
     """
-    A styled ttkbootstrap-compatible LabelFrame that supports a `color`
-    parameter for themed background styling of the container and label.
+    A themed labelframe widget with support for background color styling.
+
+    This widget extends the standard `ttk.LabelFrame` by applying a
+    background style based on the provided `color`. The style affects both
+    the container background and the label text area, offering a consistent
+    visual theme for grouped sections.
+
+    This is useful for visually organizing related widgets under a labeled
+    container with customizable styling.
 
     Example:
-        LabelFrame(root, text="Section", color="secondary", padding=10)
+        LabelFrame(root, text="Settings", color="secondary", padding=10)
+
+    Parameters:
+        master (Misc | None): The parent container widget.
+        color (Color): The background color theme (e.g., "secondary", "light").
+        **kwargs (LabelFrameOpts): Additional options accepted by `ttk.LabelFrame`.
     """
 
     def __init__(

@@ -13,14 +13,23 @@ except ImportError:
 
 class Entry(StyledWidgetMixin, ttkEntry):
     """
-    A styled ttkbootstrap-compatible Entry widget that supports a `color`
-    parameter for dynamic style generation.
+    A themed entry widget with support for dynamic color styling.
 
-    This widget wraps tkinter.ttk.Entry and applies ttkbootstrap styles
-    based on the specified `color`.
+    This widget extends the standard `ttk.Entry` by applying a style derived
+    from the provided `color`. The color affects elements like the border
+    and focus ring to visually align with the overall theme.
+
+    It retains the full behavior of a normal entry widget, supporting text
+    input, validation, and variable binding, while offering a more customized
+    appearance through theming.
 
     Example:
         Entry(root, textvariable=myvar, color="info")
+
+    Parameters:
+        master (Misc | None): The parent container widget.
+        color (Color, optional): The color theme (e.g., "info", "primary").
+        **kwargs (EntryOpts): Additional options accepted by `ttk.Entry`.
     """
 
     def __init__(

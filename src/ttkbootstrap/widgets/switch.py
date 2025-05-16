@@ -14,14 +14,24 @@ SwitchVariant = Literal["round", "square"]
 
 class Switch(Checkbutton):
     """
-    A styled switch widget that behaves like a toggle control.
+    A themed switch widget that behaves like a toggle control.
 
-    Inherits from the ttkbootstrap Checkbutton and accepts a `color` and
-    a `variant` to control its visual style. Commonly used in settings panels.
+    This widget extends a standard checkbutton and presents a modern on/off
+    toggle interface. It supports both `color` and `variant` parameters to
+    customize its appearance, making it ideal for settings panels or feature toggles.
 
     Supported variants:
-        - "round": renders a pill-style toggle
-        - "square": renders a rectangular toggle
+        - "round": Renders a pill-style toggle switch
+        - "square": Renders a rectangular toggle switch
+
+    Example:
+        Switch(root, text="Enable notifications", color="success", variant="round")
+
+    Parameters:
+        master (Misc | None): The parent container widget.
+        color (Color): The switch color theme (e.g., "success", "info").
+        variant (str): Either "round" or "square".
+        **kwargs (SwitchOpts): Additional options accepted by `ttk.Checkbutton`.
     """
 
     def __init__(
