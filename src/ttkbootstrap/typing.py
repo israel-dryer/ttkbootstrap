@@ -137,3 +137,15 @@ class PanedWindowOptions(TypedDict, total=False):
     cursor: str
     width: int
     height: int
+
+
+class ProgressbarOptions(TypedDict, total=False):
+    orient: Literal["horizontal", "vertical"]
+    length: int
+    mode: Literal["determinate", "indeterminate"]
+    maximum: float
+    value: float
+    variable: str | Variable
+    style: str
+    takefocus: bool | str
+    cursor: str
