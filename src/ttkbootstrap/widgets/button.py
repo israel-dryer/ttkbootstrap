@@ -1,13 +1,12 @@
+from tkinter import Misc
 from tkinter.ttk import Button as ttkButton
-from typing import Any
 
-from ttkbootstrap import Bootstyle
-from ttkbootstrap.utils.style_utils import combine_style_keywords
 from ttkbootstrap.typing import (
     StyleColor as Color,
     ButtonStyleVariant as Variant,
     ButtonOptions as BtnOpts,
 )
+from ttkbootstrap.styledwidget import StyledWidgetMixin
 
 try:
     from typing import Unpack
@@ -15,90 +14,35 @@ except ImportError:
     from typing_extensions import Unpack
 
 
-class Button(ttkButton):
+class Button(StyledWidgetMixin, ttkButton):
     """
-    A styled ttkbootstrap-compatible Button that supports `color` and `variant`
-    for automatic style generation without using `bootstyle`.
+    A themed ttkbootstrap-compatible Button that supports `color` and `variant`
+    parameters for dynamic style generation.
 
-    This widget wraps the standard tkinter.ttk.Button and allows you to specify:
-    - `color`: A ttkbootstrap style color token (e.g. "primary", "success").
-    - `variant`: A ttkbootstrap style variant (e.g. "outline", "link").
+    This widget wraps tkinter.ttk.Button and uses ttkbootstrap's styling system
+    to apply styles based on the provided `color` and `variant`.
 
-    If a `style` is not explicitly provided, the widget will automatically
-    generate and apply one using the given `color` and `variant`.
+    Example:
+        Button(root, text="Save", color="primary", variant="outline")
     """
 
     def __init__(
         self,
-        master: Any = None,
+        master: Misc = None,
         color: Color = None,
         variant: Variant = "default",
         **kwargs: Unpack[BtnOpts],
     ):
         """
-        Initialize a styled Button.
+        Initialize a themed Button.
 
         Parameters:
-            master (Widget, optional): The parent widget.
-            color (Color, optional): A ttkbootstrap color token.
-            variant (Variant, optional): A ttkbootstrap style variant (default: "default").
+            master (Misc, optional): The parent container.
+            color (Color, optional): A ttkbootstrap color token (e.g., "primary").
+            variant (Variant): The visual style variant (e.g., "default", "outline").
             **kwargs (BtnOpts): Additional standard ttk.Button options.
         """
         self._color = color
         self._variant = variant
-
-        style_override = kwargs.pop("style", None)
-
         super().__init__(master, **kwargs)
-
-        if style_override:
-            self.configure(style=style_override)
-        else:
-            keywords = combine_style_keywords(self._color, self._variant)
-            ttk_style = Bootstyle.update_ttk_widget_style(self, keywords, **kwargs)
-            self.configure(style=ttk_style)
-
-    def configure(self, cnf: str | None = None, **kwargs) -> Any:
-        """
-        Get or set configuration options.
-
-        Special options:
-            - color: Update the bootstyle color.
-            - variant: Update the bootstyle variant.
-            - style: Override with a custom ttk style name.
-
-        Parameters:
-            cnf (str | None): Option name to retrieve, or None to set values.
-            **kwargs: Options to update the widget configuration.
-
-        Returns:
-            Any: Value of the queried configuration, or updated config result.
-        """
-        if cnf == "color":
-            return self._color
-        elif cnf == "variant":
-            return self._variant
-        elif cnf is not None:
-            return super().configure(cnf)
-
-        build_style = False
-        if "color" in kwargs:
-            self._color = kwargs.pop("color")
-            build_style = True
-
-        if "variant" in kwargs:
-            self._variant = kwargs.pop("variant")
-            build_style = True
-
-        if "style" in kwargs:
-            style = kwargs.get("style")
-            ttk_style = Bootstyle.update_ttk_widget_style(self, style, **kwargs)
-            kwargs.update(style=ttk_style)
-            build_style = False
-
-        if build_style:
-            keywords = combine_style_keywords(self._color, self._variant)
-            ttk_style = Bootstyle.update_ttk_widget_style(self, keywords, **kwargs)
-            kwargs.update(style=ttk_style)
-
-        return super().configure(**kwargs)
+        self._init_style(kwargs, color=color, variant=variant)

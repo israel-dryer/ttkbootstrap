@@ -10,6 +10,8 @@ except ImportError:
 
 StyleColor = Literal['primary', 'secondary', 'success', 'info', 'warning', 'danger', 'light', 'dark']
 ButtonStyleVariant = Literal['default', 'outline', 'link']
+SwitchVariant = Literal["round", "square"]
+ToolbuttonVariant = Literal["default", "outline"]
 
 
 class ButtonOptions(TypedDict, total=False):
@@ -20,6 +22,25 @@ class ButtonOptions(TypedDict, total=False):
     compound: Literal["top", "bottom", "left", "right", "center", "none"]
     state: Literal["normal", "active", "disabled"]
     takefocus: bool
+    command: Callable[[], None]
+    style: str
+    width: int
+    cursor: str
+    padding: int | str | tuple
+    anchor: Literal["n", "ne", "e", "se", "s", "sw", "w", "nw", "center"]
+
+
+class CheckbuttonOptions(TypedDict, total=False):
+    text: str
+    textvariable: str
+    underline: int
+    image: str
+    compound: Literal["top", "bottom", "left", "right", "center", "none"]
+    state: Literal["normal", "active", "disabled"]
+    takefocus: bool | str
+    variable: str  # Usually a tk.BooleanVar or tk.IntVar; str used for TypedDict compatibility
+    onvalue: str | int
+    offvalue: str | int
     command: Callable[[], None]
     style: str
     width: int

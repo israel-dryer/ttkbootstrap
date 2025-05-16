@@ -11,6 +11,9 @@ from tkinter.ttk import Scale, Scrollbar, Separator
 from tkinter.ttk import Sizegrip, Spinbox, Treeview
 
 from ttkbootstrap.widgets.button import Button
+from ttkbootstrap.widgets.checkbutton import Checkbutton
+from ttkbootstrap.widgets.switch import Switch
+from ttkbootstrap.widgets.toolbutton import Toolbutton
 from ttkbootstrap.widgets.floodgauge import Floodgauge, FloodgaugeLegacy
 from ttkbootstrap.widgets.meter import Meter
 from ttkbootstrap.widgets.dateentry import DateEntry
