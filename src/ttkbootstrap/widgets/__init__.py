@@ -14,6 +14,8 @@ from ttkbootstrap.widgets.button import Button
 from ttkbootstrap.widgets.checkbutton import Checkbutton
 from ttkbootstrap.widgets.switch import Switch
 from ttkbootstrap.widgets.toolbutton import Toolbutton
+from ttkbootstrap.widgets.combobox import Combobox
+
 from ttkbootstrap.widgets.floodgauge import Floodgauge, FloodgaugeLegacy
 from ttkbootstrap.widgets.meter import Meter
 from ttkbootstrap.widgets.dateentry import DateEntry

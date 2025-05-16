@@ -47,3 +47,17 @@ class CheckbuttonOptions(TypedDict, total=False):
     cursor: str
     padding: int | str | tuple
     anchor: Literal["n", "ne", "e", "se", "s", "sw", "w", "nw", "center"]
+
+
+class ComboboxOptions(TypedDict, total=False):
+    textvariable: str
+    values: list[str]
+    state: Literal["normal", "readonly", "disabled"]
+    postcommand: Callable[[], None]
+    height: int
+    justify: Literal["left", "center", "right"]
+    exportselection: bool
+    width: int
+    style: str
+    takefocus: bool | str
+    cursor: str
