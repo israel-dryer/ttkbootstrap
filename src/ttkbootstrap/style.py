@@ -5221,48 +5221,7 @@ class Bootstyle:
         """Setup ttkbootstrap for use with tkinter and ttk. This method
         is called when ttkbootstrap is imported to perform all of the
         necessary method overrides that implement the bootstyle api."""
-        from ttkbootstrap.widgets import TTK_WIDGETS
         from ttkbootstrap.widgets import TK_WIDGETS
-
-        # TTK WIDGETS
-        for widget in TTK_WIDGETS:
-            try:
-                # override widget constructor
-                _init = Bootstyle.override_ttk_widget_constructor(
-                    widget.__init__
-                )
-                widget.__init__ = _init
-
-                # override configure method
-                _configure = Bootstyle.override_ttk_widget_configure(
-                    widget.configure
-                )
-                widget.configure = _configure
-                widget.config = widget.configure
-
-                # override get and set methods
-                _orig_getitem = widget.__getitem
-                _orig_setitem = widget.__setitem
-
-                def __setitem(self, key, val):
-                    if key in ("bootstyle", "style"):
-                        return _configure(self, **{key: val})
-                    return _orig_setitem(key, val)
-
-                def __getitem(self, key):
-                    if key in ("bootstyle", "style"):
-                        return _configure(self, cnf=key)
-                    return _orig_getitem(key)
-
-                if (
-                    widget.__name__ != "OptionMenu"
-                ):  # this has it's own override
-                    widget.__setitem__ = __setitem
-                    widget.__getitem__ = __getitem
-            except:
-                # this may fail in python 3.6 for ttk widgets that do not exist
-                #   in that version.
-                continue
 
         # TK WIDGETS
         for widget in TK_WIDGETS:
