@@ -20,6 +20,7 @@ from ttkbootstrap.widgets.label import Label
 from ttkbootstrap.widgets.labelframe import LabelFrame
 from ttkbootstrap.widgets.menubutton import Menubutton
 from ttkbootstrap.widgets.notebook import Notebook
+from ttkbootstrap.widgets.optionmenu import OptionMenu
 from ttkbootstrap.widgets.panedwindow import PanedWindow
 from ttkbootstrap.widgets.progressbar import Progressbar
 from ttkbootstrap.widgets.radiobutton import Radiobutton
@@ -38,22 +39,6 @@ from ttkbootstrap.widgets.scrolledtext import ScrolledText
 from ttkbootstrap.widgets.scrolledframe import ScrolledFrame
 from ttkbootstrap.widgets.tooltip import ToolTip
 from ttkbootstrap.widgets.toast import ToastNotification
-
-TTK_WIDGETS = (
-    ttk.Labelframe,
-    ttk.Menubutton,
-    ttk.Notebook,
-    ttk.Panedwindow,
-    ttk.Progressbar,
-    ttk.Radiobutton,
-    ttk.Scale,
-    ttk.Scrollbar,
-    ttk.Separator,
-    ttk.Sizegrip,
-    ttk.Spinbox,
-    ttk.Treeview,
-    ttk.OptionMenu,
-)
 
 TK_WIDGETS = (
     tk.Tk,

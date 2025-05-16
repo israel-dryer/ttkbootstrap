@@ -249,3 +249,17 @@ class MenubuttonOptions(TypedDict, total=False):
     cursor: str
     style: str
     takefocus: bool | str
+
+
+class OptionMenuOptions(TypedDict, total=False):
+    text: str
+    textvariable: str | Variable
+    image: str
+    compound: Literal["top", "bottom", "left", "right", "center", "none"]
+    direction: Literal["above", "below", "left", "right", "flush"]
+    state: Literal["normal", "active", "disabled"]
+    underline: int
+    width: int
+    cursor: str
+    style: str
+    takefocus: bool | str
