@@ -1,5 +1,5 @@
-from typing import Literal, TypedDict, Callable
-from tkinter import Variable
+from typing import Literal, TypedDict, Callable, Union
+from tkinter import StringVar, IntVar, BooleanVar, DoubleVar, Variable as TkVariable
 
 from PIL.ImageTk import PhotoImage
 
@@ -8,6 +8,7 @@ try:
 except ImportError:
     from typing_extensions import Unpack
 
+Variable = Union[StringVar, IntVar, BooleanVar, DoubleVar, TkVariable]
 StyleColor = Literal['primary', 'secondary', 'success', 'info', 'warning', 'danger', 'light', 'dark']
 ButtonStyleVariant = Literal['default', 'outline', 'link']
 SwitchVariant = Literal["round", "square"]
@@ -60,4 +61,20 @@ class ComboboxOptions(TypedDict, total=False):
     width: int
     style: str
     takefocus: bool | str
+    cursor: str
+
+
+class EntryOptions(TypedDict, total=False):
+    textvariable: Variable
+    show: str
+    validate: Literal["none", "focus", "focusin", "focusout", "key", "all"]
+    validatecommand: Callable[..., bool]
+    invalidcommand: Callable[[], None]
+    state: Literal["normal", "readonly", "disabled"]
+    exportselection: bool
+    font: str
+    justify: Literal["left", "center", "right"]
+    takefocus: bool | str
+    width: int
+    style: str
     cursor: str
