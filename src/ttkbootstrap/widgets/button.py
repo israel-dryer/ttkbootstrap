@@ -1,7 +1,7 @@
 from tkinter import Misc
 from tkinter.ttk import Button as ttkButton
 
-from ttkbootstrap.typing import (
+from ttkbootstrap.ttk_types import (
     StyleColor as Color,
     ButtonStyleVariant as Variant,
     ButtonOptions as BtnOpts,

@@ -1,6 +1,8 @@
 from tkinter import Text
-from tkinter.ttk import Frame, Scrollbar
-from ttkbootstrap.constants import *
+from tkinter.ttk import Frame
+from typing import Literal
+
+from ttkbootstrap.widgets import Scrollbar
 
 
 class ScrolledText(Frame):
@@ -36,14 +38,15 @@ class ScrolledText(Frame):
     """
 
     def __init__(
-            self,
-            master=None,
-            padding=2,
-            bootstyle=DEFAULT,
-            autohide=False,
-            vbar=True,
-            hbar=False,
-            **kwargs,
+        self,
+        master=None,
+        padding=2,
+        color=None,
+        variant: Literal['default', 'round'] = "default",
+        autohide=False,
+        vbar=True,
+        hbar=False,
+        **kwargs,
     ):
         """
         Parameters:
@@ -93,24 +96,26 @@ class ScrolledText(Frame):
         if vbar:
             self._vbar = Scrollbar(
                 master=self,
-                bootstyle=bootstyle,
+                color=color,
+                variant=variant,
                 command=self._text.yview,
-                orient=VERTICAL,
+                orient="vertical",
             )
-            self._vbar.place(relx=1.0, relheight=1.0, anchor=NE)
+            self._vbar.place(relx=1.0, relheight=1.0, anchor="ne")
             self._text.configure(yscrollcommand=self._vbar.set)
 
         if hbar:
             self._hbar = Scrollbar(
                 master=self,
-                bootstyle=bootstyle,
+                color=color,
+                variant=variant,
                 command=self._text.xview,
-                orient=HORIZONTAL,
+                orient="horizontal",
             )
-            self._hbar.place(rely=1.0, relwidth=1.0, anchor=SW)
+            self._hbar.place(rely=1.0, relwidth=1.0, anchor="sw")
             self._text.configure(xscrollcommand=self._hbar.set, wrap="none")
 
-        self._text.pack(side=LEFT, fill=BOTH, expand=YES)
+        self._text.pack(side="left", fill="both", expand=1)
 
         # position scrollbars
         if self._hbar:

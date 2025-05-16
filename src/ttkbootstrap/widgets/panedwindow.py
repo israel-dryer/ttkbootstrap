@@ -1,8 +1,8 @@
 from tkinter import Misc
 from tkinter.ttk import PanedWindow as ttkPanedWindow
 
-from ttkbootstrap.typing import StyleColor as Color
-from ttkbootstrap.typing import PanedWindowOptions as PanedOpts
+from ttkbootstrap.ttk_types import StyleColor as Color
+from ttkbootstrap.ttk_types import PanedWindowOptions as PanedOpts
 from ttkbootstrap.styledwidget import StyledWidgetMixin
 
 try:

@@ -1,8 +1,8 @@
 from tkinter import Misc
 from tkinter.ttk import Frame as ttkFrame
 
-from ttkbootstrap.typing import StyleColor as Color
-from ttkbootstrap.typing import FrameOptions as FrameOpts
+from ttkbootstrap.ttk_types import StyleColor as Color
+from ttkbootstrap.ttk_types import FrameOptions as FrameOpts
 from ttkbootstrap.styledwidget import StyledWidgetMixin
 
 try:

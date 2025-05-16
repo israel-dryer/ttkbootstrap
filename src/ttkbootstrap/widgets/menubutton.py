@@ -1,8 +1,8 @@
 from tkinter import Misc
 from tkinter.ttk import Menubutton as ttkMenubutton
 
-from ttkbootstrap.typing import StyleColor as Color
-from ttkbootstrap.typing import MenubuttonOptions as MenuBtnOpts
+from ttkbootstrap.ttk_types import StyleColor as Color
+from ttkbootstrap.ttk_types import MenubuttonOptions as MenuBtnOpts
 from ttkbootstrap.styledwidget import StyledWidgetMixin
 
 try:

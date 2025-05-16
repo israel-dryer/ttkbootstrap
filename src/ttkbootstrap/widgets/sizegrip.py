@@ -1,8 +1,8 @@
 from tkinter import Misc
 from tkinter.ttk import Sizegrip as ttkSizegrip
 
-from ttkbootstrap.typing import StyleColor as Color
-from ttkbootstrap.typing import SizegripOptions as GripOpts
+from ttkbootstrap.ttk_types import StyleColor as Color
+from ttkbootstrap.ttk_types import SizegripOptions as GripOpts
 from ttkbootstrap.styledwidget import StyledWidgetMixin
 
 try:

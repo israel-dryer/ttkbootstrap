@@ -1,8 +1,8 @@
 from tkinter import Misc
 from tkinter.ttk import Label as ttkLabel
 
-from ttkbootstrap.typing import StyleColor as Color
-from ttkbootstrap.typing import LabelOptions as LabelOpts
+from ttkbootstrap.ttk_types import StyleColor as Color
+from ttkbootstrap.ttk_types import LabelOptions as LabelOpts
 from ttkbootstrap.styledwidget import StyledWidgetMixin
 
 try:

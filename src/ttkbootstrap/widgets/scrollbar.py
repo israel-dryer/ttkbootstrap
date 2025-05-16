@@ -1,8 +1,8 @@
 from tkinter import Misc
 from tkinter.ttk import Scrollbar as ttkScrollbar
 
-from ttkbootstrap.typing import StyleColor as Color
-from ttkbootstrap.typing import ScrollbarOptions as ScrollOpts
+from ttkbootstrap.ttk_types import StyleColor as Color
+from ttkbootstrap.ttk_types import ScrollbarOptions as ScrollOpts
 from ttkbootstrap.styledwidget import StyledWidgetMixin
 
 try:

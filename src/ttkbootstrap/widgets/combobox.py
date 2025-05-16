@@ -1,8 +1,8 @@
 from tkinter import Misc
 from tkinter.ttk import Combobox as ttkCombobox
 
-from ttkbootstrap.typing import StyleColor as Color
-from ttkbootstrap.typing import ComboboxOptions as CbOpts
+from ttkbootstrap.ttk_types import StyleColor as Color
+from ttkbootstrap.ttk_types import ComboboxOptions as CbOpts
 from ttkbootstrap.styledwidget import StyledWidgetMixin
 
 try:

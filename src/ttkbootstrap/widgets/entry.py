@@ -1,8 +1,8 @@
 from tkinter import Misc
 from tkinter.ttk import Entry as ttkEntry
 
-from ttkbootstrap.typing import StyleColor as Color
-from ttkbootstrap.typing import EntryOptions as EntryOpts
+from ttkbootstrap.ttk_types import StyleColor as Color
+from ttkbootstrap.ttk_types import EntryOptions as EntryOpts
 from ttkbootstrap.styledwidget import StyledWidgetMixin
 
 try:

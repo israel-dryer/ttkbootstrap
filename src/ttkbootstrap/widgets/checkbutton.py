@@ -1,7 +1,7 @@
 from tkinter import Misc
 from tkinter.ttk import Checkbutton as ttkCheckbutton
 
-from ttkbootstrap.typing import StyleColor as Color, CheckbuttonOptions as CbOpts
+from ttkbootstrap.ttk_types import StyleColor as Color, CheckbuttonOptions as CbOpts
 from ttkbootstrap.styledwidget import StyledWidgetMixin
 
 try:

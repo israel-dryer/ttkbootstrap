@@ -1,8 +1,8 @@
 from tkinter import Misc
 from tkinter.ttk import Notebook as ttkNotebook
 
-from ttkbootstrap.typing import StyleColor as Color
-from ttkbootstrap.typing import NotebookOptions as NotebookOpts
+from ttkbootstrap.ttk_types import StyleColor as Color
+from ttkbootstrap.ttk_types import NotebookOptions as NotebookOpts
 from ttkbootstrap.styledwidget import StyledWidgetMixin
 
 try:

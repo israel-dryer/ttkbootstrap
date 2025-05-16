@@ -1,8 +1,8 @@
 from tkinter import Misc
 from tkinter.ttk import Radiobutton as ttkRadiobutton
 
-from ttkbootstrap.typing import StyleColor as Color
-from ttkbootstrap.typing import RadiobuttonOptions as RadioOpts
+from ttkbootstrap.ttk_types import StyleColor as Color
+from ttkbootstrap.ttk_types import RadiobuttonOptions as RadioOpts
 from ttkbootstrap.styledwidget import StyledWidgetMixin
 
 try:

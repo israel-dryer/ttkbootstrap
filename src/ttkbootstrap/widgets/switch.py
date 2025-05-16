@@ -2,7 +2,7 @@ from tkinter import Misc
 from typing import Literal
 
 from .checkbutton import Checkbutton
-from ttkbootstrap.typing import StyleColor as Color, CheckbuttonOptions as CbOpts
+from ttkbootstrap.ttk_types import StyleColor as Color, CheckbuttonOptions as CbOpts
 
 try:
     from typing import Unpack

@@ -1,6 +1,6 @@
 from tkinter import Misc
 from ttkbootstrap.widgets.radiobutton import Radiobutton
-from ttkbootstrap.typing import StyleColor as Color, RadiobuttonOptions as RadioOpts, ToolbuttonVariant
+from ttkbootstrap.ttk_types import StyleColor as Color, RadiobuttonOptions as RadioOpts, ToolbuttonVariant
 
 try:
     from typing import Unpack

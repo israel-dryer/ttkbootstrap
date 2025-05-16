@@ -1,6 +1,6 @@
 from tkinter import Misc
 from ttkbootstrap.widgets.checkbutton import Checkbutton
-from ttkbootstrap.typing import StyleColor as Color, CheckbuttonOptions as CbOpts, ToolbuttonVariant
+from ttkbootstrap.ttk_types import StyleColor as Color, CheckbuttonOptions as CbOpts, ToolbuttonVariant
 
 try:
     from typing import Unpack, Literal

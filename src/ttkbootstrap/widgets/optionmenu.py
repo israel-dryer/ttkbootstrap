@@ -1,8 +1,8 @@
 from tkinter import Misc, StringVar, Menu
 from tkinter.ttk import Menubutton
 
-from ttkbootstrap.typing import StyleColor as Color
-from ttkbootstrap.typing import OptionMenuOptions as OptMenuOpts
+from ttkbootstrap.ttk_types import StyleColor as Color
+from ttkbootstrap.ttk_types import OptionMenuOptions as OptMenuOpts
 
 try:
     from typing import Unpack

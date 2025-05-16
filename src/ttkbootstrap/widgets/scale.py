@@ -1,8 +1,8 @@
 from tkinter import Misc
 from tkinter.ttk import Scale as ttkScale
 
-from ttkbootstrap.typing import StyleColor as Color
-from ttkbootstrap.typing import ScaleOptions as ScaleOpts
+from ttkbootstrap.ttk_types import StyleColor as Color
+from ttkbootstrap.ttk_types import ScaleOptions as ScaleOpts
 from ttkbootstrap.styledwidget import StyledWidgetMixin
 
 try:

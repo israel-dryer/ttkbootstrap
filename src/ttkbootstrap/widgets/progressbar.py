@@ -1,8 +1,8 @@
 from tkinter import Misc
 from tkinter.ttk import Progressbar as ttkProgressbar
 
-from ttkbootstrap.typing import StyleColor as Color
-from ttkbootstrap.typing import ProgressbarOptions as PbarOpts
+from ttkbootstrap.ttk_types import StyleColor as Color
+from ttkbootstrap.ttk_types import ProgressbarOptions as PbarOpts
 from ttkbootstrap.styledwidget import StyledWidgetMixin
 
 try:

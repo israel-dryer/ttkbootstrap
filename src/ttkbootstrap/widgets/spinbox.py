@@ -1,8 +1,8 @@
 from tkinter import Misc
 from tkinter.ttk import Spinbox as ttkSpinbox
 
-from ttkbootstrap.typing import StyleColor as Color
-from ttkbootstrap.typing import SpinboxOptions as SpinOpts
+from ttkbootstrap.ttk_types import StyleColor as Color
+from ttkbootstrap.ttk_types import SpinboxOptions as SpinOpts
 from ttkbootstrap.styledwidget import StyledWidgetMixin
 
 try:

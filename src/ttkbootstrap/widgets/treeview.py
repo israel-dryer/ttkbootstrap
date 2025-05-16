@@ -1,8 +1,8 @@
 from tkinter import Misc
 from tkinter.ttk import Treeview as ttkTreeview
 
-from ttkbootstrap.typing import StyleColor as Color
-from ttkbootstrap.typing import TreeviewOptions as TreeOpts
+from ttkbootstrap.ttk_types import StyleColor as Color
+from ttkbootstrap.ttk_types import TreeviewOptions as TreeOpts
 from ttkbootstrap.styledwidget import StyledWidgetMixin
 
 try:
