@@ -165,3 +165,4 @@ class RadiobuttonOptions(TypedDict, total=False):
     width: int
     cursor: str
     style: str
+    padding: int | str | tuple

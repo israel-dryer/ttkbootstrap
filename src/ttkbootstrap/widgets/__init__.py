@@ -11,7 +11,8 @@ from tkinter.ttk import Sizegrip, Spinbox, Treeview
 from ttkbootstrap.widgets.button import Button
 from ttkbootstrap.widgets.checkbutton import Checkbutton
 from ttkbootstrap.widgets.switch import Switch
-from ttkbootstrap.widgets.toolbutton import Toolbutton
+from ttkbootstrap.widgets.toolcheckbutton import ToolCheckbutton
+from ttkbootstrap.widgets.toolradiobutton import ToolRadiobutton
 from ttkbootstrap.widgets.combobox import Combobox
 from ttkbootstrap.widgets.entry import Entry
 from ttkbootstrap.widgets.frame import Frame
