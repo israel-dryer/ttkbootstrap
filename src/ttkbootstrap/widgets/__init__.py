@@ -20,6 +20,7 @@ from ttkbootstrap.widgets.labelframe import LabelFrame
 from ttkbootstrap.widgets.notebook import Notebook
 from ttkbootstrap.widgets.panedwindow import PanedWindow
 from ttkbootstrap.widgets.progressbar import Progressbar
+from ttkbootstrap.widgets.radiobutton import Radiobutton
 
 from ttkbootstrap.widgets.floodgauge import Floodgauge, FloodgaugeLegacy
 from ttkbootstrap.widgets.meter import Meter

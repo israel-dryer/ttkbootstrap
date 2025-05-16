@@ -149,3 +149,19 @@ class ProgressbarOptions(TypedDict, total=False):
     style: str
     takefocus: bool | str
     cursor: str
+
+
+class RadiobuttonOptions(TypedDict, total=False):
+    text: str
+    textvariable: str | Variable
+    value: str | int
+    variable: str | Variable
+    command: Callable[[], None]
+    image: str
+    compound: Literal["top", "bottom", "left", "right", "center", "none"]
+    state: Literal["normal", "active", "disabled"]
+    underline: int
+    takefocus: bool | str
+    width: int
+    cursor: str
+    style: str
