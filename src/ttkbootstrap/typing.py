@@ -223,3 +223,15 @@ class SpinboxOptions(TypedDict, total=False):
     style: str
     takefocus: bool | str
     cursor: str
+
+
+class TreeviewOptions(TypedDict, total=False):
+    columns: list[str]
+    displaycolumns: list[str]
+    show: Literal["tree", "headings", "tree headings"]
+    selectmode: Literal["browse", "extended", "none"]
+    height: int
+    padding: int | str | tuple[int, ...]
+    takefocus: bool | str
+    cursor: str
+    style: str
