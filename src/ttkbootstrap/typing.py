@@ -9,7 +9,7 @@ except ImportError:
     from typing_extensions import Unpack
 
 Variable = Union[StringVar, IntVar, BooleanVar, DoubleVar, TkVariable]
-StyleColor = Literal['primary', 'secondary', 'success', 'info', 'warning', 'danger', 'light', 'dark']
+StyleColor = Literal['primary', 'secondary', 'success', 'info', 'warning', 'danger', 'light', 'dark', 'default']
 ButtonStyleVariant = Literal['default', 'outline', 'link']
 SwitchVariant = Literal["round", "square"]
 ToolbuttonVariant = Literal["default", "outline"]
@@ -116,6 +116,15 @@ class LabelFrameOptions(TypedDict, total=False):
     relief: Literal["flat", "raised", "sunken", "ridge", "solid", "groove"]
     width: int
     height: int
+    style: str
+    takefocus: bool | str
+    cursor: str
+
+
+class NotebookOptions(TypedDict, total=False):
+    height: int
+    width: int
+    padding: int | str | tuple[int, ...]
     style: str
     takefocus: bool | str
     cursor: str
