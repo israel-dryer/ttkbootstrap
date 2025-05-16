@@ -202,3 +202,24 @@ class SizegripOptions(TypedDict, total=False):
     style: str
     takefocus: bool | str
     cursor: str
+
+
+class SpinboxOptions(TypedDict, total=False):
+    from_: float
+    to: float
+    increment: float
+    format: str
+    values: list[str]
+    textvariable: str | Variable
+    validate: Literal["none", "focus", "focusin", "focusout", "key", "all"]
+    validatecommand: Callable[..., bool]
+    invalidcommand: Callable[[], None]
+    width: int
+    state: Literal["normal", "readonly", "disabled"]
+    justify: Literal["left", "center", "right"]
+    command: Callable[[], None]
+    font: str
+    wrap: bool
+    style: str
+    takefocus: bool | str
+    cursor: str
