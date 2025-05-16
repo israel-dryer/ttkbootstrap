@@ -181,3 +181,13 @@ class ScaleOptions(TypedDict, total=False):
     style: str
     takefocus: bool | str
     cursor: str
+
+
+class ScrollbarOptions(TypedDict, total=False):
+    orient: Literal["horizontal", "vertical"]
+    command: Callable[..., None]
+    takefocus: bool | str
+    cursor: str
+    style: str
+
+    
