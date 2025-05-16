@@ -112,18 +112,19 @@ class FrameOptions(TypedDict, total=False):
 
 class LabelOptions(TypedDict, total=False):
     text: str
-    textvariable: str | Variable
+    textvariable: Union[str, Variable]
     image: str
     compound: Literal["top", "bottom", "left", "right", "center", "none"]
     anchor: Literal["n", "ne", "e", "se", "s", "sw", "w", "nw", "center"]
     justify: Literal["left", "center", "right"]
-    padding: int | tuple[int, ...] | str
+    padding: Union[int, str, tuple[int, int]]
     font: str
     width: int
     style: str
     cursor: str
-    takefocus: bool | str
+    takefocus: Union[bool, str]
     underline: int
+    wraplength: int
 
 
 class LabelFrameOptions(TypedDict, total=False):

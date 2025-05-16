@@ -1,7 +1,9 @@
-from tkinter import font, Toplevel
-from tkinter.ttk import Frame, Label
+from tkinter import font
+
+from ttkbootstrap.ttk_types import StyleColor
+from ttkbootstrap.widgets.frame import Frame
+from ttkbootstrap.widgets.label import Label
 from ttkbootstrap.window import Toplevel
-from ttkbootstrap.constants import LIGHT, BOTH, YES, NW, NSEW, RAISED, SE, NE
 from ttkbootstrap.utility import scale_size
 
 DEFAULT_ICON_WIN32 = "\ue154"
@@ -9,92 +11,89 @@ DEFAULT_ICON = "\u25f0"
 
 
 class ToastNotification:
-    """A semi-transparent popup window for temporary alerts or messages.
-    You may choose to display the toast for a specified period of time,
-    otherwise you must click the toast to close it.
+    """
+    A semi-transparent popup window for temporary alerts or messages.
 
-    ![toast notification](../assets/toast/toast.png)
+    This widget creates a floating `Toplevel` window that displays a brief
+    message, optionally accompanied by an icon and heading. It can be dismissed
+    manually or automatically after a specified duration.
 
-    Examples:
+    Features:
+    ---------
+    - Transparent, borderless popup window
+    - Optional alert sound on display
+    - Optional duration-based auto-dismiss
+    - Fully themed using ttkbootstrap color and style
+    - OS-specific positioning and font fallback
+    - Click-to-dismiss behavior
 
-        ```python
-        import ttkbootstrap as ttk
-        from ttkbootstrap.toast import ToastNotification
+    Parameters:
+    -----------
+    title (str):
+        The title text displayed in bold at the top of the toast.
 
-        app = ttk.Window()
+    message (str):
+        The message content displayed below the title.
 
-        toast = ToastNotification(
-            title="ttkbootstrap toast message",
-            message="This is a toast message",
-            duration=3000,
-        )
-        toast.show_toast()
+    duration (int, optional):
+        The number of milliseconds to display the toast. If None,
+        the toast must be dismissed manually.
 
-        app.mainloop()
-        ```
+    color (StyleColor, optional):
+        A ttkbootstrap color keyword (e.g., "primary", "success")
+        used to style the background and text.
+
+    alert (bool, optional):
+        If True, an audible bell is played when the toast is shown.
+
+    icon (str, optional):
+        A Unicode character to display as the icon. Default is OS-specific.
+        Use an empty string "" to hide the icon.
+
+    iconfont (str | Font, optional):
+        A named font or `tkinter.font.Font` instance used for the icon.
+        Font family is chosen automatically by default.
+
+    position (tuple[int, int, str], optional):
+        The position of the toast on screen. Format: (x_offset, y_offset, anchor),
+        where anchor is one of: "n", "ne", "e", "se", "s", "sw", "w", "nw".
+        If None, OS-specific defaults apply.
+
+    **kwargs:
+        Additional keyword arguments passed to the underlying `Toplevel`.
+
+    Example:
+    --------
+    ```python
+    from ttkbootstrap.toast import ToastNotification
+
+    toast = ToastNotification(
+        title="Success!",
+        message="Your file has been uploaded successfully.",
+        duration=3000,
+        color="success",
+        alert=True
+    )
+    toast.show_toast()
+    ```
     """
 
     def __init__(
-            self,
-            title,
-            message,
-            duration=None,
-            bootstyle=LIGHT,
-            alert=False,
-            icon=None,
-            iconfont=None,
-            position=None,
-            **kwargs,
+        self,
+        title,
+        message,
+        duration=None,
+        color: StyleColor = "light",
+        alert=False,
+        icon=None,
+        iconfont=None,
+        position=None,
+        **kwargs,
     ):
-        """
-        Parameters:
-
-            title (str):
-                The toast title.
-
-            message (str):
-                The toast message.
-
-            duration (int):
-                The number of milliseconds to show the toast. If None
-                (default), then you must click the toast to close it.
-
-            bootstyle (str):
-                Style keywords used to updated the label style. One of
-                the accepted color keywords.
-
-            alert (bool):
-                Indicates whether to ring the display bell when the
-                toast is shown.
-
-            icon (str):
-                A unicode character to display on the top-left hand
-                corner of the toast. The default symbol is OS specific.
-                Pass an empty string to remove the symbol.
-
-            iconfont (Union[str, Font]):
-                The font used to render the icon. By default, this is
-                OS specific. You may need to change the font to enable
-                better character or emoji support for the icon you
-                want to use. Windows (Segoe UI Symbol),
-                Linux (FreeSerif), MacOS (Apple Symbol)
-
-            position (Tuple[int, int, str]):
-                A tuple that controls the position of the toast. Default
-                is OS specific. The tuple cooresponds to
-                (horizontal, vertical, anchor), where the horizontal and
-                vertical elements represent the position of the toplevel
-                releative to the anchor, which is "ne" or top-left by
-                default. Acceptable anchors include: n, e, s, w, nw, ne,
-                sw, se. For example: (100, 100, 'ne').
-
-            **kwargs (Dict):
-                Other keyword arguments passed to the `Toplevel` window.
-        """
         self.message = message
         self.title = title
         self.duration = duration
-        self.bootstyle = bootstyle
+        self.color = color
         self.icon = icon
         self.iconfont = iconfont
         self.iconfont = None
@@ -115,47 +114,49 @@ class ToastNotification:
 
     def show_toast(self, *_):
         """Create and show the toast window."""
-
-        # build toast
         self.toplevel = Toplevel(**self.kwargs)
         self._setup(self.toplevel)
 
-        self.container = Frame(self.toplevel, bootstyle=self.bootstyle)
-        self.container.pack(fill=BOTH, expand=YES)
+        self.container = Frame(self.toplevel, self.color)
+        self.container.pack(fill="both", expand=1)
+
         Label(
             self.container,
             text=self.icon,
             font=self.iconfont,
-            bootstyle=f"{self.bootstyle}-inverse",
-            anchor=NW,
-        ).grid(row=0, column=0, rowspan=2, sticky=NSEW, padx=(5, 0))
+            color=self.color,
+            variant="inverse",
+            anchor="nw",
+        ).grid(row=0, column=0, rowspan=2, sticky="nsew", padx=(5, 0))
+
         Label(
             self.container,
             text=self.title,
             font=self.titlefont,
-            bootstyle=f"{self.bootstyle}-inverse",
-            anchor=NW,
-        ).grid(row=0, column=1, sticky=NSEW, padx=10, pady=(5, 0))
+            color=self.color,
+            variant="inverse",
+            anchor="nw",
+        ).grid(row=0, column=1, sticky="nsew", padx=10, pady=(5, 0))
+
         Label(
             self.container,
             text=self.message,
             wraplength=scale_size(self.toplevel, 300),
-            bootstyle=f"{self.bootstyle}-inverse",
-            anchor=NW,
-        ).grid(row=1, column=1, sticky=NSEW, padx=10, pady=(0, 5))
+            color=self.color,
+            variant="inverse",
+            anchor="nw",
+        ).grid(row=1, column=1, sticky="nsew", padx=10, pady=(0, 5))
 
         self.toplevel.bind("<ButtonPress>", self.hide_toast)
 
-        # alert toast
         if self.alert:
             self.toplevel.bell()
 
-        # specified duration to close
         if self.duration:
             self.toplevel.after(self.duration, self.hide_toast)
 
     def hide_toast(self, *_):
-        """Destroy and close the toast window."""
+        """Destroy and close the toast window with fade-out effect."""
         try:
             alpha = float(self.toplevel.attributes("-alpha"))
             if alpha <= 0.1:
@@ -170,46 +171,45 @@ class ToastNotification:
     def _setup(self, window: Toplevel):
         winsys = window.tk.call("tk", "windowingsystem")
 
-        self.toplevel.configure(relief=RAISED)
+        self.toplevel.configure(relief="raised")
 
-        # minsize
         if "minsize" not in self.kwargs:
             w, h = scale_size(self.toplevel, [300, 75])
             self.toplevel.minsize(w, h)
 
-        # heading font
         _font = font.nametofont("TkDefaultFont")
         self.titlefont = font.Font(
             family=_font["family"],
             size=_font["size"] + 1,
             weight="bold",
         )
-        # symbol font
+
         self.iconfont = font.Font(size=30, weight="bold")
         if winsys == "win32":
             self.iconfont["family"] = "Segoe UI Symbol"
             self.icon = DEFAULT_ICON_WIN32 if self.icon is None else self.icon
             if self.position is None:
                 x, y = scale_size(self.toplevel, [5, 50])
-                self.position = (x, y, SE)
+                self.position = (x, y, "se")
         elif winsys == "x11":
             self.iconfont["family"] = "FreeSerif"
             self.icon = DEFAULT_ICON if self.icon is None else self.icon
             if self.position is None:
                 x, y = scale_size(self.toplevel, [0, 0])
-                self.position = (x, y, SE)
+                self.position = (x, y, "se")
         else:
             self.iconfont["family"] = "Apple Symbols"
             self.toplevel.update_idletasks()
             self.icon = DEFAULT_ICON if self.icon is None else self.icon
             if self.position is None:
                 x, y = scale_size(self.toplevel, [50, 50])
-                self.position = (x, y, NE)
+                self.position = (x, y, "ne")
 
         self.set_geometry()
 
     def set_geometry(self):
-        self.toplevel.update_idletasks()  # actualize geometry
+        """Set the position and anchor geometry of the toast on screen."""
+        self.toplevel.update_idletasks()
         anchor = self.position[-1]
         x_anchor = "-" if "w" not in anchor else "+"
         y_anchor = "-" if "n" not in anchor else "+"
@@ -222,6 +222,7 @@ class ToastNotification:
             xpos = screen_w - top_w
         else:
             xpos = self.position[0]
+
         if all(["n" not in anchor, "s" not in anchor]):
             ypos = screen_h - top_h
         else:
