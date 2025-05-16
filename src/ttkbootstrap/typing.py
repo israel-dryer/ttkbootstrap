@@ -33,13 +33,13 @@ class ButtonOptions(TypedDict, total=False):
 
 class CheckbuttonOptions(TypedDict, total=False):
     text: str
-    textvariable: str
+    textvariable: str | Variable
     underline: int
     image: str
     compound: Literal["top", "bottom", "left", "right", "center", "none"]
     state: Literal["normal", "active", "disabled"]
     takefocus: bool | str
-    variable: str  # Usually a tk.BooleanVar or tk.IntVar; str used for TypedDict compatibility
+    variable: str | Variable
     onvalue: str | int
     offvalue: str | int
     command: Callable[[], None]
@@ -51,7 +51,7 @@ class CheckbuttonOptions(TypedDict, total=False):
 
 
 class ComboboxOptions(TypedDict, total=False):
-    textvariable: str
+    textvariable: str | Variable
     values: list[str]
     state: Literal["normal", "readonly", "disabled"]
     postcommand: Callable[[], None]
@@ -65,7 +65,7 @@ class ComboboxOptions(TypedDict, total=False):
 
 
 class EntryOptions(TypedDict, total=False):
-    textvariable: Variable
+    textvariable: str | Variable
     show: str
     validate: Literal["none", "focus", "focusin", "focusout", "key", "all"]
     validatecommand: Callable[..., bool]
@@ -89,3 +89,19 @@ class FrameOptions(TypedDict, total=False):
     style: str
     takefocus: bool | str
     cursor: str
+
+
+class LabelOptions(TypedDict, total=False):
+    text: str
+    textvariable: str | Variable
+    image: str
+    compound: Literal["top", "bottom", "left", "right", "center", "none"]
+    anchor: Literal["n", "ne", "e", "se", "s", "sw", "w", "nw", "center"]
+    justify: Literal["left", "center", "right"]
+    padding: int | tuple[int, ...] | str
+    font: str
+    width: int
+    style: str
+    cursor: str
+    takefocus: bool | str
+    underline: int

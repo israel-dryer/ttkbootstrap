@@ -15,6 +15,7 @@ from ttkbootstrap.widgets.toolbutton import Toolbutton
 from ttkbootstrap.widgets.combobox import Combobox
 from ttkbootstrap.widgets.entry import Entry
 from ttkbootstrap.widgets.frame import Frame
+from ttkbootstrap.widgets.label import Label
 
 from ttkbootstrap.widgets.floodgauge import Floodgauge, FloodgaugeLegacy
 from ttkbootstrap.widgets.meter import Meter
@@ -27,7 +28,6 @@ from ttkbootstrap.widgets.toast import ToastNotification
 
 TTK_WIDGETS = (
     ttk.Labelframe,
-    ttk.Label,
     ttk.Menubutton,
     ttk.Notebook,
     ttk.Panedwindow,
