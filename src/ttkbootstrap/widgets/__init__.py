@@ -2,8 +2,6 @@ import tkinter as tk
 from tkinter import ttk
 
 from tkinter import font
-from tkinter.ttk import Checkbutton, Combobox
-from tkinter.ttk import Entry, Frame, Label
 from tkinter.ttk import Labelframe, LabelFrame, Menubutton
 from tkinter.ttk import Notebook, OptionMenu, PanedWindow
 from tkinter.ttk import Panedwindow, Progressbar, Radiobutton
@@ -16,6 +14,7 @@ from ttkbootstrap.widgets.switch import Switch
 from ttkbootstrap.widgets.toolbutton import Toolbutton
 from ttkbootstrap.widgets.combobox import Combobox
 from ttkbootstrap.widgets.entry import Entry
+from ttkbootstrap.widgets.frame import Frame
 
 from ttkbootstrap.widgets.floodgauge import Floodgauge, FloodgaugeLegacy
 from ttkbootstrap.widgets.meter import Meter
@@ -27,10 +26,6 @@ from ttkbootstrap.widgets.tooltip import ToolTip
 from ttkbootstrap.widgets.toast import ToastNotification
 
 TTK_WIDGETS = (
-    ttk.Checkbutton,
-    ttk.Combobox,
-    ttk.Entry,
-    ttk.Frame,
     ttk.Labelframe,
     ttk.Label,
     ttk.Menubutton,

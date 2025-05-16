@@ -78,3 +78,14 @@ class EntryOptions(TypedDict, total=False):
     width: int
     style: str
     cursor: str
+
+
+class FrameOptions(TypedDict, total=False):
+    borderwidth: int
+    relief: str  # Could refine with Literal["flat", "groove", "raised", "ridge", "solid", "sunken"]
+    padding: int | tuple[int, ...] | str
+    width: int
+    height: int
+    style: str
+    takefocus: bool | str
+    cursor: str
