@@ -190,4 +190,12 @@ class ScrollbarOptions(TypedDict, total=False):
     cursor: str
     style: str
 
-    
+
+class SeparatorOptions(TypedDict, total=False):
+    orient: Literal["horizontal", "vertical"]
+    style: str
+    takefocus: bool | str
+    cursor: str
+
+
+
