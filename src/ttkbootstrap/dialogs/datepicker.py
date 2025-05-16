@@ -1,11 +1,13 @@
 import calendar
 import locale
 from datetime import datetime
-from tkinter import FLAT, BOTH, YES, X, CENTER, NSEW, LEFT
+from tkinter import IntVar, StringVar
+from typing import Callable
 
-import ttkbootstrap as ttk
-from ttkbootstrap.constants import PRIMARY, SECONDARY, INVERSE
+from ttkbootstrap.widgets import Frame, Label, ToolRadiobutton, Button, Radiobutton
+from ttkbootstrap.window import Toplevel
 from ttkbootstrap.localization import MessageCatalog
+from ttkbootstrap.ttk_types import StyleColor
 
 
 class DatePickerDialog:
@@ -21,13 +23,22 @@ class DatePickerDialog:
     ---------
     - Displays the current date or a specified `startdate`
     - Navigate months with left/right chevrons
-        • Left-click chevron → +/-1 month
-        • Right-click chevron → +/-1 year
+        • Left-click chevron → ±1 month
+        • Right-click chevron → ±1 year
     - Click the month-year label to reset to the `startdate`
     - Localized weekday labels using `MessageCatalog`
-    - Fully themed with `bootstyle` (primary, secondary, etc.)
     - Calendar starts on a configurable weekday (`firstweekday`)
+    - Fully themed using `color`
     - Automatically closes after selection
+
+    Theming:
+    --------
+    The visual appearance of the dialog can be customized using the `color` parameter.
+    This color will be applied to the header background, selected day buttons,
+    and navigation controls.
+
+    Available colors include: 'primary', 'secondary', 'success', 'info',
+    'warning', 'danger', 'light', 'dark'.
 
     Notes:
     ------
@@ -37,12 +48,12 @@ class DatePickerDialog:
     """
 
     def __init__(
-            self,
-            parent=None,
-            title=" ",
-            firstweekday=6,
-            startdate=None,
-            bootstyle=PRIMARY,
+        self,
+        parent=None,
+        title=" ",
+        firstweekday=6,
+        startdate=None,
+        color: StyleColor = "primary",
     ):
         """
         Initialize a new DatePickerDialog.
@@ -60,15 +71,13 @@ class DatePickerDialog:
 
             firstweekday (int, optional):
                 Index of the first day of the week (0 = Monday, 6 = Sunday).
-                Default is `6` (Sunday-first calendar).
+                The default is `6` (Sunday-first calendar).
 
             startdate (datetime.date, optional):
                 The date to initially display and select. Defaults to today’s date.
 
-            bootstyle (str, optional):
-                The ttkbootstrap style to apply for coloring (e.g., 'primary',
-                'secondary', 'info', etc.). Affects header, navigation, and
-                selection styling.
+            color (StyleColor, optional):
+                Color for header, navigation, and selection styling.
         """
         # Safe locale setup for weekday/month names
         try:
@@ -79,16 +88,16 @@ class DatePickerDialog:
         self.parent = parent
         self.firstweekday = firstweekday
         self.startdate = startdate or datetime.today().date()
-        self.bootstyle = bootstyle or PRIMARY
+        self.color = color
 
         self.date_selected = self.startdate
         self.date = self.startdate
         self.calendar = calendar.Calendar(firstweekday=self.firstweekday)
 
-        self.titlevar = ttk.StringVar()
-        self.datevar = ttk.IntVar()
+        self.titlevar = StringVar()
+        self.datevar = IntVar()
 
-        self.root = ttk.Toplevel(
+        self.root = Toplevel(
             title=title,
             transient=self.parent,
             resizable=(False, False),
@@ -103,12 +112,12 @@ class DatePickerDialog:
 
     def _setup_calendar(self):
         """Create the layout and visual elements for the calendar dialog."""
-        self.frm_calendar = ttk.Frame(master=self.root, padding=0, borderwidth=0, relief=FLAT)
-        self.frm_calendar.pack(fill=BOTH, expand=YES)
-        self.frm_title = ttk.Frame(self.frm_calendar, padding=(3, 3))
-        self.frm_title.pack(fill=X)
-        self.frm_header = ttk.Frame(self.frm_calendar, bootstyle=SECONDARY)
-        self.frm_header.pack(fill=X)
+        self.frm_calendar = Frame(master=self.root, padding=0, borderwidth=0, relief="flat")
+        self.frm_calendar.pack(fill="both", expand=1)
+        self.frm_title = Frame(self.frm_calendar, padding=(3, 3))
+        self.frm_title.pack(fill="x")
+        self.frm_header = Frame(self.frm_calendar, color="secondary")
+        self.frm_header.pack(fill="x")
 
         self.root.withdraw()
         self.frm_calendar.update_idletasks()
@@ -118,11 +127,11 @@ class DatePickerDialog:
         self.root.deiconify()
 
     def _update_widget_bootstyle(self):
-        """Apply the current `bootstyle` to key calendar components."""
-        self.frm_title.configure(bootstyle=self.bootstyle)
-        self.title.configure(bootstyle=f"{self.bootstyle}-inverse")
-        self.prev_period.configure(style=f"Chevron.{self.bootstyle}.TButton")
-        self.next_period.configure(style=f"Chevron.{self.bootstyle}.TButton")
+        """Apply the current `bootstyle` to key calendar parts."""
+        self.frm_title.configure(color=self.color)
+        self.title.configure(color=self.color, variant="inverse")
+        self.prev_period.configure(style=f"Chevron.{self.color}.TButton")
+        self.next_period.configure(style=f"Chevron.{self.color}.TButton")
 
     def _draw_calendar(self):
         """Render the grid of date buttons for the currently displayed month."""
@@ -130,41 +139,49 @@ class DatePickerDialog:
         self._set_title()
         self._current_month_days()
 
-        self.frm_dates = ttk.Frame(self.frm_calendar)
-        self.frm_dates.pack(fill=BOTH, expand=YES)
+        self.frm_dates = Frame(self.frm_calendar)
+        self.frm_dates.pack(fill="both", expand=1)
 
         for row, weekday_list in enumerate(self.monthdays):
             for col, day in enumerate(weekday_list):
                 self.frm_dates.columnconfigure(col, weight=1)
                 if day == 0:
                     # Display overflow days from previous/next month in muted style
-                    ttk.Label(
+                    Label(
                         master=self.frm_dates,
-                        text=self.monthdates[row][col].day,
-                        anchor=CENTER,
+                        text=str(self.monthdates[row][col].day),
+                        anchor="center",
                         padding=5,
-                        bootstyle=SECONDARY,
-                    ).grid(row=row, column=col, sticky=NSEW)
+                        color="secondary",
+                    ).grid(row=row, column=col, sticky="nsew")
                 else:
                     is_selected = (
-                            day == self.date_selected.day and
-                            self.date.month == self.date_selected.month and
-                            self.date.year == self.date_selected.year
+                        day == self.date_selected.day and
+                        self.date.month == self.date_selected.month and
+                        self.date.year == self.date_selected.year
                     )
-                    day_style = "secondary-toolbutton" if is_selected else f"{self.bootstyle}-calendar"
 
                     def selected(x=row, y=col):
                         self._on_date_selected(x, y)
 
-                    ttk.Radiobutton(
-                        master=self.frm_dates,
-                        variable=self.datevar,
-                        value=day,
-                        text=day,
-                        bootstyle=day_style,
-                        padding=5,
-                        command=selected,
-                    ).grid(row=row, column=col, sticky=NSEW)
+                    if is_selected:
+                        ToolRadiobutton(
+                            master=self.frm_dates,
+                            variable=self.datevar,
+                            value=day,
+                            text=str(day),
+                            color="secondary",
+                            command=selected
+                        ).grid(row=row, column=col, sticky="nsew")
+                    else:
+                        CalendarRadio(
+                            master=self.frm_dates,
+                            variable=self.datevar,
+                            value=day,
+                            text=str(day),
+                            color=self.color,
+                            command=selected
+                        ).grid(row=row, column=col, sticky="nsew")
 
     def _draw_titlebar(self):
         """
@@ -175,32 +192,33 @@ class DatePickerDialog:
         - Month/year label that resets the view on click
         - Weekday column headers
         """
-        self.prev_period = ttk.Button(master=self.frm_title, text="«", command=self.on_prev_month)
-        self.prev_period.pack(side=LEFT)
+        self.prev_period = Button(master=self.frm_title, text="«", command=self.on_prev_month)
+        self.prev_period.pack(side="left")
 
-        self.title = ttk.Label(
+        self.title = Label(
             master=self.frm_title,
             textvariable=self.titlevar,
-            anchor=CENTER,
+            anchor="center",
             font="-weight bold",
         )
-        self.title.pack(side=LEFT, fill=X, expand=YES)
+        self.title.pack(side="left", fill="x", expand=1)
 
-        self.next_period = ttk.Button(master=self.frm_title, text="»", command=self.on_next_month)
-        self.next_period.pack(side=LEFT)
+        self.next_period = Button(master=self.frm_title, text="»", command=self.on_next_month)
+        self.next_period.pack(side="left")
 
         self.prev_period.bind("<Button-3>", self.on_prev_year, "+")
         self.next_period.bind("<Button-3>", self.on_next_year, "+")
         self.title.bind("<Button-1>", self.on_reset_date)
 
         for col in self._header_columns():
-            ttk.Label(
+            Label(
                 master=self.frm_header,
                 text=col,
-                anchor=CENTER,
+                anchor="center",
                 padding=5,
-                bootstyle=(SECONDARY, INVERSE),
-            ).pack(side=LEFT, fill=X, expand=YES)
+                color="secondary",
+                variant="inverse"
+            ).pack(side="left", fill="x", expand=1)
 
     def _set_title(self):
         """Update the title label with the current month and year."""
@@ -259,6 +277,7 @@ class DatePickerDialog:
             ypos = self.root.master.winfo_rooty()
         self.root.geometry(f"+{xpos}+{ypos}")
 
+    @staticmethod
     def _selection_callback(func):
         """Decorator to redraw the calendar after changing the month/year."""
 
@@ -272,13 +291,13 @@ class DatePickerDialog:
     @_selection_callback
     def on_next_month(self):
         """Advance the calendar to the next month."""
-        year, month = self._nextmonth(self.date.year, self.date.month)
+        year, month = self._next_month(self.date.year, self.date.month)
         self.date = datetime(year=year, month=month, day=1).date()
 
     @_selection_callback
     def on_prev_month(self):
         """Move the calendar to the previous month."""
-        year, month = self._prevmonth(self.date.year, self.date.month)
+        year, month = self._prev_month(self.date.year, self.date.month)
         self.date = datetime(year=year, month=month, day=1).date()
 
     @_selection_callback
@@ -297,7 +316,7 @@ class DatePickerDialog:
         self.date = self.startdate
 
     @staticmethod
-    def _nextmonth(year, month):
+    def _next_month(year, month):
         """
         Return the year and month of the following month.
 
@@ -307,7 +326,7 @@ class DatePickerDialog:
         return (year + 1, 1) if month == 12 else (year, month + 1)
 
     @staticmethod
-    def _prevmonth(year, month):
+    def _prev_month(year, month):
         """
         Return the year and month of the preceding month.
 
@@ -315,3 +334,11 @@ class DatePickerDialog:
             Tuple[int, int]: (year, month)
         """
         return (year - 1, 12) if month == 1 else (year, month - 1)
+
+
+class CalendarRadio(Radiobutton):
+    """A radiobutton for the calendar widget"""
+
+    def __init__(self, master=None, color: StyleColor = "primary", **kwargs):
+        kwargs.update(variant="calendar")
+        super().__init__(master, color=color, **kwargs)

@@ -6,7 +6,7 @@ from ttkbootstrap.ttk_types import RadiobuttonOptions as RadioOpts
 from ttkbootstrap.styledwidget import StyledWidgetMixin
 
 try:
-    from typing import Unpack
+    from typing import Literal, Unpack
 except ImportError:
     from typing_extensions import Unpack
 
@@ -46,6 +46,6 @@ class Radiobutton(StyledWidgetMixin, ttkRadiobutton):
             **kwargs (RadioOpts): Additional standard ttk.Radiobutton options.
         """
         self._color = color
-        self._variant = None  # Radiobuttons do not support variants
+        self._variant = kwargs.pop('variant', 'default')
         super().__init__(master, **kwargs)
-        self._init_style(kwargs, color=color, variant="")
+        self._init_style(kwargs, color=color, variant=self._variant)

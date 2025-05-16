@@ -2,7 +2,7 @@ from tkinter import Misc
 from tkinter.ttk import Button as ttkButton
 
 from ttkbootstrap.ttk_types import (
-    StyleColor as Color,
+    StyleColor,
     ButtonStyleVariant as Variant,
     ButtonOptions as BtnOpts,
 )
@@ -31,7 +31,7 @@ class Button(StyledWidgetMixin, ttkButton):
 
     Parameters:
         master (Misc, optional): The parent container widget.
-        color (Color, optional): The color theme (e.g., "primary", "success").
+        color (StyleColor, optional): The color theme (e.g., "primary", "success").
         variant (Variant): The button's visual variant (e.g., "default", "outline").
         **kwargs (BtnOpts): Additional standard options accepted by `ttk.Button`.
     """
@@ -39,7 +39,7 @@ class Button(StyledWidgetMixin, ttkButton):
     def __init__(
         self,
         master: Misc = None,
-        color: Color = None,
+        color: StyleColor = None,
         variant: Variant = "default",
         **kwargs: Unpack[BtnOpts],
     ):

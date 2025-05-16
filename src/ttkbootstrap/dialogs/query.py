@@ -7,6 +7,7 @@ from ttkbootstrap.dialogs.message import Messagebox
 from ttkbootstrap.dialogs.datepicker import DatePickerDialog
 from ttkbootstrap.dialogs.fontpicker import FontPickerDialog
 from ttkbootstrap.localization import MessageCatalog
+from ttkbootstrap.ttk_types import StyleColor
 
 
 class QueryDialog(Dialog):
@@ -19,16 +20,16 @@ class QueryDialog(Dialog):
     """
 
     def __init__(
-            self,
-            prompt,
-            title=" ",
-            initialvalue="",
-            minvalue=None,
-            maxvalue=None,
-            width=65,
-            datatype=str,
-            padding=(20, 20),
-            parent=None,
+        self,
+        prompt,
+        title=" ",
+        initialvalue="",
+        minvalue=None,
+        maxvalue=None,
+        width=65,
+        datatype=str,
+        padding=(20, 20),
+        parent=None,
     ):
         """
         Parameters:
@@ -202,7 +203,7 @@ class Querybox:
 
     @staticmethod
     def get_color(
-            parent=None, title="Color Chooser", initialcolor=None, **kwargs
+        parent=None, title="Color Chooser", initialcolor=None, **kwargs
     ):
         """Show a color picker and return the select color when the
         user pressed OK.
@@ -238,11 +239,11 @@ class Querybox:
 
     @staticmethod
     def get_date(
-            parent=None,
-            title=" ",
-            firstweekday=6,
-            startdate=None,
-            bootstyle="primary",
+        parent=None,
+        title=" ",
+        firstweekday=6,
+        startdate: 'datetime' = None,
+        color: StyleColor = "primary",
     ):
         """Shows a calendar popup and returns the selection.
 
@@ -265,10 +266,8 @@ class Querybox:
             startdate (datetime):
                 The date to be in focus when the widget is displayed;
 
-            bootstyle (str):
-                The following colors can be used to change the color of the
-                title and hover / pressed color -> primary, secondary, info,
-                warning, success, danger, light, dark.
+            color (str):
+                The color of the titlebar and and hover / pressed color
 
         Returns:
 
@@ -280,13 +279,13 @@ class Querybox:
             title=title,
             firstweekday=firstweekday,
             startdate=startdate,
-            bootstyle=bootstyle,
+            color=color,
         )
         return chooser.date_selected
 
     @staticmethod
     def get_string(
-            prompt="", title=" ", initialvalue=None, parent=None, **kwargs
+        prompt="", title=" ", initialvalue=None, parent=None, **kwargs
     ):
         """Request a string type input from the user.
 
@@ -331,13 +330,13 @@ class Querybox:
 
     @staticmethod
     def get_integer(
-            prompt="",
-            title=" ",
-            initialvalue=None,
-            minvalue=None,
-            maxvalue=None,
-            parent=None,
-            **kwargs,
+        prompt="",
+        title=" ",
+        initialvalue=None,
+        minvalue=None,
+        maxvalue=None,
+        parent=None,
+        **kwargs,
     ):
         """Request an integer type input from the user.
 
@@ -395,13 +394,13 @@ class Querybox:
 
     @staticmethod
     def get_float(
-            prompt="",
-            title=" ",
-            initialvalue=None,
-            minvalue=None,
-            maxvalue=None,
-            parent=None,
-            **kwargs,
+        prompt="",
+        title=" ",
+        initialvalue=None,
+        minvalue=None,
+        maxvalue=None,
+        parent=None,
+        **kwargs,
     ):
         """Request a float type input from the user.
 
