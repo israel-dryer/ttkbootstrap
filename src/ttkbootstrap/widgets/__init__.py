@@ -16,6 +16,7 @@ from ttkbootstrap.widgets.combobox import Combobox
 from ttkbootstrap.widgets.entry import Entry
 from ttkbootstrap.widgets.frame import Frame
 from ttkbootstrap.widgets.label import Label
+from ttkbootstrap.widgets.labelframe import LabelFrame
 
 from ttkbootstrap.widgets.floodgauge import Floodgauge, FloodgaugeLegacy
 from ttkbootstrap.widgets.meter import Meter

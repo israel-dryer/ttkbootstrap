@@ -105,3 +105,17 @@ class LabelOptions(TypedDict, total=False):
     cursor: str
     takefocus: bool | str
     underline: int
+
+
+class LabelFrameOptions(TypedDict, total=False):
+    text: str
+    labelanchor: Literal["n", "ne", "e", "se", "s", "sw", "w", "nw", "center"]
+    underline: int
+    padding: int | str | tuple[int, ...]
+    borderwidth: int
+    relief: Literal["flat", "raised", "sunken", "ridge", "solid", "groove"]
+    width: int
+    height: int
+    style: str
+    takefocus: bool | str
+    cursor: str
