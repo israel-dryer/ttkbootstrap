@@ -31,7 +31,7 @@ from ttkbootstrap.widgets.sizegrip import Sizegrip
 from ttkbootstrap.widgets.spinbox import Spinbox
 from ttkbootstrap.widgets.treeview import Treeview
 
-from ttkbootstrap.widgets.floodgauge import Floodgauge, FloodgaugeLegacy
+from ttkbootstrap.widgets.floodgauge import Floodgauge
 from ttkbootstrap.widgets.meter import Meter
 from ttkbootstrap.widgets.dateentry import DateEntry
 from ttkbootstrap.widgets.tableview import Tableview
