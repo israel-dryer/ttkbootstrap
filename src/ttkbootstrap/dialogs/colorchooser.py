@@ -559,7 +559,7 @@ class ColorChooserDialog(Dialog):
         self.colorchooser.sync_color_values('hex')
 
     def on_button_press(self, button):
-        if button.cget('text') == 'OK':
+        if button.cget('text') == MessageCatalog.translate('OK'):
             values = self.colorchooser.get_variables()
             self._result = ColorChoice(
                 rgb=(values.r, values.g, values.b),
