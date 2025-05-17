@@ -12,21 +12,20 @@ except ImportError:
 
 
 class Frame(StyledWidgetMixin, ttkFrame):
-    """
-    A themed frame widget with support for background color styling.
+    """A themed frame widget with background color styling support.
 
-    This widget extends the standard `ttk.Frame` by applying a background
-    style based on the provided `color`. It allows for consistent visual theming
-    of container elements across your application. The `"default"` color uses
-    the base theme's standard background color for frames.
+    This widget extends the standard `ttk.Frame` and applies a background
+    style based on the specified `color`. It allows for consistent visual theming
+    of containers throughout your application.
 
-    It behaves identically to `ttk.Frame`, supporting layout, nesting,
-    and padding, while allowing for custom appearance through dynamic styling.
+    All layout, padding, and nesting behaviors of `ttk.Frame` are preserved.
 
     Example:
-        Frame(root, color="light", padding=10)
+        >>> from ttkbootstrap.widgets import Frame
+        >>> frame = Frame(root, color="light", padding=10)
+        >>> frame.pack(fill="both", expand=True)
 
-    Parameters:
+    Args:
         master (Misc | None): The parent container widget.
         color (Color): The background color theme (e.g., "light", "primary", "default").
         **kwargs (FrameOpts): Additional options accepted by `ttk.Frame`.
@@ -38,13 +37,15 @@ class Frame(StyledWidgetMixin, ttkFrame):
         color: Color = "default",
         **kwargs: Unpack[FrameOpts],
     ):
-        """
-        Initialize a styled Frame.
+        """Initialize the themed Frame widget.
 
-        Parameters:
+        This constructor configures the widget’s style based on the specified color
+        and passes additional options to the base `ttk.Frame`.
+
+        Args:
             master (Misc | None): The parent container.
             color (Color): A ttkbootstrap background color token (e.g., "light", "primary", "default").
-            **kwargs (FrameOpts): Additional standard ttk.Frame options.
+            **kwargs (FrameOpts): Additional standard `ttk.Frame` options.
         """
         self._color = color
         self._variant = None  # Frame has no variant support

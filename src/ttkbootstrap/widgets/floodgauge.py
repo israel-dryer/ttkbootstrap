@@ -6,77 +6,47 @@ from ttkbootstrap.ttk_types import StyleColor
 
 
 class Floodgauge(tk.Canvas):
-    """
-    A canvas-based progress gauge that supports themed coloring, label formatting,
-    and both determinate and indeterminate animation modes.
+    """A canvas-based progress gauge with theme-aware styling and animation.
 
     This widget provides a flexible and visually rich alternative to the
-    standard `ttk.Progressbar`. It is fully theme-aware via ttkbootstrap’s
-    `StyleColor` system and dynamically responds to theme changes.
+    standard `ttk.Progressbar`. It supports dynamic styling using
+    ttkbootstrap color tokens and responds to theme changes in real time.
+
+    The gauge can operate in either determinate mode (static fill based on value)
+    or indeterminate mode (animated bounce effect). Labels can be rendered in the
+    center using a format mask, a bound `textvariable`, or a fixed `text` value.
 
     Features:
-    ---------
-    - Canvas-drawn fill and label for complete styling control
-    - Lightened trough color based on primary bar color
-    - Auto-contrast text color for legibility
-    - Determinate progress and bounce-style indeterminate animation
-    - Label can be bound to a `textvariable` or formatted using a `mask`
-    - Theme updates via `<<ThemeChanged>>` event
-    - Fully supports `configure`, `cget`, `__getitem__`, `__setitem__`
+        - Canvas-drawn bar and label for precise style control
+        - Trough color automatically lightened from the bar color
+        - Auto-contrast text color for legibility
+        - Determinate and indeterminate animation modes
+        - Theme-aware via `Style.get_instance()`
+        - Binds to `variable` and `textvariable` if provided
+        - Handles dynamic resizing and redraws automatically
+        - Supports `configure`, `cget`, `__getitem__`, and `__setitem__`
 
-    Parameters:
-    -----------
-    master : Widget, optional
-        Parent container.
-
-    value : int, optional
-        Initial value of the gauge. Default is 0.
-
-    maximum : int, optional
-        Maximum progress value. Default is 100.
-
-    mode : str, optional
-        Mode of the gauge: "determinate" (default) or "indeterminate".
-
-    mask : str, optional
-        A format string (e.g., "Loading {}%") used to format the label
-        based on the current value.
-
-    text : str, optional
-        A static label used if `mask` is not provided.
-
-    font : tuple or tkinter.Font, optional
-        Font used to render the center label. Default is Helvetica 12.
-
-    color : StyleColor, optional
-        The theme color for the bar (e.g., "primary", "info", "danger").
-        The trough and text will be derived from this color.
-
-    orient : str, optional
-        Orientation of the gauge: "horizontal" (default) or "vertical".
-
-    length : int, optional
-        Long axis dimension (width if horizontal, height if vertical).
-        Default is 200.
-
-    thickness : int, optional
-        Short axis dimension (height if horizontal, width if vertical).
-        Default is 50.
-
-    variable : tk.IntVar, optional
-        An optional `IntVar` bound to the gauge’s current value.
-        The gauge updates when the variable changes.
-
-    textvariable : tk.StringVar, optional
-        An optional `StringVar` bound to the label text.
+    Args:
+        master (tk.Widget, optional): Parent container.
+        value (int, optional): Initial gauge value. Defaults to 0.
+        maximum (int, optional): Maximum gauge value. Defaults to 100.
+        mode (str, optional): "determinate" (default) or "indeterminate".
+        mask (str, optional): Format string for the label, e.g. "Loading {}%".
+        text (str, optional): Static label (overridden by `mask` or `textvariable`).
+        font (tuple | tk.Font, optional): Font used for the label. Defaults to Helvetica 12.
+        color (StyleColor, optional): Theme color token (e.g. "primary", "info").
+        orient (str, optional): "horizontal" (default) or "vertical".
+        length (int, optional): Main axis length (width if horizontal). Defaults to 200.
+        thickness (int, optional): Cross-axis thickness. Defaults to 50.
+        variable (tk.IntVar, optional): Bound variable to reflect value updates.
+        textvariable (tk.StringVar, optional): Bound label text variable.
+        **kwargs: Additional canvas options.
 
     Example:
-    --------
-        ```python
-        fg = Floodgauge(root, value=25, maximum=100, color="info", mask="Progress: {}%")
-        fg.pack(fill="x", padx=10, pady=10)
-        fg.start()  # starts animation if mode is indeterminate
-        ```
+        >>> from ttkbootstrap.widgets import Floodgauge
+        >>> fg = Floodgauge(root, value=25, maximum=100, color="info", mask="Progress: {}%")
+        >>> fg.pack(fill="x", padx=10, pady=10)
+        >>> fg.start()  # Starts animation if mode is 'indeterminate'
     """
 
     def __init__(
@@ -94,6 +64,34 @@ class Floodgauge(tk.Canvas):
         thickness=50,
         **kwargs
     ):
+        """Initialize a themed, animated flood-style progress gauge.
+
+        This constructor sets up the canvas, binds to variables for progress and
+        label text, and applies the configured style color. It automatically adjusts
+        dimensions and listens for theme changes or widget resizing to trigger redraws.
+
+        Args:
+            master (tk.Widget, optional): Parent container for the gauge.
+            value (int, optional): Initial value of the gauge. Defaults to 0.
+            maximum (int, optional): Maximum value of the gauge. Defaults to 100.
+            mode (str, optional): Display mode, either "determinate" or "indeterminate".
+                Defaults to "determinate".
+            mask (str, optional): Format string for label text (e.g., "Progress: {}%").
+                If provided, overrides `text`.
+            text (str, optional): Static label text (used if `mask` and `textvariable`
+                are not set).
+            font (tuple or tkinter.font.Font, optional): Font used for center label.
+                Defaults to ("Helvetica", 12).
+            color (StyleColor, optional): Style color token (e.g., "primary", "info").
+                Affects the fill, trough, and text color.
+            orient (str, optional): Orientation of the gauge, "horizontal" or "vertical".
+                Defaults to "horizontal".
+            length (int, optional): Long dimension of the gauge (width if horizontal).
+                Defaults to 200.
+            thickness (int, optional): Short dimension (height if horizontal).
+                Defaults to 50.
+            **kwargs: Additional keyword arguments passed to `tk.Canvas`.
+        """
         self.variable = kwargs.pop("variable", tk.IntVar(value=value))
         self.textvariable = kwargs.pop("textvariable", tk.StringVar(value=text))
 
@@ -199,11 +197,30 @@ class Floodgauge(tk.Canvas):
         self._draw()
 
     def step(self, amount=1):
+        """Advance the gauge by a specified increment.
+
+        In determinate mode, this adds the given amount to the current value
+        and updates the display. The value wraps around if it exceeds `maximum`.
+
+        Args:
+            amount (int, optional): Amount to increment the current value. Defaults to 1.
+        """
         self.value = (self.value + amount) % (self.maximum + 1)
         self.variable.set(self.value)
         self._draw()
 
     def start(self, step_size=None, interval=None):
+        """Start the gauge animation.
+
+        In indeterminate mode, this initiates a bouncing fill animation.
+        In determinate mode, this repeatedly calls `step()` to increment the value.
+
+        Args:
+            step_size (int, optional): Distance to move per animation frame.
+                Defaults to 8 (indeterminate) or 1 (determinate).
+            interval (int, optional): Time in milliseconds between frames.
+                Defaults to 20 (indeterminate) or 50 (determinate).
+        """
         if self.mode == "indeterminate":
             self._step_size = step_size if step_size is not None else 8
             interval = interval if interval is not None else 20
@@ -216,6 +233,11 @@ class Floodgauge(tk.Canvas):
         self._run_animation(interval)
 
     def stop(self):
+        """Stop any active animation.
+
+        Cancels scheduled animation callbacks and freezes the display
+        at its current value or animation state.
+        """
         self._running = False
         if self._after_id:
             self.after_cancel(self._after_id)

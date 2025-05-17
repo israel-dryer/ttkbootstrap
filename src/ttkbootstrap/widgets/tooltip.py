@@ -1,91 +1,60 @@
-from tkinter import RAISED, BOTH, YES
+from tkinter import Misc
 from typing import Literal
-
-import ttkbootstrap as ttk
+from ttkbootstrap.ttk_types import StyleColor
+from ttkbootstrap.widgets.label import Label
+from ttkbootstrap.window import Toplevel
 from ttkbootstrap import utility
 
 
 class ToolTip:
-    """A semi-transparent tooltip popup window that shows text when the
-    mouse is hovering over the widget and closes when the mouse is no
-    longer hovering over the widget. Clicking a mouse button will also
-    close the tooltip.
+    """
+    A themed tooltip popup that appears on mouse hover.
 
-    ![](../assets/tooltip/tooltip.gif)
+    This widget creates a floating, styled `Toplevel` window that shows
+    informative text beside a widget or pointer. It supports color theming,
+    configurable position, display delay, optional image/icon, and text
+    wrapping.
 
-    Examples:
-
-        ```python
-        import ttkbootstrap as ttk
-        from ttkbootstrap.constants import *
-        from ttkbootstrap.tooltip import ToolTip
-
-        app = ttk.Window()
-        b1 = ttk.Button(app, text="default tooltip")
-        b1.pack()
-        b2 = ttk.Button(app, text="styled tooltip")
-        b2.pack()
-
-        # default tooltip
-        ToolTip(b1, text="This is the default style")
-
-        # styled tooltip
-        ToolTip(b2, text="This is dangerous", bootstyle=(DANGER, INVERSE))
-
-        app.mainloop()
-        ```
+    Example:
+        ToolTip(widget, text="Tooltip text", color="info", position="top right")
     """
 
     def __init__(
-            self,
-            widget,
-            text="widget info",
-            padding=10,
-            justify: Literal["left", "center", "right"] = "left",
-            bootstyle=None,
-            wraplength=None,
-            delay=250,  # milliseconds
-            image=None,
-            position: str | None = None,
-            **kwargs,
+        self,
+        widget: Misc,
+        text: str = "widget info",
+        padding: int = 10,
+        justify: Literal["left", "center", "right"] = "left",
+        color: StyleColor = "default",
+        wraplength: int | None = None,
+        delay: int = 250,
+        image=None,
+        position: str | None = None,
+        **kwargs,
     ):
         """
+        Initialize a themed ToolTip.
+
         Parameters:
-
-            widget (Widget):
-                The tooltip window will position over this widget when
-                hovering.
-
-            text (str):
-                The text to display in the tooltip window.
-
-            padding (int):
-                The padding between the text and the border of the tooltip (default=10).
-
-            bootstyle (str):
-                The style to apply to the tooltip label. You can use
-                any of the standard ttkbootstrap label styles.
-
-            wraplength (int):
-                The width of the tooltip window in screenunits before the
-                text is wrapped to the next line. By default, this will be
-                a scaled factor of 300.
-
-            position (str):
-                If provided, will set the position of the tooltip relative to the widget.
-                Valid options include combinations of "left", "right", "top", "bottom",
-                and "center" separated by a space. For example: "top left" or "bottom right".
-                If not provided, the tooltip will be offset from the mouse pointer.
-
-            **kwargs (Dict):
-                Other keyword arguments passed to the `Toplevel` window.
+            widget (Misc): The widget to attach the tooltip to.
+            text (str): The text displayed in the tooltip.
+            padding (int): Padding around the text label.
+            justify (str): Text alignment ("left", "center", or "right").
+            color (StyleColor): The background/foreground theme color.
+            wraplength (int): Maximum width before wrapping text.
+            delay (int): Delay in milliseconds before showing the tooltip.
+            image (Any): Optional image or icon to show above the text.
+            position (str): Tooltip anchor position relative to the widget
+                (e.g., "top left", "bottom right"). If omitted, follows mouse.
+            **kwargs: Additional options for the `Toplevel` window.
         """
         self.widget = widget
         self.text = text
         self.padding = padding
         self.justify = justify
         self.image = image
-        self.bootstyle = bootstyle
+        self.color = color
+        self.variant = "tooltip"
         self.wraplength = wraplength or utility.scale_size(self.widget, 300)
         self.toplevel = None
         self.delay = delay
@@ -101,21 +70,8 @@ class ToolTip:
         kwargs["overrideredirect"] = True
         kwargs["master"] = self.widget
         kwargs["windowtype"] = "tooltip"
-        if "alpha" not in kwargs:
-            kwargs["alpha"] = 0.95
+        kwargs.setdefault("alpha", 0.95)
         self.toplevel_kwargs = kwargs
-
-        # create default tooltip style
-        ttk.Style().configure(
-            style="tooltip.TLabel",
-            background="#fffddd",
-            foreground="#333",
-            bordercolor="#888",
-            borderwidth=1,
-            darkcolor="#fffddd",
-            lightcolor="#fffddd",
-            relief=RAISED,
-        )
 
         # event binding
         self.widget.bind("<Enter>", self.enter)
@@ -123,48 +79,46 @@ class ToolTip:
         self.widget.bind("<Motion>", self.move_tip)
         self.widget.bind("<ButtonPress>", self.leave)
 
-    def enter(self, event=None):
+    def enter(self, _):
+        """Mouse enters the widget; schedule tooltip display."""
         self.schedule()
 
-    def leave(self, event=None):
+    def leave(self, _):
+        """Mouse leaves the widget; hide and cancel tooltip."""
         self.unschedule()
         self.hide_tip()
 
     def schedule(self):
+        """Schedule tooltip display after a delay."""
         self.unschedule()
         self.id = self.widget.after(self.delay, self.show_tip)
 
     def unschedule(self):
-        id = self.id
-        self.id = None
-        if id:
-            self.widget.after_cancel(id)
+        """Cancel any scheduled tooltip display."""
+        if self.id:
+            self.widget.after_cancel(self.id)
+            self.id = None
 
     def show_tip(self, *_):
-        """Create and show the tooltip window"""
+        """Create and show the tooltip popup."""
         if self.toplevel:
             return
 
-        # Create the tooltip window at a temporary position
-        self.toplevel = ttk.Toplevel(position=(0, 0), **self.toplevel_kwargs)
+        self.toplevel = Toplevel(position=(0, 0), **self.toplevel_kwargs)
 
-        lbl = ttk.Label(
-            master=self.toplevel,
+        label = Label(
+            self.toplevel,
+            color=self.color,
+            variant=self.variant,
             text=self.text,
             image=self.image,
-            compound='bottom',
+            compound="bottom",
             justify=self.justify,
             wraplength=self.wraplength,
             padding=self.padding,
         )
-        lbl.pack(fill=BOTH, expand=YES)
+        label.pack(fill="both", expand=1)
 
-        if self.bootstyle:
-            lbl.configure(bootstyle=self.bootstyle)
-        else:
-            lbl.configure(style="tooltip.TLabel")
-
-        # Wait until size is known, then position
         self.toplevel.update_idletasks()
 
         if self.position:
@@ -176,7 +130,7 @@ class ToolTip:
         self.toplevel.geometry(f"+{x}+{y}")
 
     def move_tip(self, *_):
-        """Move the tooltip window"""
+        """Reposition the tooltip to follow mouse or stay anchored."""
         if self.toplevel:
             if self.position:
                 x, y = self._calculate_position()
@@ -192,9 +146,9 @@ class ToolTip:
             self.toplevel = None
 
     def _calculate_position(self):
+        """Compute screen coordinates from widget and position string."""
         w = self.widget
-        tip_w = 200  # fallback size
-        tip_h = 50
+        tip_w, tip_h = 200, 50
 
         try:
             self.toplevel.update_idletasks()
@@ -203,63 +157,41 @@ class ToolTip:
         except:
             pass
 
-        widget_x = w.winfo_rootx()
-        widget_y = w.winfo_rooty()
-        widget_w = w.winfo_width()
-        widget_h = w.winfo_height()
+        x = w.winfo_rootx()
+        y = w.winfo_rooty()
+        width = w.winfo_width()
+        height = w.winfo_height()
 
-        x = widget_x
-        y = widget_y
-
-        horiz = "center"
-        vert = "bottom"
         tokens = self.position.split()
 
+        # Default values
+        horiz = "center"
+        vert = "bottom"
+
         for token in tokens:
-            if token in ("top", "bottom", "center"):
+            if token in ("top", "bottom"):
                 vert = token
-            if token in ("left", "right", "center"):
+            elif token in ("left", "right"):
                 horiz = token
+            elif token == "center":
+                # only set to center if not already overridden
+                if vert not in ("top", "bottom"):
+                    vert = "center"
+                if horiz not in ("left", "right"):
+                    horiz = "center"
 
-        # Vertical positioning
         if vert == "top":
-            y = widget_y - tip_h - 4
+            y = y - tip_h - 4
         elif vert == "bottom":
-            y = widget_y + widget_h + 4
-        else:  # center
-            y = widget_y + (widget_h // 2) - (tip_h // 2)
+            y = y + height + 4
+        else:
+            y = y + (height // 2) - (tip_h // 2)
 
-        # Horizontal positioning
         if horiz == "left":
-            x = widget_x - tip_w - 4
+            x = x - tip_w - 4
         elif horiz == "right":
-            x = widget_x + widget_w + 4
-        else:  # center
-            x = widget_x + (widget_w // 2) - (tip_w // 2)
+            x = x + width + 4
+        else:
+            x = x + (width // 2) - (tip_w // 2)
 
         return x, y
-
-
-if __name__ == "__main__":
-    from ttkbootstrap import Window
-    from ttkbootstrap.constants import LEFT, X
-
-    app = ttk.Window()
-
-    b1 = ttk.Button(app, text="default tooltip")
-    b1.pack(side=LEFT, padx=20, pady=20, fill=X, expand=YES)
-
-    b2 = ttk.Button(app, text="styled tooltip")
-    b2.pack(side=LEFT, padx=20, pady=20, fill=X, expand=YES)
-
-    ToolTip(
-        b1,
-        text="Following the mouse pointer.",
-    )
-    ToolTip(
-        b2,
-        text="Anchored to the top right corner.",
-        bootstyle="danger-inverse",
-        position="top right"
-    )
-    app.mainloop()

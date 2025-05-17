@@ -12,23 +12,23 @@ except ImportError:
 
 
 class PanedWindow(StyledWidgetMixin, ttkPanedWindow):
-    """
-    A themed paned window widget with support for sash and background color styling.
+    """A themed paned window widget with background and sash color styling.
 
-    This widget extends the standard `ttk.PanedWindow` by applying a background
-    style to both the container and the sash using the provided `color`. It allows
-    you to divide the layout into resizable panes with a consistent themed appearance.
+    This widget extends the standard `ttk.PanedWindow` by applying a themed
+    background to the container and sash using the provided `color`. It allows
+    you to create adjustable, resizable layouts with a visually consistent style.
 
-    Ideal for building adjustable layouts where visual styling is desired for
-    the sash and background regions.
+    Typically used for split-pane layouts in editors, dashboards, and file explorers.
 
     Example:
-        PanedWindow(root, orient="horizontal", color="light")
+        >>> from ttkbootstrap.widgets import PanedWindow
+        >>> pw = PanedWindow(root, orient="horizontal", color="light")
+        >>> pw.pack(fill="both", expand=True)
 
-    Parameters:
+    Args:
         master (Misc | None): The parent container widget.
         color (Color): The background color theme (e.g., "light", "secondary").
-        **kwargs (PanedWindowOpts): Additional options accepted by `ttk.PanedWindow`.
+        **kwargs (PanedOpts): Additional options accepted by `ttk.PanedWindow`.
     """
 
     def __init__(
@@ -37,13 +37,12 @@ class PanedWindow(StyledWidgetMixin, ttkPanedWindow):
         color: Color = "default",
         **kwargs: Unpack[PanedOpts],
     ):
-        """
-        Initialize a styled PanedWindow.
+        """Initialize a themed PanedWindow widget.
 
-        Parameters:
+        Args:
             master (Misc | None): The parent container.
             color (Color): A ttkbootstrap color token (e.g., "light", "primary").
-            **kwargs (PanedOpts): Additional standard ttk.PanedWindow options.
+            **kwargs (PanedOpts): Additional configuration options passed to `ttk.PanedWindow`.
         """
         self._color = color
         self._variant = None  # No variant support

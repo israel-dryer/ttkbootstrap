@@ -10,33 +10,32 @@ try:
 except ImportError:
     from typing_extensions import Unpack
 
-LabelVariant = str  # Optional: could define Literal["default", "inverse"] if strict
+LabelVariant = str  # Optionally: Literal["default", "inverse"]
 
 
 class Label(StyledWidgetMixin, ttkLabel):
-    """
-    A themed label widget with support for foreground and background styling.
+    """A themed label widget with support for foreground and background styling.
 
-    This widget extends the standard `ttk.Label` and allows you to customize
-    its appearance using a `color` and a `variant`. The `color` sets the
-    thematic color (such as "success", "info", or "danger"), while the
-    `variant` determines whether the color is applied to the text (`"default"`)
-    or used as a background with inverted foreground (`"inverse"`).
+    This class extends the standard `ttk.Label` and supports styling through
+    both `color` and `variant`. The `color` defines the theme (e.g. "info",
+    "success", "danger"), and the `variant` controls how that color is applied.
 
-    This is useful for context-sensitive labels such as status indicators,
-    badges, or callouts.
+    - If `variant` is `"default"` or None, the color is applied to the text.
+    - If `variant` is `"inverse"`, the color is applied to the background and
+      the text color is automatically chosen for contrast.
 
-    Supported variants:
-        - "default": Applies color to the foreground only.
-        - "inverse": Applies color to the background with contrasting text color.
+    This widget is useful for creating contextual indicators like badges,
+    status pills, and callouts.
 
     Example:
-        Label(root, text="Connected", color="success", variant="inverse")
+        >>> from ttkbootstrap.widgets import Label
+        >>> lbl = Label(root, text="Connected", color="success", variant="inverse")
+        >>> lbl.pack()
 
-    Parameters:
+    Args:
         master (Misc | None): The parent container widget.
-        color (Color, optional): A theme color name (e.g., "info", "danger").
-        variant (str): Either "default" (text color) or "inverse" (background).
+        color (Color, optional): A ttkbootstrap color token (e.g., "info", "danger").
+        variant (str, optional): "default" (text color) or "inverse" (background color).
         **kwargs (LabelOpts): Additional options accepted by `ttk.Label`.
     """
 
@@ -44,17 +43,16 @@ class Label(StyledWidgetMixin, ttkLabel):
         self,
         master: Misc | None = None,
         color: Color = None,
-        variant: LabelVariant = "default",
+        variant: LabelVariant = None,
         **kwargs: Unpack[LabelOpts],
     ):
-        """
-        Initialize a styled Label.
+        """Initialize the themed Label widget.
 
-        Parameters:
-            master (Misc | None): The parent container.
-            color (Color, optional): A ttkbootstrap color token (e.g., "info", "danger").
-            variant (str): Either "default" or "inverse".
-            **kwargs (LabelOpts): Additional standard ttk.Label options.
+        Args:
+            master (Misc | None): The parent widget.
+            color (Color, optional): The themed color name.
+            variant (str, optional): Either "default" (foreground color) or "inverse" (background color).
+            **kwargs (LabelOpts): Additional `ttk.Label` configuration options.
         """
         self._color = color
         self._variant = variant

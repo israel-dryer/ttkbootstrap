@@ -6,32 +6,27 @@ from tkinter import Pack, Grid, Place
 
 
 class ScrolledFrame(Frame):
-    """
-    A vertically scrollable frame with a themed scrollbar.
+    """A themed vertically scrollable frame with an optional autohiding scrollbar.
 
-    This widget behaves like a standard `Frame` but includes a vertical
-    `Scrollbar` to navigate its contents when they exceed the visible area.
-    It can be used in any layout context and optionally supports automatic
-    scrollbar hiding when not in use.
+    This widget behaves like a standard frame but includes a vertical `Scrollbar`
+    for navigating its contents when they exceed the visible region. It supports
+    automatic scrollbar hiding, mousewheel scrolling, and layout method delegation
+    for use in any geometry manager (`pack`, `grid`, or `place`).
 
-    Attributes:
-        container (Frame): The outer container that wraps the content frame.
-        vscroll (Scrollbar): The vertical scrollbar instance.
-        autohide (bool): If True, hides scrollbar unless hovered.
-        winsys (str): The detected windowing system.
-
-    Geometry Delegation:
-        Methods like `pack`, `grid`, and `place` are delegated to the outer
-        `container` so that ScrolledFrame behaves as a standalone widget.
-        If you want to configure the inner content frame's layout, use:
-        `content_pack()`, `content_grid()`, or `content_place()`.
+    Use `content_pack()`, `content_grid()`, or `content_place()` to lay out widgets
+    inside the scrollable region.
 
     Example:
-        ```python
-        sf = ScrolledFrame(root, autohide=True)
-        sf.pack(fill="both", expand=True)
-        Label(sf, text="Inside the scrolled frame").pack()
-        ```
+        >>> from ttkbootstrap.widgets import ScrolledFrame
+        >>> sf = ScrolledFrame(root, autohide=True)
+        >>> sf.pack(fill="both", expand=True)
+        >>> ttk.Label(sf, text="Scrollable content").pack()
+
+    Attributes:
+        container (Frame): The outer wrapper that contains the scrollable content.
+        vscroll (Scrollbar): The vertical scrollbar instance.
+        autohide (bool): Whether the scrollbar is hidden unless hovered.
+        winsys (str): The detected windowing system ("win32", "x11", "aqua", etc.).
     """
 
     def __init__(
@@ -46,19 +41,18 @@ class ScrolledFrame(Frame):
         scrollheight=None,
         **kwargs,
     ):
-        """
-        Initialize a ScrolledFrame widget.
+        """Initialize a ScrolledFrame widget.
 
-        Parameters:
-            master (Widget, optional): The parent container.
-            padding (int): Internal padding for the content frame.
-            color (StyleColor): The style color for the scrollbar.
-            variant (str): Scrollbar style variant: 'default' or 'round'.
-            autohide (bool): If True, hides the scrollbar when not hovered.
-            height (int): Height of the outer container.
-            width (int): Width of the outer container.
-            scrollheight (int): Height of the inner frame; if None, auto-fits.
-            **kwargs: Additional options passed to the inner content frame.
+        Args:
+            master (Misc, optional): The parent container.
+            padding (int): Padding applied to the inner content frame.
+            color (StyleColor): Scrollbar color token (e.g., "primary").
+            variant (str): Scrollbar visual variant: "default" or "round".
+            autohide (bool): If True, scrollbar only appears when hovered.
+            height (int): Height of the outer container frame.
+            width (int): Width of the outer container frame.
+            scrollheight (int, optional): Height of the scrollable area; if None, auto-determined.
+            **kwargs: Additional keyword arguments passed to the inner frame.
         """
         self.container = Frame(master, relief="flat", borderwidth=0, width=width, height=height)
         self.container.bind("<Configure>", lambda _: self.yview())
@@ -87,7 +81,14 @@ class ScrolledFrame(Frame):
                 setattr(self, method, getattr(self.container, method))
 
     def yview(self, *args):
-        """Scroll control entrypoint for scrollbar commands."""
+        """Callback for the scrollbar to control vertical position.
+
+        Args:
+            *args: Supports standard scrollbar command formats:
+                - no args: sync from scrollbar
+                - ("moveto", fraction): jump to fraction
+                - ("scroll", number, "units"): scroll by step
+        """
         if not args:
             first, _ = self.vscroll.get()
             self.yview_moveto(first)
@@ -97,22 +98,31 @@ class ScrolledFrame(Frame):
             self.yview_scroll(int(args[1]), args[2])
 
     def yview_moveto(self, fraction: float):
-        """Scroll to a given position."""
+        """Scroll to a given vertical position.
+
+        Args:
+            fraction (float): Fraction between 0.0 and 1.0.
+        """
         base, thumb = self._measures()
         first = max(0.0, min(1 - thumb, fraction))
         self.vscroll.set(first, first + thumb)
 
     def yview_scroll(self, number: int, _):
-        """Scroll by an incremental amount."""
+        """Scroll the view by a number of steps.
+
+        Args:
+            number (int): The number of scroll steps (positive or negative).
+            _ (str): Unused parameter from standard scrollbar command.
+        """
         first, _ = self.vscroll.get()
         self.yview_moveto(first + number / 100)
 
     def enable_scrolling(self):
-        """Enable mousewheel scrolling for this frame and all children."""
+        """Enable mousewheel scrolling for this frame and all descendants."""
         self._add_scroll_binding(self)
 
     def disable_scrolling(self):
-        """Disable mousewheel scrolling for this frame and all children."""
+        """Disable mousewheel scrolling for this frame and all descendants."""
         self._del_scroll_binding(self)
 
     def hide_scrollbars(self):
@@ -124,16 +134,21 @@ class ScrolledFrame(Frame):
         self.vscroll.pack(side="right", fill="y")
 
     def autohide_scrollbar(self):
-        """Toggle scrollbar autohide functionality."""
+        """Toggle the autohide behavior of the scrollbar."""
         self.autohide = not self.autohide
 
     def destroy(self):
-        """Fully destroy the scrollbar, frame, and container."""
+        """Destroy the scrollbar, internal frame, and container."""
         self.vscroll.destroy()
         super().destroy()
         self.container.destroy()
 
     def _measures(self):
+        """Internal: calculate proportions of content height to container height.
+
+        Returns:
+            tuple[float, float]: (base height ratio, thumb size)
+        """
         outer = self.container.winfo_height()
         inner = max(self.winfo_height(), outer)
         base = inner / outer
@@ -161,6 +176,7 @@ class ScrolledFrame(Frame):
         self.yview()
 
     def _on_mousewheel(self, event):
+        """Internal: Handle platform-specific mousewheel scrolling."""
         if self.winsys == "win32":
             delta = -int(event.delta / 120)
         elif self.winsys == "aqua":
@@ -174,6 +190,7 @@ class ScrolledFrame(Frame):
         self.yview_scroll(delta, "units")
 
     def _add_scroll_binding(self, parent):
+        """Internal: Recursively bind mousewheel scrolling to all descendants."""
         children = parent.winfo_children()
         for widget in [parent, *children]:
             bindings = widget.bind()
@@ -189,6 +206,7 @@ class ScrolledFrame(Frame):
                 self._add_scroll_binding(widget)
 
     def _del_scroll_binding(self, parent):
+        """Internal: Recursively unbind mousewheel scrolling from all descendants."""
         children = parent.winfo_children()
         for widget in [parent, *children]:
             if self.winsys == "x11":

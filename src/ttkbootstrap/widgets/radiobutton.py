@@ -12,22 +12,24 @@ except ImportError:
 
 
 class Radiobutton(StyledWidgetMixin, ttkRadiobutton):
-    """
-    A themed radiobutton widget with support for dynamic color styling.
+    """A themed radiobutton widget with dynamic color styling.
 
-    This widget extends the standard `ttk.Radiobutton` by applying a custom
-    style based on the provided `color`. The color affects the indicator and
-    text appearance when selected, allowing for visually distinct radio groups.
+    This widget extends `ttk.Radiobutton` and applies ttkbootstrap styling
+    using the `color` option to control the indicator and text highlight color.
+    Optionally, you can specify a `variant` to alter the styling mode, though
+    most use cases rely on the default style.
 
-    Ideal for grouped selections where consistent theming and visual clarity
-    are desired.
+    Themed radiobuttons are useful for visually grouped selection controls
+    where the active option should reflect a brand or theme palette.
 
     Example:
-        Radiobutton(root, text="Choice A", value="a", variable=var, color="info")
+        >>> from ttkbootstrap.widgets import Radiobutton
+        >>> rb = Radiobutton(root, text="Choice A", value="a", variable=var, color="info")
+        >>> rb.pack()
 
-    Parameters:
+    Args:
         master (Misc | None): The parent container widget.
-        color (Color): The highlight color theme (e.g., "info", "primary").
+        color (Color, optional): The highlight color theme (e.g., "info", "primary").
         **kwargs (RadiobuttonOpts): Additional options accepted by `ttk.Radiobutton`.
     """
 
@@ -37,13 +39,12 @@ class Radiobutton(StyledWidgetMixin, ttkRadiobutton):
         color: Color = None,
         **kwargs: Unpack[RadioOpts],
     ):
-        """
-        Initialize a styled Radiobutton.
+        """Initialize the themed Radiobutton widget.
 
-        Parameters:
+        Args:
             master (Misc | None): The parent container.
-            color (Color, optional): A ttkbootstrap color token (e.g., "info", "primary").
-            **kwargs (RadioOpts): Additional standard ttk.Radiobutton options.
+            color (Color, optional): A ttkbootstrap color token (e.g., "success", "danger").
+            **kwargs (RadiobuttonOpts): Additional keyword arguments passed to `ttk.Radiobutton`.
         """
         self._color = color
         self._variant = kwargs.pop('variant', 'default')

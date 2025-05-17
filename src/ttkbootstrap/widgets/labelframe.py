@@ -12,23 +12,23 @@ except ImportError:
 
 
 class LabelFrame(StyledWidgetMixin, ttkLabelFrame):
-    """
-    A themed labelframe widget with support for background color styling.
+    """A themed labelframe widget with support for background color styling.
 
-    This widget extends the standard `ttk.LabelFrame` by applying a
-    background style based on the provided `color`. The style affects both
-    the container background and the label text area, offering a consistent
-    visual theme for grouped sections.
+    This widget extends the standard `ttk.LabelFrame` by applying a themed
+    background color using ttkbootstrap's style system. The color affects both
+    the main frame and the label header area, allowing for consistent visual
+    grouping of widgets under a labeled section.
 
-    This is useful for visually organizing related widgets under a labeled
-    container with customizable styling.
+    This is useful for organizing related widgets with a visually distinct header.
 
     Example:
-        LabelFrame(root, text="Settings", color="secondary", padding=10)
+        >>> from ttkbootstrap.widgets import LabelFrame
+        >>> lf = LabelFrame(root, text="Settings", color="secondary", padding=10)
+        >>> lf.pack(fill="both", expand=True)
 
-    Parameters:
+    Args:
         master (Misc | None): The parent container widget.
-        color (Color): The background color theme (e.g., "secondary", "light").
+        color (Color): The background color theme (e.g., "secondary", "primary", "light").
         **kwargs (LabelFrameOpts): Additional options accepted by `ttk.LabelFrame`.
     """
 
@@ -38,13 +38,12 @@ class LabelFrame(StyledWidgetMixin, ttkLabelFrame):
         color: Color = "default",
         **kwargs: Unpack[LabelFrameOpts],
     ):
-        """
-        Initialize a styled LabelFrame.
+        """Initialize the themed LabelFrame widget.
 
-        Parameters:
+        Args:
             master (Misc | None): The parent container.
-            color (Color): A ttkbootstrap color token (e.g., "primary", "default").
-            **kwargs (LabelFrameOpts): Additional standard ttk.LabelFrame options.
+            color (Color): A ttkbootstrap color token (e.g., "primary", "light", "default").
+            **kwargs (LabelFrameOpts): Additional options passed to `ttk.LabelFrame`.
         """
         self._color = color
         self._variant = None  # No variant support

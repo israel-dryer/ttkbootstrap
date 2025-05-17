@@ -9,24 +9,29 @@ except ImportError:
 
 
 class ToolRadiobutton(Radiobutton):
-    """
-    A themed toolbar radiobutton that functions as a toggleable tool button.
+    """A themed radiobutton styled for toolbar usage.
 
-    This widget behaves like a standard `Radiobutton` but is styled for use
-    in a compact toolbar layout. It supports both `color` and `variant`
-    parameters for visual customization, making it ideal for grouped toolbar
-    controls such as alignment, mode selection, or view toggles.
+    This widget extends `Radiobutton` with styling to appear as a compact
+    toolbar button. It supports the `color` and `variant` parameters for
+    theme-based customization, and is suitable for grouped toggle controls
+    such as text alignment or mode selection in toolbars.
+
+    Supported variants:
+        - "default": Standard filled button
+        - "outline": Border-only toolbar style
 
     Example:
-        ToolRadiobutton(root, text="Align Left", value="left", variable=group, color="secondary")
+        >>> from ttkbootstrap.widgets import ToolRadiobutton
+        >>> group = StringVar(value="left")
+        >>> btn = ToolRadiobutton(root, text="Align Left", value="left", variable=group, color="secondary")
+        >>> btn.pack()
 
-    Parameters:
+    Args:
         master (Misc | None): The parent container widget.
-        color (Color): The button color theme (e.g., "secondary", "info").
-        variant (str): The visual style variant (e.g., "outline", "solid").
-        **kwargs (RadiobuttonOpts): Additional options accepted by `ttk.Radiobutton`.
+        color (Color, optional): A ttkbootstrap color token (e.g., "primary", "secondary").
+        variant (ToolbuttonVariant): "default" or "outline".
+        **kwargs (RadiobuttonOptions): Additional keyword arguments passed to `ttk.Radiobutton`.
     """
-
 
     def __init__(
         self,
@@ -35,14 +40,13 @@ class ToolRadiobutton(Radiobutton):
         variant: ToolbuttonVariant = "default",
         **kwargs: Unpack[RadioOpts],
     ):
-        """
-        Initialize a ToolRadiobutton.
+        """Initialize the ToolRadiobutton widget.
 
-        Parameters:
+        Args:
             master (Misc | None): The parent container.
             color (Color, optional): A ttkbootstrap color token.
-            variant (ToolbuttonVariant): "default" or "outline".
-            **kwargs (RadioOpts): Additional standard ttk.Radiobutton options.
+            variant (ToolbuttonVariant): The button style variant, "default" or "outline".
+            **kwargs (RadiobuttonOptions): Additional options passed to `ttk.Radiobutton`.
         """
         self._color = color
         self._variant = variant

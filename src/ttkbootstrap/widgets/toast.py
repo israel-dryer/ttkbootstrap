@@ -11,71 +11,40 @@ DEFAULT_ICON = "\u25f0"
 
 
 class ToastNotification:
-    """
-    A semi-transparent popup window for temporary alerts or messages.
+    """A semi-transparent popup window for temporary alerts or messages.
 
     This widget creates a floating `Toplevel` window that displays a brief
     message, optionally accompanied by an icon and heading. It can be dismissed
     manually or automatically after a specified duration.
 
     Features:
-    ---------
-    - Transparent, borderless popup window
-    - Optional alert sound on display
-    - Optional duration-based auto-dismiss
-    - Fully themed using ttkbootstrap color and style
-    - OS-specific positioning and font fallback
-    - Click-to-dismiss behavior
-
-    Parameters:
-    -----------
-    title (str):
-        The title text displayed in bold at the top of the toast.
-
-    message (str):
-        The message content displayed below the title.
-
-    duration (int, optional):
-        The number of milliseconds to display the toast. If None,
-        the toast must be dismissed manually.
-
-    color (StyleColor, optional):
-        A ttkbootstrap color keyword (e.g., "primary", "success")
-        used to style the background and text.
-
-    alert (bool, optional):
-        If True, an audible bell is played when the toast is shown.
-
-    icon (str, optional):
-        A Unicode character to display as the icon. Default is OS-specific.
-        Use an empty string "" to hide the icon.
-
-    iconfont (str | Font, optional):
-        A named font or `tkinter.font.Font` instance used for the icon.
-        Font family is chosen automatically by default.
-
-    position (tuple[int, int, str], optional):
-        The position of the toast on screen. Format: (x_offset, y_offset, anchor),
-        where anchor is one of: "n", "ne", "e", "se", "s", "sw", "w", "nw".
-        If None, OS-specific defaults apply.
-
-    **kwargs:
-        Additional keyword arguments passed to the underlying `Toplevel`.
+        - Transparent, borderless popup window
+        - Optional alert sound on display
+        - Optional duration-based auto-dismiss
+        - Fully themed using ttkbootstrap color and style
+        - OS-specific positioning and font fallback
+        - Click-to-dismiss behavior
 
     Example:
-    --------
-    ```python
-    from ttkbootstrap.toast import ToastNotification
+        >>> toast = ToastNotification(
+        ...     title="Success!",
+        ...     message="Your file has been uploaded successfully.",
+        ...     duration=3000,
+        ...     color="success",
+        ...     alert=True
+        ... )
+        >>> toast.show_toast()
 
-    toast = ToastNotification(
-        title="Success!",
-        message="Your file has been uploaded successfully.",
-        duration=3000,
-        color="success",
-        alert=True
-    )
-    toast.show_toast()
-    ```
+    Args:
+        title (str): The title text displayed in bold at the top of the toast.
+        message (str): The message content displayed below the title.
+        duration (int, optional): Time in milliseconds before auto-dismiss. If None, manual close is required.
+        color (StyleColor, optional): A ttkbootstrap color name (e.g., "primary", "success").
+        alert (bool, optional): If True, an audible bell is played when the toast is shown.
+        icon (str, optional): Unicode character to show as an icon. OS-specific default if None. Empty string hides it.
+        iconfont (str | Font, optional): Font used for the icon. If None, it will be set automatically.
+        position (tuple[int, int, str], optional): Tuple of (x_offset, y_offset, anchor) for placement.
+        **kwargs: Additional arguments passed to `Toplevel`, such as `alpha` or `overrideredirect`.
     """
 
     def __init__(
@@ -108,12 +77,15 @@ class ToastNotification:
         if "alpha" not in self.kwargs:
             self.kwargs["alpha"] = 0.95
 
-        if position is not None:
-            if len(position) != 3:
-                self.position = None
+        if position is not None and len(position) != 3:
+            self.position = None
 
     def show_toast(self, *_):
-        """Create and show the toast window."""
+        """Display the toast notification popup.
+
+        This creates a styled `Toplevel` window, adds icon and text labels,
+        optionally plays an alert sound, and binds a click-to-dismiss event.
+        """
         self.toplevel = Toplevel(**self.kwargs)
         self._setup(self.toplevel)
 
@@ -156,7 +128,7 @@ class ToastNotification:
             self.toplevel.after(self.duration, self.hide_toast)
 
     def hide_toast(self, *_):
-        """Destroy and close the toast window with fade-out effect."""
+        """Dismiss the toast notification, optionally with a fade-out effect."""
         try:
             alpha = float(self.toplevel.attributes("-alpha"))
             if alpha <= 0.1:
@@ -169,8 +141,12 @@ class ToastNotification:
                 self.toplevel.destroy()
 
     def _setup(self, window: Toplevel):
-        winsys = window.tk.call("tk", "windowingsystem")
+        """Configure fonts, icon, and OS-specific defaults before layout.
 
+        Args:
+            window (Toplevel): The toast window instance.
+        """
+        winsys = window.tk.call("tk", "windowingsystem")
         self.toplevel.configure(relief="raised")
 
         if "minsize" not in self.kwargs:
@@ -208,7 +184,7 @@ class ToastNotification:
         self.set_geometry()
 
     def set_geometry(self):
-        """Set the position and anchor geometry of the toast on screen."""
+        """Position the toast window based on anchor and offsets."""
         self.toplevel.update_idletasks()
         anchor = self.position[-1]
         x_anchor = "-" if "w" not in anchor else "+"
@@ -229,16 +205,3 @@ class ToastNotification:
             ypos = self.position[1]
 
         self.toplevel.geometry(f"{x_anchor}{xpos}{y_anchor}{ypos}")
-
-
-if __name__ == "__main__":
-    from ttkbootstrap import Window
-
-    app = Window()
-
-    ToastNotification(
-        "ttkbootstrap toast message",
-        "This is a toast message; you can place a symbol on the top-left that is supported by the selected font. You can either make it appear for a specified period of time, or click to close.",
-    ).show_toast()
-
-    app.mainloop()

@@ -12,14 +12,21 @@ except ImportError:
 
 
 class Separator(StyledWidgetMixin, ttkSeparator):
-    """
-    A horizontal or vertical rule used to visually separate groups of widgets.
+    """A horizontal or vertical rule for visually separating groups of widgets.
 
-    This themed Separator supports a `color` parameter for customizing its
-    appearance to match the surrounding interface.
+    This widget extends `ttk.Separator` and allows you to apply a themed color
+    for more consistent styling in interfaces. It supports both horizontal
+    and vertical orientations.
 
     Example:
-        Separator(root, orient="horizontal", color="secondary")
+        >>> from ttkbootstrap.widgets import Separator
+        >>> sep = Separator(root, orient="horizontal", color="secondary")
+        >>> sep.pack(fill="x", pady=5)
+
+    Args:
+        master (Misc | None): The parent container widget.
+        color (Color, optional): A themed color token (e.g., "secondary", "info").
+        **kwargs (SeparatorOptions): Additional options accepted by `ttk.Separator`.
     """
 
     def __init__(
@@ -28,13 +35,12 @@ class Separator(StyledWidgetMixin, ttkSeparator):
         color: Color = None,
         **kwargs: Unpack[SepOpts],
     ):
-        """
-        Initialize a themed Separator.
+        """Initialize the themed Separator widget.
 
-        Parameters:
+        Args:
             master (Misc | None): The parent container.
-            color (Color, optional): A themed color token (e.g., "secondary", "info").
-            **kwargs (SepOpts): Additional standard ttk.Separator options.
+            color (Color, optional): A ttkbootstrap color token.
+            **kwargs (SeparatorOptions): Additional configuration options passed to `ttk.Separator`.
         """
         self._color = color
         self._variant = None  # No variant support

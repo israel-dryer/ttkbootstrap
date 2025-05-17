@@ -12,24 +12,31 @@ except ImportError:
 
 
 class Notebook(StyledWidgetMixin, ttkNotebook):
+    """A themed notebook widget with support for tab color styling.
+
+    This widget extends the standard `ttk.Notebook` and applies a
+    ttkbootstrap-compatible style based on the specified `color`.
+    The tab color affects the background, indicator, and selected state,
+    making it easier to visually differentiate groups of tabs or indicate
+    importance.
+
+    Commonly used in multi-tabbed interfaces such as forms, dashboards,
+    and configuration panels.
+
+    Example:
+        >>> from ttkbootstrap.widgets import Notebook
+        >>> nb = Notebook(root, color="primary")
+        >>> nb.pack(fill="both", expand=True)
+        >>> frame1 = ttk.Frame(nb)
+        >>> frame2 = ttk.Frame(nb)
+        >>> nb.add(frame1, text="Tab 1")
+        >>> nb.add(frame2, text="Tab 2")
+
+    Args:
+        master (Misc | None): The parent container widget.
+        color (Color): The tab color theme (e.g., "primary", "info", "default").
+        **kwargs (NotebookOpts): Additional options accepted by `ttk.Notebook`.
     """
-     A themed notebook widget with support for tab color styling.
-
-     This widget extends the standard `ttk.Notebook` by applying a dynamic style
-     based on the provided `color` parameter. The color affects the tab background,
-     active state, and indicator to create a cohesive visual theme across tabs.
-
-     Useful for multi-tabbed interfaces where visual emphasis or categorization
-     is desired through color differentiation.
-
-     Example:
-         Notebook(root, color="primary")
-
-     Parameters:
-         master (Misc | None): The parent container widget.
-         color (Color): The tab color theme (e.g., "primary", "info").
-         **kwargs (NotebookOpts): Additional options accepted by `ttk.Notebook`.
-     """
 
     def __init__(
         self,
@@ -37,13 +44,12 @@ class Notebook(StyledWidgetMixin, ttkNotebook):
         color: Color = "default",
         **kwargs: Unpack[NotebookOpts],
     ):
-        """
-        Initialize a styled Notebook.
+        """Initialize a themed Notebook widget.
 
-        Parameters:
+        Args:
             master (Misc | None): The parent container.
             color (Color): A ttkbootstrap color token (e.g., "primary", "default").
-            **kwargs (NotebookOpts): Additional standard ttk.Notebook options.
+            **kwargs (NotebookOpts): Additional standard `ttk.Notebook` options.
         """
         self._color = color
         self._variant = None  # Notebook does not support variants

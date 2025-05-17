@@ -12,14 +12,22 @@ except ImportError:
 
 
 class Menubutton(StyledWidgetMixin, ttkMenubutton):
-    """
-    A themed Menubutton widget that displays a dropdown menu when clicked.
+    """A themed Menubutton widget that displays a dropdown menu when clicked.
 
-    Supports ttkbootstrap `color` theming for visual consistency in toolbars,
-    headers, and action panels.
+    This widget extends the standard `ttk.Menubutton` and supports themed coloring
+    through the `color` option, allowing it to visually integrate with the
+    application's style. It is commonly used in toolbars, navigation menus, or
+    grouped option sets.
 
     Example:
-        Menubutton(root, text="Options", color="primary")
+        >>> from ttkbootstrap.widgets import Menubutton
+        >>> btn = Menubutton(root, text="Options", color="primary")
+        >>> btn.pack()
+
+    Args:
+        master (Misc | None): The parent container widget.
+        color (Color, optional): A ttkbootstrap color token (e.g., "primary", "info").
+        **kwargs (MenuBtnOpts): Additional options accepted by `ttk.Menubutton`.
     """
 
     def __init__(
@@ -28,13 +36,12 @@ class Menubutton(StyledWidgetMixin, ttkMenubutton):
         color: Color = None,
         **kwargs: Unpack[MenuBtnOpts],
     ):
-        """
-        Initialize a themed Menubutton.
+        """Initialize the themed Menubutton widget.
 
-        Parameters:
-            master (Misc | None): The parent container.
-            color (Color, optional): A ttkbootstrap color token.
-            **kwargs (MenuBtnOpts): Additional standard ttk.Menubutton options.
+        Args:
+            master (Misc | None): The parent widget.
+            color (Color, optional): The themed color name.
+            **kwargs (MenuBtnOpts): Additional keyword arguments for `ttk.Menubutton`.
         """
         self._color = color
         self._variant = None  # Menubutton does not support variants

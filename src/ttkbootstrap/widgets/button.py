@@ -16,24 +16,33 @@ except ImportError:
 
 class Button(StyledWidgetMixin, ttkButton):
     """
-    A themed button widget with support for dynamic color and variant styling.
+    A themed ttk Button widget with support for dynamic color and variant styling.
 
-    This widget extends the standard `ttk.Button` by applying styles generated
-    from the `color` and `variant` parameters using the themed styling system.
-    These parameters determine the appearance of the button, such as its color
-    scheme and whether it is filled, outlined, or has other visual variants.
+    This widget extends `ttk.Button` by applying a theme-aware style based on
+    `color` and `variant` parameters. It supports all standard `ttk.Button`
+    behavior, while enabling modern theming using ttkbootstrap.
 
-    This button behaves exactly like a standard `ttk.Button`, with all the same
-    interactive features, but allows for consistent theming across an application.
+    Features:
+        - Themed color support using keywords like "primary", "danger", etc.
+        - Variant styling such as "outline", "link", and "default"
+        - Full compatibility with `ttk.Button` options and callbacks
 
     Example:
-        Button(root, text="Submit", color="primary", variant="outline")
+        >>> from ttkbootstrap.widgets import Button
+        >>> btn = Button(root, text="Submit", color="primary", variant="outline")
 
-    Parameters:
-        master (Misc, optional): The parent container widget.
-        color (StyleColor, optional): The color theme (e.g., "primary", "success").
-        variant (Variant): The button's visual variant (e.g., "default", "outline").
-        **kwargs (BtnOpts): Additional standard options accepted by `ttk.Button`.
+    Args:
+        master (Misc, optional):
+            The parent widget.
+
+        color (StyleColor, optional):
+            A color token from the current theme (e.g., "primary", "warning").
+
+        variant (Variant, optional):
+            The button's visual style (e.g., "default", "outline", "link").
+
+        **kwargs (Unpack[BtnOpts]):
+            Additional `ttk.Button` options such as `text`, `command`, `state`, etc.
     """
 
     def __init__(
@@ -44,13 +53,20 @@ class Button(StyledWidgetMixin, ttkButton):
         **kwargs: Unpack[BtnOpts],
     ):
         """
-        Initialize a themed Button.
+        Initialize a new themed Button.
 
-        Parameters:
-            master (Misc, optional): The parent container.
-            color (Color, optional): A ttkbootstrap color token (e.g., "primary").
-            variant (Variant): The visual style variant (e.g., "default", "outline").
-            **kwargs (BtnOpts): Additional standard ttk.Button options.
+        Args:
+            master (Misc, optional):
+                The parent container widget.
+
+            color (StyleColor, optional):
+                A color keyword that maps to the theme's palette.
+
+            variant (Variant):
+                The button variant style such as "default", "outline", or "link".
+
+            **kwargs (Unpack[BtnOpts]):
+                Any standard `ttk.Button` options.
         """
         self._color = color
         self._variant = variant

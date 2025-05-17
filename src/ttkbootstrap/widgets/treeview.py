@@ -13,14 +13,26 @@ except ImportError:
 
 class Treeview(StyledWidgetMixin, ttkTreeview):
     """
-    A themed Treeview widget for displaying tabular data or hierarchical trees
-    with optional columns, headings, and row selection.
+    A themed Treeview widget for displaying tabular or hierarchical data.
 
-    Supports theming through a `color` parameter to visually differentiate
-    header and row highlights.
+    This widget extends the standard `ttk.Treeview` with dynamic theming
+    support using the `color` parameter. The color affects the row selection
+    and header styling, making it ideal for use in structured views like
+    file explorers, data tables, or nested trees.
 
     Example:
-        Treeview(root, columns=["Name", "Age"], show="headings", color="info")
+        >>> from ttkbootstrap import Window
+        >>> from ttkbootstrap.widgets import Treeview
+        >>> tv = Treeview(root, columns=["Name", "Age"], show="headings", color="info")
+        >>> tv.heading("Name", text="Name")
+        >>> tv.heading("Age", text="Age")
+        >>> tv.insert("", "end", values=["Alice", 30])
+        >>> tv.pack(fill="both", expand=True)
+
+    Parameters:
+        master (Misc | None): The parent container widget.
+        color (Color, optional): The highlight color theme (e.g., "info", "primary").
+        **kwargs (TreeOpts): Additional options accepted by `ttk.Treeview`.
     """
 
     def __init__(

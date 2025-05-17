@@ -6,34 +6,51 @@ from ttkbootstrap.dialogs.query import Querybox
 
 class DateEntry(Frame):
     """
-    A themed date entry widget combining a text entry and a calendar popup button.
+    A themed entry widget with an attached calendar popup for date selection.
 
-    This widget provides a convenient way to select a date using a calendar dialog.
-    The selected date is formatted and displayed in the entry field. A calendar
-    icon button next to the entry launches a modal date picker.
+    Combines a `ttk.Entry` and a themed `Button` to create a date picker. Users
+    can either type a date or select one from a popup calendar, with the date
+    displayed in the desired format.
 
     Features:
-    ---------
-    - Combines an `Entry` and a `Button` into a single frame.
-    - Launches a themed calendar popup on click.
-    - Supports custom date formatting (`dateformat`).
-    - Supports localization of the first weekday.
-    - Generates `<<DateEntrySelected>>` virtual event when a date is chosen.
-    - Configurable style using `color`, and themed calendar button (`variant='date'`).
-    - Entry and Button subwidgets accessible via `.entry` and `.button`.
-
-    Customization:
-    --------------
-    - `color`: applies to both entry and button
-    - `popuptitle`: sets the title shown in the popup dialog
-    - `startdate`: initial date value or dialog focus
-    - `firstweekday`: sets the starting weekday (0=Monday, 6=Sunday)
-    - `dateformat`: strftime-style formatting pattern
+        - Built-in calendar button to pick a date interactively
+        - Supports custom date formats and starting weekday
+        - Fires `<<DateEntrySelected>>` virtual event after selection
+        - Fully themed appearance using `color`
+        - Internal entry and button accessible via `.entry` and `.button`
 
     Example:
-        ```python
-        DateEntry(root, color="primary", dateformat="%Y-%m-%d")
-        ```
+        >>> from ttkbootstrap.widgets import DateEntry
+        >>> date_entry = DateEntry(
+        ...     root,
+        ...     color="primary",
+        ...     dateformat="%Y-%m-%d",
+        ...     popuptitle="Pick a Date"
+        ... )
+        >>> date_entry.pack()
+
+    Args:
+        master (Misc, optional):
+            Parent widget for this composite component.
+
+        dateformat (str, optional):
+            Format string used for displaying the date. Defaults to "%x".
+
+        firstweekday (int, optional):
+            Starting day of the week for the popup (0=Monday, 6=Sunday). Default is 6.
+
+        startdate (datetime, optional):
+            Initial value shown in both the entry and the calendar popup.
+
+        color (StyleColor, optional):
+            Theme color used for both entry and calendar button styling.
+
+        popuptitle (str, optional):
+            Title displayed on the popup calendar window.
+
+        **kwargs (dict):
+            Additional options passed to the outer `Frame`. If `width` is supplied,
+            it is forwarded to the inner entry widget.
     """
 
     def __init__(
@@ -46,44 +63,14 @@ class DateEntry(Frame):
         popuptitle: str = "Select a date",
         **kwargs,
     ):
-        """
-        Initialize a new `DateEntry` widget.
-
-        Parameters:
-            master (Widget, optional):
-                The parent container.
-
-            dateformat (str, optional):
-                Format string used to render and parse the date value in the entry.
-                Defaults to locale-specific date ("%x"). See https://strftime.org/.
-
-            firstweekday (int, optional):
-                Index of the starting weekday in the popup (0 = Monday, 6 = Sunday).
-                Defaults to 6 (Sunday).
-
-            startdate (datetime, optional):
-                The initial date displayed in the entry and calendar. Defaults to today.
-
-            color (StyleColor, optional):
-                The theme color applied to the entry and calendar button.
-
-            popuptitle (str, optional):
-                The title displayed in the date picker popup dialog.
-
-            **kwargs:
-                Additional options passed to the outer `Frame`, such as `padding`, `style`,
-                or layout geometry options. The `width` option is passed to the internal entry.
-        """
         self._dateformat = dateformat
         self._firstweekday = firstweekday
-
         self._start_date = startdate or datetime.today()
         self._color = color
         self._popup_title = popuptitle
 
         super().__init__(master, color=color, **kwargs)
 
-        # add visual components
         entry_kwargs = {}
         if "width" in kwargs:
             entry_kwargs["width"] = kwargs.pop("width")
@@ -93,7 +80,6 @@ class DateEntry(Frame):
         self.button = DateButton(self, color=color, command=self._on_date_ask)
         self.button.pack(side="left")
 
-        # starting value
         self.entry.insert("end", self._start_date.strftime(self._dateformat))
 
     def __getitem__(self, key: str):
@@ -103,9 +89,12 @@ class DateEntry(Frame):
         self.configure(cnf=None, **{key: value})
 
     def _configure_set(self, **kwargs):
-        """Override configures method to allow for setting custom
-        DateEntry parameters"""
+        """
+        Set configuration values for DateEntry-specific and inherited options.
 
+        Args:
+            **kwargs: Configuration options.
+        """
         if "state" in kwargs:
             state = kwargs.pop("state")
             if state in ["readonly", "invalid"]:
@@ -132,7 +121,15 @@ class DateEntry(Frame):
         super(Frame, self).configure(**kwargs)
 
     def _configure_get(self, cnf):
-        """Override the configure get method"""
+        """
+        Retrieve a configuration value.
+
+        Args:
+            cnf (str): Name of the configuration option.
+
+        Returns:
+            Value of the configuration option.
+        """
         if cnf == "state":
             entry_date = self.entry.cget("state")
             button_state = self.button.cget("state")
@@ -149,15 +146,15 @@ class DateEntry(Frame):
             return super(Frame, self).configure(cnf=cnf)
 
     def configure(self, cnf=None, **kwargs):
-        """Configure the options for this widget.
+        """
+        Unified configure interface for both getting and setting options.
 
-        Parameters:
+        Args:
+            cnf (str, optional): Name of the configuration option to retrieve.
+            **kwargs: Options to configure.
 
-            cnf (Dict[str, Any], optional):
-                A dictionary of configuration options.
-
-            **kwargs:
-                Optional keyword arguments.
+        Returns:
+            The requested configuration value if `cnf` is provided.
         """
         if cnf is not None:
             return self._configure_get(cnf)
@@ -165,7 +162,10 @@ class DateEntry(Frame):
             return self._configure_set(**kwargs)
 
     def _on_date_ask(self):
-        """Callback for pushing the date button"""
+        """
+        Internal callback invoked when the calendar button is pressed.
+        Shows the calendar dialog and updates the entry field.
+        """
         _val = self.entry.get() or datetime.today().strftime(self._dateformat)
 
         try:
@@ -178,8 +178,6 @@ class DateEntry(Frame):
 
         self._start_date = old_date
 
-        # get the new date and insert into the entry
-        print('creating a datebox of color', self._color)
         new_date = Querybox.get_date(
             parent=self.entry,
             title=self._popup_title,
@@ -195,20 +193,21 @@ class DateEntry(Frame):
 
 class DateButton(Button):
     """
-    A themed button styled as a calendar trigger for the DateEntry widget.
+    A themed calendar trigger button used in conjunction with `DateEntry`.
 
-    This button uses a preset `variant='date'` to visually indicate its role
-    as a date picker trigger. It is commonly used as a subcomponent of `DateEntry`.
+    This button is styled using the "date" variant and is designed to be placed
+    next to an entry field to open a calendar popup.
 
-    Parameters:
-        master (Widget, optional):
-            The parent container.
+    Args:
+        master (Misc, optional):
+            Parent widget for this button.
 
         color (StyleColor, optional):
-            The style color for the button (e.g., "primary", "info").
+            Theme color applied to the button (e.g., "primary", "info").
 
-        **kwargs:
-            Additional ttk button options. The `variant` is automatically set to "date".
+        **kwargs (dict):
+            Additional keyword arguments passed to the underlying `ttk.Button`.
+            The `variant` is automatically set to "date" for consistent styling.
     """
 
     def __init__(self, master=None, color: StyleColor = "primary", **kwargs):

@@ -14,27 +14,29 @@ ProgressbarVariant = Literal["default", "striped"]
 
 
 class Progressbar(StyledWidgetMixin, ttkProgressbar):
-    """
-    A themed progress bar widget with support for color and variant styling.
+    """A themed progress bar with support for color and fill variants.
 
-    This widget extends the standard `ttk.Progressbar` by applying dynamic styles
-    based on the provided `color` and `variant` parameters. The `color` determines
-    the fill color, while the `variant` controls the visual style of the bar.
+    This widget extends the standard `ttk.Progressbar` with ttkbootstrap theme
+    support, allowing you to customize the bar's appearance using the `color`
+    and `variant` parameters.
+
+    Use `mode="determinate"` for measurable progress and `mode="indeterminate"`
+    for animated activity indicators.
 
     Supported variants:
         - "default": Solid fill style
-        - "striped": Animated striped fill pattern (typically used with indeterminate mode)
-
-    Suitable for both determinate and indeterminate progress displays, with
-    customizable appearance to match themed applications.
+        - "striped": Animated striped fill (commonly used for indeterminate mode)
 
     Example:
-        Progressbar(root, length=200, color="success", variant="striped", mode="indeterminate")
+        >>> from ttkbootstrap.widgets import Progressbar
+        >>> pb = Progressbar(root, length=200, color="success", variant="striped", mode="indeterminate")
+        >>> pb.pack()
+        >>> pb.start()
 
-    Parameters:
+    Args:
         master (Misc | None): The parent container widget.
         color (Color): The fill color theme (e.g., "success", "info").
-        variant (str): Either "default" or "striped".
+        variant (ProgressbarVariant): Fill style: "default" or "striped".
         **kwargs (ProgressbarOpts): Additional options accepted by `ttk.Progressbar`.
     """
 
@@ -45,14 +47,13 @@ class Progressbar(StyledWidgetMixin, ttkProgressbar):
         variant: ProgressbarVariant = "default",
         **kwargs: Unpack[PbarOpts],
     ):
-        """
-        Initialize a styled Progressbar.
+        """Initialize the themed Progressbar widget.
 
-        Parameters:
+        Args:
             master (Misc | None): The parent container.
-            color (Color, optional): A ttkbootstrap color token (e.g., "info").
-            variant (ProgressbarVariant): "default" or "striped".
-            **kwargs (PbarOpts): Additional standard ttk.Progressbar options.
+            color (Color, optional): A ttkbootstrap color token (e.g., "info", "warning").
+            variant (ProgressbarVariant): Either "default" or "striped".
+            **kwargs (ProgressbarOpts): Additional keyword arguments for `ttk.Progressbar`.
         """
         self._color = color
         self._variant = variant

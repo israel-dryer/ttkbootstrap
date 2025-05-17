@@ -3,30 +3,34 @@ from ttkbootstrap.widgets.checkbutton import Checkbutton
 from ttkbootstrap.ttk_types import StyleColor as Color, CheckbuttonOptions as CbOpts, ToolbuttonVariant
 
 try:
-    from typing import Unpack, Literal
+    from typing import Unpack
 except ImportError:
     from typing_extensions import Unpack, Literal
 
 
 class ToolCheckbutton(Checkbutton):
-    """
-    A themed toolbar checkbutton that functions as a toggleable tool button.
+    """A compact, themed checkbutton for use in toolbars.
 
-    This widget behaves like a standard `Checkbutton` but is styled to match
-    the appearance of a compact toolbar button. It supports both `color` and
-    `variant` parameters for visual customization, making it ideal for toggling
-    formatting options, view modes, or feature states in a toolbar layout.
+    This widget behaves like a toggleable button styled for toolbar layouts.
+    It extends `Checkbutton` with support for `color` and `variant` parameters,
+    offering a customizable look for use cases such as formatting toggles,
+    editor actions, or state indicators.
+
+    Supported variants:
+        - "default": Standard background button
+        - "outline": Border-only button style
 
     Example:
-        ToolCheckbutton(root, text="Bold", color="primary", variant="outline")
+        >>> from ttkbootstrap.widgets import ToolCheckbutton
+        >>> btn = ToolCheckbutton(root, text="Bold", color="primary", variant="outline")
+        >>> btn.pack()
 
-    Parameters:
+    Args:
         master (Misc | None): The parent container widget.
-        color (Color): The button color theme (e.g., "primary", "info").
-        variant (str): The visual style variant (e.g., "outline", "solid").
-        **kwargs (CheckbuttonOpts): Additional options accepted by `ttk.Checkbutton`.
+        color (Color, optional): A ttkbootstrap color token (e.g., "primary", "info").
+        variant (ToolbuttonVariant): Either "default" or "outline".
+        **kwargs (CheckbuttonOptions): Additional options passed to `ttk.Checkbutton`.
     """
-
 
     def __init__(
         self,
@@ -35,14 +39,13 @@ class ToolCheckbutton(Checkbutton):
         variant: ToolbuttonVariant = "default",
         **kwargs: Unpack[CbOpts],
     ):
-        """
-        Initialize a ToolCheckbutton.
+        """Initialize the ToolCheckbutton widget.
 
-        Parameters:
+        Args:
             master (Misc | None): The parent container.
-            color (Color, optional): A ttkbootstrap color token.
-            variant (ToolbuttonVariant): "default" or "outline".
-            **kwargs (CbOpts): Additional standard ttk.Checkbutton options.
+            color (Color, optional): Themed color to apply to the button.
+            variant (ToolbuttonVariant): Visual style variant, "default" or "outline".
+            **kwargs (CheckbuttonOptions): Additional configuration options.
         """
         self._color = color
         self._variant = variant

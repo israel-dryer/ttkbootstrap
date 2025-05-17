@@ -13,24 +13,34 @@ except ImportError:
 
 class Combobox(StyledWidgetMixin, ttkCombobox):
     """
-    A themed combobox widget with support for dynamic color styling.
+    A themed `ttk.Combobox` with ttkbootstrap color styling support.
 
-    This widget extends the standard `ttk.Combobox` by applying a custom
-    style derived from the given `color`. This color affects the active
-    border, arrow button, and selected item styling to provide visual
-    consistency with the application's theme.
+    This widget behaves like a normal `ttk.Combobox`, but applies
+    dynamic theme styling through the `color` argument. The visual
+    appearance (border, arrow, focus ring, and highlight) aligns with
+    the application's active theme.
 
-    It behaves the same as a standard combobox, supporting value selection,
-    data binding, and editable input, while allowing for a more customized
-    appearance.
+    Features:
+        - Themed visual styling with `color` (e.g., "primary", "success")
+        - Full compatibility with `StringVar` or any Tk variable
+        - Supports readonly and editable modes
+        - All `ttk.Combobox` options supported
 
     Example:
-        Combobox(root, values=["One", "Two", "Three"], color="info")
+        >>> from ttkbootstrap.widgets import Combobox
+        >>> cb = Combobox(root, values=["One", "Two"], color="info", state="readonly")
+        >>> cb.pack()
 
-    Parameters:
-        master (Misc | None): The parent container widget.
-        color (Color, optional): The color theme (e.g., "info", "primary").
-        **kwargs (CbOpts): Additional options accepted by `ttk.Combobox`.
+    Args:
+        master (Misc | None, optional):
+            The parent container widget.
+
+        color (StyleColor, optional):
+            A theme token that controls the visual styling.
+
+        **kwargs (Unpack[ComboboxOptions]):
+            All additional standard `ttk.Combobox` keyword arguments such as:
+            `values`, `textvariable`, `width`, `postcommand`, `state`, etc.
     """
 
     def __init__(
@@ -40,14 +50,15 @@ class Combobox(StyledWidgetMixin, ttkCombobox):
         **kwargs: Unpack[CbOpts],
     ):
         """
-        Initialize a styled Combobox.
+        Initialize a themed `Combobox` widget.
 
-        Parameters:
-            master (Misc | None): The parent container.
-            color (Color, optional): A ttkbootstrap color token (e.g., "info").
-            **kwargs (CbOpts): Additional standard ttk.Combobox options.
+        Args:
+            master: The parent widget container.
+            color: A ttkbootstrap theme token for styling.
+            **kwargs: Keyword arguments forwarded to `ttk.Combobox`.
         """
         self._color = color
-        self._variant = None  # Explicitly no variant support
+        self._variant = None  # Combobox does not support style variants
         super().__init__(master, **kwargs)
         self._init_style(kwargs, color=color, variant="")
+

@@ -12,15 +12,22 @@ except ImportError:
 
 
 class Sizegrip(StyledWidgetMixin, ttkSizegrip):
-    """
-    A themed resize handle typically placed in the bottom-right corner
-    of a window or resizable frame.
+    """A themed resize handle for the bottom-right corner of a window.
 
-    This widget provides a visual cue and mouse control for resizing
-    its parent container. It supports theming through the `color` parameter.
+    This widget behaves like a standard `ttk.Sizegrip`, but allows for
+    color theming via the `color` parameter to match the overall UI palette.
+
+    The sizegrip provides a visual cue for resizability and allows the
+    user to drag and resize the toplevel window or container that holds it.
 
     Example:
-        Sizegrip(root, color="muted").pack(side="right", anchor="se")
+        >>> from ttkbootstrap.widgets import Sizegrip
+        >>> Sizegrip(root, color="muted").pack(side="right", anchor="se")
+
+    Args:
+        master (Misc | None): The parent container widget.
+        color (Color, optional): A ttkbootstrap color token (e.g., "muted", "info").
+        **kwargs (SizegripOptions): Additional keyword arguments for `ttk.Sizegrip`.
     """
 
     def __init__(
@@ -29,13 +36,12 @@ class Sizegrip(StyledWidgetMixin, ttkSizegrip):
         color: Color = None,
         **kwargs: Unpack[GripOpts],
     ):
-        """
-        Initialize a themed Sizegrip.
+        """Initialize the themed Sizegrip widget.
 
-        Parameters:
+        Args:
             master (Misc | None): The parent container.
-            color (Color, optional): A themed color token (e.g., "muted", "info").
-            **kwargs (GripOpts): Additional ttk.Sizegrip options.
+            color (Color, optional): A themed style color name.
+            **kwargs (SizegripOptions): Additional options accepted by `ttk.Sizegrip`.
         """
         self._color = color
         self._variant = None

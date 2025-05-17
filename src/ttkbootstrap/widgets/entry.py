@@ -12,24 +12,22 @@ except ImportError:
 
 
 class Entry(StyledWidgetMixin, ttkEntry):
-    """
-    A themed entry widget with support for dynamic color styling.
+    """A themed entry widget with support for dynamic color styling.
 
-    This widget extends the standard `ttk.Entry` by applying a style derived
-    from the provided `color`. The color affects elements like the border
-    and focus ring to visually align with the overall theme.
+    This class extends the standard ttk.Entry widget by applying a
+    ttkbootstrap-compatible style based on the specified color. This affects
+    the focus ring, border, and overall visual theming.
 
-    It retains the full behavior of a normal entry widget, supporting text
-    input, validation, and variable binding, while offering a more customized
-    appearance through theming.
+    It retains all functionality of the standard entry widget, including text
+    input, validation, and variable binding, while offering an enhanced appearance.
 
     Example:
-        Entry(root, textvariable=myvar, color="info")
+        >>> entry = Entry(root, textvariable=myvar, color="info")
 
-    Parameters:
+    Args:
         master (Misc | None): The parent container widget.
-        color (Color, optional): The color theme (e.g., "info", "primary").
-        **kwargs (EntryOpts): Additional options accepted by `ttk.Entry`.
+        color (Color, optional): The style color theme (e.g., "info", "primary").
+        **kwargs (EntryOpts): Additional keyword arguments accepted by ttk.Entry.
     """
 
     def __init__(
@@ -38,13 +36,15 @@ class Entry(StyledWidgetMixin, ttkEntry):
         color: Color = None,
         **kwargs: Unpack[EntryOpts],
     ):
-        """
-        Initialize a styled Entry.
+        """Initialize the themed Entry widget.
 
-        Parameters:
-            master (Misc | None): The parent container.
-            color (Color, optional): A ttkbootstrap color token (e.g., "info").
-            **kwargs (EntryOpts): Additional standard ttk.Entry options.
+        Applies ttkbootstrap color styling at initialization. Entry does not
+        support visual variants.
+
+        Args:
+            master (Misc | None): The parent widget.
+            color (Color, optional): A ttkbootstrap color name.
+            **kwargs (EntryOpts): Additional options passed to ttk.Entry.
         """
         self._color = color
         self._variant = None  # Entry does not support variants

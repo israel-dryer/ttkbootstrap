@@ -6,7 +6,17 @@ from ttkbootstrap.utils.style_utils import combine_style_keywords
 class StyledWidgetMixin:
     """
     Mixin for ttkbootstrap-compatible widgets that support `color` and `variant`.
-    Styles are applied synchronously after widget initialization.
+
+    This mixin handles applying dynamic styles to themed ttk widgets
+    based on semantic parameters like `color` (e.g., "primary") and
+    `variant` (e.g., "outline", "round").
+
+    Attributes:
+        _color (str | None): The style color name.
+        _variant (str | None): The style variant name.
+
+    Example:
+        Used in ttkbootstrap Button, Checkbutton, etc.
     """
 
     _color: str | None
@@ -19,14 +29,14 @@ class StyledWidgetMixin:
         variant: str = "default"
     ) -> None:
         """
-        Apply style immediately after widget initialization.
+        Initialize and apply widget style.
 
-        This must be called after `super().__init__()`.
+        This should be called after the parent widget's `__init__` method.
 
-        Parameters:
-            kwargs (dict): Remaining ttk-compatible kwargs.
-            color (str | None): The ttkbootstrap color name.
-            variant (str): The ttkbootstrap variant (or "" if none).
+        Args:
+            kwargs (dict): Remaining keyword arguments from the constructor.
+            color (str | None): A ttkbootstrap color name.
+            variant (str): A ttkbootstrap variant name or an empty string.
         """
         self._color = color
         self._variant = variant
@@ -38,9 +48,24 @@ class StyledWidgetMixin:
         else:
             style_key = combine_style_keywords(self._color, self._variant)
             style = Bootstyle.update_ttk_widget_style(self, style_key, **kwargs)
+
         self.configure(style=style)
 
     def configure(self, cnf: str | None = None, **kwargs) -> Any:
+        """
+        Configure the widget.
+
+        Special keys:
+            color (str): Re-applies the theme color.
+            variant (str): Re-applies the visual variant.
+
+        Args:
+            cnf (str | None): A single option to retrieve.
+            **kwargs: Options to set on the widget.
+
+        Returns:
+            Any: The result of the configuration query or update.
+        """
         if cnf == "color":
             return self._color
         elif cnf == "variant":

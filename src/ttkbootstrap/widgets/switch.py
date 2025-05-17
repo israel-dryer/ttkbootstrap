@@ -13,8 +13,7 @@ SwitchVariant = Literal["round", "square"]
 
 
 class Switch(Checkbutton):
-    """
-    A themed switch widget that behaves like a toggle control.
+    """A themed switch widget that behaves like a toggle control.
 
     This widget extends a standard checkbutton and presents a modern on/off
     toggle interface. It supports both `color` and `variant` parameters to
@@ -25,13 +24,15 @@ class Switch(Checkbutton):
         - "square": Renders a rectangular toggle switch
 
     Example:
-        Switch(root, text="Enable notifications", color="success", variant="round")
+        >>> from ttkbootstrap.widgets import Switch
+        >>> sw = Switch(root, text="Enable notifications", color="success", variant="round")
+        >>> sw.pack()
 
-    Parameters:
+    Args:
         master (Misc | None): The parent container widget.
-        color (Color): The switch color theme (e.g., "success", "info").
-        variant (str): Either "round" or "square".
-        **kwargs (SwitchOpts): Additional options accepted by `ttk.Checkbutton`.
+        color (Color, optional): The switch color theme (e.g., "success", "info").
+        variant (SwitchVariant): Either "round" or "square".
+        **kwargs (CheckbuttonOptions): Additional keyword arguments passed to `ttk.Checkbutton`.
     """
 
     def __init__(
@@ -41,14 +42,13 @@ class Switch(Checkbutton):
         variant: SwitchVariant = "round",
         **kwargs: Unpack[CbOpts],
     ):
-        """
-        Initialize a styled Switch.
+        """Initialize the themed Switch widget.
 
-        Parameters:
+        Args:
             master (Misc, optional): The parent container.
             color (Color, optional): A ttkbootstrap color token (e.g., "success").
-            variant (SwitchVariant): The switch shape: "round" or "square".
-            **kwargs (CbOpts): Additional standard ttk.Checkbutton options.
+            variant (SwitchVariant): The shape of the switch: "round" or "square".
+            **kwargs (CheckbuttonOptions): Additional options accepted by `ttk.Checkbutton`.
         """
         self._color = color
         self._variant = variant

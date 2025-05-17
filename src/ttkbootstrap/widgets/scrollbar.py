@@ -15,28 +15,29 @@ ScrollbarVariant = Literal["default", "round"]
 
 
 class Scrollbar(StyledWidgetMixin, ttkScrollbar):
-    """
-    A themed scrollbar widget with support for color and variant styling.
+    """A themed scrollbar widget with color and variant styling.
 
-    This widget extends the standard `ttk.Scrollbar` by applying custom styles
-    based on the provided `color` and `variant`. The `color` affects the thumb
-    and track appearance, while the `variant` determines the shape of the thumb.
+    This widget extends `ttk.Scrollbar` and applies ttkbootstrap styling
+    via the `color` and `variant` options. The `color` defines the scrollbar's
+    visual theme, while the `variant` controls the thumb's shape.
 
     Supported variants:
-        - "default": Standard rectangular thumb
-        - "round": Rounded thumb design
+        - "default": Rectangular thumb
+        - "round": Rounded thumb ends
 
-    Useful for customizing scroll appearance to better match modern or
-    stylistically themed interfaces.
+    Ideal for interfaces where scroll aesthetics should match a modern or
+    visually cohesive theme.
 
     Example:
-        Scrollbar(root, orient="vertical", color="primary", variant="round")
+        >>> from ttkbootstrap.widgets import Scrollbar
+        >>> sb = Scrollbar(root, orient="vertical", color="primary", variant="round")
+        >>> sb.pack(side="right", fill="y")
 
-    Parameters:
+    Args:
         master (Misc | None): The parent container widget.
         color (Color): The scrollbar color theme (e.g., "primary", "secondary").
-        variant (str): Either "default" or "round".
-        **kwargs (ScrollbarOpts): Additional options accepted by `ttk.Scrollbar`.
+        variant (ScrollbarVariant): Scrollbar thumb shape: "default" or "round".
+        **kwargs (ScrollOpts): Additional keyword options passed to `ttk.Scrollbar`.
     """
 
     def __init__(
@@ -46,14 +47,13 @@ class Scrollbar(StyledWidgetMixin, ttkScrollbar):
         variant: ScrollbarVariant = "default",
         **kwargs: Unpack[ScrollOpts],
     ):
-        """
-        Initialize a styled Scrollbar.
+        """Initialize the themed Scrollbar widget.
 
-        Parameters:
+        Args:
             master (Misc | None): The parent container.
-            color (Color, optional): A ttkbootstrap color token.
-            variant (ScrollbarVariant): Scrollbar style variant.
-            **kwargs (ScrollOpts): Additional ttk.Scrollbar options.
+            color (Color, optional): A ttkbootstrap color token (e.g., "info", "warning").
+            variant (ScrollbarVariant): Thumb variant: "default" or "round".
+            **kwargs (ScrollOpts): Additional configuration options passed to `ttk.Scrollbar`.
         """
         self._color = color
         self._variant = variant

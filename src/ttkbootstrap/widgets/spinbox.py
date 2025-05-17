@@ -12,14 +12,22 @@ except ImportError:
 
 
 class Spinbox(StyledWidgetMixin, ttkSpinbox):
-    """
-    A themed Spinbox widget for numeric or text-based selection from a fixed range.
+    """A themed Spinbox widget for selecting from a fixed range of values.
 
-    Supports theming through a `color` parameter and provides increment/decrement
-    controls for stepping through values.
+    This widget extends `ttk.Spinbox` and adds theme support using the
+    `color` parameter to style the background and arrow controls.
+
+    It is useful for numeric inputs or stepping through predefined options.
 
     Example:
-        Spinbox(root, from_=0, to=10, color="primary", width=10)
+        >>> from ttkbootstrap.widgets import Spinbox
+        >>> sb = Spinbox(root, from_=0, to=10, color="primary", width=10)
+        >>> sb.pack()
+
+    Args:
+        master (Misc | None): The parent container widget.
+        color (StyleColor, optional): A ttkbootstrap color token (e.g., "primary", "info").
+        **kwargs (SpinboxOptions): Additional keyword arguments for `ttk.Spinbox`.
     """
 
     def __init__(
@@ -28,13 +36,12 @@ class Spinbox(StyledWidgetMixin, ttkSpinbox):
         color: Color = None,
         **kwargs: Unpack[SpinOpts],
     ):
-        """
-        Initialize a themed Spinbox.
+        """Initialize the themed Spinbox widget.
 
-        Parameters:
+        Args:
             master (Misc | None): The parent container.
-            color (Color, optional): A ttkbootstrap color token.
-            **kwargs (SpinOpts): Additional standard ttk.Spinbox options.
+            color (StyleColor, optional): The style color applied to the Spinbox.
+            **kwargs (SpinboxOptions): Configuration options passed to `ttk.Spinbox`.
         """
         self._color = color
         self._variant = None
