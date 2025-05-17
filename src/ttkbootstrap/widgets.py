@@ -1325,7 +1325,7 @@ class Meter(ttk.Frame):
         elif cnf == "subtextstyle":
             return self._subtextstyle
         elif cnf == "subtext":
-            return self._subtext
+            return self.labelvar.get()
         elif cnf == "metersize":
             return self._metersize
         elif cnf == "bootstyle":
@@ -1392,7 +1392,7 @@ class Meter(ttk.Frame):
             self._stripethickness = kwargs.pop("stripethickness")
         if "subtext" in kwargs:
             self._subtext = kwargs.pop("subtext")
-            self.subtext.configure(text=self._subtext)
+            self.labelvar.set(self._subtext)
             meter_text_changed = True
         if "textleft" in kwargs:
             self._textleft = kwargs.pop("textleft")
