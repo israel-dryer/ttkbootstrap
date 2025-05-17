@@ -1026,7 +1026,10 @@ class Tableview(ttk.Frame):
     def unload_table_data(self):
         """Unload all data from the table"""
         for row in self.tablerows_visible:
-            row.hide()
+            tmp_row_id = row.iid
+            for tmp in self._tablerows:
+                if tmp_row_id == tmp.iid:
+                    row.hide()
         self.tablerows_visible.clear()
 
     def load_table_data(self, clear_filters=False):
