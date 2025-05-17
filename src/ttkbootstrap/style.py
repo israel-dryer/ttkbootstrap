@@ -5241,7 +5241,6 @@ class Bootstyle:
                 builder.update_combobox_popdown_style(widget)
         except:
             pass
-        print(ttkstyle, 'updated in ttk_widget_style', 'from style string', style_string)
         return ttkstyle
 
     @staticmethod
