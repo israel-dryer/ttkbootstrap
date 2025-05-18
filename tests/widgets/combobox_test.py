@@ -24,4 +24,11 @@ if __name__ == "__main__":
     combo.pack(padx=20, pady=20)
     combo.bind("<<ComboboxSelected>>", on_select)
 
+    Combobox(
+        root,
+        values=["Option 1", "Option 2", "Option 3"],
+        width=20
+    ).pack()
+
+
     root.mainloop()
