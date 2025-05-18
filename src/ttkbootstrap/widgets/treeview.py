@@ -38,7 +38,7 @@ class Treeview(StyledWidgetMixin, ttkTreeview):
     def __init__(
         self,
         master: Misc | None = None,
-        color: Color = None,
+        color: Color = "default",
         **kwargs: Unpack[TreeOpts],
     ):
         """

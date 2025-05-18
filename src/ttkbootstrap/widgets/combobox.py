@@ -46,7 +46,7 @@ class Combobox(StyledWidgetMixin, ttkCombobox):
     def __init__(
         self,
         master: Misc | None = None,
-        color: Color = None,
+        color: Color = "primary",
         **kwargs: Unpack[CbOpts],
     ):
         """

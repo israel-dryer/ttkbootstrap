@@ -45,7 +45,7 @@ class Checkbutton(StyledWidgetMixin, ttkCheckbutton):
     def __init__(
         self,
         master: Misc = None,
-        color: Color = None,
+        color: Color = "primary",
         **kwargs: Unpack[CbOpts],
     ):
         """

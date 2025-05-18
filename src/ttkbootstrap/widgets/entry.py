@@ -33,7 +33,7 @@ class Entry(StyledWidgetMixin, ttkEntry):
     def __init__(
         self,
         master: Misc | None = None,
-        color: Color = None,
+        color: Color = "default",
         **kwargs: Unpack[EntryOpts],
     ):
         """Initialize the themed Entry widget.

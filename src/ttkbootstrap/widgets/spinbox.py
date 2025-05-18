@@ -33,7 +33,7 @@ class Spinbox(StyledWidgetMixin, ttkSpinbox):
     def __init__(
         self,
         master: Misc | None = None,
-        color: Color = None,
+        color: Color = "default",
         **kwargs: Unpack[SpinOpts],
     ):
         """Initialize the themed Spinbox widget.

@@ -36,7 +36,7 @@ class Scale(StyledWidgetMixin, ttkScale):
     def __init__(
         self,
         master: Misc | None = None,
-        color: Color = None,
+        color: Color = "primary",
         **kwargs: Unpack[ScaleOpts],
     ):
         """Initialize the themed Scale widget.
