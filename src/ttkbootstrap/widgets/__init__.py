@@ -1,5 +1,3 @@
-import tkinter as tk
-
 from ttkbootstrap.widgets.button import Button
 from ttkbootstrap.widgets.checkbutton import Checkbutton
 from ttkbootstrap.widgets.switch import Switch
@@ -33,22 +31,4 @@ from ttkbootstrap.widgets.tooltip import ToolTip
 from ttkbootstrap.widgets.toast import ToastNotification
 from ttkbootstrap.widgets.tableview import Tableview
 
-TK_WIDGETS = (
-    tk.Tk,
-    tk.Toplevel,
-    tk.Button,
-    tk.Label,
-    tk.Text,
-    tk.Frame,
-    tk.Checkbutton,
-    tk.Radiobutton,
-    tk.Entry,
-    tk.Scale,
-    tk.Listbox,
-    tk.Menu,
-    tk.Menubutton,
-    tk.LabelFrame,
-    tk.Canvas,
-    tk.OptionMenu,
-    tk.Spinbox,
-)
+

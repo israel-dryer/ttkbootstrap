@@ -14,6 +14,26 @@ from ttkbootstrap import utility as util
 from ttkbootstrap import colorutils
 from PIL import ImageColor
 
+TK_WIDGETS = (
+    tk.Tk,
+    tk.Toplevel,
+    tk.Button,
+    tk.Label,
+    tk.Text,
+    tk.Frame,
+    tk.Checkbutton,
+    tk.Radiobutton,
+    tk.Entry,
+    tk.Scale,
+    tk.Listbox,
+    tk.Menu,
+    tk.Menubutton,
+    tk.LabelFrame,
+    tk.Canvas,
+    tk.OptionMenu,
+    tk.Spinbox,
+)
+
 try:
     # prevent app from failing if user.py gets corrupted
     from ttkbootstrap.themes.user import USER_THEMES
@@ -5251,10 +5271,10 @@ class Bootstyle:
         # from ttkbootstrap.widgets import TK_WIDGETS
         #
         # # TK WIDGETS
-        # for widget in TK_WIDGETS:
-        #     # override widget constructor
-        #     _init = Bootstyle.override_tk_widget_constructor(widget.__init__)
-        #     widget.__init__ = _init
+        for widget in TK_WIDGETS:
+            # override widget constructor
+            _init = Bootstyle.override_tk_widget_constructor(widget.__init__)
+            widget.__init__ = _init
 
     @staticmethod
     def update_tk_widget_style(widget):
