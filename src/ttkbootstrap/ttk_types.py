@@ -1,4 +1,5 @@
-from typing import Literal, TypedDict, Callable, Union
+from tkinter.font import Font
+from typing import Any, Literal, TypedDict, Callable, Union
 from tkinter import StringVar, IntVar, BooleanVar, DoubleVar, Variable as TkVariable
 
 from PIL.ImageTk import PhotoImage
@@ -13,6 +14,8 @@ StyleColor = Literal['primary', 'secondary', 'success', 'info', 'warning', 'dang
 ButtonStyleVariant = Literal['default', 'outline', 'link']
 SwitchVariant = Literal["round", "square"]
 ToolbuttonVariant = Literal["default", "outline"]
+
+Anchor = Literal["n", "ne", "e", "se", "s", "sw", "w", "nw", "center"]
 
 
 class ButtonOptions(TypedDict, total=False):
@@ -62,6 +65,7 @@ class ComboboxOptions(TypedDict, total=False):
     style: str
     takefocus: bool | str
     cursor: str
+    text: str
 
 
 class EntryOptions(TypedDict, total=False):
@@ -118,7 +122,7 @@ class LabelOptions(TypedDict, total=False):
     anchor: Literal["n", "ne", "e", "se", "s", "sw", "w", "nw", "center"]
     justify: Literal["left", "center", "right"]
     padding: Union[int, str, tuple[int, int]]
-    font: str
+    font: str | Font
     width: int
     style: str
     cursor: str
@@ -246,7 +250,7 @@ class SpinboxOptions(TypedDict, total=False):
 
 
 class TreeviewOptions(TypedDict, total=False):
-    columns: list[str]
+    columns: list[Any]
     displaycolumns: list[str]
     show: Literal["tree", "headings", "tree headings"]
     selectmode: Literal["browse", "extended", "none"]
