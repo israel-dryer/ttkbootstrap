@@ -1,7 +1,7 @@
 from tkinter import Text
 from ttkbootstrap.widgets.frame import Frame
 from ttkbootstrap.widgets.scrollbar import Scrollbar
-from typing import Literal
+from typing import Literal, Optional
 from ttkbootstrap.ttk_types import StyleColor, TextOptions
 
 try:
@@ -77,11 +77,6 @@ class ScrolledText(Frame):
         self._text = Text(self, padx=50, **kwargs)
         self._vbar = None
         self._hbar = None
-
-        # Delegate Text methods (excluding geometry) to self
-        for method in vars(Text).keys():
-            if not any(m in method for m in ("pack", "grid", "place")):
-                setattr(self, method, getattr(self._text, method))
 
         if vbar:
             self._vbar = Scrollbar(
@@ -172,3 +167,66 @@ class ScrolledText(Frame):
         """Enable autohide mode: show scrollbars on mouse enter, hide on leave."""
         self.bind("<Enter>", self.show_scrollbars)
         self.bind("<Leave>", self.hide_scrollbars)
+
+    # delegated methods
+
+    _excluded_getattr_methods = {
+        # Geometry management
+        "pack", "grid", "place",
+        "pack_configure", "grid_configure", "place_configure",
+        "pack_slaves", "grid_slaves", "place_slaves",
+        "pack_info", "grid_info", "place_info",
+        "pack_forget", "grid_forget", "place_forget",
+        # Explicitly typed text methods
+        "insert", "delete", "get", "replace", "see", "index",
+        "mark_set", "mark_unset",
+        "edit_undo", "edit_redo", "edit_reset", "edit_separator", "edit_modified",
+    }
+
+    def __getattr__(self, name: str):
+        """
+        Delegate attribute access to the internal `Text` widget,
+        excluding geometry management and explicitly typed methods.
+        """
+        if name in self._excluded_getattr_methods:
+            raise AttributeError(f"'{type(self).__name__}' object has no attribute '{name}'")
+        return getattr(self._text, name)
+
+    def insert(self, index: str, chars: str, *args: str) -> None:
+        return self._text.insert(index, chars, *args)
+
+    def delete(self, index1: str, index2: Optional[str] = None) -> None:
+        return self._text.delete(index1, index2)
+
+    def get(self, index1: str, index2: Optional[str] = None) -> str:
+        return self._text.get(index1, index2)
+
+    def replace(self, index1: str, index2: str, chars: str, *args: str) -> None:
+        return self._text.replace(index1, index2, chars, *args)
+
+    def see(self, index: str) -> None:
+        return self._text.see(index)
+
+    def index(self, index: str) -> str:
+        return self._text.index(index)
+
+    def mark_set(self, mark_name: str, index: str) -> None:
+        return self._text.mark_set(mark_name, index)
+
+    def mark_unset(self, *mark_names: str) -> None:
+        return self._text.mark_unset(*mark_names)
+
+    def edit_undo(self) -> None:
+        return self._text.edit_undo()
+
+    def edit_redo(self) -> None:
+        return self._text.edit_redo()
+
+    def edit_reset(self) -> None:
+        return self._text.edit_reset()
+
+    def edit_separator(self) -> None:
+        return self._text.edit_separator()
+
+    def edit_modified(self, arg: Optional[bool] = None) -> bool:
+        return self._text.edit_modified(arg)
