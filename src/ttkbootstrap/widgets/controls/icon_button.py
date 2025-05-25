@@ -27,9 +27,9 @@ class IconButton(IconMixin, StyledWidget, ttkButton):
         self._variant = variant
 
         # Inject icon and compound into kwargs before init
-        self.init_icon_support(kwargs, default_compound="image")
+        self._inject_icon_support(kwargs, default_compound="image")
 
         super().__init__(master, **kwargs)
 
-        self.bind_icon_events()
+        self._bind_icon_events()
         self._init_style("icon.button", color=color, variant=variant, **kwargs)

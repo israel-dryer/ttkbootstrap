@@ -26,7 +26,7 @@ class CheckBoxToggle(IconMixin, StyledWidget, ttkCheckbutton):
         self._icon_name = icon
         self._icon_size = size
 
-        self.init_icon_support(kwargs, default_compound="left")
+        self._inject_icon_support(kwargs, default_compound="left")
         super().__init__(master, **kwargs)
-        self.bind_icon_events()
+        self._bind_icon_events()
         self._init_style('checkbutton.toggle', color=color, variant=self._variant, **kwargs)

@@ -17,7 +17,7 @@ class IconMixin:
     _variant: str = "default"
     _color: str = "default"
 
-    def init_icon_support(self, kwargs: dict, default_compound: str = "left"):
+    def _inject_icon_support(self, kwargs: dict, default_compound: str = "left"):
         """Inject image and compound into kwargs before widget init."""
         if not self._icon_name:
             return
@@ -30,7 +30,7 @@ class IconMixin:
         except Exception as e:
             logger.error("IconMixin", f"failed to load icon: '{self._icon_name}': {e}")
 
-    def bind_icon_events(self):
+    def _bind_icon_events(self):
         """Bind all icon-related events (hover, theme change)."""
         if self._variant == "outline":
             self.bind("<Enter>", lambda e: self.configure(image=self._icon_image_hover))
