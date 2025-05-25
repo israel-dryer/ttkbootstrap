@@ -1,5 +1,5 @@
 from ttkbootstrap.window import Window
-from ttkbootstrap.widgets.tk_widgets import (
+from ttkbootstrap.widgets.legacy import (
     TkButton,
     TkLabel,
     TkTextBox,
