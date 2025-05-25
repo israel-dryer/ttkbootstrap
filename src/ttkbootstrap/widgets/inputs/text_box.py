@@ -1,10 +1,8 @@
 from tkinter import Misc
 from tkinter.ttk import Entry as ttkEntry
 
-from ttkbootstrap.ttk_types import (
-    StyleColor,
-)
-from ttkbootstrap.style.styled_widget import StyledWidget
+from ...ttk_types import StyleColor
+from ...style.styled_widget import StyledWidget
 
 try:
     from typing import Unpack
@@ -15,10 +13,10 @@ except ImportError:
 class TextBox(StyledWidget, ttkEntry):
 
     def __init__(
-            self,
-            master: Misc = None,
-            color: StyleColor = "default",
-            **kwargs
+        self,
+        master: Misc = None,
+        color: StyleColor = "default",
+        **kwargs
     ):
         self._color = color
         self._variant = "default"

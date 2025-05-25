@@ -1,10 +1,8 @@
 from tkinter import Misc
 from tkinter.ttk import Frame as ttkFrame
 
-from ttkbootstrap.ttk_types import (
-    StyleColor as Color
-)
-from ttkbootstrap.style.styled_widget import StyledWidget
+from ...ttk_types import StyleColor
+from ...style.styled_widget import StyledWidget
 
 try:
     from typing import Literal, Unpack
@@ -15,11 +13,11 @@ except ImportError:
 class Frame(StyledWidget, ttkFrame):
 
     def __init__(
-            self,
-            master: Misc = None,
-            color: Color = "default",
-            variant: Literal['default', 'round'] = "default",
-            **kwargs,
+        self,
+        master: Misc = None,
+        color: StyleColor = "default",
+        variant: Literal['default', 'round'] = "default",
+        **kwargs,
     ):
         self._color = color
         self._variant = variant

@@ -10,7 +10,7 @@
 """
 import tkinter as tk
 
-from ttkbootstrap.style.theme_manager import get_theme_manager
+from ..style.theme_manager import get_theme_manager
 
 
 def apply_style(handler: str, widget: tk.Misc):

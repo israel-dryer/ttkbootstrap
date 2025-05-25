@@ -1,10 +1,8 @@
 from tkinter import Misc
 from tkinter.ttk import Radiobutton as ttkRadiobutton
 
-from ttkbootstrap.ttk_types import (
-    StyleColor as Color, CheckbuttonOptions as CbOpts
-)
-from ttkbootstrap.style.styled_widget import StyledWidget
+from ...ttk_types import StyleColor
+from ...style.styled_widget import StyledWidget
 
 try:
     from typing import Unpack
@@ -15,10 +13,10 @@ except ImportError:
 class Radiobutton(StyledWidget, ttkRadiobutton):
 
     def __init__(
-            self,
-            master: Misc = None,
-            color: Color = "primary",
-            **kwargs
+        self,
+        master: Misc = None,
+        color: StyleColor = "primary",
+        **kwargs
     ):
         self._color = color
         self._variant = "default"

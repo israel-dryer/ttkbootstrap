@@ -1,10 +1,8 @@
 from tkinter import Misc
 from tkinter.ttk import Checkbutton as ttkCheckbutton
 
-from ttkbootstrap.ttk_types import (
-    StyleColor as Color, CheckbuttonOptions as CbOpts
-)
-from ttkbootstrap.style.styled_widget import StyledWidget
+from ...ttk_types import CheckbuttonOptions, StyleColor
+from ...style.styled_widget import StyledWidget
 
 try:
     from typing import Unpack
@@ -15,10 +13,10 @@ except ImportError:
 class Switch(StyledWidget, ttkCheckbutton):
 
     def __init__(
-            self,
-            master: Misc = None,
-            color: Color = "primary",
-            **kwargs: Unpack[CbOpts],
+        self,
+        master: Misc = None,
+        color: StyleColor = "primary",
+        **kwargs: Unpack[CheckbuttonOptions],
     ):
         self._color = color
         self._variant = "default"

@@ -1,12 +1,8 @@
 from tkinter import Misc
 from tkinter.ttk import Button as ttkButton
-
-from ttkbootstrap.ttk_types import (
-    StyleColor,
-    ButtonOptions as BtnOpts,
-)
-from ttkbootstrap.style.styled_widget import StyledWidget
-from ttkbootstrap.widgets.mixins import IconMixin
+from ..mixins import IconMixin
+from ...ttk_types import StyleColor
+from ...style.styled_widget import StyledWidget
 
 try:
     from typing import Unpack
@@ -16,13 +12,13 @@ except ImportError:
 
 class Button(IconMixin, StyledWidget, ttkButton):
     def __init__(
-            self,
-            master: Misc = None,
-            icon: str = None,
-            size: int = 24,
-            color: StyleColor = "default",
-            variant: str = "default",
-            **kwargs: Unpack[BtnOpts],
+        self,
+        master: Misc = None,
+        icon: str = None,
+        size: int = 24,
+        color: StyleColor = "default",
+        variant: str = "default",
+        **kwargs,
     ):
         self._icon_name = icon
         self._icon_size = size

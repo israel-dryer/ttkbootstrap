@@ -1,10 +1,8 @@
 from tkinter import Misc
 from tkinter.ttk import Scale as ttkScale
 
-from ttkbootstrap.ttk_types import (
-    StyleColor,
-)
-from ttkbootstrap.style.styled_widget import StyledWidget
+from ...ttk_types import StyleColor
+from ...style.styled_widget import StyledWidget
 
 try:
     from typing import Literal, Unpack
@@ -15,11 +13,11 @@ except ImportError:
 class Slider(StyledWidget, ttkScale):
 
     def __init__(
-            self,
-            master: Misc = None,
-            color: StyleColor = "default",
-            orient: Literal['horizontal', 'vertical'] = "horizontal",
-            **kwargs
+        self,
+        master: Misc = None,
+        color: StyleColor = "default",
+        orient: Literal['horizontal', 'vertical'] = "horizontal",
+        **kwargs
     ):
         self._color = color
         self._variant = "default"

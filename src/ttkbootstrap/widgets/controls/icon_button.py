@@ -1,13 +1,9 @@
 from tkinter import Misc
 from tkinter.ttk import Button as ttkButton
 
-from ttkbootstrap.style.styled_widget import StyledWidget
-from ttkbootstrap.widgets.mixins import IconMixin
-from ttkbootstrap.ttk_types import (
-    StyleColor,
-    ButtonStyleVariant as Variant,
-    ButtonOptions as BtnOpts,
-)
+from ...style.styled_widget import StyledWidget
+from ..mixins import IconMixin
+from ...ttk_types import StyleColor, ButtonStyleVariant
 
 try:
     from typing import Unpack
@@ -22,8 +18,8 @@ class IconButton(IconMixin, StyledWidget, ttkButton):
         icon: str = None,
         size: int = 24,
         color: StyleColor = "default",
-        variant: Variant = "default",
-        **kwargs: Unpack[BtnOpts],
+        variant: ButtonStyleVariant = "default",
+        **kwargs,
     ):
         self._icon_name = icon
         self._icon_size = size
@@ -38,4 +34,3 @@ class IconButton(IconMixin, StyledWidget, ttkButton):
         self.bind_icon_hover_events()
         self.bind_theme_change_event()
         self._init_style("icon.button", color=color, variant=variant, **kwargs)
-

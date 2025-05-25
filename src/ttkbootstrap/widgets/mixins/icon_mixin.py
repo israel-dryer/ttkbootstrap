@@ -1,7 +1,7 @@
 from typing import Union, TYPE_CHECKING
-from ttkbootstrap.icons import Icon
-from ttkbootstrap.logger import logger
-from ttkbootstrap.style.theme_manager import get_theme_manager
+from ...icons import Icon
+from ...logger import logger
+from ...style.theme_manager import get_theme_manager
 
 if TYPE_CHECKING:
     from tkinter import PhotoImage

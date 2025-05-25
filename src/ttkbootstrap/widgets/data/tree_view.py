@@ -1,10 +1,8 @@
 from tkinter import Misc
 from tkinter.ttk import Treeview as ttkTreeview
 
-from ttkbootstrap.ttk_types import (
-    StyleColor as Color, TreeviewOptions as TvOpts
-)
-from ttkbootstrap.style.styled_widget import StyledWidget
+from ...ttk_types import StyleColor, TreeviewOptions
+from ...style.styled_widget import StyledWidget
 
 try:
     from typing import Unpack
@@ -15,10 +13,10 @@ except ImportError:
 class Treeview(StyledWidget, ttkTreeview):
 
     def __init__(
-            self,
-            master: Misc = None,
-            color: Color = "default",
-            **kwargs: Unpack[TvOpts]
+        self,
+        master: Misc = None,
+        color: StyleColor = "default",
+        **kwargs: Unpack[TreeviewOptions]
     ):
         self._color = color
         self._variant = "default"

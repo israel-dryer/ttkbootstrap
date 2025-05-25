@@ -1,11 +1,9 @@
 from tkinter import Misc
 from tkinter.ttk import Checkbutton as ttkCheckbutton
 
-from ttkbootstrap.ttk_types import (
-    StyleColor as Color
-)
-from ttkbootstrap.style.styled_widget import StyledWidget
-from ttkbootstrap.widgets.mixins import IconMixin
+from ..mixins import IconMixin
+from ...ttk_types import StyleColor
+from ...style.styled_widget import StyledWidget
 
 try:
     from typing import Unpack
@@ -16,12 +14,12 @@ except ImportError:
 class CheckBoxToggle(IconMixin, StyledWidget, ttkCheckbutton):
 
     def __init__(
-            self,
-            master: Misc = None,
-            icon: str = None,
-            size: int = 24,
-            color: Color = "primary",
-            **kwargs,
+        self,
+        master: Misc = None,
+        icon: str = None,
+        size: int = 24,
+        color: StyleColor = "primary",
+        **kwargs,
     ):
         self._color = color
         self._variant = "default"  # Checkbutton does not support style variants
