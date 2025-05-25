@@ -9,7 +9,7 @@ if TYPE_CHECKING:
     from ttkbootstrap.style.theme import Theme
 
 
-class TTkToolbuttonDefaultStyle(StyleBuilder):
+class TTkToolButtonDefaultStyle(StyleBuilder):
 
     def __init__(self, theme: Theme):
         super().__init__(theme)

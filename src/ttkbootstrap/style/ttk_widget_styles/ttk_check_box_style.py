@@ -15,7 +15,7 @@ if TYPE_CHECKING:
     from ttkbootstrap.style.theme import Theme
 
 
-class TTkCheckbuttonStyle(StyleBuilder):
+class TTkCheckBoxStyle(StyleBuilder):
 
     def __init__(self, theme: Theme):
         super().__init__(theme)

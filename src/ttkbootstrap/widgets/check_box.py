@@ -12,7 +12,7 @@ except ImportError:
     from typing_extensions import Unpack
 
 
-class Checkbutton(StyledWidget, ttkCheckbutton):
+class CheckBox(StyledWidget, ttkCheckbutton):
     """
     A themed `ttk.Checkbutton` widget with support for dynamic color styling.
 
@@ -26,10 +26,10 @@ class Checkbutton(StyledWidget, ttkCheckbutton):
         - Compatible with all `ttk.Checkbutton` configuration options
 
     Example:
-        >>> from ttkbootstrap.widgets import Checkbutton
+        >>> from ttkbootstrap.widgets import CheckBox
         >>> from tkinter import BooleanVar
         >>> var = BooleanVar()
-        >>> cb = Checkbutton(root, text="Enable", variable=var, color="primary")
+        >>> cb = CheckBox(root, text="Enable", variable=var, color="primary")
         >>> cb.pack()
 
     Args:

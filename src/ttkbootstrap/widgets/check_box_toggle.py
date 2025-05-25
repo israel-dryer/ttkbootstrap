@@ -13,7 +13,7 @@ except ImportError:
     from typing_extensions import Unpack
 
 
-class CheckbuttonToggle(IconMixin, StyledWidget, ttkCheckbutton):
+class CheckBoxToggle(IconMixin, StyledWidget, ttkCheckbutton):
 
     def __init__(
             self,

@@ -10,7 +10,7 @@ if TYPE_CHECKING:
     from ttkbootstrap.style.theme import Theme
 
 
-class TTkTreeviewDefaultStyle(StyleBuilder):
+class TTkTreeViewDefaultStyle(StyleBuilder):
 
     def __init__(self, theme: Theme):
         super().__init__(theme)

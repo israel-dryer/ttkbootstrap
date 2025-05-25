@@ -34,7 +34,7 @@ class TkCanvas(tk.Canvas):
             self.bind("<<ThemeChanged>>", lambda _: apply_style('tk.canvas', self))
 
 
-class TkCheckbutton(tk.Checkbutton):
+class TkCheckBox(tk.Checkbutton):
     def __init__(self, master=None, themed=True, *args, **kwargs):
         super().__init__(master, *args, **kwargs)
         if themed:
@@ -42,7 +42,7 @@ class TkCheckbutton(tk.Checkbutton):
             self.bind("<<ThemeChanged>>", lambda _: apply_style('tk.checkbutton', self))
 
 
-class TkEntry(tk.Entry):
+class TkTextBox(tk.Entry):
     def __init__(self, master=None, themed=True, *args, **kwargs):
         super().__init__(master, *args, **kwargs)
         if themed:
@@ -74,7 +74,7 @@ class TkLabelFrame(tk.LabelFrame):
             self.bind("<<ThemeChanged>>", lambda _: apply_style('tk.labelframe', self))
 
 
-class TkListbox(tk.Listbox):
+class TkListBox(tk.Listbox):
     def __init__(self, master=None, themed=True, *args, **kwargs):
         super().__init__(master, *args, **kwargs)
         if themed:
@@ -90,7 +90,7 @@ class TkMenu(tk.Menu):
             self.bind("<<ThemeChanged>>", lambda _: apply_style('tk.menu', self))
 
 
-class TkMenubutton(tk.Menubutton):
+class TkMenuButton(tk.Menubutton):
     def __init__(self, master=None, themed=True, *args, **kwargs):
         super().__init__(master, *args, **kwargs)
         if themed:
@@ -98,7 +98,7 @@ class TkMenubutton(tk.Menubutton):
             self.bind("<<ThemeChanged>>", lambda _: apply_style('tk.menubutton', self))
 
 
-class TkRadiobutton(tk.Radiobutton):
+class TkRadio(tk.Radiobutton):
     def __init__(self, master=None, themed=True, *args, **kwargs):
         super().__init__(master, *args, **kwargs)
         if themed:
@@ -114,7 +114,7 @@ class TkScale(tk.Scale):
             self.bind("<<ThemeChanged>>", lambda _: apply_style('tk.scale', self))
 
 
-class TkSpinbox(tk.Spinbox):
+class TkSpinBox(tk.Spinbox):
     def __init__(self, master=None, themed=True, *args, **kwargs):
         super().__init__(master, *args, **kwargs)
         if themed:
@@ -130,7 +130,7 @@ class TkText(tk.Text):
             self.bind("<<ThemeChanged>>", lambda _: apply_style('tk.text', self))
 
 
-class TkToplevel(tk.Toplevel):
+class TkTopLevel(tk.Toplevel):
     def __init__(self, master=None, themed=True, *args, **kwargs):
         super().__init__(master, *args, **kwargs)
         if themed:

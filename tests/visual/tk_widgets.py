@@ -2,25 +2,25 @@ from ttkbootstrap.window import Window
 from ttkbootstrap.widgets.tk_widgets import (
     TkButton,
     TkLabel,
-    TkEntry,
+    TkTextBox,
     TkFrame,
-    TkCheckbutton,
+    TkCheckBox,
     TkLabelFrame,
-    TkRadiobutton,
+    TkRadio,
     TkCanvas,
     TkText,
-    TkSpinbox,
-    TkListbox,
-    TkToplevel,
+    TkSpinBox,
+    TkListBox,
+    TkTopLevel,
     TkMenu,
-    TkMenubutton,
+    TkMenuButton,
     TkScale
 )
 import tkinter as tk  # Needed for Menu integration
 
 
 def show_toplevel():
-    top = TkToplevel()
+    top = TkTopLevel()
     top.title("Themed Toplevel")
     TkLabel(top, text="This is a themed Toplevel window").pack(padx=10, pady=10)
     TkButton(top, text="Close", command=top.destroy).pack(pady=5)
@@ -55,24 +55,24 @@ def main():
     frame.pack(padx=20, pady=10, fill="both", expand=True)
 
     TkLabel(frame, text="Name:").grid(row=0, column=0, sticky="e")
-    entry = TkEntry(frame)
+    entry = TkTextBox(frame)
     entry.grid(row=0, column=1, sticky="w")
 
-    TkCheckbutton(frame, text="Subscribe").grid(row=1, column=0, columnspan=2, sticky="w")
+    TkCheckBox(frame, text="Subscribe").grid(row=1, column=0, columnspan=2, sticky="w")
 
     gender = tk.IntVar()
-    TkRadiobutton(frame, text="Male", value=1, variable=gender).grid(row=2, column=0, sticky="w")
-    TkRadiobutton(frame, text="Female", value=2, variable=gender).grid(row=2, column=1, sticky="w")
+    TkRadio(frame, text="Male", value=1, variable=gender).grid(row=2, column=0, sticky="w")
+    TkRadio(frame, text="Female", value=2, variable=gender).grid(row=2, column=1, sticky="w")
 
     TkLabel(frame, text="Bio:").grid(row=3, column=0, sticky="ne")
     bio = TkText(frame, height=4, width=30)
     bio.grid(row=3, column=1)
 
     TkLabel(frame, text="Age:").grid(row=4, column=0, sticky="e")
-    TkSpinbox(frame, from_=0, to=100).grid(row=4, column=1, sticky="w")
+    TkSpinBox(frame, from_=0, to=100).grid(row=4, column=1, sticky="w")
 
     TkLabel(frame, text="Favorites:").grid(row=5, column=0, sticky="ne")
-    listbox = TkListbox(frame, height=4)
+    listbox = TkListBox(frame, height=4)
     for item in ["Python", "Tkinter", "ttkbootstrap", "Themed Widgets"]:
         listbox.insert("end", item)
     listbox.grid(row=5, column=1)
@@ -89,7 +89,7 @@ def main():
     menubutton_frame = TkFrame(root)
     menubutton_frame.pack(pady=10)
 
-    menubutton = TkMenubutton(menubutton_frame, text="Options")
+    menubutton = TkMenuButton(menubutton_frame, text="Options")
     menubutton.pack()
 
     popup_menu = tk.Menu(menubutton, tearoff=0)

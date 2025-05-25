@@ -1,6 +1,6 @@
 from ttkbootstrap.window import Window
 from ttkbootstrap.icons import Icon
-from ttkbootstrap.widgets import Button, CheckbuttonToggle, IconButton
+from ttkbootstrap.widgets import Button, CheckBoxToggle, IconButton
 from tkinter.ttk import Button as ttkButton
 from tkinter import Label
 
@@ -17,8 +17,8 @@ IconButton(root, icon="android2", color="success", variant="outline").pack(padx=
 Button(root, text="Button", image=Icon("house", color="orange"), compound="left").pack(padx=10, pady=10)
 Button(root, text="Home", icon="house", variant="text").pack(padx=10, pady=10)
 
-CheckbuttonToggle(root, text="Verified", icon="fingerprint").pack(padx=10, pady=10)
-CheckbuttonToggle(root, text="Verified", icon="key").pack(padx=10, pady=10)
+CheckBoxToggle(root, text="Verified", icon="fingerprint").pack(padx=10, pady=10)
+CheckBoxToggle(root, text="Verified", icon="key").pack(padx=10, pady=10)
 
 Button(root, icon="android2", text="Button", variant="outline").pack(padx=10, pady=10)
 
