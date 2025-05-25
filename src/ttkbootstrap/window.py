@@ -6,10 +6,12 @@
 import tkinter
 from ttkbootstrap.constants import *
 from ttkbootstrap.publisher import Publisher
-from ttkbootstrap.style import Style
+from ttkbootstrap.style.theme_manager import get_theme_manager
 from ttkbootstrap.icons import Icon
-from ttkbootstrap import utility
+from ttkbootstrap.utils import window_utils as utility
+from ttkbootstrap.widgets.tk_widgets import apply_style
 
+APP_ICON = "iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAAFxEAABcRAcom8z8AAAT/SURBVFhHzZd9TNR1HMff/O64BwKOp+NRnkIScJI2n7ZqFmqjVhkrHExrrDFZLnPkqmEyW2WtlQ1SQawWPSAYiJLNGvK0VhJOaDgVBDPCw0PwEOUQfsfd/fp+v/cFbt0Bd6yxXvfP5+F79/l+P9+H+3w8wMnO3r40I+P5vOCQ4I1ymVzrQeCu/wSJYDabB/sHbp45XlnzQUnJgcvcBRQUHEjX6/vH6aCFQK/XjxcWHnyBxpbRle/Ysf3n0NAQJTWMmiRUnB/FNy1GNHaNYdwsIS7IE4JdPqxWKxoam3D0aAVq6+rR39+P2NhYKBQKPsJGx3Abyq8dxGldBbrvXkSoVyR8Pf3g7e0tj46O2mQ0Gqs96urqv1u/PmUL/cLfQ2a8/O0t9A2b2Q9MsjpGicOZQfBSeEAURbyZtxstLee410awVovCgk8RGxPD9NLuT1B6dT+TJ/EUFMhL/gwpYZuYXl/fUCbQPaeKVQJyqwwOwSnnekR8VDvM5JIjnzsEpwwMDmL32/mwWCxoHqhzCE6ZsJrw4YWduHGvh+k0tkAPHFXadSZc1k8whzNOtt+DcWwCJ2p+4BZH/urpwfnWNpzs/YpbHJmwivjxehmTaWxh8rTT9M+GSM7CpZ5BjI2NcYtzdH069PEVzsSkn8YWmETQek+JTpER9/3h/pDL5dzinKDAQAQqg7nmHHv/VNRV5KCFaWRcc2RdvBpajRopjz/GLY4EBARgzerVeCKc3TCneJDPxohp/9QEFDIPfJwWwE76v1nkL8fep/yYnLvzNURFRTLZHqVSib35e6BSqfDkokysC32ae6ahwbPidyFRs4JbiK2jo1NKSFjCVaDHYMaRX0fQ3mcikwIeiVMh+2EfaNTTW2Q0jqKsvBxnzzaza5mYmICXXtw6dQUpVslK7n85ztyogkEcQIRXLNKis7BWu4GPADo7rzhOYCGZ9wQmxi249NN19P5xCxaTFdo4XyQ/Gw3fEDUf4RrzmoA4MoFT77RiqNfILTY8VTKk5i1HWJI/t8wNncDsd88JzV93OQSn0Kw0FF5kGXEHtyZgJj/+5283uebI6JAI3QUD11zDrQmIIyZYzLOvcNQgcsk13JqASqOAXDnzY0XxcfMgujUBmVzAkpRwrjmiCfNCxLIArrmG24dwzZbFTk+6mmRnw+vLIJAX1R3m9Q5IpHjo/kWP3jYDOZgW9g4sTY2EyseTj3CN/8VL6PYWMO70A1W7gHeTgfzFwBcZpBpp4U7OuAl4jxQm8ZvJ/pB/0IeygC9P0fKYD7DhfgaGeoFDzwAjA9zAEcjtyDwEPEjqPZFUVqm5QFMbd9rxShpQ9AYT55eBmj2OwSlWC1D9Fln5XaC42nlwSvEJoLGVK+7eApE8wVcauOKEsTtAVxPwfT03zMCxab9AGwUuz834iG2lszF6GzCQLMzGkM1PYwu0XWKaK/iQAlqt4coMhDwAJE0XJk7hfhpboL0a01xBIAXpo9u44oRIUmrFriV1G7kV9q2UPb73AdueYyKNLfNSazpXrlyRTdslZp2LmFXAbR2gn+4tGSHkJmWVkgz5AtGhpOsgT3ItaWBIGzeFnw9QuQ9YHk/bObG4qGgrs9NGkTaMdE9c5trvknR6nyTV5EtS23HS+pq4w46rOkl6v1SSXt0vSQXHJGlwmJltzWkhK42n8pSTk5OUnr5598K055WkPS8hKQT+AVyRrtzM5URAAAAAAElFTkSuQmCC"
 
 def get_default_root(what=None):
     """Returns the default root if it has been created, otherwise
@@ -139,7 +141,7 @@ class Window(tkinter.Tk):
     def __init__(
         self,
         title="ttkbootstrap",
-        themename="litera",
+        themename="light",
         iconphoto='',
         size=None,
         position=None,
@@ -233,6 +235,7 @@ class Window(tkinter.Tk):
             utility.enable_high_dpi_awareness()
 
         super().__init__(**kwargs)
+        print('Window instantiated')
         self.winsys = self.tk.call('tk', 'windowingsystem')
 
         if scaling is not None:
@@ -241,7 +244,7 @@ class Window(tkinter.Tk):
         if iconphoto is not None:
             if iconphoto == '':
                 # the default ttkbootstrap icon
-                self._icon = tkinter.PhotoImage(master=self, data=Icon.icon)
+                self._icon = tkinter.PhotoImage(master=self, data=APP_ICON)
                 self.iconphoto(True, self._icon)
             else:
                 try:
@@ -251,7 +254,7 @@ class Window(tkinter.Tk):
                 except tkinter.TclError:
                     # The fallback icon if the user icon fails.
                     print('iconphoto path is bad; using default image.')
-                    self._icon = tkinter.PhotoImage(data=Icon.icon, master=self)
+                    self._icon = tkinter.PhotoImage(data=APP_ICON, master=self)
                     self.iconphoto(True, self._icon)
 
         self.title(title)
@@ -291,16 +294,26 @@ class Window(tkinter.Tk):
 
         apply_class_bindings(self)
         apply_all_bindings(self)
-        self._style = Style(themename)
+
+        # setup theme manager
+        self._theme_manager = get_theme_manager(themename, self)
+        apply_style('tk.base', self)  # set initial style
+
+        # subscribe to <<ThemeChanged>> event
+        self.bind("<<ThemeChanged>>", lambda _: apply_style('tk.base', self))
+
+        # initialize the icon files
+        Icon.initialize()
 
     @property
-    def style(self):
-        """Return a reference to the `ttkbootstrap.style.Style` object."""
-        return self._style
+    def theme_manager(self):
+        """Return a reference to the `ttkbootstrap.style.ThemeManager` object."""
+        return self._theme_manager
 
     def destroy(self):
         """Destroy the window and all its children."""
-        self._style.instance = None
+        self._theme_manager.instance = None
+        Icon.cleanup()
         super().destroy()
 
     def place_window_center(self):
@@ -337,6 +350,7 @@ class Toplevel(tkinter.Toplevel):
 
     def __init__(
         self,
+        master=None,
         title="ttkbootstrap",
         iconphoto='',
         size=None,
@@ -431,7 +445,7 @@ class Toplevel(tkinter.Toplevel):
         else:
             iconify = None
 
-        super().__init__(**kwargs)
+        super().__init__(master, **kwargs)
         self.winsys = self.tk.call('tk', 'windowingsystem')
 
         if iconphoto != '':
@@ -496,7 +510,7 @@ class Toplevel(tkinter.Toplevel):
     @property
     def style(self):
         """Return a reference to the `ttkbootstrap.style.Style` object."""
-        return Style()
+        return get_theme_manager()
 
     def place_window_center(self):
         """Position the toplevel in the center of the screen. Does not
