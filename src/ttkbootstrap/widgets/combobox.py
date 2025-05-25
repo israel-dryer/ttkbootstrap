@@ -1,9 +1,11 @@
 from tkinter import Misc
 from tkinter.ttk import Combobox as ttkCombobox
 
-from ttkbootstrap.ttk_types import StyleColor as Color
-from ttkbootstrap.ttk_types import ComboboxOptions as CbOpts
-from ttkbootstrap.styledwidget import StyledWidgetMixin
+from ttkbootstrap.style.styled_widget import StyledWidget
+from ttkbootstrap.ttk_types import (
+    StyleColor as Color,
+    ComboboxOptions as CbOpts
+)
 
 try:
     from typing import Unpack
@@ -11,7 +13,7 @@ except ImportError:
     from typing_extensions import Unpack
 
 
-class Combobox(StyledWidgetMixin, ttkCombobox):
+class Combobox(StyledWidget, ttkCombobox):
     """
     A themed `ttk.Combobox` with ttkbootstrap color styling support.
 
@@ -44,10 +46,10 @@ class Combobox(StyledWidgetMixin, ttkCombobox):
     """
 
     def __init__(
-        self,
-        master: Misc | None = None,
-        color: Color = "primary",
-        **kwargs: Unpack[CbOpts],
+            self,
+            master: Misc | None = None,
+            color: Color = "primary",
+            **kwargs: Unpack[CbOpts],
     ):
         """
         Initialize a themed `Combobox` widget.
@@ -58,7 +60,6 @@ class Combobox(StyledWidgetMixin, ttkCombobox):
             **kwargs: Keyword arguments forwarded to `ttk.Combobox`.
         """
         self._color = color
-        self._variant = None  # Combobox does not support style variants
+        self._variant = "default"  # Combobox does not support style variants
         super().__init__(master, **kwargs)
-        self._init_style(kwargs, color=color, variant="")
-
+        self._init_style('combobox', color=color, variant=self._variant, **kwargs)

@@ -1,8 +1,10 @@
 from tkinter import Misc
 from tkinter.ttk import Checkbutton as ttkCheckbutton
 
-from ttkbootstrap.ttk_types import StyleColor as Color, CheckbuttonOptions as CbOpts
-from ttkbootstrap.styledwidget import StyledWidgetMixin
+from ttkbootstrap.ttk_types import (
+    StyleColor as Color, CheckbuttonOptions as CbOpts
+)
+from ttkbootstrap.style.styled_widget import StyledWidget
 
 try:
     from typing import Unpack
@@ -10,11 +12,11 @@ except ImportError:
     from typing_extensions import Unpack
 
 
-class Checkbutton(StyledWidgetMixin, ttkCheckbutton):
+class Checkbutton(StyledWidget, ttkCheckbutton):
     """
     A themed `ttk.Checkbutton` widget with support for dynamic color styling.
 
-    This widget extends `ttk.Checkbutton` by allowing the `color` parameter
+    This widget extends the `ttk.Checkbutton` by allowing the `color` parameter
     to apply theme-aware styling using ttkbootstrap's theme system.
 
     Features:
@@ -43,10 +45,10 @@ class Checkbutton(StyledWidgetMixin, ttkCheckbutton):
     """
 
     def __init__(
-        self,
-        master: Misc = None,
-        color: Color = "primary",
-        **kwargs: Unpack[CbOpts],
+            self,
+            master: Misc = None,
+            color: Color = "primary",
+            **kwargs: Unpack[CbOpts],
     ):
         """
         Initialize a themed `Checkbutton`.
@@ -62,6 +64,6 @@ class Checkbutton(StyledWidgetMixin, ttkCheckbutton):
                 Additional keyword arguments passed to `ttk.Checkbutton`.
         """
         self._color = color
-        self._variant = None  # Checkbutton does not support style variants
+        self._variant = "default"  # Checkbutton does not support style variants
         super().__init__(master, **kwargs)
-        self._init_style(kwargs, color=color, variant="")
+        self._init_style('checkbutton', color=color, variant=self._variant, **kwargs)

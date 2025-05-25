@@ -12,7 +12,7 @@ except ImportError:
     from typing_extensions import Unpack
 
 
-class Radiobutton(StyledWidget, ttkRadiobutton):
+class RadiobuttonToggle(StyledWidget, ttkRadiobutton):
 
     def __init__(
             self,
@@ -23,4 +23,4 @@ class Radiobutton(StyledWidget, ttkRadiobutton):
         self._color = color
         self._variant = "default"
         super().__init__(master, **kwargs)
-        self._init_style('radiobutton', color=color, variant=self._variant, **kwargs)
+        self._init_style('radiobutton.toggle', color=color, variant=self._variant, **kwargs)

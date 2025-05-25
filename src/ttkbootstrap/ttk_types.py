@@ -1,8 +1,9 @@
 from tkinter.font import Font
-from typing import Any, Literal, TypedDict, Callable, Union
+from typing import Any, Literal, TYPE_CHECKING, TypedDict, Callable, Union
 from tkinter import StringVar, IntVar, BooleanVar, DoubleVar, Variable as TkVariable
 
 from PIL.ImageTk import PhotoImage
+from ttkbootstrap.icons import Icon
 
 try:
     from typing import Unpack
@@ -11,7 +12,7 @@ except ImportError:
 
 Variable = Union[StringVar, IntVar, BooleanVar, DoubleVar, TkVariable]
 StyleColor = Literal['primary', 'secondary', 'success', 'info', 'warning', 'danger', 'light', 'dark', 'default']
-ButtonStyleVariant = Literal['default', 'outline', 'link']
+ButtonStyleVariant = Literal['default', 'outline', 'text']
 SwitchVariant = Literal["round", "square"]
 ToolbuttonVariant = Literal["default", "outline"]
 
@@ -22,7 +23,7 @@ class ButtonOptions(TypedDict, total=False):
     text: str
     textvariable: str | Variable
     underline: int
-    image: str | PhotoImage
+    image: str | PhotoImage | Icon
     compound: Literal["top", "bottom", "left", "right", "center", "none"]
     state: Literal["normal", "active", "disabled"]
     takefocus: bool

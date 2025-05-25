@@ -3,7 +3,7 @@ from tkinter.ttk import Sizegrip as ttkSizegrip
 
 from ttkbootstrap.ttk_types import StyleColor as Color
 from ttkbootstrap.ttk_types import SizegripOptions as GripOpts
-from ttkbootstrap.styledwidget import StyledWidgetMixin
+from ttkbootstrap.style.styled_widget import StyledWidget
 
 try:
     from typing import Unpack
@@ -11,7 +11,7 @@ except ImportError:
     from typing_extensions import Unpack
 
 
-class Sizegrip(StyledWidgetMixin, ttkSizegrip):
+class Sizegrip(StyledWidget, ttkSizegrip):
     """A themed resize handle for the bottom-right corner of a window.
 
     This widget behaves like a standard `ttk.Sizegrip`, but allows for
@@ -21,8 +21,8 @@ class Sizegrip(StyledWidgetMixin, ttkSizegrip):
     user to drag and resize the toplevel window or container that holds it.
 
     Example:
-        >>> from ttkbootstrap.widgets import Sizegrip
-        >>> Sizegrip(root, color="muted").pack(side="right", anchor="se")
+        >>> from ttkbootstrap.widgets.sizegrip import Sizegrip
+        >>> Sizegrip(root).pack(side="right", anchor="se")
 
     Args:
         master (Misc | None): The parent container widget.
@@ -31,10 +31,10 @@ class Sizegrip(StyledWidgetMixin, ttkSizegrip):
     """
 
     def __init__(
-        self,
-        master: Misc | None = None,
-        color: Color = None,
-        **kwargs: Unpack[GripOpts],
+            self,
+            master: Misc | None = None,
+            color: Color = "default",
+            **kwargs: Unpack[GripOpts],
     ):
         """Initialize the themed Sizegrip widget.
 
@@ -44,6 +44,6 @@ class Sizegrip(StyledWidgetMixin, ttkSizegrip):
             **kwargs (SizegripOptions): Additional options accepted by `ttk.Sizegrip`.
         """
         self._color = color
-        self._variant = None
+        self._variant = "default"
         super().__init__(master, **kwargs)
-        self._init_style(kwargs, color=color, variant="")
+        self._init_style('sizegrip', color=color, variant="default")
