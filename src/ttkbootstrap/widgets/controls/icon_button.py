@@ -31,6 +31,5 @@ class IconButton(IconMixin, StyledWidget, ttkButton):
 
         super().__init__(master, **kwargs)
 
-        self.bind_icon_hover_events()
-        self.bind_theme_change_event()
+        self.bind_icon_events()
         self._init_style("icon.button", color=color, variant=variant, **kwargs)

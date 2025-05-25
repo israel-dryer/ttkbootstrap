@@ -30,16 +30,17 @@ class IconMixin:
         except Exception as e:
             logger.error("IconMixin", f"failed to load icon: '{self._icon_name}': {e}")
 
-    def bind_icon_hover_events(self):
-        self.bind("<Enter>", lambda e: self.configure(image=self._icon_image_hover))
-        self.bind("<Leave>", lambda e: self.configure(image=self._icon_image_normal))
-
-    def bind_theme_change_event(self):
+    def bind_icon_events(self):
+        """Bind all icon-related events (hover, theme change)."""
+        if self._variant == "outline":
+            self.bind("<Enter>", lambda e: self.configure(image=self._icon_image_hover))
+            self.bind("<Leave>", lambda e: self.configure(image=self._icon_image_normal))
         self.bind("<<ThemeChange>>", lambda e: self._on_theme_change())
 
     def _on_theme_change(self):
         self._build_icon_images()
-        self.configure(image=self._icon_image_normal)
+        if hasattr(self, "configure"):
+            self.configure(image=self._icon_image_normal)
 
     def _build_icon_images(self):
         tm = get_theme_manager()
