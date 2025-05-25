@@ -1,12 +1,12 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING
 
-from ttkbootstrap.style.style_builder import StyleBuilder
-from ttkbootstrap.style.style_element import Element, ElementImage
-from ttkbootstrap.style.ttk_widget_styles.assets import ICON_BUTTON_DEFAULT, ICON_BUTTON_DISABLED
+from ..style_builder import StyleBuilder
+from ..style_element import Element, ElementImage
+from ...utils import load_asset_image
 
 if TYPE_CHECKING:
-    from ttkbootstrap.style.theme import Theme
+    from ..theme import Theme
 
 
 class TTkIconButtonDefaultStyle(StyleBuilder):
@@ -32,17 +32,20 @@ class TTkIconButtonDefaultStyle(StyleBuilder):
         pressed = shades.d3
         disabled = background
 
+        base_default_image = load_asset_image('icon-button-default.png')
+        base_disabled_image = load_asset_image('icon-button-disabled.png')
+
         # state images
-        normal_img = self.theme.image_recolor(ICON_BUTTON_DEFAULT, background)
+        normal_img = self.theme.image_recolor(base_default_image, background)
         self.theme.register_asset(str(normal_img), normal_img)
 
-        hover_img = self.theme.image_recolor(ICON_BUTTON_DEFAULT, hover)
+        hover_img = self.theme.image_recolor(base_default_image, hover)
         self.theme.register_asset(str(hover_img), hover_img)
 
-        pressed_img = self.theme.image_recolor(ICON_BUTTON_DEFAULT, pressed)
+        pressed_img = self.theme.image_recolor(base_default_image, pressed)
         self.theme.register_asset(str(pressed_img), pressed_img)
 
-        disabled_img = self.theme.image_recolor(ICON_BUTTON_DISABLED, disabled)
+        disabled_img = self.theme.image_recolor(base_disabled_image, disabled)
         self.theme.register_asset(str(disabled_img), disabled_img)
 
         # Image element and state specs
@@ -53,15 +56,16 @@ class TTkIconButtonDefaultStyle(StyleBuilder):
         el.build()
 
         # Layout and style config
-        Element(style).layout([
-            Element(f'{style}.border', sticky="nsew"), [
+        Element(style).layout(
+            [
+                Element(f'{style}.border', sticky="nsew"), [
                 Element('Button.focus', sticky="nsew"), [
                     Element('Button.padding', sticky="nsew"), [
                         Element('Button.label', sticky="nsew")
                     ]
                 ]
             ]
-        ])
+            ])
 
         self.theme.configure(
             style,

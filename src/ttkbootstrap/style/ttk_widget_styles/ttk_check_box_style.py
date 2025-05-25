@@ -3,16 +3,12 @@ from typing import TYPE_CHECKING
 
 from tkinter import PhotoImage
 
-from ttkbootstrap.style.style_builder import StyleBuilder
-from ttkbootstrap.style.style_element import Element, ElementImage
-from ttkbootstrap.style.ttk_widget_styles.assets import (
-    CHECKBUTTON_CHECKED,
-    CHECKBUTTON_UNCHECKED,
-    CHECKBUTTON_INDETERMINATE
-)
+from ..style_builder import StyleBuilder
+from ..style_element import Element, ElementImage
+from ...utils import load_asset_image
 
 if TYPE_CHECKING:
-    from ttkbootstrap.style.theme import Theme
+    from ..theme import Theme
 
 
 class TTkCheckBoxStyle(StyleBuilder):
@@ -35,17 +31,25 @@ class TTkCheckBoxStyle(StyleBuilder):
         indicator_background = self.theme.get_color(color)
         indicator_foreground = self.theme.get_foreground(color)
         border = self.theme.border
-        disabled = indicator_background
+        disabled = border
+
+        base_checked_image = load_asset_image('checkbox-checked.png')
+        base_unchecked_image = load_asset_image('checkbox-unchecked.png')
+        base_disabled_image = load_asset_image('checkbox-disabled.png')
+        base_indeterminate_image = load_asset_image('checkbox-indeterminate.png')
 
         # state images
-        unchecked_img = self.theme.image_recolor_map(CHECKBUTTON_UNCHECKED, self.theme.background, border)
+        unchecked_img = self.theme.image_recolor_map(base_unchecked_image, self.theme.background, border)
         self.theme.register_asset(str(unchecked_img), unchecked_img)
 
-        checked_img = self.theme.image_recolor_map(CHECKBUTTON_CHECKED, indicator_foreground, indicator_background)
+        checked_img = self.theme.image_recolor_map(base_checked_image, indicator_foreground, indicator_background)
         self.theme.register_asset(str(checked_img), checked_img)
 
+        disabled_img = self.theme.image_recolor_map(base_disabled_image, self.theme.background, border)
+        self.theme.register_asset(str(disabled_img), disabled_img)
+
         indeterminate_img = self.theme.image_recolor_map(
-            CHECKBUTTON_INDETERMINATE, indicator_foreground, indicator_background)
+            base_indeterminate_image, indicator_foreground, indicator_background)
         self.theme.register_asset(str(indeterminate_img), indeterminate_img)
 
         spacer_img = PhotoImage(width=6, height=1)
@@ -56,6 +60,7 @@ class TTkCheckBoxStyle(StyleBuilder):
 
         # Indicator element
         el = ElementImage(f'{style}.indicator', checked_img, sticky="ns", padding=3)
+        el.add_spec('disabled', disabled_img)
         el.add_spec('alternate', indeterminate_img)
         el.add_spec('!selected', unchecked_img)
         el.build()

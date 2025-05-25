@@ -2,11 +2,11 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from ttkbootstrap.style.style_builder import StyleBuilder
-from ttkbootstrap.style.style_element import Element, ElementImage
+from ..style_builder import StyleBuilder
+from ..style_element import Element, ElementImage
 
 if TYPE_CHECKING:
-    from ttkbootstrap.style.theme import Theme
+    from ..theme import Theme
 
 
 class TTkSelectBoxStyle(StyleBuilder):

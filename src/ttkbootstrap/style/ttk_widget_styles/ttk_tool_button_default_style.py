@@ -1,12 +1,12 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING
 
-from ttkbootstrap.style.style_builder import StyleBuilder
-from ttkbootstrap.style.style_element import Element, ElementImage
-from ttkbootstrap.style.ttk_widget_styles.assets import BUTTON_DEFAULT, BUTTON_DISABLED
+from ..style_builder import StyleBuilder
+from ..style_element import Element, ElementImage
+from ..ttk_widget_styles.assets import BUTTON_DEFAULT, BUTTON_DISABLED
 
 if TYPE_CHECKING:
-    from ttkbootstrap.style.theme import Theme
+    from ..theme import Theme
 
 
 class TTkToolButtonDefaultStyle(StyleBuilder):
@@ -40,7 +40,7 @@ class TTkToolButtonDefaultStyle(StyleBuilder):
         foreground = self.theme.get_foreground(color)
 
         # state images
-        normal_img = self.theme.image_recolor(BUTTON_DEFAULT, inactive)
+        normal_img = self.theme.image_recolor(BUTTON_DISABLED, inactive)
         self.theme.register_asset(str(normal_img), normal_img)
 
         selected_img = self.theme.image_recolor(BUTTON_DEFAULT, active)

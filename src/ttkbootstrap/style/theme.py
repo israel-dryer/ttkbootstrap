@@ -16,7 +16,7 @@ from ..logger import logger
 from ..utils import style_utils
 
 from collections import namedtuple
-from typing import Any, Dict, List, Literal, Tuple
+from typing import Any, Dict, List, Literal, Tuple, Union
 
 DEFAULT_COLOR_1 = '#ddd'
 DEFAULT_COLOR_2 = '#111'
@@ -133,13 +133,11 @@ class Theme:
         img_data = base64.b64decode(data)
         return Image.open(BytesIO(img_data)).convert('RGBA')
 
-    def image_recolor(self, data: str, color: str):
+    def image_recolor(self, data: Union[str,Image], color: str):
         """
         Recolor a grayscale-based UI asset where white represents the active pixel
         and black or transparent represents absence, using luminance-based interpolation.
         """
-        theme_color = style_utils.color_to_rgb(color)
-
         if self.is_light_theme:
             white = color
             black = "#ffffff"  # background stays white
@@ -149,13 +147,16 @@ class Theme:
 
         return self.image_recolor_map(data, white, black)
 
-    def image_recolor_map(self, data: str, white: str, black: str):
+    def image_recolor_map(self, data: Union[str,Image], white: str, black: str):
         """
         Recolor an anti-aliased two-tone RGBA image using luminance mapping.
         Pixels closer to white get `white`, and pixels closer to black get `black`,
         with smooth interpolation for edge pixels.
         """
-        img = Theme.image_open(data).convert("RGBA")
+        if isinstance(data, str):
+            img = Theme.image_open(data).convert("RGBA")
+        else:
+            img = data
         base_rgb = ImageOps.grayscale(img)  # Use luminance to guide interpolation
         alpha = img.getchannel("A")
 

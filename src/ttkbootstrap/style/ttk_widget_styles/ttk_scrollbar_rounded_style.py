@@ -1,14 +1,14 @@
 from __future__ import annotations
 
-from typing import Literal, TYPE_CHECKING
+from typing import TYPE_CHECKING
 
 from PIL import Image, ImageDraw
 
-from ttkbootstrap.style.style_element import ElementImage, Element
-from ttkbootstrap.style.style_builder import StyleBuilder
+from ..style_element import ElementImage, Element
+from ..style_builder import StyleBuilder
 
 if TYPE_CHECKING:
-    from ttkbootstrap.style.theme import Theme
+    from ..theme import Theme
 
 
 class TTkScrollbarRoundStyle(StyleBuilder):

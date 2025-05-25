@@ -1,12 +1,12 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING
 
-from ttkbootstrap.style.style_builder import StyleBuilder
-from ttkbootstrap.style.style_element import Element, ElementImage
-from ttkbootstrap.style.ttk_widget_styles.assets import CARD_BORDER
+from ..style_builder import StyleBuilder
+from ..style_element import Element, ElementImage
+from ...utils import load_asset_image
 
 if TYPE_CHECKING:
-    from ttkbootstrap.style.theme import Theme
+    from ..theme import Theme
 
 
 class TTkFrameRoundStyle(StyleBuilder):
@@ -26,8 +26,10 @@ class TTkFrameRoundStyle(StyleBuilder):
         color = "border" if color == "default" else color
         outline = self.theme.get_color(color)
 
+        base_card_image = load_asset_image('card.png')
+
         # state images
-        outline_img = self.theme.image_recolor_map(CARD_BORDER, self.theme.background, outline)
+        outline_img = self.theme.image_recolor_map(base_card_image, self.theme.background, outline)
         self.theme.register_asset(str(outline_img), outline_img)
 
         # Image element and state specs
@@ -38,8 +40,8 @@ class TTkFrameRoundStyle(StyleBuilder):
         Element(style).layout(
             [
                 Element(f'{style}.border', sticky="nsew"), [
-                    Element('Frame.padding', sticky="nsew")
-                ]
+                Element('Frame.padding', sticky="nsew")
+            ]
             ])
 
         self.theme.configure(style, background=self.theme.background, relief="flat")

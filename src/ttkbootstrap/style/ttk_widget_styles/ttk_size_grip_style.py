@@ -2,7 +2,6 @@ from __future__ import annotations
 
 from PIL import Image, ImageDraw, ImageTk
 
-from ttkbootstrap.logger import logger
 from ttkbootstrap.utils.window_utils import get_image_name
 
 from ttkbootstrap.style.style_builder import StyleBuilder

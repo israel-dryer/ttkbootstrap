@@ -1,14 +1,12 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING
 
-from ttkbootstrap.style.style_builder import StyleBuilder
-from ttkbootstrap.style.style_element import Element, ElementImage
-from ttkbootstrap.style.ttk_widget_styles.assets import (
-    SLIDER_HANDLE, SLIDER_TRACK_VERTICAL, SLIDER_TRACK_HORIZONTAL
-)
+from ..style_builder import StyleBuilder
+from ..style_element import Element, ElementImage
+from ..ttk_widget_styles.assets import SLIDER_HANDLE, SLIDER_TRACK_VERTICAL, SLIDER_TRACK_HORIZONTAL
 
 if TYPE_CHECKING:
-    from ttkbootstrap.style.theme import Theme
+    from ...style.theme import Theme
 
 
 class TTkSliderDefaultStyle(StyleBuilder):

@@ -1,16 +1,12 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING
 
-from tkinter import PhotoImage
-
-from ttkbootstrap.style.style_builder import StyleBuilder
-from ttkbootstrap.style.style_element import Element, ElementImage
-from ttkbootstrap.style.ttk_widget_styles.assets import (
-    INPUT_BORDER
-)
+from ..style_builder import StyleBuilder
+from ..style_element import Element, ElementImage
+from ...utils import load_asset_image
 
 if TYPE_CHECKING:
-    from ttkbootstrap.style.theme import Theme
+    from ..theme import Theme
 
 
 class TTkTextBoxDefaultStyle(StyleBuilder):
@@ -34,15 +30,17 @@ class TTkTextBoxDefaultStyle(StyleBuilder):
         border = self.theme.border
         disabled = border
 
+        base_border = load_asset_image('input.png')
+
         # state images
-        normal_img = self.theme.image_recolor_map(INPUT_BORDER, self.theme.background, border)
+        normal_img = self.theme.image_recolor_map(base_border, self.theme.background, border)
         self.theme.register_asset(str(normal_img), normal_img)
 
-        focused_img = self.theme.image_recolor_map(INPUT_BORDER, self.theme.background, focused)
+        focused_img = self.theme.image_recolor_map(base_border, self.theme.background, focused)
         self.theme.register_asset(str(focused_img), focused_img)
 
         # Border element
-        el = ElementImage(f'{style}.border', normal_img, sticky="ew", padding=3, border=6, width=261, height=38)
+        el = ElementImage(f'{style}.border', normal_img, sticky="ew", padding=3, border=6)
         el.add_spec('focus', focused_img)
         el.build()
 

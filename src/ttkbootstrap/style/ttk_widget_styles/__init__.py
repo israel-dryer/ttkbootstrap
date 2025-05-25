@@ -14,6 +14,9 @@ from .ttk_tree_view_style import TTkTreeViewDefaultStyle
 from .ttk_icon_button_default_style import TTkIconButtonDefaultStyle
 from .ttk_icon_button_outline_style import TTkIconButtonOutlineStyle
 from .ttk_icon_button_text_style import TTkIconButtonTextStyle
+from .ttk_frame_default_style import TTkFrameDefaultStyle
+from .ttk_divider_default_style import TTkDividerDefaultStyle
+from .ttk_divider_dashed_style import  TTkDividerDashedStyle
 
 ttk_handlers = [
     ('ttk.default.button', TTkButtonDefaultStyle),
@@ -25,6 +28,7 @@ ttk_handlers = [
     ('ttk.default.radiobutton', TTkRadioStyle),
     ('ttk.default.switch', TTkSwitchDefaultStyle),
     ('ttk.default.input', TTkTextBoxDefaultStyle),
+    ('ttk.default.frame', TTkFrameDefaultStyle),
     ('ttk.round.frame', TTkFrameRoundStyle),
     ('ttk.default.slider', TTkSliderDefaultStyle),
     ('ttk.default.checkbutton.toggle', TTkToolButtonDefaultStyle),
@@ -32,5 +36,7 @@ ttk_handlers = [
     ('ttk.default.treeview', TTkTreeViewDefaultStyle),
     ('ttk.default.icon.button', TTkIconButtonDefaultStyle),
     ('ttk.outline.icon.button', TTkIconButtonOutlineStyle),
-    ('ttk.text.icon.button', TTkIconButtonTextStyle)
+    ('ttk.text.icon.button', TTkIconButtonTextStyle),
+    ('ttk.default.divider', TTkDividerDefaultStyle),
+    ('ttk.dashed.divider', TTkDividerDashedStyle),
 ]
