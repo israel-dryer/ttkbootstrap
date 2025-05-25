@@ -32,19 +32,17 @@ class TTkDividerDashedStyle(StyleBuilder):
         # state images
         if orient == "vertical":
             base_divider_image = load_asset_image('divider-dashed-vertical.png')
+            border = 0
         else:
             base_divider_image = load_asset_image('divider-dashed-horizontal.png')
+            border = 0
 
         divider_img = self.theme.image_recolor(base_divider_image, divider_color)
         self.theme.register_asset(str(divider_img), divider_img)
 
         # Separator element
         el = ElementImage(
-            f'{style}.divider',
-            divider_img,
-            width=38 if orient == "horizontal" else 1,
-            height=1 if orient == "horizontal" else 38,
-            border=0, padding=0)
+            f'{style}.divider', divider_img, border=border, padding=0)
         el.build()
 
         # Layout and style config

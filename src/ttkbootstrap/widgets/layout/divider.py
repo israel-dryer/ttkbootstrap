@@ -23,4 +23,4 @@ class Divider(StyledWidget, ttkSeparator):
         self._color = color
         self._variant = variant
         super().__init__(master, **kwargs)
-        self._init_style('separator', color=color, variant=self._variant, **kwargs, extras={"orient": orient})
+        self._init_style('divider', color=color, variant=self._variant, **kwargs, extras={"orient": orient})

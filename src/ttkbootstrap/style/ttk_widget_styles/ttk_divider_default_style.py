@@ -40,11 +40,7 @@ class TTkDividerDefaultStyle(StyleBuilder):
 
         # Separator element
         el = ElementImage(
-            f'{style}.divider',
-            divider_img,
-            width=38 if orient == "horizontal" else 1,
-            height=1 if orient == "horizontal" else 38,
-            border=0, padding=0)
+            f'{style}.divider', divider_img, border=0, padding=0)
         el.build()
 
         # Layout and style config
