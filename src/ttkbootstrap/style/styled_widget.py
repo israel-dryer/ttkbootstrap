@@ -1,11 +1,12 @@
 from tkinter import Misc
 from typing import Any
 
-from ttkbootstrap.style.theme_manager import get_theme_manager
-from ttkbootstrap.ttk_types import StyleColor
-from ttkbootstrap.logger import Logger
+from .theme_manager import get_theme_manager
+from ..ttk_types import StyleColor
+from ..logger import Logger
 
 logger = Logger(False, False)
+
 
 def combine_style_keywords(color: str, variant: str) -> str:
     if variant and variant != "default":
@@ -19,11 +20,11 @@ class StyledWidget(Misc):
     _widget_class: str
 
     def _init_style(
-        self,
-        widget_class: str,
-        color: StyleColor = "default",
-        variant: str = "default",
-        **kwargs
+            self,
+            widget_class: str,
+            color: StyleColor = "default",
+            variant: str = "default",
+            **kwargs
     ) -> None:
         logger.debug('StyledWidget', f'Initializing style for {widget_class} with {color} {variant} {kwargs}')
         self._widget_class = widget_class

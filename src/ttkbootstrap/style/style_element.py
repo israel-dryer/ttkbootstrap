@@ -9,8 +9,8 @@ class Element:
     """A widget element layout for a style"""
 
     def __init__(
-            self, name=None, expand=None, side=None, sticky=None,
-            border=None):
+        self, name=None, expand=None, side=None, sticky=None,
+        border=None):
         """
         Create a widget element layout for a style.
 
@@ -128,8 +128,8 @@ class ElementImage:
     """A new image element in the current theme"""
 
     def __init__(
-            self, name, image, border=None, height=None, padding=None,
-            sticky=None, width=None):
+        self, name, image, border=None, height=None, padding=None,
+        sticky=None, width=None):
         """Create a new image element in the current theme.
 
         State specific images can be added with the `add_spec` method.

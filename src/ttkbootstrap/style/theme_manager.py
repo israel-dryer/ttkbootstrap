@@ -1,8 +1,8 @@
 from tkinter.ttk import Style
 
-from ttkbootstrap.exceptions import ThemeAlreadyExistsError, ThemeNotFoundError
-from ttkbootstrap.style.theme import Theme, get_standard_themes
-from ttkbootstrap.logger import logger
+from .theme import Theme, get_standard_themes
+from ..exceptions import ThemeAlreadyExistsError, ThemeNotFoundError
+from ..logger import logger
 
 
 class ThemeManager:

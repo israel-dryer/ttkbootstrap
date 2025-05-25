@@ -9,15 +9,14 @@ from PIL import Image, ImageOps
 from PIL.ImageDraw import ImageDraw
 from PIL.ImageTk import PhotoImage
 
-from ttkbootstrap.exceptions import StyleHandlerNotFoundError
-from ttkbootstrap.logger import logger
-from ttkbootstrap.style.tk_widget_styles import tk_handlers
-from ttkbootstrap.style.ttk_widget_styles import ttk_handlers
+from .tk_widget_styles import tk_handlers
+from .ttk_widget_styles import ttk_handlers
+from ..exceptions import StyleHandlerNotFoundError
+from ..logger import logger
+from ..utils import style_utils
+
 from collections import namedtuple
 from typing import Any, Dict, List, Literal, Tuple
-
-from ttkbootstrap.utils import style_utils
-from ttkbootstrap.utils.style_utils import color_to_rgb
 
 DEFAULT_COLOR_1 = '#ddd'
 DEFAULT_COLOR_2 = '#111'
@@ -139,7 +138,7 @@ class Theme:
         Recolor a grayscale-based UI asset where white represents the active pixel
         and black or transparent represents absence, using luminance-based interpolation.
         """
-        theme_color = color_to_rgb(color)
+        theme_color = style_utils.color_to_rgb(color)
 
         if self.is_light_theme:
             white = color
@@ -161,8 +160,8 @@ class Theme:
         alpha = img.getchannel("A")
 
         # Colors to blend between
-        light = color_to_rgb(white)
-        dark = color_to_rgb(black)
+        light = style_utils.color_to_rgb(white)
+        dark = style_utils.color_to_rgb(black)
 
         # Create output image
         result = Image.new("RGBA", img.size)

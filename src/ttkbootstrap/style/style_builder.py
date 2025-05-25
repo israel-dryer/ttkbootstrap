@@ -3,7 +3,7 @@ from tkinter.ttk import Style
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from ttkbootstrap.style.theme import Theme
+    from .theme import Theme
 
 
 class StyleBuilder(ABC):

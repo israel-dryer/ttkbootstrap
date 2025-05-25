@@ -1,11 +1,11 @@
 from __future__ import annotations
 
 from typing import TYPE_CHECKING
-from ttkbootstrap.style.style_builder import StyleBuilder
+from ..style_builder import StyleBuilder
 
 if TYPE_CHECKING:
+    from ..theme import Theme
     from tkinter import Tk
-    from ttkbootstrap.style.theme import Theme
 
 
 class TkBaseStyle(StyleBuilder):

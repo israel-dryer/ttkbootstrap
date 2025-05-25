@@ -1,7 +1,7 @@
 from typing import Literal, Tuple
 from colorsys import rgb_to_hls
 from PIL import ImageColor
-from ttkbootstrap.logger import Logger
+from ..logger import Logger
 
 logger = Logger(False, True)
 
