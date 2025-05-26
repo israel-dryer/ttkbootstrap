@@ -1,3 +1,6 @@
+from .ttk_badge_circle_style import TTkBadgeCircleStyle
+from .ttk_badge_default_style import TTkBadgeDefaultStyle
+from .ttk_badge_pill_style import TTkBadgePillStyle
 from .ttk_button_default_style import TTkButtonDefaultStyle
 from .ttk_button_outline_style import TTkButtonOutlineStyle
 from .ttk_button_text_style import TTkButtonTextStyle
@@ -16,7 +19,7 @@ from .ttk_icon_button_outline_style import TTkIconButtonOutlineStyle
 from .ttk_icon_button_text_style import TTkIconButtonTextStyle
 from .ttk_frame_default_style import TTkFrameDefaultStyle
 from .ttk_divider_default_style import TTkDividerDefaultStyle
-from .ttk_divider_dashed_style import  TTkDividerDashedStyle
+from .ttk_divider_dashed_style import TTkDividerDashedStyle
 
 ttk_handlers = [
     ('ttk.default.button', TTkButtonDefaultStyle),
@@ -39,4 +42,7 @@ ttk_handlers = [
     ('ttk.text.icon.button', TTkIconButtonTextStyle),
     ('ttk.default.divider', TTkDividerDefaultStyle),
     ('ttk.dashed.divider', TTkDividerDashedStyle),
+    ('ttk.default.badge', TTkBadgeDefaultStyle),
+    ('ttk.pill.badge', TTkBadgePillStyle),
+    ('ttk.circle.badge', TTkBadgeCircleStyle),
 ]
