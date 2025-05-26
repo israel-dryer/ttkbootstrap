@@ -14,22 +14,30 @@ class TTkFrameRoundStyle(StyleBuilder):
     def __init__(self, theme: Theme):
         super().__init__(theme)
 
-    def invoke(self, color: str, **_):
+    def invoke(self, color: str, **extras):
         """Create the rounded frame style"""
 
-        style = f'{color}.Round.TFrame'
+        transparency = extras.get('transparency', False)
+        transparency_color = '#FF00FF'
+
+        if transparency:
+            style = f'{color}.Transparent.Round.TFrame'
+        else:
+            style = f'{color}.Round.TFrame'
 
         if self.theme.has_style(style):
             return style
 
         # color token
-        color = "border" if color == "default" else color
-        outline = self.theme.get_color(color)
+        token = "border" if color == "default" else color
+
+        outline = self.theme.get_color(token)
+        background = self.theme.background if token == "border" else outline
 
         base_card_image = load_asset_image('card.png')
 
         # state images
-        outline_img = self.theme.image_recolor_map(base_card_image, self.theme.background, outline)
+        outline_img = self.theme.image_recolor_map(base_card_image, background, outline)
         self.theme.register_asset(str(outline_img), outline_img)
 
         # Image element and state specs
@@ -44,6 +52,9 @@ class TTkFrameRoundStyle(StyleBuilder):
             ]
             ])
 
-        self.theme.configure(style, background=self.theme.background, relief="flat")
+        self.theme.configure(
+            style,
+            background=transparency_color if transparency else self.theme.background,
+            relief="flat")
         self.theme.add_style(style)
         return style

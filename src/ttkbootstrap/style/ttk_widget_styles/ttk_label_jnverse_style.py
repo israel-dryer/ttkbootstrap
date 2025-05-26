@@ -7,7 +7,7 @@ if TYPE_CHECKING:
     from ..theme import Theme
 
 
-class TTkLabelDefaultStyle(StyleBuilder):
+class TTkLabelInverseStyle(StyleBuilder):
 
     def __init__(self, theme: Theme):
         super().__init__(theme)
@@ -15,7 +15,7 @@ class TTkLabelDefaultStyle(StyleBuilder):
     def invoke(self, color: str, **_):
         """Create the default label style"""
 
-        style = f'{color}.TLabel'
+        style = f'{color}.Inverse.TLabel'
         if self.theme.has_style(style):
             return style
 
@@ -23,7 +23,8 @@ class TTkLabelDefaultStyle(StyleBuilder):
         color = "foreground" if color == "default" else color
 
         foreground = self.theme.get_foreground(color)
-        background = self.theme.background
+        background = self.theme.get_color(color)
+
         self.theme.configure(
             style,
             foreground=foreground,

@@ -5,6 +5,7 @@ from .ttk_button_default_style import TTkButtonDefaultStyle
 from .ttk_button_outline_style import TTkButtonOutlineStyle
 from .ttk_button_text_style import TTkButtonTextStyle
 from .ttk_check_box_style import TTkCheckBoxStyle
+from .ttk_label_jnverse_style import TTkLabelInverseStyle
 from .ttk_text_box_default_style import TTkTextBoxDefaultStyle
 from .ttk_scrollbar_default_style import TTkScrollbarDefaultStyle
 from .ttk_scrollbar_rounded_style import TTkScrollbarRoundStyle
@@ -45,4 +46,6 @@ ttk_handlers = [
     ('ttk.default.badge', TTkBadgeDefaultStyle),
     ('ttk.pill.badge', TTkBadgePillStyle),
     ('ttk.circle.badge', TTkBadgeCircleStyle),
+    ('ttk.default.frame', TTkFrameDefaultStyle),
+    ('ttk.inverse.label', TTkLabelInverseStyle)
 ]

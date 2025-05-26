@@ -104,6 +104,8 @@ class Theme:
             return self.light
         elif color_name == 'background':
             return self.foreground
+        elif color_name == 'foreground':
+            return self.background
         elif color_name == 'border':
             return self.foreground
         elif self.mode == 'dark':
