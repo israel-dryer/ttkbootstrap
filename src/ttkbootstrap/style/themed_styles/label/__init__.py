@@ -1,0 +1,2 @@
+from .ttk_label_default_style import TTkLabelDefaultStyle
+from .ttk_label_inverse_style import TTkLabelInverseStyle

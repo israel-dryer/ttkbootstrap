@@ -1,0 +1,2 @@
+from .ttk_divider_default_style import TTkDividerDefaultStyle
+from .ttk_divider_dashed_style import TTkDividerDashedStyle

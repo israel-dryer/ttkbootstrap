@@ -9,8 +9,8 @@ from PIL import Image, ImageOps
 from PIL.ImageDraw import ImageDraw
 from PIL.ImageTk import PhotoImage
 
-from .tk_widget_styles import tk_handlers
-from .ttk_widget_styles import ttk_handlers
+from .legacy_styles import tk_handlers
+from .themed_styles import ttk_handlers
 from ..exceptions import StyleHandlerNotFoundError
 from ..logger import logger
 from ..utils import style_utils

@@ -4,7 +4,7 @@ from ttkbootstrap.widgets import (
     Badge, CheckBox,
     Button, CheckBoxToggle, RadioToggle,
     Button, CheckBoxToggle, RadioToggle, TextBox,
-    IconButton, Radiobutton, Switch, Frame, Slider,
+    IconButton, Radiobutton, Switch, Frame, Slider, Toast,
 
 )
 
@@ -41,5 +41,10 @@ frame.pack(fill="both", padx=20, pady=20, expand=True)
 Badge(frame, text="100 Votes").pack(padx=10, pady=10)
 Badge(frame, variant="pill", text="100 Votes", color="danger").pack(padx=10, pady=10)
 Badge(frame, text="1", color="success", variant="circle").pack(padx=10, pady=10)
+
+toast = Toast(app, toast_type="success", message="Something bad has happened", close_on_click=True)
+app.after(500, toast.show)
+
+
 
 app.mainloop()

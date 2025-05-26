@@ -1,0 +1,1 @@
+from .ttk_slider_default_style import TTkSliderDefaultStyle

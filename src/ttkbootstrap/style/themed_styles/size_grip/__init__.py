@@ -1,0 +1,1 @@
+from .ttk_size_grip_style import TTkSizeGripStyle

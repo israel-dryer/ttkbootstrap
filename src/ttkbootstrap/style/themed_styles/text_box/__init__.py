@@ -1,0 +1,1 @@
+from .ttk_text_box_default_style import TTkTextBoxDefaultStyle
