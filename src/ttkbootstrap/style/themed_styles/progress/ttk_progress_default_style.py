@@ -5,6 +5,14 @@ from ...style_builder import StyleBuilder
 from ...style_element import Element, ElementImage
 from ....utils import load_asset_image
 
+"""
+    The style deviates from bootstrap on the rounded corners.  There is not a clean way
+    to implement this with an image layout because the pbar is conditionally rounded on
+    one side or both. The compromise is to flatten the edges. Make revisit again in the
+    future if there is a way to implement this with an image layout that replicates the
+    same conditional rounded corners as bootstrap.
+"""
+
 if TYPE_CHECKING:
     from ....style.theme import Theme
 
