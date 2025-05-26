@@ -5,6 +5,7 @@ from .divider import TTkDividerDefaultStyle, TTkDividerDashedStyle
 from .frame import TTkFrameRoundStyle, TTkFrameDefaultStyle
 from .icon_button import TTkIconButtonDefaultStyle, TTkIconButtonTextStyle, TTkIconButtonOutlineStyle
 from .label import TTkLabelInverseStyle, TTkLabelDefaultStyle
+from .progress import TTkProgressStripedStyle, TTkProgressDefaultStyle
 from .radio import TTkRadioStyle
 from .scrollbar import TTkScrollbarDefaultStyle, TTkScrollbarRoundStyle
 from .slider import TTkSliderDefaultStyle
@@ -38,5 +39,7 @@ ttk_handlers = [
     ('ttk.pill.badge', TTkBadgePillStyle),
     ('ttk.circle.badge', TTkBadgeCircleStyle),
     ('ttk.default.frame', TTkFrameDefaultStyle),
-    ('ttk.inverse.label', TTkLabelInverseStyle)
+    ('ttk.inverse.label', TTkLabelInverseStyle),
+    ('ttk.default.progress', TTkProgressDefaultStyle),
+    ('ttk.striped.progress', TTkProgressStripedStyle),
 ]

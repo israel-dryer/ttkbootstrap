@@ -137,7 +137,7 @@ class Theme:
         img_data = base64.b64decode(data)
         return Image.open(BytesIO(img_data)).convert('RGBA')
 
-    def image_recolor(self, data: Union[str,Image], color: str):
+    def image_recolor(self, data: Union[str,Image], color: str, overlay: Image=None):
         """
         Recolor a grayscale-based UI asset where white represents the active pixel
         and black or transparent represents absence, using luminance-based interpolation.
@@ -149,9 +149,9 @@ class Theme:
             white = color
             black = "#000000"
 
-        return self.image_recolor_map(data, white, black)
+        return self.image_recolor_map(data, white, black, overlay)
 
-    def image_recolor_map(self, data: Union[str,Image], white: str, black: str):
+    def image_recolor_map(self, data: Union[str,Image], white: str, black: str, overlay: Image=None):
         """
         Recolor an anti-aliased two-tone RGBA image using luminance mapping.
         Pixels closer to white get `white`, and pixels closer to black get `black`,
@@ -181,6 +181,10 @@ class Theme:
                 g = round(dark[1] + (light[1] - dark[1]) * lum)
                 b = round(dark[2] + (light[2] - dark[2]) * lum)
                 pixels[x, y] = (r, g, b, a)
+
+        # apply mask if provided
+        if overlay is not None:
+            result = Image.alpha_composite(result, overlay)
 
         scaled = self.downscale_image(result)
         return PhotoImage(scaled)

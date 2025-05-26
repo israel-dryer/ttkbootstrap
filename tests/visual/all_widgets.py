@@ -2,7 +2,7 @@ from ttkbootstrap.window import Window
 
 from ttkbootstrap.widgets import (
     Badge, CheckBox,
-    Button, CheckBoxToggle, RadioToggle,
+    Button, CheckBoxToggle, Progress, RadioToggle,
     Button, CheckBoxToggle, RadioToggle, TextBox,
     IconButton, Radiobutton, Switch, Frame, Slider, Toast,
 
@@ -38,13 +38,17 @@ frame.pack(fill="both", padx=20, pady=20, expand=True)
 # RadioToggle(frame, text="Two", value="two").pack(side="left", padx=2, pady=2)
 # RadioToggle(frame, text="Three", value="three").pack(side="left", padx=2, pady=2)
 
-Badge(frame, text="100 Votes").pack(padx=10, pady=10)
-Badge(frame, variant="pill", text="100 Votes", color="danger").pack(padx=10, pady=10)
-Badge(frame, text="1", color="success", variant="circle").pack(padx=10, pady=10)
+# Badge(frame, text="100 Votes").pack(padx=10, pady=10)
+# Badge(frame, variant="pill", text="100 Votes", color="danger").pack(padx=10, pady=10)
+# Badge(frame, text="1", color="success", variant="circle").pack(padx=10, pady=10)
+#
+# toast = Toast(app, toast_type="success", message="Something bad has happened", close_on_click=True)
+# app.after(500, toast.show)
 
-toast = Toast(app, toast_type="success", message="Something bad has happened", close_on_click=True)
-app.after(500, toast.show)
-
+Progress(frame, variant="striped", value=50).pack(padx=2, pady=2, fill='x', expand=1)
+Progress(frame, variant="striped", orient="vertical", value=50).pack(padx=2, pady=2, fill='y', expand=1)
+Progress(frame, value=50).pack(padx=2, pady=2, fill='x', expand=1)
+Progress(frame, orient="vertical", value=50).pack(padx=2, pady=2, fill='y', expand=1)
 
 
 app.mainloop()

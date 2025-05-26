@@ -9,7 +9,7 @@ if TYPE_CHECKING:
     from ....style.theme import Theme
 
 
-class TTkProgressStripedStyle(StyleBuilder):
+class TTkProgressDefaultStyle(StyleBuilder):
 
     def __init__(self, theme: Theme):
         super().__init__(theme)
@@ -19,7 +19,7 @@ class TTkProgressStripedStyle(StyleBuilder):
 
         orient = extras.pop('orient', 'horizontal')
 
-        style = f'{color}.{orient.title()}.Striped.TProgressbar'
+        style = f'{color}.{orient.title()}.TProgressbar'
         if self.theme.has_style(style):
             return style
 
@@ -29,19 +29,16 @@ class TTkProgressStripedStyle(StyleBuilder):
         # button colors
         bar_color = self.theme.get_color(color)
         trough_color = self.theme.border
-        overlay_image = None
 
         if orient == 'vertical':
-            overlay_image = load_asset_image('progress-bar-striped-vertical.png')
             base_bar_image = load_asset_image('progress-bar-default-vertical.png')
             base_trough_image = load_asset_image('progress-trough-vertical.png')
         else:
-            overlay_image = load_asset_image('progress-bar-striped-horizontal.png')
             base_bar_image = load_asset_image('progress-bar-default-horizontal.png')
             base_trough_image = load_asset_image('progress-trough-horizontal.png')
 
         # state images
-        bar_img = self.theme.image_recolor(base_bar_image, bar_color, overlay_image)
+        bar_img = self.theme.image_recolor(base_bar_image, bar_color)
         self.theme.register_asset(str(bar_img), bar_img)
 
         trough_img = self.theme.image_recolor(base_trough_image, trough_color)
