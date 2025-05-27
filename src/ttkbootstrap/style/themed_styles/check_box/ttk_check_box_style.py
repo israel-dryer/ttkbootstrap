@@ -43,7 +43,7 @@ class TTkCheckBoxStyle(StyleBuilder):
         cb_indicator_bg = self.theme.get_color(token)
         cb_indicator_fg = self.theme.get_foreground(token)
         cb_disabled_bg = cb_indicator_bg
-        cb_border = self.theme.border
+        cb_border = self.theme.get_input_border_color()
 
         # base images for state images
         base_checked_image = load_asset_image('checkbox-checked.png')

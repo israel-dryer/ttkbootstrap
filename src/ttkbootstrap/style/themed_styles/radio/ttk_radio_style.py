@@ -42,7 +42,7 @@ class TTkRadioStyle(StyleBuilder):
         rb_indicator_bg = self.theme.get_color(token)
         rg_indicator_fg = self.theme.get_foreground(token)
         rb_disabled_bg = rb_indicator_bg
-        rb_border = self.theme.border
+        rb_border = self.theme.get_input_border_color()
 
         # base images for state images
         base_unselected_image = load_asset_image('radio-unselected.png')
