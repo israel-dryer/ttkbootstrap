@@ -39,7 +39,7 @@ class TTkRadioStyle(StyleBuilder):
         token = "primary" if token == "default" else token
 
         # button colors
-        rb_fg = container_fg
+        label_fg = container_fg
         rb_indicator_bg = self.theme.get_color(token)
         rg_indicator_fg = self.theme.get_foreground(token)
         rb_disabled_bg = rb_indicator_bg
@@ -51,13 +51,13 @@ class TTkRadioStyle(StyleBuilder):
         base_disabled_image = load_asset_image('radio-disabled.png')
 
         # state images
-        unselected_img = self.theme.image_recolor_map(base_unselected_image, self.theme.background, rb_border)
+        unselected_img = self.theme.image_recolor_map(base_unselected_image, container_bg, rb_border)
         self.theme.register_asset(str(unselected_img), unselected_img)
 
         selected_img = self.theme.image_recolor_map(base_selected_image, rg_indicator_fg, rb_indicator_bg)
         self.theme.register_asset(str(selected_img), selected_img)
 
-        disabled_img = self.theme.image_recolor_map(base_disabled_image, self.theme.background, rb_disabled_bg)
+        disabled_img = self.theme.image_recolor_map(base_disabled_image, container_bg, rb_disabled_bg)
         self.theme.register_asset(str(disabled_img), disabled_img)
 
         spacer_img = PhotoImage(width=6, height=1)
@@ -81,7 +81,7 @@ class TTkRadioStyle(StyleBuilder):
                 Element('Radiobutton.label', side="left", expand=1)]
             ])
 
-        self.theme.configure(style, foreground=rb_fg, background=container_bg, font="-size 12")
+        self.theme.configure(style, foreground=label_fg, background=container_bg, font="-size 12")
         self.theme.map(style, foreground=[('disabled', rb_disabled_bg)])
 
         self.theme.add_style(style)

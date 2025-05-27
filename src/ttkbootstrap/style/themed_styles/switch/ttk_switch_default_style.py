@@ -16,35 +16,50 @@ class TTkSwitchDefaultStyle(StyleBuilder):
     def __init__(self, theme: Theme):
         super().__init__(theme)
 
-    def invoke(self, color: str, **_):
+    def invoke(self, token: str, **extras):
         """Create the default switch style"""
 
-        style = f'{color}.Switch'
+        # check if the background color should be inherited from the parent
+        parent_background = extras.get('background', None)
+        container_bg = self.theme.background
+        container_fg = self.theme.foreground
+        if parent_background is not None and parent_background != container_bg:
+            style = f'{parent_background}.{token}.Switch'  # inherited background style
+            container_bg = parent_background
+            container_token = self.theme.get_token(container_bg or '')
+            _fg = self.theme.get_foreground(container_token)
+            container_fg = _fg if _fg else container_fg
+
+        else:
+            style = f'{token}.Switch'
+
+        # check if style already exists
         if self.theme.has_style(style):
             return style
 
         # color token
-        color = "primary" if color == "default" else color
+        token = "primary" if token == "default" else token
 
         # button colors
-        foreground = self.theme.foreground
-        indicator_background = self.theme.get_color(color)
-        indicator_foreground = self.theme.get_foreground(color)
-        border = self.theme.border
-        disabled = border
+        label_foreground = container_fg
+        switch_indicator_bg = self.theme.get_color(token)
+        switch_indicator_fg = self.theme.get_foreground(token)
+        switch_border = self.theme.border
+        switch_disabled_bg = switch_border
 
+        # base images used for state
         base_checked_image = load_asset_image('switch-checked.png')
         base_unchecked_image = load_asset_image('switch-unchecked.png')
         base_disabled_image = load_asset_image('switch-disabled.png')
 
         # state images
-        unchecked_img = self.theme.image_recolor_map(base_unchecked_image, self.theme.background, border)
+        unchecked_img = self.theme.image_recolor_map(base_unchecked_image, container_bg, switch_border)
         self.theme.register_asset(str(unchecked_img), unchecked_img)
 
-        checked_img = self.theme.image_recolor_map(base_checked_image, indicator_foreground, indicator_background)
+        checked_img = self.theme.image_recolor_map(base_checked_image, switch_indicator_fg, switch_indicator_bg)
         self.theme.register_asset(str(checked_img), checked_img)
 
-        disabled_img = self.theme.image_recolor_map(base_disabled_image, indicator_foreground, indicator_background)
+        disabled_img = self.theme.image_recolor_map(base_disabled_image, switch_indicator_fg, switch_indicator_bg)
         self.theme.register_asset(str(disabled_img), disabled_img)
 
         spacer_img = PhotoImage(width=6, height=1)
@@ -67,8 +82,8 @@ class TTkSwitchDefaultStyle(StyleBuilder):
                 Element('Checkbutton.label', side="left", expand=1)]
             ])
 
-        self.theme.configure(style, foreground=foreground, background=self.theme.background, font="-size 12")
-        self.theme.map(style, foreground=[('disabled', disabled)])
+        self.theme.configure(style, foreground=label_foreground, background=container_bg, font="-size 12")
+        self.theme.map(style, foreground=[('disabled', switch_disabled_bg)])
 
         self.theme.add_style(style)
         return style
