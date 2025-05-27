@@ -14,19 +14,28 @@ class TTkBadgePillStyle(StyleBuilder):
     def __init__(self, theme: Theme):
         super().__init__(theme)
 
-    def invoke(self, color: str, **_):
+    def invoke(self, token: str, **extras):
         """Create the default button style"""
 
-        style = f'{color}.Pill.Badge.TLabel'
+        # check if the background color should be inherited from the parent
+        parent_background = extras.get('background', None)
+        container_bg = self.theme.background
+        if parent_background is not None and parent_background != container_bg:
+            style = f'{parent_background}.{token}.Circle.Badge.TLabel'  # inherited background style
+            container_bg = parent_background
+        else:
+            style = f'{token}.Circle.Badge.TLabel'
+
+        # check if style already exists
         if self.theme.has_style(style):
             return style
 
         # color token
-        color = "border" if color == "default" else color
+        token = "border" if token == "default" else token
 
         # button colors
-        foreground = self.theme.get_foreground(color)
-        background = self.theme.get_color(color)
+        foreground = self.theme.get_foreground(token)
+        background = self.theme.get_color(token)
 
         base_badge_image = load_asset_image('badge-pill.png')
 
@@ -54,7 +63,7 @@ class TTkBadgePillStyle(StyleBuilder):
             foreground=foreground,
             font="-size 9 -weight bold",
             anchor="center",
-            background=self.theme.background,
+            background=container_bg,
             padding=(10, 5)
         )
         self.theme.add_style(style)
