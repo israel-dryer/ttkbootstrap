@@ -1,13 +1,15 @@
 import base64
 from io import BytesIO
 from math import ceil
-from tkinter.ttk import Style
-from tkinter import font as tkFont
 import platform
+from collections import namedtuple
+from typing import Dict, Literal, Union
 
-from PIL import Image, ImageOps
+from PIL import Image, ImageColor, ImageOps
 from PIL.ImageDraw import ImageDraw
 from PIL.ImageTk import PhotoImage
+from tkinter.ttk import Style
+from tkinter import font as tkFont
 
 from .legacy_styles import tk_handlers
 from .themed_styles import ttk_handlers
@@ -15,15 +17,11 @@ from ..exceptions import StyleHandlerNotFoundError
 from ..logger import logger
 from ..utils import style_utils
 
-from collections import namedtuple
-from typing import Any, Dict, List, Literal, Tuple, Union
-
 DEFAULT_COLOR_1 = '#ddd'
 DEFAULT_COLOR_2 = '#111'
 SHADE_VALUES = [1.4, 1.3, 1.2, 1.1, 1.0, 0.9, 0.8, 0.7, 0.6]
 
 Shades = namedtuple('Shades', 'l4 l3 l2 l1 base d1 d2 d3 d4')
-
 ThemeMode = Literal['light', 'dark']
 ThemeColor = Literal[
     'primary', 'secondary', 'success', 'info', 'warning', 'danger', 'light', 'dark', 'background', 'foreground', 'border']
@@ -31,12 +29,10 @@ ThemeColors = Dict[str, str]
 
 
 def rgb_distance(c1, c2):
-    """Euclidean distance between two RGB colors."""
     return ((c1[0] - c2[0]) ** 2 + (c1[1] - c2[1]) ** 2 + (c1[2] - c2[2]) ** 2) ** 0.5
 
 
 class Theme:
-
     def __init__(self, name: str, mode: ThemeMode = 'light', **colors):
         self.ttk = Style()
         self.activated = False
@@ -47,7 +43,6 @@ class Theme:
         self.name = name
         self.mode = mode
 
-        # theme colors
         self.primary = colors.get('primary', DEFAULT_COLOR_1)
         self.secondary = colors.get('secondary', DEFAULT_COLOR_1)
         self.success = colors.get('success', DEFAULT_COLOR_1)
@@ -60,13 +55,10 @@ class Theme:
         self.foreground = colors.get('foreground', DEFAULT_COLOR_2)
         self.border = colors.get('border', DEFAULT_COLOR_2)
 
-        # update default fonts
         tkFont.nametofont('TkDefaultFont').configure(size=12)
 
-        # add tk handlers
         for name, handler in tk_handlers:
             self.add_handler(name, handler(self))
-
         for name, handler in ttk_handlers:
             self.add_handler(name, handler(self))
 
@@ -98,20 +90,12 @@ class Theme:
         }
 
     def get_foreground(self, color_name: str):
-        if color_name == 'light':
-            return self.dark
-        elif color_name == 'dark':
-            return self.light
-        elif color_name == 'background':
-            return self.foreground
-        elif color_name == 'foreground':
-            return self.background
-        elif color_name == 'border':
-            return self.foreground
-        elif self.mode == 'dark':
-            return self.foreground
-        else:
-            return self.background
+        if color_name == 'light': return self.dark
+        if color_name == 'dark': return self.light
+        if color_name == 'background': return self.foreground
+        if color_name == 'foreground': return self.background
+        if color_name == 'border': return self.foreground
+        return self.foreground if self.is_dark_theme else self.background
 
     def get_color(self, token: str):
         return self.__dict__.get(token)
@@ -121,104 +105,80 @@ class Theme:
         tokens = list(color_map.keys())
         colors = list(color_map.values())
         try:
-            index = colors.index(color)
-            return tokens[index]
+            return tokens[colors.index(color)]
         except ValueError:
             return None
 
-
     def get_shades(self, color_name: str) -> Shades:
-        colors = []
         value = self.get_color(color_name)
         red, grn, blu = style_utils.color_to_rgb(value, 'hex')
-        for shade in SHADE_VALUES:
-            color = f'#{int(max(0, min(red * shade, 255))):02x}'
-            color += f'{int(max(0, min(grn * shade, 255))):02x}'
-            color += f'{int(max(0, min(blu * shade, 255))):02x}'
-            colors.append(color)
+        colors = [
+            f'#{int(max(0, min(red * s, 255))):02x}{int(max(0, min(grn * s, 255))):02x}{int(max(0, min(blu * s, 255))):02x}'
+            for s in SHADE_VALUES
+        ]
         return Shades(*colors)
 
-    @staticmethod
-    def image_resize(img, size):
-        """Resize a PIL image and return a PhotoImage"""
+    def get_input_background(self) -> str:
+        base = self.background
+        return self.adjust_color_lightness(base, 0.08 if self.is_dark_theme else -0.06)
+
+    def get_input_text_color(self) -> str:
+        return self.get_contrast_text_color(self.get_input_background())
+
+    def get_input_border_color(self) -> str:
+        bg = self.get_input_background()
+        return self.adjust_color_lightness(bg, 0.10 if self.is_dark_theme else -0.08)
+
+    def image_resize(self, img, size):
         return PhotoImage(image=img.resize(size, Image.Resampling.LANCZOS))
 
     @staticmethod
     def image_open(data: str):
-        img_data = base64.b64decode(data)
-        return Image.open(BytesIO(img_data)).convert('RGBA')
+        return Image.open(BytesIO(base64.b64decode(data))).convert('RGBA')
 
-    def image_recolor(self, data: Union[str,Image], color: str, overlay: Image=None):
-        """
-        Recolor a grayscale-based UI asset where white represents the active pixel
-        and black or transparent represents absence, using luminance-based interpolation.
-        """
-        if self.is_light_theme:
-            white = color
-            black = "#ffffff"  # background stays white
-        else:
-            white = color
-            black = "#000000"
-
+    def image_recolor(self, data: Union[str, Image.Image], color: str, overlay: Image.Image = None):
+        white = color
+        black = "#ffffff" if self.is_light_theme else "#000000"
         return self.image_recolor_map(data, white, black, overlay)
 
-    def image_recolor_map(self, data: Union[str,Image], white: str, black: str, overlay: Image=None):
-        """
-        Recolor an anti-aliased two-tone RGBA image using luminance mapping.
-        Pixels closer to white get `white`, and pixels closer to black get `black`,
-        with smooth interpolation for edge pixels.
-        """
-        if isinstance(data, str):
-            img = Theme.image_open(data).convert("RGBA")
-        else:
-            img = data
-        base_rgb = ImageOps.grayscale(img)  # Use luminance to guide interpolation
+    def image_recolor_map(self, data: Union[str, Image.Image], white: str, black: str, overlay: Image.Image = None):
+        img = self.image_open(data) if isinstance(data, str) else data
+        base_rgb = ImageOps.grayscale(img)
         alpha = img.getchannel("A")
-
-        # Colors to blend between
         light = style_utils.color_to_rgb(white)
         dark = style_utils.color_to_rgb(black)
-
-        # Create output image
         result = Image.new("RGBA", img.size)
         pixels = result.load()
-
         for y in range(img.height):
             for x in range(img.width):
                 lum = base_rgb.getpixel((x, y)) / 255.0
                 a = alpha.getpixel((x, y))
-                # Interpolate between dark and light
                 r = round(dark[0] + (light[0] - dark[0]) * lum)
                 g = round(dark[1] + (light[1] - dark[1]) * lum)
                 b = round(dark[2] + (light[2] - dark[2]) * lum)
                 pixels[x, y] = (r, g, b, a)
-
-        # apply mask if provided
         if overlay is not None:
             result = Image.alpha_composite(result, overlay)
-
-        scaled = self.downscale_image(result)
-        return PhotoImage(scaled)
+        return PhotoImage(self.downscale_image(result))
 
     def downscale_image(self, image: Image.Image) -> Image.Image:
-        scale = float(self.ttk.tk.call('tk', 'scaling')) or 1.0  # e.g. 1.0 or 1.5 or 2.0
-
-        # Image is 2x design size, so baseline is 0.5
-        effective_scale = 0.5 * scale
-
-        new_size = (
-            max(1, int(image.width * effective_scale)),
-            max(1, int(image.height * effective_scale))
-        )
-
-        return image.resize(new_size, Image.Resampling.LANCZOS)
+        scale = float(self.ttk.tk.call('tk', 'scaling')) or 1.0
+        factor = 0.5 * scale
+        size = (max(1, int(image.width * factor)), max(1, int(image.height * factor)))
+        return image.resize(size, Image.Resampling.LANCZOS)
 
     @staticmethod
     def image_draw(size, mode=None, *args):
-        """Return a PIL Image and ImageDraw object"""
         im = Image.new(mode or 'RGBA', size, *args)
-        dr = ImageDraw(im)
-        return im, dr
+        return im, ImageDraw(im)
+
+    def __iter__(self):
+        copy = self.__dict__.copy()
+        for key in ['name', 'mode']: copy.pop(key, None)
+        return iter(copy)
+
+    def __repr__(self):
+        return str(self.__dict__)
 
     @property
     def is_dark_theme(self):
@@ -227,15 +187,6 @@ class Theme:
     @property
     def is_light_theme(self):
         return self.mode == 'light'
-
-    def __iter__(self):
-        colors = self.__dict__.copy()
-        del colors['name']
-        del colors['mode']
-        return iter(colors)
-
-    def __repr__(self):
-        return str(self.__dict__)
 
     @property
     def system(self):
@@ -248,188 +199,61 @@ class Theme:
         self.handlers[name] = handler
 
     def get_handler(self, name):
-        if name not in self.handlers.keys():
+        if name not in self.handlers:
             raise StyleHandlerNotFoundError(name)
-        return self.handlers.get(name)
+        return self.handlers[name]
 
     def register_asset(self, name, data):
         self.assets[name] = data
 
     def execute_handler(self, name, *args, **extras) -> str:
-        if name not in self.handlers.keys():
+        if name not in self.handlers:
             logger.error('ThemeBuilder', f'Style handler {name} not found.')
             return ''
-            # raise StyleHandlerNotFoundError(name)
-        return self.handlers.get(name).invoke(*args, **extras)
+        return self.handlers[name].invoke(*args, **extras)
 
     @staticmethod
-    def adjust_color_brightness(hex_color: str, factor: float) -> str:
-        """
-        Lighten or darken a hex color.
-
-        Args:
-            hex_color (str): The hex color string, e.g. "#336699" or "336699".
-            factor (float): A number > 0.0 where:
-                - 1.0 = no change
-                - < 1.0 = darken
-                - > 1.0 = lighten
-
-        Returns:
-            str: Adjusted hex color string, e.g. "#4d88b5"
-        """
-        hex_color = hex_color.lstrip("#")
-        if len(hex_color) != 6:
-            raise ValueError("Expected 6-character hex color string.")
-
-        r, g, b = [int(hex_color[i:i + 2], 16) for i in (0, 2, 4)]
-
-        def clamp(value: int) -> int:
-            return max(0, min(255, value))
-
-        r = clamp(int(r * factor))
-        g = clamp(int(g * factor))
-        b = clamp(int(b * factor))
-
+    def adjust_color_lightness(hex_color: str, factor: float) -> str:
+        r, g, b = ImageColor.getrgb(hex_color)
+        if factor > 0:
+            r = int(r + (255 - r) * factor)
+            g = int(g + (255 - g) * factor)
+            b = int(b + (255 - b) * factor)
+        else:
+            r = int(r * (1 + factor))
+            g = int(g * (1 + factor))
+            b = int(b * (1 + factor))
         return f"#{r:02x}{g:02x}{b:02x}"
 
     @staticmethod
+    def relative_luminance(r, g, b):
+        def channel(c):
+            c = c / 255.0
+            return c / 12.92 if c <= 0.03928 else ((c + 0.055) / 1.055) ** 2.4
+
+        return 0.2126 * channel(r) + 0.7152 * channel(g) + 0.0722 * channel(b)
+
+    @staticmethod
+    def get_contrast_text_color(bg_color: str, light="#ffffff", dark="#000000") -> str:
+        r, g, b = ImageColor.getrgb(bg_color)
+        lum_bg = Theme.relative_luminance(r, g, b)
+        lum_light = Theme.relative_luminance(*ImageColor.getrgb(light))
+        lum_dark = Theme.relative_luminance(*ImageColor.getrgb(dark))
+        contrast_light = (max(lum_bg, lum_light) + 0.05) / (min(lum_bg, lum_light) + 0.05)
+        contrast_dark = (max(lum_bg, lum_dark) + 0.05) / (min(lum_bg, lum_dark) + 0.05)
+        return light if contrast_light >= contrast_dark else dark
+
+    @staticmethod
     def is_color_dark(hex_color: str) -> bool:
-        """
-        Determine if a hex color is considered dark.
-
-        Args:
-            hex_color (str): Hex color string like "#336699" or "336699"
-
-        Returns:
-            bool: True if color is dark, False if light
-        """
         hex_color = hex_color.lstrip("#")
         if len(hex_color) != 6:
             raise ValueError("Expected 6-digit hex color.")
-
         r, g, b = [int(hex_color[i:i + 2], 16) for i in (0, 2, 4)]
-
-        # Perceived brightness formula (W3C)
         brightness = (r * 299 + g * 587 + b * 114) / 1000
-
         return brightness < 128
 
     def scale_size(self, *size):
-        """Adjust the sizes specified based on the scaling factor of the
-        development environment to ensure that the sizes are consistent across
-        platforms and screen resolutions.
-
-        Parameters
-        ----------
-        *size : Iterable
-            One or more sizes.
-
-        Returns
-        -------
-        Union[Iterable, int]
-            A integer or list of integers
-        """
-        if self.system == 'Darwin':
-            baseline = 1.000492368291482
-        else:
-            # 4k - 3840x2160
-            baseline = 2.000984736582964
-
-        scaling = self.ttk.tk.call('tk', 'scaling')
-        factor = scaling / baseline
-
-        sizes = tuple([ceil(s * factor) for s in size])
-        if len(sizes) == 1:
-            return sizes[0]
-        else:
-            return sizes
-
-
-# --- STANDARD THEMES
-def get_standard_themes():
-    return [
-        Theme(
-            'cosmo', 'light',
-            primary='#2780e3',
-            secondary='#7E8081',
-            success='#3fb618',
-            info='#9954bb',
-            warning='#ff7518',
-            danger='#ff0039',
-            light='#F8F9FA',
-            dark='#373A3C',
-            background='#ffffff',
-            foreground='#373a3c',
-            border='#dee2e6'
-        ),
-        Theme(
-            'flatly', 'light',
-            primary='#2c3e50',
-            secondary='#95a5a6',
-            success='#18bc9c',
-            info='#3498db',
-            warning='#f39c12',
-            danger='#e74c3c',
-            light='#ecf0f1',
-            dark='#7b8a8b',
-            background='#ffffff',
-            foreground='#212529',
-            border='#dee2e6'
-        ),
-        Theme(
-            'minty', 'light',
-            primary='#78c2ad',
-            secondary='#f3969a',
-            success='#56cc9d',
-            info='#6cc3d5',
-            warning='#ffce67',
-            danger='#ff7851',
-            light='#f8f9fa',
-            dark='#343a40',
-            background='#ffffff',
-            foreground='#5a5a5a',
-            border='#dee2e6'
-        ),
-        Theme(
-            'superhero', 'dark',
-            primary='#4c9be8',
-            secondary='#4e5d6c',
-            success='#5cb85c',
-            info='#5bc0de',
-            warning='#f0ad4e',
-            danger='#d9534f',
-            light='#aab6c2',
-            dark='#20374c',
-            background='#2b3e50',
-            foreground='#fff',
-            border='#495057'
-        ),
-        Theme(
-            'light', 'light',
-            primary='#0d6efd',
-            secondary='#6c757d',
-            success='#198754',
-            info='#0dcaf0',
-            warning='#ffc107',
-            danger='#dc3545',
-            light='#aab6c2',
-            dark='#20374c',
-            background='#ffffff',
-            foreground='#212529',
-            border='#dee2e6'
-        ),
-        Theme(
-            'dark', 'dark',
-            primary='#0d6efd',
-            secondary='#6c757d',
-            success='#198754',
-            info='#0dcaf0',
-            warning='#ffc107',
-            danger='#dc3545',
-            light='#f8f9fa',
-            dark='#212529',
-            background='#212529',
-            foreground='#dee2e6',
-            border='#495057'
-        )
-    ]
+        baseline = 1.0005 if self.system == 'Darwin' else 2.0009
+        factor = float(self.ttk.tk.call('tk', 'scaling')) / baseline
+        scaled = [ceil(s * factor) for s in size]
+        return scaled[0] if len(scaled) == 1 else tuple(scaled)
