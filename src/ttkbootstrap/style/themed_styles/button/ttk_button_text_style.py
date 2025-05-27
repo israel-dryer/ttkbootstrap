@@ -34,28 +34,25 @@ class TTkButtonTextStyle(StyleBuilder):
 
         # button colors
         btn_fg = self.theme.get_color(token)
-        btn_bg = self.theme.background
-        if self.theme.is_color_dark(container_bg):
-            btn_hover_bg = self.theme.adjust_color_brightness(container_bg, 1.2)
-            btn_pressed_bg = self.theme.adjust_color_brightness(container_bg, 1.3)
-        else:
-            btn_hover_bg = self.theme.adjust_color_brightness(container_bg, 0.8)
-            btn_pressed_bg = self.theme.adjust_color_brightness(container_bg, 0.7)
+        btn_bg = container_bg
+
+        btn_hover_bg = self.theme.adjust_color_lightness(container_bg, 0.2)
+        btn_pressed_bg = self.theme.adjust_color_lightness(container_bg, 0.3)
 
         btn_disabled_bg = self.theme.get_color('border')
 
         # base images used for state images
         base_text_image = load_asset_image('button-text.png')
-        base_disabled_image = load_asset_image('button-disabled.png')
+        base_default_image = load_asset_image('button-default.png')
 
         # state images
         normal_img = self.theme.image_recolor(base_text_image, btn_bg)
         self.theme.register_asset(str(normal_img), normal_img)
 
-        hover_img = self.theme.image_recolor(base_disabled_image, btn_hover_bg)
+        hover_img = self.theme.image_recolor(base_default_image, btn_hover_bg)
         self.theme.register_asset(str(hover_img), hover_img)
 
-        pressed_img = self.theme.image_recolor(base_disabled_image, btn_pressed_bg)
+        pressed_img = self.theme.image_recolor(base_default_image, btn_pressed_bg)
         self.theme.register_asset(str(pressed_img), pressed_img)
 
         # Image element and state specs
