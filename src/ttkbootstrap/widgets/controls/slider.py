@@ -1,6 +1,7 @@
 from tkinter import Misc
 from tkinter.ttk import Scale as ttkScale
 
+from ..mixins import BackgroundInheritMixin
 from ...ttk_types import StyleColor
 from ...style.styled_widget import StyledWidget
 
@@ -10,7 +11,7 @@ except ImportError:
     from typing_extensions import Unpack
 
 
-class Slider(StyledWidget, ttkScale):
+class Slider(BackgroundInheritMixin, StyledWidget, ttkScale):
 
     def __init__(
         self,
@@ -22,5 +23,6 @@ class Slider(StyledWidget, ttkScale):
         self._color = color
         self._variant = "default"
         self._orient = orient
+        self._extras = {"orient": orient}
         super().__init__(master, **kwargs, orient=orient)
-        self._init_style('slider', color=color, variant=self._variant, **kwargs, extras={"orient": orient})
+        self._init_style('slider', color=color, variant=self._variant, extras=self._extras, **kwargs)

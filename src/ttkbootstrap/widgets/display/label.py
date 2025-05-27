@@ -1,7 +1,7 @@
 from tkinter import Misc
 from tkinter.ttk import Label as ttkLabel
 
-from ..mixins import IconMixin
+from ..mixins import BackgroundInheritMixin, IconMixin
 from ...style.styled_widget import StyledWidget
 from ...ttk_types import StyleColor
 
@@ -11,7 +11,7 @@ except ImportError:
     from typing_extensions import Unpack
 
 
-class Label(IconMixin, StyledWidget, ttkLabel):
+class Label(BackgroundInheritMixin, IconMixin, StyledWidget, ttkLabel):
     def __init__(
         self,
         master: Misc = None,
@@ -26,10 +26,9 @@ class Label(IconMixin, StyledWidget, ttkLabel):
         self._icon_size = size
         self._color = color
         self._variant = variant
+        self._extras = {}
 
         # Inject icon and compound into kwargs before init
         kwargs['text'] = text
-        self._inject_icon_support(kwargs, default_compound="image")
         super().__init__(master, **kwargs)
-        self._bind_icon_events()
-        self._init_style("label", color=color, variant=variant, **kwargs)
+        self._init_style("label", color=color, variant=variant, extras=self._extras, **kwargs)

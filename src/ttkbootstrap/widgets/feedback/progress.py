@@ -1,6 +1,7 @@
 from tkinter import Misc
 from tkinter.ttk import Progressbar as ttkProgressbar
 
+from ..mixins import BackgroundInheritMixin
 from ...ttk_types import StyleColor
 from ...style.styled_widget import StyledWidget
 
@@ -10,7 +11,7 @@ except ImportError:
     from typing_extensions import Unpack
 
 
-class Progress(StyledWidget, ttkProgressbar):
+class Progress(BackgroundInheritMixin, StyledWidget, ttkProgressbar):
 
     def __init__(
         self,
@@ -23,5 +24,6 @@ class Progress(StyledWidget, ttkProgressbar):
         self._color = color
         self._variant = variant
         self._orient = orient
+        self._extras = {"orient": orient}
         super().__init__(master, **kwargs, orient=orient)
-        self._init_style('progress', color=color, variant=self._variant, **kwargs, extras={"orient": orient})
+        self._init_style('progress', color=color, variant=self._variant, extras=self._extras, **kwargs)

@@ -1,6 +1,7 @@
 from tkinter import Misc
 from tkinter.ttk import Entry as ttkEntry
 
+from ..mixins import BackgroundInheritMixin
 from ...ttk_types import StyleColor
 from ...style.styled_widget import StyledWidget
 
@@ -10,7 +11,7 @@ except ImportError:
     from typing_extensions import Unpack
 
 
-class TextBox(StyledWidget, ttkEntry):
+class TextBox(BackgroundInheritMixin, StyledWidget, ttkEntry):
 
     def __init__(
         self,
@@ -20,10 +21,11 @@ class TextBox(StyledWidget, ttkEntry):
     ):
         self._color = color
         self._variant = "default"
+        self._extras = {}
 
         # set a default font if not provided
         if 'font' not in kwargs:
             kwargs['font'] = '-size 12'
 
         super().__init__(master, **kwargs)
-        self._init_style('input', color=color, variant=self._variant, **kwargs)
+        self._init_style('input', color=color, variant=self._variant, extras=self._extras, **kwargs)

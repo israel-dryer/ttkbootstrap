@@ -1,5 +1,7 @@
 from tkinter import Misc
 from tkinter.ttk import Label as ttkLabel
+
+from ..mixins import BackgroundInheritMixin
 from ...ttk_types import StyleColor
 from ...style.styled_widget import StyledWidget
 
@@ -9,7 +11,7 @@ except ImportError:
     from typing_extensions import Unpack
 
 
-class Badge(StyledWidget, ttkLabel):
+class Badge(BackgroundInheritMixin, StyledWidget, ttkLabel):
     def __init__(
         self,
         master: Misc = None,
@@ -19,6 +21,7 @@ class Badge(StyledWidget, ttkLabel):
     ):
         self._color = color
         self._variant = variant
+        self._extras = {}
 
         super().__init__(master, **kwargs)
-        self._init_style("badge", color=color, variant=variant, **kwargs)
+        self._init_style("badge", color=color, variant=variant, extras=self._extras, **kwargs)

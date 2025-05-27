@@ -1,6 +1,7 @@
 from tkinter import Misc
 from tkinter.ttk import Separator as ttkSeparator
 
+from ..mixins import BackgroundInheritMixin
 from ...ttk_types import StyleColor
 from ...style.styled_widget import StyledWidget
 
@@ -10,7 +11,7 @@ except ImportError:
     from typing_extensions import Unpack
 
 
-class Divider(StyledWidget, ttkSeparator):
+class Divider(BackgroundInheritMixin, StyledWidget, ttkSeparator):
 
     def __init__(
         self,
@@ -22,5 +23,6 @@ class Divider(StyledWidget, ttkSeparator):
     ):
         self._color = color
         self._variant = variant
+        self._extras = {"orient": orient}
         super().__init__(master, **kwargs)
-        self._init_style('divider', color=color, variant=self._variant, **kwargs, extras={"orient": orient})
+        self._init_style('divider', color=color, variant=self._variant, extras=self._extras, **kwargs)
