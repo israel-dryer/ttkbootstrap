@@ -12,18 +12,29 @@ class TTkLabelDefaultStyle(StyleBuilder):
     def __init__(self, theme: Theme):
         super().__init__(theme)
 
-    def invoke(self, color: str, **_):
+    def invoke(self, token: str, **extras):
         """Create the default label style"""
 
-        style = f'{color}.TLabel'
+        # check if the background color should be inherited from the parent
+        parent_background = extras.get('background', None)
+        container_bg = self.theme.background
+        container_fg = self.theme.foreground
+        if parent_background is not None and parent_background != container_bg:
+            style = f'{parent_background}.{token}.TLabel'  # inherited background style
+            container_bg = parent_background
+            container_token = self.theme.get_token(container_bg or '')
+            container_fg = container_fg if not container_token else self.theme.get_foreground(container_token)
+        else:
+            style = f'{token}.TLabel'
+
+        # check if style already exists
         if self.theme.has_style(style):
             return style
 
         # color token
-        color = "foreground" if color == "default" else color
-
-        foreground = self.theme.get_foreground(color)
-        background = self.theme.background
+        token = "foreground" if token == "default" else token
+        foreground = container_fg if parent_background is not None and token == "foreground" else self.theme.get_color(token)
+        background = container_bg
         self.theme.configure(
             style,
             foreground=foreground,

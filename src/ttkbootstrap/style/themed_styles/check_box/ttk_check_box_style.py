@@ -26,9 +26,8 @@ class TTkCheckBoxStyle(StyleBuilder):
         if parent_background is not None and parent_background != container_bg:
             style = f'{parent_background}.{token}.TCheckbutton'  # inherited background style
             container_bg = parent_background
-            container_token = self.theme.get_token(container_bg)
-            _fg = self.theme.get_foreground(container_token)
-            container_fg = _fg if _fg else container_fg
+            container_token = self.theme.get_token(container_bg or '')
+            container_fg = container_fg if not container_token else self.theme.get_foreground(container_token)
         else:
             style = f'{token}.TCheckbutton'
 
