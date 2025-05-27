@@ -83,8 +83,9 @@ class TTkIconButtonDefaultStyle(StyleBuilder):
             background=container_bg,
             focuscolor=btn_fg,
             font="-size 12",
-            relief="raised",
-            anchor="center")
+            anchor="center",
+            padding="4 0 0 0",
+            relief="raised")
 
         self.theme.map(style, foreground=[('disabled', btn_disabled_bg)])
 
