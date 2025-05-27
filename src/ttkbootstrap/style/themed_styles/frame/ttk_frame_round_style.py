@@ -14,47 +14,52 @@ class TTkFrameRoundStyle(StyleBuilder):
     def __init__(self, theme: Theme):
         super().__init__(theme)
 
-    def invoke(self, color: str, **extras):
+    def invoke(self, token: str, **extras):
         """Create the rounded frame style"""
 
-        transparency = extras.get('transparency', False)
-        transparency_color = '#FF00FF'
+        # check if the background color should be inherited from the parent
+        parent_background = extras.get('background', None)
+        container_bg = self.theme.background
 
-        if transparency:
-            style = f'{color}.Transparent.Round.TFrame'
+        if parent_background is not None and parent_background != container_bg:
+            style = f'{parent_background}.{token}.Round.TFrame'  # inherited background style
+            container_bg = parent_background
         else:
-            style = f'{color}.Round.TFrame'
+            style = f'{token}.Round.TFrame'
 
+        # check if style already exists
         if self.theme.has_style(style):
             return style
 
         # color token
-        token = "border" if color == "default" else color
+        token = "border" if token == "default" else token
+        frame_border_color = self.theme.get_input_border_color()
+        frame_bg_color = frame_border_color if token == "border" else self.theme.get_color(token)
 
-        outline = self.theme.get_color(token)
-        background = self.theme.background if token == "border" else outline
-
+        # base image for state
         base_card_image = load_asset_image('card.png')
 
         # state images
-        outline_img = self.theme.image_recolor_map(base_card_image, background, outline)
+        outline_img = self.theme.image_recolor_map(base_card_image, frame_bg_color, container_bg)
         self.theme.register_asset(str(outline_img), outline_img)
 
         # Image element and state specs
-        el = ElementImage(f'{style}.border', outline_img, sticky="nsew", border=8, width=261, height=128, padding=4)
+        el = ElementImage(f'{style}.border', outline_img, sticky="nsew", border=8, padding=4)
         el.build()
 
         # Layout and style config
         Element(style).layout(
             [
-                Element(f'{style}.border', sticky="nsew"), [
-                Element('Frame.padding', sticky="nsew")
-            ]
+                Element(f'{style}.border', sticky="nsew"),
+                [
+                    Element('Frame.padding', sticky="nsew")
+                ]
             ])
 
         self.theme.configure(
             style,
-            background=transparency_color if transparency else self.theme.background,
+            background=frame_bg_color,
             relief="flat")
+
         self.theme.add_style(style)
         return style
