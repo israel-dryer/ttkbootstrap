@@ -41,7 +41,7 @@ class TTkButtonTextStyle(StyleBuilder):
 
         btn_disabled_bg = self.theme.get_color('border')
 
-        # base images used for state images
+        # base images for button state
         base_text_image = load_asset_image('button-text.png')
         base_default_image = load_asset_image('button-default.png')
 

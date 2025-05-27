@@ -17,7 +17,7 @@ class TTkRadioStyle(StyleBuilder):
         super().__init__(theme)
 
     def invoke(self, token: str, **extras):
-        """Create the default button style"""
+        """Create the default radio style"""
 
         # check if the background color should be inherited from the parent
         parent_background = extras.get('background', None)
@@ -26,9 +26,8 @@ class TTkRadioStyle(StyleBuilder):
         if parent_background is not None and parent_background != container_bg:
             style = f'{parent_background}.{token}.TRadiobutton'  # inherited background style
             container_bg = parent_background
-            container_token = self.theme.get_token(container_bg)
-            _fg = self.theme.get_foreground(container_token)
-            container_fg = _fg if _fg else container_fg
+            container_token = self.theme.get_token(container_bg or '')
+            container_fg = container_fg if not container_token else self.theme.get_foreground(container_token)
         else:
             style = f'{token}.TRadiobutton'
 
@@ -38,7 +37,7 @@ class TTkRadioStyle(StyleBuilder):
         # color token
         token = "primary" if token == "default" else token
 
-        # button colors
+        # radio colors
         label_fg = container_fg
         rb_indicator_bg = self.theme.get_color(token)
         rg_indicator_fg = self.theme.get_foreground(token)

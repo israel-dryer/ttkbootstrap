@@ -15,39 +15,49 @@ class TTkIconButtonOutlineStyle(StyleBuilder):
     def __init__(self, theme: Theme):
         super().__init__(theme)
 
-    def invoke(self, color: str, **_) -> str:
+    def invoke(self, token: str, **extras) -> str:
         """Apply the outline button style"""
 
-        style = f'{color}.Outline.Icon.TButton'
+        # check if the background color should be inherited from the parent
+        parent_background = extras.get('background', None)
+        container_bg = self.theme.background
+        if parent_background is not None and parent_background != container_bg:
+            style = f'{parent_background}.{token}.Outline.Icon.TButton'  # inherited background style
+            container_bg = parent_background
+        else:
+            style = f'{token}.Outline.Icon.TButton'
+
+        # check if style already exists
         if self.theme.has_style(style):
             return style
 
         # color token
-        color = "primary" if color == "default" else color
+        token = "primary" if token == "default" else token
 
         # button colors
-        shades = self.theme.get_shades(color)
-        hover_foreground = self.theme.get_foreground(color)
-        accent = self.theme.get_color(color)
-        hover = shades.d2
-        pressed = shades.d3
-        disabled = accent
+        btn_bg_shades = self.theme.get_shades(token)
+        btn_fg = self.theme.get_foreground(token)
+        btn_accent = self.theme.get_color(token)
+        btn_hover_bg = btn_bg_shades.d2
+        btn_pressed_bg = btn_bg_shades.d3
+        btn_disabled_bg = btn_accent
 
+        # base images for button state
         base_outline_image = load_asset_image('icon-button-outline.png')
         base_default_image = load_asset_image('icon-button-default.png')
         base_disabled_image = load_asset_image('icon-button-disabled.png')
 
         # state images
-        normal_img = self.theme.image_recolor(base_outline_image, accent)
+        normal_img = self.theme.image_recolor(base_outline_image, btn_accent)
         self.theme.register_asset(str(normal_img), normal_img)
 
-        hover_img = self.theme.image_recolor(base_default_image, hover)
+        hover_img = self.theme.image_recolor(base_default_image, btn_hover_bg)
         self.theme.register_asset(str(hover_img), hover_img)
 
-        pressed_img = self.theme.image_recolor(base_default_image, pressed)
+        pressed_img = self.theme.image_recolor(base_default_image, btn_pressed_bg)
         self.theme.register_asset(str(pressed_img), pressed_img)
 
-        disabled_img = self.theme.image_recolor(base_disabled_image, disabled)
+        disabled_img = self.theme.image_recolor(base_disabled_image, btn_disabled_bg)
         self.theme.register_asset(str(disabled_img), disabled_img)
 
         # Image element and state specs
@@ -71,18 +81,18 @@ class TTkIconButtonOutlineStyle(StyleBuilder):
 
         self.theme.configure(
             style,
-            foreground=accent,
-            background=self.theme.background,
+            foreground=btn_accent,
+            background=container_bg,
             font="-size 12",
             relief="raised",
+            padding="4 0 0 0",
             anchor="center"
         )
 
         self.theme.map(
             style,
-            foreground=[('disabled', accent), ('hover', hover_foreground)],
-            focuscolor=[('focus hover', hover_foreground), ('focus', accent)]
-
+            foreground=[('disabled', btn_accent), ('hover', btn_fg)],
+            focuscolor=[('focus hover', btn_fg), ("hover", btn_fg), ('focus', btn_accent)]
         )
 
         self.theme.add_style(style)

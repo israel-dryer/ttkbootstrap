@@ -38,7 +38,7 @@ class TTkCheckBoxStyle(StyleBuilder):
         # color token
         token = "primary" if token == "default" else token
 
-        # button colors
+        # checkbox colors
         cb_fg = container_fg
         cb_indicator_bg = self.theme.get_color(token)
         cb_indicator_fg = self.theme.get_foreground(token)
