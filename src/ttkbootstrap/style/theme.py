@@ -113,8 +113,19 @@ class Theme:
         else:
             return self.background
 
-    def get_color(self, color_name: str):
-        return self.__dict__.get(color_name)
+    def get_color(self, token: str):
+        return self.__dict__.get(token)
+
+    def get_token(self, color: str):
+        color_map = self.colors()
+        tokens = list(color_map.keys())
+        colors = list(color_map.values())
+        try:
+            index = colors.index(color)
+            return tokens[index]
+        except ValueError:
+            return None
+
 
     def get_shades(self, color_name: str) -> Shades:
         colors = []
@@ -251,6 +262,58 @@ class Theme:
             # raise StyleHandlerNotFoundError(name)
         return self.handlers.get(name).invoke(*args, **extras)
 
+    @staticmethod
+    def adjust_color_brightness(hex_color: str, factor: float) -> str:
+        """
+        Lighten or darken a hex color.
+
+        Args:
+            hex_color (str): The hex color string, e.g. "#336699" or "336699".
+            factor (float): A number > 0.0 where:
+                - 1.0 = no change
+                - < 1.0 = darken
+                - > 1.0 = lighten
+
+        Returns:
+            str: Adjusted hex color string, e.g. "#4d88b5"
+        """
+        hex_color = hex_color.lstrip("#")
+        if len(hex_color) != 6:
+            raise ValueError("Expected 6-character hex color string.")
+
+        r, g, b = [int(hex_color[i:i + 2], 16) for i in (0, 2, 4)]
+
+        def clamp(value: int) -> int:
+            return max(0, min(255, value))
+
+        r = clamp(int(r * factor))
+        g = clamp(int(g * factor))
+        b = clamp(int(b * factor))
+
+        return f"#{r:02x}{g:02x}{b:02x}"
+
+    @staticmethod
+    def is_color_dark(hex_color: str) -> bool:
+        """
+        Determine if a hex color is considered dark.
+
+        Args:
+            hex_color (str): Hex color string like "#336699" or "336699"
+
+        Returns:
+            bool: True if color is dark, False if light
+        """
+        hex_color = hex_color.lstrip("#")
+        if len(hex_color) != 6:
+            raise ValueError("Expected 6-digit hex color.")
+
+        r, g, b = [int(hex_color[i:i + 2], 16) for i in (0, 2, 4)]
+
+        # Perceived brightness formula (W3C)
+        brightness = (r * 299 + g * 587 + b * 114) / 1000
+
+        return brightness < 128
+
     def scale_size(self, *size):
         """Adjust the sizes specified based on the scaling factor of the
         development environment to ensure that the sizes are consistent across
@@ -295,7 +358,7 @@ def get_standard_themes():
             danger='#ff0039',
             light='#F8F9FA',
             dark='#373A3C',
-            background='#fff',
+            background='#ffffff',
             foreground='#373a3c',
             border='#dee2e6'
         ),
@@ -309,7 +372,7 @@ def get_standard_themes():
             danger='#e74c3c',
             light='#ecf0f1',
             dark='#7b8a8b',
-            background='#fff',
+            background='#ffffff',
             foreground='#212529',
             border='#dee2e6'
         ),
@@ -323,7 +386,7 @@ def get_standard_themes():
             danger='#ff7851',
             light='#f8f9fa',
             dark='#343a40',
-            background='#fff',
+            background='#ffffff',
             foreground='#5a5a5a',
             border='#dee2e6'
         ),
@@ -351,7 +414,7 @@ def get_standard_themes():
             danger='#dc3545',
             light='#aab6c2',
             dark='#20374c',
-            background='#fff',
+            background='#ffffff',
             foreground='#212529',
             border='#dee2e6'
         ),

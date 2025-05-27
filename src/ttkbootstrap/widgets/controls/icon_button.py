@@ -2,7 +2,7 @@ from tkinter import Misc
 from tkinter.ttk import Button as ttkButton
 
 from ...style.styled_widget import StyledWidget
-from ..mixins import IconMixin
+from ..mixins import BackgroundInheritMixin, IconMixin
 from ...ttk_types import StyleColor, ButtonStyleVariant
 
 try:
@@ -11,7 +11,7 @@ except ImportError:
     from typing_extensions import Unpack
 
 
-class IconButton(IconMixin, StyledWidget, ttkButton):
+class IconButton(BackgroundInheritMixin, IconMixin, StyledWidget, ttkButton):
     def __init__(
         self,
         master: Misc = None,
@@ -25,11 +25,7 @@ class IconButton(IconMixin, StyledWidget, ttkButton):
         self._icon_size = size
         self._color = color
         self._variant = variant
-
-        # Inject icon and compound into kwargs before init
-        self._inject_icon_support(kwargs, default_compound="image")
+        self._extras = {}
 
         super().__init__(master, **kwargs)
-
-        self._bind_icon_events()
-        self._init_style("icon.button", color=color, variant=variant, **kwargs)
+        self._init_style("icon.button", color=color, variant=variant, extras=self._extras, **kwargs)

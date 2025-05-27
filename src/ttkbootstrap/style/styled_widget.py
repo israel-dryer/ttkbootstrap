@@ -3,9 +3,7 @@ from typing import Any
 
 from .theme_manager import get_theme_manager
 from ..ttk_types import StyleColor
-from ..logger import Logger
-
-logger = Logger(False, False)
+from ..logger import logger
 
 
 def combine_style_keywords(color: str, variant: str) -> str:
@@ -26,7 +24,7 @@ class StyledWidget(Misc):
             variant: str = "default",
             **kwargs
     ) -> None:
-        logger.debug('StyledWidget', f'Initializing style for {widget_class} with {color} {variant} {kwargs}')
+        #logger.debug('StyledWidget', f'Initializing style for {widget_class} with {color} {variant} {kwargs}')
         self._widget_class = widget_class
         self._color = color
         self._variant = variant
@@ -41,7 +39,7 @@ class StyledWidget(Misc):
             self.configure(style=ttk_style)
 
         # observe <<ThemeChanged>> to update style
-        self.bind("<<ThemeChanged>>", lambda _: self.configure(style=self.build_style()))
+        self.bind("<<ThemeChanged>>", lambda _: self.configure(style=self.build_style()), add=True)
 
     def configure(self, cnf: str | None = None, **kwargs) -> Any:
         if cnf == "color":
@@ -66,6 +64,7 @@ class StyledWidget(Misc):
         return super().configure(**kwargs)
 
     def build_style(self) -> str:
+        logger.debug('StyledWidget', f'Building style for {self._widget_class} with {self._color} {self._variant}')
         manager = get_theme_manager()
         handler_name = f"ttk.{self._variant}.{self._widget_class}"
         return manager.active_theme.execute_handler(handler_name, self._color, **self._extras)

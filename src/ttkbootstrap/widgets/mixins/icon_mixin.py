@@ -1,3 +1,4 @@
+from tkinter import Misc
 from typing import Union, TYPE_CHECKING
 from ...icons import Icon
 from ...logger import logger
@@ -7,7 +8,7 @@ if TYPE_CHECKING:
     from tkinter import PhotoImage
 
 
-class IconMixin:
+class IconMixin(Misc):
     """Mixin for widgets that support a themed icon with hover + theme change behavior."""
 
     _icon_image_normal: Union["PhotoImage", str, None] = None
@@ -16,6 +17,11 @@ class IconMixin:
     _icon_size: int = 16
     _variant: str = "default"
     _color: str = "default"
+
+    def __init__(self, *args, default_compound="left", **kwargs):
+        self._inject_icon_support(kwargs, default_compound)
+        super().__init__(*args, **kwargs)
+        self._bind_icon_events()
 
     def _inject_icon_support(self, kwargs: dict, default_compound: str = "left"):
         """Inject image and compound into kwargs before widget init."""
@@ -35,7 +41,7 @@ class IconMixin:
         if self._variant == "outline":
             self.bind("<Enter>", lambda e: self.configure(image=self._icon_image_hover))
             self.bind("<Leave>", lambda e: self.configure(image=self._icon_image_normal))
-        self.bind("<<ThemeChange>>", lambda e: self._on_theme_change())
+        self.bind("<<ThemeChanged>>", lambda e: self._on_theme_change(), add=True)
 
     def _on_theme_change(self):
         self._build_icon_images()
@@ -46,15 +52,14 @@ class IconMixin:
         tm = get_theme_manager()
         token = "primary" if self._color == "default" else self._color
         base_color = tm.active_theme.get_color(token)
-
         if self._variant == "outline":
             normal_color = base_color
-            hover_color = tm.active_theme.get_foreground(base_color)
+            hover_color = tm.active_theme.get_foreground(token)
         elif self._variant == "text":
             normal_color = tm.active_theme.foreground if self._color == "default" else base_color
             hover_color = normal_color
         else:
-            normal_color = tm.active_theme.get_foreground(base_color)
+            normal_color = tm.active_theme.get_foreground(token)
             hover_color = normal_color
 
         normal_icon = Icon(self._icon_name, size=self._icon_size, color=normal_color)

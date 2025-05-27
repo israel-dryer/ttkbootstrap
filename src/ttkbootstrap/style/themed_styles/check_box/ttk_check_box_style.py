@@ -16,42 +16,57 @@ class TTkCheckBoxStyle(StyleBuilder):
     def __init__(self, theme: Theme):
         super().__init__(theme)
 
-    def invoke(self, color: str, **_):
-        """Create the default button style"""
+    def invoke(self, token: str, **extras):
+        """Create the default checkbox style"""
 
-        style = f'{color}.TCheckbutton'
+        # check if the background color should be inherited from the parent
+        parent_background = extras.get('background', None)
+        container_bg = self.theme.background
+        container_fg = self.theme.foreground
+        if parent_background is not None and parent_background != container_bg:
+            style = f'{parent_background}.{token}.TCheckbutton'  # inherited background style
+            container_bg = parent_background
+            container_token = self.theme.get_token(container_bg)
+            _fg = self.theme.get_foreground(container_token)
+            container_fg = _fg if _fg else container_fg
+        else:
+            style = f'{token}.TCheckbutton'
+
+        # check if style already exists
         if self.theme.has_style(style):
             return style
 
         # color token
-        color = "primary" if color == "default" else color
+        token = "primary" if token == "default" else token
 
         # button colors
-        foreground = self.theme.foreground
-        indicator_background = self.theme.get_color(color)
-        indicator_foreground = self.theme.get_foreground(color)
-        border = self.theme.border
-        disabled = border
+        cb_fg = container_fg
+        cb_indicator_bg = self.theme.get_color(token)
+        cb_indicator_fg = self.theme.get_foreground(token)
+        cb_disabled_bg = cb_indicator_bg
+        cb_border = self.theme.border
 
+        # base images for state images
         base_checked_image = load_asset_image('checkbox-checked.png')
         base_unchecked_image = load_asset_image('checkbox-unchecked.png')
         base_disabled_image = load_asset_image('checkbox-disabled.png')
         base_indeterminate_image = load_asset_image('checkbox-indeterminate.png')
 
         # state images
-        unchecked_img = self.theme.image_recolor_map(base_unchecked_image, self.theme.background, border)
+        unchecked_img = self.theme.image_recolor_map(base_unchecked_image, container_bg, cb_border)
         self.theme.register_asset(str(unchecked_img), unchecked_img)
 
-        checked_img = self.theme.image_recolor_map(base_checked_image, indicator_foreground, indicator_background)
+        checked_img = self.theme.image_recolor_map(base_checked_image, cb_indicator_fg, cb_indicator_bg)
         self.theme.register_asset(str(checked_img), checked_img)
 
-        disabled_img = self.theme.image_recolor_map(base_disabled_image, self.theme.background, border)
+        disabled_img = self.theme.image_recolor_map(base_disabled_image, container_bg, cb_border)
         self.theme.register_asset(str(disabled_img), disabled_img)
 
         indeterminate_img = self.theme.image_recolor_map(
-            base_indeterminate_image, indicator_foreground, indicator_background)
+            base_indeterminate_image, cb_indicator_fg, cb_indicator_bg)
         self.theme.register_asset(str(indeterminate_img), indeterminate_img)
 
+        # add space between label and checkbox
         spacer_img = PhotoImage(width=6, height=1)
         self.theme.register_asset(str(spacer_img), spacer_img)
 
@@ -74,8 +89,12 @@ class TTkCheckBoxStyle(StyleBuilder):
                 Element('Checkbutton.label', side="left", expand=1)]
             ])
 
-        self.theme.configure(style, foreground=foreground, background=self.theme.background, font="-size 12")
-        self.theme.map(style, foreground=[('disabled', disabled)])
+        self.theme.configure(
+            style,
+            foreground=cb_fg,
+            background=container_bg,
+            font="-size 12")
+        self.theme.map(style, foreground=[('disabled', cb_disabled_bg)])
 
         self.theme.add_style(style)
         return style

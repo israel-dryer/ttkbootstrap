@@ -1,6 +1,7 @@
 from tkinter import Misc
 from tkinter.ttk import Checkbutton as ttkCheckbutton
 
+from ..mixins import BackgroundInheritMixin
 from ...ttk_types import StyleColor
 from ...style.styled_widget import StyledWidget
 
@@ -10,7 +11,7 @@ except ImportError:
     from typing_extensions import Unpack
 
 
-class CheckBox(StyledWidget, ttkCheckbutton):
+class CheckBox(BackgroundInheritMixin, StyledWidget, ttkCheckbutton):
 
     def __init__(
         self,
@@ -20,5 +21,6 @@ class CheckBox(StyledWidget, ttkCheckbutton):
     ):
         self._color = color
         self._variant = "default"  # Checkbutton does not support style variants
+        self._extras = {}
         super().__init__(master, **kwargs)
-        self._init_style('checkbutton', color=color, variant=self._variant, **kwargs)
+        self._init_style('checkbutton', color=color, variant=self._variant, extras=self._extras, **kwargs)
