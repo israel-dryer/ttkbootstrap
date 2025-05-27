@@ -44,6 +44,8 @@ class IconMixin(Misc):
         self.bind("<<ThemeChanged>>", lambda e: self._on_theme_change(), add=True)
 
     def _on_theme_change(self):
+        if self._icon_name is None:
+            return
         self._build_icon_images()
         if hasattr(self, "configure"):
             self.configure(image=self._icon_image_normal)
