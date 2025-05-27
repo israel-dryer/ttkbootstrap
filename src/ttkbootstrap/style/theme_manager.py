@@ -1,6 +1,7 @@
 from tkinter.ttk import Style
 
-from .theme import Theme, get_standard_themes
+from .theme import Theme
+from .themes import get_standard_themes
 from ..exceptions import ThemeAlreadyExistsError, ThemeNotFoundError
 from ..logger import logger
 
@@ -65,7 +66,6 @@ class ThemeManager:
         # apply the theme and generate <<ThemeChanged>>
         logger.info('ThemeManager', f'Applying theme: {theme_name}')
         self.ttk.theme_use(theme_name)
-
         return theme_name
 
     def create_theme(self, theme_name, parent, settings):
