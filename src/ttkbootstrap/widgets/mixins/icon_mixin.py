@@ -67,5 +67,5 @@ class IconMixin(Misc):
         normal_icon = Icon(self._icon_name, size=self._icon_size, color=normal_color)
         hover_icon = Icon(self._icon_name, size=self._icon_size, color=hover_color)
 
-        self._icon_image_normal = normal_icon.image
-        self._icon_image_hover = hover_icon.image
+        self._icon_image_normal = normal_icon.photo_image
+        self._icon_image_hover = hover_icon.photo_image

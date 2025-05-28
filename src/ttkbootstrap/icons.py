@@ -17,25 +17,25 @@ from ttkbootstrap.logger import logger
 
     alarm_icon = Icon("alarm", size=32)
     tk.Label(root, image=alarm_icon.image).pack()
-    
+
     PYINSTALLER INSTRUCTIONS
     ========================
     Add this to your .spec file or CLI
-    
+
     CLI:
     --add-data "ttkbootstrap/assets/bootstrap-icons.ttf;ttkbootstrap/assets"
     --add-data "ttkbootstrap/assets/bootstrap-icons.json;ttkbootstrap/assets"
-    
+
     SPEC:
     datas = [
         ("ttkbootstrap/assets/bootstrap-icons.ttf", "ttkbootstrap/assets"),
         ("ttkbootstrap/assets/bootstrap-icons.json", "ttkbootstrap/assets"),
     ]
-    
+
     CLEANUP SUGGESTION
     ==================
     delete the temporary file at exit:
-    
+
     ```python
     import atexit
     atexit.register(lambda: os.remove(Icon._font_path))
@@ -53,15 +53,17 @@ class Icon:
     _cache = {}
     _initialized = False
 
-    __str__ = lambda self: str(self.image)
+    __str__ = lambda self: str(self.photo_image)
 
-    def __init__(self, name: str, size: int = 24, color: str = "black"):
+    def __init__(self, name: str, size: int = 24, color: str = "black", cache_image = True):
         if not Icon._icon_map or not Icon._font_path:
             raise RuntimeError("Call Icon.configure(font_path, icon_map) first.")
         self.name = name
         self.size = size
         self.color = color
-        self.image = self._render()
+        self.cache_image = cache_image
+        self.image = None
+        self.photo_image = self._render()
 
     @classmethod
     def configure(cls, font_path: str, icon_map: dict):
@@ -111,7 +113,10 @@ class Icon:
         draw.text((dx, dy), glyph, font=font, fill=self.color)
 
         tk_img = ImageTk.PhotoImage(img)
-        Icon._cache[key] = tk_img
+
+        self.image = img
+        if self.cache_image:
+            Icon._cache[key] = tk_img
         return tk_img
 
     @classmethod
