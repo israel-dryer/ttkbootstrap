@@ -36,6 +36,11 @@ class Button(StyleMixin, BaseMixin, IconMixin, BackgroundMixin):
         variant (str): Named style variant (e.g. 'outline', 'primary').
         on_click (Optional[Callable]): Function to call when the button is clicked.
         **kwargs (Unpack[ButtonOptions]): Additional options passed to ttk.Button.
+
+    Example:
+        ```python
+        Button(root, text="Submit", color="primary", on_click=submit_form)
+        ```
     """
 
     def __init__(
