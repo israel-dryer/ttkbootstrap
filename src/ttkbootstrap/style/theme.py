@@ -109,8 +109,8 @@ class Theme:
         except ValueError:
             return None
 
-    def get_shades(self, color_name: str) -> Shades:
-        value = self.get_color(color_name)
+    def get_shades(self, color: str) -> Shades:
+        value = self.get_color(color) or color
         red, grn, blu = style_utils.color_to_rgb(value, 'hex')
         colors = [
             f'#{int(max(0, min(red * s, 255))):02x}{int(max(0, min(grn * s, 255))):02x}{int(max(0, min(blu * s, 255))):02x}'
@@ -120,7 +120,7 @@ class Theme:
 
     def get_input_background(self) -> str:
         base = self.background
-        return self.adjust_color_lightness(base, 0.08 if self.is_dark_theme else -0.06)
+        return self.adjust_color_lightness(base, -0.15 if self.is_dark_theme else 0.12)
 
     def get_input_text_color(self) -> str:
         return self.get_contrast_text_color(self.get_input_background())
@@ -129,7 +129,61 @@ class Theme:
         bg = self.get_input_background()
         return self.adjust_color_lightness(bg, 0.10 if self.is_dark_theme else -0.08)
 
-    def image_resize(self, img, size):
+    def get_scrollbar_thumb_colors(self, token: str | None = None):
+        """
+        Return thumb colors (normal, hover, pressed) based on theme background and primary.
+        Uses linear RGB lightness adjustments and blending.
+        """
+        token = token or "foreground"
+        bg = self.get_input_background()
+        primary = self.get_color(token)
+
+        # Step 1: base thumb color is contrasty relative to trough
+        if self.is_light_theme:
+            thumb = self.adjust_color_lightness(bg, -0.3)  # darker thumb on light bg
+        else:
+            thumb = self.adjust_color_lightness(bg, 0.25)  # lighter thumb on dark bg
+
+        # Step 2: hover and pressed are blends toward primary
+        hover = self.blend_colors(thumb, primary, 0.2)
+        pressed = self.blend_colors(thumb, primary, 0.4)
+
+        return thumb, hover, pressed
+
+    def get_state_colors(self, normal: str) -> tuple[str, str, str]:
+        """
+        Generate (normal, hover, pressed) colors based on light or dark theme.
+        Light theme → darker hover/pressed.
+        Dark theme → lighter hover/pressed.
+        """
+        if self.is_light_theme:
+            hover = self.adjust_color_lightness(normal, -0.12)
+            pressed = self.adjust_color_lightness(normal, -0.24)
+        else:
+            hover = self.adjust_color_lightness(normal, 0.12)
+            pressed = self.adjust_color_lightness(normal, 0.24)
+
+        return normal, hover, pressed
+
+    def get_state_colors_blend(
+        self,
+        normal: str,
+        blend_to: str | None = None
+    ) -> tuple[str, str, str]:
+        """
+        Generate (normal, hover, pressed) colors.
+        If blend_to is given, hover/pressed blend toward that color.
+        Otherwise, fallback to brightness-based logic.
+        """
+        if blend_to:
+            hover = self.blend_colors(normal, blend_to, 0.2)
+            pressed = self.blend_colors(normal, blend_to, 0.4)
+            return normal, hover, pressed
+
+        return self.get_state_colors(normal)
+
+    @staticmethod
+    def image_resize(img, size):
         return PhotoImage(image=img.resize(size, Image.Resampling.LANCZOS))
 
     @staticmethod
@@ -224,6 +278,16 @@ class Theme:
             g = int(g * (1 + factor))
             b = int(b * (1 + factor))
         return f"#{r:02x}{g:02x}{b:02x}"
+
+    @staticmethod
+    def blend_colors(base_hex: str, blend_hex: str, alpha: float) -> str:
+        """Blend two hex colors with given alpha (0–1)."""
+        r1, g1, b1 = ImageColor.getrgb(base_hex)
+        r2, g2, b2 = ImageColor.getrgb(blend_hex)
+        r = int((1 - alpha) * r1 + alpha * r2)
+        g = int((1 - alpha) * g1 + alpha * g2)
+        b = int((1 - alpha) * b1 + alpha * b2)
+        return f'#{r:02x}{g:02x}{b:02x}'
 
     @staticmethod
     def relative_luminance(r, g, b):
