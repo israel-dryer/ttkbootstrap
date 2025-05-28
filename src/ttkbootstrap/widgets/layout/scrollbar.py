@@ -17,14 +17,14 @@ class Scrollbar(BackgroundInheritMixin, StyledWidget, ttkScrollbar):
         self,
         master: Misc | None = None,
         color: StyleColor = "default",
-        variant: Literal['default', 'round'] = 'default',
+        variant: Literal['default', 'square'] = 'default',
         orient: Literal["vertical", "horizontal"] = "vertical",
         **kwargs,
     ):
         self._color = color
         self._variant = variant
         self._orient = orient
-        self._extras = {}
+        self._extras = {"orient": orient}
         super().__init__(master, orient=orient, **kwargs)
 
         self._init_style(

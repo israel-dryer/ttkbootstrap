@@ -7,7 +7,7 @@ from .icon_button import TTkIconButtonDefaultStyle, TTkIconButtonTextStyle, TTkI
 from .label import TTkLabelInverseStyle, TTkLabelDefaultStyle
 from .progress import TTkProgressStripedStyle, TTkProgressDefaultStyle
 from .radio import TTkRadioStyle
-from .scrollbar import TTkScrollbarDefaultStyle, TTkScrollbarRoundStyle
+from .scrollbar import TTkScrollbarDefaultStyle, TTkScrollbarSquareStyle
 from .slider import TTkSliderDefaultStyle
 from .switch import TTkSwitchDefaultStyle
 from .text_box import TTkTextBoxDefaultStyle
@@ -20,7 +20,7 @@ ttk_handlers = [
     ('ttk.text.button', TTkButtonTextStyle),
     ('ttk.default.checkbutton', TTkCheckBoxStyle),
     ('ttk.default.scrollbar', TTkScrollbarDefaultStyle),
-    ('ttk.round.scrollbar', TTkScrollbarRoundStyle),
+    ('ttk.square.scrollbar', TTkScrollbarSquareStyle),
     ('ttk.default.radiobutton', TTkRadioStyle),
     ('ttk.default.switch', TTkSwitchDefaultStyle),
     ('ttk.default.input', TTkTextBoxDefaultStyle),
@@ -39,6 +39,7 @@ ttk_handlers = [
     ('ttk.pill.badge', TTkBadgePillStyle),
     ('ttk.circle.badge', TTkBadgeCircleStyle),
     ('ttk.default.frame', TTkFrameDefaultStyle),
+    ('ttk.default.label', TTkLabelDefaultStyle),
     ('ttk.inverse.label', TTkLabelInverseStyle),
     ('ttk.default.progress', TTkProgressDefaultStyle),
     ('ttk.striped.progress', TTkProgressStripedStyle),

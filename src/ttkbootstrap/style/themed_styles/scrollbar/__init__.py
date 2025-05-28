@@ -1,2 +1,2 @@
 from .ttk_scrollbar_default_style import TTkScrollbarDefaultStyle
-from .ttk_scrollbar_rounded_style import TTkScrollbarRoundStyle
+from .ttk_scrollbar_square_style import TTkScrollbarSquareStyle
