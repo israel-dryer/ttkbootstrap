@@ -1,54 +1,80 @@
-from tkinter import Misc
-from typing import Union, TYPE_CHECKING
+from tkinter import Widget
+from typing import Tuple, Union, TYPE_CHECKING
 from ...icons import Icon
 from ...logger import logger
 from ...style.theme_manager import get_theme_manager
+from ...ttk_types import StyleColor
 
 if TYPE_CHECKING:
     from tkinter import PhotoImage
 
 
-class IconMixin(Misc):
+class IconMixin:
     """Mixin for widgets that support a themed icon with hover + theme change behavior."""
+
+    widget: Widget
 
     _icon_image_normal: Union["PhotoImage", str, None] = None
     _icon_image_hover: Union["PhotoImage", str, None] = None
-    _icon_name: str = None
-    _icon_size: int = 16
+    _icon: Union[str, Tuple[str, int]]
     _variant: str = "default"
-    _color: str = "default"
+    _color: StyleColor = "default"
+    _kwargs: dict = {}
 
-    def __init__(self, *args, default_compound="left", **kwargs):
-        self._inject_icon_support(kwargs, default_compound)
-        super().__init__(*args, **kwargs)
-        self._bind_icon_events()
+    @property
+    def icon(self):
+        return self._icon
 
-    def _inject_icon_support(self, kwargs: dict, default_compound: str = "left"):
+    @icon.setter
+    def icon(self, value: Union[str, Tuple[str, int]]):
+        self._icon = value
+        self._build_icon_images()
+        self.widget.configure(image=self._icon_image_normal)
+
+    @property
+    def _icon_name(self):
+        if isinstance(self._icon, str):
+            return self._icon
+        elif isinstance(self._icon, tuple):
+            return self._icon[0]
+        else:
+            return None
+
+    @property
+    def _icon_size(self):
+        if isinstance(self._icon, str):
+            return 18
+        elif isinstance(self._icon, tuple):
+            return self._icon[1]
+        else:
+            return None
+
+    def _inject_icon_support(self, default_compound: str = "left"):
         """Inject image and compound into kwargs before widget init."""
-        if not self._icon_name:
+        if not self._icon:
             return
 
         try:
             self._build_icon_images()
-            kwargs["image"] = self._icon_image_normal
-            if "compound" not in kwargs:
-                kwargs["compound"] = default_compound
+            self._kwargs["image"] = self._icon_image_normal
+            if "compound" not in self._kwargs:
+                self._kwargs["compound"] = default_compound
         except Exception as e:
             logger.error("IconMixin", f"failed to load icon: '{self._icon_name}': {e}")
 
     def _bind_icon_events(self):
         """Bind all icon-related events (hover, theme change)."""
         if self._variant == "outline":
-            self.bind("<Enter>", lambda e: self.configure(image=self._icon_image_hover))
-            self.bind("<Leave>", lambda e: self.configure(image=self._icon_image_normal))
-        self.bind("<<ThemeChanged>>", lambda e: self._on_theme_change(), add=True)
+            self.widget.bind("<Enter>", lambda e: self.widget.configure(image=self._icon_image_hover))
+            self.widget.bind("<Leave>", lambda e: self.widget.configure(image=self._icon_image_normal))
+        self.widget.bind("<<ThemeChanged>>", lambda e: self._on_theme_change(), add=True)
 
     def _on_theme_change(self):
         if self._icon_name is None:
             return
         self._build_icon_images()
         if hasattr(self, "configure"):
-            self.configure(image=self._icon_image_normal)
+            self.widget.configure(image=self._icon_image_normal)
 
     def _build_icon_images(self):
         tm = get_theme_manager()
@@ -64,8 +90,13 @@ class IconMixin(Misc):
             normal_color = tm.active_theme.get_foreground(token)
             hover_color = normal_color
 
-        normal_icon = Icon(self._icon_name, size=self._icon_size, color=normal_color)
-        hover_icon = Icon(self._icon_name, size=self._icon_size, color=hover_color)
+        icon_name = self._icon_name
+        icon_size = self._icon_size
+        if any([icon_name is None, icon_size is None]):
+            return
+
+        normal_icon = Icon(icon_name, self._icon_size, normal_color)
+        hover_icon = Icon(icon_name, self._icon_size, hover_color)
 
         self._icon_image_normal = normal_icon.photo_image
         self._icon_image_hover = hover_icon.photo_image
