@@ -73,7 +73,14 @@ class IconMixin:
         if self._icon_name is None:
             return
         self._build_icon_images()
-        if hasattr(self, "configure"):
+
+        # Determine current state
+        state = set(self.widget.state())
+        if "pressed" in state and self._icon_image_hover:
+            self.widget.configure(image=self._icon_image_hover)
+        elif "active" in state and self._icon_image_hover:
+            self.widget.configure(image=self._icon_image_hover)
+        else:
             self.widget.configure(image=self._icon_image_normal)
 
     def _build_icon_images(self):
