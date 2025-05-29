@@ -12,13 +12,12 @@ from ttkbootstrap.widgets.mixins import (
 )
 
 
-class ButtonOptions(TypedDict):
+class ButtonOptions(TypedDict, total=False):
     """Typed dictionary for supported ttk Button options."""
     compound: Literal['text', 'image', 'center', 'top', 'bottom', 'left', 'right', 'none']
     cursor: str
     default: Literal['normal', 'active', 'disabled']
     image: PhotoImage
-    state: Literal['normal', 'disabled']
     take_focus: bool
     width: int
     inherit_background: bool
