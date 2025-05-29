@@ -1,6 +1,6 @@
 from .badge import TTkBadgeCircleStyle, TTkBadgeDefaultStyle, TTkBadgePillStyle
 from .button import TTkButtonDefaultStyle, TTkButtonTextStyle, TTkButtonOutlineStyle
-from .check_box import TTkCheckBoxStyle
+from .check_button import TTkCheckButtonStyle
 from .divider import TTkDividerDefaultStyle, TTkDividerDashedStyle
 from .frame import TTkFrameRoundStyle, TTkFrameDefaultStyle
 from .icon_button import TTkIconButtonDefaultStyle, TTkIconButtonTextStyle, TTkIconButtonOutlineStyle
@@ -18,7 +18,7 @@ ttk_handlers = [
     ('ttk.default.button', TTkButtonDefaultStyle),
     ('ttk.outline.button', TTkButtonOutlineStyle),
     ('ttk.text.button', TTkButtonTextStyle),
-    ('ttk.default.checkbutton', TTkCheckBoxStyle),
+    ('ttk.default.checkbutton', TTkCheckButtonStyle),
     ('ttk.default.scrollbar', TTkScrollbarDefaultStyle),
     ('ttk.square.scrollbar', TTkScrollbarSquareStyle),
     ('ttk.default.radiobutton', TTkRadioStyle),

@@ -11,7 +11,7 @@ if TYPE_CHECKING:
     from ...theme import Theme
 
 
-class TTkCheckBoxStyle(StyleBuilder):
+class TTkCheckButtonStyle(StyleBuilder):
 
     def __init__(self, theme: Theme):
         super().__init__(theme)
@@ -74,8 +74,8 @@ class TTkCheckBoxStyle(StyleBuilder):
 
         # Indicator element
         el = ElementImage(f'{style}.indicator', checked_img, sticky="ns", padding=3)
-        el.add_spec('disabled', disabled_img)
         el.add_spec('alternate', indeterminate_img)
+        el.add_spec('disabled', disabled_img)
         el.add_spec('!selected', unchecked_img)
         el.build()
 

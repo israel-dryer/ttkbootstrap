@@ -1,5 +1,5 @@
 from .button import Button
-from .check_box import CheckBox
+from .check_button import CheckButton
 from .check_box_toggle import CheckBoxToggle
 from .icon_button import IconButton
 from .radio import Radio
