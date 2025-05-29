@@ -43,7 +43,7 @@ class IconMixin:
     @property
     def _icon_size(self):
         if isinstance(self._icon, str):
-            return 18
+            return 24
         elif isinstance(self._icon, tuple):
             return self._icon[1]
         else:
