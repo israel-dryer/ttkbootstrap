@@ -1,6 +1,6 @@
 from .button import Button
 from .check_button import CheckButton
-from .check_box_toggle import CheckBoxToggle
+from .check_button_toggle import CheckButtonToggle
 from .icon_button import IconButton
 from .radio import Radio
 #from .radio_group import RadioGroup
