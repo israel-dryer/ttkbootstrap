@@ -29,7 +29,6 @@ class CheckButton(StyleMixin, BaseMixin, BackgroundMixin):
         master (Optional[Misc]): Parent widget.
         text (Optional[str]): The label text of the checkbutton.
         value: Literal[-1, 0, 1] The initial value of the checkbutton.
-        icon (Optional[Union[str, Tuple[str, int]]]): Icon name or (name, size) tuple (currently unused).
         color (StyleColor): Named style color for theming.
         on_click (Optional[Callable]): Callback function when the checkbutton is clicked.
         on_value_changed (Optional[Callable]): Callback function when the value changes.
