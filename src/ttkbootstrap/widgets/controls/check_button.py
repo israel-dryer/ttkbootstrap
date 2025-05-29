@@ -83,7 +83,9 @@ class CheckButton(StyleMixin, BaseMixin, BackgroundMixin):
         )
 
         if self._on_value_changed:
-            self._variable.trace_add('write', self._on_value_changed)
+            func = self._on_value_changed
+            self._on_value_changed = lambda x, y, z: func(self.value)
+            self.variable.trace_add('write', self._on_value_changed)
 
     @property
     def widget(self) -> Misc:
