@@ -83,16 +83,6 @@ class IconButton(StyleMixin, BaseMixin, IconMixin, BackgroundMixin):
             **self._kwargs
         )
 
-    # override the default icon_size for icon_button
-    @property
-    def _icon_size(self):
-        if isinstance(self._icon, str):
-            return 24
-        elif isinstance(self._icon, tuple):
-            return self._icon[1]
-        else:
-            return None
-
     @property
     def widget(self) -> Misc:
         """Return the internal ttk.Button widget."""
