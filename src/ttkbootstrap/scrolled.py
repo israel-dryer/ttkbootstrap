@@ -272,7 +272,7 @@ class ScrolledFrame(ttk.Frame):
 
         # content frame
         super().__init__(
-            master=self.container,
+            master=master,
             padding=padding,
             bootstyle=bootstyle.replace('round', ''),
             width=width,
