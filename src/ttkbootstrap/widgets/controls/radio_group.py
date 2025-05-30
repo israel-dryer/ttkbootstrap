@@ -1,0 +1,131 @@
+from tkinter import Misc, StringVar
+from typing import Callable, Optional, Sequence, Union, Literal
+from uuid import uuid4
+
+from ..layout import Frame
+from .radio_button import RadioButton  # import your custom RadioButton
+from .radio_button_toggle import RadioButtonToggle
+from ...ttk_types import StyleColor
+
+Orient = Literal["horizontal", "vertical"]
+
+
+class RadioGroup(Frame):
+    """
+    A container for managing a group of styled Radio widgets that share a common group.
+    You may specify either "radio" or "toggle" to set the visual type. If you choose
+    toggle, you may also specify an optional icon in the 3rd position (label, value, icon).
+
+    Args:
+        master (Misc): Parent widget.
+        options (Sequence[tuple[str, Union[str, int]]]): List of [(label, value, icon), ...] items to create radio buttons from..
+        selected (Union[str, int, None]): The initially selected value.
+        color (StyleColor): Named color theme for all buttons.
+        orient (Literal["horizontal", "vertical"]): Layout direction.
+        gap (int): The space between buttons.
+        type (Literal["radio", "toggle"]): The type of radio button to use.
+        on_value_changed (Callable[[Union[str, int]], None]): Callback on value change.
+        **kwargs: Additional Frame options.
+    """
+
+    def __init__(
+        self,
+        master: Optional[Misc],
+        options: Sequence,
+        selected: Union[str, int, None] = None,
+        color: StyleColor = "primary",
+        orient: Orient = "horizontal",
+        gap: int = 8,
+        type: Literal["radio", "toggle"] = "radio",
+        on_value_changed: Optional[Callable[[Union[str, int]], None]] = None,
+        **kwargs,
+    ):
+        super().__init__(master, **kwargs)
+
+        self._group_id = str(uuid4())  # shared group name
+        self._buttons: list[RadioButton] = []
+        self._orient = orient
+        self._on_value_changed = on_value_changed
+        self._gap = gap
+        self._type = type
+
+        self._variable = StringVar(self.master, selected, self._group_id)
+
+        if self._on_value_changed:
+            func = self._on_value_changed
+            self._on_value_changed = lambda x, y, z: func(self.value)
+            self.variable.trace_add('write', self._on_value_changed)
+
+        for option in options:
+            if len(option) == 2:
+                label, value = option
+                icon = None
+            elif len(option) == 3:
+                label, value, icon = option
+            else:
+                raise ValueError(
+                    "Invalid option format. Expected (label, value, icon) or (label, value)."
+                )
+            print(label, value, icon)
+            self.add_button(label, value, icon, selected == value, color)
+
+    @property
+    def value(self):
+        return self._variable.get()
+
+    @property
+    def variable(self):
+        return self._variable
+
+    @property
+    def on_value_changed(self):
+        """Get or set the callback function triggered when the checkbutton value changes."""
+        return self._on_value_changed
+
+    @on_value_changed.setter
+    def on_value_changed(self, value: Callable[[Union[str, int]], None]):
+        self._on_value_changed = lambda x, y, z: value(self.value)
+        self.variable.trace_add('write', self._on_value_changed)
+
+    def add_button(
+        self,
+        label: str,
+        value: Union[str, int],
+        icon: Optional[str] = None,
+        selected: bool = False,
+        color: StyleColor = "primary"
+    ):
+        """Add a new radio button to the group."""
+        if self._type == "radio":
+            btn = RadioButton(
+                self,
+                text=label,
+                value=value,
+                selected=selected,
+                group=self._group_id,
+                color=color
+            )
+        else:
+            btn = RadioButtonToggle(
+                self,
+                text=label,
+                value=value,
+                icon=icon,
+                selected=selected,
+                group=self._group_id,
+                color=color
+            )
+        if self._orient == "horizontal":
+            btn.widget.pack(side="left", padx=self._gap, pady=2)
+        else:
+            btn.widget.pack(anchor="w", pady=self._gap)
+
+        self._buttons.append(btn)
+
+    @value.setter
+    def value(self, val: Union[str, int]):
+        """Programmatically set the selected value."""
+        for btn in self._buttons:
+            if btn._variable:
+                btn._variable.set(val)
+                break
