@@ -1,12 +1,12 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING
 
-from ...style_builder import StyleBuilder
-from ...style_element import Element, ElementImage
-from ....utils import load_asset_image
+from ttkbootstrap.style.style_builder import StyleBuilder
+from ttkbootstrap.style.style_element import Element, ElementImage
+from ttkbootstrap.utils import load_asset_image
 
 if TYPE_CHECKING:
-    from ...theme import Theme
+    from ttkbootstrap.style.theme import Theme
 
 
 class TTkIconButtonTextStyle(StyleBuilder):

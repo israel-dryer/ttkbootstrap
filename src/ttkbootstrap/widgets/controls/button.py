@@ -60,6 +60,7 @@ class Button(StyleMixin, BaseMixin, IconMixin, BackgroundMixin):
         self._on_click = on_click
         self._kwargs = kw
         self._extras = {}
+        self._text = text
         self._image: Optional[PhotoImage] = None
         self._inherit_background = kw.pop('inherit_background', False)
         self._variable = StringVar(master, text)
@@ -78,12 +79,20 @@ class Button(StyleMixin, BaseMixin, IconMixin, BackgroundMixin):
         self._bind_icon_events()
 
         self._initialize_style(
-            'button',
+            self._get_button_class(),
             color=self._color,
             variant=self._variant,
             extras=self._extras,
             **self._kwargs
         )
+
+    def _get_button_class(self):
+        if self._text is None:
+            if self._icon is None:
+                return 'button'
+            else:
+                return 'icon.button'
+        return 'button'
 
     @property
     def widget(self) -> Misc:
