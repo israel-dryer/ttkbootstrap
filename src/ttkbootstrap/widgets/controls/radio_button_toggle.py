@@ -65,6 +65,7 @@ class RadioButtonToggle(StyleMixin, BaseMixin, IconMixin, BackgroundMixin):
         self._extras = {}
         self._value = value
         self._icon = icon
+        self._text = text
         self._inherit_background = kw.pop('inherit_background', False)
         self._text_variable = StringVar(master, text)
         self._variable = StringVar(master, value if selected else None, group)
@@ -85,7 +86,7 @@ class RadioButtonToggle(StyleMixin, BaseMixin, IconMixin, BackgroundMixin):
         self._bind_icon_events()
 
         self._initialize_style(
-            'radiobutton.toggle',
+            self._get_button_class(),
             color=self._color,
             extras=self._extras,
             **self._kwargs
@@ -95,6 +96,14 @@ class RadioButtonToggle(StyleMixin, BaseMixin, IconMixin, BackgroundMixin):
             func = self._on_value_changed
             self._on_value_changed = lambda x, y, z: func(self.value)
             self.variable.trace_add('write', self._on_value_changed)
+
+    def _get_button_class(self):
+        if self._text is None:
+            if self._icon is None:
+                return 'radiobutton.toggle'
+            else:
+                return 'icon.radiobutton.toggle'
+        return 'button'
 
     @property
     def widget(self) -> Misc:
