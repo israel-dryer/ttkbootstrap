@@ -4,7 +4,6 @@ from typing import TYPE_CHECKING
 
 from ...style_builder import StyleBuilder
 from ...style_element import Element, ElementImage
-from ....utils import load_asset_image
 
 if TYPE_CHECKING:
     from ...theme import Theme
@@ -13,8 +12,6 @@ class TTkButtonDefaultStyle(StyleBuilder):
 
     def __init__(self, theme: Theme):
         super().__init__(theme)
-
-
 
     def invoke(self, token: str, **extras):
         """Create the default button style"""
@@ -36,18 +33,13 @@ class TTkButtonDefaultStyle(StyleBuilder):
         token = "primary" if token == "default" else token
 
         # button colors
-        btn_bg_shades = self.theme.get_shades(token)
-        btn_fg = self.theme.get_foreground(token)
-        btn_bg = self.theme.get_color(token)
-        btn_hover_bg = btn_bg_shades.d2
-        btn_pressed_bg = btn_bg_shades.d3
-        btn_disabled_bg = btn_bg
+        colors = self.theme.get_color_states(self.theme.get_color(token))
 
         # state images
-        normal_img = self.theme.recolor_state_image('button-default.png', btn_bg)
-        hover_img = self.theme.recolor_state_image('button-default.png', btn_hover_bg)
-        pressed_img = self.theme.recolor_state_image('button-default.png', btn_pressed_bg)
-        disabled_img = self.theme.recolor_state_image('button-disabled.png', btn_disabled_bg)
+        normal_img = self.theme.recolor_state_image('button-default.png', colors.normal)
+        hover_img = self.theme.recolor_state_image('button-default.png', colors.hover)
+        pressed_img = self.theme.recolor_state_image('button-default.png', colors.pressed)
+        disabled_img = self.theme.recolor_state_image('button-disabled.png', colors.disabled)
 
         # Image element and state specs
         el = ElementImage(f'{style}.border', normal_img, sticky="nsew", border=8, padding=4)
@@ -70,14 +62,14 @@ class TTkButtonDefaultStyle(StyleBuilder):
 
         self.theme.configure(
             style,
-            foreground=btn_fg,
-            focuscolor=btn_fg,
+            foreground=colors.foreground,
+            focuscolor=colors.foreground,
             background=container_bg,
             font="-size 12",
             relief="raised",
             anchor="center")
 
-        self.theme.map(style, foreground=[('disabled', btn_disabled_bg)])
+        self.theme.map(style, foreground=[('disabled', colors.foreground_disabled)])
 
         self.theme.add_style(style)
         return style

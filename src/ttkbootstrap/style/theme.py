@@ -30,6 +30,19 @@ ThemeColor = Literal[
     'primary', 'secondary', 'success', 'info', 'warning', 'danger', 'light', 'dark', 'background', 'foreground', 'border']
 ThemeColors = Dict[str, str]
 
+from typing import NamedTuple
+
+
+class ColorStates(NamedTuple):
+    normal: str
+    hover: str
+    pressed: str
+    selected: str
+    disabled: str
+    foreground: str
+    foreground_disabled: str
+
+
 
 class Theme:
     def __init__(self, name: str, mode: ThemeMode = 'light', **colors):
@@ -157,37 +170,77 @@ class Theme:
 
         return thumb, hover, pressed
 
-    def get_state_colors(self, normal: str) -> tuple[str, str, str]:
-        """
-        Generate (normal, hover, pressed) colors based on light or dark theme.
-        Light theme → darker hover/pressed.
-        Dark theme → lighter hover/pressed.
-        """
-        if self.is_light_theme:
-            hover = color_utils.adjust_color_lightness(normal, -0.12)
-            pressed = color_utils.adjust_color_lightness(normal, -0.24)
-        else:
-            hover = color_utils.adjust_color_lightness(normal, 0.12)
-            pressed = color_utils.adjust_color_lightness(normal, 0.24)
-
-        return normal, hover, pressed
-
-    def get_state_colors_blend(
+    def get_color_states(
         self,
-        normal: str,
-        blend_to: str | None = None
-    ) -> tuple[str, str, str]:
+        base_color: str,
+        variant: Literal["default", "outline", "text"] = "default",
+    ) -> ColorStates:
         """
-        Generate (normal, hover, pressed) colors.
-        If blend_to is given, hover/pressed blend toward that color.
-        Otherwise, fallback to brightness-based logic.
-        """
-        if blend_to:
-            hover = color_utils.blend_colors(normal, blend_to, 0.2)
-            pressed = color_utils.blend_colors(normal, blend_to, 0.4)
-            return normal, hover, pressed
+        Generate a named tuple of state colors based on a base color, theme brightness, and variant.
 
-        return self.get_state_colors(normal)
+        Args:
+            base_color (str): The base hex color (e.g. "#007bff").
+            variant (str): One of 'default', 'outline', or 'text'.
+
+        Returns:
+            ColorStates: Named tuple with color mappings for UI states.
+        """
+        HOVER_FACTOR = 0.08
+        PRESSED_FACTOR = 0.16
+        DISABLED_FACTOR = 0.3
+        DISABLED_FOREGROUND_SHIFT = 0.4
+
+        def lighten(c, factor): return color_utils.adjust_color_lightness(c, abs(factor))
+        def darken(c, factor): return color_utils.adjust_color_lightness(c, -abs(factor))
+
+        def adjust(c, factor):
+            return lighten(c, factor) if self.is_dark_theme else darken(c, factor)
+
+        def fg_contrast(bg):
+            if self.is_light_theme:
+                return color_utils.get_contrast_text_color(bg, light=self.background, dark=self.foreground)
+            return color_utils.get_contrast_text_color(bg, light=self.foreground, dark=self.background)
+
+        def fg_disabled(fg):
+            return lighten(fg, DISABLED_FOREGROUND_SHIFT) if self.is_light_theme else darken(fg, DISABLED_FOREGROUND_SHIFT)
+
+        # Apply variant logic
+        if variant == "default":
+            normal = base_color
+            hover = adjust(base_color, HOVER_FACTOR)
+            pressed = adjust(base_color, PRESSED_FACTOR)
+            selected = hover
+            disabled = adjust(base_color, DISABLED_FACTOR)
+            foreground = fg_contrast(base_color)
+
+        elif variant == "outline":
+            normal = "transparent"
+            hover = adjust(base_color, 0.1)
+            pressed = adjust(base_color, 0.2)
+            selected = base_color
+            disabled = "transparent"
+            foreground = base_color
+
+        elif variant == "text":
+            normal = "transparent"
+            hover = adjust(base_color, 0.05)
+            pressed = adjust(base_color, 0.1)
+            selected = adjust(base_color, 0.2)
+            disabled = "transparent"
+            foreground = base_color
+
+        else:
+            raise ValueError(f"Unsupported variant: {variant}")
+
+        return ColorStates(
+            normal=normal,
+            hover=hover,
+            pressed=pressed,
+            selected=selected,
+            disabled=disabled,
+            foreground=foreground,
+            foreground_disabled=fg_disabled(foreground),
+        )
 
     def image_recolor(self, data: Union[str, Image.Image], color: str, overlay: Image.Image = None):
         white = color
