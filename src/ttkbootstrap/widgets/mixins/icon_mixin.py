@@ -87,7 +87,7 @@ class IconMixin:
             return
 
         tm = get_theme_manager()
-        colors = tm.active_theme.get_color_states(self._color, self._variant)
+        colors = tm.active_theme.get_color_states(self._color, self._variant, tm.active_theme.surface.color)
 
         def create(name, color):
             return Icon(name, icon_size, color).photo_image

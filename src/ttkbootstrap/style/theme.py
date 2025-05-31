@@ -169,7 +169,7 @@ class Theme:
         self,
         token: str = "surface",
         variant: Literal["default", "outline", "text"] = "default",
-        transparent_color: str = "transparent"
+        transparent_color: str = "surface"
     ) -> ColorStates:
         HOVER_FACTOR = 0.08
         PRESSED_FACTOR = 0.16
@@ -232,24 +232,16 @@ class Theme:
             )
 
         elif variant == "text":
-            def fg_contrast(bg):
-                return color_utils.get_contrast_text_color(
-                    bg,
-                    light=self.surface.on_color if self.is_dark_theme else self.surface.color,
-                    dark=self.surface.color if self.is_dark_theme else self.surface.on_color,
-                )
-
-            hover_bg = adjust(adjusted_base_color, 0.05)
-            pressed_bg = adjust(adjusted_base_color, 0.1)
-            selected_bg = adjust(adjusted_base_color, 0.2)
-            focused_bg = adjust(adjusted_base_color, 0.12)
+            def subtle_tint(alpha: float) -> str:
+                """Blend a hint of the foreground color into the surface for subtle feedback."""
+                return color_utils.blend_colors(self.surface.color, base.color, alpha)
 
             return ColorStates(
                 normal=ColorPair(transparent_color, base.color),
-                hover=ColorPair(hover_bg, fg_contrast(hover_bg)),
-                pressed=ColorPair(pressed_bg, fg_contrast(pressed_bg)),
-                selected=ColorPair(selected_bg, fg_contrast(selected_bg)),
-                focused=ColorPair(focused_bg, fg_contrast(focused_bg)),
+                hover=ColorPair(subtle_tint(0.10), base.color),
+                pressed=ColorPair(subtle_tint(0.20), base.color),
+                selected=ColorPair(subtle_tint(0.18), base.color),
+                focused=ColorPair(subtle_tint(0.14), base.color),
                 disabled=ColorPair(transparent_color, fg_disabled(base.color)),
             )
 
