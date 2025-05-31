@@ -9,11 +9,12 @@ from ....utils import load_asset_image
 if TYPE_CHECKING:
     from ...theme import Theme
 
-
 class TTkButtonDefaultStyle(StyleBuilder):
 
     def __init__(self, theme: Theme):
         super().__init__(theme)
+
+
 
     def invoke(self, token: str, **extras):
         """Create the default button style"""
@@ -42,22 +43,11 @@ class TTkButtonDefaultStyle(StyleBuilder):
         btn_pressed_bg = btn_bg_shades.d3
         btn_disabled_bg = btn_bg
 
-        # base images used for state
-        base_default_image = load_asset_image('button-default.png')
-        base_disabled_image = load_asset_image('button-disabled.png')
-
         # state images
-        normal_img = self.theme.image_recolor(base_default_image, btn_bg)
-        self.theme.register_asset(str(normal_img), normal_img)
-
-        hover_img = self.theme.image_recolor(base_default_image, btn_hover_bg)
-        self.theme.register_asset(str(hover_img), hover_img)
-
-        pressed_img = self.theme.image_recolor(base_default_image, btn_pressed_bg)
-        self.theme.register_asset(str(pressed_img), pressed_img)
-
-        disabled_img = self.theme.image_recolor(base_disabled_image, btn_disabled_bg)
-        self.theme.register_asset(str(disabled_img), disabled_img)
+        normal_img = self.theme.recolor_state_image('button-default.png', btn_bg)
+        hover_img = self.theme.recolor_state_image('button-default.png', btn_hover_bg)
+        pressed_img = self.theme.recolor_state_image('button-default.png', btn_pressed_bg)
+        disabled_img = self.theme.recolor_state_image('button-disabled.png', btn_disabled_bg)
 
         # Image element and state specs
         el = ElementImage(f'{style}.border', normal_img, sticky="nsew", border=8, padding=4)

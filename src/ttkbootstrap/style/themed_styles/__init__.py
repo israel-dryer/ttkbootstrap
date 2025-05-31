@@ -1,46 +1,20 @@
-from .badge import TTkBadgeCircleStyle, TTkBadgeDefaultStyle, TTkBadgePillStyle
-from .button import TTkButtonDefaultStyle, TTkButtonTextStyle, TTkButtonOutlineStyle
-from .check_button import TTkCheckButtonStyle
-from .divider import TTkDividerDefaultStyle, TTkDividerDashedStyle
-from .frame import TTkFrameRoundStyle, TTkFrameDefaultStyle
-from .icon_button import TTkIconButtonDefaultStyle, TTkIconButtonTextStyle, TTkIconButtonOutlineStyle
-from .label import TTkLabelInverseStyle, TTkLabelDefaultStyle
-from .progress import TTkProgressStripedStyle, TTkProgressDefaultStyle
-from .radio import TTkRadioStyle
-from .scrollbar import TTkScrollbarDefaultStyle, TTkScrollbarSquareStyle
-from .slider import TTkSliderDefaultStyle
-from .switch import TTkSwitchDefaultStyle
-from .text_box import TTkTextBoxDefaultStyle
-from .tool_button import TTkToolButtonDefaultStyle
+# from .badge import TTkBadgeCircleStyle, TTkBadgeDefaultStyle, TTkBadgePillStyle
+# from .button import TTkButtonDefaultStyle, TTkButtonTextStyle, TTkButtonOutlineStyle
+# from .check_button import TTkCheckButtonStyle
+# from .divider import TTkDividerDefaultStyle, TTkDividerDashedStyle
+# from .frame import TTkFrameRoundStyle, TTkFrameDefaultStyle
+# from .label import TTkLabelInverseStyle, TTkLabelDefaultStyle
+# from .progress import TTkProgressStripedStyle, TTkProgressDefaultStyle
+# from .radio import TTkRadioStyle
+# from .scrollbar import TTkScrollbarDefaultStyle, TTkScrollbarSquareStyle
+# from .slider import TTkSliderDefaultStyle
+# from .switch import TTkSwitchDefaultStyle
+# from .text_box import TTkTextBoxDefaultStyle
+# from .tool_button import TTkToolButtonDefaultStyle
 # from .tree_view import TTkTreeViewDefaultStyle
+
+from .button import TTkButtonDefaultStyle
 
 ttk_handlers = [
     ('ttk.default.button', TTkButtonDefaultStyle),
-    ('ttk.outline.button', TTkButtonOutlineStyle),
-    ('ttk.text.button', TTkButtonTextStyle),
-    ('ttk.default.checkbutton', TTkCheckButtonStyle),
-    ('ttk.default.scrollbar', TTkScrollbarDefaultStyle),
-    ('ttk.square.scrollbar', TTkScrollbarSquareStyle),
-    ('ttk.default.radiobutton', TTkRadioStyle),
-    ('ttk.default.switch', TTkSwitchDefaultStyle),
-    ('ttk.default.input', TTkTextBoxDefaultStyle),
-    ('ttk.default.frame', TTkFrameDefaultStyle),
-    ('ttk.round.frame', TTkFrameRoundStyle),
-    ('ttk.default.slider', TTkSliderDefaultStyle),
-    ('ttk.default.checkbutton.toggle', TTkToolButtonDefaultStyle),
-    ('ttk.default.radiobutton.toggle', TTkToolButtonDefaultStyle),
-    # ('ttk.default.treeview', TTkTreeViewDefaultStyle),
-    ('ttk.default.icon.button', TTkIconButtonDefaultStyle),
-    ('ttk.outline.icon.button', TTkIconButtonOutlineStyle),
-    ('ttk.text.icon.button', TTkIconButtonTextStyle),
-    ('ttk.default.divider', TTkDividerDefaultStyle),
-    ('ttk.dashed.divider', TTkDividerDashedStyle),
-    ('ttk.default.badge', TTkBadgeDefaultStyle),
-    ('ttk.pill.badge', TTkBadgePillStyle),
-    ('ttk.circle.badge', TTkBadgeCircleStyle),
-    ('ttk.default.frame', TTkFrameDefaultStyle),
-    ('ttk.default.label', TTkLabelDefaultStyle),
-    ('ttk.inverse.label', TTkLabelInverseStyle),
-    ('ttk.default.progress', TTkProgressDefaultStyle),
-    ('ttk.striped.progress', TTkProgressStripedStyle),
 ]

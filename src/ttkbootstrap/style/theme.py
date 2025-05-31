@@ -11,11 +11,14 @@ from PIL.ImageTk import PhotoImage
 from tkinter.ttk import Style
 from tkinter import font as tkFont
 
+from ttkbootstrap.utils import (
+    color_utils,
+    image_utils, load_asset_image
+)
 from .legacy_styles import tk_handlers
 from .themed_styles import ttk_handlers
 from ..exceptions import StyleHandlerNotFoundError
 from ..logger import logger
-from ..utils import style_utils
 
 DEFAULT_COLOR_1 = '#ddd'
 DEFAULT_COLOR_2 = '#111'
@@ -26,10 +29,6 @@ ThemeMode = Literal['light', 'dark']
 ThemeColor = Literal[
     'primary', 'secondary', 'success', 'info', 'warning', 'danger', 'light', 'dark', 'background', 'foreground', 'border']
 ThemeColors = Dict[str, str]
-
-
-def rgb_distance(c1, c2):
-    return ((c1[0] - c2[0]) ** 2 + (c1[1] - c2[1]) ** 2 + (c1[2] - c2[2]) ** 2) ** 0.5
 
 
 class Theme:
@@ -61,6 +60,14 @@ class Theme:
             self.add_handler(name, handler(self))
         for name, handler in ttk_handlers:
             self.add_handler(name, handler(self))
+
+    def __iter__(self):
+        copy = self.__dict__.copy()
+        for key in ['name', 'mode']: copy.pop(key, None)
+        return iter(copy)
+
+    def __repr__(self):
+        return str(self.__dict__)
 
     def has_style(self, name: str):
         return name in self.styles
@@ -111,7 +118,7 @@ class Theme:
 
     def get_shades(self, color: str) -> Shades:
         value = self.get_color(color) or color
-        red, grn, blu = style_utils.color_to_rgb(value, 'hex')
+        red, grn, blu = color_utils.color_to_rgb(value, 'hex')
         colors = [
             f'#{int(max(0, min(red * s, 255))):02x}{int(max(0, min(grn * s, 255))):02x}{int(max(0, min(blu * s, 255))):02x}'
             for s in SHADE_VALUES
@@ -120,14 +127,14 @@ class Theme:
 
     def get_input_background(self) -> str:
         base = self.background
-        return self.adjust_color_lightness(base, -0.15 if self.is_dark_theme else 0.12)
+        return color_utils.adjust_color_lightness(base, -0.15 if self.is_dark_theme else 0.12)
 
     def get_input_text_color(self) -> str:
-        return self.get_contrast_text_color(self.get_input_background())
+        return color_utils.get_contrast_text_color(self.get_input_background())
 
     def get_input_border_color(self) -> str:
         bg = self.get_input_background()
-        return self.adjust_color_lightness(bg, 0.10 if self.is_dark_theme else -0.08)
+        return color_utils.adjust_color_lightness(bg, 0.10 if self.is_dark_theme else -0.08)
 
     def get_scrollbar_thumb_colors(self, token: str | None = None):
         """
@@ -140,13 +147,13 @@ class Theme:
 
         # Step 1: base thumb color is contrasty relative to trough
         if self.is_light_theme:
-            thumb = self.adjust_color_lightness(bg, -0.3)  # darker thumb on light bg
+            thumb = color_utils.adjust_color_lightness(bg, -0.3)  # darker thumb on light bg
         else:
-            thumb = self.adjust_color_lightness(bg, 0.25)  # lighter thumb on dark bg
+            thumb = color_utils.adjust_color_lightness(bg, 0.25)  # lighter thumb on dark bg
 
         # Step 2: hover and pressed are blends toward primary
-        hover = self.blend_colors(thumb, primary, 0.2)
-        pressed = self.blend_colors(thumb, primary, 0.4)
+        hover = color_utils.blend_colors(thumb, primary, 0.2)
+        pressed = color_utils.blend_colors(thumb, primary, 0.4)
 
         return thumb, hover, pressed
 
@@ -157,11 +164,11 @@ class Theme:
         Dark theme → lighter hover/pressed.
         """
         if self.is_light_theme:
-            hover = self.adjust_color_lightness(normal, -0.12)
-            pressed = self.adjust_color_lightness(normal, -0.24)
+            hover = color_utils.adjust_color_lightness(normal, -0.12)
+            pressed = color_utils.adjust_color_lightness(normal, -0.24)
         else:
-            hover = self.adjust_color_lightness(normal, 0.12)
-            pressed = self.adjust_color_lightness(normal, 0.24)
+            hover = color_utils.adjust_color_lightness(normal, 0.12)
+            pressed = color_utils.adjust_color_lightness(normal, 0.24)
 
         return normal, hover, pressed
 
@@ -176,63 +183,16 @@ class Theme:
         Otherwise, fallback to brightness-based logic.
         """
         if blend_to:
-            hover = self.blend_colors(normal, blend_to, 0.2)
-            pressed = self.blend_colors(normal, blend_to, 0.4)
+            hover = color_utils.blend_colors(normal, blend_to, 0.2)
+            pressed = color_utils.blend_colors(normal, blend_to, 0.4)
             return normal, hover, pressed
 
         return self.get_state_colors(normal)
 
-    @staticmethod
-    def image_resize(img, size):
-        return PhotoImage(image=img.resize(size, Image.Resampling.LANCZOS))
-
-    @staticmethod
-    def image_open(data: str):
-        return Image.open(BytesIO(base64.b64decode(data))).convert('RGBA')
-
     def image_recolor(self, data: Union[str, Image.Image], color: str, overlay: Image.Image = None):
         white = color
         black = "#ffffff" if self.is_light_theme else "#000000"
-        return self.image_recolor_map(data, white, black, overlay)
-
-    def image_recolor_map(self, data: Union[str, Image.Image], white: str, black: str, overlay: Image.Image = None):
-        img = self.image_open(data) if isinstance(data, str) else data
-        base_rgb = ImageOps.grayscale(img)
-        alpha = img.getchannel("A")
-        light = style_utils.color_to_rgb(white)
-        dark = style_utils.color_to_rgb(black)
-        result = Image.new("RGBA", img.size)
-        pixels = result.load()
-        for y in range(img.height):
-            for x in range(img.width):
-                lum = base_rgb.getpixel((x, y)) / 255.0
-                a = alpha.getpixel((x, y))
-                r = round(dark[0] + (light[0] - dark[0]) * lum)
-                g = round(dark[1] + (light[1] - dark[1]) * lum)
-                b = round(dark[2] + (light[2] - dark[2]) * lum)
-                pixels[x, y] = (r, g, b, a)
-        if overlay is not None:
-            result = Image.alpha_composite(result, overlay)
-        return PhotoImage(self.downscale_image(result))
-
-    def downscale_image(self, image: Image.Image) -> Image.Image:
-        scale = float(self.ttk.tk.call('tk', 'scaling')) or 1.0
-        factor = 0.5 * scale
-        size = (max(1, int(image.width * factor)), max(1, int(image.height * factor)))
-        return image.resize(size, Image.Resampling.LANCZOS)
-
-    @staticmethod
-    def image_draw(size, mode=None, *args):
-        im = Image.new(mode or 'RGBA', size, *args)
-        return im, ImageDraw(im)
-
-    def __iter__(self):
-        copy = self.__dict__.copy()
-        for key in ['name', 'mode']: copy.pop(key, None)
-        return iter(copy)
-
-    def __repr__(self):
-        return str(self.__dict__)
+        return image_utils.image_recolor_map(data, white, black, overlay)
 
     @property
     def is_dark_theme(self):
@@ -266,58 +226,9 @@ class Theme:
             return ''
         return self.handlers[name].invoke(*args, **extras)
 
-    @staticmethod
-    def adjust_color_lightness(hex_color: str, factor: float) -> str:
-        r, g, b = ImageColor.getrgb(hex_color)
-        if factor > 0:
-            r = int(r + (255 - r) * factor)
-            g = int(g + (255 - g) * factor)
-            b = int(b + (255 - b) * factor)
-        else:
-            r = int(r * (1 + factor))
-            g = int(g * (1 + factor))
-            b = int(b * (1 + factor))
-        return f"#{r:02x}{g:02x}{b:02x}"
-
-    @staticmethod
-    def blend_colors(base_hex: str, blend_hex: str, alpha: float) -> str:
-        """Blend two hex colors with given alpha (0–1)."""
-        r1, g1, b1 = ImageColor.getrgb(base_hex)
-        r2, g2, b2 = ImageColor.getrgb(blend_hex)
-        r = int((1 - alpha) * r1 + alpha * r2)
-        g = int((1 - alpha) * g1 + alpha * g2)
-        b = int((1 - alpha) * b1 + alpha * b2)
-        return f'#{r:02x}{g:02x}{b:02x}'
-
-    @staticmethod
-    def relative_luminance(r, g, b):
-        def channel(c):
-            c = c / 255.0
-            return c / 12.92 if c <= 0.03928 else ((c + 0.055) / 1.055) ** 2.4
-
-        return 0.2126 * channel(r) + 0.7152 * channel(g) + 0.0722 * channel(b)
-
-    @staticmethod
-    def get_contrast_text_color(bg_color: str, light="#ffffff", dark="#000000") -> str:
-        r, g, b = ImageColor.getrgb(bg_color)
-        lum_bg = Theme.relative_luminance(r, g, b)
-        lum_light = Theme.relative_luminance(*ImageColor.getrgb(light))
-        lum_dark = Theme.relative_luminance(*ImageColor.getrgb(dark))
-        contrast_light = (max(lum_bg, lum_light) + 0.05) / (min(lum_bg, lum_light) + 0.05)
-        contrast_dark = (max(lum_bg, lum_dark) + 0.05) / (min(lum_bg, lum_dark) + 0.05)
-        return light if contrast_light >= contrast_dark else dark
-
-    @staticmethod
-    def is_color_dark(hex_color: str) -> bool:
-        hex_color = hex_color.lstrip("#")
-        if len(hex_color) != 6:
-            raise ValueError("Expected 6-digit hex color.")
-        r, g, b = [int(hex_color[i:i + 2], 16) for i in (0, 2, 4)]
-        brightness = (r * 299 + g * 587 + b * 114) / 1000
-        return brightness < 128
-
-    def scale_size(self, *size):
-        baseline = 1.0005 if self.system == 'Darwin' else 2.0009
-        factor = float(self.ttk.tk.call('tk', 'scaling')) / baseline
-        scaled = [ceil(s * factor) for s in size]
-        return scaled[0] if len(scaled) == 1 else tuple(scaled)
+    def recolor_state_image(self, image_path: str, color: str):
+        """Create a state image for the button"""
+        img = load_asset_image(image_path)
+        recolored = self.image_recolor(img, color)
+        self.register_asset(str(recolored), recolored)
+        return recolored

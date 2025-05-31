@@ -1,14 +1,14 @@
-from typing import Literal, Tuple
 from colorsys import rgb_to_hls
+from typing import Literal
+
 from PIL import ImageColor
-from ..logger import Logger
+
+from ttkbootstrap.logger import Logger
 
 logger = Logger(False, True)
-
 HUE = 360
 SAT = 100
 LUM = 100
-
 COLOR_MODEL = Literal['rgb', 'hsl', 'hex']
 
 
@@ -251,3 +251,57 @@ def clamp(value, min_val, max_val):
         The bounded value
     """
     return min(max(value, min_val), max_val)
+
+
+def rgb_distance(c1, c2):
+    return ((c1[0] - c2[0]) ** 2 + (c1[1] - c2[1]) ** 2 + (c1[2] - c2[2]) ** 2) ** 0.5
+
+
+def adjust_color_lightness(hex_color: str, factor: float) -> str:
+    r, g, b = ImageColor.getrgb(hex_color)
+    if factor > 0:
+        r = int(r + (255 - r) * factor)
+        g = int(g + (255 - g) * factor)
+        b = int(b + (255 - b) * factor)
+    else:
+        r = int(r * (1 + factor))
+        g = int(g * (1 + factor))
+        b = int(b * (1 + factor))
+    return f"#{r:02x}{g:02x}{b:02x}"
+
+
+def blend_colors(base_hex: str, blend_hex: str, alpha: float) -> str:
+    """Blend two hex colors with given alpha (0–1)."""
+    r1, g1, b1 = ImageColor.getrgb(base_hex)
+    r2, g2, b2 = ImageColor.getrgb(blend_hex)
+    r = int((1 - alpha) * r1 + alpha * r2)
+    g = int((1 - alpha) * g1 + alpha * g2)
+    b = int((1 - alpha) * b1 + alpha * b2)
+    return f'#{r:02x}{g:02x}{b:02x}'
+
+
+def relative_luminance(r, g, b):
+    def channel(c):
+        c = c / 255.0
+        return c / 12.92 if c <= 0.03928 else ((c + 0.055) / 1.055) ** 2.4
+
+    return 0.2126 * channel(r) + 0.7152 * channel(g) + 0.0722 * channel(b)
+
+
+def get_contrast_text_color(bg_color: str, light="#ffffff", dark="#000000") -> str:
+    r, g, b = ImageColor.getrgb(bg_color)
+    lum_bg = relative_luminance(r, g, b)
+    lum_light = relative_luminance(*ImageColor.getrgb(light))
+    lum_dark = relative_luminance(*ImageColor.getrgb(dark))
+    contrast_light = (max(lum_bg, lum_light) + 0.05) / (min(lum_bg, lum_light) + 0.05)
+    contrast_dark = (max(lum_bg, lum_dark) + 0.05) / (min(lum_bg, lum_dark) + 0.05)
+    return light if contrast_light >= contrast_dark else dark
+
+
+def is_color_dark(hex_color: str) -> bool:
+    hex_color = hex_color.lstrip("#")
+    if len(hex_color) != 6:
+        raise ValueError("Expected 6-digit hex color.")
+    r, g, b = [int(hex_color[i:i + 2], 16) for i in (0, 2, 4)]
+    brightness = (r * 299 + g * 587 + b * 114) / 1000
+    return brightness < 128
