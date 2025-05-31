@@ -23,14 +23,13 @@ class TTkButtonDefaultStyle(StyleBuilder):
 
         # button colors
         token = "primary" if token == "default" else token
-        base_color = self.theme.get_color(token)
-        colors = self.theme.get_color_states(base_color, "default", background)
+        colors = self.theme.get_color_states(token, "default", background)
 
         # state images
-        normal_img = self.theme.recolor_state_image('button-default.png', colors.normal)
-        hover_img = self.theme.recolor_state_image('button-default.png', colors.hover)
-        pressed_img = self.theme.recolor_state_image('button-default.png', colors.pressed)
-        disabled_img = self.theme.recolor_state_image('button-disabled.png', colors.disabled)
+        normal_img = self.theme.recolor_state_image('button-default.png', colors.normal.color)
+        hover_img = self.theme.recolor_state_image('button-default.png', colors.hover.color)
+        pressed_img = self.theme.recolor_state_image('button-default.png', colors.pressed.color)
+        disabled_img = self.theme.recolor_state_image('button-disabled.png', colors.disabled.color)
 
         # Image element and state specs
         el = ElementImage(f'{style}.border', normal_img, sticky="nsew", border=8, padding=4)
@@ -53,14 +52,13 @@ class TTkButtonDefaultStyle(StyleBuilder):
 
         self.theme.configure(
             style,
-            foreground=colors.foreground,
-            focuscolor=colors.foreground_focus,
+            foreground=colors.normal.on_color,
+            focuscolor=colors.focused.on_color,
             background=background,
             font="-size 12",
             relief="raised",
             anchor="center")
 
-        self.theme.map(style, foreground=[('disabled', colors.foreground_disabled), ('focus', colors.foreground_focus)])
-
+        self.theme.map(style, foreground=[('disabled', colors.disabled.on_color), ('focus', colors.focused.on_color)])
         self.theme.add_style(style)
         return style

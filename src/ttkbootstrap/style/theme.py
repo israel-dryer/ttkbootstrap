@@ -1,13 +1,8 @@
-import base64
-from io import BytesIO
-from math import ceil
 import platform
 from collections import namedtuple
-from typing import Dict, Literal, Optional, Union
+from typing import Dict, Literal, Optional, Tuple, Union
 
 from PIL import Image, ImageColor, ImageOps
-from PIL.ImageDraw import ImageDraw
-from PIL.ImageTk import PhotoImage
 from tkinter.ttk import Style
 from tkinter import font as tkFont
 
@@ -27,28 +22,41 @@ SHADE_VALUES = [1.4, 1.3, 1.2, 1.1, 1.0, 0.9, 0.8, 0.7, 0.6]
 Shades = namedtuple('Shades', 'l4 l3 l2 l1 base d1 d2 d3 d4')
 ThemeMode = Literal['light', 'dark']
 ThemeColor = Literal[
-    'primary', 'secondary', 'success', 'info', 'warning', 'danger', 'light', 'dark', 'background', 'foreground', 'border']
+    'primary', 'secondary', 'success', 'info', 'warning', 'danger', 'light', 'dark', 'surface', 'background', 'foreground', 'border']
 ThemeColors = Dict[str, str]
 
 from typing import NamedTuple
 
 
+class ColorPair(NamedTuple):
+    color: str
+    on_color: str
+
+
 class ColorStates(NamedTuple):
-    normal: str
-    hover: str
-    pressed: str
-    selected: str
-    disabled: str
-    foreground: str
-    foreground_hover: str
-    foreground_pressed: str
-    foreground_selected: str
-    foreground_focus: str
-    foreground_disabled: str
+    normal: ColorPair
+    hover: ColorPair
+    pressed: ColorPair
+    selected: ColorPair
+    disabled: ColorPair
+    focused: ColorPair
 
 
 class Theme:
-    def __init__(self, name: str, mode: ThemeMode = 'light', **colors):
+    def __init__(self,
+        name: str,
+        mode: ThemeMode = 'light',
+        *,
+        primary: Tuple[str, str],
+        secondary: Tuple[str, str],
+        success: Tuple[str, str],
+        info: Tuple[str, str],
+        warning: Tuple[str, str],
+        danger: Tuple[str, str],
+        light: Tuple[str, str],
+        dark: Tuple[str, str],
+        surface: Tuple[str, str],
+    ):
         self.ttk = Style()
         self.activated = False
         self.handlers = {}
@@ -58,17 +66,17 @@ class Theme:
         self.name = name
         self.mode = mode
 
-        self.primary = colors.get('primary', DEFAULT_COLOR_1)
-        self.secondary = colors.get('secondary', DEFAULT_COLOR_1)
-        self.success = colors.get('success', DEFAULT_COLOR_1)
-        self.info = colors.get('info', DEFAULT_COLOR_1)
-        self.warning = colors.get('warning', DEFAULT_COLOR_1)
-        self.danger = colors.get('danger', DEFAULT_COLOR_1)
-        self.light = colors.get('light', DEFAULT_COLOR_1)
-        self.dark = colors.get('dark', DEFAULT_COLOR_1)
-        self.background = colors.get('background', DEFAULT_COLOR_1)
-        self.foreground = colors.get('foreground', DEFAULT_COLOR_2)
-        self.border = colors.get('border', DEFAULT_COLOR_2)
+        self.primary = ColorPair(*primary)
+        self.secondary = ColorPair(*secondary)
+        self.success = ColorPair(*success)
+        self.info = ColorPair(*info)
+        self.warning = ColorPair(*warning)
+        self.danger = ColorPair(*danger)
+        self.light = ColorPair(*light)
+        self.dark = ColorPair(*dark)
+        self.surface = ColorPair(*surface)
+        self.background = self.surface.color
+        self.foreground = self.surface.on_color
 
         tkFont.nametofont('TkDefaultFont').configure(size=12)
 
@@ -97,6 +105,7 @@ class Theme:
     def map(self, style: str, **options):
         self.ttk.map(style, **options)
 
+    @property
     def colors(self):
         return {
             "primary": self.primary,
@@ -107,9 +116,8 @@ class Theme:
             "danger": self.danger,
             "light": self.light,
             "dark": self.dark,
-            "background": self.background,
-            "foreground": self.foreground,
-            "border": self.border,
+            "surface": self.surface,
+            "default": self.surface
         }
 
     def get_foreground(self, color_name: str):
@@ -122,15 +130,6 @@ class Theme:
 
     def get_color(self, token: str):
         return self.__dict__.get(token)
-
-    def get_token(self, color: str):
-        color_map = self.colors()
-        tokens = list(color_map.keys())
-        colors = list(color_map.values())
-        try:
-            return tokens[colors.index(color)]
-        except ValueError:
-            return None
 
     def get_shades(self, color: str) -> Shades:
         value = self.get_color(color) or color
@@ -152,27 +151,6 @@ class Theme:
         bg = self.get_input_background()
         return color_utils.adjust_color_lightness(bg, 0.10 if self.is_dark_theme else -0.08)
 
-    def get_scrollbar_thumb_colors(self, token: str | None = None):
-        """
-        Return thumb colors (normal, hover, pressed) based on theme background and primary.
-        Uses linear RGB lightness adjustments and blending.
-        """
-        token = token or "foreground"
-        bg = self.get_input_background()
-        primary = self.get_color(token)
-
-        # Step 1: base thumb color is contrasty relative to trough
-        if self.is_light_theme:
-            thumb = color_utils.adjust_color_lightness(bg, -0.3)  # darker thumb on light bg
-        else:
-            thumb = color_utils.adjust_color_lightness(bg, 0.25)  # lighter thumb on dark bg
-
-        # Step 2: hover and pressed are blends toward primary
-        hover = color_utils.blend_colors(thumb, primary, 0.2)
-        pressed = color_utils.blend_colors(thumb, primary, 0.4)
-
-        return thumb, hover, pressed
-
     def get_background_style(self, token: str, widget_class: str, **extras):
         """
         Get the background style for a widget, which includes checking for inherited backgrounds.
@@ -189,13 +167,14 @@ class Theme:
 
     def get_color_states(
         self,
-        base_color: str,
+        token: str = "surface",
         variant: Literal["default", "outline", "text"] = "default",
-        transparent_color: str = "transparent",
+        transparent_color: str = "transparent"
     ) -> ColorStates:
         HOVER_FACTOR = 0.08
         PRESSED_FACTOR = 0.16
         SELECTED_FACTOR = 0.1
+        FOCUSED_FACTOR = 0.12
         DISABLED_FACTOR = 0.3
         FOREGROUND_SHIFT = 0.4
 
@@ -211,93 +190,67 @@ class Theme:
         def fg_disabled(fg):
             return lighten(fg, FOREGROUND_SHIFT) if self.is_light_theme else darken(fg, FOREGROUND_SHIFT)
 
+        token = "surface" if token == "default" else token
+        base: ColorPair = self.colors.get(token)
+        normal = base
+
+        adjusted_base_color = base.color
+        if token in {"light", "dark"}:
+            contrast = color_utils.get_contrast_ratio(base.color, self.surface.color)
+            if contrast < 3.0:
+                adjusted_base_color = color_utils.adjust_color_for_theme_contrast(
+                    base.color, self.surface.color, self.is_dark_theme, min_ratio=3.0
+                )
+
+        # Special hover color handling for light-on-light and dark-on-dark
+        if (token == "light" and self.is_light_theme):
+            hover_color = lighten(base.color, 0.2)
+        elif (token == "dark" and self.is_dark_theme):
+            hover_color = lighten(base.color, 0.2)
+        else:
+            hover_color = adjust(adjusted_base_color, HOVER_FACTOR)
+
         if variant == "default":
-            token = self.get_token(base_color)
-
-            if token in {"light", "dark"}:
-                contrast = color_utils.get_contrast_ratio(base_color, self.background)
-                if contrast < 3.0:
-                    base_color = color_utils.adjust_color_for_theme_contrast(
-                        base_color, self.background, self.is_dark_theme, min_ratio=3.0
-                    )
-
-            normal = base_color
-            hover = adjust(base_color, HOVER_FACTOR)
-            pressed = adjust(base_color, PRESSED_FACTOR)
-            selected = adjust(base_color, SELECTED_FACTOR)
-            disabled = adjust(base_color, DISABLED_FACTOR)
-
-            if token in {"light", "info", "warning"}:
-                fg = self.foreground if self.is_light_theme else self.background
-            else:
-                fg = self.background if self.is_light_theme else self.foreground
-
             return ColorStates(
                 normal=normal,
-                hover=hover,
-                pressed=pressed,
-                selected=selected,
-                disabled=disabled,
-                foreground=fg,
-                foreground_hover=fg,
-                foreground_pressed=fg,
-                foreground_selected=fg,
-                foreground_focus=fg,
-                foreground_disabled=fg_disabled(fg),
+                hover=ColorPair(hover_color, base.on_color),
+                pressed=ColorPair(adjust(adjusted_base_color, PRESSED_FACTOR), base.on_color),
+                selected=ColorPair(adjust(adjusted_base_color, SELECTED_FACTOR), base.on_color),
+                focused=ColorPair(adjust(adjusted_base_color, FOCUSED_FACTOR), base.on_color),
+                disabled=ColorPair(adjust(adjusted_base_color, DISABLED_FACTOR), fg_disabled(base.on_color)),
             )
 
         elif variant == "outline":
-            token = self.get_token(base_color)
-
-            if token in {"light", "dark"}:
-                contrast = color_utils.get_contrast_ratio(base_color, self.background)
-                if contrast < 3.0:
-                    base_color = color_utils.adjust_color_for_theme_contrast(
-                        base_color, self.background, self.is_dark_theme, min_ratio=3.0
-                    )
-
-            solid = self.get_color_states(base_color, variant="default", transparent_color=transparent_color)
-
+            solid = self.get_color_states(token, variant="default", transparent_color=transparent_color)
             return ColorStates(
-                normal=transparent_color,
+                normal=ColorPair(transparent_color, base.color),
                 hover=solid.hover,
                 pressed=solid.pressed,
                 selected=solid.selected,
-                disabled=transparent_color,
-                foreground=base_color,
-                foreground_hover=solid.foreground_hover,
-                foreground_pressed=solid.foreground_pressed,
-                foreground_selected=solid.foreground_selected,
-                foreground_focus=solid.foreground_focus,
-                foreground_disabled=fg_disabled(base_color),
+                focused=solid.focused,
+                disabled=ColorPair(transparent_color, fg_disabled(base.color)),
             )
 
         elif variant == "text":
-            normal = transparent_color
-            hover = adjust(base_color, 0.05)
-            pressed = adjust(base_color, 0.1)
-            selected = adjust(base_color, 0.2)
-            disabled = transparent_color
-
             def fg_contrast(bg):
                 return color_utils.get_contrast_text_color(
                     bg,
-                    light=self.foreground if self.is_dark_theme else self.background,
-                    dark=self.background if self.is_dark_theme else self.foreground,
+                    light=self.surface.on_color if self.is_dark_theme else self.surface.color,
+                    dark=self.surface.color if self.is_dark_theme else self.surface.on_color,
                 )
 
+            hover_bg = adjust(adjusted_base_color, 0.05)
+            pressed_bg = adjust(adjusted_base_color, 0.1)
+            selected_bg = adjust(adjusted_base_color, 0.2)
+            focused_bg = adjust(adjusted_base_color, 0.12)
+
             return ColorStates(
-                normal=normal,
-                hover=hover,
-                pressed=pressed,
-                selected=selected,
-                disabled=disabled,
-                foreground=base_color,
-                foreground_hover=fg_contrast(hover),
-                foreground_pressed=fg_contrast(pressed),
-                foreground_selected=fg_contrast(selected),
-                foreground_focus=fg_contrast(selected),
-                foreground_disabled=fg_disabled(base_color),
+                normal=ColorPair(transparent_color, base.color),
+                hover=ColorPair(hover_bg, fg_contrast(hover_bg)),
+                pressed=ColorPair(pressed_bg, fg_contrast(pressed_bg)),
+                selected=ColorPair(selected_bg, fg_contrast(selected_bg)),
+                focused=ColorPair(focused_bg, fg_contrast(focused_bg)),
+                disabled=ColorPair(transparent_color, fg_disabled(base.color)),
             )
 
         else:
