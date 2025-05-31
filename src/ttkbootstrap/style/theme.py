@@ -43,7 +43,8 @@ class ColorStates(NamedTuple):
 
 
 class Theme:
-    def __init__(self,
+    def __init__(
+        self,
         name: str,
         mode: ThemeMode = 'light',
         *,
@@ -165,18 +166,13 @@ class Theme:
             style = f'{token}.{widget_class}'
         return container_bg, style
 
-    def get_color_states(
-        self,
-        token: str = "surface",
-        variant: Literal["default", "outline", "text"] = "default",
-        transparent_color: str = "surface"
-    ) -> ColorStates:
-        HOVER_FACTOR = 0.08
-        PRESSED_FACTOR = 0.16
-        SELECTED_FACTOR = 0.1
-        FOCUSED_FACTOR = 0.12
-        DISABLED_FACTOR = 0.3
-        FOREGROUND_SHIFT = 0.4
+    def _get_default_color_states(self, token: str) -> ColorStates:
+        hover_factor = 0.08
+        pressed_factor = 0.16
+        selected_factor = 0.1
+        focused_factor = 0.12
+        disabled_factor = 0.3
+        foreground_shift = 0.4
 
         def lighten(c, factor):
             return color_utils.adjust_color_lightness(c, abs(factor))
@@ -188,13 +184,11 @@ class Theme:
             return lighten(c, factor) if self.is_dark_theme else darken(c, factor)
 
         def fg_disabled(fg):
-            return lighten(fg, FOREGROUND_SHIFT) if self.is_light_theme else darken(fg, FOREGROUND_SHIFT)
+            return lighten(fg, foreground_shift) if self.is_light_theme else darken(fg, foreground_shift)
 
-        token = "surface" if token == "default" else token
         base: ColorPair = self.colors.get(token)
-        normal = base
-
         adjusted_base_color = base.color
+
         if token in {"light", "dark"}:
             contrast = color_utils.get_contrast_ratio(base.color, self.surface.color)
             if contrast < 3.0:
@@ -202,49 +196,71 @@ class Theme:
                     base.color, self.surface.color, self.is_dark_theme, min_ratio=3.0
                 )
 
-        # Special hover color handling for light-on-light and dark-on-dark
-        if (token == "light" and self.is_light_theme):
-            hover_color = lighten(base.color, 0.2)
-        elif (token == "dark" and self.is_dark_theme):
+        if (token == "light" and self.is_light_theme) or (token == "dark" and self.is_dark_theme):
             hover_color = lighten(base.color, 0.2)
         else:
-            hover_color = adjust(adjusted_base_color, HOVER_FACTOR)
+            hover_color = adjust(adjusted_base_color, hover_factor)
 
+        return ColorStates(
+            normal=base,
+            hover=ColorPair(hover_color, base.on_color),
+            pressed=ColorPair(adjust(adjusted_base_color, pressed_factor), base.on_color),
+            selected=ColorPair(adjust(adjusted_base_color, selected_factor), base.on_color),
+            focused=ColorPair(adjust(adjusted_base_color, focused_factor), base.on_color),
+            disabled=ColorPair(adjust(adjusted_base_color, disabled_factor), fg_disabled(base.on_color)),
+        )
+
+    def _get_outline_color_states(self, token: str, transparent_color: str) -> ColorStates:
+        solid = self._get_default_color_states(token)
+        base: ColorPair = self.colors.get(token)
+
+        def lighten(c, factor): return color_utils.adjust_color_lightness(c, abs(factor))
+
+        def darken(c, factor): return color_utils.adjust_color_lightness(c, -abs(factor))
+
+        def fg_disabled(fg): return lighten(fg, 0.4) if self.is_light_theme else darken(fg, 0.4)
+
+        return ColorStates(
+            normal=ColorPair(transparent_color, base.color),
+            hover=solid.hover,
+            pressed=solid.pressed,
+            selected=solid.selected,
+            focused=solid.focused,
+            disabled=ColorPair(transparent_color, fg_disabled(base.color)),
+        )
+
+    def _get_text_color_states(self, token: str, transparent_color: str) -> ColorStates:
+        base: ColorPair = self.colors.get(token)
+
+        def fg_disabled(fg): return color_utils.adjust_color_lightness(
+            fg, 0.4 if self.is_light_theme else -0.4
+        )
+
+        def subtle_tint(alpha: float) -> str:
+            return color_utils.blend_colors(self.surface.color, base.color, alpha)
+
+        return ColorStates(
+            normal=ColorPair(transparent_color, base.color),
+            hover=ColorPair(subtle_tint(0.10), base.color),
+            pressed=ColorPair(subtle_tint(0.20), base.color),
+            selected=ColorPair(subtle_tint(0.18), base.color),
+            focused=ColorPair(subtle_tint(0.14), base.color),
+            disabled=ColorPair(transparent_color, fg_disabled(base.color)),
+        )
+
+    def get_color_states(
+        self,
+        token: str = "surface",
+        variant: Literal["default", "outline", "text"] = "default",
+        transparent_color: str = "surface"
+    ) -> ColorStates:
+        token = "surface" if token == "default" else token
         if variant == "default":
-            return ColorStates(
-                normal=normal,
-                hover=ColorPair(hover_color, base.on_color),
-                pressed=ColorPair(adjust(adjusted_base_color, PRESSED_FACTOR), base.on_color),
-                selected=ColorPair(adjust(adjusted_base_color, SELECTED_FACTOR), base.on_color),
-                focused=ColorPair(adjust(adjusted_base_color, FOCUSED_FACTOR), base.on_color),
-                disabled=ColorPair(adjust(adjusted_base_color, DISABLED_FACTOR), fg_disabled(base.on_color)),
-            )
-
+            return self._get_default_color_states(token)
         elif variant == "outline":
-            solid = self.get_color_states(token, variant="default", transparent_color=transparent_color)
-            return ColorStates(
-                normal=ColorPair(transparent_color, base.color),
-                hover=solid.hover,
-                pressed=solid.pressed,
-                selected=solid.selected,
-                focused=solid.focused,
-                disabled=ColorPair(transparent_color, fg_disabled(base.color)),
-            )
-
+            return self._get_outline_color_states(token, transparent_color)
         elif variant == "text":
-            def subtle_tint(alpha: float) -> str:
-                """Blend a hint of the foreground color into the surface for subtle feedback."""
-                return color_utils.blend_colors(self.surface.color, base.color, alpha)
-
-            return ColorStates(
-                normal=ColorPair(transparent_color, base.color),
-                hover=ColorPair(subtle_tint(0.10), base.color),
-                pressed=ColorPair(subtle_tint(0.20), base.color),
-                selected=ColorPair(subtle_tint(0.18), base.color),
-                focused=ColorPair(subtle_tint(0.14), base.color),
-                disabled=ColorPair(transparent_color, fg_disabled(base.color)),
-            )
-
+            return self._get_text_color_states(token, transparent_color)
         else:
             raise ValueError(f"Unsupported variant: {variant}")
 
