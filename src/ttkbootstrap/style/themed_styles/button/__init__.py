@@ -1,5 +1,6 @@
-# from .ttk_button_text_style import TTkButtonTextStyle
 from .ttk_button_outline_style import TTkButtonOutlineStyle
 from .ttk_button_default_style import TTkButtonDefaultStyle
+from .ttk_button_text_style import TTkButtonTextStyle
 from .ttk_icon_button_default_style import TTkIconButtonDefaultStyle
 from .ttk_icon_button_outline_style import TTkIconButtonOutlineStyle
+from .ttk_icon_button_text_style import TTkIconButtonTextStyle

@@ -14,13 +14,15 @@
 # from .tree_view import TTkTreeViewDefaultStyle
 
 from .button import (
-    TTkButtonDefaultStyle, TTkButtonOutlineStyle,
-    TTkIconButtonDefaultStyle, TTkIconButtonOutlineStyle
+    TTkButtonDefaultStyle, TTkButtonOutlineStyle, TTkButtonTextStyle,
+    TTkIconButtonDefaultStyle, TTkIconButtonOutlineStyle, TTkIconButtonTextStyle
 )
 
 ttk_handlers = [
     ('ttk.default.button', TTkButtonDefaultStyle),
     ('ttk.outline.button', TTkButtonOutlineStyle),
+    ('ttk.text.button', TTkButtonTextStyle),
     ('ttk.default.icon.button', TTkIconButtonDefaultStyle),
-    ('ttk.outline.icon.button', TTkIconButtonOutlineStyle)
+    ('ttk.outline.icon.button', TTkIconButtonOutlineStyle),
+    ('ttk.text.icon.button', TTkIconButtonTextStyle)
 ]
