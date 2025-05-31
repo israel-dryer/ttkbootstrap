@@ -278,13 +278,13 @@ class MessageDialog(Dialog):
                 # assume this is image data
                 self._img = ttk.PhotoImage(data=self._icon)
                 icon_lbl = ttk.Label(container, image=self._img)
-                icon_lbl.pack(side=LEFT, padx=5)
+                icon_lbl.pack(side=LEFT, anchor=N, padx=5)
             except:
                 try:
                     # assume this is a file path
                     self._img = ttk.PhotoImage(file=self._icon)
                     icon_lbl = ttk.Label(container, image=self._img)
-                    icon_lbl.pack(side=LEFT, padx=5)
+                    icon_lbl.pack(side=LEFT, anchor=N, padx=5)
                 except:
                     # icon is neither data nor a valid file path
                     print("MessageDialog icon is invalid")
