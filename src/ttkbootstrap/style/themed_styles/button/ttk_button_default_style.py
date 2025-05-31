@@ -24,7 +24,7 @@ class TTkButtonDefaultStyle(StyleBuilder):
         # button colors
         token = "primary" if token == "default" else token
         base_color = self.theme.get_color(token)
-        colors = self.theme.get_color_states(base_color)
+        colors = self.theme.get_color_states(base_color, "default", background)
 
         # state images
         normal_img = self.theme.recolor_state_image('button-default.png', colors.normal)
@@ -54,13 +54,13 @@ class TTkButtonDefaultStyle(StyleBuilder):
         self.theme.configure(
             style,
             foreground=colors.foreground,
-            focuscolor=colors.foreground,
+            focuscolor=colors.foreground_focus,
             background=background,
             font="-size 12",
             relief="raised",
             anchor="center")
 
-        self.theme.map(style, foreground=[('disabled', colors.foreground_disabled)])
+        self.theme.map(style, foreground=[('disabled', colors.foreground_disabled), ('focus', colors.foreground_focus)])
 
         self.theme.add_style(style)
         return style

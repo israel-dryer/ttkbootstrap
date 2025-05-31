@@ -69,7 +69,7 @@ class Button(StyleMixin, BaseMixin, IconMixin, BackgroundMixin):
 
     def _render_widget(self):
         """Create and initialize the internal ttk.Button widget."""
-        self._inject_icon_support(default_compound="left")
+        self._prepare_icon_kwargs(default_compound="left")
         self._widget = ttkButton(
             self._master,
             command=self._on_click,

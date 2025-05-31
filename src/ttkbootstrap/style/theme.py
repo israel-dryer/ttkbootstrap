@@ -3,7 +3,7 @@ from io import BytesIO
 from math import ceil
 import platform
 from collections import namedtuple
-from typing import Dict, Literal, Union
+from typing import Dict, Literal, Optional, Union
 
 from PIL import Image, ImageColor, ImageOps
 from PIL.ImageDraw import ImageDraw
@@ -40,6 +40,10 @@ class ColorStates(NamedTuple):
     selected: str
     disabled: str
     foreground: str
+    foreground_hover: str
+    foreground_pressed: str
+    foreground_selected: str
+    foreground_focus: str
     foreground_disabled: str
 
 
@@ -187,21 +191,13 @@ class Theme:
         self,
         base_color: str,
         variant: Literal["default", "outline", "text"] = "default",
+        transparent_color: str = "transparent",
     ) -> ColorStates:
-        """
-        Generate a named tuple of state colors based on a base color, theme brightness, and variant.
-
-        Args:
-            base_color (str): The base hex color (e.g. "#007bff").
-            variant (str): One of 'default', 'outline', or 'text'.
-
-        Returns:
-            ColorStates: Named tuple with color mappings for UI states.
-        """
         HOVER_FACTOR = 0.08
         PRESSED_FACTOR = 0.16
+        SELECTED_FACTOR = 0.1
         DISABLED_FACTOR = 0.3
-        DISABLED_FOREGROUND_SHIFT = 0.4
+        FOREGROUND_SHIFT = 0.4
 
         def lighten(c, factor):
             return color_utils.adjust_color_lightness(c, abs(factor))
@@ -212,52 +208,100 @@ class Theme:
         def adjust(c, factor):
             return lighten(c, factor) if self.is_dark_theme else darken(c, factor)
 
-        def fg_contrast(bg):
-            if self.is_light_theme:
-                return color_utils.get_contrast_text_color(bg, light=self.background, dark=self.foreground)
-            return color_utils.get_contrast_text_color(bg, light=self.foreground, dark=self.background)
-
         def fg_disabled(fg):
-            return lighten(fg, DISABLED_FOREGROUND_SHIFT) if self.is_light_theme else darken(
-                fg, DISABLED_FOREGROUND_SHIFT)
+            return lighten(fg, FOREGROUND_SHIFT) if self.is_light_theme else darken(fg, FOREGROUND_SHIFT)
 
-        # Apply variant logic
         if variant == "default":
+            token = self.get_token(base_color)
+
+            if token in {"light", "dark"}:
+                contrast = color_utils.get_contrast_ratio(base_color, self.background)
+                if contrast < 3.0:
+                    base_color = color_utils.adjust_color_for_theme_contrast(
+                        base_color, self.background, self.is_dark_theme, min_ratio=3.0
+                    )
+
             normal = base_color
             hover = adjust(base_color, HOVER_FACTOR)
             pressed = adjust(base_color, PRESSED_FACTOR)
-            selected = hover
+            selected = adjust(base_color, SELECTED_FACTOR)
             disabled = adjust(base_color, DISABLED_FACTOR)
-            foreground = fg_contrast(base_color)
+
+            if token in {"light", "info", "warning"}:
+                fg = self.foreground if self.is_light_theme else self.background
+            else:
+                fg = self.background if self.is_light_theme else self.foreground
+
+            return ColorStates(
+                normal=normal,
+                hover=hover,
+                pressed=pressed,
+                selected=selected,
+                disabled=disabled,
+                foreground=fg,
+                foreground_hover=fg,
+                foreground_pressed=fg,
+                foreground_selected=fg,
+                foreground_focus=fg,
+                foreground_disabled=fg_disabled(fg),
+            )
 
         elif variant == "outline":
-            normal = "transparent"
-            hover = adjust(base_color, 0.1)
-            pressed = adjust(base_color, 0.2)
-            selected = base_color
-            disabled = "transparent"
-            foreground = base_color
+            token = self.get_token(base_color)
+
+            if token in {"light", "dark"}:
+                contrast = color_utils.get_contrast_ratio(base_color, self.background)
+                if contrast < 3.0:
+                    base_color = color_utils.adjust_color_for_theme_contrast(
+                        base_color, self.background, self.is_dark_theme, min_ratio=3.0
+                    )
+
+            solid = self.get_color_states(base_color, variant="default", transparent_color=transparent_color)
+
+            return ColorStates(
+                normal=transparent_color,
+                hover=solid.hover,
+                pressed=solid.pressed,
+                selected=solid.selected,
+                disabled=transparent_color,
+                foreground=base_color,
+                foreground_hover=solid.foreground_hover,
+                foreground_pressed=solid.foreground_pressed,
+                foreground_selected=solid.foreground_selected,
+                foreground_focus=solid.foreground_focus,
+                foreground_disabled=fg_disabled(base_color),
+            )
 
         elif variant == "text":
-            normal = "transparent"
+            normal = transparent_color
             hover = adjust(base_color, 0.05)
             pressed = adjust(base_color, 0.1)
             selected = adjust(base_color, 0.2)
-            disabled = "transparent"
-            foreground = base_color
+            disabled = transparent_color
+
+            def fg_contrast(bg):
+                return color_utils.get_contrast_text_color(
+                    bg,
+                    light=self.foreground if self.is_dark_theme else self.background,
+                    dark=self.background if self.is_dark_theme else self.foreground,
+                )
+
+            return ColorStates(
+                normal=normal,
+                hover=hover,
+                pressed=pressed,
+                selected=selected,
+                disabled=disabled,
+                foreground=base_color,
+                foreground_hover=fg_contrast(hover),
+                foreground_pressed=fg_contrast(pressed),
+                foreground_selected=fg_contrast(selected),
+                foreground_focus=fg_contrast(selected),
+                foreground_disabled=fg_disabled(base_color),
+            )
 
         else:
             raise ValueError(f"Unsupported variant: {variant}")
-
-        return ColorStates(
-            normal=normal,
-            hover=hover,
-            pressed=pressed,
-            selected=selected,
-            disabled=disabled,
-            foreground=foreground,
-            foreground_disabled=fg_disabled(foreground),
-        )
 
     def image_recolor(self, data: Union[str, Image.Image], color: str, overlay: Image.Image = None):
         white = color

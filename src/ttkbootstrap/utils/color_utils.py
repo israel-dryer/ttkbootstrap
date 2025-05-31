@@ -3,9 +3,7 @@ from typing import Literal
 
 from PIL import ImageColor
 
-from ttkbootstrap.logger import Logger
 
-logger = Logger(False, True)
 HUE = 360
 SAT = 100
 LUM = 100
@@ -305,3 +303,76 @@ def is_color_dark(hex_color: str) -> bool:
     r, g, b = [int(hex_color[i:i + 2], 16) for i in (0, 2, 4)]
     brightness = (r * 299 + g * 587 + b * 114) / 1000
     return brightness < 128
+
+
+def get_contrast_ratio(hex1: str, hex2: str) -> float:
+    r1, g1, b1 = ImageColor.getrgb(hex1)
+    r2, g2, b2 = ImageColor.getrgb(hex2)
+    L1 = relative_luminance(r1, g1, b1)
+    L2 = relative_luminance(r2, g2, b2)
+    return (max(L1, L2) + 0.05) / (min(L1, L2) + 0.05)
+
+
+def get_contrasting_color_against(bg_hex: str, min_ratio: float = 3.0) -> str:
+    """
+    Lighten the background until the contrast against it is high enough.
+
+    Args:
+        bg_hex (str): Background color.
+        min_ratio (float): Minimum acceptable contrast ratio.
+
+    Returns:
+        str: A hex color with acceptable contrast.
+    """
+    fg = bg_hex
+    factor = 0.05
+    tries = 0
+
+    while tries < 20:
+        fg = adjust_color_lightness(bg_hex, factor)
+        contrast = get_contrast_ratio(fg, bg_hex)
+        if contrast >= min_ratio:
+            return fg
+        factor += 0.05
+        tries += 1
+
+    return fg  # fallback: best effort
+
+
+def elevate_color_for_contrast(base_color: str, background: str, min_ratio: float = 3.0) -> str:
+    """
+    Lightens base_color until contrast with background is acceptable.
+    Only lightens; does not darken.
+    """
+    fg = base_color
+    factor = 0.05
+    tries = 0
+    while tries < 20:
+        contrast = get_contrast_ratio(fg, background)
+        if contrast >= min_ratio:
+            return fg
+        fg = adjust_color_lightness(base_color, factor)
+        factor += 0.05
+        tries += 1
+    return fg  # fallback
+
+
+def adjust_color_for_theme_contrast(base_color: str, bg_color: str, is_dark_theme: bool, min_ratio: float = 3.0) -> str:
+    """
+    Lightens or darkens base_color until it reaches acceptable contrast with bg_color.
+    Lightens in dark theme, darkens in light theme.
+    """
+    adjusted = base_color
+    factor = 0.05
+    tries = 0
+    while tries < 20:
+        contrast = get_contrast_ratio(adjusted, bg_color)
+        if contrast >= min_ratio:
+            return adjusted
+        if is_dark_theme:
+            adjusted = adjust_color_lightness(base_color, factor)
+        else:
+            adjusted = adjust_color_lightness(base_color, -factor)
+        factor += 0.05
+        tries += 1
+    return adjusted

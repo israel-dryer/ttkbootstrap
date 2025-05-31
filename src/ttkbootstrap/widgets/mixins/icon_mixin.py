@@ -10,16 +10,20 @@ if TYPE_CHECKING:
 
 
 class IconMixin:
-    """Mixin for widgets that support a themed icon with hover + theme change behavior."""
+    """Mixin for widgets that support themed icons with state-based styling."""
 
     widget: Widget
 
-    _icon_image_normal: Union["PhotoImage", str, None] = None
-    _icon_image_hover: Union["PhotoImage", str, None] = None
     _icon: Union[str, Tuple[str, int]]
     _variant: str = "default"
     _color: StyleColor = "default"
     _kwargs: dict = {}
+
+    _icon_image_normal: Union["PhotoImage", None] = None
+    _icon_image_hover: Union["PhotoImage", None] = None
+    _icon_image_pressed: Union["PhotoImage", None] = None
+    _icon_image_focus: Union["PhotoImage", None] = None
+    _icon_image_disabled: Union["PhotoImage", None] = None
 
     @property
     def icon(self):
@@ -29,72 +33,68 @@ class IconMixin:
     def icon(self, value: Union[str, Tuple[str, int]]):
         self._icon = value
         self._build_icon_images()
-        self.widget.configure(image=self._icon_image_normal)
+        self._update_icon_image_for_state()
 
-    @property
-    def _icon_name(self):
+    def _parse_icon(self) -> Tuple[str | None, int]:
+        """Extract the icon name and size from self._icon."""
         if isinstance(self._icon, str):
-            return self._icon
-        elif isinstance(self._icon, tuple):
-            return self._icon[0]
-        else:
-            return None
+            return self._icon, 24
+        elif isinstance(self._icon, tuple) and len(self._icon) == 2:
+            return self._icon[0], self._icon[1]
+        return None, 0
 
-    @property
-    def _icon_size(self):
-        if isinstance(self._icon, str):
-            return 24
-        elif isinstance(self._icon, tuple):
-            return self._icon[1]
-        else:
-            return None
-
-    def _inject_icon_support(self, default_compound: str = "left"):
-        """Inject image and compound into kwargs before widget init."""
+    def _prepare_icon_kwargs(self, default_compound: str = "left"):
+        """Inject image and compound keys into widget kwargs."""
         if not self._icon:
             return
-
         try:
             self._build_icon_images()
             self._kwargs["image"] = self._icon_image_normal
-            if "compound" not in self._kwargs:
-                self._kwargs["compound"] = default_compound
+            self._kwargs.setdefault("compound", default_compound)
         except Exception as e:
-            logger.error("IconMixin", f"failed to load icon: '{self._icon_name}': {e}")
+            logger.error("IconMixin", f"Failed to load icon '{self._icon}': {e}")
 
     def _bind_icon_events(self):
-        """Bind all icon-related events (hover, theme change)."""
+        """Bind icon hover and theme change events."""
         if self._variant == "outline":
             self.widget.bind("<Enter>", lambda e: self.widget.configure(image=self._icon_image_hover))
             self.widget.bind("<Leave>", lambda e: self.widget.configure(image=self._icon_image_normal))
         self.widget.bind("<<ThemeChanged>>", lambda e: self._on_theme_change(), add=True)
 
     def _on_theme_change(self):
-        if self._icon_name is None:
+        if not self._icon:
             return
         self._build_icon_images()
+        self._update_icon_image_for_state()
 
-        # Determine current state
+    def _update_icon_image_for_state(self):
+        """Apply appropriate icon image based on widget state."""
         state = set(self.widget.state())
-        if "pressed" in state and self._icon_image_hover:
+        if "disabled" in state:
+            self.widget.configure(image=self._icon_image_disabled)
+        elif "pressed" in state:
+            self.widget.configure(image=self._icon_image_pressed)
+        elif "active" in state:
             self.widget.configure(image=self._icon_image_hover)
-        elif "active" in state and self._icon_image_hover:
-            self.widget.configure(image=self._icon_image_hover)
+        elif "focus" in state:
+            self.widget.configure(image=self._icon_image_focus)
         else:
             self.widget.configure(image=self._icon_image_normal)
 
     def _build_icon_images(self):
-        tm = get_theme_manager()
-        token = "primary" if self._color == "default" else self._color
-        base_color = tm.active_theme.get_color(token)
-        colors = tm.active_theme.get_color_states(base_color)
-        icon_name = self._icon_name
-        icon_size = self._icon_size
-        if any([icon_name is None, icon_size is None]):
+        icon_name, icon_size = self._parse_icon()
+        if not icon_name or not icon_size:
             return
 
-        normal_icon = Icon(icon_name, self._icon_size, colors.foreground)
-        hover_icon = Icon(icon_name, self._icon_size, colors.foreground)
+        tm = get_theme_manager()
+        base_color = tm.active_theme.get_color(self._color)
+        colors = tm.active_theme.get_color_states(base_color, self._variant)
 
-        self._icon_image_normal = normal_icon.photo_image
-        self._icon_image_hover = hover_icon.photo_image
+        def create(name, color):
+            return Icon(name, icon_size, color).photo_image
+
+        self._icon_image_normal = create(icon_name, colors.foreground)
+        self._icon_image_hover = create(icon_name, colors.foreground_hover)
+        self._icon_image_pressed = create(icon_name, colors.foreground_pressed)
+        self._icon_image_focus = create(icon_name, colors.foreground_focus)
+        self._icon_image_disabled = create(icon_name, colors.foreground_disabled)

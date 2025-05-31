@@ -13,8 +13,9 @@
 # from .tool_button import TTkToolButtonDefaultStyle
 # from .tree_view import TTkTreeViewDefaultStyle
 
-from .button import TTkButtonDefaultStyle
+from .button import TTkButtonDefaultStyle, TTkButtonOutlineStyle
 
 ttk_handlers = [
     ('ttk.default.button', TTkButtonDefaultStyle),
+    ('ttk.outline.button', TTkButtonOutlineStyle),
 ]
