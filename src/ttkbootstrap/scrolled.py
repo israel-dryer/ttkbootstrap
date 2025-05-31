@@ -428,9 +428,7 @@ class ScrolledFrame(ttk.Frame):
         self.autohide = not self.autohide
 
     def destroy(self):
-        self.vscroll.destroy()
         super().destroy()
-        self.container.destroy()
 
     def _measures(self):
         """Measure the base size of the container and the thumb size
