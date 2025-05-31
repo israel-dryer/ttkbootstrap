@@ -43,7 +43,6 @@ class ColorStates(NamedTuple):
     foreground_disabled: str
 
 
-
 class Theme:
     def __init__(self, name: str, mode: ThemeMode = 'light', **colors):
         self.ttk = Style()
@@ -170,6 +169,20 @@ class Theme:
 
         return thumb, hover, pressed
 
+    def get_background_style(self, token: str, widget_class: str, **extras):
+        """
+        Get the background style for a widget, which includes checking for inherited backgrounds.
+        Return the generated ttk style.
+        """
+        background = extras.get('background', None)
+        container_bg = self.background
+        if background is not None and background != container_bg:
+            style = f'{background}.{token}.{widget_class}'  # inherited background style
+            container_bg = background
+        else:
+            style = f'{token}.{widget_class}'
+        return container_bg, style
+
     def get_color_states(
         self,
         base_color: str,
@@ -190,8 +203,11 @@ class Theme:
         DISABLED_FACTOR = 0.3
         DISABLED_FOREGROUND_SHIFT = 0.4
 
-        def lighten(c, factor): return color_utils.adjust_color_lightness(c, abs(factor))
-        def darken(c, factor): return color_utils.adjust_color_lightness(c, -abs(factor))
+        def lighten(c, factor):
+            return color_utils.adjust_color_lightness(c, abs(factor))
+
+        def darken(c, factor):
+            return color_utils.adjust_color_lightness(c, -abs(factor))
 
         def adjust(c, factor):
             return lighten(c, factor) if self.is_dark_theme else darken(c, factor)
@@ -202,7 +218,8 @@ class Theme:
             return color_utils.get_contrast_text_color(bg, light=self.foreground, dark=self.background)
 
         def fg_disabled(fg):
-            return lighten(fg, DISABLED_FOREGROUND_SHIFT) if self.is_light_theme else darken(fg, DISABLED_FOREGROUND_SHIFT)
+            return lighten(fg, DISABLED_FOREGROUND_SHIFT) if self.is_light_theme else darken(
+                fg, DISABLED_FOREGROUND_SHIFT)
 
         # Apply variant logic
         if variant == "default":

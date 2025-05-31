@@ -8,6 +8,7 @@ from ...style_element import Element, ElementImage
 if TYPE_CHECKING:
     from ...theme import Theme
 
+
 class TTkButtonDefaultStyle(StyleBuilder):
 
     def __init__(self, theme: Theme):
@@ -16,24 +17,14 @@ class TTkButtonDefaultStyle(StyleBuilder):
     def invoke(self, token: str, **extras):
         """Create the default button style"""
 
-        # check if the background color should be inherited from the parent
-        parent_background = extras.get('background', None)
-        container_bg = self.theme.background
-        if parent_background is not None and parent_background != container_bg:
-            style = f'{parent_background}.{token}.TButton'  # inherited background style
-            container_bg = parent_background
-        else:
-            style = f'{token}.TButton'
-
-        # check if style already exists
+        background, style = self.theme.get_background_style(token, 'TButton', **extras)
         if self.theme.has_style(style):
             return style
 
-        # color token
-        token = "primary" if token == "default" else token
-
         # button colors
-        colors = self.theme.get_color_states(self.theme.get_color(token))
+        token = "primary" if token == "default" else token
+        base_color = self.theme.get_color(token)
+        colors = self.theme.get_color_states(base_color)
 
         # state images
         normal_img = self.theme.recolor_state_image('button-default.png', colors.normal)
@@ -64,7 +55,7 @@ class TTkButtonDefaultStyle(StyleBuilder):
             style,
             foreground=colors.foreground,
             focuscolor=colors.foreground,
-            background=container_bg,
+            background=background,
             font="-size 12",
             relief="raised",
             anchor="center")
