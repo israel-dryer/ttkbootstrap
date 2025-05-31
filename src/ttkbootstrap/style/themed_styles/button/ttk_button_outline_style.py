@@ -15,7 +15,7 @@ class TTkButtonOutlineStyle(StyleBuilder):
         super().__init__(theme)
 
     def invoke(self, token: str, **extras):
-        """Create the default button style"""
+        """Create the outline button style"""
 
         background, style = self.theme.get_background_style(token, 'Outline.TButton', **extras)
         if self.theme.has_style(style):
@@ -57,6 +57,7 @@ class TTkButtonOutlineStyle(StyleBuilder):
             background=background,
             font="-size 12",
             relief="raised",
+            padding=(10, 0),
             anchor="center")
 
         self.theme.map(

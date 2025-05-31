@@ -56,6 +56,7 @@ class TTkButtonDefaultStyle(StyleBuilder):
             focuscolor=colors.focused.on_color,
             background=background,
             font="-size 12",
+            padding=(10, 0),
             relief="raised",
             anchor="center")
 
