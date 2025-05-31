@@ -87,14 +87,13 @@ class IconMixin:
             return
 
         tm = get_theme_manager()
-        base_color = tm.active_theme.get_color(self._color)
-        colors = tm.active_theme.get_color_states(base_color, self._variant)
+        colors = tm.active_theme.get_color_states(self._color, self._variant)
 
         def create(name, color):
             return Icon(name, icon_size, color).photo_image
 
-        self._icon_image_normal = create(icon_name, colors.foreground)
-        self._icon_image_hover = create(icon_name, colors.foreground_hover)
-        self._icon_image_pressed = create(icon_name, colors.foreground_pressed)
-        self._icon_image_focus = create(icon_name, colors.foreground_focus)
-        self._icon_image_disabled = create(icon_name, colors.foreground_disabled)
+        self._icon_image_normal = create(icon_name, colors.normal.on_color)
+        self._icon_image_hover = create(icon_name, colors.hover.on_color)
+        self._icon_image_pressed = create(icon_name, colors.pressed.on_color)
+        self._icon_image_focus = create(icon_name, colors.focused.on_color)
+        self._icon_image_disabled = create(icon_name, colors.disabled.on_color)
