@@ -87,23 +87,14 @@ class IconMixin:
         tm = get_theme_manager()
         token = "primary" if self._color == "default" else self._color
         base_color = tm.active_theme.get_color(token)
-        if self._variant == "outline":
-            normal_color = base_color
-            hover_color = tm.active_theme.get_foreground(token)
-        elif self._variant == "text":
-            normal_color = tm.active_theme.foreground if self._color == "default" else base_color
-            hover_color = normal_color
-        else:
-            normal_color = tm.active_theme.get_foreground(token)
-            hover_color = normal_color
-
+        colors = tm.active_theme.get_color_states(base_color)
         icon_name = self._icon_name
         icon_size = self._icon_size
         if any([icon_name is None, icon_size is None]):
             return
 
-        normal_icon = Icon(icon_name, self._icon_size, normal_color)
-        hover_icon = Icon(icon_name, self._icon_size, hover_color)
+        normal_icon = Icon(icon_name, self._icon_size, colors.foreground)
+        hover_icon = Icon(icon_name, self._icon_size, colors.foreground)
 
         self._icon_image_normal = normal_icon.photo_image
         self._icon_image_hover = hover_icon.photo_image
