@@ -79,20 +79,12 @@ class Button(StyleMixin, BaseMixin, IconMixin, BackgroundMixin):
         self._bind_icon_events()
 
         self._initialize_style(
-            self._get_button_class(),
+            'button',
             color=self._color,
             variant=self._variant,
             extras=self._extras,
             **self._kwargs
         )
-
-    def _get_button_class(self):
-        if self._text is None:
-            if self._icon is None:
-                return 'button'
-            else:
-                return 'icon.button'
-        return 'button'
 
     @property
     def widget(self) -> Misc:

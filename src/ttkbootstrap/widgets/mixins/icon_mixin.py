@@ -77,4 +77,4 @@ class IconMixin:
             return
 
         self._icon_image_dynamic = Icon(icon_name, icon_size, fg).photo_image
-        self.widget.configure(image=self._icon_image_dynamic)
+        self.widget.configure(image=self._icon_image_dynamic, padding="4 0 0 0")
