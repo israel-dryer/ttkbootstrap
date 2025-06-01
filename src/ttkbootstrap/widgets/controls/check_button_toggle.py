@@ -22,7 +22,7 @@ class CheckButtonToggleOptions(TypedDict, total=False):
 
 class CheckButtonToggle(StyleMixin, BaseMixin, IconMixin, BackgroundMixin):
     """
-    A styled `Checkbutton` widget with theme-aware styling, value binding, and event callbacks.
+    A styled Checkbutton Toggle widget with theme-aware styling, value binding, and event callbacks.
 
     Args:
         master (Optional[Misc]): Parent widget.
@@ -30,6 +30,7 @@ class CheckButtonToggle(StyleMixin, BaseMixin, IconMixin, BackgroundMixin):
         value: Literal[-1, 0, 1] The initial value of the checkbutton.
         color (StyleColor): Named style color for theming.
         icon (Optional[Union[str, Tuple[str, int]]]): Icon name or (name, size) tuple (currently unused).
+        variant: Literal['default', 'outline']: The style variant. Options are 'default' or 'outline'.
         on_click (Optional[Callable]): Callback function when the checkbutton is clicked.
         on_value_changed (Optional[Callable]): Callback function when the value changes.
         **kwargs (Unpack[CheckButtonOptions]): Additional keyword options passed to ttk.Checkbutton.
@@ -47,7 +48,7 @@ class CheckButtonToggle(StyleMixin, BaseMixin, IconMixin, BackgroundMixin):
         value: Optional[Literal[-1, 0, 1]] = -1,
         color: StyleColor = "primary",
         icon: Optional[Union[str, Tuple[str, int]]] = None,
-        variant: Literal['default', 'outline', 'subtle'] = "default",
+        variant: Literal['default', 'outline'] = "default",
         on_click: Optional[Callable] = None,
         on_value_changed: Optional[Callable] = None,
         **kwargs: Unpack[CheckButtonToggleOptions]
