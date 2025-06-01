@@ -9,7 +9,7 @@ if TYPE_CHECKING:
     from ...theme import Theme
 
 
-class TTkToolButtonDefaultStyle(StyleBuilder):
+class TTkToolButtonSubtleStyle(StyleBuilder):
 
     def __init__(self, theme: Theme):
         super().__init__(theme)
@@ -17,22 +17,24 @@ class TTkToolButtonDefaultStyle(StyleBuilder):
     def invoke(self, token: str, **extras):
         """Create the default toolbutton style"""
 
-        background, style = self.theme.get_background_style(token, 'ToolButton', **extras)
+        background, style = self.theme.get_background_style(token, 'Subtle.ToolButton', **extras)
         if self.theme.has_style(style):
             return style
 
         # button colors
         token = "primary" if token == "default" else token
-        colors = self.theme.get_color_states(token, "default", background)
+        colors = self.theme.get_color_states(token, "toolbutton", background)
 
         # state images
         normal_img = self.theme.recolor_state_image('button-default.png', colors.normal.color)
+        hover_img = self.theme.recolor_state_image('button-default.png', colors.hover.color)
         selected_img = self.theme.recolor_state_image('button-default.png', colors.selected.color)
         disabled_img = self.theme.recolor_state_image('button-disabled.png', colors.disabled.color)
 
         el = ElementImage(f'{style}.border', normal_img, sticky="nsew", border=8, padding=4)
         el.add_spec('disabled', disabled_img)
         el.add_spec('selected !disabled', selected_img)
+        el.add_spec('hover !disabled', hover_img)
         el.build()
 
         # Layout and style config

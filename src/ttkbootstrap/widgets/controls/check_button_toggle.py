@@ -47,7 +47,7 @@ class CheckButtonToggle(StyleMixin, BaseMixin, IconMixin, BackgroundMixin):
         value: Optional[Literal[-1, 0, 1]] = -1,
         color: StyleColor = "primary",
         icon: Optional[Union[str, Tuple[str, int]]] = None,
-        variant: Literal['default', 'outline', 'text'] = "default",
+        variant: Literal['default', 'outline', 'subtle'] = "default",
         on_click: Optional[Callable] = None,
         on_value_changed: Optional[Callable] = None,
         **kwargs: Unpack[CheckButtonToggleOptions]
