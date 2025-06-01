@@ -10,28 +10,12 @@ if TYPE_CHECKING:
 class TTkButtonDefaultStyle(StyleBuilder):
 
     def __init__(self, theme: Theme):
-        super().__init__(theme)
-
-    def invoke(self, token: str, **extras):
-        style, background = self._resolve_style_name(token, extras)
-        if self._style_already_exists(style):
-            return style
-
-        colors = self._generate_color_states(token)
-        images = self._register_state_images(style, colors)
-        self._build_layout(style, images)
-        self._configure_style(style, background, colors)
-
-        return style
-
-    def _resolve_style_name(self, token: str, extras: dict) -> tuple[str, str]:
-        background, style = self._get_style_name(token, 'TButton', extras.get("background"))
-        return style, background
+        super().__init__(theme, 'TButton')
 
     def _generate_color_states(self, token: str):
         return self._get_color_states(token)
 
-    def _register_state_images(self, style: str, colors) -> dict[str, str]:
+    def _build_state_images(self, colors) -> dict[str, str]:
         return {
             "normal": self._recolor_state_image('button-default.png', colors.normal.color),
             "hover": self._recolor_state_image('button-default.png', colors.hover.color),
@@ -58,6 +42,7 @@ class TTkButtonDefaultStyle(StyleBuilder):
             ])
 
     def _configure_style(self, style: str, background: str, colors):
+        print(style, background, colors)
         self._configure(
             style,
             foreground=colors.normal.on_color,

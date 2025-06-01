@@ -13,13 +13,41 @@ if TYPE_CHECKING:
 
 
 class StyleBuilder(ABC):
-    def __init__(self, theme: "Theme"):
+    def __init__(self, theme: "Theme", widget_class: str):
         self.theme = theme
         self.ttk = Style(theme.ttk.master)
+        self.widget_class = widget_class
+
+    def invoke(self, token: str, **extras):
+        background, style = self._get_style_name(token, self.widget_class, **extras)
+
+        if self._style_already_exists(style):
+            return style
+
+        colors = self._generate_color_states(token)
+        images = self._build_state_images(colors)
+        self._build_layout(style, images)
+        self._configure_style(style, background, colors)
+
+        return style
+
+    # === ABSTRACT METHODS ===
 
     @abstractmethod
-    def invoke(self, *args):
-        pass
+    def _generate_color_states(self, token: str):
+        ...
+
+    @abstractmethod
+    def _build_state_images(self, colors) -> dict[str, str]:
+        ...
+
+    @abstractmethod
+    def _build_layout(self, style: str, images: dict[str, str]):
+        ...
+
+    @abstractmethod
+    def _configure_style(self, style: str, background: str, colors):
+        ...
 
     # === CONVENIENCE WRAPPERS ===
 
@@ -82,7 +110,7 @@ class StyleBuilder(ABC):
                 )
 
         hover = lighten(base.color, 0.2) if (token == "light" and not is_dark) or (
-                token == "dark" and is_dark) else adjust(adjusted, 0.08)
+            token == "dark" and is_dark) else adjust(adjusted, 0.08)
 
         return ColorStates(
             normal=base,
