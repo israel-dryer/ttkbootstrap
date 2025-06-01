@@ -14,17 +14,9 @@
 # from .tree_view import TTkTreeViewDefaultStyle
 
 from .button import (
-    TTkButtonDefaultStyle, TTkButtonOutlineStyle, TTkButtonTextStyle,
-)
-from .tool_button import (
-    TTkToolButtonDefaultStyle, TTkToolButtonOutlineStyle, TTkToolButtonSubtleStyle
+    TTkButtonDefaultStyle
 )
 
 ttk_handlers = [
     ('ttk.default.button', TTkButtonDefaultStyle),
-    ('ttk.outline.button', TTkButtonOutlineStyle),
-    ('ttk.text.button', TTkButtonTextStyle),
-    ('ttk.default.tool.button', TTkToolButtonDefaultStyle),
-    ('ttk.subtle.tool.button', TTkToolButtonSubtleStyle),
-    ('ttk.outline.tool.button', TTkToolButtonOutlineStyle),
 ]

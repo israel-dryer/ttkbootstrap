@@ -19,17 +19,7 @@ class TTkCheckButtonStyle(StyleBuilder):
     def invoke(self, token: str, **extras):
         """Create the default checkbox style"""
 
-        # check if the background color should be inherited from the parent
-        parent_background = extras.get('background', None)
-        container_bg = self.theme.background
-        container_fg = self.theme.foreground
-        if parent_background is not None and parent_background != container_bg:
-            style = f'{parent_background}.{token}.TCheckbutton'  # inherited background style
-            container_bg = parent_background
-            container_token = self.theme.get_token(container_bg or '')
-            container_fg = container_fg if not container_token else self.theme.get_foreground(container_token)
-        else:
-            style = f'{token}.TCheckbutton'
+        background, style = self.theme.get_background_style(token, 'TCheckbutton', **extras)
 
         # check if style already exists
         if self.theme.has_style(style):
@@ -37,20 +27,17 @@ class TTkCheckButtonStyle(StyleBuilder):
 
         # color token
         token = "primary" if token == "default" else token
+        colors = self.theme.get_color_states(token, "default", background)
 
         # checkbox colors
-        cb_fg = container_fg
-        cb_indicator_bg = self.theme.get_color(token)
-        cb_indicator_fg = self.theme.get_foreground(token)
-        cb_disabled_bg = cb_indicator_bg
-        cb_border = self.theme.get_input_border_color()
+        border = self.theme.get_input_border_color()
 
         # base images for state images
-        base_checked_image = load_asset_image('checkbox-checked.png')
-        base_unchecked_image = load_asset_image('checkbox-unchecked.png')
-        base_disabled_image = load_asset_image('checkbox-disabled.png')
-        base_indeterminate_image = load_asset_image('checkbox-indeterminate.png')
-
+        # base_checked_image = load_asset_image('checkbox-checked.png')
+        # base_unchecked_image = load_asset_image('checkbox-unchecked.png')
+        # base_disabled_image = load_asset_image('checkbox-disabled.png')
+        # base_indeterminate_image = load_asset_image('checkbox-indeterminate.png')
+        #
         # state images
         unchecked_img = self.theme.image_recolor_map(base_unchecked_image, container_bg, cb_border)
         self.theme.register_asset(str(unchecked_img), unchecked_img)

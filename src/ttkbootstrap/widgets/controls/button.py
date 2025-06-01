@@ -48,7 +48,7 @@ class Button(StyleMixin, BaseMixin, IconMixin, BackgroundMixin):
             text: Optional[str] = None,
             icon: Optional[Union[str, Tuple[str, int]]] = None,
             color: StyleColor = "default",
-            variant="default",
+            variant: Literal['default', 'outline', 'text'] = "default",
             on_click: Optional[Callable] = None,
             **kwargs: Unpack[ButtonOptions]
     ):

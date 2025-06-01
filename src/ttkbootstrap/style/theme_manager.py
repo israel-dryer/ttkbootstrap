@@ -59,10 +59,6 @@ class ThemeManager:
             logger.info('ThemeManager', f'Creating theme: {theme_name}')
             self.ttk.theme_create(theme_name, 'clam')
 
-        # initialize the theme if not already activated
-        if not theme.activated:
-            theme.initialize()
-
         # apply the theme and generate <<ThemeChanged>>
         logger.info('ThemeManager', f'Applying theme: {theme_name}')
         self.ttk.theme_use(theme_name)
