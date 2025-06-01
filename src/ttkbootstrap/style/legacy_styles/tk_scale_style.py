@@ -2,15 +2,15 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from ttkbootstrap.style.style_builder import StyleBuilder
+from ttkbootstrap.style.style_builder_legacy import StyleBuilderLegacy
 
 if TYPE_CHECKING:
     from tkinter import Scale
 
 
-class TkScaleStyle(StyleBuilder):
+class TkScaleStyle(StyleBuilderLegacy):
 
-    def __init__(self, builder: StyleBuilder):
+    def __init__(self, builder: StyleBuilderLegacy):
         super().__init__(builder)
 
     def invoke(self, widget: Scale, *args, **kwargs) -> None:
