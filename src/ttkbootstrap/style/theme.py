@@ -20,8 +20,6 @@ ThemeColor = Literal[
 ]
 ThemeColors = Dict[str, str]
 
-from typing import NamedTuple
-
 
 class Theme:
     def __init__(
