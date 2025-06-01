@@ -19,11 +19,7 @@ class IconMixin:
     _color: StyleColor = "default"
     _kwargs: dict = {}
 
-    _icon_image_normal: Union["PhotoImage", None] = None
-    _icon_image_hover: Union["PhotoImage", None] = None
-    _icon_image_pressed: Union["PhotoImage", None] = None
-    _icon_image_focus: Union["PhotoImage", None] = None
-    _icon_image_disabled: Union["PhotoImage", None] = None
+    _icon_image_dynamic: Union["PhotoImage", None] = None
 
     @property
     def icon(self):
@@ -32,8 +28,7 @@ class IconMixin:
     @icon.setter
     def icon(self, value: Union[str, Tuple[str, int]]):
         self._icon = value
-        self._build_icon_images()
-        self._update_icon_image_for_state()
+        self._update_icon_image_from_foreground()
 
     def _parse_icon(self) -> Tuple[str | None, int]:
         """Extract the icon name and size from self._icon."""
@@ -48,52 +43,38 @@ class IconMixin:
         if not self._icon:
             return
         try:
-            self._build_icon_images()
-            self._kwargs["image"] = self._icon_image_normal
+            self._update_icon_image_from_foreground()
+            self._kwargs["image"] = self._icon_image_dynamic
             self._kwargs.setdefault("compound", default_compound)
         except Exception as e:
             logger.error("IconMixin", f"Failed to load icon '{self._icon}': {e}")
 
     def _bind_icon_events(self):
-        """Bind icon hover and theme change events."""
-        if self._variant == "outline":
-            self.widget.bind("<Enter>", lambda e: self.widget.configure(image=self._icon_image_hover))
-            self.widget.bind("<Leave>", lambda e: self.widget.configure(image=self._icon_image_normal))
-        self.widget.bind("<<ThemeChanged>>", lambda e: self._on_theme_change(), add=True)
+        """Bind icon color updates to widget state and theme changes."""
+        self.widget.bind("<Enter>", lambda e: self._update_icon_image_from_foreground(), add=True)
+        self.widget.bind("<Leave>", lambda e: self._update_icon_image_from_foreground(), add=True)
+        self.widget.bind("<FocusIn>", lambda e: self._update_icon_image_from_foreground(), add=True)
+        self.widget.bind("<FocusOut>", lambda e: self._update_icon_image_from_foreground(), add=True)
+        self.widget.bind("<ButtonPress>", lambda e: self._update_icon_image_from_foreground(), add=True)
+        self.widget.bind("<ButtonRelease-1>", self._delayed_icon_update, add=True)
+        self.widget.bind("<<ThemeChanged>>", lambda e: self._update_icon_image_from_foreground(), add=True)
 
-    def _on_theme_change(self):
-        if not self._icon:
-            return
-        self._build_icon_images()
-        self._update_icon_image_for_state()
+    def _delayed_icon_update(self, event):
+        """Defer icon update to allow state to settle after click."""
+        self.widget.after(10, self._update_icon_image_from_foreground)
 
-    def _update_icon_image_for_state(self):
-        """Apply appropriate icon image based on widget state."""
-        state = set(self.widget.state())
-        if "disabled" in state:
-            self.widget.configure(image=self._icon_image_disabled)
-        elif "pressed" in state:
-            self.widget.configure(image=self._icon_image_pressed)
-        elif "active" in state:
-            self.widget.configure(image=self._icon_image_hover)
-        elif "focus" in state:
-            self.widget.configure(image=self._icon_image_focus)
-        else:
-            self.widget.configure(image=self._icon_image_normal)
-
-    def _build_icon_images(self):
-        icon_name, icon_size = self._parse_icon()
-        if not icon_name or not icon_size:
+    def _update_icon_image_from_foreground(self):
+        """Generate and apply a new icon image using the current foreground color."""
+        if not self._icon or not hasattr(self, "widget") or not self.widget.winfo_exists():
             return
 
+        style = self.widget.cget("style")
         tm = get_theme_manager()
-        colors = tm.active_theme.get_color_states(self._color, self._variant, tm.active_theme.surface.color)
+        fg = tm.ttk.lookup(style, "foreground", state=self.widget.state())  # fallback-safe
 
-        def create(name, color):
-            return Icon(name, icon_size, color).photo_image
+        icon_name, icon_size = self._parse_icon()
+        if not icon_name or not icon_size or not fg:
+            return
 
-        self._icon_image_normal = create(icon_name, colors.normal.on_color)
-        self._icon_image_hover = create(icon_name, colors.hover.on_color)
-        self._icon_image_pressed = create(icon_name, colors.pressed.on_color)
-        self._icon_image_focus = create(icon_name, colors.focused.on_color)
-        self._icon_image_disabled = create(icon_name, colors.disabled.on_color)
+        self._icon_image_dynamic = Icon(icon_name, icon_size, fg).photo_image
+        self.widget.configure(image=self._icon_image_dynamic)
