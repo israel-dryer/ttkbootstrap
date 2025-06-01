@@ -1,9 +1,9 @@
 from __future__ import annotations
+
 from typing import TYPE_CHECKING
 
 from ...style_builder import StyleBuilder
 from ...style_element import Element, ElementImage
-from ....utils import load_asset_image
 
 if TYPE_CHECKING:
     from ...theme import Theme
@@ -14,48 +14,23 @@ class TTkToolButtonDefaultStyle(StyleBuilder):
     def __init__(self, theme: Theme):
         super().__init__(theme)
 
-    def invoke(self, color: str, **_):
+    def invoke(self, token: str, **extras):
         """Create the default toolbutton style"""
 
-        style = f'{color}.Toolbutton'
+        background, style = self.theme.get_background_style(token, 'ToolButton', **extras)
         if self.theme.has_style(style):
             return style
 
-        # color token
-        color = "primary" if color == "default" else color
-
         # button colors
-        shades = self.theme.get_shades(color)
-        if self.theme.is_light_theme:
-            inactive = shades.base
-            hover = shades.d2
-            active = shades.d3
-            disabled = shades.base
-        else:
-            inactive = shades.base
-            hover = shades.l2
-            active = shades.l3
-            disabled = shades.base
-
-        foreground = self.theme.get_foreground(color)
-
-        base_disabled = load_asset_image('button-disabled.png')
-        base_normal = load_asset_image('button-default.png')
+        token = "primary" if token == "default" else token
+        colors = self.theme.get_color_states(token, "toolbutton", background)
 
         # state images
-        normal_img = self.theme.image_recolor(base_disabled, inactive)
-        self.theme.register_asset(str(normal_img), normal_img)
+        normal_img = self.theme.recolor_state_image('button-default.png', colors.normal.color)
+        hover_img = self.theme.recolor_state_image('button-default.png', colors.hover.color)
+        selected_img = self.theme.recolor_state_image('button-default.png', colors.selected.color)
+        disabled_img = self.theme.recolor_state_image('button-disabled.png', colors.disabled.color)
 
-        selected_img = self.theme.image_recolor(base_normal, active)
-        self.theme.register_asset(str(selected_img), selected_img)
-
-        hover_img = self.theme.image_recolor(base_normal, hover)
-        self.theme.register_asset(str(hover_img), hover_img)
-
-        disabled_img = self.theme.image_recolor(base_disabled, disabled)
-        self.theme.register_asset(str(disabled_img), disabled_img)
-
-        # Image element and state specs
         el = ElementImage(f'{style}.border', normal_img, sticky="nsew", border=8, padding=4)
         el.add_spec('disabled', disabled_img)
         el.add_spec('selected !disabled', selected_img)
@@ -63,27 +38,48 @@ class TTkToolButtonDefaultStyle(StyleBuilder):
         el.build()
 
         # Layout and style config
-        Element(style).layout([
-            Element(f'{style}.border', sticky="nsew"), [
+        Element(style).layout(
+            [
+                Element(f'{style}.border', sticky="nsew"), [
                 Element('Button.focus', sticky="nsew"), [
                     Element('Button.padding', sticky="nsew"), [
                         Element('Button.label', sticky="nsew")
                     ]
                 ]
             ]
-        ])
-
+            ])
 
         self.theme.configure(
             style,
-            foreground=foreground,
-            background=self.theme.background,
-            focuscolor=foreground,
+            foreground=colors.normal.on_color,
+            focuscolor=colors.focused.on_color,
+            background=background,
             font="-size 12",
+            padding=(10, 0),
             relief="raised",
             anchor="center")
 
-        self.theme.map(style, foreground=[('disabled', disabled)])
+        self.theme.map(
+            style,
+            foreground=[
+                ('disabled', colors.disabled.on_color),
+                ('selected', colors.selected.on_color),
+                ('pressed', colors.pressed.on_color),
+                ('hover selected', colors.selected.on_color),
+                ('hover', colors.hover.on_color),
+                ('focus !selected', colors.normal.on_color),
+                ('!active', colors.normal.on_color),
+            ],
+            focuscolor=[
+                ('disabled', colors.disabled.on_color),
+                ('selected', colors.selected.on_color),
+                ('pressed', colors.pressed.on_color),
+                ('hover selected', colors.selected.on_color),
+                ('hover', colors.hover.on_color),
+                ('focus !selected', colors.normal.on_color),
+                ('!active', colors.normal.on_color),
+            ]
+        )
 
         self.theme.add_style(style)
         return style

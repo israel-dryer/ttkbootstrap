@@ -17,6 +17,7 @@ from .button import (
     TTkButtonDefaultStyle, TTkButtonOutlineStyle, TTkButtonTextStyle,
     TTkIconButtonDefaultStyle, TTkIconButtonOutlineStyle, TTkIconButtonTextStyle
 )
+from .tool_button import TTkToolButtonDefaultStyle
 
 ttk_handlers = [
     ('ttk.default.button', TTkButtonDefaultStyle),
@@ -24,5 +25,6 @@ ttk_handlers = [
     ('ttk.text.button', TTkButtonTextStyle),
     ('ttk.default.icon.button', TTkIconButtonDefaultStyle),
     ('ttk.outline.icon.button', TTkIconButtonOutlineStyle),
-    ('ttk.text.icon.button', TTkIconButtonTextStyle)
+    ('ttk.text.icon.button', TTkIconButtonTextStyle),
+    ('ttk.default.tool.button', TTkToolButtonDefaultStyle),
 ]

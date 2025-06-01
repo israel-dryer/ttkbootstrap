@@ -10,7 +10,6 @@ from ttkbootstrap.widgets.mixins import (
     IconMixin, StyleMixin,
 )
 
-# TODO indeterminate state is not working
 
 class CheckButtonToggleOptions(TypedDict, total=False):
     """Typed dictionary for supported ttk checkbutton options."""
@@ -46,8 +45,9 @@ class CheckButtonToggle(StyleMixin, BaseMixin, IconMixin, BackgroundMixin):
         master: Optional[Misc] = None,
         text: Optional[str] = None,
         value: Optional[Literal[-1, 0, 1]] = -1,
-        color: StyleColor = "default",
+        color: StyleColor = "primary",
         icon: Optional[Union[str, Tuple[str, int]]] = None,
+        variant: Literal['default', 'outline', 'text'] = "default",
         on_click: Optional[Callable] = None,
         on_value_changed: Optional[Callable] = None,
         **kwargs: Unpack[CheckButtonToggleOptions]
@@ -61,6 +61,7 @@ class CheckButtonToggle(StyleMixin, BaseMixin, IconMixin, BackgroundMixin):
         self._kwargs = kw
         self._extras = {}
         self._image: Optional[PhotoImage] = None
+        self._variant = variant + ".tool"
         self._inherit_background = kw.pop('inherit_background', False)
         self._text_variable = StringVar(master, text)
         self._variable = IntVar(master, value)
@@ -69,7 +70,7 @@ class CheckButtonToggle(StyleMixin, BaseMixin, IconMixin, BackgroundMixin):
 
     def _render_widget(self):
         """Create and initialize the internal checkbutton widget."""
-        self._inject_icon_support(default_compound="left")
+        self._prepare_icon_kwargs(default_compound="left")
         self._widget = ttkCheckButton(
             self._master,
             command=self._on_click,
@@ -80,9 +81,10 @@ class CheckButtonToggle(StyleMixin, BaseMixin, IconMixin, BackgroundMixin):
         self._bind_icon_events()
 
         self._initialize_style(
-            'checkbutton.toggle',
+            'button',
             color=self._color,
             extras=self._extras,
+            variant=self._variant,
             **self._kwargs
         )
 

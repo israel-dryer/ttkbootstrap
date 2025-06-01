@@ -248,10 +248,43 @@ class Theme:
             disabled=ColorPair(transparent_color, fg_disabled(base.color)),
         )
 
+    def _get_toolbutton_color_states(self, token: str, transparent_color: str) -> ColorStates:
+        base: ColorPair = self.colors.get(token)
+
+        def fg_disabled(fg):
+            return color_utils.adjust_color_lightness(
+                fg, 0.4 if self.is_light_theme else -0.4
+            )
+
+        def subtle_tint(alpha: float) -> str:
+            return color_utils.blend_colors(self.surface.color, base.color, alpha)
+
+        def solid(factor: float) -> str:
+            # Use solid base color with adjustment for hover/pressed
+            return color_utils.adjust_color_lightness(
+                base.color, -factor if self.is_light_theme else factor
+            )
+
+        return ColorStates(
+            # Subtle background like a text button in normal and hover state
+            normal=ColorPair(subtle_tint(0.08), base.color),
+            hover=ColorPair(subtle_tint(0.20), base.color),
+
+            # Solid style on hover and pressed
+            pressed=ColorPair(solid(0.16), base.on_color),
+
+            # Selected and focused similar to hover but slightly adjusted
+            selected=ColorPair(solid(0.12), base.on_color),
+            focused=ColorPair(solid(0.1), base.on_color),
+
+            # Transparent background with faded foreground
+            disabled=ColorPair(transparent_color, fg_disabled(base.color)),
+        )
+
     def get_color_states(
         self,
         token: str = "surface",
-        variant: Literal["default", "outline", "text"] = "default",
+        variant: Literal["default", "outline", "text", "toolbutton"] = "default",
         transparent_color: str = "surface"
     ) -> ColorStates:
         token = "surface" if token == "default" else token
@@ -261,6 +294,8 @@ class Theme:
             return self._get_outline_color_states(token, transparent_color)
         elif variant == "text":
             return self._get_text_color_states(token, transparent_color)
+        elif variant == "toolbutton":
+            return self._get_toolbutton_color_states(token, transparent_color)
         else:
             raise ValueError(f"Unsupported variant: {variant}")
 
