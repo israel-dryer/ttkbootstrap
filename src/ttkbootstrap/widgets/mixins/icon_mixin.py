@@ -61,7 +61,7 @@ class IconMixin:
 
     def _delayed_icon_update(self, event):
         """Defer icon update to allow state to settle after click."""
-        self.widget.after(10, self._update_icon_image_from_foreground)
+        self.widget.after(1, self._update_icon_image_from_foreground)
 
     def _update_icon_image_from_foreground(self):
         """Generate and apply a new icon image using the current foreground color."""
