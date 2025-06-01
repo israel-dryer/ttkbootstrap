@@ -1783,14 +1783,14 @@ class Querybox:
     def get_item(
         prompt="", title=" ", initialvalue=None, items=None, parent=None, **kwargs
     ):
-        """Request a string type input from the user.
+        """Request an item from a list of items from the user.
 
         ![](../../assets/dialogs/querybox-get-item.png)
 
         Parameters:
 
             prompt (str):
-                A message to display in the message box above the entry
+                A message to display in the message box above the combobox
                 widget.
 
             title (str):
@@ -1799,7 +1799,7 @@ class Querybox:
                 forbid the use of a title on this kind of dialog.
 
             initialvalue (Any):
-                The initial value in the entry widget.
+                The initial value in the combobox widget.
 
             items (list[str]):
                 A list of string values to pick one from.
@@ -1814,7 +1814,7 @@ class Querybox:
         Returns:
 
             str:
-                The string value of the entry widget.
+                The string value selected in the combobox widget.
         """
         initialvalue = initialvalue or ""
         if "position" in kwargs:
