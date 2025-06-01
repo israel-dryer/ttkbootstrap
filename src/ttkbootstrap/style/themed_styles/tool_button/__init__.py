@@ -1,1 +1,3 @@
 from .ttk_tool_button_default_style import TTkToolButtonDefaultStyle
+from .ttk_tool_button_subtle_style import TTkToolButtonSubtleStyle
+from .ttk_tool_button_outline_style import TTkToolButtonOutlineStyle

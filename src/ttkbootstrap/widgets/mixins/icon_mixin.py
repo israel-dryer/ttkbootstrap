@@ -57,7 +57,7 @@ class IconMixin:
         self.widget.bind("<FocusOut>", lambda e: self._update_icon_image_from_foreground(), add=True)
         self.widget.bind("<ButtonPress>", lambda e: self._update_icon_image_from_foreground(), add=True)
         self.widget.bind("<ButtonRelease-1>", self._delayed_icon_update, add=True)
-        self.widget.bind("<<ThemeChanged>>", lambda e: self._update_icon_image_from_foreground(), add=True)
+        self.widget.bind("<<ThemeChanged>>", self._delayed_icon_update, add=True)
 
     def _delayed_icon_update(self, event):
         """Defer icon update to allow state to settle after click."""

@@ -248,7 +248,43 @@ class Theme:
             disabled=ColorPair(transparent_color, fg_disabled(base.color)),
         )
 
-    def _get_toolbutton_color_states(self, token: str, transparent_color: str) -> ColorStates:
+    def _get_default_toolbutton_color_states(self, token: str) -> ColorStates:
+        selected_factor = 0.3
+        disabled_factor = 0.4
+        foreground_shift = 0.4
+
+        def lighten(c, factor):
+            return color_utils.adjust_color_lightness(c, abs(factor))
+
+        def darken(c, factor):
+            return color_utils.adjust_color_lightness(c, -abs(factor))
+
+        def adjust(c, factor):
+            return lighten(c, factor) if self.is_dark_theme else darken(c, factor)
+
+        def fg_disabled(fg):
+            return lighten(fg, foreground_shift) if self.is_light_theme else darken(fg, foreground_shift)
+
+        base: ColorPair = self.colors.get(token)
+        adjusted_base_color = base.color
+
+        if token in {"light", "dark"}:
+            contrast = color_utils.get_contrast_ratio(base.color, self.surface.color)
+            if contrast < 3.0:
+                adjusted_base_color = color_utils.adjust_color_for_theme_contrast(
+                    base.color, self.surface.color, self.is_dark_theme, min_ratio=3.0
+                )
+
+        return ColorStates(
+            normal=base,
+            hover=base,
+            pressed=base,
+            focused=base,
+            selected=ColorPair(adjust(adjusted_base_color, selected_factor), base.on_color),
+            disabled=ColorPair(adjust(adjusted_base_color, disabled_factor), fg_disabled(base.on_color)),
+        )
+
+    def _get_other_toolbutton_color_states(self, token: str, transparent_color: str) -> ColorStates:
         base: ColorPair = self.colors.get(token)
 
         def fg_disabled(fg):
@@ -284,7 +320,7 @@ class Theme:
     def get_color_states(
         self,
         token: str = "surface",
-        variant: Literal["default", "outline", "text", "toolbutton"] = "default",
+        variant: Literal["default", "outline", "text", "default.toolbutton", "other.toolbutton"] = "default",
         transparent_color: str = "surface"
     ) -> ColorStates:
         token = "surface" if token == "default" else token
@@ -294,8 +330,10 @@ class Theme:
             return self._get_outline_color_states(token, transparent_color)
         elif variant == "text":
             return self._get_text_color_states(token, transparent_color)
-        elif variant == "toolbutton":
-            return self._get_toolbutton_color_states(token, transparent_color)
+        elif variant == "other.toolbutton":
+            return self._get_other_toolbutton_color_states(token, transparent_color)
+        elif variant == "default.toolbutton":
+            return self._get_default_toolbutton_color_states(token)
         else:
             raise ValueError(f"Unsupported variant: {variant}")
 

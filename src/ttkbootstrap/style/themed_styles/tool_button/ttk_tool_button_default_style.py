@@ -23,7 +23,7 @@ class TTkToolButtonDefaultStyle(StyleBuilder):
 
         # button colors
         token = "primary" if token == "default" else token
-        colors = self.theme.get_color_states(token, "default", background)
+        colors = self.theme.get_color_states(token, "default.toolbutton", background)
 
         # state images
         normal_img = self.theme.recolor_state_image('button-default.png', colors.normal.color)

@@ -15,7 +15,7 @@ class TTkToolButtonOutlineStyle(StyleBuilder):
         super().__init__(theme)
 
     def invoke(self, token: str, **extras):
-        """Create the default toolbutton style"""
+        """Create the outline toolbutton style"""
 
         background, style = self.theme.get_background_style(token, 'Outline.ToolButton', **extras)
         if self.theme.has_style(style):

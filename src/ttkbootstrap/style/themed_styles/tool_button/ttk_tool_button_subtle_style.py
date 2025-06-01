@@ -15,7 +15,7 @@ class TTkToolButtonSubtleStyle(StyleBuilder):
         super().__init__(theme)
 
     def invoke(self, token: str, **extras):
-        """Create the default toolbutton style"""
+        """Create the subtle toolbutton style"""
 
         background, style = self.theme.get_background_style(token, 'Subtle.ToolButton', **extras)
         if self.theme.has_style(style):
@@ -23,7 +23,7 @@ class TTkToolButtonSubtleStyle(StyleBuilder):
 
         # button colors
         token = "primary" if token == "default" else token
-        colors = self.theme.get_color_states(token, "toolbutton", background)
+        colors = self.theme.get_color_states(token, "other.toolbutton", background)
 
         # state images
         normal_img = self.theme.recolor_state_image('button-default.png', colors.normal.color)
