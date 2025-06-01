@@ -71,6 +71,12 @@ class StyleBuilder(ABC):
         self.theme.register_asset(str(recolored), recolored)
         return recolored
 
+    def _recolor_state_image_map(self, image_path: str, white: str, black: str, overlay: Union[Image, None] = None):
+        img = load_asset_image(image_path)
+        recolored = image_utils.image_recolor_map(img, white, black, overlay)
+        self.theme.register_asset(str(recolored), recolored)
+        return recolored
+
     def _image_recolor(self, data: Union[str, Image.Image], color: str, overlay: Image.Image = None) -> Image.Image:
         black = "#ffffff" if self.theme.is_light_theme else "#000000"
         return image_utils.image_recolor_map(data, color, black, overlay)
