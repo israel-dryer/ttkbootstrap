@@ -42,7 +42,6 @@ class TTkButtonDefaultStyle(StyleBuilder):
             ])
 
     def _configure_style(self, style: str, background: str, colors):
-        print(style, background, colors)
         self._configure(
             style,
             foreground=colors.normal.on_color,
