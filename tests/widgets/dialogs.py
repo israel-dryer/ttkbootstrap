@@ -22,3 +22,6 @@ Querybox.get_float("Querybox.get_float", position=(500, 500))
 Querybox.get_integer("Querybox.get_integer", position=(500, 500))
 Querybox.get_string("Querybox.get_string", position=(500, 500))
 Querybox.get_font(title="Querybox.get_font", position=(500, 500))
+Querybox.get_item("Querybox.get_item", initialvalue="apple",
+                  items=["apple", "banana", "grape", "kiwi", "orange", "pear"],
+                  position=(500, 500))
