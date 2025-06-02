@@ -4,40 +4,34 @@ from typing import Any, Callable, Literal, Optional, Tuple, TypedDict, Union, Un
 
 from ttkbootstrap.ttk_types import StyleColor
 from ttkbootstrap.utils import keys_to_lower
-from ttkbootstrap.widgets.mixins import (
-    BackgroundMixin,
-    BaseMixin,
-    StyleMixin,
-)
+from ttkbootstrap.widgets.mixins import BackgroundMixin, BaseMixin, StyleMixin
 
-# TODO indeterminate state is not working
 
 class CheckButtonOptions(TypedDict, total=False):
-    """Typed dictionary for supported ttk checkbutton options."""
+    """Typed dictionary of supported options for the `CheckButton` widget."""
     compound: Literal['text', 'image', 'center', 'top', 'bottom', 'left', 'right', 'none']
     cursor: str
     take_focus: bool
     width: int
+    padding: Union[int, Tuple[int, int], Tuple[int, int, int, int]]
+    style: str
+    state: Literal['normal', 'disabled']
+    underline: int
+    off_value: int
+    on_value: int
+    variable: IntVar
     inherit_background: bool
 
 
 class CheckButton(StyleMixin, BaseMixin, BackgroundMixin):
     """
-    A styled `Checkbutton` widget with theme-aware styling, value binding, and event callbacks.
+    A styled `Checkbutton` widget with theme-aware styling, value binding,
+    icon support, and event callbacks.
 
-    Args:
-        master (Optional[Misc]): Parent widget.
-        text (Optional[str]): The label text of the checkbutton.
-        value: Literal[-1, 0, 1] The initial value of the checkbutton.
-        color (StyleColor): Named style color for theming.
-        on_click (Optional[Callable]): Callback function when the checkbutton is clicked.
-        on_value_changed (Optional[Callable]): Callback function when the value changes.
-        **kwargs (Unpack[CheckButtonOptions]): Additional keyword options passed to ttk.Checkbutton.
-
-    Example:
-        ```python
-        CheckButton(root, text="Enable Feature", value=True, color="success", on_value_changed=on_toggle)
-        ```
+    Attributes:
+        widget (ttkCheckButton): The internal checkbutton widget.
+        text_variable (StringVar): The text variable for the label.
+        variable (IntVar): The value variable for the checkbutton.
     """
 
     def __init__(
@@ -51,6 +45,19 @@ class CheckButton(StyleMixin, BaseMixin, BackgroundMixin):
         on_value_changed: Optional[Callable] = None,
         **kwargs: Unpack[CheckButtonOptions]
     ):
+        """
+        Initialize the CheckButton.
+
+        Args:
+            master (Optional[Misc]): Parent widget.
+            text (Optional[str]): Text displayed next to the checkbutton.
+            value (Literal[-1, 0, 1]): Initial value (-1: indeterminate, 0: off, 1: on).
+            icon (Optional[str|Tuple]): The name or tuple (name, size) of the icon.
+            color (StyleColor): Theme color used to style the widget.
+            on_click (Optional[Callable]): Callback triggered when clicked.
+            on_value_changed (Optional[Callable]): Callback when value changes.
+            **kwargs (CheckButtonOptions): Additional ttk options.
+        """
         kw = dict(kwargs)
         self._master = master
         self._icon = icon
@@ -66,7 +73,7 @@ class CheckButton(StyleMixin, BaseMixin, BackgroundMixin):
         self._render_widget()
 
     def _render_widget(self):
-        """Create and initialize the internal ttk.Button widget."""
+        """Create and initialize the internal `ttk.Checkbutton`."""
         self._widget = ttkCheckButton(
             self._master,
             command=self._on_click,
@@ -74,46 +81,43 @@ class CheckButton(StyleMixin, BaseMixin, BackgroundMixin):
             variable=self._variable,
             **keys_to_lower(self._kwargs)
         )
-
         self._initialize_style(
             'checkbutton',
             color=self._color,
             extras=self._extras,
             **self._kwargs
         )
-
         if self._on_value_changed:
             func = self._on_value_changed
             self._on_value_changed = lambda x, y, z: func(self.value)
             self.variable.trace_add('write', self._on_value_changed)
 
+    def invoke(self):
+        """
+        Programmatically trigger the checkbutton's action.
+
+        Returns:
+            Any: The result of the command callback, if defined.
+        """
+        return self.widget.invoke()
+
     @property
-    def widget(self) -> Misc:
-        """Return the internal checkbutton widget."""
+    def widget(self) -> ttkCheckButton:
+        """Return the internal `ttk.Checkbutton` widget."""
         return self._widget
 
     @property
-    def text_variable(self) -> StringVar:
-        """Return the StringVar linked to the checkbutton label."""
-        return self._text_variable
-
-    @property
-    def variable(self):
-        """Return the Variable linked to the checkbutton value."""
-        return self._variable
-
-    @property
     def text(self) -> str:
-        """Get or set the button label text."""
-        return self.text_variable.get()
+        """Get or set the checkbutton's label text."""
+        return self._text_variable.get()
 
     @text.setter
     def text(self, value: str):
-        self.text_variable.set(value)
+        self._text_variable.set(value)
 
     @property
     def value(self):
-        """Get or set the checkbutton value."""
+        """Get or set the current value of the checkbutton."""
         return self._variable.get()
 
     @value.setter
@@ -124,7 +128,7 @@ class CheckButton(StyleMixin, BaseMixin, BackgroundMixin):
 
     @property
     def enabled(self) -> bool:
-        """Return True if the checkbutton is enabled; otherwise False."""
+        """Get or set whether the checkbutton is enabled."""
         return self.widget.cget('state') != 'disabled'
 
     @enabled.setter
@@ -133,7 +137,7 @@ class CheckButton(StyleMixin, BaseMixin, BackgroundMixin):
 
     @property
     def on_click(self) -> Optional[Callable]:
-        """Get or set the command function triggered on button click."""
+        """Get or set the function triggered when clicked."""
         return self._on_click
 
     @on_click.setter
@@ -143,7 +147,7 @@ class CheckButton(StyleMixin, BaseMixin, BackgroundMixin):
 
     @property
     def on_value_changed(self):
-        """Get or set the callback function triggered when the checkbutton value changes."""
+        """Get or set the callback when the checkbutton value changes."""
         return self._on_value_changed
 
     @on_value_changed.setter
@@ -153,7 +157,7 @@ class CheckButton(StyleMixin, BaseMixin, BackgroundMixin):
 
     @property
     def cursor(self) -> str:
-        """Get or set the mouse cursor when hovering over the checkbutton."""
+        """Get or set the mouse cursor when hovering."""
         return self.widget.cget('cursor')
 
     @cursor.setter
@@ -170,19 +174,38 @@ class CheckButton(StyleMixin, BaseMixin, BackgroundMixin):
         self.widget.configure(width=value)
 
     @property
+    def padding(self) -> Union[int, Tuple[int, int], Tuple[int, int, int, int]]:
+        """Get or set internal widget padding."""
+        return self.widget.cget('padding')
+
+    @padding.setter
+    def padding(self, value: Union[int, Tuple[int, int], Tuple[int, int, int, int]]):
+        self.widget.configure(padding=value)
+
+    @property
     def take_focus(self) -> bool:
-        """Get or set whether the button can take focus via keyboard navigation."""
+        """Get or set whether the widget takes keyboard focus."""
         return self.widget.cget('takefocus')
 
     @take_focus.setter
     def take_focus(self, value: bool):
         self.widget.configure(takefocus=value)
 
-    def invoke(self):
-        """
-        Programmatically trigger the checkbutton's click action.
+    @property
+    def underline(self) -> int:
+        """Get or set the index of the character to underline in the text."""
+        return self.widget.cget('underline')
 
-        Returns:
-            Any: The return value of the associated command function, if any.
-        """
-        return self.widget.invoke()
+    @underline.setter
+    def underline(self, value: int):
+        self.widget.configure(underline=value)
+
+    @property
+    def text_variable(self) -> StringVar:
+        """Return the StringVar used to hold the checkbutton's label text."""
+        return self._text_variable
+
+    @property
+    def variable(self) -> IntVar:
+        """Return the IntVar used to hold the checkbutton's value."""
+        return self._variable
