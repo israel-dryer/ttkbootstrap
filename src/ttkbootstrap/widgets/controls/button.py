@@ -20,6 +20,7 @@ class ButtonOptions(TypedDict, total=False):
     image: PhotoImage
     take_focus: bool
     width: int
+    padding: Union[str, Tuple[int, int]]
     inherit_background: bool
 
 
@@ -35,22 +36,17 @@ class Button(StyleMixin, BaseMixin, IconMixin, BackgroundMixin):
         variant (str): Named style variant (e.g. 'outline', 'primary').
         on_click (Optional[Callable]): Function to call when the button is clicked.
         **kwargs (Unpack[ButtonOptions]): Additional options passed to ttk.Button.
-
-    Example:
-        ```python
-        Button(root, text="Submit", color="primary", on_click=submit_form)
-        ```
     """
 
     def __init__(
-            self,
-            master: Optional[Misc] = None,
-            text: Optional[str] = None,
-            icon: Optional[Union[str, Tuple[str, int]]] = None,
-            color: StyleColor = "default",
-            variant: Literal['default', 'outline', 'text'] = "default",
-            on_click: Optional[Callable] = None,
-            **kwargs: Unpack[ButtonOptions]
+        self,
+        master: Optional[Misc] = None,
+        text: Optional[str] = None,
+        icon: Optional[Union[str, Tuple[str, int]]] = None,
+        color: StyleColor = "default",
+        variant: Literal['default', 'outline', 'text'] = "default",
+        on_click: Optional[Callable] = None,
+        **kwargs: Unpack[ButtonOptions]
     ):
         kw = dict(kwargs)
         self._master = master
@@ -69,7 +65,6 @@ class Button(StyleMixin, BaseMixin, IconMixin, BackgroundMixin):
 
     def _render_widget(self):
         """Create and initialize the internal ttk.Button widget."""
-        self._prepare_icon_kwargs(default_compound="left")
         self._widget = ttkButton(
             self._master,
             command=self._on_click,
@@ -77,7 +72,7 @@ class Button(StyleMixin, BaseMixin, IconMixin, BackgroundMixin):
             **keys_to_lower(self._kwargs)
         )
         self._bind_icon_events()
-
+        self._prepare_icon_kwargs(default_compound="left")
         self._initialize_style(
             'button',
             color=self._color,
@@ -106,13 +101,9 @@ class Button(StyleMixin, BaseMixin, IconMixin, BackgroundMixin):
         self.variable.set(value)
 
     @property
-    def enabled(self) -> bool:
-        """Return True if the button is enabled; otherwise False."""
-        return self.widget.cget('state') != 'disabled'
-
-    @enabled.setter
-    def enabled(self, value: bool):
-        self.widget.configure(state='normal' if value else 'disabled')
+    def image(self) -> Optional[PhotoImage]:
+        """Return the associated image if set via icon mixin."""
+        return self._image
 
     @property
     def on_click(self) -> Optional[Callable]:
@@ -125,6 +116,15 @@ class Button(StyleMixin, BaseMixin, IconMixin, BackgroundMixin):
         self.widget.configure(command=value)
 
     @property
+    def enabled(self) -> bool:
+        """Return True if the button is enabled; otherwise False."""
+        return self.widget.cget('state') != 'disabled'
+
+    @enabled.setter
+    def enabled(self, value: bool):
+        self.widget.configure(state='normal' if value else 'disabled')
+
+    @property
     def cursor(self) -> str:
         """Get or set the mouse cursor when hovering over the button."""
         return self.widget.cget('cursor')
@@ -132,11 +132,6 @@ class Button(StyleMixin, BaseMixin, IconMixin, BackgroundMixin):
     @cursor.setter
     def cursor(self, value: str):
         self.widget.configure(cursor=value)
-
-    @property
-    def image(self) -> Optional[PhotoImage]:
-        """Return the associated image if set via icon mixin."""
-        return self._image
 
     @property
     def width(self) -> int:
@@ -176,6 +171,15 @@ class Button(StyleMixin, BaseMixin, IconMixin, BackgroundMixin):
             self.widget.configure(default='normal')
         else:
             self.widget.configure(default='disabled')
+
+    @property
+    def padding(self) -> Union[str, Tuple[int, int]]:
+        """Get or set the internal padding inside the button widget."""
+        return self.widget.cget("padding")
+
+    @padding.setter
+    def padding(self, value: Union[str, Tuple[int, int]]):
+        self.widget.configure(padding=value)
 
     def invoke(self):
         """
