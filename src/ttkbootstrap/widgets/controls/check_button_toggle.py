@@ -7,7 +7,8 @@ from ttkbootstrap.utils import keys_to_lower
 from ttkbootstrap.widgets.mixins import (
     BackgroundMixin,
     BaseMixin,
-    IconMixin, StyleMixin,
+    IconMixin,
+    StyleMixin,
 )
 
 
@@ -17,28 +18,30 @@ class CheckButtonToggleOptions(TypedDict, total=False):
     cursor: str
     take_focus: bool
     width: int
+    padding: Union[int, Tuple[int, int], Tuple[int, int, int, int]]
+    style: str
+    state: Literal['normal', 'disabled']
+    underline: int
+    off_value: int
+    on_value: int
+    variable: IntVar
     inherit_background: bool
 
 
 class CheckButtonToggle(StyleMixin, BaseMixin, IconMixin, BackgroundMixin):
     """
-    A styled Checkbutton Toggle widget with theme-aware styling, value binding, and event callbacks.
+    A themed toggle-style checkbutton widget
 
     Args:
-        master (Optional[Misc]): Parent widget.
-        text (Optional[str]): The label text of the checkbutton.
-        value: Literal[-1, 0, 1] The initial value of the checkbutton.
-        color (StyleColor): Named style color for theming.
-        icon (Optional[Union[str, Tuple[str, int]]]): Icon name or (name, size) tuple (currently unused).
-        variant: Literal['default', 'outline']: The style variant. Options are 'default' or 'outline'.
-        on_click (Optional[Callable]): Callback function when the checkbutton is clicked.
-        on_value_changed (Optional[Callable]): Callback function when the value changes.
-        **kwargs (Unpack[CheckButtonOptions]): Additional keyword options passed to ttk.Checkbutton.
-
-    Example:
-        ```python
-        CheckButtonToggle(root, text="Enable Feature", value=True, color="success", on_value_changed=on_toggle)
-        ```
+        master (Optional[Misc]): Parent container.
+        text (Optional[str]): Label to display beside the toggle.
+        value (Literal[-1, 0, 1]): Initial toggle state.
+        color (StyleColor): Bootstrap-like color token (e.g., "primary", "info").
+        icon (Optional[Union[str, Tuple[str, int]]]): Name or (name, size) of the icon.
+        variant (Literal["default", "outline"]): Style variant for toggle appearance.
+        on_click (Optional[Callable]): Function to call when clicked.
+        on_value_changed (Optional[Callable]): Function to call when value changes.
+        **kwargs (CheckButtonToggleOptions): Additional ttk-compatible options.
     """
 
     def __init__(
@@ -53,17 +56,16 @@ class CheckButtonToggle(StyleMixin, BaseMixin, IconMixin, BackgroundMixin):
         on_value_changed: Optional[Callable] = None,
         **kwargs: Unpack[CheckButtonToggleOptions]
     ):
-        kw = dict(kwargs)
         self._master = master
         self._icon = icon
         self._color = color
         self._on_click = on_click
         self._on_value_changed = on_value_changed
-        self._kwargs = kw
+        self._kwargs = dict(kwargs)
         self._extras = {}
         self._image: Optional[PhotoImage] = None
         self._variant = variant + ".tool"
-        self._inherit_background = kw.pop('inherit_background', False)
+        self._inherit_background = self._kwargs.pop('inherit_background', False)
         self._text_variable = StringVar(master, text)
         self._variable = IntVar(master, value)
         self._widget: Misc
@@ -71,8 +73,7 @@ class CheckButtonToggle(StyleMixin, BaseMixin, IconMixin, BackgroundMixin):
 
     def _render_widget(self):
         """Create and initialize the internal checkbutton widget."""
-        self._prepare_icon_kwargs(default_compound="left")
-        self._widget = ttkCheckButton(
+        self._widget: "ttkCheckButton" = ttkCheckButton(
             self._master,
             command=self._on_click,
             textvariable=self._text_variable,
@@ -80,7 +81,7 @@ class CheckButtonToggle(StyleMixin, BaseMixin, IconMixin, BackgroundMixin):
             **keys_to_lower(self._kwargs)
         )
         self._bind_icon_events()
-
+        self._prepare_icon_kwargs(default_compound="left")
         self._initialize_style(
             'button',
             color=self._color,
@@ -88,14 +89,21 @@ class CheckButtonToggle(StyleMixin, BaseMixin, IconMixin, BackgroundMixin):
             variant=self._variant,
             **self._kwargs
         )
-
         if self._on_value_changed:
             func = self._on_value_changed
             self._on_value_changed = lambda x, y, z: func(self.value)
             self.variable.trace_add('write', self._on_value_changed)
 
+    def invoke(self):
+        """
+        Programmatically trigger the checkbutton's click action.
+        Returns:
+            Any: The return value of the associated command function, if any.
+        """
+        return self.widget.invoke()
+
     @property
-    def widget(self) -> Misc:
+    def widget(self) -> "ttkCheckButton":
         """Return the internal checkbutton widget."""
         return self._widget
 
@@ -105,13 +113,13 @@ class CheckButtonToggle(StyleMixin, BaseMixin, IconMixin, BackgroundMixin):
         return self._text_variable
 
     @property
-    def variable(self):
-        """Return the Variable linked to the checkbutton value."""
+    def variable(self) -> IntVar:
+        """Return the IntVar linked to the checkbutton value."""
         return self._variable
 
     @property
     def text(self) -> str:
-        """Get or set the button label text."""
+        """Get or set the checkbutton's label text."""
         return self.text_variable.get()
 
     @text.setter
@@ -119,8 +127,8 @@ class CheckButtonToggle(StyleMixin, BaseMixin, IconMixin, BackgroundMixin):
         self.text_variable.set(value)
 
     @property
-    def value(self):
-        """Get or set the checkbutton value."""
+    def value(self) -> int:
+        """Get or set the current checkbutton value."""
         return self._variable.get()
 
     @value.setter
@@ -130,17 +138,8 @@ class CheckButtonToggle(StyleMixin, BaseMixin, IconMixin, BackgroundMixin):
             self.widget.state(['alternate'])
 
     @property
-    def enabled(self) -> bool:
-        """Return True if the checkbutton is enabled; otherwise False."""
-        return self.widget.cget('state') != 'disabled'
-
-    @enabled.setter
-    def enabled(self, value: bool):
-        self.widget.configure(state='normal' if value else 'disabled')
-
-    @property
     def on_click(self) -> Optional[Callable]:
-        """Get or set the command function triggered on button click."""
+        """Get or set the function triggered when clicked."""
         return self._on_click
 
     @on_click.setter
@@ -149,8 +148,8 @@ class CheckButtonToggle(StyleMixin, BaseMixin, IconMixin, BackgroundMixin):
         self.widget.configure(command=value)
 
     @property
-    def on_value_changed(self):
-        """Get or set the callback function triggered when the checkbutton value changes."""
+    def on_value_changed(self) -> Optional[Callable]:
+        """Get or set the function triggered when the checkbutton value changes."""
         return self._on_value_changed
 
     @on_value_changed.setter
@@ -159,8 +158,17 @@ class CheckButtonToggle(StyleMixin, BaseMixin, IconMixin, BackgroundMixin):
         self.variable.trace_add('write', self._on_value_changed)
 
     @property
+    def enabled(self) -> bool:
+        """Return True if the widget is enabled; otherwise False."""
+        return self.widget.cget('state') != 'disabled'
+
+    @enabled.setter
+    def enabled(self, value: bool):
+        self.widget.configure(state='normal' if value else 'disabled')
+
+    @property
     def cursor(self) -> str:
-        """Get or set the mouse cursor when hovering over the checkbutton."""
+        """Get or set the mouse cursor when hovering over the widget."""
         return self.widget.cget('cursor')
 
     @cursor.setter
@@ -168,13 +176,8 @@ class CheckButtonToggle(StyleMixin, BaseMixin, IconMixin, BackgroundMixin):
         self.widget.configure(cursor=value)
 
     @property
-    def image(self) -> Optional[PhotoImage]:
-        """Return the associated image if set via icon mixin."""
-        return self._image
-
-    @property
     def width(self) -> int:
-        """Get or set the width of the checkbutton in text units."""
+        """Get or set the width of the widget in text units."""
         return self.widget.cget('width')
 
     @width.setter
@@ -183,18 +186,46 @@ class CheckButtonToggle(StyleMixin, BaseMixin, IconMixin, BackgroundMixin):
 
     @property
     def take_focus(self) -> bool:
-        """Get or set whether the button can take focus via keyboard navigation."""
+        """Get or set whether the widget can take focus with the keyboard."""
         return self.widget.cget('takefocus')
 
     @take_focus.setter
     def take_focus(self, value: bool):
         self.widget.configure(takefocus=value)
 
-    def invoke(self):
-        """
-        Programmatically trigger the checkbutton's click action.
+    @property
+    def compound(self) -> str:
+        """Get or set the layout of image and text in the widget."""
+        return self.widget.cget("compound")
 
-        Returns:
-            Any: The return value of the associated command function, if any.
-        """
-        return self.widget.invoke()
+    @compound.setter
+    def compound(self, value: Literal["top", "bottom", "left", "right", "center", "none"]):
+        self.widget.configure(compound=value)
+
+    @property
+    def padding(self) -> Union[int, Tuple[int, int], Tuple[int, int, int, int]]:
+        """Get or set the internal padding of the widget."""
+        return self.widget.cget("padding")
+
+    @padding.setter
+    def padding(self, value: Union[int, Tuple[int, int], Tuple[int, int, int, int]]):
+        self.widget.configure(padding=value)
+
+    @property
+    def on_value(self) -> int:
+        """Return the value used when the checkbutton is selected."""
+        return self.widget.cget("onvalue")
+
+    @property
+    def off_value(self) -> int:
+        """Return the value used when the checkbutton is deselected."""
+        return self.widget.cget("offvalue")
+
+    @property
+    def image(self) -> Optional[PhotoImage]:
+        """Return the rendered icon image, if available."""
+        return self._image
+
+    @property
+    def selected(self) -> bool:
+        return self.value == self.on_value
