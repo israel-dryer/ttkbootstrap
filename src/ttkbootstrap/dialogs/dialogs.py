@@ -382,6 +382,7 @@ class QueryDialog(Dialog):
         datatype=str,
         padding=(20, 20),
         parent=None,
+        items=None,
     ):
         """
         Parameters:
@@ -423,10 +424,14 @@ class QueryDialog(Dialog):
 
             datatype (Union[int, str, float]):
                 The data type used to validate the entry value.
+
+            items (list[str]):
+                A list of possible string values to pick one from.
         """
         super().__init__(parent, title)
         self._prompt = prompt
         self._initialvalue = initialvalue
+        self._items = items
         self._minvalue = minvalue
         self._maxvalue = maxvalue
         self._width = width
@@ -443,8 +448,11 @@ class QueryDialog(Dialog):
                 prompt = "\n".join(textwrap.wrap(p, width=self._width))
                 prompt_label = ttk.Label(frame, text=prompt)
                 prompt_label.pack(pady=(0, 5), fill=X, anchor=N)
-
-        entry = ttk.Entry(master=frame)
+        if self._items is None or len(self._items) == 0:
+            entry = ttk.Entry(master=frame)
+        else:
+            entry = ttk.Combobox(master=frame, values=self._items)
+            entry.bind('<KeyRelease>', self.on_filter_list)
         entry.insert(END, self._initialvalue)
         entry.pack(pady=(0, 5), fill=X)
         entry.bind("<Return>", self.on_submit)
@@ -493,14 +501,25 @@ class QueryDialog(Dialog):
         self._toplevel.destroy()
         return
 
+    def on_filter_list(self, event):
+        """Filter the combobox list to items that contain the entered value"""
+        value = event.widget.get().lower()
+        if not value:
+            event.widget["values"] = self._items
+        else:
+            data = [k for k in self._items if value in k.lower()]
+            event.widget["values"] = data
+
     def validate(self):
         """Validate the data
 
         This method is called automatically to validate the data before
         the dialog is destroyed. Can be subclassed and overridden.
         """
-        # no default checks required for string data types
-        if self._datatype not in [float, int, complex]:
+        # no default checks required for string data types,
+        # unless there is a list of items to pick from
+        if self._datatype not in [float, int, complex] and\
+            (self._items is None or len(self._items) == 0):
             return True
 
         # convert result to appropriate data type
@@ -532,6 +551,17 @@ class QueryDialog(Dialog):
                 msg = MessageCatalog.translate("Number cannot be less than")
                 Messagebox.ok(
                     message=f"{msg} {self._minvalue}",
+                    title=MessageCatalog.translate("Out of range"),
+                    parent=self._toplevel
+                )
+                return False
+
+        # item in list
+        if self._items is not None and len(self._items) > 0:
+            if self._result not in self._items:
+                msg = MessageCatalog.translate("Select an item from the list")
+                Messagebox.ok(
+                    message=msg,
                     title=MessageCatalog.translate("Out of range"),
                     parent=self._toplevel
                 )
@@ -1745,6 +1775,54 @@ class Querybox:
             position = None
         dialog = QueryDialog(
             prompt, title, initialvalue, parent=parent, **kwargs
+        )
+        dialog.show(position)
+        return dialog._result
+
+    @staticmethod
+    def get_item(
+        prompt="", title=" ", initialvalue=None, items=None, parent=None, **kwargs
+    ):
+        """Request an item from a list of items from the user.
+
+        ![](../../assets/dialogs/querybox-get-item.png)
+
+        Parameters:
+
+            prompt (str):
+                A message to display in the message box above the combobox
+                widget.
+
+            title (str):
+                The string displayed as the title of the message box. This
+                option is ignored on Mac OS X, where platform guidelines
+                forbid the use of a title on this kind of dialog.
+
+            initialvalue (Any):
+                The initial value in the combobox widget.
+
+            items (list[str]):
+                A list of string values to pick one from.
+
+            parent (Widget):
+                Makes the window the logical parent of the message box. The
+                messagebox is displayed on top of its parent window.
+
+            **kwargs (Dict):
+                Other optional keyword arguments.
+
+        Returns:
+
+            str:
+                The string value selected in the combobox widget.
+        """
+        initialvalue = initialvalue or ""
+        if "position" in kwargs:
+            position = kwargs.pop("position")
+        else:
+            position = None
+        dialog = QueryDialog(
+            prompt, title, initialvalue, items=items, parent=parent, **kwargs
         )
         dialog.show(position)
         return dialog._result
