@@ -253,9 +253,15 @@ class Colors:
         color_label.
 
         Parameters:
-
             color_label (str):
                 A color label corresponding to a class property
+
+        Returns:
+            str:
+                A hexadecimal color value for the foreground color.
+
+        Raises:
+            TypeError: If the color_label is not a valid color property.
         """
         contrast_with_fg = self.get_contrast_ration(
             self.get_luminance(self.get(color_label)), self.get_luminance(self.fg)
@@ -3890,18 +3896,18 @@ class StyleBuilderTTK:
         else:
             disabled_fg = self.colors.selectbg
 
-        btn_foreground = Colors.get_foreground(self.colors, colorname)
-
-        img_normal = self.create_date_button_assets(btn_foreground)
-
         if any([colorname == DEFAULT, colorname == ""]):
             ttkstyle = STYLE
             foreground = self.colors.get_foreground(PRIMARY)
             background = self.colors.primary
+            btn_foreground = Colors.get_foreground(self.colors, PRIMARY)
         else:
             ttkstyle = f"{colorname}.{STYLE}"
             foreground = self.colors.get_foreground(colorname)
             background = self.colors.get(colorname)
+            btn_foreground = Colors.get_foreground(self.colors, colorname)
+
+        img_normal = self.create_date_button_assets(btn_foreground)
 
         pressed = Colors.update_hsv(background, vd=-0.1)
         hover = Colors.update_hsv(background, vd=0.10)
@@ -4463,14 +4469,14 @@ class StyleBuilderTTK:
         """
         STYLE = "TMenubutton"
 
-        foreground = self.colors.get_foreground(colorname)
-
         if any([colorname == DEFAULT, colorname == ""]):
             ttkstyle = STYLE
             background = self.colors.primary
+            foreground = self.colors.get_foreground(PRIMARY)
         else:
             ttkstyle = f"{colorname}.{STYLE}"
             background = self.colors.get(colorname)
+            foreground = self.colors.get_foreground(colorname)
 
         disabled_bg = Colors.make_transparent(0.10, self.colors.fg, self.colors.bg)
         disabled_fg = Colors.make_transparent(0.30, self.colors.fg, self.colors.bg)
