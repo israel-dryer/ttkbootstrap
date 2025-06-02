@@ -209,3 +209,17 @@ class CheckButton(StyleMixin, BaseMixin, BackgroundMixin):
     def variable(self) -> IntVar:
         """Return the IntVar used to hold the checkbutton's value."""
         return self._variable
+
+    @property
+    def on_value(self) -> int:
+        """Return the value used when the checkbutton is selected."""
+        return self.widget.cget("onvalue")
+
+    @property
+    def off_value(self) -> int:
+        """Return the value used when the checkbutton is deselected."""
+        return self.widget.cget("offvalue")
+
+    @property
+    def selected(self) -> bool:
+        return self.value == self.on_value
