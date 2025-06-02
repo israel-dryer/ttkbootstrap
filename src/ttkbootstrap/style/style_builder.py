@@ -129,11 +129,19 @@ class StyleBuilder(ABC):
 
     # === STYLE NAMING ===
 
-    def _get_style_name(self, token: str, widget_class: str, background: str | None = None) -> tuple[str, str]:
+    def _get_style_name(self, token: str, widget_class: str, **extras) -> tuple[str, str]:
         container_bg = self.theme.background
-        if background and background != container_bg:
-            return background, f"{background}.{token}.{widget_class}"
-        return container_bg, f"{token}.{widget_class}"
+        background = extras.get('background', "")
+        orient = extras.get('orient', None)
+        style = widget_class
+
+        if orient:
+            style = f"{str(orient).title()}.{style}"
+
+        if background != "" and background != container_bg:
+            style = f"{background}.{token}.{style}"
+            return background, style
+        return container_bg, f"{token}.{style}"
 
     # === FOREGROUND/BACKGROUND COMPUTATIONS ===
 
