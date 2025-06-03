@@ -18,20 +18,20 @@ from tkinter.ttk import Style
 """
 
 
-class BackgroundMixin(Misc):
+class BackgroundMixin:
     # set by parent class
     _extras = None
     _inherit_background = None
-
+    _widget: Misc
     # set by mixin
     _background_color = None
 
     def _initialize_inherited_background(self):
         self._identify_inherited_background()
-        self.bind('<<ThemeChanged>>', lambda _: self._identify_inherited_background(), add=True)
+        self._widget.bind('<<ThemeChanged>>', lambda _: self._identify_inherited_background(), add=True)
 
     def _identify_inherited_background(self):
-        parent = self.master
+        parent = self._widget.master
         if parent is None:
             return
         bg_color = None
