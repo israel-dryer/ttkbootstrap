@@ -112,6 +112,18 @@ class PaddingMixin:
         self.widget.configure(padding=value)
 
 
+class WrapLengthMixin:
+
+    @property
+    def wrap_length(self) -> int:
+        """Specifies the maximum line length."""
+        return self.widget.cget("wraplength")
+
+    @wrap_length.setter
+    def wrap_length(self, value: int):
+        self.widget.configure(wraplength=value)
+
+
 class WidthMixin:
 
     @property
@@ -120,7 +132,7 @@ class WidthMixin:
         return self.widget.cget("width")
 
     @width.setter
-    def width(self, value):
+    def width(self, value: int):
         self.widget.configure(width=value)
 
 
@@ -145,6 +157,17 @@ class HeightMixin:
     @height.setter
     def height(self, value):
         self.widget.configure(height=value)
+
+
+class JustifyMixin:
+    @property
+    def justify(self):
+        """If there are multiple lines of text, specifies how the lines are laid out relative to one another."""
+        return self.widget.cget("justify")
+
+    @justify.setter
+    def justify(self, value: Literal['left', 'right', 'center']):
+        self.widget.configure(justify=value)
 
 
 class OrientMixin:
@@ -178,6 +201,42 @@ class MinMaxMixin:
     @max_value.setter
     def max_value(self, value):
         self.widget.configure(to=value)
+
+
+class LengthMixin:
+
+    @property
+    def length(self):
+        """The length of the long dimension in screen units"""
+        return self.widget.cget("length")
+
+    @length.setter
+    def length(self, value):
+        self.widget.configure(length=value)
+
+
+class FontMixin:
+
+    @property
+    def font(self):
+        """Font to use for the text displayed by the widget."""
+        return self.widget.cget("font")
+
+    @font.setter
+    def font(self, value):
+        self.widget.configure(font=value)
+
+
+class AnchorMixin:
+
+    @property
+    def anchor(self):
+        """Specifies how the information in the widget is positioned relative to the inner margins."""
+        return self.widget.cget("anchor")
+
+    @anchor.setter
+    def anchor(self, value):
+        self.widget.configure(anchor=value)
 
 
 class DefaultMixin:
