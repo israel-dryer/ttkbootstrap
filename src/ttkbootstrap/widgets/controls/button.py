@@ -1,6 +1,6 @@
 from tkinter import Misc, PhotoImage, StringVar
 from tkinter.ttk import Button as ttkButton
-from typing import Callable, Literal, Optional, Tuple, TypedDict, Union, Unpack
+from typing import Callable, Literal, Optional, Tuple, Union
 
 from ttkbootstrap.ttk_types import StyleColor
 from ttkbootstrap.utils import keys_to_lower
@@ -9,18 +9,6 @@ from ttkbootstrap.widgets.mixins import (
     StyleMixin, DefaultMixin, EnabledMixIn, ImageMixin,
     OnClickMixin, PaddingMixin, TextVariableMixin, WidthMixin
 )
-
-
-class ButtonOptions(TypedDict, total=False):
-    """Typed dictionary for supported ttk Button options."""
-    compound: Literal['text', 'image', 'center', 'top', 'bottom', 'left', 'right', 'none']
-    cursor: str
-    default: Literal['normal', 'active', 'disabled']
-    image: PhotoImage
-    take_focus: bool
-    width: int
-    padding: Union[str, Tuple[int, int]]
-    inherit_background: bool
 
 
 class Button(
@@ -46,7 +34,7 @@ class Button(
         color (StyleColor): Named style color for the button theme.
         variant (str): Named style variant (e.g. 'outline', 'primary').
         on_click (Optional[Callable]): Function to call when the button is clicked.
-        **kwargs (Unpack[ButtonOptions]): Additional options passed to ttk.Button.
+        **kwargs: Additional options passed to ttk.Button.
     """
 
     def __init__(
@@ -57,7 +45,7 @@ class Button(
         color: StyleColor = "default",
         variant: Literal['default', 'outline', 'text'] = "default",
         on_click: Optional[Callable] = None,
-        **kwargs: Unpack[ButtonOptions]
+        **kwargs
     ):
         kw = dict(kwargs)
         self._master = master

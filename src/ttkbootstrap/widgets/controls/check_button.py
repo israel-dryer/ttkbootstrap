@@ -1,6 +1,6 @@
 from tkinter import IntVar, Misc, StringVar
 from tkinter.ttk import Checkbutton as ttkCheckButton
-from typing import Callable, Literal, Optional, Tuple, TypedDict, Union, Unpack
+from typing import Callable, Literal, Optional, Tuple, Union
 
 from ttkbootstrap.ttk_types import StyleColor
 from ttkbootstrap.utils import keys_to_lower
@@ -9,22 +9,6 @@ from ttkbootstrap.widgets.mixins import (
     EnabledMixIn, OnChangeMixin, OnOffValueMixin, PaddingMixin,
     TextVariableMixin, VariableMixin, WidthMixin
 )
-
-
-class CheckButtonOptions(TypedDict, total=False):
-    """Typed dictionary of supported options for the `CheckButton` widget."""
-    compound: Literal['text', 'image', 'center', 'top', 'bottom', 'left', 'right', 'none']
-    cursor: str
-    take_focus: bool
-    width: int
-    padding: Union[int, Tuple[int, int], Tuple[int, int, int, int]]
-    style: str
-    state: Literal['normal', 'disabled']
-    underline: int
-    off_value: int
-    on_value: int
-    variable: IntVar
-    inherit_background: bool
 
 
 class CheckButton(
@@ -39,16 +23,6 @@ class CheckButton(
     OnOffValueMixin,
     BackgroundMixin
 ):
-    """
-    A styled `Checkbutton` widget with theme-aware styling, value binding,
-    icon support, and event callbacks.
-
-    Attributes:
-        widget (ttk.Checkbutton): The internal checkbutton widget.
-        text_variable (StringVar): The text variable for the label.
-        variable (IntVar): The value variable for the checkbutton.
-    """
-
     def __init__(
         self,
         master: Optional[Misc] = None,
@@ -57,20 +31,8 @@ class CheckButton(
         icon: Optional[Union[str, Tuple[str, int]]] = None,
         color: StyleColor = "default",
         on_change: Optional[Callable] = None,
-        **kwargs: Unpack[CheckButtonOptions]
+        **kwargs
     ):
-        """
-        Initialize the CheckButton.
-
-        Args:
-            master (Optional[Misc]): Parent widget.
-            text (Optional[str]): Text displayed next to the checkbutton.
-            value (Literal[-1, 0, 1]): Initial value (-1: indeterminate, 0: off, 1: on).
-            icon (Optional[str|Tuple]): The name or tuple (name, size) of the icon.
-            color (StyleColor): Theme color used to style the widget.
-            on_change (Optional[Callable]): Callback when value changes.
-            **kwargs (CheckButtonOptions): Additional ttk options.
-        """
         kw = dict(kwargs)
         self._master = master
         self._icon = icon
@@ -85,7 +47,7 @@ class CheckButton(
         self._render_widget()
 
     def _render_widget(self):
-        """Create and initialize the internal `ttk.Checkbutton`."""
+        """Create and initialize the internal checkbutton widget"""
         self._widget = ttkCheckButton(
             self._master,
             textvariable=self._text_variable,
@@ -99,6 +61,4 @@ class CheckButton(
             **self._kwargs
         )
         if self._on_change:
-            func = self._on_change
-            self._on_change = lambda x, y, z: func(self.value)
-            self.variable.trace_add('write', self._on_change)
+            self.on_change = self._on_change
