@@ -23,7 +23,7 @@ class CheckButtonToggle(
     PaddingMixin,
     OnOffValueMixin,
     IconMixin,
-    BackgroundMixin
+    BackgroundMixin,
 ):
     """
     A themed toggle-style checkbutton widget
@@ -51,7 +51,7 @@ class CheckButtonToggle(
         self._inherit_background = self._kwargs.pop('inherit_background', False)
         self._text_variable = StringVar(master, text)
         self._variable = IntVar(master, value)
-        self._widget: Misc
+        self._widget: "ttkCheckButton"
         self._render_widget()
 
     def _render_widget(self):
@@ -65,7 +65,7 @@ class CheckButtonToggle(
         self._bind_icon_events()
         self._prepare_icon_kwargs(default_compound="left")
         self._initialize_style(
-            'checkbutton',
+            'button',
             color=self._color,
             extras=self._extras,
             variant=self._variant,

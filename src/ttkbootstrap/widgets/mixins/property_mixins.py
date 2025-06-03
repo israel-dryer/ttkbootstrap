@@ -233,6 +233,7 @@ class ValidationMixin:
 
 class OnChangeMixin:
     variable: Variable
+    value: Any
 
     @property
     def on_change(self):
@@ -240,7 +241,7 @@ class OnChangeMixin:
         return self._on_change
 
     @on_change.setter
-    def on_change(self, value: Callable[[int], Any]):
+    def on_change(self, value: Callable[[Any], Any]):
         self._on_change = lambda x, y, z: value(self.value)
         self.variable.trace_add('write', self._on_change)
 

@@ -7,7 +7,7 @@ from ttkbootstrap.utils import keys_to_lower
 from ttkbootstrap.widgets.mixins import (
     BackgroundMixin,
     BaseMixin,
-    EnabledMixIn, StyleMixin, TextVariableMixin, VariableMixin, WidthMixin,
+    EnabledMixIn, OnChangeMixin, StyleMixin, TextVariableMixin, VariableMixin, WidthMixin,
 )
 
 
@@ -18,6 +18,7 @@ class RadioButton(
     VariableMixin,
     EnabledMixIn,
     WidthMixin,
+    OnChangeMixin,
     BackgroundMixin
 ):
     def __init__(
@@ -63,5 +64,4 @@ class RadioButton(
         )
 
         if self._on_change:
-            func = self._on_change
-            self.on_change = func
+            self.on_change = self._on_change
