@@ -1,20 +1,7 @@
 from tkinter import PhotoImage, StringVar
-from typing import Callable, Literal, Tuple, Union
+from typing import Any, Callable, Literal, Tuple, Union
 
 from ttkbootstrap.ttk_types import Variable
-
-
-class TextMixin:
-    _text_variable: StringVar = None
-
-    @property
-    def text(self):
-        """The value of the text"""
-        return self._text_variable.get()
-
-    @text.setter
-    def text(self, value):
-        self._text_variable.set(value)
 
 
 class TextVariableMixin:
@@ -29,6 +16,24 @@ class TextVariableMixin:
     def text_variable(self, value: StringVar):
         self._text_variable = value
         self.widget.configure(textvariable=value)
+
+    @property
+    def text(self):
+        """The value of the text"""
+        return self._text_variable.get()
+
+    @text.setter
+    def text(self, value):
+        self._text_variable.set(value)
+
+    @property
+    def underline(self) -> int:
+        """Specifies the integer index (0-based) of a character to underline in the text string. end corresponds to the last character, end-1 to the before last character, and so on."""
+        return self.widget.cget('underline')
+
+    @underline.setter
+    def underline(self, value: int):
+        self.widget.configure(underline=value)
 
 
 class ImageMixin:
@@ -224,3 +229,34 @@ class ValidationMixin:
     @on_invalid.setter
     def on_invalid(self, value):
         self.widget.configure(invalidcommand=value)
+
+
+class OnChangeMixin:
+    variable: Variable
+
+    @property
+    def on_change(self):
+        """A function called when the value changes"""
+        return self._on_change
+
+    @on_change.setter
+    def on_change(self, value: Callable[[int], Any]):
+        self._on_change = lambda x, y, z: value(self.value)
+        self.variable.trace_add('write', self._on_change)
+
+
+class OnOffValueMixin:
+
+    @property
+    def on_value(self) -> int:
+        """Return the value used when the checkbutton is selected."""
+        return self.widget.cget("onvalue")
+
+    @property
+    def off_value(self) -> int:
+        """Return the value used when the checkbutton is deselected."""
+        return self.widget.cget("offvalue")
+
+    @property
+    def selected(self) -> bool:
+        return self.value == self.on_value
