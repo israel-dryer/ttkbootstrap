@@ -56,8 +56,7 @@ class CheckButton(
         value: Optional[Literal[-1, 0, 1]] = -1,
         icon: Optional[Union[str, Tuple[str, int]]] = None,
         color: StyleColor = "default",
-        on_click: Optional[Callable] = None,
-        on_value_changed: Optional[Callable] = None,
+        on_change: Optional[Callable] = None,
         **kwargs: Unpack[CheckButtonOptions]
     ):
         """
@@ -69,16 +68,14 @@ class CheckButton(
             value (Literal[-1, 0, 1]): Initial value (-1: indeterminate, 0: off, 1: on).
             icon (Optional[str|Tuple]): The name or tuple (name, size) of the icon.
             color (StyleColor): Theme color used to style the widget.
-            on_click (Optional[Callable]): Callback triggered when clicked.
-            on_value_changed (Optional[Callable]): Callback when value changes.
+            on_change (Optional[Callable]): Callback when value changes.
             **kwargs (CheckButtonOptions): Additional ttk options.
         """
         kw = dict(kwargs)
         self._master = master
         self._icon = icon
         self._color = color
-        self._on_click = on_click
-        self._on_value_changed = on_value_changed
+        self._on_change = on_change
         self._kwargs = kw
         self._extras = {}
         self._inherit_background = kw.pop('inherit_background', False)
@@ -91,7 +88,6 @@ class CheckButton(
         """Create and initialize the internal `ttk.Checkbutton`."""
         self._widget = ttkCheckButton(
             self._master,
-            command=self._on_click,
             textvariable=self._text_variable,
             variable=self._variable,
             **keys_to_lower(self._kwargs)
@@ -102,7 +98,7 @@ class CheckButton(
             extras=self._extras,
             **self._kwargs
         )
-        if self._on_value_changed:
-            func = self._on_value_changed
-            self._on_value_changed = lambda x, y, z: func(self.value)
-            self.variable.trace_add('write', self._on_value_changed)
+        if self._on_change:
+            func = self._on_change
+            self._on_change = lambda x, y, z: func(self.value)
+            self.variable.trace_add('write', self._on_change)
