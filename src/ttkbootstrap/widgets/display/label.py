@@ -3,7 +3,8 @@ from tkinter.ttk import Label as ttkLabel
 
 from ..mixins import (
     AnchorMixin, BackgroundMixin, BaseMixin, FontMixin,
-    IconMixin, ImageMixin, JustifyMixin, PaddingMixin, StyleMixin, TextVariableMixin, WidthMixin, WrapLengthMixin
+    IconMixin, ImageMixin, JustifyMixin, PaddingMixin,
+    StyleMixin, TextVariableMixin, WidthMixin, WrapLengthMixin
 )
 from ...ttk_types import StyleColor
 from ...utils import keys_to_lower
