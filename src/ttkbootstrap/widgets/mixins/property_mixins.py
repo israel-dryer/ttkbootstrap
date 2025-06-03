@@ -74,6 +74,7 @@ class OnClickMixin:
 
 class VariableMixin:
     _variable: Variable
+    _precision: int
 
     @property
     def variable(self):
@@ -88,7 +89,10 @@ class VariableMixin:
     @property
     def value(self):
         """The value of the widget"""
-        return self.variable.get() if self.variable else None
+        if not hasattr(self, '_precision'):
+            return self.variable.get() if self.variable else None
+        else:
+            return round(self._variable.get(), self._precision) if self.variable else None
 
     @value.setter
     def value(self, val):
@@ -234,6 +238,7 @@ class ValidationMixin:
 class OnChangeMixin:
     variable: Variable
     value: Any
+    _prev_value: Any
 
     @property
     def on_change(self):
@@ -242,8 +247,19 @@ class OnChangeMixin:
 
     @on_change.setter
     def on_change(self, value: Callable[[Any], Any]):
-        self._on_change = lambda x, y, z: value(self.value)
+        self._on_change = lambda x, y, z: self._value_change_wrapper(value)
         self.variable.trace_add('write', self._on_change)
+
+    def _value_change_wrapper(self, func: Callable[[float], Any]):
+        # no previous value defined
+        if not hasattr(self, '_prev_value'):
+            return func(self.value)
+
+        if (self.value == self._prev_value):
+            return "break"
+        else:
+            func(self.value)
+            self._prev_value = self.value
 
 
 class OnOffValueMixin:
