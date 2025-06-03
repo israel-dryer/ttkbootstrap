@@ -5,7 +5,7 @@ from typing import Any, Callable, Optional, Union
 from ttkbootstrap.ttk_types import StyleColor
 from ttkbootstrap.utils import keys_to_lower
 from ttkbootstrap.widgets.mixins import (
-    BackgroundMixin,
+    AnchorMixin, BackgroundMixin,
     BaseMixin,
     EnabledMixIn, OnChangeMixin, StyleMixin, TextVariableMixin, VariableMixin, WidthMixin,
 )
@@ -14,6 +14,7 @@ from ttkbootstrap.widgets.mixins import (
 class RadioButton(
     StyleMixin,
     BaseMixin,
+    AnchorMixin,
     TextVariableMixin,
     VariableMixin,
     EnabledMixIn,

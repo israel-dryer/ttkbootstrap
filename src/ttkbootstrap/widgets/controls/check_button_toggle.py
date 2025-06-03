@@ -5,7 +5,7 @@ from typing import Any, Callable, Literal, Optional, Tuple, Union
 from ttkbootstrap.ttk_types import StyleColor
 from ttkbootstrap.utils import keys_to_lower
 from ttkbootstrap.widgets.mixins import (
-    BackgroundMixin, BaseMixin, EnabledMixIn, IconMixin,
+    AnchorMixin, BackgroundMixin, BaseMixin, EnabledMixIn, IconMixin,
     ImageMixin, OnChangeMixin, OnOffValueMixin, PaddingMixin,
     StyleMixin, TextVariableMixin, VariableMixin, WidthMixin,
 )
@@ -14,6 +14,7 @@ from ttkbootstrap.widgets.mixins import (
 class CheckButtonToggle(
     StyleMixin,
     BaseMixin,
+    AnchorMixin,
     TextVariableMixin,
     VariableMixin,
     OnChangeMixin,

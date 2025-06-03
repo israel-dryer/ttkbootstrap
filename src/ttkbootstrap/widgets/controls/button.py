@@ -5,7 +5,7 @@ from typing import Callable, Literal, Optional, Tuple, Union
 from ttkbootstrap.ttk_types import StyleColor
 from ttkbootstrap.utils import keys_to_lower
 from ttkbootstrap.widgets.mixins import (
-    BackgroundMixin, BaseMixin, IconMixin,
+    AnchorMixin, BackgroundMixin, BaseMixin, IconMixin,
     StyleMixin, DefaultMixin, EnabledMixIn, ImageMixin,
     OnClickMixin, PaddingMixin, TextVariableMixin, WidthMixin
 )
@@ -14,6 +14,7 @@ from ttkbootstrap.widgets.mixins import (
 class Button(
     StyleMixin,
     BaseMixin,
+    AnchorMixin,
     TextVariableMixin,
     ImageMixin,
     OnClickMixin,

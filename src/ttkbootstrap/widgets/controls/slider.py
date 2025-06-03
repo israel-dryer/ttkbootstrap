@@ -5,8 +5,8 @@ from typing import Callable, Literal, Optional
 from ttkbootstrap.ttk_types import StyleColor
 from ttkbootstrap.utils import keys_to_lower
 from ttkbootstrap.widgets.mixins import (
-    BackgroundMixin, BaseMixin, MinMaxMixin, OnChangeMixin,
-    OrientMixin, StyleMixin, VariableMixin,
+    BackgroundMixin, BaseMixin, LengthMixin, MinMaxMixin,
+    OrientMixin, StyleMixin, VariableMixin, OnChangeMixin
 )
 
 
@@ -17,6 +17,7 @@ class Slider(
     OrientMixin,
     OnChangeMixin,
     MinMaxMixin,
+    LengthMixin,
     BackgroundMixin
 ):
 
