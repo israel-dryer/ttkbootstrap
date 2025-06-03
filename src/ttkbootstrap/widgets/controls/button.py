@@ -7,7 +7,7 @@ from ttkbootstrap.utils import keys_to_lower
 from ttkbootstrap.widgets.mixins import (
     BackgroundMixin, BaseMixin, IconMixin,
     StyleMixin, DefaultMixin, EnabledMixIn, ImageMixin,
-    OnClickMixin, PaddingMixin, TextMixin, TextVariableMixin, WidthMixin
+    OnClickMixin, PaddingMixin, TextVariableMixin, WidthMixin
 )
 
 
@@ -27,7 +27,6 @@ class Button(
     StyleMixin,
     BaseMixin,
     TextVariableMixin,
-    TextMixin,
     ImageMixin,
     OnClickMixin,
     PaddingMixin,
