@@ -59,7 +59,7 @@ class Button(
         self._text = text
         self._image: Optional[PhotoImage] = None
         self._inherit_background = kw.pop('inherit_background', False)
-        self._variable = StringVar(master, text)
+        self.text_variable = StringVar(master, text)
         self._widget: Misc
         self._render_widget()
 
@@ -68,7 +68,7 @@ class Button(
         self._widget: "ttkButton" = ttkButton(
             self._master,
             command=self._on_click,
-            textvariable=self._variable,
+            textvariable=self.text_variable,
             **keys_to_lower(self._kwargs)
         )
         self._bind_icon_events()
