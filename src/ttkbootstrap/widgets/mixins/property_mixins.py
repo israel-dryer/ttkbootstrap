@@ -263,7 +263,13 @@ class DefaultMixin:
             self.widget.configure(default='disabled')
 
 
+ValidationMode = Literal['none', 'key', 'focus', 'focusin', 'focusout', 'all']
+
+
 class ValidationMixin:
+
+    # TODO the validation API should be significantly simplified for Python use:
+    # https://www.tcl-lang.org/man/tcl8.6.13/TkCmd/ttk_entry.htm#M7
 
     @property
     def validation_mode(self):
@@ -271,7 +277,7 @@ class ValidationMixin:
         return self.widget.cget("validate")
 
     @validation_mode.setter
-    def validation_mode(self, value):
+    def validation_mode(self, value: ValidationMode):
         self.widget.configure(validate=value)
 
     @property
@@ -321,6 +327,33 @@ class OnChangeMixin:
             self._prev_value = self.value
 
 
+class OnTextChangeMixin:
+    text_variable: Variable
+    text: Any
+    _prev_text: Any
+
+    @property
+    def on_change(self):
+        """A function called when the value changes"""
+        return self._on_change
+
+    @on_change.setter
+    def on_change(self, value: Callable[[Any], Any]):
+        self._on_change = lambda x, y, z: self._value_change_wrapper(value)
+        self.text_variable.trace_add('write', self._on_change)
+
+    def _value_change_wrapper(self, func: Callable[[float], Any]):
+        # no previous value defined
+        if not hasattr(self, '_prev_text'):
+            return func(self.text)
+
+        if (self.text == self._prev_text):
+            return "break"
+        else:
+            func(self.text)
+            self._prev_value = self.text
+
+
 class OnOffValueMixin:
 
     @property
@@ -336,3 +369,68 @@ class OnOffValueMixin:
     @property
     def selected(self) -> bool:
         return self.value == self.on_value
+
+
+class ExportSelectionMixin:
+
+    @property
+    def export_selection_enabled(self):
+        """Specifies if a selection in the widget should be linked to the X selection"""
+        return self.widget.cget('exportselection')
+
+    @export_selection_enabled.setter
+    def export_selection_enabled(self, value: bool):
+        self.widget.configure(exportselection=value)
+
+
+class EntryMixin(
+    JustifyMixin, TextVariableMixin, ValidationMixin, WidthMixin, ExportSelectionMixin, EnabledMixIn,
+    OnTextChangeMixin):
+
+    @property
+    def show(self) -> str:
+        """Replace the contents of the entry with this character. For example '*' for password"""
+        return self.widget.cget('show')
+
+    @show.setter
+    def show(self, value: str):
+        self.widget.configure(show=value)
+
+    def delete(self, first: str | int, last: str | int):
+        """Delete characters from `first` up to `last`"""
+        self.widget.delete(first, last)
+
+    def clear_text(self):
+        """Remove all text from the input field"""
+        self.delete(0, 'end')
+
+    def clear_selection(self):
+        """Clear the selection if it is currently in this widget"""
+        self.widget.select_clear()
+
+    def select_range(self, start: str | int, last: str | int):
+        """Set the selection to include the characters from `start` and up to `last`"""
+        self.widget.select_range(start, last)
+
+    @property
+    def has_selection(self) -> bool:
+        """Returns True if there are characters selected else False"""
+        return self.widget.selection_present()
+
+    def insert(self, index: str | int, value: str):
+        """Insert a value just before the character at `index`"""
+        self.widget.insert(index, value)
+
+    def append(self, value: str):
+        """Append the value to the end of the text"""
+        self.insert('end', value)
+
+    def insert_cursor(self, index: int):
+        """Show the insert cursor at `index`"""
+        self.widget.icursor(index)
+
+    def bounding_box(self, index: str | int) -> Tuple[int, int, int, int]:
+        """Returns a list of four numbers that describe the bounding box of the character at `index`.
+        (x, y, width, height)
+        """
+        return self.widget.bbox(index)
