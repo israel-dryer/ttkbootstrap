@@ -20,11 +20,7 @@ from ttkbootstrap.localization import MessageCatalog
 
 
 class Dialog(BaseWidget):
-    """A simple dialog base class.
-
-    The widget grabs focus and all screen events until released.
-    If you want to cancel, click the 'X' button at the top-right corner of the widget.
-    """
+    """A simple dialog base class."""
 
     def __init__(self, parent=None, title="", alert=False):
         """
@@ -93,6 +89,7 @@ class Dialog(BaseWidget):
         if wait_for_result:
             self._toplevel.grab_set()
             self._toplevel.wait_window()
+
 
     def create_body(self, master):
         """Create the dialog body.
@@ -178,18 +175,18 @@ class MessageDialog(Dialog):
     """
 
     def __init__(
-            self,
-            message,
-            title=" ",
-            buttons=None,
-            command=None,
-            width=50,
-            parent=None,
-            alert=False,
-            default=None,
-            padding=(20, 20),
-            icon=None,
-            **kwargs,
+        self,
+        message,
+        title=" ",
+        buttons=None,
+        command=None,
+        width=50,
+        parent=None,
+        alert=False,
+        default=None,
+        padding=(20, 20),
+        icon=None,
+        **kwargs,
     ):
         """
         Parameters:
@@ -343,10 +340,10 @@ class MessageDialog(Dialog):
         for index, btn in enumerate(button_list):
             if index > 0:
                 nbtn = button_list[index - 1]
-                btn.bind('<Right>', lambda _, b=nbtn: b.focus_set())
+                btn.bind('<Right>', lambda _, b=nbtn:b.focus_set())
             if index < len(button_list) - 1:
                 nbtn = button_list[index + 1]
-                btn.bind('<Left>', lambda _, b=nbtn: b.focus_set())
+                btn.bind('<Left>', lambda _, b=nbtn:b.focus_set())
 
         ttk.Separator(self._toplevel).pack(fill=X)
         frame.pack(side=BOTTOM, fill=X, anchor=S)
@@ -377,16 +374,16 @@ class QueryDialog(Dialog):
     """
 
     def __init__(
-            self,
-            prompt,
-            title=" ",
-            initialvalue="",
-            minvalue=None,
-            maxvalue=None,
-            width=65,
-            datatype=str,
-            padding=(20, 20),
-            parent=None,
+        self,
+        prompt,
+        title=" ",
+        initialvalue="",
+        minvalue=None,
+        maxvalue=None,
+        width=65,
+        datatype=str,
+        padding=(20, 20),
+        parent=None,
     ):
         """
         Parameters:
@@ -585,12 +582,12 @@ class DatePickerDialog:
     """
 
     def __init__(
-            self,
-            parent=None,
-            title=" ",
-            firstweekday=6,
-            startdate=None,
-            bootstyle=PRIMARY,
+        self,
+        parent=None,
+        title=" ",
+        firstweekday=6,
+        startdate=None,
+        bootstyle=PRIMARY,
     ):
         """
         Parameters:
@@ -697,11 +694,11 @@ class DatePickerDialog:
                     ).grid(row=row, column=col, sticky=NSEW)
                 else:
                     if all(
-                            [
-                                day == self.date_selected.day,
-                                self.date.month == self.date_selected.month,
-                                self.date.year == self.date_selected.year,
-                            ]
+                        [
+                            day == self.date_selected.day,
+                            self.date.month == self.date_selected.month,
+                            self.date.year == self.date_selected.year,
+                        ]
                     ):
                         day_style = "secondary-toolbutton"
                     else:
@@ -802,7 +799,7 @@ class DatePickerDialog:
             MessageCatalog.translate("Sa"),
             MessageCatalog.translate("Su"),
         ]
-        header = weekdays[self.firstweekday:] + weekdays[: self.firstweekday]
+        header = weekdays[self.firstweekday :] + weekdays[: self.firstweekday]
         return header
 
     def _on_date_selected(self, row, col):
@@ -899,6 +896,7 @@ class DatePickerDialog:
 
 
 class FontDialog(Dialog):
+
     """A dialog that displays a variety of options for choosing a font.
 
     This dialog constructs and returns a `Font` object based on the
@@ -973,7 +971,7 @@ class FontDialog(Dialog):
         cancel_btn.pack(side=RIGHT, padx=5)
         cancel_btn.bind("<Return>", lambda _: cancel_btn.invoke())
 
-        self._toplevel.bind("<Escape>", func=lambda _: cancel_btn.invoke())
+        self._toplevel.bind("<Escape>", func=lambda _:cancel_btn.invoke())
         self._toplevel.protocol("WM_DELETE_WINDOW", func=cancel_btn.invoke)
 
     def _font_families_selector(self, master):
@@ -1316,12 +1314,12 @@ class Messagebox:
 
     @staticmethod
     def show_question(
-            message,
-            title=" ",
-            parent=None,
-            buttons=["No", "Yes"],
-            alert=True,
-            **kwargs,
+        message,
+        title=" ",
+        parent=None,
+        buttons=["No", "Yes"],
+        alert=True,
+        **kwargs,
     ):
         """Display a modal dialog box with yes, no buttons and a
         question icon. Also will ring the display bell. You may also
@@ -1626,7 +1624,7 @@ class Querybox:
 
     @staticmethod
     def get_color(
-            parent=None, title="Color Chooser", initialcolor=None, **kwargs
+        parent=None, title="Color Chooser", initialcolor=None, **kwargs
     ):
         """Show a color picker and return the select color when the
         user pressed OK.
@@ -1662,11 +1660,11 @@ class Querybox:
 
     @staticmethod
     def get_date(
-            parent=None,
-            title=" ",
-            firstweekday=6,
-            startdate=None,
-            bootstyle="primary",
+        parent=None,
+        title=" ",
+        firstweekday=6,
+        startdate=None,
+        bootstyle="primary",
     ):
         """Shows a calendar popup and returns the selection.
 
@@ -1710,7 +1708,7 @@ class Querybox:
 
     @staticmethod
     def get_string(
-            prompt="", title=" ", initialvalue=None, parent=None, **kwargs
+        prompt="", title=" ", initialvalue=None, parent=None, **kwargs
     ):
         """Request a string type input from the user.
 
@@ -1755,13 +1753,13 @@ class Querybox:
 
     @staticmethod
     def get_integer(
-            prompt="",
-            title=" ",
-            initialvalue=None,
-            minvalue=None,
-            maxvalue=None,
-            parent=None,
-            **kwargs,
+        prompt="",
+        title=" ",
+        initialvalue=None,
+        minvalue=None,
+        maxvalue=None,
+        parent=None,
+        **kwargs,
     ):
         """Request an integer type input from the user.
 
@@ -1819,13 +1817,13 @@ class Querybox:
 
     @staticmethod
     def get_float(
-            prompt="",
-            title=" ",
-            initialvalue=None,
-            minvalue=None,
-            maxvalue=None,
-            parent=None,
-            **kwargs,
+        prompt="",
+        title=" ",
+        initialvalue=None,
+        minvalue=None,
+        maxvalue=None,
+        parent=None,
+        **kwargs,
     ):
         """Request a float type input from the user.
 
