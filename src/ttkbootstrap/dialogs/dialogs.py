@@ -87,6 +87,7 @@ class Dialog(BaseWidget):
             self._initial_focus.focus_force()
 
         if wait_for_result:
+            self._toplevel.grab_set()
             self._toplevel.wait_window()
 
 
@@ -157,6 +158,7 @@ class Dialog(BaseWidget):
     @property
     def result(self):
         """Returns the result of the dialog."""
+        self._toplevel.grab_release()
         return self._result
 
 
