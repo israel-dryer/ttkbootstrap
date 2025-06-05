@@ -263,6 +263,15 @@ class Colors:
         Raises:
             TypeError: If the color_label is not a valid color property.
         """
+        if color_label == LIGHT:
+            return self.dark
+        elif color_label == DARK:
+            return self.light
+
+        if not Style().dynamic_foreground:
+            return self.selectfg
+
+        # dynamic foreground selection
         contrast_with_fg = self.get_contrast_ration(
             self.get_luminance(self.get(color_label)), self.get_luminance(self.fg)
         )
@@ -533,6 +542,7 @@ class Style(ttk.Style):
         self._theme_styles = {}  # styles used in theme
         self._theme_names = set()
         self._load_themes()
+        self._dynamic_foreground = False
         super().__init__()
 
         Style.instance = self
@@ -723,6 +733,29 @@ class Style(ttk.Style):
         exists_in_theme = ttkstyle in theme_styles
         exists_in_registry = ttkstyle in self._style_registry
         return exists_in_theme and exists_in_registry
+
+    def use_dynamic_foreground(self, enable: bool = True):
+        """Enable or disable dynamic foreground color selection.
+
+        When enabled, the foreground color of widgets will be decided
+        between the `fg` and `selectfg` colors based on the
+        contrast ratio with the widget's background color.
+        At default, this is disabled.
+
+        Parameters:
+
+            enable (bool):
+                If `True`, dynamic foreground selection is enabled.
+                Otherwise, it is disabled.
+        """
+        self._dynamic_foreground = enable
+
+    @property
+    def dynamic_foreground(self):
+        """Returns `True` if dynamic foreground selection is enabled,
+        otherwise `False`.
+        """
+        return self._dynamic_foreground
 
     @staticmethod
     def get_instance():
