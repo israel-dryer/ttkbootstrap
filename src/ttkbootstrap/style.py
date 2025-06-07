@@ -204,21 +204,84 @@ class Colors:
         """
         return colorsys.rgb_to_hsv(r, g, b)
 
+    def get_luminance(self, color):
+        """Calculate the luminance of a color.
+
+        Parameters:
+            color (str):
+                A hexadecimal color value.
+        Returns:
+            float:
+                The luminance value of the color.
+        """
+        r, g, b = self.hex_to_rgb(color)
+
+        # Convert RGB to linear RGB
+        r = self._get_luminance_value(r)
+        g = self._get_luminance_value(g)
+        b = self._get_luminance_value(b)
+
+        # Calculate luminance using the WCAG formula
+        return 0.2126 * r + 0.7152 * g + 0.0722 * b
+
+    def _get_luminance_value(self, value):
+        if value <= 0.03928:
+            return value / 12.92
+        else:
+            return ((value + 0.055) / 1.055) ** 2.4
+
+    def get_contrast_ration(self, lum1, lum2):
+        """Calculate the contrast ratio between two luminance values.
+
+        Parameters:
+            lum1 (float):
+                The first luminance value.
+            lum2 (float):
+                The second luminance value.
+
+        Returns:
+            float:
+                The contrast ratio.
+        """
+        if lum1 > lum2:
+            return (lum1 + 0.05) / (lum2 + 0.05)
+        else:
+            return (lum2 + 0.05) / (lum1 + 0.05)
+
     def get_foreground(self, color_label):
         """Return the appropriate foreground color for the specified
         color_label.
 
         Parameters:
-
             color_label (str):
                 A color label corresponding to a class property
+
+        Returns:
+            str:
+                A hexadecimal color value for the foreground color.
+
+        Raises:
+            TypeError: If the color_label is not a valid color property.
         """
         if color_label == LIGHT:
             return self.dark
         elif color_label == DARK:
             return self.light
-        else:
+
+        if not Style().dynamic_foreground:
             return self.selectfg
+
+        # dynamic foreground selection
+        contrast_with_fg = self.get_contrast_ration(
+            self.get_luminance(self.get(color_label)), self.get_luminance(self.fg)
+        )
+        contrast_with_selectfg = self.get_contrast_ration(
+            self.get_luminance(self.get(color_label)), self.get_luminance(self.selectfg)
+        )
+
+        if contrast_with_fg > contrast_with_selectfg:
+            return self.fg
+        return self.selectfg
 
     def get(self, color_label: str):
         """Lookup a color value from the color name
@@ -479,6 +542,7 @@ class Style(ttk.Style):
         self._theme_styles = {}  # styles used in theme
         self._theme_names = set()
         self._load_themes()
+        self._dynamic_foreground = False
         super().__init__()
 
         Style.instance = self
@@ -669,6 +733,29 @@ class Style(ttk.Style):
         exists_in_theme = ttkstyle in theme_styles
         exists_in_registry = ttkstyle in self._style_registry
         return exists_in_theme and exists_in_registry
+
+    def use_dynamic_foreground(self, enable: bool = True):
+        """Enable or disable dynamic foreground color selection.
+
+        When enabled, the foreground color of widgets will be decided
+        between the `fg` and `selectfg` colors based on the
+        contrast ratio with the widget's background color.
+        At default, this is disabled.
+
+        Parameters:
+
+            enable (bool):
+                If `True`, dynamic foreground selection is enabled.
+                Otherwise, it is disabled.
+        """
+        self._dynamic_foreground = enable
+
+    @property
+    def dynamic_foreground(self):
+        """Returns `True` if dynamic foreground selection is enabled,
+        otherwise `False`.
+        """
+        return self._dynamic_foreground
 
     @staticmethod
     def get_instance():
@@ -3855,18 +3942,18 @@ class StyleBuilderTTK:
         else:
             disabled_fg = self.colors.selectbg
 
-        btn_foreground = Colors.get_foreground(self.colors, colorname)
-
-        img_normal = self.create_date_button_assets(btn_foreground)
-
         if any([colorname == DEFAULT, colorname == ""]):
             ttkstyle = STYLE
             foreground = self.colors.get_foreground(PRIMARY)
             background = self.colors.primary
+            btn_foreground = Colors.get_foreground(self.colors, PRIMARY)
         else:
             ttkstyle = f"{colorname}.{STYLE}"
             foreground = self.colors.get_foreground(colorname)
             background = self.colors.get(colorname)
+            btn_foreground = Colors.get_foreground(self.colors, colorname)
+
+        img_normal = self.create_date_button_assets(btn_foreground)
 
         pressed = Colors.update_hsv(background, vd=-0.1)
         hover = Colors.update_hsv(background, vd=0.10)
@@ -4428,14 +4515,14 @@ class StyleBuilderTTK:
         """
         STYLE = "TMenubutton"
 
-        foreground = self.colors.get_foreground(colorname)
-
         if any([colorname == DEFAULT, colorname == ""]):
             ttkstyle = STYLE
             background = self.colors.primary
+            foreground = self.colors.get_foreground(PRIMARY)
         else:
             ttkstyle = f"{colorname}.{STYLE}"
             background = self.colors.get(colorname)
+            foreground = self.colors.get_foreground(colorname)
 
         disabled_bg = Colors.make_transparent(0.10, self.colors.fg, self.colors.bg)
         disabled_fg = Colors.make_transparent(0.30, self.colors.fg, self.colors.bg)
