@@ -162,13 +162,7 @@ class ToolTip:
         if self.bootstyle:
             lbl.configure(bootstyle=self.bootstyle)
         else:
-            lbl.configure(
-                style="tooltip.TLabel",
-                background="#fffddd",
-                foreground="#333",
-                borderwidth=1,
-                relief=RAISED,
-            )
+            lbl.configure(style="tooltip.TLabel")
 
         # Wait until size is known, then position
         self.toplevel.update_idletasks()
