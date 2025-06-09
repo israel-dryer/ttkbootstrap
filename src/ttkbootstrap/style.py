@@ -1316,6 +1316,19 @@ class StyleBuilderTTK:
         self.create_link_button_style()
         self.style.configure("symbol.Link.TButton", font="-size 16")
 
+        # this is the general style applied to the tooltip
+        self.create_label_style()
+        self.style.configure(
+            style="tooltip.TLabel",
+            background="#fffddd",
+            foreground="#333",
+            bordercolor="#888",
+            borderwidth=1,
+            darkcolor="#fffddd",
+            lightcolor="#fffddd",
+            relief=RAISED,
+        )
+
     def create_combobox_style(self, colorname=DEFAULT):
         """Create a style for the ttk.Combobox widget.
 
