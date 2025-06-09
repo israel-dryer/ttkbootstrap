@@ -105,18 +105,6 @@ class ToolTip:
             kwargs["alpha"] = 0.95
         self.toplevel_kwargs = kwargs
 
-        # create default tooltip style
-        ttk.Style().configure(
-            style="tooltip.TLabel",
-            background="#fffddd",
-            foreground="#333",
-            bordercolor="#888",
-            borderwidth=1,
-            darkcolor="#fffddd",
-            lightcolor="#fffddd",
-            relief=RAISED,
-        )
-
         # event binding
         self.widget.bind("<Enter>", self.enter)
         self.widget.bind("<Leave>", self.leave)
