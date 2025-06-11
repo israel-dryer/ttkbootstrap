@@ -5,15 +5,16 @@ from ttkbootstrap.localization.msgs import initialize_localities
 initialize_localities()
 
 def test_msgcat():
-    # unknown strings will return untranslated
+    """Basic translate() checks."""
+    # unknown strings will return untranslated:
     MessageCatalog.locale("en")
     expect = "__unknown_string__"
     result = MessageCatalog.translate(expect)
     assert result == '__unknown_string__'
 
-    expect = "Ok"
+    expect = "Cancel"
     result = MessageCatalog.translate(expect)
-    assert result == 'Ok'
+    assert result == 'Cancel'
 
     MessageCatalog.locale("nl")
     expect = "Cancel"
@@ -29,6 +30,7 @@ def test_msgcat():
 
 
 def test_variables():
+    """Tests using parameters."""
     MessageCatalog.locale("en")
     num = 2
     string = "string value"
@@ -58,9 +60,10 @@ def test_variables():
     expect = "test with multiple variables: string value, 2, 3.140"
     result = MessageCatalog.translate(template, string, num, real)
     assert result == expect
-    
+
 
 def test_positional_variables():
+    """Tests using positonal parameters in its message."""
     MessageCatalog.locale("en")
     num = 2
     string ="string value"
@@ -96,7 +99,7 @@ def test_positional_variables():
     result = MessageCatalog.translate(template, string, num, real)
     assert result == expect
 
-    # using %1d syntax (without ending $) works as well (but NOT cgnaging parameter order):
+    # using %1d syntax (without ending $) works as well (except changing parameter order):
     template = "test with string: '%1s'"
     expect = "test with string: 'string value'"
     result = MessageCatalog.translate(template, string)
@@ -149,37 +152,37 @@ def test_positional_variables():
     # assert result == expect
 
 def test_string_escaping():
+    """Check escaping of characters with special meaning in Tcl."""
     MessageCatalog.locale("en")
 
     template = "test with string: '%s'"
     result = MessageCatalog.translate(template, "string")
     assert result == "test with string: 'string'"
 
-    # escpape test "
+    # escape test "
     result = MessageCatalog.translate(template, 'string " with quote')
     assert result == "test with string: 'string \" with quote'"
 
-    # escpape test [
+    # escape test [
     result = MessageCatalog.translate(template, 'string [test] with braces')
     assert result == "test with string: 'string [test] with braces'"
 
-    # escpape test no need to escape { or }:
+    # escape test no need to escape { or }:
     result = MessageCatalog.translate(template, 'string {test} with curly braces')
     assert result == "test with string: 'string {test} with curly braces'"
 
-    # escpape test no need to escape { or }:
     result = MessageCatalog.translate(template, '{string with curly braces}')
     assert result == "test with string: '{string with curly braces}'"
 
-    # escpape test \
+    # escape test \
     result = MessageCatalog.translate(template, 'string \ with backslash')
     assert result == "test with string: 'string \ with backslash'"
 
 
 def test_set():
-    string ="string value"
+    """Add a translated string with formating patterns and use is to localize a text."""
+    string = "string value"
 
-    """Add a translated string with formating patterns and use is to localize a text"""
     MessageCatalog.locale("nl")
 
     template = "test with string: '%1$s'"
@@ -196,7 +199,7 @@ def test_set():
 
 
 def test_set_many():
-    """Add multiple translated strings with formating patterns and use them"""
+    """Add multiple translated strings with formating patterns and use them."""
     string ="string value"
     num = 2
 
