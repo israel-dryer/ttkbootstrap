@@ -99,7 +99,8 @@ def test_positional_variables():
     result = MessageCatalog.translate(template, string, num, real)
     assert result == expect
 
-    # using %1d syntax (without ending $) works as well (except changing parameter order):
+    # using %1d syntax (without ending $) works as well
+    # (except changing parameter order):
     template = "test with string: '%1s'"
     expect = "test with string: 'string value'"
     result = MessageCatalog.translate(template, string)
@@ -200,7 +201,7 @@ def test_set():
     result = MessageCatalog.translate("product: '%1$s , price: %2$.2f", 'ABC-123', 3.14)
     assert result == expect
 
-    # no French translation, expevt english string:
+    # no French translation, expect English string:
     MessageCatalog.locale("fr")
     expect = "test with string: 'string value'"
     result = MessageCatalog.translate(template, string)
@@ -236,7 +237,7 @@ def test_set_many():
     expect = "test met een [tekst]: '[test]'"
     assert result == expect
 
-    # o French ranslations, so expect english/original string with variable expansion:
+    # no French ranslations, so expect English/original string with variable expansion:
     MessageCatalog.locale("fr")
     expect = "test with [string]: 'string value'"
     result = MessageCatalog.translate(template1, string)
@@ -244,6 +245,7 @@ def test_set_many():
     result = MessageCatalog.translate(template2, num)
     expect = "test with [int]: 2"
     assert result == expect
+
 
 if __name__ == '__main__':
     test_msgcat()
