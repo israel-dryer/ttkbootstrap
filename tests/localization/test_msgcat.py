@@ -185,18 +185,22 @@ def test_set():
 
     MessageCatalog.locale("nl")
 
+    # add 2 tranlslated strings with parameters in them:
     template = "test with string: '%1$s'"
     MessageCatalog.set("nl", template, "test met een string: '%1$s'")
     MessageCatalog.set("nl", "product: '%1$s , price: %2$.2f", "Prijs: %2$.2f, Product: %1$s")
 
+    # expect NL translation:
     expect = "test met een string: 'string value'"
     result = MessageCatalog.translate(template, string)
     assert result == expect
 
+    # expect NL translation; order of variables reversed:
     expect = "Prijs: 3.14, Product: ABC-123"
     result = MessageCatalog.translate("product: '%1$s , price: %2$.2f", 'ABC-123', 3.14)
     assert result == expect
 
+    # no French translation, expevt english string:
     MessageCatalog.locale("fr")
     expect = "test with string: 'string value'"
     result = MessageCatalog.translate(template, string)
@@ -218,6 +222,7 @@ def test_set_many():
 
     MessageCatalog.set_many("nl", template1, trans1, template2, trans2)
 
+    # expect NL translated string with variable expansion:
     result = MessageCatalog.translate(template1, string)
     expect = "test met een [tekst]: 'string value'"
     assert result == expect
@@ -231,6 +236,7 @@ def test_set_many():
     expect = "test met een [tekst]: '[test]'"
     assert result == expect
 
+    # o French ranslations, so expect english/original string with variable expansion:
     MessageCatalog.locale("fr")
     expect = "test with [string]: 'string value'"
     result = MessageCatalog.translate(template1, string)
