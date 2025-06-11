@@ -85,7 +85,7 @@ def change_locale():
     selected_locale = locale_dialog.result
     if selected_locale:
         MessageCatalog.locale(selected_locale)
-        print(f"Selected locale: '{MessageCatalog.locale(None)}'")
+        print(f"Selected locale: '{MessageCatalog.locale("")}'")
 
 def create_window():
     """Create window."""
