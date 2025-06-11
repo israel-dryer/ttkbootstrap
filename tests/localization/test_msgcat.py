@@ -147,7 +147,7 @@ def test_positional_variables():
 
     # reordering variables like this will fail with a TclError:
     # template = "test with reordering variables: %+2d, %1s, %3.3f"
-    # expect = "test with multiple variables: string value, +2, 3.140"
+    # expect = "test with multiple variables: +2, string value, 3.140"
     # result = MessageCatalog.translate(template, string, num, real)
     # assert result == expect
 
@@ -187,9 +187,14 @@ def test_set():
 
     template = "test with string: '%1$s'"
     MessageCatalog.set("nl", template, "test met een string: '%1$s'")
+    MessageCatalog.set("nl", "product: '%1$s , price: %2$.2f", "Prijs: %2$.2f, Product: %1$s")
 
     expect = "test met een string: 'string value'"
     result = MessageCatalog.translate(template, string)
+    assert result == expect
+
+    expect = "Prijs: 3.14, Product: ABC-123"
+    result = MessageCatalog.translate("product: '%1$s , price: %2$.2f", 'ABC-123', 3.14)
     assert result == expect
 
     MessageCatalog.locale("fr")
