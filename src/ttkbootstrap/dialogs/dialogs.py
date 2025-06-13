@@ -1033,7 +1033,7 @@ class FontDialog(Dialog):
         listbox_vbar.pack(side=RIGHT, fill=Y)
         listbox.configure(yscrollcommand=listbox_vbar.set)
 
-        for f in self._families:
+        for f in sorted(self._families):
             listbox.insert("", iid=f, index=END, tags=[f], values=[f])
             listbox.tag_configure(f, font=(f, self._size.get()))
 
