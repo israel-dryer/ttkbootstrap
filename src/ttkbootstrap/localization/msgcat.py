@@ -3,7 +3,20 @@ from ttkbootstrap.window import get_default_root
 
 class MessageCatalog:
     @staticmethod
-    def translate(src):
+    def __join(*args) -> str:
+        """Join multiple format arguments into a joined argument string."""
+        new_args = []
+        for arg in args:
+            if isinstance(arg, str):
+                # remove surrounding quotes
+                stripped = str(arg).strip('"')
+                new_args.append("{%s}" % stripped)
+            else:
+                new_args.append(str(arg))
+        return " ".join(new_args)
+
+    @staticmethod
+    def translate(src, *fmtargs):
         """Returns a translation of src according to the user's current
         locale.
 
@@ -19,14 +32,21 @@ class MessageCatalog:
             src (str):
                 The string to be translated.
 
+            *fmtargs (tuple, optional):
+                Extra arguments passed internally to the
+                [format](https://www.tcl-lang.org/man/tcl/TclCmd/format.html) package.
+
         Returns:
 
             str:
                 The translated string.
         """
         root = get_default_root()
-        command = "::msgcat::mc"
-        return root.tk.eval(f'{command} "{src}"')
+
+        command = '::msgcat::mc {%s}' % src
+        if fmtargs:
+            command = f"{command} {MessageCatalog.__join(*fmtargs)}"
+        return root.tk.eval(command)
 
     @staticmethod
     def locale(newlocale=None):
@@ -90,7 +110,7 @@ class MessageCatalog:
         """
         from pathlib import Path
         msgs = Path(dirname).as_posix() # format path for tcl/tk
-        
+
         root = get_default_root()
         command = "::msgcat::mcload"
         return int(root.tk.eval(f"{command} [list {msgs}]"))
@@ -114,7 +134,7 @@ class MessageCatalog:
         """
         root = get_default_root()
         command = "::msgcat::mcset"
-        root.tk.eval(f'{command} {locale} {src} {translated or ""}')
+        root.tk.eval('%s %s {%s} {%s}' % (command, locale, src, translated or ""))
 
     @staticmethod
     def set_many(locale, *args):
@@ -137,7 +157,7 @@ class MessageCatalog:
         """
         root = get_default_root()
         command = "::msgcat::mcmset"
-        messages = " ".join([f'"{x}"' for x in args])
+        messages = " ".join(['{%s}' % x for x in args])
         out = f"{command} {locale} {{{messages}}}"
         return int(root.tk.eval(out))
 
