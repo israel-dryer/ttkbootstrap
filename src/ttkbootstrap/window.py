@@ -15,8 +15,9 @@ def get_default_root(what=None):
     """Returns the default root if it has been created, otherwise
     returns a new instance."""
     if not tkinter._support_default_root:
-        raise RuntimeError("No master specified and tkinter is "
-                           "configured to not support default root")
+        raise RuntimeError(
+            "No master specified and tkinter is "
+            "configured to not support default root")
     if not tkinter._default_root:
         if what:
             raise RuntimeError(f"Too early to {what}: no default root window")
@@ -51,8 +52,9 @@ def apply_class_bindings(window: tkinter.Widget):
         except KeyError:
             window.tk.call(event.widget, 'invoke')
 
-    window.bind_class("TButton", "<Key-Return>", button_default_binding,
-                      add="+")
+    window.bind_class(
+        "TButton", "<Key-Return>", button_default_binding,
+        add="+")
     window.bind_class("TButton", "<KP_Enter>", button_default_binding, add="+")
 
 
@@ -96,7 +98,7 @@ def on_map_child(event):
     event on the parent"""
     widget: tkinter.Widget = event.widget
     try:
-        if widget.master is None: # root widget
+        if widget.master is None:  # root widget
             return
         else:
             widget.master.event_generate('<<MapChild>>')
@@ -106,17 +108,16 @@ def on_map_child(event):
 
 
 def on_select_all(event):
-    """Callback to select all text in the input widget when an event is
-    executed."""
+    """Callback to select all text in Entry or Text widget when Ctrl+A is pressed."""
     widget = event.widget
-    if widget.__class__.__name__ in ("Text", "ScrolledText"):
+
+    if isinstance(widget, tkinter.Text):
         widget.tag_add(SEL, "1.0", END)
         widget.mark_set(INSERT, END)
-        widget.see(END)
-    else:
-        widget.select_range(0, END)
+        widget.see(INSERT)
+    elif isinstance(widget, tkinter.Entry):
+        widget.selection_range(0, END)
         widget.icursor(END)
-    return 'break'
 
 
 class Window(tkinter.Tk):
@@ -137,21 +138,21 @@ class Window(tkinter.Tk):
     """
 
     def __init__(
-        self,
-        title="ttkbootstrap",
-        themename="litera",
-        iconphoto='',
-        size=None,
-        position=None,
-        minsize=None,
-        maxsize=None,
-        resizable=None,
-        hdpi=True,
-        scaling=None,
-        transient=None,
-        overrideredirect=False,
-        alpha=1.0,
-        **kwargs,
+            self,
+            title="ttkbootstrap",
+            themename="litera",
+            iconphoto='',
+            size=None,
+            position=None,
+            minsize=None,
+            maxsize=None,
+            resizable=None,
+            hdpi=True,
+            scaling=None,
+            transient=None,
+            overrideredirect=False,
+            alpha=1.0,
+            **kwargs,
     ):
         """
         Parameters:
@@ -315,7 +316,7 @@ class Window(tkinter.Tk):
         ypos = (s_height - w_height) // 2
         self.geometry(f'+{xpos}+{ypos}')
 
-    position_center = place_window_center # alias
+    position_center = place_window_center  # alias
 
 
 class Toplevel(tkinter.Toplevel):
@@ -336,21 +337,21 @@ class Toplevel(tkinter.Toplevel):
     """
 
     def __init__(
-        self,
-        title="ttkbootstrap",
-        iconphoto='',
-        size=None,
-        position=None,
-        minsize=None,
-        maxsize=None,
-        resizable=None,
-        transient=None,
-        overrideredirect=False,
-        windowtype=None,
-        topmost=False,
-        toolwindow=False,
-        alpha=1.0,
-        **kwargs,
+            self,
+            title="ttkbootstrap",
+            iconphoto='',
+            size=None,
+            position=None,
+            minsize=None,
+            maxsize=None,
+            resizable=None,
+            transient=None,
+            overrideredirect=False,
+            windowtype=None,
+            topmost=False,
+            toolwindow=False,
+            alpha=1.0,
+            **kwargs,
     ):
         """
         Parameters:
@@ -510,14 +511,14 @@ class Toplevel(tkinter.Toplevel):
         ypos = (s_height - w_height) // 2
         self.geometry(f'+{xpos}+{ypos}')
 
-    position_center = place_window_center # alias
+    position_center = place_window_center  # alias
+
 
 if __name__ == "__main__":
-
     root = Window(themename="superhero", alpha=0.5, size=(1000, 1000))
-    #root.withdraw()
+    # root.withdraw()
     root.place_window_center()
-    #root.deiconify()
+    # root.deiconify()
 
     top = Toplevel(title="My Toplevel", alpha=0.4, size=(1000, 1000))
     top.place_window_center()
