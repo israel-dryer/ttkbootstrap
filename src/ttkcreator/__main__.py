@@ -34,15 +34,17 @@ class ThemeCreator(ttk.Window):
             self.file_submenu.add_command(label="Save", command=self.save_theme)
             self.file_submenu.add_command(label="Reset", command=self.change_base_theme)
             self.file_submenu.add_command(label="Import", command=self.import_user_themes)
-            self.file_submenu.add_command(label="Export", command=self.export_user_themes)
+            self.file_submenu.add_command(label="Export all themes", command=self.export_user_themes)
+            self.file_submenu.add_command(label="Export theme definition", command=self.export_theme_as_python_file)
             self.menu.add_cascade(menu=self.file_submenu, label="File")
         else:
             # all other platforms
             self.menu.add_command(label="Save", command=self.save_theme)
             self.menu.add_command(label="Reset", command=self.change_base_theme)
             self.menu.add_command(label="Import", command=self.import_user_themes)
-            self.menu.add_command(label="Export", command=self.export_user_themes)
-        
+            self.menu.add_command(label="Export all themes", command=self.export_user_themes)
+            self.menu.add_command(label="Export theme definition", command=self.export_theme_as_python_file)
+
         self.configure(menu=self.menu)
 
         # theme configuration settings
@@ -172,6 +174,52 @@ class ThemeCreator(ttk.Window):
         self.base_theme.configure(values=new_themes)
         Messagebox.ok(f"The theme {name} has been created", "Save theme")
 
+    from tkinter.filedialog import asksaveasfilename
+
+    def export_theme_as_python_file(self):
+        """Export the current theme definition as a Python file."""
+        name = self.theme_name.get().lower().replace(" ", "")
+        theme_type = self.style.theme.type
+        colors = {row.label["text"]: row.color_value for row in self.color_rows}
+
+        lines = [
+            "from ttkbootstrap.style import ThemeDefinition",
+            "",
+            f"theme = ThemeDefinition(",
+            f'    name="{name}",',
+            f'    themetype="{theme_type}",',
+            f"    colors={{"
+        ]
+        for key, value in colors.items():
+            lines.append(f'        "{key}": "{value}",')
+        lines.append("    },")
+        lines.append(")")
+
+        theme_code = "\n".join(lines)
+
+        filepath = asksaveasfilename(
+            defaultextension=".py",
+            initialfile=f"{name}_theme.py",
+            filetypes=[("Python files", "*.py")],
+            title="Save Theme As Python File",
+        )
+
+        if filepath:
+            try:
+                with open(filepath, "w", encoding="utf-8") as f:
+                    f.write(theme_code)
+                Messagebox.ok(
+                    parent=self,
+                    title="Export Successful",
+                    message=f"Theme exported to {filepath}",
+                )
+            except Exception as e:
+                Messagebox.ok(
+                    parent=self,
+                    title="Export Failed",
+                    message=f"Failed to save file: {e}",
+                    alert=True,
+                )
 
 class ColorRow(ttk.Frame):
     def __init__(self, master, color, style):
@@ -480,6 +528,5 @@ class DemoWidgets(ttk.Frame):
 
 
 if __name__ == "__main__":
-
     creator = ThemeCreator()
     creator.mainloop()
