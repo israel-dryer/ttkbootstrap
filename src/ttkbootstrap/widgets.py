@@ -8,6 +8,8 @@ from tkinter.ttk import Notebook, OptionMenu, PanedWindow
 from tkinter.ttk import Panedwindow, Progressbar, Radiobutton
 from tkinter.ttk import Scale, Scrollbar, Separator
 from tkinter.ttk import Sizegrip, Spinbox, Treeview
+from warnings import warn
+
 from ttkbootstrap.constants import *
 
 # date entry imports
@@ -104,6 +106,8 @@ class DateEntry(ttk.Frame):
             firstweekday=6,
             startdate=None,
             bootstyle="",
+            popup_title: str = 'Select new date',
+            raise_exception: bool = False,
             **kwargs,
     ):
         """
@@ -130,17 +134,22 @@ class DateEntry(ttk.Frame):
                 options include -> primary, secondary, success, info,
                 warning, danger, dark, light.
 
-            **kwargs (Dict[str, Any], optional):
+            raise_exception (bool, optional):
+                If a `ValueError` should be raised, if the user enters an invalid date string. If this is set to `False`,
+                faulty date strings will be ignored. Only a warning on the terminal/console will be printed.
+
+            **kwargs (dict[str, Any], optional):
                 Other keyword arguments passed to the frame containing the
                 entry and date button.
         """
-        self.__dateformat = dateformat  # User/Programmer should NOT be able to change this, therefore double underscores
         self.__enabled = True  # User/Programmer should NOT be able to change this, therefore double underscores
+        self.__dateformat = self._validate_dateformat(dateformat)  # User/Programmer should NOT be able to change this, therefore double underscores
         self._firstweekday = firstweekday
-        self._popup_title = "Select new date"
 
         self._startdate = startdate or datetime.today()
         self._bootstyle = bootstyle
+        self._popup_title = popup_title
+        self._raise_exception = raise_exception
         super().__init__(master, **kwargs)
 
         # add visual components
@@ -150,8 +159,6 @@ class DateEntry(ttk.Frame):
 
         if "width" in kwargs:
             entry_kwargs["width"] = kwargs.pop("width")
-        if "popup_title" in kwargs:
-            self._popup_title = kwargs.pop("popup_title")
 
         self.entry = ttk.Entry(self, **entry_kwargs)
         self.entry.pack(side=tk.LEFT, fill=tk.X, expand=tk.YES)
@@ -261,7 +268,41 @@ class DateEntry(ttk.Frame):
         return self.configure(cnf='startdate')
 
     @staticmethod
-    def __clean_datetime(new_date: datetime | date) -> datetime:
+    def _validate_dateformat(dateformat: str) -> str:
+        """
+        Checks if given dateformat string is appropriate for dates. If not, a `ValueError` will be raised.
+
+        @see https://docs.python.org/3/library/datetime.html#strftime-and-strptime-behavior
+
+        :param dateformat: Dateformat string
+        :return: Given dateformat string
+        :raise ValueError: If given dateformat string is not appropriate for dates
+        """
+        has_year: bool = any(y in dateformat for y in ('%Y', '%y', '%G'))
+        has_month: bool = any(m in dateformat for m in ('%m', '%B', '%b'))
+        has_day: bool = any(d in dateformat for d in ('%d', ))
+        is_full_format: bool = any(f in dateformat for f in ('%x', '%c'))
+
+        if has_year and has_month and has_day:
+            return dateformat
+
+        if is_full_format:
+            return dateformat
+
+        # Special case: (day of the year & year)
+        if '%j' in dateformat and has_year:
+            return dateformat
+
+        # Special case: (week day & week number & year)
+        has_week_number: bool = any(w in dateformat for w in ('%U', '%W', '%V'))
+        has_week_day: bool = any(w in dateformat for w in ('%a', '%A', '%w'))
+        if has_week_number and has_week_day and has_year:
+            return dateformat
+
+        raise ValueError(f'Given formatting string ("{dateformat}"), cannot be used to validate a given strings for dates!')
+
+    @staticmethod
+    def _clean_datetime(new_date: datetime | date) -> datetime:
         """This is a date picker, therefore erase all unnecessary elements: hours, minutes, seconds, ..."""
         if isinstance(new_date, datetime):
             return datetime(new_date.year, new_date.month, new_date.day, tzinfo=new_date.tzinfo)
@@ -276,7 +317,7 @@ class DateEntry(ttk.Frame):
 
         :param new_date: New date that will become the currently selected one
         """
-        _date = self.__clean_datetime(new_date)
+        _date: datetime = self._clean_datetime(new_date)
         if self.__enabled:
             self.configure(startdate=_date)
             self.entry.delete(first=0, last=END)
@@ -306,16 +347,15 @@ class DateEntry(ttk.Frame):
 
         :raise ValueError: If entered string does NOT match with currently used date format
         """
-        current_date = self.entry.get() or datetime.today().strftime(self.__dateformat)
+        currently_selected_date: str = self.entry.get() or datetime.today().strftime(self.__dateformat)
         try:
-            self._startdate = datetime.strptime(current_date, self.__dateformat)
-        except ValueError:
-            # Rollback to current date & reraise exception
-            self.entry.delete(first=0, last=END)
-            self.entry.insert(END, self._startdate.strftime(self.__dateformat))
-            raise
-
-        old_date = datetime.strptime(current_date, self.__dateformat)
+            self._startdate: datetime = datetime.strptime(currently_selected_date, self.__dateformat)
+        except ValueError as exc:
+            warn(f"Date entry text does not match with date format: {self.__dateformat}\n")
+            if self._raise_exception:
+                raise exc
+            return
+        old_date = datetime.strptime(currently_selected_date, self.__dateformat)
 
         # get the new date and insert into the entry
         new_date = Querybox.get_date(
@@ -328,6 +368,7 @@ class DateEntry(ttk.Frame):
         self.entry.delete(first=0, last=END)
         self.entry.insert(END, new_date.strftime(self.__dateformat))
         self.entry.focus_force()
+        self.event_generate("<<DateEntrySelected>>")
 
 
 class Floodgauge(tk.Canvas):
