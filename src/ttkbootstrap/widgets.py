@@ -159,13 +159,14 @@ class DateEntry(ttk.Frame):
         entry_kwargs = {
             "bootstyle": self._bootstyle,
         }
-
         if "width" in kwargs:
             entry_kwargs["width"] = kwargs.pop("width")
 
+        # Build date Widget button (this shows the date in the wanted format)
         self.entry = ttk.Entry(self, **entry_kwargs)
         self.entry.pack(side=tk.LEFT, fill=tk.X, expand=tk.YES)
 
+        # Build datepicker button & place it right to the date widget
         self.button = ttk.Button(
             master=self,
             command=self._on_date_ask,
@@ -173,8 +174,8 @@ class DateEntry(ttk.Frame):
         )
         self.button.pack(side=tk.LEFT)
 
-        # starting value
-        self.entry.insert(tk.END, self._startdate.strftime(self.__dateformat))
+        # Initialize this widget
+        self.set_date(self._startdate)
 
     def __getitem__(self, key: str):
         return self.configure(cnf=key)
@@ -302,7 +303,7 @@ class DateEntry(ttk.Frame):
         if has_week_number and has_week_day and has_year:
             return dateformat
 
-        raise ValueError(f'Given formatting string ("{dateformat}"), cannot be used to validate a given strings for dates!')
+        raise ValueError(f'Given formatting string ("{dateformat}"), cannot be used to validate a given strings for dates or display a given datetime object as a date!')
 
     @staticmethod
     def _clean_datetime(new_date: datetime | date) -> datetime:
@@ -329,7 +330,7 @@ class DateEntry(ttk.Frame):
             self.enable()
             self.configure(startdate=_date)
             self.entry.delete(first=0, last=END)
-            self.entry.insert(END, new_date.strftime(self.__dateformat))
+            self.entry.insert(tk.END, new_date.strftime(self.__dateformat))
             self.disable()
 
     def disable(self) -> None:
@@ -368,9 +369,7 @@ class DateEntry(ttk.Frame):
             firstweekday=self._firstweekday,
             bootstyle=self._bootstyle,
         )
-        self.entry.delete(first=0, last=END)
-        self.entry.insert(END, new_date.strftime(self.__dateformat))
-        self.entry.focus_force()
+        self.set_date(new_date)
         self.event_generate("<<DateEntrySelected>>")
 
 
