@@ -134,9 +134,12 @@ class DateEntry(ttk.Frame):
                 options include -> primary, secondary, success, info,
                 warning, danger, dark, light.
 
+            popup_title (str, optional):
+                Title for PopUp window (Default: `Select new date`)
+
             raise_exception (bool, optional):
                 If a `ValueError` should be raised, if the user enters an invalid date string. If this is set to `False`,
-                faulty date strings will be ignored. Only a warning on the terminal/console will be printed.
+                faulty date strings will be ignored. Only a warning on the terminal/console will be printed. (Default: `False`)
 
             **kwargs (dict[str, Any], optional):
                 Other keyword arguments passed to the frame containing the
