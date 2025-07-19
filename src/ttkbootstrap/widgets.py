@@ -1212,7 +1212,7 @@ class Meter(ttk.Frame):
         self._set_subtext()
 
     def _set_subtext(self):
-        if self._subtextfont:
+        if self._subtext:
             if self._showtext:
                 self.subtext.place(relx=0.5, rely=0.6, anchor=tk.CENTER)
             else:
