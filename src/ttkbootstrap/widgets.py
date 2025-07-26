@@ -8,11 +8,13 @@ from tkinter.ttk import Notebook, OptionMenu, PanedWindow
 from tkinter.ttk import Panedwindow, Progressbar, Radiobutton
 from tkinter.ttk import Scale, Scrollbar, Separator
 from tkinter.ttk import Sizegrip, Spinbox, Treeview
+from warnings import warn
+
 from ttkbootstrap.constants import *
 
 # date entry imports
 from ttkbootstrap.dialogs import Querybox
-from datetime import datetime
+from datetime import datetime, date
 
 # floodgauge imports
 import math
@@ -104,6 +106,8 @@ class DateEntry(ttk.Frame):
             firstweekday=6,
             startdate=None,
             bootstyle="",
+            popup_title: str = 'Select new date',
+            raise_exception: bool = False,
             **kwargs,
     ):
         """
@@ -130,25 +134,39 @@ class DateEntry(ttk.Frame):
                 options include -> primary, secondary, success, info,
                 warning, danger, dark, light.
 
-            **kwargs (Dict[str, Any], optional):
+            popup_title (str, optional):
+                Title for PopUp window (Default: `Select new date`)
+
+            raise_exception (bool, optional):
+                If a `ValueError` should be raised, if the user enters an invalid date string. If this is set to `False`,
+                faulty date strings will be ignored. Only a warning on the terminal/console will be printed. (Default: `False`)
+
+            **kwargs (dict[str, Any], optional):
                 Other keyword arguments passed to the frame containing the
                 entry and date button.
         """
-        self._dateformat = dateformat
+        self.__enabled = True  # User/Programmer should NOT be able to change this, therefore double underscores
+        self.__dateformat = self._validate_dateformat(dateformat)  # User/Programmer should NOT be able to change this, therefore double underscores
         self._firstweekday = firstweekday
 
         self._startdate = startdate or datetime.today()
         self._bootstyle = bootstyle
+        self._popup_title = popup_title
+        self._raise_exception = raise_exception
         super().__init__(master, **kwargs)
 
         # add visual components
-        entry_kwargs = {"bootstyle": self._bootstyle}
+        entry_kwargs = {
+            "bootstyle": self._bootstyle,
+        }
         if "width" in kwargs:
             entry_kwargs["width"] = kwargs.pop("width")
 
+        # Build date Widget button (this shows the date in the wanted format)
         self.entry = ttk.Entry(self, **entry_kwargs)
         self.entry.pack(side=tk.LEFT, fill=tk.X, expand=tk.YES)
 
+        # Build datepicker button & place it right to the date widget
         self.button = ttk.Button(
             master=self,
             command=self._on_date_ask,
@@ -156,8 +174,8 @@ class DateEntry(ttk.Frame):
         )
         self.button.pack(side=tk.LEFT)
 
-        # starting value
-        self.entry.insert(tk.END, self._startdate.strftime(self._dateformat))
+        # Initialize this widget
+        self.set_date(self._startdate)
 
     def __getitem__(self, key: str):
         return self.configure(cnf=key)
@@ -179,7 +197,7 @@ class DateEntry(ttk.Frame):
             else:
                 kwargs[state] = state
         if "dateformat" in kwargs:
-            self._dateformat = kwargs.pop("dateformat")
+            self.__dateformat = kwargs.pop("dateformat")
         if "firstweekday" in kwargs:
             self._firstweekday = kwargs.pop("firstweekday")
         if "startdate" in kwargs:
@@ -201,7 +219,7 @@ class DateEntry(ttk.Frame):
             buttonstate = self.button.cget("state")
             return {"Entry": entrystate, "Button": buttonstate}
         if cnf == "dateformat":
-            return self._dateformat
+            return self.__dateformat
         if cnf == "firstweekday":
             return self._firstweekday
         if cnf == "startdate":
@@ -227,31 +245,131 @@ class DateEntry(ttk.Frame):
         else:
             return self._configure_set(**kwargs)
 
-    def _on_date_ask(self):
-        """Callback for pushing the date button"""
-        _val = self.entry.get() or datetime.today().strftime(self._dateformat)
-        try:
-            self._startdate = datetime.strptime(_val, self._dateformat)
-        except Exception as e:
-            print("Date entry text does not match", self._dateformat)
-            self._startdate = datetime.today()
-            self.entry.delete(first=0, last=tk.END)
-            self.entry.insert(
-                tk.END, self._startdate.strftime(self._dateformat)
-            )
+    @property
+    def enabled(self) -> bool:
+        """
+        If ``True`` this date picker is enabled and user can pick a new date, if ``False`` user can't use this picker
 
-        old_date = datetime.strptime(_val, self._dateformat)
+        :return: ``True`` if usable, ``False`` otherwise
+        """
+        return self.__enabled
+
+    @property
+    def dateformat(self) -> str:
+        """
+        Returns date format string, that is used to convert from strings to datetime objects respectively vice versa
+
+        :return: Date format as string
+        """
+        return self.__dateformat
+
+    def get_date(self) -> datetime:
+        """
+        Returns currently selected date as datetime object
+
+        :return: Currently selected date
+        """
+        return self.configure(cnf='startdate')
+
+    @staticmethod
+    def _validate_dateformat(dateformat: str) -> str:
+        """
+        Checks if given dateformat string is appropriate for dates. If not, a `ValueError` will be raised.
+
+        @see https://docs.python.org/3/library/datetime.html#strftime-and-strptime-behavior
+
+        :param dateformat: Dateformat string
+        :return: Given dateformat string
+        :raise ValueError: If given dateformat string is not appropriate for dates
+        """
+        has_year: bool = any(y in dateformat for y in ('%Y', '%y', '%G'))
+        has_month: bool = any(m in dateformat for m in ('%m', '%B', '%b'))
+        has_day: bool = any(d in dateformat for d in ('%d', ))
+        is_full_format: bool = any(f in dateformat for f in ('%x', '%c'))
+
+        if has_year and has_month and has_day:
+            return dateformat
+
+        if is_full_format:
+            return dateformat
+
+        # Special case: (day of the year & year)
+        if '%j' in dateformat and has_year:
+            return dateformat
+
+        # Special case: (week day & week number & year)
+        has_week_number: bool = any(w in dateformat for w in ('%U', '%W', '%V'))
+        has_week_day: bool = any(w in dateformat for w in ('%a', '%A', '%w'))
+        if has_week_number and has_week_day and has_year:
+            return dateformat
+
+        raise ValueError(f'Given formatting string ("{dateformat}"), cannot be used to validate a given strings for dates or display a given datetime object as a date!')
+
+    @staticmethod
+    def _clean_datetime(new_date: datetime | date) -> datetime:
+        """This is a date picker, therefore erase all unnecessary elements: hours, minutes, seconds, ..."""
+        if isinstance(new_date, datetime):
+            return datetime(new_date.year, new_date.month, new_date.day, tzinfo=new_date.tzinfo)
+        else:
+            return datetime(new_date.year, new_date.month, new_date.day)
+
+    def set_date(self, new_date: datetime | date) -> None:
+        """
+        Sets given date/datetime object as currently selected date.
+
+        (NOTE: Hours, minutes, seconds, milliseconds, microseconds will be ignored)
+
+        :param new_date: New date that will become the currently selected one
+        """
+        _date: datetime = self._clean_datetime(new_date)
+        if self.__enabled:
+            self.configure(startdate=_date)
+            self.entry.delete(first=0, last=END)
+            self.entry.insert(END, new_date.strftime(self.__dateformat))
+        else:
+            self.enable()
+            self.configure(startdate=_date)
+            self.entry.delete(first=0, last=END)
+            self.entry.insert(tk.END, new_date.strftime(self.__dateformat))
+            self.disable()
+
+    def disable(self) -> None:
+        """ Disables this date picker """
+        self.__enabled = False
+        self.entry.state(['disabled'])
+        self.button.state(['disabled'])
+
+    def enable(self) -> None:
+        """ Enables this date picker """
+        self.__enabled = True
+        self.entry.state(['!disabled'])
+        self.button.state(['!disabled'])
+
+    def _on_date_ask(self):
+        """
+        Callback for pushing the date button
+
+        :raise ValueError: If entered string does NOT match with currently used date format
+        """
+        currently_selected_date: str = self.entry.get() or datetime.today().strftime(self.__dateformat)
+        try:
+            self._startdate: datetime = datetime.strptime(currently_selected_date, self.__dateformat)
+        except ValueError as exc:
+            warn(f"Date entry text does not match with date format: {self.__dateformat}\n")
+            if self._raise_exception:
+                raise exc
+            return
+        old_date = datetime.strptime(currently_selected_date, self.__dateformat)
 
         # get the new date and insert into the entry
         new_date = Querybox.get_date(
             parent=self.entry,
+            title=self._popup_title,
             startdate=old_date,
             firstweekday=self._firstweekday,
             bootstyle=self._bootstyle,
         )
-        self.entry.delete(first=0, last=tk.END)
-        self.entry.insert(tk.END, new_date.strftime(self._dateformat))
-        self.entry.focus_force()
+        self.set_date(new_date)
         self.event_generate("<<DateEntrySelected>>")
 
 
@@ -1094,7 +1212,7 @@ class Meter(ttk.Frame):
         self._set_subtext()
 
     def _set_subtext(self):
-        if self._subtextfont:
+        if self._subtext:
             if self._showtext:
                 self.subtext.place(relx=0.5, rely=0.6, anchor=tk.CENTER)
             else:
