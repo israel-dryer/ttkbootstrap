@@ -8,6 +8,7 @@ from tkinter.ttk import Notebook, OptionMenu, PanedWindow
 from tkinter.ttk import Panedwindow, Progressbar, Radiobutton
 from tkinter.ttk import Scale, Scrollbar, Separator
 from tkinter.ttk import Sizegrip, Spinbox, Treeview
+from typing import Union
 from warnings import warn
 
 from ttkbootstrap.constants import *
@@ -306,14 +307,14 @@ class DateEntry(ttk.Frame):
         raise ValueError(f'Given formatting string ("{dateformat}"), cannot be used to validate a given strings for dates or display a given datetime object as a date!')
 
     @staticmethod
-    def _clean_datetime(new_date: datetime | date) -> datetime:
+    def _clean_datetime(new_date: Union[datetime, date]) -> datetime:
         """This is a date picker, therefore erase all unnecessary elements: hours, minutes, seconds, ..."""
         if isinstance(new_date, datetime):
             return datetime(new_date.year, new_date.month, new_date.day, tzinfo=new_date.tzinfo)
         else:
             return datetime(new_date.year, new_date.month, new_date.day)
 
-    def set_date(self, new_date: datetime | date) -> None:
+    def set_date(self, new_date: Union[datetime, date]) -> None:
         """
         Sets given date/datetime object as currently selected date.
 
