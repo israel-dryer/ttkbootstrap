@@ -18,6 +18,8 @@ plugins:
       handlers:
         python:
           paths: ["src"]
+          options:
+            imports: true
 
   - i18n:
       default_language: en
