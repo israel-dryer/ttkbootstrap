@@ -40,3 +40,9 @@ load, expore, and apply your own custom themes.
 ## 🎨 Sample Themes
 
 ![themes](./assets/themes/themes.gif)
+
+### Powered by
+<div>
+  <a href="https://jb.gg/OpenSource"><img src="https://resources.jetbrains.com/storage/products/company/brand/logos/jetbrains.svg" alt="jetbrains" width="300"></a>
+</div>
+<sub>Copyright © 2025 JetBrains s.r.o. JetBrains and the JetBrains logo are trademarks of JetBrains s.r.o.</sub>
