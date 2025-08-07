@@ -46,6 +46,8 @@ load, expore, and apply your own custom themes.
 This project is proudly developed with the support of the
 <a href="https://www.jetbrains.com/pycharm/" target="_blank" rel="noopener">PyCharm IDE</a>, generously provided by JetBrains.
 
-<a href="https://www.jetbrains.com/" target="_blank" rel="noopener"> <picture> <source media="(prefers-color-scheme: light)" srcset="https://github.com/user-attachments/assets/f6d4e79d-97f4-4368-a944-affd423aa922"> <img width="250" alt="JetBrains logo" src="https://github.com/user-attachments/assets/1e42e5db-ffb5-4c8d-b238-3f5633fb7e6d"> </picture> </a> 
+<a href="https://www.jetbrains.com/" target="_blank" rel="noopener"> 
+ <img src="https://github.com/user-attachments/assets/f6d4e79d-97f4-4368-a944-affd423aa922" width="250" alt="jetbrains logo">
+</a> 
 
 <sub> © 2025 JetBrains s.r.o. JetBrains and the JetBrains logo are registered trademarks of JetBrains s.r.o. </sub>
