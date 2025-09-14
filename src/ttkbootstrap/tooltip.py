@@ -1,4 +1,4 @@
-from typing import Literal
+from typing import Literal, Optional
 
 import ttkbootstrap as ttk
 from ttkbootstrap.constants import *
@@ -46,7 +46,7 @@ class ToolTip:
             wraplength=None,
             delay=250,  # milliseconds
             image=None,
-            position: str | None = None,
+            position: Optional[str] = None,
             **kwargs,
     ):
         """
