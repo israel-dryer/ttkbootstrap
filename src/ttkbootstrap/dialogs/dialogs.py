@@ -697,6 +697,7 @@ class DatePickerDialog:
         # make toplevel visible
         self._set_window_position()
         self.root.deiconify()
+        self.root.update_idletasks()
 
     def _update_widget_bootstyle(self):
         self.frm_title.configure(bootstyle=self.bootstyle)
