@@ -1,5 +1,8 @@
+include LICENSE
 include README.md
 include README_zh.md
-recursive-include src/ttkbootstrap/localization/msgs *.msg
-recursive-include src/ttkbootstrap/themes *.json
-recursive-include src/ttkbootstrap/assets *
+
+graft src/ttkbootstrap
+graft src/ttkcreator
+
+global-exclude *.py[cod] __pycache__/* .DS_Store
