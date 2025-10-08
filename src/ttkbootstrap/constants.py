@@ -1,33 +1,4 @@
-from tkinter.constants import (
-    ACTIVE,
-    ANCHOR,
-    BOTTOM,
-    CENTER,
-    DISABLED,
-    E,
-    END,
-    FIRST,
-    HORIZONTAL,
-    INSERT,
-    LAST,
-    LEFT,
-    N,
-    NE,
-    NONE,
-    NORMAL,
-    NS,
-    NSEW,
-    NW,
-    RIGHT,
-    S,
-    SE,
-    SW,
-    TOP,
-    VERTICAL,
-    W,
-    X,
-    Y,
-)
+from tkinter.constants import *
 
 DEFAULT = 'default'
 DEFAULT_THEME = 'litera'
@@ -70,31 +41,3 @@ TREEHEADINGS = 'tree headings'
 
 # state constants
 READONLY = 'readonly'
-
-__all__ = [
-    # tkinter.constants
-    "ACTIVE", "ANCHOR", "BOTTOM", "CENTER", "DISABLED", "E", "END", "FIRST", "HORIZONTAL",
-    "INSERT", "LAST", "LEFT", "N", "NE", "NONE", "NORMAL", "NS", "NSEW", "NW", "RIGHT",
-    "S", "SE", "SW", "TOP", "VERTICAL", "W", "X", "Y",
-
-    # themes
-    "DEFAULT", "DEFAULT_THEME", "TTK_CLAM", "TTK_ALT", "TTK_DEFAULT",
-
-    # meter
-    "FULL", "SEMI",
-
-    # progressbar
-    "DETERMINATE", "INDETERMINATE",
-
-    # bootstyle colors
-    "PRIMARY", "SECONDARY", "SUCCESS", "DANGER", "WARNING", "INFO", "LIGHT", "DARK",
-
-    # bootstyle types
-    "OUTLINE", "LINK", "TOGGLE", "INVERSE", "STRIPED", "TOOLBUTTON", "ROUND", "SQUARE",
-
-    # treeview
-    "TREE", "HEADINGS", "TREEHEADINGS",
-
-    # states
-    "READONLY",
-]
