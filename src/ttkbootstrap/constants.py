@@ -31,7 +31,6 @@ TOGGLE = 'toggle'
 INVERSE = 'inverse'
 STRIPED = 'striped'
 TOOLBUTTON = 'toolbutton'
-ROUND = 'round'
 SQUARE = 'square'
 
 # treeview constants
