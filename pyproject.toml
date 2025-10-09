@@ -4,13 +4,13 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "ttkbootstrap"
-version = "1.14.4"
+version = "1.14.5"
 description = "A supercharged theme extension for tkinter that enables on-demand modern flat style themes inspired by Bootstrap."
 readme = "README.md"
 requires-python = ">=3.8"
 license = "MIT AND (Apache-2.0 OR BSD-2-Clause)"
 authors = [
-    { name="Israel Dryer", email="israel.dryer@gmail.com" }
+    { name = "Israel Dryer", email = "israel.dryer@gmail.com" }
 ]
 keywords = [
     "tkinter",
@@ -44,9 +44,7 @@ classifiers = [
     "Operating System :: OS Independent",
 ]
 
-dependencies = [
-    "pillow>=10,<11",
-]
+dependencies = ["pillow>=10,<12"]
 
 [project.urls]
 Homepage = "https://github.com/israel-dryer/ttkbootstrap"
