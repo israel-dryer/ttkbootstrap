@@ -4,11 +4,14 @@
     !! This widget is not currently supported on Mac OS
 """
 import tkinter as tk
-import ttkbootstrap as ttk
-from ttkbootstrap.constants import *
-from ttkbootstrap import colorutils, utility
-from PIL import ImageGrab, ImageTk, Image
 from collections import namedtuple
+
+from PIL import ImageGrab, ImageTk
+from PIL.Image import Resampling
+
+import ttkbootstrap as ttk
+from ttkbootstrap import colorutils, utility
+from ttkbootstrap.constants import *
 
 ColorChoice = namedtuple('ColorChoice', 'rgb hsl hex')
 
@@ -113,13 +116,13 @@ class ColorDropperDialog:
             y = event.y
         # move snip window
         self.zoom_toplevel.geometry(
-            f'+{x+self.zoom_xoffset}+{y+self.zoom_yoffset}')
+            f'+{x + self.zoom_xoffset}+{y + self.zoom_yoffset}')
         # update the snip image
-        bbox = (x-self.zoom_level, y-self.zoom_level,
-                x+self.zoom_level+1, y+self.zoom_level+1)
+        bbox = (x - self.zoom_level, y - self.zoom_level,
+                x + self.zoom_level + 1, y + self.zoom_level + 1)
         size = (self.zoom_width, self.zoom_height)
         self.zoom_data = self.screenshot_data.crop(
-            bbox).resize(size, Image.BOX)
+            bbox).resize(size, Resampling.BOX)
         self.zoom_image = ImageTk.PhotoImage(self.zoom_data)
         self.zoom_canvas.itemconfig('image', image=self.zoom_image)
         hover_color = self.get_hover_color()
@@ -129,8 +132,8 @@ class ColorDropperDialog:
     def get_hover_color(self):
         """Get the color that is hovered over by the mouse cursor."""
         x1, y1, x2, y2 = self.zoom_canvas.bbox('indicator')
-        x = x1 + (x2-x1)//2
-        y = y1 + (y2-y2)//2
+        x = x1 + (x2 - x1) // 2
+        y = y1 + (y2 - y2) // 2
         r, g, b = self.zoom_data.getpixel((x, y))
         hx = colorutils.color_to_hex((r, g, b))
         return hx
