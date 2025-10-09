@@ -1,18 +1,18 @@
+import colorsys
 import json
 import re
-import colorsys
 import tkinter as tk
-from tkinter import font
 from math import ceil
-from tkinter import TclError, ttk
+from tkinter import TclError, font, ttk
 from typing import Any, Callable
-from PIL import ImageTk, ImageDraw, Image, ImageFont
+
+from PIL import Image, ImageColor, ImageDraw, ImageFont, ImageTk
+from PIL.Image import Resampling, Transpose
+
+from ttkbootstrap import colorutils, utility as util
 from ttkbootstrap.constants import *
+from ttkbootstrap.publisher import Channel, Publisher
 from ttkbootstrap.themes.standard import STANDARD_THEMES
-from ttkbootstrap.publisher import Publisher, Channel
-from ttkbootstrap import utility as util
-from ttkbootstrap import colorutils
-from PIL import ImageColor
 
 try:
     # prevent app from failing if user.py gets corrupted
@@ -1550,7 +1550,7 @@ class StyleBuilderTTK:
         )
         draw.polygon(xy=[(0, 52), (48, 100), (0, 100)], fill=barcolor)
 
-        _resized = img.resize((thickness, thickness), Image.LANCZOS)
+        _resized = img.resize((thickness, thickness), Resampling.LANCZOS)
         h_img = ImageTk.PhotoImage(_resized)
         h_name = h_img._PhotoImage__photo.name
         v_img = ImageTk.PhotoImage(_resized.rotate(90))
@@ -1814,7 +1814,7 @@ class StyleBuilderTTK:
         draw = ImageDraw.Draw(_normal)
         draw.ellipse((0, 0, 95, 95), fill=normal_color)
         normal_img = ImageTk.PhotoImage(
-            _normal.resize((size, size), Image.LANCZOS)
+            _normal.resize((size, size), Resampling.LANCZOS)
         )
         normal_name = util.get_image_name(normal_img)
         self.theme_images[normal_name] = normal_img
@@ -1824,7 +1824,7 @@ class StyleBuilderTTK:
         draw = ImageDraw.Draw(_pressed)
         draw.ellipse((0, 0, 95, 95), fill=pressed_color)
         pressed_img = ImageTk.PhotoImage(
-            _pressed.resize((size, size), Image.LANCZOS)
+            _pressed.resize((size, size), Resampling.LANCZOS)
         )
         pressed_name = util.get_image_name(pressed_img)
         self.theme_images[pressed_name] = pressed_img
@@ -1834,7 +1834,7 @@ class StyleBuilderTTK:
         draw = ImageDraw.Draw(_hover)
         draw.ellipse((0, 0, 95, 95), fill=hover_color)
         hover_img = ImageTk.PhotoImage(
-            _hover.resize((size, size), Image.LANCZOS)
+            _hover.resize((size, size), Resampling.LANCZOS)
         )
         hover_name = util.get_image_name(hover_img)
         self.theme_images[hover_name] = hover_img
@@ -1844,7 +1844,7 @@ class StyleBuilderTTK:
         draw = ImageDraw.Draw(_disabled)
         draw.ellipse((0, 0, 95, 95), fill=disabled_color)
         disabled_img = ImageTk.PhotoImage(
-            _disabled.resize((size, size), Image.LANCZOS)
+            _disabled.resize((size, size), Resampling.LANCZOS)
         )
         disabled_name = util.get_image_name(disabled_img)
         self.theme_images[disabled_name] = disabled_img
@@ -2080,7 +2080,7 @@ class StyleBuilderTTK:
             # Draw the arrow shape (triangle) pointing upwards, offset by the specified y_offset
             draw.polygon([(3, 6 + y_offset), (9, 6 + y_offset), (6, 3 + y_offset)], fill=color)
 
-            img = img.resize(size, Image.BICUBIC)
+            img = img.resize(size, Resampling.BICUBIC)
 
             up_img = ImageTk.PhotoImage(img)
             up_name = util.get_image_name(up_img)
@@ -2138,7 +2138,7 @@ class StyleBuilderTTK:
             draw.line([7, 5, 7, 8], fill=color)
             draw.line([8, 6, 8, 9], fill=color)
 
-            img = img.resize(size, Image.BICUBIC)
+            img = img.resize(size, Resampling.BICUBIC)
 
             up_img = ImageTk.PhotoImage(img)
             up_name = util.get_image_name(up_img)
@@ -2190,7 +2190,7 @@ class StyleBuilderTTK:
             draw = ImageDraw.Draw(img)
             radius = min([x, y]) // 2
             draw.rounded_rectangle([0, 0, x - 1, y - 1], radius, fill)
-            image = ImageTk.PhotoImage(img.resize(size, Image.BICUBIC))
+            image = ImageTk.PhotoImage(img.resize(size, Resampling.BICUBIC))
             name = util.get_image_name(image)
             self.theme_images[name] = image
             return name
@@ -2384,7 +2384,7 @@ class StyleBuilderTTK:
             x = size[0] * 10
             y = size[1] * 10
             img = Image.new("RGBA", (x, y), fill)
-            image = ImageTk.PhotoImage(img.resize(size), Image.BICUBIC)
+            image = ImageTk.PhotoImage(img.resize(size), Resampling.BICUBIC)
             name = util.get_image_name(image)
             self.theme_images[name] = image
             return name
@@ -3203,7 +3203,7 @@ class StyleBuilderTTK:
         )
         draw.rectangle([18, 18, 110, 110], fill=off_indicator)
 
-        off_img = ImageTk.PhotoImage(_off.resize(size, Image.LANCZOS))
+        off_img = ImageTk.PhotoImage(_off.resize(size, Resampling.LANCZOS))
         off_name = util.get_image_name(off_img)
         self.theme_images[off_name] = off_img
 
@@ -3214,8 +3214,8 @@ class StyleBuilderTTK:
             xy=[1, 1, 225, 129], outline=on_border, width=6, fill=on_fill
         )
         draw.rectangle([18, 18, 110, 110], fill=on_indicator)
-        _on = toggle_on.transpose(Image.ROTATE_180)
-        on_img = ImageTk.PhotoImage(_on.resize(size, Image.LANCZOS))
+        _on = toggle_on.transpose(Transpose.ROTATE_180)
+        on_img = ImageTk.PhotoImage(_on.resize(size, Resampling.LANCZOS))
         on_name = util.get_image_name(on_img)
         self.theme_images[on_name] = on_img
 
@@ -3225,7 +3225,7 @@ class StyleBuilderTTK:
         draw.rectangle([1, 1, 225, 129], outline=disabled_fg, width=6)
         draw.rectangle([18, 18, 110, 110], fill=disabled_fg)
         disabled_img = ImageTk.PhotoImage(
-            _disabled.resize(size, Image.LANCZOS)
+            _disabled.resize(size, Resampling.LANCZOS)
         )
         disabled_name = util.get_image_name(disabled_img)
         self.theme_images[disabled_name] = disabled_img
@@ -3237,8 +3237,8 @@ class StyleBuilderTTK:
             xy=[1, 1, 225, 129], outline=disabled_fg, width=6, fill=off_fill
         )
         draw.rectangle([18, 18, 110, 110], fill=disabled_fg)
-        _on_disabled = toggle_on_disabled.transpose(Image.ROTATE_180)
-        on_dis_img = ImageTk.PhotoImage(_on_disabled.resize(size, Image.LANCZOS))
+        _on_disabled = toggle_on_disabled.transpose(Transpose.ROTATE_180)
+        on_dis_img = ImageTk.PhotoImage(_on_disabled.resize(size, Resampling.LANCZOS))
         on_disabled_name = util.get_image_name(on_dis_img)
         self.theme_images[on_disabled_name] = on_dis_img
 
@@ -3301,7 +3301,7 @@ class StyleBuilderTTK:
             fill=off_fill,
         )
         draw.ellipse([20, 18, 112, 110], fill=off_indicator)
-        off_img = ImageTk.PhotoImage(_off.resize(size, Image.LANCZOS))
+        off_img = ImageTk.PhotoImage(_off.resize(size, Resampling.LANCZOS))
         off_name = util.get_image_name(off_img)
         self.theme_images[off_name] = off_img
 
@@ -3316,8 +3316,8 @@ class StyleBuilderTTK:
             fill=on_fill,
         )
         draw.ellipse([20, 18, 112, 110], fill=on_indicator)
-        _on = _on.transpose(Image.ROTATE_180)
-        on_img = ImageTk.PhotoImage(_on.resize(size, Image.LANCZOS))
+        _on = _on.transpose(Transpose.ROTATE_180)
+        on_img = ImageTk.PhotoImage(_on.resize(size, Resampling.LANCZOS))
         on_name = util.get_image_name(on_img)
         self.theme_images[on_name] = on_img
 
@@ -3332,8 +3332,8 @@ class StyleBuilderTTK:
             fill=off_fill,
         )
         draw.ellipse([20, 18, 112, 110], fill=disabled_fg)
-        _on_disabled = _on_disabled.transpose(Image.ROTATE_180)
-        on_dis_img = ImageTk.PhotoImage(_on_disabled.resize(size, Image.LANCZOS))
+        _on_disabled = _on_disabled.transpose(Transpose.ROTATE_180)
+        on_dis_img = ImageTk.PhotoImage(_on_disabled.resize(size, Resampling.LANCZOS))
         on_disabled_name = util.get_image_name(on_dis_img)
         self.theme_images[on_disabled_name] = on_dis_img
 
@@ -3345,7 +3345,7 @@ class StyleBuilderTTK:
         )
         draw.ellipse([20, 18, 112, 110], fill=disabled_fg)
         disabled_img = ImageTk.PhotoImage(
-            _disabled.resize(size, Image.LANCZOS)
+            _disabled.resize(size, Resampling.LANCZOS)
         )
         disabled_name = util.get_image_name(disabled_img)
         self.theme_images[disabled_name] = disabled_img
@@ -3763,7 +3763,7 @@ class StyleBuilderTTK:
         draw.ellipse(
             xy=[1, 1, 133, 133], outline=off_border, width=6, fill=off_fill
         )
-        off_img = ImageTk.PhotoImage(_off.resize(size, Image.LANCZOS))
+        off_img = ImageTk.PhotoImage(_off.resize(size, Resampling.LANCZOS))
         off_name = util.get_image_name(off_img)
         self.theme_images[off_name] = off_img
 
@@ -3775,7 +3775,7 @@ class StyleBuilderTTK:
         else:
             draw.ellipse(xy=[1, 1, 133, 133], fill=on_fill)
         draw.ellipse([40, 40, 94, 94], fill=on_indicator)
-        on_img = ImageTk.PhotoImage(_on.resize(size, Image.LANCZOS))
+        on_img = ImageTk.PhotoImage(_on.resize(size, Resampling.LANCZOS))
         on_name = util.get_image_name(on_img)
         self.theme_images[on_name] = on_img
 
@@ -3787,7 +3787,7 @@ class StyleBuilderTTK:
         else:
             draw.ellipse(xy=[1, 1, 133, 133], fill=disabled)
         draw.ellipse([40, 40, 94, 94], fill=off_fill)
-        on_dis_img = ImageTk.PhotoImage(_on_dis.resize(size, Image.LANCZOS))
+        on_dis_img = ImageTk.PhotoImage(_on_dis.resize(size, Resampling.LANCZOS))
         on_disabled_name = util.get_image_name(on_dis_img)
         self.theme_images[on_disabled_name] = on_dis_img
 
@@ -3798,7 +3798,7 @@ class StyleBuilderTTK:
             xy=[1, 1, 133, 133], outline=disabled, width=3, fill=off_fill
         )
         disabled_img = ImageTk.PhotoImage(
-            _disabled.resize(size, Image.LANCZOS)
+            _disabled.resize(size, Resampling.LANCZOS)
         )
         disabled_name = util.get_image_name(disabled_img)
         self.theme_images[disabled_name] = disabled_img
@@ -3920,7 +3920,7 @@ class StyleBuilderTTK:
             draw.rectangle(xy=xy, fill=fill)
 
         size = self.scale_size([21, 22])
-        tk_img = ImageTk.PhotoImage(image.resize(size, Image.LANCZOS))
+        tk_img = ImageTk.PhotoImage(image.resize(size, Resampling.LANCZOS))
         tk_name = util.get_image_name(tk_img)
         self.theme_images[tk_name] = tk_img
         return tk_name
@@ -4418,7 +4418,7 @@ class StyleBuilderTTK:
             fill=off_fill,
         )
         off_img = ImageTk.PhotoImage(
-            checkbutton_off.resize(size, Image.LANCZOS)
+            checkbutton_off.resize(size, Resampling.LANCZOS)
         )
         off_name = util.get_image_name(off_img)
         self.theme_images[off_name] = off_img
@@ -4435,7 +4435,7 @@ class StyleBuilderTTK:
         )
 
         draw.text((20, font_offset), indicator, font=fnt, fill=check_color)
-        on_img = ImageTk.PhotoImage(checkbutton_on.resize(size, Image.LANCZOS))
+        on_img = ImageTk.PhotoImage(checkbutton_on.resize(size, Resampling.LANCZOS))
         on_name = util.get_image_name(on_img)
         self.theme_images[on_name] = on_img
 
@@ -4451,7 +4451,7 @@ class StyleBuilderTTK:
         )
 
         draw.text((20, font_offset), indicator, font=fnt, fill=off_fill)
-        on_dis_img = ImageTk.PhotoImage(checkbutton_on_disabled.resize(size, Image.LANCZOS))
+        on_dis_img = ImageTk.PhotoImage(checkbutton_on_disabled.resize(size, Resampling.LANCZOS))
         on_dis_name = util.get_image_name(on_dis_img)
         self.theme_images[on_dis_name] = on_dis_img
 
@@ -4467,7 +4467,7 @@ class StyleBuilderTTK:
         )
         draw.line([36, 67, 100, 67], fill=check_color, width=12)
         alt_img = ImageTk.PhotoImage(
-            checkbutton_alt.resize(size, Image.LANCZOS)
+            checkbutton_alt.resize(size, Resampling.LANCZOS)
         )
         alt_name = util.get_image_name(alt_img)
         self.theme_images[alt_name] = alt_img
@@ -4484,7 +4484,7 @@ class StyleBuilderTTK:
         )
         draw.line([36, 67, 100, 67], fill=off_fill, width=12)
         alt_dis_img = ImageTk.PhotoImage(
-            checkbutton_alt_disabled.resize(size, Image.LANCZOS)
+            checkbutton_alt_disabled.resize(size, Resampling.LANCZOS)
         )
         alt_dis_name = util.get_image_name(alt_dis_img)
         self.theme_images[alt_dis_name] = alt_dis_img
@@ -4496,7 +4496,7 @@ class StyleBuilderTTK:
             [2, 2, 132, 132], radius=16, outline=disabled_fg, width=3
         )
         disabled_img = ImageTk.PhotoImage(
-            checkbutton_disabled.resize(size, Image.LANCZOS)
+            checkbutton_disabled.resize(size, Resampling.LANCZOS)
         )
         disabled_name = util.get_image_name(disabled_img)
         self.theme_images[disabled_name] = disabled_img
@@ -4751,7 +4751,6 @@ class StyleBuilderTTK:
             str:
                 The PhotoImage name.
         """
-        from math import ceil
 
         box = self.scale_size(1)
         pad = box * 2
