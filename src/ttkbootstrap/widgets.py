@@ -1,31 +1,22 @@
+# floodgauge imports
+import math
 import tkinter as tk
+from datetime import date, datetime
 from tkinter import ttk
-from tkinter import font
-from tkinter.ttk import Button, Checkbutton, Combobox
-from tkinter.ttk import Entry, Frame, Label
-from tkinter.ttk import Labelframe, LabelFrame, Menubutton
-from tkinter.ttk import Notebook, OptionMenu, PanedWindow
-from tkinter.ttk import Panedwindow, Progressbar, Radiobutton
-from tkinter.ttk import Scale, Scrollbar, Separator
-from tkinter.ttk import Sizegrip, Spinbox, Treeview
+from tkinter.ttk import Label, Progressbar
 from typing import Union
 from warnings import warn
 
-from ttkbootstrap.constants import *
+# meter imports
+from PIL import Image, ImageDraw, ImageTk
+from PIL.Image import Resampling
 
+from ttkbootstrap import utility
+from ttkbootstrap.colorutils import contrast_color
+from ttkbootstrap.constants import *
 # date entry imports
 from ttkbootstrap.dialogs import Querybox
-from datetime import datetime, date
-
-# floodgauge imports
-import math
-
-# meter imports
-from PIL import Image, ImageTk, ImageDraw
-from ttkbootstrap.style import Colors
-from ttkbootstrap.colorutils import contrast_color
-from ttkbootstrap import utility
-from ttkbootstrap.style import Bootstyle, Style
+from ttkbootstrap.style import Bootstyle, Colors, Style
 
 M = 3  # meter image scale, higher number increases resolution
 
@@ -147,7 +138,8 @@ class DateEntry(ttk.Frame):
                 entry and date button.
         """
         self.__enabled = True  # User/Programmer should NOT be able to change this, therefore double underscores
-        self.__dateformat = self._validate_dateformat(dateformat)  # User/Programmer should NOT be able to change this, therefore double underscores
+        self.__dateformat = self._validate_dateformat(
+            dateformat)  # User/Programmer should NOT be able to change this, therefore double underscores
         self._firstweekday = firstweekday
 
         self._startdate = startdate or datetime.today()
@@ -285,7 +277,7 @@ class DateEntry(ttk.Frame):
         """
         has_year: bool = any(y in dateformat for y in ('%Y', '%y', '%G'))
         has_month: bool = any(m in dateformat for m in ('%m', '%B', '%b'))
-        has_day: bool = any(d in dateformat for d in ('%d', ))
+        has_day: bool = any(d in dateformat for d in ('%d',))
         is_full_format: bool = any(f in dateformat for f in ('%x', '%c'))
 
         if has_year and has_month and has_day:
@@ -304,7 +296,8 @@ class DateEntry(ttk.Frame):
         if has_week_number and has_week_day and has_year:
             return dateformat
 
-        raise ValueError(f'Given formatting string ("{dateformat}"), cannot be used to validate a given strings for dates or display a given datetime object as a date!')
+        raise ValueError(
+            f'Given formatting string ("{dateformat}"), cannot be used to validate a given strings for dates or display a given datetime object as a date!')
 
     @staticmethod
     def _clean_datetime(new_date: Union[datetime, date]) -> datetime:
@@ -429,19 +422,19 @@ class Floodgauge(tk.Canvas):
     """
 
     def __init__(
-        self,
-        master=None,
-        value=0,
-        maximum=100,
-        mode="determinate",
-        mask=None,
-        text="",
-        font=("Helvetica", 12),
-        bootstyle="primary",
-        orient="horizontal",
-        length=200,
-        thickness=50,
-        **kwargs
+            self,
+            master=None,
+            value=0,
+            maximum=100,
+            mode="determinate",
+            mask=None,
+            text="",
+            font=("Helvetica", 12),
+            bootstyle="primary",
+            orient="horizontal",
+            length=200,
+            thickness=50,
+            **kwargs
     ):
         self.variable = kwargs.pop("variable", tk.IntVar(value=value))
         self.textvariable = kwargs.pop("textvariable", tk.StringVar(value=text))
@@ -495,7 +488,6 @@ class Floodgauge(tk.Canvas):
             self.length = event.height
             self.thickness = event.width
         self._draw()
-
 
     def _draw(self):
         self.delete("all")
@@ -936,6 +928,7 @@ class FloodgaugeLegacy(Progressbar):
         if self.cget('variable') != value:
             self.configure(variable=self._variable)
 
+
 class Meter(ttk.Frame):
     """A radial meter that can be used to show progress of long
     running operations or the amount of work completed; can also be
@@ -1287,7 +1280,7 @@ class Meter(ttk.Frame):
             self._draw_solid_meter(draw)
 
         self._meterimage = ImageTk.PhotoImage(
-            img.resize((self._metersize, self._metersize), Image.BICUBIC)
+            img.resize((self._metersize, self._metersize), Resampling.BICUBIC)
         )
         self.indicator.configure(image=self._meterimage)
 
@@ -1597,6 +1590,7 @@ class Meter(ttk.Frame):
         else:
             self.amountusedvar.set(amount_updated)
 
+
 class LabeledScale(ttk.Frame):
     """A Ttk Scale widget with a Ttk Label widget indicating its
     current value.
@@ -1643,7 +1637,6 @@ class LabeledScale(ttk.Frame):
         self.bind('<Configure>', self._adjust)
         self.bind('<Map>', self._adjust)
 
-
     def destroy(self):
         """Destroy this widget and possibly its associated variable."""
         try:
@@ -1664,11 +1657,11 @@ class LabeledScale(ttk.Frame):
                 x = int(x)
         return x
 
-
     def _adjust(self, *args):
         """Adjust the label position according to the scale."""
+
         def adjust_label():
-            self.update_idletasks() # "force" scale redraw
+            self.update_idletasks()  # "force" scale redraw
 
             x, y = self.scale.coords()
             if self._label_top:
