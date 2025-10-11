@@ -743,6 +743,7 @@ class DatePickerDialog:
                         variable=self.datevar,
                         value=day,
                         text=day,
+                        takefocus=True,
                         bootstyle=day_style,
                         padding=5,
                         command=selected,
