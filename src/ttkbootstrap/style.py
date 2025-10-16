@@ -2987,7 +2987,7 @@ class StyleBuilderTTK:
             darkcolor=background,
             lightcolor=background,
             relief=tk.RAISED,
-            focusthickness=0,
+            focusthickness=1,
             focuscolor=foreground,
             padding=(10, 5),
             anchor=tk.CENTER,
@@ -2995,6 +2995,7 @@ class StyleBuilderTTK:
         self.style.map(
             ttkstyle,
             foreground=[("disabled", disabled_fg)],
+            focuscolor=[("disabled", disabled_fg)],
             background=[
                 ("disabled", disabled_bg),
                 ("pressed !disabled", pressed),
@@ -3048,7 +3049,7 @@ class StyleBuilderTTK:
             darkcolor=self.colors.bg,
             lightcolor=self.colors.bg,
             relief=tk.RAISED,
-            focusthickness=0,
+            focusthickness=1,
             focuscolor=foreground,
             padding=(10, 5),
             anchor=tk.CENTER,
@@ -3118,7 +3119,7 @@ class StyleBuilderTTK:
             darkcolor=self.colors.bg,
             lightcolor=self.colors.bg,
             relief=tk.RAISED,
-            focusthickness=0,
+            focusthickness=1,
             focuscolor=foreground,
             anchor=tk.CENTER,
             padding=(10, 5),
@@ -3553,14 +3554,19 @@ class StyleBuilderTTK:
             darkcolor=toggle_off,
             lightcolor=toggle_off,
             relief=tk.RAISED,
-            focusthickness=0,
-            focuscolor="",
+            focusthickness=1,
+            focuscolor=foreground,
             padding=(10, 5),
             anchor=tk.CENTER,
         )
         self.style.map(
             ttkstyle,
             foreground=[
+                ("disabled", disabled_fg),
+                ("hover", foreground),
+                ("selected", foreground),
+            ],
+            focuscolor=[
                 ("disabled", disabled_fg),
                 ("hover", foreground),
                 ("selected", foreground),
@@ -4029,8 +4035,8 @@ class StyleBuilderTTK:
             darkcolor=self.colors.bg,
             lightcolor=self.colors.bg,
             relief=tk.RAISED,
-            focusthickness=0,
-            focuscolor="",
+            focusthickness=1,
+            focuscolor=self.colors.fg,
             borderwidth=1,
             padding=(10, 5),
             anchor=tk.CENTER,
@@ -4044,13 +4050,18 @@ class StyleBuilderTTK:
                         "sticky": tk.NSEW,
                         "children": [
                             (
-                                "Toolbutton.padding",
+                                "Toolbutton.focus",
                                 {
                                     "sticky": tk.NSEW,
                                     "children": [
                                         (
-                                            "Toolbutton.label",
-                                            {"sticky": tk.NSEW},
+                                            "Toolbutton.padding",
+                                            {
+                                                "sticky": tk.NSEW,
+                                                "children": [
+                                                    ("Toolbutton.label", {"sticky": tk.NSEW})
+                                                ],
+                                            },
                                         )
                                     ],
                                 },
@@ -4060,6 +4071,7 @@ class StyleBuilderTTK:
                 )
             ],
         )
+
         self.style.map(
             ttkstyle,
             foreground=[
@@ -4089,10 +4101,14 @@ class StyleBuilderTTK:
                 ("selected !disabled", pressed),
                 ("hover !disabled", pressed),
             ],
+            focuscolor=[
+                ("disabled", disabled_fg),
+                ("pressed !disabled", self.colors.selectfg),
+                ("selected !disabled", self.colors.selectfg),
+                ("hover !disabled", self.colors.selectfg),
+            ]
         )
-        self.style._build_configure(
-            chevron_style, font="-size 14", focuscolor=""
-        )
+        self.style._build_configure(chevron_style, font="-size 14")
 
         # register ttkstyle
         self.style._register_ttkstyle(ttkstyle)
