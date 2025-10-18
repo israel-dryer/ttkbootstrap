@@ -440,6 +440,7 @@ class Tableview(ttk.Frame):
             pagesize=10,
             height=10,
             delimiter=",",
+            disable_right_click = False,
     ):
         """
         Parameters:
@@ -546,6 +547,7 @@ class Tableview(ttk.Frame):
         self._delimiter = delimiter
         self._iidmap = {}  # maps iid to row object
         self._cidmap = {}  # maps cid to col object
+        self.disable_right_click = disable_right_click
 
         self.view: ttk.Treeview = None
         self._build_tableview_widget(coldata, rowdata, bootstyle)
@@ -2121,8 +2123,10 @@ class Tableview(ttk.Frame):
 
         self.build_table_data(coldata, rowdata)
 
-        self._rightclickmenu_cell = TableCellRightClickMenu(self)
-        self._rightclickmenu_head = TableHeaderRightClickMenu(self)
+        if not self.disable_right_click:
+            self._rightclickmenu_cell = TableCellRightClickMenu(self)
+            self._rightclickmenu_head = TableHeaderRightClickMenu(self)
+        
         self._set_widget_binding()
 
     def _build_search_frame(self):
@@ -2243,11 +2247,13 @@ class Tableview(ttk.Frame):
         """Setup the widget binding"""
         self.view.bind("<Double-Button-1>", self._header_double_leftclick)
         self.view.bind("<Button-1>", self._header_leftclick)
-        if self.tk.call("tk", "windowingsystem") == "aqua":
-            sequence = "<Button-2>"
-        else:
-            sequence = "<Button-3>"
-        self.view.bind(sequence, self._table_rightclick)
+
+        if not self.disable_right_click:
+            if self.tk.call("tk", "windowingsystem") == "aqua":
+                sequence = "<Button-2>"
+            else:
+                sequence = "<Button-3>"
+            self.view.bind(sequence, self._table_rightclick)
 
         # add trace to track pagesize changes
         self._pagesize.trace_add("write", self._trace_pagesize)
