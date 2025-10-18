@@ -17,6 +17,7 @@ from ttkbootstrap.icons import Icon
 from ttkbootstrap.constants import *
 from tkinter import BaseWidget
 from ttkbootstrap.localization import MessageCatalog
+from ttkbootstrap.utility import center_on_parent
 
 
 class Dialog(BaseWidget):
@@ -50,22 +51,15 @@ class Dialog(BaseWidget):
 
     def _locate(self):
         toplevel = self._toplevel
-        if self._parent is None:
-            master = toplevel.master
-        else:
-            master = self._parent
-        x = master.winfo_rootx()
-        y = master.winfo_rooty()
-        toplevel.geometry(f"+{x}+{y}")
+        center_on_parent(toplevel, self._parent)
 
     def show(self, position=None, wait_for_result=True):
         """Show the popup dialog
         Parameters:
 
             position: Tuple[int, int]
-                The x and y coordinates used to position the dialog. By
-                default the dialog will anchor at the NW corner of the
-                parent window.
+                The x and y coordinates used to position the dialog. If no parent
+                then the dialog will anchor to the center of the parent window.
         """
         self._result = None
         self.build()
@@ -625,7 +619,7 @@ class DatePickerDialog:
             parent (Widget):
                 The parent widget; the popup will appear to the
                 bottom-right of the parent widget. If no parent is
-                provided, the widget is centered on the screen.
+                provided, the widget is centered on the parent window.
 
             title (str):
                 The text that appears on the titlebar.
@@ -695,9 +689,9 @@ class DatePickerDialog:
         self._draw_calendar()
 
         # make toplevel visible
-        self._set_window_position()
-        self.root.deiconify()
         self.root.update_idletasks()
+        self.root.deiconify()
+        self._set_window_position()
 
     def _update_widget_bootstyle(self):
         self.frm_title.configure(bootstyle=self.bootstyle)
@@ -899,8 +893,8 @@ class DatePickerDialog:
         self.date = self.startdate
 
     def _set_window_position(self):
-        """Move the window the to bottom-right of the parent widget, or
-        the top-left corner of the master window if no parent is
+        """Move the window to the bottom-right of the parent widget, or
+        the center of the master window if no parent is
         provided.
         """
         if self.parent:
@@ -908,9 +902,7 @@ class DatePickerDialog:
             ypos = self.parent.winfo_rooty() + self.parent.winfo_height()
             self.root.geometry(f"+{xpos}+{ypos}")
         else:
-            xpos = self.root.master.winfo_rootx()
-            ypos = self.root.master.winfo_rooty()
-            self.root.geometry(f"+{xpos}+{ypos}")
+            center_on_parent(self.root, self.parent)
 
     @staticmethod
     def _nextmonth(year, month):

@@ -28,6 +28,10 @@ def test_msgcat():
     result = MessageCatalog.translate("yes")
     assert result == "确认"
 
+    MessageCatalog.locale("sl")
+    result = MessageCatalog.translate("yes")
+    assert result == "da"
+
 
 def test_variables():
     """Tests using parameters."""
