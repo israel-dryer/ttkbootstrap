@@ -1,27 +1,36 @@
-import ttkbootstrap as ttk
 from ttkbootstrap.dialogs import Querybox, Messagebox
-from ttkbootstrap.icons import Icon
-import tkinter as tk
-
 from ttkbootstrap.localization import MessageCatalog
-MessageCatalog.locale('zh_cn')
-Messagebox.ok("Messagebox.ok", position=(500, 500))
+from ttkbootstrap.window import Window
 
-Messagebox.okcancel("Messagebox.okcancel", position=(500, 500))
-Messagebox.retrycancel("Messagebox.retrycancel", position=(500, 500))
-Messagebox.yesno("Messagebox.yesno", position=(500, 500))
-Messagebox.yesnocancel("Messagebox.yesnocancel", position=(1000, 1000))
 
-Messagebox.show_error("Messagebox.show_error", position=(500, 500))
-Messagebox.show_info("Messagebox.show_info", position=(500, 500))
-Messagebox.show_question("Messagebox.show_question", position=(500, 500))
-Messagebox.show_warning("Messagebox.show_warning", position=(500, 500))
+def run_test():
+    MessageCatalog.locale('zh_cn')
+    Messagebox.ok("Testing first item", parent=root)
+    Messagebox.ok("Messagebox.ok")
 
-Querybox.get_date(title="Querybox.get_date")
-Querybox.get_float("Querybox.get_float", position=(500, 500))
-Querybox.get_integer("Querybox.get_integer", position=(500, 500))
-Querybox.get_string("Querybox.get_string", position=(500, 500))
-Querybox.get_font(title="Querybox.get_font", position=(500, 500))
-Querybox.get_item("Querybox.get_item", initialvalue="apple",
-                  items=["apple", "banana", "grape", "kiwi", "orange", "pear"],
-                  position=(500, 500))
+    Messagebox.okcancel("Messagebox.okcancel")
+    Messagebox.retrycancel("Messagebox.retrycancel")
+    Messagebox.yesno("Messagebox.yesno")
+    Messagebox.yesnocancel("Messagebox.yesnocancel")
+
+    Messagebox.show_error("Messagebox.show_error")
+    Messagebox.show_info("Messagebox.show_info")
+    Messagebox.show_question("Messagebox.show_question")
+    Messagebox.show_warning("Messagebox.show_warning")
+
+    Querybox.get_date(title="Querybox.get_date")
+    Querybox.get_float("Querybox.get_float")
+    Querybox.get_integer("Querybox.get_integer")
+    Querybox.get_string("Querybox.get_string")
+    Querybox.get_font(title="Querybox.get_font")
+    Querybox.get_item("Querybox.get_item", initialvalue="apple",
+                      items=["apple", "banana", "grape", "kiwi", "orange", "pear"],
+                      position=(500, 500))
+
+
+root = Window()
+root.geometry("1000x1000+1000+500")
+
+root.after(100, run_test)
+
+root.mainloop()
