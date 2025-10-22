@@ -1,11 +1,12 @@
 import tkinter as tk
-import ttkbootstrap as ttk
-from ttkbootstrap.constants import *
-from math import ceil
 from datetime import datetime
+from math import ceil
 from tkinter import font
-from ttkbootstrap import utility
 from typing import Any, Dict, List, Union
+
+import ttkbootstrap as ttk
+from ttkbootstrap import utility
+from ttkbootstrap.constants import *
 from ttkbootstrap.localization import MessageCatalog
 
 UPARROW = "⬆"
@@ -440,7 +441,7 @@ class Tableview(ttk.Frame):
             pagesize=10,
             height=10,
             delimiter=",",
-            disable_right_click = False,
+            disable_right_click=False,
     ):
         """
         Parameters:
@@ -523,6 +524,9 @@ class Tableview(ttk.Frame):
             delimiter (str):
                 The character to use as a delimiter when exporting data
                 to CSV.
+
+            disable_right_click (bool):
+                When set to `True`, the built-in right click menus are disabled on the widget.
         """
         super().__init__(master)
         self._tablecols = []
@@ -2091,7 +2095,7 @@ class Tableview(ttk.Frame):
         """Build the data table"""
         if self._searchable:
             self._build_search_frame()
-            
+
         table_frame = ttk.Frame(self)
         table_frame.pack(fill=BOTH, expand=YES, side=TOP)
 
@@ -2104,14 +2108,14 @@ class Tableview(ttk.Frame):
             bootstyle=f"{bootstyle}-table",
         )
         self.view.pack(fill=BOTH, expand=YES, side=LEFT)
-        
+
         if self._yscrollbar:
             self.ybar = ttk.Scrollbar(
                 master=table_frame, command=self.view.yview, orient=VERTICAL
             )
             self.ybar.pack(fill=Y, side=RIGHT)
             self.view.configure(yscrollcommand=self.ybar.set)
-        
+
         self.hbar = ttk.Scrollbar(
             master=self, command=self.view.xview, orient=HORIZONTAL
         )
@@ -2126,7 +2130,7 @@ class Tableview(ttk.Frame):
         if not self.disable_right_click:
             self._rightclickmenu_cell = TableCellRightClickMenu(self)
             self._rightclickmenu_head = TableHeaderRightClickMenu(self)
-        
+
         self._set_widget_binding()
 
     def _build_search_frame(self):
