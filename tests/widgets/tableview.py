@@ -1,9 +1,9 @@
+import csv
+from pathlib import Path
+
 import ttkbootstrap as ttk
 from ttkbootstrap.constants import *
-from pathlib import Path
-import csv
-from ttkbootstrap.tableview import TableRow, Tableview
-from ttkbootstrap.utility import scale_size
+from ttkbootstrap.tableview import Tableview
 
 app = ttk.Window(themename='flatly')
 colors = app.style.colors
@@ -26,9 +26,8 @@ coldata = [
 
 dt = Tableview(
     master=app,
-#    coldata=coldata,
-#    rowdata=rowdata,
     paginated=True,
+    disable_right_click=True,
     searchable=True,
     bootstyle=PRIMARY,
     stripecolor=(None, None),
@@ -37,7 +36,7 @@ dt = Tableview(
 dt.pack(fill=BOTH, expand=YES, padx=5, pady=5)
 
 dt.build_table_data(coldata, rowdata)
-#dt.delete_columns(indices=[2, 3])
+# dt.delete_columns(indices=[2, 3])
 
 # modify the contents of a single cell
 row = dt.get_row(0)
