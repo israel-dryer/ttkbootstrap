@@ -130,6 +130,7 @@ class Dialog(BaseWidget):
                 transient=self.master,
                 title=self._title,
                 resizable=(0, 0),
+                minsize=(250, 15),
                 windowtype="dialog",
                 iconify=True,
             )
