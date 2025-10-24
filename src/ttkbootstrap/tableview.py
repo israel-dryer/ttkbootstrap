@@ -481,9 +481,12 @@ class Tableview(ttk.Frame):
                 Press the <Return> key to initiate a search. Searching
                 with an empty string will reset the search criteria, or
                 pressing the reset button to the right of the search
-                bar. Currently, the search method looks for any row
-                that contains the search text. The filtered results
-                are displayed in the table view.
+                bar.
+
+                The search is case insensitive and handles special characters.
+                The filtered results are displayed in the table view. For
+                programmatic access with column-specific searching, use the
+                `search_table_data(criteria, *columns)` method.
                 
             yscrollbar (bool):
                 If `True`, a vertical scrollbar will be created to the right
@@ -1390,6 +1393,86 @@ class Tableview(ttk.Frame):
 
     # DATA SEARCH & FILTERING
 
+    def search_table_data(self, criteria, *columns):
+        """Search the table data for records that match the search criteria.
+
+        The search is case insensitive and handles special characters safely.
+
+        Parameters:
+
+            criteria (Any):
+                The search value to look for in the table data. Can be any
+                data type (str, int, float, etc.) and will be converted to
+                a string for searching. If empty or None, resets the search
+                filter.
+
+            *columns (str):
+                Optional column names to search. If provided, only searches
+                the specified columns. Column names should match the headertext
+                of the desired columns. If no columns are specified, searches
+                all columns.
+
+        Examples:
+
+            Search all columns:
+            ```python
+            tableview.search_table_data("example")
+            tableview.search_table_data(12345)  # Search for numeric value
+            ```
+
+            Search specific columns:
+            ```python
+            tableview.search_table_data("example", "CompanyName")
+            tableview.search_table_data(100, "Price", "Quantity")
+            ```
+        """
+        import re
+
+        if criteria is None or (isinstance(criteria, str) and not criteria):
+            self.reset_row_filters()
+            return
+
+        search_text = str(criteria)
+
+        # Get column indices if specified
+        column_indices = None
+        if columns:
+            column_indices = []
+            for column_name in columns:
+                for col in self.tablecolumns:
+                    if col.headertext == column_name:
+                        column_indices.append(col.tableindex)
+                        break
+
+        # Escape special regex characters for literal search
+        search_text_escaped = re.escape(search_text.lower())
+
+        self._filtered = True
+        self.tablerows_filtered.clear()
+        self.unload_table_data()
+
+        for row in self.tablerows:
+            if column_indices:
+                # Search specific columns
+                for col_index in column_indices:
+                    try:
+                        col_value = str(row.values[col_index]).lower()
+                        if search_text_escaped in col_value:
+                            self.tablerows_filtered.append(row)
+                            break
+                    except IndexError:
+                        # Column doesn't exist in this row
+                        pass
+            else:
+                # Search all columns
+                for col in row.values:
+                    if search_text_escaped in str(col).lower():
+                        self.tablerows_filtered.append(row)
+                        break
+
+        self._rowindex.set(0)
+        self.load_table_data()
+
     def reset_row_filters(self):
         """Remove all row level filters; unhide all rows."""
         self._filtered = False
@@ -2059,21 +2142,13 @@ class Tableview(ttk.Frame):
         return data
 
     def _search_table_data(self, _):
-        """Search the table data for records that meet search criteria.
-        Currently, this search locates any records that contain the
-        specified text; it is also case insensitive.
-        """
+        """Internal callback for the search entry widget. Calls the public
+        search_table_data method with the current searchcriteria value."""
         criteria = self._searchcriteria.get()
-        self._filtered = True
-        self.tablerows_filtered.clear()
-        self.unload_table_data()
-        for row in self.tablerows:
-            for col in row.values:
-                if str(criteria).lower() in str(col).lower():
-                    self.tablerows_filtered.append(row)
-                    break
-        self._rowindex.set(0)
-        self.load_table_data()
+        if not criteria:
+            self.reset_row_filters()
+        else:
+            self.search_table_data(criteria)
 
     # PRIVATE METHODS - SORTING
 

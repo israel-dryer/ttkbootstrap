@@ -47,4 +47,6 @@ row.refresh()
 row = dt.get_row(1)
 row.values = ['123456', 'My Company', 'Israel', 'Something here', 45]
 
+dt.search_table_data(2, "Leave")
+
 app.mainloop()
