@@ -342,7 +342,16 @@ class TableRow:
         the resulting item id (iid).
         """
         if self._iid is None:
-            self._iid = self.view.insert("", END, values=self.values)
+            # Use custom iid from specified field if configured
+            if self._table._iid_field_index is not None:
+                try:
+                    custom_iid = str(self.values[self._table._iid_field_index])
+                    self._iid = self.view.insert("", END, iid=custom_iid, values=self.values)
+                except (IndexError, tk.TclError):
+                    # Fall back to auto-generated iid if field doesn't exist or iid already exists
+                    self._iid = self.view.insert("", END, values=self.values)
+            else:
+                self._iid = self.view.insert("", END, values=self.values)
             self._table.iidmap[self.iid] = self
 
 
@@ -443,6 +452,7 @@ class Tableview(ttk.Frame):
             delimiter=",",
             disable_right_click=False,
             on_select=None,
+            iid_field=None,
     ):
         """
         Parameters:
@@ -546,6 +556,31 @@ class Tableview(ttk.Frame):
 
                 tableview = Tableview(master, on_select=handle_selection, ...)
                 ```
+
+            iid_field (Union[int, str, None]):
+                Optional column index or header name to use as the unique identifier (iid)
+                for each row. If specified as an integer, it represents the column index.
+                If specified as a string, it represents the column header text. When set,
+                the value from this field will be used as the row's iid instead of the
+                auto-generated iid. This is useful when you have a natural key field like
+                an ID or unique code that you want to use for row identification.
+
+                Example:
+                ```python
+                # Using column index
+                tableview = Tableview(
+                    coldata=["ID", "Name", "Age"],
+                    rowdata=[[1, "Alice", 25], [2, "Bob", 30]],
+                    iid_field=0  # Use first column (ID) as iid
+                )
+
+                # Using column name
+                tableview = Tableview(
+                    coldata=["ID", "Name", "Age"],
+                    rowdata=[[1, "Alice", 25], [2, "Bob", 30]],
+                    iid_field="ID"  # Use ID column as iid
+                )
+                ```
         """
         super().__init__(master)
         self._tablecols = []
@@ -572,6 +607,8 @@ class Tableview(ttk.Frame):
         self._cidmap = {}  # maps cid to col object
         self.disable_right_click = disable_right_click
         self._on_select = on_select
+        self._iid_field = iid_field
+        self._iid_field_index = None  # Resolved column index for iid_field
 
         self.view: ttk.Treeview = None
         self._build_tableview_widget(coldata, rowdata, bootstyle)
@@ -704,6 +741,9 @@ class Tableview(ttk.Frame):
             else:
                 # a dictionary of column settings
                 self.insert_column(i, **col)
+
+        # resolve iid_field to column index
+        self._resolve_iid_field_index()
 
         # build the table rows
         for values in rowdata:
@@ -2187,6 +2227,29 @@ class Tableview(ttk.Frame):
         arrow = UPARROW if column.columnsort == ASCENDING else DOWNARROW
         headertext = f"{column.headertext} {arrow}"
         self.view.heading(column.cid, text=headertext)
+
+    def _resolve_iid_field_index(self):
+        """Resolve the iid_field to a column index. This method should be called
+        after columns are built."""
+        if self._iid_field is None:
+            self._iid_field_index = None
+            return
+
+        # If it's an integer, use it directly as the index
+        if isinstance(self._iid_field, int):
+            if 0 <= self._iid_field < len(self.tablecolumns):
+                self._iid_field_index = self._iid_field
+            else:
+                raise ValueError(f"iid_field index {self._iid_field} is out of range")
+        # If it's a string, find the column by headertext
+        elif isinstance(self._iid_field, str):
+            for col in self.tablecolumns:
+                if col.headertext == self._iid_field:
+                    self._iid_field_index = col.tableindex
+                    return
+            raise ValueError(f"iid_field column '{self._iid_field}' not found")
+        else:
+            raise TypeError(f"iid_field must be int, str, or None, not {type(self._iid_field)}")
 
     # PRIVATE METHODS - WIDGET BUILDERS
 
