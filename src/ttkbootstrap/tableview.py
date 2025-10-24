@@ -342,7 +342,16 @@ class TableRow:
         the resulting item id (iid).
         """
         if self._iid is None:
-            self._iid = self.view.insert("", END, values=self.values)
+            # Use custom iid from specified field if configured
+            if self._table._iid_field_index is not None:
+                try:
+                    custom_iid = str(self.values[self._table._iid_field_index])
+                    self._iid = self.view.insert("", END, iid=custom_iid, values=self.values)
+                except (IndexError, tk.TclError):
+                    # Fall back to auto-generated iid if field doesn't exist or iid already exists
+                    self._iid = self.view.insert("", END, values=self.values)
+            else:
+                self._iid = self.view.insert("", END, values=self.values)
             self._table.iidmap[self.iid] = self
 
 
@@ -442,6 +451,8 @@ class Tableview(ttk.Frame):
             height=10,
             delimiter=",",
             disable_right_click=False,
+            on_select=None,
+            iid_field=None,
     ):
         """
         Parameters:
@@ -481,9 +492,12 @@ class Tableview(ttk.Frame):
                 Press the <Return> key to initiate a search. Searching
                 with an empty string will reset the search criteria, or
                 pressing the reset button to the right of the search
-                bar. Currently, the search method looks for any row
-                that contains the search text. The filtered results
-                are displayed in the table view.
+                bar.
+
+                The search is case insensitive and handles special characters.
+                The filtered results are displayed in the table view. For
+                programmatic access with column-specific searching, use the
+                `search_table_data(criteria, *columns)` method.
                 
             yscrollbar (bool):
                 If `True`, a vertical scrollbar will be created to the right
@@ -527,6 +541,46 @@ class Tableview(ttk.Frame):
 
             disable_right_click (bool):
                 When set to `True`, the built-in right click menus are disabled on the widget.
+
+            on_select (Callable[[List[TableRow]], None]):
+                Optional callback function to be invoked when the row selection changes.
+                The callback receives a list of selected TableRow objects as its argument.
+                When no rows are selected, the callback receives an empty list.
+
+                Example:
+                ```python
+                def handle_selection(selected_rows):
+                    print(f"Selected {len(selected_rows)} rows")
+                    for row in selected_rows:
+                        print(row.values)
+
+                tableview = Tableview(master, on_select=handle_selection, ...)
+                ```
+
+            iid_field (Union[int, str, None]):
+                Optional column index or header name to use as the unique identifier (iid)
+                for each row. If specified as an integer, it represents the column index.
+                If specified as a string, it represents the column header text. When set,
+                the value from this field will be used as the row's iid instead of the
+                auto-generated iid. This is useful when you have a natural key field like
+                an ID or unique code that you want to use for row identification.
+
+                Example:
+                ```python
+                # Using column index
+                tableview = Tableview(
+                    coldata=["ID", "Name", "Age"],
+                    rowdata=[[1, "Alice", 25], [2, "Bob", 30]],
+                    iid_field=0  # Use first column (ID) as iid
+                )
+
+                # Using column name
+                tableview = Tableview(
+                    coldata=["ID", "Name", "Age"],
+                    rowdata=[[1, "Alice", 25], [2, "Bob", 30]],
+                    iid_field="ID"  # Use ID column as iid
+                )
+                ```
         """
         super().__init__(master)
         self._tablecols = []
@@ -552,6 +606,9 @@ class Tableview(ttk.Frame):
         self._iidmap = {}  # maps iid to row object
         self._cidmap = {}  # maps cid to col object
         self.disable_right_click = disable_right_click
+        self._on_select = on_select
+        self._iid_field = iid_field
+        self._iid_field_index = None  # Resolved column index for iid_field
 
         self.view: ttk.Treeview = None
         self._build_tableview_widget(coldata, rowdata, bootstyle)
@@ -684,6 +741,9 @@ class Tableview(ttk.Frame):
             else:
                 # a dictionary of column settings
                 self.insert_column(i, **col)
+
+        # resolve iid_field to column index
+        self._resolve_iid_field_index()
 
         # build the table rows
         for values in rowdata:
@@ -1390,6 +1450,86 @@ class Tableview(ttk.Frame):
 
     # DATA SEARCH & FILTERING
 
+    def search_table_data(self, criteria, *columns):
+        """Search the table data for records that match the search criteria.
+
+        The search is case insensitive and handles special characters safely.
+
+        Parameters:
+
+            criteria (Any):
+                The search value to look for in the table data. Can be any
+                data type (str, int, float, etc.) and will be converted to
+                a string for searching. If empty or None, resets the search
+                filter.
+
+            *columns (str):
+                Optional column names to search. If provided, only searches
+                the specified columns. Column names should match the headertext
+                of the desired columns. If no columns are specified, searches
+                all columns.
+
+        Examples:
+
+            Search all columns:
+            ```python
+            tableview.search_table_data("example")
+            tableview.search_table_data(12345)  # Search for numeric value
+            ```
+
+            Search specific columns:
+            ```python
+            tableview.search_table_data("example", "CompanyName")
+            tableview.search_table_data(100, "Price", "Quantity")
+            ```
+        """
+        import re
+
+        if criteria is None or (isinstance(criteria, str) and not criteria):
+            self.reset_row_filters()
+            return
+
+        search_text = str(criteria)
+
+        # Get column indices if specified
+        column_indices = None
+        if columns:
+            column_indices = []
+            for column_name in columns:
+                for col in self.tablecolumns:
+                    if col.headertext == column_name:
+                        column_indices.append(col.tableindex)
+                        break
+
+        # Escape special regex characters for literal search
+        search_text_escaped = re.escape(search_text.lower())
+
+        self._filtered = True
+        self.tablerows_filtered.clear()
+        self.unload_table_data()
+
+        for row in self.tablerows:
+            if column_indices:
+                # Search specific columns
+                for col_index in column_indices:
+                    try:
+                        col_value = str(row.values[col_index]).lower()
+                        if search_text_escaped in col_value:
+                            self.tablerows_filtered.append(row)
+                            break
+                    except IndexError:
+                        # Column doesn't exist in this row
+                        pass
+            else:
+                # Search all columns
+                for col in row.values:
+                    if search_text_escaped in str(col).lower():
+                        self.tablerows_filtered.append(row)
+                        break
+
+        self._rowindex.set(0)
+        self.load_table_data()
+
     def reset_row_filters(self):
         """Remove all row level filters; unhide all rows."""
         self._filtered = False
@@ -2059,21 +2199,20 @@ class Tableview(ttk.Frame):
         return data
 
     def _search_table_data(self, _):
-        """Search the table data for records that meet search criteria.
-        Currently, this search locates any records that contain the
-        specified text; it is also case insensitive.
-        """
+        """Internal callback for the search entry widget. Calls the public
+        search_table_data method with the current searchcriteria value."""
         criteria = self._searchcriteria.get()
-        self._filtered = True
-        self.tablerows_filtered.clear()
-        self.unload_table_data()
-        for row in self.tablerows:
-            for col in row.values:
-                if str(criteria).lower() in str(col).lower():
-                    self.tablerows_filtered.append(row)
-                    break
-        self._rowindex.set(0)
-        self.load_table_data()
+        if not criteria:
+            self.reset_row_filters()
+        else:
+            self.search_table_data(criteria)
+
+    def _on_selection_changed(self, event):
+        """Internal callback for selection change events. Calls the user-provided
+        on_select callback with the list of selected TableRow objects."""
+        if self._on_select is not None:
+            selected_rows = self.get_rows(selected=True)
+            self._on_select(selected_rows)
 
     # PRIVATE METHODS - SORTING
 
@@ -2088,6 +2227,29 @@ class Tableview(ttk.Frame):
         arrow = UPARROW if column.columnsort == ASCENDING else DOWNARROW
         headertext = f"{column.headertext} {arrow}"
         self.view.heading(column.cid, text=headertext)
+
+    def _resolve_iid_field_index(self):
+        """Resolve the iid_field to a column index. This method should be called
+        after columns are built."""
+        if self._iid_field is None:
+            self._iid_field_index = None
+            return
+
+        # If it's an integer, use it directly as the index
+        if isinstance(self._iid_field, int):
+            if 0 <= self._iid_field < len(self.tablecolumns):
+                self._iid_field_index = self._iid_field
+            else:
+                raise ValueError(f"iid_field index {self._iid_field} is out of range")
+        # If it's a string, find the column by headertext
+        elif isinstance(self._iid_field, str):
+            for col in self.tablecolumns:
+                if col.headertext == self._iid_field:
+                    self._iid_field_index = col.tableindex
+                    return
+            raise ValueError(f"iid_field column '{self._iid_field}' not found")
+        else:
+            raise TypeError(f"iid_field must be int, str, or None, not {type(self._iid_field)}")
 
     # PRIVATE METHODS - WIDGET BUILDERS
 
@@ -2258,6 +2420,10 @@ class Tableview(ttk.Frame):
             else:
                 sequence = "<Button-3>"
             self.view.bind(sequence, self._table_rightclick)
+
+        # bind selection change event if callback provided
+        if self._on_select is not None:
+            self.view.bind("<<TreeviewSelect>>", self._on_selection_changed)
 
         # add trace to track pagesize changes
         self._pagesize.trace_add("write", self._trace_pagesize)
