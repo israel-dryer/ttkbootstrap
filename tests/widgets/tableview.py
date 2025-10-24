@@ -24,6 +24,9 @@ coldata = [
     {"text": "Leave", "stretch": False},
 ]
 
+def handle_selection(event):
+    print(event)
+
 dt = Tableview(
     master=app,
     paginated=True,
@@ -31,7 +34,8 @@ dt = Tableview(
     searchable=True,
     bootstyle=PRIMARY,
     stripecolor=(None, None),
-    autofit=False
+    autofit=False,
+    on_select=handle_selection,
 )
 dt.pack(fill=BOTH, expand=YES, padx=5, pady=5)
 
