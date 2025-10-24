@@ -1010,6 +1010,7 @@ class Meter(ttk.Frame):
             bootstyle=DEFAULT,
             arcrange=None,
             arcoffset=None,
+            amountmin=0,
             amounttotal=100,
             amountused=0,
             amountformat="{:.0f}",
@@ -1041,6 +1042,10 @@ class Meter(ttk.Frame):
             arcoffset (int):
                 The amount to offset the arc's starting position in degrees.
                 0 is at 3 o'clock.
+
+            amountmin (int):
+                The minimum value of the meter. Defaults to 0. Can be set
+                to a negative value to support negative ranges.
 
             amounttotal (int):
                 The maximum value of the meter.
@@ -1117,6 +1122,7 @@ class Meter(ttk.Frame):
         super().__init__(master=master, **kwargs)
 
         # widget variables
+        self.amountminvar = tk.IntVar(value=amountmin)
         self.amountusedvar = tk.IntVar(value=amountused)
         self.amountusedvar.trace_add("write", self._update_meter)
         self.amountuseddisplayvar = tk.StringVar(value=amountformat.format(amountused))
@@ -1377,10 +1383,18 @@ class Meter(ttk.Frame):
     def _meter_value(self) -> int:
         """Calculate the value to be used to draw the arc length of the
         progress meter."""
-        value = int(
-            (self["amountused"] / self["amounttotal"]) * self._arcrange
-            + self._arcoffset
-        )
+        amountmin = self["amountmin"]
+        amounttotal = self["amounttotal"]
+        amountused = self["amountused"]
+
+        # Normalize to 0-1 range to handle negative values
+        range_size = amounttotal - amountmin
+        if range_size == 0:
+            normalized = 0
+        else:
+            normalized = (amountused - amountmin) / range_size
+
+        value = int(normalized * self._arcrange + self._arcoffset)
         return value
 
     def _on_theme_change(self, *_):
@@ -1399,22 +1413,26 @@ class Meter(ttk.Frame):
         else:
             factor = 360 + degs - self._arcoffset
 
-        # clamp the value between 0 and `amounttotal`
+        # clamp the value between `amountmin` and `amounttotal`
+        amountmin = self.amountminvar.get()
         amounttotal = self.amounttotalvar.get()
         lastused = self.amountusedvar.get()
-        amountused = (amounttotal / self._arcrange * factor)
+
+        # Calculate the value based on the range
+        range_size = amounttotal - amountmin
+        amountused = (range_size / self._arcrange * factor) + amountmin
 
         # calculate amount used given stepsize
-        if amountused > self._stepsize // 2:
-            amountused = amountused // self._stepsize * self._stepsize + self._stepsize
-        else:
-            amountused = 0
-        # if the number is the name, then do not redraw
+        if self._stepsize > 0:
+            # Round to nearest stepsize
+            amountused = round(amountused / self._stepsize) * self._stepsize
+
+        # if the number is the same, then do not redraw
         if lastused == amountused:
             return
         # set the amount used variable
-        if amountused < 0:
-            self.amountusedvar.set(0)
+        if amountused < amountmin:
+            self.amountusedvar.set(amountmin)
         elif amountused > amounttotal:
             self.amountusedvar.set(amounttotal)
         else:
@@ -1433,6 +1451,8 @@ class Meter(ttk.Frame):
             return self._arcrange
         elif cnf == "arcoffset":
             return self._arcoffset
+        elif cnf == "amountmin":
+            return self.amountminvar.get()
         elif cnf == "amounttotal":
             return self.amounttotalvar.get()
         elif cnf == "amountused":
@@ -1478,6 +1498,9 @@ class Meter(ttk.Frame):
             self._arcrange = kwargs.pop("arcrange")
         if "arcoffset" in kwargs:
             self._arcoffset = kwargs.pop("arcoffset")
+        if "amountmin" in kwargs:
+            amountmin = kwargs.pop("amountmin")
+            self.amountminvar.set(amountmin)
         if "amounttotal" in kwargs:
             amounttotal = kwargs.pop("amounttotal")
             self.amounttotalvar.set(amounttotal)
@@ -1581,6 +1604,7 @@ class Meter(ttk.Frame):
                 The amount to change the indicator.
         """
         amount_used = self.amountusedvar.get()
+        amount_min = self.amountminvar.get()
         amount_total = self.amounttotalvar.get()
 
         if self._towards_maximum:
@@ -1591,9 +1615,9 @@ class Meter(ttk.Frame):
         if amount_updated >= amount_total:
             self._towards_maximum = False
             self.amountusedvar.set(amount_total - (amount_updated - amount_total))
-        elif amount_updated < 0:
+        elif amount_updated < amount_min:
             self._towards_maximum = True
-            self.amountusedvar.set(abs(amount_updated))
+            self.amountusedvar.set(amount_min + (amount_min - amount_updated))
         else:
             self.amountusedvar.set(amount_updated)
 
