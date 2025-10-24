@@ -442,6 +442,7 @@ class Tableview(ttk.Frame):
             height=10,
             delimiter=",",
             disable_right_click=False,
+            on_select=None,
     ):
         """
         Parameters:
@@ -530,6 +531,21 @@ class Tableview(ttk.Frame):
 
             disable_right_click (bool):
                 When set to `True`, the built-in right click menus are disabled on the widget.
+
+            on_select (Callable[[List[TableRow]], None]):
+                Optional callback function to be invoked when the row selection changes.
+                The callback receives a list of selected TableRow objects as its argument.
+                When no rows are selected, the callback receives an empty list.
+
+                Example:
+                ```python
+                def handle_selection(selected_rows):
+                    print(f"Selected {len(selected_rows)} rows")
+                    for row in selected_rows:
+                        print(row.values)
+
+                tableview = Tableview(master, on_select=handle_selection, ...)
+                ```
         """
         super().__init__(master)
         self._tablecols = []
@@ -555,6 +571,7 @@ class Tableview(ttk.Frame):
         self._iidmap = {}  # maps iid to row object
         self._cidmap = {}  # maps cid to col object
         self.disable_right_click = disable_right_click
+        self._on_select = on_select
 
         self.view: ttk.Treeview = None
         self._build_tableview_widget(coldata, rowdata, bootstyle)
@@ -2150,6 +2167,13 @@ class Tableview(ttk.Frame):
         else:
             self.search_table_data(criteria)
 
+    def _on_selection_changed(self, event):
+        """Internal callback for selection change events. Calls the user-provided
+        on_select callback with the list of selected TableRow objects."""
+        if self._on_select is not None:
+            selected_rows = self.get_rows(selected=True)
+            self._on_select(selected_rows)
+
     # PRIVATE METHODS - SORTING
 
     def _column_sort_header_reset(self):
@@ -2333,6 +2357,10 @@ class Tableview(ttk.Frame):
             else:
                 sequence = "<Button-3>"
             self.view.bind(sequence, self._table_rightclick)
+
+        # bind selection change event if callback provided
+        if self._on_select is not None:
+            self.view.bind("<<TreeviewSelect>>", self._on_selection_changed)
 
         # add trace to track pagesize changes
         self._pagesize.trace_add("write", self._trace_pagesize)
