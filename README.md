@@ -77,6 +77,10 @@ The new keyword API is very flexible. The following examples all produce the sam
 - `bootstyle=("info", "outline")`
 - `bootstyle=(INFO, OUTLINE)`
 
+## Icons
+
+Add Bootstrap or Lucide icons to your app buttons and labels using the [ttkbootstrap-icons](https://github.com/israel-dryer/ttkbootstrap-icons) library.
+
 ## Contributing
 We welcome contributions! If you'd like to contribute to ttkbootstrap, please check out our contributing guidelines.
 
