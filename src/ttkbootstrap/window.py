@@ -172,28 +172,28 @@ class Window(tkinter.Tk):
                 this default behavior, set the value to `None` and use
                 the `Tk.iconphoto` or `Tk.iconbitmap` methods directly.
 
-            size (Tuple[int, int]):
+            size (tuple[int, int]):
                 The width and height of the application window.
                 Internally, this argument is passed to the
                 `Window.geometry` method.
 
-            position (Tuple[int, int]):
+            position (tuple[int, int]):
                 The horizontal and vertical position of the window on
                 the screen relative to the top-left coordinate.
                 Internally this is passed to the `Window.geometry`
                 method.
 
-            minsize (Tuple[int, int]):
+            minsize (tuple[int, int]):
                 Specifies the minimum permissible dimensions for the
                 window. Internally, this argument is passed to the
                 `Window.minsize` method.
 
-            maxsize (Tuple[int, int]):
+            maxsize (tuple[int, int]):
                 Specifies the maximum permissible dimensions for the
                 window. Internally, this argument is passed to the
                 `Window.maxsize` method.
 
-            resizable (Tuple[bool, bool]):
+            resizable (tuple[bool, bool]):
                 Specifies whether the user may interactively resize the
                 toplevel window. Must pass in two arguments that specify
                 this flag for _horizontal_ and _vertical_ dimensions.
@@ -364,28 +364,28 @@ class Toplevel(tkinter.Toplevel):
                 Internally this is passed to the `Tk.iconphoto` method.
                 By default the application icon is used.
 
-            size (Tuple[int, int]):
+            size (tuple[int, int]):
                 The width and height of the application window.
                 Internally, this argument is passed to the
                 `Toplevel.geometry` method.
 
-            position (Tuple[int, int]):
+            position (tuple[int, int]):
                 The horizontal and vertical position of the window on
                 the screen relative to the top-left coordinate.
                 Internally this is passed to the `Toplevel.geometry`
                 method.
 
-            minsize (Tuple[int, int]):
+            minsize (tuple[int, int]):
                 Specifies the minimum permissible dimensions for the
                 window. Internally, this argument is passed to the
                 `Toplevel.minsize` method.
 
-            maxsize (Tuple[int, int]):
+            maxsize (tuple[int, int]):
                 Specifies the maximum permissible dimensions for the
                 window. Internally, this argument is passed to the
                 `Toplevel.maxsize` method.
 
-            resizable (Tuple[bool, bool]):
+            resizable (tuple[bool, bool]):
                 Specifies whether the user may interactively resize the
                 toplevel window. Must pass in two arguments that specify
                 this flag for _horizontal_ and _vertical_ dimensions.

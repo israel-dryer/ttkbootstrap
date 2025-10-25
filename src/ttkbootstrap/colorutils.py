@@ -27,8 +27,8 @@ def color_to_rgb(color, model=HEX):
             The color model being converted.
     
     Returns:
-    
-        Tuple[int, int, int]:
+
+        tuple[int, int, int]:
             The rgb color values.
     """
     color_ = conform_color_model(color, model)    
@@ -76,8 +76,8 @@ def color_to_hsl(color, model=HEX):
             The color model being converted.
     
     Returns:
-    
-        Tuple[int, int, int]:
+
+        tuple[int, int, int]:
             The hsl color values.
     """
     r, g, b = color_to_rgb(color, model)
@@ -115,7 +115,7 @@ def update_hsl_value(color, hue=None, sat=None, lum=None, inmodel=HSL, outmodel=
 
     Returns:
 
-        Union[Tuple[int, int, int], str]:
+        Union[tuple[int, int, int], str]:
             The color value based on the selected color model.
     """
     h, s, l = color_to_hsl(color, inmodel)
@@ -182,7 +182,7 @@ def conform_color_model(color, model):
 
     Parameters:
 
-        color (Union[Tuple[int, int, int], str]):
+        color (Union[tuple[int, int, int], str]):
             The color value to conform.
 
         model (str):

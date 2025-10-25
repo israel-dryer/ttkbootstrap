@@ -617,7 +617,7 @@ class FloodgaugeLegacy(Progressbar):
 
         Parameters:
 
-            cnf (Dict[str, Any], optional):
+            cnf (dict[str, Any], optional):
                 A dictionary of configuration options.
 
             **kwargs:

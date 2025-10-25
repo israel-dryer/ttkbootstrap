@@ -199,7 +199,7 @@ class Colors:
                 blue
 
         Returns:
-            Tuple[float, float, float]: The hsv color value.
+            tuple[float, float, float]: The hsv color value.
         """
         return colorsys.rgb_to_hsv(r, g, b)
 
@@ -593,7 +593,7 @@ class Style(ttk.Style):
 
         Returns:
 
-            List[str, ...]:
+            list[str, ...]:
                 A list of theme names.
         """
         return list(self._theme_definitions.keys())
@@ -1522,7 +1522,7 @@ class StyleBuilderTTK:
 
         Returns:
 
-            Tuple[str]:
+            tuple[str]:
                 A list of photoimage names.
         """
         if any([colorname == DEFAULT, colorname == ""]):
@@ -1786,7 +1786,7 @@ class StyleBuilderTTK:
 
         Returns:
 
-            Tuple[str]:
+            tuple[str]:
                 A tuple of PhotoImage names to be used in the image
                 layout when building the style.
         """
@@ -3171,7 +3171,7 @@ class StyleBuilderTTK:
 
         Returns:
 
-            Tuple[str]:
+            tuple[str]:
                 A tuple of PhotoImage names.
         """
         size = self.scale_size([24, 15])
@@ -3264,7 +3264,7 @@ class StyleBuilderTTK:
 
         Returns:
 
-            Tuple[str]:
+            tuple[str]:
                 A tuple of PhotoImage names.
         """
         size = self.scale_size([24, 15])
@@ -3748,7 +3748,7 @@ class StyleBuilderTTK:
 
         Returns:
 
-            Tuple[str]:
+            tuple[str]:
                 A tuple of PhotoImage names
         """
         prime_color = self.colors.get(colorname)
@@ -4367,7 +4367,7 @@ class StyleBuilderTTK:
 
         Returns:
 
-            Tuple[str]:
+            tuple[str]:
                 A tuple of PhotoImage names.
         """
         # set platform specific checkfont

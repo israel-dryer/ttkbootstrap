@@ -248,7 +248,7 @@ class TableRow:
             tableview (Tableview):
                 The Tableview widget that contains this row
 
-            values (List[Any, ...]):
+            values (list[Any, ...]):
                 A list of values to display in the row
         """
         self.view: ttk.Treeview = tableview.view
@@ -466,7 +466,7 @@ class Tableview(ttk.Frame):
                 options include -> primary, secondary, success, info,
                 warning, danger, dark, light.
 
-            coldata (List[str | Dict]):
+            coldata (list[str | dict]):
                 An iterable containing either the heading name or a
                 dictionary of column settings. Configurable settings
                 include >> text, image, command, anchor, width, minwidth,
@@ -516,7 +516,7 @@ class Tableview(ttk.Frame):
                 to determine the data type for alignment. Also see
                 `Tableview.autoalign_columns`.
 
-            stripecolor (Tuple[str, str]):
+            stripecolor (tuple[str, str]):
                 If provided, even numbered rows will be color using the
                 (background, foreground) specified. You may specify one
                 or the other by passing in **None**. For example,
@@ -542,7 +542,7 @@ class Tableview(ttk.Frame):
             disable_right_click (bool):
                 When set to `True`, the built-in right click menus are disabled on the widget.
 
-            on_select (Callable[[List[TableRow]], None]):
+            on_select (Callable[[list[TableRow]], None]):
                 Optional callback function to be invoked when the row selection changes.
                 The callback receives a list of selected TableRow objects as its argument.
                 When no rows are selected, the callback receives an empty list.
@@ -670,12 +670,12 @@ class Tableview(ttk.Frame):
         self._pagesize.set(value)
 
     @property
-    def iidmap(self) -> Dict[str, TableRow]:
+    def iidmap(self) -> dict[str, TableRow]:
         """A map of iid to tablerow object"""
         return self._iidmap
 
     @property
-    def cidmap(self) -> Dict[str, TableColumn]:
+    def cidmap(self) -> dict[str, TableColumn]:
         """A map of cid to tablecolumn object"""
         return self._cidmap
 
@@ -724,7 +724,7 @@ class Tableview(ttk.Frame):
 
         Parameters:
 
-            coldata (List[Union[str, Dict]]):
+            coldata (list[Union[str, dict]]):
                 An iterable of column names and/or settings.
 
             rowdata (List):
@@ -828,7 +828,7 @@ class Tableview(ttk.Frame):
                 the string 'end', which will append the records to the
                 end of the data set.
 
-            rowdata (List[Any, List]):
+            rowdata (list[Any, list]):
                 A list of row values to be inserted into the table.
 
         Examples:
@@ -894,10 +894,10 @@ class Tableview(ttk.Frame):
 
         Parameters:
 
-            indices (List[int]):
+            indices (list[int]):
                 A list of column indices to delete from the table.
 
-            cids (List[str]):
+            cids (list[str]):
                 A list of unique column identifiers to delete from the
                 table.
 
@@ -1174,7 +1174,7 @@ class Tableview(ttk.Frame):
 
     # CONFIGURATION
 
-    def get_columns(self) -> List[TableColumn]:
+    def get_columns(self) -> list[TableColumn]:
         """Returns a list of all column objects. Same as using the
         `Tableview.tablecolumns` property."""
         return self._tablecols
@@ -1234,7 +1234,7 @@ class Tableview(ttk.Frame):
                 except ValueError:
                     return None
 
-    def get_rows(self, visible=False, filtered=False, selected=False) -> List[TableRow]:
+    def get_rows(self, visible=False, filtered=False, selected=False) -> list[TableRow]:
         """Return a list of TableRow objects.
 
         Return a subset of rows based on optional flags. Only ONE flag can be used
@@ -1254,7 +1254,7 @@ class Tableview(ttk.Frame):
 
         Returns:
 
-            List[TableRow]:
+            list[TableRow]:
                 A list of TableRow objects.
         """
         if visible:
@@ -1739,10 +1739,10 @@ class Tableview(ttk.Frame):
 
         Parameters:
 
-            headers (List[str]):
+            headers (list[str]):
                 A list of header labels.
 
-            records (List[Tuple[...]]):
+            records (list[tuple[...]]):
                 A list of table records.
 
             delimiter (str):
@@ -2007,7 +2007,7 @@ class Tableview(ttk.Frame):
 
         Parameters:
 
-            stripecolor (Tuple[str, str]):
+            stripecolor (tuple[str, str]):
                 A tuple of colors to apply to the table stripe. The
                 tuple represents (background, foreground).
         """
@@ -2387,7 +2387,7 @@ class Tableview(ttk.Frame):
 
         Parameters:
 
-            coldata (List[str|Dict[str, Any]]):
+            coldata (list[str|dict[str, Any]]):
                 An iterable of column names or a dictionary of column
                 configuration settings.
         """

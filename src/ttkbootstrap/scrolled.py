@@ -76,7 +76,7 @@ class ScrolledText(ttk.Frame):
                 When **True**, the scrollbars will hide when the mouse
                 is not within the frame bbox.
 
-            **kwargs (Dict[str, Any]):
+            **kwargs (dict[str, Any]):
                 Other keyword arguments passed to the `Text` widget.
         """
         super().__init__(master, padding=padding)
@@ -256,7 +256,7 @@ class ScrolledFrame(ttk.Frame):
                 The height of the content frame in screen units. If None,
                 the height is determined by the frame contents.
 
-            **kwargs (Dict[str, Any]):
+            **kwargs (dict[str, Any]):
                 Other keyword arguments passed to the content frame.
         """
         # content frame container
@@ -318,7 +318,7 @@ class ScrolledFrame(ttk.Frame):
 
         Parameters:
 
-            *args (List[Any, ...]):
+            *args (list[Any, ...]):
                 Optional arguments passed to yview in order to move the
                 content frame within the container frame.
         """

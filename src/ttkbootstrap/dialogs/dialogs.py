@@ -57,7 +57,7 @@ class Dialog(BaseWidget):
         """Show the popup dialog
         Parameters:
 
-            position: Tuple[int, int]
+            position: tuple[int, int]
                 The x and y coordinates used to position the dialog. If no parent
                 then the dialog will anchor to the center of the parent window.
         """
@@ -195,7 +195,7 @@ class MessageDialog(Dialog):
                 guidelines forbid the use of a title on this kind of
                 dialog.
 
-            buttons (List[str]):
+            buttons (list[str]):
                 A list of buttons to appear at the bottom of the popup
                 messagebox. The buttons can be a list of strings which
                 will define the symbolic name and the button text.
@@ -205,7 +205,7 @@ class MessageDialog(Dialog):
                 the style is set to 'primary' by default.
                 `['OK:success','Cancel:danger']`.
 
-            command (Tuple[Callable, str]):
+            command (tuple[Callable, str]):
                 The function to invoke when the user closes the dialog.
                 The actual command is a tuple that consists of the
                 function to call and the symbolic name of the button that
@@ -229,7 +229,7 @@ class MessageDialog(Dialog):
                 If no default is provided, the right-most button in the
                 button list will be set as the default.,
 
-            padding  (Union[int, Tuple[int]]):
+            padding  (Union[int, tuple[int]]):
                 The amount of space between the border and the widget
                 contents.
 
@@ -415,7 +415,7 @@ class QueryDialog(Dialog):
                 The messagebox is displayed on top of its parent
                 window.
 
-            padding (Union[int, Tuple[int]]):
+            padding (Union[int, tuple[int]]):
                 The amount of space between the border and the widget
                 contents.
 
@@ -814,7 +814,7 @@ class DatePickerDialog:
 
         Returns:
 
-            List[str]:
+            list[str]:
                 A list of weekday column names for the calendar header.
         """
         weekdays = [
@@ -841,7 +841,7 @@ class DatePickerDialog:
 
         Parameters:
 
-            index (Tuple[int, int]):
+            index (tuple[int, int]):
                 A row and column index of the date selected; to be
                 found in the `monthdates` matrix.
 
@@ -1366,7 +1366,7 @@ class Messagebox:
                 Makes the window the logical parent of the message box. The
                 message box is displayed on top of its parent window.
 
-            buttons (List[str]):
+            buttons (list[str]):
                 A list of buttons to appear at the bottom of the popup
                 messagebox. The buttons can be a list of strings which
                 will define the symbolic name and the button text.
@@ -1670,7 +1670,7 @@ class Querybox:
 
         Returns:
 
-            Tuple[rgb, hsl, hex]:
+            tuple[rgb, hsl, hex]:
                 The selected color in various colors models.
         """
         from ttkbootstrap.dialogs.colorchooser import ColorChooserDialog

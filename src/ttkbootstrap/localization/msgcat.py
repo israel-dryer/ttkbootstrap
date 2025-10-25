@@ -80,7 +80,7 @@ class MessageCatalog:
 
         Returns:
 
-            List[str, ...]:
+            list[str, ...]:
                 Locales preferred by the user.
         """
         root = get_default_root()

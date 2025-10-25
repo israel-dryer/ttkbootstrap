@@ -80,7 +80,7 @@ class ToastNotification:
                 want to use. Windows (Segoe UI Symbol),
                 Linux (FreeSerif), MacOS (Apple Symbol)
 
-            position (Tuple[int, int, str]):
+            position (tuple[int, int, str]):
                 A tuple that controls the position of the toast. Default
                 is OS specific. The tuple cooresponds to
                 (horizontal, vertical, anchor), where the horizontal and
