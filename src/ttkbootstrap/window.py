@@ -1,7 +1,47 @@
-"""
-    This module contains a class of the same name that wraps the
-    tkinter.Tk and ttkbootstrap.style.Style classes to provide a more
-    consolidated api for initial application startup.
+"""Window and Toplevel classes for ttkbootstrap applications.
+
+This module provides enhanced Window and Toplevel classes that wrap tkinter.Tk
+and tkinter.Toplevel with integrated ttkbootstrap Style support, providing a
+consolidated API for application initialization and window creation.
+
+Classes:
+    Window: Main application window (wraps tk.Tk with Style)
+    Toplevel: Top-level popup window (wraps tk.Toplevel with Style)
+
+Features:
+    - Integrated ttkbootstrap theme support
+    - Simplified window configuration (size, position, title, etc.)
+    - High-DPI awareness configuration
+    - Window positioning utilities (center, place)
+    - Alpha transparency support
+    - Icon management (PhotoImage or file path)
+    - Resizable window control
+    - Theme-aware styling
+
+Example:
+    ```python
+    import ttkbootstrap as ttk
+    from ttkbootstrap.constants import *
+
+    # Create main window with theme
+    root = ttk.Window(
+        title="My Application",
+        themename="darkly",
+        size=(800, 600),
+        position=(100, 100),
+        resizable=(True, True),
+    )
+
+    # Add widgets
+    ttk.Label(root, text="Hello, World!").pack(padx=20, pady=20)
+    ttk.Button(root, text="Click Me", bootstyle="success").pack()
+
+    # Create toplevel popup
+    popup = ttk.Toplevel(title="Popup Window")
+    popup.geometry("400x300")
+
+    root.mainloop()
+    ```
 """
 import tkinter
 from ttkbootstrap.constants import *
@@ -172,28 +212,28 @@ class Window(tkinter.Tk):
                 this default behavior, set the value to `None` and use
                 the `Tk.iconphoto` or `Tk.iconbitmap` methods directly.
 
-            size (Tuple[int, int]):
+            size (tuple[int, int]):
                 The width and height of the application window.
                 Internally, this argument is passed to the
                 `Window.geometry` method.
 
-            position (Tuple[int, int]):
+            position (tuple[int, int]):
                 The horizontal and vertical position of the window on
                 the screen relative to the top-left coordinate.
                 Internally this is passed to the `Window.geometry`
                 method.
 
-            minsize (Tuple[int, int]):
+            minsize (tuple[int, int]):
                 Specifies the minimum permissible dimensions for the
                 window. Internally, this argument is passed to the
                 `Window.minsize` method.
 
-            maxsize (Tuple[int, int]):
+            maxsize (tuple[int, int]):
                 Specifies the maximum permissible dimensions for the
                 window. Internally, this argument is passed to the
                 `Window.maxsize` method.
 
-            resizable (Tuple[bool, bool]):
+            resizable (tuple[bool, bool]):
                 Specifies whether the user may interactively resize the
                 toplevel window. Must pass in two arguments that specify
                 this flag for _horizontal_ and _vertical_ dimensions.
@@ -364,28 +404,28 @@ class Toplevel(tkinter.Toplevel):
                 Internally this is passed to the `Tk.iconphoto` method.
                 By default the application icon is used.
 
-            size (Tuple[int, int]):
+            size (tuple[int, int]):
                 The width and height of the application window.
                 Internally, this argument is passed to the
                 `Toplevel.geometry` method.
 
-            position (Tuple[int, int]):
+            position (tuple[int, int]):
                 The horizontal and vertical position of the window on
                 the screen relative to the top-left coordinate.
                 Internally this is passed to the `Toplevel.geometry`
                 method.
 
-            minsize (Tuple[int, int]):
+            minsize (tuple[int, int]):
                 Specifies the minimum permissible dimensions for the
                 window. Internally, this argument is passed to the
                 `Toplevel.minsize` method.
 
-            maxsize (Tuple[int, int]):
+            maxsize (tuple[int, int]):
                 Specifies the maximum permissible dimensions for the
                 window. Internally, this argument is passed to the
                 `Toplevel.maxsize` method.
 
-            resizable (Tuple[bool, bool]):
+            resizable (tuple[bool, bool]):
                 Specifies whether the user may interactively resize the
                 toplevel window. Must pass in two arguments that specify
                 this flag for _horizontal_ and _vertical_ dimensions.

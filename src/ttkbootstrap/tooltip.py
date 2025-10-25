@@ -1,3 +1,48 @@
+"""Tooltip popup widgets for ttkbootstrap.
+
+This module provides a semi-transparent tooltip system that displays helpful
+text when hovering over widgets. Tooltips automatically appear on mouse hover
+and disappear when the mouse leaves the widget or on click.
+
+Classes:
+    ToolTip: Semi-transparent popup that shows text on hover
+
+Features:
+    - Automatic show/hide on mouse enter/leave events
+    - Configurable delay before tooltip appears
+    - Bootstrap styling support
+    - Flexible positioning (follows mouse or anchored to widget)
+    - Text wrapping and justification options
+    - Optional image display with text
+
+Example:
+    ```python
+    import ttkbootstrap as ttk
+    from ttkbootstrap.constants import *
+    from ttkbootstrap.tooltip import ToolTip
+
+    app = ttk.Window()
+
+    b1 = ttk.Button(app, text="default tooltip")
+    b1.pack(side=LEFT, padx=20, pady=20)
+
+    b2 = ttk.Button(app, text="styled tooltip")
+    b2.pack(side=LEFT, padx=20, pady=20)
+
+    # Default tooltip (follows mouse)
+    ToolTip(b1, text="This is the default style")
+
+    # Styled tooltip anchored to widget
+    ToolTip(
+        b2,
+        text="This is dangerous",
+        bootstyle=(DANGER, INVERSE),
+        position="top right"
+    )
+
+    app.mainloop()
+    ```
+"""
 from typing import Literal, Optional
 
 import ttkbootstrap as ttk

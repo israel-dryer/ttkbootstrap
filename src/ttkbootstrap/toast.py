@@ -1,3 +1,48 @@
+"""Toast notification popup widgets for ttkbootstrap.
+
+This module provides a semi-transparent toast notification system for displaying
+temporary alerts or messages. Toasts appear as popup windows that can be configured
+to automatically close after a duration or require user interaction to dismiss.
+
+Classes:
+    ToastNotification: Semi-transparent popup for alerts and messages
+
+Features:
+    - Configurable display duration or click-to-close behavior
+    - Bootstrap styling support (primary, secondary, success, danger, etc.)
+    - Customizable icon and font support
+    - Flexible positioning (anchored to screen corners)
+    - Optional audible alert bell
+    - Smooth fade-out animation on close
+
+Example:
+    ```python
+    import ttkbootstrap as ttk
+    from ttkbootstrap.toast import ToastNotification
+
+    app = ttk.Window()
+
+    # Toast with auto-close after 3 seconds
+    toast = ToastNotification(
+        title="ttkbootstrap toast message",
+        message="This is a toast message",
+        duration=3000,
+        bootstyle="info",
+    )
+    toast.show_toast()
+
+    # Toast that requires click to close
+    toast2 = ToastNotification(
+        title="Important Notice",
+        message="Click to dismiss this message",
+        bootstyle="warning",
+        alert=True,  # Ring bell when shown
+    )
+    toast2.show_toast()
+
+    app.mainloop()
+    ```
+"""
 from tkinter import font
 import ttkbootstrap as ttk
 from ttkbootstrap.constants import *
@@ -80,7 +125,7 @@ class ToastNotification:
                 want to use. Windows (Segoe UI Symbol),
                 Linux (FreeSerif), MacOS (Apple Symbol)
 
-            position (Tuple[int, int, str]):
+            position (tuple[int, int, str]):
                 A tuple that controls the position of the toast. Default
                 is OS specific. The tuple cooresponds to
                 (horizontal, vertical, anchor), where the horizontal and

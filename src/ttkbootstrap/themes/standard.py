@@ -1,3 +1,38 @@
+"""Standard built-in theme definitions for ttkbootstrap.
+
+This module contains over 40 pre-defined Bootstrap-inspired themes that can
+be used in ttkbootstrap applications. Each theme includes a complete color
+scheme with primary, secondary, success, info, warning, danger, light, and
+dark colors, plus additional UI colors for backgrounds, foregrounds, borders, etc.
+
+Themes are categorized as:
+    - Light themes: bright backgrounds with dark text
+    - Dark themes: dark backgrounds with light text
+
+Available themes include:
+    Light: cosmo, flatly, litera, minty, lumen, pulse, sandstone, united,
+           yeti, morph, journal, simplex, cerulean, solar, superhero, darkly,
+           cyborg, vapor
+
+    Dark: darkly, solar, superhero, cyborg, vapor
+
+Each theme dictionary contains:
+    - type: "light" or "dark"
+    - colors: dict with primary, secondary, success, info, warning, danger,
+              light, dark, bg, fg, selectbg, selectfg, border, inputfg,
+              inputbg, and active color definitions
+
+Example:
+    Themes are automatically loaded by the Style class:
+    ```python
+    import ttkbootstrap as ttk
+
+    # Use a standard theme
+    root = ttk.Window(themename="darkly")
+    root.mainloop()
+    ```
+"""
+
 STANDARD_THEMES = {
     "cosmo": {
         "type": "light",

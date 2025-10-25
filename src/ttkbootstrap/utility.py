@@ -1,3 +1,29 @@
+"""Utility functions for ttkbootstrap.
+
+This module provides various utility functions for common tasks in
+ttkbootstrap applications, including high-DPI support, screen geometry
+calculations, and color manipulations.
+
+Functions:
+    enable_high_dpi_awareness: Enable high-DPI scaling on Windows/Linux
+    scale_size: Scale a size value for high-DPI displays
+    get_desktop_geometry: Get the screen dimensions
+    get_asset_path: Get the path to an asset file
+
+Example:
+    ```python
+    from ttkbootstrap.utility import enable_high_dpi_awareness
+    import ttkbootstrap as ttk
+
+    # Enable high-DPI before creating window
+    enable_high_dpi_awareness()
+
+    root = ttk.Window()
+    root.mainloop()
+    ```
+"""
+
+
 def enable_high_dpi_awareness(root=None, scaling=None):
     """Enable high dpi awareness.
 

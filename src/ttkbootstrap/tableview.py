@@ -1,3 +1,59 @@
+"""Table view widget with sorting, searching, and pagination for ttkbootstrap.
+
+This module provides a powerful table widget built on top of ttk.Treeview with
+enhanced features like column sorting, row striping, pagination, searching,
+and data loading from various sources.
+
+Classes:
+    TableColumn: Represents a column in the Tableview
+    Tableview: Enhanced treeview widget for displaying tabular data
+
+Features:
+    - Automatic column sorting with visual indicators
+    - Row striping for better readability
+    - Pagination with configurable page size
+    - Column-specific searching
+    - Loading data from lists, dicts, CSV files
+    - Row selection with callback events
+    - Autofit columns and autoalign numeric data
+    - Localization support for date formatting
+
+Example:
+    ```python
+    import ttkbootstrap as ttk
+    from ttkbootstrap.tableview import Tableview
+
+    app = ttk.Window()
+
+    # Define column structure
+    coldata = [
+        {"text": "Name", "stretch": False},
+        {"text": "Age", "stretch": False},
+        {"text": "Email", "stretch": True}
+    ]
+
+    # Define row data
+    rowdata = [
+        ["John Doe", 28, "john@example.com"],
+        ["Jane Smith", 35, "jane@example.com"],
+        ["Bob Wilson", 42, "bob@example.com"],
+    ]
+
+    # Create tableview
+    tv = Tableview(
+        master=app,
+        coldata=coldata,
+        rowdata=rowdata,
+        paginated=True,
+        searchable=True,
+        bootstyle="primary",
+        stripecolor=(None, None),
+    )
+    tv.pack(fill="both", expand=True, padx=10, pady=10)
+
+    app.mainloop()
+    ```
+"""
 import tkinter as tk
 from datetime import datetime
 from math import ceil
@@ -16,7 +72,7 @@ DESCENDING = 1
 
 
 class TableColumn:
-    """Represents a column in a Tableview object"""
+    """Represents a column in a Tableview object."""
 
     def __init__(
             self,
@@ -90,13 +146,25 @@ class TableColumn:
 
     @property
     def headertext(self):
-        """The text on the header label"""
+        """Return the text on the column header label.
+
+        Returns:
+
+            str: The header text.
+        """
         return self._headertext
 
     @property
     def columnsort(self):
-        """Indicates how the column is to be sorted when the sorting
-        method is invoked."""
+        """Return the sort direction used for this column.
+
+        Indicates how the column is to be sorted when sorting is
+        invoked.
+
+        Returns:
+
+            int: ``ASCENDING`` (0) or ``DESCENDING`` (1).
+        """
         return self._sort
 
     @columnsort.setter
@@ -105,12 +173,22 @@ class TableColumn:
 
     @property
     def cid(self):
-        """A unique column identifier"""
+        """Return the unique column identifier.
+
+        Returns:
+
+            str: The column id.
+        """
         return str(self._cid)
 
     @property
     def tableindex(self):
-        """The index of the column as it is in the table configuration."""
+        """Return the index of the column in the table configuration.
+
+        Returns:
+
+            int | None: The configured index of the column, or None.
+        """
         cols = self.view.cget("columns")
         if cols is None:
             return
@@ -121,7 +199,12 @@ class TableColumn:
 
     @property
     def displayindex(self):
-        """The index of the column as it is displayed"""
+        """Return the index of the column as displayed.
+
+        Returns:
+
+            int | None: The displayed index of the column, or None.
+        """
         cols = self.view.cget("displaycolumns")
         if "#all" in cols:
             return self.tableindex
@@ -248,7 +331,7 @@ class TableRow:
             tableview (Tableview):
                 The Tableview widget that contains this row
 
-            values (List[Any, ...]):
+            values (list[Any, ...]):
                 A list of values to display in the row
         """
         self.view: ttk.Treeview = tableview.view
@@ -466,7 +549,7 @@ class Tableview(ttk.Frame):
                 options include -> primary, secondary, success, info,
                 warning, danger, dark, light.
 
-            coldata (List[str | Dict]):
+            coldata (list[str | dict]):
                 An iterable containing either the heading name or a
                 dictionary of column settings. Configurable settings
                 include >> text, image, command, anchor, width, minwidth,
@@ -516,7 +599,7 @@ class Tableview(ttk.Frame):
                 to determine the data type for alignment. Also see
                 `Tableview.autoalign_columns`.
 
-            stripecolor (Tuple[str, str]):
+            stripecolor (tuple[str, str]):
                 If provided, even numbered rows will be color using the
                 (background, foreground) specified. You may specify one
                 or the other by passing in **None**. For example,
@@ -542,7 +625,7 @@ class Tableview(ttk.Frame):
             disable_right_click (bool):
                 When set to `True`, the built-in right click menus are disabled on the widget.
 
-            on_select (Callable[[List[TableRow]], None]):
+            on_select (Callable[[list[TableRow]], None]):
                 Optional callback function to be invoked when the row selection changes.
                 The callback receives a list of selected TableRow objects as its argument.
                 When no rows are selected, the callback receives an empty list.
@@ -670,12 +753,12 @@ class Tableview(ttk.Frame):
         self._pagesize.set(value)
 
     @property
-    def iidmap(self) -> Dict[str, TableRow]:
+    def iidmap(self) -> dict[str, TableRow]:
         """A map of iid to tablerow object"""
         return self._iidmap
 
     @property
-    def cidmap(self) -> Dict[str, TableColumn]:
+    def cidmap(self) -> dict[str, TableColumn]:
         """A map of cid to tablecolumn object"""
         return self._cidmap
 
@@ -724,7 +807,7 @@ class Tableview(ttk.Frame):
 
         Parameters:
 
-            coldata (List[Union[str, Dict]]):
+            coldata (list[Union[str, dict]]):
                 An iterable of column names and/or settings.
 
             rowdata (List):
@@ -828,7 +911,7 @@ class Tableview(ttk.Frame):
                 the string 'end', which will append the records to the
                 end of the data set.
 
-            rowdata (List[Any, List]):
+            rowdata (list[Any, list]):
                 A list of row values to be inserted into the table.
 
         Examples:
@@ -894,10 +977,10 @@ class Tableview(ttk.Frame):
 
         Parameters:
 
-            indices (List[int]):
+            indices (list[int]):
                 A list of column indices to delete from the table.
 
-            cids (List[str]):
+            cids (list[str]):
                 A list of unique column identifiers to delete from the
                 table.
 
@@ -1174,7 +1257,7 @@ class Tableview(ttk.Frame):
 
     # CONFIGURATION
 
-    def get_columns(self) -> List[TableColumn]:
+    def get_columns(self) -> list[TableColumn]:
         """Returns a list of all column objects. Same as using the
         `Tableview.tablecolumns` property."""
         return self._tablecols
@@ -1234,7 +1317,7 @@ class Tableview(ttk.Frame):
                 except ValueError:
                     return None
 
-    def get_rows(self, visible=False, filtered=False, selected=False) -> List[TableRow]:
+    def get_rows(self, visible=False, filtered=False, selected=False) -> list[TableRow]:
         """Return a list of TableRow objects.
 
         Return a subset of rows based on optional flags. Only ONE flag can be used
@@ -1254,7 +1337,7 @@ class Tableview(ttk.Frame):
 
         Returns:
 
-            List[TableRow]:
+            list[TableRow]:
                 A list of TableRow objects.
         """
         if visible:
@@ -1739,10 +1822,10 @@ class Tableview(ttk.Frame):
 
         Parameters:
 
-            headers (List[str]):
+            headers (list[str]):
                 A list of header labels.
 
-            records (List[Tuple[...]]):
+            records (list[tuple[...]]):
                 A list of table records.
 
             delimiter (str):
@@ -2007,7 +2090,7 @@ class Tableview(ttk.Frame):
 
         Parameters:
 
-            stripecolor (Tuple[str, str]):
+            stripecolor (tuple[str, str]):
                 A tuple of colors to apply to the table stripe. The
                 tuple represents (background, foreground).
         """
@@ -2387,7 +2470,7 @@ class Tableview(ttk.Frame):
 
         Parameters:
 
-            coldata (List[str|Dict[str, Any]]):
+            coldata (list[str|dict[str, Any]]):
                 An iterable of column names or a dictionary of column
                 configuration settings.
         """
