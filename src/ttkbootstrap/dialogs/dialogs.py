@@ -112,6 +112,7 @@ class Dialog(BaseWidget):
                 The x and y coordinates used to position the dialog. If no parent
                 then the dialog will anchor to the center of the parent window.
         """
+        self.update_idletasks()
         self._result = None
         self.build()
 
