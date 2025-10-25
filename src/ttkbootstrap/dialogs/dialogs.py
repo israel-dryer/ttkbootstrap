@@ -1,9 +1,60 @@
-"""
-    This module contains various base dialog base classes that can be
-    used to create custom dialogs for the end user.
+"""Dialog base classes and implementations for ttkbootstrap.
 
-    These classes serve as the basis for the pre-defined static helper
-    methods in the `Messagebox`, and `Querybox` container classes.
+This module provides the foundation for creating Bootstrap-styled dialogs,
+including base classes for custom dialogs and complete implementations of
+common dialog types (messageboxes, query boxes, date pickers, etc.).
+
+Base Classes:
+    Dialog: Simple dialog base class
+    MessageDialog: Dialog for displaying messages with buttons
+    QueryDialog: Dialog for getting user input
+
+Dialog Implementations:
+    Messagebox: Static methods for showing messages (ok, okcancel, yesno, etc.)
+    Querybox: Static methods for getting input (get_string, get_integer, etc.)
+    DatePickerDialog: Calendar-based date selection dialog
+    FontDialog: Font selection and configuration dialog
+
+Features:
+    - Bootstrap-styled dialog windows
+    - Localization support for multi-language interfaces
+    - Flexible button configurations
+    - Modal and non-modal dialog options
+    - Automatic centering over parent windows
+    - Return value handling
+    - Optional alert bell on show
+
+Example:
+    Using Messagebox:
+    ```python
+    import ttkbootstrap as ttk
+    from ttkbootstrap.dialogs import Messagebox
+
+    root = ttk.Window()
+
+    # Show info message
+    Messagebox.ok("Operation completed successfully!")
+
+    # Ask yes/no question
+    result = Messagebox.yesno("Save changes before closing?")
+    if result == "Yes":
+        # Save changes
+        pass
+    ```
+
+    Using Querybox:
+    ```python
+    from ttkbootstrap.dialogs import Querybox
+
+    # Get string input
+    name = Querybox.get_string("Enter your name:")
+
+    # Get integer
+    age = Querybox.get_integer("Enter your age:", minvalue=0, maxvalue=150)
+
+    # Get date
+    date = Querybox.get_date("Select a date:")
+    ```
 """
 
 import calendar

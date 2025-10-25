@@ -1,3 +1,59 @@
+"""Table view widget with sorting, searching, and pagination for ttkbootstrap.
+
+This module provides a powerful table widget built on top of ttk.Treeview with
+enhanced features like column sorting, row striping, pagination, searching,
+and data loading from various sources.
+
+Classes:
+    TableColumn: Represents a column in the Tableview
+    Tableview: Enhanced treeview widget for displaying tabular data
+
+Features:
+    - Automatic column sorting with visual indicators
+    - Row striping for better readability
+    - Pagination with configurable page size
+    - Column-specific searching
+    - Loading data from lists, dicts, CSV files
+    - Row selection with callback events
+    - Autofit columns and autoalign numeric data
+    - Localization support for date formatting
+
+Example:
+    ```python
+    import ttkbootstrap as ttk
+    from ttkbootstrap.tableview import Tableview
+
+    app = ttk.Window()
+
+    # Define column structure
+    coldata = [
+        {"text": "Name", "stretch": False},
+        {"text": "Age", "stretch": False},
+        {"text": "Email", "stretch": True}
+    ]
+
+    # Define row data
+    rowdata = [
+        ["John Doe", 28, "john@example.com"],
+        ["Jane Smith", 35, "jane@example.com"],
+        ["Bob Wilson", 42, "bob@example.com"],
+    ]
+
+    # Create tableview
+    tv = Tableview(
+        master=app,
+        coldata=coldata,
+        rowdata=rowdata,
+        paginated=True,
+        searchable=True,
+        bootstyle="primary",
+        stripecolor=(None, None),
+    )
+    tv.pack(fill="both", expand=True, padx=10, pady=10)
+
+    app.mainloop()
+    ```
+"""
 import tkinter as tk
 from datetime import datetime
 from math import ceil
@@ -16,7 +72,7 @@ DESCENDING = 1
 
 
 class TableColumn:
-    """Represents a column in a Tableview object"""
+    """Represents a column in a Tableview object."""
 
     def __init__(
             self,
@@ -90,13 +146,25 @@ class TableColumn:
 
     @property
     def headertext(self):
-        """The text on the header label"""
+        """Return the text on the column header label.
+
+        Returns:
+
+            str: The header text.
+        """
         return self._headertext
 
     @property
     def columnsort(self):
-        """Indicates how the column is to be sorted when the sorting
-        method is invoked."""
+        """Return the sort direction used for this column.
+
+        Indicates how the column is to be sorted when sorting is
+        invoked.
+
+        Returns:
+
+            int: ``ASCENDING`` (0) or ``DESCENDING`` (1).
+        """
         return self._sort
 
     @columnsort.setter
@@ -105,12 +173,22 @@ class TableColumn:
 
     @property
     def cid(self):
-        """A unique column identifier"""
+        """Return the unique column identifier.
+
+        Returns:
+
+            str: The column id.
+        """
         return str(self._cid)
 
     @property
     def tableindex(self):
-        """The index of the column as it is in the table configuration."""
+        """Return the index of the column in the table configuration.
+
+        Returns:
+
+            int | None: The configured index of the column, or None.
+        """
         cols = self.view.cget("columns")
         if cols is None:
             return
@@ -121,7 +199,12 @@ class TableColumn:
 
     @property
     def displayindex(self):
-        """The index of the column as it is displayed"""
+        """Return the index of the column as displayed.
+
+        Returns:
+
+            int | None: The displayed index of the column, or None.
+        """
         cols = self.view.cget("displaycolumns")
         if "#all" in cols:
             return self.tableindex

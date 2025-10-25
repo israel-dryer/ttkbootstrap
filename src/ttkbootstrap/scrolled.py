@@ -1,6 +1,42 @@
-"""
-    This module contains various custom scrolling widgets, including 
-    `ScrolledText` and `ScrolledFrame`.
+"""Scrolling widgets with optional autohide scrollbars for ttkbootstrap.
+
+This module provides enhanced scrolling widgets that wrap standard tkinter
+and ttk widgets with automatic scrollbar management. The scrollbars can be
+configured to autohide when the mouse is not over the widget.
+
+Classes:
+    ScrolledText: Text widget with vertical/horizontal scrollbars
+    ScrolledFrame: Frame container with vertical scrollbar
+
+Features:
+    - Optional autohide scrollbars (hide when mouse leaves widget)
+    - Configurable vertical and horizontal scrollbars
+    - Seamless delegation of widget methods
+    - Bootstrap styling support via bootstyle parameter
+
+Example:
+    ```python
+    import ttkbootstrap as ttk
+    from ttkbootstrap.constants import *
+    from ttkbootstrap.scrolled import ScrolledText, ScrolledFrame
+
+    app = ttk.Window()
+
+    # Scrolled text with autohide scrollbar
+    st = ScrolledText(app, padding=5, height=10, autohide=True)
+    st.pack(fill=BOTH, expand=YES)
+    st.insert(END, 'Insert your text here.')
+
+    # Scrolled frame for multiple widgets
+    sf = ScrolledFrame(app, autohide=True)
+    sf.pack(fill=BOTH, expand=YES, padx=10, pady=10)
+
+    # Add widgets to scrolled frame
+    for x in range(20):
+        ttk.Checkbutton(sf, text=f"Checkbutton {x}").pack(anchor=W)
+
+    app.mainloop()
+    ```
 """
 import ttkbootstrap as ttk
 from ttkbootstrap.constants import *
@@ -129,7 +165,7 @@ class ScrolledText(ttk.Frame):
             self.hide_scrollbars()
 
     def _on_configure(self, *_):
-        """Callback for when the configure method is used"""
+        """Callback for when the configure method is used."""
         if self._hbar:
             self.update_idletasks()
             text_width = self.winfo_width()
@@ -139,17 +175,32 @@ class ScrolledText(ttk.Frame):
 
     @property
     def text(self):
-        """Returns the internal text object"""
+        """Return the internal text widget.
+
+        Returns:
+
+            ttk.Text: The underlying text widget instance.
+        """
         return self._text
 
     @property
     def hbar(self):
-        """Returns the internal horizontal scrollbar"""
+        """Return the internal horizontal scrollbar.
+
+        Returns:
+
+            ttk.Scrollbar | None: The horizontal scrollbar, if created.
+        """
         return self._hbar
 
     @property
     def vbar(self):
-        """Returns the internal vertical scrollbar"""
+        """Return the internal vertical scrollbar.
+
+        Returns:
+
+            ttk.Scrollbar | None: The vertical scrollbar, if created.
+        """
         return self._vbar            
 
     def hide_scrollbars(self, *_):

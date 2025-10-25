@@ -1,3 +1,35 @@
+"""Color utility functions for ttkbootstrap.
+
+This module provides utilities for converting between different color models
+and manipulating colors (adjusting hue, saturation, luminance).
+
+Supported color models:
+    - RGB: Red, Green, Blue tuple (0-255)
+    - HSL: Hue (0-360), Saturation (0-100), Luminance (0-100)
+    - HEX: Hexadecimal color string (#RRGGBB)
+    - NAME: Named colors (e.g., 'red', 'blue')
+
+Functions:
+    color_to_rgb: Convert any color model to RGB
+    color_to_hex: Convert any color model to HEX
+    color_to_hsl: Convert any color model to HSL
+    update_color: Modify HSL values of a color
+    contrast_color: Get contrasting foreground color for readability
+
+Example:
+    ```python
+    from ttkbootstrap.colorutils import *
+
+    # Convert hex to RGB
+    rgb = color_to_rgb('#FF5733', model=HEX)  # (255, 87, 51)
+
+    # Adjust color lightness
+    lighter = update_color('#FF5733', lum=80, inmodel=HEX, outmodel=HEX)
+
+    # Get contrasting text color
+    fg_color = contrast_color('#FF5733')  # Returns 'white' or 'black'
+    ```
+"""
 from PIL import ImageColor
 from colorsys import rgb_to_hls
 

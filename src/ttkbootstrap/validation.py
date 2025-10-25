@@ -1,44 +1,52 @@
-"""
-    This module contains classes and functions that are used to add
-    validation to Entry, Spinbox, and Combobox widgets. Several helper 
-    methods are included which start with the "add" prefix.
+"""Validation framework for ttkbootstrap entry widgets.
 
-    ## Using predefined methods
-    
-    When validation is applied to a widget and the input is determined
-    to be invalid, a 'danger' colored border is applied to the widget.
-    This border disappears when the widget is determined to have valid
-    contents.
+This module provides classes and functions for adding validation to Entry,
+Spinbox, and Combobox widgets. When validation fails, a 'danger' colored
+border is applied to the widget, which disappears when the contents become valid.
 
-    Below are a few examples using predefined validation. Browse the 
-    full list in the documentation below:
+The module includes:
+    - Predefined validation functions (text, numeric, phone number, regex, etc.)
+    - Custom validation decorator (@validator)
+    - Helper functions starting with "add_" prefix for quick validation setup
+
+Classes:
+    ValidationEvent: Contains attributes of a validation event from tkinter
+
+Functions:
+    add_validation: Core function to add validation to any compatible widget
+    add_text_validation: Validate that contents is alphabetic text
+    add_numeric_validation: Validate that contents is numeric
+    add_phonenumber_validation: Validate phone number format
+    add_regex_validation: Validate against custom regex pattern
+    add_range_validation: Validate numeric value is within range
+    add_option_validation: Validate value is in list of options
+
+Example:
+    Using predefined validation:
     ```python
-    app = ttk.Window()
+    import ttkbootstrap as ttk
+    from ttkbootstrap.validation import *
 
+    app = ttk.Window()
     entry = ttk.Entry()
     entry.pack(padx=10, pady=10)
 
-    # check if contents is text
+    # Check if contents is text
     add_text_validation(entry)
 
-    # prevent any entry except text
+    # Prevent any entry except text
     add_text_validation(entry, when='key')
 
-    # check for a specific list of options
+    # Check for specific list of options
     add_option_validation(entry, ['red', 'blue', 'green'])
 
-    # validate against a specific regex expression
-    add_regex_validation(entry, r'\d{4}-\d{2}-\d{2}')    
+    # Validate against regex expression
+    add_regex_validation(entry, r'\d{4}-\d{2}-\d{2}')
+
+    app.mainloop()
     ```
 
-    ## Adding a custom validation
-
-    First, create a custom validation function. This must accept a 
-    `ValidationEvent` object and should return a boolean. You should
-    also use the @validator decorator to convert this method to a
-    validation method. Check the `ValidationEvent` attributes to 
-    learn about what is returned in this event.
-
+    Creating custom validation:
     ```python
     from ttkbootstrap.validation import validator, add_validation
 
@@ -48,10 +56,8 @@
             return True
         else:
             return False
-    ```
 
-    Apply your custom validation to the widget
-    ```python
+    # Apply custom validation
     add_validation(entry, validate_long_text)
     ```
 """
@@ -70,7 +76,7 @@ class ValidationEvent:
             or -1 if the callback was for focusin, focusout, or a
             change to the textvariable.
 
-        insertdeletetext (str):
+        insertdeleteindex (str):
             When the user attempts to insert or delete text, this
             attribute will be the index of the beginning of the
             insertion or deletion. If the callback was due to focusin,
@@ -91,13 +97,17 @@ class ValidationEvent:
             Specifies the widget's validation option which specifies
             _when_ the validation will occur.
 
+        validationreason (str):
+            The reason for the validation callback (key, focusin,
+            focusout, forced).
+
         widget (Widget):
             The widget object that is being validated.
     """
 
     def __init__(self, d, i, P, s, S, v, V, W):
         self.actioncode = d
-        self.insertdeletetext = i
+        self.insertdeleteindex = i
         self.postchangetext = P
         self.prechangetext = s
         self.insertdeletetext = S

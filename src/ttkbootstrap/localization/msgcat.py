@@ -1,3 +1,37 @@
+"""Message catalog wrapper for ttkbootstrap localization.
+
+This module provides a Python interface to the Tcl/Tk msgcat (message catalog)
+system for managing multi-lingual user interfaces. It enables applications to
+translate UI text based on the user's locale.
+
+Classes:
+    MessageCatalog: Static wrapper for Tcl/Tk msgcat commands
+
+The MessageCatalog allows applications to:
+    - Translate strings based on current locale
+    - Set locale preferences
+    - Define message translations for multiple languages
+    - Format translated messages with arguments
+
+See also:
+    https://www.tcl.tk/man/tcl/TclCmd/msgcat.html
+
+Example:
+    ```python
+    from ttkbootstrap.localization import MessageCatalog
+
+    # Set locale
+    MessageCatalog.locale('de')
+
+    # Define German translations
+    MessageCatalog.set('de', 'Hello', 'Hallo')
+    MessageCatalog.set('de', 'Goodbye', 'Auf Wiedersehen')
+
+    # Translate
+    greeting = MessageCatalog.translate('Hello')  # Returns 'Hallo'
+    farewell = MessageCatalog.translate('Goodbye')  # Returns 'Auf Wiedersehen'
+    ```
+"""
 from ttkbootstrap.window import get_default_root
 
 

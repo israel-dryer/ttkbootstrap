@@ -1,3 +1,43 @@
+"""Constants and type aliases for ttkbootstrap.
+
+This module defines constants and type aliases used throughout ttkbootstrap,
+including tkinter/ttk configuration values and ttkbootstrap-specific enums.
+
+The module provides:
+    - Type aliases using Literal for better type checking
+    - Standard tkinter constants (anchor, fill, relief, etc.)
+    - TTkbootstrap-specific constants (bootstyle colors and types)
+    - Final-typed constants for IDE autocomplete
+
+All constants are exported in __all__ for easy wildcard import:
+    ```python
+    from ttkbootstrap.constants import *
+    ```
+
+Type Aliases:
+    Anchor: Widget anchor positions (n, s, e, w, nw, ne, sw, se, center)
+    Fill: Fill modes for pack geometry manager (none, x, y, both)
+    Side: Widget placement side (left, top, right, bottom)
+    Relief: Border relief style (raised, sunken, flat, ridge, groove, solid)
+    Orient: Widget orientation (horizontal, vertical)
+    State: Widget state (normal, disabled, active, hidden, readonly)
+    BootColor: Bootstyle color names (primary, secondary, success, etc.)
+    BootType: Bootstyle type modifiers (outline, link, toggle, etc.)
+
+Example:
+    ```python
+    import ttkbootstrap as ttk
+    from ttkbootstrap.constants import *
+
+    root = ttk.Window()
+
+    # Use constants for cleaner code
+    btn = ttk.Button(root, text="OK", bootstyle=SUCCESS)
+    btn.pack(side=LEFT, fill=X, padx=10)
+
+    root.mainloop()
+    ```
+"""
 from __future__ import annotations
 
 from typing import Final, Literal
