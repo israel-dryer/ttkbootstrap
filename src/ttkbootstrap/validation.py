@@ -1,4 +1,4 @@
-"""Validation framework for ttkbootstrap entry widgets.
+r"""Validation framework for ttkbootstrap entry widgets.
 
 This module provides classes and functions for adding validation to Entry,
 Spinbox, and Combobox widgets. When validation fails, a 'danger' colored
