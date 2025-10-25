@@ -11,7 +11,6 @@ from ttkbootstrap.scrolled import ScrolledText
 
 
 def setup_demo(master):
-
     ZEN = """Beautiful is better than ugly. 
 Explicit is better than implicit. 
 Simple is better than complex. 
@@ -93,9 +92,9 @@ Namespaces are one honking great idea -- let's do more of those!"""
     check2.pack(side=LEFT, expand=YES, padx=5)
 
     check4 = ttk.Checkbutton(rb_group, text="deselected")
-    check4.pack(side=LEFT, expand=YES, padx=5)    
+    check4.pack(side=LEFT, expand=YES, padx=5)
     check4.invoke()
-    check4.invoke()    
+    check4.invoke()
 
     check3 = ttk.Checkbutton(rb_group, text="disabled", state=DISABLED)
     check3.pack(side=LEFT, expand=YES, padx=5)
@@ -292,7 +291,6 @@ Namespaces are one honking great idea -- let's do more of those!"""
 
 
 if __name__ == "__main__":
-
     app = ttk.Window("ttkbootstrap widget demo")
 
     bagel = setup_demo(app)

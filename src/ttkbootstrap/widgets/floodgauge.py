@@ -1,4 +1,36 @@
-"""Floodgauge widgets for ttkbootstrap."""
+"""Floodgauge widgets for ttkbootstrap.
+
+This module provides Floodgauge widgets that display progress with optional
+text labels. Floodgauge is a canvas-based alternative to the ttk Progressbar
+with enhanced styling and animation capabilities.
+
+Example:
+    ```python
+    import ttkbootstrap as ttk
+
+    root = ttk.Window()
+
+    # Create a floodgauge with a mask for percentage display
+    fg = ttk.Floodgauge(
+        root,
+        maximum=100,
+        value=0,
+        bootstyle="success",
+        mask="{}% Complete"
+    )
+    fg.pack(fill='x', padx=10, pady=10)
+
+    # Start animation or update value
+    fg.configure(value=50)
+
+    # For indeterminate mode
+    fg_indet = ttk.Floodgauge(root, mode='indeterminate', bootstyle='info')
+    fg_indet.pack(fill='x', padx=10, pady=10)
+    fg_indet.start()
+
+    root.mainloop()
+    ```
+"""
 import tkinter as tk
 from tkinter.ttk import Progressbar
 
@@ -181,11 +213,31 @@ class Floodgauge(tk.Canvas):
         self._draw()
 
     def step(self, amount=1):
+        """Increment the progress value.
+
+        Parameters:
+            amount (int, optional): The amount to increment. Defaults to 1.
+                                   Value wraps around after reaching maximum.
+        """
         self.value = (self.value + amount) % (self.maximum + 1)
         self.variable.set(self.value)
         self._draw()
 
     def start(self, step_size=None, interval=None):
+        """Start the progress animation.
+
+        For indeterminate mode, starts the bouncing animation. For determinate
+        mode, starts auto-incrementing the value.
+
+        Parameters:
+            step_size (int, optional): Amount to increment per animation step.
+                                      Defaults to 8 for indeterminate mode,
+                                      1 for determinate mode.
+
+            interval (int, optional): Time in milliseconds between animation steps.
+                                     Defaults to 20ms for indeterminate mode,
+                                     50ms for determinate mode.
+        """
         if self.mode == "indeterminate":
             self._step_size = step_size if step_size is not None else 8
             interval = interval if interval is not None else 20
@@ -198,6 +250,10 @@ class Floodgauge(tk.Canvas):
         self._run_animation(interval)
 
     def stop(self):
+        """Stop the progress animation.
+
+        Cancels any running animation and halts auto-incrementing or bouncing.
+        """
         self._running = False
         if self._after_id:
             self.after_cancel(self._after_id)
@@ -244,6 +300,15 @@ class Floodgauge(tk.Canvas):
         self._after_id = self.after(interval, lambda: self._animate_indeterminate(interval))
 
     def configure(self, cnf=None, **kwargs):
+        """Configure the options for this widget.
+
+        Parameters:
+            cnf (str, optional): Option name to query. If provided without
+                                kwargs, returns the current value.
+
+            **kwargs: Widget options to set (value, maximum, mask, text, font,
+                     bootstyle, length, thickness, variable, textvariable).
+        """
         if cnf is not None and not kwargs:
             custom = {
                 "value": ("value", "value", "Value", self.variable.get()),
@@ -300,6 +365,14 @@ class Floodgauge(tk.Canvas):
         self._draw()
 
     def cget(self, key):
+        """Get the current value of a configuration option.
+
+        Parameters:
+            key (str): The option name to query.
+
+        Returns:
+            The current value of the specified option.
+        """
         if key == "value":
             return self.variable.get()
         if key == "text":
@@ -323,12 +396,22 @@ class Floodgauge(tk.Canvas):
         return super().cget(key)
 
     def keys(self):
+        """Get the list of valid configuration option names.
+
+        Returns:
+            list: List of configuration option names.
+        """
         return [
             "value", "maximum", "mask", "text", "font",
             "bootstyle", "length", "thickness", "variable", "textvariable"
         ]
 
     def items(self):
+        """Get all configuration options as key-value pairs.
+
+        Returns:
+            dict_items: Iterator of (option, value) pairs.
+        """
         return {k: self.cget(k) for k in self.keys()}.items()
 
     __getitem__ = lambda self, key: self.cget(key)
@@ -547,23 +630,39 @@ class FloodgaugeLegacy(Progressbar):
 
     @property
     def textvariable(self):
-        """Returns the textvariable object"""
+        """Get the text variable object.
+
+        Returns:
+            tk.StringVar: The variable controlling the display text.
+        """
         return self._textvariable
 
     @textvariable.setter
     def textvariable(self, value):
-        """Set the new textvariable property"""
+        """Set a new text variable.
+
+        Parameters:
+            value (tk.StringVar): The new text variable to bind.
+        """
         self._textvariable = value
         self._set_widget_text(self._textvariable.get())
 
     @property
     def variable(self):
-        """Returns the variable object"""
+        """Get the value variable object.
+
+        Returns:
+            tk.IntVar: The variable controlling the progress value.
+        """
         return self._variable
 
     @variable.setter
     def variable(self, value):
-        """Set the new variable object"""
+        """Set a new value variable.
+
+        Parameters:
+            value (tk.IntVar): The new variable to bind.
+        """
         self._variable = value
         if self.cget('variable') != value:
             self.configure(variable=self._variable)

@@ -1,4 +1,31 @@
-"""DateEntry widget for ttkbootstrap."""
+"""DateEntry widget for ttkbootstrap.
+
+This module provides the DateEntry widget, which combines an Entry field
+with a calendar button to allow users to select dates from a popup calendar.
+
+Example:
+    ```python
+    import ttkbootstrap as ttk
+    from datetime import datetime
+
+    root = ttk.Window()
+
+    # Create a date entry widget
+    date_entry = ttk.DateEntry(root, firstweekday=0, startdate=datetime.now())
+    date_entry.pack(padx=10, pady=10)
+
+    # Get the selected date
+    selected_date = date_entry.get_date()
+
+    # Handle date selection events
+    def on_date_selected(event):
+        print(f"Selected date: {date_entry.get_date()}")
+
+    date_entry.bind("<<DateEntrySelected>>", on_date_selected)
+
+    root.mainloop()
+    ```
+"""
 import tkinter as tk
 from datetime import date, datetime
 from tkinter import ttk
@@ -9,29 +36,31 @@ from ttkbootstrap.dialogs import Querybox
 
 
 class DateEntry(ttk.Frame):
-    """A date entry widget combines the `Combobox` and a `Button`
-    with a callback attached to the `get_date` function.
+    """A date entry widget combines an Entry field and a Button for date selection.
 
-    When pressed, a date chooser popup is displayed. The returned
-    value is inserted into the combobox.
+    When the button is pressed, a calendar popup is displayed allowing the user
+    to select a date. The selected date is inserted into the entry field.
 
-    The <<DateEntrySelected>> event is generated when a date is
-    selected.
+    The <<DateEntrySelected>> event is generated when a date is selected from
+    the calendar popup.
 
-    The date chooser popup will use the date in the combobox as the
-    date of focus if it is in the format specified by the
-    `dateformat` parameter. By default, this format is "%Y-%m-%d".
+    Features:
+        - Configurable date format using strftime format strings
+        - Customizable starting weekday (0=Monday, 6=Sunday)
+        - Style customization via bootstyle parameter
+        - Date validation with optional exception raising
+        - Access to entry and button widgets via instance attributes
 
-    The bootstyle api may be used to change the style of the widget.
-    The available colors include -> primary, secondary, success,
-    info, warning, danger, light, dark.
+    The date chooser popup will use the date in the entry field as the initial
+    focus date if it matches the specified dateformat. By default, the format
+    is locale-specific ("%x").
 
-    The starting weekday on the date chooser popup can be changed
-    with the `firstweekday` parameter. By default this value is
-    `6`, which represents "Sunday".
+    The bootstyle parameter can be used to change the widget colors. Available
+    options include: primary, secondary, success, info, warning, danger, light, dark.
 
-    The `Entry` and `Button` widgets are accessible from the
-    `DateEntry.Entry` and `DateEntry.Button` properties.
+    Widget Attributes:
+        entry (ttk.Entry): The entry field displaying the selected date
+        button (ttk.Button): The button that opens the calendar popup
 
     ![](../../assets/widgets/date-entry.png)
     """
@@ -54,8 +83,9 @@ class DateEntry(ttk.Frame):
                 The parent widget.
 
             dateformat (str, optional):
-                The format string used to render the text in the entry
-                widget. For more information on acceptable formats, see https://strftime.org/
+                The format string used to render the text in the entry widget.
+                Defaults to "%x" (locale's appropriate date representation).
+                For more information on acceptable formats, see https://strftime.org/
 
             firstweekday (int, optional):
                 Specifies the first day of the week. 0=Monday, 1=Tuesday,
@@ -124,8 +154,11 @@ class DateEntry(ttk.Frame):
         self.configure(cnf=None, **{key: value})
 
     def _configure_set(self, **kwargs):
-        """Override configure method to allow for setting custom
-        DateEntry parameters"""
+        """Override configure method to allow for setting custom DateEntry parameters.
+
+        Handles special configuration options like 'state', 'dateformat', 'firstweekday',
+        'startdate', 'bootstyle', and 'width'.
+        """
 
         if "state" in kwargs:
             state = kwargs.pop("state")
@@ -153,7 +186,10 @@ class DateEntry(ttk.Frame):
         super(ttk.Frame, self).configure(**kwargs)
 
     def _configure_get(self, cnf):
-        """Override the configure get method"""
+        """Override the configure get method.
+
+        Returns configuration values for DateEntry-specific options.
+        """
         if cnf == "state":
             entrystate = self.entry.cget("state")
             buttonstate = self.button.cget("state")
@@ -187,40 +223,51 @@ class DateEntry(ttk.Frame):
 
     @property
     def enabled(self) -> bool:
-        """
-        If ``True`` this date picker is enabled and user can pick a new date, if ``False`` user can't use this picker
+        """Check if the date picker is enabled.
 
-        :return: ``True`` if usable, ``False`` otherwise
+        Returns:
+            bool: True if the widget is enabled and can accept user input,
+                  False otherwise.
         """
         return self.__enabled
 
     @property
     def dateformat(self) -> str:
-        """
-        Returns date format string, that is used to convert from strings to datetime objects respectively vice versa
+        """Get the date format string.
 
-        :return: Date format as string
+        Returns:
+            str: The strftime format string used to convert between
+                 strings and datetime objects.
         """
         return self.__dateformat
 
     def get_date(self) -> datetime:
-        """
-        Returns currently selected date as datetime object
+        """Get the currently selected date.
 
-        :return: Currently selected date
+        Returns:
+            datetime: The currently selected date as a datetime object.
         """
         return self.configure(cnf='startdate')
 
     @staticmethod
     def _validate_dateformat(dateformat: str) -> str:
-        """
-        Checks if given dateformat string is appropriate for dates. If not, a `ValueError` will be raised.
+        """Validate that a date format string is appropriate for dates.
 
-        @see https://docs.python.org/3/library/datetime.html#strftime-and-strptime-behavior
+        Checks that the format string contains sufficient information to
+        represent a complete date (year, month, and day).
 
-        :param dateformat: Dateformat string
-        :return: Given dateformat string
-        :raise ValueError: If given dateformat string is not appropriate for dates
+        Parameters:
+            dateformat (str): The strftime format string to validate.
+
+        Returns:
+            str: The validated format string.
+
+        Raises:
+            ValueError: If the format string cannot be used to represent
+                       a complete date.
+
+        See Also:
+            https://docs.python.org/3/library/datetime.html#strftime-and-strptime-behavior
         """
         has_year: bool = any(y in dateformat for y in ('%Y', '%y', '%G'))
         has_month: bool = any(m in dateformat for m in ('%m', '%B', '%b'))
@@ -248,19 +295,31 @@ class DateEntry(ttk.Frame):
 
     @staticmethod
     def _clean_datetime(new_date: Union[datetime, date]) -> datetime:
-        """This is a date picker, therefore erase all unnecessary elements: hours, minutes, seconds, ..."""
+        """Strip time components from a datetime object.
+
+        Since this is a date picker, removes hours, minutes, seconds, and
+        microseconds, keeping only the date components (year, month, day).
+
+        Parameters:
+            new_date (Union[datetime, date]): The date or datetime to clean.
+
+        Returns:
+            datetime: A datetime object with only date components (time set to 00:00:00).
+        """
         if isinstance(new_date, datetime):
             return datetime(new_date.year, new_date.month, new_date.day, tzinfo=new_date.tzinfo)
         else:
             return datetime(new_date.year, new_date.month, new_date.day)
 
     def set_date(self, new_date: Union[datetime, date]) -> None:
-        """
-        Sets given date/datetime object as currently selected date.
+        """Set the currently selected date.
 
-        (NOTE: Hours, minutes, seconds, milliseconds, microseconds will be ignored)
+        Updates the entry field and internal state with the new date.
+        Time components (hours, minutes, seconds, microseconds) are ignored
+        and will be stripped from datetime objects.
 
-        :param new_date: New date that will become the currently selected one
+        Parameters:
+            new_date (Union[datetime, date]): The new date to set.
         """
         from warnings import warn
 
@@ -277,22 +336,33 @@ class DateEntry(ttk.Frame):
             self.disable()
 
     def disable(self) -> None:
-        """ Disables this date picker """
+        """Disable the date picker.
+
+        Disables both the entry field and calendar button, preventing user interaction.
+        """
         self.__enabled = False
         self.entry.state(['disabled'])
         self.button.state(['disabled'])
 
     def enable(self) -> None:
-        """ Enables this date picker """
+        """Enable the date picker.
+
+        Enables both the entry field and calendar button, allowing user interaction.
+        """
         self.__enabled = True
         self.entry.state(['!disabled'])
         self.button.state(['!disabled'])
 
     def _on_date_ask(self):
-        """
-        Callback for pushing the date button
+        """Handle the calendar button click event.
 
-        :raise ValueError: If entered string does NOT match with currently used date format
+        Opens the date selection popup and updates the entry field with the
+        selected date. Generates the <<DateEntrySelected>> event when a date
+        is chosen.
+
+        Raises:
+            ValueError: If raise_exception is True and the entry text doesn't
+                       match the configured date format.
         """
         from warnings import warn
 

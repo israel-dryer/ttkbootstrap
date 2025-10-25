@@ -1,4 +1,24 @@
-"""LabeledScale widget for ttkbootstrap."""
+"""LabeledScale widget for ttkbootstrap.
+
+This module provides the LabeledScale widget, which combines a Scale
+widget with a Label that automatically displays the current value.
+
+Example:
+    ```python
+    import ttkbootstrap as ttk
+
+    root = ttk.Window()
+
+    # Create a labeled scale
+    scale = ttk.LabeledScale(root, from_=0, to=100)
+    scale.pack(padx=10, pady=10)
+
+    # Access the current value
+    print(scale.value)
+
+    root.mainloop()
+    ```
+"""
 import tkinter as tk
 from tkinter import ttk
 
@@ -6,22 +26,45 @@ from ttkbootstrap.constants import DEFAULT
 
 
 class LabeledScale(ttk.Frame):
-    """A Ttk Scale widget with a Ttk Label widget indicating its
-    current value.
+    """A Ttk Scale widget with a Ttk Label widget indicating its current value.
 
-    The Ttk Scale can be accessed through instance.scale, and Ttk Label
-    can be accessed through instance.label"""
+    The label automatically updates to show the current scale value. The
+    Ttk Scale can be accessed through instance.scale, and the Ttk Label
+    can be accessed through instance.label.
+
+    The label position can be configured to appear above or below the scale
+    using the 'compound' parameter.
+    """
 
     def __init__(self, master=None, variable=None, from_=0, to=10, bootstyle=DEFAULT, **kwargs):
-        """Construct a horizontal LabeledScale with parent master, a
-        variable to be associated with the Ttk Scale widget and its range.
-        If variable is not specified, a tkinter.IntVar is created.
+        """Construct a horizontal LabeledScale.
 
-        WIDGET-SPECIFIC OPTIONS
+        Parameters:
 
-            compound: 'top' or 'bottom'
+            master (Widget, optional):
+                The parent widget.
+
+            variable (tk.IntVar, optional):
+                A tkinter variable to be associated with the Scale widget.
+                If not specified, a tkinter.IntVar is created automatically.
+
+            from_ (int, optional):
+                The minimum value of the scale. Defaults to 0.
+
+            to (int, optional):
+                The maximum value of the scale. Defaults to 10.
+
+            bootstyle (str, optional):
+                The style keyword used to set the color of the scale and label.
+                Options include primary, secondary, success, info, warning,
+                danger, light, dark. Defaults to DEFAULT.
+
+            compound (str, optional):
                 Specifies how to display the label relative to the scale.
-                Defaults to 'top'.
+                Options are 'top' or 'bottom'. Defaults to 'top'.
+
+            **kwargs (dict[str, Any], optional):
+                Other keyword arguments passed to the Frame widget.
         """
         super().__init__(master=master, **kwargs)
         self._label_top = kwargs.pop('compound', 'top') == 'top'
@@ -64,6 +107,14 @@ class LabeledScale(ttk.Frame):
         self.scale = None
 
     def _to_number(self, x):
+        """Convert a string to int or float.
+
+        Parameters:
+            x: Value to convert (str, int, or float).
+
+        Returns:
+            int or float: The converted number.
+        """
         if isinstance(x, str):
             if '.' in x:
                 x = float(x)
@@ -72,7 +123,7 @@ class LabeledScale(ttk.Frame):
         return x
 
     def _adjust(self, *args):
-        """Adjust the label position according to the scale."""
+        """Adjust the label position and text according to the scale value."""
 
         def adjust_label():
             self.update_idletasks()  # "force" scale redraw
@@ -101,10 +152,18 @@ class LabeledScale(ttk.Frame):
 
     @property
     def value(self):
-        """Return current scale value."""
+        """Get the current scale value.
+
+        Returns:
+            int or float: The current value of the scale.
+        """
         return self._variable.get()
 
     @value.setter
     def value(self, val):
-        """Set new scale value."""
+        """Set the scale to a new value.
+
+        Parameters:
+            val (int or float): The new value to set.
+        """
         self._variable.set(val)
