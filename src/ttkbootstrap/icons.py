@@ -1,6 +1,51 @@
-"""
-    A module various classes that can be used either in text as `Emoji` 
-    or in the tkinter.PhotoImage class as in `Icon`.
+"""Icon and emoji resources for ttkbootstrap widgets.
+
+This module provides icon and emoji resources that can be used in tkinter
+widgets. Icons are base64-encoded images suitable for PhotoImage, while
+emojis are unicode characters for direct text display.
+
+Classes:
+    Icon: Container for base64-encoded icon images
+    Emoji: Container for emoji unicode characters
+    EmojiItem: Individual emoji with metadata (name, category, character)
+
+Features:
+    - Ready-to-use base64 icon images (info, warning, error, question)
+    - Comprehensive emoji collection organized by category
+    - Direct usage in tkinter widgets without external files
+    - Searchable emoji database by name or category
+
+Example:
+    Using icons:
+    ```python
+    import tkinter as tk
+    from ttkbootstrap.icons import Icon
+
+    root = tk.Tk()
+
+    # Create PhotoImage from base64 icon
+    warning_img = tk.PhotoImage(data=Icon.warning)
+    error_img = tk.PhotoImage(data=Icon.error)
+
+    # Use in label
+    tk.Label(root, image=warning_img).pack()
+
+    root.mainloop()
+    ```
+
+    Using emojis:
+    ```python
+    import ttkbootstrap as ttk
+    from ttkbootstrap.icons import Emoji
+
+    root = ttk.Window()
+
+    # Use emoji in button text
+    btn = ttk.Button(root, text=f"{Emoji.get('FIRE')} Hot!")
+    btn.pack(padx=20, pady=20)
+
+    root.mainloop()
+    ```
 """
 
 

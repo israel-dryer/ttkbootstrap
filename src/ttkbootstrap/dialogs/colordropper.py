@@ -1,7 +1,45 @@
-"""
-    NOTE: https://stackoverflow.com/questions/25467288/pils-imagegrab-is-capturing-at-the-wrong-resolution
+"""Screen color picker (dropper) dialog for ttkbootstrap.
 
-    !! This widget is not currently supported on Mac OS
+This module provides a color dropper tool that allows users to select colors
+directly from anywhere on the screen. It captures a screenshot and displays
+a magnified view to help with precise color selection.
+
+Classes:
+    ColorDropperDialog: Interactive screen color picker widget
+    ColorChoice: Named tuple containing selected color in multiple formats
+
+Features:
+    - Click anywhere on screen to select color
+    - Magnified zoom window for precise selection
+    - Mouse wheel zoom in/out control
+    - Returns color in RGB, HSL, and HEX formats
+    - Cross-platform support (Windows and Linux only)
+
+Platform Support:
+    - Windows: Fully supported
+    - Linux: Fully supported
+    - macOS: NOT SUPPORTED (ImageGrab limitation)
+
+Known Issues:
+    High-DPI displays may require application to run in high-DPI mode for
+    accurate color selection. On Windows, this is handled automatically.
+    See: https://stackoverflow.com/questions/25467288
+
+Example:
+    ```python
+    from ttkbootstrap.dialogs.colordropper import ColorDropperDialog
+
+    # Create color dropper
+    dropper = ColorDropperDialog()
+    dropper.show()
+
+    # Get selected color
+    color = dropper.result.get()
+    if color:
+        print(f"Selected: {color.hex}")
+        print(f"RGB: {color.rgb}")
+        print(f"HSL: {color.hsl}")
+    ```
 """
 import tkinter as tk
 from collections import namedtuple

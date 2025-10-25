@@ -1,3 +1,54 @@
+"""Color chooser widget for ttkbootstrap dialogs.
+
+This module provides a comprehensive color selection widget with multiple
+selection methods including RGB sliders, HSL controls, standard color palette,
+hex input, and screen color picker (color dropper).
+
+Classes:
+    ColorChooser: Main color chooser widget with tabbed interface
+    ColorValues: Named tuple for color value storage
+    ColorChoice: Named tuple for final color selection result
+
+Features:
+    - Multiple color selection methods via tabbed interface
+    - RGB color model with R, G, B sliders (0-255 range)
+    - HSL color model with H (0-360), S, L (0-100) sliders
+    - Standard color palette with common colors and shades
+    - Hex color input with validation
+    - Color dropper for selecting colors from screen
+    - Live color preview
+    - Integration with Querybox for dialog usage
+
+Color Models:
+    - RGB: Red, Green, Blue (0-255 each)
+    - HSL: Hue (0-360), Saturation (0-100), Luminance (0-100)
+    - HEX: Hexadecimal color string (#RRGGBB)
+
+Example:
+    Using ColorChooser in a dialog:
+    ```python
+    from ttkbootstrap.dialogs import Querybox
+
+    # Get color from user
+    color = Querybox.get_color(initialcolor="#FF0000")
+    if color:
+        print(f"Selected color: {color.hex}")
+        print(f"RGB: {color.rgb}")
+        print(f"HSL: {color.hsl}")
+    ```
+
+    Using ColorChooser widget directly:
+    ```python
+    import ttkbootstrap as ttk
+    from ttkbootstrap.dialogs.colorchooser import ColorChooser
+
+    root = ttk.Window()
+    chooser = ColorChooser(root, initialcolor="#00FF00")
+    chooser.pack(padx=10, pady=10)
+
+    root.mainloop()
+    ```
+"""
 import ttkbootstrap as ttk
 from ttkbootstrap.validation import add_range_validation, add_validation, validator
 from ttkbootstrap.constants import *
