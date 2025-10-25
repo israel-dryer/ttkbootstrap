@@ -1,8 +1,47 @@
-"""
-Widgets module for ttkbootstrap.
+"""Widgets module for ttkbootstrap.
 
-This module provides custom widgets for ttkbootstrap. All widgets are
-re-exported from this module for backwards compatibility.
+This module provides custom widgets for ttkbootstrap, extending the standard
+tkinter and ttk widget set with enhanced functionality and styling options.
+
+Available Widgets:
+    DateEntry: Date picker widget with calendar popup
+    Floodgauge: Progress bar with customizable text overlay
+    FloodgaugeLegacy: Legacy ttk-based progress bar
+    Meter: Radial progress indicator with various display styles
+    LabeledScale: Scale widget with automatic value label
+
+Module Constants:
+    M (int): Meter image scale factor (3)
+    TTK_WIDGETS: Tuple of standard ttk widget classes
+    TK_WIDGETS: Tuple of standard tk widget classes
+
+Example:
+    ```python
+    import ttkbootstrap as ttk
+    from datetime import datetime
+
+    root = ttk.Window()
+
+    # Create various custom widgets
+    date_entry = ttk.DateEntry(root, firstweekday=0)
+    date_entry.pack(padx=10, pady=5)
+
+    floodgauge = ttk.Floodgauge(root, maximum=100, mask="{}% Complete")
+    floodgauge.pack(fill='x', padx=10, pady=5)
+
+    meter = ttk.Meter(root, amountused=75, metertype="semi")
+    meter.pack(padx=10, pady=5)
+
+    scale = ttk.LabeledScale(root, from_=0, to=100)
+    scale.pack(fill='x', padx=10, pady=5)
+
+    root.mainloop()
+    ```
+
+Note:
+    All widgets in this module maintain backwards compatibility with the
+    previous monolithic widgets.py file. Imports from ttkbootstrap.widgets
+    will work identically to before the module refactoring.
 """
 import tkinter as tk
 from tkinter import ttk
@@ -10,8 +49,8 @@ from tkinter import ttk
 # Import widgets from individual modules
 from ttkbootstrap.widgets.dateentry import DateEntry
 from ttkbootstrap.widgets.floodgauge import Floodgauge, FloodgaugeLegacy
-from ttkbootstrap.widgets.meter import Meter
 from ttkbootstrap.widgets.labeledscale import LabeledScale
+from ttkbootstrap.widgets.meter import Meter
 
 # Constants from original widgets.py
 M = 3  # meter image scale, higher number increases resolution
