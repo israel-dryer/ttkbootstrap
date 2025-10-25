@@ -1,3 +1,54 @@
+"""Pre-defined message translations for ttkbootstrap localization.
+
+This module contains built-in translations for common UI strings used throughout
+ttkbootstrap widgets and dialogs. Translations are provided for multiple languages
+and automatically loaded when the localization system initializes.
+
+Classes:
+    LocaleMsgs: Helper class for loading locale-specific message translations
+
+Functions:
+    initialize_localities: Load all custom message files into MessageCatalog
+
+Supported Languages:
+    - Czech (cs)
+    - German (de)
+    - Spanish (es)
+    - French (fr)
+    - Italian (it)
+    - Japanese (ja)
+    - Korean (ko)
+    - Dutch (nl)
+    - Polish (pl)
+    - Portuguese (pt)
+    - Russian (ru)
+    - Turkish (tr)
+    - Chinese Simplified (zh_cn)
+    - Chinese Traditional (zh_tw)
+    - And more...
+
+Common Translated Strings:
+    - Dialog buttons: OK, Cancel, Yes, No, Close, etc.
+    - Actions: Submit, Delete, Add, Remove, etc.
+    - Navigation: Next, Previous, Continue, etc.
+    - Font dialog: Family, Weight, Slant, Size, etc.
+    - Months and days of the week
+    - Common verbs and UI labels
+
+Example:
+    Translations are used automatically by ttkbootstrap dialogs:
+    ```python
+    from ttkbootstrap.dialogs import Messagebox
+    from ttkbootstrap.localization import MessageCatalog
+
+    # Set locale to German
+    MessageCatalog.locale('de')
+
+    # Dialog buttons automatically display in German
+    Messagebox.ok("Dies ist eine Nachricht")  # "OK" button shows as "OK"
+    Messagebox.yesno("Fortfahren?")  # "Yes"/"No" show as "Ja"/"Nein"
+    ```
+"""
 from ttkbootstrap.localization.msgcat import MessageCatalog
 
 MESSAGES = []
