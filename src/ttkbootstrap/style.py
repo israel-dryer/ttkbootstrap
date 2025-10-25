@@ -1,3 +1,57 @@
+"""Style engine and theme management for ttkbootstrap.
+
+This module provides the core styling system for ttkbootstrap, managing themes,
+colors, and widget styles. It includes the Style class for applying and managing
+Bootstrap-inspired themes, along with color manipulation utilities.
+
+Classes:
+    Colors: Defines color scheme for themes with manipulation methods
+    ThemeDefinition: Encapsulates complete theme configuration
+    Style: Main style engine for managing themes and widget styles
+    StylerTTK: TTK widget styler
+    StylerTK: Legacy tk widget styler
+    Bootstyle: API for applying bootstyles to widgets
+
+Key Features:
+    - 40+ built-in Bootstrap-inspired themes
+    - Dynamic theme switching at runtime
+    - Custom theme creation and management
+    - Widget-specific style boosting (outline, link, toggle, etc.)
+    - Color utilities for HSV manipulation
+    - Publisher-subscriber pattern for theme change notifications
+    - Support for user-defined themes
+
+Color Keywords:
+    - primary, secondary, success, info, warning, danger, light, dark
+
+Style Types:
+    - outline, link, toggle, inverse, striped, toolbutton, square
+
+Example:
+    ```python
+    import ttkbootstrap as ttk
+    from ttkbootstrap.constants import *
+
+    # Create window with theme
+    app = ttk.Window(themename="darkly")
+
+    # Access style instance
+    style = ttk.Style.get_instance()
+
+    # Get theme colors
+    primary_color = style.colors.primary
+    bg_color = style.colors.bg
+
+    # Change theme at runtime
+    style.theme_use("flatly")
+
+    # Create styled widgets
+    btn = ttk.Button(app, text="Success", bootstyle="success")
+    btn_outline = ttk.Button(app, text="Danger", bootstyle="danger-outline")
+
+    app.mainloop()
+    ```
+"""
 import colorsys
 import json
 import re
@@ -199,7 +253,7 @@ class Colors:
                 blue
 
         Returns:
-            Tuple[float, float, float]: The hsv color value.
+            tuple[float, float, float]: The hsv color value.
         """
         return colorsys.rgb_to_hsv(r, g, b)
 
@@ -458,8 +512,14 @@ class Colors:
 
 
 class ThemeDefinition:
-    """A class to provide defined name, colors, and font settings for a
-    ttkbootstrap theme."""
+    """Encapsulates the name, color palette, and metadata for a
+    ttkbootstrap theme.
+
+    A ThemeDefinition is a lightweight container that pairs a theme name
+    with its Colors object and whether it is a light or dark theme. The
+    Style engine consumes ThemeDefinition instances to build widget
+    styles and images for the active theme.
+    """
 
     def __init__(self, name, colors, themetype=LIGHT):
         """
@@ -593,7 +653,7 @@ class Style(ttk.Style):
 
         Returns:
 
-            List[str, ...]:
+            list[str, ...]:
                 A list of theme names.
         """
         return list(self._theme_definitions.keys())
@@ -1522,7 +1582,7 @@ class StyleBuilderTTK:
 
         Returns:
 
-            Tuple[str]:
+            tuple[str]:
                 A list of photoimage names.
         """
         if any([colorname == DEFAULT, colorname == ""]):
@@ -1786,7 +1846,7 @@ class StyleBuilderTTK:
 
         Returns:
 
-            Tuple[str]:
+            tuple[str]:
                 A tuple of PhotoImage names to be used in the image
                 layout when building the style.
         """
@@ -3171,7 +3231,7 @@ class StyleBuilderTTK:
 
         Returns:
 
-            Tuple[str]:
+            tuple[str]:
                 A tuple of PhotoImage names.
         """
         size = self.scale_size([24, 15])
@@ -3264,7 +3324,7 @@ class StyleBuilderTTK:
 
         Returns:
 
-            Tuple[str]:
+            tuple[str]:
                 A tuple of PhotoImage names.
         """
         size = self.scale_size([24, 15])
@@ -3748,7 +3808,7 @@ class StyleBuilderTTK:
 
         Returns:
 
-            Tuple[str]:
+            tuple[str]:
                 A tuple of PhotoImage names
         """
         prime_color = self.colors.get(colorname)
@@ -4367,7 +4427,7 @@ class StyleBuilderTTK:
 
         Returns:
 
-            Tuple[str]:
+            tuple[str]:
                 A tuple of PhotoImage names.
         """
         # set platform specific checkfont
@@ -4881,9 +4941,20 @@ class StyleBuilderTTK:
 
 
 class Keywords:
-    # TODO possibly refactor the bootstyle keyword methods into this class?
-    #   Leave for now.
+    """Static keyword lists and regex patterns used to parse
+    ttkbootstrap "bootstyle" strings.
 
+    Bootstyle strings contain space- or dash-separated tokens that may
+    specify: a widget class (e.g. "button"), an orientation ("horizontal"
+    or "vertical"), a color ("primary", "info", etc.), and optional
+    type modifiers (e.g. "outline", "link", "inverse", "striped"). The
+    constants and compiled regexes in this class centralize those token
+    definitions for reuse by the bootstyle parsing helpers.
+
+    This class is internal to the styling system and not intended to be
+    instantiated.
+    """
+    
     COLORS = [
         "primary",
         "secondary",
@@ -4947,6 +5018,21 @@ class Keywords:
 
 
 class Bootstyle:
+    """Helpers for parsing and applying ttkbootstrap "bootstyle" options.
+
+    Bootstyle augments ttk widgets with a compact styling API that lets
+    you configure color, orientation, and type with a single string (or
+    tuple) such as "primary-outline", "success", or ("danger", "inverse").
+
+    This class provides utilities to parse those tokens from strings and
+    widget state, determine the target widget class and orientation, and
+    resolve the requested color and variant. It also wires ttkbootstrap
+    into tkinter/ttk via ``setup_ttkbootstrap_api`` so that widgets accept
+    the ``bootstyle=...`` keyword at construction or during configure().
+
+    Typical end users will not call these methods directly; they are used
+    internally by the Style engine and by widget constructor overrides.
+    """
     @staticmethod
     def ttkstyle_widget_class(widget=None, string=""):
         """Find and return the widget class

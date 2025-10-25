@@ -1,9 +1,60 @@
-"""
-    This module contains various base dialog base classes that can be
-    used to create custom dialogs for the end user.
+"""Dialog base classes and implementations for ttkbootstrap.
 
-    These classes serve as the basis for the pre-defined static helper
-    methods in the `Messagebox`, and `Querybox` container classes.
+This module provides the foundation for creating Bootstrap-styled dialogs,
+including base classes for custom dialogs and complete implementations of
+common dialog types (messageboxes, query boxes, date pickers, etc.).
+
+Base Classes:
+    Dialog: Simple dialog base class
+    MessageDialog: Dialog for displaying messages with buttons
+    QueryDialog: Dialog for getting user input
+
+Dialog Implementations:
+    Messagebox: Static methods for showing messages (ok, okcancel, yesno, etc.)
+    Querybox: Static methods for getting input (get_string, get_integer, etc.)
+    DatePickerDialog: Calendar-based date selection dialog
+    FontDialog: Font selection and configuration dialog
+
+Features:
+    - Bootstrap-styled dialog windows
+    - Localization support for multi-language interfaces
+    - Flexible button configurations
+    - Modal and non-modal dialog options
+    - Automatic centering over parent windows
+    - Return value handling
+    - Optional alert bell on show
+
+Example:
+    Using Messagebox:
+    ```python
+    import ttkbootstrap as ttk
+    from ttkbootstrap.dialogs import Messagebox
+
+    root = ttk.Window()
+
+    # Show info message
+    Messagebox.ok("Operation completed successfully!")
+
+    # Ask yes/no question
+    result = Messagebox.yesno("Save changes before closing?")
+    if result == "Yes":
+        # Save changes
+        pass
+    ```
+
+    Using Querybox:
+    ```python
+    from ttkbootstrap.dialogs import Querybox
+
+    # Get string input
+    name = Querybox.get_string("Enter your name:")
+
+    # Get integer
+    age = Querybox.get_integer("Enter your age:", minvalue=0, maxvalue=150)
+
+    # Get date
+    date = Querybox.get_date("Select a date:")
+    ```
 """
 
 import calendar
@@ -57,10 +108,11 @@ class Dialog(BaseWidget):
         """Show the popup dialog
         Parameters:
 
-            position: Tuple[int, int]
+            position: tuple[int, int]
                 The x and y coordinates used to position the dialog. If no parent
                 then the dialog will anchor to the center of the parent window.
         """
+        self.update_idletasks()
         self._result = None
         self.build()
 
@@ -195,7 +247,7 @@ class MessageDialog(Dialog):
                 guidelines forbid the use of a title on this kind of
                 dialog.
 
-            buttons (List[str]):
+            buttons (list[str]):
                 A list of buttons to appear at the bottom of the popup
                 messagebox. The buttons can be a list of strings which
                 will define the symbolic name and the button text.
@@ -205,7 +257,7 @@ class MessageDialog(Dialog):
                 the style is set to 'primary' by default.
                 `['OK:success','Cancel:danger']`.
 
-            command (Tuple[Callable, str]):
+            command (tuple[Callable, str]):
                 The function to invoke when the user closes the dialog.
                 The actual command is a tuple that consists of the
                 function to call and the symbolic name of the button that
@@ -229,7 +281,7 @@ class MessageDialog(Dialog):
                 If no default is provided, the right-most button in the
                 button list will be set as the default.,
 
-            padding  (Union[int, Tuple[int]]):
+            padding  (Union[int, tuple[int]]):
                 The amount of space between the border and the widget
                 contents.
 
@@ -415,7 +467,7 @@ class QueryDialog(Dialog):
                 The messagebox is displayed on top of its parent
                 window.
 
-            padding (Union[int, Tuple[int]]):
+            padding (Union[int, tuple[int]]):
                 The amount of space between the border and the widget
                 contents.
 
@@ -814,7 +866,7 @@ class DatePickerDialog:
 
         Returns:
 
-            List[str]:
+            list[str]:
                 A list of weekday column names for the calendar header.
         """
         weekdays = [
@@ -841,7 +893,7 @@ class DatePickerDialog:
 
         Parameters:
 
-            index (Tuple[int, int]):
+            index (tuple[int, int]):
                 A row and column index of the date selected; to be
                 found in the `monthdates` matrix.
 
@@ -1366,7 +1418,7 @@ class Messagebox:
                 Makes the window the logical parent of the message box. The
                 message box is displayed on top of its parent window.
 
-            buttons (List[str]):
+            buttons (list[str]):
                 A list of buttons to appear at the bottom of the popup
                 messagebox. The buttons can be a list of strings which
                 will define the symbolic name and the button text.
@@ -1670,7 +1722,7 @@ class Querybox:
 
         Returns:
 
-            Tuple[rgb, hsl, hex]:
+            tuple[rgb, hsl, hex]:
                 The selected color in various colors models.
         """
         from ttkbootstrap.dialogs.colorchooser import ColorChooserDialog
