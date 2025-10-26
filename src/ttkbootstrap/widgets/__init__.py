@@ -51,6 +51,8 @@ from ttkbootstrap.widgets.dateentry import DateEntry
 from ttkbootstrap.widgets.floodgauge import Floodgauge, FloodgaugeLegacy
 from ttkbootstrap.widgets.labeledscale import LabeledScale
 from ttkbootstrap.widgets.meter import Meter
+from ttkbootstrap.widgets.toast import ToastNotification
+from ttkbootstrap.widgets.tooltip import ToolTip
 
 # Constants from original widgets.py
 M = 3  # meter image scale, higher number increases resolution
@@ -104,6 +106,8 @@ __all__ = [
     'FloodgaugeLegacy',
     'Meter',
     'LabeledScale',
+    'ToolTip',
+    'ToastNotification',
     'M',
     'TTK_WIDGETS',
     'TK_WIDGETS',
