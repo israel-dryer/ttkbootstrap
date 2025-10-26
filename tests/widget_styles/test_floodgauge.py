@@ -1,17 +1,21 @@
-import tkinter as tk
-import ttkbootstrap as ttk
 from random import choice
+
+import ttkbootstrap as ttk
 from ttkbootstrap import utility
+from ttkbootstrap.constants import *
+
 utility.enable_high_dpi_awareness()
 
-root = tk.Tk()
+root = ttk.Tk()
 root.geometry('500x500')
 root.title('ttkbootstrap')
 style = ttk.Style()
 
+
 def change_style():
     theme = choice(style.theme_names())
     style.theme_use(theme)
+
 
 p1 = ttk.Floodgauge(
     bootstyle='info',
@@ -19,7 +23,7 @@ p1 = ttk.Floodgauge(
     mask="Memory Used {}%",
     value=45
 )
-p1.pack(fill=tk.BOTH, expand=tk.YES, padx=10, pady=10)
+p1.pack(fill=BOTH, expand=YES, padx=10, pady=10)
 p1.start()
 
 btn = ttk.Button(text="Change Theme", command=change_style)
@@ -44,6 +48,6 @@ assert p1.configure('mask')[-1] == '{}% Complete'
 var = ttk.IntVar(value=30)
 p1['variable'] = var
 assert p1['value'] == 30
-assert(str(var) == p1.cget('variable'))
+assert (str(var) == p1.cget('variable'))
 
 root.mainloop()
