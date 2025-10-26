@@ -58,7 +58,7 @@ import tkinter as tk
 from datetime import datetime
 from math import ceil
 from tkinter import font
-from typing import Any, Dict, List, Union
+from typing import Any, Callable, Dict, List, Optional, Sequence, Union
 
 import ttkbootstrap as ttk
 from ttkbootstrap import utility
@@ -76,16 +76,16 @@ class TableColumn:
 
     def __init__(
             self,
-            tableview,
-            cid,
-            text,
-            image="",
-            command="",
-            anchor=W,
-            width=200,
-            minwidth=20,
-            stretch=False,
-    ):
+            tableview: "Tableview",
+            cid: int,
+            text: str,
+            image: Any = "",
+            command: Optional[Callable[[], None]] = None,
+            anchor: Anchor = W,
+            width: int = 200,
+            minwidth: int = 20,
+            stretch: bool = False,
+    ) -> None:
         """
         Parameters:
 
@@ -145,7 +145,7 @@ class TableColumn:
         self._table._cidmap[self._cid] = self
 
     @property
-    def headertext(self):
+    def headertext(self) -> str:
         """Return the text on the column header label.
 
         Returns:
@@ -155,7 +155,7 @@ class TableColumn:
         return self._headertext
 
     @property
-    def columnsort(self):
+    def columnsort(self) -> int:
         """Return the sort direction used for this column.
 
         Indicates how the column is to be sorted when sorting is
@@ -168,11 +168,11 @@ class TableColumn:
         return self._sort
 
     @columnsort.setter
-    def columnsort(self, value):
+    def columnsort(self, value: int) -> None:
         self._sort = value
 
     @property
-    def cid(self):
+    def cid(self) -> str:
         """Return the unique column identifier.
 
         Returns:
@@ -182,7 +182,7 @@ class TableColumn:
         return str(self._cid)
 
     @property
-    def tableindex(self):
+    def tableindex(self) -> Optional[int]:
         """Return the index of the column in the table configuration.
 
         Returns:
@@ -198,7 +198,7 @@ class TableColumn:
             return
 
     @property
-    def displayindex(self):
+    def displayindex(self) -> Optional[int]:
         """Return the index of the column as displayed.
 
         Returns:
@@ -211,7 +211,7 @@ class TableColumn:
         else:
             return cols.index(self.cid)
 
-    def configure(self, opt=None, **kwargs):
+    def configure(self, opt: Optional[str] = None, **kwargs: Any) -> Union[Any, None]:
         """Configure the column. If opt is provided, the
         current value is returned, otherwise, sets the widget
         options specified in kwargs. See the documentation for
@@ -246,7 +246,7 @@ class TableColumn:
         if "text" in kwargs:
             self._headertext = kwargs["text"]
 
-    def show(self):
+    def show(self) -> None:
         """Make the column visible in the tableview"""
         displaycols = list(self.view.cget("displaycolumns"))
         if "#all" in displaycols:
@@ -258,7 +258,7 @@ class TableColumn:
         displaycols.insert(index, self.cid)
         self.view.configure(displaycolumns=displaycols)
 
-    def hide(self):
+    def hide(self) -> None:
         """Hide the column in the tableview"""
         displaycols = list(self.view.cget("displaycolumns"))
         cols = list(self.view.cget("columns"))
@@ -267,7 +267,7 @@ class TableColumn:
         displaycols.remove(self.cid)
         self.view.configure(displaycolumns=displaycols)
 
-    def delete(self):
+    def delete(self) -> None:
         """Remove the column from the tableview permanently."""
         # update the tablerow columns
         index = self.tableindex
@@ -303,12 +303,12 @@ class TableColumn:
             else:
                 column.restore_settings()
 
-    def restore_settings(self):
+    def restore_settings(self) -> None:
         """Update the configuration based on stored settings"""
         self.view.column(self.cid, **self._settings_column)
         self.view.heading(self.cid, **self._settings_heading)
 
-    def _capture_settings(self):
+    def _capture_settings(self) -> None:
         """Update the stored settings for the column and heading.
         This is required because the settings are erased whenever
         the `columns` parameter is configured in the underlying
@@ -324,7 +324,7 @@ class TableRow:
 
     _cnt = 0
 
-    def __init__(self, tableview, values):
+    def __init__(self, tableview: "Tableview", values: Sequence[Any]) -> None:
         """
         Parameters:
 
@@ -344,21 +344,21 @@ class TableRow:
         TableRow._cnt += 1
 
     @property
-    def values(self):
+    def values(self) -> List[Any]:
         """The table row values"""
         return self._values
 
     @values.setter
-    def values(self, values):
+    def values(self, values: Sequence[Any]) -> None:
         self._values = values
         self.refresh()
 
     @property
-    def iid(self):
+    def iid(self) -> str:
         """A unique record identifier"""
         return str(self._iid)
 
-    def configure(self, opt=None, **kwargs):
+    def configure(self, opt: Optional[str] = None, **kwargs: Any) -> Union[Any, None]:
         """Configure the row. If opt is provided, the
         current value is returned, otherwise, sets the widget
         options specified in kwargs. See the documentation for
@@ -384,7 +384,7 @@ class TableRow:
         else:
             self.view.item(self.iid, **kwargs)
 
-    def show(self, striped=False):
+    def show(self, striped: bool = False) -> None:
         """Show the row in the data table view"""
         if self._iid is None:
             self.build()
@@ -402,7 +402,7 @@ class TableRow:
             tags.append("striped")
         self.view.item(self.iid, tags=tags)
 
-    def delete(self):
+    def delete(self) -> None:
         """Delete the row from the dataset"""
         if self.iid:
             self._table.iidmap.pop(self.iid)
@@ -411,16 +411,16 @@ class TableRow:
             self._table.load_table_data()
             self.view.delete(self.iid)
 
-    def hide(self):
+    def hide(self) -> None:
         """Remove the row from the data table view"""
         self.view.detach(self.iid)
 
-    def refresh(self):
+    def refresh(self) -> None:
         """Syncs the tableview values with the object values"""
         if self._iid:
             self.view.item(self.iid, values=self.values)
 
-    def build(self):
+    def build(self) -> None:
         """Create the row object in the `Treeview` and capture
         the resulting item id (iid).
         """
@@ -522,8 +522,8 @@ class Tableview(ttk.Frame):
             self,
             master=None,
             bootstyle=DEFAULT,
-            coldata=[],
-            rowdata=[],
+            coldata=None,
+            rowdata=None,
             paginated=False,
             searchable=False,
             yscrollbar=False,
@@ -1066,7 +1066,7 @@ class Tableview(ttk.Frame):
             text="",
             image="",
             command="",
-            anchor=W,
+            anchor: Anchor = W,
             width=200,
             minwidth=20,
             stretch=False,
