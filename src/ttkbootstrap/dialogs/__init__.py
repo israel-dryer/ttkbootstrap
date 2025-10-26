@@ -30,4 +30,27 @@ Example:
     root.mainloop()
     ```
 """
-from ttkbootstrap.dialogs.dialogs import *
+from .colorchooser import (
+    ColorChooser,
+    ColorChooserDialog,
+)
+from .colordropper import (
+    ColorDropperDialog,
+)
+from .dialogs import (DatePickerDialog, Dialog, FontDialog, MessageDialog, Messagebox, QueryDialog, Querybox)
+
+__all__ = [
+    # Base / core dialogs
+    "Dialog",
+    "MessageDialog",
+    "QueryDialog",
+    "DatePickerDialog",
+    "FontDialog",
+    # Facades
+    "Messagebox",
+    "Querybox",
+    # Color tools
+    "ColorChooser",
+    "ColorChooserDialog",
+    "ColorDropperDialog",
+]

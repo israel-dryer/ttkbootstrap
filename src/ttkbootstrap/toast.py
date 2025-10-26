@@ -44,9 +44,10 @@ Example:
     ```
 """
 from tkinter import font
-import ttkbootstrap as ttk
+from typing import Any
+
+from ttkbootstrap import Frame, Label, Toplevel, utility
 from ttkbootstrap.constants import *
-from ttkbootstrap import utility
 
 # https://www.fontspace.com/freeserif-font-f13277
 
@@ -81,17 +82,17 @@ class ToastNotification:
     """
 
     def __init__(
-        self,
-        title,
-        message,
-        duration=None,
-        bootstyle=LIGHT,
-        alert=False,
-        icon=None,
-        iconfont=None,
-        position=None,
-        **kwargs,
-    ):
+            self,
+            title: str,
+            message: str,
+            duration: int | None = None,
+            bootstyle: str = LIGHT,
+            alert: bool = False,
+            icon: str | None = None,
+            iconfont: font.Font | str | None = None,
+            position: tuple[int, int, str] | None = None,
+            **kwargs: Any,
+    ) -> None:
         """
         Parameters:
 
@@ -114,7 +115,7 @@ class ToastNotification:
                 toast is shown.
 
             icon (str):
-                A unicode character to display on the top-left hand
+                A UNICODE character to display on the top-left hand
                 corner of the toast. The default symbol is OS specific.
                 Pass an empty string to remove the symbol.
 
@@ -123,7 +124,7 @@ class ToastNotification:
                 OS specific. You may need to change the font to enable
                 better character or emoji support for the icon you
                 want to use. Windows (Segoe UI Symbol),
-                Linux (FreeSerif), MacOS (Apple Symbol)
+                Linux (FreeSerif), macOS (Apple Symbol)
 
             position (tuple[int, int, str]):
                 A tuple that controls the position of the toast. Default
@@ -137,6 +138,7 @@ class ToastNotification:
             **kwargs (Dict):
                 Other keyword arguments passed to the `Toplevel` window.
         """
+        self.container: Frame
         self.message = message
         self.title = title
         self.duration = duration
@@ -159,30 +161,30 @@ class ToastNotification:
             if len(position) != 3:
                 self.position = None
 
-    def show_toast(self, *_):
+    def show_toast(self, *_: Any) -> None:
         """Create and show the toast window."""
 
         # build toast
-        self.toplevel = ttk.Toplevel(**self.kwargs)
+        self.toplevel = Toplevel(**self.kwargs)
         self._setup(self.toplevel)
 
-        self.container = ttk.Frame(self.toplevel, bootstyle=self.bootstyle)
+        self.container = Frame(self.toplevel, bootstyle=self.bootstyle)
         self.container.pack(fill=BOTH, expand=YES)
-        ttk.Label(
+        Label(
             self.container,
             text=self.icon,
             font=self.iconfont,
             bootstyle=f"{self.bootstyle}-inverse",
             anchor=NW,
         ).grid(row=0, column=0, rowspan=2, sticky=NSEW, padx=(5, 0))
-        ttk.Label(
+        Label(
             self.container,
             text=self.title,
             font=self.titlefont,
             bootstyle=f"{self.bootstyle}-inverse",
             anchor=NW,
         ).grid(row=0, column=1, sticky=NSEW, padx=10, pady=(5, 0))
-        ttk.Label(
+        Label(
             self.container,
             text=self.message,
             wraplength=utility.scale_size(self.toplevel, 300),
@@ -200,7 +202,7 @@ class ToastNotification:
         if self.duration:
             self.toplevel.after(self.duration, self.hide_toast)
 
-    def hide_toast(self, *_):
+    def hide_toast(self, *_: Any) -> None:
         """Destroy and close the toast window."""
         try:
             alpha = float(self.toplevel.attributes("-alpha"))
@@ -213,7 +215,7 @@ class ToastNotification:
             if self.toplevel:
                 self.toplevel.destroy()
 
-    def _setup(self, window: ttk.Toplevel):
+    def _setup(self, window: Toplevel) -> None:
         winsys = window.tk.call("tk", "windowingsystem")
 
         self.toplevel.configure(relief=RAISED)
@@ -254,7 +256,7 @@ class ToastNotification:
 
         self.set_geometry()
 
-    def set_geometry(self):
+    def set_geometry(self) -> None:
         self.toplevel.update_idletasks()  # actualize geometry
         anchor = self.position[-1]
         x_anchor = "-" if "w" not in anchor else "+"
@@ -277,8 +279,9 @@ class ToastNotification:
 
 
 if __name__ == "__main__":
+    from ttkbootstrap import Window
 
-    app = ttk.Window()
+    app = Window()
 
     ToastNotification(
         "ttkbootstrap toast message",

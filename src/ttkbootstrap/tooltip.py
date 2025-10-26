@@ -43,11 +43,12 @@ Example:
     app.mainloop()
     ```
 """
-from typing import Literal, Optional
+from tkinter import Event, Misc
+from typing import Any, Literal
 
 import ttkbootstrap as ttk
-from ttkbootstrap.constants import *
 from ttkbootstrap import utility
+from ttkbootstrap.constants import *
 
 
 class ToolTip:
@@ -83,17 +84,17 @@ class ToolTip:
 
     def __init__(
             self,
-            widget,
-            text="widget info",
-            padding=10,
+            widget: Misc,
+            text: str = "widget info",
+            padding: int = 10,
             justify: Literal["left", "center", "right"] = "left",
-            bootstyle=None,
-            wraplength=None,
-            delay=250,  # milliseconds
-            image=None,
-            position: Optional[str] = None,
-            **kwargs,
-    ):
+            bootstyle: str | tuple[str, ...] | None = None,
+            wraplength: int | None = None,
+            delay: int = 250,  # milliseconds
+            image: Any = None,
+            position: str | None = None,
+            **kwargs: Any,
+    ) -> None:
         """
         Parameters:
 
@@ -156,24 +157,24 @@ class ToolTip:
         self.widget.bind("<Motion>", self.move_tip)
         self.widget.bind("<ButtonPress>", self.leave)
 
-    def enter(self, event=None):
+    def enter(self, event: Event | None = None) -> None:
         self.schedule()
 
-    def leave(self, event=None):
+    def leave(self, event: Event | None = None) -> None:
         self.unschedule()
         self.hide_tip()
 
-    def schedule(self):
+    def schedule(self) -> None:
         self.unschedule()
         self.id = self.widget.after(self.delay, self.show_tip)
 
-    def unschedule(self):
-        id = self.id
+    def unschedule(self) -> None:
+        _id = self.id
         self.id = None
-        if id:
-            self.widget.after_cancel(id)
+        if _id:
+            self.widget.after_cancel(_id)
 
-    def show_tip(self, *_):
+    def show_tip(self, *_: Any) -> None:
         """Create and show the tooltip window"""
         if self.toplevel:
             return
@@ -208,7 +209,7 @@ class ToolTip:
 
         self.toplevel.geometry(f"+{x}+{y}")
 
-    def move_tip(self, *_):
+    def move_tip(self, *_: Any) -> None:
         """Move the tooltip window"""
         if self.toplevel:
             if self.position:
@@ -218,13 +219,13 @@ class ToolTip:
                 y = self.widget.winfo_pointery() + 10
             self.toplevel.geometry(f"+{x}+{y}")
 
-    def hide_tip(self, *_):
+    def hide_tip(self, *_: Any) -> None:
         """Destroy the tooltip window."""
         if self.toplevel:
             self.toplevel.destroy()
             self.toplevel = None
 
-    def _calculate_position(self):
+    def _calculate_position(self) -> tuple[int, int]:
         w = self.widget
         tip_w = 200  # fallback size
         tip_h = 50
@@ -240,9 +241,6 @@ class ToolTip:
         widget_y = w.winfo_rooty()
         widget_w = w.winfo_width()
         widget_h = w.winfo_height()
-
-        x = widget_x
-        y = widget_y
 
         horiz = "center"
         vert = "bottom"
