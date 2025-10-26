@@ -1,17 +1,21 @@
-import tkinter as tk
-import ttkbootstrap as ttk
 from random import choice
-from ttkbootstrap import utility
+
+import ttkbootstrap as ttk
+from ttkbootstrap import Tk, utility
+from ttkbootstrap.constants import *
+
 utility.enable_high_dpi_awareness()
 
-root = tk.Tk()
+root = Tk()
 style = ttk.Style()
+
 
 def change_style():
     theme = choice(style.theme_names())
     style.theme_use(theme)
 
-frame = ttk.Frame(padding=10)    
+
+frame = ttk.Frame(padding=10)
 frame.pack(padx=10, pady=10)
 
 ttk.Meter(
@@ -24,7 +28,7 @@ ttk.Meter(
 
     subtext='miles per hour',
     interactive=True
-).pack(side=tk.LEFT)
+).pack(side=LEFT)
 
 ttk.Meter(
     master=frame,
@@ -37,7 +41,7 @@ ttk.Meter(
     bootstyle='info',
     stripethickness=10,
     interactive=True
-).pack(side=tk.LEFT)
+).pack(side=LEFT)
 
 ttk.Meter(
     master=frame,
@@ -49,7 +53,7 @@ ttk.Meter(
     textright='%',
     bootstyle='success',
     interactive=True
-).pack(side=tk.LEFT)
+).pack(side=LEFT)
 
 ttk.Meter(
     master=frame,
@@ -62,22 +66,22 @@ ttk.Meter(
     amountused=75,
     textright='°',
     subtext='heat temperature',
-    wedgesize=10,
+    wedgesize=2,
     bootstyle='danger',
     interactive=True
-).pack(side=tk.LEFT)
+).pack(side='left')
 
 meter = ttk.Meter(
-    metersize = 100,
-    padding = 10,
-    amountused = 10,
-    metertype = "semi",
-    subtext = "Miles per hour",
-    interactive = True,
-    amounttotal = 100
+    metersize=100,
+    padding=10,
+    amountused=10,
+    metertype="semi",
+    subtext="Miles per hour",
+    interactive=True,
+    amounttotal=100
 )
 meter.step(-50)
-meter.pack(side=tk.LEFT)
+meter.pack(side=LEFT)
 # btn = ttk.Button(text="Change Theme", command=change_style)
 # btn.grid(row=3, column=0, columnspan=2, padx=10, pady=10)
 
