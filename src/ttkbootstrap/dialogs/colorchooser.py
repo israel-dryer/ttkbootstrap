@@ -60,7 +60,7 @@ import ttkbootstrap as ttk
 from ttkbootstrap import colorutils, utility
 from ttkbootstrap.colorutils import HEX, HSL, HUE, LUM, RGB, SAT
 from ttkbootstrap.constants import *
-from ttkbootstrap.dialogs.colordropper import ColorDropperDialog
+from .colordropper import ColorDropperDialog
 from ttkbootstrap.localization import MessageCatalog
 from ttkbootstrap.tooltip import ToolTip
 from ttkbootstrap.validation import add_range_validation, add_validation, validator
@@ -542,7 +542,7 @@ class ColorChooser(ttk.Frame):
         self.sync_color_values(HSL)
 
 
-from ttkbootstrap.dialogs import Dialog
+from .dialogs import Dialog
 
 
 class ColorChooserDialog(Dialog):
