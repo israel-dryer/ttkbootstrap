@@ -137,13 +137,26 @@ class LabeledScale(Frame):
         """Adjust the label position and text according to the scale value."""
 
         def adjust_label() -> None:
-            self.update_idletasks()  # "force" scale redraw
+            self.update_idletasks()  # ensure geometry info is current
 
             x, y = self.scale.coords()
+
+            # Vertical placement above or below the scale
             if self._label_top:
                 y = self.scale.winfo_y() - self.label.winfo_reqheight()
             else:
                 y = self.scale.winfo_reqheight() + self.label.winfo_reqheight()
+
+            # Prevent horizontal clipping: clamp label center within frame
+            frame_w = max(0, self.winfo_width())
+            label_w = max(0, self.label.winfo_reqwidth())
+            if frame_w > 0 and label_w > 0:
+                half = label_w // 2
+                # If label wider than frame, center within frame
+                if label_w >= frame_w:
+                    x = frame_w // 2
+                else:
+                    x = min(max(x, half), frame_w - half)
 
             self.label.place_configure(x=x, y=y)
 
