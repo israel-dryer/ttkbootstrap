@@ -37,7 +37,11 @@ from .colorchooser import (
 from .colordropper import (
     ColorDropperDialog,
 )
-from .dialogs import (DatePickerDialog, Dialog, FontDialog, MessageDialog, Messagebox, QueryDialog, Querybox)
+from .base import Dialog
+from .message import MessageDialog, Messagebox
+from .query import QueryDialog, Querybox
+from .datepicker import DatePickerDialog
+from .fontdialog import FontDialog
 
 __all__ = [
     # Base / core dialogs
