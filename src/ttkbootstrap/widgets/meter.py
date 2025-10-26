@@ -38,20 +38,20 @@ Example:
     ```
 """
 import math
-import tkinter as tk
-from tkinter import ttk
+from tkinter import Event, Misc
+from typing import Any
 
 from PIL import Image, ImageDraw, ImageTk
 from PIL.Image import Resampling
 
-from ttkbootstrap import utility
-from ttkbootstrap.constants import DEFAULT, FULL
+from ttkbootstrap import Frame, IntVar, Label, StringVar, utility
+from ttkbootstrap.constants import CENTER, DEFAULT, FULL, LEFT, RIGHT, S, Y
 from ttkbootstrap.style import Bootstyle, Colors
 
 M = 3  # meter image scale, higher number increases resolution
 
 
-class Meter(ttk.Frame):
+class Meter(Frame):
     """A radial meter that can be used to show progress of long
     running operations or the amount of work completed; can also be
     used as a dial when set to `interactive=True`.
@@ -121,30 +121,30 @@ class Meter(ttk.Frame):
 
     def __init__(
             self,
-            master=None,
-            bootstyle=DEFAULT,
-            arcrange=None,
-            arcoffset=None,
-            amountmin=0,
-            amounttotal=100,
-            amountused=0,
-            amountformat="{:.0f}",
-            wedgesize=0,
-            metersize=200,
-            metertype=FULL,
-            meterthickness=10,
-            showtext=True,
-            interactive=False,
-            stripethickness=0,
-            textleft=None,
-            textright=None,
-            textfont="-size 20 -weight bold",
-            subtext=None,
-            subtextstyle=DEFAULT,
-            subtextfont="-size 10",
-            stepsize=1,
-            **kwargs,
-    ):
+            master: Misc | None = None,
+            bootstyle: str = DEFAULT,
+            arcrange: int | None = None,
+            arcoffset: int | None = None,
+            amountmin: int | float = 0,
+            amounttotal: int | float = 100,
+            amountused: int | float = 0,
+            amountformat: str = "{:.0f}",
+            wedgesize: int = 0,
+            metersize: int = 200,
+            metertype: str = FULL,
+            meterthickness: int = 10,
+            showtext: bool = True,
+            interactive: bool = False,
+            stripethickness: int = 0,
+            textleft: str | None = None,
+            textright: str | None = None,
+            textfont: str = "-size 20 -weight bold",
+            subtext: str | None = None,
+            subtextstyle: str = DEFAULT,
+            subtextfont: str = "-size 10",
+            stepsize: int | float = 1,
+            **kwargs: Any,
+    ) -> None:
         """
         Parameters:
 
@@ -237,12 +237,12 @@ class Meter(ttk.Frame):
         super().__init__(master=master, **kwargs)
 
         # widget variables
-        self.amountminvar = tk.IntVar(value=amountmin)
-        self.amountusedvar = tk.IntVar(value=amountused)
+        self.amountminvar = IntVar(value=amountmin)
+        self.amountusedvar = IntVar(value=amountused)
         self.amountusedvar.trace_add("write", self._update_meter)
-        self.amountuseddisplayvar = tk.StringVar(value=amountformat.format(amountused))
-        self.amounttotalvar = tk.IntVar(value=amounttotal)
-        self.labelvar = tk.StringVar(value=subtext)
+        self.amountuseddisplayvar = StringVar(value=amountformat.format(amountused))
+        self.amounttotalvar = IntVar(value=amounttotal)
+        self.labelvar = StringVar(value=subtext)
 
         # misc settings
         self._amountformat = amountformat
@@ -266,7 +266,7 @@ class Meter(ttk.Frame):
 
         self._setup_widget()
 
-    def _update_meter(self, *_):
+    def _update_meter(self, *_: Any) -> None:
         """Update the meter display when the value changes.
 
         Redraws the meter and updates the display text according to
@@ -276,40 +276,40 @@ class Meter(ttk.Frame):
         amount_used = self.amountusedvar.get()
         self.amountuseddisplayvar.set(self._amountformat.format(amount_used))
 
-    def _setup_widget(self):
+    def _setup_widget(self) -> None:
         """Initialize and configure all meter components.
 
         Creates the meter frame, indicator label, text labels, and binds
         event handlers for theme changes and interactivity.
         """
-        self.meterframe = ttk.Frame(
+        self.meterframe = Frame(
             master=self, width=self._metersize, height=self._metersize
         )
-        self.indicator = ttk.Label(self.meterframe)
-        self.textframe = ttk.Frame(self.meterframe)
-        self.textleft = ttk.Label(
+        self.indicator = Label(self.meterframe)
+        self.textframe = Frame(self.meterframe)
+        self.textleft = Label(
             master=self.textframe,
             text=self._textleft,
             font=self._subtextfont,
             bootstyle=(self._subtextstyle, "metersubtxt"),
-            anchor=tk.S,
+            anchor=S,
             padding=(0, 5),
         )
-        self.textcenter = ttk.Label(
+        self.textcenter = Label(
             master=self.textframe,
             textvariable=self.amountuseddisplayvar,
             bootstyle=(self._bootstyle, "meter"),
             font=self._textfont,
         )
-        self.textright = ttk.Label(
+        self.textright = Label(
             master=self.textframe,
             text=self._textright,
             font=self._subtextfont,
             bootstyle=(self._subtextstyle, "metersubtxt"),
-            anchor=tk.S,
+            anchor=S,
             padding=(0, 5),
         )
-        self.subtext = ttk.Label(
+        self.subtext = Label(
             master=self.meterframe,
             text=self._subtext,
             bootstyle=(self._subtextstyle, "metersubtxt"),
@@ -328,7 +328,7 @@ class Meter(ttk.Frame):
         self.meterframe.pack()
         self._set_show_text()
 
-    def _set_widget_colors(self):
+    def _set_widget_colors(self) -> None:
         """Query the theme for meter colors.
 
         Sets the meter foreground, background, and trough colors based on
@@ -343,7 +343,7 @@ class Meter(ttk.Frame):
         self._meterbackground = Colors.update_hsv(background, vd=-0.1)
         self._metertrough = troughcolor
 
-    def _set_meter_text(self):
+    def _set_meter_text(self) -> None:
         """Configure and position all text labels.
 
         Arranges the text labels (left, center, right, and subtext) according
@@ -352,15 +352,15 @@ class Meter(ttk.Frame):
         self._set_show_text()
         self._set_subtext()
 
-    def _set_subtext(self):
+    def _set_subtext(self) -> None:
         """Position the subtext label below the center text."""
         if self._subtext:
             if self._showtext:
-                self.subtext.place(relx=0.5, rely=0.6, anchor=tk.CENTER)
+                self.subtext.place(relx=0.5, rely=0.6, anchor=CENTER)
             else:
-                self.subtext.place(relx=0.5, rely=0.5, anchor=tk.CENTER)
+                self.subtext.place(relx=0.5, rely=0.5, anchor=CENTER)
 
-    def _set_show_text(self):
+    def _set_show_text(self) -> None:
         """Show or hide the text labels based on showtext setting."""
         self.textframe.pack_forget()
         self.textcenter.pack_forget()
@@ -370,32 +370,32 @@ class Meter(ttk.Frame):
 
         if self._showtext:
             if self._subtext:
-                self.textframe.place(relx=0.5, rely=0.45, anchor=tk.CENTER)
+                self.textframe.place(relx=0.5, rely=0.45, anchor=CENTER)
             else:
-                self.textframe.place(relx=0.5, rely=0.5, anchor=tk.CENTER)
+                self.textframe.place(relx=0.5, rely=0.5, anchor=CENTER)
 
         self._set_text_left()
         self._set_text_center()
         self._set_text_right()
         self._set_subtext()
 
-    def _set_text_left(self):
+    def _set_text_left(self) -> None:
         """Pack the left text label if configured."""
         if self._showtext and self._textleft:
-            self.textleft.pack(side=tk.LEFT, fill=tk.Y)
+            self.textleft.pack(side=LEFT, fill=Y)
 
-    def _set_text_center(self):
+    def _set_text_center(self) -> None:
         """Pack the center text label showing the current value."""
         if self._showtext:
-            self.textcenter.pack(side=tk.LEFT, fill=tk.Y)
+            self.textcenter.pack(side=LEFT, fill=Y)
 
-    def _set_text_right(self):
+    def _set_text_right(self) -> None:
         """Pack the right text label if configured."""
         self.textright.configure(text=self._textright)
         if self._showtext and self._textright:
-            self.textright.pack(side=tk.RIGHT, fill=tk.Y)
+            self.textright.pack(side=RIGHT, fill=Y)
 
-    def _set_interactive_bind(self):
+    def _set_interactive_bind(self) -> None:
         """Bind or unbind mouse events for interactive mode."""
         seq1 = "<B1-Motion>"
         seq2 = "<Button-1>"
@@ -414,7 +414,7 @@ class Meter(ttk.Frame):
             self.indicator.unbind(seq2, self._bindids.get(seq2))
             self._bindids.clear()
 
-    def _set_arc_offset_range(self, metertype, arcoffset, arcrange):
+    def _set_arc_offset_range(self, metertype: str, arcoffset: int | None, arcrange: int | None) -> None:
         """Configure the arc parameters based on meter type.
 
         Sets default arc offset and range values for full or semi-circle meters
@@ -430,7 +430,7 @@ class Meter(ttk.Frame):
             self._arcrange = 360 if arcrange is None else arcrange
         self._metertype = metertype
 
-    def _draw_meter(self, *_):
+    def _draw_meter(self, *_: Any) -> None:
         """Draw the meter indicator on the base image.
 
         Creates a copy of the base image and draws either a solid or striped
@@ -448,7 +448,7 @@ class Meter(ttk.Frame):
         )
         self.indicator.configure(image=self._meterimage)
 
-    def _draw_base_image(self):
+    def _draw_base_image(self) -> None:
         """Draw the meter background/trough.
 
         Creates the base image showing the meter trough (background arc)
@@ -485,7 +485,7 @@ class Meter(ttk.Frame):
                 width=width,
             )
 
-    def _draw_solid_meter(self, draw: ImageDraw.Draw):
+    def _draw_solid_meter(self, draw) -> None:
         """Draw a solid meter indicator.
 
         Draws a continuous arc representing the current value, either as a
@@ -512,7 +512,7 @@ class Meter(ttk.Frame):
                 width=width,
             )
 
-    def _draw_striped_meter(self, draw: ImageDraw.Draw):
+    def _draw_striped_meter(self, draw) -> None:
         """Draw a striped meter indicator.
 
         Draws the meter as a series of discrete wedges/stripes rather than
@@ -567,7 +567,7 @@ class Meter(ttk.Frame):
         value = int(normalized * self._arcrange + self._arcoffset)
         return value
 
-    def _on_theme_change(self, *_):
+    def _on_theme_change(self, *_: Any) -> None:
         """Handle theme change events.
 
         Redraws the meter with updated colors from the new theme.
@@ -575,7 +575,7 @@ class Meter(ttk.Frame):
         self._draw_base_image()
         self._draw_meter()
 
-    def _on_dial_interact(self, e: tk.Event):
+    def _on_dial_interact(self, e: Event) -> None:
         """Handle mouse interaction for changing meter value.
 
         Calculates the new meter value based on mouse position when the
@@ -620,7 +620,7 @@ class Meter(ttk.Frame):
         else:
             self.amountusedvar.set(amountused)
 
-    def _lookup_style_option(self, style: str, option: str):
+    def _lookup_style_option(self, style: str, option: str) -> Any:
         """Query a ttk style option value.
 
         Parameters:
@@ -635,7 +635,7 @@ class Meter(ttk.Frame):
         )
         return value
 
-    def _configure_get(self, cnf):
+    def _configure_get(self, cnf: str) -> Any:
         """Get the value of a configuration option.
 
         Parameters:
@@ -685,9 +685,9 @@ class Meter(ttk.Frame):
         elif cnf == "stepsize":
             return self._stepsize
         else:
-            return super(ttk.Frame, self).configure(cnf)
+            return super(Frame, self).configure(cnf)
 
-    def _configure_set(self, **kwargs):
+    def _configure_set(self, **kwargs: Any) -> None:
         """Set widget configuration options.
 
         Handles all meter-specific configuration options and updates
@@ -721,15 +721,15 @@ class Meter(ttk.Frame):
             self.textright.configure(font=self._subtextfont)
         if "subtextstyle" in kwargs:
             self._subtextstyle = kwargs.pop("subtextstyle")
-            self.subtext.configure(bootstyle=[self._subtextstyle, "meter"])
+            self.subtext.configure(bootstyle=(self._subtextstyle, "meter"))
         if "metersize" in kwargs:
-            self._metersize = utility.scale_size(kwargs.pop("metersize"))
+            self._metersize = utility.scale_size(self, kwargs.pop("metersize"))
             self.meterframe.configure(
                 height=self._metersize, width=self._metersize
             )
         if "bootstyle" in kwargs:
             self._bootstyle = kwargs.pop("bootstyle")
-            self.textcenter.configure(bootstyle=[self._bootstyle, "meter"])
+            self.textcenter.configure(bootstyle=(self._bootstyle, "meter"))
         if "metertype" in kwargs:
             self._metertype = kwargs.pop("metertype")
         if "meterthickness" in kwargs:
@@ -774,15 +774,15 @@ class Meter(ttk.Frame):
         self._draw_meter()
 
         # pass remaining configurations to `ttk.Frame.configure`
-        super(ttk.Frame, self).configure(**kwargs)
+        super(Frame, self).configure(**kwargs)
 
-    def __getitem__(self, key: str):
+    def __getitem__(self, key: str) -> Any:
         return self._configure_get(key)
 
-    def __setitem__(self, key: str, value) -> None:
+    def __setitem__(self, key: str, value: Any) -> None:
         self._configure_set(**{key: value})
 
-    def configure(self, cnf=None, **kwargs):
+    def configure(self, cnf: str | None = None, **kwargs: Any) -> Any:
         """Configure the options for this widget.
 
         Parameters:
@@ -800,9 +800,9 @@ class Meter(ttk.Frame):
         if cnf is not None:
             return self._configure_get(cnf)
         else:
-            self._configure_set(**kwargs)
+            return self._configure_set(**kwargs)
 
-    def step(self, delta=1):
+    def step(self, delta: int | float = 1) -> None:
         """Increment or decrement the meter value.
 
         The indicator will bounce back when reaching the minimum or maximum

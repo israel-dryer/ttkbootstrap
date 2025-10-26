@@ -1,5 +1,5 @@
 import ttkbootstrap as ttk
-from ttkbootstrap.dialogs.colorchooser import ColorChooserDialog
+from ttkbootstrap.dialogs import ColorChooserDialog
 
 app = ttk.Window()
 

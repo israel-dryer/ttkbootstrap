@@ -61,8 +61,11 @@ Example:
     add_validation(entry, validate_long_text)
     ```
 """
-import ttkbootstrap as ttk
 import re
+from tkinter import Misc
+from typing import Any, Callable
+
+import ttkbootstrap as ttk
 
 
 class ValidationEvent:
@@ -105,7 +108,7 @@ class ValidationEvent:
             The widget object that is being validated.
     """
 
-    def __init__(self, d, i, P, s, S, v, V, W):
+    def __init__(self, d: str, i: str, P: str, s: str, S: str, v: str, V: str, W: str) -> None:
         self.actioncode = d
         self.insertdeleteindex = i
         self.postchangetext = P
@@ -120,7 +123,7 @@ class ValidationEvent:
         )  # replace with another method
 
 
-def validator(func):
+def validator(func: Callable[[ValidationEvent], bool]) -> Callable[..., bool]:
     """Decorates a standard function so that it receives the validation
     events returned by the validate command on the tkinter widgets.
 
@@ -130,14 +133,14 @@ def validator(func):
             The validation function to be decorated.
     """
 
-    def inner(*args, **kw):
+    def inner(*args: Any, **kw: Any) -> bool:
         event = ValidationEvent(*args)
         return func(event, **kw)
 
     return inner
 
 
-def add_validation(widget, func, when="focusout", **kwargs):
+def add_validation(widget: Misc, func: Callable[..., bool], when: str = "focusout", **kwargs: Any) -> None:
     """Adds validation to the widget of type `Entry`, `Combobox`, or
     `Spinbox`. The func should accept a parameter of type
     `ValidationEvent` and should return a boolean value.
@@ -170,7 +173,7 @@ def add_validation(widget, func, when="focusout", **kwargs):
 
 
 @validator
-def _validate_text(event: ValidationEvent):
+def _validate_text(event: ValidationEvent) -> bool:
     """Contents is text."""
     if len(event.postchangetext) == 0:
         return True
@@ -178,7 +181,7 @@ def _validate_text(event: ValidationEvent):
 
 
 @validator
-def _validate_number(event: ValidationEvent):
+def _validate_number(event: ValidationEvent) -> bool:
     """Contents is a number."""
     if len(event.postchangetext) == 0:
         return True
@@ -186,13 +189,13 @@ def _validate_number(event: ValidationEvent):
 
 
 @validator
-def _validate_options(event: ValidationEvent, options):
+def _validate_options(event: ValidationEvent, options: list[Any]) -> bool:
     """Contents is in a list of options"""
     return event.postchangetext in options
 
 
 @validator
-def _validate_range(event: ValidationEvent, startrange, endrange):
+def _validate_range(event: ValidationEvent, startrange: int | float, endrange: int | float) -> bool:
     """Contents is a number between the startrange and endrange
     inclusive
     """
@@ -207,7 +210,7 @@ def _validate_range(event: ValidationEvent, startrange, endrange):
 
 
 @validator
-def _validate_regex(event: ValidationEvent, pattern):
+def _validate_regex(event: ValidationEvent, pattern: str) -> bool:
     """Contents matches a regex expression"""
     match = re.match(pattern, event.postchangetext)
     return match is not None
@@ -216,7 +219,7 @@ def _validate_regex(event: ValidationEvent, pattern):
 # helper methods
 
 
-def add_text_validation(widget, when="focusout"):
+def add_text_validation(widget: Misc, when: str = "focusout") -> None:
     """Check if widget contents is alpha. Sets the state to 'Invalid'
     if not text.
 
@@ -232,7 +235,7 @@ def add_text_validation(widget, when="focusout"):
     add_validation(widget, _validate_text, when=when)
 
 
-def add_numeric_validation(widget, when="focusout"):
+def add_numeric_validation(widget: Misc, when: str = "focusout") -> None:
     """Check if widget contents is numeric. Sets the state to 'Invalid'
     if not a number.
 
@@ -248,7 +251,7 @@ def add_numeric_validation(widget, when="focusout"):
     add_validation(widget, _validate_number, when=when)
 
 
-def add_phonenumber_validation(widget, when="focusout"):
+def add_phonenumber_validation(widget: Misc, when: str = "focusout") -> None:
     """Check if the widget contents matches a phone number pattern.
 
     Parameters:
@@ -264,7 +267,7 @@ def add_phonenumber_validation(widget, when="focusout"):
     add_validation(widget, _validate_regex, pattern=pattern, when=when)
 
 
-def add_regex_validation(widget, pattern, when="focusout"):
+def add_regex_validation(widget: Misc, pattern: str, when: str = "focusout") -> None:
     """Check if widget contents matches regular expresssion. Sets the
     state to 'Invalid' if no match is found.
 
@@ -280,7 +283,7 @@ def add_regex_validation(widget, pattern, when="focusout"):
     add_validation(widget, _validate_regex, pattern=pattern, when=when)
 
 
-def add_range_validation(widget, startrange, endrange, when="focusout"):
+def add_range_validation(widget: Misc, startrange: int | float, endrange: int | float, when: str = "focusout") -> None:
     """Check if widget contents is within a range of numbers, inclusive.
     Sets the state to 'Invalid' if the number is outside of the range.
 
@@ -302,7 +305,7 @@ def add_range_validation(widget, startrange, endrange, when="focusout"):
     )
 
 
-def add_option_validation(widget, options, when="focusout"):
+def add_option_validation(widget: Misc, options: list[Any], when: str = "focusout") -> None:
     """Check if the widget contents is in a list of options.
 
 
@@ -319,13 +322,14 @@ def add_option_validation(widget, options, when="focusout"):
 
 
 if __name__ == "__main__":
-
     app = ttk.Window()
 
+
     @validator
-    def myvalidation(event: ValidationEvent) -> bool:
+    def my_validation(event: ValidationEvent) -> bool:
         print(event.postchangetext)
         return True
+
 
     entry = ttk.Entry()
     entry.pack(padx=10, pady=10)
