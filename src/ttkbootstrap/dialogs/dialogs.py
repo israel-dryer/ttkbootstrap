@@ -1,8 +1,15 @@
-"""Backwards-compatibility shim for ttkbootstrap.dialogs.dialogs.
+"""Backwards-compatibility shim for `ttkbootstrap.dialogs.dialogs`.
 
-This module re-exports dialog classes and facades that are now organized
-across submodules within `ttkbootstrap.dialogs`.
+Deprecated: import from `ttkbootstrap.dialogs` (package) or specific
+submodules instead, e.g. `ttkbootstrap.dialogs.message`.
 """
+import warnings
+
+warnings.warn(
+    "ttkbootstrap.dialogs.dialogs is deprecated; import from ttkbootstrap.dialogs or specific submodules",
+    DeprecationWarning,
+    stacklevel=2,
+)
 
 from .base import Dialog
 from .datepicker import DatePickerDialog
