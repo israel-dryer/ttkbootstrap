@@ -7,7 +7,7 @@
 import ttkbootstrap as ttk
 from ttkbootstrap.constants import *
 from ttkbootstrap.dialogs import Messagebox
-from ttkbootstrap.scrolled import ScrolledText
+from ttkbootstrap.widgets.scrolled import ScrolledText
 
 
 def setup_demo(master):

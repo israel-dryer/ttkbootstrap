@@ -61,7 +61,7 @@ from ttkbootstrap import colorutils, utility
 from ttkbootstrap.colorutils import HEX, HSL, HUE, LUM, RGB, SAT
 from ttkbootstrap.constants import *
 from ttkbootstrap.localization import MessageCatalog
-from ttkbootstrap.tooltip import ToolTip
+from ttkbootstrap.widgets.tooltip import ToolTip
 from ttkbootstrap.validation import add_range_validation, add_validation, validator
 from .colordropper import ColorDropperDialog
 
