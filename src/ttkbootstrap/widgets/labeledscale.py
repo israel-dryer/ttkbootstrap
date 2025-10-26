@@ -19,13 +19,16 @@ Example:
     root.mainloop()
     ```
 """
-import tkinter as tk
-from tkinter import ttk
+from tkinter import Misc
+from typing import Any
 
-from ttkbootstrap.constants import DEFAULT
+from ttkbootstrap import (
+    Frame, IntVar, Label, Scale
+)
+from ttkbootstrap.constants import DEFAULT, Side
 
 
-class LabeledScale(ttk.Frame):
+class LabeledScale(Frame):
     """A Ttk Scale widget with a Ttk Label widget indicating its current value.
 
     The label automatically updates to show the current scale value. The
@@ -36,7 +39,15 @@ class LabeledScale(ttk.Frame):
     using the 'compound' parameter.
     """
 
-    def __init__(self, master=None, variable=None, from_=0, to=10, bootstyle=DEFAULT, **kwargs):
+    def __init__(
+            self,
+            master: Misc | None = None,
+            variable: IntVar | None = None,
+            from_: int | float = 0,
+            to: int | float = 10,
+            bootstyle: str = DEFAULT,
+            **kwargs: Any
+    ) -> None:
         """Construct a horizontal LabeledScale.
 
         Parameters:
@@ -69,22 +80,22 @@ class LabeledScale(ttk.Frame):
         super().__init__(master=master, **kwargs)
         self._label_top = kwargs.pop('compound', 'top') == 'top'
 
-        ttk.Frame.__init__(self, master, **kwargs)
-        self._variable = variable or tk.IntVar(master)
+        Frame.__init__(self, master, **kwargs)
+        self._variable = variable or IntVar(master)
         self._variable.set(from_)
         self._last_valid = from_
         self._bootstyle = bootstyle
 
-        self.label = ttk.Label(self, bootstyle=bootstyle)
-        self.scale = ttk.Scale(self, variable=self._variable, from_=from_, to=to, bootstyle=bootstyle)
+        self.label = Label(self, bootstyle=bootstyle)
+        self.scale = Scale(self, variable=self._variable, from_=from_, to=to, bootstyle=bootstyle)
         self.scale.bind('<<RangeChanged>>', self._adjust)
 
         # position scale and label according to the compound option
-        scale_side = 'bottom' if self._label_top else 'top'
-        label_side = 'top' if scale_side == 'bottom' else 'bottom'
+        scale_side: Side = 'bottom' if self._label_top else 'top'
+        label_side: Side = 'top' if scale_side == 'bottom' else 'bottom'
         self.scale.pack(side=scale_side, fill='x')
         # Dummy required to make frame correct height
-        dummy = ttk.Label(self)
+        dummy = Label(self)
         dummy.pack(side=label_side)
         dummy.lower()
         self.label.place(anchor='n' if label_side == 'top' else 's')
@@ -94,7 +105,7 @@ class LabeledScale(ttk.Frame):
         self.bind('<Configure>', self._adjust)
         self.bind('<Map>', self._adjust)
 
-    def destroy(self):
+    def destroy(self) -> None:
         """Destroy this widget and possibly its associated variable."""
         try:
             self._variable.trace_remove('write', self.__tracecb)
@@ -106,7 +117,7 @@ class LabeledScale(ttk.Frame):
         self.label = None
         self.scale = None
 
-    def _to_number(self, x):
+    def _to_number(self, x: str | int | float) -> int | float:
         """Convert a string to int or float.
 
         Parameters:
@@ -122,17 +133,30 @@ class LabeledScale(ttk.Frame):
                 x = int(x)
         return x
 
-    def _adjust(self, *args):
+    def _adjust(self, *_) -> None:
         """Adjust the label position and text according to the scale value."""
 
-        def adjust_label():
-            self.update_idletasks()  # "force" scale redraw
+        def adjust_label() -> None:
+            self.update_idletasks()  # ensure geometry info is current
 
             x, y = self.scale.coords()
+
+            # Vertical placement above or below the scale
             if self._label_top:
                 y = self.scale.winfo_y() - self.label.winfo_reqheight()
             else:
                 y = self.scale.winfo_reqheight() + self.label.winfo_reqheight()
+
+            # Prevent horizontal clipping: clamp label center within frame
+            frame_w = max(0, self.winfo_width())
+            label_w = max(0, self.label.winfo_reqwidth())
+            if frame_w > 0 and label_w > 0:
+                half = label_w // 2
+                # If label wider than frame, center within frame
+                if label_w >= frame_w:
+                    x = frame_w // 2
+                else:
+                    x = min(max(x, half), frame_w - half)
 
             self.label.place_configure(x=x, y=y)
 
@@ -151,7 +175,7 @@ class LabeledScale(ttk.Frame):
         self.after_idle(adjust_label)
 
     @property
-    def value(self):
+    def value(self) -> int | float:
         """Get the current scale value.
 
         Returns:
@@ -160,7 +184,7 @@ class LabeledScale(ttk.Frame):
         return self._variable.get()
 
     @value.setter
-    def value(self, val):
+    def value(self, val: int | float) -> None:
         """Set the scale to a new value.
 
         Parameters:
