@@ -1,4 +1,4 @@
-from ttkbootstrap.dialogs import Querybox, Messagebox
+from ttkbootstrap.dialogs import Messagebox, Querybox
 from ttkbootstrap.localization import MessageCatalog
 from ttkbootstrap.window import Window
 
@@ -23,9 +23,10 @@ def run_test():
     Querybox.get_integer("Querybox.get_integer")
     Querybox.get_string("Querybox.get_string")
     Querybox.get_font(title="Querybox.get_font")
-    Querybox.get_item("Querybox.get_item", initialvalue="apple",
-                      items=["apple", "banana", "grape", "kiwi", "orange", "pear"],
-                      position=(500, 500))
+    Querybox.get_item(
+        "Querybox.get_item", initialvalue="apple",
+        items=["apple", "banana", "grape", "kiwi", "orange", "pear"],
+        position=(500, 500))
 
 
 root = Window()

@@ -58,15 +58,17 @@ Example:
 """
 
 import calendar
-import textwrap
 import locale
-from datetime import datetime
-from tkinter import font
+import textwrap
+import tkinter
+from datetime import date, datetime
+from tkinter import BaseWidget, font
+from typing import Any, Callable, List, Optional, Tuple, Union
+
 import ttkbootstrap as ttk
 from ttkbootstrap import utility
-from ttkbootstrap.icons import Icon
 from ttkbootstrap.constants import *
-from tkinter import BaseWidget
+from ttkbootstrap.icons import Icon
 from ttkbootstrap.localization import MessageCatalog
 from ttkbootstrap.utility import center_on_parent
 
@@ -74,7 +76,7 @@ from ttkbootstrap.utility import center_on_parent
 class Dialog(BaseWidget):
     """A simple dialog base class."""
 
-    def __init__(self, parent=None, title="", alert=False):
+    def __init__(self, parent: Optional[tkinter.Misc] = None, title: str = "", alert: bool = False) -> None:
         """
         Parameters:
 
@@ -100,14 +102,15 @@ class Dialog(BaseWidget):
         self._alert = alert
         self._initial_focus = None
 
-    def _locate(self):
+    def _locate(self) -> None:
         toplevel = self._toplevel
         center_on_parent(toplevel, self._parent)
 
-    def show(self, position=None, wait_for_result=True):
+    def show(self, position: Optional[Tuple[int, int]] = None, wait_for_result: bool = True) -> None:
         """Show the popup dialog
         Parameters:
 
+            wait_for_result:
             position: tuple[int, int]
                 The x and y coordinates used to position the dialog. If no parent
                 then the dialog will anchor to the center of the parent window.
@@ -136,8 +139,7 @@ class Dialog(BaseWidget):
             self._toplevel.grab_set()
             self._toplevel.wait_window()
 
-
-    def create_body(self, master):
+    def create_body(self, master: tkinter.Misc) -> None:
         """Create the dialog body.
 
         This method should be overridden and is called by the `build`
@@ -151,7 +153,7 @@ class Dialog(BaseWidget):
         """
         raise NotImplementedError
 
-    def create_buttonbox(self, master):
+    def create_buttonbox(self, master: tkinter.Misc) -> None:
         """Create the dialog button box.
 
         This method should be overridden and is called by the `build`
@@ -165,7 +167,7 @@ class Dialog(BaseWidget):
         """
         raise NotImplementedError
 
-    def build(self):
+    def build(self) -> None:
         """Build the dialog from settings"""
 
         # setup toplevel based on widowing system
@@ -173,7 +175,7 @@ class Dialog(BaseWidget):
             self._toplevel = ttk.Toplevel(
                 transient=self.master,
                 title=self._title,
-                resizable=(0, 0),
+                resizable=(False, False),
                 minsize=(250, 15),
                 iconify=True,
             )
@@ -181,7 +183,7 @@ class Dialog(BaseWidget):
             self._toplevel = ttk.Toplevel(
                 transient=self.master,
                 title=self._title,
-                resizable=(0, 0),
+                resizable=(False, False),
                 minsize=(250, 15),
                 windowtype="dialog",
                 iconify=True,
@@ -203,7 +205,7 @@ class Dialog(BaseWidget):
         self._toplevel.update_idletasks()
 
     @property
-    def result(self):
+    def result(self) -> Any:
         """Returns the result of the dialog."""
         self._toplevel.grab_release()
         return self._result
@@ -222,19 +224,19 @@ class MessageDialog(Dialog):
     """
 
     def __init__(
-        self,
-        message,
-        title=" ",
-        buttons=None,
-        command=None,
-        width=50,
-        parent=None,
-        alert=False,
-        default=None,
-        padding=(20, 20),
-        icon=None,
-        **kwargs,
-    ):
+            self,
+            message: str,
+            title: str = " ",
+            buttons: Optional[List[str]] = None,
+            command: Optional[Tuple[Callable[..., Any], str]] = None,
+            width: int = 50,
+            parent: Optional[tkinter.Misc] = None,
+            alert: bool = False,
+            default: Optional[str] = None,
+            padding: Union[int, Tuple[int, int]] = (20, 20),
+            icon: Optional[str] = None,
+            **kwargs: Any,
+    ) -> None:
         """
         Parameters:
 
@@ -303,7 +305,7 @@ class MessageDialog(Dialog):
         """
         super().__init__(parent, title, alert)
         self._message = message
-        self._command = command
+        self._command: Optional[Tuple[Callable[..., Any], str]] = command
         self._width = width
         self._alert = alert
         self._default = default
@@ -319,7 +321,7 @@ class MessageDialog(Dialog):
         else:
             self._buttons = buttons
 
-    def create_body(self, master):
+    def create_body(self, master: tkinter.Misc) -> None:
         """Overrides the parent method; adds the message section."""
         container = ttk.Frame(master, padding=self._padding)
         if self._icon:
@@ -345,7 +347,7 @@ class MessageDialog(Dialog):
                 message_label.pack(pady=(0, 3), fill=X, anchor=N)
         container.pack(fill=X, expand=True)
 
-    def create_buttonbox(self, master):
+    def create_buttonbox(self, master: tkinter.Misc) -> None:
         """Overrides the parent method; adds the message buttonbox"""
         frame = ttk.Frame(master, padding=(5, 5))
 
@@ -387,10 +389,10 @@ class MessageDialog(Dialog):
         for index, btn in enumerate(button_list):
             if index > 0:
                 nbtn = button_list[index - 1]
-                btn.bind('<Right>', lambda _, b=nbtn:b.focus_set())
+                btn.bind('<Right>', lambda _, b=nbtn: b.focus_set())
             if index < len(button_list) - 1:
                 nbtn = button_list[index + 1]
-                btn.bind('<Left>', lambda _, b=nbtn:b.focus_set())
+                btn.bind('<Left>', lambda _, b=nbtn: b.focus_set())
 
         ttk.Separator(self._toplevel).pack(fill=X)
         frame.pack(side=BOTTOM, fill=X, anchor=S)
@@ -398,7 +400,7 @@ class MessageDialog(Dialog):
         if not self._initial_focus:
             self._initial_focus = button_list[0]
 
-    def on_button_press(self, button):
+    def on_button_press(self, button: str) -> None:
         """Save result, destroy the toplevel, and execute command."""
         self._result = button["text"]
         command = self._command
@@ -406,9 +408,9 @@ class MessageDialog(Dialog):
             command()
         self._toplevel.after_idle(self._toplevel.destroy)
 
-    def show(self, position=None):
+    def show(self, position: Optional[Tuple[int, int]] = None, wait_for_result: bool = True) -> None:
         """Create and display the popup messagebox."""
-        super().show(position)
+        super().show(position, wait_for_result=wait_for_result)
 
 
 class QueryDialog(Dialog):
@@ -421,18 +423,18 @@ class QueryDialog(Dialog):
     """
 
     def __init__(
-        self,
-        prompt,
-        title=" ",
-        initialvalue="",
-        minvalue=None,
-        maxvalue=None,
-        width=65,
-        datatype=str,
-        padding=(20, 20),
-        parent=None,
-        items=None,
-    ):
+            self,
+            prompt: str,
+            title: str = " ",
+            initialvalue: Any = "",
+            minvalue: Optional[Any] = None,
+            maxvalue: Optional[Any] = None,
+            width: int = 65,
+            datatype: Any = str,
+            padding: Union[int, Tuple[int, int]] = (20, 20),
+            parent: Optional[tkinter.Misc] = None,
+            items: Optional[List[str]] = None,
+    ) -> None:
         """
         Parameters:
 
@@ -488,7 +490,7 @@ class QueryDialog(Dialog):
         self._padding = padding
         self._result = None
 
-    def create_body(self, master):
+    def create_body(self, master: tkinter.Misc) -> None:
         """Overrides the parent method; adds the message and input
         section."""
         frame = ttk.Frame(master, padding=self._padding)
@@ -510,7 +512,7 @@ class QueryDialog(Dialog):
         frame.pack(fill=X, expand=True)
         self._initial_focus = entry
 
-    def create_buttonbox(self, master):
+    def create_buttonbox(self, master: tkinter.Misc) -> None:
         """Overrides the parent method; adds the message buttonbox"""
         frame = ttk.Frame(master, padding=(5, 10))
 
@@ -535,7 +537,7 @@ class QueryDialog(Dialog):
         ttk.Separator(self._toplevel).pack(fill=X)
         frame.pack(side=BOTTOM, fill=X, anchor=S)
 
-    def on_submit(self, *_):
+    def on_submit(self, *_: Any) -> None:
         """Save result, destroy the toplevel, and apply any post-hoc
         data manipulations."""
         self._result = self._initial_focus.get()
@@ -545,12 +547,12 @@ class QueryDialog(Dialog):
         self._toplevel.destroy()
         self.apply()
 
-    def on_cancel(self, *_):
+    def on_cancel(self, *_: Any) -> None:
         """Close the toplevel and return empty."""
         self._toplevel.destroy()
         return
 
-    def on_filter_list(self, event):
+    def on_filter_list(self, event: tkinter.Event) -> None:
         """Filter the combobox list to items that contain the entered value"""
         value = event.widget.get().lower()
         if not value:
@@ -559,7 +561,7 @@ class QueryDialog(Dialog):
             data = [k for k in self._items if value in k.lower()]
             event.widget["values"] = data
 
-    def validate(self):
+    def validate(self) -> bool:
         """Validate the data
 
         This method is called automatically to validate the data before
@@ -567,8 +569,8 @@ class QueryDialog(Dialog):
         """
         # no default checks required for string data types,
         # unless there is a list of items to pick from
-        if self._datatype not in [float, int, complex] and\
-            (self._items is None or len(self._items) == 0):
+        if self._datatype not in [float, int, complex] and \
+                (self._items is None or len(self._items) == 0):
             return True
 
         # convert result to appropriate data type
@@ -619,7 +621,7 @@ class QueryDialog(Dialog):
         # valid result
         return True
 
-    def apply(self):
+    def apply(self) -> None:
         """Process the data.
 
         This method is called automatically to process the data after
@@ -659,13 +661,13 @@ class DatePickerDialog:
     """
 
     def __init__(
-        self,
-        parent=None,
-        title=" ",
-        firstweekday=6,
-        startdate=None,
-        bootstyle=PRIMARY,
-    ):
+            self,
+            parent: Optional[tkinter.Misc] = None,
+            title: str = " ",
+            firstweekday: int = 6,
+            startdate: Optional[date] = None,
+            bootstyle: str = PRIMARY,
+    ) -> None:
         """
         Parameters:
 
@@ -721,7 +723,7 @@ class DatePickerDialog:
         self.root.grab_set()
         self.root.wait_window()
 
-    def _setup_calendar(self):
+    def _setup_calendar(self) -> None:
         """Setup the calendar widget"""
         # create the widget containers
         self.frm_calendar = ttk.Frame(
@@ -746,13 +748,13 @@ class DatePickerDialog:
         self.root.deiconify()
         self._set_window_position()
 
-    def _update_widget_bootstyle(self):
+    def _update_widget_bootstyle(self) -> None:
         self.frm_title.configure(bootstyle=self.bootstyle)
         self.title.configure(bootstyle=f"{self.bootstyle}-inverse")
         self.prev_period.configure(style=f"Chevron.{self.bootstyle}.TButton")
         self.next_period.configure(style=f"Chevron.{self.bootstyle}.TButton")
 
-    def _draw_calendar(self):
+    def _draw_calendar(self) -> None:
         self._update_widget_bootstyle()
         self._set_title()
         self._current_month_days()
@@ -772,11 +774,11 @@ class DatePickerDialog:
                     ).grid(row=row, column=col, sticky=NSEW)
                 else:
                     if all(
-                        [
-                            day == self.date_selected.day,
-                            self.date.month == self.date_selected.month,
-                            self.date.year == self.date_selected.year,
-                        ]
+                            [
+                                day == self.date_selected.day,
+                                self.date.month == self.date_selected.month,
+                                self.date.year == self.date_selected.year,
+                            ]
                     ):
                         day_style = "secondary-toolbutton"
                     else:
@@ -797,7 +799,7 @@ class DatePickerDialog:
                     )
                     btn.grid(row=row, column=col, sticky=NSEW)
 
-    def _draw_titlebar(self):
+    def _draw_titlebar(self) -> None:
         """Draw the calendar title bar which includes the month title
         and the buttons that increment and decrement the selected
         month.
@@ -843,11 +845,11 @@ class DatePickerDialog:
                 bootstyle=(SECONDARY, INVERSE),
             ).pack(side=LEFT, fill=X, expand=YES)
 
-    def _set_title(self):
+    def _set_title(self) -> None:
         _titledate = f'{self.date.strftime("%B %Y")}'
         self.titlevar.set(value=_titledate.capitalize())
 
-    def _current_month_days(self):
+    def _current_month_days(self) -> None:
         """Fetch the day numbers and dates for all days in the current
         month. `monthdays` is a list of days as integers, and
         `monthdates` is a list of `datetime` objects.
@@ -859,7 +861,7 @@ class DatePickerDialog:
             year=self.date.year, month=self.date.month
         )
 
-    def _header_columns(self):
+    def _header_columns(self) -> List[str]:
         """Create and return a list of weekdays to be used as a header
         in the calendar. The order of the weekdays is based on the
         `firstweekday` property.
@@ -878,10 +880,10 @@ class DatePickerDialog:
             MessageCatalog.translate("Sa"),
             MessageCatalog.translate("Su"),
         ]
-        header = weekdays[self.firstweekday :] + weekdays[: self.firstweekday]
+        header = weekdays[self.firstweekday:] + weekdays[: self.firstweekday]
         return header
 
-    def _on_date_selected(self, row, col):
+    def _on_date_selected(self, row: int, col: int) -> None:
         """Callback for selecting a date.
 
         An index is assigned to each date button that corresponds to
@@ -916,36 +918,36 @@ class DatePickerDialog:
         return inner
 
     @_selection_callback
-    def on_next_month(self):
+    def on_next_month(self) -> None:
         """Increment the calendar data to the next month"""
         year, month = self._nextmonth(self.date.year, self.date.month)
         self.date = datetime(year=year, month=month, day=1).date()
 
     @_selection_callback
-    def on_next_year(self, *_):
+    def on_next_year(self, *_: Any) -> None:
         """Increment the calendar data to the next year"""
         year = self.date.year + 1
         month = self.date.month
         self.date = datetime(year=year, month=month, day=1).date()
 
     @_selection_callback
-    def on_prev_month(self):
+    def on_prev_month(self) -> None:
         """Decrement the calendar to the previous year"""
         year, month = self._prevmonth(self.date.year, self.date.month)
         self.date = datetime(year=year, month=month, day=1).date()
 
     @_selection_callback
-    def on_prev_year(self, *_):
+    def on_prev_year(self, *_: Any) -> None:
         year = self.date.year - 1
         month = self.date.month
         self.date = datetime(year=year, month=month, day=1).date()
 
     @_selection_callback
-    def on_reset_date(self, *_):
+    def on_reset_date(self, *_: Any) -> None:
         """Set the calendar to the start date"""
         self.date = self.startdate
 
-    def _set_window_position(self):
+    def _set_window_position(self) -> None:
         """Move the window to the bottom-right of the parent widget, or
         the center of the master window if no parent is
         provided.
@@ -958,14 +960,14 @@ class DatePickerDialog:
             center_on_parent(self.root, self.parent)
 
     @staticmethod
-    def _nextmonth(year, month):
+    def _nextmonth(year: int, month: int) -> Tuple[int, int]:
         if month == 12:
             return year + 1, 1
         else:
             return year, month + 1
 
     @staticmethod
-    def _prevmonth(year, month):
+    def _prevmonth(year: int, month: int) -> Tuple[int, int]:
         if month == 1:
             return year - 1, 12
         else:
@@ -973,7 +975,6 @@ class DatePickerDialog:
 
 
 class FontDialog(Dialog):
-
     """A dialog that displays a variety of options for choosing a font.
 
     This dialog constructs and returns a `Font` object based on the
@@ -987,7 +988,9 @@ class FontDialog(Dialog):
     ![](../../assets/dialogs/querybox-get-font.png)
     """
 
-    def __init__(self, title="Font Selector", parent=None, default_font="TkDefaultFont"):
+    def __init__(
+            self, title: str = "Font Selector", parent: Optional[tkinter.Misc] = None,
+            default_font: str = "TkDefaultFont") -> None:
         title = MessageCatalog.translate(title)
         super().__init__(parent=parent, title=title)
         self._style = ttk.Style()
@@ -1014,7 +1017,7 @@ class FontDialog(Dialog):
             if all([f, not f.startswith("@"), "emoji" not in f.lower()]):
                 self._families.add(f)
 
-    def create_body(self, master):
+    def create_body(self, master: tkinter.Misc) -> None:
         width = utility.scale_size(master, 600)
         height = utility.scale_size(master, 500)
         self._toplevel.geometry(f"{width}x{height}")
@@ -1026,7 +1029,7 @@ class FontDialog(Dialog):
         self._font_options_selectors(master, padding=10)
         self._font_preview(master, padding=10)
 
-    def create_buttonbox(self, master):
+    def create_buttonbox(self, master: tkinter.Misc) -> None:
         container = ttk.Frame(master, padding=(5, 10))
         container.pack(fill=X)
 
@@ -1048,10 +1051,10 @@ class FontDialog(Dialog):
         cancel_btn.pack(side=RIGHT, padx=5)
         cancel_btn.bind("<Return>", lambda _: cancel_btn.invoke())
 
-        self._toplevel.bind("<Escape>", func=lambda _:cancel_btn.invoke())
+        self._toplevel.bind("<Escape>", func=lambda _: cancel_btn.invoke())
         self._toplevel.protocol("WM_DELETE_WINDOW", func=cancel_btn.invoke)
 
-    def _font_families_selector(self, master):
+    def _font_families_selector(self, master: tkinter.Misc) -> ttk.Treeview:
         container = ttk.Frame(master)
         container.pack(fill=BOTH, expand=YES, side=LEFT)
 
@@ -1092,7 +1095,7 @@ class FontDialog(Dialog):
         )
         return listbox
 
-    def _font_size_selector(self, master):
+    def _font_size_selector(self, master: tkinter.Misc) -> None:
         container = ttk.Frame(master)
         container.pack(side=LEFT, fill=Y, padx=(10, 0))
 
@@ -1127,7 +1130,7 @@ class FontDialog(Dialog):
         sizes_listbox.pack(side=LEFT, fill=Y, expand=YES, anchor=N)
         sizes_listbox_vbar.pack(side=LEFT, fill=Y, expand=YES)
 
-    def _font_options_selectors(self, master, padding: int):
+    def _font_options_selectors(self, master: tkinter.Misc, padding: int) -> None:
         container = ttk.Frame(master, padding=padding)
         container.pack(fill=X, padx=2, pady=2, anchor=N)
 
@@ -1188,7 +1191,7 @@ class FontDialog(Dialog):
         )
         opt_overstrike.pack(side=LEFT, padx=5, pady=5)
 
-    def _font_preview(self, master, padding: int):
+    def _font_preview(self, master: tkinter.Misc, padding: int) -> None:
         container = ttk.Frame(master, padding=padding)
         container.pack(fill=BOTH, expand=YES, anchor=N)
 
@@ -1212,13 +1215,13 @@ class FontDialog(Dialog):
         self._preview_text.pack(fill=BOTH, expand=YES)
         container.pack_propagate(False)
 
-    def _on_select_font_family(self, e):
+    def _on_select_font_family(self, e: tkinter.Event) -> None:
         tree: ttk.Treeview = self._toplevel.nametowidget(e.widget)
         fontfamily = tree.selection()[0]
         self._family.set(value=fontfamily)
         self._update_font_preview()
 
-    def _on_select_font_size(self, e):
+    def _on_select_font_size(self, e: tkinter.Event) -> None:
         tree: ttk.Treeview = self._toplevel.nametowidget(e.widget)
         fontsize = tree.selection()[0]
         self._size.set(value=fontsize)
@@ -1228,11 +1231,11 @@ class FontDialog(Dialog):
         self._toplevel.destroy()
         return self.result
 
-    def _on_cancel(self):
+    def _on_cancel(self) -> None:
         self._result = None
         self._toplevel.destroy()
 
-    def _update_font_preview(self, *_):
+    def _update_font_preview(self, *_: Any) -> None:
         family = self._family.get()
         size = self._size.get()
         slant = self._slant.get()
@@ -1261,7 +1264,9 @@ class Messagebox:
     and alert options."""
 
     @staticmethod
-    def show_info(message, title=" ", parent=None, alert=False, **kwargs):
+    def show_info(
+            message: str, title: str = " ", parent: Optional[tkinter.Misc] = None, alert: bool = False,
+            **kwargs: Any) -> None:
         """Display a modal dialog box with an OK button and an INFO
         icon.
 
@@ -1304,7 +1309,9 @@ class Messagebox:
         dialog.show(position)
 
     @staticmethod
-    def show_warning(message, title=" ", parent=None, alert=True, **kwargs):
+    def show_warning(
+            message: str, title: str = " ", parent: Optional[tkinter.Misc] = None, alert: bool = True,
+            **kwargs: Any) -> None:
         """Display a modal dialog box with an OK button and a
         warning icon. Also will ring the display bell.
 
@@ -1347,7 +1354,9 @@ class Messagebox:
         dialog.show(position)
 
     @staticmethod
-    def show_error(message, title=" ", parent=None, alert=True, **kwargs):
+    def show_error(
+            message: str, title: str = " ", parent: Optional[tkinter.Misc] = None, alert: bool = True,
+            **kwargs: Any) -> None:
         """Display a modal dialog box with an OK button and an
         error icon. Also will ring the display bell.
 
@@ -1391,13 +1400,13 @@ class Messagebox:
 
     @staticmethod
     def show_question(
-        message,
-        title=" ",
-        parent=None,
-        buttons=["No", "Yes"],
-        alert=True,
-        **kwargs,
-    ):
+            message: str,
+            title: str = " ",
+            parent: Optional[tkinter.Misc] = None,
+            buttons: List[str] = ["No", "Yes"],
+            alert: bool = True,
+            **kwargs: Any,
+    ) -> Optional[str]:
         """Display a modal dialog box with yes, no buttons and a
         question icon. Also will ring the display bell. You may also
         change the button scheme using the `buttons` parameter.
@@ -1458,7 +1467,9 @@ class Messagebox:
         return dialog.result
 
     @staticmethod
-    def ok(message, title=" ", alert=False, parent=None, **kwargs):
+    def ok(
+            message: str, title: str = " ", alert: bool = False, parent: Optional[tkinter.Misc] = None,
+            **kwargs: Any) -> None:
         """Display a modal dialog box with an OK button and and optional
         bell alert.
 
@@ -1500,7 +1511,9 @@ class Messagebox:
         dialog.show(position)
 
     @staticmethod
-    def okcancel(message, title=" ", alert=False, parent=None, **kwargs):
+    def okcancel(
+            message: str, title: str = " ", alert: bool = False, parent: Optional[tkinter.Misc] = None,
+            **kwargs: Any) -> Optional[str]:
         """Displays a modal dialog box with OK and Cancel buttons and
         return the symbolic name of the button pressed.
 
@@ -1548,7 +1561,9 @@ class Messagebox:
         return dialog.result
 
     @staticmethod
-    def yesno(message, title=" ", alert=False, parent=None, **kwargs):
+    def yesno(
+            message: str, title: str = " ", alert: bool = False, parent: Optional[tkinter.Misc] = None,
+            **kwargs: Any) -> Optional[str]:
         """Display a modal dialog box with YES and NO buttons and return
         the symbolic name of the button pressed.
 
@@ -1597,7 +1612,9 @@ class Messagebox:
         return dialog.result
 
     @staticmethod
-    def yesnocancel(message, title=" ", alert=False, parent=None, **kwargs):
+    def yesnocancel(
+            message: str, title: str = " ", alert: bool = False, parent: Optional[tkinter.Misc] = None,
+            **kwargs: Any) -> Optional[str]:
         """Display a modal dialog box with YES, NO, and Cancel buttons,
         and return the symbolic name of the button pressed.
 
@@ -1646,7 +1663,9 @@ class Messagebox:
         return dialog.result
 
     @staticmethod
-    def retrycancel(message, title=" ", alert=False, parent=None, **kwargs):
+    def retrycancel(
+            message: str, title: str = " ", alert: bool = False, parent: Optional[tkinter.Misc] = None,
+            **kwargs: Any) -> Optional[str]:
         """Display a modal dialog box with RETRY and Cancel buttons;
         returns the symbolic name of the button pressed.
 
@@ -1701,8 +1720,9 @@ class Querybox:
 
     @staticmethod
     def get_color(
-        parent=None, title="Color Chooser", initialcolor=None, **kwargs
-    ):
+            parent: Optional[tkinter.Misc] = None, title: str = "Color Chooser", initialcolor: Optional[str] = None,
+            **kwargs: Any
+    ) -> Any:
         """Show a color picker and return the select color when the
         user pressed OK.
 
@@ -1737,12 +1757,12 @@ class Querybox:
 
     @staticmethod
     def get_date(
-        parent=None,
-        title=" ",
-        firstweekday=6,
-        startdate=None,
-        bootstyle="primary",
-    ):
+            parent: Optional[tkinter.Misc] = None,
+            title: str = " ",
+            firstweekday: int = 6,
+            startdate: Optional[date] = None,
+            bootstyle: str = "primary",
+    ) -> date:
         """Shows a calendar popup and returns the selection.
 
         ![](../../assets/dialogs/querybox-get-date.png)
@@ -1785,8 +1805,9 @@ class Querybox:
 
     @staticmethod
     def get_string(
-        prompt="", title=" ", initialvalue=None, parent=None, **kwargs
-    ):
+            prompt: str = "", title: str = " ", initialvalue: Optional[str] = None,
+            parent: Optional[tkinter.Misc] = None, **kwargs: Any
+    ) -> Optional[str]:
         """Request a string type input from the user.
 
         ![](../../assets/dialogs/querybox-get-string.png)
@@ -1830,8 +1851,9 @@ class Querybox:
 
     @staticmethod
     def get_item(
-        prompt="", title=" ", initialvalue=None, items=None, parent=None, **kwargs
-    ):
+            prompt: str = "", title: str = " ", initialvalue: Optional[str] = None, items: Optional[List[str]] = None,
+            parent: Optional[tkinter.Misc] = None, **kwargs: Any
+    ) -> Optional[str]:
         """Request an item from a list of items from the user.
 
         ![](../../assets/dialogs/querybox-get-item.png)
@@ -1878,14 +1900,14 @@ class Querybox:
 
     @staticmethod
     def get_integer(
-        prompt="",
-        title=" ",
-        initialvalue=None,
-        minvalue=None,
-        maxvalue=None,
-        parent=None,
-        **kwargs,
-    ):
+            prompt="",
+            title=" ",
+            initialvalue: Optional[int] = None,
+            minvalue: Optional[int] = None,
+            maxvalue: Optional[int] = None,
+            parent: Optional[tkinter.Misc] = None,
+            **kwargs: Any,
+    ) -> Optional[int]:
         """Request an integer type input from the user.
 
         ![](../../assets/dialogs/querybox-get-integer.png)
@@ -1942,14 +1964,14 @@ class Querybox:
 
     @staticmethod
     def get_float(
-        prompt="",
-        title=" ",
-        initialvalue=None,
-        minvalue=None,
-        maxvalue=None,
-        parent=None,
-        **kwargs,
-    ):
+            prompt="",
+            title=" ",
+            initialvalue: Optional[float] = None,
+            minvalue: Optional[float] = None,
+            maxvalue: Optional[float] = None,
+            parent: Optional[tkinter.Misc] = None,
+            **kwargs: Any,
+    ) -> Optional[float]:
         """Request a float type input from the user.
 
         ![](../../assets/dialogs/querybox-get-float.png)
@@ -2005,7 +2027,7 @@ class Querybox:
         return dialog._result
 
     @staticmethod
-    def get_font(parent=None, **kwargs):
+    def get_font(parent: Optional[tkinter.Misc] = None, **kwargs: Any) -> Optional[font.Font]:
         """Request a customized font
 
         ![](../../assets/dialogs/querybox-get-font.png)
