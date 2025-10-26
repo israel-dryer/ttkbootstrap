@@ -26,16 +26,16 @@ Example:
     root.mainloop()
     ```
 """
-import tkinter as tk
 from datetime import date, datetime
-from tkinter import ttk
-from typing import Union
+from tkinter import Misc
+from typing import Any
 
-from ttkbootstrap.constants import END
+from ttkbootstrap import Button, Entry, Frame
+from ttkbootstrap.constants import END, LEFT, X, YES
 from ttkbootstrap.dialogs import Querybox
 
 
-class DateEntry(ttk.Frame):
+class DateEntry(Frame):
     """A date entry widget combines an Entry field and a Button for date selection.
 
     When the button is pressed, a calendar popup is displayed allowing the user
@@ -67,15 +67,15 @@ class DateEntry(ttk.Frame):
 
     def __init__(
             self,
-            master=None,
-            dateformat=r"%x",
-            firstweekday=6,
-            startdate=None,
-            bootstyle="",
+            master: Misc | None = None,
+            dateformat: str = r"%x",
+            firstweekday: int = 6,
+            startdate: datetime | date | None = None,
+            bootstyle: str = "",
             popup_title: str = 'Select new date',
             raise_exception: bool = False,
-            **kwargs,
-    ):
+            **kwargs: Any,
+    ) -> None:
         """
         Parameters:
 
@@ -112,7 +112,6 @@ class DateEntry(ttk.Frame):
                 Other keyword arguments passed to the frame containing the
                 entry and date button.
         """
-        from warnings import warn
 
         self.__enabled = True  # User/Programmer should NOT be able to change this, therefore double underscores
         self.__dateformat = self._validate_dateformat(
@@ -133,27 +132,27 @@ class DateEntry(ttk.Frame):
             entry_kwargs["width"] = kwargs.pop("width")
 
         # Build date Widget button (this shows the date in the wanted format)
-        self.entry = ttk.Entry(self, **entry_kwargs)
-        self.entry.pack(side=tk.LEFT, fill=tk.X, expand=tk.YES)
+        self.entry = Entry(self, **entry_kwargs)
+        self.entry.pack(side=LEFT, fill=X, expand=YES)
 
         # Build datepicker button & place it right to the date widget
-        self.button = ttk.Button(
+        self.button = Button(
             master=self,
             command=self._on_date_ask,
             bootstyle=f"{self._bootstyle}-date",
         )
-        self.button.pack(side=tk.LEFT)
+        self.button.pack(side=LEFT)
 
         # Initialize this widget
         self.set_date(self._startdate)
 
-    def __getitem__(self, key: str):
+    def __getitem__(self, key: str) -> Any:
         return self.configure(cnf=key)
 
-    def __setitem__(self, key: str, value):
+    def __setitem__(self, key: str, value: Any) -> None:
         self.configure(cnf=None, **{key: value})
 
-    def _configure_set(self, **kwargs):
+    def _configure_set(self, **kwargs: Any) -> None:
         """Override configure method to allow for setting custom DateEntry parameters.
 
         Handles special configuration options like 'state', 'dateformat', 'firstweekday',
@@ -183,9 +182,9 @@ class DateEntry(ttk.Frame):
             width = kwargs.pop("width")
             self.entry.configure(width=width)
 
-        super(ttk.Frame, self).configure(**kwargs)
+        super(Frame, self).configure(**kwargs)
 
-    def _configure_get(self, cnf):
+    def _configure_get(self, cnf: str) -> Any:
         """Override the configure get method.
 
         Returns configuration values for DateEntry-specific options.
@@ -203,9 +202,9 @@ class DateEntry(ttk.Frame):
         if cnf == "bootstyle":
             return self._bootstyle
         else:
-            return super(ttk.Frame, self).configure(cnf=cnf)
+            return super(Frame, self).configure(cnf=cnf)
 
-    def configure(self, cnf=None, **kwargs):
+    def configure(self, cnf: str | None = None, **kwargs: Any) -> Any:
         """Configure the options for this widget.
 
         Parameters:
@@ -294,14 +293,14 @@ class DateEntry(ttk.Frame):
             f'Given formatting string ("{dateformat}"), cannot be used to validate a given strings for dates or display a given datetime object as a date!')
 
     @staticmethod
-    def _clean_datetime(new_date: Union[datetime, date]) -> datetime:
+    def _clean_datetime(new_date: datetime | date) -> datetime:
         """Strip time components from a datetime object.
 
         Since this is a date picker, removes hours, minutes, seconds, and
         microseconds, keeping only the date components (year, month, day).
 
         Parameters:
-            new_date (Union[datetime, date]): The date or datetime to clean.
+            new_date (datetime | date): The date or datetime to clean.
 
         Returns:
             datetime: A datetime object with only date components (time set to 00:00:00).
@@ -311,7 +310,7 @@ class DateEntry(ttk.Frame):
         else:
             return datetime(new_date.year, new_date.month, new_date.day)
 
-    def set_date(self, new_date: Union[datetime, date]) -> None:
+    def set_date(self, new_date: datetime | date) -> None:
         """Set the currently selected date.
 
         Updates the entry field and internal state with the new date.
@@ -319,9 +318,8 @@ class DateEntry(ttk.Frame):
         and will be stripped from datetime objects.
 
         Parameters:
-            new_date (Union[datetime, date]): The new date to set.
+            new_date (datetime | date): The new date to set.
         """
-        from warnings import warn
 
         _date: datetime = self._clean_datetime(new_date)
         if self.__enabled:
@@ -332,7 +330,7 @@ class DateEntry(ttk.Frame):
             self.enable()
             self.configure(startdate=_date)
             self.entry.delete(first=0, last=END)
-            self.entry.insert(tk.END, new_date.strftime(self.__dateformat))
+            self.entry.insert(END, new_date.strftime(self.__dateformat))
             self.disable()
 
     def disable(self) -> None:
@@ -353,7 +351,7 @@ class DateEntry(ttk.Frame):
         self.entry.state(['!disabled'])
         self.button.state(['!disabled'])
 
-    def _on_date_ask(self):
+    def _on_date_ask(self) -> None:
         """Handle the calendar button click event.
 
         Opens the date selection popup and updates the entry field with the
