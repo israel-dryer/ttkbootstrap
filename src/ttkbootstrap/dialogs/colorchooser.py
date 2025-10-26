@@ -62,7 +62,7 @@ from ttkbootstrap.colorutils import HEX, HSL, HUE, LUM, RGB, SAT
 from ttkbootstrap.constants import *
 from .colordropper import ColorDropperDialog
 from ttkbootstrap.localization import MessageCatalog
-from ttkbootstrap.tooltip import ToolTip
+from ttkbootstrap.widgets.tooltip import ToolTip
 from ttkbootstrap.validation import add_range_validation, add_validation, validator
 
 STD_SHADES: List[float] = [0.9, 0.8, 0.7, 0.4, 0.3]
