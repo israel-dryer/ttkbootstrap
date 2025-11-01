@@ -123,7 +123,7 @@ Namespaces are one honking great idea -- let's do more of those!"""
 
     tv = ttk.Treeview(master=ttframe, columns=[0, 1], show=HEADINGS, height=5)
     for row in table_data:
-        tv.insert("", END, values=row)
+        tv.insert("", 'end', values=row)
 
     tv.selection_set("I001")
     tv.heading(0, text="City")
@@ -276,7 +276,6 @@ Namespaces are one honking great idea -- let's do more of those!"""
 
     cbo = ttk.Combobox(
         master=input_group,
-        text=style.theme.name,
         values=theme_names,
         exportselection=False,
     )

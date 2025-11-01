@@ -37,6 +37,53 @@ class MessageDialog(Dialog):
             icon: Optional[str] = None,
             **kwargs: Any,
     ) -> None:
+        """Create a message dialog.
+
+        Parameters:
+
+            message (str):
+                The message text to display. Supports multiline strings
+                (separated by \\n).
+
+            title (str):
+                The dialog window title (default=' ').
+
+            buttons (List[str]):
+                List of button labels. Each button can optionally specify
+                a bootstyle using "label:bootstyle" format (e.g., "OK:primary").
+                If None, defaults to ["Cancel", "OK"]. The buttons are
+                displayed in reverse order (rightmost first).
+
+            command (Callable):
+                Optional callback function to execute when a button is pressed.
+
+            width (int):
+                Maximum width in characters for text wrapping (default=50).
+
+            parent (Widget):
+                Parent widget. The dialog will be centered on this widget.
+
+            alert (bool):
+                If True, rings the system bell when the dialog is shown
+                (default=False).
+
+            default (str):
+                The button label to use as the default (receives primary
+                bootstyle and initial focus). If None, the rightmost button
+                becomes the default.
+
+            padding (int | tuple):
+                Padding around the message content. Can be a single int or
+                tuple (horizontal, vertical) (default=(20, 20)).
+
+            icon (str):
+                Optional icon to display. Can be image data, file path,
+                or Icon constant (e.g., Icon.info).
+
+            **kwargs (Dict):
+                Additional keyword arguments. Supports 'localize' (bool)
+                to enable message translation.
+        """
         super().__init__(parent, title, alert)
         self._message = message
         self._command: Optional[Tuple[Callable[..., Any], str]] = command

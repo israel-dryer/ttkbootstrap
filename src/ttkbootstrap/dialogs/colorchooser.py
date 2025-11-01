@@ -95,6 +95,32 @@ class ColorChooser(ttk.Frame):
     def __init__(
             self, master: Optional[tkinter.Misc], initialcolor: Optional[str] = None,
             padding: Optional[int] = None) -> None:
+        """Create a color chooser widget.
+
+        The color chooser provides multiple methods for selecting colors via
+        a tabbed interface:
+        - Advanced: Color spectrum with hue/saturation selection and luminance slider
+        - Themed: Swatches of theme colors and their shades
+        - Standard: Common standard colors and their shades
+
+        The widget includes RGB/HSL/Hex value inputs, live preview, and optional
+        color dropper (platform-dependent). Color values are accessible through
+        widget variables (hue, sat, lum, red, grn, blu, hex).
+
+        Parameters:
+
+            master (Widget):
+                Parent widget to contain the color chooser.
+
+            initialcolor (str):
+                Initial color to display. Can be any valid color string format
+                (e.g., '#FF0000', 'red', 'rgb(255,0,0)'). If None, uses the
+                theme's background color.
+
+            padding (int):
+                Padding around the entire color chooser widget. If None, uses
+                default padding.
+        """
         super().__init__(master, padding=padding)
         self.tframe = ttk.Frame(self, padding=5)
         self.tframe.pack(fill=X)
@@ -574,6 +600,36 @@ class ColorChooserDialog(Dialog):
     def __init__(
             self, parent: Optional[tkinter.Misc] = None, title: str = "Color Chooser",
             initialcolor: Optional[str] = None) -> None:
+        """Create a color chooser dialog.
+
+        The dialog displays a ColorChooser widget in a modal dialog with OK
+        and Cancel buttons. When OK is pressed, the result property returns a
+        ColorChoice namedtuple containing the selected color in multiple formats
+        (rgb, hsl, hex). The dialog also includes a color dropper tool for
+        selecting colors from the screen (Windows/Linux only).
+
+        Parameters:
+
+            parent (Widget):
+                Parent widget. The dialog will be modal and centered on this
+                widget.
+
+            title (str):
+                The dialog window title (default='Color Chooser', will be
+                localized).
+
+            initialcolor (str):
+                Initial color to display in the chooser. Can be any valid color
+                string format (e.g., '#FF0000', 'red', 'rgb(255,0,0)'). If None,
+                uses the theme's background color.
+
+        Returns:
+            The result property contains a ColorChoice namedtuple with fields:
+            - rgb: tuple (r, g, b) with values 0-255
+            - hsl: tuple (h, s, l) with h=0-360, s=0-100, l=0-100
+            - hex: string in format '#RRGGBB'
+            Returns None if the dialog was cancelled.
+        """
         title = MessageCatalog.translate(title)
         super().__init__(parent=parent, title=title)
         self.initialcolor = initialcolor

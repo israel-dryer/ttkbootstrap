@@ -30,6 +30,50 @@ class QueryDialog(Dialog):
             parent: Optional[tkinter.Misc] = None,
             items: Optional[List[str]] = None,
     ) -> None:
+        """Create a query dialog for collecting user input.
+
+        Parameters:
+
+            prompt (str):
+                The prompt text to display above the input field. Supports
+                multiline strings (separated by \\n).
+
+            title (str):
+                The dialog window title (default=' ').
+
+            initialvalue (Any):
+                The initial value to populate in the input field (default='').
+
+            minvalue (Any):
+                Minimum allowed value for numeric data types (int, float, complex).
+                Ignored for strings.
+
+            maxvalue (Any):
+                Maximum allowed value for numeric data types (int, float, complex).
+                Ignored for strings.
+
+            width (int):
+                Maximum width in characters for text wrapping of the prompt
+                (default=65).
+
+            datatype (type):
+                Expected data type for validation (str, int, float, complex).
+                When set to int, float, or complex, the input will be validated
+                and converted (default=str).
+
+            padding (int | tuple):
+                Padding around the dialog content. Can be a single int or
+                tuple (horizontal, vertical) (default=(20, 20)).
+
+            parent (Widget):
+                Parent widget. The dialog will be centered on this widget.
+
+            items (List[str]):
+                Optional list of items for dropdown selection. If provided,
+                shows a Combobox instead of Entry. The Combobox supports
+                filtering by typing. If items are provided, the input must
+                match one from the list.
+        """
         super().__init__(parent, title)
         self._prompt = prompt
         self._initialvalue = initialvalue

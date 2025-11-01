@@ -47,6 +47,41 @@ class DatePickerDialog:
             startdate: Optional[date] = None,
             bootstyle: str = PRIMARY,
     ) -> None:
+        """Create a date picker dialog with a calendar popup.
+
+        The dialog displays a calendar that allows the user to select a date.
+        The selected date can be accessed via the `date_selected` attribute
+        after the dialog is closed. The dialog is modal and grabs focus until
+        dismissed.
+
+        Parameters:
+
+            parent (Widget):
+                Parent widget. If provided, the dialog will be positioned
+                relative to it. Otherwise, it will be centered on screen.
+
+            title (str):
+                The dialog window title (default=' ').
+
+            firstweekday (int):
+                First day of the week (0=Monday, 6=Sunday). Adjust this for
+                different geographical conventions (default=6).
+
+            startdate (date):
+                Initial date to display in the calendar. If None, uses today's
+                date. The calendar will open to the month containing this date.
+
+            bootstyle (str):
+                The color theme for the calendar (primary, secondary, success,
+                info, warning, danger, light, dark) (default=PRIMARY).
+
+        Interaction:
+            - Left-click month arrows: Move calendar by one month
+            - Right-click month arrows: Move calendar by one year
+            - Right-click title: Reset to start date
+            - Click date: Select date and close dialog
+            - Click X button: Cancel selection and close dialog
+        """
         # Safe locale setup
         try:
             locale.setlocale(locale.LC_TIME, "")
