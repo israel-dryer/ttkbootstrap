@@ -26,6 +26,32 @@ class FontDialog(Dialog):
     def __init__(
             self, title: str = "Font Selector", parent: Optional[tkinter.Misc] = None,
             default_font: str = "TkDefaultFont") -> None:
+        """Create a font selection dialog.
+
+        The dialog provides a comprehensive interface for selecting and
+        previewing fonts, including family, size, weight, slant, and effects
+        (underline, overstrike). The selected font is returned as a
+        tkinter.font.Font object when OK is pressed.
+
+        Parameters:
+
+            title (str):
+                The dialog window title (default='Font Selector', will be
+                localized).
+
+            parent (Widget):
+                Parent widget. The dialog will be modal and centered on this
+                widget.
+
+            default_font (str):
+                Name of the initial font to display. Can be any valid tkinter
+                font name (e.g., 'TkDefaultFont', 'TkFixedFont', 'TkTextFont',
+                'TkHeadingFont', etc.) or a custom font name (default='TkDefaultFont').
+
+        Returns:
+            The result property contains a tkinter.font.Font object with the
+            selected settings, or None if the dialog was cancelled.
+        """
         title = MessageCatalog.translate(title)
         super().__init__(parent=parent, title=title)
         self._style = ttk.Style()
