@@ -184,7 +184,9 @@ class DatePickerDialog:
             ).pack(side=LEFT, fill=X, expand=YES)
 
     def _set_title(self) -> None:
-        _titledate = f"{self.date.strftime('%B %Y')}"
+        _titledate_month = MessageCatalog.translate(f'{self.date.strftime("%B")}')
+        _titledate_year = f'{self.date.strftime("%Y")}'
+        _titledate = f'{_titledate_month} {_titledate_year}'
         self.titlevar.set(value=_titledate.capitalize())
 
     def _current_month_days(self) -> None:
