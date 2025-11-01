@@ -46,7 +46,6 @@ Namespaces are one honking great idea -- let's do more of those!"""
     lbl = ttk.Label(theme_selection, text="Select a theme:")
     theme_cbo = ttk.Combobox(
         master=theme_selection,
-        text=style.theme.name,
         values=theme_names,
     )
     theme_cbo.pack(padx=10, side=RIGHT)
@@ -56,7 +55,7 @@ Namespaces are one honking great idea -- let's do more of those!"""
     ttk.Separator(root).pack(fill=X, pady=10, padx=10)
 
     def change_theme(e):
-        t = cbo.get()
+        t = theme_cbo.get()
         style.theme_use(t)
         theme_selected.configure(text=t)
         theme_cbo.selection_clear()
