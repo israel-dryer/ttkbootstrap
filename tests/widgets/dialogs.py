@@ -1,10 +1,11 @@
 from ttkbootstrap.dialogs import Messagebox, Querybox
 from ttkbootstrap.localization import MessageCatalog
 from ttkbootstrap.window import Window
+from ttkbootstrap.dialogs import FontDialog
 
 
 def run_test():
-    MessageCatalog.locale('zh_cn')
+    #MessageCatalog.locale('zh_cn')
     Messagebox.ok("Testing first item", parent=root)
     Messagebox.ok("Messagebox.ok")
 

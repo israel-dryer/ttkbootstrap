@@ -140,6 +140,12 @@ class Dialog(BaseWidget):
         # update the window before showing
         self._toplevel.update_idletasks()
 
+        # Explicitly set geometry to ensure proper sizing on all platforms
+        width = self._toplevel.winfo_reqwidth()
+        height = self._toplevel.winfo_reqheight()
+        if width > 0 and height > 0:
+            self._toplevel.geometry(f"{width}x{height}")        
+
     @property
     def result(self) -> Any:
         """Returns the result of the dialog."""
