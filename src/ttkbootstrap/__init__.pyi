@@ -27,6 +27,7 @@ from tkinter import (
 )
 from tkinter import ttk as _ttk
 
+from ttkbootstrap.appconfig import AppConfig
 from ttkbootstrap.style import Bootstyle, Style
 from ttkbootstrap.window import Toplevel, Window
 from ttkbootstrap.widgets import (
@@ -1422,6 +1423,7 @@ __all__ = [
     "OptionMenu",
 
     # ttkbootstrap
+    "AppConfig",
     "Bootstyle",
     "Style",
     "Toplevel",

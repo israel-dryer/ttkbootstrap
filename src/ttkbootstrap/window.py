@@ -47,6 +47,7 @@ import tkinter
 from typing import Any, Optional, Tuple, Union
 
 from ttkbootstrap import utility
+from ttkbootstrap.appconfig import AppConfig
 from ttkbootstrap.constants import *
 from ttkbootstrap.icons import Icon
 from ttkbootstrap.publisher import Publisher
@@ -272,6 +273,26 @@ class Window(tkinter.Tk):
                 Any other keyword arguments that are passed through to tkinter.Tk() constructor
                 List of available keywords available at: https://docs.python.org/3/library/tkinter.html#tkinter.Tk
         """
+        # Apply AppConfig defaults for any parameters not explicitly provided
+        if themename == "litera" and AppConfig.has("theme"):
+            themename = AppConfig.get("theme")
+        if size is None and AppConfig.has("window_size"):
+            size = AppConfig.get("window_size")
+        if position is None and AppConfig.has("window_position"):
+            position = AppConfig.get("window_position")
+        if minsize is None and AppConfig.has("window_minsize"):
+            minsize = AppConfig.get("window_minsize")
+        if maxsize is None and AppConfig.has("window_maxsize"):
+            maxsize = AppConfig.get("window_maxsize")
+        if resizable is None and AppConfig.has("window_resizable"):
+            resizable = AppConfig.get("window_resizable")
+        if not hdpi and AppConfig.has("window_hdpi"):
+            hdpi = AppConfig.get("window_hdpi")
+        if scaling is None and AppConfig.has("window_scaling"):
+            scaling = AppConfig.get("window_scaling")
+        if alpha == 1.0 and AppConfig.has("window_alpha"):
+            alpha = AppConfig.get("window_alpha")
+
         if hdpi:
             utility.enable_high_dpi_awareness()
 
@@ -469,6 +490,20 @@ class Toplevel(tkinter.Toplevel):
             **kwargs (Dict):
                 Other optional keyword arguments.
         """
+        # Apply AppConfig defaults for any parameters not explicitly provided
+        if size is None and AppConfig.has("window_size"):
+            size = AppConfig.get("window_size")
+        if position is None and AppConfig.has("window_position"):
+            position = AppConfig.get("window_position")
+        if minsize is None and AppConfig.has("window_minsize"):
+            minsize = AppConfig.get("window_minsize")
+        if maxsize is None and AppConfig.has("window_maxsize"):
+            maxsize = AppConfig.get("window_maxsize")
+        if resizable is None and AppConfig.has("window_resizable"):
+            resizable = AppConfig.get("window_resizable")
+        if alpha == 1.0 and AppConfig.has("window_alpha"):
+            alpha = AppConfig.get("window_alpha")
+
         if 'iconify' in kwargs:
             iconify = kwargs.pop('iconify')
         else:
