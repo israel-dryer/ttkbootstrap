@@ -45,6 +45,7 @@ Canvas = _tkCanvas
 TkFrame = _tkFrame  # Exported as TkFrame to avoid conflict with ttk.Frame
 
 from ttkbootstrap import widgets as _widgets
+from ttkbootstrap.appconfig import AppConfig
 from ttkbootstrap.style import Bootstyle, Style
 from ttkbootstrap.widgets import DateEntry, Floodgauge, FloodgaugeLegacy, LabeledScale, M, Meter
 from ttkbootstrap.window import Toplevel, Window
@@ -761,6 +762,7 @@ __all__ = [
     Treeview, OptionMenu,
 
     # TTkBootstrap exports
+    AppConfig,
     Bootstyle,
     Style,
     Toplevel,
