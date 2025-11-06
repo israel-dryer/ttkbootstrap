@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "ttkbootstrap"
-version = "1.18.1"
+version = "2.0.0a1"
 description = "A supercharged theme extension for tkinter that enables on-demand modern flat style themes inspired by Bootstrap."
 readme = "README.md"
 requires-python = ">=3.9"
@@ -29,7 +29,7 @@ keywords = [
     "python-gui"
 ]
 classifiers = [
-    "Development Status :: 5 - Production/Stable",
+    "Development Status :: 3 - Alpha",
     "Environment :: Win32 (MS Windows)",
     "Environment :: X11 Applications :: GTK",
     "Intended Audience :: Developers",
