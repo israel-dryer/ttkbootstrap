@@ -80,9 +80,9 @@ class AppConfig:
     _app_author: Optional[str] = None
 
     # Theme & Styling defaults
-    _light_theme: Optional[str] = "bootstrap_light"
-    _dark_theme: Optional[str] = "bootstrap_dark"
-    _load_all_themes: Optional[bool] = True
+    _light_theme: Optional[str] = "bootstrap-light"
+    _dark_theme: Optional[str] = "bootstrap-dark"
+    _load_all_themes: Optional[bool] = False
     _theme: Optional[str] = None
     _font: Optional[Tuple[str, int]] = None
     _legacy_bootstyle: Optional[bool] = None
