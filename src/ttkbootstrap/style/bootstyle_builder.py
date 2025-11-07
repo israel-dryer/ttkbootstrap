@@ -1,12 +1,12 @@
 from __future__ import annotations
 
 import threading
+from typing import Callable, Dict, Optional
 
 from typing_extensions import Any, ParamSpec, Protocol, TypeVar
 
 from ttkbootstrap.exceptions import BootstyleBuilderError
 from ttkbootstrap.style.element import Element, ElementImage
-from ttkbootstrap.style.style import Style
 from ttkbootstrap.style.theme_provider import ThemeProvider
 from ttkbootstrap.style.utility import best_foreground, darken_color, lighten_color, mix_colors, relative_luminance
 
@@ -20,46 +20,268 @@ F = TypeVar("F", bound=BuilderCallable)
 P = ParamSpec("P")
 R = TypeVar("R")
 
+# Widget name mappings (common name <-> TTK class name)
+WIDGET_CLASS_MAP = {
+    'button': 'TButton',
+    'label': 'TLabel',
+    'entry': 'TEntry',
+    'frame': 'TFrame',
+    'labelframe': 'TLabelframe',
+    'progressbar': 'TProgressbar',
+    'scale': 'TScale',
+    'scrollbar': 'TScrollbar',
+    'checkbutton': 'TCheckbutton',
+    'radiobutton': 'TRadiobutton',
+    'combobox': 'TCombobox',
+    'notebook': 'TNotebook',
+    'treeview': 'Treeview',
+    'separator': 'TSeparator',
+    'sizegrip': 'TSizegrip',
+    'panedwindow': 'TPanedwindow',
+    'spinbox': 'TSpinbox',
+    'menubutton': 'TMenubutton',
+}
+
+WIDGET_NAME_MAP = {v: k for k, v in WIDGET_CLASS_MAP.items()}
+
+# Default variant name used when no variant is specified
+# Builders should register under both their specific name AND 'default'
+# Example:
+#   @BootstyleBuilder.register_builder('solid', 'TButton')
+#   @BootstyleBuilder.register_builder('default', 'TButton')
+#   def build_button_solid(builder, ttk_style, **options):
+#       ...
+DEFAULT_VARIANT = 'default'
+
 
 class BootstyleBuilder:
-    _builder_registry = {}
+    """Builder manager with widget-specific style builder registry.
+
+    This class manages registration and invocation of style builder functions.
+    Builders are registered per-widget-class and variant.
+
+    Registry structure:
+        {
+            'TButton': {
+                'solid': builder_func,
+                'outline': builder_func,
+                ...
+            },
+            'TLabel': {
+                'solid': builder_func,
+                'inverse': builder_func,
+                ...
+            }
+        }
+    """
+
+    # Widget-specific builder registry: {widget_class: {variant: builder_func}}
+    _builder_registry: Dict[str, Dict[str, Callable]] = {}
     _builder_lock = threading.Lock()
 
-    def __init__(self):
-        self._provider = ThemeProvider()
-        self._style = Style()
+    def __init__(
+            self, theme_provider: Optional[ThemeProvider] = None,
+            style_instance: Optional[Any] = None):
+        """Initialize the BootstyleBuilder.
+
+        Args:
+            theme_provider: Optional ThemeProvider instance (creates one if None)
+            style_instance: Optional Style instance (set later to avoid circular import)
+        """
+        self._provider = theme_provider or ThemeProvider()
+        self._style = style_instance  # May be None initially
+
+    def set_style_instance(self, style_instance: Any):
+        """Set the Style instance (avoids circular import in __init__).
+
+        Args:
+            style_instance: Style instance to use for configuration
+        """
+        self._style = style_instance
 
     @property
     def provider(self):
+        """Get the ThemeProvider instance.
+
+        Returns:
+            ThemeProvider instance
+        """
         return self._provider
 
     @property
     def style(self):
+        """Get the Style instance.
+
+        Returns:
+            Style instance
+        """
         return self._style
 
     @property
     def colors(self):
+        """Get colors from the current theme.
+
+        Returns:
+            Colors dictionary from ThemeProvider
+        """
         return self.provider.colors
 
     @classmethod
-    def register_builder(cls, name: str):
-        if not isinstance(name, str) or not name:
-            raise BootstyleBuilderError("`name` must be a non-empty string")
+    def register_builder(cls, variant: str, widget_class: str):
+        """Register a builder for a specific widget variant.
+
+        Args:
+            variant: Variant name (e.g., 'solid', 'outline', 'link')
+            widget_class: TTK widget class (e.g., 'TButton', 'TLabel')
+
+        Returns:
+            Decorator function
+
+        Raises:
+            BootstyleBuilderError: If variant or widget_class invalid
+
+        Example:
+            >>> @BootstyleBuilder.register_builder('outline', 'TButton')
+            ... def build_button_outline(builder, ttk_style, **options):
+            ...     # Builder implementation
+            ...     pass
+        """
+        if not isinstance(variant, str) or not variant:
+            raise BootstyleBuilderError("`variant` must be a non-empty string")
+
+        if not isinstance(widget_class, str) or not widget_class:
+            raise BootstyleBuilderError("`widget_class` must be a non-empty string")
 
         def deco(func: F) -> F:
             with cls._builder_lock:
-                if not name in cls._builder_registry:
-                    cls._builder_registry[name] = func
+                if widget_class not in cls._builder_registry:
+                    cls._builder_registry[widget_class] = {}
+
+                if variant not in cls._builder_registry[widget_class]:
+                    cls._builder_registry[widget_class][variant] = func
+                else:
+                    # Warn about overwriting?
+                    cls._builder_registry[widget_class][variant] = func
+
             return func
 
         return deco
 
-    def call_builder(self, name: str, ttk_style: str, **options):
+    def call_builder(self, widget_class: str, variant: str, ttk_style: str, **options):
+        """Call a registered builder for a specific widget variant.
+
+        Args:
+            widget_class: TTK widget class (e.g., 'TButton')
+            variant: Variant name (e.g., 'outline')
+            ttk_style: Full TTK style name
+            **options: Custom style options
+
+        Raises:
+            BootstyleBuilderError: If builder not found
+        """
         with BootstyleBuilder._builder_lock:
-            if name in BootstyleBuilder._builder_registry:
-                BootstyleBuilder._builder_registry[name](self, ttk_style, **options)
-            else:
-                raise BootstyleBuilderError(f"{name} is not a known style builder")
+            widget_registry = BootstyleBuilder._builder_registry.get(widget_class)
+
+            if not widget_registry:
+                raise BootstyleBuilderError(
+                    f"No builders registered for widget class '{widget_class}'"
+                )
+
+            builder_func = widget_registry.get(variant)
+
+            if not builder_func:
+                available = ', '.join(widget_registry.keys())
+                raise BootstyleBuilderError(
+                    f"Builder '{variant}' not found for widget class '{widget_class}'. "
+                    f"Available variants: {available}"
+                )
+
+            # Call the builder
+            builder_func(self, ttk_style, **options)
+
+    @classmethod
+    def get_widget_class(cls, widget_name: str) -> str:
+        """Convert widget common name to TTK class name.
+
+        Args:
+            widget_name: Common widget name (e.g., 'button')
+
+        Returns:
+            TTK class name (e.g., 'TButton')
+
+        Raises:
+            ValueError: If widget name not recognized
+        """
+        if widget_name not in WIDGET_CLASS_MAP:
+            raise ValueError(
+                f"Unknown widget name: '{widget_name}'. "
+                f"Known names: {', '.join(WIDGET_CLASS_MAP.keys())}"
+            )
+        return WIDGET_CLASS_MAP[widget_name]
+
+    @classmethod
+    def get_widget_name(cls, widget_class: str) -> str:
+        """Convert TTK class name to common widget name.
+
+        Args:
+            widget_class: TTK class name (e.g., 'TButton')
+
+        Returns:
+            Common widget name (e.g., 'button')
+
+        Raises:
+            ValueError: If widget class not recognized
+        """
+        if widget_class not in WIDGET_NAME_MAP:
+            raise ValueError(
+                f"Unknown widget class: '{widget_class}'. "
+                f"Known classes: {', '.join(WIDGET_NAME_MAP.keys())}"
+            )
+        return WIDGET_NAME_MAP[widget_class]
+
+    @classmethod
+    def get_default_variant(cls, widget_class: str = None) -> str:
+        """Get the default variant name.
+
+        The default variant is 'default'. Builders should register under
+        both their specific variant name and 'default' to be used as the
+        default for their widget class.
+
+        Args:
+            widget_class: TTK widget class (unused, kept for compatibility)
+
+        Returns:
+            Default variant name ('default')
+
+        Example:
+            >>> @BootstyleBuilder.register_builder('solid', 'TButton')
+            >>> @BootstyleBuilder.register_builder('default', 'TButton')
+            >>> def build_button_solid(builder, ttk_style, **options):
+            ...     pass
+        """
+        return DEFAULT_VARIANT
+
+    @classmethod
+    def get_registered_builders(cls, widget_class: str) -> list:
+        """Get list of registered builders for a widget class.
+
+        Args:
+            widget_class: TTK widget class
+
+        Returns:
+            List of variant names
+        """
+        registry = cls._builder_registry.get(widget_class, {})
+        return list(registry.keys())
+
+    @classmethod
+    def get_all_registered_widgets(cls) -> list:
+        """Get list of all widget classes with registered builders.
+
+        Returns:
+            List of TTK widget class names
+        """
+        return list(cls._builder_registry.keys())
 
     def map_style(self, ttk_style: str, **options):
         self.style.map(ttk_style, **options)

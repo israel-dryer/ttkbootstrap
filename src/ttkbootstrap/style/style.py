@@ -37,11 +37,16 @@ class Style(ttkStyle):
         """
         super().__init__(master)
 
-        # Builder manager - stateless, calls registered builder functions
-        self._builder_manager = BootstyleBuilder()
-
         # Theme provider - manages themes and colors
         self._theme_provider = ThemeProvider(theme)
+
+        # Builder manager - stateless, calls registered builder functions
+        # Pass theme_provider and set style instance to avoid circular import
+        self._builder_manager = BootstyleBuilder(
+            theme_provider=self._theme_provider,
+            style_instance=None  # Set below after creation
+        )
+        self._builder_manager.set_style_instance(self)
 
         # Style registries
         self._style_registry: Set[str] = set()
@@ -166,21 +171,24 @@ class Style(ttkStyle):
         if options:
             self._style_options[ttkstyle] = options
 
-    def create_style(self, ttkstyle: str, builder_name: str, options: Optional[dict] = None):
+    def create_style(self, widget_class: str, variant: str, ttkstyle: str,
+                    options: Optional[dict] = None):
         """Create a new style if it doesn't exist in current theme.
 
         Args:
-            ttkstyle: Full TTK style name (e.g., "success.TButton")
-            builder_name: Builder function name (e.g., "button")
+            widget_class: TTK widget class (e.g., "TButton")
+            variant: Variant name (e.g., "outline")
+            ttkstyle: Full TTK style name (e.g., "success.Outline.TButton")
             options: Optional custom style options
         """
         # Check if already exists in this theme
         if self.style_exists_in_theme(ttkstyle):
             return  # Already created for this theme
 
-        # Call builder by name
+        # Call builder with widget class and variant
         self._builder_manager.call_builder(
-            name=builder_name,
+            widget_class=widget_class,
+            variant=variant,
             ttk_style=ttkstyle,
             **(options or {})
         )
@@ -215,17 +223,19 @@ class Style(ttkStyle):
             # Get stored options if any
             options = self._style_options.get(ttkstyle, {})
 
-            # Parse style name to get builder name
-            builder_name = self._parse_builder_name(ttkstyle)
-
-            # Skip if we can't determine builder
-            if not builder_name:
+            # Parse style name to get widget class and variant
+            parsed = self._parse_style_name(ttkstyle)
+            if not parsed:
                 continue
+
+            widget_class = parsed['widget_class']
+            variant = parsed['variant']
 
             # Call builder (it will use current theme from provider)
             try:
                 self._builder_manager.call_builder(
-                    name=builder_name,
+                    widget_class=widget_class,
+                    variant=variant,
                     ttk_style=ttkstyle,
                     **options
                 )
@@ -239,29 +249,26 @@ class Style(ttkStyle):
                 # Builder doesn't exist or failed - log but continue
                 print(f"Warning: Failed to rebuild style '{ttkstyle}': {e}")
 
-    def _parse_builder_name(self, ttkstyle: str) -> Optional[str]:
-        """Parse TTK style name to extract builder name.
+    def _parse_style_name(self, ttkstyle: str) -> Optional[dict]:
+        """Parse TTK style name to extract widget class and variant.
 
         Args:
             ttkstyle: Full TTK style name
 
         Returns:
-            Builder name (e.g., "button", "button_outline") or None
+            Dict with 'widget_class' and 'variant', or None
 
         Examples:
-            >>> _parse_builder_name("success.TButton")
-            "button"
-            >>> _parse_builder_name("custom_abc.danger.Outline.TButton")
-            "button_outline"
-            >>> _parse_builder_name("striped.Horizontal.TProgressbar")
-            "progressbar_striped"
+            >>> _parse_style_name("success.TButton")
+            {'widget_class': 'TButton', 'variant': 'solid'}
+            >>> _parse_style_name("custom_abc.danger.Outline.TButton")
+            {'widget_class': 'TButton', 'variant': 'outline'}
+            >>> _parse_style_name("info.Striped.TProgressbar")
+            {'widget_class': 'TProgressbar', 'variant': 'striped'}
         """
         # Color tokens to exclude
         COLORS = {'primary', 'secondary', 'success', 'info', 'warning',
                   'danger', 'light', 'dark'}
-
-        # Orientation tokens
-        ORIENTATIONS = {'horizontal', 'vertical'}
 
         # Split into parts
         parts = ttkstyle.split('.')
@@ -283,23 +290,26 @@ class Style(ttkStyle):
         if not widget_class:
             return None
 
-        # Extract base widget name (e.g., "TButton" → "button")
-        widget_base = widget_class[1:].lower()
-
-        # Extract type/variant tokens (e.g., "Outline", "Link", "striped")
+        # Extract variant tokens (exclude colors and widget class)
         variants = []
         for part in parts:
             part_lower = part.lower()
             if (part_lower not in COLORS and
-                part_lower not in ORIENTATIONS and
                 not part.startswith('T')):
                 variants.append(part_lower)
 
-        # Build builder name
+        # Determine variant
         if variants:
-            variant_str = '_'.join(variants)
-            return f"{widget_base}_{variant_str}"
-        return widget_base
+            # Use first variant found (they're typically single, like "outline")
+            variant = variants[0]
+        else:
+            # Use default variant for this widget
+            variant = BootstyleBuilder.get_default_variant(widget_class)
+
+        return {
+            'widget_class': widget_class,
+            'variant': variant
+        }
 
     def get_builder_manager(self) -> BootstyleBuilder:
         """Get the builder manager instance.
