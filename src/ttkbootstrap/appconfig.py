@@ -45,9 +45,11 @@ class AppConfig:
             app_author (str): Application author/organization name.
 
         Theme & Styling:
+            light_theme (str): The default light theme; bound to "light" theme name.
+            dark_theme (str): The default dark theme; bound to "dark" theme name.
             theme (str): Default theme name (e.g., "darkly", "cosmo", "flatly").
+            load_all_themes (bool): Whether to load all themes or just dark and light.
             font (Tuple[str, int]): Default application font as (family, size).
-            colors (Dict[str, str]): Custom color overrides.
             legacy_bootstyle (bool): Use legacy bootstyle parsing behavior.
                 When True, uses relaxed parsing for backward compatibility.
                 When False (default), uses strict parsing. Default is False.
@@ -78,9 +80,11 @@ class AppConfig:
     _app_author: Optional[str] = None
 
     # Theme & Styling defaults
+    _light_theme: Optional[str] = "bootstrap_light"
+    _dark_theme: Optional[str] = "bootstrap_dark"
+    _load_all_themes: Optional[bool] = True
     _theme: Optional[str] = None
     _font: Optional[Tuple[str, int]] = None
-    _colors: Dict[str, str] = {}
     _legacy_bootstyle: Optional[bool] = None
 
     # Window defaults
@@ -115,8 +119,10 @@ class AppConfig:
                 app_name (str): Application name
                 app_author (str): Application author
                 theme (str): Default theme name
+                dark_theme (str): Default dark theme. Bound to "dark" theme name.
+                light_theme (str): Default light theme. Bound to "light" theme name.
+                load_all_themes (bool): Whether to load all themes, or just `dark` and `light`
                 font (Tuple[str, int]): Default font as (family, size)
-                colors (Dict[str, str]): Custom color overrides
                 legacy_bootstyle (bool): Use legacy bootstyle parsing
                 window_size (Tuple[int, int]): Default window size
                 window_position (Tuple[int, int]): Default window position
@@ -135,6 +141,8 @@ class AppConfig:
 
         Examples:
             >>> AppConfig.set(
+            ...     default_dark="darkly",
+            ...     default_light="flatly",
             ...     theme="darkly",
             ...     font=("Arial", 11),
             ...     window_size=(1024, 768),
@@ -146,7 +154,7 @@ class AppConfig:
         """
         valid_keys = {
             'app_name', 'app_author',
-            'theme', 'font', 'colors', 'legacy_bootstyle',
+            'theme', 'font', 'dark_theme', 'light_theme', 'load_all_themes', 'legacy_bootstyle',
             'window_size', 'window_position', 'window_minsize', 'window_maxsize',
             'window_resizable', 'window_scaling', 'window_hdpi', 'window_alpha',
             'icons',
