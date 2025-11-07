@@ -82,6 +82,7 @@ def enable_high_dpi_awareness(root=None, scaling=None):
     except:
         pass
 
+
 def get_image_name(image):
     """Extract and return the tcl/tk image name from a PhotoImage 
     object.
@@ -97,6 +98,7 @@ def get_image_name(image):
             The tcl/tk name of the photoimage object.
     """
     return image._PhotoImage__photo.name
+
 
 def scale_size(widget, size):
     """Scale the size based on the scaling factor of tkinter. 
@@ -128,9 +130,9 @@ def scale_size(widget, size):
 
 def center_on_parent(win, parent=None):
     """Center `win` on parent or over its master if not given"""
-    win.update_idletasks() # ensure geometry
+    win.update_idletasks()  # ensure geometry
     if parent is None:
-        parent = getattr(win, 'master', None) or win # root if no parent
+        parent = getattr(win, 'master', None) or win  # root if no parent
 
     # parent geometry
     parent.update_idletasks()
@@ -147,3 +149,17 @@ def center_on_parent(win, parent=None):
     x = px + (pw - ww) // 2
     y = py + (ph - wh) // 2
     win.geometry(f"{ww}x{wh}+{x}+{y}")
+
+
+def clamp(value, min_val, max_val):
+    """Return a value that is bounded by a minimum and maximum.
+
+    Args:
+        value: The value to evaluate.
+        min_val: The minimum allowed value.
+        max_val: The maximum allowed value.
+
+    Returns:
+        The value, constrained between `min_val` and `max_val`.
+    """
+    return min(max(value, min_val), max_val)
