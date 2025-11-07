@@ -215,7 +215,7 @@ class Colors:
     @staticmethod
     def make_transparent(alpha, foreground, background='#ffffff'):
         """Simulate color transparency.
-        
+
         Parameters:
 
             alpha (float):
@@ -230,8 +230,8 @@ class Colors:
         Returns:
 
             str:
-                A hexadecimal color representing the "transparent" 
-                version of the foreground color against the background 
+                A hexadecimal color representing the "transparent"
+                version of the foreground color against the background
                 color.
         """
         fg = ImageColor.getrgb(foreground)
@@ -4446,15 +4446,15 @@ class StyleBuilderTTK:
                 font_offset = 10
             except:
                 try:
-                    # this should be available as a backup on Linux 
+                    # this should be available as a backup on Linux
                     # distros that don't have the FreeSerif.ttf file
                     fnt = ImageFont.truetype("DejaVuSans.ttf", 160)
                     font_offset = -15
                 except:
                     # If all else fails, use the default ImageFont
-                    # this won't actually show anything in practice 
-                    # because of how I'm scaling the image, but it 
-                    # will prevent the program from crashing. I need 
+                    # this won't actually show anything in practice
+                    # because of how I'm scaling the image, but it
+                    # will prevent the program from crashing. I need
                     # a better solution for a missing font
                     fnt = ImageFont.load_default()
                     font_offset = 0
@@ -4954,7 +4954,7 @@ class Keywords:
     This class is internal to the styling system and not intended to be
     instantiated.
     """
-    
+
     COLORS = [
         "primary",
         "secondary",
@@ -5033,6 +5033,7 @@ class Bootstyle:
     Typical end users will not call these methods directly; they are used
     internally by the Style engine and by widget constructor overrides.
     """
+
     @staticmethod
     def ttkstyle_widget_class(widget=None, string=""):
         """Find and return the widget class
@@ -5280,7 +5281,7 @@ class Bootstyle:
                 bootstyle = ""
 
             if "style" in kwargs:
-                style = kwargs.pop("style") or ""
+                style = kwargs.pop("bs_style") or ""
             else:
                 style = ""
 
@@ -5336,7 +5337,7 @@ class Bootstyle:
                 bootstyle = ""
 
             if "style" in kwargs:
-                style = kwargs.get("style")
+                style = kwargs.get("bs_style")
                 ttkstyle = Bootstyle.update_ttk_widget_style(
                     self, style, **kwargs
                 )
