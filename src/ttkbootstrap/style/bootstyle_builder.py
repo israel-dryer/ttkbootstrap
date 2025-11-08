@@ -255,8 +255,8 @@ class BootstyleBuilder:
 
         Example:
             >>> @BootstyleBuilder.register_builder('solid', 'TButton')
-            >>> @BootstyleBuilder.register_builder('default', 'TButton')
-            >>> def build_button_solid(builder, ttk_style, **options):
+            ... @BootstyleBuilder.register_builder('default', 'TButton')
+            ... def build_button_solid(builder, ttk_style, **options):
             ...     pass
         """
         return DEFAULT_VARIANT
