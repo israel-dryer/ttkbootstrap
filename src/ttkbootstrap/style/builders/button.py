@@ -27,6 +27,8 @@ def build_button_solid(builder: BootstyleBuilder, ttk_style: str,
     """
     # Use the color passed directly from parsing (default to 'primary' if None)
     colorname = color or 'primary'
+    surface_token = options.get('surface_color', 'background')
+    surface = builder.color(surface_token)
 
     # Get theme colors
     background = builder.color(colorname)
@@ -34,8 +36,8 @@ def build_button_solid(builder: BootstyleBuilder, ttk_style: str,
 
     # Calculate state colors
     bordercolor = background
-    disabled_bg = builder.disabled('background')
-    disabled_fg = builder.disabled('text')
+    disabled_bg = builder.disabled('background', surface=surface)
+    disabled_fg = builder.disabled('text', surface=surface)
     pressed = builder.active(background)
     hover = builder.hover(background)
 
@@ -97,7 +99,7 @@ def build_button_outline(builder: BootstyleBuilder, ttk_style: str,
     """
     # Use the color passed directly from parsing (default to 'primary' if None)
     colorname = color or 'primary'
-    surface_token = options.get('surface_color')
+    surface_token = options.get('surface_color', 'background')
     background = builder.color(surface_token)
 
 
@@ -107,7 +109,7 @@ def build_button_outline(builder: BootstyleBuilder, ttk_style: str,
 
     # Calculate state colors
     bordercolor = foreground
-    disabled_fg = builder.disabled('text')
+    disabled_fg = builder.disabled('text', surface=background)
     pressed = foreground
     hover = foreground
 
@@ -187,8 +189,9 @@ def build_button_link(builder: BootstyleBuilder, ttk_style: str,
     # Link buttons typically use info color for hover
     pressed = builder.color('info')
     hover = builder.color('info')
-    disabled_fg = builder.disabled('text')
-    bg_color = builder.color('background')
+    surface_token = options.get('surface_color', 'background')
+    bg_color = builder.color(surface_token)
+    disabled_fg = builder.disabled('text', surface=bg_color)
 
     # Configure base style
     builder.configure_style(

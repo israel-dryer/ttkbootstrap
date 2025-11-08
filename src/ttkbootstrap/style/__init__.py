@@ -5334,11 +5334,9 @@ class Bootstyle:
                         self.configure(style=ttkstyle)
                     # else: No builder exists - leave widget unstyled to make gaps visible
 
-                except (ImportError, Exception) as e:
-                    # New system not available or failed - leave unstyled
-                    import traceback
-                    print(f"[DEBUG] Integration error for {widget_class} with bootstyle='{bootstyle}': {e}")
-                    traceback.print_exc()
+                except (ImportError, Exception):
+                    # New system not available or failed - leave unstyled silently
+                    pass
             else:
                 # No bootstyle provided: apply default variant if builder exists
                 try:
@@ -5394,18 +5392,17 @@ class Bootstyle:
             else:
                 bootstyle = ""
 
-            # get the parent's surface color... figure out how to pass this to the child in opts
+            # Attempt to determine parent surface color silently
             surface = None
             try:
                 parent_style = self.master.cget('style')
-                print("Parent style", parent_style)
-                surface = ttk.Style().configure(parent_style, "background")
-                print("Parent surface", surface)
+                if parent_style:
+                    surface = ttk.Style().configure(parent_style, "background")
             except Exception:
-                print("No parent")
+                pass
 
             if "style" in kwargs:
-                style = kwargs.get("bs_style")
+                style = kwargs.get("style")
                 ttkstyle = Bootstyle.update_ttk_widget_style(
                     self, style, surface=surface, **kwargs
                 )

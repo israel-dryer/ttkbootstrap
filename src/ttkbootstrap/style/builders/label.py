@@ -6,6 +6,7 @@ from ttkbootstrap.style.bootstyle_builder import BootstyleBuilder
 @BootstyleBuilder.register_builder('default', 'TLabel')
 def build_label(builder: BootstyleBuilder, ttk_style: str, color: str = None, **options):
     foreground = builder.color(color or "foreground")
-    background = builder.color("background")
+    surface_token = options.get('surface_color', 'background')
+    background = builder.color(surface_token)
 
     builder.configure_style(ttk_style, background=background, foreground=foreground)

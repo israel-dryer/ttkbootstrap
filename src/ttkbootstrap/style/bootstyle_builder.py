@@ -443,8 +443,15 @@ class BootstyleBuilder:
         foreground = self.color('foreground')
         return best_foreground(color, [color, background, foreground])
 
-    def disabled(self, role="background"):
-        surface = self.color('background')
+    def disabled(self, role="background", surface: str = None):
+        """Return a disabled color mixed with the surface.
+
+        Args:
+            role: 'background' for surfaces, 'text' for foregrounds.
+            surface: Optional surface color to mix against. If omitted,
+                     uses the theme background.
+        """
+        surface = surface or self.color('background')
 
         if role == "text":
             if self.provider.mode == "light":
