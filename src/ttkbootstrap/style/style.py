@@ -58,11 +58,21 @@ class Style(ttkStyle):
         self._style_options: Dict[str, dict] = {}
         """Custom options per style: {style_name: {option: value, ...}}"""
 
+        self._style_colors: Dict[str, Optional[str]] = {}
+        """Color per style: {style_name: color}"""
+
         # Current theme tracking
         self._current_theme: Optional[str] = theme
 
-        # Apply base TTK theme
-        super().theme_use('clam')
+        # Apply a base TTK theme - needed for TTK widgets to function
+        # We use 'default' or 'clam' as the base, then layer our styles on top
+        try:
+            super().theme_use('default')
+        except:
+            try:
+                super().theme_use('clam')
+            except:
+                pass  # No base theme available, continue anyway
 
     @classmethod
     def get_instance(cls, master=None) -> Style:
@@ -172,36 +182,43 @@ class Style(ttkStyle):
             self._style_options[ttkstyle] = options
 
     def create_style(self, widget_class: str, variant: str, ttkstyle: str,
-                    options: Optional[dict] = None):
+                    color: Optional[str] = None, options: Optional[dict] = None):
         """Create a new style if it doesn't exist in current theme.
 
         Args:
             widget_class: TTK widget class (e.g., "TButton")
             variant: Variant name (e.g., "outline")
             ttkstyle: Full TTK style name (e.g., "success.Outline.TButton")
+            color: Optional color token (e.g., "success", "#FF5733", "blue[100]")
             options: Optional custom style options
         """
         # Check if already exists in this theme
         if self.style_exists_in_theme(ttkstyle):
             return  # Already created for this theme
 
-        # Call builder with widget class and variant
+        # Call builder with widget class, variant, and parsed color
         self._builder_manager.call_builder(
             widget_class=widget_class,
             variant=variant,
             ttk_style=ttkstyle,
+            color=color,
             **(options or {})
         )
+
+        # Store the color so we can rebuild with the same color
+        self._style_colors[ttkstyle] = color
 
         # Register it
         self.register_style(ttkstyle, options)
 
-    def theme_use(self, themename: str):
+    def theme_use(self, themename: str = None):
         """Switch to a different theme and rebuild all styles.
 
         Args:
             themename: Theme name to switch to
         """
+        if themename is None:
+            return super().theme_use()
         # Tell ThemeProvider to switch
         self._theme_provider.use(themename)
         self._current_theme = themename
@@ -220,8 +237,9 @@ class Style(ttkStyle):
         custom options.
         """
         for ttkstyle in self._style_registry:
-            # Get stored options if any
+            # Get stored options and color
             options = self._style_options.get(ttkstyle, {})
+            color = self._style_colors.get(ttkstyle)
 
             # Parse style name to get widget class and variant
             parsed = self._parse_style_name(ttkstyle)
@@ -237,6 +255,7 @@ class Style(ttkStyle):
                     widget_class=widget_class,
                     variant=variant,
                     ttk_style=ttkstyle,
+                    color=color,  # Pass the stored color
                     **options
                 )
 
@@ -290,13 +309,21 @@ class Style(ttkStyle):
         if not widget_class:
             return None
 
-        # Extract variant tokens (exclude colors and widget class)
+        # Extract variant tokens (exclude colors, color patterns, and widget class)
         variants = []
         for part in parts:
             part_lower = part.lower()
-            if (part_lower not in COLORS and
-                not part.startswith('T')):
-                variants.append(part_lower)
+            # Skip if it's a standard color
+            if part_lower in COLORS:
+                continue
+            # Skip if it's the widget class
+            if part.startswith('T'):
+                continue
+            # Skip if it looks like a color pattern (spectrum or hex)
+            if '[' in part or '#' in part:
+                continue
+            # Otherwise it's a variant token
+            variants.append(part_lower)
 
         # Determine variant
         if variants:

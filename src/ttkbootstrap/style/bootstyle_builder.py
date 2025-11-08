@@ -78,6 +78,7 @@ class BootstyleBuilder:
     # Widget-specific builder registry: {widget_class: {variant: builder_func}}
     _builder_registry: Dict[str, Dict[str, Callable]] = {}
     _builder_lock = threading.Lock()
+    _builders_loaded = False  # Track if builders have been auto-imported
 
     def __init__(
             self, theme_provider: Optional[ThemeProvider] = None,
@@ -167,18 +168,23 @@ class BootstyleBuilder:
 
         return deco
 
-    def call_builder(self, widget_class: str, variant: str, ttk_style: str, **options):
+    def call_builder(self, widget_class: str, variant: str, ttk_style: str,
+                     color: Optional[str] = None, **options):
         """Call a registered builder for a specific widget variant.
 
         Args:
             widget_class: TTK widget class (e.g., 'TButton')
             variant: Variant name (e.g., 'outline')
             ttk_style: Full TTK style name
+            color: Optional color token (passed directly to builder)
             **options: Custom style options
 
         Raises:
             BootstyleBuilderError: If builder not found
         """
+        # Ensure builders are loaded before accessing registry
+        BootstyleBuilder._ensure_builders_loaded()
+
         with BootstyleBuilder._builder_lock:
             widget_registry = BootstyleBuilder._builder_registry.get(widget_class)
 
@@ -196,8 +202,9 @@ class BootstyleBuilder:
                     f"Available variants: {available}"
                 )
 
-            # Call the builder
-            builder_func(self, ttk_style, **options)
+            # Pass parsed color directly to builder
+            # No need to pass variant - the builder itself is variant-specific
+            builder_func(self, ttk_style, color=color, **options)
 
     @classmethod
     def get_widget_class(cls, widget_name: str) -> str:
@@ -271,6 +278,7 @@ class BootstyleBuilder:
         Returns:
             List of variant names
         """
+        cls._ensure_builders_loaded()
         registry = cls._builder_registry.get(widget_class, {})
         return list(registry.keys())
 
@@ -281,7 +289,54 @@ class BootstyleBuilder:
         Returns:
             List of TTK widget class names
         """
+        cls._ensure_builders_loaded()
         return list(cls._builder_registry.keys())
+
+    @classmethod
+    def _ensure_builders_loaded(cls):
+        """Ensure builders module is loaded (lazy import).
+
+        This is called automatically when registry is accessed to ensure
+        all builder functions are registered before use.
+        """
+        # Fast path - no lock needed if already loaded
+        if cls._builders_loaded:
+            return
+
+        # Use a simple flag to prevent multiple imports
+        # We check WITHOUT holding the lock to avoid deadlock
+        if not cls._builders_loaded:
+            try:
+                # Import builders module WITHOUT holding the lock
+                # This allows the builders to register themselves (which needs the lock)
+                import ttkbootstrap.style.builders  # noqa: F401
+                cls._builders_loaded = True
+            except ImportError:
+                # Builders module doesn't exist yet, that's ok
+                cls._builders_loaded = True  # Set to avoid retrying
+            except Exception:
+                # Unexpected error, but set flag to avoid infinite retries
+                cls._builders_loaded = True
+
+    @classmethod
+    def has_builder(cls, widget_class: str, variant: str) -> bool:
+        """Check if a builder exists for widget class and variant.
+
+        Args:
+            widget_class: TTK widget class (e.g., 'TButton')
+            variant: Variant name (e.g., 'solid', 'outline')
+
+        Returns:
+            True if builder exists, False otherwise
+
+        Example:
+            >>> BootstyleBuilder.has_builder('TButton', 'solid')
+            True
+            >>> BootstyleBuilder.has_builder('TButton', 'nonexistent')
+            False
+        """
+        cls._ensure_builders_loaded()
+        return variant in cls._builder_registry.get(widget_class, {})
 
     def map_style(self, ttk_style: str, **options):
         self.style.map(ttk_style, **options)

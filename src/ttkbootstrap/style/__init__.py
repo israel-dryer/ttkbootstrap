@@ -5280,10 +5280,13 @@ class Bootstyle:
             else:
                 bootstyle = ""
 
-            if "style" in kwargs:
+            if "bs_style" in kwargs:
                 style = kwargs.pop("bs_style") or ""
             else:
                 style = ""
+
+            # Capture style_options for new builder system
+            style_options = kwargs.pop("style_options", None)
 
             # instantiate the widget
             func(self, *args, **kwargs)
@@ -5291,24 +5294,79 @@ class Bootstyle:
             # must be called AFTER instantiation in order to use winfo_class
             #    in the `get_ttkstyle_name` method
 
-            if style:
-                if Style.get_instance().style_exists_in_theme(style):
-                    self.configure(style=style)
-                else:
-                    ttkstyle = Bootstyle.update_ttk_widget_style(
-                        self, style, **kwargs
-                    )
-                    self.configure(style=ttkstyle)
-            elif bootstyle:
-                ttkstyle = Bootstyle.update_ttk_widget_style(
-                    self, bootstyle, **kwargs
-                )
-                self.configure(style=ttkstyle)
+            # Try new builder system
+            # If no builder exists, widget will remain unstyled (making gaps visible)
+            widget_class = self.winfo_class()
+
+            if bootstyle or style:
+                try:
+                    from ttkbootstrap.style.bootstyle import parse_bootstyle, generate_ttk_style_name
+                    from ttkbootstrap.style.bootstyle_builder import BootstyleBuilder
+                    from ttkbootstrap.style.style import Style as NewStyle
+
+                    # Parse the bootstyle string
+                    parsed = parse_bootstyle(bootstyle or style, widget_class)
+
+                    # Check if we have a builder for this variant
+                    variant = parsed['variant'] or BootstyleBuilder.get_default_variant(widget_class)
+
+                    if BootstyleBuilder.has_builder(widget_class, variant):
+                        # Use NEW builder system
+                        ttkstyle = generate_ttk_style_name(
+                            color=parsed['color'],
+                            variant=parsed['variant'],
+                            widget_class=widget_class
+                        )
+
+                        style_instance = NewStyle.get_instance()
+                        if style_instance is None:
+                            # Style not initialized yet, skip for now
+                            return
+
+                        style_instance.create_style(
+                            widget_class=widget_class,
+                            variant=variant,
+                            ttkstyle=ttkstyle,
+                            color=parsed['color'],
+                            options=style_options
+                        )
+
+                        self.configure(style=ttkstyle)
+                    # else: No builder exists - leave widget unstyled to make gaps visible
+
+                except (ImportError, Exception) as e:
+                    # New system not available or failed - leave unstyled
+                    import traceback
+                    print(f"[DEBUG] Integration error for {widget_class} with bootstyle='{bootstyle}': {e}")
+                    traceback.print_exc()
             else:
-                ttkstyle = Bootstyle.update_ttk_widget_style(
-                    self, "default", **kwargs
-                )
-                self.configure(style=ttkstyle)
+                # No bootstyle provided: apply default variant if builder exists
+                try:
+                    from ttkbootstrap.style.bootstyle_builder import BootstyleBuilder
+                    from ttkbootstrap.style.bootstyle import generate_ttk_style_name
+                    from ttkbootstrap.style.style import Style as NewStyle
+
+                    default_variant = BootstyleBuilder.get_default_variant(widget_class)
+                    if BootstyleBuilder.has_builder(widget_class, default_variant):
+                        ttkstyle = generate_ttk_style_name(
+                            color=None,
+                            variant=default_variant,  # 'default' -> 'Default' token in style name
+                            widget_class=widget_class
+                        )
+
+                        style_instance = NewStyle.get_instance()
+                        if style_instance is not None:
+                            style_instance.create_style(
+                                widget_class=widget_class,
+                                variant=default_variant,
+                                ttkstyle=ttkstyle,
+                                options=style_options
+                            )
+                            self.configure(style=ttkstyle)
+                        # If style not initialized yet, skip silently; it will apply once Style exists
+                except (ImportError, Exception):
+                    # If anything fails here, leave unstyled rather than crashing
+                    pass
 
         return __init__
 
@@ -5336,14 +5394,24 @@ class Bootstyle:
             else:
                 bootstyle = ""
 
+            # get the parent's surface color... figure out how to pass this to the child in opts
+            surface = None
+            try:
+                parent_style = self.master.cget('style')
+                print("Parent style", parent_style)
+                surface = ttk.Style().configure(parent_style, "background")
+                print("Parent surface", surface)
+            except Exception:
+                print("No parent")
+
             if "style" in kwargs:
                 style = kwargs.get("bs_style")
                 ttkstyle = Bootstyle.update_ttk_widget_style(
-                    self, style, **kwargs
+                    self, style, surface=surface, **kwargs
                 )
             elif bootstyle:
                 ttkstyle = Bootstyle.update_ttk_widget_style(
-                    self, bootstyle, **kwargs
+                    self, bootstyle, surface=surface, **kwargs
                 )
                 kwargs.update(style=ttkstyle)
 

@@ -1,0 +1,11 @@
+from __future__ import annotations
+
+from ttkbootstrap.style.bootstyle_builder import BootstyleBuilder
+
+
+@BootstyleBuilder.register_builder('default', 'TLabel')
+def build_label(builder: BootstyleBuilder, ttk_style: str, color: str = None, **options):
+    foreground = builder.color(color or "foreground")
+    background = builder.color("background")
+
+    builder.configure_style(ttk_style, background=background, foreground=foreground)
