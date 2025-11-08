@@ -86,6 +86,7 @@ class AppConfig:
     _theme: Optional[str] = None
     _font: Optional[Tuple[str, int]] = None
     _legacy_bootstyle: Optional[bool] = None
+    _inherit_surface_color: Optional[bool] = True
 
     # Window defaults
     _window_size: Optional[Tuple[int, int]] = None
@@ -124,6 +125,7 @@ class AppConfig:
                 load_all_themes (bool): Whether to load all themes, or just `dark` and `light`
                 font (Tuple[str, int]): Default font as (family, size)
                 legacy_bootstyle (bool): Use legacy bootstyle parsing
+                inherit_surface_color (bool): Use the parent widget's background color to simulate transparency.
                 window_size (Tuple[int, int]): Default window size
                 window_position (Tuple[int, int]): Default window position
                 window_minsize (Tuple[int, int]): Minimum window size
@@ -141,8 +143,8 @@ class AppConfig:
 
         Examples:
             >>> AppConfig.set(
-            ...     default_dark="darkly",
-            ...     default_light="flatly",
+            ...     dark_theme="darkly",
+            ...     light_theme="flatly",
             ...     theme="darkly",
             ...     font=("Arial", 11),
             ...     window_size=(1024, 768),
@@ -155,6 +157,7 @@ class AppConfig:
         valid_keys = {
             'app_name', 'app_author',
             'theme', 'font', 'dark_theme', 'light_theme', 'load_all_themes', 'legacy_bootstyle',
+            'inherit_surface_color',
             'window_size', 'window_position', 'window_minsize', 'window_maxsize',
             'window_resizable', 'window_scaling', 'window_hdpi', 'window_alpha',
             'icons',
@@ -183,7 +186,7 @@ class AppConfig:
             The configuration value, or default if not set.
 
         Examples:
-            >>> theme = AppConfig.get("theme", "cosmo")
+            >>> theme = AppConfig.get("theme", "dark")
             >>> window_size = AppConfig.get("window_size")
 
         Raises:
@@ -209,9 +212,9 @@ class AppConfig:
 
         Examples:
             >>> AppConfig.reset()  # Start fresh
-            >>> AppConfig.set(theme="darkly", font=("Arial", 11), window_size=(1024, 768))
+            >>> AppConfig.set(theme="bootstrap-dark", font=("Arial", 11), window_size=(1024, 768))
             >>> config = AppConfig.get_all()
-            >>> config == {'theme': 'darkly', 'font': ('Arial', 11), 'window_size': (1024, 768)}
+            >>> config == {'theme': 'bootstrap-dark', 'font': ('Arial', 11), 'window_size': (1024, 768)}
             True
             >>> AppConfig.reset()  # Clean up
         """
@@ -251,6 +254,7 @@ class AppConfig:
             cls._theme = None
             cls._font = None
             cls._colors = {}
+            cls._inherit_surface_color = None
             cls._legacy_bootstyle = None
             cls._window_size = None
             cls._window_position = None

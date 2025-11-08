@@ -97,10 +97,12 @@ def build_button_outline(builder: BootstyleBuilder, ttk_style: str,
     """
     # Use the color passed directly from parsing (default to 'primary' if None)
     colorname = color or 'primary'
+    surface_token = options.get('surface_color')
+    background = builder.color(surface_token)
+
 
     # Get theme colors
     foreground = builder.color(colorname)
-    background = builder.on_color(foreground)
     foreground_pressed = background
 
     # Calculate state colors
@@ -113,10 +115,10 @@ def build_button_outline(builder: BootstyleBuilder, ttk_style: str,
     builder.configure_style(
         ttk_style,
         foreground=foreground,
-        background=builder.color('background'),
+        background=background,
         bordercolor=bordercolor,
-        darkcolor=builder.color('background'),
-        lightcolor=builder.color('background'),
+        darkcolor=background,
+        lightcolor=background,
         relief='raised',
         focusthickness=1,
         focuscolor=foreground,
