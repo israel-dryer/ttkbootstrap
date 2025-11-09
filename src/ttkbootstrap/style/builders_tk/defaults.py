@@ -193,7 +193,7 @@ def build_tk_menubutton(builder: BootstyleBuilderTk, widget: Any, **options: Any
     )
 
 
-@BootstyleBuilderTk.register_builder('LabelFrame')
+@BootstyleBuilderTk.register_builder('Labelframe')
 def build_tk_labelframe(builder: BootstyleBuilderTk, widget: Any, **options: Any) -> None:
     bg = builder.color(options.get('surface_color', 'background'))
     fg = builder.on_color(bg)
