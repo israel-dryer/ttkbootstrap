@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import weakref
 from tkinter.ttk import Style as ttkStyle
 from typing import Dict, Set, Optional
 
@@ -63,6 +64,9 @@ class Style(ttkStyle):
 
         # Current theme tracking
         self._current_theme: Optional[str] = theme
+
+        # Track legacy Tk widgets for theme-change restyling
+        self._tk_widgets = weakref.WeakSet()
 
         # Apply a base TTK theme - needed for TTK widgets to function
         # We use 'default' or 'clam' as the base, then layer our styles on top
@@ -225,6 +229,8 @@ class Style(ttkStyle):
 
         # Rebuild all existing styles with new theme
         self._rebuild_all_styles()
+        # Re-apply Tk widget styling (legacy widgets)
+        self._rebuild_all_tk_widgets()
 
         # TODO: Publish theme change event
         # Publisher.publish_message(Channel.STD)
@@ -267,6 +273,29 @@ class Style(ttkStyle):
             except Exception as e:
                 # Builder doesn't exist or failed - log but continue
                 print(f"Warning: Failed to rebuild style '{ttkstyle}': {e}")
+
+    def register_tk_widget(self, widget) -> None:
+        """Register a Tk widget to be restyled on theme changes."""
+        try:
+            self._tk_widgets.add(widget)
+        except Exception:
+            pass
+
+    def _rebuild_all_tk_widgets(self) -> None:
+        """Restyle all registered Tk widgets on theme change."""
+        try:
+            from ttkbootstrap.style.bootstyle_builder_tk import BootstyleBuilderTk
+        except Exception:
+            return
+
+        builder_tk = BootstyleBuilderTk(style_instance=self)
+        for widget in list(self._tk_widgets):
+            try:
+                surface = getattr(widget, '_surface_color', 'background')
+                builder_tk.call_builder(widget, surface_color=surface)
+            except Exception:
+                # Skip widgets that may have been destroyed or incompatible
+                continue
 
     def _parse_style_name(self, ttkstyle: str) -> Optional[dict]:
         """Parse TTK style name to extract widget class and variant.

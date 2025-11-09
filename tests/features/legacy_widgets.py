@@ -1,25 +1,28 @@
 import tkinter as tk
+from this import s as ZEN
+
 import ttkbootstrap as ttk
 from ttkbootstrap.constants import *
-from this import s as ZEN
 
 app = ttk.Window("Legacy Widgets")
 
 
 def change_theme():
     themename = app.getvar("themename")
-    app.style.theme_use(themename)
+    style = ttk.Style.get_instance()
+    style.theme_use(themename)
+    print("changing theme")
 
 
 frame = tk.Frame(app, padx=10, pady=10)
 frame.pack(fill=BOTH, expand=YES)
 
-themes = app.style.theme_names()
+themes = ['light', 'dark']
 
 headerframe = tk.Frame(frame)
 headerframe.pack(fill=X)
 
-themename = tk.Variable(name="themename", value="litera")
+themename = tk.Variable(name="themename", value="light")
 header = tk.Label(headerframe, textvariable=themename, font="-size 24")
 header.pack(side=LEFT, fill=X)
 
@@ -82,8 +85,8 @@ lb = tk.Listbox(textframe, height=8)
 lb.pack(side=LEFT, fill=X, padx=(5, 0))
 [lb.insert(END, c) for c in app.style.colors]
 
-# scrollbar
-sb = ttk.Scrollbar(lf, orient=HORIZONTAL)
+# scrollbar (appears to be native drawn on Windows & macOS)
+sb = tk.Scrollbar(lf, orient=HORIZONTAL)
 sb.pack(fill=X, expand=YES)
 sb.set(0.05, 0.95)
 
