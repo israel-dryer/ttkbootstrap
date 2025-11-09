@@ -88,12 +88,12 @@ class Style(ttkStyle):
         self._tk_widgets = weakref.WeakSet()
 
         # Apply a base TTK theme - needed for TTK widgets to function
-        # We use 'default' or 'clam' as the base, then layer our styles on top
+        # Prefer 'clam' as the base, then layer our styles on top
         try:
-            super().theme_use('default')
+            super().theme_use('clam')
         except:
             try:
-                super().theme_use('clam')
+                super().theme_use('default')
             except:
                 pass  # No base theme available, continue anyway
 
