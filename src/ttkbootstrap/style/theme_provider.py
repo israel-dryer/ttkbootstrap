@@ -138,7 +138,6 @@ class ThemeProvider:
     def use(self, name):
         self._theme = get_theme(name)
         self.build_theme_colors()
-        self.update_theme_styles()
 
     @property
     def raw(self):
