@@ -9,38 +9,7 @@ from __future__ import annotations
 from typing import Optional
 
 from ttkbootstrap.appconfig import AppConfig
-
-# Standard ttkbootstrap color tokens
-COLORS = {
-    'primary', 'secondary', 'success', 'info',
-    'warning', 'danger', 'light', 'dark'
-}
-
-# Widget class name mappings
-WIDGET_CLASS_MAP = {
-    'button': 'TButton',
-    'label': 'TLabel',
-    'entry': 'TEntry',
-    'frame': 'TFrame',
-    'labelframe': 'TLabelframe',
-    'progressbar': 'TProgressbar',
-    'scale': 'TScale',
-    'scrollbar': 'TScrollbar',
-    'checkbutton': 'TCheckbutton',
-    'radiobutton': 'TRadiobutton',
-    'combobox': 'TCombobox',
-    'notebook': 'TNotebook',
-    'treeview': 'Treeview',
-    'separator': 'TSeparator',
-    'sizegrip': 'TSizegrip',
-    'panedwindow': 'TPanedwindow',
-    'spinbox': 'TSpinbox',
-    'menubutton': 'TMenubutton',
-}
-
-WIDGET_NAME_MAP = {v: k for k, v in WIDGET_CLASS_MAP.items()}
-
-FRAME_SURFACE_CLASSES = {'TFrame', 'TLabelframe'}
+from ttkbootstrap.style.token_maps import COLORS, FRAME_SURFACE_CLASSES, WIDGET_CLASS_MAP
 
 
 def parse_bootstyle_v2(bootstyle: str, widget_class: str) -> dict:
@@ -253,99 +222,82 @@ class Bootstyle:
         """Override ttk widget __init__ to accept bootstyle parameter."""
 
         def __init__wrapper(self, *args, **kwargs):
+
+            # extract bootstyle & style arguments
             had_style_kwarg = 'style' in kwargs
-
             bootstyle = kwargs.pop("bootstyle", "")
-            bs_style = kwargs.pop("bs_style", "")
             style_options = kwargs.pop("style_options", None)
-            inherit_flag_arg = kwargs.pop('inherit_surface_color', None)
-            explicit_surface_arg = kwargs.pop('surface_color', None)
+            inherit_surface_color = kwargs.pop('inherit_surface_color', None)
+            surface_color_token = kwargs.pop('surface_color', None)
 
-            func(self, *args, **kwargs)
+            func(self, *args, **kwargs)  # the actual widget constructor
 
-            try:
-                widget_class = self.winfo_class()
-            except Exception:
-                widget_class = None
+            widget_class = self.winfo_class()
+            style_str = bootstyle
 
-            try:
-                style_str = bootstyle or bs_style
+            # ===== Surface color inheritance =====
 
-                if hasattr(self, 'master') and self.master is not None:
-                    parent_surface = getattr(self.master, '_surface_color', 'background')
-                else:
-                    parent_surface = 'background'
+            if hasattr(self, 'master') and self.master is not None:
+                parent_surface_token = getattr(self.master, '_surface_color', 'background')
+            else:
+                parent_surface_token = 'background'
 
-                inherit_flag = inherit_flag_arg
-                if inherit_flag is None:
-                    inherit_flag = AppConfig.get('inherit_surface_color', True)
+            if inherit_surface_color is None:
+                inherit_surface_color = AppConfig.get('inherit_surface_color', True)
 
-                explicit_surface = explicit_surface_arg
-                if explicit_surface:
-                    effective_surface = explicit_surface
-                elif inherit_flag:
-                    effective_surface = parent_surface
-                else:
-                    effective_surface = 'background'
+            if surface_color_token:
+                effective_surface_token = surface_color_token
+            elif inherit_surface_color:
+                effective_surface_token = parent_surface_token
+            else:
+                effective_surface_token = 'background'
 
-                if style_str and widget_class in FRAME_SURFACE_CLASSES and explicit_surface is None:
-                    try:
-                        parsed = parse_bootstyle(style_str, widget_class)
-                        if parsed.get('color'):
-                            effective_surface = parsed['color']
-                    except Exception:
-                        pass
+            # frame widgets can take their surface color from the bootstyle
+            if style_str and widget_class in FRAME_SURFACE_CLASSES and surface_color_token is None:
+                parsed = parse_bootstyle(style_str, widget_class)
+                if parsed.get('color'):
+                    effective_surface_token = parsed['color']
 
-                try:
-                    setattr(self, '_surface_color', effective_surface)
-                except Exception:
-                    from ttkbootstrap.utility import debug_log_exception
-                    debug_log_exception("autostyle: reading background color from Style failed")
-                if style_str and widget_class:
-                    ttkstyle = Bootstyle.create_ttk_style(
+            setattr(self, '_surface_color', effective_surface_token)
+
+            # ==== Create actual ttk style & assign to widget =====
+
+            if style_str and widget_class:
+                ttk_style = Bootstyle.create_ttk_style(
+                    widget_class=widget_class,
+                    bootstyle=style_str,
+                    style_options=style_options,
+                    surface_color=effective_surface_token,
+                )
+                self.configure(style=ttk_style)
+
+            elif widget_class and not had_style_kwarg:
+                from ttkbootstrap.style.bootstyle_builder import BootstyleBuilder
+                from ttkbootstrap.style.style import use_style
+                default_variant = BootstyleBuilder.get_default_variant(widget_class)
+
+                if BootstyleBuilder.has_builder(widget_class, default_variant):
+                    ttk_style = generate_ttk_style_name(
+                        color=None,
+                        variant=default_variant,
                         widget_class=widget_class,
-                        bootstyle=style_str,
-                        style_options=style_options,
-                        surface_color=effective_surface,
+                        surface_color=effective_surface_token,
                     )
-                    try:
-                        self.configure(style=ttkstyle)
-                    except Exception:
-                        pass
-                elif widget_class and not had_style_kwarg:
-                    from ttkbootstrap.style.bootstyle_builder import BootstyleBuilder
-                    from ttkbootstrap.style.style import use_style
-                    default_variant = BootstyleBuilder.get_default_variant(widget_class)
-                    if BootstyleBuilder.has_builder(widget_class, default_variant):
-                        ttkstyle = generate_ttk_style_name(
-                            color=None,
-                            variant=default_variant,
-                            widget_class=widget_class,
-                            surface_color=effective_surface,
-                        )
 
-                        style_instance = use_style()
-                        if style_instance is not None:
-                            options = dict(style_options or {})
-                            if effective_surface and effective_surface != 'background':
-                                options['surface_color'] = effective_surface
-                            style_instance.create_style(
-                                widget_class=widget_class,
-                                variant=default_variant,
-                                ttkstyle=ttkstyle,
-                                options=options,
-                            )
-                            try:
-                                self.configure(style=ttkstyle)
-                            except Exception:
-                                pass
-                    else:
-                        try:
-                            self.configure(style=widget_class)
-                        except Exception:
-                            pass
-            except Exception:
-                pass
+                    style_instance = use_style()
+                    if style_instance is not None:
+                        options = dict(style_options or {})
+                        if effective_surface_token and effective_surface_token != 'background':
+                            options['surface_color'] = effective_surface_token
+                        style_instance.create_style(
+                            widget_class=widget_class,
+                            variant=default_variant,
+                            ttkstyle=ttk_style,
+                            options=options,
+                        )
+                        self.configure(style=ttk_style)
+                else:
+                    self.configure(style=widget_class)
 
         return __init__wrapper
 
@@ -355,10 +307,7 @@ class Bootstyle:
 
         def configure(self, cnf=None, **kwargs):
             if cnf in ("bootstyle", "style"):
-                try:
-                    return self.cget("style")
-                except Exception:
-                    return ""
+                return self.cget("style")
 
             if cnf is not None:
                 return func(self, cnf)
@@ -370,49 +319,33 @@ class Bootstyle:
             style_str = None
             if "bootstyle" in kwargs and kwargs["bootstyle"]:
                 style_str = kwargs.pop("bootstyle")
-            elif "bs_style" in kwargs and kwargs["bs_style"]:
-                style_str = kwargs.pop("bs_style")
 
             if style_str:
-                try:
-                    widget_class = self.winfo_class()
-                    if explicit_surface is not None:
-                        surface = explicit_surface
+                widget_class = self.winfo_class()
+                if explicit_surface is not None:
+                    surface = explicit_surface
+                else:
+                    if inherit_flag is None:
+                        inherit_flag = AppConfig.get('inherit_surface_color', True)
+                    if inherit_flag:
+                        surface = 'background'
+                        if hasattr(self, 'master') and self.master is not None:
+                            surface = getattr(self.master, '_surface_color', 'background')
                     else:
-                        if inherit_flag is None:
-                            inherit_flag = AppConfig.get('inherit_surface_color', True)
-                        if inherit_flag:
-                            surface = 'background'
-                            try:
-                                if hasattr(self, 'master') and self.master is not None:
-                                    surface = getattr(self.master, '_surface_color', 'background')
-                            except Exception:
-                                pass
-                        else:
-                            surface = getattr(self, '_surface_color', 'background')
+                        surface = getattr(self, '_surface_color', 'background')
 
-                    if widget_class in FRAME_SURFACE_CLASSES and explicit_surface is None:
-                        try:
-                            parsed = parse_bootstyle(style_str, widget_class)
-                            if parsed.get('color'):
-                                surface = parsed['color']
-                        except Exception:
-                            pass
-
-                    try:
-                        setattr(self, '_surface_color', surface)
-                    except Exception:
-                        pass
-                    ttkstyle = Bootstyle.create_ttk_style(
-                        widget_class=widget_class,
-                        bootstyle=style_str,
-                        style_options=style_options,
-                        surface_color=surface,
-                    )
-                    kwargs["style"] = ttkstyle
-                except Exception:
-                    from ttkbootstrap.utility import debug_log_exception
-                    debug_log_exception("autostyle: apply tk builder failed")
+                if widget_class in FRAME_SURFACE_CLASSES and explicit_surface is None:
+                    parsed = parse_bootstyle(style_str, widget_class)
+                    if parsed.get('color'):
+                        surface = parsed['color']
+                    setattr(self, '_surface_color', surface)
+                ttk_style = Bootstyle.create_ttk_style(
+                    widget_class=widget_class,
+                    bootstyle=style_str,
+                    style_options=style_options,
+                    surface_color=surface,
+                )
+                kwargs["style"] = ttk_style
 
             return func(self, cnf, **kwargs)
 
@@ -423,129 +356,84 @@ class Bootstyle:
         """Override Tk widget __init__ to apply theme background when autostyle=True."""
 
         def __init__wrapper(self, *args, **kwargs):
-            autostyle = kwargs.pop("autostyle", True)
 
-            inherit_flag = kwargs.pop('inherit_surface_color', None)
-            if inherit_flag is None:
-                inherit_flag = AppConfig.get('inherit_surface_color', True)
-            explicit_surface = kwargs.pop('surface_color', None)
+            # capture bootstrap arguments
+            auto_style = kwargs.pop("autostyle", True)
+            inherit_surface_color = kwargs.pop('inherit_surface_color', None)
+            if inherit_surface_color is None:
+                inherit_surface_color = AppConfig.get('inherit_surface_color', True)
+            surface_token = kwargs.pop('surface_color', None)
 
-            func(self, *args, **kwargs)
+            func(self, *args, **kwargs)  # the actual constructor
 
-            try:
-                if hasattr(self, 'master') and self.master is not None:
-                    parent_surface = getattr(self.master, '_surface_color', 'background')
-                else:
-                    parent_surface = 'background'
+            # ===== Surface color inheritance =====
 
-                if explicit_surface:
-                    effective_surface = explicit_surface
-                elif inherit_flag:
-                    effective_surface = parent_surface
-                else:
-                    effective_surface = 'background'
+            if hasattr(self, 'master') and self.master is not None:
+                parent_surface_token = getattr(self.master, '_surface_color', 'background')
+            else:
+                parent_surface_token = 'background'
 
-                setattr(self, '_surface_color', effective_surface)
-            except Exception:
-                pass
+            if inherit_surface_color:
+                surface_token = parent_surface_token
+            else:
+                surface_token = surface_token or 'background'
 
-            if autostyle:
-                bg = None
-                inst = None  # Active ttkbootstrap Style singleton
-                try:
-                    from ttkbootstrap.style.style import use_style
-                    master = self.winfo_toplevel()
-                    inst = use_style(master=master)
-                    if inst is not None:
-                        bg = inst.builder_manager.color('background')
-                except Exception:
-                    from ttkbootstrap.utility import debug_log_exception
-                    debug_log_exception("autostyle: acquire Style instance or background failed")
+            setattr(self, '_surface_color', surface_token)
 
-                if bg is None:
-                    try:
-                        from ttkbootstrap.style.theme_provider import ThemeProvider
-                        bg = ThemeProvider.instance().colors.get('background')
-                    except Exception:
-                        bg = None
+            if not auto_style:
+                return
 
-                if bg is not None:
-                    try:
-                        self.configure(background=bg)
-                    except Exception:
-                        pass
+            # ==== Update widget style & register for theme changes =====
 
-                try:
-                    from ttkbootstrap.style.bootstyle_builder_tk import BootstyleBuilderTk
-                    # Use the same theme provider as the active Style instance
-                    builder_tk = BootstyleBuilderTk(
-                        theme_provider=inst.theme_provider if inst else None,
-                        style_instance=inst)
-                    surface = getattr(self, '_surface_color', 'background')
-                    builder_tk.call_builder(self, surface_color=surface)
-                except Exception:
-                    pass
+            from ttkbootstrap.style.style import use_style
+            from ttkbootstrap.style.bootstyle_builder_tk import BootstyleBuilderTk
+            style = use_style()
+            builder_tk = BootstyleBuilderTk(
+                theme_provider=style.theme_provider if style else None,
+                style_instance=style
+            )
+            surface = getattr(self, '_surface_color', 'background')
+            builder_tk.call_builder(self, surface_color=surface)
 
-                try:
-                    from ttkbootstrap.style.style import use_style
-                    # Get the root window to pass as master
-                    master = self.winfo_toplevel()
-                    inst = use_style(master=master)
-                    if inst is not None:
-                        inst.register_tk_widget(self)
-                except Exception:
-                    pass
+            style.register_tk_widget(self)
 
         return __init__wrapper
 
     @staticmethod
-    def setup_ttkbootstrap_api():
+    def install_ttkbootstrap():
         """Install bootstyle API into ttk/tk widgets via monkey patching."""
-        try:
-            from ttkbootstrap.widgets import TTK_WIDGETS, TK_WIDGETS
-        except Exception:
-            return
-
-        try:
-            import ttkbootstrap.style.builders_tk  # noqa: F401
-        except Exception:
-            pass
+        from ttkbootstrap.widgets import TTK_WIDGETS, TK_WIDGETS
+        import ttkbootstrap.style.builders_tk  # noqa: F401
 
         for widget in TTK_WIDGETS:
-            try:
-                _init = Bootstyle.override_ttk_widget_constructor(widget.__init__)
-                widget.__init__ = _init
+            _init = Bootstyle.override_ttk_widget_constructor(widget.__init__)
+            widget.__init__ = _init
 
-                _configure = Bootstyle.override_ttk_widget_configure(widget.configure)
-                widget.configure = _configure
-                widget.config = widget.configure
+            _configure = Bootstyle.override_ttk_widget_configure(widget.configure)
+            widget.configure = _configure
+            widget.config = widget.configure
 
-                if getattr(widget, "__name__", "") != "OptionMenu":
-                    _orig_getitem = getattr(widget, "__getitem__", None)
-                    _orig_setitem = getattr(widget, "__setitem__", None)
+            if getattr(widget, "__name__", "") != "OptionMenu":
+                _orig_getitem = getattr(widget, "__getitem__", None)
+                _orig_setitem = getattr(widget, "__setitem__", None)
 
-                    if _orig_getitem and _orig_setitem:
-                        def __setitem(self, key, val):
-                            if key in ("bootstyle", "style"):
-                                return _configure(self, **{key: val})
-                            return _orig_setitem(self, key, val)
+                if _orig_getitem and _orig_setitem:
+                    def __setitem(self, key, val):
+                        if key in ("bootstyle", "style"):
+                            return _configure(self, **{key: val})
+                        return _orig_setitem(self, key, val)
 
-                        def __getitem(self, key):
-                            if key in ("bootstyle", "style"):
-                                return _configure(self, cnf=key)
-                            return _orig_getitem(self, key)
+                    def __getitem(self, key):
+                        if key in ("bootstyle", "style"):
+                            return _configure(self, cnf=key)
+                        return _orig_getitem(self, key)
 
-                        widget.__setitem__ = __setitem
-                        widget.__getitem__ = __getitem
-            except Exception:
-                continue
+                    widget.__setitem__ = __setitem
+                    widget.__getitem__ = __getitem
 
         for widget in TK_WIDGETS:
-            try:
-                _init = Bootstyle.override_tk_widget_constructor(widget.__init__)
-                widget.__init__ = _init
-            except Exception:
-                continue
+            _init = Bootstyle.override_tk_widget_constructor(widget.__init__)
+            widget.__init__ = _init
 
 
 __all__ = [
@@ -557,7 +445,4 @@ __all__ = [
     'extract_variant_from_style',
     'extract_widget_class_from_style',
     'Bootstyle',
-    'COLORS',
-    'WIDGET_CLASS_MAP',
-    'WIDGET_NAME_MAP',
 ]

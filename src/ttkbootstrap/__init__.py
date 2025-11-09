@@ -50,7 +50,7 @@ from ttkbootstrap.style.style import Style, use_style
 from ttkbootstrap.widgets import DateEntry, Floodgauge, FloodgaugeLegacy, LabeledScale, M, Meter
 from ttkbootstrap.window import Toplevel, Window
 
-Bootstyle.setup_ttkbootstrap_api()
+Bootstyle.install_ttkbootstrap()
 
 # Typing-time augmentation so local type checkers see `bootstyle`
 # in constructors and `configure(...)` for ttk widgets imported from

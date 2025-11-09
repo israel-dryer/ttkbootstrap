@@ -20,29 +20,7 @@ F = TypeVar("F", bound=BuilderCallable)
 P = ParamSpec("P")
 R = TypeVar("R")
 
-# Widget name mappings (common name <-> TTK class name)
-WIDGET_CLASS_MAP = {
-    'button': 'TButton',
-    'label': 'TLabel',
-    'entry': 'TEntry',
-    'frame': 'TFrame',
-    'labelframe': 'TLabelframe',
-    'progressbar': 'TProgressbar',
-    'scale': 'TScale',
-    'scrollbar': 'TScrollbar',
-    'checkbutton': 'TCheckbutton',
-    'radiobutton': 'TRadiobutton',
-    'combobox': 'TCombobox',
-    'notebook': 'TNotebook',
-    'treeview': 'Treeview',
-    'separator': 'TSeparator',
-    'sizegrip': 'TSizegrip',
-    'panedwindow': 'TPanedwindow',
-    'spinbox': 'TSpinbox',
-    'menubutton': 'TMenubutton',
-}
-
-WIDGET_NAME_MAP = {v: k for k, v in WIDGET_CLASS_MAP.items()}
+from ttkbootstrap.style.token_maps import WIDGET_CLASS_MAP, WIDGET_NAME_MAP
 
 # Default variant name used when no variant is specified
 # Builders should register under both their specific name AND 'default'
@@ -90,7 +68,7 @@ class BootstyleBuilder:
             style_instance: Optional Style instance (set later to avoid circular import)
         """
         self._provider = theme_provider or ThemeProvider()
-        self._style = style_instance  # May be None initially
+        self._style = style_instance
 
     def set_style_instance(self, style_instance: Any):
         """Set the Style instance (avoids circular import in __init__).
@@ -168,8 +146,9 @@ class BootstyleBuilder:
 
         return deco
 
-    def call_builder(self, widget_class: str, variant: str, ttk_style: str,
-                     color: Optional[str] = None, **options):
+    def call_builder(
+            self, widget_class: str, variant: str, ttk_style: str,
+            color: Optional[str] = None, **options):
         """Call a registered builder for a specific widget variant.
 
         Args:
