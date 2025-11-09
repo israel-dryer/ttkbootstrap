@@ -4,12 +4,11 @@ import json
 import tomllib
 from importlib import resources
 
-from ttkbootstrap.style.utility import shade_color, tint_color
 from ttkbootstrap.exceptions import ThemeError
+from ttkbootstrap.style.utility import shade_color, tint_color
 
 _registered_themes = {}
 _current_theme = None
-_theme_provider: ThemeProvider | None = None
 
 TINT_WEIGHTS = (0.80, 0.60, 0.40, 0.25)
 SHADE_WEIGHTS = (0.25, 0.4, 0.6, 0.85)
@@ -101,8 +100,30 @@ def color_spectrum(token, value):
 
 
 class ThemeProvider:
+    """Theme data provider with singleton access and helpers.
+
+    Mirrors the pattern used by Style/use_style():
+    - `ThemeProvider()` returns the global instance (singleton)
+    - `use_theme(name)` returns/initializes the singleton with optional theme
+    - `ThemeProvider.instance(name)` remains for backward compatibility
+    """
+
+    # Class-level global singleton instance
+    _instance: ThemeProvider | None = None
+
+    def __new__(cls, *args, **kwargs):
+        """Ensure ThemeProvider() always returns the global singleton instance."""
+        if cls._instance is None:
+            cls._instance = super().__new__(cls)
+        return cls._instance
 
     def __init__(self, name: str = "light"):
+        # Prevent reinitialization on subsequent ThemeProvider() calls
+        if getattr(self, "_initialized", False):
+            if name and name != self.name:
+                self.use(name)
+            return
+
         self._theme = {}
         self._colors = {}
         load_system_themes()
@@ -112,6 +133,7 @@ class ThemeProvider:
         Typography.initialize_from_appconfig()
 
         self.use(name)
+        self._initialized = True
 
     def use(self, name):
         self._theme = get_theme(name)
@@ -128,14 +150,6 @@ class ThemeProvider:
         """Trigger a style update for the active theme"""
         from tkinter.ttk import Style
         Style().theme_use('clam')
-
-    @staticmethod
-    def instance(name="light"):
-        global _theme_provider
-        if _theme_provider is None:
-            _theme_provider = ThemeProvider()
-            _theme_provider.use(name)
-        return _theme_provider
 
     def build_theme_colors(self):
         colors = {}
@@ -193,3 +207,19 @@ class ThemeProvider:
     def __repr__(self):
         """Return a string representation of the current theme"""
         return f"<Theme name={self.name} mode={self.mode}>"
+
+
+def use_theme(name: str = "light") -> ThemeProvider:
+    """Return the global ThemeProvider singleton instance.
+
+    Convenience helper that mirrors `use_style()` so callers can obtain
+    the current ThemeProvider without handling singleton state.
+
+    Args:
+        name: Optional initial theme name for first-time initialization.
+
+    Returns:
+        Global ThemeProvider instance.
+    """
+    # Lazily construct via direct call; __new__/__init__ enforce singleton
+    return ThemeProvider(name)

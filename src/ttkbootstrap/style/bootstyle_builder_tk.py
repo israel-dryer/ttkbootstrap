@@ -6,7 +6,7 @@ from typing import Callable, Dict, Optional
 from typing_extensions import Any, Protocol
 
 from ttkbootstrap.style.bootstyle_builder import BootstyleBuilder
-from ttkbootstrap.style.theme_provider import ThemeProvider
+from ttkbootstrap.style.theme_provider import ThemeProvider, use_theme
 
 
 class TkBuilderCallable(Protocol):
@@ -38,7 +38,7 @@ class BootstyleBuilderTk:
                 theme_provider = style_instance.theme_provider  # type: ignore[attr-defined]
             except Exception:
                 theme_provider = None
-        self._provider = theme_provider or ThemeProvider()
+        self._provider = theme_provider or use_theme()
         # Reuse BootstyleBuilder for color utilities
         self._ttk_utils = BootstyleBuilder(theme_provider=self._provider, style_instance=style_instance)
 

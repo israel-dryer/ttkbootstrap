@@ -35,9 +35,9 @@ def parse_bootstyle_v2(bootstyle: str, widget_class: str) -> dict:
         }
 
     from ttkbootstrap.style.bootstyle_builder import BootstyleBuilder
-    from ttkbootstrap.style.theme_provider import ThemeProvider
+    from ttkbootstrap.style.theme_provider import use_theme
 
-    theme_colors = ThemeProvider.instance().colors
+    theme_colors = use_theme().colors
     parts = bootstyle.lower().split('-')
 
     color = None

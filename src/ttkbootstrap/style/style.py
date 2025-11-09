@@ -7,7 +7,7 @@ from tkinter.ttk import Style as ttkStyle
 from typing import Dict, Set, Optional
 
 from ttkbootstrap.style.bootstyle_builder import BootstyleBuilder
-from ttkbootstrap.style.theme_provider import ThemeProvider
+from ttkbootstrap.style.theme_provider import ThemeProvider, use_theme
 
 
 class Style(ttkStyle):
@@ -57,8 +57,8 @@ class Style(ttkStyle):
 
         super().__init__(master)
 
-        # Theme provider - manages themes and colors
-        self._theme_provider = ThemeProvider(theme)
+        # Theme provider - manages themes and colors (singleton)
+        self._theme_provider = use_theme(theme)
 
         # Builder manager - stateless, calls registered builder functions
         # Pass theme_provider and set style instance to avoid circular import

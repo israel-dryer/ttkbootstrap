@@ -7,7 +7,7 @@ from typing_extensions import Any, ParamSpec, Protocol, TypeVar
 
 from ttkbootstrap.exceptions import BootstyleBuilderError
 from ttkbootstrap.style.element import Element, ElementImage
-from ttkbootstrap.style.theme_provider import ThemeProvider
+from ttkbootstrap.style.theme_provider import ThemeProvider, use_theme
 from ttkbootstrap.style.utility import best_foreground, darken_color, lighten_color, mix_colors, relative_luminance
 
 
@@ -67,7 +67,7 @@ class BootstyleBuilder:
             theme_provider: Optional ThemeProvider instance (creates one if None)
             style_instance: Optional Style instance (set later to avoid circular import)
         """
-        self._provider = theme_provider or ThemeProvider()
+        self._provider = theme_provider or use_theme()
         self._style = style_instance
 
     def set_style_instance(self, style_instance: Any):
