@@ -145,12 +145,6 @@ class ThemeProvider:
         """Return the raw source dictionary"""
         return self._theme
 
-    @staticmethod
-    def update_theme_styles():
-        """Trigger a style update for the active theme"""
-        from tkinter.ttk import Style
-        Style().theme_use('clam')
-
     def build_theme_colors(self):
         colors = {}
         colors.update(
