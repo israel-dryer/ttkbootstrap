@@ -285,15 +285,15 @@ class Style(ttkStyle):
             >>> _parse_style_name("info.Striped.TProgressbar")
             {'widget_class': 'TProgressbar', 'variant': 'striped'}
         """
-        # Color tokens to exclude
-        COLORS = {'primary', 'secondary', 'success', 'info', 'warning',
-                  'danger', 'light', 'dark'}
-
         # Split into parts
         parts = ttkstyle.split('.')
 
         # Remove custom prefix if present
         if parts and parts[0].startswith('custom_'):
+            parts = parts[1:]
+
+        # Remove surface prefix if present: Surface[...]
+        if parts and parts[0].startswith('Surface['):
             parts = parts[1:]
 
         if not parts:
@@ -309,28 +309,28 @@ class Style(ttkStyle):
         if not widget_class:
             return None
 
-        # Extract variant tokens (exclude colors, color patterns, and widget class)
-        variants = []
+        # Determine variant using registered builders for this widget
+        from ttkbootstrap.style.bootstyle_builder import BootstyleBuilder
+        builder_variants = set(v.lower() for v in BootstyleBuilder.get_registered_builders(widget_class))
+
+        variant = None
+        color = None
         for part in parts:
-            part_lower = part.lower()
-            # Skip if it's a standard color
-            if part_lower in COLORS:
-                continue
-            # Skip if it's the widget class
             if part.startswith('T'):
                 continue
-            # Skip if it looks like a color pattern (spectrum or hex)
-            if '[' in part or '#' in part:
+            token = part.lower()
+            # Skip surface/style prefixes (already removed) and custom
+            if token.startswith('custom_'):
                 continue
-            # Otherwise it's a variant token
-            variants.append(part_lower)
+            # Identify variant by registry match
+            if token in builder_variants and variant is None:
+                variant = token
+                continue
+            # First non-variant token becomes color (accept anything)
+            if color is None:
+                color = part
 
-        # Determine variant
-        if variants:
-            # Use first variant found (they're typically single, like "outline")
-            variant = variants[0]
-        else:
-            # Use default variant for this widget
+        if variant is None:
             variant = BootstyleBuilder.get_default_variant(widget_class)
 
         return {
