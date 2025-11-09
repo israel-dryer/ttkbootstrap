@@ -128,6 +128,35 @@ def scale_size(widget, size):
         return [int(x * factor) for x in size]
 
 
+# --- Debug helpers ---------------------------------------------------------
+def _debug_enabled() -> bool:
+    """Return True if debug logging is enabled.
+
+    Controlled via the environment variable `TTKBOOTSTRAP_DEBUG`.
+    Accepts: "1", "true", "yes" (case-insensitive) as truthy values.
+    """
+    import os
+    return str(os.environ.get("TTKBOOTSTRAP_DEBUG", "")).lower() in {"1", "true", "yes"}
+
+
+def debug_log_exception(message: str = "") -> None:
+    """Print the current exception traceback if debug is enabled.
+
+    Args:
+        message: Optional context message to print before the traceback.
+    """
+    if not _debug_enabled():
+        return
+    try:
+        import traceback
+        if message:
+            print(f"TTKBootstrap DEBUG: {message}")
+        traceback.print_exc()
+    except Exception:
+        # Never raise from debug logging
+        pass
+
+
 def center_on_parent(win, parent=None):
     """Center `win` on parent or over its master if not given"""
     win.update_idletasks()  # ensure geometry

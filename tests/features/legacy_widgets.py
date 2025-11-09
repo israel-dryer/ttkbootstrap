@@ -1,7 +1,11 @@
+import ttkbootstrap as ttk
+from ttkbootstrap.style.style import use_style
+
+TTKBOOTSTRAP_DEBUG = 1
+
 import tkinter as tk
 from this import s as ZEN
 
-import ttkbootstrap as ttk
 from ttkbootstrap.constants import *
 
 app = ttk.Window("Legacy Widgets")
@@ -9,13 +13,15 @@ app = ttk.Window("Legacy Widgets")
 
 def change_theme():
     themename = app.getvar("themename")
-    style = ttk.Style.get_instance()
+    style = use_style()
     style.theme_use(themename)
-    print("changing theme")
+    print("changing theme in app", themename)
 
 
-frame = tk.Frame(app, padx=10, pady=10)
+frame = ttk.TkFrame(app, padx=10, pady=10)
 frame.pack(fill=BOTH, expand=YES)
+
+ttk.Button(frame, text='TTk Button').pack()
 
 themes = ['light', 'dark']
 

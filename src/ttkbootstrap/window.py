@@ -355,7 +355,8 @@ class Window(tkinter.Tk):
 
         apply_class_bindings(self)
         apply_all_bindings(self)
-        self._style = Style.get_instance(self)
+        from ttkbootstrap.style.style import use_style
+        self._style = use_style(self)
 
     @property
     def style(self) -> Style:
@@ -574,7 +575,8 @@ class Toplevel(tkinter.Toplevel):
     @property
     def style(self) -> Style:
         """Return a reference to the `ttkbootstrap.style.Style` object."""
-        return Style()
+        from ttkbootstrap.style.style import use_style
+        return use_style()
 
     def place_window_center(self) -> None:
         """Position the toplevel in the center of the screen. Does not

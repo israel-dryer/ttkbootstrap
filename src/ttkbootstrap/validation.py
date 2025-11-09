@@ -117,7 +117,7 @@ class ValidationEvent:
         self.validationtype = v
         self.validationreason = V
 
-        style = ttk.Style.get_instance()
+        style = ttk.use_style()
         self.widget = style.master.nametowidget(
             W
         )  # replace with another method

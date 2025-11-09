@@ -36,6 +36,7 @@ def build_tk_button(builder: BootstyleBuilderTk, widget: Any, **options: Any) ->
     bg = builder.color('primary')
     fg = builder.on_color(bg)
     widget.configure(
+        relief='flat',
         background=bg,
         activebackground=bg,
         foreground=fg,
@@ -199,7 +200,7 @@ def build_tk_labelframe(builder: BootstyleBuilderTk, widget: Any, **options: Any
     border = builder.border(bg)
     widget.configure(
         background=bg,
-        foreground=fg,
+        foreground=fg,  # does not work on Aqua or Windows
         borderwidth=1,
         highlightthickness=0,
         highlightcolor=border,

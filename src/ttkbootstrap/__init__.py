@@ -45,8 +45,8 @@ from ttkbootstrap import widgets as _widgets
 from ttkbootstrap.appconfig import AppConfig
 # Use the new Bootstyle implementation with constructor/configure overrides
 from ttkbootstrap.style.bootstyle import Bootstyle
-# Export the new Style implementation (singleton get_instance constructs on demand)
-from ttkbootstrap.style.style import Style
+# Export the new Style implementation and a convenience accessor
+from ttkbootstrap.style.style import Style, use_style
 from ttkbootstrap.widgets import DateEntry, Floodgauge, FloodgaugeLegacy, LabeledScale, M, Meter
 from ttkbootstrap.window import Toplevel, Window
 

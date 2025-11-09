@@ -98,7 +98,6 @@ def parse_bootstyle_v2(bootstyle: str, widget_class: str) -> dict:
     }
 
 
-
 def generate_ttk_style_name(
         color: Optional[str],
         variant: Optional[str],
@@ -139,7 +138,9 @@ def parse_bootstyle(bootstyle: str, widget_class: str) -> dict:
     flag to determine parsing method (V1 legacy vs V2 new).
     """
     use_legacy = AppConfig.get('legacy_bootstyle', False)
-    return parse_bootstyle_legacy(bootstyle, widget_class) if use_legacy else parse_bootstyle_v2(bootstyle, widget_class)
+    return parse_bootstyle_legacy(bootstyle, widget_class) if use_legacy else parse_bootstyle_v2(
+        bootstyle, widget_class)
+
 
 def extract_color_from_style(ttk_style: str, default: str = 'primary') -> str:
     """Extract color token from TTK style name."""
@@ -230,8 +231,8 @@ class Bootstyle:
             surface_color=surface_color
         )
 
-        from ttkbootstrap.style.style import Style
-        style = Style.get_instance()
+        from ttkbootstrap.style.style import use_style
+        style = use_style()
 
         options = dict(style_options or {})
         if surface_color and surface_color != 'background':
@@ -298,7 +299,8 @@ class Bootstyle:
                 try:
                     setattr(self, '_surface_color', effective_surface)
                 except Exception:
-                    pass
+                    from ttkbootstrap.utility import debug_log_exception
+                    debug_log_exception("autostyle: reading background color from Style failed")
                 if style_str and widget_class:
                     ttkstyle = Bootstyle.create_ttk_style(
                         widget_class=widget_class,
@@ -312,7 +314,7 @@ class Bootstyle:
                         pass
                 elif widget_class and not had_style_kwarg:
                     from ttkbootstrap.style.bootstyle_builder import BootstyleBuilder
-                    from ttkbootstrap.style.style import Style as NewStyle
+                    from ttkbootstrap.style.style import use_style
                     default_variant = BootstyleBuilder.get_default_variant(widget_class)
                     if BootstyleBuilder.has_builder(widget_class, default_variant):
                         ttkstyle = generate_ttk_style_name(
@@ -322,7 +324,7 @@ class Bootstyle:
                             surface_color=effective_surface,
                         )
 
-                        style_instance = NewStyle.get_instance()
+                        style_instance = use_style()
                         if style_instance is not None:
                             options = dict(style_options or {})
                             if effective_surface and effective_surface != 'background':
@@ -409,7 +411,8 @@ class Bootstyle:
                     )
                     kwargs["style"] = ttkstyle
                 except Exception:
-                    pass
+                    from ttkbootstrap.utility import debug_log_exception
+                    debug_log_exception("autostyle: apply tk builder failed")
 
             return func(self, cnf, **kwargs)
 
@@ -448,13 +451,16 @@ class Bootstyle:
 
             if autostyle:
                 bg = None
+                inst = None  # Active ttkbootstrap Style singleton
                 try:
-                    from ttkbootstrap.style.style import Style as NewStyle
-                    inst = NewStyle.get_instance()
+                    from ttkbootstrap.style.style import use_style
+                    master = self.winfo_toplevel()
+                    inst = use_style(master=master)
                     if inst is not None:
-                        bg = inst.colors.bg
+                        bg = inst.builder_manager.color('background')
                 except Exception:
-                    pass
+                    from ttkbootstrap.utility import debug_log_exception
+                    debug_log_exception("autostyle: acquire Style instance or background failed")
 
                 if bg is None:
                     try:
@@ -471,16 +477,20 @@ class Bootstyle:
 
                 try:
                     from ttkbootstrap.style.bootstyle_builder_tk import BootstyleBuilderTk
-                    builder_tk = BootstyleBuilderTk()
+                    # Use the same theme provider as the active Style instance
+                    builder_tk = BootstyleBuilderTk(
+                        theme_provider=inst.theme_provider if inst else None,
+                        style_instance=inst)
                     surface = getattr(self, '_surface_color', 'background')
                     builder_tk.call_builder(self, surface_color=surface)
                 except Exception:
                     pass
 
                 try:
-                    if 'NewStyle' not in locals():
-                        from ttkbootstrap.style.style import Style as NewStyle
-                    inst = NewStyle.get_instance()
+                    from ttkbootstrap.style.style import use_style
+                    # Get the root window to pass as master
+                    master = self.winfo_toplevel()
+                    inst = use_style(master=master)
                     if inst is not None:
                         inst.register_tk_widget(self)
                 except Exception:

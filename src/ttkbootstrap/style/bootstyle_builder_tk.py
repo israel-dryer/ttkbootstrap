@@ -32,6 +32,12 @@ class BootstyleBuilderTk:
     _builders_loaded = False
 
     def __init__(self, theme_provider: Optional[ThemeProvider] = None, style_instance: Optional[Any] = None):  # noqa: ANN401
+        # If no provider given, try to derive from style_instance
+        if theme_provider is None and style_instance is not None:
+            try:
+                theme_provider = style_instance.theme_provider  # type: ignore[attr-defined]
+            except Exception:
+                theme_provider = None
         self._provider = theme_provider or ThemeProvider()
         # Reuse BootstyleBuilder for color utilities
         self._ttk_utils = BootstyleBuilder(theme_provider=self._provider, style_instance=style_instance)

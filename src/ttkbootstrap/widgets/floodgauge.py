@@ -147,7 +147,8 @@ class Floodgauge(Canvas):
         self._draw()
 
     def _update_theme_colors(self) -> None:
-        style = Style.get_instance()
+        from ttkbootstrap.style.style import use_style
+        style = use_style()
         self.bar_color = style.colors.get(self._bootstyle)
         self.trough_color = Colors.update_hsv(self.bar_color, 0, -0.5, 0.3)
         self.text_color = contrast_color(self.bar_color, 'hex')

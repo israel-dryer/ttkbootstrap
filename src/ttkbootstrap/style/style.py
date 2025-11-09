@@ -26,8 +26,17 @@ class Style(ttkStyle):
     - Custom options per style (for recreating with same options)
     """
 
-    # Class-level singleton tracking (one Style instance per master)
-    _instances: Dict[int, Style] = {}
+    # Class-level global singleton instance
+    _instance: Optional["Style"] = None
+
+    def __new__(cls, *args, **kwargs):
+        """Ensure Style() always returns the global singleton instance.
+
+        If an instance already exists, return it. Otherwise create it.
+        """
+        if cls._instance is None:
+            cls._instance = super().__new__(cls)
+        return cls._instance
 
     def __init__(self, master=None, theme: str = "light"):
         """Initialize the Style instance.
@@ -36,6 +45,16 @@ class Style(ttkStyle):
             master: Tkinter master widget (None for default)
             theme: Initial theme name (default: "light")
         """
+        # Prevent reinitialization on subsequent Style() calls
+        if getattr(self, "_initialized", False):
+            # Optionally honor a theme argument after initialization
+            try:
+                if theme and theme != self._current_theme:
+                    self.theme_use(theme)
+            except Exception:
+                pass
+            return
+
         super().__init__(master)
 
         # Theme provider - manages themes and colors
@@ -78,20 +97,22 @@ class Style(ttkStyle):
             except:
                 pass  # No base theme available, continue anyway
 
+        # Mark as initialized
+        self._initialized = True
+
     @classmethod
-    def get_instance(cls, master=None) -> Style:
-        """Get or create Style instance (singleton per master).
+    def get_instance(cls, master=None) -> "Style":
+        """Get or create the global Style instance.
 
         Args:
-            master: Tkinter master widget (None for default)
+            master: Tkinter master widget (ignored after first creation)
 
         Returns:
-            Style instance for this master
+            Global Style instance
         """
-        key = id(master) if master else 0
-        if key not in cls._instances:
-            cls._instances[key] = cls(master)
-        return cls._instances[key]
+        if cls._instance is None:
+            cls._instance = cls(master)
+        return cls._instance
 
     @property
     def builder_manager(self) -> BootstyleBuilder:
@@ -218,22 +239,72 @@ class Style(ttkStyle):
     def theme_use(self, themename: str = None):
         """Switch to a different theme and rebuild all styles.
 
+        Applies theme change to the global Style instance, rebuilds all
+        TTK styles and registered Tk widgets, and publishes a legacy
+        theme-change event for subscribers.
+
         Args:
             themename: Theme name to switch to
         """
         if themename is None:
             return super().theme_use()
-        # Tell ThemeProvider to switch
-        self._theme_provider.use(themename)
-        self._current_theme = themename
 
-        # Rebuild all existing styles with new theme
-        self._rebuild_all_styles()
-        # Re-apply Tk widget styling (legacy widgets)
-        self._rebuild_all_tk_widgets()
+        try:
+            self._theme_provider.use(themename)
+            self._current_theme = themename
 
-        # TODO: Publish theme change event
-        # Publisher.publish_message(Channel.STD)
+            # Rebuild all registered TTK styles inline to avoid missing method issues
+            try:
+                for ttkstyle in list(self._style_registry):
+                    options = self._style_options.get(ttkstyle, {})
+                    color = self._style_colors.get(ttkstyle)
+
+                    parsed = self._parse_style_name(ttkstyle)
+                    if not parsed:
+                        continue
+
+                    widget_class = parsed['widget_class']
+                    variant = parsed['variant']
+
+                    self._builder_manager.call_builder(
+                        widget_class=widget_class,
+                        variant=variant,
+                        ttk_style=ttkstyle,
+                        color=color,
+                        **options
+                    )
+
+                    if self._current_theme not in self._theme_styles:
+                        self._theme_styles[self._current_theme] = set()
+                    self._theme_styles[self._current_theme].add(ttkstyle)
+            except Exception:
+                from ttkbootstrap.utility import debug_log_exception
+                debug_log_exception("inline rebuild of TTK styles failed")
+
+            # Re-apply Tk widget styling (legacy widgets)
+            try:
+                self._rebuild_all_tk_widgets()
+            except Exception:
+                from ttkbootstrap.utility import debug_log_exception
+                debug_log_exception("_rebuild_all_tk_widgets failed")
+
+            # Publish theme-change event for legacy subscribers
+            try:
+                from ttkbootstrap.publisher import Channel, Publisher  # lazy import
+                Publisher.publish_message(Channel.STD)
+            except Exception:
+                from ttkbootstrap.utility import debug_log_exception
+                debug_log_exception("Publisher.publish_message failed")
+                pass
+        except Exception:
+            from ttkbootstrap.utility import debug_log_exception
+            debug_log_exception("theme_use fallback to base theme")
+            # Fall back to a safe base theme to keep ttk functional
+            try:
+                return super().theme_use('clam')
+            except Exception:
+                return
+
 
     def _rebuild_all_styles(self):
         """Recreate all registered styles when theme changes.
@@ -270,9 +341,9 @@ class Style(ttkStyle):
                     self._theme_styles[self._current_theme] = set()
                 self._theme_styles[self._current_theme].add(ttkstyle)
 
-            except Exception as e:
-                # Builder doesn't exist or failed - log but continue
-                print(f"Warning: Failed to rebuild style '{ttkstyle}': {e}")
+            except Exception:
+                from ttkbootstrap.utility import debug_log_exception
+                debug_log_exception(f"Failed to rebuild style '{ttkstyle}'")
 
     def register_tk_widget(self, widget) -> None:
         """Register a Tk widget to be restyled on theme changes."""
@@ -288,13 +359,30 @@ class Style(ttkStyle):
         except Exception:
             return
 
-        builder_tk = BootstyleBuilderTk(style_instance=self)
+        builder_tk = BootstyleBuilderTk(theme_provider=self._theme_provider, style_instance=self)
+
+        # Get new background color for the theme
+        bg = builder_tk.color('background')
+        print(f"DEBUG _rebuild: bg color = {bg}, num widgets = {len(list(self._tk_widgets))}")
+
         for widget in list(self._tk_widgets):
             try:
+                print(f"DEBUG _rebuild: Processing {type(widget).__name__}")
+                # Update background color
+                if bg is not None:
+                    try:
+                        widget.configure(background=bg)
+                        print(f"DEBUG _rebuild: Set background to {bg}")
+                    except Exception as e:
+                        print(f"DEBUG _rebuild: Failed to set background: {e}")
+
+                # Call builder to update any custom styling
                 surface = getattr(widget, '_surface_color', 'background')
                 builder_tk.call_builder(widget, surface_color=surface)
             except Exception:
                 # Skip widgets that may have been destroyed or incompatible
+                from ttkbootstrap.utility import debug_log_exception
+                debug_log_exception("_rebuild_all_tk_widgets iteration failure")
                 continue
 
     def _parse_style_name(self, ttkstyle: str) -> Optional[dict]:
@@ -378,3 +466,18 @@ class Style(ttkStyle):
     def __repr__(self) -> str:
         """String representation of Style instance."""
         return f"<Style theme={self._current_theme} styles={len(self._style_registry)}>"
+
+
+def use_style(master=None) -> Style:
+    """Return the global Style singleton instance.
+
+    Convenience helper function that mirrors legacy usage and ensures a
+    single Style instance is used across the application.
+
+    Args:
+        master: Optional master for initial construction; ignored thereafter.
+
+    Returns:
+        Global Style instance.
+    """
+    return Style.get_instance(master)
