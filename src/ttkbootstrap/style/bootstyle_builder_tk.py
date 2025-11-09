@@ -5,8 +5,8 @@ from typing import Callable, Dict, Optional
 
 from typing_extensions import Any, Protocol
 
-from ttkbootstrap.style.bootstyle_builder import BootstyleBuilder
-from ttkbootstrap.style.theme_provider import ThemeProvider, use_theme
+from ttkbootstrap.style.bootstyle_base import BootstyleBase
+from ttkbootstrap.style.theme_provider import ThemeProvider
 
 
 class TkBuilderCallable(Protocol):
@@ -14,7 +14,7 @@ class TkBuilderCallable(Protocol):
         ...
 
 
-class BootstyleBuilderTk:
+class BootstyleBuilderTk(BootstyleBase):
     """Builder registry for legacy Tk widgets.
 
     Mirrors the TTK BootstyleBuilder API, but targets Tk widgets and passes
@@ -32,51 +32,9 @@ class BootstyleBuilderTk:
     _builders_loaded = False
 
     def __init__(self, theme_provider: Optional[ThemeProvider] = None, style_instance: Optional[Any] = None):  # noqa: ANN401
-        # If no provider given, try to derive from style_instance
-        if theme_provider is None and style_instance is not None:
-            try:
-                theme_provider = style_instance.theme_provider  # type: ignore[attr-defined]
-            except Exception:
-                theme_provider = None
-        self._provider = theme_provider or use_theme()
-        # Reuse BootstyleBuilder for color utilities
-        self._ttk_utils = BootstyleBuilder(theme_provider=self._provider, style_instance=style_instance)
+        super().__init__(theme_provider, style_instance)
 
-    @property
-    def provider(self) -> ThemeProvider:
-        return self._provider
-
-    @property
-    def colors(self):
-        return self._ttk_utils.colors
-
-    # ----- Utility forwards (reuse same color helpers as TTK) -----
-    def color(self, token: str, surface: str = None, role: str = "background") -> str:
-        return self._ttk_utils.color(token, surface, role)
-
-    def subtle(self, token: str, surface: str = None, role: str = "background") -> str:
-        return self._ttk_utils.subtle(token, surface, role)
-
-    def hover(self, color: str) -> str:
-        return self._ttk_utils.hover(color)
-
-    def active(self, color: str) -> str:
-        return self._ttk_utils.active(color)
-
-    def focus_border(self, color: str) -> str:
-        return self._ttk_utils.focus_border(color)
-
-    def focus_ring(self, color: str, surface: str = None) -> str:
-        return self._ttk_utils.focus_ring(color, surface)
-
-    def border(self, color: str) -> str:
-        return self._ttk_utils.border(color)
-
-    def on_color(self, color: str) -> str:
-        return self._ttk_utils.on_color(color)
-
-    def disabled(self, role: str = "background", surface: str = None) -> str:
-        return self._ttk_utils.disabled(role=role, surface=surface)
+    # Color utilities and provider/colors properties are inherited from BootstyleBase
 
     # ----- Registry API -----
     @classmethod
