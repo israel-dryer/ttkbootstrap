@@ -4,9 +4,9 @@ from __future__ import annotations
 
 import weakref
 from tkinter.ttk import Style as ttkStyle
-from typing import Dict, Set, Optional
+from typing import Dict, Optional, Set
 
-from ttkbootstrap.style.bootstyle_builder import BootstyleBuilder
+from ttkbootstrap.style.bootstyle_builder_ttk import BootstyleBuilderBuilderTTk
 from ttkbootstrap.style.theme_provider import ThemeProvider, use_theme
 
 
@@ -62,7 +62,7 @@ class Style(ttkStyle):
 
         # Builder manager - stateless, calls registered builder functions
         # Pass theme_provider and set style instance to avoid circular import
-        self._builder_manager = BootstyleBuilder(
+        self._builder_manager = BootstyleBuilderBuilderTTk(
             theme_provider=self._theme_provider,
             style_instance=None  # Set below after creation
         )
@@ -115,7 +115,7 @@ class Style(ttkStyle):
         return cls._instance
 
     @property
-    def builder_manager(self) -> BootstyleBuilder:
+    def builder_manager(self) -> BootstyleBuilderBuilderTTk:
         """Get the builder manager instance.
 
         Returns:
@@ -206,8 +206,9 @@ class Style(ttkStyle):
         if options:
             self._style_options[ttkstyle] = options
 
-    def create_style(self, widget_class: str, variant: str, ttkstyle: str,
-                    color: Optional[str] = None, options: Optional[dict] = None):
+    def create_style(
+            self, widget_class: str, variant: str, ttkstyle: str,
+            color: Optional[str] = None, options: Optional[dict] = None):
         """Create a new style if it doesn't exist in current theme.
 
         Args:
@@ -305,7 +306,6 @@ class Style(ttkStyle):
             except Exception:
                 return
 
-
     def _rebuild_all_styles(self):
         """Recreate all registered styles when theme changes.
 
@@ -355,26 +355,20 @@ class Style(ttkStyle):
     def _rebuild_all_tk_widgets(self) -> None:
         """Restyle all registered Tk widgets on theme change."""
         try:
-            from ttkbootstrap.style.bootstyle_builder_tk import BootstyleBuilderTk
+            from ttkbootstrap.style.bootstyle_builder_tk import BootstyleBuilderBuilderTk
         except Exception:
             return
 
-        builder_tk = BootstyleBuilderTk(theme_provider=self._theme_provider, style_instance=self)
+        builder_tk = BootstyleBuilderBuilderTk(theme_provider=self._theme_provider, style_instance=self)
 
         # Get new background color for the theme
         bg = builder_tk.color('background')
-        print(f"DEBUG _rebuild: bg color = {bg}, num widgets = {len(list(self._tk_widgets))}")
 
         for widget in list(self._tk_widgets):
             try:
-                print(f"DEBUG _rebuild: Processing {type(widget).__name__}")
                 # Update background color
                 if bg is not None:
-                    try:
-                        widget.configure(background=bg)
-                        print(f"DEBUG _rebuild: Set background to {bg}")
-                    except Exception as e:
-                        print(f"DEBUG _rebuild: Failed to set background: {e}")
+                    widget.configure(background=bg)
 
                 # Call builder to update any custom styling
                 surface = getattr(widget, '_surface_color', 'background')
@@ -427,8 +421,8 @@ class Style(ttkStyle):
             return None
 
         # Determine variant using registered builders for this widget
-        from ttkbootstrap.style.bootstyle_builder import BootstyleBuilder
-        builder_variants = set(v.lower() for v in BootstyleBuilder.get_registered_builders(widget_class))
+        from ttkbootstrap.style.bootstyle_builder_ttk import BootstyleBuilderBuilderTTk
+        builder_variants = set(v.lower() for v in BootstyleBuilderBuilderTTk.get_registered_builders(widget_class))
 
         variant = None
         color = None
@@ -448,14 +442,14 @@ class Style(ttkStyle):
                 color = part
 
         if variant is None:
-            variant = BootstyleBuilder.get_default_variant(widget_class)
+            variant = BootstyleBuilderBuilderTTk.get_default_variant(widget_class)
 
         return {
             'widget_class': widget_class,
             'variant': variant
         }
 
-    def get_builder_manager(self) -> BootstyleBuilder:
+    def get_builder_manager(self) -> BootstyleBuilderBuilderTTk:
         """Get the builder manager instance.
 
         Returns:
