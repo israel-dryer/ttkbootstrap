@@ -5,13 +5,14 @@ This module contains style builders for ttk.Button widgets and variants.
 
 from __future__ import annotations
 
-from ttkbootstrap.style.bootstyle_builder import BootstyleBuilder
+from ttkbootstrap.style.bootstyle_builder_ttk import BootstyleBuilderBuilderTTk
 
 
-@BootstyleBuilder.register_builder('solid', 'TButton')
-@BootstyleBuilder.register_builder('default', 'TButton')
-def build_button_solid(builder: BootstyleBuilder, ttk_style: str,
-                       color: str = None, **options):
+@BootstyleBuilderBuilderTTk.register_builder('solid', 'TButton')
+@BootstyleBuilderBuilderTTk.register_builder('default', 'TButton')
+def build_button_solid(
+        builder: BootstyleBuilderBuilderTTk, ttk_style: str,
+        color: str = None, **options):
     """Build solid button style with filled background.
 
     This is the default button style with a solid colored background.
@@ -57,9 +58,8 @@ def build_button_solid(builder: BootstyleBuilder, ttk_style: str,
     )
 
     # Map state-specific colors
-    builder.map_style(
-        ttk_style,
-        foreground=[('disabled', disabled_fg)],
+    state_spec = dict(
+        foreground=[('disabled', disabled_fg), ('', foreground)],
         focuscolor=[('disabled', disabled_fg)],
         background=[
             ('disabled', disabled_bg),
@@ -79,10 +79,20 @@ def build_button_solid(builder: BootstyleBuilder, ttk_style: str,
         ],
     )
 
+    icon = options.get('icon')
 
-@BootstyleBuilder.register_builder('outline', 'TButton')
-def build_button_outline(builder: BootstyleBuilder, ttk_style: str,
-                         color: str = None, **options):
+    if icon is not None:
+        icon = builder.normalize_icon_spec(icon)
+        state_spec['image'] = builder.map_stateful_icons(icon, state_spec['foreground'])
+
+    builder.map_style(ttk_style, **state_spec)
+
+
+
+@BootstyleBuilderBuilderTTk.register_builder('outline', 'TButton')
+def build_button_outline(
+        builder: BootstyleBuilderBuilderTTk, ttk_style: str,
+        color: str = None, **options):
     """Build outline button style with border.
 
     Outline buttons have a transparent background with a colored border.
@@ -101,7 +111,6 @@ def build_button_outline(builder: BootstyleBuilder, ttk_style: str,
     colorname = color or 'primary'
     surface_token = options.get('surface_color', 'background')
     background = builder.color(surface_token)
-
 
     # Get theme colors
     foreground = builder.color(colorname)
@@ -129,12 +138,12 @@ def build_button_outline(builder: BootstyleBuilder, ttk_style: str,
     )
 
     # Map state-specific colors
-    builder.map_style(
-        ttk_style,
+    state_spec = dict(
         foreground=[
             ('disabled', disabled_fg),
             ('pressed !disabled', foreground_pressed),
             ('hover !disabled', foreground_pressed),
+            ('', foreground)
         ],
         background=[
             ('pressed !disabled', pressed),
@@ -158,11 +167,20 @@ def build_button_outline(builder: BootstyleBuilder, ttk_style: str,
             ('hover !disabled', hover),
         ],
     )
+    icon = options.get('icon')
+
+    if icon is not None:
+        icon = builder.normalize_icon_spec(icon)
+        state_spec['image'] = builder.map_stateful_icons(icon, state_spec['foreground'])
+
+    builder.map_style(ttk_style, **state_spec)
 
 
-@BootstyleBuilder.register_builder('link', 'TButton')
-def build_button_link(builder: BootstyleBuilder, ttk_style: str,
-                      color: str = None, **options):
+
+@BootstyleBuilderBuilderTTk.register_builder('link', 'TButton')
+def build_button_link(
+        builder: BootstyleBuilderBuilderTTk, ttk_style: str,
+        color: str = None, **options):
     """Build link-style button (text only, no visible button).
 
     Link buttons appear as clickable text with no background or border.
@@ -209,13 +227,13 @@ def build_button_link(builder: BootstyleBuilder, ttk_style: str,
     )
 
     # Map state-specific colors
-    builder.map_style(
-        ttk_style,
+    state_spec = dict(
         shiftrelief=[('pressed !disabled', -1)],
         foreground=[
             ('disabled', disabled_fg),
             ('pressed !disabled', pressed),
             ('hover !disabled', hover),
+            ('', foreground)
         ],
         focuscolor=[
             ('pressed !disabled', pressed),
@@ -242,3 +260,11 @@ def build_button_link(builder: BootstyleBuilder, ttk_style: str,
             ('hover !disabled', bg_color),
         ],
     )
+
+    icon = options.get('icon')
+
+    if icon is not None:
+        icon = builder.normalize_icon_spec(icon)
+        state_spec['image'] = builder.map_stateful_icons(icon, state_spec['foreground'])
+
+    builder.map_style(ttk_style, **state_spec)
