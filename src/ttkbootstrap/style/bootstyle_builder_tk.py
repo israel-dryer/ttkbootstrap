@@ -2,26 +2,27 @@ from __future__ import annotations
 
 import threading
 from typing import Callable, Dict, Optional
+from collections.abc import Sequence
 
 from typing_extensions import Any, Protocol
 
-from ttkbootstrap.style.bootstyle_base import BootstyleBase
+from ttkbootstrap.style.bootstyle_builder_base import BootstyleBuilderBase, IconSpec
 from ttkbootstrap.style.theme_provider import ThemeProvider
 
 
 class TkBuilderCallable(Protocol):
-    def __call__(self, builder: "BootstyleBuilderTk", widget: Any, **options: Any) -> None:  # noqa: ANN401
+    def __call__(self, builder: "BootstyleBuilderBuilderTk", widget: Any, **options: Any) -> None:  # noqa: ANN401
         ...
 
 
-class BootstyleBuilderTk(BootstyleBase):
+class BootstyleBuilderBuilderTk(BootstyleBuilderBase):
     """Builder registry for legacy Tk widgets.
 
     Mirrors the TTK BootstyleBuilder API, but targets Tk widgets and passes
     the actual widget instance to builder functions.
 
     Usage:
-        >>> @BootstyleBuilderTk.register_builder('Button')
+        >>> @BootstyleBuilderBuilderTk.register_builder('Button')
         ... def build_tk_button(builder, widget, **opts):
         ...     bg = builder.color(opts.get('surface_color', 'background'))
         ...     widget.configure(background=bg, foreground=builder.colors.get('foreground'))
@@ -95,3 +96,14 @@ class BootstyleBuilderTk(BootstyleBase):
             return
 
         builder_func(self, widget, **options)
+
+    # --- Icons ---
+    def map_stateful_icons(self, icon: IconSpec, foreground_spec: Sequence[tuple]):
+        """Stateful icon mapping is not supported for Tk builders.
+
+        This API is intended for TTK style building only. Raise a clear
+        error if accidentally invoked from the Tk builder.
+        """
+        raise NotImplementedError(
+            "map_stateful_icons is only supported for TTK styles via BootstyleBuilderBuilderTTk."
+        )

@@ -34,7 +34,7 @@ def parse_bootstyle_v2(bootstyle: str, widget_class: str) -> dict:
             'cross_widget': False
         }
 
-    from ttkbootstrap.style.bootstyle_builder import BootstyleBuilder
+    from ttkbootstrap.style.bootstyle_builder_ttk import BootstyleBuilderBuilderTTk
     from ttkbootstrap.style.theme_provider import use_theme
 
     theme_colors = use_theme().colors
@@ -52,7 +52,7 @@ def parse_bootstyle_v2(bootstyle: str, widget_class: str) -> dict:
             resolved_widget = WIDGET_CLASS_MAP[part]
             if resolved_widget != widget_class:
                 cross_widget = True
-        elif BootstyleBuilder.has_builder(resolved_widget, part):
+        elif BootstyleBuilderBuilderTTk.has_builder(resolved_widget, part):
             variant = part
         elif '[' in part or '#' in part or part in COLORS:
             color = part
@@ -167,7 +167,7 @@ class Bootstyle:
 
         Parses bootstyle string, generates TTK style name, and triggers style creation.
         """
-        from ttkbootstrap.style.bootstyle_builder import BootstyleBuilder
+        from ttkbootstrap.style.bootstyle_builder_ttk import BootstyleBuilderBuilderTTk
 
         if not bootstyle:
             return widget_class
@@ -186,7 +186,7 @@ class Bootstyle:
             custom_prefix = f"custom_{options_hash}"
 
         builder_variant = variant if variant is not None else \
-            BootstyleBuilder.get_default_variant(resolved_widget)
+            BootstyleBuilderBuilderTTk.get_default_variant(resolved_widget)
 
         if (surface_color is None or surface_color == 'background') and \
                 resolved_widget in FRAME_SURFACE_CLASSES and color:
@@ -229,6 +229,8 @@ class Bootstyle:
             style_options = kwargs.pop("style_options", None)
             inherit_surface_color = kwargs.pop('inherit_surface_color', None)
             surface_color_token = kwargs.pop('surface_color', None)
+            # Capture an optional icon spec for image-capable widgets
+            icon_spec = kwargs.pop('icon', None)
 
             func(self, *args, **kwargs)  # the actual widget constructor
 
@@ -263,6 +265,16 @@ class Bootstyle:
             # ==== Create actual ttk style & assign to widget =====
 
             if style_str and widget_class:
+                # If this widget supports images and an icon was provided, pass to builder
+                try:
+                    supports_image = 'image' in self.keys()
+                except Exception:
+                    supports_image = False
+                if icon_spec is not None and supports_image:
+                    # Merge icon into style_options
+                    _opts = dict(style_options or {})
+                    _opts['icon'] = icon_spec
+                    style_options = _opts
                 ttk_style = Bootstyle.create_ttk_style(
                     widget_class=widget_class,
                     bootstyle=style_str,
@@ -272,11 +284,11 @@ class Bootstyle:
                 self.configure(style=ttk_style)
 
             elif widget_class and not had_style_kwarg:
-                from ttkbootstrap.style.bootstyle_builder import BootstyleBuilder
+                from ttkbootstrap.style.bootstyle_builder_ttk import BootstyleBuilderBuilderTTk
                 from ttkbootstrap.style.style import use_style
-                default_variant = BootstyleBuilder.get_default_variant(widget_class)
+                default_variant = BootstyleBuilderBuilderTTk.get_default_variant(widget_class)
 
-                if BootstyleBuilder.has_builder(widget_class, default_variant):
+                if BootstyleBuilderBuilderTTk.has_builder(widget_class, default_variant):
                     ttk_style = generate_ttk_style_name(
                         color=None,
                         variant=default_variant,
@@ -287,6 +299,13 @@ class Bootstyle:
                     style_instance = use_style()
                     if style_instance is not None:
                         options = dict(style_options or {})
+                        # Include icon for image-capable widgets
+                        try:
+                            supports_image = 'image' in self.keys()
+                        except Exception:
+                            supports_image = False
+                        if icon_spec is not None and supports_image:
+                            options['icon'] = icon_spec
                         if effective_surface_token and effective_surface_token != 'background':
                             options['surface_color'] = effective_surface_token
                         style_instance.create_style(
@@ -315,6 +334,8 @@ class Bootstyle:
             style_options = kwargs.pop("style_options", None)
             inherit_flag = kwargs.pop('inherit_surface_color', None)
             explicit_surface = kwargs.pop('surface_color', None)
+            # Capture an optional icon spec for image-capable widgets
+            icon_spec = kwargs.pop('icon', None)
 
             style_str = None
             if "bootstyle" in kwargs and kwargs["bootstyle"]:
@@ -339,6 +360,15 @@ class Bootstyle:
                     if parsed.get('color'):
                         surface = parsed['color']
                     setattr(self, '_surface_color', surface)
+                # If this widget supports images and an icon was provided, pass to builder
+                try:
+                    supports_image = 'image' in self.keys()
+                except Exception:
+                    supports_image = False
+                if icon_spec is not None and supports_image:
+                    _opts = dict(style_options or {})
+                    _opts['icon'] = icon_spec
+                    style_options = _opts
                 ttk_style = Bootstyle.create_ttk_style(
                     widget_class=widget_class,
                     bootstyle=style_str,
@@ -386,9 +416,9 @@ class Bootstyle:
             # ==== Update widget style & register for theme changes =====
 
             from ttkbootstrap.style.style import use_style
-            from ttkbootstrap.style.bootstyle_builder_tk import BootstyleBuilderTk
+            from ttkbootstrap.style.bootstyle_builder_tk import BootstyleBuilderBuilderTk
             style = use_style()
-            builder_tk = BootstyleBuilderTk(
+            builder_tk = BootstyleBuilderBuilderTk(
                 theme_provider=style.theme_provider if style else None,
                 style_instance=style
             )
