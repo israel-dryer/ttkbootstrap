@@ -29,5 +29,7 @@ WIDGET_CLASS_MAP = {
     'spinbox': 'TSpinbox',
     'menubutton': 'TMenubutton',
 }
+
 WIDGET_NAME_MAP = {v: k for k, v in WIDGET_CLASS_MAP.items()}
-FRAME_SURFACE_CLASSES = {'TFrame', 'TLabelframe'}
+CONTAINER_CLASSES = {'TFrame', 'TLabelframe'}
+ORIENT_CLASSES = {'TProgressbar', 'TScale', 'TScrollbar', 'TPanedwindow'}

@@ -10,7 +10,7 @@ from typing import Optional
 
 from ttkbootstrap.appconfig import AppConfig
 from ttkbootstrap.exceptions import BootstyleParsingError
-from ttkbootstrap.style.token_maps import COLOR_TOKENS, FRAME_SURFACE_CLASSES, WIDGET_CLASS_MAP
+from ttkbootstrap.style.token_maps import COLOR_TOKENS, CONTAINER_CLASSES, ORIENT_CLASSES, WIDGET_CLASS_MAP
 
 
 def parse_bootstyle_v2(bootstyle: str, widget_class: str) -> dict:
@@ -32,7 +32,8 @@ def parse_bootstyle_v2(bootstyle: str, widget_class: str) -> dict:
             'color': None,
             'variant': "default",
             'widget_class': widget_class,
-            'cross_widget': False
+            'cross_widget': False,
+            'orient': None,
         }
 
     from ttkbootstrap.style.bootstyle_builder_ttk import BootstyleBuilderBuilderTTk
@@ -45,6 +46,7 @@ def parse_bootstyle_v2(bootstyle: str, widget_class: str) -> dict:
     variant = None
     resolved_widget = widget_class
     cross_widget = False
+    orient = None
 
     for part in parts:
         if part in theme_colors:
@@ -57,6 +59,8 @@ def parse_bootstyle_v2(bootstyle: str, widget_class: str) -> dict:
             variant = part
         elif '[' in part or part in COLOR_TOKENS:
             color = part
+        elif part.lower() in ['horizontal', 'vertical']:
+            orient = part
         else:
             message = f"Unrecognized variant or color token: '{part}'"
             raise BootstyleParsingError(message)
@@ -65,7 +69,8 @@ def parse_bootstyle_v2(bootstyle: str, widget_class: str) -> dict:
         'color': color,
         'variant': variant,
         'widget_class': resolved_widget,
-        'cross_widget': cross_widget
+        'cross_widget': cross_widget,
+        'orient': orient
     }
 
 
@@ -73,10 +78,12 @@ def generate_ttk_style_name(
         color: Optional[str],
         variant: Optional[str],
         widget_class: str,
-        custom_prefix: Optional[str] = None) -> str:
+        custom_prefix: Optional[str] = None,
+        orient: Optional[str] = None,
+) -> str:
     """Generate TTK style name from parsed components.
 
-    Returns style name in format: [custom_prefix].[color].[Variant].[Widget]
+    Returns style name in format: [custom_prefix].[color].[Variant].[Orient].[Widget]
     """
     parts = []
 
@@ -86,9 +93,19 @@ def generate_ttk_style_name(
         parts.append(color)
     if variant:
         parts.append(variant.capitalize())
-
+    if orient:
+        parts.append(normalize_orientation(orient))
     parts.append(widget_class)
+    print('ttk style name parts', parts)
     return '.'.join(parts)
+
+
+def normalize_orientation(orient: str):
+    """Normalize TTK style orientation."""
+    if orient.lower().startswith('v'):
+        return 'Vertical'
+    else:
+        return 'Horizontal'
 
 
 def parse_bootstyle_legacy(bootstyle: str, widget_class: str) -> dict:
@@ -106,8 +123,20 @@ def parse_bootstyle(bootstyle: str, widget_class: str) -> dict:
     flag to determine parsing method (V1 legacy vs V2 new).
     """
     use_legacy = AppConfig.get('legacy_bootstyle', False)
-    return parse_bootstyle_legacy(bootstyle, widget_class) if use_legacy else parse_bootstyle_v2(
-        bootstyle, widget_class)
+    if use_legacy:
+        return parse_bootstyle_legacy(bootstyle, widget_class)
+    else:
+        return parse_bootstyle_v2(bootstyle, widget_class)
+
+
+def extract_orient_from_style(ttk_style: str):
+    """Extract orientation from TTK style name."""
+    if 'horizontal' in ttk_style.lower():
+        return 'Horizontal'
+    elif 'vertical' in ttk_style.lower():
+        return 'Vertical'
+    else:
+        return None
 
 
 def extract_color_from_style(ttk_style: str, default: str = 'primary') -> str:
@@ -155,8 +184,7 @@ class Bootstyle:
     def create_ttk_style(
             widget_class: str,
             bootstyle: Optional[str] = None,
-            style_options: Optional[dict] = None,
-            surface_color: Optional[str] = None) -> str:
+            style_options: Optional[dict] = None) -> str:
         """Create or get TTK style name for a widget.
 
         Parses bootstyle string, generates TTK style name, and triggers style creation.
@@ -170,24 +198,17 @@ class Bootstyle:
         color = parsed['color']
         variant = parsed['variant']
         resolved_widget = parsed['widget_class']
+        surface_color = style_options.get("surface_color")
 
         builder_variant = variant if variant is not None else \
             BootstyleBuilderBuilderTTk.get_default_variant(resolved_widget)
 
-        if (surface_color is None or surface_color == 'background') and \
-                resolved_widget in FRAME_SURFACE_CLASSES and color:
-            surface_color = color
-
-        options = dict(style_options or {})
-        if surface_color and surface_color != 'background':
-            options['surface_color'] = surface_color
-
         custom_prefix = None
 
-        if style_options or surface_color != 'background':
+        if style_options.keys() or surface_color != 'background':
             import hashlib
             import json
-            options_str = json.dumps(options, sort_keys=True)
+            options_str = json.dumps(style_options, sort_keys=True)
             options_hash = hashlib.md5(options_str.encode()).hexdigest()[:8]
             custom_prefix = f"bs[{options_hash}]"
 
@@ -195,7 +216,8 @@ class Bootstyle:
             color=color,
             variant=variant,
             widget_class=resolved_widget,
-            custom_prefix=custom_prefix
+            custom_prefix=custom_prefix,
+            orient=style_options.get('orient'),
         )
 
         from ttkbootstrap.style.style import use_style
@@ -206,7 +228,7 @@ class Bootstyle:
             variant=builder_variant,
             ttk_style=ttk_style,
             color=color,
-            options=options
+            options=style_options
         )
 
         return ttk_style
@@ -220,10 +242,9 @@ class Bootstyle:
             # extract bootstyle & style arguments
             had_style_kwarg = 'style' in kwargs
             bootstyle = kwargs.pop("bootstyle", "")
-            style_options = kwargs.pop("style_options", None)
+            style_options = kwargs.pop("style_options", {})
             inherit_surface_color = kwargs.pop('inherit_surface_color', None)
             surface_color_token = kwargs.pop('surface_color', None)
-            # Capture an optional icon spec for image-capable widgets
             icon_spec = kwargs.pop('icon', None)
 
             func(self, *args, **kwargs)  # the actual widget constructor
@@ -233,13 +254,13 @@ class Bootstyle:
 
             # ===== Surface color inheritance =====
 
+            if inherit_surface_color is None:
+                inherit_surface_color = AppConfig.get('inherit_surface_color', True)
+
             if hasattr(self, 'master') and self.master is not None:
                 parent_surface_token = getattr(self.master, '_surface_color', 'background')
             else:
                 parent_surface_token = 'background'
-
-            if inherit_surface_color is None:
-                inherit_surface_color = AppConfig.get('inherit_surface_color', True)
 
             if surface_color_token:
                 effective_surface_token = surface_color_token
@@ -248,59 +269,57 @@ class Bootstyle:
             else:
                 effective_surface_token = 'background'
 
-            # frame widgets can take their surface color from the bootstyle
-            if style_str and widget_class in FRAME_SURFACE_CLASSES and surface_color_token is None:
+            # container widgets can take their surface color from the bootstyle
+            if style_str and widget_class in CONTAINER_CLASSES and surface_color_token is None:
                 parsed = parse_bootstyle(style_str, widget_class)
                 if parsed.get('color'):
                     effective_surface_token = parsed['color']
 
+            # cache the surface color for child components
             setattr(self, '_surface_color', effective_surface_token)
+            if effective_surface_token != 'background' and effective_surface_token is not None:
+                style_options.setdefault('surface_color', effective_surface_token)
+
+            # ==== Orientation =====
+
+            # handle widgets with orientation
+            if widget_class in ORIENT_CLASSES:
+                orient = str(self.cget('orient'))
+                style_options.setdefault('orient', orient)
+                print('orient', orient)
 
             # ==== Create actual ttk style & assign to widget =====
 
             if style_str and widget_class:
-                # If this widget supports images and an icon was provided, pass to builder
                 try:
                     supports_image = 'image' in self.keys()
                 except Exception:
                     supports_image = False
                 if icon_spec is not None and supports_image:
                     # Merge icon into style_options
-                    _opts = dict(style_options or {})
-                    _opts['icon'] = icon_spec
-                    style_options = _opts
+                    style_options['icon'] = icon_spec
+
                 ttk_style = Bootstyle.create_ttk_style(
                     widget_class=widget_class,
                     bootstyle=style_str,
                     style_options=style_options,
-                    surface_color=effective_surface_token,
                 )
                 self.configure(style=ttk_style)
 
             elif widget_class and not had_style_kwarg:
                 from ttkbootstrap.style.bootstyle_builder_ttk import BootstyleBuilderBuilderTTk
                 from ttkbootstrap.style.style import use_style
+
                 default_variant = BootstyleBuilderBuilderTTk.get_default_variant(widget_class)
+                print('default variant', default_variant, widget_class)
 
                 if BootstyleBuilderBuilderTTk.has_builder(widget_class, default_variant):
                     # Build options first so we can decide if a custom bs[...] prefix is needed
-                    options = dict(style_options or {})
-                    # Include icon for image-capable widgets
-                    try:
-                        supports_image = 'image' in self.keys()
-                    except Exception:
-                        supports_image = False
-                    if icon_spec is not None and supports_image:
-                        options['icon'] = icon_spec
-                    if effective_surface_token and effective_surface_token != 'background':
-                        options['surface_color'] = effective_surface_token
-
-                    # Mirror create_ttk_style behavior: add bs[...] when custom options or non-background surface
                     custom_prefix = None
-                    if style_options or (effective_surface_token and effective_surface_token != 'background'):
+                    if style_options.keys():
                         import hashlib
                         import json
-                        options_str = json.dumps(options, sort_keys=True)
+                        options_str = json.dumps(style_options, sort_keys=True)
                         options_hash = hashlib.md5(options_str.encode()).hexdigest()[:8]
                         custom_prefix = f"bs[{options_hash}]"
 
@@ -317,7 +336,7 @@ class Bootstyle:
                             widget_class=widget_class,
                             variant=default_variant,
                             ttk_style=ttk_style,
-                            options=options,
+                            options=style_options,
                         )
                         self.configure(style=ttk_style)
                 else:
@@ -360,7 +379,7 @@ class Bootstyle:
                     else:
                         surface = getattr(self, '_surface_color', 'background')
 
-                if widget_class in FRAME_SURFACE_CLASSES and explicit_surface is None:
+                if widget_class in CONTAINER_CLASSES and explicit_surface is None:
                     parsed = parse_bootstyle(style_str, widget_class)
                     if parsed.get('color'):
                         surface = parsed['color']
@@ -377,8 +396,7 @@ class Bootstyle:
                 ttk_style = Bootstyle.create_ttk_style(
                     widget_class=widget_class,
                     bootstyle=style_str,
-                    style_options=style_options,
-                    surface_color=surface,
+                    style_options=style_options
                 )
                 kwargs["style"] = ttk_style
 
