@@ -1,9 +1,14 @@
 from __future__ import annotations
 
-COLORS = {
+COLOR_TOKENS = {
     'primary', 'secondary', 'success', 'info',
-    'warning', 'danger', 'light', 'dark'
+    'warning', 'danger', 'light', 'dark',
+    'foreground', 'background', 'white', 'black',
+    'blue', 'indigo', 'purple', 'red', 'orange',
+    'yellow', 'green', 'teal', 'cyan', 'gray',
+    'border'
 }
+
 WIDGET_CLASS_MAP = {
     'button': 'TButton',
     'label': 'TLabel',

@@ -9,7 +9,8 @@ from __future__ import annotations
 from typing import Optional
 
 from ttkbootstrap.appconfig import AppConfig
-from ttkbootstrap.style.token_maps import COLORS, FRAME_SURFACE_CLASSES, WIDGET_CLASS_MAP
+from ttkbootstrap.exceptions import BootstyleParsingError
+from ttkbootstrap.style.token_maps import COLOR_TOKENS, FRAME_SURFACE_CLASSES, WIDGET_CLASS_MAP
 
 
 def parse_bootstyle_v2(bootstyle: str, widget_class: str) -> dict:
@@ -54,10 +55,11 @@ def parse_bootstyle_v2(bootstyle: str, widget_class: str) -> dict:
                 cross_widget = True
         elif BootstyleBuilderBuilderTTk.has_builder(resolved_widget, part):
             variant = part
-        elif '[' in part or '#' in part or part in COLORS:
+        elif '[' in part or part in COLOR_TOKENS:
             color = part
         else:
-            color = part
+            message = f"Unrecognized variant or color token: '{part}'"
+            raise BootstyleParsingError(message)
 
     return {
         'color': color,
@@ -111,11 +113,9 @@ def parse_bootstyle(bootstyle: str, widget_class: str) -> dict:
 def extract_color_from_style(ttk_style: str, default: str = 'primary') -> str:
     """Extract color token from TTK style name."""
     parts = ttk_style.split('.')
-    if parts and parts[0].startswith('custom_'):
-        parts = parts[1:]
 
     for part in parts:
-        if part.lower() in COLORS:
+        if part.lower() in COLOR_TOKENS:
             return part.lower()
 
     return default
@@ -125,12 +125,9 @@ def extract_variant_from_style(ttk_style: str) -> Optional[str]:
     """Extract variant name from TTK style name."""
     parts = ttk_style.split('.')
 
-    if parts and parts[0].startswith('custom_'):
-        parts = parts[1:]
-
     for part in parts:
         part_lower = part.lower()
-        if part_lower not in COLORS and not part.startswith('T'):
+        if part_lower not in COLOR_TOKENS and not part.startswith('T'):
             return part_lower
 
     return None
