@@ -8,6 +8,8 @@ from PIL.ImageTk import PhotoImage
 from ttkbootstrap.style.types import ColorModel
 from ttkbootstrap.utility import clamp
 
+image_cache = []
+
 ASSETS_DIR = Path(__file__).parent.parent / "assets" / "widgets"
 
 HUE = 360
@@ -255,7 +257,7 @@ def recolor_image(
         magenta_color: str | None = None,
         transparent_color: str | None = None,
         *,
-        scale: float = 0.5,
+        scale: float = 0.43,
 ) -> PhotoImage:
     """
     Recolor a white-layout PNG image using luminance interpolation.
@@ -319,7 +321,10 @@ def recolor_image(
         )
         result = result.resize(new_size, Image.Resampling.LANCZOS)
 
-    return PhotoImage(image=result)
+    img = PhotoImage(image=result)
+    global image_cache
+    image_cache.append(img)
+    return img
 
 
 def should_darken(bg_hex: str) -> bool:

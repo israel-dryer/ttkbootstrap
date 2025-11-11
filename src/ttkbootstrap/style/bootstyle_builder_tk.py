@@ -32,7 +32,7 @@ class BootstyleBuilderBuilderTk(BootstyleBuilderBase):
     _lock = threading.Lock()
     _builders_loaded = False
 
-    def __init__(self, theme_provider: Optional[ThemeProvider] = None, style_instance: Optional[Any] = None):  # noqa: ANN401
+    def __init__(self, theme_provider: Optional[ThemeProvider] = None, style_instance: Optional[Any] = None):
         super().__init__(theme_provider, style_instance)
 
     # Color utilities and provider/colors properties are inherited from BootstyleBase

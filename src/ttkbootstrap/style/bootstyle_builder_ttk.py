@@ -300,6 +300,13 @@ class BootstyleBuilderBuilderTTk(BootstyleBuilderBase):
 
     def create_style_element_image(self, element: ElementImage):
         name, args, kwargs = element.build()
+        try:
+            existing = set(self.style.element_names())
+        except Exception:
+            existing = set()
+        if name in existing:
+            # Element already exists; avoid duplicate creation error on theme rebuilds
+            return
         self.style.element_create(name, "image", *args, **kwargs)
 
     def create_style_layout(self, ttk_style: str, element: Element):

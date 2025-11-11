@@ -117,7 +117,7 @@ class ThemeProvider:
             cls._instance = super().__new__(cls)
         return cls._instance
 
-    def __init__(self, name: str = "light"):
+    def __init__(self, name: str = "dark"):
         # Prevent reinitialization on subsequent ThemeProvider() calls
         if getattr(self, "_initialized", False):
             if name and name != self.name:

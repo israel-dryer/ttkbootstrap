@@ -71,16 +71,13 @@ def generate_ttk_style_name(
         color: Optional[str],
         variant: Optional[str],
         widget_class: str,
-        custom_prefix: Optional[str] = None,
-        surface_color: Optional[str] = None) -> str:
+        custom_prefix: Optional[str] = None) -> str:
     """Generate TTK style name from parsed components.
 
-    Returns style name in format: [surface].[custom_prefix].[color].[Variant].[Widget]
+    Returns style name in format: [custom_prefix].[color].[Variant].[Widget]
     """
     parts = []
 
-    if surface_color and surface_color != 'background':
-        parts.append(f"Surface[{surface_color}]")
     if custom_prefix:
         parts.append(custom_prefix)
     if color:
@@ -177,14 +174,6 @@ class Bootstyle:
         variant = parsed['variant']
         resolved_widget = parsed['widget_class']
 
-        custom_prefix = None
-        if style_options:
-            import hashlib
-            import json
-            options_str = json.dumps(style_options, sort_keys=True)
-            options_hash = hashlib.md5(options_str.encode()).hexdigest()[:8]
-            custom_prefix = f"custom_{options_hash}"
-
         builder_variant = variant if variant is not None else \
             BootstyleBuilderBuilderTTk.get_default_variant(resolved_widget)
 
@@ -192,25 +181,33 @@ class Bootstyle:
                 resolved_widget in FRAME_SURFACE_CLASSES and color:
             surface_color = color
 
+        options = dict(style_options or {})
+        if surface_color and surface_color != 'background':
+            options['surface_color'] = surface_color
+
+        custom_prefix = None
+
+        if style_options or surface_color != 'background':
+            import hashlib
+            import json
+            options_str = json.dumps(options, sort_keys=True)
+            options_hash = hashlib.md5(options_str.encode()).hexdigest()[:8]
+            custom_prefix = f"bs[{options_hash}]"
+
         ttk_style = generate_ttk_style_name(
             color=color,
             variant=variant,
             widget_class=resolved_widget,
-            custom_prefix=custom_prefix,
-            surface_color=surface_color
+            custom_prefix=custom_prefix
         )
 
         from ttkbootstrap.style.style import use_style
         style = use_style()
 
-        options = dict(style_options or {})
-        if surface_color and surface_color != 'background':
-            options['surface_color'] = surface_color
-
         style.create_style(
             widget_class=resolved_widget,
             variant=builder_variant,
-            ttkstyle=ttk_style,
+            ttk_style=ttk_style,
             color=color,
             options=options
         )
@@ -292,8 +289,7 @@ class Bootstyle:
                     ttk_style = generate_ttk_style_name(
                         color=None,
                         variant=default_variant,
-                        widget_class=widget_class,
-                        surface_color=effective_surface_token,
+                        widget_class=widget_class
                     )
 
                     style_instance = use_style()
@@ -311,7 +307,7 @@ class Bootstyle:
                         style_instance.create_style(
                             widget_class=widget_class,
                             variant=default_variant,
-                            ttkstyle=ttk_style,
+                            ttk_style=ttk_style,
                             options=options,
                         )
                         self.configure(style=ttk_style)
