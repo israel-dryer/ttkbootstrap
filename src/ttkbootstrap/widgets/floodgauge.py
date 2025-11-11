@@ -32,7 +32,7 @@ Example:
     ```
 """
 from tkinter import Event, Misc, TclError
-from typing import Any
+from typing import Any, Optional, Union
 
 from ttkbootstrap import Canvas, IntVar, Progressbar, StringVar
 from ttkbootstrap.colorutils import contrast_color
@@ -96,13 +96,13 @@ class Floodgauge(Canvas):
 
     def __init__(
             self,
-            master: Misc | None = None,
+            master: Optional[Misc] = None,
             value: int = 0,
             maximum: int = 100,
             mode: str = "determinate",
-            mask: str | None = None,
+            mask: Optional[str] = None,
             text: str = "",
-            font: tuple[str, int] | str = ("Helvetica", 12),
+            font: Union[tuple[str, int], str] = ("Helvetica", 12),
             bootstyle: str = "primary",
             orient: str = "horizontal",
             length: int = 200,
@@ -224,7 +224,7 @@ class Floodgauge(Canvas):
         self.variable.set(self.value)
         self._draw()
 
-    def start(self, step_size: int | None = None, interval: int | None = None) -> None:
+    def start(self, step_size: Optional[int] = None, interval: Optional[int] = None) -> None:
         """Start the progress animation.
 
         For indeterminate mode, starts the bouncing animation. For determinate
@@ -300,7 +300,7 @@ class Floodgauge(Canvas):
         self._draw()
         self._after_id = self.after(interval, lambda: self._animate_indeterminate(interval))
 
-    def configure(self, cnf: str | None = None, **kwargs: Any) -> Any:
+    def configure(self, cnf: Optional[str] = None, **kwargs: Any) -> Any:
         """Configure the options for this widget.
 
         Parameters:
@@ -437,18 +437,18 @@ class FloodgaugeLegacy(Progressbar):
 
     def __init__(
             self,
-            master: Misc | None = None,
-            cursor: str | None = None,
-            font: tuple[str, int] | str | None = None,
-            length: int | None = None,
-            maximum: int | float = 100,
+            master: Optional[Misc] = None,
+            cursor: Optional[str] = None,
+            font: Optional[Union[tuple[str, int], str]] = None,
+            length: Optional[int] = None,
+            maximum: Union[int, float] = 100,
             mode: str = DETERMINATE,
             orient: str = HORIZONTAL,
             bootstyle: str = PRIMARY,
             takefocus: bool = False,
-            text: str | None = None,
-            value: int | float = 0,
-            mask: str | None = None,
+            text: Optional[str] = None,
+            value: Union[int, float] = 0,
+            mask: Optional[str] = None,
             **kwargs: Any,
     ) -> None:
         """
@@ -614,7 +614,7 @@ class FloodgaugeLegacy(Progressbar):
     def __setitem__(self, key: str, value: Any) -> None:
         self._configure_set(**{key: value})
 
-    def configure(self, cnf: str | None = None, **kwargs: Any) -> Any:
+    def configure(self, cnf: Optional[str] = None, **kwargs: Any) -> Any:
         """Configure the options for this widget.
 
         Parameters:
