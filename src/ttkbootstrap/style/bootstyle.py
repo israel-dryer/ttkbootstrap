@@ -10,7 +10,10 @@ from typing import Optional
 
 from ttkbootstrap.appconfig import AppConfig
 from ttkbootstrap.exceptions import BootstyleParsingError
-from ttkbootstrap.style.token_maps import COLOR_TOKENS, CONTAINER_CLASSES, ORIENT_CLASSES, WIDGET_CLASS_MAP
+from ttkbootstrap.style.token_maps import (
+    COLOR_TOKENS, CONTAINER_CLASSES, ICON_CLASSES, ORIENT_CLASSES,
+    WIDGET_CLASS_MAP
+)
 
 
 def parse_bootstyle_v2(bootstyle: str, widget_class: str) -> dict:
@@ -96,7 +99,6 @@ def generate_ttk_style_name(
     if orient:
         parts.append(normalize_orientation(orient))
     parts.append(widget_class)
-    print('ttk style name parts', parts)
     return '.'.join(parts)
 
 
@@ -286,16 +288,11 @@ class Bootstyle:
             if widget_class in ORIENT_CLASSES:
                 orient = str(self.cget('orient'))
                 style_options.setdefault('orient', orient)
-                print('orient', orient)
 
             # ==== Create actual ttk style & assign to widget =====
 
             if style_str and widget_class:
-                try:
-                    supports_image = 'image' in self.keys()
-                except Exception:
-                    supports_image = False
-                if icon_spec is not None and supports_image:
+                if widget_class in ICON_CLASSES and icon_spec is not None:
                     # Merge icon into style_options
                     style_options['icon'] = icon_spec
 
@@ -311,9 +308,12 @@ class Bootstyle:
                 from ttkbootstrap.style.style import use_style
 
                 default_variant = BootstyleBuilderBuilderTTk.get_default_variant(widget_class)
-                print('default variant', default_variant, widget_class)
 
                 if BootstyleBuilderBuilderTTk.has_builder(widget_class, default_variant):
+                    # Handle icon for image-capable widgets
+                    if widget_class in ICON_CLASSES and icon_spec is not None:
+                        style_options['icon'] = icon_spec
+
                     # Build options first so we can decide if a custom bs[...] prefix is needed
                     custom_prefix = None
                     if style_options.keys():
@@ -358,7 +358,6 @@ class Bootstyle:
             style_options = kwargs.pop("style_options", None)
             inherit_flag = kwargs.pop('inherit_surface_color', None)
             explicit_surface = kwargs.pop('surface_color', None)
-            # Capture an optional icon spec for image-capable widgets
             icon_spec = kwargs.pop('icon', None)
 
             style_str = None
@@ -379,17 +378,15 @@ class Bootstyle:
                     else:
                         surface = getattr(self, '_surface_color', 'background')
 
+                # handle surface color for container widgets
                 if widget_class in CONTAINER_CLASSES and explicit_surface is None:
                     parsed = parse_bootstyle(style_str, widget_class)
                     if parsed.get('color'):
                         surface = parsed['color']
                     setattr(self, '_surface_color', surface)
-                # If this widget supports images and an icon was provided, pass to builder
-                try:
-                    supports_image = 'image' in self.keys()
-                except Exception:
-                    supports_image = False
-                if icon_spec is not None and supports_image:
+
+                # Pass through icon to style builder for supported widgets
+                if widget_class in ICON_CLASSES and icon_spec is not None:
                     _opts = dict(style_options or {})
                     _opts['icon'] = icon_spec
                     style_options = _opts
