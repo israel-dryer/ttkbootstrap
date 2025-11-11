@@ -194,10 +194,9 @@ class Style(ttkStyle):
 
         if name not in self.theme_names():
             self.theme_create(name, 'clam', {})
-            super().theme_use(name)
-            self._rebuild_all_styles()
-        else:
-            super().theme_use(name)
+
+        super().theme_use(name)
+        self._rebuild_all_styles()
 
         # Re-apply Tk widget styling (legacy widgets)
         self._rebuild_all_tk_widgets()
@@ -216,8 +215,6 @@ class Style(ttkStyle):
         custom options.
         """
         for style in self._style_registry:
-            if self.style_exists(style):
-                continue
             # Get stored options and color
             options = self._style_options.get(style, {})
             color = self._style_colors.get(style)
@@ -278,11 +275,11 @@ class Style(ttkStyle):
             return None
 
         # Extract widget class (e.g., "TButton")
+        # Widget class is always the LAST part starting with 'T'
         widget_class = None
         for part in parts:
             if part.startswith('T'):
                 widget_class = part
-                break
 
         if not widget_class:
             return None
@@ -294,7 +291,8 @@ class Style(ttkStyle):
         variant = None
         color = None
         for part in parts:
-            if part.startswith('T'):
+            # Skip the widget class itself (e.g., 'TCheckbutton')
+            if part == widget_class:
                 continue
             token = part.lower()
             # Identify variant by registry match
