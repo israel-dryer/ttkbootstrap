@@ -17,6 +17,14 @@ SAT = 100
 LUM = 100
 
 
+def create_transparent_image(width: int, height: int):
+    """Create a transparent image."""
+    img = Image.new('RGBA', (width, height), (255, 255, 255, 0))
+    pm = PhotoImage(image=img)
+    image_cache.append(pm)
+    return pm
+
+
 def color_to_rgb(color, model: ColorModel = 'hex'):
     """Convert color value to rgb.
 

@@ -13,9 +13,11 @@ from __future__ import annotations
 from . import button  # noqa: F401
 from . import frame
 from . import label
+from . import radio_button
 
 __all__ = [
     'button',
     'frame',
-    'label'
+    'label',
+    'radio_button',
 ]
