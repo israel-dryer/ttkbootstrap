@@ -283,24 +283,36 @@ class Bootstyle:
                 default_variant = BootstyleBuilderBuilderTTk.get_default_variant(widget_class)
 
                 if BootstyleBuilderBuilderTTk.has_builder(widget_class, default_variant):
+                    # Build options first so we can decide if a custom bs[...] prefix is needed
+                    options = dict(style_options or {})
+                    # Include icon for image-capable widgets
+                    try:
+                        supports_image = 'image' in self.keys()
+                    except Exception:
+                        supports_image = False
+                    if icon_spec is not None and supports_image:
+                        options['icon'] = icon_spec
+                    if effective_surface_token and effective_surface_token != 'background':
+                        options['surface_color'] = effective_surface_token
+
+                    # Mirror create_ttk_style behavior: add bs[...] when custom options or non-background surface
+                    custom_prefix = None
+                    if style_options or (effective_surface_token and effective_surface_token != 'background'):
+                        import hashlib
+                        import json
+                        options_str = json.dumps(options, sort_keys=True)
+                        options_hash = hashlib.md5(options_str.encode()).hexdigest()[:8]
+                        custom_prefix = f"bs[{options_hash}]"
+
                     ttk_style = generate_ttk_style_name(
                         color=None,
                         variant=default_variant,
-                        widget_class=widget_class
+                        widget_class=widget_class,
+                        custom_prefix=custom_prefix,
                     )
 
                     style_instance = use_style()
                     if style_instance is not None:
-                        options = dict(style_options or {})
-                        # Include icon for image-capable widgets
-                        try:
-                            supports_image = 'image' in self.keys()
-                        except Exception:
-                            supports_image = False
-                        if icon_spec is not None and supports_image:
-                            options['icon'] = icon_spec
-                        if effective_surface_token and effective_surface_token != 'background':
-                            options['surface_color'] = effective_surface_token
                         style_instance.create_style(
                             widget_class=widget_class,
                             variant=default_variant,
