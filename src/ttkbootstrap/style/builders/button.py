@@ -155,94 +155,125 @@ def build_outline_button_style(b: BootstyleBuilderBuilderTTk, ttk_style: str, co
     b.map_style(ttk_style, **state_spec)
 
 
-@BootstyleBuilderBuilderTTk.register_builder('link', 'TButton')
-def build_button_link(
-        builder: BootstyleBuilderBuilderTTk, ttk_style: str,
-        color: str = None, **options):
-    """Build link-style button (text only, no visible button).
-
-    Link buttons appear as clickable text with no background or border.
-    They change color on hover to indicate interactivity.
-
-    Args:
-        builder: BootstyleBuilder instance with style, colors, utilities
-        ttk_style: Full TTK style name (e.g., "info.Link.TButton")
-        color: Color token (e.g., 'info', '#FF5733') or None for default
-        **options: Custom style options (currently unused)
-
-    Supported Options:
-        None currently - reserved for future use
-    """
-    # Use the color passed directly from parsing (default to 'primary' if None)
-    colorname = color or 'primary'
-
-    # Get theme colors
-    if colorname in ('light', 'primary'):
-        foreground = builder.color('foreground')
-    else:
-        foreground = builder.color(colorname)
-
-    # Link buttons typically use info color for hover
-    pressed = builder.color('info')
-    hover = builder.color('info')
+@BootstyleBuilderBuilderTTk.register_builder('text', 'TButton')
+def build_text_button_style(b: BootstyleBuilderBuilderTTk, ttk_style: str, color: str = None, **options):
+    accent_token = color or 'foreground'
     surface_token = options.get('surface_color', 'background')
-    bg_color = builder.color(surface_token)
-    disabled_fg = builder.disabled('text', surface=bg_color)
 
-    # Configure base style
-    builder.configure_style(
+    surface = b.color(surface_token)
+    foreground_normal = b.color(accent_token)
+    foreground_disabled = b.disabled('text')
+
+    disabled = foreground_disabled
+    focused_ring = b.focus_ring(foreground_normal, surface)
+
+    # button element images
+    normal_img = recolor_image('button', surface, surface, surface)
+    focused_img = recolor_image('button', surface, surface, focused_ring)
+    disabled_img = recolor_image('button', surface, disabled, surface, surface)
+
+    b.create_style_element_image(
+        ElementImage(
+            f'{ttk_style}.border', normal_img, sticky="nsew", border=8, padding=8).state_specs(
+            [
+                ('disabled', disabled_img),
+                ('focus', focused_img),
+            ])
+    )
+
+    b.create_style_layout(
+        ttk_style, Element(f"{ttk_style}.border", sticky="nsew").children(
+            [
+                Element("Button.padding", sticky="nsew").children(
+                    [
+                        Element("Button.label", sticky="")
+                    ])
+            ]))
+
+    b.configure_style(
         ttk_style,
-        foreground=foreground,
-        background=bg_color,
-        bordercolor=bg_color,
-        darkcolor=bg_color,
-        lightcolor=bg_color,
-        relief='raised',
-        focusthickness=1,
-        focuscolor=foreground,
-        anchor='center',
-        padding=(10, 5),
+        background=surface,
+        foreground=foreground_normal,
+        relief='flat',
+        stipple="gray12",
+        padding=(8, 0)
     )
 
-    # Map state-specific colors
     state_spec = dict(
-        shiftrelief=[('pressed !disabled', -1)],
         foreground=[
-            ('disabled', disabled_fg),
-            ('pressed !disabled', pressed),
-            ('hover !disabled', hover),
-            ('', foreground)
-        ],
-        focuscolor=[
-            ('pressed !disabled', pressed),
-            ('hover !disabled', pressed),
-        ],
-        background=[
-            ('disabled', bg_color),
-            ('pressed !disabled', bg_color),
-            ('hover !disabled', bg_color),
-        ],
-        bordercolor=[
-            ('disabled', bg_color),
-            ('pressed !disabled', bg_color),
-            ('hover !disabled', bg_color),
-        ],
-        darkcolor=[
-            ('disabled', bg_color),
-            ('pressed !disabled', bg_color),
-            ('hover !disabled', bg_color),
-        ],
-        lightcolor=[
-            ('disabled', bg_color),
-            ('pressed !disabled', bg_color),
-            ('hover !disabled', bg_color),
-        ],
+            ('disabled', foreground_disabled),
+            ('', foreground_normal)
+        ], background=[('disabled', surface)]
     )
 
+    # map icon if available
     icon = options.get('icon')
 
     if icon is not None:
-        icon = builder.normalize_icon_spec(icon)
-        state_spec['image'] = builder.map_stateful_icons(icon, state_spec['foreground'])
+        icon = b.normalize_icon_spec(icon)
+        state_spec['image'] = b.map_stateful_icons(icon, state_spec['foreground'])
 
-    builder.map_style(ttk_style, **state_spec)
+    b.map_style(ttk_style, **state_spec)
+
+
+@BootstyleBuilderBuilderTTk.register_builder('link', 'TButton')
+def build_text_button_style(b: BootstyleBuilderBuilderTTk, ttk_style: str, color: str = None, **options):
+    accent_token = color or 'foreground'
+    surface_token = options.get('surface_color', 'background')
+
+    surface = b.color(surface_token)
+    foreground_normal = b.color(accent_token)
+    foreground_disabled = b.disabled('text')
+    foreground_active = b.color('primary')
+
+    disabled = foreground_disabled
+    focused_ring = b.focus_ring(foreground_normal, surface)
+
+    # button element images
+    normal_img = recolor_image('button', surface, surface, surface)
+    focused_img = recolor_image('button', surface, surface, focused_ring)
+    disabled_img = recolor_image('button', surface, disabled, surface, surface)
+
+    b.create_style_element_image(
+        ElementImage(
+            f'{ttk_style}.border', normal_img, sticky="nsew", border=8, padding=8).state_specs(
+            [
+                ('disabled', disabled_img),
+                ('focus', focused_img),
+            ])
+    )
+
+    b.create_style_layout(
+        ttk_style, Element(f"{ttk_style}.border", sticky="nsew").children(
+            [
+                Element("Button.padding", sticky="nsew").children(
+                    [
+                        Element("Button.label", sticky="")
+                    ])
+            ]))
+
+    b.configure_style(
+        ttk_style,
+        background=surface,
+        foreground=foreground_normal,
+        relief='flat',
+        stipple="gray12",
+        padding=(8, 0)
+    )
+
+    state_spec = dict(
+        foreground=[
+            ('disabled', foreground_disabled),
+            ('hover !disabled', foreground_active),
+            ('', foreground_normal)
+        ], background=[('disabled', surface)]
+    )
+
+    # map icon if available
+    icon = options.get('icon')
+
+    if icon is not None:
+        icon = b.normalize_icon_spec(icon)
+        state_spec['image'] = b.map_stateful_icons(icon, state_spec['foreground'])
+
+    b.map_style(ttk_style, **state_spec)
