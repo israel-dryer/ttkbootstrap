@@ -12,7 +12,7 @@ from ttkbootstrap.style.utility import recolor_image
 
 @BootstyleBuilderTTk.register_builder('solid', 'TButton')
 @BootstyleBuilderTTk.register_builder('default', 'TButton')
-def build_solid_button_style(b: BootstyleBuilderTTk, ttk_style: str, color: str = 'primary', **options):
+def build_solid_button_style(b: BootstyleBuilderTTk, ttk_style: str, color: str = None, **options):
     accent_token = color or 'primary'
     surface_token = options.get('surface_color', 'background')
 
