@@ -5,14 +5,14 @@ This module contains style builders for ttk.Button widgets and variants.
 
 from __future__ import annotations
 
-from ttkbootstrap.style.bootstyle_builder_ttk import BootstyleBuilderBuilderTTk
+from ttkbootstrap.style.bootstyle_builder_ttk import BootstyleBuilderTTk
 from ttkbootstrap.style.element import Element, ElementImage
 from ttkbootstrap.style.utility import recolor_image
 
 
-@BootstyleBuilderBuilderTTk.register_builder('solid', 'TButton')
-@BootstyleBuilderBuilderTTk.register_builder('default', 'TButton')
-def build_solid_button_style(b: BootstyleBuilderBuilderTTk, ttk_style: str, color: str = 'primary', **options):
+@BootstyleBuilderTTk.register_builder('solid', 'TButton')
+@BootstyleBuilderTTk.register_builder('default', 'TButton')
+def build_solid_button_style(b: BootstyleBuilderTTk, ttk_style: str, color: str = 'primary', **options):
     accent_token = color or 'primary'
     surface_token = options.get('surface_color', 'background')
 
@@ -79,8 +79,8 @@ def build_solid_button_style(b: BootstyleBuilderBuilderTTk, ttk_style: str, colo
     b.map_style(ttk_style, **state_spec)
 
 
-@BootstyleBuilderBuilderTTk.register_builder('outline', 'TButton')
-def build_outline_button_style(b: BootstyleBuilderBuilderTTk, ttk_style: str, color: str = None, **options):
+@BootstyleBuilderTTk.register_builder('outline', 'TButton')
+def build_outline_button_style(b: BootstyleBuilderTTk, ttk_style: str, color: str = None, **options):
     accent_token = color or 'primary'
     surface_token = options.get('surface_color', 'background')
 
@@ -155,8 +155,8 @@ def build_outline_button_style(b: BootstyleBuilderBuilderTTk, ttk_style: str, co
     b.map_style(ttk_style, **state_spec)
 
 
-@BootstyleBuilderBuilderTTk.register_builder('text', 'TButton')
-def build_text_button_style(b: BootstyleBuilderBuilderTTk, ttk_style: str, color: str = None, **options):
+@BootstyleBuilderTTk.register_builder('text', 'TButton')
+def build_text_button_style(b: BootstyleBuilderTTk, ttk_style: str, color: str = None, **options):
     accent_token = color or 'foreground'
     surface_token = options.get('surface_color', 'background')
 
@@ -216,8 +216,8 @@ def build_text_button_style(b: BootstyleBuilderBuilderTTk, ttk_style: str, color
     b.map_style(ttk_style, **state_spec)
 
 
-@BootstyleBuilderBuilderTTk.register_builder('link', 'TButton')
-def build_link_button_style(b: BootstyleBuilderBuilderTTk, ttk_style: str, color: str = None, **options):
+@BootstyleBuilderTTk.register_builder('link', 'TButton')
+def build_link_button_style(b: BootstyleBuilderTTk, ttk_style: str, color: str = None, **options):
     accent_token = color or 'foreground'
     surface_token = options.get('surface_color', 'background')
 
@@ -279,8 +279,8 @@ def build_link_button_style(b: BootstyleBuilderBuilderTTk, ttk_style: str, color
     b.map_style(ttk_style, **state_spec)
 
 
-@BootstyleBuilderBuilderTTk.register_builder('ghost', 'TButton')
-def build_ghost_button_style(b: BootstyleBuilderBuilderTTk, ttk_style: str, color: str = None, **options):
+@BootstyleBuilderTTk.register_builder('ghost', 'TButton')
+def build_ghost_button_style(b: BootstyleBuilderTTk, ttk_style: str, color: str = None, **options):
     accent_token = color or 'primary'
     surface_token = options.get('surface_color', 'background')
 

@@ -5,13 +5,13 @@ This module contains style builders for ttk.Checkbutton widgets and variants.
 
 from __future__ import annotations
 
-from ttkbootstrap.style.bootstyle_builder_ttk import BootstyleBuilderBuilderTTk
+from ttkbootstrap.style.bootstyle_builder_ttk import BootstyleBuilderTTk
 from ttkbootstrap.style.element import Element, ElementImage
 from ttkbootstrap.style.utility import create_transparent_image, recolor_image
 
 
-@BootstyleBuilderBuilderTTk.register_builder('default', 'TCheckbutton')
-def build_checkbutton_style(b: BootstyleBuilderBuilderTTk, ttk_style: str, color: str = 'primary', **options):
+@BootstyleBuilderTTk.register_builder('default', 'TCheckbutton')
+def build_checkbutton_style(b: BootstyleBuilderTTk, ttk_style: str, color: str = 'primary', **options):
     accent_token = color or 'primary'
     surface_token = options.get('surface_color', 'background')
 
@@ -96,8 +96,8 @@ def build_checkbutton_style(b: BootstyleBuilderBuilderTTk, ttk_style: str, color
     b.map_style(ttk_style, background=[], foreground=[])
 
 
-@BootstyleBuilderBuilderTTk.register_builder('toggle', 'TCheckbutton')
-def build_toggle_style(b: BootstyleBuilderBuilderTTk, ttk_style: str, color: str = 'primary', **options):
+@BootstyleBuilderTTk.register_builder('toggle', 'TCheckbutton')
+def build_toggle_style(b: BootstyleBuilderTTk, ttk_style: str, color: str = 'primary', **options):
     accent_token = color or 'primary'
     surface_token = options.get('surface_color', 'background')
 

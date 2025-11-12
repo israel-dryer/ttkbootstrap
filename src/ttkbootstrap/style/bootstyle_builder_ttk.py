@@ -13,7 +13,7 @@ from ttkbootstrap.style.bootstyle_builder_base import BootstyleBuilderBase
 
 
 class BuilderCallable(Protocol):
-    def __call__(self, builder: BootstyleBuilderBuilderTTk, ttk_style: str, **options: Any) -> None:
+    def __call__(self, builder: BootstyleBuilderTTk, ttk_style: str, **options: Any) -> None:
         ...
 
 
@@ -33,7 +33,7 @@ from ttkbootstrap.style.token_maps import WIDGET_CLASS_MAP, WIDGET_NAME_MAP
 DEFAULT_VARIANT = 'default'
 
 
-class BootstyleBuilderBuilderTTk(BootstyleBuilderBase):
+class BootstyleBuilderTTk(BootstyleBuilderBase):
     """Builder manager with widget-specific style builder registry.
 
     This class manages registration and invocation of style builder functions.
@@ -95,7 +95,7 @@ class BootstyleBuilderBuilderTTk(BootstyleBuilderBase):
             BootstyleBuilderError: If variant or widget_class invalid
 
         Example:
-            >>> @BootstyleBuilderBuilderTTk.register_builder('outline', 'TButton')
+            >>> @BootstyleBuilderTTk.register_builder('outline', 'TButton')
             ... def build_button_outline(builder, ttk_style, **options):
             ...     # Builder implementation
             ...     pass
@@ -137,10 +137,10 @@ class BootstyleBuilderBuilderTTk(BootstyleBuilderBase):
             BootstyleBuilderError: If builder not found
         """
         # Ensure builders are loaded before accessing registry
-        BootstyleBuilderBuilderTTk._ensure_builders_loaded()
+        BootstyleBuilderTTk._ensure_builders_loaded()
 
-        with BootstyleBuilderBuilderTTk._builder_lock:
-            widget_registry = BootstyleBuilderBuilderTTk._builder_registry.get(widget_class)
+        with BootstyleBuilderTTk._builder_lock:
+            widget_registry = BootstyleBuilderTTk._builder_registry.get(widget_class)
 
             if not widget_registry:
                 raise BootstyleBuilderError(
@@ -215,8 +215,8 @@ class BootstyleBuilderBuilderTTk(BootstyleBuilderBase):
             Default variant name ('default')
 
         Example:
-            >>> @BootstyleBuilderBuilderTTk.register_builder('solid', 'TButton')
-            ... @BootstyleBuilderBuilderTTk.register_builder('default', 'TButton')
+            >>> @BootstyleBuilderTTk.register_builder('solid', 'TButton')
+            ... @BootstyleBuilderTTk.register_builder('default', 'TButton')
             ... def build_button_solid(builder, ttk_style, **options):
             ...     pass
         """
@@ -284,9 +284,9 @@ class BootstyleBuilderBuilderTTk(BootstyleBuilderBase):
             True if builder exists, False otherwise
 
         Example:
-            >>> BootstyleBuilderBuilderTTk.has_builder('TButton', 'solid')
+            >>> BootstyleBuilderTTk.has_builder('TButton', 'solid')
             True
-            >>> BootstyleBuilderBuilderTTk.has_builder('TButton', 'nonexistent')
+            >>> BootstyleBuilderTTk.has_builder('TButton', 'nonexistent')
             False
         """
         cls._ensure_builders_loaded()

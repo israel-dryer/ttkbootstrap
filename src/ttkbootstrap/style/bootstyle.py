@@ -39,7 +39,7 @@ def parse_bootstyle_v2(bootstyle: str, widget_class: str) -> dict:
             'orient': None,
         }
 
-    from ttkbootstrap.style.bootstyle_builder_ttk import BootstyleBuilderBuilderTTk
+    from ttkbootstrap.style.bootstyle_builder_ttk import BootstyleBuilderTTk
     from ttkbootstrap.style.theme_provider import use_theme
 
     theme_colors = use_theme().colors
@@ -51,22 +51,30 @@ def parse_bootstyle_v2(bootstyle: str, widget_class: str) -> dict:
     cross_widget = False
     orient = None
 
+    # First pass: resolve widget target (so variant tokens can be validated)
     for part in parts:
-        if part in theme_colors:
-            color = part
-        elif part in WIDGET_CLASS_MAP:
+        if part in WIDGET_CLASS_MAP:
             resolved_widget = WIDGET_CLASS_MAP[part]
             if resolved_widget != widget_class:
                 cross_widget = True
-        elif BootstyleBuilderBuilderTTk.has_builder(resolved_widget, part):
-            variant = part
-        elif '[' in part or part in COLOR_TOKENS:
+
+    # Second pass: resolve color/variant/orientation
+    for part in parts:
+        if part in WIDGET_CLASS_MAP:
+            # already handled in first pass
+            continue
+        if part in theme_colors or part in COLOR_TOKENS or '[' in part:
             color = part
-        elif part.lower() in ['horizontal', 'vertical']:
+            continue
+        if part in ("horizontal", "vertical"):
             orient = part
-        else:
-            message = f"Unrecognized variant or color token: '{part}'"
-            raise BootstyleParsingError(message)
+            continue
+        if BootstyleBuilderTTk.has_builder(resolved_widget, part):
+            variant = part
+            continue
+        # If we reach here, it's unrecognized
+        message = f"Unrecognized variant or color token: '{part}'"
+        raise BootstyleParsingError(message)
 
     return {
         'color': color,
@@ -191,7 +199,7 @@ class Bootstyle:
 
         Parses bootstyle string, generates TTK style name, and triggers style creation.
         """
-        from ttkbootstrap.style.bootstyle_builder_ttk import BootstyleBuilderBuilderTTk
+        from ttkbootstrap.style.bootstyle_builder_ttk import BootstyleBuilderTTk
 
         if not bootstyle:
             return widget_class
@@ -203,7 +211,7 @@ class Bootstyle:
         surface_color = style_options.get("surface_color")
 
         builder_variant = variant if variant is not None else \
-            BootstyleBuilderBuilderTTk.get_default_variant(resolved_widget)
+            BootstyleBuilderTTk.get_default_variant(resolved_widget)
 
         custom_prefix = None
 
@@ -304,12 +312,12 @@ class Bootstyle:
                 self.configure(style=ttk_style)
 
             elif widget_class and not had_style_kwarg:
-                from ttkbootstrap.style.bootstyle_builder_ttk import BootstyleBuilderBuilderTTk
+                from ttkbootstrap.style.bootstyle_builder_ttk import BootstyleBuilderTTk
                 from ttkbootstrap.style.style import use_style
 
-                default_variant = BootstyleBuilderBuilderTTk.get_default_variant(widget_class)
+                default_variant = BootstyleBuilderTTk.get_default_variant(widget_class)
 
-                if BootstyleBuilderBuilderTTk.has_builder(widget_class, default_variant):
+                if BootstyleBuilderTTk.has_builder(widget_class, default_variant):
                     # Handle icon for image-capable widgets
                     if widget_class in ICON_CLASSES and icon_spec is not None:
                         style_options['icon'] = icon_spec

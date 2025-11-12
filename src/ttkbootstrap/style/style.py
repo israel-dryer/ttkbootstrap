@@ -6,7 +6,7 @@ import weakref
 from tkinter.ttk import Style as ttkStyle
 from typing import Dict, Optional, Set
 
-from ttkbootstrap.style.bootstyle_builder_ttk import BootstyleBuilderBuilderTTk
+from ttkbootstrap.style.bootstyle_builder_ttk import BootstyleBuilderTTk
 from ttkbootstrap.style.theme_provider import ThemeProvider, use_theme
 
 _style_instance: Style | None = None
@@ -58,7 +58,7 @@ class Style(ttkStyle):
         super().__init__(master)
 
         self._theme_provider = use_theme(theme)
-        self._style_builder = BootstyleBuilderBuilderTTk(theme_provider=self._theme_provider, style_instance=None)
+        self._style_builder = BootstyleBuilderTTk(theme_provider=self._theme_provider, style_instance=None)
         self._style_builder.set_style_instance(self)
 
         # Style registries
@@ -76,7 +76,7 @@ class Style(ttkStyle):
         self._initialized = True
 
     @property
-    def style_builder(self) -> BootstyleBuilderBuilderTTk:
+    def style_builder(self) -> BootstyleBuilderTTk:
         """Get the builder manager instance.
 
         Returns:
@@ -285,8 +285,8 @@ class Style(ttkStyle):
             return None
 
         # Determine variant using registered builders for this widget
-        from ttkbootstrap.style.bootstyle_builder_ttk import BootstyleBuilderBuilderTTk
-        builder_variants = set(v.lower() for v in BootstyleBuilderBuilderTTk.get_registered_builders(widget_class))
+        from ttkbootstrap.style.bootstyle_builder_ttk import BootstyleBuilderTTk
+        builder_variants = set(v.lower() for v in BootstyleBuilderTTk.get_registered_builders(widget_class))
 
         variant = None
         color = None
@@ -304,14 +304,14 @@ class Style(ttkStyle):
                 color = part
 
         if variant is None:
-            variant = BootstyleBuilderBuilderTTk.get_default_variant(widget_class)
+            variant = BootstyleBuilderTTk.get_default_variant(widget_class)
 
         return {
             'widget_class': widget_class,
             'variant': variant
         }
 
-    def get_style_builder(self) -> BootstyleBuilderBuilderTTk:
+    def get_style_builder(self) -> BootstyleBuilderTTk:
         """Get the style builder instance.
 
         Returns:

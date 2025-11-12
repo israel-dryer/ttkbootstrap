@@ -1,10 +1,10 @@
 from __future__ import annotations
 
-from ttkbootstrap.style.bootstyle_builder_ttk import BootstyleBuilderBuilderTTk
+from ttkbootstrap.style.bootstyle_builder_ttk import BootstyleBuilderTTk
 
 
-@BootstyleBuilderBuilderTTk.register_builder('default', 'TLabel')
-def build_label(b: BootstyleBuilderBuilderTTk, ttk_style: str, color: str = None, **options):
+@BootstyleBuilderTTk.register_builder('default', 'TLabel')
+def build_label(b: BootstyleBuilderTTk, ttk_style: str, color: str = None, **options):
     foreground = b.color(color or "foreground")
     surface_token = options.get('surface_color', 'background')
     background = b.color(surface_token)

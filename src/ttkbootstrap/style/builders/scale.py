@@ -5,13 +5,13 @@ This module contains style builders for ttk.Scale widget and variants.
 
 from __future__ import annotations
 
-from ttkbootstrap.style.bootstyle_builder_ttk import BootstyleBuilderBuilderTTk
+from ttkbootstrap.style.bootstyle_builder_ttk import BootstyleBuilderTTk
 from ttkbootstrap.style.element import Element, ElementImage
 from ttkbootstrap.style.utility import recolor_image
 
 
-@BootstyleBuilderBuilderTTk.register_builder('default', 'TScale')
-def build_scale_style(b: BootstyleBuilderBuilderTTk, ttk_style: str, color: str = 'primary', **options):
+@BootstyleBuilderTTk.register_builder('default', 'TScale')
+def build_scale_style(b: BootstyleBuilderTTk, ttk_style: str, color: str = 'primary', **options):
     accent_token = color or 'primary'
     surface_token = options.get('surface_color', 'background')
     orient = options.get('orient', 'vertical').title()

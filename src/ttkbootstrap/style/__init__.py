@@ -5301,16 +5301,16 @@ class Bootstyle:
             if bootstyle or style:
                 try:
                     from ttkbootstrap.style.bootstyle import parse_bootstyle, generate_ttk_style_name
-                    from ttkbootstrap.style.bootstyle_builder_ttk import BootstyleBuilderBuilderTTk
+                    from ttkbootstrap.style.bootstyle_builder_ttk import BootstyleBuilderTTk
                     from ttkbootstrap.style.style import Style as NewStyle
 
                     # Parse the bootstyle string
                     parsed = parse_bootstyle(bootstyle or style, widget_class)
 
                     # Check if we have a builder for this variant
-                    variant = parsed['variant'] or BootstyleBuilderBuilderTTk.get_default_variant(widget_class)
+                    variant = parsed['variant'] or BootstyleBuilderTTk.get_default_variant(widget_class)
 
-                    if BootstyleBuilderBuilderTTk.has_builder(widget_class, variant):
+                    if BootstyleBuilderTTk.has_builder(widget_class, variant):
                         # Use NEW builder system
                         ttkstyle = generate_ttk_style_name(
                             color=parsed['color'],
@@ -5340,12 +5340,12 @@ class Bootstyle:
             else:
                 # No bootstyle provided: apply default variant if builder exists
                 try:
-                    from ttkbootstrap.style.bootstyle_builder_ttk import BootstyleBuilderBuilderTTk
+                    from ttkbootstrap.style.bootstyle_builder_ttk import BootstyleBuilderTTk
                     from ttkbootstrap.style.bootstyle import generate_ttk_style_name
                     from ttkbootstrap.style.style import Style as NewStyle
 
-                    default_variant = BootstyleBuilderBuilderTTk.get_default_variant(widget_class)
-                    if BootstyleBuilderBuilderTTk.has_builder(widget_class, default_variant):
+                    default_variant = BootstyleBuilderTTk.get_default_variant(widget_class)
+                    if BootstyleBuilderTTk.has_builder(widget_class, default_variant):
                         ttkstyle = generate_ttk_style_name(
                             color=None,
                             variant=default_variant,  # 'default' -> 'Default' token in style name
