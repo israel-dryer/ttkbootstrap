@@ -10,6 +10,7 @@ COLOR_TOKENS = {
 }
 
 WIDGET_CLASS_MAP = {
+    'badge': 'TBadge',
     'button': 'TButton',
     'label': 'TLabel',
     'entry': 'TEntry',
