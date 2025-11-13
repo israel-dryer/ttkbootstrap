@@ -1,0 +1,84 @@
+# Translations converted from legacy msgs.py
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: ttkbootstrap\n"
+"Report-Msgid-Bugs-To: "
+"POT-Creation-Date: 2025-11-13 04:16\n"
+"PO-Revision-Date: 2025-11-13 04:16\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Language: da\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: tools/convert_msgs_to_po.py\n"
+
+#: legacy msgs.py
+msgid "Continue"
+msgstr "Fortsætte"
+
+#: legacy msgs.py
+msgid "Retry"
+msgstr "Prøv"
+
+#: legacy msgs.py
+msgid "Delete"
+msgstr "Slette"
+
+#: legacy msgs.py
+msgid "Next"
+msgstr "Næste"
+
+#: legacy msgs.py
+msgid "Prev"
+msgstr "Forrige"
+
+#: legacy msgs.py
+msgid "Yes"
+msgstr "Ja"
+
+#: legacy msgs.py
+msgid "No"
+msgstr "Nej"
+
+#: legacy msgs.py
+msgid "Open"
+msgstr "Åben"
+
+#: legacy msgs.py
+msgid "Close"
+msgstr "Lukke"
+
+#: legacy msgs.py
+msgid "Add"
+msgstr "Tilføje"
+
+#: legacy msgs.py
+msgid "Remove"
+msgstr "Fjerne"
+
+#: legacy msgs.py
+msgid "Submit"
+msgstr "Indsende"
+
+#: legacy msgs.py
+msgid "Family"
+msgstr "Familie"
+
+#: legacy msgs.py
+msgid "Weight"
+msgstr "Vægt"
+
+#: legacy msgs.py
+msgid "Slant"
+msgstr "Drejning"
+
+#: legacy msgs.py
+msgid "Effects"
+msgstr "Effekter"
+
+#: legacy msgs.py
+msgid "Size"
+msgstr "Størrelse"
+

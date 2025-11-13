@@ -1,0 +1,756 @@
+# Translations converted from legacy msgs.py
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: ttkbootstrap\n"
+"Report-Msgid-Bugs-To: "
+"POT-Creation-Date: 2025-11-13 04:16\n"
+"PO-Revision-Date: 2025-11-13 04:16\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Language: zh_TW\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: tools/convert_msgs_to_po.py\n"
+
+#: legacy msgs.py
+msgid "&Abort"
+msgstr "中止(&A)"
+
+#: legacy msgs.py
+msgid "&About..."
+msgstr "關於(&A)……"
+
+#: legacy msgs.py
+msgid "&Apply"
+msgstr "套用(&A)"
+
+#: legacy msgs.py
+msgid "&Blue"
+msgstr "藍色(&B)"
+
+#: legacy msgs.py
+msgid "&Cancel"
+msgstr "取消(&C)"
+
+#: legacy msgs.py
+msgid "&Clear Console"
+msgstr "清除終端(&C)"
+
+#: legacy msgs.py
+msgid "&Copy"
+msgstr "複製(&C)"
+
+#: legacy msgs.py
+msgid "&Delete"
+msgstr "刪除(&D)"
+
+#: legacy msgs.py
+msgid "&Directory:"
+msgstr "目錄(&D)："
+
+#: legacy msgs.py
+msgid "&Edit"
+msgstr "編輯(&E)"
+
+#: legacy msgs.py
+msgid "&File"
+msgstr "文件(&F)"
+
+#: legacy msgs.py
+msgid "&Filter"
+msgstr "過濾(&F)"
+
+#: legacy msgs.py
+msgid "&Font:"
+msgstr "字體(&F)："
+
+#: legacy msgs.py
+msgid "&Green"
+msgstr "綠色(&G)"
+
+#: legacy msgs.py
+msgid "&Help"
+msgstr "幫助(&H)"
+
+#: legacy msgs.py
+msgid "&Hide Console"
+msgstr "隱藏終端(&H)"
+
+#: legacy msgs.py
+msgid "&Ignore"
+msgstr "忽略(&I)"
+
+#: legacy msgs.py
+msgid "&No"
+msgstr "否(&N)"
+
+#: legacy msgs.py
+msgid "&OK"
+msgstr "確定(&O)"
+
+#: legacy msgs.py
+msgid "&Open"
+msgstr "打開(&O)"
+
+#: legacy msgs.py
+msgid "&Quit"
+msgstr "退出(&Q)"
+
+#: legacy msgs.py
+msgid "&Red"
+msgstr "紅色(&R)"
+
+#: legacy msgs.py
+msgid "&Retry"
+msgstr "重試(&R)"
+
+#: legacy msgs.py
+msgid "&Save"
+msgstr "儲存(&S)"
+
+#: legacy msgs.py
+msgid "&Selection:"
+msgstr "選擇(&S)："
+
+#: legacy msgs.py
+msgid "&Size:"
+msgstr "大小(&S)："
+
+#: legacy msgs.py
+msgid "&Source..."
+msgstr "來源(&S)……"
+
+#: legacy msgs.py
+msgid "&Underline"
+msgstr "底線(&U)"
+
+#: legacy msgs.py
+msgid "&Yes"
+msgstr "確定(&Y)"
+
+#: legacy msgs.py
+msgid "⎌"
+msgstr "↺"
+
+#: legacy msgs.py
+msgid "A4"
+msgstr "A4"
+
+#: legacy msgs.py
+msgid "abort"
+msgstr "中止"
+
+#: legacy msgs.py
+msgid "Add"
+msgstr "新增"
+
+#: legacy msgs.py
+msgid "Advanced"
+msgstr "進階"
+
+#: legacy msgs.py
+msgid "Align"
+msgstr "對齊"
+
+#: legacy msgs.py
+msgid "Align center"
+msgstr "置中"
+
+#: legacy msgs.py
+msgid "Align left"
+msgstr "靠左對齊"
+
+#: legacy msgs.py
+msgid "Align right"
+msgstr "靠右對齊"
+
+#: legacy msgs.py
+msgid "All Files"
+msgstr "所有文件"
+
+#: legacy msgs.py
+msgid "Application Error"
+msgstr "應用程式錯誤"
+
+#: legacy msgs.py
+msgid "Blue"
+msgstr "藍色"
+
+#: legacy msgs.py
+msgid "Bold"
+msgstr "粗體"
+
+#: legacy msgs.py
+msgid "Bold Italic"
+msgstr "加粗斜體"
+
+#: legacy msgs.py
+msgid "Cancel"
+msgstr "取消"
+
+#: legacy msgs.py
+msgid "cancel"
+msgstr "取消"
+
+#: legacy msgs.py
+msgid "Cannot change to the directory %1\\$s.\\nPermission denied."
+msgstr "無法更改目錄 %1\\$s。\\n訪問被拒絕。"
+
+#: legacy msgs.py
+msgid "Choose Directory"
+msgstr "選擇資料夾"
+
+#: legacy msgs.py
+msgid "Cl&ear"
+msgstr "清除(&E)"
+
+#: legacy msgs.py
+msgid "Clear filters"
+msgstr "Limpar filtros"
+
+#: legacy msgs.py
+msgid "Close"
+msgstr "關閉"
+
+#: legacy msgs.py
+msgid "Color"
+msgstr "顏色"
+
+#: legacy msgs.py
+msgid "Color Chooser"
+msgstr "顏色挑選器"
+
+#: legacy msgs.py
+msgid "color dropper"
+msgstr "顏色挑選器"
+
+#: legacy msgs.py
+msgid "Columns"
+msgstr "欄"
+
+#: legacy msgs.py
+msgid "Console"
+msgstr "終端"
+
+#: legacy msgs.py
+msgid "Continue"
+msgstr "繼續"
+
+#: legacy msgs.py
+msgid "Copies"
+msgstr "複製"
+
+#: legacy msgs.py
+msgid "Cu&t"
+msgstr "剪&切"
+
+#: legacy msgs.py
+msgid "Current"
+msgstr "目前"
+
+#: legacy msgs.py
+msgid "Delete"
+msgstr "刪除"
+
+#: legacy msgs.py
+msgid "Delete column"
+msgstr "刪除欄"
+
+#: legacy msgs.py
+msgid "Delete selected rows"
+msgstr "刪除所選列"
+
+#: legacy msgs.py
+msgid "Details >>"
+msgstr "詳細資訊 >>"
+
+#: legacy msgs.py
+msgid "Directory %1\\$s does not exist."
+msgstr "目錄 %1\\$s 不存在。"
+
+#: legacy msgs.py
+msgid "E&xit"
+msgstr "退出(&X)"
+
+#: legacy msgs.py
+msgid "Effects"
+msgstr "效果"
+
+#: legacy msgs.py
+msgid "Error: %1\\$s"
+msgstr "錯誤： %1\\$s"
+
+#: legacy msgs.py
+msgid "Export"
+msgstr "匯出"
+
+#: legacy msgs.py
+msgid "Export all records"
+msgstr "匯出所有內容"
+
+#: legacy msgs.py
+msgid "Export current page"
+msgstr "匯出目前頁面"
+
+#: legacy msgs.py
+msgid "Export current selection"
+msgstr "匯出目前所選"
+
+#: legacy msgs.py
+msgid "Export records in filter"
+msgstr "匯出篩選內容"
+
+#: legacy msgs.py
+msgid "extension"
+msgstr "擴展"
+
+#: legacy msgs.py
+msgid "extensions"
+msgstr "擴展"
+
+#: legacy msgs.py
+msgid "Family"
+msgstr "組"
+
+#: legacy msgs.py
+msgid "Fi&les:"
+msgstr "文件(&L)："
+
+#: legacy msgs.py
+msgid "Fil&ter:"
+msgstr "過濾(&T)："
+
+#: legacy msgs.py
+msgid "File %1\\$s already exists.\\n\\n"
+msgstr "文件 %1\\$s 已經存在。\\n\\n"
+
+#: legacy msgs.py
+msgid "File %1\\$s already exists.\\nDo you want to overwrite it?"
+msgstr "文件 %1\\$s 已經存在。\\n您想要覆蓋它嗎？"
+
+#: legacy msgs.py
+msgid "File %1\\$s does not exist."
+msgstr "文件 %1\\$s 不存在。"
+
+#: legacy msgs.py
+msgid "File &name:"
+msgstr "文件名(&N)："
+
+#: legacy msgs.py
+msgid "File &names:"
+msgstr "文件名(&N)："
+
+#: legacy msgs.py
+msgid "Files of &type:"
+msgstr "文件類型(&T)："
+
+#: legacy msgs.py
+msgid "Filter"
+msgstr "篩選"
+
+#: legacy msgs.py
+msgid "Filter by cell's value"
+msgstr "使用內容值篩選"
+
+#: legacy msgs.py
+msgid "Font"
+msgstr "字體"
+
+#: legacy msgs.py
+msgid "Font Selector"
+msgstr "字體選擇器"
+
+#: legacy msgs.py
+msgid "Font st&yle:"
+msgstr "字體樣式(&Y)："
+
+#: legacy msgs.py
+msgid "Fr"
+msgstr "五"
+
+#: legacy msgs.py
+msgid "Grayscale"
+msgstr "灰度"
+
+#: legacy msgs.py
+msgid "Green"
+msgstr "綠色"
+
+#: legacy msgs.py
+msgid "Hex"
+msgstr "Hex"
+
+#: legacy msgs.py
+msgid "Hi"
+msgstr "你好"
+
+#: legacy msgs.py
+msgid "Hide column"
+msgstr "隱藏欄"
+
+#: legacy msgs.py
+msgid "Hide select rows"
+msgstr "隱藏所選列"
+
+#: legacy msgs.py
+msgid "Hue"
+msgstr "色相"
+
+#: legacy msgs.py
+msgid "ignore"
+msgstr "忽略"
+
+#: legacy msgs.py
+msgid "Invalid data type"
+msgstr "無效資料類型"
+
+#: legacy msgs.py
+msgid "Invalid file name %1\\$s."
+msgstr "無效的檔案名 %1\\$s。"
+
+#: legacy msgs.py
+msgid "italic"
+msgstr "斜體"
+
+#: legacy msgs.py
+msgid "Italic"
+msgstr "斜體"
+
+#: legacy msgs.py
+msgid "Landscape"
+msgstr "橫向"
+
+#: legacy msgs.py
+msgid "Legal "
+msgstr "合法的 "
+
+#: legacy msgs.py
+msgid "Letter "
+msgstr "Letter"
+
+#: legacy msgs.py
+msgid "Log Files"
+msgstr "日誌檔案"
+
+#: legacy msgs.py
+msgid "Mo"
+msgstr "一"
+
+#: legacy msgs.py
+msgid "Move"
+msgstr "移動"
+
+#: legacy msgs.py
+msgid "Move down"
+msgstr "下移"
+
+#: legacy msgs.py
+msgid "Move to bottom"
+msgstr "移至底部"
+
+#: legacy msgs.py
+msgid "Move to first"
+msgstr "移至第一"
+
+#: legacy msgs.py
+msgid "Move to last"
+msgstr "移至最後"
+
+#: legacy msgs.py
+msgid "Move to left"
+msgstr "移至左側"
+
+#: legacy msgs.py
+msgid "Move to right"
+msgstr "移至右側"
+
+#: legacy msgs.py
+msgid "Move to top"
+msgstr "移至頂部"
+
+#: legacy msgs.py
+msgid "Move up"
+msgstr "上移"
+
+#: legacy msgs.py
+msgid "New"
+msgstr "新增"
+
+#: legacy msgs.py
+msgid "Next"
+msgstr "下一步"
+
+#: legacy msgs.py
+msgid "No"
+msgstr "否"
+
+#: legacy msgs.py
+msgid "normal"
+msgstr "正常"
+
+#: legacy msgs.py
+msgid "Number cannot be greater than"
+msgstr "數字不能大於"
+
+#: legacy msgs.py
+msgid "of"
+msgstr "of"
+
+#: legacy msgs.py
+msgid "OK"
+msgstr "確定"
+
+#: legacy msgs.py
+msgid "Ok"
+msgstr "確定"
+
+#: legacy msgs.py
+msgid "ok"
+msgstr "確定"
+
+#: legacy msgs.py
+msgid "Open"
+msgstr "打開"
+
+#: legacy msgs.py
+msgid "Open Multiple Files"
+msgstr "打開多個文件"
+
+#: legacy msgs.py
+msgid "Options"
+msgstr "設定"
+
+#: legacy msgs.py
+msgid "Orientation"
+msgstr "方向"
+
+#: legacy msgs.py
+msgid "Out of range"
+msgstr "超出範圍"
+
+#: legacy msgs.py
+msgid "Output"
+msgstr "輸出"
+
+#: legacy msgs.py
+msgid "overstrike"
+msgstr "overstrike"
+
+#: legacy msgs.py
+msgid "P&aste"
+msgstr "貼上(&A)"
+
+#: legacy msgs.py
+msgid "Page"
+msgstr "頁數"
+
+#: legacy msgs.py
+msgid "Paper"
+msgstr "紙"
+
+#: legacy msgs.py
+msgid "Portrait"
+msgstr "豎向"
+
+#: legacy msgs.py
+msgid "Prev"
+msgstr "上一步"
+
+#: legacy msgs.py
+msgid "Preview"
+msgstr "預覽"
+
+#: legacy msgs.py
+msgid "Previous"
+msgstr "以前的"
+
+#: legacy msgs.py
+msgid "Print"
+msgstr "輸出"
+
+#: legacy msgs.py
+msgid "Printer"
+msgstr "印表機"
+
+#: legacy msgs.py
+msgid "Red"
+msgstr "紅色"
+
+#: legacy msgs.py
+msgid "red"
+msgstr "紅色"
+
+#: legacy msgs.py
+msgid "Regular"
+msgstr "規則"
+
+#: legacy msgs.py
+msgid "Remove"
+msgstr "移除"
+
+#: legacy msgs.py
+msgid "Replace existing file?"
+msgstr "取代已有文件？"
+
+#: legacy msgs.py
+msgid "Reset table"
+msgstr "重設表格"
+
+#: legacy msgs.py
+msgid "retry"
+msgstr "重試"
+
+#: legacy msgs.py
+msgid "Retry"
+msgstr "重試"
+
+#: legacy msgs.py
+msgid "RGB"
+msgstr "RGB"
+
+#: legacy msgs.py
+msgid "roman"
+msgstr ""
+
+#: legacy msgs.py
+msgid "Sa"
+msgstr "六"
+
+#: legacy msgs.py
+msgid "Sample"
+msgstr "範本"
+
+#: legacy msgs.py
+msgid "Save As"
+msgstr "另存新檔"
+
+#: legacy msgs.py
+msgid "Save To Log"
+msgstr "儲存到日誌"
+
+#: legacy msgs.py
+msgid "Scale"
+msgstr "規模"
+
+#: legacy msgs.py
+msgid "Search"
+msgstr "搜尋"
+
+#: legacy msgs.py
+msgid "Select a file to source"
+msgstr "選擇一個來源文件"
+
+#: legacy msgs.py
+msgid "Select Log File"
+msgstr "選擇日誌檔案"
+
+#: legacy msgs.py
+msgid "Should be of data type"
+msgstr "應為資料類型"
+
+#: legacy msgs.py
+msgid "Show &Hidden Directories"
+msgstr "顯示隱藏目錄(&H)"
+
+#: legacy msgs.py
+msgid "Show &Hidden Files and Directories"
+msgstr "顯示隱藏文件和目錄(&H)"
+
+#: legacy msgs.py
+msgid "Show All"
+msgstr "顯示全部"
+
+#: legacy msgs.py
+msgid "Show only select rows"
+msgstr "只顯示所選列"
+
+#: legacy msgs.py
+msgid "Size"
+msgstr "大小"
+
+#: legacy msgs.py
+msgid "Skip Messages"
+msgstr "跳過訊息"
+
+#: legacy msgs.py
+msgid "Slant"
+msgstr "傾斜"
+
+#: legacy msgs.py
+msgid "Sort"
+msgstr "排序"
+
+#: legacy msgs.py
+msgid "Sort Ascending"
+msgstr "順序"
+
+#: legacy msgs.py
+msgid "Sort Descending"
+msgstr "倒序"
+
+#: legacy msgs.py
+msgid "Standard"
+msgstr "標準"
+
+#: legacy msgs.py
+msgid "Stri&keout"
+msgstr "刪除線(&K)"
+
+#: legacy msgs.py
+msgid "Su"
+msgstr "日"
+
+#: legacy msgs.py
+msgid "Submit"
+msgstr "上傳"
+
+#: legacy msgs.py
+msgid "Tcl for Windows"
+msgstr "適用於Windows的Tcl"
+
+#: legacy msgs.py
+msgid "Tcl Scripts"
+msgstr "Tcl腳本"
+
+#: legacy msgs.py
+msgid "Text Files"
+msgstr "文字文件"
+
+#: legacy msgs.py
+msgid "Th"
+msgstr "四"
+
+#: legacy msgs.py
+msgid "The quick brown fox jumps over the lazy dog."
+msgstr "敏捷的棕色狐狸跳過懶惰的狗。"
+
+#: legacy msgs.py
+msgid "Themed"
+msgstr "主題化"
+
+#: legacy msgs.py
+msgid "Tu"
+msgstr "二"
+
+#: legacy msgs.py
+msgid "underline"
+msgstr "底線"
+
+#: legacy msgs.py
+msgid "We"
+msgstr "三"
+
+#: legacy msgs.py
+msgid "Weight"
+msgstr "重量"
+
+#: legacy msgs.py
+msgid "yes"
+msgstr "確認"
+
+#: legacy msgs.py
+msgid "Yes"
+msgstr "確認"
+

@@ -1,0 +1,716 @@
+# Translations converted from legacy msgs.py
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: ttkbootstrap\n"
+"Report-Msgid-Bugs-To: "
+"POT-Creation-Date: 2025-11-13 04:16\n"
+"PO-Revision-Date: 2025-11-13 04:16\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Language: sl\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: tools/convert_msgs_to_po.py\n"
+
+#: legacy msgs.py
+msgid "&Abort"
+msgstr "&Prekini"
+
+#: legacy msgs.py
+msgid "&About..."
+msgstr "&O..."
+
+#: legacy msgs.py
+msgid "All Files"
+msgstr "Vse datoteke"
+
+#: legacy msgs.py
+msgid "Application Error"
+msgstr "Napaka aplikacije"
+
+#: legacy msgs.py
+msgid "&Apply"
+msgstr "&Uporabi"
+
+#: legacy msgs.py
+msgid "Bold"
+msgstr "Krepko"
+
+#: legacy msgs.py
+msgid "Bold Italic"
+msgstr "Krepko ležeče"
+
+#: legacy msgs.py
+msgid "&Blue"
+msgstr "&Modra"
+
+#: legacy msgs.py
+msgid "Cancel"
+msgstr "Prekliči"
+
+#: legacy msgs.py
+msgid "&Cancel"
+msgstr "&Prekliči"
+
+#: legacy msgs.py
+msgid "Cannot change to the directory %1\\$s.\\nPermission denied."
+msgstr "Ne morem dostopati do mape %1\\$s.\\nDostop zavrnjen."
+
+#: legacy msgs.py
+msgid "Choose Directory"
+msgstr "Izberi mapo"
+
+#: legacy msgs.py
+msgid "Cl&ear"
+msgstr "Poč&isti"
+
+#: legacy msgs.py
+msgid "&Clear Console"
+msgstr "&Počisti konzolo"
+
+#: legacy msgs.py
+msgid "Color"
+msgstr "Barva"
+
+#: legacy msgs.py
+msgid "Console"
+msgstr "Konzola"
+
+#: legacy msgs.py
+msgid "&Copy"
+msgstr "&Kopiraj"
+
+#: legacy msgs.py
+msgid "Cu&t"
+msgstr "&Izreži"
+
+#: legacy msgs.py
+msgid "&Delete"
+msgstr "&Izbriši"
+
+#: legacy msgs.py
+msgid "Details >>"
+msgstr "Podrobnosti >>"
+
+#: legacy msgs.py
+msgid "Directory  %1\\$s does not exist."
+msgstr "Mapa %1\\$s ne obstaja."
+
+#: legacy msgs.py
+msgid "&Directory:"
+msgstr "&Mapa:"
+
+#: legacy msgs.py
+msgid "&Edit"
+msgstr "&Uredi"
+
+#: legacy msgs.py
+msgid "Effects"
+msgstr "Učinki"
+
+#: legacy msgs.py
+msgid "Error: %1\\$s"
+msgstr "Napaka: %1\\$s"
+
+#: legacy msgs.py
+msgid "E&xit"
+msgstr "&Izhod"
+
+#: legacy msgs.py
+msgid "&File"
+msgstr "&Datoteka"
+
+#: legacy msgs.py
+msgid "File %1\\$s already exists.\\nDo you want to overwrite it?"
+msgstr "Datoteka %1\\$s že obstaja.\\nAli jo želite prepisati?"
+
+#: legacy msgs.py
+msgid "File %1\\$s already exists.\\n\\n"
+msgstr "Datoteka %1\\$s že obstaja.\\n\\n"
+
+#: legacy msgs.py
+msgid "File %1\\$s does not exist."
+msgstr "Datoteka %1\\$s ne obstaja."
+
+#: legacy msgs.py
+msgid "File &name:"
+msgstr "Ime &datoteke:"
+
+#: legacy msgs.py
+msgid "File &names:"
+msgstr "Imena &datotek:"
+
+#: legacy msgs.py
+msgid "Files of &type:"
+msgstr "Datoteke &vrste:"
+
+#: legacy msgs.py
+msgid "Fi&les:"
+msgstr "&Datoteke:"
+
+#: legacy msgs.py
+msgid "&Filter"
+msgstr "&Filter"
+
+#: legacy msgs.py
+msgid "Fil&ter:"
+msgstr "&Filter:"
+
+#: legacy msgs.py
+msgid "Font"
+msgstr "Pisava"
+
+#: legacy msgs.py
+msgid "&Font:"
+msgstr "&Pisava:"
+
+#: legacy msgs.py
+msgid "Font st&yle:"
+msgstr "&Slog pisave:"
+
+#: legacy msgs.py
+msgid "&Green"
+msgstr "&Zelena"
+
+#: legacy msgs.py
+msgid "&Help"
+msgstr "&Pomoč"
+
+#: legacy msgs.py
+msgid "Hi"
+msgstr "Živjo"
+
+#: legacy msgs.py
+msgid "&Hide Console"
+msgstr "&Skrij konzolo"
+
+#: legacy msgs.py
+msgid "&Ignore"
+msgstr "&Prezri"
+
+#: legacy msgs.py
+msgid "Invalid file name %1\\$s."
+msgstr "Neveljavno ime datoteke %1\\$s."
+
+#: legacy msgs.py
+msgid "Italic"
+msgstr "Ležeče"
+
+#: legacy msgs.py
+msgid "Log Files"
+msgstr "Dnevniške datoteke"
+
+#: legacy msgs.py
+msgid "&No"
+msgstr "&Ne"
+
+#: legacy msgs.py
+msgid "&OK"
+msgstr "&V redu"
+
+#: legacy msgs.py
+msgid "OK"
+msgstr "V redu"
+
+#: legacy msgs.py
+msgid "Ok"
+msgstr "V redu"
+
+#: legacy msgs.py
+msgid "Open"
+msgstr "Odpri"
+
+#: legacy msgs.py
+msgid "&Open"
+msgstr "&Odpri"
+
+#: legacy msgs.py
+msgid "Open Multiple Files"
+msgstr "Odpri več datotek"
+
+#: legacy msgs.py
+msgid "P&aste"
+msgstr "Pr&ilepi"
+
+#: legacy msgs.py
+msgid "&Quit"
+msgstr "&Končaj"
+
+#: legacy msgs.py
+msgid "&Red"
+msgstr "&Rdeča"
+
+#: legacy msgs.py
+msgid "Regular"
+msgstr "Navadno"
+
+#: legacy msgs.py
+msgid "Replace existing file?"
+msgstr "Zamenjaj obstoječo datoteko?"
+
+#: legacy msgs.py
+msgid "&Retry"
+msgstr "&Poskusi znova"
+
+#: legacy msgs.py
+msgid "Sample"
+msgstr "Vzorec"
+
+#: legacy msgs.py
+msgid "&Save"
+msgstr "&Shrani"
+
+#: legacy msgs.py
+msgid "Save As"
+msgstr "Shrani kot"
+
+#: legacy msgs.py
+msgid "Save To Log"
+msgstr "Shrani v dnevnik"
+
+#: legacy msgs.py
+msgid "Select Log File"
+msgstr "Izberi dnevniško datoteko"
+
+#: legacy msgs.py
+msgid "Select a file to source"
+msgstr "Izberi datoteko za izvajanje"
+
+#: legacy msgs.py
+msgid "&Selection:"
+msgstr "&Izbor:"
+
+#: legacy msgs.py
+msgid "&Size:"
+msgstr "&Velikost:"
+
+#: legacy msgs.py
+msgid "Show &Hidden Directories"
+msgstr "Prikaži &skrite mape"
+
+#: legacy msgs.py
+msgid "Show &Hidden Files and Directories"
+msgstr "Prikaži &skrite datoteke in mape"
+
+#: legacy msgs.py
+msgid "Skip Messages"
+msgstr "Preskoči sporočila"
+
+#: legacy msgs.py
+msgid "&Source...,"
+msgstr "&Izvedi..."
+
+#: legacy msgs.py
+msgid "Stri&keout"
+msgstr "Pr&ečrtano"
+
+#: legacy msgs.py
+msgid "Tcl Scripts"
+msgstr "Tcl skripte"
+
+#: legacy msgs.py
+msgid "Tcl for Windows"
+msgstr "Tcl za Windows"
+
+#: legacy msgs.py
+msgid "Text Files"
+msgstr "Besedilne datoteke"
+
+#: legacy msgs.py
+msgid "&Underline"
+msgstr "&Podčrtano"
+
+#: legacy msgs.py
+msgid "&Yes"
+msgstr "&Da"
+
+#: legacy msgs.py
+msgid "abort"
+msgstr "prekini"
+
+#: legacy msgs.py
+msgid "blue"
+msgstr "modra"
+
+#: legacy msgs.py
+msgid "cancel"
+msgstr "prekliči"
+
+#: legacy msgs.py
+msgid "extension"
+msgstr "razširitev"
+
+#: legacy msgs.py
+msgid "extensions"
+msgstr "razširitve"
+
+#: legacy msgs.py
+msgid "green"
+msgstr "zelena"
+
+#: legacy msgs.py
+msgid "ignore"
+msgstr "prezri"
+
+#: legacy msgs.py
+msgid "ok"
+msgstr "v redu"
+
+#: legacy msgs.py
+msgid "red"
+msgstr "rdeča"
+
+#: legacy msgs.py
+msgid "retry"
+msgstr "poskusi znova"
+
+#: legacy msgs.py
+msgid "yes"
+msgstr "da"
+
+#: legacy msgs.py
+msgid "OK"
+msgstr "V redu"
+
+#: legacy msgs.py
+msgid "Ok"
+msgstr "V redu"
+
+#: legacy msgs.py
+msgid "Retry"
+msgstr "Poskusi znova"
+
+#: legacy msgs.py
+msgid "Delete"
+msgstr "Izbriši"
+
+#: legacy msgs.py
+msgid "Next"
+msgstr "Naslednji"
+
+#: legacy msgs.py
+msgid "Prev"
+msgstr "Prejšnji"
+
+#: legacy msgs.py
+msgid "Yes"
+msgstr "Da"
+
+#: legacy msgs.py
+msgid "No"
+msgstr "Ne"
+
+#: legacy msgs.py
+msgid "Open"
+msgstr "Odpri"
+
+#: legacy msgs.py
+msgid "Close"
+msgstr "Zapri"
+
+#: legacy msgs.py
+msgid "Add"
+msgstr "Dodaj"
+
+#: legacy msgs.py
+msgid "Remove"
+msgstr "Odstrani"
+
+#: legacy msgs.py
+msgid "Submit"
+msgstr "Pošlji"
+
+#: legacy msgs.py
+msgid "Family"
+msgstr "Družina"
+
+#: legacy msgs.py
+msgid "Size"
+msgstr "Velikost"
+
+#: legacy msgs.py
+msgid "Should be of data type"
+msgstr "Mora biti podatkovnega tipa"
+
+#: legacy msgs.py
+msgid "Invalid data type"
+msgstr "Neveljaven podatkovni tip"
+
+#: legacy msgs.py
+msgid "Number cannot be greater than"
+msgstr "Število ne sme biti večje od"
+
+#: legacy msgs.py
+msgid "Out of range"
+msgstr "Izven obsega"
+
+#: legacy msgs.py
+msgid "Previous"
+msgstr "Prejšnji"
+
+#: legacy msgs.py
+msgid "The quick brown fox jumps over the lazy dog."
+msgstr "Hitra rjava lisica skače čez lenega psa."
+
+#: legacy msgs.py
+msgid "Font Selector"
+msgstr "Izbirnik pisav"
+
+#: legacy msgs.py
+msgid "normal"
+msgstr "normalno"
+
+#: legacy msgs.py
+msgid "bold"
+msgstr "krepko"
+
+#: legacy msgs.py
+msgid "roman"
+msgstr "rimski"
+
+#: legacy msgs.py
+msgid "italic"
+msgstr "ležeče"
+
+#: legacy msgs.py
+msgid "underline"
+msgstr "podčrtano"
+
+#: legacy msgs.py
+msgid "overstrike"
+msgstr "prečrtano"
+
+#: legacy msgs.py
+msgid "Color Chooser"
+msgstr "Izbirnik barv"
+
+#: legacy msgs.py
+msgid "Advanced"
+msgstr "Napredno"
+
+#: legacy msgs.py
+msgid "Themed"
+msgstr "Tematsko"
+
+#: legacy msgs.py
+msgid "Standard"
+msgstr "Standardno"
+
+#: legacy msgs.py
+msgid "Current"
+msgstr "Trenutno"
+
+#: legacy msgs.py
+msgid "New"
+msgstr "Novo"
+
+#: legacy msgs.py
+msgid "Hue"
+msgstr "Odtenek"
+
+#: legacy msgs.py
+msgid "Sat"
+msgstr "Nasičenost"
+
+#: legacy msgs.py
+msgid "Lum"
+msgstr "Svetlost"
+
+#: legacy msgs.py
+msgid "Hex"
+msgstr "Heksadecimalno"
+
+#: legacy msgs.py
+msgid "Red"
+msgstr "Rdeča"
+
+#: legacy msgs.py
+msgid "Green"
+msgstr "Zelena"
+
+#: legacy msgs.py
+msgid "Blue"
+msgstr "Modra"
+
+#: legacy msgs.py
+msgid "color dropper"
+msgstr "kapalka za barve"
+
+#: legacy msgs.py
+msgid "Cancel"
+msgstr "Prekliči"
+
+#: legacy msgs.py
+msgid "Search"
+msgstr "Iskanje"
+
+#: legacy msgs.py
+msgid "Page"
+msgstr "Stran"
+
+#: legacy msgs.py
+msgid "of"
+msgstr "od"
+
+#: legacy msgs.py
+msgid "⎌"
+msgstr "⎌"
+
+#: legacy msgs.py
+msgid "Reset table"
+msgstr "Ponastavi tabelo"
+
+#: legacy msgs.py
+msgid "Columns"
+msgstr "Stolpci"
+
+#: legacy msgs.py
+msgid "Move"
+msgstr "Premakni"
+
+#: legacy msgs.py
+msgid "Align"
+msgstr "Poravnaj"
+
+#: legacy msgs.py
+msgid "Hide column"
+msgstr "Skrij stolpec"
+
+#: legacy msgs.py
+msgid "Delete column"
+msgstr "Izbriši stolpec"
+
+#: legacy msgs.py
+msgid "Show All"
+msgstr "Prikaži vse"
+
+#: legacy msgs.py
+msgid "Move to left"
+msgstr "Premakni levo"
+
+#: legacy msgs.py
+msgid "Move to right"
+msgstr "Premakni desno"
+
+#: legacy msgs.py
+msgid "Move to first"
+msgstr "Premakni na prvo mesto"
+
+#: legacy msgs.py
+msgid "Move to last"
+msgstr "Premakni na zadnje mesto"
+
+#: legacy msgs.py
+msgid "Align left"
+msgstr "Poravnaj levo"
+
+#: legacy msgs.py
+msgid "Align center"
+msgstr "Poravnaj na sredino"
+
+#: legacy msgs.py
+msgid "Align right"
+msgstr "Poravnaj desno"
+
+#: legacy msgs.py
+msgid "Sort"
+msgstr "Razvrsti"
+
+#: legacy msgs.py
+msgid "Filter"
+msgstr "Filtriraj"
+
+#: legacy msgs.py
+msgid "Export"
+msgstr "Izvozi"
+
+#: legacy msgs.py
+msgid "Delete selected rows"
+msgstr "Izbriši izbrane vrstice"
+
+#: legacy msgs.py
+msgid "Sort Ascending"
+msgstr "Razvrsti naraščajoče"
+
+#: legacy msgs.py
+msgid "Sort Descending"
+msgstr "Razvrsti padajoče"
+
+#: legacy msgs.py
+msgid "Clear filters"
+msgstr "Počisti filtre"
+
+#: legacy msgs.py
+msgid "Filter by cell’s value"
+msgstr "Filtriraj po vrednosti celice"
+
+#: legacy msgs.py
+msgid "Hide select rows"
+msgstr "Skrij izbrane vrstice"
+
+#: legacy msgs.py
+msgid "Show only select rows"
+msgstr "Prikaži samo izbrane vrstice"
+
+#: legacy msgs.py
+msgid "Export all records"
+msgstr "Izvozi vse zapise"
+
+#: legacy msgs.py
+msgid "Export current page"
+msgstr "Izvozi trenutno stran"
+
+#: legacy msgs.py
+msgid "Export current selection"
+msgstr "Izvozi trenutno izbiro"
+
+#: legacy msgs.py
+msgid "Export records in filter"
+msgstr "Izvozi zapise v filtru"
+
+#: legacy msgs.py
+msgid "Move up"
+msgstr "Premakni gor"
+
+#: legacy msgs.py
+msgid "Move down"
+msgstr "Premakni dol"
+
+#: legacy msgs.py
+msgid "Move to top"
+msgstr "Premakni na vrh"
+
+#: legacy msgs.py
+msgid "Move to bottom"
+msgstr "Premakni na dno"
+
+#: legacy msgs.py
+msgid "Mo"
+msgstr "Pon"
+
+#: legacy msgs.py
+msgid "Tu"
+msgstr "Tor"
+
+#: legacy msgs.py
+msgid "We"
+msgstr "Sre"
+
+#: legacy msgs.py
+msgid "Th"
+msgstr "Čet"
+
+#: legacy msgs.py
+msgid "Fr"
+msgstr "Pet"
+
+#: legacy msgs.py
+msgid "Sa"
+msgstr "Sob"
+
+#: legacy msgs.py
+msgid "Su"
+msgstr "Ned"
+
