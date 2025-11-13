@@ -606,9 +606,9 @@ class Style(ttk.Style):
         Style.instance = self
         self.theme_use(theme)
 
-        # apply localization
-        from ttkbootstrap import localization
-        localization.initialize_localities()
+        # initialize localization bridge (Babel/gettext + Tcl msgcat)
+        from ttkbootstrap.localization.msgcat import MessageCatalog
+        MessageCatalog.init(locales_dir=None, domain="ttkbootstrap", default_locale="en")
 
     @property
     def colors(self):
@@ -5590,3 +5590,4 @@ class Bootstyle:
                 Bootstyle.update_tk_widget_style(self)
 
         return __init__wrapper
+

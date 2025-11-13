@@ -1,0 +1,384 @@
+# Translations converted from legacy msgs.py
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: ttkbootstrap\n"
+"Report-Msgid-Bugs-To: "
+"POT-Creation-Date: 2025-11-13 04:16\n"
+"PO-Revision-Date: 2025-11-13 04:16\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Language: fr\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: tools/convert_msgs_to_po.py\n"
+
+#: legacy msgs.py
+msgid "OK"
+msgstr "OK"
+
+#: legacy msgs.py
+msgid "Ok"
+msgstr "Ok"
+
+#: legacy msgs.py
+msgid "Retry"
+msgstr "Recommencer"
+
+#: legacy msgs.py
+msgid "Delete"
+msgstr "Supprimer"
+
+#: legacy msgs.py
+msgid "Next"
+msgstr "Suivant"
+
+#: legacy msgs.py
+msgid "Prev"
+msgstr "Préc."
+
+#: legacy msgs.py
+msgid "Yes"
+msgstr "Oui"
+
+#: legacy msgs.py
+msgid "No"
+msgstr "Non"
+
+#: legacy msgs.py
+msgid "Open"
+msgstr "Ouvrir"
+
+#: legacy msgs.py
+msgid "Close"
+msgstr "Fermer"
+
+#: legacy msgs.py
+msgid "Add"
+msgstr "Ajouter"
+
+#: legacy msgs.py
+msgid "Remove"
+msgstr "Supprimer"
+
+#: legacy msgs.py
+msgid "Submit"
+msgstr "Envoyer"
+
+#: legacy msgs.py
+msgid "Family"
+msgstr "Famille"
+
+#: legacy msgs.py
+msgid "Weight"
+msgstr "Poids"
+
+#: legacy msgs.py
+msgid "Slant"
+msgstr "Italique"
+
+#: legacy msgs.py
+msgid "Effects"
+msgstr "Effets"
+
+#: legacy msgs.py
+msgid "Preview"
+msgstr "Prévisualiser"
+
+#: legacy msgs.py
+msgid "Size"
+msgstr "Taille"
+
+#: legacy msgs.py
+msgid "Should be of data type"
+msgstr "Doit être du type de données"
+
+#: legacy msgs.py
+msgid "Invalid data type"
+msgstr "Type de données invalide"
+
+#: legacy msgs.py
+msgid "Number cannot be greater than"
+msgstr "Le nombre ne peut pas être plus grand que"
+
+#: legacy msgs.py
+msgid "Number cannot be less than"
+msgstr "Le nombre ne peut pas être inférieur à"
+
+#: legacy msgs.py
+msgid "Select an item from the list"
+msgstr "Sélectionner un élément de la liste"
+
+#: legacy msgs.py
+msgid "Out of range"
+msgstr "Hors limites"
+
+#: legacy msgs.py
+msgid "Previous"
+msgstr "Précédent"
+
+#: legacy msgs.py
+msgid "The quick brown fox jumps over the lazy dog."
+msgstr "The quick brown fox jumps over the lazy dog."
+
+#: legacy msgs.py
+msgid "Font Selector"
+msgstr "Sélecteur de Polices"
+
+#: legacy msgs.py
+msgid "normal"
+msgstr "normal"
+
+#: legacy msgs.py
+msgid "bold"
+msgstr "gras"
+
+#: legacy msgs.py
+msgid "roman"
+msgstr "roman"
+
+#: legacy msgs.py
+msgid "italic"
+msgstr "italique"
+
+#: legacy msgs.py
+msgid "underline"
+msgstr "souligné"
+
+#: legacy msgs.py
+msgid "overstrike"
+msgstr "barré"
+
+#: legacy msgs.py
+msgid "Color Chooser"
+msgstr "Sélecteur de couleur"
+
+#: legacy msgs.py
+msgid "Advanced"
+msgstr "Avancé"
+
+#: legacy msgs.py
+msgid "Themed"
+msgstr "Thème"
+
+#: legacy msgs.py
+msgid "Standard"
+msgstr "Standard"
+
+#: legacy msgs.py
+msgid "Current"
+msgstr "Courant"
+
+#: legacy msgs.py
+msgid "New"
+msgstr "Nouveau"
+
+#: legacy msgs.py
+msgid "Hue"
+msgstr "Teinte"
+
+#: legacy msgs.py
+msgid "Sat"
+msgstr "Sat"
+
+#: legacy msgs.py
+msgid "Lum"
+msgstr "Lum"
+
+#: legacy msgs.py
+msgid "Hex"
+msgstr "Hex"
+
+#: legacy msgs.py
+msgid "Red"
+msgstr "Rouge"
+
+#: legacy msgs.py
+msgid "Green"
+msgstr "Vert"
+
+#: legacy msgs.py
+msgid "Blue"
+msgstr "Bleu"
+
+#: legacy msgs.py
+msgid "color dropper"
+msgstr "Sélecteur de couleurs"
+
+#: legacy msgs.py
+msgid "Cancel"
+msgstr "Annuler"
+
+#: legacy msgs.py
+msgid "Search"
+msgstr "Chercher"
+
+#: legacy msgs.py
+msgid "Page"
+msgstr "Page"
+
+#: legacy msgs.py
+msgid "of"
+msgstr "de"
+
+#: legacy msgs.py
+msgid "⎌"
+msgstr "↺"
+
+#: legacy msgs.py
+msgid "Reset table"
+msgstr "Réinit. table"
+
+#: legacy msgs.py
+msgid "Columns"
+msgstr "Colonnes"
+
+#: legacy msgs.py
+msgid "Move"
+msgstr "Déplacer"
+
+#: legacy msgs.py
+msgid "Align"
+msgstr "Aligner"
+
+#: legacy msgs.py
+msgid "Hide column"
+msgstr "Cacher la colonne"
+
+#: legacy msgs.py
+msgid "Delete column"
+msgstr "Supprimer la colonne"
+
+#: legacy msgs.py
+msgid "Show All"
+msgstr "Afficher tout"
+
+#: legacy msgs.py
+msgid "Move to left"
+msgstr "Déplacer vers la gauche"
+
+#: legacy msgs.py
+msgid "Move to right"
+msgstr "Déplacer vers la droite"
+
+#: legacy msgs.py
+msgid "Move to first"
+msgstr "Déplacer en premier"
+
+#: legacy msgs.py
+msgid "Move to last"
+msgstr "Déplacer en dernier"
+
+#: legacy msgs.py
+msgid "Align left"
+msgstr "Aligner à gauche"
+
+#: legacy msgs.py
+msgid "Align center"
+msgstr "Aligner au centre"
+
+#: legacy msgs.py
+msgid "Align right"
+msgstr "Aligner à droite"
+
+#: legacy msgs.py
+msgid "Sort"
+msgstr "Trier"
+
+#: legacy msgs.py
+msgid "Filter"
+msgstr "Filtrer"
+
+#: legacy msgs.py
+msgid "Export"
+msgstr "Exporter"
+
+#: legacy msgs.py
+msgid "Delete selected rows"
+msgstr "Supprimer les lignes sélectionnées"
+
+#: legacy msgs.py
+msgid "Sort Ascending"
+msgstr "Tri ascendant"
+
+#: legacy msgs.py
+msgid "Sort Descending"
+msgstr "Tri descendant"
+
+#: legacy msgs.py
+msgid "Clear filters"
+msgstr "Effacer les filtres"
+
+#: legacy msgs.py
+msgid "Filter by cell's value"
+msgstr "Filtrer par valeur de cellules"
+
+#: legacy msgs.py
+msgid "Hide select rows"
+msgstr "Cacher les lignes sélectionnées"
+
+#: legacy msgs.py
+msgid "Show only select rows"
+msgstr "N’afficher que les lignes sélectionnées"
+
+#: legacy msgs.py
+msgid "Export all records"
+msgstr "Exporter tous les enregistrements"
+
+#: legacy msgs.py
+msgid "Export current page"
+msgstr "Exporter la page active"
+
+#: legacy msgs.py
+msgid "Export current selection"
+msgstr "Exporter la sélection"
+
+#: legacy msgs.py
+msgid "Export records in filter"
+msgstr "Exporter les enregistrements filtrés"
+
+#: legacy msgs.py
+msgid "Move up"
+msgstr "Déplacer vers le haut"
+
+#: legacy msgs.py
+msgid "Move down"
+msgstr "Déplacer vers le bas"
+
+#: legacy msgs.py
+msgid "Move to top"
+msgstr "Déplacer en premier"
+
+#: legacy msgs.py
+msgid "Move to bottom"
+msgstr "Déplacer en dernier"
+
+#: legacy msgs.py
+msgid "Mo"
+msgstr "Lu"
+
+#: legacy msgs.py
+msgid "Tu"
+msgstr "Ma"
+
+#: legacy msgs.py
+msgid "We"
+msgstr "Me"
+
+#: legacy msgs.py
+msgid "Th"
+msgstr "Je"
+
+#: legacy msgs.py
+msgid "Fr"
+msgstr "Ve"
+
+#: legacy msgs.py
+msgid "Sa"
+msgstr "Sa"
+
+#: legacy msgs.py
+msgid "Su"
+msgstr "Di"
+

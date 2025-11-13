@@ -1,3 +1,4 @@
+dateparser
 typing-extensions
 mkdocs>=1.5,<2.0
 mkdocs-material==9.6.14
