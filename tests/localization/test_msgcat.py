@@ -1,8 +1,12 @@
+from pathlib import Path
 
 from ttkbootstrap.localization.msgcat import MessageCatalog
-from ttkbootstrap.localization.msgs import initialize_localities
 
-initialize_localities()
+# Initialize Babel/gettext bridge for tests using absolute locales path
+_ROOT = Path(__file__).resolve().parents[2]
+_LOCALES = str(_ROOT / "locales")
+MessageCatalog.init(locales_dir=_LOCALES, domain="ttkbootstrap", default_locale="en")
+
 
 def test_msgcat():
     """Basic translate() checks."""
@@ -70,7 +74,7 @@ def test_positional_variables():
     """Tests using positonal parameters in its message."""
     MessageCatalog.locale("en")
     num = 2
-    string ="string value"
+    string = "string value"
     real = 3.14
 
     template = "test with string: '%1$s'"
@@ -156,6 +160,7 @@ def test_positional_variables():
     # result = MessageCatalog.translate(template, string, num, real)
     # assert result == expect
 
+
 def test_string_escaping():
     """Check escaping of characters with special meaning in Tcl."""
     MessageCatalog.locale("en")
@@ -214,7 +219,7 @@ def test_set():
 
 def test_set_many():
     """Add multiple translated strings with formating patterns and use them."""
-    string ="string value"
+    string = "string value"
     num = 2
 
     MessageCatalog.locale("nl")

@@ -81,6 +81,27 @@ The new keyword API is very flexible. The following examples all produce the sam
 
 Add Bootstrap or Lucide icons to your app buttons and labels using the [ttkbootstrap-icons](https://github.com/israel-dryer/ttkbootstrap-icons) library.
 
+## Localization
+
+ttkbootstrap ships with a unified localization system that bridges Python gettext (.mo compiled with Babel) and Tcl/Tk msgcat.
+
+- Mark strings in your code:
+  - from ttkbootstrap.localization.msgcat import MessageCatalog
+  - _ = MessageCatalog.translate
+  - ttk.Label(root, text=_('Cancel'))
+- Switch languages at runtime: MessageCatalog.locale('de')
+- Bind to the virtual event for auto-refresh:
+  - root.bind('<<LocaleChanged>>', lambda e: refresh_text())
+- Catalogs live under the package: ttkbootstrap/assets/locales/<lang>/LC_MESSAGES/ttkbootstrap.(po|mo)
+- Dev helper (extract/init/update/compile): python tools/make_i18n.py ...
+
+International formatting (numbers/dates)
+- from ttkbootstrap.localization import IntlFormatter
+- fmt = IntlFormatter(locale='de_DE')
+- fmt.format(1234.56, 'decimal') -> locale-aware number
+- fmt.format(date.today(), 'longDate') -> locale-aware date
+- fmt.parse('1.2M', 'largeNumber') -> 1200000.0
+
 ## Contributing
 We welcome contributions! If you'd like to contribute to ttkbootstrap, please check out our contributing guidelines.
 
@@ -96,3 +117,4 @@ This project is proudly developed with the support of the
 <a href="https://www.jetbrains.com/" target="_blank" rel="noopener"> <picture> <source media="(prefers-color-scheme: light)" srcset="https://github.com/user-attachments/assets/f6d4e79d-97f4-4368-a944-affd423aa922"> <img width="250" alt="JetBrains logo" src="https://github.com/user-attachments/assets/1e42e5db-ffb5-4c8d-b238-3f5633fb7e6d"> </picture> </a> 
 
 <sub> © 2025 JetBrains s.r.o. JetBrains and the JetBrains logo are registered trademarks of JetBrains s.r.o. </sub>
+

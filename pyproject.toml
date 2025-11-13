@@ -48,6 +48,14 @@ dependencies = [
     "ttkbootstrap-icons"
 ]
 
+[project.optional-dependencies]
+# Development-time helpers for localization (message extraction/compile)
+i18n = [
+    "Babel>=2.12",
+    "python-dateutil>=2.8",
+    "dateparser>=1.1",
+]
+
 [project.urls]
 Homepage = "https://github.com/israel-dryer/ttkbootstrap"
 Documentation = "https://ttkbootstrap.readthedocs.io/en/latest/"
@@ -56,4 +64,10 @@ Documentation = "https://ttkbootstrap.readthedocs.io/en/latest/"
 where = ["src"]
 
 [tool.setuptools.package-data]
-"ttkbootstrap" = ["themes/*.json", "assets/*"]
+"ttkbootstrap" = [
+    "themes/*.json",
+    "assets/*",
+    # ship compiled gettext catalogs within the package
+    "assets/locales/**/LC_MESSAGES/*.mo",
+]
+
