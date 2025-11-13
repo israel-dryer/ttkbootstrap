@@ -20,7 +20,7 @@ Example:
     ```
 """
 from tkinter import Misc
-from typing import Any
+from typing import Any, Optional, Union
 
 from ttkbootstrap import (
     Frame, IntVar, Label, Scale
@@ -41,10 +41,10 @@ class LabeledScale(Frame):
 
     def __init__(
             self,
-            master: Misc | None = None,
-            variable: IntVar | None = None,
-            from_: int | float = 0,
-            to: int | float = 10,
+            master: Optional[Misc] = None,
+            variable: Optional[IntVar] = None,
+            from_: Union[int, float] = 0,
+            to: Union[int, float] = 10,
             bootstyle: str = DEFAULT,
             **kwargs: Any
     ) -> None:
@@ -117,7 +117,7 @@ class LabeledScale(Frame):
         self.label = None
         self.scale = None
 
-    def _to_number(self, x: str | int | float) -> int | float:
+    def _to_number(self, x: Union[str, int, float]) -> Union[int, float]:
         """Convert a string to int or float.
 
         Parameters:
@@ -175,7 +175,7 @@ class LabeledScale(Frame):
         self.after_idle(adjust_label)
 
     @property
-    def value(self) -> int | float:
+    def value(self) -> Union[int, float]:
         """Get the current scale value.
 
         Returns:
@@ -184,7 +184,7 @@ class LabeledScale(Frame):
         return self._variable.get()
 
     @value.setter
-    def value(self, val: int | float) -> None:
+    def value(self, val: Union[int, float]) -> None:
         """Set the scale to a new value.
 
         Parameters:
