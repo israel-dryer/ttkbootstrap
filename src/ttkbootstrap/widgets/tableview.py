@@ -2094,7 +2094,7 @@ class Tableview(ttk.Frame):
                 A tuple of colors to apply to the table stripe. The
                 tuple represents (background, foreground).
         """
-        style: ttk.Style = ttk.Style.get_instance()
+        style: ttk.Style = ttk.use_style()
         colors = style.colors
         if len(stripecolor) == 2:
             self._stripecolor = stripecolor

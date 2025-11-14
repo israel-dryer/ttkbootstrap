@@ -29,7 +29,6 @@ from ttkbootstrap.constants import *
 from tkinter.scrolledtext import ScrolledText
 from pathlib import Path
 
-
 PATH = Path(__file__).parent / 'assets'
 
 
@@ -68,8 +67,8 @@ class BackMeUp(ttk.Frame):
         _func = lambda: Messagebox.ok(message='Adding new backup')
         btn = ttk.Button(
             master=buttonbar, text='New backup set',
-            image='add-to-backup-light', 
-            compound=LEFT, 
+            image='add-to-backup-light',
+            compound=LEFT,
             command=_func
         )
         btn.pack(side=LEFT, ipadx=5, ipady=5, padx=(1, 0), pady=1)
@@ -77,10 +76,10 @@ class BackMeUp(ttk.Frame):
         ## backup
         _func = lambda: Messagebox.ok(message='Backing up...')
         btn = ttk.Button(
-            master=buttonbar, 
-            text='Backup', 
-            image='play', 
-            compound=LEFT, 
+            master=buttonbar,
+            text='Backup',
+            image='play',
+            compound=LEFT,
             command=_func
         )
         btn.pack(side=LEFT, ipadx=5, ipady=5, padx=0, pady=1)
@@ -88,10 +87,10 @@ class BackMeUp(ttk.Frame):
         ## refresh
         _func = lambda: Messagebox.ok(message='Refreshing...')
         btn = ttk.Button(
-            master=buttonbar, 
-            text='Refresh', 
+            master=buttonbar,
+            text='Refresh',
             image='refresh',
-            compound=LEFT, 
+            compound=LEFT,
             command=_func
         )
         btn.pack(side=LEFT, ipadx=5, ipady=5, padx=0, pady=1)
@@ -99,10 +98,10 @@ class BackMeUp(ttk.Frame):
         ## stop
         _func = lambda: Messagebox.ok(message='Stopping backup.')
         btn = ttk.Button(
-            master=buttonbar, 
-            text='Stop', 
+            master=buttonbar,
+            text='Stop',
             image='stop-light',
-            compound=LEFT, 
+            compound=LEFT,
             command=_func
         )
         btn.pack(side=LEFT, ipadx=5, ipady=5, padx=0, pady=1)
@@ -110,10 +109,10 @@ class BackMeUp(ttk.Frame):
         ## settings
         _func = lambda: Messagebox.ok(message='Changing settings')
         btn = ttk.Button(
-            master=buttonbar, 
-            text='Settings', 
+            master=buttonbar,
+            text='Settings',
             image='properties-light',
-            compound=LEFT, 
+            compound=LEFT,
             command=_func
         )
         btn.pack(side=LEFT, ipadx=5, ipady=5, padx=0, pady=1)
@@ -130,8 +129,8 @@ class BackMeUp(ttk.Frame):
         bus_frm = ttk.Frame(bus_cf, padding=5)
         bus_frm.columnconfigure(1, weight=1)
         bus_cf.add(
-            child=bus_frm, 
-            title='Backup Summary', 
+            child=bus_frm,
+            title='Backup Summary',
             bootstyle=SECONDARY)
 
         ## destination
@@ -162,11 +161,11 @@ class BackMeUp(ttk.Frame):
         ## properties button
         _func = lambda: Messagebox.ok(message='Changing properties')
         bus_prop_btn = ttk.Button(
-            master=bus_frm, 
-            text='Properties', 
-            image='properties-dark', 
+            master=bus_frm,
+            text='Properties',
+            image='properties-dark',
             compound=LEFT,
-            command=_func, 
+            command=_func,
             bootstyle=LINK
         )
         bus_prop_btn.grid(row=4, column=0, columnspan=2, sticky=W)
@@ -174,11 +173,11 @@ class BackMeUp(ttk.Frame):
         ## add to backup button
         _func = lambda: Messagebox.ok(message='Adding to backup')
         add_btn = ttk.Button(
-            master=bus_frm, 
-            text='Add to backup', 
-            image='add-to-backup-dark', 
+            master=bus_frm,
+            text='Add to backup',
+            image='add-to-backup-dark',
             compound=LEFT,
-            command=_func, 
+            command=_func,
             bootstyle=LINK
         )
         add_btn.grid(row=5, column=0, columnspan=2, sticky=W)
@@ -191,14 +190,14 @@ class BackMeUp(ttk.Frame):
         status_frm = ttk.Frame(status_cf, padding=10)
         status_frm.columnconfigure(1, weight=1)
         status_cf.add(
-            child=status_frm, 
-            title='Backup Status', 
+            child=status_frm,
+            title='Backup Status',
             bootstyle=SECONDARY
         )
         ## progress message
         lbl = ttk.Label(
-            master=status_frm, 
-            textvariable='prog-message', 
+            master=status_frm,
+            textvariable='prog-message',
             font='Helvetica 10 bold'
         )
         lbl.grid(row=0, column=0, columnspan=2, sticky=W)
@@ -206,8 +205,8 @@ class BackMeUp(ttk.Frame):
 
         ## progress bar
         pb = ttk.Progressbar(
-            master=status_frm, 
-            variable='prog-value', 
+            master=status_frm,
+            variable='prog-value',
             bootstyle=SUCCESS
         )
         pb.grid(row=1, column=0, columnspan=2, sticky=EW, pady=(10, 5))
@@ -235,11 +234,11 @@ class BackMeUp(ttk.Frame):
         ## stop button
         _func = lambda: Messagebox.ok(message='Stopping backup')
         btn = ttk.Button(
-            master=status_frm, 
-            text='Stop', 
-            image='stop-backup-dark', 
-            compound=LEFT, 
-            command=_func, 
+            master=status_frm,
+            text='Stop',
+            image='stop-backup-dark',
+            compound=LEFT,
+            command=_func,
             bootstyle=LINK
         )
         btn.grid(row=6, column=0, columnspan=2, sticky=W)
@@ -264,13 +263,13 @@ class BackMeUp(ttk.Frame):
         ## file input
         browse_frm = ttk.Frame(right_panel)
         browse_frm.pack(side=TOP, fill=X, padx=2, pady=1)
-        
+
         file_entry = ttk.Entry(browse_frm, textvariable='folder-path')
         file_entry.pack(side=LEFT, fill=X, expand=YES)
-        
+
         btn = ttk.Button(
-            master=browse_frm, 
-            image='opened-folder', 
+            master=browse_frm,
+            image='opened-folder',
             bootstyle=(LINK, SECONDARY),
             command=self.get_directory
         )
@@ -278,24 +277,25 @@ class BackMeUp(ttk.Frame):
 
         ## Treeview
         tv = ttk.Treeview(right_panel, show='headings', height=5)
-        tv.configure(columns=(
-            'name', 'state', 'last-modified', 
-            'last-run-time', 'size'
-        ))
+        tv.configure(
+            columns=(
+                'name', 'state', 'last-modified',
+                'last-run-time', 'size'
+            ))
         tv.column('name', width=150, stretch=True)
-        
+
         for col in ['last-modified', 'last-run-time', 'size']:
             tv.column(col, stretch=False)
-        
+
         for col in tv['columns']:
             tv.heading(col, text=col.title(), anchor=W)
-        
+
         tv.pack(fill=X, pady=1)
 
         ## scrolling text output
         scroll_cf = CollapsingFrame(right_panel)
         scroll_cf.pack(fill=BOTH, expand=YES)
-        
+
         output_container = ttk.Frame(scroll_cf, padding=1)
         _value = 'Log: Backing up... [Uploading file: D:/sample_file_35.txt]'
         self.setvar('scroll-message', _value)
@@ -314,10 +314,11 @@ class BackMeUp(ttk.Frame):
             st.insert(END, f'19:34:{x}\t\t Uploading: D:/file_{x}.txt\n')
             st.insert(END, f'19:34:{x}\t\t Upload {result}.\n')
             timestamp = datetime.now().strftime('%d.%m.%Y %H:%M:%S')
-            tv.insert('', END, x, 
-                      values=(f'sample_file_{x}.txt', 
-                              result, timestamp, timestamp, 
-                              f'{int(x // 3)} MB')
+            tv.insert(
+                '', END, x,
+                values=(f'sample_file_{x}.txt',
+                        result, timestamp, timestamp,
+                        f'{int(x // 3)} MB')
             )
         tv.selection_set(20)
 
@@ -339,8 +340,8 @@ class CollapsingFrame(ttk.Frame):
 
         # widget images
         self.images = [
-            ttk.PhotoImage(file=PATH/'icons8_double_up_24px.png'),
-            ttk.PhotoImage(file=PATH/'icons8_double_right_24px.png')
+            ttk.PhotoImage(file=PATH / 'icons8_double_up_24px.png'),
+            ttk.PhotoImage(file=PATH / 'icons8_double_right_24px.png')
         ]
 
     def add(self, child, title="", bootstyle=PRIMARY, **kwargs):
@@ -362,7 +363,7 @@ class CollapsingFrame(ttk.Frame):
         """
         if child.winfo_class() != 'TFrame':
             return
-        
+
         style_color = Bootstyle.ttkstyle_widget_color(bootstyle)
         frm = ttk.Frame(self, bootstyle=style_color)
         frm.grid(row=self.cumulative_rows, column=0, sticky=EW)
@@ -378,7 +379,9 @@ class CollapsingFrame(ttk.Frame):
         header.pack(side=LEFT, fill=BOTH, padx=10)
 
         # header toggle button
-        def _func(c=child): return self._toggle_open_close(c)
+        def _func(c=child):
+            return self._toggle_open_close(c)
+
         btn = ttk.Button(
             master=frm,
             image=self.images[0],
@@ -412,7 +415,6 @@ class CollapsingFrame(ttk.Frame):
 
 
 if __name__ == '__main__':
-    
     app = ttk.Window("Back Me Up")
     BackMeUp(app)
     app.mainloop()

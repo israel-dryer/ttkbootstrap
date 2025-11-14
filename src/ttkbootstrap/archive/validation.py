@@ -63,7 +63,7 @@ Example:
 """
 import re
 from tkinter import Misc
-from typing import Any, Callable
+from typing import Any, Callable, Union
 
 import ttkbootstrap as ttk
 
@@ -117,7 +117,7 @@ class ValidationEvent:
         self.validationtype = v
         self.validationreason = V
 
-        style = ttk.Style.get_instance()
+        style = ttk.use_style()
         self.widget = style.master.nametowidget(
             W
         )  # replace with another method
@@ -195,7 +195,9 @@ def _validate_options(event: ValidationEvent, options: list[Any]) -> bool:
 
 
 @validator
-def _validate_range(event: ValidationEvent, startrange: int | float, endrange: int | float) -> bool:
+def _validate_range(
+    event: ValidationEvent, startrange: Union[int, float], endrange: Union[int, float]
+) -> bool:
     """Contents is a number between the startrange and endrange
     inclusive
     """
@@ -283,7 +285,12 @@ def add_regex_validation(widget: Misc, pattern: str, when: str = "focusout") -> 
     add_validation(widget, _validate_regex, pattern=pattern, when=when)
 
 
-def add_range_validation(widget: Misc, startrange: int | float, endrange: int | float, when: str = "focusout") -> None:
+def add_range_validation(
+    widget: Misc,
+    startrange: Union[int, float],
+    endrange: Union[int, float],
+    when: str = "focusout",
+) -> None:
     """Check if widget contents is within a range of numbers, inclusive.
     Sets the state to 'Invalid' if the number is outside of the range.
 

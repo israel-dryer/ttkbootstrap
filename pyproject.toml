@@ -44,7 +44,7 @@ classifiers = [
 ]
 
 dependencies = [
-    "pillow>=10,<12",
+    "pillow>=10,<=12",
     "ttkbootstrap-icons"
 ]
 

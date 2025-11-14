@@ -215,7 +215,7 @@ class Colors:
     @staticmethod
     def make_transparent(alpha, foreground, background='#ffffff'):
         """Simulate color transparency.
-        
+
         Parameters:
 
             alpha (float):
@@ -230,8 +230,8 @@ class Colors:
         Returns:
 
             str:
-                A hexadecimal color representing the "transparent" 
-                version of the foreground color against the background 
+                A hexadecimal color representing the "transparent"
+                version of the foreground color against the background
                 color.
         """
         fg = ImageColor.getrgb(foreground)
@@ -4446,15 +4446,15 @@ class StyleBuilderTTK:
                 font_offset = 10
             except:
                 try:
-                    # this should be available as a backup on Linux 
+                    # this should be available as a backup on Linux
                     # distros that don't have the FreeSerif.ttf file
                     fnt = ImageFont.truetype("DejaVuSans.ttf", 160)
                     font_offset = -15
                 except:
                     # If all else fails, use the default ImageFont
-                    # this won't actually show anything in practice 
-                    # because of how I'm scaling the image, but it 
-                    # will prevent the program from crashing. I need 
+                    # this won't actually show anything in practice
+                    # because of how I'm scaling the image, but it
+                    # will prevent the program from crashing. I need
                     # a better solution for a missing font
                     fnt = ImageFont.load_default()
                     font_offset = 0
@@ -4954,7 +4954,7 @@ class Keywords:
     This class is internal to the styling system and not intended to be
     instantiated.
     """
-    
+
     COLORS = [
         "primary",
         "secondary",
@@ -5033,6 +5033,7 @@ class Bootstyle:
     Typical end users will not call these methods directly; they are used
     internally by the Style engine and by widget constructor overrides.
     """
+
     @staticmethod
     def ttkstyle_widget_class(widget=None, string=""):
         """Find and return the widget class
@@ -5279,10 +5280,13 @@ class Bootstyle:
             else:
                 bootstyle = ""
 
-            if "style" in kwargs:
-                style = kwargs.pop("style") or ""
+            if "bs_style" in kwargs:
+                style = kwargs.pop("bs_style") or ""
             else:
                 style = ""
+
+            # Capture style_options for new builder system
+            style_options = kwargs.pop("style_options", None)
 
             # instantiate the widget
             func(self, *args, **kwargs)
@@ -5290,66 +5294,83 @@ class Bootstyle:
             # must be called AFTER instantiation in order to use winfo_class
             #    in the `get_ttkstyle_name` method
 
-            if style:
-                if Style.get_instance().style_exists_in_theme(style):
-                    self.configure(style=style)
-                else:
-                    ttkstyle = Bootstyle.update_ttk_widget_style(
-                        self, style, **kwargs
-                    )
-                    self.configure(style=ttkstyle)
-            elif bootstyle:
-                ttkstyle = Bootstyle.update_ttk_widget_style(
-                    self, bootstyle, **kwargs
-                )
-                self.configure(style=ttkstyle)
+            # Try new builder system
+            # If no builder exists, widget will remain unstyled (making gaps visible)
+            widget_class = self.winfo_class()
+
+            if bootstyle or style:
+                try:
+                    from ttkbootstrap.style.bootstyle import parse_bootstyle, generate_ttk_style_name
+                    from ttkbootstrap.style.bootstyle_builder_ttk import BootstyleBuilderTTk
+                    from ttkbootstrap.style.style import Style as NewStyle
+
+                    # Parse the bootstyle string
+                    parsed = parse_bootstyle(bootstyle or style, widget_class)
+
+                    # Check if we have a builder for this variant
+                    variant = parsed['variant'] or BootstyleBuilderTTk.get_default_variant(widget_class)
+
+                    if BootstyleBuilderTTk.has_builder(widget_class, variant):
+                        # Use NEW builder system
+                        ttkstyle = generate_ttk_style_name(
+                            color=parsed['color'],
+                            variant=parsed['variant'],
+                            widget_class=widget_class
+                        )
+
+                        style_instance = NewStyle.get_instance()
+                        if style_instance is None:
+                            # Style not initialized yet, skip for now
+                            return
+
+                        style_instance.create_style(
+                            widget_class=widget_class,
+                            variant=variant,
+                            ttkstyle=ttkstyle,
+                            color=parsed['color'],
+                            options=style_options
+                        )
+
+                        self.configure(style=ttkstyle)
+                    # else: No builder exists - leave widget unstyled to make gaps visible
+
+                except (ImportError, Exception):
+                    # New system not available or failed - leave unstyled silently
+                    pass
             else:
-                ttkstyle = Bootstyle.update_ttk_widget_style(
-                    self, "default", **kwargs
-                )
-                self.configure(style=ttkstyle)
+                # No bootstyle provided: apply default variant if builder exists
+                try:
+                    from ttkbootstrap.style.bootstyle_builder_ttk import BootstyleBuilderTTk
+                    from ttkbootstrap.style.bootstyle import generate_ttk_style_name
+                    from ttkbootstrap.style.style import Style as NewStyle
+
+                    default_variant = BootstyleBuilderTTk.get_default_variant(widget_class)
+                    if BootstyleBuilderTTk.has_builder(widget_class, default_variant):
+                        ttkstyle = generate_ttk_style_name(
+                            color=None,
+                            variant=default_variant,  # 'default' -> 'Default' token in style name
+                            widget_class=widget_class
+                        )
+
+                        style_instance = NewStyle.get_instance()
+                        if style_instance is not None:
+                            style_instance.create_style(
+                                widget_class=widget_class,
+                                variant=default_variant,
+                                ttkstyle=ttkstyle,
+                                options=style_options
+                            )
+                            self.configure(style=ttkstyle)
+                        # If style not initialized yet, skip silently; it will apply once Style exists
+                except (ImportError, Exception):
+                    # If anything fails here, leave unstyled rather than crashing
+                    pass
 
         return __init__
 
-    @staticmethod
-    def override_ttk_widget_configure(func):
-        """Overrides the configure method on a ttk widget.
-
-        Parameters:
-
-            func (Callable):
-                The widget class `configure` method
-        """
-
-        def configure(self, cnf=None, **kwargs):
-            # get configuration
-            if cnf in ("bootstyle", "style"):
-                return self.cget("style")
-
-            if cnf is not None:
-                return func(self, cnf)
-
-            # set configuration
-            if "bootstyle" in kwargs:
-                bootstyle = kwargs.pop("bootstyle")
-            else:
-                bootstyle = ""
-
-            if "style" in kwargs:
-                style = kwargs.get("style")
-                ttkstyle = Bootstyle.update_ttk_widget_style(
-                    self, style, **kwargs
-                )
-            elif bootstyle:
-                ttkstyle = Bootstyle.update_ttk_widget_style(
-                    self, bootstyle, **kwargs
-                )
-                kwargs.update(style=ttkstyle)
-
-            # update widget configuration
-            func(self, cnf, **kwargs)
-
-        return configure
+    # Note: ttk configure interception and indexing are handled by
+    # wrapper subclasses in the ttkbootstrap.widgets package. No ttk
+    # monkey-patching remains here.
 
     @staticmethod
     def update_ttk_widget_style(
@@ -5415,59 +5436,8 @@ class Bootstyle:
 
         return ttkstyle
 
-    @staticmethod
-    def setup_ttkbootstrap_api():
-        """Setup ttkbootstrap for use with tkinter and ttk. This method
-        is called when ttkbootstrap is imported to perform all of the
-        necessary method overrides that implement the bootstyle api."""
-        from ttkbootstrap.widgets import TTK_WIDGETS
-        from ttkbootstrap.widgets import TK_WIDGETS
-
-        # TTK WIDGETS
-        for widget in TTK_WIDGETS:
-            try:
-                # override widget constructor
-                _init = Bootstyle.override_ttk_widget_constructor(
-                    widget.__init__
-                )
-                widget.__init__ = _init
-
-                # override configure method
-                _configure = Bootstyle.override_ttk_widget_configure(
-                    widget.configure
-                )
-                widget.configure = _configure
-                widget.config = widget.configure
-
-                # override get and set methods
-                _orig_getitem = widget.__getitem
-                _orig_setitem = widget.__setitem
-
-                def __setitem(self, key, val):
-                    if key in ("bootstyle", "style"):
-                        return _configure(self, **{key: val})
-                    return _orig_setitem(key, val)
-
-                def __getitem(self, key):
-                    if key in ("bootstyle", "style"):
-                        return _configure(self, cnf=key)
-                    return _orig_getitem(key)
-
-                if (
-                        widget.__name__ != "OptionMenu"
-                ):  # this has it's own override
-                    widget.__setitem__ = __setitem
-                    widget.__getitem__ = __getitem
-            except:
-                # this may fail in python 3.6 for ttk widgets that do not exist
-                #   in that version.
-                continue
-
-        # TK WIDGETS
-        for widget in TK_WIDGETS:
-            # override widget constructor
-            _init = Bootstyle.override_tk_widget_constructor(widget.__init__)
-            widget.__init__ = _init
+    # setup_ttkbootstrap_api removed; ttk uses wrappers, Tk autostyle is
+    # installed via ttkbootstrap.style.tk_patch in package __init__.
 
     @staticmethod
     def update_tk_widget_style(widget):
