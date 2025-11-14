@@ -694,7 +694,7 @@ class Tableview(ttk.Frame):
         self._iid_field_index = None  # Resolved column index for iid_field
 
         self.view: ttk.Treeview = None
-        self._build_tableview_widget(coldata, rowdata, bootstyle)
+        self._build_tableview_widget(coldata or [], rowdata or [], bootstyle)
 
     @property
     def tablerows(self):
@@ -2336,8 +2336,9 @@ class Tableview(ttk.Frame):
 
     # PRIVATE METHODS - WIDGET BUILDERS
 
-    def _build_tableview_widget(self, coldata, rowdata, bootstyle):
+    def _build_tableview_widget(self, coldata: Sequence[Any], rowdata: Sequence[Any], bootstyle: str):
         """Build the data table"""
+
         if self._searchable:
             self._build_search_frame()
 
