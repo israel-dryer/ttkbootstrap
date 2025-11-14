@@ -1,6 +1,6 @@
 import ttkbootstrap as ttk
 from ttkbootstrap.constants import *
-from ttkbootstrap.tableview import TableRow, Tableview
+from ttkbootstrap.widgets.tableview import TableRow, Tableview
 
 app = ttk.Window(themename='flatly')
 colors = app.style.colors
@@ -63,7 +63,6 @@ dt = Tableview(
     disable_right_click=True,
     searchable=True,
     bootstyle=PRIMARY,
-    stripecolor=(None, None),
     autofit=False,
     on_select=handle_selection,
     iid_field="EmployeeNumber"
