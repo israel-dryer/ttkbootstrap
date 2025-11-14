@@ -28,7 +28,7 @@ Example:
 """
 from datetime import date, datetime
 from tkinter import Misc
-from typing import Any
+from typing import Any, Optional, Union
 
 from ttkbootstrap import Button, Entry, Frame
 from ttkbootstrap.constants import END, LEFT, X, YES
@@ -67,10 +67,10 @@ class DateEntry(Frame):
 
     def __init__(
             self,
-            master: Misc | None = None,
+            master: Optional[Misc] = None,
             dateformat: str = r"%x",
             firstweekday: int = 6,
-            startdate: datetime | date | None = None,
+            startdate: Optional[Union[datetime, date]] = None,
             bootstyle: str = "",
             popup_title: str = 'Select new date',
             raise_exception: bool = False,
@@ -204,7 +204,7 @@ class DateEntry(Frame):
         else:
             return super(Frame, self).configure(cnf=cnf)
 
-    def configure(self, cnf: str | None = None, **kwargs: Any) -> Any:
+    def configure(self, cnf: Optional[str] = None, **kwargs: Any) -> Any:
         """Configure the options for this widget.
 
         Parameters:
@@ -293,7 +293,7 @@ class DateEntry(Frame):
             f'Given formatting string ("{dateformat}"), cannot be used to validate a given strings for dates or display a given datetime object as a date!')
 
     @staticmethod
-    def _clean_datetime(new_date: datetime | date) -> datetime:
+    def _clean_datetime(new_date: Union[datetime, date]) -> datetime:
         """Strip time components from a datetime object.
 
         Since this is a date picker, removes hours, minutes, seconds, and
@@ -310,7 +310,7 @@ class DateEntry(Frame):
         else:
             return datetime(new_date.year, new_date.month, new_date.day)
 
-    def set_date(self, new_date: datetime | date) -> None:
+    def set_date(self, new_date: Union[datetime, date]) -> None:
         """Set the currently selected date.
 
         Updates the entry field and internal state with the new date.

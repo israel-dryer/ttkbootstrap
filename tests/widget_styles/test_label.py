@@ -20,15 +20,15 @@ def create_label_style(bootstyle, style, test_name):
     lbl.pack(padx=5, pady=5, fill=BOTH)
 
     # colored
-    for color in style.colors:
-        lbl = ttk.Label(frame, text=color, bootstyle=(color, bootstyle))
+    for color, value in style.colors.items():
+        lbl = ttk.Label(frame, text=color, bootstyle=color)
         lbl.pack(padx=5, pady=5, fill=BOTH)
 
     return frame
 
 
 def change_style():
-    theme = choice(style.theme_names())
+    theme = choice(['light', 'dark'])
     style.theme_use(theme)
 
 

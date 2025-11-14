@@ -54,7 +54,7 @@ class FontDialog(Dialog):
         """
         title = MessageCatalog.translate(title)
         super().__init__(parent=parent, title=title)
-        self._style = ttk.Style()
+        self._style = ttk.use_style()
         self._default = font.nametofont(default_font)
         self._actual = self._default.actual()
         self._size = ttk.Variable(value=self._actual["size"])

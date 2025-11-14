@@ -21,7 +21,6 @@ import ttkbootstrap as ttk
 from ttkbootstrap.constants import *
 from ttkbootstrap.style import Bootstyle
 
-
 IMG_PATH = Path(__file__).parent / 'assets'
 
 
@@ -35,8 +34,8 @@ class CollapsingFrame(ttk.Frame):
 
         # widget images
         self.images = [
-            ttk.PhotoImage(file=IMG_PATH/'icons8_double_up_24px.png'),
-            ttk.PhotoImage(file=IMG_PATH/'icons8_double_right_24px.png')
+            ttk.PhotoImage(file=IMG_PATH / 'icons8_double_up_24px.png'),
+            ttk.PhotoImage(file=IMG_PATH / 'icons8_double_right_24px.png')
         ]
 
     def add(self, child, title="", bootstyle=PRIMARY, **kwargs):
@@ -58,7 +57,7 @@ class CollapsingFrame(ttk.Frame):
         """
         if child.winfo_class() != 'TFrame':
             return
-        
+
         style_color = Bootstyle.ttkstyle_widget_color(bootstyle)
         frm = ttk.Frame(self, bootstyle=style_color)
         frm.grid(row=self.cumulative_rows, column=0, sticky=EW)
@@ -74,7 +73,9 @@ class CollapsingFrame(ttk.Frame):
         header.pack(side=LEFT, fill=BOTH, padx=10)
 
         # header toggle button
-        def _func(c=child): return self._toggle_open_close(c)
+        def _func(c=child):
+            return self._toggle_open_close(c)
+
         btn = ttk.Button(
             master=frm,
             image=self.images[0],

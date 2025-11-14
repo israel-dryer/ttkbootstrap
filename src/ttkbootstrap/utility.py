@@ -82,6 +82,7 @@ def enable_high_dpi_awareness(root=None, scaling=None):
     except:
         pass
 
+
 def get_image_name(image):
     """Extract and return the tcl/tk image name from a PhotoImage 
     object.
@@ -97,6 +98,7 @@ def get_image_name(image):
             The tcl/tk name of the photoimage object.
     """
     return image._PhotoImage__photo.name
+
 
 def scale_size(widget, size):
     """Scale the size based on the scaling factor of tkinter. 
@@ -126,11 +128,40 @@ def scale_size(widget, size):
         return [int(x * factor) for x in size]
 
 
+# --- Debug helpers ---------------------------------------------------------
+def _debug_enabled() -> bool:
+    """Return True if debug logging is enabled.
+
+    Controlled via the environment variable `TTKBOOTSTRAP_DEBUG`.
+    Accepts: "1", "true", "yes" (case-insensitive) as truthy values.
+    """
+    import os
+    return str(os.environ.get("TTKBOOTSTRAP_DEBUG", "")).lower() in {"1", "true", "yes"}
+
+
+def debug_log_exception(message: str = "") -> None:
+    """Print the current exception traceback if debug is enabled.
+
+    Args:
+        message: Optional context message to print before the traceback.
+    """
+    if not _debug_enabled():
+        return
+    try:
+        import traceback
+        if message:
+            print(f"TTKBootstrap DEBUG: {message}")
+        traceback.print_exc()
+    except Exception:
+        # Never raise from debug logging
+        pass
+
+
 def center_on_parent(win, parent=None):
     """Center `win` on parent or over its master if not given"""
-    win.update_idletasks() # ensure geometry
+    win.update_idletasks()  # ensure geometry
     if parent is None:
-        parent = getattr(win, 'master', None) or win # root if no parent
+        parent = getattr(win, 'master', None) or win  # root if no parent
 
     # parent geometry
     parent.update_idletasks()
@@ -147,3 +178,17 @@ def center_on_parent(win, parent=None):
     x = px + (pw - ww) // 2
     y = py + (ph - wh) // 2
     win.geometry(f"{ww}x{wh}+{x}+{y}")
+
+
+def clamp(value, min_val, max_val):
+    """Return a value that is bounded by a minimum and maximum.
+
+    Args:
+        value: The value to evaluate.
+        min_val: The minimum allowed value.
+        max_val: The maximum allowed value.
+
+    Returns:
+        The value, constrained between `min_val` and `max_val`.
+    """
+    return min(max(value, min_val), max_val)

@@ -39,7 +39,7 @@ Example:
 """
 import math
 from tkinter import Event, Misc
-from typing import Any
+from typing import Any, Optional, Union
 
 from PIL import Image, ImageDraw, ImageTk
 from PIL.Image import Resampling
@@ -121,13 +121,13 @@ class Meter(Frame):
 
     def __init__(
             self,
-            master: Misc | None = None,
+            master: Optional[Misc] = None,
             bootstyle: str = DEFAULT,
-            arcrange: int | None = None,
-            arcoffset: int | None = None,
-            amountmin: int | float = 0,
-            amounttotal: int | float = 100,
-            amountused: int | float = 0,
+            arcrange: Optional[int] = None,
+            arcoffset: Optional[int] = None,
+            amountmin: Union[int, float] = 0,
+            amounttotal: Union[int, float] = 100,
+            amountused: Union[int, float] = 0,
             amountformat: str = "{:.0f}",
             wedgesize: int = 0,
             metersize: int = 200,
@@ -136,13 +136,13 @@ class Meter(Frame):
             showtext: bool = True,
             interactive: bool = False,
             stripethickness: int = 0,
-            textleft: str | None = None,
-            textright: str | None = None,
+            textleft: Optional[str] = None,
+            textright: Optional[str] = None,
             textfont: str = "-size 20 -weight bold",
-            subtext: str | None = None,
+            subtext: Optional[str] = None,
             subtextstyle: str = DEFAULT,
             subtextfont: str = "-size 10",
-            stepsize: int | float = 1,
+            stepsize: Union[int, float] = 1,
             **kwargs: Any,
     ) -> None:
         """
@@ -414,7 +414,9 @@ class Meter(Frame):
             self.indicator.unbind(seq2, self._bindids.get(seq2))
             self._bindids.clear()
 
-    def _set_arc_offset_range(self, metertype: str, arcoffset: int | None, arcrange: int | None) -> None:
+    def _set_arc_offset_range(
+        self, metertype: str, arcoffset: Optional[int], arcrange: Optional[int]
+    ) -> None:
         """Configure the arc parameters based on meter type.
 
         Sets default arc offset and range values for full or semi-circle meters
@@ -782,7 +784,7 @@ class Meter(Frame):
     def __setitem__(self, key: str, value: Any) -> None:
         self._configure_set(**{key: value})
 
-    def configure(self, cnf: str | None = None, **kwargs: Any) -> Any:
+    def configure(self, cnf: Optional[str] = None, **kwargs: Any) -> Any:
         """Configure the options for this widget.
 
         Parameters:
@@ -802,7 +804,7 @@ class Meter(Frame):
         else:
             return self._configure_set(**kwargs)
 
-    def step(self, delta: int | float = 1) -> None:
+    def step(self, delta: Union[int, float] = 1) -> None:
         """Increment or decrement the meter value.
 
         The indicator will bounce back when reaching the minimum or maximum

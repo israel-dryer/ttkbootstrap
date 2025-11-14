@@ -1,58 +1,41 @@
-"""Widgets module for ttkbootstrap.
+"""Public widget exports for ttkbootstrap.
 
-This module provides custom widgets for ttkbootstrap, extending the standard
-tkinter and ttk widget set with enhanced functionality and styling options.
-
-Available Widgets:
-    DateEntry: Date picker widget with calendar popup
-    Floodgauge: Progress bar with customizable text overlay
-    FloodgaugeLegacy: Legacy ttk-based progress bar
-    Meter: Radial progress indicator with various display styles
-    LabeledScale: Scale widget with automatic value label
-
-Module Constants:
-    M (int): Meter image scale factor (3)
-    TTK_WIDGETS: Tuple of standard ttk widget classes
-    TK_WIDGETS: Tuple of standard tk widget classes
-
-Example:
-    ```python
-    import ttkbootstrap as ttk
-    from datetime import datetime
-
-    root = ttk.Window()
-
-    # Create various custom widgets
-    date_entry = ttk.DateEntry(root, firstweekday=0)
-    date_entry.pack(padx=10, pady=5)
-
-    floodgauge = ttk.Floodgauge(root, maximum=100, mask="{}% Complete")
-    floodgauge.pack(fill='x', padx=10, pady=5)
-
-    meter = ttk.Meter(root, amountused=75, metertype="semi")
-    meter.pack(padx=10, pady=5)
-
-    scale = ttk.LabeledScale(root, from_=0, to=100)
-    scale.pack(fill='x', padx=10, pady=5)
-
-    root.mainloop()
-    ```
-
-Note:
-    All widgets in this module maintain backwards compatibility with the
-    previous monolithic widgets.py file. Imports from ttkbootstrap.widgets
-    will work identically to before the module refactoring.
+Re-exports ttk wrapper widgets and custom widgets under a stable namespace.
+Prefer importing from `ttkbootstrap` or `ttkbootstrap.widgets` rather than
+submodules.
 """
 import tkinter as tk
 from tkinter import ttk
 
 # Import widgets from individual modules
-from ttkbootstrap.widgets.dateentry import DateEntry
-from ttkbootstrap.widgets.floodgauge import Floodgauge, FloodgaugeLegacy
-from ttkbootstrap.widgets.labeledscale import LabeledScale
-from ttkbootstrap.widgets.meter import Meter
-from ttkbootstrap.widgets.toast import ToastNotification
-from ttkbootstrap.widgets.tooltip import ToolTip
+from ttkbootstrap.widgets.custom.dateentry import DateEntry
+from ttkbootstrap.widgets.custom.floodgauge import Floodgauge, FloodgaugeLegacy
+from ttkbootstrap.widgets.custom.labeledscale import LabeledScale
+from ttkbootstrap.widgets.custom.meter import Meter
+from ttkbootstrap.widgets.custom.toast import ToastNotification
+from ttkbootstrap.widgets.custom.tooltip import ToolTip
+from ttkbootstrap.widgets.custom.validated_entry import ValidatedEntry
+
+# Wrapper widgets (ttk)
+from ttkbootstrap.widgets.controls.button import Button
+from ttkbootstrap.widgets.display.label import Label
+from ttkbootstrap.widgets.controls.menubutton import Menubutton
+from ttkbootstrap.widgets.controls.checkbutton import Checkbutton
+from ttkbootstrap.widgets.controls.radiobutton import Radiobutton
+from ttkbootstrap.widgets.controls.combobox import Combobox
+from ttkbootstrap.widgets.controls.entry import Entry
+from ttkbootstrap.widgets.containers.frame import Frame
+from ttkbootstrap.widgets.containers.notebook import Notebook
+from ttkbootstrap.widgets.containers.labelframe import Labelframe
+from ttkbootstrap.widgets.containers.panedwindow import Panedwindow
+from ttkbootstrap.widgets.display.progressbar import Progressbar
+from ttkbootstrap.widgets.controls.scale import Scale
+from ttkbootstrap.widgets.display.scrollbar import Scrollbar
+from ttkbootstrap.widgets.display.separator import Separator
+from ttkbootstrap.widgets.display.sizegrip import Sizegrip
+from ttkbootstrap.widgets.controls.spinbox import Spinbox
+from ttkbootstrap.widgets.dataview.treeview import Treeview
+from ttkbootstrap.widgets.controls.optionmenu import OptionMenu
 
 # Constants from original widgets.py
 M = 3  # meter image scale, higher number increases resolution
@@ -101,11 +84,33 @@ TK_WIDGETS = (
 
 # Export all widgets for backwards compatibility
 __all__ = [
+    # ttk wrapper widgets
+    'Button',
+    'Label',
+    'Menubutton',
+    'Checkbutton',
+    'Radiobutton',
+    'Combobox',
+    'Entry',
+    'Frame',
+    'Notebook',
+    'Labelframe',
+    'Panedwindow',
+    'Progressbar',
+    'Scale',
+    'Scrollbar',
+    'Separator',
+    'Sizegrip',
+    'Spinbox',
+    'Treeview',
+    'OptionMenu',
+
     'DateEntry',
     'Floodgauge',
     'FloodgaugeLegacy',
     'Meter',
     'LabeledScale',
+    'ValidatedEntry',
     'ToolTip',
     'ToastNotification',
     'M',

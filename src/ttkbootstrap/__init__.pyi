@@ -97,9 +97,23 @@ class Button(_ttk.Button):
             underline: int = ...,
             width: Any = ...,
             bootstyle: Optional[BootstyleArg] = ...,
+            style_options: Optional[dict] = ...,
+            surface_color: Optional[str] = ...,
+            icon: Any = ...,
+            inherit_surface_color: Optional[bool] = ...,
     ) -> None: ...
 
-    def configure(self, cnf: Any = ..., *, bootstyle: Optional[BootstyleArg] = ..., **kwargs: Any) -> Any: ...
+    def configure(
+            self,
+            cnf: Any = ...,
+            *,
+            bootstyle: Optional[BootstyleArg] = ...,
+            style_options: Optional[dict] = ...,
+            surface_color: Optional[str] = ...,
+            icon: Any = ...,
+            inherit_surface_color: Optional[bool] = ...,
+            **kwargs: Any
+    ) -> Any: ...
 
     config = configure
 
@@ -156,9 +170,23 @@ class Checkbutton(_ttk.Checkbutton):
             variable: Any = ...,
             width: Any = ...,
             bootstyle: Optional[BootstyleArg] = ...,
+            style_options: Optional[dict] = ...,
+            surface_color: Optional[str] = ...,
+            icon: Any = ...,
+            inherit_surface_color: Optional[bool] = ...,
     ) -> None: ...
 
-    def configure(self, cnf: Any = ..., *, bootstyle: Optional[BootstyleArg] = ..., **kwargs: Any) -> Any: ...
+    def configure(
+            self,
+            cnf: Any = ...,
+            *,
+            bootstyle: Optional[BootstyleArg] = ...,
+            style_options: Optional[dict] = ...,
+            surface_color: Optional[str] = ...,
+            icon: Any = ...,
+            inherit_surface_color: Optional[bool] = ...,
+            **kwargs: Any
+    ) -> Any: ...
 
     config = configure
 
@@ -333,9 +361,23 @@ class Frame(_ttk.Frame):
             takefocus: Any = ...,
             width: Any = ...,
             bootstyle: Optional[BootstyleArg] = ...,
+            style_options: Optional[dict] = ...,
+            surface_color: Optional[str] = ...,
+            icon: Any = ...,
+            inherit_surface_color: Optional[bool] = ...,
     ) -> None: ...
 
-    def configure(self, cnf: Any = ..., *, bootstyle: Optional[BootstyleArg] = ..., **kwargs: Any) -> Any: ...
+    def configure(
+            self,
+            cnf: Any = ...,
+            *,
+            bootstyle: Optional[BootstyleArg] = ...,
+            style_options: Optional[dict] = ...,
+            surface_color: Optional[str] = ...,
+            icon: Any = ...,
+            inherit_surface_color: Optional[bool] = ...,
+            **kwargs: Any
+    ) -> Any: ...
 
     config = configure
 
@@ -388,9 +430,23 @@ class Labelframe(_ttk.Labelframe):
             underline: int = ...,
             width: Any = ...,
             bootstyle: Optional[BootstyleArg] = ...,
+            style_options: Optional[dict] = ...,
+            surface_color: Optional[str] = ...,
+            icon: Any = ...,
+            inherit_surface_color: Optional[bool] = ...,
     ) -> None: ...
 
-    def configure(self, cnf: Any = ..., *, bootstyle: Optional[BootstyleArg] = ..., **kwargs: Any) -> Any: ...
+    def configure(
+            self,
+            cnf: Any = ...,
+            *,
+            bootstyle: Optional[BootstyleArg] = ...,
+            style_options: Optional[dict] = ...,
+            surface_color: Optional[str] = ...,
+            icon: Any = ...,
+            inherit_surface_color: Optional[bool] = ...,
+            **kwargs: Any
+    ) -> Any: ...
 
     config = configure
 
@@ -457,9 +513,23 @@ class Label(_ttk.Label):
             width: Any = ...,
             wraplength: Any = ...,
             bootstyle: Optional[BootstyleArg] = ...,
+            style_options: Optional[dict] = ...,
+            surface_color: Optional[str] = ...,
+            icon: Any = ...,
+            inherit_surface_color: Optional[bool] = ...,
     ) -> None: ...
 
-    def configure(self, cnf: Any = ..., *, bootstyle: Optional[BootstyleArg] = ..., **kwargs: Any) -> Any: ...
+    def configure(
+            self,
+            cnf: Any = ...,
+            *,
+            bootstyle: Optional[BootstyleArg] = ...,
+            style_options: Optional[dict] = ...,
+            surface_color: Optional[str] = ...,
+            icon: Any = ...,
+            inherit_surface_color: Optional[bool] = ...,
+            **kwargs: Any
+    ) -> Any: ...
 
     config = configure
 

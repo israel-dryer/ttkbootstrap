@@ -24,7 +24,7 @@ Examples:
     >>> AppConfig.reset()
 """
 
-from typing import Any, Dict, Optional, Tuple
+from typing import Any, Dict, Optional, Tuple, Type
 
 
 class AppConfig:
@@ -45,9 +45,11 @@ class AppConfig:
             app_author (str): Application author/organization name.
 
         Theme & Styling:
+            light_theme (str): The default light theme; bound to "light" theme name.
+            dark_theme (str): The default dark theme; bound to "dark" theme name.
             theme (str): Default theme name (e.g., "darkly", "cosmo", "flatly").
+            load_all_themes (bool): Whether to load all themes or just dark and light.
             font (Tuple[str, int]): Default application font as (family, size).
-            colors (Dict[str, str]): Custom color overrides.
             legacy_bootstyle (bool): Use legacy bootstyle parsing behavior.
                 When True, uses relaxed parsing for backward compatibility.
                 When False (default), uses strict parsing. Default is False.
@@ -63,7 +65,7 @@ class AppConfig:
             window_alpha (float): Window transparency (0.0 to 1.0).
 
         Icons & Assets:
-            icons (str): Icon provider name (e.g., "lucide", "bootstrap").
+            icon_provider (type): Icon provider class (e.g., BootstrapIcon).
 
         Localization:
             language (str): Default language code (e.g., "en", "es", "fr").
@@ -78,10 +80,13 @@ class AppConfig:
     _app_author: Optional[str] = None
 
     # Theme & Styling defaults
+    _light_theme: Optional[str] = "bootstrap-light"
+    _dark_theme: Optional[str] = "bootstrap-dark"
+    _load_all_themes: Optional[bool] = False
     _theme: Optional[str] = None
     _font: Optional[Tuple[str, int]] = None
-    _colors: Dict[str, str] = {}
     _legacy_bootstyle: Optional[bool] = None
+    _inherit_surface_color: Optional[bool] = True
 
     # Window defaults
     _window_size: Optional[Tuple[int, int]] = None
@@ -94,7 +99,7 @@ class AppConfig:
     _window_alpha: Optional[float] = None
 
     # Icons & Assets
-    _icons: Optional[str] = None
+    _icon_provider: Optional[Type[Any]] = None
 
     # Localization
     _language: Optional[str] = None
@@ -115,9 +120,12 @@ class AppConfig:
                 app_name (str): Application name
                 app_author (str): Application author
                 theme (str): Default theme name
+                dark_theme (str): Default dark theme. Bound to "dark" theme name.
+                light_theme (str): Default light theme. Bound to "light" theme name.
+                load_all_themes (bool): Whether to load all themes, or just `dark` and `light`
                 font (Tuple[str, int]): Default font as (family, size)
-                colors (Dict[str, str]): Custom color overrides
                 legacy_bootstyle (bool): Use legacy bootstyle parsing
+                inherit_surface_color (bool): Use the parent widget's background color to simulate transparency.
                 window_size (Tuple[int, int]): Default window size
                 window_position (Tuple[int, int]): Default window position
                 window_minsize (Tuple[int, int]): Minimum window size
@@ -126,7 +134,7 @@ class AppConfig:
                 window_scaling (float): Window scaling factor
                 window_hdpi (bool): Enable high-DPI support
                 window_alpha (float): Window transparency (0.0 to 1.0)
-                icons (str): Icon provider name
+                icon_provider (type): Icon provider class (e.g., BootstrapIcon)
                 language (str): Default language code
                 date_format (str): Date format string
                 time_format (str): Time format string
@@ -135,6 +143,8 @@ class AppConfig:
 
         Examples:
             >>> AppConfig.set(
+            ...     dark_theme="darkly",
+            ...     light_theme="flatly",
             ...     theme="darkly",
             ...     font=("Arial", 11),
             ...     window_size=(1024, 768),
@@ -146,10 +156,11 @@ class AppConfig:
         """
         valid_keys = {
             'app_name', 'app_author',
-            'theme', 'font', 'colors', 'legacy_bootstyle',
+            'theme', 'font', 'dark_theme', 'light_theme', 'load_all_themes', 'legacy_bootstyle',
+            'inherit_surface_color',
             'window_size', 'window_position', 'window_minsize', 'window_maxsize',
             'window_resizable', 'window_scaling', 'window_hdpi', 'window_alpha',
-            'icons',
+            'icon_provider',
             'language', 'date_format', 'time_format', 'number_decimal', 'number_thousands'
         }
 
@@ -175,7 +186,7 @@ class AppConfig:
             The configuration value, or default if not set.
 
         Examples:
-            >>> theme = AppConfig.get("theme", "cosmo")
+            >>> theme = AppConfig.get("theme", "dark")
             >>> window_size = AppConfig.get("window_size")
 
         Raises:
@@ -201,9 +212,9 @@ class AppConfig:
 
         Examples:
             >>> AppConfig.reset()  # Start fresh
-            >>> AppConfig.set(theme="darkly", font=("Arial", 11), window_size=(1024, 768))
+            >>> AppConfig.set(theme="bootstrap-dark", font=("Arial", 11), window_size=(1024, 768))
             >>> config = AppConfig.get_all()
-            >>> config == {'theme': 'darkly', 'font': ('Arial', 11), 'window_size': (1024, 768)}
+            >>> config == {'theme': 'bootstrap-dark', 'font': ('Arial', 11), 'window_size': (1024, 768)}
             True
             >>> AppConfig.reset()  # Clean up
         """
@@ -243,6 +254,7 @@ class AppConfig:
             cls._theme = None
             cls._font = None
             cls._colors = {}
+            cls._inherit_surface_color = None
             cls._legacy_bootstyle = None
             cls._window_size = None
             cls._window_position = None
@@ -252,7 +264,7 @@ class AppConfig:
             cls._window_scaling = None
             cls._window_hdpi = None
             cls._window_alpha = None
-            cls._icons = None
+            cls._icon_provider = None
             cls._language = None
             cls._date_format = None
             cls._time_format = None
@@ -310,3 +322,46 @@ class AppConfig:
 
         items = [f"{k}={repr(v)}" for k, v in config.items()]
         return f"AppConfig({', '.join(items)})"
+
+
+def use_icon_provider() -> Type[Any]:
+    """Return the configured icon provider class.
+
+    Behavior:
+    - If `AppConfig.icon_provider` is set, return it.
+    - Otherwise, attempt to use the default `BootstrapIcon` from
+      the optional `ttkbootstrap_icons` package.
+
+    Returns:
+        Icon provider class.
+
+    Raises:
+        ImportError: If no provider is configured and the default
+            `BootstrapIcon` cannot be imported.
+    """
+    provider = AppConfig.get('icon_provider')
+    if provider is not None:
+        return provider  # type: ignore[return-value]
+
+    # Try importing the default BootstrapIcon from ttkbootstrap_icons
+    errors: list[str] = []
+    candidates = (
+        'ttkbootstrap_icons',
+        'ttkbootstrap_icons.bootstrap_icon',
+        'ttkbootstrap_icons.icons',
+    )
+    for modname in candidates:
+        try:
+            mod = __import__(modname, fromlist=['BootstrapIcon'])
+            default = getattr(mod, 'BootstrapIcon')
+            # Cache for subsequent calls
+            AppConfig.set(icon_provider=default)
+            return default  # type: ignore[return-value]
+        except Exception as e:  # pragma: no cover - best-effort fallback
+            errors.append(f"{modname}: {e}")
+
+    raise ImportError(
+        "Icon provider is not configured and default BootstrapIcon could not be imported. "
+        "Install 'ttkbootstrap-icons' or set AppConfig.set(icon_provider=YourProviderClass).\n"
+        + "; ".join(errors)
+    )

@@ -44,7 +44,7 @@ Example:
     ```
 """
 from tkinter import font
-from typing import Any, TYPE_CHECKING
+from typing import Any, TYPE_CHECKING, Optional, Union
 
 from ttkbootstrap.constants import *
 
@@ -84,12 +84,12 @@ class ToastNotification:
             self,
             title: str,
             message: str,
-            duration: int | None = None,
+            duration: Optional[int] = None,
             bootstyle: str = LIGHT,
             alert: bool = False,
-            icon: str | None = None,
-            iconfont: font.Font | str | None = None,
-            position: tuple[int, int, str] | None = None,
+            icon: Optional[str] = None,
+            iconfont: Optional[Union[font.Font, str]] = None,
+            position: Optional[tuple[int, int, str]] = None,
             **kwargs: Any,
     ) -> None:
         """

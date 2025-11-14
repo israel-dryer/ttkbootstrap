@@ -130,7 +130,7 @@ class ColorChooser(ttk.Frame):
         self.notebook = ttk.Notebook(self.tframe)
         self.notebook.pack(fill=BOTH)
 
-        self.style = ttk.Style.get_instance()
+        self.style = ttk.use_style()
         self.colors = self.style.colors
         self.initialcolor = initialcolor or self.colors.bg
 

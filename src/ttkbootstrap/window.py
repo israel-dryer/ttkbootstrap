@@ -51,7 +51,7 @@ from ttkbootstrap.appconfig import AppConfig
 from ttkbootstrap.constants import *
 from ttkbootstrap.icons import Icon
 from ttkbootstrap.publisher import Publisher
-from ttkbootstrap.style import Style
+from ttkbootstrap.style.style import Style
 
 
 def get_default_root(what: Optional[str] = None) -> tkinter.Tk:
@@ -183,7 +183,7 @@ class Window(tkinter.Tk):
     def __init__(
             self,
             title: str = "ttkbootstrap",
-            themename: str = "litera",
+            themename: str = "light",
             iconphoto: Optional[str] = '',
             size: Optional[Tuple[int, int]] = None,
             position: Optional[Tuple[int, int]] = None,
@@ -274,7 +274,7 @@ class Window(tkinter.Tk):
                 List of available keywords available at: https://docs.python.org/3/library/tkinter.html#tkinter.Tk
         """
         # Apply AppConfig defaults for any parameters not explicitly provided
-        if themename == "litera" and AppConfig.has("theme"):
+        if themename == "light" and AppConfig.has("theme"):
             themename = AppConfig.get("theme")
         if size is None and AppConfig.has("window_size"):
             size = AppConfig.get("window_size")
@@ -355,7 +355,8 @@ class Window(tkinter.Tk):
 
         apply_class_bindings(self)
         apply_all_bindings(self)
-        self._style = Style(themename)
+        from ttkbootstrap.style.style import use_style
+        self._style = use_style(self)
 
     @property
     def style(self) -> Style:
@@ -574,7 +575,8 @@ class Toplevel(tkinter.Toplevel):
     @property
     def style(self) -> Style:
         """Return a reference to the `ttkbootstrap.style.Style` object."""
-        return Style()
+        from ttkbootstrap.style.style import use_style
+        return use_style()
 
     def place_window_center(self) -> None:
         """Position the toplevel in the center of the screen. Does not

@@ -44,7 +44,7 @@ Example:
     ```
 """
 from tkinter import Event, Misc
-from typing import Any, Literal
+from typing import Any, Literal, Optional, Union
 
 import ttkbootstrap as ttk
 from ttkbootstrap import utility
@@ -88,11 +88,11 @@ class ToolTip:
             text: str = "widget info",
             padding: int = 10,
             justify: Literal["left", "center", "right"] = "left",
-            bootstyle: str | tuple[str, ...] | None = None,
-            wraplength: int | None = None,
+            bootstyle: Optional[Union[str, tuple[str, ...]]] = None,
+            wraplength: Optional[int] = None,
             delay: int = 250,  # milliseconds
             image: Any = None,
-            position: str | None = None,
+            position: Optional[str] = None,
             **kwargs: Any,
     ) -> None:
         """
@@ -157,10 +157,10 @@ class ToolTip:
         self.widget.bind("<Motion>", self.move_tip)
         self.widget.bind("<ButtonPress>", self.leave)
 
-    def enter(self, event: Event | None = None) -> None:
+    def enter(self, event: Optional[Event] = None) -> None:
         self.schedule()
 
-    def leave(self, event: Event | None = None) -> None:
+    def leave(self, event: Optional[Event] = None) -> None:
         self.unschedule()
         self.hide_tip()
 
