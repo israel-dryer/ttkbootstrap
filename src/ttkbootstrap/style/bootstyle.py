@@ -353,63 +353,6 @@ class Bootstyle:
         return __init__wrapper
 
     @staticmethod
-    def override_ttk_widget_configure(func):
-        """Override ttk widget configure to accept bootstyle parameter."""
-
-        def configure(self, cnf=None, **kwargs):
-            if cnf in ("bootstyle", "style"):
-                return self.cget("style")
-
-            if cnf is not None:
-                return func(self, cnf)
-
-            style_options = kwargs.pop("style_options", None)
-            inherit_flag = kwargs.pop('inherit_surface_color', None)
-            explicit_surface = kwargs.pop('surface_color', None)
-            icon_spec = kwargs.pop('icon', None)
-
-            style_str = None
-            if "bootstyle" in kwargs and kwargs["bootstyle"]:
-                style_str = kwargs.pop("bootstyle")
-
-            if style_str:
-                widget_class = self.winfo_class()
-                if explicit_surface is not None:
-                    surface = explicit_surface
-                else:
-                    if inherit_flag is None:
-                        inherit_flag = AppConfig.get('inherit_surface_color', True)
-                    if inherit_flag:
-                        surface = 'background'
-                        if hasattr(self, 'master') and self.master is not None:
-                            surface = getattr(self.master, '_surface_color', 'background')
-                    else:
-                        surface = getattr(self, '_surface_color', 'background')
-
-                # handle surface color for container widgets
-                if widget_class in CONTAINER_CLASSES and explicit_surface is None:
-                    parsed = parse_bootstyle(style_str, widget_class)
-                    if parsed.get('color'):
-                        surface = parsed['color']
-                    setattr(self, '_surface_color', surface)
-
-                # Pass through icon to style builder for supported widgets
-                if widget_class in ICON_CLASSES and icon_spec is not None:
-                    _opts = dict(style_options or {})
-                    _opts['icon'] = icon_spec
-                    style_options = _opts
-                ttk_style = Bootstyle.create_ttk_style(
-                    widget_class=widget_class,
-                    bootstyle=style_str,
-                    style_options=style_options
-                )
-                kwargs["style"] = ttk_style
-
-            return func(self, cnf, **kwargs)
-
-        return configure
-
-    @staticmethod
     def override_tk_widget_constructor(func):
         """Override Tk widget __init__ to apply theme background when autostyle=True."""
 
@@ -456,42 +399,6 @@ class Bootstyle:
             style.register_tk_widget(self)
 
         return __init__wrapper
-
-    @staticmethod
-    def install_ttkbootstrap():
-        """Install bootstyle API into ttk/tk widgets via monkey patching."""
-        from ttkbootstrap.widgets import TTK_WIDGETS, TK_WIDGETS
-        import ttkbootstrap.style.builders_tk  # noqa: F401
-
-        for widget in TTK_WIDGETS:
-            _init = Bootstyle.override_ttk_widget_constructor(widget.__init__)
-            widget.__init__ = _init
-
-            _configure = Bootstyle.override_ttk_widget_configure(widget.configure)
-            widget.configure = _configure
-            widget.config = widget.configure
-
-            if getattr(widget, "__name__", "") != "OptionMenu":
-                _orig_getitem = getattr(widget, "__getitem__", None)
-                _orig_setitem = getattr(widget, "__setitem__", None)
-
-                if _orig_getitem and _orig_setitem:
-                    def __setitem(self, key, val):
-                        if key in ("bootstyle", "style"):
-                            return _configure(self, **{key: val})
-                        return _orig_setitem(self, key, val)
-
-                    def __getitem(self, key):
-                        if key in ("bootstyle", "style"):
-                            return _configure(self, cnf=key)
-                        return _orig_getitem(self, key)
-
-                    widget.__setitem__ = __setitem
-                    widget.__getitem__ = __getitem
-
-        for widget in TK_WIDGETS:
-            _init = Bootstyle.override_tk_widget_constructor(widget.__init__)
-            widget.__init__ = _init
 
 
 __all__ = [

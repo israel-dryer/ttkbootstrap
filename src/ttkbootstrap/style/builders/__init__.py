@@ -9,7 +9,7 @@ Builder modules are automatically imported to trigger registration.
 from __future__ import annotations
 
 from . import badge, button, checkbutton, frame, label, progressbar, radiobutton, scale, scrollbar, menubutton
-from . import entry
+from . import entry, field
 
 # Import all builder modules to trigger registration
 
@@ -24,5 +24,6 @@ __all__ = [
     'scale',
     'scrollbar',
     'menubutton',
-    'entry'
+    'entry',
+    'field'
 ]

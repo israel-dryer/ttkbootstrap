@@ -5368,54 +5368,9 @@ class Bootstyle:
 
         return __init__
 
-    @staticmethod
-    def override_ttk_widget_configure(func):
-        """Overrides the configure method on a ttk widget.
-
-        Parameters:
-
-            func (Callable):
-                The widget class `configure` method
-        """
-
-        def configure(self, cnf=None, **kwargs):
-            # get configuration
-            if cnf in ("bootstyle", "style"):
-                return self.cget("style")
-
-            if cnf is not None:
-                return func(self, cnf)
-
-            # set configuration
-            if "bootstyle" in kwargs:
-                bootstyle = kwargs.pop("bootstyle")
-            else:
-                bootstyle = ""
-
-            # Attempt to determine parent surface color silently
-            surface = None
-            try:
-                parent_style = self.master.cget('style')
-                if parent_style:
-                    surface = ttk.Style().configure(parent_style, "background")
-            except Exception:
-                pass
-
-            if "style" in kwargs:
-                style = kwargs.get("style")
-                ttkstyle = Bootstyle.update_ttk_widget_style(
-                    self, style, surface=surface, **kwargs
-                )
-            elif bootstyle:
-                ttkstyle = Bootstyle.update_ttk_widget_style(
-                    self, bootstyle, surface=surface, **kwargs
-                )
-                kwargs.update(style=ttkstyle)
-
-            # update widget configuration
-            func(self, cnf, **kwargs)
-
-        return configure
+    # Note: ttk configure interception and indexing are handled by
+    # wrapper subclasses in the ttkbootstrap.widgets package. No ttk
+    # monkey-patching remains here.
 
     @staticmethod
     def update_ttk_widget_style(
@@ -5481,59 +5436,8 @@ class Bootstyle:
 
         return ttkstyle
 
-    @staticmethod
-    def setup_ttkbootstrap_api():
-        """Setup ttkbootstrap for use with tkinter and ttk. This method
-        is called when ttkbootstrap is imported to perform all of the
-        necessary method overrides that implement the bootstyle api."""
-        from ttkbootstrap.widgets import TTK_WIDGETS
-        from ttkbootstrap.widgets import TK_WIDGETS
-
-        # TTK WIDGETS
-        for widget in TTK_WIDGETS:
-            try:
-                # override widget constructor
-                _init = Bootstyle.override_ttk_widget_constructor(
-                    widget.__init__
-                )
-                widget.__init__ = _init
-
-                # override configure method
-                _configure = Bootstyle.override_ttk_widget_configure(
-                    widget.configure
-                )
-                widget.configure = _configure
-                widget.config = widget.configure
-
-                # override get and set methods
-                _orig_getitem = widget.__getitem
-                _orig_setitem = widget.__setitem
-
-                def __setitem(self, key, val):
-                    if key in ("bootstyle", "style"):
-                        return _configure(self, **{key: val})
-                    return _orig_setitem(key, val)
-
-                def __getitem(self, key):
-                    if key in ("bootstyle", "style"):
-                        return _configure(self, cnf=key)
-                    return _orig_getitem(key)
-
-                if (
-                        widget.__name__ != "OptionMenu"
-                ):  # this has it's own override
-                    widget.__setitem__ = __setitem
-                    widget.__getitem__ = __getitem
-            except:
-                # this may fail in python 3.6 for ttk widgets that do not exist
-                #   in that version.
-                continue
-
-        # TK WIDGETS
-        for widget in TK_WIDGETS:
-            # override widget constructor
-            _init = Bootstyle.override_tk_widget_constructor(widget.__init__)
-            widget.__init__ = _init
+    # setup_ttkbootstrap_api removed; ttk uses wrappers, Tk autostyle is
+    # installed via ttkbootstrap.style.tk_patch in package __init__.
 
     @staticmethod
     def update_tk_widget_style(widget):
