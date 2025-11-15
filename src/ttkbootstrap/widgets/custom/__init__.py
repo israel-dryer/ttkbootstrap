@@ -10,7 +10,6 @@ from .labeledscale import LabeledScale
 from .meter import Meter
 from .toast import ToastNotification
 from .tooltip import ToolTip
-from .validated_entry import ValidatedEntry
 
 __all__ = [
     'DateEntry',
@@ -20,6 +19,4 @@ __all__ = [
     'Meter',
     'ToastNotification',
     'ToolTip',
-    'ValidatedEntry',
 ]
-
