@@ -196,6 +196,10 @@ class Style(ttkStyle):
             self.theme_create(name, 'clam', {})
 
         super().theme_use(name)
+
+        # Initialize all default widget styles before rebuilding custom styles
+        self._style_builder.initialize_all_default_styles()
+
         self._rebuild_all_styles()
 
         # Re-apply Tk widget styling (legacy widgets)
