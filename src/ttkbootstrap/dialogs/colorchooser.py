@@ -568,7 +568,7 @@ class ColorChooser(ttk.Frame):
         self.sync_color_values(HSL)
 
 
-from .dialogs import Dialog
+from .base import Dialog
 
 
 class ColorChooserDialog(Dialog):
