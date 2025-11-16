@@ -7,9 +7,7 @@ root = tk.Tk()
 style = ttk.Style()
 style.theme_use('default')
 
-layout = style.layout('TSpinbox')
-
-print(layout)
+print(style.layout('TNotebook'))
 
 root.mainloop()
 
