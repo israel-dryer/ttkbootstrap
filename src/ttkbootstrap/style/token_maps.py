@@ -33,6 +33,6 @@ WIDGET_CLASS_MAP = {
 }
 
 WIDGET_NAME_MAP = {v: k for k, v in WIDGET_CLASS_MAP.items()}
-CONTAINER_CLASSES = {'TFrame', 'TLabelframe', 'TField'}
+CONTAINER_CLASSES = {'TFrame', 'TField'}
 ORIENT_CLASSES = {'TProgressbar', 'TScale', 'TScrollbar', 'TPanedwindow'}
 ICON_CLASSES = {'TLabel', 'TButton', 'TCheckbutton', 'TRadiobutton', 'TMenubutton'}
