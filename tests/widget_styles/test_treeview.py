@@ -1,60 +1,67 @@
-import ttkbootstrap as ttk
 from random import choice
+
+import ttkbootstrap as ttk
 from ttkbootstrap import utility
+
 utility.enable_high_dpi_awareness()
 
 DARK = 'dark'
 LIGHT = 'light'
 
-def create_treeview_style(_, style):
+
+def create_treeview_style():
     frame = ttk.Frame(root, padding=5)
-    
-    # title
-    title = ttk.Label(frame, text='Treeview', anchor='center')
-    title.pack(padx=5, pady=2, fill='both')
-    ttk.Separator(frame).pack(padx=5, pady=5, fill='x')
 
-    # default
-    ttk.Label(frame, text='default').pack(fill='x')
-    tv = ttk.Treeview(frame, columns=[0, 1], height=2)
-    tv.heading('#0', text='Column')
-    for x in range(2):
-        tv.heading(x, text=f'Column {x}')
-        tv.insert('', 'end', text=f'Item {x}', 
-                  values=[f'Row {x}', f'Row {x+1}'])
-    tv.pack(padx=5, pady=5, fill='both')
+    # Create Treeview
+    tree = ttk.Treeview(root, bootstyle="table")
+    tree.pack(fill="both", expand=True, padx=10, pady=10)
 
-    # colored 
-    for color in style.colors:
-        ttk.Label(frame, text=color).pack(fill='x')
-        tv = ttk.Treeview(
-            master=frame, 
-            bootstyle=color, 
-            columns=[0, 1],
-            height=2
-        )
-        tv.heading('#0', text='Column')
-        for x in range(2):
-            tv.heading(x, text=f'Column {x}')
-            tv.insert('', 'end', text=f'Item {x}', 
-                    values=[f'Row {x}', f'Row {x+1}'])
-        tv.pack(padx=5, pady=5, fill='both')
+    # Define columns (optional – here we use just the built-in #0 column for labels)
+    # If you want extra data columns, you can uncomment this part:
+    # tree["columns"] = ("size", "modified")
+    # tree.heading("#0", text="Name", anchor="w")
+    # tree.heading("size", text="Size", anchor="w")
+    # tree.heading("modified", text="Modified", anchor="w")
+
+    # Add parents
+    parent1 = tree.insert("", "end", text="Parent 1", open=True)
+    parent2 = tree.insert("", "end", text="Parent 2", open=False)
+    parent3 = tree.insert("", "end", text="Parent 3", open=False)
+
+    # Add children to Parent 1
+    tree.insert(parent1, "end", text="Child 1.1")
+    tree.insert(parent1, "end", text="Child 1.2")
+    child13 = tree.insert(parent1, "end", text="Child 1.3", open=True)
+
+    # Grandchildren under Child 1.3
+    tree.insert(child13, "end", text="Grandchild 1.3.1")
+    tree.insert(child13, "end", text="Grandchild 1.3.2")
+
+    # Add children to Parent 2
+    tree.insert(parent2, "end", text="Child 2.1")
+    tree.insert(parent2, "end", text="Child 2.2")
+
+    # Add children to Parent 3
+    tree.insert(parent3, "end", text="Child 3.1")
 
     return frame
 
+
 def change_style():
-    theme = choice(['light', 'dark'])
-    print(theme)
-    style.theme_use(theme)    
+    if style.theme_use() == DARK:
+        style.theme_use(LIGHT)
+    else:
+        style.theme_use(DARK)
 
 
 if __name__ == '__main__':
     # create visual widget style tests
     root = ttk.Window()
+    root.geometry("300x300")
     style = ttk.Style()
 
     ttk.Button(text="Change Theme", command=change_style).pack(padx=10, pady=10)
 
-    create_treeview_style('', style).pack(side='left')
+    create_treeview_style().pack(side='left')
 
     root.mainloop()
