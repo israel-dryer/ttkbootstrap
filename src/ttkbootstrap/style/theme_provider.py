@@ -202,17 +202,25 @@ class ThemeProvider:
         return f"<Theme name={self.name} mode={self.mode}>"
 
 
-def use_theme(name: str = "light") -> ThemeProvider:
+def use_theme(name: str = None) -> ThemeProvider:
     """Return the global ThemeProvider singleton instance.
 
     Convenience helper that mirrors `use_style()` so callers can obtain
     the current ThemeProvider without handling singleton state.
 
     Args:
-        name: Optional initial theme name for first-time initialization.
+        name: Optional theme name to switch to, or None to return current instance.
 
     Returns:
         Global ThemeProvider instance.
     """
-    # Lazily construct via direct call; __new__/__init__ enforce singleton
-    return ThemeProvider(name)
+    # If instance doesn't exist yet, create it with default theme
+    if ThemeProvider._instance is None:
+        return ThemeProvider(name or "dark")
+
+    # If name is provided and different, switch themes
+    if name is not None and name != ThemeProvider._instance.name:
+        ThemeProvider._instance.use(name)
+
+    # Return the singleton
+    return ThemeProvider._instance
