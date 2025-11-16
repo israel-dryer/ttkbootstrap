@@ -189,7 +189,9 @@ class Style(ttkStyle):
         if name is None:
             return super().theme_use()
 
-        self._theme_provider.use(name)
+        # Only call use() if theme is changing to avoid redundant build_theme_colors()
+        if name != self._theme_provider.name:
+            self._theme_provider.use(name)
         self._current_theme = name
 
         if name not in self.theme_names():
