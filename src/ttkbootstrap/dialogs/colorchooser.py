@@ -62,7 +62,7 @@ from ttkbootstrap.colorutils import HEX, HSL, HUE, LUM, RGB, SAT
 from ttkbootstrap.constants import *
 from ttkbootstrap.localization import MessageCatalog
 from ttkbootstrap.widgets.tooltip import ToolTip
-from ttkbootstrap.validation import add_range_validation, add_validation, validator
+# from ttkbootstrap.validation import add_range_validation, add_validation, validator
 from .colordropper import ColorDropperDialog
 
 STD_SHADES: List[float] = [0.9, 0.8, 0.7, 0.4, 0.3]
@@ -77,13 +77,13 @@ ColorChoice = namedtuple('ColorChoice', 'rgb hsl hex')
 PEN = '✛'
 
 
-@validator
-def validate_color(event: Any) -> bool:
-    try:
-        ImageColor.getrgb(event.postchangetext)
-        return True
-    except:
-        return False
+# @validator
+# def validate_color(event: Any) -> bool:
+#     try:
+#         ImageColor.getrgb(event.postchangetext)
+#         return True
+#     except:
+#         return False
 
 
 class ColorChooser(ttk.Frame):
@@ -348,12 +348,12 @@ class ColorChooser(ttk.Frame):
         ent_hex.grid(row=3, column=1, padx=4, columnspan=3, pady=2, sticky=EW)
 
         # add input validation
-        add_validation(ent_hex, validate_color)
-        add_range_validation(sb_hue, 0, 360)
-        for sb in [sb_sat, sb_lum]:
-            add_range_validation(sb, 0, 100)
-        for sb in [sb_red, sb_grn, sb_blu]:
-            add_range_validation(sb, 0, 255)
+        # add_validation(ent_hex, validate_color)
+        # add_range_validation(sb_hue, 0, 360)
+        # for sb in [sb_sat, sb_lum]:
+        #     add_range_validation(sb, 0, 100)
+        # for sb in [sb_red, sb_grn, sb_blu]:
+        #     add_range_validation(sb, 0, 255)
 
         # event binding for updating colors on value change
         for sb in [sb_hue, sb_sat, sb_lum]:
