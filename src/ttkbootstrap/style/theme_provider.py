@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import json
-import tomllib
+# import tomllib
 from importlib import resources
 
 from ttkbootstrap.exceptions import ThemeError
@@ -83,7 +83,8 @@ def load_system_themes():
 
 def load_user_defined_theme(path):
     with open(path, "rb") as f:
-        return tomllib.load(f)
+        None
+        # return tomllib.load(f)
 
 
 def load_package_theme(filename: str, package="ttkbootstrap.assets.themes"):
