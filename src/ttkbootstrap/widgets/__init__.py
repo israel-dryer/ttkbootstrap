@@ -14,7 +14,6 @@ from ttkbootstrap.widgets.custom.labeledscale import LabeledScale
 from ttkbootstrap.widgets.custom.meter import Meter
 from ttkbootstrap.widgets.custom.toast import ToastNotification
 from ttkbootstrap.widgets.custom.tooltip import ToolTip
-from ttkbootstrap.widgets.custom.validated_entry import ValidatedEntry
 
 # Wrapper widgets (ttk)
 from ttkbootstrap.widgets.controls.button import Button
@@ -110,7 +109,6 @@ __all__ = [
     'FloodgaugeLegacy',
     'Meter',
     'LabeledScale',
-    'ValidatedEntry',
     'ToolTip',
     'ToastNotification',
     'M',

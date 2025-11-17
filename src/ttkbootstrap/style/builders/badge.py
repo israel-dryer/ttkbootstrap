@@ -36,7 +36,6 @@ def build_badge(b: BootstyleBuilderTTk, ttk_style: str, color: str = None, varia
     border = 10
     padding = (10, 0)
 
-    print(variant)
     if variant == 'circle':
         padding = 0
         border = 10

@@ -61,7 +61,8 @@ def build_solid_button_style(b: BootstyleBuilderTTk, ttk_style: str, color: str 
         foreground=foreground,
         stipple="gray12",
         relief='flat',
-        padding=(8, 0)
+        padding=(8, 0),
+        anchor="center"
     )
 
     state_spec = dict(
