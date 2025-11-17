@@ -292,6 +292,45 @@ class BootstyleBuilderTTk(BootstyleBuilderBase):
         cls._ensure_builders_loaded()
         return variant in cls._builder_registry.get(widget_class, {})
 
+    def initialize_all_default_styles(self):
+        """Initialize all default widget styles.
+
+        This method should be called when a theme is loaded to ensure
+        all base widget styles are properly configured before any
+        bootstyle variants are created.
+
+        It iterates through all registered widget classes and calls
+        their 'default' builder (if registered) with no color specified,
+        which creates the base widget style.
+        """
+        BootstyleBuilderTTk._ensure_builders_loaded()
+
+        from ttkbootstrap.style.bootstyle import generate_ttk_style_name
+
+        for widget_class in BootstyleBuilderTTk.get_all_registered_widgets():
+            # Check if widget has a default builder
+            if BootstyleBuilderTTk.has_builder(widget_class, DEFAULT_VARIANT):
+                try:
+                    # Generate the proper style name (e.g., 'Default.TFrame')
+                    ttk_style = generate_ttk_style_name(
+                        color=None,
+                        variant=DEFAULT_VARIANT,
+                        widget_class=widget_class
+                    )
+
+                    # Call the default builder with the generated style name
+                    # and no color (None), which creates the default style
+                    self.call_builder(
+                        widget_class=widget_class,
+                        variant=DEFAULT_VARIANT,
+                        ttk_style=ttk_style,
+                        color=None
+                    )
+                except Exception:
+                    # Silently ignore errors to avoid breaking theme initialization
+                    # Individual builder errors shouldn't prevent other builders from running
+                    pass
+
     def map_style(self, ttk_style: str, **options):
         self.style.map(ttk_style, **options)
 
@@ -309,7 +348,8 @@ class BootstyleBuilderTTk(BootstyleBuilderBase):
             return
         self.style.element_create(name, "image", *args, **kwargs)
 
-    def create_style_layout(self, ttk_style: str, element: Element):
-        self.style.layout(ttk_style, [element.spec()])
-
-    # Color utilities inherited from BootstyleBase
+    def create_style_layout(self, ttk_style: str, element: Element|list[Element]):
+        if isinstance(element, list):
+            self.style.layout(ttk_style, [e.spec() for e in element])
+        else:
+            self.style.layout(ttk_style, [element.spec()])

@@ -1,8 +1,8 @@
 from __future__ import annotations
 
 from tkinter import ttk
-from typing import Any, TypedDict, Unpack
-
+from typing import Any, TypedDict
+from typing_extensions import Unpack
 from .._internal.wrapper_base import TTKWrapperBase
 
 
