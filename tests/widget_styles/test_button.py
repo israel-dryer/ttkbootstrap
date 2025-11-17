@@ -1,9 +1,7 @@
-import ttkbootstrap as ttk
 from random import choice
-from ttkbootstrap import utility
-from ttkbootstrap.style.style import use_style
 
-utility.enable_high_dpi_awareness()
+import ttkbootstrap as ttk
+from ttkbootstrap.style.style import use_style
 
 DARK = 'dark'
 LIGHT = 'light'
@@ -23,7 +21,7 @@ def button_style_frame(bootstyle, widget_name):
 
     ttk.Button(
         master=frame,
-        text='default',
+        text='Default',
         bootstyle=bootstyle,
         compound="left",
         icon="bootstrap",
@@ -32,9 +30,10 @@ def button_style_frame(bootstyle, widget_name):
     for color in ['primary', 'secondary', 'success', 'info', 'warning', 'danger', 'dark', 'light']:
         ttk.Button(
             master=frame,
-            text=color,
+            text=color.title(),
             bootstyle=f'{color}-{bootstyle}',
             compound="left",
+            cursor="hand2" if bootstyle == "link" else None,
             icon="bootstrap",
         ).pack(padx=5, pady=5, fill='both')
 
@@ -42,10 +41,12 @@ def button_style_frame(bootstyle, widget_name):
         master=frame,
         text='disabled',
         state='disabled',
+        cursor="hand2" if bootstyle == "link" else None,
         bootstyle=bootstyle
     ).pack(padx=5, pady=5, fill='both')
 
     return frame
+
 
 def change_style():
     theme = choice(['light', 'dark'])
@@ -53,16 +54,16 @@ def change_style():
     print(theme)
 
 
-
 if __name__ == '__main__':
     # create visual widget style tests
-    root = ttk.Window()
-    style = use_style("light")
+    root = ttk.Window(themename="dark")
+    style = use_style()
 
     button_style_frame('default', 'Solid Button').pack(side='left')
     button_style_frame('outline', 'Outline Button').pack(side='left')
     button_style_frame('ghost', 'Ghost Button').pack(side='left')
     button_style_frame('text', 'Text Button').pack(side='left')
-    ttk.Button(text="Light", command=lambda: style.theme_use('light')).pack(padx=10, pady=10)
-    ttk.Button(text="Dark", command=lambda: style.theme_use('dark')).pack(padx=10, pady=10)
+    button_style_frame('link', 'Link Button').pack(side='left')
+    ttk.Button(root, cursor="hand2", icon="sun", command=lambda: style.theme_use('light'), style_options={"icon_only": True}).pack(padx=10, pady=10)
+    ttk.Button(root, cursor="hand2", icon="moon", command=lambda: style.theme_use('dark'), style_options={"icon_only": True}).pack(padx=10, pady=10)
     root.mainloop()
