@@ -181,9 +181,6 @@ def build_text_button_style(b: BootstyleBuilderTTk, ttk_style: str, color: str =
     foreground_normal = b.color(accent_token)
     foreground_disabled = b.disabled('text')
 
-    disabled = foreground_disabled
-    focused_ring = b.focus_ring(foreground_normal, surface)
-
     # button element images
     normal_img = recolor_image('button', surface, surface, surface, surface)
     focused_img = recolor_image('button', surface, surface, surface, surface)
@@ -250,8 +247,6 @@ def build_link_button_style(b: BootstyleBuilderTTk, ttk_style: str, color: str =
     surface = b.color(surface_token)
     foreground_normal = b.color(accent_token)
     foreground_disabled = b.disabled('text')
-
-    disabled = foreground_disabled
 
     # button element images
     normal_img = recolor_image('button', surface, surface, surface, surface)
