@@ -24,7 +24,6 @@ def create_checkbutton_test(bootstyle, name):
         )
         cb.pack(padx=5, pady=5, fill=BOTH)
         cb.invoke()
-        print(cb.cget('style'))
 
     # disabled style
     cb = ttk.Checkbutton(
