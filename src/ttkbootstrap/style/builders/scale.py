@@ -21,8 +21,8 @@ def build_scale_style(b: BootstyleBuilderTTk, ttk_style: str, color: str = 'prim
     foreground_disabled = b.disabled("text")
     track_color = b.border(background)
     handle_normal = b.color(accent_token)
-    handle_hover = b.hover(handle_normal)
-    handle_pressed = b.active(handle_normal)
+    handle_hover = b.active(handle_normal)
+    handle_pressed = b.pressed(handle_normal)
     handle_disabled = b.disabled("text")
     track_disabled = b.disabled("background")
 

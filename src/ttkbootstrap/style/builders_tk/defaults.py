@@ -124,7 +124,7 @@ def build_tk_radiobutton(builder: BootstyleBuilderBuilderTk, widget: Any, **opti
 @BootstyleBuilderBuilderTk.register_builder('Scale')
 def build_tk_scale(builder: BootstyleBuilderBuilderTk, widget: Any, **options: Any) -> None:
     accent = builder.color('primary')
-    hover = builder.hover(accent)
+    hover = builder.active(accent)
     border = builder.color('border')
     widget.configure(
         background=accent,
@@ -182,7 +182,7 @@ def build_tk_menu(builder: BootstyleBuilderBuilderTk, widget: Any, **options: An
 def build_tk_menubutton(builder: BootstyleBuilderBuilderTk, widget: Any, **options: Any) -> None:
     bg = builder.color('primary')
     fg = builder.on_color(bg)
-    hover = builder.hover(bg)
+    hover = builder.active(bg)
 
     widget.configure(
         background=bg,

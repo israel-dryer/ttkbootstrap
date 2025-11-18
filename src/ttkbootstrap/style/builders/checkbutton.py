@@ -16,14 +16,14 @@ def build_checkbutton_style(b: BootstyleBuilderTTk, ttk_style: str, color: str =
     surface_token = options.get('surface_color', 'background')
 
     background = b.color(surface_token)
-    background_hover = b.hover(background)
+    background_hover = b.active(background)
     foreground = b.on_color(background)
     foreground_disabled = b.disabled('text')
 
     normal = b.color(accent_token)
     foreground_active = b.on_color(normal)
-    pressed = b.active(normal)
-    hovered = b.hover(normal)
+    pressed = b.pressed(normal)
+    hovered = b.active(normal)
     border = b.border(background)
     focus = hovered
     focus_ring = b.focus_ring(normal, background)
@@ -102,14 +102,14 @@ def build_toggle_style(b: BootstyleBuilderTTk, ttk_style: str, color: str = 'pri
     surface_token = options.get('surface_color', 'background')
 
     background = b.color(surface_token)
-    background_hover = b.hover(background)
+    background_hover = b.active(background)
     foreground = b.on_color(background)
     foreground_disabled = b.disabled('text')
 
     normal = b.color(accent_token)
     foreground_active = b.on_color(normal)
-    pressed = b.active(normal)
-    hovered = b.hover(normal)
+    pressed = b.pressed(normal)
+    hovered = b.active(normal)
     border = b.border(background)
     focus = hovered
     focus_ring = b.focus_ring(normal, background)

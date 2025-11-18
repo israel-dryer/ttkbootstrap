@@ -20,8 +20,8 @@ def build_horizontal_scrollbar(b: BootstyleBuilderTTk, ttk_style: str, color: st
     background_color = b.color(surface_token)
     trough_color = b.elevate(background_color, 1)
     thumb_color = b.border(background_color)
-    thumb_hover = b.hover(thumb_color)
-    thumb_pressed = b.active(thumb_color)
+    thumb_hover = b.active(thumb_color)
+    thumb_pressed = b.pressed(thumb_color)
 
     b.create_style_layout(
         ttk_style, Element(f'{ttk_style}.Scrollbar.trough', sticky="ew").children(
@@ -57,8 +57,8 @@ def build_vertical_scrollbar(b: BootstyleBuilderTTk, ttk_style: str, color: str 
     background_color = b.color(surface_token)
     trough_color = b.elevate(background_color, 1)
     thumb_color = b.border(background_color)
-    thumb_hover = b.hover(thumb_color)
-    thumb_pressed = b.active(thumb_color)
+    thumb_hover = b.active(thumb_color)
+    thumb_pressed = b.pressed(thumb_color)
 
     b.create_style_layout(
         ttk_style, Element(f'{ttk_style}.Scrollbar.trough', sticky="ns").children(

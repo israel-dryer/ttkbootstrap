@@ -178,15 +178,15 @@ def build_tree_style(b: BootstyleBuilderTTk, ttk_style: str, color: str = None, 
 
     if options.get('header_background'):
         heading_color = b.color(options.get('header_background'))
-        heading_hover = b.hover(heading_color)
+        heading_hover = b.active(heading_color)
     else:
         heading_color = b.elevate(surface, 1)
-        heading_hover = b.hover(heading_color)
+        heading_hover = b.active(heading_color)
 
     on_heading = b.on_color(heading_color)
     on_surface = b.on_color(surface)
     on_surface_disabled = b.disabled('text', surface)
-    hover = b.hover(surface)
+    hover = b.active(surface)
 
     if options.get('select_background'):
         select_background = b.color(options.get('select_background'))
@@ -196,7 +196,7 @@ def build_tree_style(b: BootstyleBuilderTTk, ttk_style: str, color: str = None, 
         else:
             select_background = b.color('primary')
 
-    select_hover = b.hover(select_background)
+    select_hover = b.active(select_background)
     on_select = b.on_color(select_background)
 
     f = font.nametofont('TkDefaultFont')

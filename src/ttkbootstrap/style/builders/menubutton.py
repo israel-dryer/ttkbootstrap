@@ -21,8 +21,8 @@ def build_solid_menubutton_style(b: BootstyleBuilderTTk, ttk_style: str, color: 
     normal = b.color(accent_token)
     foreground = b.on_color(normal)
     foreground_disabled = b.disabled('text')
-    pressed = b.active(normal)
-    hovered = focused = b.hover(normal)
+    pressed = b.pressed(normal)
+    hovered = focused = b.active(normal)
     focused_border = b.focus_border(normal)
     disabled = b.disabled()
     focused_ring = b.focus_ring(normal, surface)
@@ -108,7 +108,7 @@ def build_outline_menubutton_style(b: BootstyleBuilderTTk, ttk_style: str, color
 
     disabled = foreground_disabled
     normal = surface
-    pressed = b.hover(foreground_normal)
+    pressed = b.active(foreground_normal)
     focused = hovered = pressed
     focused_border = b.focus_border(foreground_normal)
     focused_ring = b.focus_ring(foreground_normal, surface)

@@ -22,7 +22,7 @@ def build_tabs_notebook(b: BootstyleBuilderTTk, ttk_style: str, color: str = Non
     # notebook colors
     tab_active_color = surface
     tab_accent_color = b.color(color or 'background[+1]')
-    tab_accent_hover = b.hover(tab_accent_color)
+    tab_accent_hover = b.active(tab_accent_color)
 
     tab_active_foreground = b.on_color(surface)
     tab_accent_foreground = b.on_color(tab_accent_color)
@@ -108,7 +108,7 @@ def build_pill_notebook(b: BootstyleBuilderTTk, ttk_style: str, color: str = Non
     pill_normal_color = surface
     pill_normal_foreground = b.on_color(pill_normal_color)
     pill_disabled_foreground = b.disabled('text', surface)
-    pill_normal_hover = b.hover(surface)
+    pill_normal_hover = b.active(surface)
 
     # notebook border assets & style
     notebook_border = b.border(surface)
@@ -187,7 +187,7 @@ def build_underline_notebook(b: BootstyleBuilderTTk, ttk_style: str, color: str 
     accent_color = b.color(color or 'primary')
     foreground = b.on_color(surface)
     disabled = b.disabled('text', surface)
-    hover = b.hover(surface)
+    hover = b.active(surface)
 
     # notebook border assets, style and layout
     if show_border:

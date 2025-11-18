@@ -140,11 +140,11 @@ class BootstyleBuilderBase:
             else:
                 return mix_colors(base_color, surface_color, 0.10)
 
-    def hover(self, color: str) -> str:
-        return self._state_color(color, "hover")
-
     def active(self, color: str) -> str:
         return self._state_color(color, "active")
+
+    def pressed(self, color: str) -> str:
+        return self._state_color(color, "pressed")
 
     def focus(self, color: str) -> str:
         return self._state_color(color, "focus")
@@ -226,8 +226,8 @@ class BootstyleBuilderBase:
         if state == "focus":
             return color
         delta = {
-            "hover": 0.08,
-            "active": 0.12,
+            "active": 0.08,
+            "pressed": 0.12,
             "focus": 0.08,
         }[state]
         lum = relative_luminance(color)

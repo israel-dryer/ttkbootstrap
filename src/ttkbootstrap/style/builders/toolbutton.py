@@ -1,6 +1,6 @@
-"""Button widget style builders.
+"""Toolbutton widget style builders.
 
-This module contains style builders for ttk.Button widgets and variants.
+This module contains style builders for ttk.Checkbutton and Radiobutton toolbutton variants.
 """
 
 from __future__ import annotations
@@ -10,9 +10,9 @@ from ttkbootstrap.style.element import Element, ElementImage
 from ttkbootstrap.style.utility import recolor_image
 
 
-@BootstyleBuilderTTk.register_builder('solid', 'TButton')
-@BootstyleBuilderTTk.register_builder('default', 'TButton')
-def build_solid_button_style(b: BootstyleBuilderTTk, ttk_style: str, color: str = None, **options):
+@BootstyleBuilderTTk.register_builder('solid', 'Toolbutton')
+@BootstyleBuilderTTk.register_builder('default', 'Toolbutton')
+def build_solid_toolbutton_style(b: BootstyleBuilderTTk, ttk_style: str, color: str = None, **options):
     """
     Configure the button style.
 
@@ -23,21 +23,27 @@ def build_solid_button_style(b: BootstyleBuilderTTk, ttk_style: str, color: str 
     surface_token = options.get('surface_color', 'background')
 
     surface = b.color(surface_token)
-    normal = b.color(accent_token)
+    on_surface = b.on_color(surface)
+    accent = b.color(accent_token)
+    on_accent = b.on_color(accent)
+
+    surface_hover = b.pressed(color)
+    surface_pressed = b.active(surface_hover)
+
     foreground = b.on_color(normal)
     foreground_disabled = b.disabled('text')
-    pressed = b.pressed(normal)
+    selected = b.pressed(normal)
     hovered = focused = b.active(normal)
     focused_border = b.focus_border(normal)
     disabled = b.disabled()
     focused_ring = b.focus_ring(normal, surface)
 
     normal_img = recolor_image('button', normal, normal, surface)
-    pressed_img = recolor_image('button', pressed, pressed, surface)
+    selected_img = recolor_image('button', selected, selected, surface)
     hovered_img = recolor_image('button', hovered, hovered, surface)
     focused_img = recolor_image('button', focused, focused_border, focused_ring)
     focused_hovered_img = recolor_image('button', hovered, focused_border, focused_ring)
-    focused_pressed_img = recolor_image('button', pressed, focused_border, focused_ring)
+    focused_selected_img = recolor_image('button', selected, focused_border, focused_ring)
     disabled_img = recolor_image('button', disabled, disabled, surface, surface)
 
     b.create_style_element_image(
@@ -45,19 +51,19 @@ def build_solid_button_style(b: BootstyleBuilderTTk, ttk_style: str, color: str 
             f'{ttk_style}.border', normal_img, sticky="nsew", border=b.scale(10), padding=b.scale(10)).state_specs(
             [
                 ('disabled', disabled_img),
-                ('focus pressed', focused_pressed_img),
+                ('focus selected', focused_selected_img),
+                ('selected', selected_img),
                 ('focus hover', focused_hovered_img),
                 ('focus', focused_img),
-                ('pressed', pressed_img),
                 ('hover', hovered_img),
             ]))
 
     b.create_style_layout(
         ttk_style, Element(f"{ttk_style}.border", sticky="nsew").children(
             [
-                Element("Button.padding", sticky="nsew").children(
+                Element("Toolbutton.padding", sticky="nsew").children(
                     [
-                        Element("Button.label", sticky="")
+                        Element("Toolbutton.label", sticky="")
                     ])
             ]))
 
@@ -95,8 +101,8 @@ def build_solid_button_style(b: BootstyleBuilderTTk, ttk_style: str, color: str 
     b.map_style(ttk_style, **state_spec)
 
 
-@BootstyleBuilderTTk.register_builder('outline', 'TButton')
-def build_outline_button_style(b: BootstyleBuilderTTk, ttk_style: str, color: str = None, **options):
+@BootstyleBuilderTTk.register_builder('outline', 'Toolbutton')
+def build_outline_toolbutton_style(b: BootstyleBuilderTTk, ttk_style: str, color: str = None, **options):
     accent_token = color or 'primary'
     surface_token = options.get('surface_color', 'background')
 
@@ -172,8 +178,8 @@ def build_outline_button_style(b: BootstyleBuilderTTk, ttk_style: str, color: st
     b.map_style(ttk_style, **state_spec)
 
 
-@BootstyleBuilderTTk.register_builder('text', 'TButton')
-def build_text_button_style(b: BootstyleBuilderTTk, ttk_style: str, color: str = None, **options):
+@BootstyleBuilderTTk.register_builder('text', 'Toolbutton')
+def build_text_toolbutton_style(b: BootstyleBuilderTTk, ttk_style: str, color: str = None, **options):
     accent_token = color or 'foreground'
     surface_token = options.get('surface_color', 'background')
 
@@ -239,8 +245,8 @@ def build_text_button_style(b: BootstyleBuilderTTk, ttk_style: str, color: str =
     b.map_style(ttk_style, **state_spec)
 
 
-@BootstyleBuilderTTk.register_builder('link', 'TButton')
-def build_link_button_style(b: BootstyleBuilderTTk, ttk_style: str, color: str = None, **options):
+@BootstyleBuilderTTk.register_builder('link', 'Toolbutton')
+def build_link_toolbutton_style(b: BootstyleBuilderTTk, ttk_style: str, color: str = None, **options):
     accent_token = color or 'foreground'
     surface_token = options.get('surface_color', 'background')
 
@@ -308,8 +314,8 @@ def build_link_button_style(b: BootstyleBuilderTTk, ttk_style: str, color: str =
     b.map_style(ttk_style, **state_spec)
 
 
-@BootstyleBuilderTTk.register_builder('ghost', 'TButton')
-def build_ghost_button_style(b: BootstyleBuilderTTk, ttk_style: str, color: str = None, **options):
+@BootstyleBuilderTTk.register_builder('ghost', 'Toolbutton')
+def build_ghost_toolbutton_style(b: BootstyleBuilderTTk, ttk_style: str, color: str = None, **options):
     accent_token = color or 'primary'
     surface_token = options.get('surface_color', 'background')
 

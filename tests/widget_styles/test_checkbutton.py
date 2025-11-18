@@ -54,8 +54,8 @@ if __name__ == '__main__':
     test1.pack(side='left', fill=BOTH)
     test3 = create_checkbutton_test('toggle','Toggle')
     test3.pack(side='left', fill=BOTH)
-    # test4 = create_checkbutton_test('toolbutton','Toolbutton')
-    # test4.pack(side='left', fill=BOTH)
+    test4 = create_checkbutton_test('toolbutton','Toolbutton')
+    test4.pack(side='left', fill=BOTH)
     # test5 = create_checkbutton_test('outline-toolbutton','Outline Toolbutton')
     # test5.pack(side='left', fill=BOTH)
 
