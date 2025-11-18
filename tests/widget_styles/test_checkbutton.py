@@ -1,6 +1,7 @@
 import ttkbootstrap as ttk
 from ttkbootstrap.constants import *
 
+
 def create_checkbutton_test(bootstyle, name):
     frame = ttk.Frame(padding=10)
 
@@ -24,6 +25,7 @@ def create_checkbutton_test(bootstyle, name):
         )
         cb.pack(padx=5, pady=5, fill=BOTH)
         cb.invoke()
+        print(cb.cget('style'))
 
     # disabled style
     cb = ttk.Checkbutton(
@@ -52,12 +54,8 @@ if __name__ == '__main__':
 
     test1 = create_checkbutton_test('default', 'Checkbutton')
     test1.pack(side='left', fill=BOTH)
-    test3 = create_checkbutton_test('toggle','Toggle')
+    test3 = create_checkbutton_test('toggle', 'Toggle')
     test3.pack(side='left', fill=BOTH)
-    test4 = create_checkbutton_test('toolbutton','Toolbutton')
-    test4.pack(side='left', fill=BOTH)
-    # test5 = create_checkbutton_test('outline-toolbutton','Outline Toolbutton')
-    # test5.pack(side='left', fill=BOTH)
 
     btn = ttk.Button(text="Change Theme", command=change_style)
     btn.pack(padx=10, pady=10)
