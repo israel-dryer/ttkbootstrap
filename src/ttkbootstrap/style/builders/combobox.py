@@ -35,7 +35,7 @@ def build_combobox_style(b: BootstyleBuilderTTk, ttk_style: str, color: str = No
     disabled_img = recolor_image('input', disabled, border, surface)
 
     b.create_style_element_image(
-        ElementImage(f'{ttk_style}.field', normal_img, sticky='nsew', border=8).state_specs(
+        ElementImage(f'{ttk_style}.field', normal_img, sticky='nsew', border=b.scale(8)).state_specs(
             [
                 ('disabled', disabled_img),
                 ('readonly', disabled_img),
@@ -46,11 +46,11 @@ def build_combobox_style(b: BootstyleBuilderTTk, ttk_style: str, color: str = No
 
     # add chevron image
     icon = use_icon_provider()
-    chevron_normal_img = icon('caret-down-fill', color=foreground, size=14).image
-    chevron_disabled_img = icon('caret-down-fill', color=disabled_foreground, size=14).image
+    chevron_normal_img = icon('caret-down-fill', color=foreground, size=b.scale(14)).image
+    chevron_disabled_img = icon('caret-down-fill', color=disabled_foreground, size=b.scale(14)).image
 
     b.create_style_element_image(
-        ElementImage(f'{ttk_style}.chevron', chevron_normal_img, sticky='nsew').state_specs(
+        ElementImage(f'{ttk_style}.chevron', chevron_normal_img, sticky='nsew', border=1, width=b.scale(16)).state_specs(
             [
                 ('disabled', chevron_disabled_img),
                 ('', chevron_normal_img),
@@ -74,11 +74,12 @@ def build_combobox_style(b: BootstyleBuilderTTk, ttk_style: str, color: str = No
         ttk_style,
         foreground=foreground,
         background=surface,
-        padding=(8, 0),
+        padding=b.scale((8, 0)),
         selectforeground=select_foreground,
         selectbackground=select_background,
         insertcolor=foreground,
         selectborderwidth=0,
+        font='body'
     )
 
     b.map_style(

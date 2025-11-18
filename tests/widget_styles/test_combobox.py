@@ -1,68 +1,66 @@
-import tkinter as tk
 import ttkbootstrap as ttk
-from random import choice
-from ttkbootstrap import utility
-utility.enable_high_dpi_awareness()
+from ttkbootstrap.constants import *
 
-DARK = 'superhero'
-LIGHT = 'flatly'
 
-def create_combobox_test(bootstyle, style, test_name):
+def create_combobox_test(bootstyle, test_name):
     frame = ttk.Frame(padding=10)
 
     # title
     title = ttk.Label(
-        master=frame, 
-        text=test_name, 
-        anchor=tk.CENTER
+        master=frame,
+        text=test_name,
+        anchor=CENTER
     )
-    title.pack(padx=5, pady=2, fill=tk.BOTH)
-    ttk.Separator(frame).pack(padx=5, pady=5, fill=tk.X)
+    title.pack(padx=5, pady=2, fill=BOTH)
+    ttk.Separator(frame).pack(padx=5, pady=5, fill=X)
 
     # default
     cbo = ttk.Combobox(
-        master=frame, 
-        values=['default', 'other'], 
+        master=frame,
+        values=['default', 'other'],
         bootstyle=bootstyle
     )
-    cbo.pack(padx=5, pady=5, fill=tk.BOTH)
+    cbo.pack(padx=5, pady=5, fill=BOTH)
     cbo.current(0)
 
     # color
-    for color in style.theme.colors:
+    for color in ['default', 'primary', 'secondary', 'success', 'info', 'warning', 'danger']:
         cbo = ttk.Combobox(
-            master=frame, 
-            values=[color, 'other'], 
-            bootstyle=(color, bootstyle)
+            master=frame,
+            values=[color, 'other'],
+            bootstyle=color,
         )
-        cbo.pack(padx=5, pady=5, fill=tk.BOTH)
+        cbo.pack(padx=5, pady=5, fill=BOTH)
         cbo.current(0)
 
     # disabled
     cbo = ttk.Combobox(
-        master=frame, 
-        values=[bootstyle,'other'], 
-        bootstyle=bootstyle, 
-        state=tk.DISABLED
+        master=frame,
+        values=[bootstyle, 'other'],
+        bootstyle=bootstyle,
+        state=DISABLED
     )
-    cbo.pack(padx=5, pady=5, fill=tk.BOTH)
+    cbo.pack(padx=5, pady=5, fill=BOTH)
     cbo.current(0)
 
     return frame
 
+
 def change_style():
-    theme = choice(style.theme_names())
-    style.theme_use(theme)    
+    if style.theme_use() == 'light':
+        style.theme_use('dark')
+    else:
+        style.theme_use('light')
 
 
 if __name__ == '__main__':
     # create visual widget style tests
-    root = tk.Tk()
+    root = ttk.Window()
     style = ttk.Style()
 
     ttk.Button(text="Change Theme", command=change_style).pack(padx=10, pady=10)
 
-    test1 = create_combobox_test('TCombobox', style, 'Combobox')
-    test1.pack(side=tk.LEFT, fill=tk.BOTH)
+    test1 = create_combobox_test(None, 'Combobox')
+    test1.pack(side=LEFT, fill=BOTH)
 
     root.mainloop()
