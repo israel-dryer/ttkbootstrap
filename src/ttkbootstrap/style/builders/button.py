@@ -86,7 +86,7 @@ def build_solid_button_style(b: BootstyleBuilderTTk, ttk_style: str, color: str 
 
     # map icon if available
     icon = options.get('icon')
-    default_size = 24 if icon_only else 20
+    default_size = b.scale(24) if icon_only else b.scale(20)
 
     if icon is not None:
         icon = b.normalize_icon_spec(icon, default_size)
