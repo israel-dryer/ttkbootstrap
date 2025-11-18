@@ -50,11 +50,11 @@ def build_checkbutton_style(b: BootstyleBuilderTTk, ttk_style: str, color: str =
         'checkbox-unchecked', foreground_disabled, foreground_disabled, background)
     disabled_indeterminate_img = recolor_image('checkbox-indeterminate', disabled, foreground_disabled, background)
 
-    spacer_img = create_transparent_image(8, 1)
+    spacer_img = create_transparent_image(b.scale(8), b.scale(1))
     b.create_style_element_image(ElementImage(f'{ttk_style}.spacer', spacer_img, sticky="ew"))
 
     b.create_style_element_image(
-        ElementImage(f'{ttk_style}.indicator', normal_unchecked_img, sticky="ns", padding=3).state_specs(
+        ElementImage(f'{ttk_style}.indicator', normal_unchecked_img, sticky="ns", padding=b.scale(3)).state_specs(
             [
                 # Disabled states
                 ('disabled alternate !selected', disabled_indeterminate_img),
@@ -92,7 +92,7 @@ def build_checkbutton_style(b: BootstyleBuilderTTk, ttk_style: str, color: str =
             ])
     )
 
-    b.configure_style(ttk_style, background=background, foreground=foreground)
+    b.configure_style(ttk_style, background=background, foreground=foreground, font="body")
     b.map_style(ttk_style, background=[], foreground=[])
 
 
@@ -130,7 +130,7 @@ def build_toggle_style(b: BootstyleBuilderTTk, ttk_style: str, color: str = 'pri
     disabled_checked_img = recolor_image('switch-on', disabled, foreground_disabled, background)
     disabled_unchecked_img = recolor_image('switch-off', foreground_disabled, foreground_disabled, background)
 
-    spacer_img = create_transparent_image(8, 1)
+    spacer_img = create_transparent_image(b.scale(8), b.scale(1))
     b.create_style_element_image(ElementImage(f'{ttk_style}.spacer', spacer_img, sticky="ew"))
 
     b.create_style_element_image(
@@ -167,5 +167,5 @@ def build_toggle_style(b: BootstyleBuilderTTk, ttk_style: str, color: str = 'pri
             ])
     )
 
-    b.configure_style(ttk_style, background=background, foreground=foreground)
+    b.configure_style(ttk_style, background=background, foreground=foreground, font="body")
     b.map_style(ttk_style, background=[], foreground=[])

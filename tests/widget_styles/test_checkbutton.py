@@ -1,70 +1,65 @@
-import tkinter as tk
 import ttkbootstrap as ttk
-from random import choice
-from ttkbootstrap import utility
-utility.enable_high_dpi_awareness()
+from ttkbootstrap.constants import *
 
-DARK = 'dark'
-LIGHT = 'light'
-
-def create_checkbutton_test(bootstyle, style, name):
+def create_checkbutton_test(bootstyle, name):
     frame = ttk.Frame(padding=10)
 
     # title
-    title = ttk.Label(frame, text=name, anchor=tk.CENTER)
-    title.pack(padx=5, pady=2, fill=tk.BOTH)
-    ttk.Separator(frame).pack(padx=5, pady=5, fill=tk.X)
+    title = ttk.Label(frame, text=name, anchor=CENTER)
+    title.pack(padx=5, pady=2, fill=BOTH)
+    ttk.Separator(frame).pack(padx=5, pady=5, fill=X)
 
     # default style
     cb = ttk.Checkbutton(frame, text='default', bootstyle=bootstyle)
-    cb.pack(padx=5, pady=5, fill=tk.BOTH)
+    cb.pack(padx=5, pady=5, fill=BOTH)
     cb.invoke()
 
     # color styles
-    for color in style.colors.keys():
+    for color in ['primary', 'secondary', 'success', 'info', 'warning', 'danger']:
         cb = ttk.Checkbutton(
-            master=frame, 
-            text=color, 
-            bootstyle=color + bootstyle,
+            master=frame,
+            text=color,
+            bootstyle=f"{color}-{bootstyle}",
             width=15
         )
-        cb.pack(padx=5, pady=5, fill=tk.BOTH)
+        cb.pack(padx=5, pady=5, fill=BOTH)
         cb.invoke()
 
     # disabled style
     cb = ttk.Checkbutton(
-        master=frame, 
-        text='disabled', 
+        master=frame,
+        text='disabled',
         bootstyle=bootstyle,
-        state=tk.DISABLED
+        state=DISABLED
     )
-    cb.pack(padx=5, pady=5, fill=tk.BOTH)
+    cb.pack(padx=5, pady=5, fill=BOTH)
     cb.invoke()
 
     return frame
 
+
 def change_style():
-    theme = choice(['light', 'dark'])
-    style.theme_use(theme)
+    if style.theme_use() == 'dark':
+        style.theme_use('light')
+    else:
+        style.theme_use('dark')
 
 
 if __name__ == '__main__':
     # create visual widget style tests
-    root = tk.Tk()
+    root = ttk.Window()
     style = ttk.Style()
 
-    test1 = create_checkbutton_test('', style, 'Checkbutton')
-    test1.pack(side='left', fill=tk.BOTH)
-    test2 = create_checkbutton_test('round-toggle', style, 'Roundtoggle')
-    test2.pack(side='left', fill=tk.BOTH)
-    test3 = create_checkbutton_test('square-toggle', style, 'Squaretoggle')
-    test3.pack(side='left', fill=tk.BOTH)
-    test4 = create_checkbutton_test('toolbutton', style, 'Toolbutton')
-    test4.pack(side='left', fill=tk.BOTH)
-    test5 = create_checkbutton_test('outline-toolbutton', style, 'Outline Toolbutton')
-    test5.pack(side='left', fill=tk.BOTH)
+    test1 = create_checkbutton_test('default', 'Checkbutton')
+    test1.pack(side='left', fill=BOTH)
+    test3 = create_checkbutton_test('toggle','Toggle')
+    test3.pack(side='left', fill=BOTH)
+    # test4 = create_checkbutton_test('toolbutton','Toolbutton')
+    # test4.pack(side='left', fill=BOTH)
+    # test5 = create_checkbutton_test('outline-toolbutton','Outline Toolbutton')
+    # test5.pack(side='left', fill=BOTH)
 
     btn = ttk.Button(text="Change Theme", command=change_style)
-    btn.pack(padx=10, pady=10)    
+    btn.pack(padx=10, pady=10)
 
     root.mainloop()
