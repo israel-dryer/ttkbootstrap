@@ -9,8 +9,12 @@ from ttkbootstrap.style.bootstyle_builder_ttk import BootstyleBuilderTTk
 from ttkbootstrap.style.element import Element, ElementImage
 from ttkbootstrap.style.utility import recolor_image
 
+"""
+    The active styles are intentionally limited on toolbuttons to improve interaction
+    and limit the number of images creates for each style.
+"""
 
-@BootstyleBuilderTTk.register_builder('solid', 'Toolbutton')
+
 @BootstyleBuilderTTk.register_builder('default', 'Toolbutton')
 def build_solid_toolbutton_style(b: BootstyleBuilderTTk, ttk_style: str, color: str = None, **options):
     """
@@ -24,26 +28,21 @@ def build_solid_toolbutton_style(b: BootstyleBuilderTTk, ttk_style: str, color: 
 
     surface = b.color(surface_token)
     on_surface = b.on_color(surface)
+
     accent = b.color(accent_token)
+    accent_pressed = b.pressed(accent)
+    accent_focus = b.focus(accent)
     on_accent = b.on_color(accent)
 
-    surface_hover = b.pressed(color)
-    surface_pressed = b.active(surface_hover)
-
-    foreground = b.on_color(normal)
-    foreground_disabled = b.disabled('text')
-    selected = b.pressed(normal)
-    hovered = focused = b.active(normal)
-    focused_border = b.focus_border(normal)
+    focus_ring = b.focus_ring(accent_focus, surface)
     disabled = b.disabled()
-    focused_ring = b.focus_ring(normal, surface)
 
-    normal_img = recolor_image('button', normal, normal, surface)
-    selected_img = recolor_image('button', selected, selected, surface)
-    hovered_img = recolor_image('button', hovered, hovered, surface)
-    focused_img = recolor_image('button', focused, focused_border, focused_ring)
-    focused_hovered_img = recolor_image('button', hovered, focused_border, focused_ring)
-    focused_selected_img = recolor_image('button', selected, focused_border, focused_ring)
+    normal_img = recolor_image('button', surface, surface, surface, surface)
+    normal_focus_img = recolor_image('button', surface, surface, focus_ring, surface)
+    selected_img = recolor_image('button', accent, accent, surface, surface)
+    selected_pressed_img = recolor_image('button', accent_pressed, accent_pressed, surface, surface)
+    selected_focus_img = recolor_image('button', accent_focus, accent_focus, focus_ring, surface)
+
     disabled_img = recolor_image('button', disabled, disabled, surface, surface)
 
     b.create_style_element_image(
@@ -51,11 +50,11 @@ def build_solid_toolbutton_style(b: BootstyleBuilderTTk, ttk_style: str, color: 
             f'{ttk_style}.border', normal_img, sticky="nsew", border=b.scale(10), padding=b.scale(10)).state_specs(
             [
                 ('disabled', disabled_img),
-                ('focus selected', focused_selected_img),
+                ('selected focus', selected_focus_img),
+                ('selected pressed', selected_pressed_img),
                 ('selected', selected_img),
-                ('focus hover', focused_hovered_img),
-                ('focus', focused_img),
-                ('hover', hovered_img),
+                ('focus !selected', normal_focus_img),
+                ('', normal_img)
             ]))
 
     b.create_style_layout(
@@ -63,7 +62,7 @@ def build_solid_toolbutton_style(b: BootstyleBuilderTTk, ttk_style: str, color: 
             [
                 Element("Toolbutton.padding", sticky="nsew").children(
                     [
-                        Element("Toolbutton.label", sticky="")
+                        Element("Toolbutton.label", sticky="nsew")
                     ])
             ]))
 
@@ -77,7 +76,7 @@ def build_solid_toolbutton_style(b: BootstyleBuilderTTk, ttk_style: str, color: 
     b.configure_style(
         ttk_style,
         background=surface,
-        foreground=foreground,
+        foreground="black",
         stipple="gray12",
         relief='flat',
         padding=button_padding,
@@ -86,13 +85,12 @@ def build_solid_toolbutton_style(b: BootstyleBuilderTTk, ttk_style: str, color: 
     )
 
     state_spec = dict(
-        foreground=[('disabled', foreground_disabled), ('', foreground)],
-        background=[('disabled', disabled)]
+        foreground=[('disabled', on_surface), ('selected', on_accent), ('', on_surface)],
     )
 
     # map icon if available
     icon = options.get('icon')
-    default_size = 24 if icon_only else 20
+    default_size = b.scale(24) if icon_only else b.scale(20)
 
     if icon is not None:
         icon = b.normalize_icon_spec(icon, default_size)
@@ -103,110 +101,48 @@ def build_solid_toolbutton_style(b: BootstyleBuilderTTk, ttk_style: str, color: 
 
 @BootstyleBuilderTTk.register_builder('outline', 'Toolbutton')
 def build_outline_toolbutton_style(b: BootstyleBuilderTTk, ttk_style: str, color: str = None, **options):
+    """
+    Configure the button style.
+
+    Style options include:
+        * icon_only
+    """
     accent_token = color or 'primary'
     surface_token = options.get('surface_color', 'background')
 
     surface = b.color(surface_token)
-    foreground_normal = b.color(accent_token)
-    foreground_disabled = b.disabled('text')
-    foreground_active = b.on_color(foreground_normal)
+    on_surface = b.on_color(surface)
 
-    disabled = foreground_disabled
-    normal = surface
-    pressed = b.active(foreground_normal)
-    focused = hovered = pressed
-    focused_border = b.focus_border(foreground_normal)
-    focused_ring = b.focus_ring(foreground_normal, surface)
+    accent = b.color(accent_token)
+    accent_focus = b.focus(accent)
 
-    # button element images
-    normal_img = recolor_image('button', normal, foreground_normal, surface)
-    pressed_img = recolor_image('button', pressed, pressed, surface)
-    hovered_img = recolor_image('button', hovered, hovered, surface)
-    focused_img = recolor_image('button', focused, focused_border, focused_ring)
-    focused_hovered_img = recolor_image('button', hovered, focused_border, focused_ring)
-    focused_pressed_img = recolor_image('button', pressed, focused_border, focused_ring)
-    disabled_img = recolor_image('button', surface, disabled, surface, surface)
+    focus_ring = b.focus_ring(accent_focus, surface)
+    disabled = b.disabled()
+
+    normal_img = recolor_image('button', surface, surface, surface, surface)
+    normal_focus_img = recolor_image('button', surface, surface, focus_ring, surface)
+    selected_img = recolor_image('button', surface, accent, surface, surface)
+    selected_focus_img = recolor_image('button', surface, accent_focus, focus_ring, surface)
+
+    disabled_img = recolor_image('button', disabled, disabled, surface, surface)
 
     b.create_style_element_image(
         ElementImage(
             f'{ttk_style}.border', normal_img, sticky="nsew", border=b.scale(10), padding=b.scale(10)).state_specs(
             [
                 ('disabled', disabled_img),
-                ('focus pressed', focused_pressed_img),
-                ('focus hover', focused_hovered_img),
-                ('focus', focused_img),
-                ('pressed', pressed_img),
-                ('hover', hovered_img),
-            ])
-    )
-
-    b.create_style_layout(
-        ttk_style, Element(f"{ttk_style}.border", sticky="nsew").children(
-            [
-                Element("Button.padding", sticky="nsew").children(
-                    [
-                        Element("Button.label", sticky="")
-                    ])
+                ('selected focus', selected_focus_img),
+                ('selected', selected_img),
+                ('focus !selected', normal_focus_img),
+                ('', normal_img)
             ]))
 
-    b.configure_style(
-        ttk_style,
-        background=surface,
-        foreground=foreground_normal,
-        relief='flat',
-        stipple="gray12",
-        padding=b.scale((10, 0)),
-        font="body"
-    )
-
-    state_spec = dict(
-        foreground=[
-            ('disabled', foreground_disabled),
-            ('focus', foreground_active),
-            ('hover', foreground_active),
-            ('', foreground_normal)
-        ], background=[('disabled', surface)]
-    )
-
-    # map icon if available
-    icon = options.get('icon')
-
-    if icon is not None:
-        icon = b.normalize_icon_spec(icon)
-        state_spec['image'] = b.map_stateful_icons(icon, state_spec['foreground'])
-
-    b.map_style(ttk_style, **state_spec)
-
-
-@BootstyleBuilderTTk.register_builder('text', 'Toolbutton')
-def build_text_toolbutton_style(b: BootstyleBuilderTTk, ttk_style: str, color: str = None, **options):
-    accent_token = color or 'foreground'
-    surface_token = options.get('surface_color', 'background')
-
-    surface = b.color(surface_token)
-    foreground_normal = b.color(accent_token)
-    foreground_disabled = b.disabled('text')
-
-    # button element images
-    normal_img = recolor_image('button', surface, surface, surface, surface)
-    focused_img = recolor_image('button', surface, surface, surface, surface)
-    disabled_img = recolor_image('button', surface, surface, surface, surface)
-
-    b.create_style_element_image(
-        ElementImage(
-            f'{ttk_style}.border', normal_img, sticky="nsew", border=b.scale(10), padding=b.scale(10)).state_specs(
-            [
-                ('disabled', disabled_img),
-                ('focus', focused_img),
-            ])
-    )
-
     b.create_style_layout(
         ttk_style, Element(f"{ttk_style}.border", sticky="nsew").children(
             [
-                Element("Button.padding", sticky="nsew").children(
+                Element("Toolbutton.padding", sticky="nsew").children(
                     [
-                        Element("Button.label", sticky="")
+                        Element("Toolbutton.label", sticky="nsew")
                     ])
             ]))
 
@@ -220,92 +156,21 @@ def build_text_toolbutton_style(b: BootstyleBuilderTTk, ttk_style: str, color: s
     b.configure_style(
         ttk_style,
         background=surface,
-        foreground=foreground_normal,
-        relief='flat',
+        foreground="black",
         stipple="gray12",
+        relief='flat',
         padding=button_padding,
+        anchor="center",
         font="body"
     )
 
     state_spec = dict(
-        foreground=[
-            ('disabled', foreground_disabled),
-            ('', foreground_normal)
-        ], background=[('disabled', surface)]
+        foreground=[('disabled', on_surface), ('', on_surface)],
     )
 
     # map icon if available
     icon = options.get('icon')
-    default_size = 24 if icon_only else 20
-
-    if icon is not None:
-        icon = b.normalize_icon_spec(icon, default_size)
-        state_spec['image'] = b.map_stateful_icons(icon, state_spec['foreground'])
-
-    b.map_style(ttk_style, **state_spec)
-
-
-@BootstyleBuilderTTk.register_builder('link', 'Toolbutton')
-def build_link_toolbutton_style(b: BootstyleBuilderTTk, ttk_style: str, color: str = None, **options):
-    accent_token = color or 'foreground'
-    surface_token = options.get('surface_color', 'background')
-
-    surface = b.color(surface_token)
-    foreground_normal = b.color(accent_token)
-    foreground_disabled = b.disabled('text')
-
-    # button element images
-    normal_img = recolor_image('button', surface, surface, surface, surface)
-    focused_img = recolor_image('button', surface, surface, surface, surface)
-    disabled_img = recolor_image('button', surface, surface, surface, surface)
-
-    b.create_style_element_image(
-        ElementImage(
-            f'{ttk_style}.border', normal_img, sticky="nsew", border=b.scale(10), padding=b.scale(10)).state_specs(
-            [
-                ('disabled', disabled_img),
-                ('focus', focused_img),
-            ])
-    )
-
-    b.create_style_layout(
-        ttk_style, Element(f"{ttk_style}.border", sticky="nsew").children(
-            [
-                Element("Button.padding", sticky="nsew").children(
-                    [
-                        Element("Button.label", sticky="")
-                    ])
-            ]))
-
-    icon_only = options.get('icon_only', False)
-    if icon_only:
-        button_padding = 0
-    else:
-        # scaled standard padding for text button
-        button_padding = b.scale((10, 0))
-
-    b.configure_style(
-        ttk_style,
-        background=surface,
-        foreground=foreground_normal,
-        relief='flat',
-        stipple="gray12",
-        padding=button_padding,
-        font="body"
-    )
-
-    state_spec = dict(
-        font=[("active !disabled", "hyperlink"), ("", "body")],
-        cursor=[('', 'hand2')],
-        foreground=[
-            ('disabled', foreground_disabled),
-            ('', foreground_normal)
-        ], background=[('disabled', surface)]
-    )
-
-    # map icon if available
-    icon = options.get('icon')
-    default_size = 24 if icon_only else 20
+    default_size = b.scale(24) if icon_only else b.scale(20)
 
     if icon is not None:
         icon = b.normalize_icon_spec(icon, default_size)
@@ -316,46 +181,52 @@ def build_link_toolbutton_style(b: BootstyleBuilderTTk, ttk_style: str, color: s
 
 @BootstyleBuilderTTk.register_builder('ghost', 'Toolbutton')
 def build_ghost_toolbutton_style(b: BootstyleBuilderTTk, ttk_style: str, color: str = None, **options):
+    """
+    Configure the button style.
+
+    Style options include:
+        * icon_only
+    """
     accent_token = color or 'primary'
     surface_token = options.get('surface_color', 'background')
 
     surface = b.color(surface_token)
-    foreground_normal = b.color(accent_token)
-    foreground_disabled = b.disabled('text')
+    on_surface = b.on_color(surface)
 
-    normal = surface
-    pressed = b.subtle(accent_token, surface)
-    focused = hovered = pressed
-    focused_ring = b.focus_ring(focused, surface)
+    accent = b.subtle(accent_token, surface)
+    accent_pressed = b.pressed(accent)
+    accent_focus = b.focus(accent)
+    on_accent = b.on_color(accent)
 
-    # button element images
-    normal_img = recolor_image('button', normal, normal, surface, surface)
-    pressed_img = recolor_image('button', pressed, surface, surface, surface)
-    hovered_img = recolor_image('button', hovered, surface, surface, surface)
-    focused_img = recolor_image('button', focused, focused, focused_ring, surface)
-    focused_hovered_img = recolor_image('button', hovered, focused, focused_ring, surface)
-    focused_pressed_img = recolor_image('button', pressed, focused, focused_ring, surface)
-    disabled_img = recolor_image('button', surface, surface, surface, surface)
+    focus_ring = b.focus_ring(accent_focus, surface)
+    disabled = b.disabled()
+
+    normal_img = recolor_image('button', surface, surface, surface, surface)
+    normal_focus_img = recolor_image('button', surface, surface, focus_ring, surface)
+    selected_img = recolor_image('button', accent, accent, surface, surface)
+    selected_pressed_img = recolor_image('button', accent_pressed, accent_pressed, surface, surface)
+    selected_focus_img = recolor_image('button', accent_focus, accent_focus, focus_ring, surface)
+
+    disabled_img = recolor_image('button', disabled, disabled, surface, surface)
 
     b.create_style_element_image(
         ElementImage(
             f'{ttk_style}.border', normal_img, sticky="nsew", border=b.scale(10), padding=b.scale(10)).state_specs(
             [
                 ('disabled', disabled_img),
-                ('focus pressed', focused_pressed_img),
-                ('focus hover', focused_hovered_img),
-                ('focus', focused_img),
-                ('pressed', pressed_img),
-                ('hover', hovered_img),
-            ])
-    )
+                ('selected focus', selected_focus_img),
+                ('selected pressed', selected_pressed_img),
+                ('selected', selected_img),
+                ('focus !selected', normal_focus_img),
+                ('', normal_img)
+            ]))
 
     b.create_style_layout(
         ttk_style, Element(f"{ttk_style}.border", sticky="nsew").children(
             [
-                Element("Button.padding", sticky="nsew").children(
+                Element("Toolbutton.padding", sticky="nsew").children(
                     [
-                        Element("Button.label", sticky="")
+                        Element("Toolbutton.label", sticky="nsew")
                     ])
             ]))
 
@@ -369,21 +240,21 @@ def build_ghost_toolbutton_style(b: BootstyleBuilderTTk, ttk_style: str, color: 
     b.configure_style(
         ttk_style,
         background=surface,
-        foreground=foreground_normal,
-        relief='flat',
+        foreground="black",
         stipple="gray12",
+        relief='flat',
         padding=button_padding,
+        anchor="center",
         font="body"
     )
 
     state_spec = dict(
-        foreground=[('disabled', foreground_disabled), ('', foreground_normal)],
-        background=[('disabled', surface)]
+        foreground=[('disabled', on_surface), ('selected', on_accent), ('', on_surface)],
     )
 
     # map icon if available
     icon = options.get('icon')
-    default_size = 24 if icon_only else 20
+    default_size = b.scale(24) if icon_only else b.scale(20)
 
     if icon is not None:
         icon = b.normalize_icon_spec(icon, default_size)
