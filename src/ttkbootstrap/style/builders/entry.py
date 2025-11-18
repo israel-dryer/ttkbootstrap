@@ -34,7 +34,7 @@ def build_entry_style(b: BootstyleBuilderTTk, ttk_style: str, color: str = None,
     disabled_img = recolor_image('input', disabled, border, surface)
 
     b.create_style_element_image(
-        ElementImage(f'{ttk_style}.field', normal_img, sticky='nsew', border=8).state_specs(
+        ElementImage(f'{ttk_style}.field', normal_img, sticky='nsew', border=b.scale(8)).state_specs(
             [
                 ('disabled', disabled_img),
                 ('readonly', disabled_img),
@@ -58,11 +58,12 @@ def build_entry_style(b: BootstyleBuilderTTk, ttk_style: str, color: str = None,
         ttk_style,
         foreground=foreground,
         background=surface,
-        padding=(8, 0),
+        padding=b.scale((8, 0)),
         selectforeground=select_foreground,
         selectbackground=select_background,
         insertcolor=foreground,
         selectborderwidth=0,
+        font="body"
     )
 
     b.map_style(
