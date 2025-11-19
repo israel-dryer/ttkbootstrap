@@ -13,6 +13,9 @@ sb = ttk.Scrollbar(root, orient='horizontal', bootstyle='danger-rounded')
 sb.pack(fill='x', expand=True, padx=20, pady=20)
 sb.set(0.1, 0.9)
 
+sb = ttk.Scrollbar(root, orient='horizontal', bootstyle='danger-rounded', style_options={"show_arrows": False})
+sb.pack(fill='x', expand=True, padx=20, pady=20)
+sb.set(0.1, 0.9)
 
 def change_theme():
     if style.theme_use() == 'dark':
