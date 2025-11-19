@@ -1,13 +1,8 @@
-from random import choice
-
 import ttkbootstrap as ttk
-from ttkbootstrap import utility
 from ttkbootstrap.constants import *
 
-utility.enable_high_dpi_awareness()
 
-
-def create_label_style(bootstyle, style, test_name):
+def create_label_style(test_name):
     frame = ttk.Frame(root, padding=5)
 
     # title
@@ -16,20 +11,22 @@ def create_label_style(bootstyle, style, test_name):
     ttk.Separator(frame).pack(padx=5, pady=5, fill=X)
 
     # default
-    lbl = ttk.Label(frame, text='default', bootstyle=bootstyle)
-    lbl.pack(padx=5, pady=5, fill=BOTH)
+    lbl = ttk.Label(frame, text='default')
+    lbl.pack(padx=5, pady=5, fill=X)
 
     # colored
-    for color, value in style.colors.items():
+    for color in ['primary', 'secondary', 'success', 'info', 'warning', 'danger']:
         lbl = ttk.Label(frame, text=color, bootstyle=color)
-        lbl.pack(padx=5, pady=5, fill=BOTH)
+        lbl.pack(padx=5, pady=5, fill=X)
 
     return frame
 
 
 def change_style():
-    theme = choice(['light', 'dark'])
-    style.theme_use(theme)
+    if style.theme_use() == 'dark':
+        style.theme_use('light')
+    else:
+        style.theme_use('dark')
 
 
 if __name__ == '__main__':
@@ -39,7 +36,6 @@ if __name__ == '__main__':
 
     ttk.Button(text="Change Theme", command=change_style).pack(padx=10, pady=10)
 
-    create_label_style('', style, 'Label').pack(side=LEFT)
-    create_label_style('inverse', style, 'Inverse Label').pack(side=LEFT)
+    create_label_style('Label').pack(side=LEFT, fill=X)
 
     root.mainloop()
