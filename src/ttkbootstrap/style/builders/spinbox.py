@@ -35,7 +35,7 @@ def build_spinbox_style(b: BootstyleBuilderTTk, ttk_style: str, color: str = Non
     disabled_img = recolor_image('input', disabled, border, surface)
 
     b.create_style_element_image(
-        ElementImage(f'{ttk_style}.field', normal_img, sticky='nsew', border=8).state_specs(
+        ElementImage(f'{ttk_style}.field', normal_img, sticky='nsew', border=b.scale(8)).state_specs(
             [
                 ('disabled', disabled_img),
                 ('readonly', disabled_img),
@@ -45,11 +45,12 @@ def build_spinbox_style(b: BootstyleBuilderTTk, ttk_style: str, color: str = Non
     )
 
     # add chevron image
+    icon_size = b.scale(14)
     icon = use_icon_provider()
-    arrow_up_normal_img = icon('caret-up-fill', color=foreground, size=14).image
-    arrow_up_disabled_img = icon('caret-up-fill', color=disabled_foreground, size=14).image
-    arrow_down_normal_img = icon('caret-down-fill', color=foreground, size=14).image
-    arrow_down_disabled_img = icon('caret-down-fill', color=disabled_foreground, size=14).image
+    arrow_up_normal_img = icon('caret-up-fill', color=foreground, size=icon_size).image
+    arrow_up_disabled_img = icon('caret-up-fill', color=disabled_foreground, size=icon_size).image
+    arrow_down_normal_img = icon('caret-down-fill', color=foreground, size=icon_size).image
+    arrow_down_disabled_img = icon('caret-down-fill', color=disabled_foreground, size=icon_size).image
 
     b.create_style_element_image(
         ElementImage(f'{ttk_style}.uparrow', arrow_up_normal_img, sticky='nsew').state_specs(
@@ -88,11 +89,12 @@ def build_spinbox_style(b: BootstyleBuilderTTk, ttk_style: str, color: str = Non
         ttk_style,
         foreground=foreground,
         background=surface,
-        padding=(8, 0),
+        padding=b.scale((8, 0)),
         selectforeground=select_foreground,
         selectbackground=select_background,
         insertcolor=foreground,
         selectborderwidth=0,
+        font="body"
     )
 
     b.map_style(

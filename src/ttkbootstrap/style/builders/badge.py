@@ -19,11 +19,6 @@ def build_pill_badge_style(b: BootstyleBuilderTTk, ttk_style: str, color: str = 
     build_badge(b, ttk_style, color, 'pill', **options)
 
 
-@BootstyleBuilderTTk.register_builder('circle', 'TBadge')
-def build_circle_badge_style(b: BootstyleBuilderTTk, ttk_style: str, color: str = None, **options):
-    build_badge(b, ttk_style, color, 'circle', **options)
-
-
 def build_badge(b: BootstyleBuilderTTk, ttk_style: str, color: str = None, variant: str = 'default', **options):
     surface_token = options.get('surface_color', 'background')
 
@@ -31,14 +26,10 @@ def build_badge(b: BootstyleBuilderTTk, ttk_style: str, color: str = None, varia
     normal = b.color(color or 'primary')
     foreground = b.on_color(normal)
 
-    normal_img = recolor_image(f'badge-{variant}', normal, scale=0.6)
+    normal_img = recolor_image(f'badge-{variant}', normal)
 
-    border = 10
-    padding = (10, 0)
-
-    if variant == 'circle':
-        padding = 0
-        border = 10
+    border = b.scale(10)
+    padding = b.scale((10, 0))
 
     # button element
     b.create_style_element_image(
@@ -55,9 +46,5 @@ def build_badge(b: BootstyleBuilderTTk, ttk_style: str, color: str = None, varia
                     ])
             ]))
 
-    style_padding = 2
-    if variant == 'circle':
-        style_padding = 0
-    elif variant == 'pill':
-        style_padding = (4, 2)
-    b.configure_style(ttk_style, font="TkCaptionFont", background=surface, foreground=foreground, padding=style_padding)
+    style_padding = b.scale((4, 2))
+    b.configure_style(ttk_style, font="caption", background=surface, foreground=foreground, padding=style_padding)

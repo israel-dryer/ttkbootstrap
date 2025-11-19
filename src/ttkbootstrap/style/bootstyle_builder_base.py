@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import re
 from collections.abc import Sequence
-from typing import Optional
+from typing import List, Optional, Tuple, Union
 
 from typing_extensions import Any, TypedDict
 
@@ -14,6 +14,7 @@ from ttkbootstrap.style.utility import (
     mix_colors,
     relative_luminance,
 )
+from ttkbootstrap.utility import scale_size
 
 
 class IconSpec(TypedDict, total=False):
@@ -139,11 +140,11 @@ class BootstyleBuilderBase:
             else:
                 return mix_colors(base_color, surface_color, 0.10)
 
-    def hover(self, color: str) -> str:
-        return self._state_color(color, "hover")
-
     def active(self, color: str) -> str:
         return self._state_color(color, "active")
+
+    def pressed(self, color: str) -> str:
+        return self._state_color(color, "pressed")
 
     def focus(self, color: str) -> str:
         return self._state_color(color, "focus")
@@ -225,8 +226,8 @@ class BootstyleBuilderBase:
         if state == "focus":
             return color
         delta = {
-            "hover": 0.08,
-            "active": 0.12,
+            "active": 0.08,
+            "pressed": 0.12,
             "focus": 0.08,
         }[state]
         lum = relative_luminance(color)
@@ -234,19 +235,34 @@ class BootstyleBuilderBase:
             return lighten_color(color, delta)
         return darken_color(color, delta)
 
+    @staticmethod
+    def scale(value: Union[int, List, Tuple]):
+        return scale_size(value)
+
     # ----- Icon Utilities -----
 
     @staticmethod
-    def normalize_icon_spec(icon: str | IconSpec, default_size: int = 16) -> IconSpec:
+    def normalize_icon_spec(icon: str | IconSpec, default_size: int = 20) -> IconSpec:
         """
             If the icon is a string, then create a icon spec where the name is known and the size is set to default_size.
             If the there is an icon spec, map the default size if one is not already specified in the spec.
+
+            Icon sizes are automatically scaled based on DPI settings. The default size of 20px provides
+            a balanced appearance, being slightly larger than the visible text (16px) but not overwhelming.
         """
+        from ttkbootstrap.utility import scale_size
+
+        # Apply DPI scaling to default size
+        scaled_default = scale_size(default_size)
+
         if isinstance(icon, str):
-            return dict(name=icon, size=default_size)
+            return dict(name=icon, size=scaled_default)
         else:
             if 'size' not in icon or icon.get('size') is None:
-                icon['size'] = default_size
+                icon['size'] = scaled_default
+            elif icon.get('size'):
+                # Scale user-provided size too
+                icon['size'] = scale_size(icon['size'])
             return icon
 
     def map_stateful_icons(self, icon: IconSpec, foreground_spec: Sequence[tuple]):
@@ -292,7 +308,8 @@ class BootstyleBuilderBase:
         if not base_name:
             # Nothing we can do without an icon name
             return []
-        base_size: int = int(icon.get('size') or 16)
+
+        base_size: int = int(icon.get('size') or 20)
         base_color: str | None = icon.get('color')
 
         # Build per-state override lookup: {state_str: {'name':..., 'color':...}}

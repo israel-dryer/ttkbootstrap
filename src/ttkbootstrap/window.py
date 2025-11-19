@@ -299,8 +299,16 @@ class Window(tkinter.Tk):
         super().__init__(**kwargs)
         self.winsys: str = self.tk.call('tk', 'windowingsystem')
 
-        if scaling is not None:
-            utility.enable_high_dpi_awareness(self, scaling)
+        from ttkbootstrap.style.style import use_style
+        style = use_style()
+        style.theme_use(themename)
+
+        if hdpi:
+            # Apply auto-detected scaling if no manual scaling specified
+            if scaling is None:
+                utility.enable_high_dpi_awareness(self, 'auto')
+            else:
+                utility.enable_high_dpi_awareness(self, scaling)
 
         if iconphoto is not None:
             if iconphoto == '':

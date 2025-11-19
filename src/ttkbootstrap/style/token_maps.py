@@ -29,7 +29,8 @@ WIDGET_CLASS_MAP = {
     'panedwindow': 'TPanedwindow',
     'spinbox': 'TSpinbox',
     'menubutton': 'TMenubutton',
-    'field': 'TField'
+    'field': 'TField',
+    'toolbutton': 'Toolbutton'
 }
 
 WIDGET_NAME_MAP = {v: k for k, v in WIDGET_CLASS_MAP.items()}

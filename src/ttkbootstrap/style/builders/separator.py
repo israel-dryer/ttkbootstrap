@@ -22,7 +22,7 @@ def build_separator_style(b: BootstyleBuilderTTk, ttk_style: str, color: str = N
     else:
         accent = b.color(accent_token)
 
-    img = recolor_image(f"separator-{orient}", accent, scale=0.75)
+    img = recolor_image(f"separator-{orient}", accent)
     sticky = "ew" if orient == "horizontal" else "ns"
 
     b.create_style_element_image(ElementImage(f"{ttk_style}.Separator", img, border=0, sticky=sticky))

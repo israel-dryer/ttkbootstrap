@@ -1,8 +1,10 @@
 from __future__ import annotations
 
 from tkinter import ttk
-from typing import Any, Literal, Optional, TypedDict
+from typing import Any, Literal, TypedDict
+
 from typing_extensions import Unpack
+
 from .._internal.wrapper_base import TTKWrapperBase
 
 
@@ -59,3 +61,65 @@ class Combobox(TTKWrapperBase, ttk.Combobox):
         """
         super().__init__(master, **kwargs)
 
+        # Store original postcommand if provided
+        self._original_postcommand = kwargs.get('postcommand')
+
+        # Set up our postcommand to style popdown on first open
+        self._popdown_styled = False
+        self._setup_postcommand()
+
+        # Subscribe to theme changes to re-apply popdown styling
+        root = self.nametowidget('.')
+        root.bind('<<ThemeChanged>>', lambda _: self._on_theme_changed(), add='+')
+
+    def _setup_postcommand(self) -> None:
+        """Set up postcommand to style popdown when first opened."""
+
+        def on_popdown():
+            # Apply popdown styling if not done yet
+            if not self._popdown_styled:
+                self._apply_popdown_style()
+                self._popdown_styled = True
+
+            # Call original postcommand if it exists
+            if self._original_postcommand:
+                if callable(self._original_postcommand):
+                    self._original_postcommand()
+                else:
+                    # It might be a string command
+                    self.tk.eval(str(self._original_postcommand))
+
+        # Configure the postcommand
+        self.configure(postcommand=on_popdown)
+
+    def _on_theme_changed(self) -> None:
+        """Handle theme change event."""
+        # Reset styled flag so popdown gets restyled on next open
+        self._popdown_styled = False
+
+        # If popdown has been opened before, restyle it immediately
+        try:
+            # Try to get the popdown window - if it exists, style it now
+            popdown = self.tk.eval(f"ttk::combobox::PopdownWindow {self}")
+            if popdown:
+                self._apply_popdown_style()
+        except Exception:
+            # Popdown doesn't exist yet, will be styled on next open
+            pass
+
+    def _apply_popdown_style(self) -> None:
+        """Apply theme-appropriate styling to the popdown listbox."""
+        from ttkbootstrap.style.bootstyle_builder_mixed import BootstyleBuilderMixed
+        from ttkbootstrap.style.style import use_style
+
+        try:
+            style = use_style()
+            builder = BootstyleBuilderMixed(
+                theme_provider=style.theme_provider,
+                style_instance=style
+            )
+            # Apply immediately - popdown should exist now
+            builder.update_combobox_popdown_style(self)
+            self._popdown_styled = True
+        except Exception:
+            pass

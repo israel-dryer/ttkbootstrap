@@ -10,7 +10,8 @@ from __future__ import annotations
 
 from . import (
     badge, button, checkbutton, combobox, entry, frame, label, labelframe, menubutton, notebook,
-    panedwindow, progressbar, radiobutton, scale, scrollbar, separator, sizegrip, spinbox, treeview
+    panedwindow, progressbar, radiobutton, scale, scrollbar, separator, sizegrip, spinbox, treeview,
+    toolbutton
 )
 
 # Import all builder modules to trigger registration
@@ -34,5 +35,6 @@ __all__ = [
     'panedwindow',
     'sizegrip',
     'spinbox',
-    'treeview'
+    'treeview',
+    'toolbutton',
 ]

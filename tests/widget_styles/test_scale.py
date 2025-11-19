@@ -1,20 +1,14 @@
-import tkinter as tk
 import ttkbootstrap as ttk
-from random import choice
-from ttkbootstrap import utility
-utility.enable_high_dpi_awareness()
-
-DARK = 'superhero'
-LIGHT = 'flatly'
+from ttkbootstrap.constants import *
 
 
-def create_scale_frame(widget_style, style, orient):
+def create_scale_frame(orient):
     frame = ttk.Frame(root, padding=5)
 
     # title
-    title = ttk.Label(frame, text=orient.title() + ' Scale', anchor=tk.CENTER)
-    title.pack(padx=5, pady=2, fill=tk.BOTH)
-    ttk.Separator(frame).pack(padx=5, pady=5, fill=tk.X)
+    title = ttk.Label(frame, text=orient.title() + ' Scale', anchor=CENTER)
+    title.pack(padx=5, pady=2, fill=BOTH)
+    ttk.Separator(frame).pack(padx=5, pady=5, fill=X)
 
     # default
     pb = ttk.Scale(
@@ -22,43 +16,45 @@ def create_scale_frame(widget_style, style, orient):
         orient=orient,
         value=0.2
     )
-    if orient == tk.HORIZONTAL:
-        pb.pack(padx=5, pady=5, fill=tk.BOTH)
+    if orient == HORIZONTAL:
+        pb.pack(padx=5, pady=5, fill=BOTH)
     else:
-        pb.pack(padx=5, pady=5, fill=tk.BOTH, side=tk.LEFT)
+        pb.pack(padx=5, pady=5, fill=BOTH, side=LEFT)
 
     # colored
-    for color in style.colors:
-        ttk.Label(frame, text=color).pack(fill=tk.X)
+    for color in ['primary', 'secondary', 'success', 'info', 'warning', 'danger']:
+        ttk.Label(frame, text=color).pack(fill=X)
         pb = ttk.Scale(
             master=frame,
             value=0.2,
             bootstyle=color,
             orient=orient
         )
-        if orient == tk.HORIZONTAL:
-            pb.pack(padx=5, pady=5, fill=tk.BOTH)
+        if orient == HORIZONTAL:
+            pb.pack(padx=5, pady=5, fill=BOTH)
         else:
-            pb.pack(padx=5, pady=5, fill=tk.BOTH, side=tk.LEFT)
+            pb.pack(padx=5, pady=5, fill=BOTH, side=LEFT)
 
     return frame
 
 
 def change_style():
-    theme = choice(style.theme_names())
-    style.theme_use(theme)    
+    if style.theme_use() == 'dark':
+        style.theme_use('light')
+    else:
+        style.theme_use('dark')
 
 
 if __name__ == '__main__':
     # create visual widget style tests
-    root = tk.Tk()
+    root = ttk.Window()
     style = ttk.Style()
 
     ttk.Button(text="Change Theme", command=change_style).pack(padx=10, pady=10)
 
-    test1 = create_scale_frame('', style, tk.HORIZONTAL)
-    test1.pack(side=tk.LEFT, anchor=tk.N)
-    test2 = create_scale_frame('', style, 'v')
-    test2.pack(side=tk.LEFT, anchor=tk.N)
+    test1 = create_scale_frame(HORIZONTAL)
+    test1.pack(side=LEFT, anchor=N)
+    test2 = create_scale_frame(VERTICAL)
+    test2.pack(side=LEFT, anchor=N)
 
     root.mainloop()

@@ -35,7 +35,14 @@ def build_labelframe_style(b: BootstyleBuilderTTk, ttk_style: str, color: str = 
     else:
         border_img = recolor_image('border', surface, surface, surface, surface)
 
-    b.create_style_element_image(ElementImage(f'{ttk_style}.border', border_img, border=8, padding=8, sticky="nsew"))
+    b.create_style_element_image(
+        ElementImage(
+            f'{ttk_style}.border',
+            border_img,
+            border=b.scale(8),
+            padding=b.scale(8),
+            sticky="nsew")
+    )
     b.create_style_layout(ttk_style, Element(f'{ttk_style}.border', sticky="nsew"))
-    b.configure_style(f'{ttk_style}.Label', background=surface, foreground=foreground)
+    b.configure_style(f'{ttk_style}.Label', background=surface, foreground=foreground, font="label")
     b.configure_style(ttk_style, background=surface)

@@ -10,6 +10,7 @@ class FontSpec(NamedTuple):
     font: str
     size: int
     weight: Literal["normal", "bold"]
+    underline: bool = False
 
 
 class FontTokenNames:
@@ -25,6 +26,7 @@ class FontTokenNames:
     label = "label"
     caption = "caption"
     code = "code"
+    hyperlink = "hyperlink"
 
 
 class FontTokens(NamedTuple):
@@ -40,6 +42,7 @@ class FontTokens(NamedTuple):
     label: FontSpec
     caption: FontSpec
     code: FontSpec
+    hyperlink: FontSpec
 
 
 def system_fallback_font() -> str:
@@ -94,6 +97,8 @@ def build_tokens_from_base(base_size: int, family: str | None = None, mono_famil
         caption=FontSpec(ui, base - 1, "normal"),
         # Code
         code=FontSpec(mono, base, "normal"),
+        # Hyperlink (same as body but underlined)
+        hyperlink=FontSpec(ui, base + 1, "normal", underline=True),
     )
 
 
@@ -102,6 +107,11 @@ def build_desktop_tokens() -> FontTokens:
     base = font.nametofont("TkDefaultFont").cget("size")
     # Guard rails: keep within 8..14 for sanity if environment reports something odd
     base = max(8, min(int(base), 14))
+
+    # Ensure minimum readability: bump up if system default is too small
+    # Modern displays benefit from slightly larger text (10-11pt base)
+    if base < 10:
+        base = 10  # Minimum comfortable base for modern desktop apps
 
     return build_tokens_from_base(base)
 
@@ -140,7 +150,8 @@ class Typography:
             name: FontSpec(
                 family if name != "code" else cls._fonts.code.font,
                 spec.size,
-                spec.weight)
+                spec.weight,
+                spec.underline)
             for name, spec in cls._fonts._asdict().items()
         }
         cls.use_fonts(FontTokens(**updated), fallback=True)
@@ -172,6 +183,7 @@ class Typography:
             family=spec.font if not cls._use_fallback else fallback,
             size=spec.size,
             weight=spec.weight,
+            underline=spec.underline,
         )
 
     @classmethod
@@ -184,7 +196,7 @@ class Typography:
 
         If AppConfig.font is configured, this will rebuild the entire font token
         system using the specified family and size as the base. Otherwise, uses
-        system defaults.
+        system defaults and applies them to Tk fonts.
 
         Example:
             >>> AppConfig.set(font=("Arial", 11))
@@ -198,6 +210,9 @@ class Typography:
             # Build new token set with custom base
             tokens = build_tokens_from_base(size, family)
             cls.use_fonts(tokens)
+        else:
+            # Apply default tokens to Tk fonts (important for minimum size enforcement)
+            cls.use_fonts()
 
     @classmethod
     def _register_fonts(cls) -> None:
@@ -211,6 +226,7 @@ class Typography:
                 family=spec.font if not cls._use_fallback else fallback,
                 size=spec.size,
                 weight=spec.weight,
+                underline=spec.underline,
             )
             cls._named_fonts[font_name] = f
 

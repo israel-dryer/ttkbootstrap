@@ -43,6 +43,8 @@ def parse_bootstyle_v2(bootstyle: str, widget_class: str) -> dict:
     from ttkbootstrap.style.theme_provider import use_theme
 
     theme_colors = use_theme().colors
+    if not isinstance(bootstyle, str):
+        raise BootstyleParsingError(f'bootstyle must be a string. Received the value: {bootstyle}')
     parts = bootstyle.lower().split('-')
 
     color = None

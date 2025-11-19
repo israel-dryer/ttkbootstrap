@@ -5,11 +5,16 @@ from ttkbootstrap.style.bootstyle_builder_ttk import BootstyleBuilderTTk
 
 @BootstyleBuilderTTk.register_builder('default', 'TLabel')
 def build_label(b: BootstyleBuilderTTk, ttk_style: str, color: str = None, **options):
-    foreground = b.color(color or "foreground")
     surface_token = options.get('surface_color', 'background')
     background = b.color(surface_token)
+    if color is None:
+        # best foreground on inherited background
+        foreground = b.on_color(background)
+    else:
+        # override
+        foreground = b.color(color)
 
-    b.configure_style(ttk_style, background=background, foreground=foreground)
+    b.configure_style(ttk_style, background=background, foreground=foreground, font="body")
 
     state_spec = dict(foreground=[('', foreground)])
 
