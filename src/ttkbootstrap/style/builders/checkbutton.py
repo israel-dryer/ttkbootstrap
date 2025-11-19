@@ -50,7 +50,7 @@ def build_checkbutton_style(b: BootstyleBuilderTTk, ttk_style: str, color: str =
         'checkbox-unchecked', foreground_disabled, foreground_disabled, background)
     disabled_indeterminate_img = recolor_image('checkbox-indeterminate', disabled, foreground_disabled, background)
 
-    spacer_img = create_transparent_image(b.scale(8), b.scale(1))
+    spacer_img = create_transparent_image(8, 1)
     b.create_style_element_image(ElementImage(f'{ttk_style}.spacer', spacer_img, sticky="ew"))
 
     b.create_style_element_image(
@@ -102,39 +102,29 @@ def build_toggle_style(b: BootstyleBuilderTTk, ttk_style: str, color: str = 'pri
     surface_token = options.get('surface_color', 'background')
 
     background = b.color(surface_token)
-    background_hover = b.active(background)
     foreground = b.on_color(background)
     foreground_disabled = b.disabled('text')
 
     normal = b.color(accent_token)
-    foreground_active = b.on_color(normal)
-    pressed = b.pressed(normal)
     hovered = b.active(normal)
     border = b.border(background)
     focus = hovered
     focus_ring = b.focus_ring(normal, background)
-    disabled = b.disabled()
 
-    normal_checked_img = recolor_image('switch-on', foreground_active, normal, background)
+    normal_checked_img = recolor_image('switch-on', background, normal, background)
     normal_unchecked_img = recolor_image('switch-off', background, border, background)
 
-    hovered_checked_img = recolor_image('switch-on', foreground_active, hovered, background)
-    hovered_unchecked_img = recolor_image('switch-off', background_hover, border, background)
+    focus_checked_img = recolor_image('switch-on', background, focus, focus_ring)
+    focus_unchecked_img = recolor_image('switch-off', background, border, focus_ring)
 
-    pressed_checked_img = recolor_image('switch-on', foreground_active, pressed, background)
-    pressed_unchecked_img = recolor_image('switch-off', background_hover, pressed, background)
-
-    focus_checked_img = recolor_image('switch-on', foreground_active, focus, focus_ring)
-    focus_unchecked_img = recolor_image('switch-off', background_hover, focus, focus_ring)
-
-    disabled_checked_img = recolor_image('switch-on', disabled, foreground_disabled, background)
+    disabled_checked_img = recolor_image('switch-on', background, foreground_disabled, background)
     disabled_unchecked_img = recolor_image('switch-off', foreground_disabled, foreground_disabled, background)
 
-    spacer_img = create_transparent_image(b.scale(8), b.scale(1))
+    spacer_img = create_transparent_image(8, 1)
     b.create_style_element_image(ElementImage(f'{ttk_style}.spacer', spacer_img, sticky="ew"))
 
     b.create_style_element_image(
-        ElementImage(f'{ttk_style}.indicator', normal_unchecked_img, sticky="ns", padding=3).state_specs(
+        ElementImage(f'{ttk_style}.indicator', normal_unchecked_img, sticky="ns", padding=b.scale(4)).state_specs(
             [
                 # Disabled states
                 ('disabled selected', disabled_checked_img),
@@ -143,14 +133,6 @@ def build_toggle_style(b: BootstyleBuilderTTk, ttk_style: str, color: str = 'pri
                 # Focused states
                 ('focus selected', focus_checked_img),
                 ('focus !selected !alternate', focus_unchecked_img),
-
-                # Pressed states
-                ('pressed selected', pressed_checked_img),
-                ('pressed !selected !alternate', pressed_unchecked_img),
-
-                # Hover states
-                ('hover selected', hovered_checked_img),
-                ('hover !selected !alternate', hovered_unchecked_img),
 
                 # Normal base states
                 ('selected', normal_checked_img),
