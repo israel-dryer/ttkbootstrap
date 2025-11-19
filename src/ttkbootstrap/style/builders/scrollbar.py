@@ -92,7 +92,7 @@ def build_vertical_scrollbar(b: BootstyleBuilderTTk, ttk_style: str, color: str 
 
 @BootstyleBuilderTTk.register_builder('rounded', 'TScrollbar')
 def build_rounded_scrollbar_style(b: BootstyleBuilderTTk, ttk_style: str, color: str = None, **options):
-    if options.get('vertical', 'vertical') == 'vertical':
+    if options.get('orient', 'vertical') == 'vertical':
         _build_rounded_vertical_scrollbar(b, ttk_style, color, **options)
     else:
         _build_rounded_horizontal_scrollbar(b, ttk_style, color, **options)
@@ -119,7 +119,7 @@ def _build_rounded_vertical_scrollbar(b: BootstyleBuilderTTk, ttk_style: str, co
     b.create_style_element_image(
         ElementImage(
             f'{ttk_style}.thumb', thumb_normal_img,
-            padding=b.scale(6), border=b.scale(6), width=b.scale(10), height=b.scale(30)).state_specs(
+            padding=b.scale(3), border=b.scale(6), width=b.scale(10), height=b.scale(30)).state_specs(
             [
                 ('pressed', thumb_pressed_img),
                 ('active', thumb_active_img),
@@ -180,4 +180,81 @@ def _build_rounded_vertical_scrollbar(b: BootstyleBuilderTTk, ttk_style: str, co
 
 
 def _build_rounded_horizontal_scrollbar(b: BootstyleBuilderTTk, ttk_style: str, color: str = None, **options):
-    ...
+    surface_token = options.get('surface_color', 'background')
+    surface = b.color(surface_token)
+    border_color = b.border(surface)
+
+    if color is not None:
+        thumb_normal = b.color(color)
+    else:
+        thumb_normal = border_color
+
+    thumb_active = b.active(thumb_normal)
+    thumb_pressed = b.pressed(thumb_normal)
+
+    # thumb element
+    thumb_normal_img = recolor_image('scrollbar-horizontal-rounded', thumb_normal, thumb_active, surface, surface)
+    thumb_active_img = recolor_image('scrollbar-horizontal-rounded', thumb_active, thumb_active, surface, surface)
+    thumb_pressed_img = recolor_image('scrollbar-horizontal-rounded', thumb_pressed, thumb_pressed, surface, surface)
+
+    b.create_style_element_image(
+        ElementImage(
+            f'{ttk_style}.thumb', thumb_normal_img,
+            padding=b.scale(3), border=b.scale(6), width=b.scale(30), height=b.scale(10)).state_specs(
+            [
+                ('pressed', thumb_pressed_img),
+                ('active', thumb_active_img),
+                ('', thumb_normal_img),
+            ]),
+    )
+
+    # arrow elements
+    icon = use_icon_provider()
+    arrow_size = b.scale(18)
+
+    # arrow [left]
+    arrow_left_normal = icon('caret-left-fill', arrow_size, thumb_normal)
+    arrow_left_active = icon('caret-left-fill', arrow_size, thumb_active)
+    arrow_left_pressed = icon('caret-left-fill', arrow_size, thumb_pressed)
+    b.create_style_element_image(
+        ElementImage(
+            f'{ttk_style}.leftarrow', arrow_left_normal,
+            padding=2, border=2, width=arrow_size, height=arrow_size).state_specs(
+            [
+                ('pressed', arrow_left_pressed),
+                ('active', arrow_left_active),
+                ('', arrow_left_normal),
+            ])
+    )
+
+    # arrow [right]
+    arrow_right_normal = icon('caret-right-fill', arrow_size, thumb_normal)
+    arrow_right_active = icon('caret-right-fill', arrow_size, thumb_active)
+    arrow_right_pressed = icon('caret-right-fill', arrow_size, thumb_pressed)
+    b.create_style_element_image(
+        ElementImage(
+            f'{ttk_style}.rightarrow', arrow_right_normal,
+            padding=2, border=2, width=arrow_size, height=arrow_size).state_specs(
+            [
+                ('pressed', arrow_right_pressed),
+                ('active', arrow_right_active),
+                ('', arrow_right_normal),
+            ])
+    )
+
+    b.create_style_layout(
+        ttk_style,
+        Element('Horizontal.Scrollbar.trough', sticky="we").children(
+            [
+                Element(f'{ttk_style}.leftarrow', side="left", sticky=""),
+                Element(f'{ttk_style}.rightarrow', side="right", sticky=""),
+                Element(f'{ttk_style}.thumb', sticky="ew"),
+            ])
+    )
+
+    b.configure_style(
+        ttk_style,
+        troughcolor=surface,
+        bordercolor=surface,
+        relief='flat'
+    )
