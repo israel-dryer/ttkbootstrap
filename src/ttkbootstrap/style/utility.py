@@ -270,7 +270,7 @@ def recolor_image(
         magenta_color: str | None = None,
         transparent_color: str | None = None,
         *,
-        scale: float = 0.43,
+        scale: float | None = None,
 ) -> PhotoImage:
     """
     Recolor a white-layout PNG image using luminance interpolation.
@@ -280,12 +280,18 @@ def recolor_image(
         white_color: Replace white with this color (hex string)
         black_color: Replace black with this color (hex string)
         magenta_color: Replace magenta (#ff00ff) with this color, if provided
-        scale: Optional scaling factor for output image
+        scale: Optional scaling factor for output image. If None, uses automatic
+            scaling based on DPI (recommended). Source images are 2x resolution.
         transparent_color: Fill fully transparent areas with this color
 
     Returns:
         A ChromaTk-compatible PhotoImage object.
     """
+    # Use automatic scaling if not specified
+    if scale is None:
+        from ttkbootstrap.utility import _ScalingState
+        scale = _ScalingState.get_image_scale(source_resolution=2.0)
+
     # Create cache key from all parameters
     cache_key = (name, white_color, black_color, magenta_color, transparent_color, scale)
 

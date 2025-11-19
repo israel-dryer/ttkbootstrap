@@ -1,69 +1,62 @@
-import tkinter as tk
 import ttkbootstrap as ttk
-from random import choice
-from ttkbootstrap import utility
-utility.enable_high_dpi_awareness()
-
-DARK = 'superhero'
-LIGHT = 'flatly'
+from ttkbootstrap.constants import *
 
 
-def create_menubutton_frame(bootstyle, style, testname):
+def create_menubutton_frame(bootstyle, testname):
     frame = ttk.Frame(root, padding=5)
 
     title = ttk.Label(
         master=frame,
         text=testname,
-        anchor=tk.CENTER
+        anchor=CENTER
     )
-    title.pack(padx=5, pady=2, fill=tk.BOTH)
+    title.pack(padx=5, pady=2, fill=BOTH)
 
-    ttk.Separator(frame).pack(padx=5, pady=5, fill=tk.X)
+    ttk.Separator(frame).pack(padx=5, pady=5, fill=X)
 
     btn = ttk.Menubutton(
         master=frame,
+        bootstyle=bootstyle,
         text='default',
-        bootstyle=bootstyle
     )
-    btn.pack(padx=5, pady=5, fill=tk.BOTH)
+    btn.pack(padx=5, pady=5, fill=BOTH)
 
-    for color in style.colors:
+    for color in ['primary', 'secondary', 'success', 'info', 'warning', 'danger']:
         btn = ttk.Menubutton(
             master=frame,
             text=color,
-            bootstyle=(color, bootstyle)
+            bootstyle=f"{color}-{bootstyle}"
         )
-        btn.pack(padx=5, pady=5, fill=tk.BOTH)
+        btn.pack(padx=5, pady=5, fill=BOTH)
 
     btn = ttk.Menubutton(
         master=frame,
         text='disabled',
-        state=tk.DISABLED,
-        bootstyle=bootstyle
+        state=DISABLED,
+        bootstyle=bootstyle,
     )
-    btn.pack(padx=5, pady=5, fill=tk.BOTH)
+    btn.pack(padx=5, pady=5, fill=BOTH)
 
     return frame
 
 
 def change_style():
-    theme = choice(style.theme_names())
-    style.theme_use(theme)    
+    if style.theme_use() == 'dark':
+        style.theme_use('light')
+    else:
+        style.theme_use('dark')
 
 
 if __name__ == '__main__':
     # create visual widget style tests
-    root = tk.Tk()
+    root = ttk.Window()
     style = ttk.Style()
 
     ttk.Button(text="Change Theme", command=change_style).pack(padx=10, pady=10)
 
-    create_menubutton_frame(
-        '', style, 'Solid Menubutton'
-    ).pack(side=tk.LEFT)
-    
-    create_menubutton_frame(
-        'outline', style, 'Outline Menubutton'
-    ).pack(side=tk.LEFT)
+    create_menubutton_frame("default", 'Solid Menubutton').pack(side=LEFT)
+    create_menubutton_frame('outline', 'Outline Menubutton').pack(side=LEFT)
+    create_menubutton_frame('ghost', 'Ghost Menubutton').pack(side=LEFT)
+    create_menubutton_frame('text', 'Text Menubutton').pack(side=LEFT)
 
     root.mainloop()

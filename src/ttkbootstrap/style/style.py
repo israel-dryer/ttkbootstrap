@@ -200,7 +200,7 @@ class Style(ttkStyle):
         super().theme_use(name)
 
         # Initialize all default widget styles before rebuilding custom styles
-        self._style_builder.initialize_all_default_styles()
+        #self._style_builder.initialize_all_default_styles()
 
         self._rebuild_all_styles()
 

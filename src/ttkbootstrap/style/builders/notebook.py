@@ -22,7 +22,7 @@ def build_tabs_notebook(b: BootstyleBuilderTTk, ttk_style: str, color: str = Non
     # notebook colors
     tab_active_color = surface
     tab_accent_color = b.color(color or 'background[+1]')
-    tab_accent_hover = b.hover(tab_accent_color)
+    tab_accent_hover = b.active(tab_accent_color)
 
     tab_active_foreground = b.on_color(surface)
     tab_accent_foreground = b.on_color(tab_accent_color)
@@ -38,12 +38,14 @@ def build_tabs_notebook(b: BootstyleBuilderTTk, ttk_style: str, color: str = Non
         notebook_border = recolor_image('border', surface, surface, surface, surface)
 
     b.create_style_element_image(
-        ElementImage(f'{ttk_style}.border', notebook_border, border=2, padding=2, sticky="nsew")
+        ElementImage(
+            f'{ttk_style}.border', notebook_border,
+            border=b.scale(4), padding=b.scale(4), sticky="nsew")
     )
 
     b.create_style_layout(
         ttk_style,
-        Element(f'{ttk_style}.border', sticky="nsew", border=8).children(
+        Element(f'{ttk_style}.border', sticky="nsew", border=b.scale(12)).children(
             [
                 Element('Notebook.client', sticky='nsew')
             ])
@@ -58,7 +60,9 @@ def build_tabs_notebook(b: BootstyleBuilderTTk, ttk_style: str, color: str = Non
         'notebook-tab-normal', tab_accent_hover, tab_active_border, tab_accent_color, tab_accent_color)
 
     b.create_style_element_image(
-        ElementImage(f'{ttk_style}.tab', tab_normal_img, sticky='nsew', padding=8, border=8, height=28).state_specs(
+        ElementImage(
+            f'{ttk_style}.tab', tab_normal_img,
+            sticky='nsew', padding=b.scale(12), border=b.scale(12), height=b.scale(28)).state_specs(
             [
                 ('selected', tab_active_img),
                 ('active', tab_hover_img),
@@ -80,7 +84,12 @@ def build_tabs_notebook(b: BootstyleBuilderTTk, ttk_style: str, color: str = Non
             ])
     )
 
-    b.configure_style(f"{ttk_style}.Tab", foreground=tab_accent_foreground, focuscolor='', padding=(8, 0))
+    b.configure_style(
+        f"{ttk_style}.Tab",
+        font="label",
+        foreground=tab_accent_foreground,
+        focuscolor='',
+        padding=b.scale((8, 0)))
 
     b.map_style(
         f"{ttk_style}.Tab",
@@ -93,7 +102,7 @@ def build_tabs_notebook(b: BootstyleBuilderTTk, ttk_style: str, color: str = Non
     )
 
     # general notebook style
-    b.configure_style(ttk_style, padding=0, tabmargins=(2, 6, 0, -2))
+    b.configure_style(ttk_style, padding=0, tabmargins=b.scale((2, 6, 0, -3)))
 
 
 @BootstyleBuilderTTk.register_builder('pill', 'TNotebook')
@@ -108,7 +117,7 @@ def build_pill_notebook(b: BootstyleBuilderTTk, ttk_style: str, color: str = Non
     pill_normal_color = surface
     pill_normal_foreground = b.on_color(pill_normal_color)
     pill_disabled_foreground = b.disabled('text', surface)
-    pill_normal_hover = b.hover(surface)
+    pill_normal_hover = b.subtle(color or 'primary', surface)
 
     # notebook border assets & style
     notebook_border = b.border(surface)
@@ -120,12 +129,14 @@ def build_pill_notebook(b: BootstyleBuilderTTk, ttk_style: str, color: str = Non
         notebook_border_img = recolor_image('border', surface, surface, surface, surface)
 
     b.create_style_element_image(
-        ElementImage(f'{ttk_style}.border', notebook_border_img, border=2, padding=2, sticky="nsew")
+        ElementImage(
+            f'{ttk_style}.border', notebook_border_img,
+            border=b.scale(4), padding=b.scale(4), sticky="nsew")
     )
 
     b.create_style_layout(
         ttk_style,
-        Element(f'{ttk_style}.border', sticky="nsew", border=8).children(
+        Element(f'{ttk_style}.border', sticky="nsew", border=b.scale(12)).children(
             [
                 Element('Notebook.client', sticky='nsew')
             ])
@@ -139,7 +150,9 @@ def build_pill_notebook(b: BootstyleBuilderTTk, ttk_style: str, color: str = Non
         'notebook-pill-inactive', pill_normal_hover, pill_normal_hover, surface, surface)
 
     b.create_style_element_image(
-        ElementImage(f'{ttk_style}.tab', pill_normal_img, sticky='nsew', padding=8, border=8, height=28).state_specs(
+        ElementImage(
+            f'{ttk_style}.tab', pill_normal_img,
+            sticky='nsew', padding=b.scale(12), border=b.scale(12), height=b.scale(28)).state_specs(
             [
                 ('selected', pill_active_img),
                 ('active !selected', pill_normal_hover_img),
@@ -161,9 +174,14 @@ def build_pill_notebook(b: BootstyleBuilderTTk, ttk_style: str, color: str = Non
             ])
     )
 
-    b.configure_style(ttk_style, padding=0, tabmargins=(6, 6, 4, 0))
+    b.configure_style(ttk_style, padding=0, tabmargins=b.scale((6, 6, 4, 0)))
 
-    b.configure_style(f"{ttk_style}.Tab", foreground=pill_normal_foreground, focuscolor='', padding=(8, 0))
+    b.configure_style(
+        f"{ttk_style}.Tab",
+        foreground=pill_normal_foreground,
+        font="label",
+        focuscolor='',
+        padding=b.scale((8, 0)))
 
     b.map_style(
         f"{ttk_style}.Tab",
@@ -187,7 +205,7 @@ def build_underline_notebook(b: BootstyleBuilderTTk, ttk_style: str, color: str 
     accent_color = b.color(color or 'primary')
     foreground = b.on_color(surface)
     disabled = b.disabled('text', surface)
-    hover = b.hover(surface)
+    hover = b.subtle(color or 'primary', surface)
 
     # notebook border assets, style and layout
     if show_border:
@@ -197,12 +215,12 @@ def build_underline_notebook(b: BootstyleBuilderTTk, ttk_style: str, color: str 
         notebook_border = recolor_image('border', surface, surface, surface, surface)
 
     b.create_style_element_image(
-        ElementImage(f'{ttk_style}.border', notebook_border, border=2, padding=2, sticky="nsew")
+        ElementImage(f'{ttk_style}.border', notebook_border, border=b.scale(4), padding=b.scale(4), sticky="nsew")
     )
 
     b.create_style_layout(
         ttk_style,
-        Element(f'{ttk_style}.border', sticky="nsew", border=8).children(
+        Element(f'{ttk_style}.border', sticky="nsew", border=b.scale(12)).children(
             [
                 Element('Notebook.client', sticky='nsew')
             ])
@@ -215,7 +233,9 @@ def build_underline_notebook(b: BootstyleBuilderTTk, ttk_style: str, color: str 
     hover_img = recolor_image('notebook-underline', hover, border_color, hover, surface)
 
     b.create_style_element_image(
-        ElementImage(f'{ttk_style}.tab', normal_img, sticky='nsew', padding=8, border=8, height=28).state_specs(
+        ElementImage(
+            f'{ttk_style}.tab', normal_img, sticky='nsew',
+            padding=b.scale(12), border=b.scale(12), height=b.scale(28)).state_specs(
             [
                 ('selected !disabled', active_img),
                 ('active selected !disabled', active_hover_img),
@@ -238,7 +258,12 @@ def build_underline_notebook(b: BootstyleBuilderTTk, ttk_style: str, color: str 
             ])
     )
 
-    b.configure_style(f"{ttk_style}.Tab", foreground=foreground, focuscolor='', padding=(8, 0))
+    b.configure_style(
+        f"{ttk_style}.Tab",
+        foreground=foreground,
+        font="label",
+        focuscolor='',
+        padding=b.scale((8, 0)))
 
     b.map_style(
         f"{ttk_style}.Tab",
@@ -249,4 +274,4 @@ def build_underline_notebook(b: BootstyleBuilderTTk, ttk_style: str, color: str 
     )
 
     # general notebook style
-    b.configure_style(ttk_style, padding=0, tabmargins=(2, 6, 0, -2))
+    b.configure_style(ttk_style, padding=0, tabmargins=b.scale((2, 6, 0, -2)))

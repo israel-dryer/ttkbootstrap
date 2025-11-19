@@ -1,33 +1,26 @@
-import tkinter as tk
 import ttkbootstrap as ttk
-from random import choice
-from ttkbootstrap import utility
-utility.enable_high_dpi_awareness()
-
-DARK = 'superhero'
-LIGHT = 'flatly'
+from ttkbootstrap.constants import *
 
 
-def create_labelframe_style(bootstyle, style):
+def create_labelframe_style():
     frame = ttk.Frame(root, padding=5)
 
     # title
-    title = ttk.Label(frame, text='Labelframe', anchor=tk.CENTER)
-    title.pack(padx=5, pady=2, fill=tk.BOTH)
-    ttk.Separator(frame).pack(padx=5, pady=5, fill=tk.X)
+    title = ttk.Label(frame, text='Labelframe', anchor=CENTER)
+    title.pack(padx=5, pady=2, fill=BOTH)
+    ttk.Separator(frame).pack(padx=5, pady=5, fill=X)
 
     # default
     lbl = ttk.Labelframe(
         master=frame,
         text='default',
-        bootstyle=bootstyle,
         width=150,
         height=75
     )
-    lbl.pack(padx=5, pady=5, fill=tk.BOTH)
+    lbl.pack(padx=5, pady=5, fill=BOTH)
 
     # colored
-    for color in style.colors:
+    for color in ['primary', 'secondary', 'success', 'info', 'warning', 'danger']:
         lbl = ttk.Labelframe(
             master=frame,
             text=color,
@@ -35,23 +28,25 @@ def create_labelframe_style(bootstyle, style):
             width=150,
             height=75
         )
-        lbl.pack(padx=5, pady=5, fill=tk.BOTH)
+        lbl.pack(padx=5, pady=5, fill=BOTH)
 
     return frame
 
 
 def change_style():
-    theme = choice(style.theme_names())
-    style.theme_use(theme)    
+    if style.theme_use() == 'dark':
+        style.theme_use('light')
+    else:
+        style.theme_use('dark')
 
 
 if __name__ == '__main__':
     # create visual widget style tests
-    root = tk.Tk()
+    root = ttk.Window()
     style = ttk.Style()
 
     ttk.Button(text="Change Theme", command=change_style).pack(padx=10, pady=10)
 
-    create_labelframe_style('', style).pack(side=tk.LEFT)
+    create_labelframe_style().pack(side=LEFT)
 
     root.mainloop()
