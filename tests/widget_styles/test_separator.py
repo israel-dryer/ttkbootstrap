@@ -1,62 +1,61 @@
-import tkinter as tk
 import ttkbootstrap as ttk
-from random import choice
-from ttkbootstrap import utility
-utility.enable_high_dpi_awareness()
+from ttkbootstrap.constants import *
 
-DARK = 'superhero'
-LIGHT = 'flatly'
 
-def create_separator_frame(widget_style, style, orient):
+def create_separator_frame(orient):
     frame = ttk.Frame(root, padding=5)
-    
+
     # title
     title = ttk.Label(
-        master=frame, 
-        text=orient.title() + ' Separator', 
-        anchor=tk.CENTER
+        master=frame,
+        text=orient.title() + ' Separator',
+        anchor=CENTER
     )
-    title.pack(padx=5, pady=2, fill=tk.BOTH)
-    ttk.Separator(frame).pack(padx=5, pady=5, fill=tk.X)
+    title.pack(padx=5, pady=2, fill=BOTH)
+    ttk.Separator(frame).pack(padx=5, pady=5, fill=X)
 
     # default
     sep = ttk.Separator(frame, orient=orient)
-    if orient == tk.HORIZONTAL:
-        sep.pack(padx=5, pady=5, fill=tk.BOTH)
+    if orient == HORIZONTAL:
+        sep.pack(padx=5, pady=5, fill=BOTH)
     else:
-        sep.pack(padx=5, pady=5, fill=tk.BOTH, side=tk.LEFT)
+        sep.pack(padx=5, pady=5, fill=BOTH, side=LEFT)
 
     # colored
-    for i, color in enumerate(style.colors):
-        ttk.Label(frame, text=color).pack(fill=tk.X)
+    for i, color in enumerate(['primary', 'secondary', 'success', 'info', 'warning', 'danger']):
+        ttk.Label(frame, text=color).pack(fill=X)
         sep = ttk.Separator(
-            master=frame, 
-            bootstyle=color, 
+            master=frame,
+            bootstyle=color,
             orient=orient
         )
-        if orient == tk.HORIZONTAL:
-            sep.pack(padx=5, pady=5, fill=tk.BOTH)
+        if orient == HORIZONTAL:
+            sep.pack(padx=5, pady=5, fill=BOTH)
         else:
-            sep.pack(padx=5, pady=5, fill=tk.BOTH, side=tk.LEFT)
-
+            sep.pack(padx=5, pady=5, fill=BOTH, side=LEFT)
 
     return frame
 
+
 def change_style():
-    theme = choice(style.theme_names())
-    style.theme_use(theme)    
+    if style.theme_use() == 'light':
+        style.theme_use('dark')
+    else:
+        style.theme_use('light')
 
 
 if __name__ == '__main__':
     # create visual widget style tests
-    root = tk.Tk()
+    root = ttk.Window()
     style = ttk.Style()
 
     ttk.Button(text="Change Theme", command=change_style).pack(padx=10, pady=10)
 
-    test1 = create_separator_frame('', style, tk.HORIZONTAL)
-    test1.pack(side=tk.LEFT, anchor=tk.N)
-    test2 = create_separator_frame('', style, tk.VERTICAL)
-    test2.pack(side=tk.LEFT, anchor=tk.N)
+    test1 = create_separator_frame(HORIZONTAL)
+    test1.pack(side=LEFT, anchor=N)
+
+    test1 = create_separator_frame(VERTICAL)
+    test1.pack(side=LEFT, anchor=N)
+
 
     root.mainloop()
