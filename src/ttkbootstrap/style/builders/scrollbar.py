@@ -182,6 +182,7 @@ def build_vertical_scrollbar(b: BootstyleBuilderTTk, ttk_style: str, color: str 
     )
 
 
+@BootstyleBuilderTTk.register_builder('round', 'TScrollbar')
 @BootstyleBuilderTTk.register_builder('rounded', 'TScrollbar')
 def build_rounded_scrollbar_style(b: BootstyleBuilderTTk, ttk_style: str, color: str = None, **options):
     """
