@@ -40,8 +40,8 @@ def build_solid_menubutton_style(b: BootstyleBuilderTTk, ttk_style: str, color: 
 
     # chevron images
     icon = use_icon_provider()
-    normal_chevron_img = icon('caret-down-fill', size=14, color=foreground).image
-    disabled_chevron_img = icon('caret-down-fill', size=14, color=disabled).image
+    normal_chevron_img = icon('caret-down-fill', size=b.scale(14), color=foreground).image
+    disabled_chevron_img = icon('caret-down-fill', size=b.scale(14), color=disabled).image
     b.create_style_element_image(
         ElementImage(f'{ttk_style}.chevron', normal_chevron_img).state_specs(
             [
@@ -78,7 +78,8 @@ def build_solid_menubutton_style(b: BootstyleBuilderTTk, ttk_style: str, color: 
         foreground=foreground,
         stipple="gray12",
         relief='flat',
-        padding=(8, 0, 4, 0),
+        font="body",
+        padding=b.scale((8, 0, 4, 0)),
     )
 
     state_spec = dict(
@@ -122,14 +123,14 @@ def build_outline_menubutton_style(b: BootstyleBuilderTTk, ttk_style: str, color
     focused_pressed_img = recolor_image('button', pressed, focused_border, focused_ring)
     disabled_img = recolor_image('button', surface, disabled, surface, surface)
 
-    spacer_img = create_transparent_image(8, 1)
+    spacer_img = create_transparent_image(b.scale(8), b.scale(1))
     b.create_style_element_image(ElementImage(f'{ttk_style}.spacer', spacer_img, sticky="ew"))
 
     # chevron images
     icon = use_icon_provider()
-    normal_chevron_img = icon('caret-down-fill', size=14, color=foreground_normal).image
-    pressed_chevron_img = icon('caret-down-fill', size=14, color=foreground_active).image
-    disabled_chevron_img = icon('caret-down-fill', size=14, color=disabled).image
+    normal_chevron_img = icon('caret-down-fill', size=b.scale(14), color=foreground_normal).image
+    pressed_chevron_img = icon('caret-down-fill', size=b.scale(14), color=foreground_active).image
+    disabled_chevron_img = icon('caret-down-fill', size=b.scale(14), color=disabled).image
     b.create_style_element_image(
         ElementImage(f'{ttk_style}.chevron', normal_chevron_img).state_specs(
             [
@@ -181,7 +182,8 @@ def build_outline_menubutton_style(b: BootstyleBuilderTTk, ttk_style: str, color
         foreground=foreground_normal,
         relief='flat',
         stipple="gray12",
-        padding=(8, 0, 4, 0)
+        font="body",
+        padding=b.scale((8, 0, 4, 0))
     )
 
     state_spec = dict(
@@ -220,13 +222,13 @@ def build_text_menubutton_style(b: BootstyleBuilderTTk, ttk_style: str, color: s
     focused_img = recolor_image('button', surface, surface, focused_ring)
     disabled_img = recolor_image('button', surface, disabled, surface, surface)
 
-    spacer_img = create_transparent_image(8, 1)
+    spacer_img = create_transparent_image(b.scale(8), b.scale(1))
     b.create_style_element_image(ElementImage(f'{ttk_style}.spacer', spacer_img, sticky="ew"))
 
     # chevron images
     icon = use_icon_provider()
-    normal_chevron_img = icon('caret-down-fill', size=14, color=foreground_normal).image
-    disabled_chevron_img = icon('caret-down-fill', size=14, color=disabled).image
+    normal_chevron_img = icon('caret-down-fill', size=b.scale(14), color=foreground_normal).image
+    disabled_chevron_img = icon('caret-down-fill', size=b.scale(14), color=disabled).image
     b.create_style_element_image(
         ElementImage(f'{ttk_style}.chevron', normal_chevron_img).state_specs(
             [
@@ -260,7 +262,8 @@ def build_text_menubutton_style(b: BootstyleBuilderTTk, ttk_style: str, color: s
         foreground=foreground_normal,
         relief='flat',
         stipple="gray12",
-        padding=(8, 0, 4, 0)
+        font="body",
+        padding=b.scale((8, 0, 4, 0))
     )
 
     state_spec = dict(
@@ -303,13 +306,13 @@ def build_ghost_button_style(b: BootstyleBuilderTTk, ttk_style: str, color: str 
     focused_pressed_img = recolor_image('button', pressed, focused, focused_ring, surface)
     disabled_img = recolor_image('button', surface, surface, surface, surface)
 
-    spacer_img = create_transparent_image(8, 1)
+    spacer_img = create_transparent_image(b.scale(8), b.scale(1))
     b.create_style_element_image(ElementImage(f'{ttk_style}.spacer', spacer_img, sticky="ew"))
 
     # chevron images
     icon = use_icon_provider()
-    normal_chevron_img = icon('caret-down-fill', size=14, color=foreground_normal).image
-    disabled_chevron_img = icon('caret-down-fill', size=14, color=foreground_disabled).image
+    normal_chevron_img = icon('caret-down-fill', size=b.scale(14), color=foreground_normal).image
+    disabled_chevron_img = icon('caret-down-fill', size=b.scale(14), color=foreground_disabled).image
     b.create_style_element_image(
         ElementImage(f'{ttk_style}.chevron', normal_chevron_img).state_specs(
             [
@@ -347,7 +350,8 @@ def build_ghost_button_style(b: BootstyleBuilderTTk, ttk_style: str, color: str 
         foreground=foreground_normal,
         relief='flat',
         stipple="gray12",
-        padding=(8, 0, 4, 0)
+        font="body",
+        padding=b.scale((8, 0, 4, 0))
     )
 
     state_spec = dict(
