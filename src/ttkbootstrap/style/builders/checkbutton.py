@@ -29,21 +29,21 @@ def build_checkbutton_style(b: BootstyleBuilderTTk, ttk_style: str, color: str =
     focus_ring = b.focus_ring(normal, background)
     disabled = b.disabled()
 
-    normal_checked_img = recolor_image('checkbox-checked', foreground_active, normal, background)
+    normal_checked_img = recolor_image('checkbox-checked', background, normal, background)
     normal_unchecked_img = recolor_image('checkbox-unchecked', background, border, background)
-    normal_indeterminate_img = recolor_image('checkbox-indeterminate', foreground_active, normal, background)
+    normal_indeterminate_img = recolor_image('checkbox-indeterminate', background, normal, background)
 
-    hovered_checked_img = recolor_image('checkbox-checked', foreground_active, hovered, background)
+    hovered_checked_img = recolor_image('checkbox-checked', background, hovered, background)
     hovered_unchecked_img = recolor_image('checkbox-unchecked', background_hover, border, background)
-    hovered_indeterminate_img = recolor_image('checkbox-indeterminate', foreground_active, hovered, background)
+    hovered_indeterminate_img = recolor_image('checkbox-indeterminate', background, hovered, background)
 
-    pressed_checked_img = recolor_image('checkbox-checked', foreground_active, pressed, background)
+    pressed_checked_img = recolor_image('checkbox-checked', background, pressed, background)
     pressed_unchecked_img = recolor_image('checkbox-unchecked', background_hover, pressed, background)
-    pressed_indeterminate_img = recolor_image('checkbox-indeterminate', foreground_active, pressed, background)
+    pressed_indeterminate_img = recolor_image('checkbox-indeterminate', background, pressed, background)
 
-    focus_checked_img = recolor_image('checkbox-checked', foreground_active, focus, focus_ring)
+    focus_checked_img = recolor_image('checkbox-checked', background, focus, focus_ring)
     focus_unchecked_img = recolor_image('checkbox-unchecked', background_hover, focus, focus_ring)
-    focus_indeterminate_img = recolor_image('checkbox-indeterminate', foreground_active, focus, focus_ring)
+    focus_indeterminate_img = recolor_image('checkbox-indeterminate', background, focus, focus_ring)
 
     disabled_checked_img = recolor_image('checkbox-checked', disabled, foreground_disabled, background)
     disabled_unchecked_img = recolor_image(

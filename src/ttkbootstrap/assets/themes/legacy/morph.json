@@ -1,0 +1,32 @@
+{
+  "name": "morph",
+  "display_name": "Morph",
+  "mode": "light",
+  "foreground": "#212529",
+  "background": "#DAE3F0",
+  "white": "#ffffff",
+  "black": "#000000",
+  "shades": {
+    "blue": "#3E93F5",
+    "indigo": "#586FEC",
+    "purple": "#6f42c1",
+    "red": "#DA3031",
+    "orange": "#FBBF40",
+    "yellow": "#ffc107",
+    "green": "#63C746",
+    "teal": "#20c997",
+    "cyan": "#0dcaf0",
+    "gray": "#adb5bd",
+    "pink": "#d63384"
+  },
+  "semantic": {
+    "primary": "blue[500]",
+    "secondary": "gray[300]",
+    "success": "green[500]",
+    "info": "indigo[500]",
+    "warning": "yellow[500]",
+    "danger": "red[500]",
+    "light": "gray[100]",
+    "dark": "gray[900]"
+  }
+}

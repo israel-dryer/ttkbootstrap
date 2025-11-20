@@ -1,0 +1,32 @@
+{
+  "name": "simplex",
+  "display_name": "Simplex",
+  "mode": "light",
+  "foreground": "#212529",
+  "background": "#FCFCFC",
+  "white": "#ffffff",
+  "black": "#000000",
+  "shades": {
+    "blue": "#0d6efd",
+    "indigo": "#6610f2",
+    "purple": "#924E99",
+    "red": "#CB2C20",
+    "orange": "#CF8036",
+    "yellow": "#ffc107",
+    "green": "#558F29",
+    "teal": "#2E9ACA",
+    "cyan": "#0dcaf0",
+    "gray": "#adb5bd",
+    "pink": "#d63384"
+  },
+  "semantic": {
+    "primary": "red[500]",
+    "secondary": "gray[200]",
+    "success": "green[500]",
+    "info": "teal[500]",
+    "warning": "orange[500]",
+    "danger": "purple[500]",
+    "light": "gray[100]",
+    "dark": "gray[900]"
+  }
+}

@@ -20,65 +20,96 @@ def register_user_theme(name, path):
 
 
 def get_theme(name):
+    """Return a registered theme by name.
+
+    If the theme is not currently registered this will re-run
+    ``load_system_themes`` once to pick up any newly added themes before
+    failing.
+    """
     if name in _registered_themes:
         return _registered_themes[name]
-    else:
-        raise ThemeError(f"Theme '{name}' is not registered")
+
+    # Lazy fallback: configuration (e.g., load_all_themes/include_legacy_themes)
+    # may have changed after the provider singleton was first initialized.
+    # Re-run the loader once to pick up any additional themes.
+    try:
+        load_system_themes()
+        if name in _registered_themes:
+            return _registered_themes[name]
+    except Exception:
+        # If anything goes wrong here, fall through to the ThemeError.
+        pass
+
+    # Build a helpful error message listing available themes
+    available = sorted(
+        {
+            data.get("name")
+            for data in _registered_themes.values()
+            if isinstance(data, dict) and data.get("name")
+        }
+    )
+    available_str = ", ".join(available) if available else "<none>"
+    raise ThemeError(
+        f"Theme '{name}' is not registered. "
+        f"Registered themes: {available_str}"
+    )
 
 
 def load_system_themes():
     """Load system themes from the package.
 
-    Loads either all themes or just dark/light based on AppConfig setting.
-    By default, only loads dark.json and light.json unless AppConfig.load_all_themes is True.
-
-    Themes matching AppConfig.dark_theme or AppConfig.light_theme are also registered
-    with 'dark' and 'light' aliases for convenience.
+    Loads all v2 themes from ``ttkbootstrap.assets.themes`` and all legacy
+    themes from ``ttkbootstrap.assets.themes.legacy``. Themes matching
+    AppConfig.dark_theme or AppConfig.light_theme are also registered with
+    'dark' and 'light' aliases for convenience.
     """
     from ttkbootstrap.appconfig import AppConfig
     from importlib import resources
 
     global _registered_themes
 
-    load_all = AppConfig.get('load_all_themes', False)
-    package = 'ttkbootstrap.assets.themes'
+    base_package = 'ttkbootstrap.assets.themes'
+    legacy_package = 'ttkbootstrap.assets.themes.legacy'
 
     # Get configured theme names for dark/light aliases
     dark_theme_name = AppConfig.get('dark_theme', 'bootstrap-dark')
     light_theme_name = AppConfig.get('light_theme', 'bootstrap-light')
 
-    if load_all:
-        # Discover and load all .json theme files in the package
-        theme_files = resources.files(package)
-        for theme_file in theme_files.iterdir():
-            if theme_file.name.endswith('.json'):
-                data = load_package_theme(theme_file.name, package)
-                name = data["name"]
-                _registered_themes[name] = data
-
-                # Register aliases for dark/light themes
-                if name == dark_theme_name:
-                    _registered_themes['dark'] = data
-                elif name == light_theme_name:
-                    _registered_themes['light'] = data
-    else:
-        # Only load the themes designated as dark and light in AppConfig
-        # Map filenames to the theme names they should match
-        theme_files = {
-            'dark.json': ('dark', dark_theme_name),
-            'light.json': ('light', light_theme_name)
-        }
-
-        for filename, (alias, expected_name) in theme_files.items():
-            data = load_package_theme(filename, package)
-            name = data["name"]
-
-            # Register under the actual theme name
+    # Always load all v2 JSON themes from the primary themes package.
+    try:
+        base_dir = resources.files(base_package)
+    except ModuleNotFoundError:
+        base_dir = None
+    if base_dir is not None:
+        for theme_file in base_dir.iterdir():
+            if not theme_file.name.endswith(".json"):
+                continue
+            data = load_package_theme(theme_file.name, base_package)
+            name = data.get("name")
+            if not name:
+                continue
             _registered_themes[name] = data
 
-            # Register alias only if theme name matches AppConfig
-            if name == expected_name:
-                _registered_themes[alias] = data
+            # Register aliases for dark/light themes
+            if name == dark_theme_name:
+                _registered_themes['dark'] = data
+            elif name == light_theme_name:
+                _registered_themes['light'] = data
+
+    # Always supplement with legacy themes (if present)
+    try:
+        legacy_dir = resources.files(legacy_package)
+    except ModuleNotFoundError:
+        legacy_dir = None
+    if legacy_dir is not None:
+        for theme_file in legacy_dir.iterdir():
+            if not theme_file.name.endswith(".json"):
+                continue
+            data = load_package_theme(theme_file.name, legacy_package)
+            name = data.get("name")
+            if not name:
+                continue
+            _registered_themes[name] = data
 
 
 def load_user_defined_theme(path):
@@ -136,6 +167,57 @@ class ThemeProvider:
         self.use(name)
         self._initialized = True
 
+    # ----- Theme metadata helpers -------------------------------------------------
+
+    def list_themes(self) -> list[dict[str, str]]:
+        """Return a list of available themes with names and display names.
+
+        The result is a list of dictionaries in the form::
+
+            {"name": "cosmo", "display_name": "Cosmo"}
+
+        Aliases such as ``\"light\"`` and ``\"dark\"`` are not included; only the
+        canonical theme entries loaded into the provider are returned.
+        """
+        from ttkbootstrap.appconfig import AppConfig
+
+        themes: list[dict[str, str]] = []
+        seen: set[str] = set()
+
+        for key, data in _registered_themes.items():
+            # Skip alias keys that point at an existing theme object
+            name = data.get("name")
+            if not name:
+                continue
+            if key != name and name in _registered_themes:
+                # This is an alias like 'light' or 'dark'
+                continue
+            if name in seen:
+                continue
+            seen.add(name)
+            themes.append(
+                {
+                    "name": name,
+                    "display_name": data.get("display_name", name),
+                }
+            )
+
+        # If the application has declared a specific set/order of themes
+        # to expose, filter and order by that list.
+        select_themes = AppConfig.get("load_select_themes", None)
+        if select_themes:
+            by_name = {t["name"]: t for t in themes}
+            ordered: list[dict[str, str]] = []
+            for name in select_themes:
+                t = by_name.get(name)
+                if t is not None:
+                    ordered.append(t)
+            return ordered
+
+        # Otherwise, sort for stable UI ordering (by display name, then name)
+        themes.sort(key=lambda t: (t["display_name"].lower(), t["name"].lower()))
+        return themes
+
     def use(self, name):
         self._theme = get_theme(name)
         self.build_theme_colors()
@@ -158,8 +240,20 @@ class ThemeProvider:
         for color, value in self._shades.items():
             colors.update(**color_spectrum(color, value))
 
-        # sematic tokens
+        # semantic tokens
+        neutral_tokens = {
+            "foreground",
+            "muted",
+            "muted_alt",
+            "subtle",
+            "border",
+            "border_subtle",
+        }
         for token, value in self._semantic.items():
+            # Neutral roles are derived elsewhere from the top-level
+            # foreground/background and should not be overridden here.
+            if token in neutral_tokens:
+                continue
             colors[token] = colors[value]
 
         self._colors.clear()

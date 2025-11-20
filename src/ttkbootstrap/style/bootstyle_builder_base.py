@@ -13,6 +13,7 @@ from ttkbootstrap.style.utility import (
     lighten_color,
     mix_colors,
     relative_luminance,
+    color_to_hsl,
 )
 from ttkbootstrap.utility import scale_size
 
@@ -181,9 +182,79 @@ class BootstyleBuilderBase:
             return darken_color(color, 0.20)
 
     def on_color(self, color: str) -> str:
-        background = self.color('background')
-        foreground = self.color('foreground')
-        return best_foreground(color, [color, background, foreground])
+        """Return a readable foreground color for the given background.
+
+        This is intentionally biased so that *dark-ish* accents get light
+        text rather than the mathematically highest-contrast dark text,
+        which tends to look wrong on buttons and pills.
+        """
+        background = self.color("background")
+        foreground = self.color("foreground")
+
+        try:
+            lum = relative_luminance(color)
+        except Exception:
+            candidates = [foreground, background, "#000000", "#ffffff"]
+            return best_foreground(color, candidates)
+
+        # Optional HSL-based accent detection to handle saturated mid-tone
+        # colors (like teal) that visually need light text even when their
+        # raw luminance is not very low.
+        hue = sat = hsl_lum = None
+        try:
+            hue, sat, hsl_lum = color_to_hsl(color, model="hex")
+        except Exception:
+            pass
+
+        if self.provider.mode == "light":
+            accent_force_light = False
+            if hue is not None and sat is not None and hsl_lum is not None:
+                # Treat saturated accents as needing light text when they are
+                # not extremely light overall. This catches teal/cyan/etc. but
+                # avoids triggering on near-white tinted backgrounds.
+                if sat >= 40 and hsl_lum <= 80:
+                    # Strong teal/cyan/blue band (e.g., teal[600], cyan[600])
+                    if 140 <= hue <= 220:
+                        accent_force_light = True
+                    # Other saturated accents, excluding the yellow/orange band,
+                    # when not extremely light.
+                    elif hsl_lum <= 70 and not (35 <= hue <= 70):
+                        accent_force_light = True
+
+            # Saturated accents: force pure white text so contrast decisions
+            # don't accidentally favor dark foreground on mid-tone accents.
+            if accent_force_light:
+                candidates = ["#ffffff"]
+            # Anything darker than ~55% luminance is treated as a dark surface:
+            # always use light text, even if contrast math slightly prefers dark.
+            elif lum <= 0.55:
+                candidates = ["#ffffff"]
+            # Mid-light colors (e.g., warning/info) can work with either;
+            # allow contrast to choose, but still bias toward theme foreground.
+            elif lum <= 0.80:
+                candidates = [foreground, "#ffffff", "#000000"]
+            # Very light backgrounds -> dark text
+            else:
+                candidates = [foreground, "#000000"]
+        else:
+            # Dark mode: inverse bias.
+            if lum >= 0.75:
+                # Very light chips / badges -> dark text
+                candidates = ["#000000", foreground]
+            elif lum >= 0.45:
+                # Mid tones -> let contrast pick, but include light text
+                candidates = ["#ffffff", foreground, "#000000"]
+            else:
+                # Very dark surfaces -> light text
+                candidates = ["#ffffff", foreground]
+
+        # Deduplicate and remove empty candidates
+        unique: list[str] = []
+        for c in candidates:
+            if c and c not in unique:
+                unique.append(c)
+
+        return best_foreground(color, unique)
 
     def disabled(self, role: str = "background", surface: str | None = None) -> str:
         """Return a disabled color mixed with the surface.
