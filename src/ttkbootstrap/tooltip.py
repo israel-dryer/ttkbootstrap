@@ -10,5 +10,3 @@ warnings.warn(
     stacklevel=2,
 )
 
-from .widgets.tooltip import *  # re-export
-
