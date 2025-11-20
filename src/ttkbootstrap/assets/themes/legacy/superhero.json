@@ -16,17 +16,17 @@
     "green": "#198754",
     "teal": "#20c997",
     "cyan": "#0dcaf0",
-    "gray": "#adb5bd",
+    "gray": "#5B80A0",
     "pink": "#d63384"
   },
   "semantic": {
     "primary": "orange[500]",
-    "secondary": "gray[600]",
+    "secondary": "gray[500]",
     "success": "green[400]",
     "info": "cyan[400]",
     "warning": "yellow[400]",
     "danger": "red[500]",
     "light": "gray[200]",
-    "dark": "cyan[800]"
+    "dark": "gray[800]"
   }
 }
