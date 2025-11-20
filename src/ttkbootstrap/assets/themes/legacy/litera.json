@@ -1,0 +1,32 @@
+{
+  "name": "litera",
+  "display_name": "Litera",
+  "mode": "light",
+  "foreground": "#212529",
+  "background": "#FFFFFF",
+  "white": "#ffffff",
+  "black": "#000000",
+  "shades": {
+    "blue": "#4888E5",
+    "indigo": "#6610f2",
+    "purple": "#6f42c1",
+    "red": "#D05754",
+    "orange": "#EBAC5D",
+    "yellow": "#ffc107",
+    "green": "#43B57A",
+    "teal": "#20c997",
+    "cyan": "#3AA2B5",
+    "gray": "#adb5bd",
+    "pink": "#d63384"
+  },
+  "semantic": {
+    "primary": "blue[500]",
+    "secondary": "gray[500]",
+    "success": "green[500]",
+    "info": "cyan[500]",
+    "warning": "yellow[500]",
+    "danger": "red[500]",
+    "light": "gray[100]",
+    "dark": "gray[900]"
+  }
+}

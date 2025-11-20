@@ -1,0 +1,32 @@
+{
+  "name": "yeti",
+  "display_name": "Yeti",
+  "mode": "light",
+  "foreground": "#212529",
+  "background": "#FFFFFF",
+  "white": "#ffffff",
+  "black": "#000000",
+  "shades": {
+    "blue": "#6AC0DB",
+    "indigo": "#6610f2",
+    "purple": "#6f42c1",
+    "red": "#E54732",
+    "orange": "#E38F31",
+    "yellow": "#ffc107",
+    "green": "#58A96F",
+    "teal": "#20c997",
+    "cyan": "#298DB6",
+    "gray": "#adb5bd",
+    "pink": "#d63384"
+  },
+  "semantic": {
+    "primary": "cyan[500]",
+    "secondary": "gray[200]",
+    "success": "green[500]",
+    "info": "blue[500]",
+    "warning": "orange[500]",
+    "danger": "red[500]",
+    "light": "gray[100]",
+    "dark": "gray[800]"
+  }
+}

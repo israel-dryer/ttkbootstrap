@@ -8,7 +8,7 @@ Examples:
     >>> from ttkbootstrap import AppConfig
     >>>
     >>> AppConfig.set(
-    ...     theme="darkly",
+    ...     theme="dark",
     ...     font=("Segoe UI", 10),
     ...     window_size=(800, 600),
     ...     window_scaling=1.5
@@ -24,7 +24,37 @@ Examples:
     >>> AppConfig.reset()
 """
 
-from typing import Any, Dict, Optional, Tuple, Type
+from typing import Any, Dict, Optional, Tuple, Type, List
+from typing_extensions import TypedDict, Unpack
+
+
+class AppConfigOptions(TypedDict, total=False):
+    app_name: str
+    app_author: str
+    theme: str
+    dark_theme: str
+    light_theme: str
+    load_select_themes: List[str]
+    font: Tuple[str, int]
+    legacy_bootstyle: bool
+    inherit_surface_color: bool
+    window_size: Tuple[int, int]
+    window_position: Tuple[int, int]
+    window_minsize: Tuple[int, int]
+    window_maxsize: Tuple[int, int]
+    window_resizable: Tuple[bool, bool]
+    window_scaling: float
+    window_hdpi: bool
+    window_alpha: float
+    icon_provider: Type[Any]
+    language: str
+    date_format: str
+    time_format: str
+    number_decimal: str
+    number_thousands: str
+
+    # Undocumented, used internally by reset()
+    colors: Dict[str, Any]
 
 
 class AppConfig:
@@ -48,7 +78,11 @@ class AppConfig:
             light_theme (str): The default light theme; bound to "light" theme name.
             dark_theme (str): The default dark theme; bound to "dark" theme name.
             theme (str): Default theme name (e.g., "darkly", "cosmo", "flatly").
-            load_all_themes (bool): Whether to load all themes or just dark and light.
+            load_select_themes (List[str]): Optional list of theme names that
+                should be exposed in application UI helpers (e.g., theme pickers).
+                When set, helpers like ``Style.list_themes()`` will filter and
+                order themes using this list. All themes remain registered and
+                can still be used programmatically.
             font (Tuple[str, int]): Default application font as (family, size).
             legacy_bootstyle (bool): Use legacy bootstyle parsing behavior.
                 When True, uses relaxed parsing for backward compatibility.
@@ -82,8 +116,8 @@ class AppConfig:
     # Theme & Styling defaults
     _light_theme: Optional[str] = "bootstrap-light"
     _dark_theme: Optional[str] = "bootstrap-dark"
-    _load_all_themes: Optional[bool] = False
     _theme: Optional[str] = None
+    _load_select_themes: Optional[List[str]] = None
     _font: Optional[Tuple[str, int]] = None
     _legacy_bootstyle: Optional[bool] = None
     _inherit_surface_color: Optional[bool] = True
@@ -109,7 +143,7 @@ class AppConfig:
     _number_thousands: Optional[str] = None
 
     @classmethod
-    def set(cls, **kwargs) -> None:
+    def set(cls, **kwargs: Unpack[AppConfigOptions]) -> None:
         """Set one or more configuration values.
 
         Configuration changes only affect widgets and windows created after
@@ -122,7 +156,11 @@ class AppConfig:
                 theme (str): Default theme name
                 dark_theme (str): Default dark theme. Bound to "dark" theme name.
                 light_theme (str): Default light theme. Bound to "light" theme name.
-                load_all_themes (bool): Whether to load all themes, or just `dark` and `light`
+                load_select_themes (List[str]): Optional ordered list of theme
+                    names to expose in application UI (e.g., theme pickers).
+                    When set, helpers like Style.list_themes() will filter and
+                    order themes using this list. Themes not in this list are
+                    still registered and may be used programmatically.
                 font (Tuple[str, int]): Default font as (family, size)
                 legacy_bootstyle (bool): Use legacy bootstyle parsing
                 inherit_surface_color (bool): Use the parent widget's background color to simulate transparency.
@@ -143,9 +181,9 @@ class AppConfig:
 
         Examples:
             >>> AppConfig.set(
-            ...     dark_theme="darkly",
-            ...     light_theme="flatly",
-            ...     theme="darkly",
+            ...     dark_theme="dark",
+            ...     light_theme="light",
+            ...     theme="dark",
             ...     font=("Arial", 11),
             ...     window_size=(1024, 768),
             ...     window_hdpi=True
@@ -156,7 +194,9 @@ class AppConfig:
         """
         valid_keys = {
             'app_name', 'app_author',
-            'theme', 'font', 'dark_theme', 'light_theme', 'load_all_themes', 'legacy_bootstyle',
+            'theme', 'font', 'dark_theme', 'light_theme',
+            'load_select_themes',
+            'legacy_bootstyle',
             'inherit_surface_color',
             'window_size', 'window_position', 'window_minsize', 'window_maxsize',
             'window_resizable', 'window_scaling', 'window_hdpi', 'window_alpha',

@@ -1,0 +1,32 @@
+{
+  "name": "vapor",
+  "display_name": "Vapor",
+  "mode": "dark",
+  "foreground": "#f8f9fa",
+  "background": "#180D31",
+  "white": "#ffffff",
+  "black": "#000000",
+  "shades": {
+    "blue": "#3BA4EA",
+    "indigo": "#6610f2",
+    "purple": "#6B4DB9",
+    "red": "#D95159",
+    "orange": "#fd7e14",
+    "yellow": "#FBBF40",
+    "green": "#6CED8C",
+    "teal": "#20c997",
+    "cyan": "#0dcaf0",
+    "gray": "#adb5bd",
+    "pink": "#DE4BB4"
+  },
+  "semantic": {
+    "primary": "purple[500]",
+    "secondary": "pink[500]",
+    "success": "green[500]",
+    "info": "blue[500]",
+    "warning": "yellow[500]",
+    "danger": "red[500]",
+    "light": "blue[200]",
+    "dark": "purple[800]"
+  }
+}

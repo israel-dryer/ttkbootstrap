@@ -1,0 +1,32 @@
+{
+  "name": "sandstone",
+  "display_name": "Sandstone",
+  "mode": "light",
+  "foreground": "#212529",
+  "background": "#F8F5F0",
+  "white": "#ffffff",
+  "black": "#000000",
+  "shades": {
+    "blue": "#365F85",
+    "indigo": "#6610f2",
+    "purple": "#6f42c1",
+    "red": "#D05754",
+    "orange": "#EC7D4A",
+    "yellow": "#ffc107",
+    "green": "#9BC15B",
+    "teal": "#20c997",
+    "cyan": "#43ACDC",
+    "gray": "#adb5bd",
+    "pink": "#d63384"
+  },
+  "semantic": {
+    "primary": "blue[500]",
+    "secondary": "gray[500]",
+    "success": "green[500]",
+    "info": "cyan[500]",
+    "warning": "orange[500]",
+    "danger": "red[500]",
+    "light": "white",
+    "dark": "gray[900]"
+  }
+}

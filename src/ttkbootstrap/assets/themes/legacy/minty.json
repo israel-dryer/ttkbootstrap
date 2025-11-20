@@ -1,0 +1,32 @@
+{
+  "name": "minty",
+  "display_name": "Minty",
+  "mode": "light",
+  "foreground": "#212529",
+  "background": "#FFFFFF",
+  "white": "#ffffff",
+  "black": "#000000",
+  "shades": {
+    "blue": "#0d6efd",
+    "indigo": "#6610f2",
+    "purple": "#6f42c1",
+    "red": "#F67A5A",
+    "orange": "#FCCC76",
+    "yellow": "#ffc107",
+    "green": "#6CC9A0",
+    "teal": "#83C0AE",
+    "cyan": "#78C3D3",
+    "gray": "#adb5bd",
+    "pink": "#EC989C"
+  },
+  "semantic": {
+    "primary": "teal[500]",
+    "secondary": "pink[500]",
+    "success": "green[500]",
+    "info": "cyan[500]",
+    "warning": "orange[500]",
+    "danger": "red[500]",
+    "light": "gray[100]",
+    "dark": "gray[900]"
+  }
+}

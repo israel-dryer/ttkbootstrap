@@ -76,7 +76,7 @@ def build_solid_button_style(b: BootstyleBuilderTTk, ttk_style: str, color: str 
         relief='flat',
         padding=button_padding,
         anchor="center",
-        font="body"
+        font="label"
     )
 
     state_spec = dict(
@@ -150,7 +150,8 @@ def build_outline_button_style(b: BootstyleBuilderTTk, ttk_style: str, color: st
         relief='flat',
         stipple="gray12",
         padding=b.scale((10, 0)),
-        font="body"
+        anchor="center",
+        font="label"
     )
 
     state_spec = dict(
@@ -218,7 +219,8 @@ def build_text_button_style(b: BootstyleBuilderTTk, ttk_style: str, color: str =
         relief='flat',
         stipple="gray12",
         padding=button_padding,
-        font="body"
+        anchor="center",
+        font="label"
     )
 
     state_spec = dict(
@@ -285,7 +287,8 @@ def build_link_button_style(b: BootstyleBuilderTTk, ttk_style: str, color: str =
         relief='flat',
         stipple="gray12",
         padding=button_padding,
-        font="body"
+        anchor="center",
+        font="label"
     )
 
     state_spec = dict(
@@ -367,7 +370,8 @@ def build_ghost_button_style(b: BootstyleBuilderTTk, ttk_style: str, color: str 
         relief='flat',
         stipple="gray12",
         padding=button_padding,
-        font="body"
+        anchor="center",
+        font="label"
     )
 
     state_spec = dict(

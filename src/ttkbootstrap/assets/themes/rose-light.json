@@ -1,9 +1,9 @@
 {
-  "name": "bootstrap-light",
-  "display_name": "Boostrap Light",
+  "name": "rose-light",
+  "display_name": "Rose Light",
   "mode": "light",
   "foreground": "#212529",
-  "background": "#ffffff",
+  "background": "#fff5f8",
   "white": "#ffffff",
   "black": "#000000",
   "shades": {
@@ -16,17 +16,17 @@
     "green": "#198754",
     "teal": "#20c997",
     "cyan": "#0dcaf0",
-    "gray": "#adb5bd"
+    "gray": "#adb5bd",
+    "pink": "#d63384"
   },
   "semantic": {
-    "primary": "blue",
-    "secondary": "gray[700]",
-    "success": "green",
-    "info": "cyan",
-    "warning": "yellow",
-    "danger": "red",
+    "primary": "pink[600]",
+    "secondary": "red[600]",
+    "success": "green[600]",
+    "info": "cyan[600]",
+    "warning": "yellow[600]",
+    "danger": "red[600]",
     "light": "gray[100]",
-    "dark": "gray[900]",
-    "border": "gray[300]"
+    "dark": "gray[900]"
   }
 }

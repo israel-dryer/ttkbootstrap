@@ -93,6 +93,18 @@ class Style(ttkStyle):
         """
         return self._theme_provider
 
+    # ----- Theme metadata helpers -------------------------------------------------
+
+    def list_themes(self) -> list[dict[str, str]]:
+        """Return available themes as [{'name', 'display_name'}, ...].
+
+        This delegates to the underlying ThemeProvider. Themes are always
+        loaded from both the v2 and legacy theme packages; if
+        ``AppConfig.load_select_themes`` is set, the result is filtered
+        and ordered by that list.
+        """
+        return self._theme_provider.list_themes()
+
     @property
     def current_theme(self) -> Optional[str]:
         """Get the current theme name.

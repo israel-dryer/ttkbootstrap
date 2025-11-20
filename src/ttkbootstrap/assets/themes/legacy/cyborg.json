@@ -1,0 +1,32 @@
+{
+  "name": "cyborg",
+  "display_name": "Cyborg",
+  "mode": "dark",
+  "foreground": "#f8f9fa",
+  "background": "#050709",
+  "white": "#ffffff",
+  "black": "#000000",
+  "shades": {
+    "blue": "#3FA1D2",
+    "indigo": "#6610f2",
+    "purple": "#9045C6",
+    "red": "#C21717",
+    "orange": "#F78831",
+    "yellow": "#ffc107",
+    "green": "#81AF32",
+    "teal": "#20c997",
+    "cyan": "#0dcaf0",
+    "gray": "#adb5bd",
+    "pink": "#d63384"
+  },
+  "semantic": {
+    "primary": "cyan[500]",
+    "secondary": "gray[800]",
+    "success": "green[500]",
+    "info": "purple[500]",
+    "warning": "orange[500]",
+    "danger": "red[500]",
+    "light": "gray[100]",
+    "dark": "gray[900]"
+  }
+}

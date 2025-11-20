@@ -1,0 +1,32 @@
+{
+  "name": "cosmo",
+  "display_name": "Cosmo",
+  "mode": "light",
+  "foreground": "#212529",
+  "background": "#ffffff",
+  "white": "#ffffff",
+  "black": "#000000",
+  "shades": {
+    "blue": "#3085DD",
+    "indigo": "#6610f2",
+    "purple": "#9045C6",
+    "red": "#C21717",
+    "orange": "#F78831",
+    "yellow": "#ffc107",
+    "green": "#81AF32",
+    "teal": "#20c997",
+    "cyan": "#0dcaf0",
+    "gray": "#adb5bd",
+    "pink": "#d63384"
+  },
+  "semantic": {
+    "primary": "blue[500]",
+    "secondary": "gray[800]",
+    "success": "green[500]",
+    "info": "purple[500]",
+    "warning": "orange[500]",
+    "danger": "red[500]",
+    "light": "gray[100]",
+    "dark": "gray[900]"
+  }
+}

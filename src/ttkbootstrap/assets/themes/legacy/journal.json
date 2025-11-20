@@ -1,0 +1,32 @@
+{
+  "name": "journal",
+  "display_name": "Journal",
+  "mode": "light",
+  "foreground": "#212529",
+  "background": "#FFFFFF",
+  "white": "#ffffff",
+  "black": "#000000",
+  "shades": {
+    "blue": "#386895",
+    "indigo": "#6610f2",
+    "purple": "#6f42c1",
+    "red": "#E26B68",
+    "orange": "#EC7B2D",
+    "yellow": "#F5E251",
+    "green": "#4AAE57",
+    "teal": "#20c997",
+    "cyan": "#0dcaf0",
+    "gray": "#adb5bd",
+    "pink": "#d63384"
+  },
+  "semantic": {
+    "primary": "red[500]",
+    "secondary": "gray[500]",
+    "success": "green[500]",
+    "info": "blue[500]",
+    "warning": "yellow[500]",
+    "danger": "orange[500]",
+    "light": "gray[100]",
+    "dark": "gray[900]"
+  }
+}
