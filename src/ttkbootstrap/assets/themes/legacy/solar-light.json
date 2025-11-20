@@ -1,0 +1,32 @@
+{
+  "name": "solar-light",
+  "display_name": "Solar Light",
+  "mode": "light",
+  "foreground": "#103641",
+  "background": "#FDF5E5",
+  "white": "#ffffff",
+  "black": "#000000",
+  "shades": {
+    "blue": "#368ECD",
+    "indigo": "#6A76BF",
+    "purple": "#6f42c1",
+    "red": "#D23937",
+    "orange": "#C34E27",
+    "yellow": "#B2872A",
+    "green": "#89962B",
+    "teal": "#20c997",
+    "cyan": "#44A098",
+    "gray": "#677B82",
+    "pink": "#C94180"
+  },
+  "semantic": {
+    "primary": "yellow[500]",
+    "secondary": "gray[600]",
+    "success": "teal[500]",
+    "info": "blue[500]",
+    "warning": "red[500]",
+    "danger": "pink[500]",
+    "light": "gray[100]",
+    "dark": "cyan[900]"
+  }
+}

@@ -1,6 +1,6 @@
 {
-  "name": "solar",
-  "display_name": "Solar",
+  "name": "solar-dark",
+  "display_name": "Solar Dark",
   "mode": "dark",
   "foreground": "#f8f9fa",
   "background": "#072B35",
