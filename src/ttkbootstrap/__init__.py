@@ -47,7 +47,7 @@ from ttkbootstrap.appconfig import AppConfig, use_icon_provider
 from ttkbootstrap.style.bootstyle import Bootstyle
 # Export the new Style implementation and a convenience accessor
 from ttkbootstrap.style.style import Style, use_style
-from ttkbootstrap.widgets import DateEntry, Floodgauge, FloodgaugeLegacy, LabeledScale, M, Meter
+from ttkbootstrap.widgets import DateEntry, FloodGauge, LabeledScale, M, Meter
 from ttkbootstrap.window import Toplevel, Window
 
 # Export subclass-based ttk wrappers instead of monkey-patching ttk
@@ -876,8 +876,7 @@ __all__ = [
     Toplevel,
     Window,
     DateEntry,
-    Floodgauge,
-    FloodgaugeLegacy,
+    FloodGauge,
     LabeledScale,
     Meter,
     M

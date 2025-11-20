@@ -9,7 +9,7 @@ from tkinter import ttk
 
 # Import widgets from individual modules
 from ttkbootstrap.widgets.custom.dateentry import DateEntry
-from ttkbootstrap.widgets.custom.floodgauge import Floodgauge, FloodgaugeLegacy
+from ttkbootstrap.widgets.custom.floodgauge import FloodGauge
 from ttkbootstrap.widgets.custom.labeledscale import LabeledScale
 from ttkbootstrap.widgets.custom.meter import Meter
 from ttkbootstrap.widgets.custom.toast import ToastNotification
@@ -105,8 +105,7 @@ __all__ = [
     'OptionMenu',
 
     'DateEntry',
-    'Floodgauge',
-    'FloodgaugeLegacy',
+    'FloodGauge',
     'Meter',
     'LabeledScale',
     'ToolTip',

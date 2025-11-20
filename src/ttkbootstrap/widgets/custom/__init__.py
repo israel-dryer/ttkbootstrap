@@ -5,7 +5,7 @@ These modules wrap the existing implementations to provide a stable
 """
 
 from .dateentry import DateEntry
-from .floodgauge import Floodgauge, FloodgaugeLegacy
+from .floodgauge import FloodGauge
 from .labeledscale import LabeledScale
 from .meter import Meter
 from .toast import ToastNotification
@@ -13,8 +13,7 @@ from .tooltip import ToolTip
 
 __all__ = [
     'DateEntry',
-    'Floodgauge',
-    'FloodgaugeLegacy',
+    'FloodGauge',
     'LabeledScale',
     'Meter',
     'ToastNotification',

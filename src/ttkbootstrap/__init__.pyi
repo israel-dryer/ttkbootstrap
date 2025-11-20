@@ -32,8 +32,7 @@ from ttkbootstrap.style import Bootstyle, Style
 from ttkbootstrap.window import Toplevel, Window
 from ttkbootstrap.widgets import (
     DateEntry,
-    Floodgauge,
-    FloodgaugeLegacy,
+    FloodGauge,
     LabeledScale,
     Meter,
 )
@@ -1499,8 +1498,7 @@ __all__ = [
     "Toplevel",
     "Window",
     "DateEntry",
-    "Floodgauge",
-    "FloodgaugeLegacy",
+    "FloodGauge",
     "LabeledScale",
     "Meter",
     "M",
