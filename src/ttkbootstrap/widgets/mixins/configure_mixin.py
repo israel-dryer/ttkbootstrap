@@ -13,9 +13,9 @@ from typing import Any, Callable, Dict, Tuple
 def configure_delegate(*names: str):
     """Decorator to mark a method as a configure handler for given names.
 
-    The decorated method should accept a single argument `value` which will be
-    the value provided via configure(..., name=value). If `value` is None, the
-    method should return the current value for queries (configure(cnf=name)).
+    The decorated method should accept a single argument `value` to set,
+    and optionally return None. For getting values, the mixin will read
+    from self._<option_name> directly.
     """
 
     def _decorator(func: Callable[[Any, Any], Any]):
@@ -56,11 +56,62 @@ class ConfigureDelegationMixin:
         return True
 
     def _config_delegate_get(self, key: str) -> Tuple[bool, Any]:
-        method_name = self._configure_delegate_map.get(key)
-        if not method_name:
+        # Check if this key has a delegate
+        if key not in self._configure_delegate_map:
             return False, None
-        handler = getattr(self, method_name)
-        return True, handler(None)
+        # Read directly from self._<key> attribute
+        attr_name = f"_{key}"
+        if hasattr(self, attr_name):
+            value = getattr(self, attr_name)
+            # For variable options, return the string name instead of the object
+            if key in ('variable', 'textvariable') and hasattr(value, '_name'):
+                return True, str(value)
+            return True, value
+        return False, None
+
+    def configure(self, cnf=None, **kwargs):
+        """Configure widget options, handling custom delegated options first."""
+        # Handle custom delegated keys
+        if kwargs:
+            for _k in list(kwargs.keys()):
+                if _k in self._configure_delegate_map:
+                    if self._config_delegate_set(_k, kwargs[_k]):
+                        kwargs.pop(_k, None)
+
+        # Getter path for delegated keys
+        if isinstance(cnf, str) and cnf in self._configure_delegate_map:
+            handled, value = self._config_delegate_get(cnf)
+            if handled:
+                # Return in standard Tkinter format: (name, dbName, dbClass, default, current)
+                return (cnf, cnf, cnf.capitalize(), None, value)
+
+        # Forward remaining options to parent
+        return super().configure(cnf, **kwargs)
+
+    config = configure
+
+    def __setitem__(self, key, value):
+        """Set configuration option via indexing."""
+        if key in self._configure_delegate_map:
+            self._config_delegate_set(key, value)
+            return
+        return super().__setitem__(key, value)
+
+    def __getitem__(self, key):
+        """Get configuration option via indexing."""
+        if key in self._configure_delegate_map:
+            handled, value = self._config_delegate_get(key)
+            if handled:
+                return value
+        return super().__getitem__(key)
+
+    def cget(self, key):
+        """Get configuration option."""
+        if key in self._configure_delegate_map:
+            handled, value = self._config_delegate_get(key)
+            if handled:
+                return value
+        return super().cget(key)
 
 
 __all__ = ["configure_delegate", "ConfigureDelegationMixin"]
