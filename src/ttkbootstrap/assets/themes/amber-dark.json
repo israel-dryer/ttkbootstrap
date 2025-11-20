@@ -1,9 +1,9 @@
 {
-  "name": "bootstrap-dark",
-  "display_name": "Bootstrap Dark",
+  "name": "amber-dark",
+  "display_name": "Amber Dark",
   "mode": "dark",
   "foreground": "#f8f9fa",
-  "background": "#212529",
+  "background": "#18130a",
   "white": "#ffffff",
   "black": "#000000",
   "shades": {
@@ -16,17 +16,17 @@
     "green": "#198754",
     "teal": "#20c997",
     "cyan": "#0dcaf0",
-    "gray": "#adb5bd"
+    "gray": "#adb5bd",
+    "pink": "#d63384"
   },
   "semantic": {
-    "primary": "blue",
-    "secondary": "gray[700]",
-    "success": "green",
-    "info": "cyan",
-    "warning": "yellow",
-    "danger": "red",
+    "primary": "orange[400]",
+    "secondary": "yellow[400]",
+    "success": "green[400]",
+    "info": "cyan[400]",
+    "warning": "yellow[400]",
+    "danger": "red[400]",
     "light": "gray[100]",
-    "dark": "gray[900]",
-    "border": "gray[300]"
+    "dark": "gray[900]"
   }
 }

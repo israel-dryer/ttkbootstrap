@@ -1,0 +1,32 @@
+{
+  "name": "lumen",
+  "display_name": "Lumen",
+  "mode": "light",
+  "foreground": "#212529",
+  "background": "#ffffff",
+  "white": "#ffffff",
+  "black": "#000000",
+  "shades": {
+    "blue": "#308DB6",
+    "indigo": "#6610f2",
+    "purple": "#6f42c1",
+    "red": "#F44940",
+    "orange": "#F68638",
+    "yellow": "#ffc107",
+    "green": "#4EB242",
+    "teal": "#20c997",
+    "cyan": "#80CAE8",
+    "gray": "#adb5bd",
+    "pink": "#d63384"
+  },
+  "semantic": {
+    "primary": "blue[500]",
+    "secondary": "gray[400]",
+    "success": "green[500]",
+    "info": "cyan[500]",
+    "warning": "orange[500]",
+    "danger": "red[500]",
+    "light": "gray[100]",
+    "dark": "gray[900]"
+  }
+}

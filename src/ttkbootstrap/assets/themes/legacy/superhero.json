@@ -1,0 +1,32 @@
+{
+  "name": "superhero",
+  "display_name": "Superhero",
+  "mode": "dark",
+  "foreground": "#f8f9fa",
+  "background": "#112636",
+  "white": "#ffffff",
+  "black": "#000000",
+  "shades": {
+    "blue": "#0d6efd",
+    "indigo": "#6610f2",
+    "purple": "#6f42c1",
+    "red": "#D05754",
+    "orange": "#D76A2F",
+    "yellow": "#ffc107",
+    "green": "#198754",
+    "teal": "#20c997",
+    "cyan": "#0dcaf0",
+    "gray": "#adb5bd",
+    "pink": "#d63384"
+  },
+  "semantic": {
+    "primary": "orange[500]",
+    "secondary": "gray[600]",
+    "success": "green[400]",
+    "info": "cyan[400]",
+    "warning": "yellow[400]",
+    "danger": "red[500]",
+    "light": "gray[200]",
+    "dark": "cyan[800]"
+  }
+}

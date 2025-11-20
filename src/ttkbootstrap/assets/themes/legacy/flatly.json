@@ -1,0 +1,32 @@
+{
+  "name": "flatly",
+  "display_name": "Flatly",
+  "mode": "light",
+  "foreground": "#212529",
+  "background": "#FFFFFF",
+  "white": "#ffffff",
+  "black": "#000000",
+  "shades": {
+    "blue": "#439AD6",
+    "indigo": "#6610f2",
+    "purple": "#6f42c1",
+    "red": "#DD5144",
+    "orange": "#ED9B39",
+    "yellow": "#ffc107",
+    "green": "#198754",
+    "teal": "#47BA9D",
+    "cyan": "#0dcaf0",
+    "gray": "#adb5bd",
+    "pink": "#d63384"
+  },
+  "semantic": {
+    "primary": "blue[900]",
+    "secondary": "gray[600]",
+    "success": "teal[500]",
+    "info": "blue[500]",
+    "warning": "orange[500]",
+    "danger": "red[500]",
+    "light": "gray[100]",
+    "dark": "gray[800]"
+  }
+}
