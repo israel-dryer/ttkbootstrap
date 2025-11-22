@@ -1,16 +1,16 @@
-# File Backup Utility
+# ファイルバックアップユーティリティ
 This example demonstrates how to use various styles to build a UI for a 
-File Backup Utility application. A custom `CollapsingFrame` class contains 
+ファイルバックアップユーティリティ application. A custom `CollapsingFrame` class contains 
 the left-side info panels as well as the output on the bottom right. These 
 contain indicator buttons on the right-side of the header which collapse and 
 expand the `Frame` with a mouse-click action. 
 
-![file search image example](../assets/gallery/back_me_up.png)
+![ファイルバックアップユーティリティの例](../assets/gallery/back_me_up.png)
 
-## Style Summary
-The theme used in this example is **litera**.
+## スタイル概要
+この例で使用されるテーマは **litera**.
 
-| Item                              | Class             | Bootstyle |
+| 項目                              | クラス             | Bootstyle |
 | ---                               | ---               | ---|
 | Top button bar                    | `Button`          | primary |
 | Collapsible frames                | `CollapsingFrame` | secondary |
@@ -19,8 +19,8 @@ The theme used in this example is **litera**.
 | Properties, stop, add to backup   | `Button`          | link |
 | File Open                         | `Button`          | secondary-link |
 
-## Example Code
-[Run this code live](https://replit.com/@israel-dryer/file-backup-utility#main.py) on repl.it
+## サンプルコード
+[このコードをライブで実行](https://replit.com/@israel-dryer/file-backup-utility#main.py) on repl.it
 
 ```python
 from datetime import datetime
@@ -31,10 +31,10 @@ from tkinter.filedialog import askdirectory
 from ttkbootstrap.dialogs import Messagebox
 from ttkbootstrap.constants import *
 from tkinter.scrolledtext import ScrolledText
-from pathlib import Path
+from pathlib import パス
 
 
-PATH = Path(__file__).parent / 'assets'
+PATH = パス(__file__).parent / 'assets'
 
 
 class BackMeUp(ttk.Frame):
@@ -59,7 +59,7 @@ class BackMeUp(ttk.Frame):
         }
 
         self.photoimages = []
-        imgpath = Path(__file__).parent / 'assets'
+        imgpath = パス(__file__).parent / 'assets'
         for key, val in image_files.items():
             _path = imgpath / val
             self.photoimages.append(ttk.PhotoImage(name=key, file=_path))
