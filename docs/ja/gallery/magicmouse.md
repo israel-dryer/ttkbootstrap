@@ -1,20 +1,20 @@
-# Magic Mouse
-This application demonstrates a complicated design with many options and 
-several label frames. A **link** button style is used on all buttons
-that use images.
+# マジックマウス
+このアプリケーションは、多くのオプションと複数のラベルフレームを備えた複雑なデザインを示しています。
+すべての画像付きボタンには **link** ボタンスタイルが使用されています。
 
-![file search image example](../assets/gallery/magic_mouse.png)
 
-## Style Summary
-The theme used is **lumen**.
+![マジックマウスの例](../assets/gallery/magic_mouse.png)
 
-| Item              | Class        | Bootstyle  |
+## スタイル概要
+使用されているテーマは **lumen** です。
+
+| 項目              | クラス        | Bootstyle  |
 | ---               | ---          | ---        |
 | Image buttons     | `Button`     | link       |
 | License number    | `Label`      | primary    |
 
-## Example Code
-[Run this code live](https://replit.com/@israel-dryer/magic-mouse#main.py) on repl.it
+## コード例
+[このコードをオンラインで実行](https://replit.com/@israel-dryer/magic-mouse#main.py) repl.itで
 
 ```python
 from pathlib import Path
