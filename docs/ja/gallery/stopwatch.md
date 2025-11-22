@@ -1,24 +1,24 @@
-# Stopwatch
-This stopwatch application has the standard start, stop, and reset
-functions. Different styles are applied to the **Start** and 
-**Pause** button depending on the state of the button. 
+# ストップウォッチ
+このストップウォッチアプリケーションには、標準的な開始、停止、リセット機能があります。
+**Start** と **Pause** ボタンには、状態に応じて異なるスタイルが適用されます。
 
-![file search image example](../assets/gallery/timer_widget_started.png)  
 
-![file search image example](../assets/gallery/timer_widget_paused.png)  
+![ストップウォッチの例](../assets/gallery/timer_widget_started.png)  
 
-## Style Summary
-The theme applied is **cosmo**.
+![ストップウォッチの例](../assets/gallery/timer_widget_paused.png)  
 
-| Item      | Class     | Bootstyle |
+## スタイル概要
+適用されているテーマは **cosmo** です。
+
+| 項目      | クラス     | Bootstyle |
 | ---       | ---       | --- |
 | Start     | `Button`  | info |
 | Pause     | `Button`  | info-outline |
 | Reset     | `Button`  | success |
 | Quit      | `Button`  | danger |
 
-## Example Code
-[Run this code live](https://replit.com/@israel-dryer/stopwatch#main.py) on repl.it
+## コード例
+[このコードをオンラインで実行](https://replit.com/@israel-dryer/stopwatch#main.py) repl.itで
 
 ```python
 import ttkbootstrap as ttk
