@@ -1,23 +1,25 @@
-# Collapsing Frame
-This example demonstrates how to build a collapsing frame widget. Each `Frame` 
-added to the widget can be assigned a title and style. Various bootstyles are
-applied to each option group. 
+# 折りたたみフレーム
 
-![file search image example](../assets/gallery/collapsing_frame.png)
- 
-## Style Summary
-The theme used is **litera**.
+この例では、折りたたみ可能なフレームウィジェットの構築方法を示します。
+ウィジェットに追加された各`Frame`にはタイトルとスタイルを割り当てることができます。
+各オプショングループにはさまざまなbootstyleが適用されます。
 
-| Item              | Class             | Bootstyle |
+![折りたたみフレームの例](../assets/gallery/collapsing_frame.png)
+
+## スタイル概要
+使用されているテーマは **litera** です。
+
+| 項目              | クラス             | Bootstyle |
 | ---               | ---               | --- |
-| Option group 1    | `CollapsingFrame` | primary |
-| Option group 2    | `CollapsingFrame` | danger |
-| Option group 3    | `CollapsingFrame` | success |
+| オプショングループ1 | `CollapsingFrame` | primary |
+| オプショングループ2 | `CollapsingFrame` | danger |
+| オプショングループ3 | `CollapsingFrame` | success |
 
-## Example Code
-[Run this code live](https://replit.com/@israel-dryer/collapsing-frame#main.py) on repl.it
+## サンプルコード
+[このコードをReplitで実行](https://replit.com/@israel-dryer/collapsing-frame#main.py)
 
 ```python
+
 from pathlib import Path
 import ttkbootstrap as ttk
 from ttkbootstrap.constants import *
