@@ -1,42 +1,42 @@
-# Light themes
+# ライトテーマ
 
-The following light themes are largly inspired by [https://bootswatch.com/](https://bootswatch.com/)
+以下のライトテーマは、主に[https://bootswatch.com/](https://bootswatch.com/)からインスピレーションを得ています。
 
-![cosmo theme](../assets/themes/cosmo.png)
-Source of [inspiration](https://bootswatch.com/cosmo/)
+![cosmoテーマ](../assets/themes/cosmo.png)
+参照: [インスピレーション元](https://bootswatch.com/cosmo/)
 
-![flatly theme](../assets/themes/flatly.png)
-Source of [inspiration](https://bootswatch.com/flatly/)
+![flatlyテーマ](../assets/themes/flatly.png)
+参照: [インスピレーション元](https://bootswatch.com/flatly/)
 
-![journal theme](../assets/themes/journal.png)
-Source of [inspiration](https://bootswatch.com/journal/)
+![journalテーマ](../assets/themes/journal.png)
+参照: [インスピレーション元](https://bootswatch.com/journal/)
 
-![litera theme](../assets/themes/litera.png)
-Source of [inspiration](https://bootswatch.com/litera/)
+![literaテーマ](../assets/themes/litera.png)
+参照: [インスピレーション元](https://bootswatch.com/litera/)
 
-![lumen theme](../assets/themes/lumen.png)
-Source of [inspiration](https://bootswatch.com/lumen/)
+![lumenテーマ](../assets/themes/lumen.png)
+参照: [インスピレーション元](https://bootswatch.com/lumen/)
 
-![minty theme](../assets/themes/minty.png)
-Source of [inspiration](https://bootswatch.com/minty/)
+![mintyテーマ](../assets/themes/minty.png)
+参照: [インスピレーション元](https://bootswatch.com/minty/)
 
-![pulse theme](../assets/themes/pulse.png)
-Source of [inspiration](https://bootswatch.com/pulse/)
+![pulseテーマ](../assets/themes/pulse.png)
+参照: [インスピレーション元](https://bootswatch.com/pulse/)
 
-![sandstone theme](../assets/themes/sandstone.png)
-Source of [inspiration](https://bootswatch.com/sandstone/)
+![sandstoneテーマ](../assets/themes/sandstone.png)
+参照: [インスピレーション元](https://bootswatch.com/sandstone/)
 
-![united theme](../assets/themes/united.png)
-Source of [inspiration](https://bootswatch.com/united/)
+![unitedテーマ](../assets/themes/united.png)
+参照: [インスピレーション元](https://bootswatch.com/united/)
 
-![yeti theme](../assets/themes/yeti.png)
-Source of [inspiration](https://bootswatch.com/yeti/)
+![yetiテーマ](../assets/themes/yeti.png)
+参照: [インスピレーション元](https://bootswatch.com/yeti/)
 
-![morph theme](../assets/themes/morph.png)
-Source of [inspiration](https://bootswatch.com/morph/)
+![morphテーマ](../assets/themes/morph.png)
+参照: [インスピレーション元](https://bootswatch.com/morph/)
 
-![simplex theme](../assets/themes/simplex.png)
-Source of [inspiration](https://bootswatch.com/simplex/)
+![simplexテーマ](../assets/themes/simplex.png)
+参照: [インスピレーション元](https://bootswatch.com/simplex/)
 
-![cerculean theme](../assets/themes/cerculean.png)
-Source of [inspiration](https://bootswatch.com/cerulean/)
+![ceruleanテーマ](../assets/themes/cerculean.png)
+参照: [インスピレーション元](https://bootswatch.com/cerulean/)
