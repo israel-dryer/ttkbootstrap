@@ -1,22 +1,23 @@
-# Calculator
-This basic calculator UI demonstrates how to use different colors to 
-differentiate button functions. 
+# 電卓
 
-![file search image example](../assets/gallery/calculator.png)
+この基本的な電卓UIは、異なる色を使用してボタンの機能を区別する方法を示しています。
 
-## Style Summary
-The theme used in this example is **flatly**.
+![電卓の例](../assets/gallery/calculator.png)
 
-| Item      | Class     | Bootstyle |
+## スタイル概要
+この例で使用されているテーマは **flatly** です。
+
+| 項目      | クラス     | Bootstyle |
 | ---       | ---       |---        |
-| Digits    | `Button`  | primary   |
-| Operators | `Button`  | secondary |
-| Equals    | `Button`  | success   |
+| 数字      | `Button`  | primary   |
+| 演算子    | `Button`  | secondary |
+| イコール  | `Button`  | success   |
 
-## Example Code
-[Run this code live](https://replit.com/@israel-dryer/calculator#main.py) on repl.it
+## サンプルコード
+[このコードをReplitで実行](https://replit.com/@israel-dryer/calculator#main.py)
 
 ```python
+
 import ttkbootstrap as ttk
 from ttkbootstrap.constants import *
 
