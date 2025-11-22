@@ -44,7 +44,10 @@ from typing import Any, Optional, Union
 from PIL import Image, ImageDraw, ImageTk
 from PIL.Image import Resampling
 
-from ttkbootstrap import Frame, IntVar, Label, StringVar, utility
+from tkinter import IntVar, StringVar
+from ttkbootstrap.widgets.frame import Frame
+from ttkbootstrap.widgets.label import Label
+from ttkbootstrap import utility
 from ttkbootstrap.constants import CENTER, DEFAULT, FULL, LEFT, RIGHT, S, Y
 from ttkbootstrap.style import Bootstyle, Colors
 

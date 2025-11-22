@@ -1,7 +1,7 @@
 from tkinter import Event, Misc
 from typing import Any, Optional, Union
 
-from ttkbootstrap import Canvas, IntVar, StringVar
+from tkinter import Canvas, IntVar, StringVar
 from ttkbootstrap.widgets.mixins.configure_mixin import ConfigureDelegationMixin, configure_delegate
 
 
