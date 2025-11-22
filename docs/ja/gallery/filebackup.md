@@ -1,9 +1,7 @@
 # ファイルバックアップユーティリティ
-This example demonstrates how to use various styles to build a UI for a 
-ファイルバックアップユーティリティ application. A custom `CollapsingFrame` class contains 
-the left-side info panels as well as the output on the bottom right. These 
-contain indicator buttons on the right-side of the header which collapse and 
-expand the `Frame` with a mouse-click action. 
+この例は、ファイルバックアップユーティリティアプリケーションのUI構築に様々なスタイルを活用する方法を示しています。
+カスタム`CollapsingFrame`クラスは、左側の情報パネルと右下の出力領域を保持します。
+これらはヘッダー右側にインジケーターボタンを備え、マウスクリック操作で`Frame`の折りたたみ/展開を行います。
 
 ![ファイルバックアップユーティリティの例](../assets/gallery/back_me_up.png)
 
@@ -31,10 +29,10 @@ from tkinter.filedialog import askdirectory
 from ttkbootstrap.dialogs import Messagebox
 from ttkbootstrap.constants import *
 from tkinter.scrolledtext import ScrolledText
-from pathlib import パス
+from pathlib import Path
 
 
-PATH = パス(__file__).parent / 'assets'
+PATH = Path(__file__).parent / 'assets'
 
 
 class BackMeUp(ttk.Frame):
@@ -59,7 +57,7 @@ class BackMeUp(ttk.Frame):
         }
 
         self.photoimages = []
-        imgpath = パス(__file__).parent / 'assets'
+        imgpath = Path(__file__).parent / 'assets'
         for key, val in image_files.items():
             _path = imgpath / val
             self.photoimages.append(ttk.PhotoImage(name=key, file=_path))
