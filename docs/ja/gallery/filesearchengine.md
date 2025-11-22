@@ -1,24 +1,24 @@
-# File Search Engine
-This application is a local file search engine that uses threading and a queue 
+# ファイル検索エンジン
+このアプリケーションはローカルファイル検索エンジンです that uses threading and a queue 
 to manage IO tasks in order to keep the gui interactive. The `Treeview` updates 
 the results in real-time and sets the focus and view on the most recently 
 inserted result in the results `Treeview`. 
 
-![file search image example](../assets/gallery/file_search_engine.png)
+![ファイル検索エンジンの例](../assets/gallery/file_search_engine.png)
 
-## Style Summary
-The theme used in this example is **journal**.
+## スタイル概要
+この例で使用されるテーマは **journal**.
 
-| Item          | Class         | Bootstyle         |
+| 項目          | クラス         | Bootstyle         |
 | ---           | ---           | ---               |
 | User Input    | `Entry`       | default           |
-| Browse        | `Button`      | primary           |
-| Search        | `Button`      | primary-outline   |
+| 参照        | `Button`      | primary           |
+| 検索        | `Button`      | primary-outline   |
 | Treeview      | `Treeview`    | info              |
 | Progressbar   | `Progressbar` | success           |
 
-## Example Code
-[Run this code live](https://replit.com/@israel-dryer/file-search-engine#main.py) on repl.it
+## サンプルコード
+[このコードをライブで実行](https://replit.com/@israel-dryer/file-search-engine#main.py) on repl.it
 
 ```python
 import datetime
