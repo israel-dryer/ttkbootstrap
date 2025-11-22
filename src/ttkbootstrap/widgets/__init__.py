@@ -12,7 +12,7 @@ from ttkbootstrap.widgets.custom.dateentry import DateEntry
 from ttkbootstrap.widgets.custom.floodgauge import FloodGauge
 from ttkbootstrap.widgets.custom.labeledscale import LabeledScale
 from ttkbootstrap.widgets.custom.meter import Meter
-from ttkbootstrap.widgets.custom.toast import ToastNotification
+from ttkbootstrap.widgets.custom.toast import Toast
 from ttkbootstrap.widgets.custom.tooltip import ToolTip
 
 # Wrapper widgets (ttk)
@@ -108,8 +108,8 @@ __all__ = [
     'FloodGauge',
     'Meter',
     'LabeledScale',
+    'Toast',
     'ToolTip',
-    'ToastNotification',
     'M',
     'TTK_WIDGETS',
     'TK_WIDGETS',

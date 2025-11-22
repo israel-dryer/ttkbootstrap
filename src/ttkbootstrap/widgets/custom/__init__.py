@@ -8,7 +8,7 @@ from .dateentry import DateEntry
 from .floodgauge import FloodGauge
 from .labeledscale import LabeledScale
 from .meter import Meter
-from .toast import ToastNotification
+from .toast import Toast
 from .tooltip import ToolTip
 
 __all__ = [
@@ -16,6 +16,6 @@ __all__ = [
     'FloodGauge',
     'LabeledScale',
     'Meter',
-    'ToastNotification',
+    'Toast',
     'ToolTip',
 ]
