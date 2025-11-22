@@ -1,13 +1,13 @@
-# Media Player
-This example demonstrates how to build a media player GUI. The buttons are 
-simple unicode characters. 
+# メディアプレーヤー
+この例では、メディアプレーヤーのGUIを構築する方法を示します。ボタンは
+シンプルなUnicode文字です。
 
-![file search image example](../assets/gallery/media_player.png)
+![メディアプレーヤーの例](../assets/gallery/media_player.png)
 
-## Style Summary
-The theme used in this example is **yeti**.
+## スタイル概要
+この例で使用されているテーマは **yeti** です。
 
-| Item                  | Class     | Bootstyle |
+| 項目                  | クラス     | Bootstyle |
 | ---                   | ---       | --- |
 | Header                | `Label`   | light-inverse |
 | Media Controls        | `Button`  | primary |
@@ -15,8 +15,8 @@ The theme used in this example is **yeti**.
 | Time Elapsed Slider   | `Scale`   | secondary |
 
 
-## Example Code
-[Run this code live](https://replit.com/@israel-dryer/media-player#main.py) on repl.it
+## コード例
+[このコードをオンラインで実行](https://replit.com/@israel-dryer/media-player#main.py) repl.itで
 
 ```python
 from pathlib import Path
