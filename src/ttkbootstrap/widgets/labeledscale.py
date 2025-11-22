@@ -1,9 +1,9 @@
 import tkinter as tk
 from typing import Any, Literal
 
-from ttkbootstrap.widgets.containers.frame import Frame
-from ttkbootstrap.widgets.controls.scale import Scale
-from ttkbootstrap.widgets.display.label import Label
+from ttkbootstrap.widgets.frame import Frame
+from ttkbootstrap.widgets.scale import Scale
+from ttkbootstrap.widgets.label import Label
 
 
 class LabeledScale(Frame):

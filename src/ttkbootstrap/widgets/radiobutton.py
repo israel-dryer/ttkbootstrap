@@ -3,8 +3,8 @@ from __future__ import annotations
 from tkinter import ttk
 from typing import Any, Callable, Literal, Optional, TypedDict
 from typing_extensions import Unpack
-from .._internal.wrapper_base import TTKWrapperBase
-from ..mixins.icon_mixin import IconMixin
+from ._internal.wrapper_base import TTKWrapperBase
+from .mixins.icon_mixin import IconMixin
 
 
 class RadiobuttonKwargs(TypedDict, total=False):

@@ -5,7 +5,7 @@ from typing import Any, Literal, TypedDict
 
 from typing_extensions import Unpack
 
-from .._internal.wrapper_base import TTKWrapperBase
+from ._internal.wrapper_base import TTKWrapperBase
 
 
 class ComboboxKwargs(TypedDict, total=False):

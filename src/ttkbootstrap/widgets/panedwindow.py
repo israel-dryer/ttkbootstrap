@@ -3,16 +3,13 @@ from __future__ import annotations
 from tkinter import ttk
 from typing import Any, TypedDict
 from typing_extensions import Unpack
-from .._internal.wrapper_base import TTKWrapperBase
+from ._internal.wrapper_base import TTKWrapperBase
 
 
-class LabelframeKwargs(TypedDict, total=False):
-    # Standard ttk.Labelframe options
-    text: Any
-    labelanchor: Any
+class PanedwindowKwargs(TypedDict, total=False):
+    # Standard ttk.Panedwindow options
+    orient: Any
     padding: Any
-    relief: Any
-    borderwidth: Any
     width: int
     height: int
     style: str
@@ -26,20 +23,17 @@ class LabelframeKwargs(TypedDict, total=False):
     style_options: dict[str, Any]
 
 
-class Labelframe(TTKWrapperBase, ttk.Labelframe):
-    """ttkbootstrap wrapper for `ttk.Labelframe` with bootstyle support."""
+class Panedwindow(TTKWrapperBase, ttk.Panedwindow):
+    """ttkbootstrap wrapper for `ttk.Panedwindow` with bootstyle support."""
 
-    _ttk_base = ttk.Labelframe
+    _ttk_base = ttk.Panedwindow
 
-    def __init__(self, master=None, **kwargs: Unpack[LabelframeKwargs]) -> None:
-        """Create a themed ttkbootstrap Labelframe.
+    def __init__(self, master=None, **kwargs: Unpack[PanedwindowKwargs]) -> None:
+        """Create a themed ttkbootstrap Panedwindow.
 
         Keyword Args:
-            text: Text for the embedded label.
-            labelanchor: Position of the label relative to the frame.
+            orient: Orientation of panes ('horizontal' or 'vertical').
             padding: Extra internal padding.
-            relief: Border style.
-            borderwidth: Border width.
             width: Requested width in pixels.
             height: Requested height in pixels.
             style: Explicit ttk style name (overrides bootstyle).

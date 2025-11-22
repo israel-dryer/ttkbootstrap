@@ -7,34 +7,34 @@ submodules.
 import tkinter as tk
 from tkinter import ttk
 
-# Import widgets from individual modules
-from ttkbootstrap.widgets.custom.dateentry import DateEntry
-from ttkbootstrap.widgets.custom.floodgauge import FloodGauge
-from ttkbootstrap.widgets.custom.labeledscale import LabeledScale
-from ttkbootstrap.widgets.custom.meter import Meter
-from ttkbootstrap.widgets.custom.toast import Toast
-from ttkbootstrap.widgets.custom.tooltip import ToolTip
+# Custom widgets
+from ttkbootstrap.widgets.dateentry import DateEntry
+from ttkbootstrap.widgets.floodgauge import FloodGauge
+from ttkbootstrap.widgets.labeledscale import LabeledScale
+from ttkbootstrap.widgets.meter import Meter
+from ttkbootstrap.widgets.toast import Toast
+from ttkbootstrap.widgets.tooltip import ToolTip
 
 # Wrapper widgets (ttk)
-from ttkbootstrap.widgets.controls.button import Button
-from ttkbootstrap.widgets.display.label import Label
-from ttkbootstrap.widgets.controls.menubutton import Menubutton
-from ttkbootstrap.widgets.controls.checkbutton import Checkbutton
-from ttkbootstrap.widgets.controls.radiobutton import Radiobutton
-from ttkbootstrap.widgets.controls.combobox import Combobox
-from ttkbootstrap.widgets.controls.entry import Entry
-from ttkbootstrap.widgets.containers.frame import Frame
-from ttkbootstrap.widgets.containers.notebook import Notebook
-from ttkbootstrap.widgets.containers.labelframe import Labelframe
-from ttkbootstrap.widgets.containers.panedwindow import Panedwindow
-from ttkbootstrap.widgets.display.progressbar import Progressbar
-from ttkbootstrap.widgets.controls.scale import Scale
-from ttkbootstrap.widgets.display.scrollbar import Scrollbar
-from ttkbootstrap.widgets.display.separator import Separator
-from ttkbootstrap.widgets.display.sizegrip import Sizegrip
-from ttkbootstrap.widgets.controls.spinbox import Spinbox
-from ttkbootstrap.widgets.dataview.treeview import Treeview
-from ttkbootstrap.widgets.controls.optionmenu import OptionMenu
+from ttkbootstrap.widgets.button import Button
+from ttkbootstrap.widgets.label import Label
+from ttkbootstrap.widgets.menubutton import Menubutton
+from ttkbootstrap.widgets.checkbutton import Checkbutton
+from ttkbootstrap.widgets.radiobutton import Radiobutton
+from ttkbootstrap.widgets.combobox import Combobox
+from ttkbootstrap.widgets.entry import Entry
+from ttkbootstrap.widgets.frame import Frame
+from ttkbootstrap.widgets.notebook import Notebook
+from ttkbootstrap.widgets.labelframe import Labelframe
+from ttkbootstrap.widgets.panedwindow import Panedwindow
+from ttkbootstrap.widgets.progressbar import Progressbar
+from ttkbootstrap.widgets.scale import Scale
+from ttkbootstrap.widgets.scrollbar import Scrollbar
+from ttkbootstrap.widgets.separator import Separator
+from ttkbootstrap.widgets.sizegrip import Sizegrip
+from ttkbootstrap.widgets.spinbox import Spinbox
+from ttkbootstrap.widgets.treeview import Treeview
+from ttkbootstrap.widgets.optionmenu import OptionMenu
 
 # Constants from original widgets.py
 M = 3  # meter image scale, higher number increases resolution

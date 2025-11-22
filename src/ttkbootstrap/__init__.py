@@ -51,25 +51,25 @@ from ttkbootstrap.widgets import DateEntry, FloodGauge, LabeledScale, M, Meter, 
 from ttkbootstrap.window import Toplevel, Window
 
 # Export subclass-based ttk wrappers instead of monkey-patching ttk
-from ttkbootstrap.widgets.controls.button import Button as Button
-from ttkbootstrap.widgets.display.label import Label as Label
-from ttkbootstrap.widgets.controls.menubutton import Menubutton as Menubutton
-from ttkbootstrap.widgets.controls.checkbutton import Checkbutton as Checkbutton
-from ttkbootstrap.widgets.controls.radiobutton import Radiobutton as Radiobutton
-from ttkbootstrap.widgets.controls.combobox import Combobox as Combobox
-from ttkbootstrap.widgets.controls.entry import Entry as Entry
-from ttkbootstrap.widgets.containers.frame import Frame as Frame
-from ttkbootstrap.widgets.containers.notebook import Notebook as Notebook
-from ttkbootstrap.widgets.containers.labelframe import Labelframe as Labelframe
-from ttkbootstrap.widgets.containers.panedwindow import Panedwindow as Panedwindow
-from ttkbootstrap.widgets.display.progressbar import Progressbar as Progressbar
-from ttkbootstrap.widgets.controls.scale import Scale as Scale
-from ttkbootstrap.widgets.display.scrollbar import Scrollbar as Scrollbar
-from ttkbootstrap.widgets.display.separator import Separator as Separator
-from ttkbootstrap.widgets.display.sizegrip import Sizegrip as Sizegrip
-from ttkbootstrap.widgets.controls.spinbox import Spinbox as Spinbox
-from ttkbootstrap.widgets.dataview.treeview import Treeview as Treeview
-from ttkbootstrap.widgets.controls.optionmenu import OptionMenu as OptionMenu
+from ttkbootstrap.widgets.button import Button as Button
+from ttkbootstrap.widgets.label import Label as Label
+from ttkbootstrap.widgets.menubutton import Menubutton as Menubutton
+from ttkbootstrap.widgets.checkbutton import Checkbutton as Checkbutton
+from ttkbootstrap.widgets.radiobutton import Radiobutton as Radiobutton
+from ttkbootstrap.widgets.combobox import Combobox as Combobox
+from ttkbootstrap.widgets.entry import Entry as Entry
+from ttkbootstrap.widgets.frame import Frame as Frame
+from ttkbootstrap.widgets.notebook import Notebook as Notebook
+from ttkbootstrap.widgets.labelframe import Labelframe as Labelframe
+from ttkbootstrap.widgets.panedwindow import Panedwindow as Panedwindow
+from ttkbootstrap.widgets.progressbar import Progressbar as Progressbar
+from ttkbootstrap.widgets.scale import Scale as Scale
+from ttkbootstrap.widgets.scrollbar import Scrollbar as Scrollbar
+from ttkbootstrap.widgets.separator import Separator as Separator
+from ttkbootstrap.widgets.sizegrip import Sizegrip as Sizegrip
+from ttkbootstrap.widgets.spinbox import Spinbox as Spinbox
+from ttkbootstrap.widgets.treeview import Treeview as Treeview
+from ttkbootstrap.widgets.optionmenu import OptionMenu as OptionMenu
  
 
 # Patch Tk widgets for autostyle

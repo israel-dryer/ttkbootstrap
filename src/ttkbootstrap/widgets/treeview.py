@@ -3,7 +3,7 @@ from __future__ import annotations
 from tkinter import ttk
 from typing import Any, Literal, TypedDict
 from typing_extensions import Unpack
-from .._internal.wrapper_base import TTKWrapperBase
+from ._internal.wrapper_base import TTKWrapperBase
 
 
 class TreeviewKwargs(TypedDict, total=False):
