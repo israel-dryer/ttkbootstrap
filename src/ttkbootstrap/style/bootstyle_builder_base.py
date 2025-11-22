@@ -41,7 +41,7 @@ class BootstyleBuilderBase:
     avoid duplication.
     """
 
-    _RE_TOKEN = re.compile(r"^\s*(?P<head>[a-zA-Z_][\w-]*)(?:\[(?P<mods>[^]]*)])?\s*$")
+    _RE_TOKEN = re.compile(r"^\s*(?P<head>[a-zA-Z_][\w-]*)(?P<brackets>(?:\[[^]]*])*)\s*$")
 
     def __init__(self, theme_provider: ThemeProvider | None = None, style_instance: Any | None = None):  # noqa: ANN401
         # If no provider given, try to derive from style_instance
@@ -71,26 +71,58 @@ class BootstyleBuilderBase:
     # ----- Color Utilities & Transformers -----
 
     def _parse_color_token(self, token: str):
+        """Parse a color token into head and ordered list of modifiers.
+
+        Returns a dict with:
+            - head: The base color name (e.g., "primary")
+            - modifiers: List of (type, value) tuples in order
+        """
         m = self._RE_TOKEN.match(token)
         if not m:
             return None
+
         head = m.group("head")
-        mods_raw = m.group("mods")
-        shade = None
-        subtle = False
-        rel = 0
-        if mods_raw:
-            parts = [p.strip().lower() for p in mods_raw.split("|") if p.strip()]
-            for p in parts:
-                if p.isdigit():
-                    shade = int(p)
-                elif re.fullmatch(r"[+-]\s*\d+", p):
-                    rel += int(p.replace(" ", ""))
-                elif p == "subtle":
-                    subtle = True
-        return {"head": head, "shade": shade, "subtle": subtle, "rel": rel}
+        brackets_raw = m.group("brackets")
+
+        modifiers = []  # List of (type, value) tuples in order
+
+        if brackets_raw:
+            # Extract all bracket contents: [content1][content2] -> ["content1", "content2"]
+            bracket_contents = re.findall(r'\[([^]]*)]', brackets_raw)
+
+            # Process each bracket in order for pipeline
+            for bracket in bracket_contents:
+                part = bracket.strip().lower()
+                if not part:
+                    continue
+
+                if part.isdigit():
+                    modifiers.append(("shade", int(part)))
+                elif re.fullmatch(r'[+-]\s*\d+', part):
+                    rel = int(part.replace(" ", ""))
+                    modifiers.append(("elevation", rel))
+                elif part == "subtle":
+                    modifiers.append(("subtle", None))
+                elif part == "muted":
+                    modifiers.append(("muted", None))
+
+        return {"head": head, "modifiers": modifiers}
 
     def color(self, token: str, surface: str | None = None, role: str = "background") -> str:
+        """Resolve a color token with optional chained modifiers.
+
+        Modifiers are applied as a pipeline from left to right:
+        - primary[100][muted] → lookup primary[100], then apply muted
+        - background[+1][muted] → lookup background, elevate it, then apply muted
+
+        Args:
+            token: Color token (e.g., "primary", "primary[100][muted]")
+            surface: Optional surface color for subtle modifier
+            role: Role for subtle modifier ("background" or "text")
+
+        Returns:
+            The resolved color value as a hex string
+        """
         # Fast path: exact key (e.g., "blue[100]" or "primary")
         direct = self.colors.get(token)
         if direct is not None:
@@ -101,29 +133,35 @@ class BootstyleBuilderBase:
             return self.colors.get(token)
 
         head = parsed["head"]
-        shade = parsed["shade"]
-        subtle = parsed["subtle"]
-        rel = parsed["rel"]
+        modifiers = parsed["modifiers"]
 
-        # Compose the base *key* exactly how the map stores it
-        base_key = f"{head}[{shade}]" if shade is not None else head
+        # Determine base lookup key
+        # If first modifier is a shade, use it for lookup and remove from pipeline
+        base_key = head
+        if modifiers and modifiers[0][0] == "shade":
+            shade_value = modifiers[0][1]
+            base_key = f"{head}[{shade_value}]"
+            modifiers = modifiers[1:]  # Remove shade from pipeline
 
-        # 1) SUBTLE: pass the *token/key* to subtle() so it can do its own lookup/blend
-        if subtle:
-            base = self.subtle(base_key, surface, role)
-        else:
-            # otherwise resolve the base from the map
-            base = self.colors.get(base_key)
-
-        if base is None:
+        # Get the base color
+        current_color = self.colors.get(base_key)
+        if current_color is None:
             # Unknown base; fall back
             return self.colors.get(token)
 
-        # 2) ELEVATION: apply relative elevation to the resolved color
-        if rel:
-            base = self.elevate(base, int(rel))
+        # Apply each modifier in order as a pipeline transformation
+        for mod_type, mod_value in modifiers:
+            if mod_type == "elevation":
+                current_color = self.elevate(current_color, mod_value)
+            elif mod_type == "subtle":
+                # Subtle needs special handling - it does its own lookup
+                # Use the base_key for lookup, not the current transformed color
+                current_color = self.subtle(base_key, surface, role)
+            elif mod_type == "muted":
+                # Muted transforms whatever color we currently have
+                current_color = self.muted_foreground(current_color)
 
-        return base
+        return current_color
 
     def subtle(self, token: str, surface: str | None = None, role: str = "background") -> str:
         """Return a subtle instance of this color for background or text."""
@@ -255,6 +293,54 @@ class BootstyleBuilderBase:
                 unique.append(c)
 
         return best_foreground(color, unique)
+
+    def muted_foreground(self, background: str, min_contrast: float = 4.5) -> str:
+        """Return a muted foreground color with adequate contrast.
+
+        Generates a subdued text color that maintains readability across
+        varying backgrounds by ensuring minimum WCAG contrast requirements.
+
+        Args:
+            background: The background color to contrast against.
+            min_contrast: Minimum WCAG contrast ratio (4.5 for AA, 7.0 for AAA).
+                         Default is 4.5 (AA standard for normal text).
+
+        Returns:
+            A muted foreground color with adequate contrast against the background.
+        """
+        from ttkbootstrap.style.utility import hex_to_rgb, contrast_ratio
+
+        lum = relative_luminance(background)
+        bg_rgb = hex_to_rgb(background)
+
+        # Determine if we need light or dark muted text
+        if lum > 0.5:
+            # Light background -> use muted dark text
+            base_color = "#495057"  # Dark gray
+        else:
+            # Dark background -> use muted light text
+            base_color = "#adb5bd"  # Light gray
+
+        # Check if base muted color has adequate contrast
+        fg_rgb = hex_to_rgb(base_color)
+        ratio = contrast_ratio(bg_rgb, fg_rgb)
+
+        if ratio >= min_contrast:
+            return base_color
+
+        # If not enough contrast, adjust toward pure black/white
+        target = "#000000" if lum > 0.5 else "#ffffff"
+
+        # Binary search for minimum adjustment needed
+        for weight in [0.2, 0.4, 0.6, 0.8, 1.0]:
+            adjusted = mix_colors(target, base_color, weight)
+            adjusted_rgb = hex_to_rgb(adjusted)
+            ratio = contrast_ratio(bg_rgb, adjusted_rgb)
+            if ratio >= min_contrast:
+                return adjusted
+
+        # Fallback to pure contrast
+        return target
 
     def disabled(self, role: str = "background", surface: str | None = None) -> str:
         """Return a disabled color mixed with the surface.
