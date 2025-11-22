@@ -1,24 +1,25 @@
-# Simple Data Entry
-This simple data entry form accepts user input and then prints it to the screen 
-when submitted. 
+# シンプルなデータ入力
 
-![file search image example](../assets/gallery/simple_data_entry_light.png)
+このシンプルなデータ入力フォームは、ユーザー入力を受け取り、送信時に画面に表示します。
 
-![file search image example](../assets/gallery/simple_data_entry_dark.png)
+![データ入力フォーム（ライトテーマ）](../assets/gallery/simple_data_entry_light.png)
 
-## Style Summary
-The two examples above use the themes **litera** and **superhero**.
+![データ入力フォーム（ダークテーマ）](../assets/gallery/simple_data_entry_dark.png)
 
-| Item          | Class     | Bootstyle |
-| ---           | ---       | ---|
-| Submit Button | `Button`  | success |
-| Cancel Button | `Button`  | danger |
-| Inputs        | `Entry`   | default |
+## スタイル概要
+上記の2つの例では、テーマ **litera** と **superhero** が使用されています。
 
-## Example Code
-[Run this code live](https://replit.com/@israel-dryer/data-entry#main.py) on repl.it
+| 項目           | クラス     | Bootstyle |
+| ---            | ---       | ---       |
+| 送信ボタン       | `Button`  | success   |
+| キャンセルボタン   | `Button`  | danger    |
+| 入力欄          | `Entry`   | default   |
+
+## サンプルコード
+[このコードをReplitで実行](https://replit.com/@israel-dryer/data-entry#main.py)
 
 ```python
+
 import ttkbootstrap as ttk
 from ttkbootstrap.constants import *
 
