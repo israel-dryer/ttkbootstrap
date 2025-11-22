@@ -1,20 +1,20 @@
-# PC Cleaner
-This example demonstrates how to use various styles to build a UI for a PC 
-Cleaner application. This is adapted from an image you can find 
-[here](https://images.idgesg.net/images/article/2018/08/cw_win10_utilities_ss_02-100769136-orig.jpg).
+# PCクリーナー
+この例では、さまざまなスタイルを使用してPC用のUIを構築する方法を示します。
+このクリーナーアプリケーションは、次の画像を参考にしています：
+[ここ](https://images.idgesg.net/images/article/2018/08/cw_win10_utilities_ss_02-100769136-orig.jpg).
 
-![file search image example](../assets/gallery/pc_cleaner.png)
+![PCクリーナーの例](../assets/gallery/pc_cleaner.png)
 
-## Style Summary
-The theme used in this example is **pulse**.
+## スタイル概要
+この例で使用されているテーマは **pulse** です。
 
-| Item                  | Class         | Bootstyle |
+| 項目                  | クラス         | Bootstyle |
 | ---                   | ---           | --- |
 | Action buttons        | `Button`      | info |
 | Progressbar           | `Progressbar` | success-striped |
 
-## Example Code
-[Run this code live](https://replit.com/@israel-dryer/pc-cleaner#main.py) on repl.it
+## コード例
+[このコードをオンラインで実行](https://replit.com/@israel-dryer/pc-cleaner#main.py) repl.itで
 
 ```python
 from pathlib import Path

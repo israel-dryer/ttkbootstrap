@@ -1,19 +1,14 @@
-# Themes
+# テーマ
 
-ttkbootstrap comes packaged with a LOT of beautifully styled light and
-dark themes, which you can view in a demo by typing this command into
-your terminal _after installing ttkbootstrap_.
+ttkbootstrapには、美しくスタイルされたライトテーマとダークテーマが多数含まれています。
+インストール後、以下のコマンドをターミナルに入力するとデモを表示できます。
 
 ```shell
 >>> python -m ttkbootstrap
 ```
 
-You will see a demo screen that looks like the image below. Change the
-theme selection in the **Select a theme** combobox and the demo screen
-will update to the new theme.
+以下の画像のようなデモ画面が表示されます。**Select a theme**コンボボックスでテーマを変更すると、デモ画面が新しいテーマに更新されます。
 
-You may also check out the screenshots for the [light themes](light.md) and 
-[dark themes](dark.md).
+また、[ライトテーマ](light.md)や[ダークテーマ](dark.md)のスクリーンショットもご覧いただけます。
 
 ![litera theme](../assets/themes/litera.png)
-

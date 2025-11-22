@@ -1,7 +1,7 @@
-# Gallery
+# ギャラリー
 
-In this section you will find a growing list of ttkbootstrap projects meant to 
-provide inspiration or direction when creating your own applications. These are 
-meant to demonstrate design and are not necessarily fully functional applications.
+このセクションでは、ttkbootstrapプロジェクトの増え続けるリストをご覧いただけます。 
+これらは、独自のアプリケーションを作成する際のインスピレーションや方向性を提供することを目的としています。 
+デザインを示すことを目的としており、必ずしも完全に機能するアプリケーションではありません。
 
-![file search image example](../assets/gallery/back_me_up.png)
+![ファイルバックアップユーティリティの例](../assets/gallery/back_me_up.png)

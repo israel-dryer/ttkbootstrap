@@ -1,17 +1,15 @@
-# Installation
+# インストール
 
-Easy peezy.
+とても簡単です。
 
-!!! note "PyPI Installation"
-    ```bash
-    python -m pip install ttkbootstrap
-    ```
+!!! note "PyPIでのインストール"
+```bash
+python -m pip install ttkbootstrap
+```
 
-Lemon squeezy.
+楽々インストール。
 
-!!! note "Github Installation"
-    ```bash
-    python -m pip install git+https://github.com/israel-dryer/ttkbootstrap
-    ```
-
-
+!!! note "GitHubからのインストール"
+```bash
+python -m pip install git+https://github.com/israel-dryer/ttkbootstrap
+```

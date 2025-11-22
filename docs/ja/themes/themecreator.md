@@ -1,10 +1,8 @@
-# TTK Creator
+# TTKクリエイター
 
-TTK Creator is packaged with ttkbootstrap so that you can modify, save, 
-export, and import themes that you have created.
+ttkbootstrapにはTTK Creatorが同梱されており、作成したテーマを編集、保存、エクスポート、インポートできます。
 
-To run the program, type the following command in the console _after_ you
-have installed **ttkbootstrap**:
+プログラムを実行するには、**ttkbootstrap**をインストールした後、コンソールで次のコマンドを入力します：
 
 ```shell
 python -m ttkcreator
@@ -12,45 +10,34 @@ python -m ttkcreator
 
 ![creator](../assets/ttkcreator/creator.png)
 
-## Create a new theme
+## 新しいテーマを作成
+テーマを変更するためのすべてのコントロールは、左側のコントロールフレームにあります。
 
-All of the controls for changing the theme are on the left-side control 
-frame. 
+1. **name**エントリでテーマ名を入力
+2. **ベーステーマ**を選択します。これにより初期カラーが設定されます
+3. 各カラーキーワードに対して次のいずれかの方法で色を選択します：
+   * 🎨ボタンをクリックしてカラーダイアログから選択
+   * または、16進数または有効なカラー名を入力
+4. **Save**ボタンをクリック
 
-1. Name your theme using the **name** entry
+テーマは `ttkbootstrap.themes.user.py` ファイルに保存されます。
 
-2. Select a **base theme**; this will setup the _initial_ colors
+!!! tip "テーマをリセット"
+カラー選択をリセットしたい場合は、トップメニューの**Reset**オプションをクリックして、
+すべてのカラーを**ベーステーマ**カラーに戻します。
 
-3. Select a color for each color _keyword_ using one of two options
-    
-    * Click the 🎨 button to choose a color from the color dialog
-    * Or, type a _hexadecimal_ or valid color _name_ 
+## TTK Creatorテーマをインポート
+以下の形式のユーザーテーマファイルがある場合、ttkbootstrapにインポートできます。
 
-4. Click the **Save** button
-
-Your theme is now saved in the file `ttkbootstrap.themes.user.py`
-
-!!! tip "Reset your theme"
-    If you want to reset your color choices, you can click the 
-    **Reset** option from the top menu to reset all of the colors
-    to the **base theme** colors.
-
-## Import TTK Creator themes
-
-If you have a user themes file that is in the format specified below, you can 
-import that file into ttkbootstrap. 
-
-1. Click the **Import** button on the top menu
-
-2. Select the themes file you wish to import, then click **Ok** to import
+1. トップメニューの**Import**ボタンをクリック
+2. インポートするテーマファイルを選択し、**Ok**をクリック
 
 !!! warning
-    Importing a user themes file will overwrite the existing user defined
-    themes within ttkbootstrap; so make sure you **export** your existing
-    theme set if you wish to keep it
+ユーザーテーマファイルをインポートすると、既存のユーザー定義テーマが上書きされます。
+保持したい場合は、事前に**Export**してください。
 
-The `user.py` file contains a dictionary of user defined themes. The file that
-you import must match the pattern illustrated below.
+`user.py`ファイルにはユーザー定義テーマの辞書が含まれています。
+インポートするファイルは以下のパターンに一致する必要があります。
 
 ```python
 USER_THEMES = {
@@ -77,16 +64,14 @@ USER_THEMES = {
 }
 ```
 
+## JSONからユーザーテーマをインポート
+`Style.load_user_themes`メソッドを使用してテーマをインポートできます。
+この方法でインポートされたテーマは、実行時にのみプロジェクトに影響し、
+前の例のようにttkbootstrapのソースファイルを変更しません。
+これは、テーマをJSON形式で保存している場合や、特定のプロジェクトでのみテーマを利用したい場合に便利です。
 
-## Import User Themes from JSON
+JSONファイルの形式は次の例と一致する必要があります：
 
-You can import themes using the `Style.load_user_themes` method. Importing themes
-with this method only affects the project at run-time and does not change the
-ttkbootstrap source files as does the previous example. This is handy if you have
-themes stored in JSON format, or if you want a theme available for a specific project
-but not others, etc...
-
-The format of the JSON file must match the following:
 ```json
 {
   "themes": [
@@ -140,16 +125,10 @@ The format of the JSON file must match the following:
 }
 ```
 
+## TTK Creatorテーマをエクスポート
+ユーザー定義テーマは、上記の形式でエクスポートできます。
 
-## Export TTK Creator themes
-
-User defined themes can be exported into the format specified above
-
-1. Click the **Export** button from the top menu
-
-2. Navigate to the location that you wish to export
-
-3. Select a valid file name; the extension is `.py` by default
-
-4. Click **Ok** to save the exported settings
-    
+1. トップメニューの**Export**ボタンをクリック
+2. エクスポート先の場所を選択
+3. 有効なファイル名を選択します（拡張子はデフォルトで`.py`）
+4. **Ok**をクリックして設定を保存

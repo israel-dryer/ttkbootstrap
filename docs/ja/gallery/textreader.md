@@ -1,19 +1,19 @@
-# Text Reader
-This application opens a text file and puts the data into a scrolled `Text` 
-widget. 
+# テキストリーダー
+このアプリケーションはテキストファイルを開き、データをスクロール可能な `Text` ウィジェットに配置します。 
+ウィジェットです。 
 
-![file search image example](../assets/gallery/text_reader.png)  
+![テキストリーダーの例](../assets/gallery/text_reader.png)  
 
-## Style Summary
-The theme applied is **sandstone**.
+## スタイル概要
+適用されているテーマは **sandstone** です。
 
-| Item          | Class     | Bootstyle |
+| 項目          | クラス     | Bootstyle |
 | ---           | ---       | --- |
-| file entry    | `Entry`   | default |
-| Browe button  | `Button`  | default |
+| ファイル入力    | `Entry`   | default |
+| 参照ボタン  | `Button`  | default |
 
-## Example Code
-[Run this code live](https://replit.com/@israel-dryer/text-reader#main.py) on repl.it
+## サンプルコード
+[このコードをライブで実行](https://replit.com/@israel-dryer/text-reader#main.py) repl.it 上で
 
 ```python
 import ttkbootstrap as ttk

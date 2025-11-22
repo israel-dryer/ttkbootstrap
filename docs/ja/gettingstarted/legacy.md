@@ -1,14 +1,12 @@
-# Legacy support
+# レガシーサポート
 
-While `tkinter` widgets are not the focus of the library, I applied some default
-styling for each theme to legacy widgets so that they didn't stick out. A large
-reason for this is that several `ttk` widgets use `tkinter` widget components
-under the hood. So it was necessary to style these as well so that, for example, 
-the popdown list in the **Combobox**, or the **Menu** in the menubutton are
-styled appropriate.
+`tkinter`ウィジェットはこのライブラリの主な対象ではありませんが、
+各テーマに対してレガシーウィジェットにデフォルトのスタイルを適用しました。
+これは、いくつかの`ttk`ウィジェットが内部で`tkinter`ウィジェットコンポーネントを使用しているためです。
+そのため、例えば**Combobox**のポップダウンリストや、メニューボタンの**Menu**が適切にスタイルされるようにする必要がありました。
 
-Below are examples of a light and dark themes using legacy `tkinter` widgets.
+以下は、レガシー`tkinter`ウィジェットを使用したライトテーマとダークテーマの例です。
 
-![legacy light theme](../assets/themes/legacy_light.png)
+![レガシーライトテーマ](../assets/themes/legacy_light.png)
 
-![legacy dark theme](../assets/themes/legacy_dark.png)
+![レガシーダークテーマ](../assets/themes/legacy_dark.png)

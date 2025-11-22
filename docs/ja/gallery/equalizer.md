@@ -1,35 +1,32 @@
-# Equalizer
-This example demonstrates the use of styles to differentiate scale functions. 
-Now for some comments on the code; because I wanted the scale value to be 
-reflected in a label below the scale, this application is a lot more 
-complicated than it really needs to be due to some oddities of the `Scale` 
-implementation. The `Scale` widget outputs a double type, which means that 
-in order to display a nice rounded integer, that number has to be converted 
-when updated. Fortunately, the scale widget has a command parameter for setting 
-a callback. The callback will get the scale value, which can then be converted 
-into a nice clean format. 
+# イコライザー
 
-![file search image example](../assets/gallery/equalizer.png)
+この例では、スタイルを使用してスケール機能を区別する方法を示します。
+コードに関するコメントとして、スケール値をスケールの下にあるラベルに反映させたいので、
+このアプリケーションは `Scale` 実装の特異性により、必要以上に複雑になっています。
+`Scale` ウィジェットは double 型を出力するため、整数に丸めて表示するには値を変換する必要があります。
+幸い、スケールウィジェットにはコマンドパラメータがあり、コールバックを設定できます。
+コールバックはスケール値を取得し、それをきれいな形式に変換できます。
 
-## Style Summary
-The theme used is **litera**.
+![イコライザーの例](../assets/gallery/equalizer.png)
 
-| Item          | Class     | Bootstyle |
-| ---           | ---       | ---       |
-| Volume Scale  | `Scale`   | success   |
-| Gain Scale    | `Scale`   | success   |
-| Other Scales  | `Scale`   | info      |
+## スタイル概要
+この例で使用されているテーマは **litera** です。
 
-!!! note
-    For a vertical orientation, the `from_` parameter corresponds to the top 
-    and `to` corresponds to the bottom of the widget, so you’ll need to take 
-    this into account when you set the minimum and maximum numbers for your 
-    scale range.
+| 項目           | クラス    | Bootstyle |
+| ---            | ---       | ---       |
+| ボリュームスケール | `Scale`  | success   |
+| ゲインスケール    | `Scale`  | success   |
+| その他のスケール   | `Scale`  | info      |
 
-## Example Code
-[Run this code live](https://replit.com/@israel-dryer/equalizer#main.py) on repl.it
+!!! 注意
+垂直方向の場合、`from_` パラメータはウィジェットの上部に対応し、`to` は下部に対応します。
+したがって、スケール範囲の最小値と最大値を設定する際に考慮する必要があります。
+
+## サンプルコード
+[このコードをReplitで実行](https://replit.com/@israel-dryer/equalizer#main.py)
 
 ```python
+
 import ttkbootstrap as ttk
 from ttkbootstrap.constants import *
 from random import randint

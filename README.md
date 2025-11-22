@@ -8,7 +8,7 @@
 ![](https://img.shields.io/github/forks/israel-dryer/ttkbootstrap.svg)
 
 # ttkbootstrap
-English | [中文](README_zh.md)
+English | [日本語](README_ja.md) | [中文](README_zh.md)
 
 ttkbootstrap is a Python library that enhances tkinter by providing modern, flat-style themes inspired by Bootstrap. Easily create stylish GUI applications with built-in themes, pre-defined widget styles, and more.
 

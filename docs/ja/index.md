@@ -8,35 +8,36 @@
 ![](https://img.shields.io/github/stars/israel-dryer/ttkbootstrap.svg)
 ![](https://img.shields.io/github/forks/israel-dryer/ttkbootstrap.svg)
 
-A supercharged theme extension for tkinter that enables on-demand modern 
-flat style themes inspired by [Bootstrap](https://getbootstrap.com/).
+モダンでフラットなスタイルテーマをオンデマンドで利用できる、tkinter用の強化テーマ拡張です。
+[Bootstrap](https://getbootstrap.com/)にインスパイアされています。
 
-## 📦 Features
+## 📦 特徴
+✔️ [**組み込みテーマ**](themes/index.md)  
+ダークテーマとライトテーマを含む十数種類の厳選テーマ。
 
-✔️ [**Built-in Themes**](themes/index.md)   
-Over a dozen curated [dark](themes/dark.md) and [light](themes/light.md) themes  
+✔️ [**事前定義スタイル**](styleguide/index.md)  
+**outline**や**round toggle**ボタンなど、美しいウィジェットスタイルが多数。
 
-✔️ [**Pre-defined Styles:**](styleguide/index.md)  
-Loads of beautiful [pre-defined widget styles](styleguide/index.md) such 
-as **outline** and **round toggle** buttons.
+✔️ [**シンプルなキーワードAPI**](gettingstarted/tutorial.md#use-themed-widgets)  
+**primary**や**striped**などの簡単なキーワードで色やタイプを適用できます。
+従来の**primary.Striped.Horizontal.TProgressbar**のような複雑な指定は不要です。
+Bootstrapを使ったことがある方なら、CSSクラスのようなこのアプローチに馴染みがあるでしょう。
 
-✔️ [**Simple keyword API:**](gettingstarted/tutorial.md#use-themed-widgets)  
-Apply colors and types using [simple keywords](gettingstarted/tutorial.md#use-themed-widgets) 
-such as **primary** and **striped** instead of the legacy approach of 
-**primary.Striped.Horizontal.TProgressbar**. If you've used Bootstrap for
-web development, you are already familiar with this approach using css classes.
+✔️ [**新しいウィジェットが多数**](api/widgets/dateentry.md)  
+**Meter**、**DateEntry**、**Floodgauge**など、美しく設計された新しいウィジェットを搭載。
+さらに、**dialogs**もテーマ対応で完全にカスタマイズ可能です。
 
-✔️ [**Lots of new Widgets:**](api/widgets/dateentry.md)  
-ttkbootstrap comes with several new beautifully designed widgets such 
-as [Meter](api/widgets/meter), [DateEntry](api/widgets/dateentry.md), 
-and [Floodgauge](api/widgets/floodgauge). Additionally, [dialogs](api/dialogs/dialog.md) 
-are now themed and fully customizable.
+✔️ [**テーマ作成機能を内蔵**](themes/themecreator.md)  
+独自のテーマを作りたい？簡単です！テーマ作成ツールでカスタムテーマを構築、読み込み、適用できます。
 
-✔️ [**Built-in Theme Creator:**](themes/themecreator.md)  
-Want to create your own theme? Easy! ttkbootstrap includes a built-in 
-[theme creator](themes/themecreator.md) that enables you to easily build, 
-load, expore, and apply your own custom themes.
-
-## 🎨 Sample Themes
-
+## 🎨 サンプルテーマ
 ![themes](./assets/themes/themes.gif)
+
+## サポート
+このプロジェクトは、JetBrainsが提供する<a href="https://www.jetbrains.com/pycharm/" target="_blank" rel="noopener">PyCharm IDE</a>のサポートを受けて開発されています。
+
+<a href="https://www.jetbrains.com/" target="_blank" rel="noopener">
+<img src="https://github.com/user-attachments/assets/f6d4e79d-97f4-4368-a944-affd423aa922" width="250" alt="jetbrains logo">
+</a>
+
+<sub>© 2025 JetBrains s.r.o. JetBrainsおよびJetBrainsロゴはJetBrains s.r.o.の登録商標です。</sub>
