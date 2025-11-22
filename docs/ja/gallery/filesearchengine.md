@@ -1,8 +1,6 @@
 # ファイル検索エンジン
-このアプリケーションはローカルファイル検索エンジンです that uses threading and a queue 
-to manage IO tasks in order to keep the gui interactive. The `Treeview` updates 
-the results in real-time and sets the focus and view on the most recently 
-inserted result in the results `Treeview`. 
+このアプリケーションは、GUIのインタラクティブ性を維持するため、スレッドとキューを使用してI/Oタスクを管理するローカルファイル検索エンジンです。
+`Treeview`は結果をリアルタイムで更新し、結果`Treeview`内で最も最近挿入された結果にフォーカスとビューを設定します。
 
 ![ファイル検索エンジンの例](../assets/gallery/file_search_engine.png)
 
