@@ -1,19 +1,18 @@
-# Dark themes
+# ダークテーマ
 
-The following dark themes are largly inspired by [https://bootswatch.com/](https://bootswatch.com/)
+以下のダークテーマは、主に[https://bootswatch.com/](https://bootswatch.com/)からインスピレーションを得ています。
 
-![solar theme](../assets/themes/solar.png)
-Source of [inspiration](https://bootswatch.com/solar/)
+![solarテーマ](../assets/themes/solar.png)
+参照: [インスピレーション元](https://bootswatch.com/solar/)
 
-![superhero theme](../assets/themes/superhero.png)
-Source of [inspiration](https://bootswatch.com/superhero/)
+![superheroテーマ](../assets/themes/superhero.png)
+参照: [インスピレーション元](https://bootswatch.com/superhero/)
 
-![darkly theme](../assets/themes/darkly.png)
-Source of [inspiration](https://bootswatch.com/darkly/)
+![darklyテーマ](../assets/themes/darkly.png)
+参照: [インスピレーション元](https://bootswatch.com/darkly/)
 
-![cyborg theme](../assets/themes/cyborg.png)
-Source of [inspiration](https://bootswatch.com/cyborg/)
+![cyborgテーマ](../assets/themes/cyborg.png)
+参照: [インスピレーション元](https://bootswatch.com/cyborg/)
 
-![vapor theme](../assets/themes/vapor.png)
-Source of [inspiration](https://bootswatch.com/vapor/)
-
+![vaporテーマ](../assets/themes/vapor.png)
+参照: [インスピレーション元](https://bootswatch.com/vapor/)
