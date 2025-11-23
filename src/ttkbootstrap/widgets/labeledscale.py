@@ -112,7 +112,7 @@ class LabeledScale(Frame):
             '<<RangeChanged>>': self.scale.bind('<<RangeChanged>>', self._adjust_value),
             '<Configure>': self.bind('<Configure>', self._adjust_value),
             '<Map>': self.bind('<Map>', self._adjust_value),
-            'trace': self._variable.trace('w', self._adjust_value)
+            'trace': self._variable.trace_add('write', self._adjust_value)
         }
 
     def destroy(self):
