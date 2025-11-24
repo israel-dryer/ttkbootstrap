@@ -75,7 +75,7 @@ def build_tk_text(builder: BootstyleBuilderBuilderTk, widget: Any, **options: An
         foreground=fg,
         highlightcolor=accent,
         highlightbackground=border,
-        highlightthickness=1,
+        highlightthickness=0,
         insertbackground=fg,
         selectbackground=accent,
         selectforeground=accent_fg,
