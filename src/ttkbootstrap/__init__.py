@@ -64,6 +64,8 @@ from ttkbootstrap.widgets.separator import Separator as Separator
 from ttkbootstrap.widgets.sizegrip import Sizegrip as Sizegrip
 from ttkbootstrap.widgets.spinbox import Spinbox as Spinbox
 from ttkbootstrap.widgets.treeview import Treeview as Treeview
+from ttkbootstrap.widgets.scrollview import ScrollView as ScrollView
+from ttkbootstrap.widgets.scrolledtext import ScrolledText as ScrolledText
 from ttkbootstrap.widgets.optionmenu import OptionMenu as OptionMenu
 
 # Import custom widgets (after basic widgets to avoid circular imports)
@@ -108,6 +110,8 @@ __all__ = [
     'Meter',
     'Toast',
     'ToolTip',
+    'ScrollView',
+    'ScrolledText',
     'M',
     'TTK_WIDGETS',
     'TK_WIDGETS',
