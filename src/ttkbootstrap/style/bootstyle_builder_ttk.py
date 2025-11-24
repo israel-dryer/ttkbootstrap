@@ -1,15 +1,14 @@
 from __future__ import annotations
 
-import re
 import threading
 from typing import Callable, Dict, Optional
 
 from typing_extensions import Any, ParamSpec, Protocol, TypeVar
 
 from ttkbootstrap.exceptions import BootstyleBuilderError
+from ttkbootstrap.style.bootstyle_builder_base import BootstyleBuilderBase
 from ttkbootstrap.style.element import Element, ElementImage
 from ttkbootstrap.style.theme_provider import ThemeProvider
-from ttkbootstrap.style.bootstyle_builder_base import BootstyleBuilderBase
 
 
 class BuilderCallable(Protocol):
@@ -348,7 +347,7 @@ class BootstyleBuilderTTk(BootstyleBuilderBase):
             return
         self.style.element_create(name, "image", *args, **kwargs)
 
-    def create_style_layout(self, ttk_style: str, element: Element|list[Element]):
+    def create_style_layout(self, ttk_style: str, element: Element | list[Element]):
         if isinstance(element, list):
             self.style.layout(ttk_style, [e.spec() for e in element])
         else:
