@@ -8,7 +8,7 @@ from ttkbootstrap.style.element import Element, ElementImage
 from ttkbootstrap.style.utility import recolor_image
 
 
-@BootstyleBuilderTTk.register_builder('default', 'TScrollbar')
+@BootstyleBuilderTTk.register_builder('square', 'TScrollbar')
 def build_scrollbar_style(b: BootstyleBuilderTTk, ttk_style: str, color: str = None, **options):
     if options.get('orient', 'vertical') == 'vertical':
         build_vertical_scrollbar(b, ttk_style, color, **options)
@@ -181,7 +181,7 @@ def build_vertical_scrollbar(b: BootstyleBuilderTTk, ttk_style: str, color: str 
         lightcolor=[('pressed', thumb_pressed), ('active', thumb_active)],
     )
 
-
+@BootstyleBuilderTTk.register_builder('default', 'TScrollbar')
 @BootstyleBuilderTTk.register_builder('round', 'TScrollbar')
 @BootstyleBuilderTTk.register_builder('rounded', 'TScrollbar')
 def build_rounded_scrollbar_style(b: BootstyleBuilderTTk, ttk_style: str, color: str = None, **options):

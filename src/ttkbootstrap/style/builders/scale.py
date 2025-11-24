@@ -38,7 +38,10 @@ def build_scale_style(b: BootstyleBuilderTTk, ttk_style: str, color: str = 'prim
     padding = b.scale((8, 0, -8, 0)) if orient == "Horizontal" else b.scale((0, 8, 0, -8))
 
     b.create_style_element_image(
-        ElementImage(f"{ttk_style}.{orient}.Scale.slider", handle_normal_img).state_specs(
+        ElementImage(f"{ttk_style}.{orient}.Scale.slider", handle_normal_img,
+                     width=b.scale(24),
+                     height=b.scale(24),
+                     ).state_specs(
             [
                 ('disabled', handle_disabled_img),
                 ('focus', handle_focus_img),

@@ -1,18 +1,16 @@
-from random import choice
-
 import ttkbootstrap as ttk
-from ttkbootstrap import Tk, utility
+from ttkbootstrap import use_style
 from ttkbootstrap.constants import *
 
-utility.enable_high_dpi_awareness()
-
-root = Tk()
-style = ttk.Style()
+root = ttk.Window()
+style = use_style()
 
 
 def change_style():
-    theme = choice(style.theme_names())
-    style.theme_use(theme)
+    if style.theme_use() == 'dark':
+        style.theme_use('light')
+    else:
+        style.theme_use('dark')
 
 
 frame = ttk.Frame(padding=10)
@@ -20,69 +18,55 @@ frame.pack(padx=10, pady=10)
 
 ttk.Meter(
     master=frame,
-    metersize=180,
+    size=180,
     padding=5,
-    amountused=25,
-    amountformat="{:0.1f}",
-    metertype='semi',
-
-    subtext='miles per hour',
+    value=25,
+    value_format="{:0.1f}",
+    meter_type='semi',
+    subtitle='miles per hour',
     interactive=True
-).pack(side=LEFT)
+).pack(side=LEFT, padx=10)
 
 ttk.Meter(
     master=frame,
-    metersize=180,
+    size=180,
     padding=5,
-    amountused=1800,
-    amounttotal=2600,
-    subtext='storage used',
-    textright='gb',
+    value=1800,
+    maxvalue=2600,
+    subtitle='storage used',
+    value_suffix='gb',
     bootstyle='info',
-    stripethickness=10,
+    segment_width=10,
     interactive=True
-).pack(side=LEFT)
+).pack(side=LEFT, padx=10)
 
 ttk.Meter(
     master=frame,
-    metersize=180,
+    size=180,
     padding=5,
-    stripethickness=2,
-    amountused=40,
-    subtext='project capacity',
-    textright='%',
+    segment_width=2,
+    value=40,
+    subtitle='project capacity',
+    value_suffix='%',
     bootstyle='success',
     interactive=True
-).pack(side=LEFT)
+).pack(side=LEFT, padx=10)
 
 ttk.Meter(
     master=frame,
-    metersize=180,
+    size=180,
     padding=5,
-    amounttotal=280,
-    meterthickness=50,
-    arcrange=180,
-    arcoffset=-180,
-    amountused=75,
-    textright='°',
-    subtext='heat temperature',
-    wedgesize=2,
+    value=75,
+    maxvalue=280,
+    arc_range=180,
+    arc_offset=-180,
+    value_suffix='°',
+    subtitle='heat temperature',
+    indicator_width=2,
     bootstyle='danger',
     interactive=True
-).pack(side='left')
+).pack(side='left', padx=10)
 
-meter = ttk.Meter(
-    metersize=100,
-    padding=10,
-    amountused=10,
-    metertype="semi",
-    subtext="Miles per hour",
-    interactive=True,
-    amounttotal=100
-)
-meter.step(-50)
-meter.pack(side=LEFT)
-# btn = ttk.Button(text="Change Theme", command=change_style)
-# btn.grid(row=3, column=0, columnspan=2, padx=10, pady=10)
+ttk.Button(root, text='Change style', command=change_style).pack(padx=10, pady=10)
 
 root.mainloop()

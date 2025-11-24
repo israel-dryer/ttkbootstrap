@@ -30,10 +30,11 @@ WIDGET_CLASS_MAP = {
     'spinbox': 'TSpinbox',
     'menubutton': 'TMenubutton',
     'field': 'TField',
-    'toolbutton': 'Toolbutton'
+    'toolbutton': 'Toolbutton',
+    'tooltip': 'Tooltip'
 }
 
 WIDGET_NAME_MAP = {v: k for k, v in WIDGET_CLASS_MAP.items()}
 CONTAINER_CLASSES = {'TFrame', 'TField'}
-ORIENT_CLASSES = {'TProgressbar', 'TScale', 'TScrollbar', 'TPanedwindow'}
+ORIENT_CLASSES = {'TProgressbar', 'TScale', 'TScrollbar', 'TPanedwindow', 'TSeparator'}
 ICON_CLASSES = {'TLabel', 'TButton', 'TCheckbutton', 'TRadiobutton', 'TMenubutton'}

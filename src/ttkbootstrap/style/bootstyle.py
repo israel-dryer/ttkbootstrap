@@ -206,6 +206,10 @@ class Bootstyle:
         if not bootstyle:
             return widget_class
 
+        # Initialize style_options to empty dict if None
+        if style_options is None:
+            style_options = {}
+
         parsed = parse_bootstyle(bootstyle, widget_class)
         color = parsed['color']
         variant = parsed['variant']

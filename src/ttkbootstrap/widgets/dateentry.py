@@ -30,7 +30,10 @@ from datetime import date, datetime
 from tkinter import Misc
 from typing import Any, Optional, Union
 
-from ttkbootstrap import Button, Entry, Frame
+from tkinter import Button as _Button, Entry as _Entry, Frame as _Frame
+from ttkbootstrap.widgets.button import Button
+from ttkbootstrap.widgets.entry import Entry
+from ttkbootstrap.widgets.frame import Frame
 from ttkbootstrap.constants import END, LEFT, X, YES
 from ttkbootstrap.dialogs import Querybox
 

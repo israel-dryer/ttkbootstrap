@@ -9,7 +9,7 @@ sb = ttk.Scrollbar(root, orient='vertical')
 sb.pack(fill='y', expand=True, padx=20, pady=20, side='left')
 sb.set(0, 1)
 
-sb = ttk.Scrollbar(root, orient='vertical', bootstyle='danger-rounded')
+sb = ttk.Scrollbar(root, orient='vertical', bootstyle='danger-round')
 sb.pack(fill='y', expand=True, padx=20, pady=20, side='left')
 sb.set(0, 1)
 
