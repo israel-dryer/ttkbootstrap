@@ -163,18 +163,18 @@ def build_tk_listbox(builder: BootstyleBuilderBuilderTk, widget: Any, **options:
 def build_tk_menu(builder: BootstyleBuilderBuilderTk, widget: Any, **options: Any) -> None:
     bg = builder.color('background')
     fg = builder.color('foreground')
-    accent = builder.color('primary')
+    accent = builder.active(bg)
     on_accent = builder.on_color(accent)
 
     widget.configure(
         tearoff=False,
         borderwidth=0,
         relief='flat',
-        activebackground=accent,
-        activeforeground=on_accent,
-        background=bg,
         foreground=fg,
-        selectcolor=accent,
+        activeforeground=on_accent,
+        selectcolor=fg,
+        activebackground=accent,
+        background=bg,
     )
 
 

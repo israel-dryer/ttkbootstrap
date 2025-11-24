@@ -44,6 +44,7 @@ from ttkbootstrap.style.bootstyle import Bootstyle
 # Export the new Style implementation and a convenience accessor
 from ttkbootstrap.style.style import Style, use_style
 from ttkbootstrap.window import Toplevel, Window
+from ttkbootstrap.menu import MenuManager, create_menu
 
 # Export subclass-based ttk wrappers FIRST to avoid circular imports
 from ttkbootstrap.widgets.button import Button as Button
@@ -112,6 +113,8 @@ __all__ = [
     'ToolTip',
     'ScrollView',
     'ScrolledText',
+    'MenuManager',
+    'create_menu',
     'M',
     'TTK_WIDGETS',
     'TK_WIDGETS',
