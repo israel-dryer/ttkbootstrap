@@ -35,7 +35,7 @@ class Scrollbar(TTKWrapperBase, ttk.Scrollbar):
             command: Scroll command callback.
             takefocus: Whether the widget participates in focus traversal.
             style: Explicit ttk style name (overrides bootstyle).
-            bootstyle: ttkbootstrap style tokens (e.g., 'primary').
+            bootstyle: ttkbootstrap style tokens (e.g., 'primary', 'danger-square').
             surface_color: Optional surface token; otherwise inherited.
             style_options: Optional dict forwarded to the style builder.
         """
