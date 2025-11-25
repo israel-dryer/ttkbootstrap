@@ -1,9 +1,13 @@
 from __future__ import annotations
 
 from tkinter import ttk
-from typing import Any, Literal, TypedDict
+from typing import Any, Literal, TypedDict, TYPE_CHECKING
 from typing_extensions import Unpack
 from ._internal.wrapper_base import TTKWrapperBase
+from .mixins import TextSignalMixin
+
+if TYPE_CHECKING:
+    from ttkbootstrap.signals import Signal
 
 
 class SpinboxKwargs(TypedDict, total=False):
@@ -15,6 +19,7 @@ class SpinboxKwargs(TypedDict, total=False):
     wrap: bool
     command: Any
     textvariable: Any
+    textsignal: Signal[Any]
     format: str
     width: int
     state: Literal['normal','disabled','readonly'] | str
@@ -30,7 +35,7 @@ class SpinboxKwargs(TypedDict, total=False):
     style_options: dict[str, Any]
 
 
-class Spinbox(TTKWrapperBase, ttk.Spinbox):
+class Spinbox(TextSignalMixin, TTKWrapperBase, ttk.Spinbox):
     """ttkbootstrap wrapper for `ttk.Spinbox` with bootstyle support."""
 
     _ttk_base = ttk.Spinbox
@@ -46,6 +51,7 @@ class Spinbox(TTKWrapperBase, ttk.Spinbox):
             wrap: Whether to wrap between min/max.
             command: Callback when the value changes.
             textvariable: Tk variable linked to the entry text.
+            textsignal: Reactive Signal linked to the text (auto-synced with textvariable).
             format: Display format string.
             width: Widget width in characters.
             state: Widget state.

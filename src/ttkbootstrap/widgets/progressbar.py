@@ -1,9 +1,13 @@
 from __future__ import annotations
 
 from tkinter import ttk
-from typing import Any, Literal, TypedDict
+from typing import Any, Literal, TypedDict, TYPE_CHECKING
 from typing_extensions import Unpack
 from ._internal.wrapper_base import TTKWrapperBase
+from .mixins import SignalMixin
+
+if TYPE_CHECKING:
+    from ttkbootstrap.signals import Signal
 
 
 class ProgressbarKwargs(TypedDict, total=False):
@@ -14,6 +18,7 @@ class ProgressbarKwargs(TypedDict, total=False):
     maximum: float
     value: float
     variable: Any
+    signal: Signal[Any]
     phase: int
     style: str
     class_: str
@@ -26,7 +31,7 @@ class ProgressbarKwargs(TypedDict, total=False):
     style_options: dict[str, Any]
 
 
-class Progressbar(TTKWrapperBase, ttk.Progressbar):
+class Progressbar(SignalMixin, TTKWrapperBase, ttk.Progressbar):
     """ttkbootstrap wrapper for `ttk.Progressbar` with bootstyle support."""
 
     _ttk_base = ttk.Progressbar
@@ -41,6 +46,7 @@ class Progressbar(TTKWrapperBase, ttk.Progressbar):
             maximum: Maximum value.
             value: Current value.
             variable: Tk variable linked to the value.
+            signal: Reactive Signal linked to the value (auto-synced with variable).
             phase: Animation phase for indeterminate mode.
             style: Explicit ttk style name (overrides bootstyle).
             bootstyle: ttkbootstrap style tokens (e.g., 'success', 'striped').
