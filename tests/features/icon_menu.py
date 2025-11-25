@@ -1,6 +1,6 @@
 import ttkbootstrap as ttk
 
-app = ttk.Window()
+app = ttk.Window(size=(400, 300))
 
 
 def change_theme(theme_name):
