@@ -328,6 +328,23 @@ class FontMixin:
         - Always returns Tk-compatible font specifications
     """
 
+    def _init_font_mixin(self, kwargs: dict[str, Any]) -> Any:
+        """Pop and return any incoming font kwarg before widget init."""
+        return kwargs.pop('font', None)
+
+    def __init__(self, *args, **kwargs):
+        """Initialize mixin and process font modifier syntax before tkinter sees it."""
+        # Extract font before passing kwargs to tkinter
+        font_value = self._init_font_mixin(kwargs)
+
+        # Call parent __init__
+        super().__init__(*args, **kwargs)
+
+        # Apply font after widget construction if it was provided
+        if font_value is not None:
+            # Process font modifier syntax and apply
+            self._delegate_font(font_value)
+
     @configure_delegate("font")
     def _delegate_font(self, value: Any = None):
         """Process font modifier syntax or pass through standard font specifications.
