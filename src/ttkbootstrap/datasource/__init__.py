@@ -33,12 +33,14 @@ Usage:
     page1 = ds.get_page(0)
 """
 
+from ttkbootstrap.datasource.base import BaseDataSource
 from ttkbootstrap.datasource.memory_source import MemoryDataSource
 from ttkbootstrap.datasource.sqlite_source import SqliteDataSource
 from ttkbootstrap.datasource.file_source import FileDataSource, FileSourceConfig
 from ttkbootstrap.datasource.types import DataSourceProtocol, Record, Primitive
 
 __all__ = [
+    'BaseDataSource',
     'MemoryDataSource',
     'SqliteDataSource',
     'FileDataSource',

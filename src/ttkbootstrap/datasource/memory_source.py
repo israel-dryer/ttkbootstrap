@@ -46,10 +46,11 @@ import re
 from collections.abc import Sequence
 from typing import Any, Dict, List, Optional, Union, Mapping, Iterable, Tuple
 
+from ttkbootstrap.datasource.base import BaseDataSource
 from ttkbootstrap.datasource.types import Primitive, Record
 
 
-class MemoryDataSource:
+class MemoryDataSource(BaseDataSource):
     """In-memory data manager with pagination, filtering, sorting, and CRUD operations.
 
     Stores all records in memory as dictionaries with automatic ID generation and
@@ -103,9 +104,8 @@ class MemoryDataSource:
         Args:
             page_size: Number of records returned per page when paginating.
         """
-        self.page_size = page_size
+        super().__init__(page_size)
         self._table = "records"
-        self._page = 0
         self._columns: List[str] = []
         self._data: List[Dict[str, Any]] = []
         self._id_index: Dict[Any, int] = {}
@@ -114,21 +114,6 @@ class MemoryDataSource:
         self._filter_predicate = None
         self._sort_keys: List[Tuple[str, bool]] = []
 
-    @staticmethod
-    def _infer_type(value: Any) -> str:
-        """Infer SQL-compatible type from Python value."""
-        if isinstance(value, int):
-            return "INTEGER"
-        elif isinstance(value, float):
-            return "REAL"
-        elif isinstance(value, (bytes, bytearray)):
-            return "BLOB"
-        return "TEXT"
-
-    @staticmethod
-    def _is_mapping(x: Any) -> bool:
-        """Check if value is a mapping (dict-like)."""
-        return isinstance(x, Mapping)
 
     def _rebuild_id_index(self) -> None:
         """Rebuild the ID-to-position index for fast lookups."""
@@ -158,27 +143,6 @@ class MemoryDataSource:
                 used.add(max_id)
         self._rebuild_id_index()
 
-    @staticmethod
-    def _coerce_literal(s: str) -> Any:
-        """Parse string literal into Python value (int, float, bool, None, or str)."""
-        t = s.strip()
-        if (len(t) >= 2 and ((t[0] == t[-1] == "'") or (t[0] == t[-1] == '"'))):
-            return t[1:-1]
-        if t.lower() == "true":
-            return True
-        if t.lower() == "false":
-            return False
-        if t.lower() in ("null", "none"):
-            return None
-        try:
-            return int(t)
-        except Exception:
-            pass
-        try:
-            return float(t)
-        except Exception:
-            pass
-        return t
 
     @staticmethod
     def _like_to_regex(pattern: str) -> re.Pattern:

@@ -39,10 +39,11 @@ import csv
 import sqlite3
 from typing import Any, Dict, List, Optional, Union, Sequence
 
+from ttkbootstrap.datasource.base import BaseDataSource
 from ttkbootstrap.datasource.types import Primitive, Record
 
 
-class SqliteDataSource:
+class SqliteDataSource(BaseDataSource):
     """SQLite-backed data manager with pagination, filtering, sorting, and CRUD operations.
 
     Provides persistent storage using SQLite database with automatic schema inference
@@ -97,25 +98,14 @@ class SqliteDataSource:
             name: Database file path or ':memory:' for an in-memory database.
             page_size: Number of records returned per page during pagination.
         """
+        super().__init__(page_size)
         self.conn = sqlite3.connect(name)
         self.conn.row_factory = sqlite3.Row
-        self.page_size = page_size
         self._table = "records"
         self._where = ""
         self._order_by = ""
-        self._page = 0
         self._columns = []
 
-    @classmethod
-    def _infer_type(cls, value: Any) -> str:
-        """Infer SQL type from Python value."""
-        if isinstance(value, int):
-            return "INTEGER"
-        elif isinstance(value, float):
-            return "REAL"
-        elif isinstance(value, bytes):
-            return "BLOB"
-        return "TEXT"
 
     def set_data(self, records: Union[Sequence[Primitive], Sequence[dict[str, Any]]]):
         """Load records into database, creating table with inferred schema.
