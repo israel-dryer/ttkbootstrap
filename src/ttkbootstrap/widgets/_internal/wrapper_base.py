@@ -41,8 +41,11 @@ class TTKWrapperBase(FontMixin, ConfigureDelegationMixin):
     _ttk_base: type
 
     def __init__(self, *args: Any, **kwargs: Any) -> None:  # type: ignore[override]
+        font_value = self._init_font_mixin(kwargs)
         init_wrapper = Bootstyle.override_ttk_widget_constructor(self._ttk_base.__init__)  # type: ignore[attr-defined]
         init_wrapper(self, *args, **kwargs)
+        if font_value is not None:
+            self._delegate_font(font_value)
 
     def configure(self, cnf: Any | None = None, **kwargs: Any):  # type: ignore[override]
         # First, route custom keys via delegation
