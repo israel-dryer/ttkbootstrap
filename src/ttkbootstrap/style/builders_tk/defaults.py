@@ -168,8 +168,7 @@ def build_tk_menu(builder: BootstyleBuilderBuilderTk, widget: Any, **options: An
 
     widget.configure(
         tearoff=False,
-        borderwidth=0,
-        relief='flat',
+        borderwidth=1,
         foreground=fg,
         activeforeground=on_accent,
         selectcolor=fg,
