@@ -1,9 +1,13 @@
 from __future__ import annotations
 
 from tkinter import ttk
-from typing import Any, TypedDict
+from typing import Any, TypedDict, TYPE_CHECKING
 from typing_extensions import Unpack
 from ._internal.wrapper_base import TTKWrapperBase
+from .mixins import SignalMixin
+
+if TYPE_CHECKING:
+    from ttkbootstrap.signals import Signal
 
 
 class ScaleKwargs(TypedDict, total=False):
@@ -12,6 +16,7 @@ class ScaleKwargs(TypedDict, total=False):
     to: float
     value: float
     variable: Any
+    signal: 'Signal[Any]'
     orient: Any
     length: Any
     command: Any
@@ -27,7 +32,7 @@ class ScaleKwargs(TypedDict, total=False):
     style_options: dict[str, Any]
 
 
-class Scale(TTKWrapperBase, ttk.Scale):
+class Scale(SignalMixin, TTKWrapperBase, ttk.Scale):
     """ttkbootstrap wrapper for `ttk.Scale` with bootstyle support."""
 
     _ttk_base = ttk.Scale
@@ -40,6 +45,7 @@ class Scale(TTKWrapperBase, ttk.Scale):
             to: Maximum value.
             value: Initial value.
             variable: Tk variable linked to the value.
+            signal: Reactive Signal linked to the value (auto-synced with variable).
             orient: Orientation of the scale.
             length: Scale length.
             command: Callback on value change.

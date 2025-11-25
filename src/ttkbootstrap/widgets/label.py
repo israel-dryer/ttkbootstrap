@@ -1,10 +1,13 @@
 from __future__ import annotations
 
 from tkinter import ttk
-from typing import Any, Literal, TypedDict
+from typing import Any, Literal, TypedDict, TYPE_CHECKING
 from typing_extensions import Unpack
 from ._internal.wrapper_base import TTKWrapperBase
-from .mixins.icon_mixin import IconMixin
+from .mixins import IconMixin, TextSignalMixin
+
+if TYPE_CHECKING:
+    from ttkbootstrap.signals import Signal
 
 
 class LabelKwargs(TypedDict, total=False):
@@ -29,6 +32,7 @@ class LabelKwargs(TypedDict, total=False):
     cursor: str
     name: str
     textvariable: Any
+    textsignal: 'Signal[str]'
 
     # ttkbootstrap-specific extensions
     bootstyle: str
@@ -36,7 +40,7 @@ class LabelKwargs(TypedDict, total=False):
     style_options: dict[str, Any]
 
 
-class Label(IconMixin, TTKWrapperBase, ttk.Label):
+class Label(TextSignalMixin, IconMixin, TTKWrapperBase, ttk.Label):
     """ttkbootstrap wrapper for `ttk.Label` with bootstyle and icon support."""
 
     _ttk_base = ttk.Label
@@ -46,6 +50,8 @@ class Label(IconMixin, TTKWrapperBase, ttk.Label):
 
         Keyword Args:
             text: Text to display in the label.
+            textvariable: Tk variable linked to the label text.
+            textsignal: Reactive Signal linked to the label text (auto-synced with textvariable).
             image: Image to display.
             icon: Theme-aware icon spec handled by the style system.
             compound: Placement of the image relative to text.

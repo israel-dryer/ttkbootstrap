@@ -1,14 +1,19 @@
 from __future__ import annotations
 
 from tkinter import ttk
-from typing import Any, Literal, Optional, TypedDict
+from typing import Any, Literal, Optional, TypedDict, TYPE_CHECKING
 from typing_extensions import Unpack
 from ._internal.wrapper_base import TTKWrapperBase
+from .mixins import TextSignalMixin
+
+if TYPE_CHECKING:
+    from ttkbootstrap.signals import Signal
 
 
 class EntryKwargs(TypedDict, total=False):
     # Standard ttk.Entry options
     textvariable: Any
+    textsignal: 'Signal[str]'
     show: Any
     width: int
     exportselection: bool
@@ -33,7 +38,7 @@ class EntryKwargs(TypedDict, total=False):
     style_options: dict[str, Any]
 
 
-class Entry(TTKWrapperBase, ttk.Entry):
+class Entry(TextSignalMixin, TTKWrapperBase, ttk.Entry):
     """ttkbootstrap wrapper for `ttk.Entry` with bootstyle support."""
 
     _ttk_base = ttk.Entry
@@ -43,6 +48,7 @@ class Entry(TTKWrapperBase, ttk.Entry):
 
         Keyword Args:
             textvariable: Tk variable linked to the entry text.
+            textsignal: Reactive Signal linked to the entry text (auto-synced with textvariable).
             show: Substitute character for masked input.
             width: Width in characters.
             exportselection: Whether selection is exported to X clipboard.

@@ -1,10 +1,13 @@
 from __future__ import annotations
 
 from tkinter import ttk
-from typing import Any, Callable, Literal, Optional, TypedDict
+from typing import Any, Callable, Literal, Optional, TypedDict, TYPE_CHECKING
 from typing_extensions import Unpack
 from ._internal.wrapper_base import TTKWrapperBase
-from .mixins.icon_mixin import IconMixin
+from .mixins import IconMixin, SignalMixin, TextSignalMixin
+
+if TYPE_CHECKING:
+    from ttkbootstrap.signals import Signal
 
 
 class CheckbuttonKwargs(TypedDict, total=False):
@@ -15,6 +18,7 @@ class CheckbuttonKwargs(TypedDict, total=False):
     icon: Any
     compound: Literal['text','image','top','bottom','left','right','center','none'] | str
     variable: Any
+    signal: 'Signal[Any]'
     onvalue: Any
     offvalue: Any
     padding: Any
@@ -27,6 +31,7 @@ class CheckbuttonKwargs(TypedDict, total=False):
     cursor: str
     name: str
     textvariable: Any
+    textsignal: 'Signal[str]'
 
     # ttkbootstrap-specific extensions
     bootstyle: str
@@ -34,7 +39,7 @@ class CheckbuttonKwargs(TypedDict, total=False):
     style_options: dict[str, Any]
 
 
-class Checkbutton(IconMixin, TTKWrapperBase, ttk.Checkbutton):
+class Checkbutton(SignalMixin, TextSignalMixin, IconMixin, TTKWrapperBase, ttk.Checkbutton):
     """ttkbootstrap wrapper for `ttk.Checkbutton` with bootstyle and icon support."""
 
     _ttk_base = ttk.Checkbutton
@@ -44,11 +49,14 @@ class Checkbutton(IconMixin, TTKWrapperBase, ttk.Checkbutton):
 
         Keyword Args:
             text: Text to display.
+            textvariable: Tk variable linked to the text.
+            textsignal: Reactive Signal linked to the text (auto-synced with textvariable).
             command: Callable invoked when the value toggles.
             image: Image to display.
             icon: Theme-aware icon spec handled by the style system.
             compound: Placement of the image relative to text.
             variable: Linked variable controlling the on/off state.
+            signal: Reactive Signal controlling the on/off state (auto-synced with variable).
             onvalue: Value set in `variable` when selected.
             offvalue: Value set in `variable` when deselected.
             padding: Extra space around the content.

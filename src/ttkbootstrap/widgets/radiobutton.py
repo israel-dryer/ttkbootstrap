@@ -1,10 +1,13 @@
 from __future__ import annotations
 
 from tkinter import ttk
-from typing import Any, Callable, Literal, Optional, TypedDict
+from typing import Any, Callable, Literal, Optional, TypedDict, TYPE_CHECKING
 from typing_extensions import Unpack
 from ._internal.wrapper_base import TTKWrapperBase
-from .mixins.icon_mixin import IconMixin
+from .mixins import IconMixin, SignalMixin, TextSignalMixin
+
+if TYPE_CHECKING:
+    from ttkbootstrap.signals import Signal
 
 
 class RadiobuttonKwargs(TypedDict, total=False):
@@ -15,6 +18,7 @@ class RadiobuttonKwargs(TypedDict, total=False):
     icon: Any
     compound: Literal['text','image','top','bottom','left','right','center','none'] | str
     variable: Any
+    signal: 'Signal[Any]'
     value: Any
     padding: Any
     width: int
@@ -26,6 +30,7 @@ class RadiobuttonKwargs(TypedDict, total=False):
     cursor: str
     name: str
     textvariable: Any
+    textsignal: 'Signal[str]'
 
     # ttkbootstrap-specific extensions
     bootstyle: str
@@ -33,7 +38,7 @@ class RadiobuttonKwargs(TypedDict, total=False):
     style_options: dict[str, Any]
 
 
-class Radiobutton(IconMixin, TTKWrapperBase, ttk.Radiobutton):
+class Radiobutton(SignalMixin, TextSignalMixin, IconMixin, TTKWrapperBase, ttk.Radiobutton):
     """ttkbootstrap wrapper for `ttk.Radiobutton` with bootstyle and icon support."""
 
     _ttk_base = ttk.Radiobutton
@@ -43,11 +48,14 @@ class Radiobutton(IconMixin, TTKWrapperBase, ttk.Radiobutton):
 
         Keyword Args:
             text: Text to display.
+            textvariable: Tk variable linked to the text.
+            textsignal: Reactive Signal linked to the text (auto-synced with textvariable).
             command: Callable invoked when the value is selected.
             image: Image to display.
             icon: Theme-aware icon spec handled by the style system.
             compound: Placement of the image relative to text.
             variable: Linked tk variable that receives the selected value.
+            signal: Reactive Signal that receives the selected value (auto-synced with variable).
             value: The value assigned to `variable` when this radio is selected.
             padding: Extra space around the content.
             width: Width of the control in characters.

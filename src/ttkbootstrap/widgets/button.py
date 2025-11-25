@@ -1,11 +1,14 @@
 from __future__ import annotations
 
 from tkinter import ttk
-from typing import Any, Callable, Literal, Optional, TypedDict
+from typing import Any, Callable, Literal, Optional, TypedDict, TYPE_CHECKING
 from typing_extensions import Unpack
 
 from ._internal.wrapper_base import TTKWrapperBase
-from .mixins.icon_mixin import IconMixin
+from .mixins import IconMixin, TextSignalMixin
+
+if TYPE_CHECKING:
+    from ttkbootstrap.signals import Signal
 
 
 class ButtonKwargs(TypedDict, total=False):
@@ -26,6 +29,7 @@ class ButtonKwargs(TypedDict, total=False):
     default: Any
     name: str
     textvariable: Any
+    textsignal: 'Signal[str]'
 
     # ttkbootstrap-specific extensions
     bootstyle: str
@@ -33,7 +37,7 @@ class ButtonKwargs(TypedDict, total=False):
     style_options: dict[str, Any]
 
 
-class Button(IconMixin, TTKWrapperBase, ttk.Button):
+class Button(TextSignalMixin, IconMixin, TTKWrapperBase, ttk.Button):
     """TTK Bootstrap Button
 
     ttkbootstrap wrapper for `ttk.Button` with bootstyle and icon support.
@@ -45,6 +49,8 @@ class Button(IconMixin, TTKWrapperBase, ttk.Button):
 
         Keyword Args:
             text: Text to display on the button.
+            textvariable: Tk variable linked to the button text.
+            textsignal: Reactive Signal linked to the button text (auto-synced with textvariable).
             command: Callable invoked when the button is pressed.
             image: Image to display on the button.
             icon: Optional icon spec integrated via the style system. Preferred
