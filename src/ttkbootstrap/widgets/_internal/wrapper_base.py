@@ -26,13 +26,16 @@ from ttkbootstrap.widgets.mixins.configure_mixin import (
     ConfigureDelegationMixin,
     configure_delegate,
 )
+from ttkbootstrap.widgets.mixins.font_mixin import FontMixin
 
 
-class TTKWrapperBase(ConfigureDelegationMixin):
+class TTKWrapperBase(FontMixin, ConfigureDelegationMixin):
     """Base class for all ttk wrapper widgets.
 
     Subclasses must set `_ttk_base` to the underlying ttk class and inherit
     from that ttk class as well (MRO: WrapperBase, ttk.Class).
+
+    Includes FontMixin for font modifier syntax support.
     """
 
     _ttk_base: type
