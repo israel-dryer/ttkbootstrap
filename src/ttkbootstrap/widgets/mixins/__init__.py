@@ -6,6 +6,7 @@ from ttkbootstrap.widgets.mixins.configure_mixin import (
 )
 from ttkbootstrap.widgets.mixins.font_mixin import FontMixin
 from ttkbootstrap.widgets.mixins.icon_mixin import IconMixin
+from ttkbootstrap.widgets.mixins.signal_mixin import SignalMixin, TextSignalMixin
 from ttkbootstrap.widgets.mixins.validation_mixin import ValidationMixin
 
 __all__ = [
@@ -13,5 +14,7 @@ __all__ = [
     "configure_delegate",
     "FontMixin",
     "IconMixin",
+    "SignalMixin",
+    "TextSignalMixin",
     "ValidationMixin",
 ]
