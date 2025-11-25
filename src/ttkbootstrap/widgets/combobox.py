@@ -1,17 +1,22 @@
 from __future__ import annotations
 
 from tkinter import ttk
-from typing import Any, Literal, TypedDict
+from typing import Any, Literal, TypedDict, TYPE_CHECKING
 
 from typing_extensions import Unpack
 
 from ._internal.wrapper_base import TTKWrapperBase
+from .mixins import TextSignalMixin
+
+if TYPE_CHECKING:
+    from ttkbootstrap.signals import Signal
 
 
 class ComboboxKwargs(TypedDict, total=False):
     # Standard ttk.Combobox options
     values: Any
     textvariable: Any
+    textsignal: Signal[Any]
     state: Literal['normal', 'readonly', 'disabled'] | str
     width: int
     height: int
@@ -33,7 +38,7 @@ class ComboboxKwargs(TypedDict, total=False):
     style_options: dict[str, Any]
 
 
-class Combobox(TTKWrapperBase, ttk.Combobox):
+class Combobox(TextSignalMixin, TTKWrapperBase, ttk.Combobox):
     """ttkbootstrap wrapper for `ttk.Combobox` with bootstyle support."""
 
     _ttk_base = ttk.Combobox
@@ -44,6 +49,7 @@ class Combobox(TTKWrapperBase, ttk.Combobox):
         Keyword Args:
             values: Sequence of values to display.
             textvariable: Tk variable linked to the selected value.
+            textsignal: Reactive Signal linked to the text (auto-synced with textvariable).
             state: Widget state; 'readonly' restricts to list items.
             width: Width in characters.
             height: Maximum rows shown in the drop-down list.
