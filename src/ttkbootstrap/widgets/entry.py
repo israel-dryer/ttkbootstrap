@@ -13,7 +13,7 @@ if TYPE_CHECKING:
 class EntryKwargs(TypedDict, total=False):
     # Standard ttk.Entry options
     textvariable: Any
-    textsignal: 'Signal[str]'
+    textsignal: Signal[str]
     show: Any
     width: int
     exportselection: bool

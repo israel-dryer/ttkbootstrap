@@ -18,7 +18,7 @@ class RadiobuttonKwargs(TypedDict, total=False):
     icon: Any
     compound: Literal['text','image','top','bottom','left','right','center','none'] | str
     variable: Any
-    signal: 'Signal[Any]'
+    signal: Signal[Any]
     value: Any
     padding: Any
     width: int
@@ -30,7 +30,7 @@ class RadiobuttonKwargs(TypedDict, total=False):
     cursor: str
     name: str
     textvariable: Any
-    textsignal: 'Signal[str]'
+    textsignal: Signal[str]
 
     # ttkbootstrap-specific extensions
     bootstyle: str

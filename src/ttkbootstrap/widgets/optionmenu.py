@@ -1,13 +1,18 @@
 from __future__ import annotations
 
 from tkinter import ttk
-from typing import Any, TypedDict
+from typing import Any, TypedDict, TYPE_CHECKING
 from typing_extensions import Unpack
 from ._internal.wrapper_base import TTKWrapperBase
+from .mixins import SignalMixin
+
+if TYPE_CHECKING:
+    from ttkbootstrap.signals import Signal
 
 
 class OptionMenuKwargs(TypedDict, total=False):
     # Standard ttk.OptionMenu keyword options (positional args handled separately)
+    signal: Signal[Any]
     style: str
     class_: str
     cursor: str
@@ -19,7 +24,7 @@ class OptionMenuKwargs(TypedDict, total=False):
     style_options: dict[str, Any]
 
 
-class OptionMenu(TTKWrapperBase, ttk.OptionMenu):
+class OptionMenu(SignalMixin, TTKWrapperBase, ttk.OptionMenu):
     """ttkbootstrap wrapper for `ttk.OptionMenu` with bootstyle support.
 
     Note:
@@ -36,6 +41,8 @@ class OptionMenu(TTKWrapperBase, ttk.OptionMenu):
             *om_args: `(variable, default, *values)` as required by ttk.OptionMenu.
 
         Keyword Args:
+            signal: Reactive Signal linked to the variable (auto-synced with the variable
+                passed as the first positional argument).
             style: Explicit ttk style name (overrides bootstyle).
             bootstyle: ttkbootstrap style tokens.
             surface_color: Optional surface token; otherwise inherited.

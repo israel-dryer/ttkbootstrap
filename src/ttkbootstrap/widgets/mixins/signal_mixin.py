@@ -170,6 +170,18 @@ class TextSignalMixin:
         entry.configure(textsignal=Signal("new"))
     """
 
+    def __init__(self, *args, **kwargs):
+        """Initialize mixin and extract textsignal parameter before tkinter sees it."""
+        # Extract textsignal before passing kwargs to tkinter
+        textsignal_value = kwargs.pop('textsignal', None)
+
+        # Call parent __init__
+        super().__init__(*args, **kwargs)
+
+        # Apply textsignal after widget construction
+        if textsignal_value is not None:
+            self._config_delegate_set('textsignal', textsignal_value)
+
     @configure_delegate("textvariable", "textsignal")
     def _delegate_textsignal(self, value: Any = None):
         """Handle textvariable and textsignal configuration.
@@ -320,6 +332,18 @@ class SignalMixin:
         # Runtime configuration
         cb.configure(signal=Signal(True))
     """
+
+    def __init__(self, *args, **kwargs):
+        """Initialize mixin and extract signal parameter before tkinter sees it."""
+        # Extract signal before passing kwargs to tkinter
+        signal_value = kwargs.pop('signal', None)
+
+        # Call parent __init__
+        super().__init__(*args, **kwargs)
+
+        # Apply signal after widget construction
+        if signal_value is not None:
+            self._config_delegate_set('signal', signal_value)
 
     @configure_delegate("variable", "signal")
     def _delegate_signal(self, value: Any = None):

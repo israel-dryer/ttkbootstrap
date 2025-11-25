@@ -1,10 +1,14 @@
 from __future__ import annotations
 
 from tkinter import ttk
-from typing import Any, Literal, Optional, TypedDict
+from typing import Any, Literal, Optional, TypedDict, TYPE_CHECKING
 from typing_extensions import Unpack
 from ._internal.wrapper_base import TTKWrapperBase
 from .mixins.icon_mixin import IconMixin
+from .mixins import TextSignalMixin
+
+if TYPE_CHECKING:
+    from ttkbootstrap.signals import Signal
 
 
 class MenubuttonKwargs(TypedDict, total=False):
@@ -23,6 +27,7 @@ class MenubuttonKwargs(TypedDict, total=False):
     cursor: str
     name: str
     textvariable: Any
+    textsignal: Signal[Any]
 
     # ttkbootstrap-specific extensions
     bootstyle: str
@@ -30,7 +35,7 @@ class MenubuttonKwargs(TypedDict, total=False):
     style_options: dict[str, Any]
 
 
-class Menubutton(IconMixin, TTKWrapperBase, ttk.Menubutton):
+class Menubutton(TextSignalMixin, IconMixin, TTKWrapperBase, ttk.Menubutton):
     """ttkbootstrap wrapper for `ttk.Menubutton` with bootstyle and icon support."""
 
     _ttk_base = ttk.Menubutton
@@ -48,6 +53,8 @@ class Menubutton(IconMixin, TTKWrapperBase, ttk.Menubutton):
             padding: Extra space around the content.
             state: Widget state.
             takefocus: Whether the widget participates in focus traversal.
+            textvariable: Tk variable linked to the text.
+            textsignal: Reactive Signal linked to the text (auto-synced with textvariable).
             style: Explicit ttk style name (overrides bootstyle).
             bootstyle: ttkbootstrap style tokens (e.g., 'primary', 'ghost').
             surface_color: Optional surface token; otherwise inherited.

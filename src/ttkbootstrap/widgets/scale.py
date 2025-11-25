@@ -16,7 +16,7 @@ class ScaleKwargs(TypedDict, total=False):
     to: float
     value: float
     variable: Any
-    signal: 'Signal[Any]'
+    signal: Signal[Any]
     orient: Any
     length: Any
     command: Any

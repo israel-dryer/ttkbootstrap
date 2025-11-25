@@ -29,7 +29,7 @@ class ButtonKwargs(TypedDict, total=False):
     default: Any
     name: str
     textvariable: Any
-    textsignal: 'Signal[str]'
+    textsignal: Signal[str]
 
     # ttkbootstrap-specific extensions
     bootstyle: str

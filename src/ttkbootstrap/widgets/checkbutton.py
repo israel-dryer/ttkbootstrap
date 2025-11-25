@@ -18,7 +18,7 @@ class CheckbuttonKwargs(TypedDict, total=False):
     icon: Any
     compound: Literal['text','image','top','bottom','left','right','center','none'] | str
     variable: Any
-    signal: 'Signal[Any]'
+    signal: Signal[Any]
     onvalue: Any
     offvalue: Any
     padding: Any
@@ -31,7 +31,7 @@ class CheckbuttonKwargs(TypedDict, total=False):
     cursor: str
     name: str
     textvariable: Any
-    textsignal: 'Signal[str]'
+    textsignal: Signal[str]
 
     # ttkbootstrap-specific extensions
     bootstyle: str

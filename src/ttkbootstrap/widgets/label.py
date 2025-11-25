@@ -32,7 +32,7 @@ class LabelKwargs(TypedDict, total=False):
     cursor: str
     name: str
     textvariable: Any
-    textsignal: 'Signal[str]'
+    textsignal: Signal[str]
 
     # ttkbootstrap-specific extensions
     bootstyle: str
