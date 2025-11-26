@@ -85,6 +85,10 @@ from ttkbootstrap.widgets import M, TTK_WIDGETS, TK_WIDGETS
 from ttkbootstrap.style.tk_patch import install_tk_autostyle
 install_tk_autostyle()
 
+# Install enhanced event system
+from ttkbootstrap.events import install_enhanced_events
+install_enhanced_events()
+
 # Note: Type annotations for widgets are now in the actual widget classes
 # (widgets/button.py, widgets/label.py, etc.) - no TYPE_CHECKING stubs needed
 
