@@ -1,6 +1,11 @@
+"""Validation mixin for widgets with enhanced event system.
+
+This mixin provides validation functionality using the enhanced event system
+that allows passing data directly through virtual events.
+"""
+
 from __future__ import annotations
 
-from collections import deque
 from tkinter import TclError
 from tkinter.ttk import Widget
 from typing import Any, Callable, Optional
@@ -10,41 +15,56 @@ from ttkbootstrap.validation.types import RuleTriggerType, RuleType, ValidationO
 
 
 class ValidationMixin(Widget):
-    """
-    Pure-Tkinter validation mixin for bound widgets.
+    """Pure-Tkinter validation mixin for bound widgets.
 
-    - Debounced auto-validate on key/blur
-    - Emits virtual events with payload:
-        <<Tkb-Valid>>, <<Tkb-Invalid>>, <<Tkb-Validated>>
-    - Payload is retrieved via get_event_payload(event_name)
+    Features:
+        - Debounced auto-validate on key/blur
+        - Emits virtual events with data payload:
+            <<Valid>>, <<Invalid>>, <<Validated>>
+        - Event data accessible via event.data in handlers
+
+    Events:
+        <<Valid>>: Fired when validation passes
+            event.data = {"value": Any, "is_valid": True, "message": str}
+
+        <<Invalid>>: Fired when validation fails
+            event.data = {"value": Any, "is_valid": False, "message": str}
+
+        <<Validated>>: Fired after any validation
+            event.data = {"value": Any, "is_valid": bool, "message": str}
+
+    Example:
+        ```python
+        import ttkbootstrap as ttk
+        from ttkbootstrap.widgets.parts import TextEntryPart
+
+        root = ttk.Window()
+        entry = TextEntryPart(root)
+        entry.pack()
+
+        # Add validation rules
+        entry.add_validation_rule('required', message='Field is required')
+        entry.add_validation_rule('min_length', min_length=5, message='Min 5 chars')
+
+        # Bind to validation events
+        def on_invalid(event):
+            print(f"Invalid: {event.data['message']}")
+
+        entry.bind('<<Invalid>>', on_invalid)
+        root.mainloop()
+        ```
     """
 
-    EVENT_VALID = '<<Tkb-Valid>>'
-    EVENT_INVALID = '<<Tkb-Invalid>>'
-    EVENT_VALIDATED = '<<Tkb-Validated>>'
+    EVENT_VALID = '<<Valid>>'
+    EVENT_INVALID = '<<Invalid>>'
+    EVENT_VALIDATED = '<<Validated>>'
     SEQ_KEYUP = '<KeyRelease>'
     SEQ_BLUR = '<FocusOut>'
 
     def __init__(self, *args, **kwargs):
+        """Initialize validation mixin."""
         # Validation rules
         self._rules: list[ValidationRule] = []
-
-        # Per-event payload queues and state
-        self._emit_queue: dict[str, deque[dict[str, Any]]] = {
-            self.EVENT_VALID: deque(),
-            self.EVENT_INVALID: deque(),
-            self.EVENT_VALIDATED: deque(),
-        }
-        self._emit_flushing: dict[str, bool] = {
-            self.EVENT_VALID: False,
-            self.EVENT_INVALID: False,
-            self.EVENT_VALIDATED: False,
-        }
-        self._payload_by_event: dict[str, dict[str, Any]] = {
-            self.EVENT_VALID: {},
-            self.EVENT_INVALID: {},
-            self.EVENT_VALIDATED: {},
-        }
 
         # Debounce tracking
         self._debounce_ids: dict[str, str] = {}
@@ -60,7 +80,11 @@ class ValidationMixin(Widget):
     # ---------------- Public API ----------------
 
     def value(self) -> Any:
-        """Default value accessor; override for non-Entry widgets."""
+        """Default value accessor; override for non-Entry widgets.
+
+        Returns:
+            Current widget value
+        """
         if hasattr(self, 'get'):
             try:
                 return self.get()
@@ -69,17 +93,56 @@ class ValidationMixin(Widget):
         return None
 
     def add_validation_rule(self, rule_type: RuleType, **kwargs: ValidationOptions) -> None:
-        """Add a single validation rule."""
+        """Add a single validation rule.
+
+        Args:
+            rule_type: Type of validation rule (e.g., 'required', 'min_length')
+            **kwargs: Rule-specific options (e.g., min_length=5, message='...')
+
+        Example:
+            ```python
+            entry.add_validation_rule('required', message='Field is required')
+            entry.add_validation_rule('email', message='Invalid email')
+            ```
+        """
         self._rules.append(ValidationRule(rule_type, **kwargs))
 
     def add_validation_rules(self, rules: list[ValidationRule]) -> None:
-        """Replace all validation rules."""
+        """Replace all validation rules.
+
+        Args:
+            rules: List of ValidationRule objects
+
+        Example:
+            ```python
+            from ttkbootstrap.validation import ValidationRule
+
+            rules = [
+                ValidationRule('required'),
+                ValidationRule('min_length', min_length=5)
+            ]
+            entry.add_validation_rules(rules)
+            ```
+        """
         self._rules = list(rules)
 
     def validate(self, value: Any, trigger: RuleTriggerType = "manual") -> bool:
-        """
-        Run validation rules against a raw/model value.
-        Emits events with payload when rules run.
+        """Run validation rules against a value.
+
+        Emits <<Valid>>, <<Invalid>>, and <<Validated>> events
+        with data payload containing validation results.
+
+        Args:
+            value: Value to validate
+            trigger: Trigger type ('manual', 'key', 'blur', or 'always')
+
+        Returns:
+            True if validation was performed (regardless of result)
+
+        Example:
+            ```python
+            is_valid = entry.validate(entry.value(), trigger='manual')
+            ```
         """
         ran_rule = False
         payload: dict[str, Any] = {"value": value, "is_valid": True, "message": ""}
@@ -93,43 +156,85 @@ class ValidationMixin(Widget):
             payload.update(is_valid=result.is_valid, message=result.message)
 
             if not result.is_valid:
-                self._emit_with_payload(self.EVENT_INVALID, payload)
-                self._emit_with_payload(self.EVENT_VALIDATED, payload)
+                # Emit invalid and validated events with data
+                self.event_generate(self.EVENT_INVALID, data=payload)
+                self.event_generate(self.EVENT_VALIDATED, data=payload)
                 return False
 
         if ran_rule:
-            self._emit_with_payload(self.EVENT_VALID, payload)
-            self._emit_with_payload(self.EVENT_VALIDATED, payload)
+            # Emit valid and validated events with data
+            self.event_generate(self.EVENT_VALID, data=payload)
+            self.event_generate(self.EVENT_VALIDATED, data=payload)
 
         return ran_rule
 
-    def get_event_payload(self, event_name: str) -> dict[str, Any]:
-        """Read the most recent payload for a given virtual event."""
-        return dict(self._payload_by_event.get(event_name, {}))
-
     # Optional: ergonomic callback registration
     def on_invalid(self, func: Callable[[dict[str, Any]], None]) -> None:
+        """Register callback for invalid validation.
+
+        Args:
+            func: Callback receiving validation data dict
+
+        Example:
+            ```python
+            def handle_invalid(data):
+                print(f"Invalid: {data['message']}")
+
+            entry.on_invalid(handle_invalid)
+            ```
+        """
         self._on_invalid_command = func
 
     def on_valid(self, func: Callable[[dict[str, Any]], None]) -> None:
+        """Register callback for valid validation.
+
+        Args:
+            func: Callback receiving validation data dict
+
+        Example:
+            ```python
+            def handle_valid(data):
+                print(f"Valid: {data['value']}")
+
+            entry.on_valid(handle_valid)
+            ```
+        """
         self._on_valid_command = func
 
     def on_validated(self, func: Callable[[dict[str, Any]], None]) -> None:
+        """Register callback for any validation (valid or invalid).
+
+        Args:
+            func: Callback receiving validation data dict
+
+        Example:
+            ```python
+            def handle_validated(data):
+                if data['is_valid']:
+                    print("Validation passed")
+                else:
+                    print(f"Validation failed: {data['message']}")
+
+            entry.on_validated(handle_validated)
+            ```
+        """
         self._on_validated_command = func
 
     # ---------------- Internals ----------------
 
     def _setup_validation_binds(self, keyup_delay_ms: int = 50, blur_delay_ms: int = 50) -> None:
+        """Set up automatic validation bindings with debouncing."""
         # Auto-validate (debounced)
         self.bind(self.SEQ_KEYUP, lambda e: self._debounced("key", keyup_delay_ms), add=True)
         self.bind(self.SEQ_BLUR, lambda e: self._debounced("blur", blur_delay_ms), add=True)
 
-        # Wire optional convenience callbacks if set later
+        # Wire optional convenience callbacks
         self.bind(self.EVENT_VALIDATED, self._dispatch_validated, add=True)
         self.bind(self.EVENT_VALID, self._dispatch_valid, add=True)
         self.bind(self.EVENT_INVALID, self._dispatch_invalid, add=True)
 
     def _debounced(self, trigger: RuleTriggerType, ms: int) -> None:
+        """Debounce validation to avoid excessive checks during typing."""
         key = f"debounce:{trigger}"
         aid: Optional[str] = self._debounce_ids.get(key)
         if aid:
@@ -140,46 +245,19 @@ class ValidationMixin(Widget):
         # defer reading value until the timer fires
         self._debounce_ids[key] = self.after(ms, self.validate, self.value(), trigger)
 
-    # ----- payload queue management -----
-
-    def _emit_with_payload(self, event_name: str, payload: dict[str, Any]) -> None:
-        """Queue payload for the specific virtual event name."""
-        self._emit_queue[event_name].append(dict(payload))  # copy for isolation
-        if not self._emit_flushing[event_name]:
-            self._emit_flushing[event_name] = True
-            # Use partial to keep type checkers happy
-            self.after_idle(self._flush_event_queue, event_name)
-
-    def _flush_event_queue(self, event_name: str) -> None:
-        """Emit one payload per idle tick for each event name."""
-        try:
-            if not self._emit_queue[event_name]:
-                return
-
-            payload = self._emit_queue[event_name].popleft()
-            self._payload_by_event[event_name] = payload
-            self.event_generate(event_name, when="tail")
-
-            # Clear exactly this payload dict after handlers have run
-            self.after_idle(payload.clear)
-
-            # If more items remain, schedule another idle tick
-            if self._emit_queue[event_name]:
-                self.after_idle(self._flush_event_queue, event_name)
-        finally:
-            if not self._emit_queue[event_name]:
-                self._emit_flushing[event_name] = False
-
     # ----- optional dispatchers for on_* convenience -----
 
-    def _dispatch_validated(self, _) -> None:
+    def _dispatch_validated(self, event) -> None:
+        """Dispatch validated event to registered callback."""
         if self._on_validated_command:
-            self._on_validated_command(self.get_event_payload(self.EVENT_VALIDATED))
+            self._on_validated_command(event.data)
 
-    def _dispatch_valid(self, _) -> None:
+    def _dispatch_valid(self, event) -> None:
+        """Dispatch valid event to registered callback."""
         if self._on_valid_command:
-            self._on_valid_command(self.get_event_payload(self.EVENT_VALID))
+            self._on_valid_command(event.data)
 
-    def _dispatch_invalid(self, _) -> None:
+    def _dispatch_invalid(self, event) -> None:
+        """Dispatch invalid event to registered callback."""
         if self._on_invalid_command:
-            self._on_invalid_command(self.get_event_payload(self.EVENT_INVALID))
+            self._on_invalid_command(event.data)
