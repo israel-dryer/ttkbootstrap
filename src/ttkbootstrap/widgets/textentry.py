@@ -1,51 +1,6 @@
-from tkinter import Variable
-from typing import Callable, TypedDict
-
 from typing_extensions import Unpack
 
-from ttkbootstrap.signals import Signal
-from ttkbootstrap.widgets.field import Field
-
-
-class TextEntryOptions(TypedDict, total=False):
-    """Type hints for TextEntry widget configuration options.
-
-    Attributes:
-        allow_blank: If True, empty input is allowed. If False, empty input preserves previous value.
-        cursor: Cursor to display when hovering over the widget.
-        value_format: ICU format pattern for parsing/formatting (e.g., '$#,##0.00' for currency).
-        exportselection: If True, selected text is exported to X selection.
-        font: Font to use for text display.
-        foreground: Text color.
-        initial_focus: If True, widget receives focus when created.
-        justify: Text justification ('left', 'center', 'right').
-        show_message: If True, displays message text below the field.
-        padding: Padding around the entry widget.
-        show: Character to display instead of typed characters (for password fields).
-        take_focus: If True, widget can receive focus via Tab key.
-        textvariable: Tkinter Variable to link with the entry text.
-        textsignal: Signal object for reactive text updates.
-        width: Width of the entry in characters.
-        required: If True, field cannot be empty (adds validation rule).
-        xscrollcommand: Callback for horizontal scrolling.
-    """
-    allow_blank: bool
-    cursor: str
-    value_format: str
-    exportselection: bool
-    font: str
-    foreground: str
-    initial_focus: bool
-    justify: str
-    show_message: bool
-    padding: str
-    show: str
-    take_focus: bool
-    textvariable: Variable
-    textsignal: Signal
-    width: str
-    required: bool
-    xscrollcommand: Callable[[int, int], None]
+from ttkbootstrap.widgets.field import Field, FieldOptions
 
 
 class TextEntry(Field):
@@ -159,7 +114,7 @@ class TextEntry(Field):
 
     def __init__(
             self, master=None, value: str = "", label: str = None, message: str = None,
-            **kwargs: Unpack[TextEntryOptions]):
+            **kwargs: Unpack[FieldOptions]):
         """Initialize a TextEntry widget.
 
         Creates a composite text entry field with optional label, validation,
@@ -173,27 +128,28 @@ class TextEntry(Field):
                 If required=True, an asterisk (*) is automatically appended.
             message: Optional message text to display below the entry field.
                 This is replaced by validation error messages when validation fails.
-            **kwargs: Additional keyword arguments from TextEntryOptions:
-                allow_blank (bool): Allow empty input. Default is False.
-                cursor (str): Cursor style when hovering.
-                value_format (str): ICU format pattern for parsing/formatting.
+            **kwargs: Additional keyword arguments from FieldOptions:
+                allow_blank: Allow empty input. Default is False.
+                bootstyle: The accent color of the focus ring and active border.
+                cursor: Cursor style when hovering.
+                value_format: ICU format pattern for parsing/formatting.
                     Examples: '$#,##0.00' (currency), '#,##0.00' (decimal),
                     'yyyy-MM-dd' (date), '#,##0.00%' (percent)
-                exportselection (bool): Export selection to clipboard.
-                font (str): Font for text display.
-                foreground (str): Text color.
-                initial_focus (bool): If True, widget receives focus on creation.
-                justify (str): Text alignment ('left', 'center', 'right').
-                show_message (bool): If True, displays message area. Default is True.
-                padding (str): Padding around entry widget.
-                show (str): Character to mask input (e.g., '*' for passwords).
-                take_focus (bool): If True, widget accepts Tab focus.
-                textvariable (Variable): Tkinter Variable to link with text.
-                textsignal (Signal): Signal object for reactive updates.
-                width (str): Width in characters.
-                required (bool): If True, field cannot be empty. Adds 'required'
+                exportselection: Export selection to clipboard.
+                font: Font for text display.
+                foreground: Text color.
+                initial_focus: If True, widget receives focus on creation.
+                justify: Text alignment ('left', 'center', 'right').
+                show_message: If True, displays message area. Default is True.
+                padding: Padding around entry widget.
+                show: Character to mask input (e.g., '*' for passwords).
+                take_focus: If True, widget accepts Tab focus.
+                textvariable: Tkinter Variable to link with text.
+                textsignal: Signal object for reactive updates.
+                width: Width in characters.
+                required: If True, field cannot be empty. Adds 'required'
                     validation rule and appends '*' to label.
-                xscrollcommand (Callable): Callback for horizontal scrolling.
+                xscrollcommand: Callback for horizontal scrolling.
 
         Example:
             ```python
