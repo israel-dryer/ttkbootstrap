@@ -5,9 +5,10 @@ from ttkbootstrap import AppConfig
 from ttkbootstrap.localization import IntlFormatter
 from ttkbootstrap.widgets.entry import Entry
 from ttkbootstrap.widgets.mixins import ValidationMixin
+from ttkbootstrap.widgets.mixins.configure_mixin import configure_delegate
 
 
-class TextEntryPart(Entry, ValidationMixin):
+class TextEntryPart(ValidationMixin, Entry):
     """Internationalization-aware entry widget with deferred parsing and formatting.
 
     This widget separates user input (display text) from the committed/parsed value,
@@ -374,6 +375,49 @@ class TextEntryPart(Entry, ValidationMixin):
             self.textsignal.set(new_text)
             if fid:
                 self._on_input_fid = self.textsignal.subscribe(self._handle_change)
+
+    # Configuration delegation for value_format, allow_blank, and locale
+    @configure_delegate('value_format')
+    def _delegate_value_format(self, value: str):
+        """Set the value format pattern and reformat display.
+
+        Can be accessed via:
+            widget.configure(value_format='#,##0.00')
+            widget['value_format'] = '#,##0.00'
+            widget.cget('value_format')
+        """
+        self._value_format = value
+        # Reformat current value with new format
+        if self._value is not None:
+            formatted_text = self._format_value(self._value)
+            self.textsignal.set(formatted_text)
+
+    @configure_delegate('allow_blank')
+    def _delegate_allow_blank(self, value: bool):
+        """Set whether blank input is allowed.
+
+        Can be accessed via:
+            widget.configure(allow_blank=True)
+            widget['allow_blank'] = True
+            widget.cget('allow_blank')
+        """
+        self._allow_blank = bool(value)
+
+    @configure_delegate('locale')
+    def _delegate_locale(self, value: str):
+        """Set the locale and recreate formatter.
+
+        Can be accessed via:
+            widget.configure(locale='en_US')
+            widget['locale'] = 'de_DE'
+            widget.cget('locale')
+        """
+        self._locale = value
+        self._fmt = IntlFormatter(locale=value)
+        # Reformat current value with new locale
+        if self._value is not None:
+            formatted_text = self._format_value(self._value)
+            self.textsignal.set(formatted_text)
 
     def destroy(self):
         """Clean up signal subscriptions and destroy the widget."""
