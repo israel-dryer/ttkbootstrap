@@ -1,6 +1,7 @@
 from tkinter import Event, TclError
 from typing import Any, Callable
 
+from ttkbootstrap import AppConfig
 from ttkbootstrap.localization import IntlFormatter
 from ttkbootstrap.widgets.entry import Entry
 from ttkbootstrap.widgets.mixins import ValidationMixin
@@ -130,29 +131,38 @@ class TextEntryPart(Entry, ValidationMixin):
             event handlers for <FocusIn>, <FocusOut>, and <Return>. These
             handlers manage value commits and trigger <<Changed>> events.
         """
+        kwargs.update(bootstyle='field-input')
         super().__init__(master, **kwargs)
 
         # configuration
         self._value_format = value_format
-        self._locale = locale  # TODO get a default from AppConfig
+        self._locale = locale or AppConfig.get("language")
         self._allow_blank = allow_blank
 
         self._fmt = IntlFormatter(locale=locale)
 
         # set the initial display value
-        initial_display = value or self.textsignal.get() or ''
-        initial_value = self._parse_or_none(initial_display) if value_format is not None else initial_display or ''
+        # Convert to string if it's a number
+        if isinstance(value, (int, float)):
+            initial_display = str(value)
+        else:
+            initial_display = value or self.textsignal.get() or ''
+
+        # Parse initial value if format is specified
+        if value_format is not None:
+            initial_value = self._parse_or_none(initial_display)
+        else:
+            initial_value = initial_display or ''
 
         self._value = initial_value
         self._prev_changed_value = initial_value
-        self.textsignal.set(initial_value)
 
         # normalize initial display if we already have a parsed value
         if self._value is not None:
-            self.textsignal.set(
-                str(self._value) if self._value_format is None else
-                self._fmt.format(str(self._value), self._value_format)
-            )
+            formatted_text = self._format_value(self._value)
+            self.textsignal.set(formatted_text)
+        else:
+            self.textsignal.set('')
 
         # track last text emitted for CHANGE
         self._prev_change_text = self.textsignal.get()
@@ -215,6 +225,30 @@ class TextEntryPart(Entry, ValidationMixin):
         except ValueError:
             return None
 
+    def _format_value(self, value: Any) -> str:
+        """Format a value for display using value_format.
+
+        Args:
+            value: The value to format (can be string, int, float, etc.)
+
+        Returns:
+            Formatted string representation of the value
+        """
+        if value is None:
+            return ''
+
+        # If no format specified, just convert to string
+        if self._value_format is None:
+            return str(value)
+
+        # IntlFormatter.format() expects numeric values, not strings
+        # So pass the value directly (it will be a number from parse())
+        try:
+            return self._fmt.format(value, self._value_format)
+        except (ValueError, TypeError):
+            # If formatting fails, return string representation
+            return str(value)
+
     def on_input(self, callback: Callable[[Any], Any]) -> str:
         """Bind callback to <<Input>> event (fires on every keystroke).
 
@@ -272,7 +306,7 @@ class TextEntryPart(Entry, ValidationMixin):
         """Get or set the parsed/committed value.
 
         Args:
-            value: If provided, sets the display text (parsing occurs on next commit)
+            value: If provided, sets the display text and internal value with formatting
 
         Returns:
             Current parsed value if no argument provided, None otherwise
@@ -280,7 +314,21 @@ class TextEntryPart(Entry, ValidationMixin):
         if value is None:
             return self._value
         else:
-            self.textsignal.set(str(value))
+            # Store the value and format it for display
+            if isinstance(value, (int, float)):
+                value_str = str(value)
+            else:
+                value_str = str(value) if value is not None else ''
+
+            # Parse the value if format is specified
+            if self._value_format is not None and value_str:
+                self._value = self._parse_or_none(value_str)
+            else:
+                self._value = value_str if value_str else None
+
+            # Format and display
+            formatted_text = self._format_value(self._value)
+            self.textsignal.set(formatted_text)
             return None
 
     def text(self, value=None):
@@ -312,12 +360,8 @@ class TextEntryPart(Entry, ValidationMixin):
                 # keep prior value on parse failure
                 return
 
-        # pretty format once
-        if self._value is None:
-            new_text = ''
-        else:
-            new_text = str(self._value) if self._value_format is None else self._fmt.format(
-                self._value, self._value_format)
+        # Format the value for display
+        new_text = self._format_value(self._value)
 
         if new_text != self.textsignal.get():
             # temporarily silence CHANGE while normalizing text
