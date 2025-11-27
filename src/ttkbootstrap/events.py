@@ -216,9 +216,11 @@ def _patched_bind(
                 # Create event object
                 event = VirtualEvent(widget)
 
-                # Attach custom data and remove from cache
+                # Attach custom data (don't pop yet - multiple handlers may need it)
                 if data_guid and data_guid in _event_data_cache:
-                    event.data = _event_data_cache.pop(data_guid)
+                    event.data = _event_data_cache[data_guid]
+                    # Schedule cleanup after all handlers have run
+                    widget.after_idle(lambda: _event_data_cache.pop(data_guid, None))
                 else:
                     # Data might have been evicted from cache already
                     event.data = None
