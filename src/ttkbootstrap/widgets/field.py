@@ -4,12 +4,14 @@ Provides a flexible generic entry field composite widget used as the foundation
 for creating specialized entry widgets like TextEntry, PasswordEntry, NumberEntry, etc.
 """
 
-from tkinter import TclError
-from typing import Any, Literal, Type, Union
+from tkinter import TclError, Variable
+from typing import Any, Callable, Literal, Type, TypedDict, Union
 
+from ttkbootstrap.signals import Signal
 from ttkbootstrap.widgets.button import Button
 from ttkbootstrap.widgets.frame import Frame
 from ttkbootstrap.widgets.label import Label
+from ttkbootstrap.widgets.mixins import configure_delegate
 from ttkbootstrap.widgets.mixins.entry_mixin import EntryMixin
 from ttkbootstrap.widgets.parts.numberentry_part import NumberEntryPart
 from ttkbootstrap.widgets.parts.textentry_part import TextEntryPart
@@ -21,6 +23,49 @@ Determines which entry part widget to use:
     - 'text': Uses TextEntryPart for text input with formatting support
     - 'numeric': Uses NumberEntryPart for numeric input with bounds and stepping
 """
+
+
+class FieldOptions(TypedDict, total=False):
+    """Type hints for Field widget configuration options.
+
+    Attributes:
+        allow_blank: If True, empty input is allowed. If False, empty input preserves previous value.
+        bootstyle: The accent color of the focus ring and active border of the input.
+        cursor: Cursor to display when hovering over the widget.
+        value_format: ICU format pattern for parsing/formatting (e.g., '$#,##0.00' for currency).
+        exportselection: If True, selected text is exported to X selection.
+        font: Font to use for text display.
+        foreground: Text color.
+        initial_focus: If True, widget receives focus when created.
+        justify: Text justification ('left', 'center', 'right').
+        show_message: If True, displays message text below the field.
+        padding: Padding around the entry widget.
+        show: Character to display instead of typed characters (for password fields).
+        take_focus: If True, widget can receive focus via Tab key.
+        textvariable: Tkinter Variable to link with the entry text.
+        textsignal: Signal object for reactive text updates.
+        width: Width of the entry in characters.
+        required: If True, field cannot be empty (adds validation rule).
+        xscrollcommand: Callback for horizontal scrolling.
+    """
+    allow_blank: bool
+    bootstyle: str
+    cursor: str
+    value_format: str
+    exportselection: bool
+    font: str
+    foreground: str
+    initial_focus: bool
+    justify: str
+    show_message: bool
+    padding: str
+    show: str
+    take_focus: bool
+    textvariable: Variable
+    textsignal: Signal
+    width: str
+    required: bool
+    xscrollcommand: Callable[[int, int], None]
 
 
 class Field(EntryMixin, Frame):
@@ -264,6 +309,8 @@ class Field(EntryMixin, Frame):
             - Creates a 'required' validation rule if required=True
             - Manages message display for validation feedback
         """
+        self._bootstyle = kwargs.pop('bootstyle', 'default')
+
         super().__init__(master)
 
         # configuration
@@ -283,7 +330,7 @@ class Field(EntryMixin, Frame):
         self._message_lbl = Label(self, text=message or '', font="caption", bootstyle="secondary")
 
         # field container & field
-        self._field = Frame(self, bootstyle="field", padding=6)
+        self._field = Frame(self, bootstyle=self._bootstyle, padding=6, class_="TField")
 
         if kind == "numeric":
             self._entry = NumberEntryPart(self._field, value=value, **kwargs)
@@ -397,6 +444,15 @@ class Field(EntryMixin, Frame):
             ```
         """
         return self._addons
+
+    @configure_delegate
+    def _config_bootstyle(self, value=None):
+        if value is None:
+            return self._bootstyle
+        else:
+            self._bootstyle = value
+            self._field['bootstyle'] = self._bootstyle
+        return None
 
     def disable(self):
         """Disable the field, preventing user input.
