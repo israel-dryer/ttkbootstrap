@@ -342,7 +342,7 @@ class Field(EntryMixin, Frame):
             self._label_lbl.pack(side='top', fill='x', padx=(4, 0))
 
         self._field.pack(side='top', fill='x', expand=True)
-        self._entry.pack(side='top', fill='both', expand=True)
+        self._entry.pack(side='left', fill='both', expand=True)
 
         if self._show_messages:
             self._message_lbl.pack(side='top', fill='x', padx=4)
@@ -647,6 +647,7 @@ class Field(EntryMixin, Frame):
             options.update(side="right", after=self._entry)
         else:
             options.update(side="left", before=self._entry)
+        print('options:', options)
         instance.pack(**options)
 
         # match parent disabled state
