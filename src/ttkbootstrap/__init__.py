@@ -78,6 +78,7 @@ from ttkbootstrap.widgets.toast import Toast
 from ttkbootstrap.widgets.tooltip import ToolTip
 from ttkbootstrap.widgets.field import Field as Field
 from ttkbootstrap.widgets.textentry import TextEntry as TextEntry
+from ttkbootstrap.widgets.passwordentry import PasswordEntry as PasswordEntry
 
 # Import constants from widgets
 from ttkbootstrap.widgets import M, TTK_WIDGETS, TK_WIDGETS
@@ -116,6 +117,7 @@ __all__ = [
     'FloodGauge',
     'LabeledScale',
     'Meter',
+    'PasswordEntry',
     'Toast',
     'ToolTip',
     'TextEntry',
