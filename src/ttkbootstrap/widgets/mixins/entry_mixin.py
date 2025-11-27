@@ -1,10 +1,15 @@
-from tkinter.ttk import Entry
+from __future__ import annotations
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from ttkbootstrap.widgets.parts.numberentry_part import NumberEntryPart
+    from ttkbootstrap.widgets.parts.numberentry_part import TextEntryPart
 
 
 class EntryMixin:
     """A mixin that exposes the functionality of entry-like widgets on composite widgets"""
 
-    _entry: Entry
+    _entry: TextEntryPart | NumberEntryPart
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)

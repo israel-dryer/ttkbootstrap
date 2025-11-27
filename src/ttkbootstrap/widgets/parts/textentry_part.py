@@ -62,6 +62,7 @@ class TextEntryPart(ValidationMixin, Entry):
     def __init__(
             self,
             master=None,
+            *,
             value='',
             value_format=None,
             initial_focus: bool = False,
@@ -172,9 +173,9 @@ class TextEntryPart(ValidationMixin, Entry):
         self._on_input_fid = self.textsignal.subscribe(self._handle_change)
 
         # Commit on focus out / enter;
-        self.bind('<FocusIn>', self._store_prev_value)
-        self.bind('<FocusOut>', self._handle_focus_out)
-        self.bind('<Return>', self._handle_return)
+        self.bind('<FocusIn>', self._store_prev_value, add=True)
+        self.bind('<FocusOut>', self._handle_focus_out, add=True)
+        self.bind('<Return>', self._handle_return, add=True)
 
         # set initial focus
         if initial_focus:

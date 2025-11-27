@@ -76,6 +76,8 @@ from ttkbootstrap.widgets.labeledscale import LabeledScale
 from ttkbootstrap.widgets.meter import Meter
 from ttkbootstrap.widgets.toast import Toast
 from ttkbootstrap.widgets.tooltip import ToolTip
+from ttkbootstrap.widgets.field import Field as Field
+from ttkbootstrap.widgets.textentry import TextEntry as TextEntry
 
 # Import constants from widgets
 from ttkbootstrap.widgets import M, TTK_WIDGETS, TK_WIDGETS
@@ -110,11 +112,13 @@ __all__ = [
     'Toplevel',
     'Window',
     'DateEntry',
+    'Field',
     'FloodGauge',
     'LabeledScale',
     'Meter',
     'Toast',
     'ToolTip',
+    'TextEntry',
     'ScrollView',
     'ScrolledText',
     'MenuManager',

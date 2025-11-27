@@ -73,6 +73,7 @@ class NumberEntryPart(TextEntryPart):
     def __init__(
             self,
             master=None,
+            *,
             value: Union[int, float, str] = 0,
             value_format: str = None,
             minvalue: Union[int, float] = 0,
