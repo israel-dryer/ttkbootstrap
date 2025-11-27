@@ -151,35 +151,6 @@ class TextEntry(Field):
                     validation rule and appends '*' to label.
                 xscrollcommand: Callback for horizontal scrolling.
 
-        Example:
-            ```python
-            # Basic text entry
-            entry = TextEntry(root, label="Username", required=True)
-
-            # Currency entry with formatting
-            entry = TextEntry(
-                root,
-                label="Price",
-                value="99.99",
-                value_format='¤#,##0.00',
-                locale='en_US',
-                message="Enter product price"
-            )
-
-            # Password entry
-            entry = TextEntry(
-                root,
-                label="Password",
-                show='*',
-                required=True,
-                message="Must be at least 8 characters"
-            )
-
-            # Email entry with validation
-            entry = TextEntry(root, label="Email", required=True)
-            entry.add_validation_rule('email')
-            ```
-
         Note:
             The widget automatically sets up event handlers for focus, validation,
             and value commits. Use on_input(), on_changed(), on_valid(), and
