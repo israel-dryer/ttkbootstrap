@@ -123,9 +123,9 @@ def build_field_addon_style(b: BootstyleBuilderTTk, ttk_style: str, _: str, vari
     b.create_style_layout(
         ttk_style, Element(f"{ttk_style}.border", sticky="nsew").children(
             [
-                Element("Label.padding", sticky="nsew").children(
+                Element("Button.padding", sticky="nsew").children(
                     [
-                        Element("Label.label", sticky="")
+                        Element("Button.label", sticky="")
                     ])
             ]))
 
@@ -142,7 +142,12 @@ def build_field_addon_style(b: BootstyleBuilderTTk, ttk_style: str, _: str, vari
     icon = options.get('icon')
 
     state_spec = dict(
-        foreground=[('disabled', foreground_disabled), ('', foreground)])
+        foreground=[
+            ('disabled', foreground_disabled),
+            ('pressed !disabled', foreground),
+            ('hover !disabled', foreground),
+            ('', foreground)
+        ])
 
     if icon is not None:
         icon = b.normalize_icon_spec(icon)
