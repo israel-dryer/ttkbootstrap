@@ -222,6 +222,19 @@ class ValidationMixin(Widget):
 
     # ---------------- Internals ----------------
 
+    def _get_validation_value(self) -> Any:
+        """Get the current value for validation purposes.
+
+        For entry widgets, this should return the current text being typed,
+        not the committed value. Prefers get() method over value() method.
+        """
+        if hasattr(self, 'get'):
+            try:
+                return self.get()
+            except (AttributeError, TclError):
+                pass
+        return self.value()
+
     def _setup_validation_binds(self, keyup_delay_ms: int = 50, blur_delay_ms: int = 50) -> None:
         """Set up automatic validation bindings with debouncing."""
         # Auto-validate (debounced)
@@ -243,7 +256,7 @@ class ValidationMixin(Widget):
             except TclError:
                 pass
         # defer reading value until the timer fires
-        self._debounce_ids[key] = self.after(ms, self.validate, self.value(), trigger)
+        self._debounce_ids[key] = self.after(ms, lambda: self.validate(self._get_validation_value(), trigger))
 
     # ----- optional dispatchers for on_* convenience -----
 
