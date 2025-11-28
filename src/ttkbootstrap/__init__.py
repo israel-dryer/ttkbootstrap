@@ -79,6 +79,7 @@ from ttkbootstrap.widgets.tooltip import ToolTip
 from ttkbootstrap.widgets.field import Field as Field
 from ttkbootstrap.widgets.textentry import TextEntry as TextEntry
 from ttkbootstrap.widgets.passwordentry import PasswordEntry as PasswordEntry
+from ttkbootstrap.widgets.numericentry import NumericEntry as NumericEntry
 
 # Import constants from widgets
 from ttkbootstrap.widgets import M, TTK_WIDGETS, TK_WIDGETS
@@ -124,6 +125,7 @@ __all__ = [
     'ScrollView',
     'ScrolledText',
     'MenuManager',
+    'NumericEntry',
     'create_menu',
     'M',
     'TTK_WIDGETS',
