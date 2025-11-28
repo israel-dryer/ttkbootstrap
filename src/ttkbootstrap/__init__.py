@@ -80,6 +80,7 @@ from ttkbootstrap.widgets.field import Field as Field
 from ttkbootstrap.widgets.textentry import TextEntry as TextEntry
 from ttkbootstrap.widgets.passwordentry import PasswordEntry as PasswordEntry
 from ttkbootstrap.widgets.numericentry import NumericEntry as NumericEntry
+from ttkbootstrap.widgets.pathentry import PathEntry as PathEntry
 
 # Import constants from widgets
 from ttkbootstrap.widgets import M, TTK_WIDGETS, TK_WIDGETS
@@ -119,6 +120,7 @@ __all__ = [
     'LabeledScale',
     'Meter',
     'PasswordEntry',
+    'PathEntry',
     'Toast',
     'ToolTip',
     'TextEntry',
