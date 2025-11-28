@@ -426,7 +426,6 @@ class Field(EntryMixin, Frame):
             options.update(side="right", after=self._entry)
         else:
             options.update(side="left", before=self._entry)
-        print('options:', options)
         instance.pack(**options)
 
         # match parent disabled state
