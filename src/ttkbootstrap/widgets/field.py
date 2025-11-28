@@ -323,6 +323,21 @@ class Field(EntryMixin, Frame):
         self.add_validation_rules = self._entry.add_validation_rules
         self.validation = self._entry.validate
 
+        # Copy Field's delegate handlers to entry for configuration forwarding
+        for key, method_name in self._configure_delegate_map.items():
+            if hasattr(self, method_name):
+                # Attach the Field's handler method to the entry instance
+                setattr(self._entry, method_name, getattr(self, method_name))
+                # Add to entry's delegate map
+                self._entry._configure_delegate_map[key] = method_name
+
+        # Forward configuration methods to entry widget
+        self.configure = self._entry.configure
+        self.config = self._entry.config
+        self.cget = self._entry.cget
+        self.__getitem__ = self._entry.__getitem__
+        self.__setitem__ = self._entry.__setitem__
+
     @property
     def entry_widget(self) -> NumberEntryPart | TextEntryPart:
         """Get the underlying entry widget."""
