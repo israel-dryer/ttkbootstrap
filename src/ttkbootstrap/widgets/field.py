@@ -302,11 +302,17 @@ class Field(EntryMixin, Frame):
 
         # forward reference entry methods
         self.on_input = self._entry.on_input
+        self.off_input = self._entry.off_input
         self.on_changed = self._entry.on_changed
+        self.off_changed = self._entry.off_changed
         self.on_enter = self._entry.on_enter
+        self.off_enter = self._entry.off_enter
         self.on_invalid = self._entry.on_invalid
+        self.off_invalid = self._entry.off_invalid
         self.on_valid = self._entry.on_valid
+        self.off_valid = self._entry.off_valid
         self.on_validated = self._entry.on_validated
+        self.off_validated = self._entry.off_validated
 
         # entry state
         self.variable = self._entry.textvariable
