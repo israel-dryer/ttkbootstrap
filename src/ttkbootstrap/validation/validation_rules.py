@@ -65,7 +65,9 @@ class ValidationRule:
         return "Invalid input."
 
     def _default_trigger(self) -> RuleTriggerType:
-        if self.type in {"required", "stringLength"}:
+        if self.type == "required":
+            return "always"
+        elif self.type in {"stringLength"}:
             return "blur"
         elif self.type in {"email", "pattern"}:
             return "always"

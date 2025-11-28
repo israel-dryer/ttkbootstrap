@@ -256,17 +256,15 @@ class Signal(Generic[T]):
                 pass
         return fid
 
-    def unsubscribe(self, callback: Callable[[T], Any]) -> None:
+    def unsubscribe(self, funcid: str) -> None:
         """
         Remove a previously registered subscriber.
 
         Args:
-            callback: The function originally passed to `subscribe()`.
+            funcid: The function id returned from `subscribe()`.
         """
-        fids = self._callback_index.pop(callback, set())
-        for fid in fids:
-            self._subscribers.pop(fid, None)
-            self._trace.remove(fid)
+        self._subscribers.pop(funcid, None)
+        self._trace.remove(funcid)
 
     def unsubscribe_all(self) -> None:
         """

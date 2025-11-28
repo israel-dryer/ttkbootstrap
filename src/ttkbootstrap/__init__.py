@@ -70,12 +70,17 @@ from ttkbootstrap.widgets.scrolledtext import ScrolledText as ScrolledText
 from ttkbootstrap.widgets.optionmenu import OptionMenu as OptionMenu
 
 # Import custom widgets (after basic widgets to avoid circular imports)
-from ttkbootstrap.widgets.dateentry import DateEntry
 from ttkbootstrap.widgets.floodgauge import FloodGauge
 from ttkbootstrap.widgets.labeledscale import LabeledScale
 from ttkbootstrap.widgets.meter import Meter
 from ttkbootstrap.widgets.toast import Toast
 from ttkbootstrap.widgets.tooltip import ToolTip
+from ttkbootstrap.widgets.field import Field as Field
+from ttkbootstrap.widgets.textentry import TextEntry as TextEntry
+from ttkbootstrap.widgets.passwordentry import PasswordEntry as PasswordEntry
+from ttkbootstrap.widgets.numericentry import NumericEntry as NumericEntry
+from ttkbootstrap.widgets.pathentry import PathEntry as PathEntry
+from ttkbootstrap.widgets.dateentry import DateEntry as DateEntry
 
 # Import constants from widgets
 from ttkbootstrap.widgets import M, TTK_WIDGETS, TK_WIDGETS
@@ -110,14 +115,19 @@ __all__ = [
     'Toplevel',
     'Window',
     'DateEntry',
+    'Field',
     'FloodGauge',
     'LabeledScale',
     'Meter',
+    'PasswordEntry',
+    'PathEntry',
     'Toast',
     'ToolTip',
+    'TextEntry',
     'ScrollView',
     'ScrolledText',
     'MenuManager',
+    'NumericEntry',
     'create_menu',
     'M',
     'TTK_WIDGETS',

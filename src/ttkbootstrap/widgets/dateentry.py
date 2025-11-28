@@ -1,389 +1,250 @@
-"""DateEntry widget for ttkbootstrap.
+"""Date entry field widget with calendar picker button.
 
-This module provides the DateEntry widget, which combines an Entry field
-with a calendar button to allow users to select dates from a popup calendar.
-
-Example:
-    ```python
-    import ttkbootstrap as ttk
-    from datetime import datetime
-
-    root = ttk.Window()
-
-    # Create a date entry widget
-    date_entry = ttk.DateEntry(root, firstweekday=0, startdate=datetime.now())
-    date_entry.pack(padx=10, pady=10)
-
-    # Get the selected date
-    selected_date = date_entry.get_date()
-
-    # Handle date selection events
-    def on_date_selected(event):
-        print(f"Selected date: {date_entry.get_date()}")
-
-    date_entry.bind("<<DateEntrySelected>>", on_date_selected)
-
-    root.mainloop()
-    ```
+Provides a specialized entry field for date input with locale-aware formatting
+and an optional calendar picker button.
 """
+
 from datetime import date, datetime
-from tkinter import Misc
-from typing import Any, Optional, Union
 
-from tkinter import Button as _Button, Entry as _Entry, Frame as _Frame
+from typing_extensions import Unpack
+
 from ttkbootstrap.widgets.button import Button
-from ttkbootstrap.widgets.entry import Entry
-from ttkbootstrap.widgets.frame import Frame
-from ttkbootstrap.constants import END, LEFT, X, YES
-from ttkbootstrap.dialogs import Querybox
+from ttkbootstrap.widgets.field import Field, FieldOptions
+from ttkbootstrap.widgets.mixins import configure_delegate
 
 
-class DateEntry(Frame):
-    """A date entry widget combines an Entry field and a Button for date selection.
+class DateEntry(Field):
+    """A date entry field widget with calendar picker button.
 
-    When the button is pressed, a calendar popup is displayed allowing the user
-    to select a date. The selected date is inserted into the entry field.
-
-    The <<DateEntrySelected>> event is generated when a date is selected from
-    the calendar popup.
+    DateEntry extends the Field widget to provide specialized date input with
+    locale-aware formatting and an optional calendar picker button. The widget
+    supports various date format presets and custom ICU date format patterns,
+    and can accept input as strings, date objects, or datetime objects.
 
     Features:
-        - Configurable date format using strftime format strings
-        - Customizable starting weekday (0=Monday, 6=Sunday)
-        - Style customization via bootstyle parameter
-        - Date validation with optional exception raising
-        - Access to entry and button widgets via instance attributes
+        - Locale-aware date formatting
+        - Multiple date format presets (longDate, shortDate, etc.)
+        - Custom ICU date format patterns
+        - Calendar picker button with icon
+        - Accepts date, datetime, or string input
+        - Automatic parsing and formatting on commit
+        - All Field features (label, validation, messages, etc.)
 
-    The date chooser popup will use the date in the entry field as the initial
-    focus date if it matches the specified dateformat. By default, the format
-    is locale-specific ("%x").
+    Date Format Presets:
+        - longDate: Full date (e.g., "January 15, 2025")
+        - shortDate: Short date (e.g., "1/15/25")
+        - monthAndDate: Month and day (e.g., "January 15")
+        - monthAndYear: Month and year (e.g., "January 2025")
+        - quarterAndYear: Quarter and year (e.g., "Q1 2025")
+        - day: Day of month (e.g., "15")
+        - dayOfWeek: Day name (e.g., "Wednesday")
+        - month: Month name (e.g., "January")
+        - quarter: Quarter (e.g., "Q1")
+        - year: Year (e.g., "2025")
+        - longTime: Long time format (e.g., "3:30:45 PM PST")
+        - shortTime: Short time format (e.g., "3:30 PM")
+        - longDateLongTime: Full date and time
+        - shortDateShortTime: Short date and time
+        - Custom: Any ICU date format pattern (e.g., "yyyy-MM-dd")
 
-    The bootstyle parameter can be used to change the widget colors. Available
-    options include: primary, secondary, success, info, warning, danger, light, dark.
+    Events (inherited from Field):
+        <<Changed>>: Fired when date value changes after commit
+        <<Input>>: Fired on each keystroke
+        <<Valid>>: Fired when validation passes
+        <<Invalid>>: Fired when validation fails
 
-    Widget Attributes:
-        entry (ttk.Entry): The entry field displaying the selected date
-        button (ttk.Button): The button that opens the calendar popup
+    Example:
+        ```python
+        import ttkbootstrap as ttk
+        from ttkbootstrap.widgets.dateentry import DateEntry
+        from datetime import date
 
-    ![](../../assets/widgets/date-entry.png)
+        root = ttk.Window()
+
+        # Basic date entry with short date format
+        date_entry = DateEntry(
+            root,
+            label="Birth Date",
+            value=date(1990, 1, 15),
+            value_format="shortDate",
+            message="Enter your birth date"
+        )
+        date_entry.pack(padx=20, pady=10, fill='x')
+
+        # Long date format
+        date_entry2 = DateEntry(
+            root,
+            label="Event Date",
+            value_format="longDate",
+            locale="en_US"
+        )
+        date_entry2.pack(padx=20, pady=10, fill='x')
+
+        # Custom date format (ISO 8601)
+        date_entry3 = DateEntry(
+            root,
+            label="ISO Date",
+            value="2025-01-15",
+            value_format="yyyy-MM-dd"
+        )
+        date_entry3.pack(padx=20, pady=10, fill='x')
+
+        # Month and year only
+        date_entry4 = DateEntry(
+            root,
+            label="Expiry Date",
+            value_format="monthAndYear"
+        )
+        date_entry4.pack(padx=20, pady=10, fill='x')
+
+        # Without picker button
+        date_entry5 = DateEntry(
+            root,
+            label="Date",
+            show_picker_button=False
+        )
+        date_entry5.pack(padx=20, pady=10, fill='x')
+
+        # Get date value
+        def on_submit():
+            value = date_entry.value()
+            print(f"Selected date: {value}")
+
+        ttk.Button(root, text="Submit", command=on_submit).pack(pady=10)
+
+        root.mainloop()
+        ```
+
+    Inherited Properties:
+        entry_widget: Access to the underlying TextEntryPart widget
+        label_widget: Access to the label widget
+        message_widget: Access to the message label widget
+        addons: Dictionary of inserted addon widgets
+        variable: Tkinter Variable linked to entry text
+        signal: Signal object for reactive updates
+
+    Note:
+        The calendar picker button is currently a placeholder. The date picker
+        dialog implementation is planned for a future release. The button can
+        be hidden using show_picker_button=False.
     """
 
     def __init__(
             self,
-            master: Optional[Misc] = None,
-            dateformat: str = r"%x",
-            firstweekday: int = 6,
-            startdate: Optional[Union[datetime, date]] = None,
-            bootstyle: str = "",
-            popup_title: str = 'Select new date',
-            raise_exception: bool = False,
-            **kwargs: Any,
-    ) -> None:
+            master=None,
+            value: str | date | datetime = None,
+            value_format: str = "shortDate",
+            label: str = None,
+            message: str = None,
+            show_picker_button=False,
+            picker_title: str = "Select new date",
+            picker_first_weekday: int = 6,
+            **kwargs: Unpack[FieldOptions]
+    ):
+        """Initialize a DateEntry widget.
+
+        Creates a date entry field with locale-aware formatting and an optional
+        calendar picker button. The widget accepts date input as strings, date
+        objects, or datetime objects, and formats them according to the specified
+        value_format pattern.
+
+        Args:
+            master: Parent widget. If None, uses the default root window.
+            value: Initial date value to display. Can be a date object, datetime
+                object, or string representation. Default is None (empty field).
+            value_format: Date format pattern to use for parsing and displaying
+                dates. Can be a preset format name or custom ICU date pattern.
+                Default is "shortDate". Common presets:
+                - "shortDate": Short numeric date (e.g., "1/15/25")
+                - "longDate": Full date (e.g., "January 15, 2025")
+                - "yyyy-MM-dd": ISO 8601 format
+                - "monthAndYear": Month and year only
+                See class documentation for complete list of format presets.
+            label: Optional label text to display above the entry field.
+                If required=True, an asterisk (*) is automatically appended.
+            message: Optional message text to display below the entry field.
+                Used for hints or help text. Replaced by validation errors when
+                validation fails.
+            show_picker_button: If True, displays the calendar picker button
+                to the right of the entry. If False, hides the button. Default
+                is True. Note: The picker dialog is not yet implemented.
+            picker_title: Title text for the calendar picker dialog (when
+                implemented). Default is "Select new date".
+            picker_first_weekday: First day of the week to display in the
+                calendar picker (when implemented). 0=Monday, 6=Sunday. Default
+                is 6 (Sunday).
+            **kwargs: Additional keyword arguments from FieldOptions:
+                locale: Locale identifier for date formatting (e.g., 'en_US')
+                required: If True, field cannot be empty
+                bootstyle: The accent color of the focus ring and active border
+                allow_blank: Allow empty input
+                cursor: Cursor style when hovering
+                exportselection: Export selection to clipboard
+                font: Font for text display
+                foreground: Text color
+                initial_focus: If True, widget receives focus on creation
+                justify: Text alignment
+                show_message: If True, displays message area
+                padding: Padding around entry widget
+                take_focus: If True, widget accepts Tab focus
+                textvariable: Tkinter Variable to link with text
+                textsignal: Signal object for reactive updates
+                width: Width in characters
+                xscrollcommand: Callback for horizontal scrolling
+
+        Note:
+            The widget uses the IntlFormatter for locale-aware date formatting.
+            The value is parsed and formatted automatically when the user commits
+            input (on FocusOut or Return key). Invalid date strings that cannot
+            be parsed will revert to the previous valid value.
         """
-        Parameters:
+        super().__init__(master=master, value=value, value_format=value_format, label=label, message=message, **kwargs)
 
-            master (Widget, optional):
-                The parent widget.
+        # configuration
+        self._show_picker_button = show_picker_button
+        self._picker_title = picker_title
+        self._picker_first_weekday = picker_first_weekday
 
-            dateformat (str, optional):
-                The format string used to render the text in the entry widget.
-                Defaults to "%x" (locale's appropriate date representation).
-                For more information on acceptable formats, see https://strftime.org/
+        self._button_pack = {}
 
-            firstweekday (int, optional):
-                Specifies the first day of the week. 0=Monday, 1=Tuesday,
-                etc...
-
-            startdate (datetime, optional):
-                The date that is in focus when the widget is displayed. Default is
-                current date.
-
-            bootstyle (str, optional):
-                A style keyword used to set the focus color of the entry
-                and the background color of the date button. Available
-                options include -> primary, secondary, success, info,
-                warning, danger, dark, light.
-
-            popup_title (str, optional):
-                Title for PopUp window (Default: `Select new date`)
-
-            raise_exception (bool, optional):
-                If a `ValueError` should be raised, if the user enters an invalid date string. If this is set to `False`,
-                faulty date strings will be ignored. Only a warning on the terminal/console will be printed. (Default: `False`)
-
-            **kwargs (dict[str, Any], optional):
-                Other keyword arguments passed to the frame containing the
-                entry and date button.
-        """
-
-        self.__enabled = True  # User/Programmer should NOT be able to change this, therefore double underscores
-        self.__dateformat = self._validate_dateformat(
-            dateformat)  # User/Programmer should NOT be able to change this, therefore double underscores
-        self._firstweekday = firstweekday
-
-        self._startdate = startdate or datetime.today()
-        self._bootstyle = bootstyle
-        self._popup_title = popup_title
-        self._raise_exception = raise_exception
-        super().__init__(master, **kwargs)
-
-        # add visual components
-        entry_kwargs = {
-            "bootstyle": self._bootstyle,
-        }
-        if "width" in kwargs:
-            entry_kwargs["width"] = kwargs.pop("width")
-
-        # Build date Widget button (this shows the date in the wanted format)
-        self.entry = Entry(self, **entry_kwargs)
-        self.entry.pack(side=LEFT, fill=X, expand=YES)
-
-        # Build datepicker button & place it right to the date widget
-        self.button = Button(
-            master=self,
-            command=self._on_date_ask,
-            bootstyle=f"{self._bootstyle}-date",
+        self.insert_addon(
+            Button,
+            position="after",
+            name="date-picker",
+            icon="calendar-week",
+            command=self._show_date_picker
         )
-        self.button.pack(side=LEFT)
 
-        # Initialize this widget
-        self.set_date(self._startdate)
+        self._config_show_picker_button(self._show_picker_button)
 
-    def __getitem__(self, key: str) -> Any:
-        return self.configure(cnf=key)
+    @property
+    def date_picker_button(self):
+        """Get the calendar picker button widget."""
+        return self.addons.get('date-picker')
 
-    def __setitem__(self, key: str, value: Any) -> None:
-        self.configure(cnf=None, **{key: value})
-
-    def _configure_set(self, **kwargs: Any) -> None:
-        """Override configure method to allow for setting custom DateEntry parameters.
-
-        Handles special configuration options like 'state', 'dateformat', 'firstweekday',
-        'startdate', 'bootstyle', and 'width'.
-        """
-
-        if "state" in kwargs:
-            state = kwargs.pop("state")
-            if state in ["readonly", "invalid"]:
-                self.entry.configure(state=state)
-            elif state in ("disabled", "normal"):
-                self.entry.configure(state=state)
-                self.button.configure(state=state)
+    @configure_delegate('show_picker_button')
+    def _config_show_picker_button(self, value: bool = None):
+        """Get or set the visibility of the calendar picker button."""
+        if value is None:
+            return self._show_picker_button
+        else:
+            if value:
+                if not self.date_picker_button.winfo_ismapped():
+                    self.date_picker_button.pack(**self._button_pack)
             else:
-                kwargs[state] = state
-        if "dateformat" in kwargs:
-            self.__dateformat = kwargs.pop("dateformat")
-        if "firstweekday" in kwargs:
-            self._firstweekday = kwargs.pop("firstweekday")
-        if "startdate" in kwargs:
-            self._startdate = kwargs.pop("startdate")
-        if "bootstyle" in kwargs:
-            self._bootstyle = kwargs.pop("bootstyle")
-            self.entry.configure(bootstyle=self._bootstyle)
-            self.button.configure(bootstyle=[self._bootstyle, "date"])
-        if "width" in kwargs:
-            width = kwargs.pop("width")
-            self.entry.configure(width=width)
+                self._button_pack = self.date_picker_button.pack_info()
+                self.date_picker_button.pack_forget()
+        return None
 
-        super(Frame, self).configure(**kwargs)
+    def _show_date_picker(self):
+        """Open the calendar picker dialog.
 
-    def _configure_get(self, cnf: str) -> Any:
-        """Override the configure get method.
+        Placeholder method for opening a date picker dialog. The actual
+        implementation is planned for a future release.
 
-        Returns configuration values for DateEntry-specific options.
+        Note:
+            This method is called when the calendar picker button is clicked.
+            Currently, does nothing (not implemented).
         """
-        if cnf == "state":
-            entrystate = self.entry.cget("state")
-            buttonstate = self.button.cget("state")
-            return {"Entry": entrystate, "Button": buttonstate}
-        if cnf == "dateformat":
-            return self.__dateformat
-        if cnf == "firstweekday":
-            return self._firstweekday
-        if cnf == "startdate":
-            return self._startdate
-        if cnf == "bootstyle":
-            return self._bootstyle
-        else:
-            return super(Frame, self).configure(cnf=cnf)
-
-    def configure(self, cnf: Optional[str] = None, **kwargs: Any) -> Any:
-        """Configure the options for this widget.
-
-        Parameters:
-
-            cnf (dict[str, Any], optional):
-                A dictionary of configuration options.
-
-            **kwargs:
-                Optional keyword arguments.
-        """
-        if cnf is not None:
-            return self._configure_get(cnf)
-        else:
-            return self._configure_set(**kwargs)
-
-    @property
-    def enabled(self) -> bool:
-        """Check if the date picker is enabled.
-
-        Returns:
-            bool: True if the widget is enabled and can accept user input,
-                  False otherwise.
-        """
-        return self.__enabled
-
-    @property
-    def dateformat(self) -> str:
-        """Get the date format string.
-
-        Returns:
-            str: The strftime format string used to convert between
-                 strings and datetime objects.
-        """
-        return self.__dateformat
-
-    def get_date(self) -> datetime:
-        """Get the currently selected date.
-
-        Returns:
-            datetime: The currently selected date as a datetime object.
-        """
-        return self.configure(cnf='startdate')
-
-    @staticmethod
-    def _validate_dateformat(dateformat: str) -> str:
-        """Validate that a date format string is appropriate for dates.
-
-        Checks that the format string contains sufficient information to
-        represent a complete date (year, month, and day).
-
-        Parameters:
-            dateformat (str): The strftime format string to validate.
-
-        Returns:
-            str: The validated format string.
-
-        Raises:
-            ValueError: If the format string cannot be used to represent
-                       a complete date.
-
-        See Also:
-            https://docs.python.org/3/library/datetime.html#strftime-and-strptime-behavior
-        """
-        has_year: bool = any(y in dateformat for y in ('%Y', '%y', '%G'))
-        has_month: bool = any(m in dateformat for m in ('%m', '%B', '%b'))
-        has_day: bool = any(d in dateformat for d in ('%d',))
-        is_full_format: bool = any(f in dateformat for f in ('%x', '%c'))
-
-        if has_year and has_month and has_day:
-            return dateformat
-
-        if is_full_format:
-            return dateformat
-
-        # Special case: (day of the year & year)
-        if '%j' in dateformat and has_year:
-            return dateformat
-
-        # Special case: (week day & week number & year)
-        has_week_number: bool = any(w in dateformat for w in ('%U', '%W', '%V'))
-        has_week_day: bool = any(w in dateformat for w in ('%a', '%A', '%w'))
-        if has_week_number and has_week_day and has_year:
-            return dateformat
-
-        raise ValueError(
-            f'Given formatting string ("{dateformat}"), cannot be used to validate a given strings for dates or display a given datetime object as a date!')
-
-    @staticmethod
-    def _clean_datetime(new_date: Union[datetime, date]) -> datetime:
-        """Strip time components from a datetime object.
-
-        Since this is a date picker, removes hours, minutes, seconds, and
-        microseconds, keeping only the date components (year, month, day).
-
-        Parameters:
-            new_date (datetime | date): The date or datetime to clean.
-
-        Returns:
-            datetime: A datetime object with only date components (time set to 00:00:00).
-        """
-        if isinstance(new_date, datetime):
-            return datetime(new_date.year, new_date.month, new_date.day, tzinfo=new_date.tzinfo)
-        else:
-            return datetime(new_date.year, new_date.month, new_date.day)
-
-    def set_date(self, new_date: Union[datetime, date]) -> None:
-        """Set the currently selected date.
-
-        Updates the entry field and internal state with the new date.
-        Time components (hours, minutes, seconds, microseconds) are ignored
-        and will be stripped from datetime objects.
-
-        Parameters:
-            new_date (datetime | date): The new date to set.
-        """
-
-        _date: datetime = self._clean_datetime(new_date)
-        if self.__enabled:
-            self.configure(startdate=_date)
-            self.entry.delete(first=0, last=END)
-            self.entry.insert(END, new_date.strftime(self.__dateformat))
-        else:
-            self.enable()
-            self.configure(startdate=_date)
-            self.entry.delete(first=0, last=END)
-            self.entry.insert(END, new_date.strftime(self.__dateformat))
-            self.disable()
-
-    def disable(self) -> None:
-        """Disable the date picker.
-
-        Disables both the entry field and calendar button, preventing user interaction.
-        """
-        self.__enabled = False
-        self.entry.state(['disabled'])
-        self.button.state(['disabled'])
-
-    def enable(self) -> None:
-        """Enable the date picker.
-
-        Enables both the entry field and calendar button, allowing user interaction.
-        """
-        self.__enabled = True
-        self.entry.state(['!disabled'])
-        self.button.state(['!disabled'])
-
-    def _on_date_ask(self) -> None:
-        """Handle the calendar button click event.
-
-        Opens the date selection popup and updates the entry field with the
-        selected date. Generates the <<DateEntrySelected>> event when a date
-        is chosen.
-
-        Raises:
-            ValueError: If raise_exception is True and the entry text doesn't
-                       match the configured date format.
-        """
-        from warnings import warn
-
-        currently_selected_date: str = self.entry.get() or datetime.today().strftime(self.__dateformat)
-        try:
-            self._startdate: datetime = datetime.strptime(currently_selected_date, self.__dateformat)
-        except ValueError as exc:
-            warn(f"Date entry text does not match with date format: {self.__dateformat}\n")
-            if self._raise_exception:
-                raise exc
-            return
-        old_date = datetime.strptime(currently_selected_date, self.__dateformat)
-
-        # get the new date and insert into the entry
-        new_date = Querybox.get_date(
-            parent=self.entry,
-            title=self._popup_title,
-            startdate=old_date,
-            firstweekday=self._firstweekday,
-            bootstyle=self._bootstyle,
-        )
-        self.set_date(new_date)
-        self.event_generate("<<DateEntrySelected>>")
+        # TODO implement with new dialog
+        ...
