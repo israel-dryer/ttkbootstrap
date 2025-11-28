@@ -1,14 +1,17 @@
 """Message dialogs and messagebox facade for ttkbootstrap."""
 
+import logging
 import textwrap
 import tkinter
-from typing import Any, Callable, List, Optional, Tuple
+from typing import Any, Callable, List, Optional
 
 import ttkbootstrap as ttk
+from ttkbootstrap.appconfig import use_icon_provider
 from ttkbootstrap.constants import *
-from ttkbootstrap.icons import Icon
 from ttkbootstrap.localization import MessageCatalog
 from .base import Dialog
+
+logger = logging.getLogger(__name__)
 
 
 class MessageDialog(Dialog):
@@ -28,67 +31,36 @@ class MessageDialog(Dialog):
             message: str,
             title: str = " ",
             buttons: Optional[List[str]] = None,
-            command: Optional[Tuple[Callable[..., Any], str]] = None,
+            command: Optional[Callable[[], None]] = None,
             width: int = 50,
-            parent: Optional[tkinter.Misc] = None,
+            master: Optional[tkinter.Misc] = None,
             alert: bool = False,
             default: Optional[str] = None,
-            padding: "tuple[int, int] | int" = (20, 20),
-            icon: Optional[str] = None,
+            padding: tuple[int, int] | int = (20, 20),
+            icon: Optional[str | dict] = None,
             **kwargs: Any,
     ) -> None:
         """Create a message dialog.
 
-        Parameters:
-
-            message (str):
-                The message text to display. Supports multiline strings
-                (separated by \\n).
-
-            title (str):
-                The dialog window title (default=' ').
-
-            buttons (List[str]):
-                List of button labels. Each button can optionally specify
-                a bootstyle using "label:bootstyle" format (e.g., "OK:primary").
-                If None, defaults to ["Cancel", "OK"]. The buttons are
-                displayed in reverse order (rightmost first).
-
-            command (Callable):
-                Optional callback function to execute when a button is pressed.
-
-            width (int):
-                Maximum width in characters for text wrapping (default=50).
-
-            parent (Widget):
-                Parent widget. The dialog will be centered on this widget.
-
-            alert (bool):
-                If True, rings the system bell when the dialog is shown
-                (default=False).
-
-            default (str):
-                The button label to use as the default (receives primary
-                bootstyle and initial focus). If None, the rightmost button
-                becomes the default.
-
-            padding (int | tuple):
-                Padding around the message content. Can be a single int or
-                tuple (horizontal, vertical) (default=(20, 20)).
-
-            icon (str):
-                Optional icon to display. Can be image data, file path,
-                or Icon constant (e.g., Icon.info).
-
-            **kwargs (Dict):
-                Additional keyword arguments. Supports 'localize' (bool)
-                to enable message translation.
+        Args:
+            message: The message text to display. Supports multiline strings.
+            title: The dialog window title.
+            buttons: List of button labels. Can specify bootstyle as "label:bootstyle".
+                If None, defaults to ["Cancel", "OK"].
+            command: Optional callback function to execute when any button is pressed.
+            width: Maximum width in characters for text wrapping.
+            master: Parent widget for the dialog.
+            alert: If True, rings the system bell when shown.
+            default: The button label to use as default. Receives primary bootstyle and focus.
+            padding: Padding around the message content.
+            icon: Optional icon specification. Can be a string (icon name) or dict with
+                keys: 'name' (required), 'size' (default 32), 'color' (optional).
+            **kwargs: Additional keyword arguments. Supports 'localize' to enable translation.
         """
-        super().__init__(parent, title, alert)
+        super().__init__(master, title, alert)
         self._message = message
-        self._command: Optional[Tuple[Callable[..., Any], str]] = command
+        self._command = command
         self._width = width
-        self._alert = alert
         self._default = default
         self._padding = padding
         self._icon = icon
@@ -103,23 +75,40 @@ class MessageDialog(Dialog):
             self._buttons = buttons
 
     def create_body(self, master: tkinter.Misc) -> None:
-        """Overrides the parent method; adds the message section."""
+        """Create the message body with optional icon."""
         container = ttk.Frame(master, padding=self._padding)
+
         if self._icon:
             try:
-                # assume this is image data
-                self._img = ttk.PhotoImage(data=self._icon)
-                icon_lbl = ttk.Label(container, image=self._img)
-                icon_lbl.pack(side=LEFT, anchor=N, padx=(0, 5))
-            except Exception:
-                try:
-                    # assume this is a file path
-                    self._img = ttk.PhotoImage(file=self._icon)
+                icon_provider = use_icon_provider()
+
+                # Parse icon specification - initialize variables
+                icon_name: Optional[str] = None
+                icon_size: int = 32
+                icon_color: Optional[str] = None
+
+                if isinstance(self._icon, str):
+                    icon_name = self._icon
+                elif isinstance(self._icon, dict):
+                    icon_name = self._icon.get("name")
+                    icon_size = self._icon.get("size", 32)
+                    icon_color = self._icon.get("color")
+                else:
+                    logger.warning("Invalid icon specification: %s", self._icon)
+
+                # Generate icon image
+                if icon_name:
+                    if icon_color:
+                        icon_image = icon_provider(icon_name, icon_size, icon_color)
+                    else:
+                        icon_image = icon_provider(icon_name, icon_size)
+
+                    self._img = icon_image
                     icon_lbl = ttk.Label(container, image=self._img)
-                    icon_lbl.pack(side=LEFT, anchor=N, padx=(0, 5))
-                except Exception:
-                    # icon is neither data nor a valid file path
-                    print("MessageDialog icon is invalid")
+                    icon_lbl.pack(side=LEFT, anchor=N, padx=(0, 10))
+
+            except Exception as e:
+                logger.warning("Failed to create icon: %s", e)
 
         if self._message:
             for msg in self._message.split("\n"):
@@ -129,8 +118,13 @@ class MessageDialog(Dialog):
         container.pack(fill=X, expand=True)
 
     def create_buttonbox(self, master: tkinter.Misc) -> None:
-        """Overrides the parent method; adds the message buttonbox"""
+        """Create the button box with configured buttons."""
+        # Add separator above buttons
+        ttk.Separator(master).pack(fill=X)
+
+        # Create button frame
         frame = ttk.Frame(master, padding=(5, 5))
+        frame.pack(side=BOTTOM, fill=X, anchor=S)
 
         button_list: list[ttk.Button] = []
 
@@ -154,8 +148,8 @@ class MessageDialog(Dialog):
             if self._localize is True:
                 text = MessageCatalog.translate(text)
 
-            btn = ttk.Button(frame, bootstyle=bootstyle, text=text)
-            btn.configure(command=lambda b=btn: self.on_button_press(b))
+            btn = ttk.Button(frame, bootstyle=bootstyle, text=text, padding=(10, 5))
+            btn.configure(command=lambda b=btn: self._on_button_press(b))
             btn.pack(padx=2, side=RIGHT)
             btn.lower()  # set focus traversal left-to-right
             button_list.append(btn)
@@ -163,10 +157,11 @@ class MessageDialog(Dialog):
             if is_default:
                 self._initial_focus = btn
 
-            # bind default button to return key press and set focus
+            # Bind return key to button
             btn.bind("<Return>", lambda _, b=btn: b.invoke())
             btn.bind("<KP_Enter>", lambda _, b=btn: b.invoke())
 
+        # Bind arrow keys for navigation
         for index, btn in enumerate(button_list):
             if index > 0:
                 nbtn = button_list[index - 1]
@@ -175,217 +170,252 @@ class MessageDialog(Dialog):
                 nbtn = button_list[index + 1]
                 btn.bind("<Left>", lambda _, b=nbtn: b.focus_set())
 
-        ttk.Separator(self._toplevel).pack(fill=X)
-        frame.pack(side=BOTTOM, fill=X, anchor=S)
-
         if not self._initial_focus:
             self._initial_focus = button_list[0]
 
-    def on_button_press(self, button: ttk.Button) -> None:
-        """Save result, destroy the toplevel, and execute command."""
+    def _on_button_press(self, button: ttk.Button) -> None:
+        """Save result and close dialog."""
         self._result = button["text"]
-        command = self._command
-        if command is not None:
-            command()
-        self._toplevel.after_idle(self._toplevel.destroy)
-
-    def show(self, position: Optional[Tuple[int, int]] = None, wait_for_result: bool = True) -> None:
-        """Create and display the popup messagebox."""
-        super().show(position, wait_for_result=wait_for_result)
+        if self._command is not None:
+            self._command()
+        self.destroy()
 
 
 class Messagebox:
-    """This class contains various static methods that show popups with
-    a message to the end user with various arrangments of buttons
-    and alert options."""
+    """Static methods for displaying standard message dialogs."""
+
+    @staticmethod
+    def _show(
+            message: str,
+            title: str = " ",
+            master: Optional[tkinter.Misc] = None,
+            alert: bool = False,
+            buttons: Optional[List[str]] = None,
+            icon: Optional[str] = None,
+            **kwargs: Any,
+    ) -> Optional[str]:
+        """Internal helper to show a message dialog.
+
+        Args:
+            message: The message text to display.
+            title: The dialog window title.
+            master: Parent widget for the dialog.
+            alert: If True, rings the system bell.
+            buttons: List of button labels.
+            icon: Optional icon to display.
+            **kwargs: Additional arguments including 'position'.
+
+        Returns:
+            The text of the button pressed, or None.
+        """
+        position = kwargs.pop("position", None)
+        dialog = MessageDialog(
+            message=message,
+            title=title,
+            master=master,
+            alert=alert,
+            buttons=buttons,
+            icon=icon,
+            localize=True,
+            **kwargs,
+        )
+        dialog.show(position)
+        return dialog.result
 
     @staticmethod
     def show_info(
             message: str,
             title: str = " ",
-            parent: Optional[tkinter.Misc] = None,
+            master: Optional[tkinter.Misc] = None,
             alert: bool = False,
             **kwargs: Any,
-    ) -> None:
-        """Display a modal dialog box with an OK button and an INFO icon."""
-        dialog = MessageDialog(
-            message=message,
-            title=title,
-            alert=alert,
-            parent=parent,
-            buttons=["OK:primary"],
-            icon=Icon.info,
-            localize=True,
-            **kwargs,
-        )
-        position = kwargs.pop("position", None)
-        dialog.show(position)
+    ) -> Optional[str]:
+        """Display an info dialog with OK button and info icon.
+
+        Args:
+            message: The message text to display.
+            title: The dialog window title.
+            master: Parent widget for the dialog.
+            alert: If True, rings the system bell.
+            **kwargs: Additional arguments including 'position'.
+
+        Returns:
+            The text of the button pressed.
+        """
+        return Messagebox._show(message, title, master, alert, ["OK:primary"], "info-circle-fill", **kwargs)
 
     @staticmethod
     def show_warning(
             message: str,
             title: str = " ",
-            parent: Optional[tkinter.Misc] = None,
+            master: Optional[tkinter.Misc] = None,
             alert: bool = True,
             **kwargs: Any,
-    ) -> None:
-        """Display a modal dialog box with an OK button and a warning icon."""
-        dialog = MessageDialog(
-            message=message,
-            title=title,
-            parent=parent,
-            buttons=["OK:primary"],
-            icon=Icon.warning,
-            alert=alert,
-            localize=True,
-            **kwargs,
-        )
-        position = kwargs.pop("position", None)
-        dialog.show(position)
+    ) -> Optional[str]:
+        """Display a warning dialog with OK button and warning icon.
+
+        Args:
+            message: The message text to display.
+            title: The dialog window title.
+            master: Parent widget for the dialog.
+            alert: If True, rings the system bell.
+            **kwargs: Additional arguments including 'position'.
+
+        Returns:
+            The text of the button pressed.
+        """
+        return Messagebox._show(message, title, master, alert, ["OK:primary"], "exclamation-triangle-fill", **kwargs)
 
     @staticmethod
     def show_error(
             message: str,
             title: str = " ",
-            parent: Optional[tkinter.Misc] = None,
+            master: Optional[tkinter.Misc] = None,
             alert: bool = True,
             **kwargs: Any,
-    ) -> None:
-        """Display a modal dialog box with an OK button and an error icon."""
-        dialog = MessageDialog(
-            message=message,
-            title=title,
-            parent=parent,
-            buttons=["OK:primary"],
-            icon=Icon.error,
-            alert=alert,
-            localize=True,
-            **kwargs,
-        )
-        position = kwargs.pop("position", None)
-        dialog.show(position)
+    ) -> Optional[str]:
+        """Display an error dialog with OK button and error icon.
+
+        Args:
+            message: The message text to display.
+            title: The dialog window title.
+            master: Parent widget for the dialog.
+            alert: If True, rings the system bell.
+            **kwargs: Additional arguments including 'position'.
+
+        Returns:
+            The text of the button pressed.
+        """
+        return Messagebox._show(message, title, master, alert, ["OK:primary"], "x-circle-fill", **kwargs)
 
     @staticmethod
     def show_question(
             message: str,
             title: str = " ",
-            parent: Optional[tkinter.Misc] = None,
+            master: Optional[tkinter.Misc] = None,
             alert: bool = False,
             **kwargs: Any,
-    ) -> None:
-        """Display a modal dialog box with an OK button and a question icon."""
-        dialog = MessageDialog(
-            message=message,
-            title=title,
-            parent=parent,
-            buttons=["OK:primary"],
-            icon=Icon.question,
-            alert=alert,
-            localize=True,
-            **kwargs,
-        )
-        position = kwargs.pop("position", None)
-        dialog.show(position)
+    ) -> Optional[str]:
+        """Display a question dialog with OK button and question icon.
+
+        Args:
+            message: The message text to display.
+            title: The dialog window title.
+            master: Parent widget for the dialog.
+            alert: If True, rings the system bell.
+            **kwargs: Additional arguments including 'position'.
+
+        Returns:
+            The text of the button pressed.
+        """
+        return Messagebox._show(message, title, master, alert, ["OK:primary"], "question-circle-fill", **kwargs)
 
     @staticmethod
     def ok(
             message: str,
             title: str = " ",
-            parent: Optional[tkinter.Misc] = None,
+            master: Optional[tkinter.Misc] = None,
             alert: bool = False,
             **kwargs: Any,
-    ) -> None:
-        dialog = MessageDialog(
-            title=title,
-            message=message,
-            parent=parent,
-            alert=alert,
-            buttons=["OK:primary"],
-            localize=True,
-            **kwargs,
-        )
-        position = kwargs.pop("position", None)
-        dialog.show(position)
+    ) -> Optional[str]:
+        """Display a dialog with an OK button.
+
+        Args:
+            message: The message text to display.
+            title: The dialog window title.
+            master: Parent widget for the dialog.
+            alert: If True, rings the system bell.
+            **kwargs: Additional arguments including 'position'.
+
+        Returns:
+            The text of the button pressed.
+        """
+        return Messagebox._show(message, title, master, alert, ["OK:primary"], None, **kwargs)
 
     @staticmethod
     def okcancel(
             message: str,
             title: str = " ",
+            master: Optional[tkinter.Misc] = None,
             alert: bool = False,
-            parent: Optional[tkinter.Misc] = None,
             **kwargs: Any,
     ) -> Optional[str]:
-        dialog = MessageDialog(
-            title=title,
-            message=message,
-            parent=parent,
-            alert=alert,
-            localize=True,
-            **kwargs,
-        )
-        position = kwargs.pop("position", None)
-        dialog.show(position)
-        return dialog.result
+        """Display a dialog with OK and Cancel buttons.
+
+        Args:
+            message: The message text to display.
+            title: The dialog window title.
+            master: Parent widget for the dialog.
+            alert: If True, rings the system bell.
+            **kwargs: Additional arguments including 'position'.
+
+        Returns:
+            The text of the button pressed.
+        """
+        return Messagebox._show(message, title, master, alert, ["Cancel", "OK"], None, **kwargs)
 
     @staticmethod
     def yesno(
             message: str,
             title: str = " ",
+            master: Optional[tkinter.Misc] = None,
             alert: bool = False,
-            parent: Optional[tkinter.Misc] = None,
             **kwargs: Any,
     ) -> Optional[str]:
-        dialog = MessageDialog(
-            title=title,
-            message=message,
-            parent=parent,
-            buttons=["No", "Yes"],
-            alert=alert,
-            localize=True,
-            **kwargs,
-        )
-        position = kwargs.pop("position", None)
-        dialog.show(position)
-        return dialog.result
+        """Display a dialog with Yes and No buttons.
+
+        Args:
+            message: The message text to display.
+            title: The dialog window title.
+            master: Parent widget for the dialog.
+            alert: If True, rings the system bell.
+            **kwargs: Additional arguments including 'position'.
+
+        Returns:
+            The text of the button pressed.
+        """
+        return Messagebox._show(message, title, master, alert, ["No", "Yes"], None, **kwargs)
 
     @staticmethod
     def yesnocancel(
             message: str,
             title: str = " ",
+            master: Optional[tkinter.Misc] = None,
             alert: bool = False,
-            parent: Optional[tkinter.Misc] = None,
             **kwargs: Any,
     ) -> Optional[str]:
-        dialog = MessageDialog(
-            title=title,
-            message=message,
-            parent=parent,
-            alert=alert,
-            buttons=["Cancel", "No", "Yes"],
-            localize=True,
-            **kwargs,
-        )
-        position = kwargs.pop("position", None)
-        dialog.show(position)
-        return dialog.result
+        """Display a dialog with Yes, No, and Cancel buttons.
+
+        Args:
+            message: The message text to display.
+            title: The dialog window title.
+            master: Parent widget for the dialog.
+            alert: If True, rings the system bell.
+            **kwargs: Additional arguments including 'position'.
+
+        Returns:
+            The text of the button pressed.
+        """
+        return Messagebox._show(message, title, master, alert, ["Cancel", "No", "Yes"], None, **kwargs)
 
     @staticmethod
     def retrycancel(
             message: str,
             title: str = " ",
+            master: Optional[tkinter.Misc] = None,
             alert: bool = False,
-            parent: Optional[tkinter.Misc] = None,
             **kwargs: Any,
     ) -> Optional[str]:
-        dialog = MessageDialog(
-            title=title,
-            message=message,
-            parent=parent,
-            alert=alert,
-            buttons=["Cancel", "Retry"],
-            localize=True,
-            **kwargs,
-        )
-        position = kwargs.pop("position", None)
-        dialog.show(position)
-        return dialog.result
+        """Display a dialog with Retry and Cancel buttons.
+
+        Args:
+            message: The message text to display.
+            title: The dialog window title.
+            master: Parent widget for the dialog.
+            alert: If True, rings the system bell.
+            **kwargs: Additional arguments including 'position'.
+
+        Returns:
+            The text of the button pressed.
+        """
+        return Messagebox._show(message, title, master, alert, ["Cancel", "Retry"], None, **kwargs)
