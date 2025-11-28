@@ -27,11 +27,13 @@ class NumberEntryPart(TextEntryPart):
         - Virtual events for increment/decrement
 
     Events:
-        <<Increment>>: Fired when value is incremented
-            event.data = {"value": numeric_value}
+        <<Increment>>: Fired when an increment is requested (before step occurs).
+            Emit this event to programmatically increment the value.
+            Can be intercepted to prevent or customize increment behavior.
 
-        <<Decrement>>: Fired when value is decremented
-            event.data = {"value": numeric_value}
+        <<Decrement>>: Fired when a decrement is requested (before step occurs).
+            Emit this event to programmatically decrement the value.
+            Can be intercepted to prevent or customize decrement behavior.
 
         Plus all events from TextEntryPart:
             <<Input>>, <<Changed>>, <Return>
@@ -101,38 +103,6 @@ class NumberEntryPart(TextEntryPart):
             allow_blank: If True, empty input is allowed (sets value to None)
             locale: Locale identifier for number formatting (e.g., 'en_US')
             **kwargs: Additional keyword arguments passed to TextEntryPart
-
-        Example:
-            ```python
-            # Integer entry from 0-100 with step of 5
-            entry1 = NumberEntryPart(
-                root,
-                value=50,
-                minvalue=0,
-                maxvalue=100,
-                increment=5
-            )
-
-            # Decimal entry with 2 decimal places
-            entry2 = NumberEntryPart(
-                root,
-                value=3.14,
-                minvalue=0.0,
-                maxvalue=10.0,
-                increment=0.01,
-                value_format='#,##0.00'
-            )
-
-            # Wrapping entry (like a clock)
-            entry3 = NumberEntryPart(
-                root,
-                value=0,
-                minvalue=0,
-                maxvalue=23,
-                increment=1,
-                wrap=True
-            )
-            ```
         """
         # Store numeric configuration
         self._minvalue = minvalue
@@ -174,24 +144,28 @@ class NumberEntryPart(TextEntryPart):
             self._prev_changed_value = self._value
 
         # Bind keyboard stepping (Up/Down arrows)
-        self.bind('<Up>', self._handle_up_key)
-        self.bind('<Down>', self._handle_down_key)
+        self.bind('<Up>', self._handle_up_key, add=True)
+        self.bind('<Down>', self._handle_down_key, add=True)
 
         # Bind mouse wheel (Windows/macOS)
-        self.bind('<MouseWheel>', self._handle_mouse_wheel)
+        self.bind('<MouseWheel>', self._handle_mouse_wheel, add=True)
 
         # Bind mouse wheel (Linux/X11)
-        self.bind('<Button-4>', self._handle_wheel_up)
-        self.bind('<Button-5>', self._handle_wheel_down)
+        self.bind('<Button-4>', self._handle_wheel_up, add=True)
+        self.bind('<Button-5>', self._handle_wheel_down, add=True)
+
+        # Listen for increment/decrement events to invoke step
+        self.bind('<<Increment>>', self._handle_increment_event, add=True)
+        self.bind('<<Decrement>>', self._handle_decrement_event, add=True)
 
     def _handle_up_key(self, event):
-        """Handle Up arrow key press - increment value."""
-        self.step(+1)
+        """Handle Up arrow key press - emit increment event."""
+        self.event_generate('<<Increment>>')
         return 'break'  # Prevent default behavior
 
     def _handle_down_key(self, event):
-        """Handle Down arrow key press - decrement value."""
-        self.step(-1)
+        """Handle Down arrow key press - emit decrement event."""
+        self.event_generate('<<Decrement>>')
         return 'break'  # Prevent default behavior
 
     def _handle_mouse_wheel(self, event):
@@ -202,28 +176,32 @@ class NumberEntryPart(TextEntryPart):
             delta = 0
 
         if delta != 0:
-            self.step(+1 if delta > 0 else -1)
+            if delta > 0:
+                self.event_generate('<<Increment>>')
+            else:
+                self.event_generate('<<Decrement>>')
         return 'break'
 
     def _handle_wheel_up(self, event):
         """Handle mouse wheel up on Linux/X11."""
-        self.step(+1)
+        self.event_generate('<<Increment>>')
         return 'break'
 
     def _handle_wheel_down(self, event):
         """Handle mouse wheel down on Linux/X11."""
-        self.step(-1)
+        self.event_generate('<<Decrement>>')
         return 'break'
 
+    def _handle_increment_event(self, event):
+        """Handle <<Increment>> event by stepping up."""
+        self.step(+1)
+
+    def _handle_decrement_event(self, event):
+        """Handle <<Decrement>> event by stepping down."""
+        self.step(-1)
+
     def _apply_bounds(self, x: float) -> float:
-        """Apply min/max bounds with optional wrapping.
-
-        Args:
-            x: Input value to constrain
-
-        Returns:
-            Value constrained to [min_value, max_value] range
-        """
+        """Apply min/max bounds with optional wrapping."""
         lo, hi = float(self._minvalue), float(self._maxvalue)
 
         if not self._wrap:
@@ -243,24 +221,7 @@ class NumberEntryPart(TextEntryPart):
         return x
 
     def step(self, n: int = 1):
-        """Increment or decrement value by n steps.
-
-        Updates the internal value, applies bounds/wrapping, formats
-        the display, and emits appropriate events.
-
-        Args:
-            n: Number of steps to increment (positive) or decrement (negative)
-
-        Returns:
-            Self for method chaining
-
-        Example:
-            ```python
-            entry.step(1)   # Increment by one step
-            entry.step(-2)  # Decrement by two steps
-            entry.step(5)   # Increment by five steps
-            ```
-        """
+        """Increment or decrement value by n steps."""
         # Get current value (default to min if None)
         current = self._value
         if current is None:
@@ -288,10 +249,6 @@ class NumberEntryPart(TextEntryPart):
 
         # Update display
         self._normalize_display_from_value()
-
-        # Emit increment/decrement event
-        event_name = '<<Increment>>' if n > 0 else '<<Decrement>>'
-        self.event_generate(event_name, data={"value": self._value})
 
         # Emit changed event if value actually changed
         if self._value != prev_value:
@@ -349,45 +306,24 @@ class NumberEntryPart(TextEntryPart):
             self._normalize_display_from_value()
 
     def on_increment(self, callback):
-        """Bind callback to <<Increment>> event.
-
-        Args:
-            callback: Function receiving event.data = {"value": numeric_value}
-
-        Returns:
-            Binding identifier
-        """
-        return self.bind('<<Increment>>', callback)
+        """Bind callback to <<Increment>> event."""
+        return self.bind('<<Increment>>', callback, add=True)
 
     def off_increment(self, funcid: str):
         """Remove callback from <<Increment>> event."""
         self.unbind('<<Increment>>', funcid)
 
     def on_decrement(self, callback):
-        """Bind callback to <<Decrement>> event.
-
-        Args:
-            callback: Function receiving event.data = {"value": numeric_value}
-
-        Returns:
-            Binding identifier
-        """
-        return self.bind('<<Decrement>>', callback)
+        """Bind callback to <<Decrement>> event."""
+        return self.bind('<<Decrement>>', callback, add=True)
 
     def off_decrement(self, funcid: str):
         """Remove callback from <<Decrement>> event."""
         self.unbind('<<Decrement>>', funcid)
 
-    # Configuration delegation for min_value, max_value, increment, and wrap
     @configure_delegate('minvalue')
     def _delegate_minvalue(self, value: Union[int, float]):
-        """Set the minimum allowed value and re-validate current value.
-
-        Can be accessed via:
-            widget.configure(minvalue=10)
-            widget['minvalue'] = 10
-            widget.cget('minvalue')
-        """
+        """Set the minimum allowed value and re-validate current value."""
         self._minvalue = value
         if self._value is not None:
             self._value = self._apply_bounds(float(self._value))
@@ -395,13 +331,7 @@ class NumberEntryPart(TextEntryPart):
 
     @configure_delegate('maxvalue')
     def _delegate_maxvalue(self, value: Union[int, float]):
-        """Set the maximum allowed value and re-validate current value.
-
-        Can be accessed via:
-            widget.configure(maxvalue=100)
-            widget['maxvalue'] = 100
-            widget.cget('maxvalue')
-        """
+        """Set the maximum allowed value and re-validate current value."""
         self._maxvalue = value
         if self._value is not None:
             self._value = self._apply_bounds(float(self._value))
@@ -409,22 +339,10 @@ class NumberEntryPart(TextEntryPart):
 
     @configure_delegate('increment')
     def _delegate_increment(self, value: Union[int, float]):
-        """Set the step increment value.
-
-        Can be accessed via:
-            widget.configure(increment=5)
-            widget['increment'] = 5
-            widget.cget('increment')
-        """
+        """Set the step increment value."""
         self._increment = value
 
     @configure_delegate('wrap')
     def _delegate_wrap(self, value: bool):
-        """Set the wrap setting.
-
-        Can be accessed via:
-            widget.configure(wrap=True)
-            widget['wrap'] = True
-            widget.cget('wrap')
-        """
+        """Set the wrap setting."""
         self._wrap = bool(value)
