@@ -13,30 +13,20 @@ from ttkbootstrap.utility import center_on_parent
 
 
 class Dialog(ABC):
-    """A simple dialog base class using composition pattern.
+    """Base class for creating modal dialogs using composition pattern.
 
     This class creates and manages a Toplevel window internally and provides
-    a consistent API for creating modal dialogs. Subclasses must implement
+    a consistent API for modal dialogs. Subclasses must implement
     `create_body` and `create_buttonbox` methods.
     """
 
     def __init__(self, master: Optional[tkinter.Misc] = None, title: str = "", alert: bool = False) -> None:
-        """
-        Parameters:
+        """Initialize the dialog.
 
-            master (Widget):
-                Makes the window the logical parent of the message box.
-                The messagebox is displayed on top of its parent window.
-                If None, uses the default root window.
-
-            title (str):
-                The string displayed as the title of the message box.
-                This option is ignored on Mac OS X, where platform
-                guidelines forbid the use of a title on this kind of
-                dialog.
-
-            alert (bool):
-                Ring the display's bell when the dialog is shown.
+        Args:
+            master: Parent widget for the dialog. If None, uses the default root window.
+            title: Dialog window title. Ignored on macOS per platform guidelines.
+            alert: If True, rings the system bell when the dialog is shown.
         """
         self._master = master if master else tkinter._default_root
         self._winsys = self._master.tk.call("tk", "windowingsystem")
@@ -53,17 +43,11 @@ class Dialog(ABC):
             center_on_parent(self._toplevel, self._master)
 
     def show(self, position: Optional[Tuple[int, int]] = None, wait_for_result: bool = True) -> None:
-        """Show the popup dialog.
+        """Show the dialog.
 
-        Parameters:
-
-            position (tuple[int, int]):
-                The x and y coordinates used to position the dialog.
-                If None, the dialog will be centered on the parent window.
-
-            wait_for_result (bool):
-                If True, the dialog is modal and blocks until closed.
-                If False, the dialog is non-modal and returns immediately.
+        Args:
+            position: x and y coordinates to position the dialog. If None, centers on parent.
+            wait_for_result: If True, dialog is modal and blocks. If False, non-modal.
         """
         # Reset result for each show
         self._result = None
@@ -101,14 +85,11 @@ class Dialog(ABC):
     def create_body(self, master: tkinter.Misc) -> None:
         """Create the dialog body.
 
-        This method must be overridden by subclasses and is called by the
-        internal `_build` method. Set the `self._initial_focus` attribute
-        to the widget that should receive the initial focus.
+        Subclasses must override this method. Set `self._initial_focus` to the widget
+        that should receive initial focus.
 
-        Parameters:
-
-            master (Widget):
-                The parent widget (the dialog's Toplevel).
+        Args:
+            master: The dialog's Toplevel window.
         """
         pass
 
@@ -116,19 +97,16 @@ class Dialog(ABC):
     def create_buttonbox(self, master: tkinter.Misc) -> None:
         """Create the dialog button box.
 
-        This method must be overridden by subclasses and is called by the
-        internal `_build` method. Set the `self._initial_focus` attribute
-        to the button that should receive the initial focus.
+        Subclasses must override this method. Set `self._initial_focus` to the button
+        that should receive initial focus.
 
-        Parameters:
-
-            master (Widget):
-                The parent widget (the dialog's Toplevel).
+        Args:
+            master: The dialog's Toplevel window.
         """
         pass
 
     def _build(self) -> None:
-        """Build the dialog from settings (internal method)."""
+        """Build the dialog window and widgets."""
         if self._is_built:
             return
 
@@ -172,12 +150,12 @@ class Dialog(ABC):
         self._is_built = True
 
     def _on_escape(self) -> None:
-        """Handle Escape key press - cancel the dialog."""
+        """Cancel the dialog when Escape is pressed."""
         self._result = None
         self.destroy()
 
     def destroy(self) -> None:
-        """Destroy the dialog and clean up resources."""
+        """Destroy the dialog and release resources."""
         if self._toplevel:
             try:
                 self._toplevel.grab_release()
@@ -196,5 +174,5 @@ class Dialog(ABC):
 
     @property
     def result(self) -> Any:
-        """Returns the result of the dialog without side effects."""
+        """The dialog result value."""
         return self._result
