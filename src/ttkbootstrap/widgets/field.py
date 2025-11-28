@@ -422,6 +422,12 @@ class Field(EntryMixin, Frame):
         """
         bootstyle = "suffix-field" if position == "after" else "prefix-field"
         kwargs.update(bootstyle=bootstyle, takefocus=False)
+
+        if widget == Button:
+            if 'style_options' in kwargs:
+                kwargs['style_options'].update(use_active_states=True)
+            else:
+                kwargs['style_options'] = dict(use_active_states=True)
         instance = widget(master=self._field, **kwargs)
         key = name or str(instance)
         self._addons[key] = instance

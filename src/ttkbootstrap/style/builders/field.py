@@ -47,7 +47,8 @@ def build_field_style(b: BootstyleBuilderTTk, ttk_style: str, color: str = None,
 
 @BootstyleBuilderTTk.register_builder('input', 'TField')
 def build_field_input_style(b: BootstyleBuilderTTk, ttk_style: str, color: str = None, **options):
-    surface = b.color("background")  # always use the theme background
+    surface_token = options.get('surface_color', 'background')
+    surface = b.color(surface_token)
     disabled_bg = b.disabled('background')
     disabled_fg = b.disabled('text')
     foreground = b.on_color(surface)
@@ -104,21 +105,39 @@ def build_field_suffix_style(b: BootstyleBuilderTTk, ttk_style: str, color: str 
 
 def build_field_addon_style(b: BootstyleBuilderTTk, ttk_style: str, _: str, variant: str, **options):
     surface_token = options.get('surface_color', 'background')
-
+    use_active_states = options.get('use_active_states', False)
     surface = b.color(surface_token)
+
+    if use_active_states:
+        surface_active = b.active(surface)
+        surface_pressed = b.pressed(surface)
+    else:
+        surface_active = surface_pressed = surface
+
     border = b.border(surface)
     foreground = b.on_color(surface)
     foreground_disabled = b.disabled('text')
-    normal = b.disabled()
+    normal = b.disabled(surface=surface)
 
     # button element images
     normal_img = recolor_image(f'input-{variant}', normal, border)
+
+    if use_active_states:
+        active_img = recolor_image(f'input-{variant}', surface_active, border)
+        pressed_img = recolor_image(f'input-{variant}', surface_pressed, border)
+    else:
+        active_img = pressed_img = normal_img
+
     img_padding = 8
 
     # button element
     b.create_style_element_image(
-        ElementImage(
-            f'{ttk_style}.border', normal_img, sticky="nsew", border=img_padding, padding=img_padding))
+
+        ElementImage(f'{ttk_style}.border', normal_img, sticky="nsew", border=img_padding, padding=img_padding).state_specs([
+            ('pressed', pressed_img),
+            ('active', active_img),
+            ('', normal_img)
+        ]))
 
     b.create_style_layout(
         ttk_style, Element(f"{ttk_style}.border", sticky="nsew").children(
