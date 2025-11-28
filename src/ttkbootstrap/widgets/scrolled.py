@@ -367,9 +367,20 @@ class ScrolledFrame(ttk.Frame):
         self.bind("<<MapChild>>", self._on_map_child, "+")
 
         # delegate content geometry methods to container frame
+        # exclude configuration methods that should apply to content frame
+        _exclude = {
+            "grid_columnconfigure", "grid_rowconfigure", "grid_bbox",
+            "grid_location", "grid_propagate", "grid_size",
+            "grid_slaves", "grid_content",  # grid_slaves renamed to grid_content in newer tk
+            "pack_propagate", "pack_slaves", "pack_content",
+            "place_slaves", "place_content"
+        }
         _methods = vars(Pack).keys() | vars(Grid).keys() | vars(Place).keys()
         for method in _methods:
             if any(["pack" in method, "grid" in method, "place" in method]):
+                if method in _exclude:
+                    # keep these methods pointing to the content frame
+                    continue
                 # prefix content frame methods with 'content_'
                 setattr(self, f"content_{method}", getattr(self, method))
                 # overwrite content frame methods from container frame
