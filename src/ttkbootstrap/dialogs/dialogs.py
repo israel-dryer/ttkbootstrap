@@ -11,7 +11,7 @@ warnings.warn(
     stacklevel=2,
 )
 
-from .base import Dialog
+from .dialog import Dialog
 from .datepicker import DatePickerDialog
 from .fontdialog import FontDialog
 from .message import MessageDialog, Messagebox

@@ -9,12 +9,12 @@ import ttkbootstrap as ttk
 from ttkbootstrap.appconfig import use_icon_provider
 from ttkbootstrap.constants import *
 from ttkbootstrap.localization import MessageCatalog
-from .base import Dialog
+from .dialog import Dialog, DialogButton, ButtonRole
 
 logger = logging.getLogger(__name__)
 
 
-class MessageDialog(Dialog):
+class MessageDialog:
     """A simple modal dialog class that can be used to build simple
     message dialogs.
 
@@ -57,26 +57,38 @@ class MessageDialog(Dialog):
                 keys: 'name' (required), 'size' (default 32), 'color' (optional).
             **kwargs: Additional keyword arguments. Supports 'localize' to enable translation.
         """
-        super().__init__(master, title, alert)
         self._message = message
         self._command = command
         self._width = width
-        self._default = default
         self._padding = padding
         self._icon = icon
         self._localize = kwargs.get("localize")
+        self._img = None  # Store icon image to prevent garbage collection
 
         if buttons is None:
-            self._buttons = [
+            button_labels = [
                 f"{MessageCatalog.translate('Cancel')}",
                 f"{MessageCatalog.translate('OK')}",
             ]
         else:
-            self._buttons = buttons
+            button_labels = buttons
 
-    def create_body(self, master: tkinter.Misc) -> None:
+        # Parse button labels and create DialogButton specs
+        button_specs = self._parse_buttons(button_labels, default)
+
+        # Create the underlying dialog
+        self._dialog = Dialog(
+            master=master,
+            title=title,
+            content_builder=self._create_content,
+            buttons=button_specs,
+            alert=alert,
+            minsize=(300, 100),
+        )
+
+    def _create_content(self, parent: tkinter.Widget) -> None:
         """Create the message body with optional icon."""
-        container = ttk.Frame(master, padding=self._padding)
+        container = ttk.Frame(parent, padding=self._padding)
 
         if self._icon:
             try:
@@ -117,27 +129,23 @@ class MessageDialog(Dialog):
                 message_label.pack(pady=(0, 3), fill=X, anchor=N)
         container.pack(fill=X, expand=True)
 
-    def create_buttonbox(self, master: tkinter.Misc) -> None:
-        """Create the button box with configured buttons."""
-        # Add separator above buttons
-        ttk.Separator(master).pack(fill=X)
+    def _parse_buttons(self, button_labels: List[str], default: Optional[str]) -> List[DialogButton]:
+        """Parse button label strings into DialogButton specifications."""
+        button_specs: List[DialogButton] = []
 
-        # Create button frame
-        frame = ttk.Frame(master, padding=(5, 5))
-        frame.pack(side=BOTTOM, fill=X, anchor=S)
-
-        button_list: list[ttk.Button] = []
-
-        for i, button in enumerate(self._buttons[::-1]):
+        for i, button in enumerate(button_labels):
+            # Parse "text:bootstyle" format
             cnf = button.split(":")
             text = cnf[0]
 
-            is_default = False
-            if self._default is not None and text == self._default:
-                is_default = True
-            elif self._default is None and i == 0:
-                is_default = True
+            # Apply localization if enabled
+            if self._localize:
+                text = MessageCatalog.translate(text)
 
+            # Determine if this is the default button
+            is_default = (text == default) if default else (i == len(button_labels) - 1)
+
+            # Parse or infer bootstyle
             if len(cnf) == 2:
                 bootstyle = cnf[1]
             elif is_default:
@@ -145,40 +153,48 @@ class MessageDialog(Dialog):
             else:
                 bootstyle = "secondary"
 
-            if self._localize is True:
-                text = MessageCatalog.translate(text)
+            # Determine button role
+            role: ButtonRole
+            if bootstyle == "primary":
+                role = "primary"
+            elif i == 0 and "cancel" in text.lower():
+                role = "cancel"
+            else:
+                role = "secondary"
 
-            btn = ttk.Button(frame, bootstyle=bootstyle, text=text, padding=(10, 5))
-            btn.configure(command=lambda b=btn: self._on_button_press(b))
-            btn.pack(padx=2, side=RIGHT)
-            btn.lower()  # set focus traversal left-to-right
-            button_list.append(btn)
+            # Create button specification
+            button_specs.append(
+                DialogButton(
+                    text=text,
+                    role=role,
+                    result=text,
+                    bootstyle=bootstyle if bootstyle != role else None,
+                    default=is_default,
+                    command=self._make_command_callback() if self._command else None,
+                )
+            )
 
-            if is_default:
-                self._initial_focus = btn
+        return button_specs
 
-            # Bind return key to button
-            btn.bind("<Return>", lambda _, b=btn: b.invoke())
-            btn.bind("<KP_Enter>", lambda _, b=btn: b.invoke())
+    def _make_command_callback(self) -> Callable[[Dialog], None]:
+        """Create a callback wrapper for the custom command."""
+        def callback(dialog: Dialog) -> None:
+            if self._command:
+                self._command()
+        return callback
 
-        # Bind arrow keys for navigation
-        for index, btn in enumerate(button_list):
-            if index > 0:
-                nbtn = button_list[index - 1]
-                btn.bind("<Right>", lambda _, b=nbtn: b.focus_set())
-            if index < len(button_list) - 1:
-                nbtn = button_list[index + 1]
-                btn.bind("<Left>", lambda _, b=nbtn: b.focus_set())
+    def show(self, position: Optional[tuple[int, int]] = None) -> None:
+        """Show the dialog.
 
-        if not self._initial_focus:
-            self._initial_focus = button_list[0]
+        Args:
+            position: x and y coordinates to position the dialog. If None, centers on parent.
+        """
+        self._dialog.show(position=position, modal=True)
 
-    def _on_button_press(self, button: ttk.Button) -> None:
-        """Save result and close dialog."""
-        self._result = button["text"]
-        if self._command is not None:
-            self._command()
-        self.destroy()
+    @property
+    def result(self) -> Any:
+        """The dialog result value (the text of the button pressed)."""
+        return self._dialog.result
 
 
 class Messagebox:
