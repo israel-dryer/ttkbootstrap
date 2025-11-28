@@ -170,55 +170,28 @@ class ValidationMixin(Widget):
 
     # Optional: ergonomic callback registration
     def on_invalid(self, func: Callable[[dict[str, Any]], None]) -> None:
-        """Register callback for invalid validation.
-
-        Args:
-            func: Callback receiving validation data dict
-
-        Example:
-            ```python
-            def handle_invalid(data):
-                print(f"Invalid: {data['message']}")
-
-            entry.on_invalid(handle_invalid)
-            ```
-        """
+        """Register callback for invalid validation."""
         self._on_invalid_command = func
 
+    def off_invalid(self, funcid: str):
+        """Remove the callback for the <<Invalid>> event"""
+        self.unbind('<<Invalid>>', funcid)
+
     def on_valid(self, func: Callable[[dict[str, Any]], None]) -> None:
-        """Register callback for valid validation.
-
-        Args:
-            func: Callback receiving validation data dict
-
-        Example:
-            ```python
-            def handle_valid(data):
-                print(f"Valid: {data['value']}")
-
-            entry.on_valid(handle_valid)
-            ```
-        """
+        """Register callback for valid validation."""
         self._on_valid_command = func
 
+    def off_valid(self, funcid: str):
+        """Remove the callback for the <<Valid>> event"""
+        self.unbind('<<Valid>>', funcid)
+
     def on_validated(self, func: Callable[[dict[str, Any]], None]) -> None:
-        """Register callback for any validation (valid or invalid).
-
-        Args:
-            func: Callback receiving validation data dict
-
-        Example:
-            ```python
-            def handle_validated(data):
-                if data['is_valid']:
-                    print("Validation passed")
-                else:
-                    print(f"Validation failed: {data['message']}")
-
-            entry.on_validated(handle_validated)
-            ```
-        """
+        """Register callback for any validation (valid or invalid)."""
         self._on_validated_command = func
+
+    def off_validated(self, funcid: str):
+        """Remove the callback for validated event"""
+        self.unbind('<<Validated>>', funcid)
 
     # ---------------- Internals ----------------
 
