@@ -13,7 +13,7 @@ from ttkbootstrap.widgets.button import Button
 from ttkbootstrap.widgets.field import Field, FieldOptions
 from ttkbootstrap.widgets.mixins import configure_delegate
 
-if TYPE_CHECKING:  # pragma: no cover
+if TYPE_CHECKING:
     from ttkbootstrap.dialogs.datedialog import DateDialog
 
 
@@ -255,6 +255,8 @@ class DateEntry(Field):
         if not isinstance(current_value, date):
             current_value = date.today()
 
+        position = self._picker_position()
+
         dialog = DateDialog(
             master=self.winfo_toplevel(),
             title=self._picker_title,
@@ -264,25 +266,10 @@ class DateEntry(Field):
         )
 
         def _on_result(payload):
-            # Tk may not carry dicts across event.data; also check a side channel.
-            selected = None
-            if isinstance(payload, dict):
-                selected = payload.get("result")
-            elif isinstance(payload, (date, datetime)):
-                selected = payload
-            elif isinstance(payload, str):
-                try:
-                    selected = datetime.fromisoformat(payload).date()
-                except Exception:
-                    selected = None
+            self.value = payload.data['result']
 
-            if isinstance(selected, datetime):
-                selected = selected.date()
-            if isinstance(selected, date):
-                self.value = selected
-
-        dialog.on_result(_on_result)
-        dialog.show()
+        dialog.on_result(lambda x: _on_result(x))
+        dialog.show(position=position)
 
         # Fallback: ensure value is applied after modal dialog closes.
         selected = dialog.result
@@ -290,3 +277,23 @@ class DateEntry(Field):
             selected = selected.date()
         if isinstance(selected, date):
             self.value = selected
+
+    def _picker_position(self):
+        """Choose a dialog position near the picker button, else center on the window."""
+        try:
+            btn = self.date_picker_button
+            btn.update_idletasks()
+            x = btn.winfo_rootx() + btn.winfo_width() // 2
+            y = btn.winfo_rooty() + btn.winfo_height()
+            return x, y
+        except Exception:
+            pass
+
+        try:
+            top = self.winfo_toplevel()
+            top.update_idletasks()
+            x = top.winfo_rootx() + top.winfo_width() // 2
+            y = top.winfo_rooty() + top.winfo_height() // 2
+            return x, y
+        except Exception:
+            return None
