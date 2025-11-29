@@ -10,7 +10,7 @@ from tkinter.filedialog import askopenfilename, asksaveasfilename
 from ttkbootstrap.themes import standard, user
 from ttkbootstrap.style import ThemeDefinition
 from ttkbootstrap.constants import *
-from ttkbootstrap.dialogs import Messagebox
+from ttkbootstrap.dialogs import MessageBox
 
 
 class ThemeCreator(ttk.Window):
@@ -108,7 +108,7 @@ class ThemeCreator(ttk.Window):
         )
         if outpath:
             shutil.copyfile(inpath, outpath)
-            Messagebox.ok(
+            MessageBox.ok(
                 parent=self,
                 title="Export",
                 message="User themes have been exported.",
@@ -123,13 +123,13 @@ class ThemeCreator(ttk.Window):
             initialfile="user.py",
             filetypes=[("python", "*.py")],
         )
-        confirm = Messagebox.okcancel(
+        confirm = MessageBox.okcancel(
             title="Import",
             message="This import will overwrite the existing user themes. Ok to import?",
         )
         if confirm == "OK" and inpath:
             shutil.copyfile(inpath, outpath)
-            Messagebox.ok(
+            MessageBox.ok(
                 parent=self,
                 title="Export",
                 message="User themes have been imported.",
@@ -141,7 +141,7 @@ class ThemeCreator(ttk.Window):
         name = self.theme_name.get().lower().replace(" ", "")
 
         if name in user.USER_THEMES:
-            result = Messagebox.okcancel(
+            result = MessageBox.okcancel(
                 title="Save Theme",
                 alert=True,
                 message=f"Overwrite existing theme {name}?",
@@ -172,7 +172,7 @@ class ThemeCreator(ttk.Window):
             if not themename.startswith("temp"):
                 new_themes.append(themename)
         self.base_theme.configure(values=new_themes)
-        Messagebox.ok(f"The theme {name} has been created", "Save theme")
+        MessageBox.ok(f"The theme {name} has been created", "Save theme")
 
     from tkinter.filedialog import asksaveasfilename
 
@@ -208,13 +208,13 @@ class ThemeCreator(ttk.Window):
             try:
                 with open(filepath, "w", encoding="utf-8") as f:
                     f.write(theme_code)
-                Messagebox.ok(
+                MessageBox.ok(
                     parent=self,
                     title="Export Successful",
                     message=f"Theme exported to {filepath}",
                 )
             except Exception as e:
-                Messagebox.ok(
+                MessageBox.ok(
                     parent=self,
                     title="Export Failed",
                     message=f"Failed to save file: {e}",

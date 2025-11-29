@@ -140,6 +140,7 @@ class TextEntryPart(ValidationMixin, Entry):
         self._value_format = value_format
         self._locale = locale or AppConfig.get("language")
         self._allow_blank = allow_blank
+        self._on_input_fid = None
 
         self._fmt = IntlFormatter(locale=locale)
 
@@ -217,6 +218,9 @@ class TextEntryPart(ValidationMixin, Entry):
 
     def _parse_or_none(self, s: str):
         """Parse string using value_format, returning None on empty/invalid input."""
+        # If a non-string is passed (e.g., datetime/date), assume it's already parsed.
+        if not isinstance(s, str):
+            return s
         s2 = (s or '').strip()
         if not s2:
             return None

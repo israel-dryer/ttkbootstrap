@@ -35,7 +35,7 @@ from ttkbootstrap.widgets.button import Button
 from ttkbootstrap.widgets.entry import Entry
 from ttkbootstrap.widgets.frame import Frame
 from ttkbootstrap.constants import END, LEFT, X, YES
-from ttkbootstrap.dialogs import Querybox
+from ttkbootstrap.dialogs import QueryBox
 
 
 class DateEntry(Frame):
@@ -378,7 +378,7 @@ class DateEntry(Frame):
         old_date = datetime.strptime(currently_selected_date, self.__dateformat)
 
         # get the new date and insert into the entry
-        new_date = Querybox.get_date(
+        new_date = QueryBox.get_date(
             parent=self.entry,
             title=self._popup_title,
             startdate=old_date,

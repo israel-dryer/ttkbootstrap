@@ -7,7 +7,6 @@ import tkinter as tk
 from tkinter import ttk
 
 # Constants from original widgets.py
-M = 3  # meter image scale, higher number increases resolution
 
 TTK_WIDGETS = (
     ttk.Button,
@@ -51,4 +50,4 @@ TK_WIDGETS = (
     tk.Spinbox,
 )
 
-__all__ = ['M', 'TTK_WIDGETS', 'TK_WIDGETS']
+__all__ = ['TTK_WIDGETS', 'TK_WIDGETS']
