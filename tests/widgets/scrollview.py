@@ -252,7 +252,7 @@ def demo_nested_frames():
     frame = ttk.Frame(notebook)
     notebook.add(frame, text="Nested Widgets")
 
-    scroll = ttk.ScrollView(frame, direction='both', show_scrollbar='always', scrollbar_style='primary-rounded')
+    scroll = ttk.ScrollView(frame, direction='both', show_scrollbar='always')
     scroll.pack(fill=BOTH, expand=True, padx=5, pady=5)
 
     content = ttk.Frame(scroll.canvas)
@@ -267,7 +267,7 @@ def demo_nested_frames():
 
     for i in range(10):
         # Create a labelframe for each section
-        lf = ttk.Labelframe(content, text=f"Section {i + 1}", bootstyle='primary')
+        lf = ttk.Labelframe(content, text=f"Section {i + 1}")
         lf.pack(fill=X, padx=10, pady=5)
 
         # Add nested frames with various widgets
@@ -287,8 +287,7 @@ def demo_nested_frames():
 if __name__ == '__main__':
     root = ttk.Window(
         title="ScrollView Widget Demo",
-        themename="darkly",
-        size=(1000, 600)
+        themename="darkly"
     )
 
     # Header
