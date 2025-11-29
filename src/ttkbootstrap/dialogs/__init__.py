@@ -41,7 +41,7 @@ from .colordropper import (
 from .dialog import Dialog, DialogButton
 from .message import MessageDialog, MessageBox
 from .query import QueryDialog, QueryBox
-from .date import DateDialog
+from .datedialog import DateDialog
 from .fontdialog import FontDialog
 
 __all__ = [

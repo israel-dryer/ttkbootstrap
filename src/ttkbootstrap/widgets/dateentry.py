@@ -14,7 +14,7 @@ from ttkbootstrap.widgets.field import Field, FieldOptions
 from ttkbootstrap.widgets.mixins import configure_delegate
 
 if TYPE_CHECKING:  # pragma: no cover
-    from ttkbootstrap.dialogs.date import DateDialog
+    from ttkbootstrap.dialogs.datedialog import DateDialog
 
 
 class DateEntry(Field):
@@ -247,7 +247,7 @@ class DateEntry(Field):
         the entry when a date is picked, and leaves the field unchanged on
         cancel.
         """
-        from ttkbootstrap.dialogs.date import DateDialog
+        from ttkbootstrap.dialogs.datedialog import DateDialog
 
         current_value = self.value
         if isinstance(current_value, datetime):
