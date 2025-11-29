@@ -51,7 +51,7 @@ class SelectBox(Field):
         self._allow_custom_values = allow_custom_values
         self.readonly(not allow_custom_values)
 
-        self._items = items
+        self._items = items or []
         self._button_pack = {}
         self.insert_addon(
             Button,
@@ -63,6 +63,9 @@ class SelectBox(Field):
 
     def _show_selection_options(self):
         """Create and display the popup list of selectable items."""
+        if not self._items:
+            return
+
         # Make sure this widget's geometry is up to date
         self.update_idletasks()
 
@@ -121,7 +124,7 @@ class SelectBox(Field):
         if value is None:
             return self._items
         else:
-            self._items = value
+            self._items = value or []
         return None
 
     @configure_delegate('allow_custom_values')
@@ -148,15 +151,16 @@ class SelectBox(Field):
         if new_value != prev_value:
             # keep change tracking in sync and emit <<Changed>> for programmatic updates
             self.entry_widget._prev_changed_value = new_value
-            self.entry_widget.event_generate(
-                '<<Changed>>',
-                data={
-                    'value': new_value,
-                    'prev_value': prev_value,
-                    'text': self.entry_widget.get()
-                },
-                when="tail"
-            )
+            if not getattr(self, "_suppress_changed_event", False):
+                self.entry_widget.event_generate(
+                    '<<Changed>>',
+                    data={
+                        'value': new_value,
+                        'prev_value': prev_value,
+                        'text': self.entry_widget.get()
+                    },
+                    when="tail"
+                )
 
     def _get_selected_item(self, tree, top):
         """Handle item selection from the popup Treeview."""
