@@ -197,7 +197,7 @@ class Field(EntryMixin, Frame):
             value: str | int | float = None,
             label: str = None,
             message: str = None,
-            show_messages: bool = True,
+            show_message: bool = True,
             required: bool = False,
             kind: FieldKind = "text",
             **kwargs
@@ -221,7 +221,7 @@ class Field(EntryMixin, Frame):
                 Used for hints, instructions, or help text. This text is replaced
                 by validation error messages when validation fails, and restored
                 when validation passes. Default is None (no message).
-            show_messages: If True, displays the message area below the field.
+            show_message: If True, displays the message area below the field.
                 If False, hides the message area entirely (validation errors
                 won't be shown). Default is True.
             required: If True, marks the field as required and automatically adds
@@ -251,13 +251,18 @@ class Field(EntryMixin, Frame):
                     - value_format (str): Number format pattern
                     - allow_blank (bool): Allow empty input
         """
+        # Accept legacy parameter name and prevent it from reaching the Tk widget.
+        if 'show_messages' in kwargs:
+            show_message = kwargs.pop('show_messages')
+        show_message = kwargs.pop('show_message', show_message)
+
         self._bootstyle = kwargs.pop('bootstyle', 'default')
 
         super().__init__(master)
 
         # configuration
         self._message_text = message
-        self._show_messages = show_messages
+        self._show_messages = show_message
         self._addons: dict[str, Button | Label] = {}
         self._required = required
         self._kind = kind
@@ -337,6 +342,19 @@ class Field(EntryMixin, Frame):
         self.cget = self._entry.cget
         self.__getitem__ = self._entry.__getitem__
         self.__setitem__ = self._entry.__setitem__
+
+    @property
+    def value(self):
+        """Get or set the parsed value via the underlying entry widget."""
+        return self._entry.value()
+
+    @value.setter
+    def value(self, value):
+        self._entry.value(value)
+
+    def get(self):
+        """Return the raw text from the underlying entry widget."""
+        return self._entry.get()
 
     @property
     def entry_widget(self) -> NumberEntryPart | TextEntryPart:
