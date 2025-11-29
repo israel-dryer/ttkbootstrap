@@ -5,12 +5,16 @@ and an optional calendar picker button.
 """
 
 from datetime import date, datetime
+from typing import TYPE_CHECKING
 
 from typing_extensions import Unpack
 
 from ttkbootstrap.widgets.button import Button
 from ttkbootstrap.widgets.field import Field, FieldOptions
 from ttkbootstrap.widgets.mixins import configure_delegate
+
+if TYPE_CHECKING:  # pragma: no cover
+    from ttkbootstrap.dialogs.datedialog import DateDialog
 
 
 class DateEntry(Field):
@@ -115,7 +119,7 @@ class DateEntry(Field):
         root.mainloop()
         ```
 
-    Inherited Properties:
+        Inherited Properties:
         entry_widget: Access to the underlying TextEntryPart widget
         label_widget: Access to the label widget
         message_widget: Access to the message label widget
@@ -136,7 +140,7 @@ class DateEntry(Field):
             value_format: str = "shortDate",
             label: str = None,
             message: str = None,
-            show_picker_button=False,
+            show_picker_button=True,
             picker_title: str = "Select new date",
             picker_first_weekday: int = 6,
             **kwargs: Unpack[FieldOptions]
@@ -165,14 +169,13 @@ class DateEntry(Field):
             message: Optional message text to display below the entry field.
                 Used for hints or help text. Replaced by validation errors when
                 validation fails.
-            show_picker_button: If True, displays the calendar picker button
-                to the right of the entry. If False, hides the button. Default
-                is True. Note: The picker dialog is not yet implemented.
-            picker_title: Title text for the calendar picker dialog (when
-                implemented). Default is "Select new date".
-            picker_first_weekday: First day of the week to display in the
-                calendar picker (when implemented). 0=Monday, 6=Sunday. Default
-                is 6 (Sunday).
+        show_picker_button: If True, displays the calendar picker button
+            to the right of the entry. If False, hides the button. Default
+            is True.
+        picker_title: Title text for the calendar picker dialog (when
+            implemented). Default is "Select new date".
+        picker_first_weekday: First day of the week to display in the
+            calendar picker. 0=Monday, 6=Sunday. Default is 6 (Sunday).
             **kwargs: Additional keyword arguments from FieldOptions:
                 locale: Locale identifier for date formatting (e.g., 'en_US')
                 required: If True, field cannot be empty
@@ -198,6 +201,7 @@ class DateEntry(Field):
             input (on FocusOut or Return key). Invalid date strings that cannot
             be parsed will revert to the previous valid value.
         """
+        kwargs.setdefault('bootstyle', 'primary')
         super().__init__(master=master, value=value, value_format=value_format, label=label, message=message, **kwargs)
 
         # configuration
@@ -239,12 +243,50 @@ class DateEntry(Field):
     def _show_date_picker(self):
         """Open the calendar picker dialog.
 
-        Placeholder method for opening a date picker dialog. The actual
-        implementation is planned for a future release.
-
-        Note:
-            This method is called when the calendar picker button is clicked.
-            Currently, does nothing (not implemented).
+        Opens a DateDialog seeded with the current value (if valid), updates
+        the entry when a date is picked, and leaves the field unchanged on
+        cancel.
         """
-        # TODO implement with new dialog
-        ...
+        from ttkbootstrap.dialogs.datedialog import DateDialog
+
+        current_value = self.value
+        if isinstance(current_value, datetime):
+            current_value = current_value.date()
+        if not isinstance(current_value, date):
+            current_value = date.today()
+
+        dialog = DateDialog(
+            master=self.winfo_toplevel(),
+            title=self._picker_title,
+            first_weekday=self._picker_first_weekday,
+            initial_date=current_value,
+            bootstyle=self._bootstyle,
+        )
+
+        def _on_result(payload):
+            # Tk may not carry dicts across event.data; also check a side channel.
+            selected = None
+            if isinstance(payload, dict):
+                selected = payload.get("result")
+            elif isinstance(payload, (date, datetime)):
+                selected = payload
+            elif isinstance(payload, str):
+                try:
+                    selected = datetime.fromisoformat(payload).date()
+                except Exception:
+                    selected = None
+
+            if isinstance(selected, datetime):
+                selected = selected.date()
+            if isinstance(selected, date):
+                self.value = selected
+
+        dialog.on_result(_on_result)
+        dialog.show()
+
+        # Fallback: ensure value is applied after modal dialog closes.
+        selected = dialog.result
+        if isinstance(selected, datetime):
+            selected = selected.date()
+        if isinstance(selected, date):
+            self.value = selected

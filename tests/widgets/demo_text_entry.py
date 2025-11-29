@@ -16,6 +16,7 @@ te.insert('end', 'Something')
 ttk.Button(app, text="Disable Text Entry", command=te.disable).pack(padx=16, pady=(4, 8))
 ttk.Button(app, text="Readonly Text Entry", command=te.readonly).pack(padx=16, pady=(4, 8))
 
+te['show'] = '*'
 
 
 app.mainloop()

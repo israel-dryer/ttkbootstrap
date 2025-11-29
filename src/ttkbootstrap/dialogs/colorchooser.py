@@ -26,33 +26,27 @@ Color Models:
 
 Example:
     Using ColorChooser in a dialog:
-    ```python
-    from ttkbootstrap.dialogs import Querybox
 
-    # Get color from user
-    color = Querybox.get_color(initialcolor="#FF0000")
-    if color:
-        print(f"Selected color: {color.hex}")
-        print(f"RGB: {color.rgb}")
-        print(f"HSL: {color.hsl}")
-    ```
+    >>> from ttkbootstrap.dialogs import QueryBox
+    >>> color = QueryBox.get_color(title="Pick", value="#FF0000")
+    >>> if color:
+    ...     print(color.hex)
+    ...     print(color.rgb)
+    ...     print(color.hsl)
 
     Using ColorChooser widget directly:
-    ```python
-    import ttkbootstrap as ttk
-    from ttkbootstrap.dialogs.colorchooser import ColorChooser
 
-    root = ttk.Window()
-    chooser = ColorChooser(root, initialcolor="#00FF00")
-    chooser.pack(padx=10, pady=10)
-
-    root.mainloop()
-    ```
+    >>> import ttkbootstrap as ttk
+    >>> from ttkbootstrap.dialogs.colorchooser import ColorChooser
+    >>> root = ttk.Window()
+    >>> chooser = ColorChooser(root, initial_color="#00FF00")
+    >>> chooser.pack(padx=10, pady=10)
+    >>> root.mainloop()
 """
 import tkinter
 from collections import namedtuple
 from tkinter import Frame as tkFrame, Label as tkLabel
-from typing import Any, List, Optional, Tuple
+from typing import Any, Callable, List, Optional, Tuple
 
 from PIL import ImageColor
 
@@ -87,39 +81,24 @@ PEN = '✛'
 
 
 class ColorChooser(ttk.Frame):
-    """A class which creates a color chooser widget
-
-    ![](../../assets/dialogs/querybox-get-color.png)
-    """
+    """Color chooser widget with multiple selection modes."""
 
     def __init__(
-            self, master: Optional[tkinter.Misc], initialcolor: Optional[str] = None,
+            self, master: Optional[tkinter.Misc], initial_color: Optional[str] = None,
             padding: Optional[int] = None) -> None:
         """Create a color chooser widget.
 
-        The color chooser provides multiple methods for selecting colors via
-        a tabbed interface:
-        - Advanced: Color spectrum with hue/saturation selection and luminance slider
-        - Themed: Swatches of theme colors and their shades
-        - Standard: Common standard colors and their shades
+        The chooser offers:
+        - Advanced tab: spectrum with hue/saturation and luminance slider.
+        - Themed tab: swatches for theme colors and shades.
+        - Standard tab: common colors and shades.
 
-        The widget includes RGB/HSL/Hex value inputs, live preview, and optional
-        color dropper (platform-dependent). Color values are accessible through
-        widget variables (hue, sat, lum, red, grn, blu, hex).
+        Includes RGB/HSL/Hex inputs, live preview, and optional dropper.
 
-        Parameters:
-
-            master (Widget):
-                Parent widget to contain the color chooser.
-
-            initialcolor (str):
-                Initial color to display. Can be any valid color string format
-                (e.g., '#FF0000', 'red', 'rgb(255,0,0)'). If None, uses the
-                theme's background color.
-
-            padding (int):
-                Padding around the entire color chooser widget. If None, uses
-                default padding.
+        Args:
+            master: Parent widget.
+            initial_color: Initial color string; defaults to theme background.
+            padding: Padding around the chooser.
         """
         super().__init__(master, padding=padding)
         self.tframe = ttk.Frame(self, padding=5)
@@ -132,10 +111,15 @@ class ColorChooser(ttk.Frame):
 
         self.style = ttk.use_style()
         self.colors = self.style.colors
-        self.initialcolor = initialcolor or self.colors.bg
+        fallback_bg = (
+                          self.colors.get("bg")
+                          if isinstance(self.colors, dict)
+                          else getattr(self.colors, "bg", None)
+                      ) or "#ffffff"
+        self.initial_color = initial_color or fallback_bg
 
         # color variables
-        r, g, b = ImageColor.getrgb(self.initialcolor)
+        r, g, b = ImageColor.getrgb(self.initial_color)
         h, s, l = colorutils.color_to_hsl((r, g, b), RGB)
         hx = colorutils.color_to_hex((r, g, b), RGB)
 
@@ -161,7 +145,12 @@ class ColorChooser(ttk.Frame):
         self.luminance_scale.pack(fill=X)
         self.notebook.add(spectrum_frame, text=MessageCatalog.translate('Advanced'))
 
-        themed_colors = [self.colors.get(c) for c in self.style.colors]
+        palette_keys = ("primary", "secondary", "success", "info", "warning", "danger", "light", "dark")
+        themed_colors = [
+            (self.colors.get(c) if isinstance(self.colors, dict) else getattr(self.colors, c, None))
+            for c in palette_keys
+        ]
+        themed_colors = [c or "#ffffff" for c in themed_colors]
         self.themed_swatches = self.create_swatches(
             self.notebook, themed_colors)
         self.standard_swatches = self.create_swatches(
@@ -213,16 +202,16 @@ class ColorChooser(ttk.Frame):
     # widget builder methods
     def create_swatches(self, master: tkinter.Misc, colors: List[str]) -> ttk.Frame:
         """Create a grid of color swatches"""
-        boxpadx = 2
-        boxpady = 0
-        padxtotal = (boxpadx * 15)
-        boxwidth = int((self.spectrum_width - padxtotal)) / len(STD_COLORS)
-        boxheight = int((self.spectrum_height - boxpady) / (len(STD_SHADES) + 1))
+        box_padx = 2
+        box_pady = 0
+        padx_total = (box_padx * 15)
+        box_width = int((self.spectrum_width - padx_total)) / len(STD_COLORS)
+        box_height = int((self.spectrum_height - box_pady) / (len(STD_SHADES) + 1))
         container = ttk.Frame(master)
 
         # create color combinations
         color_rows = [colors]
-        lastcol = len(colors) - 1
+        last_col = len(colors) - 1
         for l in STD_SHADES:
             lum = int(l * LUM)
             row = []
@@ -238,31 +227,31 @@ class ColorChooser(ttk.Frame):
 
         # themed colors - regular colors
         for row in color_rows:
-            rowframe = ttk.Frame(container)
+            row_frame = ttk.Frame(container)
             for j, color in enumerate(row):
                 swatch = tkFrame(
-                    master=rowframe,
+                    master=row_frame,
                     bg=color,
-                    width=boxwidth,
-                    height=boxheight,
+                    width=box_width,
+                    height=box_height,
                     autostyle=False
                 )
                 swatch.bind('<Button-1>', self.on_press_swatch)
                 if j == 0:
-                    swatch.pack(side=LEFT, padx=(0, boxpadx))
-                elif j == lastcol:
-                    swatch.pack(side=LEFT, padx=(boxpadx, 0))
+                    swatch.pack(side=LEFT, padx=(0, box_padx))
+                elif j == last_col:
+                    swatch.pack(side=LEFT, padx=(box_padx, 0))
                 else:
-                    swatch.pack(side=LEFT, padx=boxpadx)
-            rowframe.pack(fill=X, expand=YES)
+                    swatch.pack(side=LEFT, padx=box_padx)
+            row_frame.pack(fill=X, expand=YES)
 
         return container
 
     def create_preview(self, master: tkinter.Misc) -> ttk.Frame:
         """Create the preview frame for original and new colors"""
-        nbstyle = self.notebook.cget('style')
+        ng_style = self.notebook.cget('style')
         # set the border color to match the notebook border color
-        bordercolor = self.style.lookup(nbstyle, 'bordercolor')
+        border_color = self.style.lookup(ng_style, 'bordercolor') or "#000000"
         container = ttk.Frame(master)
 
         # the frame and label for the original color (current)
@@ -271,20 +260,20 @@ class ColorChooser(ttk.Frame):
             relief=FLAT,
             bd=2,
             highlightthickness=1,
-            highlightbackground=bordercolor,
-            bg=self.initialcolor,
+            highlightbackground=border_color,
+            bg=self.initial_color,
             autostyle=False
         )
         old.pack(side=LEFT, fill=BOTH, expand=YES, padx=(0, 2))
-        contrastfg = colorutils.contrast_color(
-            color=self.initialcolor,
+        constrast_fg = colorutils.contrast_color(
+            color=self.initial_color,
             model='hex',
         )
         tkLabel(
             master=old,
             text=MessageCatalog.translate('Current'),
-            background=self.initialcolor,
-            foreground=contrastfg,
+            background=self.initial_color,
+            foreground=constrast_fg,
             autostyle=False,
             width=7
         ).pack(anchor=NW)
@@ -295,16 +284,16 @@ class ColorChooser(ttk.Frame):
             relief=FLAT,
             bd=2,
             highlightthickness=1,
-            highlightbackground=bordercolor,
-            bg=self.initialcolor,
+            highlightbackground=border_color,
+            bg=self.initial_color,
             autostyle=False
         )
         self.preview.pack(side=LEFT, fill=BOTH, expand=YES, padx=(2, 0))
         self.preview_lbl = tkLabel(
             master=self.preview,
             text=MessageCatalog.translate('New'),
-            background=self.initialcolor,
-            foreground=contrastfg,
+            background=self.initial_color,
+            foreground=constrast_fg,
             autostyle=False,
             width=7
         )
@@ -346,14 +335,6 @@ class ColorChooser(ttk.Frame):
         sb_blu.grid(row=2, column=3, padx=4, pady=2, sticky=EW)
         ent_hex = ttk.Entry(container, textvariable=self.hex)
         ent_hex.grid(row=3, column=1, padx=4, columnspan=3, pady=2, sticky=EW)
-
-        # add input validation
-        # add_validation(ent_hex, validate_color)
-        # add_range_validation(sb_hue, 0, 360)
-        # for sb in [sb_sat, sb_lum]:
-        #     add_range_validation(sb, 0, 100)
-        # for sb in [sb_red, sb_grn, sb_blu]:
-        #     add_range_validation(sb, 0, 255)
 
         # event binding for updating colors on value change
         for sb in [sb_hue, sb_sat, sb_lum]:
@@ -568,117 +549,149 @@ class ColorChooser(ttk.Frame):
         self.sync_color_values(HSL)
 
 
-from .dialogs import Dialog
+from ttkbootstrap.dialogs.dialog import Dialog
 
 
-class ColorChooserDialog(Dialog):
-    """A class which displays a color chooser dialog. When a color
-    option is selected and the "OK" button is pressed, the dialog will
-    return a namedtuple that contains the color values for rgb, hsl, and
-    hex. These values can be accessed by indexing the tuple or by using
-    the named fields.
+class ColorChooserDialog:
+    """Dialog wrapper for the ColorChooser widget.
 
-    ![](../../assets/dialogs/querybox-get-color.png)
+    Args:
+        master: Parent widget used for positioning and event binding.
+        title: Dialog window title (localized).
+        initial_color: Initial color shown in the chooser; defaults to theme background.
 
-    Examples:
-
-        ```python
-        >>> cd = ColorChooserDialog()
-        >>> cd.show()
-        >>> colors = cd.result
-        >>> colors.hex
-        '#5fb04f'
-        >>> colors[2]
-        '#5fb04f
-        >>> colors.rgb
-        (95, 176, 79)
-        >>> colors[0]
-        (95, 176, 79)
-        ```
+    Events:
+        ``<<DialogResult>>`` with ``event.data = {"result": ColorChoice|None, "confirmed": bool}``.
     """
 
     def __init__(
-            self, parent: Optional[tkinter.Misc] = None, title: str = "Color Chooser",
-            initialcolor: Optional[str] = None) -> None:
-        """Create a color chooser dialog.
+            self,
+            master: Optional[tkinter.Misc] = None,
+            title: str = "Color Chooser",
+            initial_color: Optional[str] = None,
+    ) -> None:
+        self._master = master
+        self._title = MessageCatalog.translate(title)
+        self._initial_color = initial_color
+        self.result: Optional[ColorChoice] = None
+        self._emitted_result = False
 
-        The dialog displays a ColorChooser widget in a modal dialog with OK
-        and Cancel buttons. When OK is pressed, the result property returns a
-        ColorChoice namedtuple containing the selected color in multiple formats
-        (rgb, hsl, hex). The dialog also includes a color dropper tool for
-        selecting colors from the screen (Windows/Linux only).
+        self._dropper = ColorDropperDialog()
+        self._dropper.result.trace_add('write', self._trace_dropper_color)
 
-        Parameters:
+        self._dialog = Dialog(
+            master=master,
+            title=self._title,
+            content_builder=self._build_content,
+            footer_builder=self._build_footer,
+        )
+        self._chooser: Optional[ColorChooser] = None
 
-            parent (Widget):
-                Parent widget. The dialog will be modal and centered on this
-                widget.
+    # builders -----------------------------------------------------------------
+    def _build_content(self, master: tkinter.Widget) -> None:
+        self._chooser = ColorChooser(master, self._initial_color)
+        self._chooser.pack(fill=BOTH, expand=YES)
 
-            title (str):
-                The dialog window title (default='Color Chooser', will be
-                localized).
-
-            initialcolor (str):
-                Initial color to display in the chooser. Can be any valid color
-                string format (e.g., '#FF0000', 'red', 'rgb(255,0,0)'). If None,
-                uses the theme's background color.
-
-        Returns:
-            The result property contains a ColorChoice namedtuple with fields:
-            - rgb: tuple (r, g, b) with values 0-255
-            - hsl: tuple (h, s, l) with h=0-360, s=0-100, l=0-100
-            - hex: string in format '#RRGGBB'
-            Returns None if the dialog was cancelled.
-        """
-        title = MessageCatalog.translate(title)
-        super().__init__(parent=parent, title=title)
-        self.initialcolor = initialcolor
-        self.dropper = ColorDropperDialog()
-        self.dropper.result.trace_add('write', self.trace_dropper_color)
-
-    def create_body(self, master: tkinter.Misc) -> None:
-        self.colorchooser = ColorChooser(master, self.initialcolor)
-        self.colorchooser.pack(fill=BOTH, expand=YES)
-
-    def create_buttonbox(self, master: tkinter.Misc) -> None:
+    def _build_footer(self, master: tkinter.Widget) -> None:
         frame = ttk.Frame(master, padding=(5, 5))
 
-        # OK button
-        ok = ttk.Button(frame, bootstyle=PRIMARY, text=MessageCatalog.translate('OK'))
-        ok.bind("<Return>", lambda _: ok.invoke())
-        ok.configure(command=lambda b=ok: self.on_button_press(b))
+        # color dropper (not supported on macOS)
+        winsys = ""
+        try:
+            winsys = master.tk.call("tk", "windowingsystem")
+        except Exception:
+            winsys = ""
+        if winsys != 'aqua':
+            dropper = ttk.Label(frame, text=PEN, font=('-size 16'))
+            ToolTip(dropper, MessageCatalog.translate('color dropper'))
+            dropper.pack(side=LEFT, padx=2)
+            dropper.bind("<Button-1>", self._on_show_color_dropper)
+
+        ok = ttk.Button(
+            frame,
+            bootstyle=PRIMARY,
+            text=MessageCatalog.translate('OK'),
+            command=self._on_ok,
+        )
         ok.pack(padx=2, side=RIGHT)
 
-        # Cancel button
-        cancel = ttk.Button(frame, bootstyle=SECONDARY, text=MessageCatalog.translate('Cancel'))
-        cancel.bind("<Return>", lambda _: cancel.invoke())
-        cancel.configure(command=lambda b=cancel: self.on_button_press(b))
+        cancel = ttk.Button(
+            frame,
+            bootstyle=SECONDARY,
+            text=MessageCatalog.translate('Cancel'),
+            command=self._on_cancel,
+        )
         cancel.pack(padx=2, side=RIGHT)
-
-        # color dropper (not supported on Mac OS)
-        if self._toplevel.winsys != 'aqua':
-            dropper = ttk.Label(frame, text=PEN, font=('-size 16'))
-            ToolTip(dropper, MessageCatalog.translate('color dropper'))  # add tooltip
-            dropper.pack(side=RIGHT, padx=2)
-            dropper.bind("<Button-1>", self.on_show_colordropper)
 
         frame.pack(side=BOTTOM, fill=X, anchor=S)
 
-    def on_show_colordropper(self, event: tkinter.Event) -> None:
-        self.dropper.show()
+    # callbacks ----------------------------------------------------------------
+    def _on_show_color_dropper(self, _: tkinter.Event) -> None:
+        self._dropper.show()
 
-    def trace_dropper_color(self, *_: Any) -> None:
-        values = self.dropper.result.get()
-        self.colorchooser.hex.set(values[2])
-        self.colorchooser.sync_color_values('hex')
+    def _trace_dropper_color(self, *_: Any) -> None:
+        values = self._dropper.result.get()
+        if self._chooser:
+            self._chooser.hex.set(values[2])
+            self._chooser.sync_color_values('hex')
 
-    def on_button_press(self, button: ttk.Button) -> None:
-        if button.cget('text') == MessageCatalog.translate('OK'):
-            values = self.colorchooser.get_variables()
-            self._result = ColorChoice(
+    def _on_ok(self) -> None:
+        if self._chooser:
+            values = self._chooser.get_variables()
+            self.result = ColorChoice(
                 rgb=(values.r, values.g, values.b),
                 hsl=(values.h, values.s, values.l),
                 hex=values.hex
             )
-            self._toplevel.destroy()
-        self._toplevel.destroy()
+        self._emit_result(confirmed=True)
+        if self._dialog.toplevel:
+            self._dialog.toplevel.after_idle(self._dialog.toplevel.destroy)
+
+    def _on_cancel(self) -> None:
+        self.result = None
+        self._emit_result(confirmed=False)
+        if self._dialog.toplevel:
+            self._dialog.toplevel.after_idle(self._dialog.toplevel.destroy)
+
+    # API ----------------------------------------------------------------------
+    def show(self, position: Optional[tuple[int, int]] = None, modal: bool = True) -> None:
+        """Display the dialog."""
+        self.result = None
+        self._emitted_result = False
+        self._dialog.show(position=position, modal=modal)
+        # Ensure result event fires even if consumers prefer post-show access
+        if not self._emitted_result:
+            self._emit_result(confirmed=self.result is not None)
+
+    def on_dialog_result(self, callback: Callable[[Any], None]) -> Optional[str]:
+        """Bind a callback fired when the dialog produces a result."""
+        target = self._master or self._dialog.toplevel
+        if target is None:
+            return None
+
+        def handler(event):
+            callback(getattr(event, "data", None))
+
+        return target.bind("<<DialogResult>>", handler, add="+")
+
+    def off_dialog_result(self, funcid: str) -> None:
+        """Unbind a previously bound dialog result callback."""
+        target = self._master or self._dialog.toplevel
+        if target is None:
+            return
+        target.unbind("<<DialogResult>>", funcid)
+
+    # helpers ------------------------------------------------------------------
+    def _emit_result(self, confirmed: bool) -> None:
+        payload = {"result": self.result, "confirmed": confirmed}
+        target = self._master or self._dialog.toplevel
+        if not target:
+            return
+        try:
+            target.event_generate("<<DialogResult>>", data=payload)
+        except Exception:
+            try:
+                target.event_generate("<<DialogResult>>")
+            except Exception:
+                pass
+        self._emitted_result = True

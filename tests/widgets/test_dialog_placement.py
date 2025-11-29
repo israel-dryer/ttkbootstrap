@@ -1,5 +1,5 @@
 import ttkbootstrap as ttk
-from ttkbootstrap.dialogs import Messagebox
+from ttkbootstrap.dialogs import MessageBox
 
 window = ttk.Window()
 
@@ -21,7 +21,7 @@ def confirm_shutdown():
     x = x0 + w // 6
     y = y0 + h // 6
 
-    if Messagebox.yesno("Message text here", "Confirm", parent=window) == "Yes":
+    if MessageBox.yesno("Message text here", "Confirm", parent=window) == "Yes":
         print("Confirmed")
     else:
         print("Not confirmed")

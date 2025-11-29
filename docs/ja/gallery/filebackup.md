@@ -28,7 +28,7 @@ from random import choices
 import ttkbootstrap as ttk
 from ttkbootstrap.style import Bootstyle
 from tkinter.filedialog import askdirectory
-from ttkbootstrap.dialogs import Messagebox
+from ttkbootstrap.dialogs import MessageBox
 from ttkbootstrap.constants import *
 from tkinter.scrolledtext import ScrolledText
 from pathlib import Path
@@ -68,7 +68,7 @@ class BackMeUp(ttk.Frame):
         buttonbar.pack(fill=X, pady=1, side=TOP)
 
         ## new backup
-        _func = lambda: Messagebox.ok(message='Adding new backup')
+        _func = lambda: MessageBox.ok(message='Adding new backup')
         btn = ttk.Button(
             master=buttonbar, text='New backup set',
             image='add-to-backup-light',
@@ -78,7 +78,7 @@ class BackMeUp(ttk.Frame):
         btn.pack(side=LEFT, ipadx=5, ipady=5, padx=(1, 0), pady=1)
 
         ## backup
-        _func = lambda: Messagebox.ok(message='Backing up...')
+        _func = lambda: MessageBox.ok(message='Backing up...')
         btn = ttk.Button(
             master=buttonbar,
             text='Backup',
@@ -89,7 +89,7 @@ class BackMeUp(ttk.Frame):
         btn.pack(side=LEFT, ipadx=5, ipady=5, padx=0, pady=1)
 
         ## refresh
-        _func = lambda: Messagebox.ok(message='Refreshing...')
+        _func = lambda: MessageBox.ok(message='Refreshing...')
         btn = ttk.Button(
             master=buttonbar,
             text='Refresh',
@@ -100,7 +100,7 @@ class BackMeUp(ttk.Frame):
         btn.pack(side=LEFT, ipadx=5, ipady=5, padx=0, pady=1)
 
         ## stop
-        _func = lambda: Messagebox.ok(message='Stopping backup.')
+        _func = lambda: MessageBox.ok(message='Stopping backup.')
         btn = ttk.Button(
             master=buttonbar,
             text='Stop',
@@ -111,7 +111,7 @@ class BackMeUp(ttk.Frame):
         btn.pack(side=LEFT, ipadx=5, ipady=5, padx=0, pady=1)
 
         ## settings
-        _func = lambda: Messagebox.ok(message='Changing settings')
+        _func = lambda: MessageBox.ok(message='Changing settings')
         btn = ttk.Button(
             master=buttonbar,
             text='Settings',
@@ -163,7 +163,7 @@ class BackMeUp(ttk.Frame):
         sep.grid(row=3, column=0, columnspan=2, pady=10, sticky=EW)
 
         ## properties button
-        _func = lambda: Messagebox.ok(message='Changing properties')
+        _func = lambda: MessageBox.ok(message='Changing properties')
         bus_prop_btn = ttk.Button(
             master=bus_frm,
             text='Properties',
@@ -175,7 +175,7 @@ class BackMeUp(ttk.Frame):
         bus_prop_btn.grid(row=4, column=0, columnspan=2, sticky=W)
 
         ## add to backup button
-        _func = lambda: Messagebox.ok(message='Adding to backup')
+        _func = lambda: MessageBox.ok(message='Adding to backup')
         add_btn = ttk.Button(
             master=bus_frm,
             text='Add to backup',
@@ -236,7 +236,7 @@ class BackMeUp(ttk.Frame):
         sep.grid(row=5, column=0, columnspan=2, pady=10, sticky=EW)
 
         ## stop button
-        _func = lambda: Messagebox.ok(message='Stopping backup')
+        _func = lambda: MessageBox.ok(message='Stopping backup')
         btn = ttk.Button(
             master=status_frm,
             text='Stop',

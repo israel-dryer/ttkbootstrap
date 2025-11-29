@@ -5,7 +5,7 @@ from random import randint
 from threading import Thread
 import ttkbootstrap as ttk
 from ttkbootstrap.constants import *
-from ttkbootstrap.dialogs import Messagebox
+from ttkbootstrap.dialogs import MessageBox
 
 
 class LongRunning(ttk.Frame):
@@ -64,7 +64,7 @@ class LongRunning(ttk.Frame):
         """
         if LongRunning.threadqueue.unfinished_tasks == 0:
             self.progressbar.stop()
-            Messagebox.ok(title='alert', message="process complete")
+            MessageBox.ok(title='alert', message="process complete")
             self.start_btn.configure(state=NORMAL)
             self.message.set('')
             return

@@ -7,7 +7,7 @@ from pathlib import Path
 from tkinter import PhotoImage
 import ttkbootstrap as ttk
 from ttkbootstrap.constants import *
-from ttkbootstrap.dialogs import Messagebox
+from ttkbootstrap.dialogs import MessageBox
 
 
 PATH = Path(__file__).parent / 'assets'
@@ -453,7 +453,7 @@ class MouseUtilities(ttk.Frame):
 
     def callback(self):
         """Demo callback"""
-        Messagebox.ok(
+        MessageBox.ok(
             title='Button callback', 
             message="You pressed a button."
         )

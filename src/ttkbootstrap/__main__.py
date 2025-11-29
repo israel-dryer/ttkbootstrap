@@ -6,7 +6,7 @@
 """
 import ttkbootstrap as ttk
 from ttkbootstrap.constants import *
-from ttkbootstrap.dialogs import Messagebox
+from ttkbootstrap.dialogs import MessageBox
 from ttkbootstrap import ScrolledText
 
 
@@ -222,7 +222,7 @@ Namespaces are one honking great idea -- let's do more of those!"""
         master=btn_group,
         text="outline button",
         bootstyle=(INFO, OUTLINE),
-        command=lambda: Messagebox.ok("You pushed an outline button"),
+        command=lambda: MessageBox.ok("You pushed an outline button"),
     )
     ob.pack(fill=X, pady=5)
 

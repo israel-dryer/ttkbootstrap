@@ -4,46 +4,21 @@ This module provides a color dropper tool that allows users to select colors
 directly from anywhere on the screen. It captures a screenshot and displays
 a magnified view to help with precise color selection.
 
-Classes:
-    ColorDropperDialog: Interactive screen color picker widget
-    ColorChoice: Named tuple containing selected color in multiple formats
-
-Features:
-    - Click anywhere on screen to select color
-    - Magnified zoom window for precise selection
-    - Mouse wheel zoom in/out control
-    - Returns color in RGB, HSL, and HEX formats
-    - Cross-platform support (Windows and Linux only)
-
-Platform Support:
-    - Windows: Fully supported
-    - Linux: Fully supported
-    - macOS: NOT SUPPORTED (ImageGrab limitation)
-
-Known Issues:
-    High-DPI displays may require application to run in high-DPI mode for
-    accurate color selection. On Windows, this is handled automatically.
-    See: https://stackoverflow.com/questions/25467288
-
 Example:
-    ```python
-    from ttkbootstrap.dialogs.colordropper import ColorDropperDialog
+    Using the dropper directly:
 
-    # Create color dropper
-    dropper = ColorDropperDialog()
-    dropper.show()
-
-    # Get selected color
-    color = dropper.result.get()
-    if color:
-        print(f"Selected: {color.hex}")
-        print(f"RGB: {color.rgb}")
-        print(f"HSL: {color.hsl}")
-    ```
+    >>> from ttkbootstrap.dialogs.colordropper import ColorDropperDialog
+    >>> dropper = ColorDropperDialog()
+    >>> dropper.show()
+    >>> color = dropper.result.get()
+    >>> if color:
+    ...     print(color.hex)
+    ...     print(color.rgb)
+    ...     print(color.hsl)
 """
 import tkinter as tk
 from collections import namedtuple
-from typing import Any, Optional
+from typing import Any, Callable, Optional
 
 from PIL import ImageGrab, ImageTk
 from PIL.Image import Resampling
@@ -56,40 +31,45 @@ ColorChoice = namedtuple('ColorChoice', 'rgb hsl hex')
 
 
 class ColorDropperDialog:
-    """A widget that displays an indicator and a zoom window for
-    selecting a color on the screen.
+    """Screen color picker with zoom preview.
 
-    Left-click the mouse button to select a color. The result is 
-    stored in the `result` property as a `ColorChoice` tuple which
-    contains named fields for rgb, hsl, and hex color models.
+    Usage:
+        Left-click anywhere on screen to pick a color; mouse wheel zooms the preview.
+        Selected color is stored in ``result`` as a ColorChoice (rgb, hsl, hex).
 
-    Zoom in and out on the zoom window by using the mouse wheel.
+    Platforms:
+        Windows and Linux supported; macOS not supported (ImageGrab limitation).
 
-    This widget is implemented for **Windows** and **Linux** only.
-
-    ![](../../assets/dialogs/color-dropper.png)       
-
-    !!! warning "high resolution displays"
-        This widget may not function properly on high resolution
-        displays if you are not using the application in high
-        resolution mode. This is enabled automatically on Windows.
+    Notes:
+        On high-DPI displays, ensure the app runs in high-DPI mode (automatic on Windows).
     """
 
     def __init__(self) -> None:
+        self.zoom_yoffset = None
+        self.zoom_xoffset = None
+        self.zoom_width = None
+        self.zoom_height = None
+        self.zoom_image = None
+        self.zoom_data = None
+        self.zoom_level = None
+        self.screenshot_image = None
+        self.screenshot_data = None
+        self.screenshot_canvas = None
         self.toplevel: Optional[ttk.Toplevel] = None
+        self.zoom_toplevel: Optional[ttk.Toplevel] = None
         self.result: ttk.Variable = ttk.Variable()
+        self._emitted_result = False
 
     def build_screenshot_canvas(self) -> None:
         """Build the screenshot canvas"""
-        self.screenshot_canvas: ttk.Canvas = ttk.Canvas(
-            self.toplevel, cursor='tcross', autostyle=False)
+        self.screenshot_canvas: ttk.Canvas = ttk.Canvas(self.toplevel, cursor='tcross')
         self.screenshot_data = ImageGrab.grab()
         self.screenshot_image: ImageTk.PhotoImage = ImageTk.PhotoImage(self.screenshot_data)
         self.screenshot_canvas.create_image(
             0, 0, image=self.screenshot_image, anchor=NW)
         self.screenshot_canvas.pack(fill=BOTH, expand=YES)
 
-    def build_zoom_toplevel(self, master: tk.Misc) -> None:
+    def build_zoom_toplevel(self, master) -> None:
         """Build the toplevel widget that shows the zoomed version of
         the pixels underneath the mouse cursor."""
         height = utility.scale_size(self.toplevel, 100)
@@ -112,10 +92,22 @@ class ColorDropperDialog:
         self.zoom_canvas.pack(fill=BOTH, expand=YES)
         self.zoom_toplevel = toplevel
 
+    def _cleanup(self) -> None:
+        """Destroy zoom and main toplevels."""
+        if self.zoom_toplevel and self.zoom_toplevel.winfo_exists():
+            try:
+                self.zoom_toplevel.destroy()
+            except Exception:
+                pass
+        if self.toplevel and self.toplevel.winfo_exists():
+            try:
+                self.toplevel.destroy()
+            except Exception:
+                pass
+
     def on_mouse_wheel(self, event: tk.Event) -> None:
-        """Zoom in and out on the image underneath the mouse
-        TODO Cross platform testing needed
-        """
+        """Zoom in and out on the image underneath the mouse"""
+        delta = 0
         if self.toplevel and self.toplevel.winsys.lower() == 'win32':
             delta = -int(event.delta / 120)
         elif self.toplevel and self.toplevel.winsys.lower() == 'aqua':
@@ -125,7 +117,7 @@ class ColorDropperDialog:
         elif event.num == 5:
             delta = 1
         self.zoom_level += delta
-        self.on_mouse_motion()
+        self._on_mouse_motion()
 
     def on_left_click(self, _: tk.Event) -> Optional[ColorChoice]:
         """Capture the color underneath the mouse cursor and destroy
@@ -150,7 +142,7 @@ class ColorDropperDialog:
             self.toplevel.grab_release()
             self.toplevel.destroy()
 
-    def on_mouse_motion(self, event: Optional[tk.Event] = None) -> None:
+    def _on_mouse_motion(self, event: Optional[tk.Event] = None) -> None:
         """Callback for mouse motion"""
         if event is None:
             x, y = self.toplevel.winfo_pointerxy()  # type: ignore[union-attr]
@@ -181,16 +173,54 @@ class ColorDropperDialog:
         hx = colorutils.color_to_hex((r, g, b))
         return hx
 
+    # event helpers -----------------------------------------------------------
+    def on_dialog_result(self, callback: Callable[[Any], None]) -> Optional[str]:
+        """Bind a callback fired when the dropper produces a result."""
+        target = self.toplevel
+        if target is None:
+            return None
+
+        def handler(event):
+            callback(getattr(event, "data", None))
+
+        return target.bind("<<DialogResult>>", handler, add="+")
+
+    def off_dialog_result(self, funcid: str) -> None:
+        """Unbind a previously bound dialog result callback."""
+        target = self.toplevel
+        if target is None:
+            return
+        target.unbind("<<DialogResult>>", funcid)
+
+    def _emit_result(self, confirmed: bool) -> None:
+        """Emit the dialog result event once."""
+        if self._emitted_result:
+            return
+        payload = {"result": self.result.get() if hasattr(self.result, "get") else None, "confirmed": confirmed}
+        target = self.toplevel
+        if not target:
+            return
+        try:
+            target.event_generate("<<DialogResult>>", data=payload)
+        except Exception:
+            try:
+                target.event_generate("<<DialogResult>>")
+            except Exception:
+                pass
+        self._emitted_result = True
+
     def show(self) -> None:
         """Show the toplevel window"""
+        self._emitted_result = False
         self.toplevel = ttk.Toplevel(alpha=1)
         self.toplevel.wm_attributes('-fullscreen', True)
         self.build_screenshot_canvas()
 
         # event binding
-        self.toplevel.bind("<Motion>", self.on_mouse_motion, "+")
-        self.toplevel.bind("<Button-1>", self.on_left_click, "+")
-        self.toplevel.bind("<Button-3>", self.on_right_click, "+")
+        self.toplevel.bind("<Motion>", self._on_mouse_motion, "+")
+        self.toplevel.bind("<Button-1>", self._on_left_click, "+")
+        self.toplevel.bind("<Button-3>", self._on_right_click, "+")
+        self.toplevel.bind("<Escape>", self._on_cancel, "+")
 
         if self.toplevel.winsys.lower() == 'x11':
             self.toplevel.bind("<Button-4>", self.on_mouse_wheel, "+")
@@ -213,4 +243,24 @@ class ColorDropperDialog:
         self.toplevel.lift('.')
         self.zoom_toplevel.lift(self.toplevel)
 
-        self.on_mouse_motion()
+        self._on_mouse_motion()
+
+    def _on_left_click(self, _: tk.Event) -> Optional[ColorChoice]:
+        """Capture the color underneath the mouse cursor and close."""
+        hx = self.get_hover_color()
+        hsl = colorutils.color_to_hsl(hx)
+        rgb = colorutils.color_to_rgb(hx)
+        self.result.set(ColorChoice(rgb, hsl, hx))
+        self._emit_result(confirmed=True)
+        self._cleanup()
+        return self.result.get()
+
+    def _on_right_click(self, _: tk.Event) -> None:
+        """Close without saving any color information."""
+        self.result.set(None)
+        self._emit_result(confirmed=False)
+        self._cleanup()
+
+    def _on_cancel(self, _: tk.Event) -> None:
+        """Close without selection (Escape)."""
+        self._on_right_click(_)
