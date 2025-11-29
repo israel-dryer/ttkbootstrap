@@ -114,6 +114,7 @@ class NumericEntry(Field):
             show_spin_buttons: bool = True,
             minvalue: int | float = 0,
             maxvalue: int | float = 100,
+            increment: int | float = 1,
             **kwargs: Unpack[FieldOptions]
     ):
         """Initialize a NumericEntry widget.
@@ -139,8 +140,8 @@ class NumericEntry(Field):
                 be clamped or wrapped depending on the wrap setting. Default is 0.
             maxvalue: Maximum allowed value (inclusive). Values above this will
                 be clamped or wrapped depending on the wrap setting. Default is 100.
+            increment: Step size for increment/decrement operations. Default is 1.
             **kwargs: Additional keyword arguments from FieldOptions:
-                increment: Step size for increment/decrement operations. Default is 1.
                 wrap: If True, values wrap around at min/max boundaries. If False,
                     values are clamped at boundaries. Default is False.
                 value_format: Number format specification for IntlFormatter.
@@ -165,7 +166,7 @@ class NumericEntry(Field):
         """
         super().__init__(
             master, value=value, label=label, message=message, minvalue=minvalue, maxvalue=maxvalue, kind="numeric",
-            **kwargs)
+            increment=increment, **kwargs)
 
         self._show_spin_buttons = show_spin_buttons
 
