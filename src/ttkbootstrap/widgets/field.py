@@ -194,6 +194,7 @@ class Field(EntryMixin, Frame):
     def __init__(
             self,
             master=None,
+            *,
             value: str | int | float = None,
             label: str = None,
             message: str = None,
@@ -273,7 +274,12 @@ class Field(EntryMixin, Frame):
         self._addons: dict[str, Union[Button, Label]] = {}
 
         # layout
-        self._label_lbl = Label(self, text=self._label_text + '*' if required else '', font="label[normal]")
+        label_text = self._label_text or ''
+        self._label_lbl = Label(
+            self,
+            text=f"{label_text}*" if required else label_text,
+            font="label[normal]"
+        )
         self._message_lbl = Label(self, text=message or '', font="caption", bootstyle="secondary")
 
         # field container & field
