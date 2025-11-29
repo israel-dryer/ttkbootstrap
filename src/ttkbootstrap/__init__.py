@@ -75,6 +75,7 @@ from ttkbootstrap.widgets.labeledscale import LabeledScale
 from ttkbootstrap.widgets.meter import Meter
 from ttkbootstrap.widgets.toast import Toast
 from ttkbootstrap.widgets.tooltip import ToolTip
+from ttkbootstrap.widgets.form import Form as Form
 from ttkbootstrap.widgets.field import Field as Field
 from ttkbootstrap.widgets.textentry import TextEntry as TextEntry
 from ttkbootstrap.widgets.passwordentry import PasswordEntry as PasswordEntry
@@ -118,6 +119,7 @@ __all__ = [
     'FloodGauge',
     'LabeledScale',
     'Meter',
+    'Form',
     'PasswordEntry',
     'PathEntry',
     'Toast',
