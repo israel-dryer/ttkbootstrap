@@ -1,4 +1,4 @@
-from ttkbootstrap.dialogs import Messagebox, QueryBox
+from ttkbootstrap.dialogs import MessageBox, QueryBox
 from ttkbootstrap.localization import MessageCatalog
 from ttkbootstrap.window import Window
 from ttkbootstrap.dialogs import FontDialog
@@ -6,18 +6,18 @@ from ttkbootstrap.dialogs import FontDialog
 
 def run_test():
     #MessageCatalog.locale('zh_cn')
-    Messagebox.ok("Testing first item", parent=root)
-    Messagebox.ok("Messagebox.ok")
+    MessageBox.ok("Testing first item", parent=root)
+    MessageBox.ok("Messagebox.ok")
 
-    Messagebox.okcancel("Messagebox.okcancel")
-    Messagebox.retrycancel("Messagebox.retrycancel")
-    Messagebox.yesno("Messagebox.yesno")
-    Messagebox.yesnocancel("Messagebox.yesnocancel")
+    MessageBox.okcancel("Messagebox.okcancel")
+    MessageBox.retrycancel("Messagebox.retrycancel")
+    MessageBox.yesno("Messagebox.yesno")
+    MessageBox.yesnocancel("Messagebox.yesnocancel")
 
-    Messagebox.show_error("Messagebox.show_error")
-    Messagebox.show_info("Messagebox.show_info")
-    Messagebox.show_question("Messagebox.show_question")
-    Messagebox.show_warning("Messagebox.show_warning")
+    MessageBox.show_error("Messagebox.show_error")
+    MessageBox.show_info("Messagebox.show_info")
+    MessageBox.show_question("Messagebox.show_question")
+    MessageBox.show_warning("Messagebox.show_warning")
 
     QueryBox.get_date(title="Querybox.get_date")
     QueryBox.get_float("Querybox.get_float")

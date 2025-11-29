@@ -197,7 +197,7 @@ class MessageDialog:
         return self._dialog.result
 
 
-class Messagebox:
+class MessageBox:
     """Static methods for displaying standard message dialogs."""
 
     @staticmethod
@@ -258,7 +258,7 @@ class Messagebox:
         Returns:
             The text of the button pressed.
         """
-        return Messagebox._show(message, title, master, alert, ["OK:primary"], "info-circle-fill", **kwargs)
+        return MessageBox._show(message, title, master, alert, ["OK:primary"], "info-circle-fill", **kwargs)
 
     @staticmethod
     def show_warning(
@@ -280,7 +280,7 @@ class Messagebox:
         Returns:
             The text of the button pressed.
         """
-        return Messagebox._show(message, title, master, alert, ["OK:primary"], "exclamation-triangle-fill", **kwargs)
+        return MessageBox._show(message, title, master, alert, ["OK:primary"], "exclamation-triangle-fill", **kwargs)
 
     @staticmethod
     def show_error(
@@ -302,7 +302,7 @@ class Messagebox:
         Returns:
             The text of the button pressed.
         """
-        return Messagebox._show(message, title, master, alert, ["OK:primary"], "x-circle-fill", **kwargs)
+        return MessageBox._show(message, title, master, alert, ["OK:primary"], "x-circle-fill", **kwargs)
 
     @staticmethod
     def show_question(
@@ -324,7 +324,7 @@ class Messagebox:
         Returns:
             The text of the button pressed.
         """
-        return Messagebox._show(message, title, master, alert, ["OK:primary"], "question-circle-fill", **kwargs)
+        return MessageBox._show(message, title, master, alert, ["OK:primary"], "question-circle-fill", **kwargs)
 
     @staticmethod
     def ok(
@@ -346,7 +346,7 @@ class Messagebox:
         Returns:
             The text of the button pressed.
         """
-        return Messagebox._show(message, title, master, alert, ["OK:primary"], None, **kwargs)
+        return MessageBox._show(message, title, master, alert, ["OK:primary"], None, **kwargs)
 
     @staticmethod
     def okcancel(
@@ -368,7 +368,7 @@ class Messagebox:
         Returns:
             The text of the button pressed.
         """
-        return Messagebox._show(message, title, master, alert, ["Cancel", "OK"], None, **kwargs)
+        return MessageBox._show(message, title, master, alert, ["Cancel", "OK"], None, **kwargs)
 
     @staticmethod
     def yesno(
@@ -390,7 +390,7 @@ class Messagebox:
         Returns:
             The text of the button pressed.
         """
-        return Messagebox._show(message, title, master, alert, ["No", "Yes"], None, **kwargs)
+        return MessageBox._show(message, title, master, alert, ["No", "Yes"], None, **kwargs)
 
     @staticmethod
     def yesnocancel(
@@ -412,7 +412,7 @@ class Messagebox:
         Returns:
             The text of the button pressed.
         """
-        return Messagebox._show(message, title, master, alert, ["Cancel", "No", "Yes"], None, **kwargs)
+        return MessageBox._show(message, title, master, alert, ["Cancel", "No", "Yes"], None, **kwargs)
 
     @staticmethod
     def retrycancel(
@@ -434,4 +434,4 @@ class Messagebox:
         Returns:
             The text of the button pressed.
         """
-        return Messagebox._show(message, title, master, alert, ["Cancel", "Retry"], None, **kwargs)
+        return MessageBox._show(message, title, master, alert, ["Cancel", "Retry"], None, **kwargs)

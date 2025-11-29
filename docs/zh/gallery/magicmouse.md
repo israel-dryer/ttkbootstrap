@@ -19,8 +19,7 @@ from pathlib import Path
 from tkinter import PhotoImage
 import ttkbootstrap as ttk
 from ttkbootstrap.constants import *
-from ttkbootstrap.dialogs import Messagebox
-
+from ttkbootstrap.dialogs import MessageBox
 
 PATH = Path(__file__).parent / 'assets'
 
@@ -30,31 +29,31 @@ class MouseUtilities(ttk.Frame):
     def __init__(self, master):
         super().__init__(master)
         self.pack(fill=BOTH, expand=YES)
-        
+
         self.images = [
             PhotoImage(
-                name='reset', 
+                name='reset',
                 file=PATH / 'magic_mouse/icons8_reset_24px.png'),
             PhotoImage(
-                name='reset-small', 
+                name='reset-small',
                 file=PATH / 'magic_mouse/icons8_reset_16px.png'),
             PhotoImage(
-                name='submit', 
+                name='submit',
                 file=PATH / 'magic_mouse/icons8_submit_progress_24px.png'),
             PhotoImage(
-                name='question', 
+                name='question',
                 file=PATH / 'magic_mouse/icons8_question_mark_16px.png'),
             PhotoImage(
-                name='direction', 
+                name='direction',
                 file=PATH / 'magic_mouse/icons8_move_16px.png'),
             PhotoImage(
-                name='bluetooth', 
+                name='bluetooth',
                 file=PATH / 'magic_mouse/icons8_bluetooth_2_16px.png'),
             PhotoImage(
-                name='buy', 
+                name='buy',
                 file=PATH / 'magic_mouse/icons8_buy_26px_2.png'),
             PhotoImage(
-                name='mouse', 
+                name='mouse',
                 file=PATH / 'magic_mouse/magic_mouse.png')
         ]
 
@@ -465,14 +464,13 @@ class MouseUtilities(ttk.Frame):
 
     def callback(self):
         """Demo callback"""
-        Messagebox.ok(
-            title='Button callback', 
+        MessageBox.ok(
+            title='Button callback',
             message="You pressed a button."
         )
 
 
 if __name__ == '__main__':
-
     app = ttk.Window("Magic Mouse", "yeti")
     MouseUtilities(app)
     app.mainloop()

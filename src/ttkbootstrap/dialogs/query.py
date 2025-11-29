@@ -11,7 +11,7 @@ from ttkbootstrap.localization import MessageCatalog
 from ttkbootstrap.dialogs.datepicker import DatePickerDialog
 from ttkbootstrap.dialogs.dialog import Dialog, DialogButton
 from ttkbootstrap.dialogs.fontdialog import FontDialog
-from ttkbootstrap.dialogs.message import Messagebox
+from ttkbootstrap.dialogs.message import MessageBox
 from ttkbootstrap.widgets.textentry import TextEntry
 from ttkbootstrap.widgets.numericentry import NumericEntry
 from ttkbootstrap.widgets.dateentry import DateEntry
@@ -195,7 +195,7 @@ class QueryDialog:
             converted_result = self._datatype(result)
         except ValueError:
             msg = MessageCatalog.translate("Should be of data type")
-            Messagebox.ok(
+            MessageBox.ok(
                 message=f"{msg} `{self._datatype}`",
                 title=MessageCatalog.translate("Invalid data type"),
                 master=self._dialog.toplevel,
@@ -205,7 +205,7 @@ class QueryDialog:
         # Check max value range
         if self._maxvalue is not None and converted_result > self._maxvalue:
             msg = MessageCatalog.translate("Number cannot be greater than")
-            Messagebox.ok(
+            MessageBox.ok(
                 message=f"{msg} {self._maxvalue}",
                 title=MessageCatalog.translate("Out of range"),
                 master=self._dialog.toplevel,
@@ -215,7 +215,7 @@ class QueryDialog:
         # Check min value range
         if self._minvalue is not None and converted_result < self._minvalue:
             msg = MessageCatalog.translate("Number cannot be less than")
-            Messagebox.ok(
+            MessageBox.ok(
                 message=f"{msg} {self._minvalue}",
                 title=MessageCatalog.translate("Out of range"),
                 master=self._dialog.toplevel,
@@ -225,7 +225,7 @@ class QueryDialog:
         # Check if item is in list
         if self._items is not None and len(self._items) > 0 and result not in self._items:
             msg = MessageCatalog.translate("Select an item from the list")
-            Messagebox.ok(
+            MessageBox.ok(
                 message=msg,
                 title=MessageCatalog.translate("Out of range"),
                 master=self._dialog.toplevel,

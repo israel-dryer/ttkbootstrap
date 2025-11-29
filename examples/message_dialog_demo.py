@@ -1,12 +1,12 @@
 """Demo for MessageDialog and Messagebox with icon provider integration."""
 
 import ttkbootstrap as ttk
-from ttkbootstrap.dialogs import Messagebox, MessageDialog
+from ttkbootstrap.dialogs import MessageBox, MessageDialog
 
 
 def demo_show_info():
     """Show info dialog."""
-    result = Messagebox.show_info(
+    result = MessageBox.show_info(
         message="This is an informational message.\nThe operation completed successfully.",
         title="Information",
         master=root
@@ -16,7 +16,7 @@ def demo_show_info():
 
 def demo_show_warning():
     """Show warning dialog."""
-    result = Messagebox.show_warning(
+    result = MessageBox.show_warning(
         message="Warning: This action may have consequences.\nPlease proceed with caution.",
         title="Warning",
         master=root
@@ -26,7 +26,7 @@ def demo_show_warning():
 
 def demo_show_error():
     """Show error dialog."""
-    result = Messagebox.show_error(
+    result = MessageBox.show_error(
         message="Error: The operation failed.\nPlease check your settings and try again.",
         title="Error",
         master=root
@@ -36,7 +36,7 @@ def demo_show_error():
 
 def demo_show_question():
     """Show question dialog."""
-    result = Messagebox.show_question(
+    result = MessageBox.show_question(
         message="Do you have any questions about this feature?\nFeel free to ask for help.",
         title="Question",
         master=root
@@ -46,7 +46,7 @@ def demo_show_question():
 
 def demo_ok():
     """Show OK dialog."""
-    result = Messagebox.ok(
+    result = MessageBox.ok(
         message="This is a simple notification.\nClick OK to continue.",
         title="Notification",
         master=root
@@ -56,7 +56,7 @@ def demo_ok():
 
 def demo_okcancel():
     """Show OK/Cancel dialog."""
-    result = Messagebox.okcancel(
+    result = MessageBox.okcancel(
         message="Do you want to proceed with this action?",
         title="Confirm",
         master=root
@@ -69,7 +69,7 @@ def demo_okcancel():
 
 def demo_yesno():
     """Show Yes/No dialog."""
-    result = Messagebox.yesno(
+    result = MessageBox.yesno(
         message="Would you like to save your changes?",
         title="Save Changes",
         master=root
@@ -82,7 +82,7 @@ def demo_yesno():
 
 def demo_yesnocancel():
     """Show Yes/No/Cancel dialog."""
-    result = Messagebox.yesnocancel(
+    result = MessageBox.yesnocancel(
         message="You have unsaved changes.\nDo you want to save them before closing?",
         title="Unsaved Changes",
         master=root
@@ -92,7 +92,7 @@ def demo_yesnocancel():
 
 def demo_retrycancel():
     """Show Retry/Cancel dialog."""
-    result = Messagebox.retrycancel(
+    result = MessageBox.retrycancel(
         message="Connection to server failed.\nWould you like to retry?",
         title="Connection Error",
         master=root
@@ -167,7 +167,7 @@ Each paragraph will be properly formatted and displayed."""
 
 def demo_no_icon():
     """Show dialog without any icon."""
-    result = Messagebox.okcancel(
+    result = MessageBox.okcancel(
         message="This dialog has no icon.\nSometimes simpler is better.",
         title="Simple Dialog",
         master=root

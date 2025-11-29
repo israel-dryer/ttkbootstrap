@@ -8,7 +8,7 @@ import ttkbootstrap as ttk
 from ttkbootstrap import utility
 from ttkbootstrap.constants import *
 from ttkbootstrap.localization import MessageCatalog
-from ttkbootstrap.dialogs.base import Dialog
+from ttkbootstrap.dialogs.dialog import Dialog
 
 
 class FontDialog(Dialog):

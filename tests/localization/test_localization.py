@@ -6,7 +6,7 @@ import ttkbootstrap as ttk
 from ttkbootstrap.constants import *
 from ttkbootstrap.dialogs.colorchooser import ColorChooserDialog
 from ttkbootstrap.localization.msgcat import MessageCatalog
-from ttkbootstrap.dialogs.dialogs import QueryDialog, Querybox
+from ttkbootstrap.dialogs.dialogs import QueryDialog, QueryBox
 from ttkbootstrap.tableview import Tableview
 
 def show_tableview():
@@ -62,7 +62,7 @@ def show_color_chooser():
 
 def show_font_selector():
     """Show font selector"""
-    Querybox.get_font(title="Querybox.get_font", position=(500, 500))
+    QueryBox.get_font(title="Querybox.get_font", position=(500, 500))
 
 
 def show_date_entry():
