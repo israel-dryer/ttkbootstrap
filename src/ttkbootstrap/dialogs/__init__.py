@@ -39,7 +39,7 @@ from .colordropper import (
 )
 from .dialog import Dialog, DialogButton
 from .message import MessageDialog, Messagebox
-from .query import QueryDialog, Querybox
+from .query import QueryDialog, QueryBox
 from .datepicker import DatePickerDialog
 from .fontdialog import FontDialog
 
@@ -53,7 +53,7 @@ __all__ = [
     "FontDialog",
     # Facades
     "Messagebox",
-    "Querybox",
+    "QueryBox",
     # Color tools
     "ColorChooser",
     "ColorChooserDialog",

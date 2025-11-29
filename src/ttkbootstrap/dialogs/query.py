@@ -8,140 +8,175 @@ from typing import Any, List, Optional
 import ttkbootstrap as ttk
 from ttkbootstrap.constants import *
 from ttkbootstrap.localization import MessageCatalog
-from .base import Dialog
-from .datepicker import DatePickerDialog
-from .fontdialog import FontDialog
-from .message import Messagebox
+from ttkbootstrap.dialogs.datepicker import DatePickerDialog
+from ttkbootstrap.dialogs.dialog import Dialog, DialogButton
+from ttkbootstrap.dialogs.fontdialog import FontDialog
+from ttkbootstrap.dialogs.message import Messagebox
+from ttkbootstrap.widgets.textentry import TextEntry
+from ttkbootstrap.widgets.numericentry import NumericEntry
+from ttkbootstrap.widgets.dateentry import DateEntry
 
+EntryWidget = TextEntry | NumericEntry | DateEntry
 
-class QueryDialog(Dialog):
-    """A simple modal dialog class for collecting user input."""
+class QueryDialog:
+    """A modal dialog for collecting user input with validation."""
 
     def __init__(
             self,
             prompt: str,
             title: str = " ",
-            initialvalue: Any = "",
+            value: Any = "",
             minvalue: Optional[Any] = None,
             maxvalue: Optional[Any] = None,
             width: int = 65,
             datatype: Any = str,
-            padding: "tuple[int, int] | int" = (20, 20),
-            parent: Optional[tkinter.Misc] = None,
+            padding: tuple[int, int] | int = (20, 20),
+            master: Optional[tkinter.Misc] = None,
             items: Optional[List[str]] = None,
+            value_format: Optional[str] = None,
+            increment: Optional[int | float] = None,
     ) -> None:
         """Create a query dialog for collecting user input.
 
-        Parameters:
-
-            prompt (str):
-                The prompt text to display above the input field. Supports
-                multiline strings (separated by \\n).
-
-            title (str):
-                The dialog window title (default=' ').
-
-            initialvalue (Any):
-                The initial value to populate in the input field (default='').
-
-            minvalue (Any):
-                Minimum allowed value for numeric data types (int, float, complex).
-                Ignored for strings.
-
-            maxvalue (Any):
-                Maximum allowed value for numeric data types (int, float, complex).
-                Ignored for strings.
-
-            width (int):
-                Maximum width in characters for text wrapping of the prompt
-                (default=65).
-
-            datatype (type):
-                Expected data type for validation (str, int, float, complex).
-                When set to int, float, or complex, the input will be validated
-                and converted (default=str).
-
-            padding (int | tuple):
-                Padding around the dialog content. Can be a single int or
-                tuple (horizontal, vertical) (default=(20, 20)).
-
-            parent (Widget):
-                Parent widget. The dialog will be centered on this widget.
-
-            items (List[str]):
-                Optional list of items for dropdown selection. If provided,
-                shows a Combobox instead of Entry. The Combobox supports
-                filtering by typing. If items are provided, the input must
-                match one from the list.
+        Args:
+            prompt: The prompt text to display above the input field. Supports multiline strings.
+            title: The dialog window title.
+            value: The initial value to populate in the input field.
+            value_format: Optional ICU format pattern for formatting/parsing values.
+                For numbers: e.g., '$#,##0.00' for currency, '#,##0.##' for decimals
+                For dates: e.g., 'shortDate', 'longDate', 'yyyy-MM-dd'
+                When provided, uses specialized Field widgets (TextEntry, NumericEntry, DateEntry).
+            minvalue: Minimum allowed value for numeric data types. Ignored for strings.
+            maxvalue: Maximum allowed value for numeric data types. Ignored for strings.
+            increment: Step size for numeric fields (passed to NumericEntry).
+            width: Maximum width in characters for text wrapping of the prompt.
+            datatype: Expected data type for validation (str, int, float, date, complex).
+            padding: Padding around the dialog content.
+            master: Parent widget for the dialog.
+            items: Optional list of items for dropdown selection. Shows a Combobox instead of Entry.
         """
-        super().__init__(parent, title)
         self._prompt = prompt
-        self._initialvalue = initialvalue
+        self._value = value
         self._items = items
         self._minvalue = minvalue
         self._maxvalue = maxvalue
         self._width = width
         self._datatype = datatype
         self._padding = padding
-        self._result = None
+        self._value_format = value_format
+        self._increment = increment
+        self._entry_widget: Optional[EntryWidget] = None
 
-    def create_body(self, master: tkinter.Misc) -> None:
-        frame = ttk.Frame(master, padding=self._padding)
+        # Create the underlying dialog with inline button specifications
+        self._dialog = Dialog(
+            master=master,
+            title=title,
+            content_builder=self._create_content,
+            buttons=[
+                DialogButton(
+                    text=MessageCatalog.translate("Cancel"),
+                    role="cancel",
+                    result=None,
+                ),
+                DialogButton(
+                    text=MessageCatalog.translate("Submit"),
+                    role="primary",
+                    default=True,
+                    command=lambda dlg: self._on_submit(),
+                    closes=False,  # Don't close yet - we need to validate first
+                ),
+            ],
+            minsize=(350, 120),
+        )
+
+    def _create_content(self, parent: tkinter.Widget) -> None:
+        """Create the dialog body with prompt and input field."""
+        frame = ttk.Frame(parent, padding=self._padding)
+
+        # Create prompt label(s)
         if self._prompt:
             for p in self._prompt.split("\n"):
                 prompt = "\n".join(textwrap.wrap(p, width=self._width))
                 prompt_label = ttk.Label(frame, text=prompt)
                 prompt_label.pack(pady=(0, 5), fill=X, anchor=N)
-        if self._items is None or len(self._items) == 0:
-            entry = ttk.Entry(master=frame)
-        else:
+
+        # Create appropriate input field based on datatype and options
+        if self._items is not None and len(self._items) > 0:
+            # Combobox for item selection
             entry = ttk.Combobox(master=frame, values=self._items)
-            entry.bind("<KeyRelease>", self.on_filter_list)
-        entry.insert(END, self._initialvalue)
+            entry.bind("<KeyRelease>", self._on_filter_list)
+            if self._value:
+                entry.set(self._value)
+        elif self._datatype == date:
+            # DateEntry for date input
+            kwargs = {"value": self._value} if self._value else {}
+            if self._value_format:
+                kwargs["value_format"] = self._value_format
+            kwargs.setdefault("initial_focus", True)
+            entry = DateEntry(master=frame, label=None, show_message=False, **kwargs)
+        elif self._datatype in (int, float):
+            # NumericEntry for numeric input with validation
+            kwargs = {"value": self._value if self._value else 0}
+            if self._minvalue is not None:
+                kwargs["minvalue"] = self._minvalue
+            if self._maxvalue is not None:
+                kwargs["maxvalue"] = self._maxvalue
+            if self._value_format:
+                kwargs["value_format"] = self._value_format
+            if self._increment is not None:
+                kwargs["increment"] = self._increment
+            kwargs.setdefault("initial_focus", True)
+            entry = NumericEntry(master=frame, label=None, show_message=False, **kwargs)
+        else:
+            # TextEntry for string input
+            kwargs = {"value": str(self._value) if self._value else ""}
+            if self._value_format:
+                kwargs["value_format"] = self._value_format
+            kwargs.setdefault("initial_focus", True)
+            entry = TextEntry(master=frame, label=None, show_message=False, **kwargs)
+
         entry.pack(pady=(0, 5), fill=X)
-        entry.bind("<Return>", self.on_submit)
-        entry.bind("<KP_Enter>", self.on_submit)
-        entry.bind("<Escape>", self.on_cancel)
+        entry.bind("<Return>", self._on_submit)
+        entry.bind("<KP_Enter>", self._on_submit)
+
+        # Focus the entry field
+        def _focus():
+            if hasattr(entry, 'entry_widget'):
+                entry.entry_widget.focus_set()
+            else:
+                entry.focus_set()
+
+        _focus()
+        # Ensure focus after dialog buttons set their own focus
+        entry.after_idle(_focus)
+
         frame.pack(fill=X, expand=True)
-        self._initial_focus = entry
+        self._entry_widget = entry
 
-    def create_buttonbox(self, master: tkinter.Misc) -> None:
-        frame = ttk.Frame(master, padding=(5, 10))
+    def _on_submit(self, *_: Any) -> None:
+        """Handle submit (Enter key or button click)."""
+        if not self._entry_widget:
+            return
 
-        submit = ttk.Button(
-            master=frame,
-            bootstyle="primary",
-            text=MessageCatalog.translate("Submit"),
-            command=self.on_submit,
-        )
-        submit.pack(padx=5, side=RIGHT)
-        submit.lower()
+        # Get value from widget - Field widgets use .value, Entry/Combobox use .get()
+        if hasattr(self._entry_widget, 'value'):
+            # Field widgets (TextEntry, NumericEntry, DateEntry)
+            result = self._entry_widget.value
+            # Field widgets handle their own validation, so we can use the value directly
+            if result is not None:
+                self._dialog.result = result
+                if self._dialog.toplevel:
+                    self._dialog.toplevel.destroy()
+        else:
+            # Regular Entry/Combobox - use old validation logic
+            result = self._entry_widget.get()
+            if self._validate(result):
+                self._dialog.result = self._datatype(result) if self._datatype != str else result
+                if self._dialog.toplevel:
+                    self._dialog.toplevel.destroy()
 
-        cancel = ttk.Button(
-            master=frame,
-            bootstyle="secondary",
-            text=MessageCatalog.translate("Cancel"),
-            command=self.on_cancel,
-        )
-        cancel.pack(padx=5, side=RIGHT)
-        cancel.lower()
-
-        ttk.Separator(self._toplevel).pack(fill=X)
-        frame.pack(side=BOTTOM, fill=X, anchor=S)
-
-    def on_submit(self, *_: Any) -> None:
-        self._result = self._initial_focus.get()
-        valid_result = self.validate()
-        if not valid_result:
-            return  # keep toplevel open for valid response
-        self._toplevel.destroy()
-        self.apply()
-
-    def on_cancel(self, *_: Any) -> None:
-        self._toplevel.destroy()
-        return
-
-    def on_filter_list(self, event: tkinter.Event) -> None:
+    def _on_filter_list(self, event: tkinter.Event) -> None:
+        """Filter combobox items based on user input."""
         value = event.widget.get().lower()
         if not value:
             event.widget["values"] = self._items
@@ -149,179 +184,303 @@ class QueryDialog(Dialog):
             data = [k for k in self._items if value in k.lower()]
             event.widget["values"] = data
 
-    def validate(self) -> bool:
-        """Validate the data before closing."""
-        # no default checks required for string data types,
-        # unless there is a list of items to pick from
+    def _validate(self, result: str) -> bool:
+        """Validate the input data."""
+        # No validation for string data types unless there's a list of items
         if self._datatype not in [float, int, complex] and (self._items is None or len(self._items) == 0):
             return True
 
-        # convert result to appropriate data type
+        # Convert result to appropriate data type
         try:
-            self._result = self._datatype(self._result)
+            converted_result = self._datatype(result)
         except ValueError:
             msg = MessageCatalog.translate("Should be of data type")
             Messagebox.ok(
                 message=f"{msg} `{self._datatype}`",
                 title=MessageCatalog.translate("Invalid data type"),
-                parent=self._toplevel,
+                master=self._dialog.toplevel,
             )
             return False
 
-        # max value range
-        if self._maxvalue is not None and self._result > self._maxvalue:
+        # Check max value range
+        if self._maxvalue is not None and converted_result > self._maxvalue:
             msg = MessageCatalog.translate("Number cannot be greater than")
             Messagebox.ok(
                 message=f"{msg} {self._maxvalue}",
                 title=MessageCatalog.translate("Out of range"),
-                parent=self._toplevel,
+                master=self._dialog.toplevel,
             )
             return False
 
-        # min value range
-        if self._minvalue is not None and self._result < self._minvalue:
+        # Check min value range
+        if self._minvalue is not None and converted_result < self._minvalue:
             msg = MessageCatalog.translate("Number cannot be less than")
             Messagebox.ok(
                 message=f"{msg} {self._minvalue}",
                 title=MessageCatalog.translate("Out of range"),
-                parent=self._toplevel,
+                master=self._dialog.toplevel,
             )
             return False
 
-        # item in list
-        if self._items is not None and len(self._items) > 0 and self._result not in self._items:
+        # Check if item is in list
+        if self._items is not None and len(self._items) > 0 and result not in self._items:
             msg = MessageCatalog.translate("Select an item from the list")
             Messagebox.ok(
                 message=msg,
                 title=MessageCatalog.translate("Out of range"),
-                parent=self._toplevel,
+                master=self._dialog.toplevel,
             )
             return False
 
         return True
 
-    def apply(self) -> None:
-        """Process the data after closing (no-op by default)."""
-        pass
+    def show(self, position: Optional[tuple[int, int]] = None) -> None:
+        """Show the dialog.
+
+        Args:
+            position: x and y coordinates to position the dialog. If None, centers on parent.
+        """
+        self._dialog.show(position=position, modal=True)
+
+    @property
+    def result(self) -> Any:
+        """The dialog result value."""
+        return self._dialog.result
 
 
-class Querybox:
-    """Static methods that request data from the end user."""
+class QueryBox:
+    """Static methods for displaying query dialogs."""
 
     @staticmethod
     def get_color(
-            parent: Optional[tkinter.Misc] = None,
+            master: Optional[tkinter.Misc] = None,
             title: str = "Color Chooser",
-            initialcolor: Optional[str] = None,
+            value: Optional[str] = None,
             **kwargs: Any,
     ) -> Any:
-        """Show a color picker and return the selected color when OK is pressed."""
+        """Show a color picker dialog.
+
+        Args:
+            master: Parent widget for the dialog.
+            title: The dialog window title.
+            value: Initial color to display.
+            **kwargs: Additional arguments including 'position'.
+
+        Returns:
+            Selected color or None if cancelled.
+        """
         from ttkbootstrap.dialogs.colorchooser import ColorChooserDialog
 
-        dialog = ColorChooserDialog(parent, title, initialcolor)
         position = kwargs.pop("position", None)
+        dialog = ColorChooserDialog(master, title, value)
         dialog.show(position)
         return dialog.result
 
     @staticmethod
     def get_date(
-            parent: Optional[tkinter.Misc] = None,
+            master: Optional[tkinter.Misc] = None,
             title: str = " ",
             firstweekday: int = 6,
-            startdate: Optional[date] = None,
+            value: Optional[date] = None,
             bootstyle: str = "primary",
+            **kwargs: Any,
     ) -> date:
+        """Show a date picker dialog.
+
+        Args:
+            master: Parent widget for the dialog.
+            title: The dialog window title.
+            firstweekday: First day of the week (0=Monday, 6=Sunday).
+            value: Initial date to display.
+            bootstyle: Style for the calendar.
+            **kwargs: Additional arguments including 'position'.
+
+        Returns:
+            Selected date.
+        """
+        position = kwargs.pop("position", None)
         chooser = DatePickerDialog(
-            parent=parent,
+            parent=master,
             title=title,
             firstweekday=firstweekday,
-            startdate=startdate,
+            startdate=value,
             bootstyle=bootstyle,
         )
+        chooser.show(position)
         return chooser.date_selected
 
     @staticmethod
     def get_string(
             prompt: str = "",
             title: str = " ",
-            initialvalue: Optional[str] = None,
-            parent: Optional[tkinter.Misc] = None,
+            value: Optional[str] = None,
+            master: Optional[tkinter.Misc] = None,
+            value_format: Optional[str] = None,
             **kwargs: Any,
     ) -> Optional[str]:
-        initialvalue = initialvalue or ""
+        """Show a string input dialog.
+
+        Args:
+            prompt: The prompt text to display.
+            title: The dialog window title.
+            value: Initial value for the input field.
+            master: Parent widget for the dialog.
+            value_format: Optional ICU format pattern for parsing/formatting.
+            **kwargs: Additional arguments including 'position'.
+
+        Returns:
+            Input string or None if cancelled.
+        """
+        value = value or ""
         position = kwargs.pop("position", None)
-        dialog = QueryDialog(prompt, title, initialvalue, parent=parent, **kwargs)
+        dialog = QueryDialog(
+            prompt,
+            title,
+            value,
+            master=master,
+            value_format=value_format,
+            **kwargs,
+        )
         dialog.show(position)
-        return dialog._result
+        return dialog.result
 
     @staticmethod
     def get_item(
             prompt: str = "",
             title: str = " ",
-            initialvalue: Optional[str] = None,
+            value: Optional[str] = None,
             items: Optional[List[str]] = None,
-            parent: Optional[tkinter.Misc] = None,
+            master: Optional[tkinter.Misc] = None,
             **kwargs: Any,
     ) -> Optional[str]:
-        initialvalue = initialvalue or ""
+        """Show a dropdown selection dialog.
+
+        Args:
+            prompt: The prompt text to display.
+            title: The dialog window title.
+            value: Initial value for the input field.
+            items: List of items to choose from.
+            master: Parent widget for the dialog.
+            **kwargs: Additional arguments including 'position'.
+
+        Returns:
+            Selected item or None if cancelled.
+        """
+        value = value or ""
         position = kwargs.pop("position", None)
-        dialog = QueryDialog(prompt, title, initialvalue, items=items, parent=parent, **kwargs)
+        dialog = QueryDialog(
+            prompt,
+            title,
+            value,
+            items=items,
+            master=master,
+            **kwargs,
+        )
         dialog.show(position)
-        return dialog._result
+        return dialog.result
 
     @staticmethod
     def get_integer(
             prompt: str = "",
             title: str = " ",
-            initialvalue: Optional[int] = None,
+            value: Optional[int] = None,
             minvalue: Optional[int] = None,
             maxvalue: Optional[int] = None,
-            parent: Optional[tkinter.Misc] = None,
+            master: Optional[tkinter.Misc] = None,
+            value_format: Optional[str] = None,
+            increment: Optional[int] = None,
             **kwargs: Any,
     ) -> Optional[int]:
-        initialvalue = initialvalue or ""
+        """Show an integer input dialog with validation.
+
+        Args:
+            prompt: The prompt text to display.
+            title: The dialog window title.
+            value: Initial value for the input field.
+            minvalue: Minimum allowed value.
+            maxvalue: Maximum allowed value.
+            increment: Step size for increment/decrement buttons.
+            value_format: Optional ICU format pattern for parsing/formatting.
+            master: Parent widget for the dialog.
+            **kwargs: Additional arguments including 'position'.
+
+        Returns:
+            Integer value or None if cancelled.
+        """
+        value = value or ""
         position = kwargs.pop("position", None)
         dialog = QueryDialog(
             prompt,
             title,
-            initialvalue,
+            value,
             minvalue,
             maxvalue,
             datatype=int,
-            parent=parent,
+            master=master,
+            value_format=value_format,
+            increment=increment,
             **kwargs,
         )
         dialog.show(position)
-        return dialog._result
+        return dialog.result
 
     @staticmethod
     def get_float(
             prompt: str = "",
             title: str = " ",
-            initialvalue: Optional[float] = None,
+            value: Optional[float] = None,
             minvalue: Optional[float] = None,
             maxvalue: Optional[float] = None,
-            parent: Optional[tkinter.Misc] = None,
+            master: Optional[tkinter.Misc] = None,
+            value_format: Optional[str] = None,
+            increment: Optional[float] = None,
             **kwargs: Any,
     ) -> Optional[float]:
-        initialvalue = initialvalue or ""
+        """Show a float input dialog with validation.
+
+        Args:
+            prompt: The prompt text to display.
+            title: The dialog window title.
+            value: Initial value for the input field.
+            minvalue: Minimum allowed value.
+            maxvalue: Maximum allowed value.
+            master: Parent widget for the dialog.
+            value_format: Optional ICU format pattern for parsing/formatting.
+            increment: Step size for increment/decrement buttons.
+            **kwargs: Additional arguments including 'position'.
+
+        Returns:
+            Float value or None if cancelled.
+        """
+        value = value or ""
         position = kwargs.pop("position", None)
         dialog = QueryDialog(
             prompt,
             title,
-            initialvalue,
+            value,
             minvalue,
             maxvalue,
             datatype=float,
-            parent=parent,
+            master=master,
+            value_format=value_format,
+            increment=increment,
             **kwargs,
         )
         dialog.show(position)
-        return dialog._result
+        return dialog.result
 
     @staticmethod
-    def get_font(parent: Optional[tkinter.Misc] = None, **kwargs: Any):
+    def get_font(master: Optional[tkinter.Misc] = None, **kwargs: Any) -> Any:
+        """Show a font selection dialog.
+
+        Args:
+            master: Parent widget for the dialog.
+            **kwargs: Additional arguments including 'position'.
+
+        Returns:
+            Selected font or None if cancelled.
+        """
         position = kwargs.pop("position", None)
-        dialog = FontDialog(parent=parent, **kwargs)
+        dialog = FontDialog(parent=master, **kwargs)
         dialog.show(position)
         return dialog.result

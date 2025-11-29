@@ -339,6 +339,11 @@ class Dialog:
                 self._toplevel.grab_set()
             self._master.wait_window(self._toplevel)
 
+    @property
+    def toplevel(self) -> ttk.Toplevel | None:
+        """Read-only access to the underlying toplevel window."""
+        return self._toplevel
+
     # ----------------------------------------------------------------- internals
 
     def _normalize_buttons(

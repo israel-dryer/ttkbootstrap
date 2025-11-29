@@ -15,7 +15,7 @@ from .dialog import Dialog
 from .datepicker import DatePickerDialog
 from .fontdialog import FontDialog
 from .message import MessageDialog, Messagebox
-from .query import QueryDialog, Querybox
+from .query import QueryDialog, QueryBox
 
 __all__ = [
     "Dialog",
@@ -24,5 +24,5 @@ __all__ = [
     "DatePickerDialog",
     "FontDialog",
     "Messagebox",
-    "Querybox",
+    "QueryBox",
 ]
