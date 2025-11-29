@@ -7,53 +7,49 @@ from typing import Any, Optional
 import ttkbootstrap as ttk
 from ttkbootstrap import utility
 from ttkbootstrap.constants import *
+from ttkbootstrap.dialogs.dialog import Dialog, DialogButton
 from ttkbootstrap.localization import MessageCatalog
-from ttkbootstrap.dialogs.dialog import Dialog
 
 
-class FontDialog(Dialog):
-    """A dialog that displays a variety of options for choosing a font.
+class FontDialog:
+    """A dialog for selecting and previewing fonts.
 
-    This dialog constructs and returns a `Font` object based on the
-    options selected by the user. The initial font is based on OS
-    settings and will vary.
+    This dialog provides a comprehensive interface for selecting fonts,
+    including family, size, weight, slant, and effects (underline, overstrike).
+    The selected font is returned as a tkinter.font.Font object when OK is
+    pressed, or None if cancelled.
 
-    The font object is returned when the OK button is pressed and
-    can be passed to any widget that accepts a `font` configuration
-    option.
+    Example:
+        ```python
+        import ttkbootstrap as ttk
+        from ttkbootstrap.dialogs import FontDialog
+
+        root = ttk.Window()
+        dialog = FontDialog(master=root, title="Select Font")
+        dialog.show()
+
+        if dialog.result:
+            label = ttk.Label(root, text="Sample Text", font=dialog.result)
+            label.pack()
+        ```
     """
 
     def __init__(
-            self, title: str = "Font Selector", parent: Optional[tkinter.Misc] = None,
-            default_font: str = "TkDefaultFont") -> None:
+            self,
+            title: str = "Font Selector",
+            master: Optional[tkinter.Misc] = None,
+            default_font: str = "TkDefaultFont"
+    ):
         """Create a font selection dialog.
 
-        The dialog provides a comprehensive interface for selecting and
-        previewing fonts, including family, size, weight, slant, and effects
-        (underline, overstrike). The selected font is returned as a
-        tkinter.font.Font object when OK is pressed.
-
-        Parameters:
-
-            title (str):
-                The dialog window title (default='Font Selector', will be
-                localized).
-
-            parent (Widget):
-                Parent widget. The dialog will be modal and centered on this
-                widget.
-
-            default_font (str):
-                Name of the initial font to display. Can be any valid tkinter
+        Args:
+            title: The dialog window title. Will be localized automatically.
+            master: Parent widget. The dialog will be modal and centered on this widget.
+            default_font: Name of the initial font to display. Can be any valid tkinter
                 font name (e.g., 'TkDefaultFont', 'TkFixedFont', 'TkTextFont',
-                'TkHeadingFont', etc.) or a custom font name (default='TkDefaultFont').
-
-        Returns:
-            The result property contains a tkinter.font.Font object with the
-            selected settings, or None if the dialog was cancelled.
+                'TkHeadingFont', etc.) or a custom font name.
         """
         title = MessageCatalog.translate(title)
-        super().__init__(parent=parent, title=title)
         self._style = ttk.use_style()
         self._default = font.nametofont(default_font)
         self._actual = self._default.actual()
@@ -64,58 +60,61 @@ class FontDialog(Dialog):
         self._overstrike = ttk.Variable(value=self._actual["overstrike"])
         self._underline = ttk.Variable(value=self._actual["underline"])
         self._preview_font = font.Font()
+        self._preview_text: Optional[ttk.Text] = None
+
         self._slant.trace_add("write", self._update_font_preview)
         self._weight.trace_add("write", self._update_font_preview)
         self._overstrike.trace_add("write", self._update_font_preview)
         self._underline.trace_add("write", self._update_font_preview)
 
-        _headingfont = font.nametofont("TkHeadingFont")
-        _headingfont.configure(weight="bold")
-
         self._update_font_preview()
-        self._families = set([self._family.get()])
+        self._families = {self._family.get()}
         for f in font.families():
             if all([f, not f.startswith("@"), "emoji" not in f.lower()]):
                 self._families.add(f)
 
-    def create_body(self, master: tkinter.Misc) -> None:
-        width = utility.scale_size(master, 600)
-        height = utility.scale_size(master, 500)
-        self._toplevel.geometry(f"{width}x{height}")
+        # Create the underlying dialog
+        self._dialog = Dialog(
+            master=master,
+            title=title,
+            content_builder=self._create_content,
+            buttons=[
+                DialogButton(
+                    text=MessageCatalog.translate("Cancel"),
+                    role="cancel",
+                    result=None,
+                ),
+                DialogButton(
+                    text=MessageCatalog.translate("OK"),
+                    role="primary",
+                    default=True,
+                    command=lambda dlg: self._on_submit(),
+                    result=self._preview_font,
+                ),
+            ],
+        )
+
+    def _create_content(self, master: tkinter.Widget) -> None:
+        """Create the dialog body with font selection controls."""
+        # Set dialog size
+        width = utility.scale_size(master, 800)
+        height = utility.scale_size(master, 600)
+        if self._dialog.toplevel:
+            self._dialog.toplevel.geometry(f"{width}x{height}")
 
         family_size_frame = ttk.Frame(master, padding=10)
         family_size_frame.pack(fill=X, anchor=N)
-        self._initial_focus = self._font_families_selector(family_size_frame)
+        initial_focus = self._font_families_selector(family_size_frame)
         self._font_size_selector(family_size_frame)
         self._font_options_selectors(master, padding=10)
         self._font_preview(master, padding=10)
 
-    def create_buttonbox(self, master: tkinter.Misc) -> None:
-        container = ttk.Frame(master, padding=(5, 10))
-        container.pack(fill=X)
-
-        ok_btn = ttk.Button(
-            master=container,
-            bootstyle="primary",
-            text=MessageCatalog.translate("OK"),
-            command=self._on_submit,
-        )
-        ok_btn.pack(side=RIGHT, padx=5)
-        ok_btn.bind("<Return>", lambda _: ok_btn.invoke())
-
-        cancel_btn = ttk.Button(
-            master=container,
-            bootstyle="secondary",
-            text=MessageCatalog.translate("Cancel"),
-            command=self._on_cancel,
-        )
-        cancel_btn.pack(side=RIGHT, padx=5)
-        cancel_btn.bind("<Return>", lambda _: cancel_btn.invoke())
-
-        self._toplevel.bind("<Escape>", func=lambda _: cancel_btn.invoke())
-        self._toplevel.protocol("WM_DELETE_WINDOW", func=cancel_btn.invoke)
+        # Set initial focus
+        if initial_focus and self._dialog.toplevel:
+            self._dialog.toplevel.after(100, initial_focus.focus_set)
 
     def _font_families_selector(self, master: tkinter.Misc) -> ttk.Treeview:
+        """Create and populate the font family selection list."""
         container = ttk.Frame(master)
         container.pack(fill=BOTH, expand=YES, side=LEFT)
 
@@ -145,7 +144,7 @@ class FontDialog(Dialog):
         listbox.configure(yscrollcommand=listbox_vbar.set)
 
         for f in sorted(self._families):
-            listbox.insert("", iid=f, index=END, tags=[f], values=[f])
+            listbox.insert("", iid=f, index='end', tags=[f], values=[f])
             listbox.tag_configure(f, font=(f, self._size.get()))
 
         iid = self._family.get()
@@ -155,6 +154,7 @@ class FontDialog(Dialog):
         return listbox
 
     def _font_size_selector(self, master: tkinter.Misc) -> None:
+        """Create and populate the font size selection list."""
         container = ttk.Frame(master)
         container.pack(side=LEFT, fill=Y, padx=(10, 0))
 
@@ -166,11 +166,11 @@ class FontDialog(Dialog):
         header.pack(fill=X, pady=(0, 2), anchor=N)
 
         sizes_listbox = ttk.Treeview(container, height=7, columns=[0], show="")
-        sizes_listbox.column(0, width=utility.scale_size(sizes_listbox, 24))
+        sizes_listbox.column(0, width=utility.scale_size(sizes_listbox, 48))
 
         sizes = [*range(8, 13), *range(13, 30, 2), 36, 48, 72]
         for s in sizes:
-            sizes_listbox.insert("", iid=s, index=END, values=[s])
+            sizes_listbox.insert("", iid=s, index='end', values=[s])
 
         iid = self._size.get()
         sizes_listbox.selection_set(iid)
@@ -188,6 +188,7 @@ class FontDialog(Dialog):
         sizes_listbox_vbar.pack(side=LEFT, fill=Y, expand=YES)
 
     def _font_options_selectors(self, master: tkinter.Misc, padding: int) -> None:
+        """Create font option controls (weight, slant, effects)."""
         container = ttk.Frame(master, padding=padding)
         container.pack(fill=X, padx=2, pady=2, anchor=N)
 
@@ -243,8 +244,10 @@ class FontDialog(Dialog):
         opt_overstrike.pack(side=LEFT, padx=5, pady=5)
 
     def _font_preview(self, master: tkinter.Misc, padding: int) -> None:
-        container = ttk.Frame(master, padding=padding)
+        """Create the font preview text widget."""
+        container = ttk.Frame(master, padding=padding, height=utility.scale_size(master, 150))
         container.pack(fill=BOTH, expand=YES, anchor=N)
+        container.pack_propagate(False)
 
         header = ttk.Label(
             container,
@@ -258,33 +261,34 @@ class FontDialog(Dialog):
             master=container,
             height=3,
             font=self._preview_font,
-            highlightbackground=self._style.colors.primary,
         )
         self._preview_text.insert(END, content)
         self._preview_text.pack(fill=BOTH, expand=YES)
-        container.pack_propagate(False)
 
     def _on_select_font_family(self, e: tkinter.Event) -> None:
-        tree: ttk.Treeview = self._toplevel.nametowidget(e.widget)
-        fontfamily = tree.selection()[0]
-        self._family.set(value=fontfamily)
+        """Handle font family selection event."""
+        if not self._dialog.toplevel:
+            return
+        tree: ttk.Treeview = self._dialog.toplevel.nametowidget(e.widget)
+        font_family = tree.selection()[0]
+        self._family.set(value=font_family)
         self._update_font_preview()
 
     def _on_select_font_size(self, e: tkinter.Event) -> None:
-        tree: ttk.Treeview = self._toplevel.nametowidget(e.widget)
+        """Handle font size selection event."""
+        if not self._dialog.toplevel:
+            return
+        tree: ttk.Treeview = self._dialog.toplevel.nametowidget(e.widget)
         fontsize = tree.selection()[0]
         self._size.set(value=fontsize)
         self._update_font_preview()
 
-    def _on_submit(self) -> font.Font:
-        self._toplevel.destroy()
-        return self.result
-
-    def _on_cancel(self) -> None:
-        self._result = None
-        self._toplevel.destroy()
+    def _on_submit(self) -> None:
+        """Handle OK button - update result with current font."""
+        self._dialog.result = self._preview_font
 
     def _update_font_preview(self, *_: Any) -> None:
+        """Update the preview font based on current selections."""
         family = self._family.get()
         size = self._size.get()
         slant = self._slant.get()
@@ -300,8 +304,17 @@ class FontDialog(Dialog):
             underline=underline,
             weight=weight,
         )
-        try:
-            self._preview_text.configure(font=self._preview_font)
-        except Exception:
-            pass
-        self._result = self._preview_font
+        if self._preview_text:
+            try:
+                self._preview_text.configure(font=self._preview_font)
+            except Exception:
+                pass
+
+    def show(self, position: Optional[tuple[int, int]] = None) -> None:
+        """Show the dialog."""
+        self._dialog.show(position=position, modal=True)
+
+    @property
+    def result(self) -> Optional[font.Font]:
+        """The selected font, or None if cancelled."""
+        return self._dialog.result

@@ -481,6 +481,6 @@ class QueryBox:
             Selected font or None if cancelled.
         """
         position = kwargs.pop("position", None)
-        dialog = FontDialog(parent=master, **kwargs)
+        dialog = FontDialog(master=master, **kwargs)
         dialog.show(position)
         return dialog.result
