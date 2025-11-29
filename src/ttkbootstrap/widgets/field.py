@@ -412,7 +412,7 @@ class Field(EntryMixin, Frame):
             self._entry.state(['readonly'])
         elif value:
             self._field.state(['!disabled'])
-            self._entry.state(['!readonly'])
+            self._entry.state(['readonly'])
         else:
             self._entry.state(['readonly !disabled'])
             self._field.state(['disabled'])
