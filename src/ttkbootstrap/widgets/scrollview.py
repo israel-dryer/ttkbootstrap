@@ -15,6 +15,8 @@ class ScrollView(Frame):
     full mouse wheel support on all descendants, including deeply nested widgets.
     Scrollbars can be configured to appear always, never, on hover, or when scrolling.
 
+    The scrollbars will only be visible when the content exceeds the available space.
+
     The widget uses a unique bind tag system to enable mouse wheel scrolling on
     all child widgets without interfering with normal widget behavior. Bindings
     are automatically refreshed when the container is reconfigured.
@@ -71,6 +73,7 @@ class ScrollView(Frame):
         self._window_id = None
         self._hide_timer = None
         self._scrolling_enabled = False
+        self._hovering = False
 
         # Create unique bind tag for this scrollview
         self._scroll_tag = f'ScrollView_{id(self)}'
@@ -87,6 +90,7 @@ class ScrollView(Frame):
             highlightthickness=0,
             borderwidth=0
         )
+        self.canvas.bind("<Configure>", self._on_canvas_configure)
 
         # Create scrollbars
         self.vertical_scrollbar = Scrollbar(
@@ -222,6 +226,9 @@ class ScrollView(Frame):
         # Configure grid weights
         self.grid_rowconfigure(0, weight=1)
         self.grid_columnconfigure(0, weight=1)
+        # Keep scrollbars above the canvas/content when visible
+        self.vertical_scrollbar.lift()
+        self.horizontal_scrollbar.lift()
 
         # Initially hide scrollbars based on show_scrollbar setting
         if self._show_scrollbar == 'never':
@@ -245,35 +252,65 @@ class ScrollView(Frame):
 
     def _on_container_enter(self, event):
         """Handle mouse entering the container."""
+        self._hovering = True
         self.enable_scrolling()
         if self._show_scrollbar == 'on-hover':
             self._show_scrollbars()
 
     def _on_container_leave(self, event):
         """Handle mouse leaving the container."""
+        self._hovering = False
         self.disable_scrolling()
         if self._show_scrollbar == 'on-hover':
             self._hide_scrollbars()
 
+    def _content_fits(self):
+        """Return booleans for whether content fits in the viewport (x_fit, y_fit)."""
+        if self._window_id:
+            bbox = self.canvas.bbox(self._window_id)
+        else:
+            bbox = self.canvas.bbox('all')
+        if not bbox:
+            return True, True
+        x0, y0, x1, y1 = bbox
+        content_w = x1 - x0
+        content_h = y1 - y0
+        viewport_w = max(1, self.canvas.winfo_width())
+        viewport_h = max(1, self.canvas.winfo_height())
+        if viewport_w <= 1 or viewport_h <= 1:
+            return True, True
+        return content_w <= viewport_w, content_h <= viewport_h
+
     def _show_scrollbars(self):
-        """Show scrollbars."""
-        if self._direction in ('vertical', 'both'):
+        """Show scrollbars only if content overflows the viewport."""
+        x_fit, y_fit = self._content_fits()
+        if self._direction in ('vertical', 'both') and not y_fit:
             self.vertical_scrollbar.grid()
-        if self._direction in ('horizontal', 'both'):
+        else:
+            self.vertical_scrollbar.grid_remove()
+        if self._direction in ('horizontal', 'both') and not x_fit:
             self.horizontal_scrollbar.grid()
+        else:
+            self.horizontal_scrollbar.grid_remove()
 
     def _hide_scrollbars(self):
         """Hide scrollbars."""
         self.vertical_scrollbar.grid_remove()
         self.horizontal_scrollbar.grid_remove()
 
+    def _on_canvas_configure(self, event):
+        """Update visibility when the viewport size changes."""
+        self._update_scrollbar_visibility()
+
     def _on_canvas_scroll_y(self, first, last):
         """Update vertical scrollbar position."""
         self.vertical_scrollbar.set(first, last)
+        self._update_scrollbar_visibility()
 
     def _on_canvas_scroll_x(self, first, last):
         """Update horizontal scrollbar position."""
         self.horizontal_scrollbar.set(first, last)
+        self._update_scrollbar_visibility()
 
     def _update_scrollbar_visibility(self):
         """Update scrollbar visibility based on current mode."""
@@ -281,10 +318,30 @@ class ScrollView(Frame):
             self._show_scrollbars()
         elif self._show_scrollbar == 'never':
             self._hide_scrollbars()
+        elif self._show_scrollbar == 'on-hover':
+            # Show only while hovering and overflowing
+            x_fit, y_fit = self._content_fits()
+            if self._hovering and self._direction in ('vertical', 'both') and not y_fit:
+                self.vertical_scrollbar.grid()
+            else:
+                self.vertical_scrollbar.grid_remove()
+
+            if self._hovering and self._direction in ('horizontal', 'both') and not x_fit:
+                self.horizontal_scrollbar.grid()
+            else:
+                self.horizontal_scrollbar.grid_remove()
+        elif self._show_scrollbar == 'on-scroll':
+            # Hide if no overflow; otherwise leave current visibility to scroll events
+            x_fit, y_fit = self._content_fits()
+            if y_fit:
+                self.vertical_scrollbar.grid_remove()
+            if x_fit:
+                self.horizontal_scrollbar.grid_remove()
 
     def _on_frame_configure(self, event):
         """Update scroll region and refresh bindings on configure."""
         self.canvas.configure(scrollregion=self.canvas.bbox('all'))
+        self._update_scrollbar_visibility()
 
         # Refresh bindings for any newly added widgets
         if self._scrolling_enabled and self._child_widget:
@@ -426,6 +483,14 @@ class ScrollView(Frame):
 
         # Create window in canvas
         self._window_id = self.canvas.create_window(0, 0, **window_kwargs)
+
+        # Keep scrollbars above the canvas/content
+        self.vertical_scrollbar.lift()
+        self.horizontal_scrollbar.lift()
+
+        # Bind configure event to update scroll region
+        widget.bind('<Configure>', self._on_frame_configure)
+        self._update_scrollbar_visibility()
 
         # Bind configure event to update scroll region
         widget.bind('<Configure>', self._on_frame_configure)
