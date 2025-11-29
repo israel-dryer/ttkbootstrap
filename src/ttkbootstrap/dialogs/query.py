@@ -3,7 +3,7 @@
 import textwrap
 import tkinter
 from datetime import date
-from typing import Any, List, Optional
+from typing import Any, Callable, List, Optional
 
 import ttkbootstrap as ttk
 from ttkbootstrap.constants import *
@@ -19,7 +19,11 @@ from ttkbootstrap.widgets.dateentry import DateEntry
 EntryWidget = TextEntry | NumericEntry | DateEntry
 
 class QueryDialog:
-    """A modal dialog for collecting user input with validation."""
+    """A modal dialog for collecting user input with validation.
+
+    Emits:
+        ``<<DialogResult>>`` with ``event.data = {"result": <value>, "confirmed": True/False}``.
+    """
 
     def __init__(
             self,
@@ -66,6 +70,7 @@ class QueryDialog:
         self._value_format = value_format
         self._increment = increment
         self._entry_widget: Optional[EntryWidget] = None
+        self._master = master
 
         # Create the underlying dialog with inline button specifications
         self._dialog = Dialog(
@@ -241,11 +246,48 @@ class QueryDialog:
             position: x and y coordinates to position the dialog. If None, centers on parent.
         """
         self._dialog.show(position=position, modal=True)
+        target = self._dialog.toplevel or self._master
+        if target:
+            payload = {"result": self._dialog.result, "confirmed": self._dialog.result is not None}
+            try:
+                target.event_generate("<<DialogResult>>", data=payload)
+            except Exception:
+                try:
+                    target.event_generate("<<DialogResult>>")
+                except Exception:
+                    pass
 
     @property
     def result(self) -> Any:
         """The dialog result value."""
         return self._dialog.result
+
+    def on_dialog_result(self, callback: Callable[[Any], None]) -> Optional[str]:
+        """Bind a callback fired when the dialog produces a result.
+
+        The callback receives ``event.data["result"]`` when available.
+
+        Args:
+            callback: Callable that receives the result payload.
+
+        Returns:
+            Binding identifier for use with ``off_dialog_result``.
+        """
+        target = self._dialog.toplevel or self._master
+        if target is None:
+            return None
+
+        def handler(event):
+            callback(getattr(event, "data", None))
+
+        return target.bind("<<DialogResult>>", handler, add="+")
+
+    def off_dialog_result(self, funcid: str) -> None:
+        """Unbind a previously bound dialog result callback."""
+        target = self._dialog.toplevel or self._master
+        if target is None:
+            return
+        target.unbind("<<DialogResult>>", funcid)
 
 
 class QueryBox:
@@ -283,6 +325,7 @@ class QueryBox:
             first_weekday: int = 6,
             value: Optional[date] = None,
             bootstyle: str = "primary",
+            on_result: Optional[Callable[[Any], None]] = None,
             **kwargs: Any,
     ) -> Optional[date]:
         """Show a date picker dialog.
@@ -293,6 +336,7 @@ class QueryBox:
             first_weekday: First day of the week (0=Monday, 6=Sunday).
             value: Initial date to display.
             bootstyle: Style for the calendar.
+            on_result: Optional callback receiving the dialog result payload.
             **kwargs: Additional arguments including 'position'.
 
         Returns:
@@ -306,6 +350,8 @@ class QueryBox:
             initial_date=value,
             bootstyle=bootstyle,
         )
+        if on_result:
+            dialog.on_result(on_result)
         dialog.show(position)
         return dialog.result
 
@@ -316,6 +362,7 @@ class QueryBox:
             value: Optional[str] = None,
             master: Optional[tkinter.Misc] = None,
             value_format: Optional[str] = None,
+            on_result: Optional[Callable[[Any], None]] = None,
             **kwargs: Any,
     ) -> Optional[str]:
         """Show a string input dialog.
@@ -326,6 +373,7 @@ class QueryBox:
             value: Initial value for the input field.
             master: Parent widget for the dialog.
             value_format: Optional ICU format pattern for parsing/formatting.
+            on_result: Optional callback receiving the dialog result payload.
             **kwargs: Additional arguments including 'position'.
 
         Returns:
@@ -341,6 +389,8 @@ class QueryBox:
             value_format=value_format,
             **kwargs,
         )
+        if on_result:
+            dialog.on_dialog_result(on_result)
         dialog.show(position)
         return dialog.result
 
@@ -351,6 +401,7 @@ class QueryBox:
             value: Optional[str] = None,
             items: Optional[List[str]] = None,
             master: Optional[tkinter.Misc] = None,
+            on_result: Optional[Callable[[Any], None]] = None,
             **kwargs: Any,
     ) -> Optional[str]:
         """Show a dropdown selection dialog.
@@ -361,6 +412,7 @@ class QueryBox:
             value: Initial value for the input field.
             items: List of items to choose from.
             master: Parent widget for the dialog.
+            on_result: Optional callback receiving the dialog result payload.
             **kwargs: Additional arguments including 'position'.
 
         Returns:
@@ -376,6 +428,8 @@ class QueryBox:
             master=master,
             **kwargs,
         )
+        if on_result:
+            dialog.on_dialog_result(on_result)
         dialog.show(position)
         return dialog.result
 
@@ -389,6 +443,7 @@ class QueryBox:
             master: Optional[tkinter.Misc] = None,
             value_format: Optional[str] = None,
             increment: Optional[int] = None,
+            on_result: Optional[Callable[[Any], None]] = None,
             **kwargs: Any,
     ) -> Optional[int]:
         """Show an integer input dialog with validation.
@@ -402,6 +457,7 @@ class QueryBox:
             increment: Step size for increment/decrement buttons.
             value_format: Optional ICU format pattern for parsing/formatting.
             master: Parent widget for the dialog.
+            on_result: Optional callback receiving the dialog result payload.
             **kwargs: Additional arguments including 'position'.
 
         Returns:
@@ -421,6 +477,8 @@ class QueryBox:
             increment=increment,
             **kwargs,
         )
+        if on_result:
+            dialog.on_dialog_result(on_result)
         dialog.show(position)
         return dialog.result
 
@@ -434,6 +492,7 @@ class QueryBox:
             master: Optional[tkinter.Misc] = None,
             value_format: Optional[str] = None,
             increment: Optional[float] = None,
+            on_result: Optional[Callable[[Any], None]] = None,
             **kwargs: Any,
     ) -> Optional[float]:
         """Show a float input dialog with validation.
@@ -447,6 +506,7 @@ class QueryBox:
             master: Parent widget for the dialog.
             value_format: Optional ICU format pattern for parsing/formatting.
             increment: Step size for increment/decrement buttons.
+            on_result: Optional callback receiving the dialog result payload.
             **kwargs: Additional arguments including 'position'.
 
         Returns:
@@ -466,6 +526,8 @@ class QueryBox:
             increment=increment,
             **kwargs,
         )
+        if on_result:
+            dialog.on_dialog_result(on_result)
         dialog.show(position)
         return dialog.result
 

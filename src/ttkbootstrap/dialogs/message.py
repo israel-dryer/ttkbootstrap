@@ -24,6 +24,9 @@ class MessageDialog:
     select one of the buttons. Then it returns the symbolic name of the
     selected button. Use a `Toplevel` widget for more advanced modal
     dialog designs.
+
+    Emits:
+        ``<<DialogResult>>`` with ``event.data = {"result": <str>, "confirmed": True}``.
     """
 
     def __init__(
@@ -85,6 +88,7 @@ class MessageDialog:
             alert=alert,
             minsize=(300, 100),
         )
+        self._master = master
 
     def _create_content(self, parent: tkinter.Widget) -> None:
         """Create the message body with optional icon."""
@@ -190,11 +194,48 @@ class MessageDialog:
             position: x and y coordinates to position the dialog. If None, centers on parent.
         """
         self._dialog.show(position=position, modal=True)
+        target = self._dialog.toplevel or self._master
+        if target:
+            payload = {"result": self._dialog.result, "confirmed": self._dialog.result is not None}
+            try:
+                target.event_generate("<<DialogResult>>", data=payload)
+            except Exception:
+                try:
+                    target.event_generate("<<DialogResult>>")
+                except Exception:
+                    pass
 
     @property
     def result(self) -> Any:
         """The dialog result value (the text of the button pressed)."""
         return self._dialog.result
+
+    def on_dialog_result(self, callback: Callable[[Any], None]) -> Optional[str]:
+        """Bind a callback fired when the dialog produces a result.
+
+        The callback receives ``event.data["result"]`` when available.
+
+        Args:
+            callback: Callable that receives the result payload.
+
+        Returns:
+            Binding identifier for use with ``off_dialog_result``.
+        """
+        target = self._dialog.toplevel or self._master
+        if target is None:
+            return None
+
+        def handler(event):
+            callback(getattr(event, "data", None))
+
+        return target.bind("<<DialogResult>>", handler, add="+")
+
+    def off_dialog_result(self, funcid: str) -> None:
+        """Unbind a previously bound dialog result callback."""
+        target = self._dialog.toplevel or self._master
+        if target is None:
+            return
+        target.unbind("<<DialogResult>>", funcid)
 
 
 class MessageBox:
@@ -208,6 +249,7 @@ class MessageBox:
             alert: bool = False,
             buttons: Optional[List[str]] = None,
             icon: Optional[str] = None,
+            on_result: Optional[Callable[[Any], None]] = None,
             **kwargs: Any,
     ) -> Optional[str]:
         """Internal helper to show a message dialog.
@@ -219,6 +261,7 @@ class MessageBox:
             alert: If True, rings the system bell.
             buttons: List of button labels.
             icon: Optional icon to display.
+            on_result: Optional callback receiving the dialog result payload.
             **kwargs: Additional arguments including 'position'.
 
         Returns:
@@ -235,6 +278,8 @@ class MessageBox:
             localize=True,
             **kwargs,
         )
+        if on_result:
+            dialog.on_dialog_result(on_result)
         dialog.show(position)
         return dialog.result
 
