@@ -12,7 +12,7 @@ warnings.warn(
 )
 
 from .dialog import Dialog
-from .datepicker import DateDialog
+from .date import DateDialog
 from .fontdialog import FontDialog
 from .message import MessageDialog, MessageBox
 from .query import QueryDialog, QueryBox
