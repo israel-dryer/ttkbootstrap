@@ -56,7 +56,7 @@ def show_tableview():
 
 def show_color_chooser():
     """Show the color dialog"""
-    cd = ColorChooserDialog(initialcolor='#1122ff')
+    cd = ColorChooserDialog(initial_color='#1122ff')
     cd.show()
 
 
