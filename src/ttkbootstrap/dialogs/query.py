@@ -8,7 +8,7 @@ from typing import Any, List, Optional
 import ttkbootstrap as ttk
 from ttkbootstrap.constants import *
 from ttkbootstrap.localization import MessageCatalog
-from ttkbootstrap.dialogs.datepicker import DatePickerDialog
+from ttkbootstrap.dialogs.datepicker import DateDialog
 from ttkbootstrap.dialogs.dialog import Dialog, DialogButton
 from ttkbootstrap.dialogs.fontdialog import FontDialog
 from ttkbootstrap.dialogs.message import MessageBox
@@ -280,34 +280,34 @@ class QueryBox:
     def get_date(
             master: Optional[tkinter.Misc] = None,
             title: str = " ",
-            firstweekday: int = 6,
+            first_weekday: int = 6,
             value: Optional[date] = None,
             bootstyle: str = "primary",
             **kwargs: Any,
-    ) -> date:
+    ) -> Optional[date]:
         """Show a date picker dialog.
 
         Args:
             master: Parent widget for the dialog.
             title: The dialog window title.
-            firstweekday: First day of the week (0=Monday, 6=Sunday).
+            first_weekday: First day of the week (0=Monday, 6=Sunday).
             value: Initial date to display.
             bootstyle: Style for the calendar.
             **kwargs: Additional arguments including 'position'.
 
         Returns:
-            Selected date.
+            Selected date or None if cancelled.
         """
         position = kwargs.pop("position", None)
-        chooser = DatePickerDialog(
-            parent=master,
+        dialog = DateDialog(
+            master=master,
             title=title,
-            firstweekday=firstweekday,
-            startdate=value,
+            first_weekday=first_weekday,
+            initial_date=value,
             bootstyle=bootstyle,
         )
-        chooser.show(position)
-        return chooser.date_selected
+        dialog.show(position)
+        return dialog.result
 
     @staticmethod
     def get_string(

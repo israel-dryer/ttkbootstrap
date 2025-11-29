@@ -7,6 +7,7 @@ Dialogs:
     - Messagebox: Display informational messages (info, warning, error, question)
     - Querybox: Get user input (text, integer, float, selection)
     - Colorchooser: Select colors using various methods
+    - DateDialog: Select dates using a calendar
     - FontDialog: Select and configure fonts
 
 All dialogs support Bootstrap styling and theming.
@@ -40,7 +41,7 @@ from .colordropper import (
 from .dialog import Dialog, DialogButton
 from .message import MessageDialog, MessageBox
 from .query import QueryDialog, QueryBox
-from .datepicker import DatePickerDialog
+from .datepicker import DateDialog
 from .fontdialog import FontDialog
 
 __all__ = [
@@ -49,7 +50,7 @@ __all__ = [
     "DialogButton",
     "MessageDialog",
     "QueryDialog",
-    "DatePickerDialog",
+    "DateDialog",
     "FontDialog",
     # Facades
     "MessageBox",

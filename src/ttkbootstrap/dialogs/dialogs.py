@@ -12,7 +12,7 @@ warnings.warn(
 )
 
 from .dialog import Dialog
-from .datepicker import DatePickerDialog
+from .datepicker import DateDialog
 from .fontdialog import FontDialog
 from .message import MessageDialog, MessageBox
 from .query import QueryDialog, QueryBox
@@ -21,7 +21,7 @@ __all__ = [
     "Dialog",
     "MessageDialog",
     "QueryDialog",
-    "DatePickerDialog",
+    "DateDialog",
     "FontDialog",
     "MessageBox",
     "QueryBox",
