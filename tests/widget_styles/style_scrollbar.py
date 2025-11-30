@@ -52,10 +52,10 @@ if __name__ == '__main__':
     test2 = create_scrollbar_frame(orient=VERTICAL, bootstyle='default')
     test2.pack(side=LEFT, anchor=N, fill=BOTH, expand=YES)
 
-    test3 = create_scrollbar_frame(orient=HORIZONTAL, bootstyle='rounded')
+    test3 = create_scrollbar_frame(orient=HORIZONTAL, bootstyle='square')
     test3.pack(side=LEFT, anchor=N, fill=BOTH, expand=YES)
     
-    test4 = create_scrollbar_frame(orient=VERTICAL, bootstyle='round')
+    test4 = create_scrollbar_frame(orient=VERTICAL, bootstyle='square')
     test4.pack(side=LEFT, anchor=N, fill=BOTH, expand=YES)
 
     root.mainloop()

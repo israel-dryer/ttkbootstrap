@@ -74,7 +74,7 @@ def build_combobox_style(b: BootstyleBuilderTTk, ttk_style: str, color: str = No
         ttk_style,
         foreground=foreground,
         background=surface,
-        padding=b.scale((8, 0)),
+        padding=b.scale((6, 0)),
         selectforeground=select_foreground,
         selectbackground=select_background,
         insertcolor=foreground,

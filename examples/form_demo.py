@@ -42,8 +42,7 @@ def main():
             "Cancel",
             {"text": "Submit", "role": "primary", "result": "submitted"},
         ],
-        on_data_changed=lambda data: print("Inferred changed:", data),
-        show_scrollbar="never",
+        on_data_changed=lambda data: print("Inferred changed:", data)
     )
     inferred_form.pack(fill=X, padx=20)
 
@@ -100,14 +99,13 @@ def main():
             {"text": "Save", "role": "primary", "result": "saved"},
         ],
         on_data_changed=lambda data: print("Explicit changed:", data),
-        show_scrollbar="on-scroll",
         height=260,
     )
     explicit_form.pack(fill=BOTH, expand=True, padx=20, pady=(0, 15))
 
     def show_results():
-        print("Inferred result:", inferred_form.get_data())
-        print("Explicit result:", explicit_form.get_data())
+        print("Inferred result:", inferred_form.data)
+        print("Explicit result:", explicit_form.data)
 
     ttk.Button(app, text="Print Results", command=show_results, bootstyle="secondary").pack(pady=(0, 15))
 

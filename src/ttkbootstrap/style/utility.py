@@ -290,7 +290,7 @@ def recolor_image(
     # Use automatic scaling if not specified
     if scale is None:
         from ttkbootstrap.utility import _ScalingState
-        scale = _ScalingState.get_image_scale(source_resolution=2.0)
+        scale = _ScalingState.get_image_scale(source_resolution=2.25)
 
     # Create cache key from all parameters
     cache_key = (name, white_color, black_color, magenta_color, transparent_color, scale)

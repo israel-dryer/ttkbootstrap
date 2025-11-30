@@ -10,6 +10,39 @@ from ttkbootstrap.style.element import Element, ElementImage
 from ttkbootstrap.style.utility import recolor_image
 
 
+def _button_layout(ttk_style: str) -> Element:
+    return Element(f"{ttk_style}.border", sticky="nsew").children(
+        [
+            Element("Button.padding", sticky="nsew").children(
+                [
+                    Element("Button.label", sticky="")
+                ])
+        ])
+
+
+def _button_padding(b: BootstyleBuilderTTk, options: dict) -> int | tuple[int, int]:
+    return 0 if options.get('icon_only', False) else b.scale((8, 0))
+
+
+def _apply_icon_mapping(
+        b: BootstyleBuilderTTk,
+        options: dict,
+        state_spec: dict,
+        default_size: int | None = None
+) -> dict:
+    icon = options.get('icon')
+    if icon is None:
+        return state_spec
+
+    if default_size is None:
+        icon = b.normalize_icon_spec(icon)
+    else:
+        icon = b.normalize_icon_spec(icon, default_size)
+
+    state_spec['image'] = b.map_stateful_icons(icon, state_spec['foreground'])
+    return state_spec
+
+
 @BootstyleBuilderTTk.register_builder('solid', 'TButton')
 @BootstyleBuilderTTk.register_builder('default', 'TButton')
 def build_solid_button_style(b: BootstyleBuilderTTk, ttk_style: str, color: str = None, **options):
@@ -25,12 +58,12 @@ def build_solid_button_style(b: BootstyleBuilderTTk, ttk_style: str, color: str 
     surface = b.color(surface_token)
     normal = b.color(accent_token)
     foreground = b.on_color(normal)
-    foreground_disabled = b.disabled('text')
     pressed = b.pressed(normal)
     hovered = focused = b.active(normal)
     focused_border = b.focus_border(normal)
     disabled = b.disabled()
     focused_ring = b.focus_ring(normal, surface)
+    foreground_disabled = b.disabled('text', disabled)
 
     normal_img = recolor_image('button', normal, normal, surface)
     pressed_img = recolor_image('button', pressed, pressed, surface)
@@ -53,20 +86,11 @@ def build_solid_button_style(b: BootstyleBuilderTTk, ttk_style: str, color: str 
             ]))
 
     b.create_style_layout(
-        ttk_style, Element(f"{ttk_style}.border", sticky="nsew").children(
-            [
-                Element("Button.padding", sticky="nsew").children(
-                    [
-                        Element("Button.label", sticky="")
-                    ])
-            ]))
+        ttk_style,
+        _button_layout(ttk_style),
+    )
 
-    icon_only = options.get('icon_only', False)
-    if icon_only:
-        button_padding = 0
-    else:
-        # scaled standard padding for text button
-        button_padding = b.scale((10, 0))
+    button_padding = _button_padding(b, options)
 
     b.configure_style(
         ttk_style,
@@ -84,13 +108,9 @@ def build_solid_button_style(b: BootstyleBuilderTTk, ttk_style: str, color: str 
         background=[('disabled', disabled)]
     )
 
-    # map icon if available
-    icon = options.get('icon')
+    icon_only = options.get('icon_only', False)
     default_size = b.scale(24) if icon_only else b.scale(20)
-
-    if icon is not None:
-        icon = b.normalize_icon_spec(icon, default_size)
-        state_spec['image'] = b.map_stateful_icons(icon, state_spec['foreground'])
+    state_spec = _apply_icon_mapping(b, options, state_spec, default_size)
 
     b.map_style(ttk_style, **state_spec)
 
@@ -102,7 +122,7 @@ def build_outline_button_style(b: BootstyleBuilderTTk, ttk_style: str, color: st
 
     surface = b.color(surface_token)
     foreground_normal = b.color(accent_token)
-    foreground_disabled = b.disabled('text')
+    foreground_disabled = b.disabled('text', surface)
     foreground_active = b.on_color(foreground_normal)
 
     disabled = foreground_disabled
@@ -135,13 +155,9 @@ def build_outline_button_style(b: BootstyleBuilderTTk, ttk_style: str, color: st
     )
 
     b.create_style_layout(
-        ttk_style, Element(f"{ttk_style}.border", sticky="nsew").children(
-            [
-                Element("Button.padding", sticky="nsew").children(
-                    [
-                        Element("Button.label", sticky="")
-                    ])
-            ]))
+        ttk_style,
+        _button_layout(ttk_style),
+    )
 
     b.configure_style(
         ttk_style,
@@ -149,7 +165,7 @@ def build_outline_button_style(b: BootstyleBuilderTTk, ttk_style: str, color: st
         foreground=foreground_normal,
         relief='flat',
         stipple="gray12",
-        padding=b.scale((10, 0)),
+        padding=b.scale((8, 0)),
         anchor="center",
         font="label"
     )
@@ -163,12 +179,7 @@ def build_outline_button_style(b: BootstyleBuilderTTk, ttk_style: str, color: st
         ], background=[('disabled', surface)]
     )
 
-    # map icon if available
-    icon = options.get('icon')
-
-    if icon is not None:
-        icon = b.normalize_icon_spec(icon)
-        state_spec['image'] = b.map_stateful_icons(icon, state_spec['foreground'])
+    state_spec = _apply_icon_mapping(b, options, state_spec)
 
     b.map_style(ttk_style, **state_spec)
 
@@ -180,7 +191,7 @@ def build_text_button_style(b: BootstyleBuilderTTk, ttk_style: str, color: str =
 
     surface = b.color(surface_token)
     foreground_normal = b.color(accent_token)
-    foreground_disabled = b.disabled('text')
+    foreground_disabled = b.disabled('text', surface)
 
     # button element images
     normal_img = recolor_image('button', surface, surface, surface, surface)
@@ -197,20 +208,11 @@ def build_text_button_style(b: BootstyleBuilderTTk, ttk_style: str, color: str =
     )
 
     b.create_style_layout(
-        ttk_style, Element(f"{ttk_style}.border", sticky="nsew").children(
-            [
-                Element("Button.padding", sticky="nsew").children(
-                    [
-                        Element("Button.label", sticky="")
-                    ])
-            ]))
+        ttk_style,
+        _button_layout(ttk_style),
+    )
 
-    icon_only = options.get('icon_only', False)
-    if icon_only:
-        button_padding = 0
-    else:
-        # scaled standard padding for text button
-        button_padding = b.scale((10, 0))
+    button_padding = _button_padding(b, options)
 
     b.configure_style(
         ttk_style,
@@ -230,13 +232,9 @@ def build_text_button_style(b: BootstyleBuilderTTk, ttk_style: str, color: str =
         ], background=[('disabled', surface)]
     )
 
-    # map icon if available
-    icon = options.get('icon')
+    icon_only = options.get('icon_only', False)
     default_size = 24 if icon_only else 20
-
-    if icon is not None:
-        icon = b.normalize_icon_spec(icon, default_size)
-        state_spec['image'] = b.map_stateful_icons(icon, state_spec['foreground'])
+    state_spec = _apply_icon_mapping(b, options, state_spec, default_size)
 
     b.map_style(ttk_style, **state_spec)
 
@@ -248,7 +246,7 @@ def build_link_button_style(b: BootstyleBuilderTTk, ttk_style: str, color: str =
 
     surface = b.color(surface_token)
     foreground_normal = b.color(accent_token)
-    foreground_disabled = b.disabled('text')
+    foreground_disabled = b.disabled('text', surface)
 
     # button element images
     normal_img = recolor_image('button', surface, surface, surface, surface)
@@ -265,20 +263,11 @@ def build_link_button_style(b: BootstyleBuilderTTk, ttk_style: str, color: str =
     )
 
     b.create_style_layout(
-        ttk_style, Element(f"{ttk_style}.border", sticky="nsew").children(
-            [
-                Element("Button.padding", sticky="nsew").children(
-                    [
-                        Element("Button.label", sticky="")
-                    ])
-            ]))
+        ttk_style,
+        _button_layout(ttk_style),
+    )
 
-    icon_only = options.get('icon_only', False)
-    if icon_only:
-        button_padding = 0
-    else:
-        # scaled standard padding for text button
-        button_padding = b.scale((10, 0))
+    button_padding = _button_padding(b, options)
 
     b.configure_style(
         ttk_style,
@@ -300,13 +289,9 @@ def build_link_button_style(b: BootstyleBuilderTTk, ttk_style: str, color: str =
         ], background=[('disabled', surface)]
     )
 
-    # map icon if available
-    icon = options.get('icon')
+    icon_only = options.get('icon_only', False)
     default_size = 24 if icon_only else 20
-
-    if icon is not None:
-        icon = b.normalize_icon_spec(icon, default_size)
-        state_spec['image'] = b.map_stateful_icons(icon, state_spec['foreground'])
+    state_spec = _apply_icon_mapping(b, options, state_spec, default_size)
 
     b.map_style(ttk_style, **state_spec)
 
@@ -318,7 +303,7 @@ def build_ghost_button_style(b: BootstyleBuilderTTk, ttk_style: str, color: str 
 
     surface = b.color(surface_token)
     foreground_normal = b.color(accent_token)
-    foreground_disabled = b.disabled('text')
+    foreground_disabled = b.disabled('text', surface)
 
     normal = surface
     pressed = b.subtle(accent_token, surface)
@@ -348,20 +333,11 @@ def build_ghost_button_style(b: BootstyleBuilderTTk, ttk_style: str, color: str 
     )
 
     b.create_style_layout(
-        ttk_style, Element(f"{ttk_style}.border", sticky="nsew").children(
-            [
-                Element("Button.padding", sticky="nsew").children(
-                    [
-                        Element("Button.label", sticky="")
-                    ])
-            ]))
+        ttk_style,
+        _button_layout(ttk_style),
+    )
 
-    icon_only = options.get('icon_only', False)
-    if icon_only:
-        button_padding = 0
-    else:
-        # scaled standard padding for text button
-        button_padding = b.scale((10, 0))
+    button_padding = _button_padding(b, options)
 
     b.configure_style(
         ttk_style,
@@ -379,12 +355,8 @@ def build_ghost_button_style(b: BootstyleBuilderTTk, ttk_style: str, color: str 
         background=[('disabled', surface)]
     )
 
-    # map icon if available
-    icon = options.get('icon')
+    icon_only = options.get('icon_only', False)
     default_size = 24 if icon_only else 20
-
-    if icon is not None:
-        icon = b.normalize_icon_spec(icon, default_size)
-        state_spec['image'] = b.map_stateful_icons(icon, state_spec['foreground'])
+    state_spec = _apply_icon_mapping(b, options, state_spec, default_size)
 
     b.map_style(ttk_style, **state_spec)

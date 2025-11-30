@@ -284,7 +284,7 @@ class Field(EntryMixin, Frame):
         self._message_lbl = Label(self, text=message or '', font="caption", bootstyle="secondary")
 
         # field container & field
-        self._field = Frame(self, bootstyle=self._bootstyle, padding=6, class_="TField")
+        self._field = Frame(self, bootstyle=self._bootstyle, padding=5, class_="TField")
 
         if kind == "numeric":
             self._entry = NumberEntryPart(self._field, value=value, **kwargs)
@@ -296,7 +296,7 @@ class Field(EntryMixin, Frame):
             self._label_lbl.pack(side='top', fill='x', padx=(4, 0))
 
         self._field.pack(side='top', fill='x', expand=True)
-        self._entry.pack(side='left', fill='both', expand=True)
+        self._entry.pack(side='left', fill='x', expand=True, padx=0, pady=0)
 
         if self._show_messages:
             self._message_lbl.pack(side='top', fill='x', padx=4)
