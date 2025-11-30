@@ -28,7 +28,7 @@ def create_radiobutton_test(bootstyle, testname):
     # disabled style
     cb = ttk.Radiobutton(
         master=frame,
-        text=bootstyle,
+        text='disabled',
         bootstyle=bootstyle,
         state=DISABLED,
         variable=var,
@@ -60,5 +60,6 @@ if __name__ == '__main__':
     test4.pack(side=LEFT, fill=BOTH)
     test5 = create_radiobutton_test('outline-toolbutton', 'Outline Toolbutton')
     test5.pack(side=LEFT, fill=BOTH)
+    create_radiobutton_test('ghost-toolbutton', 'Ghost Toolbutton').pack(side=LEFT, fill=BOTH)
 
     root.mainloop()

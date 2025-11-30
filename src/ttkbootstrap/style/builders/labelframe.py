@@ -16,22 +16,16 @@ from ttkbootstrap.style.utility import recolor_image
 
 @BootstyleBuilderTTk.register_builder('default', 'TLabelframe')
 def build_labelframe_style(b: BootstyleBuilderTTk, ttk_style: str, color: str = None, **options):
-    accent_token = color or 'border'
     surface_token = options.get('surface_color') or 'background'
     show_border = options.get('show_border', True)
-
     surface = b.color(surface_token)
 
-    if accent_token == 'border':
-        accent = b.border(surface)
-        foreground = b.on_color(surface)
-    else:
-        accent = b.color(accent_token)
-        foreground = accent
+    border = b.border(surface)
+    foreground = b.on_color(surface)
 
     # border assets and styles
     if show_border:
-        border_img = recolor_image('border', surface, accent, surface, surface)
+        border_img = recolor_image('border', surface, border, surface, surface)
     else:
         border_img = recolor_image('border', surface, surface, surface, surface)
 
@@ -39,8 +33,7 @@ def build_labelframe_style(b: BootstyleBuilderTTk, ttk_style: str, color: str = 
         ElementImage(
             f'{ttk_style}.border',
             border_img,
-            border=b.scale(8),
-            padding=b.scale(8),
+            border=b.scale(6),
             sticky="nsew")
     )
     b.create_style_layout(ttk_style, Element(f'{ttk_style}.border', sticky="nsew"))

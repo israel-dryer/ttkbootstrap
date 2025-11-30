@@ -18,10 +18,9 @@ def build_checkbutton_style(b: BootstyleBuilderTTk, ttk_style: str, color: str =
     background = b.color(surface_token)
     background_hover = b.active(background)
     foreground = b.on_color(background)
-    foreground_disabled = b.disabled('text')
+    foreground_disabled = b.disabled('text', background)
 
     normal = b.color(accent_token)
-    foreground_active = b.on_color(normal)
     pressed = b.pressed(normal)
     hovered = b.active(normal)
     border = b.border(background)
@@ -50,11 +49,11 @@ def build_checkbutton_style(b: BootstyleBuilderTTk, ttk_style: str, color: str =
         'checkbox-unchecked', foreground_disabled, foreground_disabled, background)
     disabled_indeterminate_img = recolor_image('checkbox-indeterminate', disabled, foreground_disabled, background)
 
-    spacer_img = create_transparent_image(8, 1)
+    spacer_img = create_transparent_image(6, 1)
     b.create_style_element_image(ElementImage(f'{ttk_style}.spacer', spacer_img, sticky="ew"))
 
     b.create_style_element_image(
-        ElementImage(f'{ttk_style}.indicator', normal_unchecked_img, sticky="ns", padding=b.scale(3)).state_specs(
+        ElementImage(f'{ttk_style}.indicator', normal_unchecked_img, sticky="ns").state_specs(
             [
                 # Disabled states
                 ('disabled alternate !selected', disabled_indeterminate_img),
@@ -93,7 +92,7 @@ def build_checkbutton_style(b: BootstyleBuilderTTk, ttk_style: str, color: str =
     )
 
     b.configure_style(ttk_style, background=background, foreground=foreground, font="body")
-    b.map_style(ttk_style, background=[], foreground=[])
+    b.map_style(ttk_style, background=[], foreground=[('disabled', foreground_disabled), ('', foreground)])
 
 
 @BootstyleBuilderTTk.register_builder('toggle', 'TCheckbutton')
@@ -103,7 +102,7 @@ def build_toggle_style(b: BootstyleBuilderTTk, ttk_style: str, color: str = 'pri
 
     background = b.color(surface_token)
     foreground = b.on_color(background)
-    foreground_disabled = b.disabled('text')
+    foreground_disabled = b.disabled('text', background)
 
     normal = b.color(accent_token)
     hovered = b.active(normal)
@@ -120,11 +119,11 @@ def build_toggle_style(b: BootstyleBuilderTTk, ttk_style: str, color: str = 'pri
     disabled_checked_img = recolor_image('switch-on', background, foreground_disabled, background)
     disabled_unchecked_img = recolor_image('switch-off', foreground_disabled, foreground_disabled, background)
 
-    spacer_img = create_transparent_image(8, 1)
+    spacer_img = create_transparent_image(6, 1)
     b.create_style_element_image(ElementImage(f'{ttk_style}.spacer', spacer_img, sticky="ew"))
 
     b.create_style_element_image(
-        ElementImage(f'{ttk_style}.indicator', normal_unchecked_img, sticky="ns", padding=b.scale(4)).state_specs(
+        ElementImage(f'{ttk_style}.indicator', normal_unchecked_img, sticky="ns").state_specs(
             [
                 # Disabled states
                 ('disabled selected', disabled_checked_img),
@@ -145,9 +144,9 @@ def build_toggle_style(b: BootstyleBuilderTTk, ttk_style: str, color: str = 'pri
             [
                 Element(f'{ttk_style}.indicator', side="left", sticky=""),
                 Element(f'{ttk_style}.spacer', side="left"),
-                Element('Checkbutton.label', side="left", sticky="nsew")
+                Element('Checkbutton.label', side="left", sticky="")
             ])
     )
 
     b.configure_style(ttk_style, background=background, foreground=foreground, font="body")
-    b.map_style(ttk_style, background=[], foreground=[])
+    b.map_style(ttk_style, background=[], foreground=[('disabled', foreground_disabled), ('', foreground)])

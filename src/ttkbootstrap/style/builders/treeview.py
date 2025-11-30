@@ -106,9 +106,7 @@ def build_tree_style(b: BootstyleBuilderTTk, ttk_style: str, color: str = None, 
     border_img = recolor_image('border', surface, border_color, surface, surface)
 
     b.create_style_element_image(
-        ElementImage(
-            f'{ttk_style}.field', border_img,
-            border=b.scale(4), padding=b.scale(4), width=0, height=0, sticky='nsew')
+        ElementImage(f'{ttk_style}.field', border_img, border=b.scale(6), sticky='nsew')
     )
 
     b.create_style_layout(
@@ -126,7 +124,7 @@ def build_tree_style(b: BootstyleBuilderTTk, ttk_style: str, color: str = None, 
         font="label",
         background=heading_color,
         foreground=on_heading,
-        padding=b.scale(5)
+        padding=b.scale((8, 10))
     )
     b.map_style(
         f'{ttk_style}.Heading',
@@ -163,4 +161,4 @@ def build_tree_style(b: BootstyleBuilderTTk, ttk_style: str, color: str = None, 
     )
 
     # configure cell
-    b.configure_style(f"{ttk_style}.Cell", font="body", padding=b.scale((4, 0)))
+    b.configure_style(f"{ttk_style}.Cell", font="body", padding=b.scale((6, 0)))
