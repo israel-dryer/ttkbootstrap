@@ -17,6 +17,7 @@ class ButtonKwargs(TypedDict, total=False):
     command: Optional[Callable[[], Any]]
     image: Any
     icon: Any
+    icon_only: bool
     compound: Literal['text', 'image', 'top', 'bottom', 'left', 'right', 'center', 'none'] | str
     padding: Any
     width: int
@@ -55,6 +56,7 @@ class Button(TextSignalMixin, IconMixin, TTKWrapperBase, ttk.Button):
             image: Image to display on the button.
             icon: Optional icon spec integrated via the style system. Preferred
                 over `image` for theme-aware iconography when supported.
+            icon_only: If true, removes the extra padding reserved for the text labels.
             compound: Placement of the image relative to text (e.g., 'left').
             padding: Extra space around the button content.
             width: Width of the button in characters.
@@ -69,6 +71,4 @@ class Button(TextSignalMixin, IconMixin, TTKWrapperBase, ttk.Button):
             style_options: Optional dict forwarded to the style builder. Useful
                 for widget-specific options (e.g., {'icon': ...}).
         """
-        super().__init__(master, **kwargs)  # type: ignore[arg-type]
-
-
+        super().__init__(master, **kwargs)

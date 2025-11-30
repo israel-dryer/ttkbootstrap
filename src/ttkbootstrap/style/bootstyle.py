@@ -258,7 +258,10 @@ class Bootstyle:
             # extract bootstyle & style arguments
             had_style_kwarg = 'style' in kwargs
             bootstyle = kwargs.pop("bootstyle", "")
+            icon_only = kwargs.pop("icon_only", None)
             style_options = kwargs.pop("style_options", {})
+            if icon_only:
+                style_options['icon_only'] = icon_only
             inherit_surface_color = kwargs.pop('inherit_surface_color', None)
             surface_color_token = kwargs.pop('surface_color', None)
             icon_spec = kwargs.pop('icon', None)
