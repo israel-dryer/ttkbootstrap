@@ -41,6 +41,7 @@ def build_scale_style(b: BootstyleBuilderTTk, ttk_style: str, color: str = 'prim
         ElementImage(f"{ttk_style}.{orient}.Scale.slider", handle_normal_img,
                      width=b.scale(24),
                      height=b.scale(24),
+                     sticky=''
                      ).state_specs(
             [
                 ('disabled', handle_disabled_img),
