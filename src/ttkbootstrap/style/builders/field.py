@@ -30,7 +30,7 @@ def build_field_style(b: BootstyleBuilderTTk, ttk_style: str, color: str = None,
 
     # input element
     b.create_style_element_image(
-        ElementImage(f'{ttk_style}.border', normal_img, sticky="nsew", border=8).state_specs(
+        ElementImage(f'{ttk_style}.border', normal_img, sticky="nsew", border=b.scale(8)).state_specs(
             [
                 ('disabled', disabled_img),
                 ('focus', focused_img),
@@ -53,8 +53,8 @@ def build_field_input_style(b: BootstyleBuilderTTk, ttk_style: str, color: str =
     disabled_fg = b.disabled('text')
     foreground = b.on_color(surface)
 
-    normal_img = recolor_image('input-inner', surface)
-    b.create_style_element_image(ElementImage(f'{ttk_style}.field', normal_img, sticky="nsew"))
+    normal_img = recolor_image('field', surface)
+    b.create_style_element_image(ElementImage(f'{ttk_style}.field', normal_img, sticky="nsew", height=b.scale(31)))
     b.create_style_layout(
         ttk_style, Element(f'{ttk_style}.field').children(
             [
@@ -75,7 +75,7 @@ def build_field_input_style(b: BootstyleBuilderTTk, ttk_style: str, color: str =
         darkcolor=surface,
         lightcolor=surface,
         insertcolor=foreground,
-        padding=(8, 0),
+        padding=(7, 0),
         selectforeground=b.on_color(b.color('primary')),
         selectbackground=b.color('primary')
     )
@@ -128,12 +128,10 @@ def build_field_addon_style(b: BootstyleBuilderTTk, ttk_style: str, _: str, vari
     else:
         active_img = pressed_img = normal_img
 
-    img_padding = 8
-
     # button element
     b.create_style_element_image(
 
-        ElementImage(f'{ttk_style}.border', normal_img, sticky="nsew", border=img_padding, padding=img_padding).state_specs([
+        ElementImage(f'{ttk_style}.border', normal_img, height=b.scale(31), border=b.scale(8)).state_specs([
             ('pressed', pressed_img),
             ('active', active_img),
             ('', normal_img)
