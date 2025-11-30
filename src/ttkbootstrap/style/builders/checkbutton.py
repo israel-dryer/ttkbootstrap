@@ -18,7 +18,7 @@ def build_checkbutton_style(b: BootstyleBuilderTTk, ttk_style: str, color: str =
     background = b.color(surface_token)
     background_hover = b.active(background)
     foreground = b.on_color(background)
-    foreground_disabled = b.disabled('text')
+    foreground_disabled = b.disabled('text', background)
 
     normal = b.color(accent_token)
     pressed = b.pressed(normal)
@@ -92,7 +92,7 @@ def build_checkbutton_style(b: BootstyleBuilderTTk, ttk_style: str, color: str =
     )
 
     b.configure_style(ttk_style, background=background, foreground=foreground, font="body")
-    b.map_style(ttk_style, background=[], foreground=[])
+    b.map_style(ttk_style, background=[], foreground=[('disabled', foreground_disabled), ('', foreground)])
 
 
 @BootstyleBuilderTTk.register_builder('toggle', 'TCheckbutton')
@@ -102,7 +102,7 @@ def build_toggle_style(b: BootstyleBuilderTTk, ttk_style: str, color: str = 'pri
 
     background = b.color(surface_token)
     foreground = b.on_color(background)
-    foreground_disabled = b.disabled('text')
+    foreground_disabled = b.disabled('text', background)
 
     normal = b.color(accent_token)
     hovered = b.active(normal)
@@ -149,4 +149,4 @@ def build_toggle_style(b: BootstyleBuilderTTk, ttk_style: str, color: str = 'pri
     )
 
     b.configure_style(ttk_style, background=background, foreground=foreground, font="body")
-    b.map_style(ttk_style, background=[], foreground=[])
+    b.map_style(ttk_style, background=[], foreground=[('disabled', foreground_disabled), ('', foreground)])
