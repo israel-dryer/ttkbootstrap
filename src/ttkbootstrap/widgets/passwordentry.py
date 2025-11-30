@@ -152,7 +152,7 @@ class PasswordEntry(Field):
             name="visibility",
             icon={"name": "eye", "state": [("pressed", "eye-slash")]},
             compound="image",
-            style_options={"icon_only": True}
+            icon_only=True
         )
         addon = self.addons['visibility']
         addon.bind('<ButtonPress>', self._show_password, add=True)

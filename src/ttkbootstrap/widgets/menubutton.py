@@ -16,6 +16,7 @@ class MenubuttonKwargs(TypedDict, total=False):
     text: Any
     image: Any
     icon: Any
+    icon_only: bool
     compound: Literal['text','image','top','bottom','left','right','center','none'] | str
     direction: Any
     menu: Any
@@ -47,6 +48,7 @@ class Menubutton(TextSignalMixin, IconMixin, TTKWrapperBase, ttk.Menubutton):
             text: Text to display in the menubutton.
             image: Image to display.
             icon: Theme-aware icon spec handled by the style system.
+            icon_only: If True, removes the additional padding reserved for label text.
             compound: Placement of the image relative to text.
             direction: Direction for the menu to appear.
             menu: Associated tk.Menu instance.
