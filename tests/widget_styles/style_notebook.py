@@ -8,14 +8,14 @@ def create_notebook_frame(bootstyle, test_name):
     # title
     title = ttk.Label(frame, text=test_name, anchor=CENTER)
     title.pack(padx=5, pady=2, fill=BOTH)
-    ttk.Separator(frame).pack(padx=5, pady=5, fill=X)
     colors = ['primary', 'secondary', 'success', 'info', 'warning', 'danger']
 
     # default
     nb = ttk.Notebook(frame, height=50, width=100, bootstyle=bootstyle)
     nb.pack(padx=5, pady=5, fill=BOTH)
     for i, _ in enumerate(colors):
-        nb.add(ttk.Frame(nb), text=f'Tab {i + 1}')
+        if i % 2 == 0:
+            nb.add(ttk.Frame(nb), text=f'Tab {i + 1}')
 
     # other colors
     for color in colors:
