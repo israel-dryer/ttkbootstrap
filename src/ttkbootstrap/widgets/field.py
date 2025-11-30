@@ -198,7 +198,7 @@ class Field(EntryMixin, Frame):
             value: str | int | float = None,
             label: str = None,
             message: str = None,
-            show_message: bool = True,
+            show_message: bool = False,
             required: bool = False,
             kind: FieldKind = "text",
             **kwargs
@@ -255,6 +255,7 @@ class Field(EntryMixin, Frame):
         # Accept legacy parameter name and prevent it from reaching the Tk widget.
         if 'show_messages' in kwargs:
             show_message = kwargs.pop('show_messages')
+        # If caller explicitly provided show_message, honor it; otherwise default to False
         show_message = kwargs.pop('show_message', show_message)
 
         self._bootstyle = kwargs.pop('bootstyle', 'default')
@@ -302,6 +303,10 @@ class Field(EntryMixin, Frame):
 
         self._entry.bind('<<Invalid>>', self._show_error, add=True)
         self._entry.bind('<<Valid>>', self._clear_error, add=True)
+
+        # If message text or required validation is present, enable messages unless explicitly disabled
+        if message and 'show_message' not in kwargs:
+            self._show_messages = True
 
         # bind focus styling to the field frame
         self._entry.bind('<FocusIn>', lambda _: self._field.state(['focus']), add=True)
