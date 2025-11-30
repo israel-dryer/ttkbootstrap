@@ -216,6 +216,7 @@ class DateEntry(Field):
             position="after",
             name="date-picker",
             icon="calendar-week",
+            icon_only=True,
             command=self._show_date_picker
         )
 

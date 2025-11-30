@@ -15,6 +15,7 @@ class LabelKwargs(TypedDict, total=False):
     text: Any
     image: Any
     icon: Any
+    icon_only: bool
     compound: Literal['text', 'image', 'top', 'bottom', 'left', 'right', 'center', 'none'] | str
     anchor: Any
     justify: Any
@@ -54,6 +55,7 @@ class Label(TextSignalMixin, IconMixin, TTKWrapperBase, ttk.Label):
             textsignal: Reactive Signal linked to the label text (auto-synced with textvariable).
             image: Image to display.
             icon: Theme-aware icon spec handled by the style system.
+            icon_only: If True, removes the additional padding reserved for label text.
             compound: Placement of the image relative to text.
             anchor: Alignment of the label's content within its area.
             justify: How to justify multiple lines of text.

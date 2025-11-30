@@ -58,6 +58,7 @@ class SelectBox(Field):
             position="after",
             name="dropdown",
             icon="chevron-down",
+            icon_only=True,
             command=self._show_selection_options
         )
 
