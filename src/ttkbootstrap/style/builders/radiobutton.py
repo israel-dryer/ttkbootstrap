@@ -18,7 +18,7 @@ def build_radiobutton_style(b: BootstyleBuilderTTk, ttk_style: str, color: str =
     background = b.color(surface_token)
     background_hover = b.active(background)
     foreground = b.on_color(background)
-    foreground_disabled = b.disabled('text')
+    foreground_disabled = b.disabled('text', background)
 
     normal = b.color(accent_token)
     hovered = b.active(normal)
@@ -35,7 +35,7 @@ def build_radiobutton_style(b: BootstyleBuilderTTk, ttk_style: str, color: str =
     disabled_checked_img = recolor_image('radio-selected', background, foreground_disabled, background)
     disabled_unchecked_img = recolor_image('radio-unselected', background, foreground_disabled, background)
 
-    spacer_img = create_transparent_image(8, 1)
+    spacer_img = create_transparent_image(6, 1)
     b.create_style_element_image(ElementImage(f'{ttk_style}.spacer', spacer_img, sticky="ew"))
 
     b.create_style_element_image(
@@ -65,4 +65,4 @@ def build_radiobutton_style(b: BootstyleBuilderTTk, ttk_style: str, color: str =
     )
 
     b.configure_style(ttk_style, background=background, foreground=foreground, font="body")
-    b.map_style(ttk_style, background=[], foreground=[])
+    b.map_style(ttk_style, background=[], foreground=[('disabled', foreground_disabled), ('', foreground)])
