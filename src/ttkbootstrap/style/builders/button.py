@@ -58,12 +58,12 @@ def build_solid_button_style(b: BootstyleBuilderTTk, ttk_style: str, color: str 
     surface = b.color(surface_token)
     normal = b.color(accent_token)
     foreground = b.on_color(normal)
-    foreground_disabled = b.disabled('text')
     pressed = b.pressed(normal)
     hovered = focused = b.active(normal)
     focused_border = b.focus_border(normal)
     disabled = b.disabled()
     focused_ring = b.focus_ring(normal, surface)
+    foreground_disabled = b.disabled('text', disabled)
 
     normal_img = recolor_image('button', normal, normal, surface)
     pressed_img = recolor_image('button', pressed, pressed, surface)
@@ -122,7 +122,7 @@ def build_outline_button_style(b: BootstyleBuilderTTk, ttk_style: str, color: st
 
     surface = b.color(surface_token)
     foreground_normal = b.color(accent_token)
-    foreground_disabled = b.disabled('text')
+    foreground_disabled = b.disabled('text', surface)
     foreground_active = b.on_color(foreground_normal)
 
     disabled = foreground_disabled
@@ -191,7 +191,7 @@ def build_text_button_style(b: BootstyleBuilderTTk, ttk_style: str, color: str =
 
     surface = b.color(surface_token)
     foreground_normal = b.color(accent_token)
-    foreground_disabled = b.disabled('text')
+    foreground_disabled = b.disabled('text', surface)
 
     # button element images
     normal_img = recolor_image('button', surface, surface, surface, surface)
@@ -246,7 +246,7 @@ def build_link_button_style(b: BootstyleBuilderTTk, ttk_style: str, color: str =
 
     surface = b.color(surface_token)
     foreground_normal = b.color(accent_token)
-    foreground_disabled = b.disabled('text')
+    foreground_disabled = b.disabled('text', surface)
 
     # button element images
     normal_img = recolor_image('button', surface, surface, surface, surface)
@@ -303,7 +303,7 @@ def build_ghost_button_style(b: BootstyleBuilderTTk, ttk_style: str, color: str 
 
     surface = b.color(surface_token)
     foreground_normal = b.color(accent_token)
-    foreground_disabled = b.disabled('text')
+    foreground_disabled = b.disabled('text', surface)
 
     normal = surface
     pressed = b.subtle(accent_token, surface)
