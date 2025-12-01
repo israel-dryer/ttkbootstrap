@@ -19,7 +19,8 @@ def create_combobox_test(bootstyle, test_name):
         master=frame,
         value='default',
         items=['default', 'other'],
-        show_dropdown_button=False,
+        allow_custom_values=True,
+        show_dropdown_button=True,
         bootstyle=bootstyle,
     )
     cbo.pack(padx=5, pady=5, fill=BOTH)
