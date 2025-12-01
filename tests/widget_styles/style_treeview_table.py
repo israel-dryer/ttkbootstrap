@@ -16,7 +16,7 @@ def create_treeview_style():
         container,
         columns=columns,
         show="headings",
-        height=8,
+        height=4,
     )
     tree.pack(fill="both", expand=True)
 
@@ -32,6 +32,14 @@ def create_treeview_style():
 
     # Sample data
     data = [
+        ("Alice", "Johnson", "alice@example.com"),
+        ("Bob", "Smith", "bob.smith@example.com"),
+        ("Charlie", "Brown", "charlie.brown@example.com"),
+        ("Diana", "Prince", "diana@themiscira.org"),
+        ("Alice", "Johnson", "alice@example.com"),
+        ("Bob", "Smith", "bob.smith@example.com"),
+        ("Charlie", "Brown", "charlie.brown@example.com"),
+        ("Diana", "Prince", "diana@themiscira.org"),
         ("Alice", "Johnson", "alice@example.com"),
         ("Bob", "Smith", "bob.smith@example.com"),
         ("Charlie", "Brown", "charlie.brown@example.com"),
