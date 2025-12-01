@@ -31,7 +31,8 @@ WIDGET_CLASS_MAP = {
     'menubutton': 'TMenubutton',
     'field': 'TField',
     'toolbutton': 'Toolbutton',
-    'tooltip': 'Tooltip'
+    'tooltip': 'Tooltip',
+    'calendar': 'TCalendar'
 }
 
 WIDGET_NAME_MAP = {v: k for k, v in WIDGET_CLASS_MAP.items()}
