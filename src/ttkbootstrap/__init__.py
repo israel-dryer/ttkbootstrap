@@ -82,6 +82,7 @@ from ttkbootstrap.widgets.passwordentry import PasswordEntry as PasswordEntry
 from ttkbootstrap.widgets.numericentry import NumericEntry as NumericEntry
 from ttkbootstrap.widgets.pathentry import PathEntry as PathEntry
 from ttkbootstrap.widgets.dateentry import DateEntry as DateEntry
+from ttkbootstrap.widgets.datepicker import DatePicker as DatePicker
 from ttkbootstrap.widgets.selectbox import SelectBox as SelectBox
 
 # Import constants from widgets
@@ -115,6 +116,7 @@ __all__ = [
     'Toplevel',
     'Window',
     'DateEntry',
+    'DatePicker',
     'Field',
     'FloodGauge',
     'LabeledScale',
