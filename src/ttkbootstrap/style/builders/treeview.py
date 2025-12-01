@@ -106,7 +106,7 @@ def build_tree_style(b: BootstyleBuilderTTk, ttk_style: str, color: str = None, 
     border_img = recolor_image('border', surface, border_color, surface, surface)
 
     b.create_style_element_image(
-        ElementImage(f'{ttk_style}.field', border_img, border=b.scale(6), sticky='nsew')
+        ElementImage(f'{ttk_style}.field', border_img, border=b.scale(6), padding=b.scale(6), width=0, height=0, sticky='nsew')
     )
 
     b.create_style_layout(
