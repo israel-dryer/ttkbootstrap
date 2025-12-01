@@ -53,15 +53,17 @@ class SelectBox(Field):
 
         self._allow_custom_values = allow_custom_values
 
-        self.readonly(not allow_custom_values)
-
-        if not allow_custom_values:
+        if allow_custom_values:
+            # Make entry editable by removing readonly state
+            self.entry_widget.state(['!readonly'])
+        else:
+            self.readonly(True)
             self.after_idle(self._bind_readonly_selection_on_click)
 
         self._items = items or []
         self._button_pack = {}
 
-        if not allow_custom_values and show_dropdown_button:
+        if allow_custom_values or show_dropdown_button:
             self.insert_addon(
                 Button,
                 position="after",
@@ -150,7 +152,10 @@ class SelectBox(Field):
             return self._allow_custom_values
         else:
             self._allow_custom_values = value
-            self.readonly(not value)
+            if value:
+                self.entry_widget.state(['!readonly'])
+            else:
+                self.readonly(True)
         return None
 
     @property
