@@ -11,7 +11,7 @@ from ttkbootstrap.style.utility import recolor_image
 
 
 def _button_layout(ttk_style: str) -> Element:
-    return Element(f"{ttk_style}.border", sticky="nsew").children(
+    return Element(f"{ttk_style}.Button.border", sticky="nsew").children(
         [
             Element("Button.padding", sticky="nsew").children(
                 [
@@ -75,7 +75,8 @@ def build_solid_button_style(b: BootstyleBuilderTTk, ttk_style: str, color: str 
 
     b.create_style_element_image(
         ElementImage(
-            f'{ttk_style}.border', normal_img, sticky="nsew", border=b.scale(10), padding=b.scale(10)).state_specs(
+            f'{ttk_style}.Button.border', normal_img, sticky="nsew", border=b.scale(10),
+            padding=b.scale(10)).state_specs(
             [
                 ('disabled', disabled_img),
                 ('focus pressed', focused_pressed_img),
@@ -100,7 +101,7 @@ def build_solid_button_style(b: BootstyleBuilderTTk, ttk_style: str, color: str 
         relief='flat',
         padding=button_padding,
         anchor="center",
-        font="label"
+        font="body"
     )
 
     state_spec = dict(
@@ -143,7 +144,8 @@ def build_outline_button_style(b: BootstyleBuilderTTk, ttk_style: str, color: st
 
     b.create_style_element_image(
         ElementImage(
-            f'{ttk_style}.border', normal_img, sticky="nsew", border=b.scale(10), padding=b.scale(10)).state_specs(
+            f'{ttk_style}.Button.border', normal_img, sticky="nsew", border=b.scale(10),
+            padding=b.scale(10)).state_specs(
             [
                 ('disabled', disabled_img),
                 ('focus pressed', focused_pressed_img),
@@ -167,7 +169,7 @@ def build_outline_button_style(b: BootstyleBuilderTTk, ttk_style: str, color: st
         stipple="gray12",
         padding=b.scale((8, 0)),
         anchor="center",
-        font="label"
+        font="body"
     )
 
     state_spec = dict(
@@ -200,7 +202,8 @@ def build_text_button_style(b: BootstyleBuilderTTk, ttk_style: str, color: str =
 
     b.create_style_element_image(
         ElementImage(
-            f'{ttk_style}.border', normal_img, sticky="nsew", border=b.scale(10), padding=b.scale(10)).state_specs(
+            f'{ttk_style}.Button.border', normal_img, sticky="nsew", border=b.scale(10),
+            padding=b.scale(10)).state_specs(
             [
                 ('disabled', disabled_img),
                 ('focus', focused_img),
@@ -222,7 +225,7 @@ def build_text_button_style(b: BootstyleBuilderTTk, ttk_style: str, color: str =
         stipple="gray12",
         padding=button_padding,
         anchor="center",
-        font="label"
+        font="body"
     )
 
     state_spec = dict(
@@ -255,7 +258,8 @@ def build_link_button_style(b: BootstyleBuilderTTk, ttk_style: str, color: str =
 
     b.create_style_element_image(
         ElementImage(
-            f'{ttk_style}.border', normal_img, sticky="nsew", border=b.scale(10), padding=b.scale(10)).state_specs(
+            f'{ttk_style}.Button.border', normal_img, sticky="nsew", border=b.scale(10),
+            padding=b.scale(10)).state_specs(
             [
                 ('disabled', disabled_img),
                 ('focus', focused_img),
@@ -277,7 +281,7 @@ def build_link_button_style(b: BootstyleBuilderTTk, ttk_style: str, color: str =
         stipple="gray12",
         padding=button_padding,
         anchor="center",
-        font="label"
+        font="body"
     )
 
     state_spec = dict(
@@ -321,7 +325,8 @@ def build_ghost_button_style(b: BootstyleBuilderTTk, ttk_style: str, color: str 
 
     b.create_style_element_image(
         ElementImage(
-            f'{ttk_style}.border', normal_img, sticky="nsew", border=b.scale(10), padding=b.scale(10)).state_specs(
+            f'{ttk_style}.Button.border', normal_img, sticky="nsew", border=b.scale(10),
+            padding=b.scale(10)).state_specs(
             [
                 ('disabled', disabled_img),
                 ('focus pressed', focused_pressed_img),
@@ -347,7 +352,7 @@ def build_ghost_button_style(b: BootstyleBuilderTTk, ttk_style: str, color: str 
         stipple="gray12",
         padding=button_padding,
         anchor="center",
-        font="label"
+        font="body"
     )
 
     state_spec = dict(
@@ -360,3 +365,5 @@ def build_ghost_button_style(b: BootstyleBuilderTTk, ttk_style: str, color: str 
     state_spec = _apply_icon_mapping(b, options, state_spec, default_size)
 
     b.map_style(ttk_style, **state_spec)
+
+

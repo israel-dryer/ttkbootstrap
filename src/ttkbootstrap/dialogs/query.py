@@ -325,6 +325,7 @@ class QueryBox:
             first_weekday: int = 6,
             value: Optional[date] = None,
             bootstyle: str = "primary",
+            hide_window_chrome: bool = False,
             on_result: Optional[Callable[[Any], None]] = None,
             **kwargs: Any,
     ) -> Optional[date]:
@@ -336,6 +337,8 @@ class QueryBox:
             first_weekday: First day of the week (0=Monday, 6=Sunday).
             value: Initial date to display.
             bootstyle: Style for the calendar.
+            hide_window_chrome: If True, shows the dialog with override-redirect
+                to hide window decorations.
             on_result: Optional callback receiving the dialog result payload.
             **kwargs: Additional arguments including 'position'.
 
@@ -349,6 +352,7 @@ class QueryBox:
             first_weekday=first_weekday,
             initial_date=value,
             bootstyle=bootstyle,
+            hide_window_chrome=hide_window_chrome,
         )
         if on_result:
             dialog.on_result(on_result)
