@@ -137,7 +137,7 @@ class DateEntry(Field):
             self,
             master=None,
             value: str | date | datetime = None,
-            value_format: str = "shortDate",
+            value_format: str = "longDate",
             label: str = None,
             message: str = None,
             show_picker_button=True,
@@ -250,6 +250,23 @@ class DateEntry(Field):
         """
         from ttkbootstrap.dialogs.datedialog import DateDialog
 
+        # Prevent multiple dialogs: reuse existing if still open
+        existing = getattr(self, "_active_date_dialog", None)
+        top = getattr(getattr(existing, "_dialog", None), "toplevel", None) if existing else None
+        try:
+            exists = bool(top and top.winfo_exists())
+        except Exception:
+            exists = False
+
+        if exists:
+            try:
+                top.lift()
+                top.focus_force()
+            except Exception:
+                pass
+            return
+        self._active_date_dialog = None
+
         current_value = self.value
         if isinstance(current_value, datetime):
             current_value = current_value.date()
@@ -264,13 +281,30 @@ class DateEntry(Field):
             first_weekday=self._picker_first_weekday,
             initial_date=current_value,
             bootstyle=self._bootstyle,
+            hide_window_chrome=True,
+            close_on_click_outside=True,
         )
+
+        self._active_date_dialog = dialog
 
         def _on_result(payload):
             self.value = payload.data['result']
 
         dialog.on_result(lambda x: _on_result(x))
         dialog.show(position=position)
+
+        top = getattr(getattr(dialog, "_dialog", None), "toplevel", None)
+        cleared = False
+        try:
+            if top and top.winfo_exists():
+                def _clear(_=None):
+                    self._active_date_dialog = None
+                top.bind("<Destroy>", _clear, add="+")
+                cleared = True
+        except Exception:
+            cleared = False
+        if not cleared:
+            self._active_date_dialog = None
 
         # Fallback: ensure value is applied after modal dialog closes.
         selected = dialog.result
@@ -280,12 +314,11 @@ class DateEntry(Field):
             self.value = selected
 
     def _picker_position(self):
-        """Choose a dialog position near the picker button, else center on the window."""
+        """Choose a dialog position beneath the entry mirroring SelectBox spacing."""
         try:
-            btn = self.date_picker_button
-            btn.update_idletasks()
-            x = btn.winfo_rootx() + btn.winfo_width() // 2
-            y = btn.winfo_rooty() + btn.winfo_height()
+            self.update_idletasks()
+            x = self.winfo_rootx() + 4
+            y = self.winfo_rooty() + self.winfo_height() + 6
             return x, y
         except Exception:
             pass

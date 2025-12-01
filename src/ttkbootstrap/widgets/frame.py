@@ -17,6 +17,7 @@ class FrameKwargs(TypedDict, total=False):
     class_: str
     cursor: str
     name: str
+    show_border: bool
 
     # ttkbootstrap-specific extensions
     bootstyle: str
@@ -41,7 +42,11 @@ class Frame(TTKWrapperBase, ttk.Frame):
             style: Explicit ttk style name (overrides bootstyle).
             bootstyle: ttkbootstrap style tokens (e.g., 'secondary').
             surface_color: Optional surface token; otherwise inherited.
+            show_border: If true, draws a border around the frame.
             style_options: Optional dict forwarded to the style builder.
         """
-        super().__init__(master, **kwargs)
+        show_border = kwargs.pop('show_border', False)
+        style_options = kwargs.pop('style_options', {})
+        style_options['show_border'] = show_border
+        super().__init__(master, style_options=style_options, **kwargs)
 
