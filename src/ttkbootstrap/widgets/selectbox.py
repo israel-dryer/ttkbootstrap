@@ -31,6 +31,7 @@ class SelectBox(Field):
             label: str = None,
             message: str = None,
             allow_custom_values: bool = False,
+            show_dropdown_button: bool = True,
             **kwargs: Unpack[FieldOptions]
     ):
         """Create a SelectBox widget.
@@ -43,24 +44,36 @@ class SelectBox(Field):
             message: Optional helper/error message shown below the field.
             allow_custom_values: If True, the entry is editable so users can type
                 arbitrary values in addition to choosing from the list.
+            show_dropdown_button: If True (default), the dropdown button is show. This option is
+                ignored if custom values are allowed.
             **kwargs: Additional :class:`FieldOptions` forwarded to ``Field`` and
                 the underlying entry (e.g., ``bootstyle``, ``width``, ``textvariable``).
         """
         super().__init__(master, value=value, label=label, message=message, **kwargs)
 
         self._allow_custom_values = allow_custom_values
+
         self.readonly(not allow_custom_values)
+
+        if not allow_custom_values:
+            self.after_idle(self._bind_readonly_selection_on_click)
 
         self._items = items or []
         self._button_pack = {}
-        self.insert_addon(
-            Button,
-            position="after",
-            name="dropdown",
-            icon="chevron-down",
-            icon_only=True,
-            command=self._show_selection_options
-        )
+
+        if not allow_custom_values and show_dropdown_button:
+            self.insert_addon(
+                Button,
+                position="after",
+                name="dropdown",
+                icon="chevron-down",
+                icon_only=True,
+                command=self._show_selection_options
+            )
+
+    def _bind_readonly_selection_on_click(self):
+        """Bind entry click to show popup when in readonly mode."""
+        self.entry_widget.bind('<Button-1>', lambda _: self.after_idle(self._show_selection_options), add='+')
 
     def _show_selection_options(self):
         """Create and display the popup list of selectable items."""
@@ -71,8 +84,8 @@ class SelectBox(Field):
         self.update_idletasks()
 
         # Get absolute screen position for the SelectBox
-        x = self.winfo_rootx() + 4
-        y = self.entry_widget.winfo_rooty() + self.entry_widget.winfo_height() + 6
+        x = self.winfo_rootx() + 3
+        y = self.entry_widget.winfo_rooty() + self.entry_widget.winfo_height() + 8
 
         width = self.winfo_width() - 8
 
@@ -108,12 +121,14 @@ class SelectBox(Field):
         tree.see(selected)
 
         # Bind after idle so initial selection doesn't close the popup
-        self.after_idle(
-            lambda: tree.bind(
-                '<<TreeviewSelect>>',
-                lambda e: self._get_selected_item(tree, toplevel)
-            )
-        )
+        def bind_selection():
+            if tree.winfo_exists():
+                tree.bind(
+                    '<<TreeviewSelect>>',
+                    lambda e: self._get_selected_item(tree, toplevel)
+                )
+
+        self.after_idle(bind_selection)
 
         toplevel.deiconify()
         toplevel.lift()
