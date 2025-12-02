@@ -7,7 +7,7 @@ from datetime import date, datetime, timedelta
 from typing import Any, Callable, Iterable, Literal, Optional
 
 import ttkbootstrap as ttk
-from ttkbootstrap.constants import BOTH, CENTER, LEFT, NSEW, PRIMARY, SECONDARY, X, Y, YES
+from ttkbootstrap.constants import BOTH, CENTER, LEFT, NSEW, PRIMARY, X, Y, YES
 from ttkbootstrap.localization import MessageCatalog
 
 
@@ -380,7 +380,8 @@ class DatePicker(ttk.Frame):
                 child.destroy()
 
         if self._show_week_numbers:
-            ttk.Label(weekdays_frame, text="#", anchor=CENTER, padding=5, surface_color="background[+1]").pack(side=LEFT, fill=X, expand=YES)
+            ttk.Label(weekdays_frame, text="#", anchor=CENTER, padding=5, surface_color="background[+1]").pack(
+                side=LEFT, fill=X, expand=YES)
         for col in self._header_columns():
             ttk.Label(
                 master=weekdays_frame,
@@ -514,6 +515,7 @@ class DatePicker(ttk.Frame):
     # --- selection/navigation ----------------------------------------
     def _refresh_calendar(self) -> None:
         self._draw_calendar()
+
     def _on_next_month(self, *_args) -> None:
         candidate = self._add_months(self._display_date, 1)
         if self._is_month_allowed(candidate):
@@ -544,7 +546,8 @@ class DatePicker(ttk.Frame):
         self._range_start = self._initial_date
         self._range_end = None
         self._refresh_calendar()
-        self.event_generate("<<DateSelected>>", data={"date": self._selected_date, "range": (self._range_start, self._range_end)})
+        self.event_generate(
+            "<<DateSelected>>", data={"date": self._selected_date, "range": (self._range_start, self._range_end)})
 
     def _on_date_selected_by_date(self, target: date) -> None:
         if self._is_disabled(target):
@@ -564,7 +567,8 @@ class DatePicker(ttk.Frame):
             self._range_end = None
 
         self._draw_calendar()
-        self.event_generate("<<DateSelected>>", data={"date": self._selected_date, "range": (self._range_start, self._range_end)})
+        self.event_generate(
+            "<<DateSelected>>", data={"date": self._selected_date, "range": (self._range_start, self._range_end)})
 
     # --- helpers ------------------------------------------------------
     def _lock_size(self) -> None:

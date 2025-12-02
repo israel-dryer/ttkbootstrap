@@ -33,6 +33,7 @@ class SelectBox(Field):
             message: str = None,
             allow_custom_values: bool = False,
             show_dropdown_button: bool = True,
+            dropdown_button_icon: str = None,
             search_enabled: bool = False,
             **kwargs: Unpack[FieldOptions]
     ):
@@ -48,6 +49,7 @@ class SelectBox(Field):
                 arbitrary values in addition to choosing from the list.
             show_dropdown_button: If True (default), the dropdown button is shown. This option is
                 ignored if custom values are allowed.
+            dropdown_button_icon: The icon to display on the dropdown button.
             search_enabled: If True, allows typing in the entry to filter the popup list.
                 When combined with allow_custom_values=False, the first filtered item is selected
                 when the popup closes. With allow_custom_values=True, any typed value is kept.
@@ -61,6 +63,7 @@ class SelectBox(Field):
         self._items = items or []
         self._last_selected_value = value
         self._popup_open = False
+        self._dropdown_button_icon = dropdown_button_icon or 'chevron-down'
 
         # Configure entry state based on search and custom value settings
         if allow_custom_values or search_enabled:
@@ -75,7 +78,7 @@ class SelectBox(Field):
                 Button,
                 position="after",
                 name="dropdown",
-                icon="chevron-down",
+                icon=self._dropdown_button_icon,
                 icon_only=True,
                 command=self._on_dropdown_click
             )
