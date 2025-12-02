@@ -64,3 +64,6 @@ class Menubutton(TextSignalMixin, IconMixin, TTKWrapperBase, ttk.Menubutton):
         """
         super().__init__(master, **kwargs)
 
+        # Ensure the menubutton receives focus when clicked so focus styling is visible.
+        self.bind("<Button-1>", lambda _: self.focus_set(), add="+")
+
