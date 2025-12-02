@@ -84,6 +84,7 @@ from ttkbootstrap.widgets.pathentry import PathEntry as PathEntry
 from ttkbootstrap.widgets.dateentry import DateEntry as DateEntry
 from ttkbootstrap.widgets.datepicker import DatePicker as DatePicker
 from ttkbootstrap.widgets.selectbox import SelectBox as SelectBox
+from ttkbootstrap.widgets.timeentry import TimeEntry as TimeEntry
 
 # Import constants from widgets
 from ttkbootstrap.widgets import TTK_WIDGETS, TK_WIDGETS
@@ -127,6 +128,7 @@ __all__ = [
     'Toast',
     'ToolTip',
     'TextEntry',
+    'TimeEntry',
     'ScrollView',
     'ScrolledText',
     'SelectBox',
