@@ -118,6 +118,7 @@ class ContextMenu:
         self._on_item_click_callback = None
         self._click_handler_id = None
         self._click_binding_root = None
+        self._click_bind_after_id = None
 
         # Create toplevel window
         self._toplevel = Toplevel(master)
@@ -321,12 +322,17 @@ class ContextMenu:
 
     def hide(self):
         """Hide the context menu."""
+        # Unbind click handler first
+        self._cancel_click_outside_after()
+        self._unbind_click_outside_handler()
+
         if self._toplevel.winfo_exists():
             self._toplevel.withdraw()
 
     def destroy(self):
         """Destroy the context menu and cleanup resources."""
         # Unbind click handler
+        self._cancel_click_outside_after()
         self._unbind_click_outside_handler()
 
         # Destroy toplevel
@@ -437,6 +443,13 @@ class ContextMenu:
                 self.hide()
 
         def bind_click():
+            # Clear the pending after id once we run
+            self._click_bind_after_id = None
+
+            # Skip binding if the menu is already hidden
+            if not (self._toplevel.winfo_exists() and self._toplevel.winfo_viewable()):
+                return
+
             if self._toplevel.winfo_exists():
                 self._unbind_click_outside_handler()
                 root = self._get_binding_root()
@@ -445,7 +458,8 @@ class ContextMenu:
                     self._click_handler_id = root.bind('<Button-1>', on_click, add='+')
 
         # Delay binding to avoid capturing the click that shows the menu
-        self._toplevel.after(100, bind_click)
+        self._cancel_click_outside_after()
+        self._click_bind_after_id = self._toplevel.after(100, bind_click)
 
     def _get_binding_root(self) -> Widget | None:
         """Return the widget to bind click-outside events to."""
@@ -470,3 +484,12 @@ class ContextMenu:
         finally:
             self._click_handler_id = None
             self._click_binding_root = None
+
+    def _cancel_click_outside_after(self):
+        """Cancel any scheduled click-outside binding."""
+        if self._click_bind_after_id and self._toplevel.winfo_exists():
+            try:
+                self._toplevel.after_cancel(self._click_bind_after_id)
+            except TclError:
+                pass
+        self._click_bind_after_id = None
