@@ -85,6 +85,7 @@ from ttkbootstrap.widgets.dateentry import DateEntry as DateEntry
 from ttkbootstrap.widgets.datepicker import DatePicker as DatePicker
 from ttkbootstrap.widgets.selectbox import SelectBox as SelectBox
 from ttkbootstrap.widgets.timeentry import TimeEntry as TimeEntry
+from ttkbootstrap.widgets.contextmenu import ContextMenu as ContextMenu
 
 # Import constants from widgets
 from ttkbootstrap.widgets import TTK_WIDGETS, TK_WIDGETS
@@ -113,6 +114,7 @@ __all__ = [
     # TTkBootstrap exports
     'AppConfig',
     'Bootstyle',
+    'ContextMenu',
     'Style',
     'Toplevel',
     'Window',

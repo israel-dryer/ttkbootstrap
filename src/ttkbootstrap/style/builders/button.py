@@ -367,3 +367,47 @@ def build_ghost_button_style(b: BootstyleBuilderTTk, ttk_style: str, color: str 
     b.map_style(ttk_style, **state_spec)
 
 
+@BootstyleBuilderTTk.register_builder('context_item', 'TButton')
+def build_dropdown_item_button_style(b: BootstyleBuilderTTk, ttk_style: str, color: str = None, **options):
+    accent_token = color or 'primary'
+    surface_token = options.get('surface_color', 'background')
+
+    surface = b.color(surface_token)
+    on_surface = b.on_color(surface)
+    on_disabled = b.disabled('text', surface)
+
+    active = b.elevate(surface, 1)
+    pressed = b.color(accent_token)
+    on_pressed = b.on_color(pressed)
+
+    b.configure_style(
+        ttk_style,
+        background=surface,
+        foreground=on_surface,
+        relief='flat',
+        stipple='gray12',
+        padding=(6, 3),
+        anchor='w',
+        font='body',
+        focuscolor=''
+    )
+
+    state_spec = dict(
+        foreground=[
+            ('disabled', on_disabled),
+            ('focus !disabled', on_pressed),
+            ('pressed', on_pressed),
+            ('', on_surface)],
+        background=[
+            ('focus !disabled', pressed),
+            ('pressed !disabled', pressed),
+            ('active !disabled', active),
+            ('', surface)
+        ]
+    )
+
+    icon_only = options.get('icon_only', False)
+    default_size = 24 if icon_only else 20
+    state_spec = _apply_icon_mapping(b, options, state_spec, default_size)
+
+    b.map_style(ttk_style, **state_spec)
