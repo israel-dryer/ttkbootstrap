@@ -10,11 +10,10 @@ from typing import Any, Callable, Union
 from ttkbootstrap.widgets.button import Button
 from ttkbootstrap.widgets.checkbutton import Checkbutton
 from ttkbootstrap.widgets.frame import Frame
+from ttkbootstrap.widgets.mixins import CustomConfigMixin, configure_delegate
 from ttkbootstrap.widgets.radiobutton import Radiobutton
 from ttkbootstrap.widgets.separator import Separator
 
-# TODO expose a toplevel configuration API
-# TODO expose a menu item configuration API
 
 class ContextMenuItem:
     """Data class for context menu items.
@@ -35,7 +34,7 @@ class ContextMenuItem:
         self.kwargs = kwargs
 
 
-class ContextMenu:
+class ContextMenu(CustomConfigMixin):
     """A customizable context menu widget.
 
     Displays a popup menu with support for command buttons, checkbuttons,
@@ -107,6 +106,7 @@ class ContextMenu:
                 Default is True.
             items: List of ContextMenuItem objects to add initially.
         """
+        super().__init__()
         self._master = master
         self._target = target
         self._minwidth = minwidth
@@ -300,6 +300,102 @@ class ContextMenu:
                 item_type = item.get('type')
                 kwargs = {k: v for k, v in item.items() if k != 'type'}
                 self.add_item(item_type, **kwargs)
+
+    def items(self, value=None):
+        """Get or set the current menu items."""
+        if value is None:
+            return self._delegate_items(None)
+        self._delegate_items(value)
+        return None
+
+    def insert_item(self, index: int, type: str, **kwargs):
+        """Insert a new item at the given index."""
+        before_widget = self._items[index] if 0 <= index < len(self._items) else None
+
+        widget = self.add_item(type, **kwargs)
+
+        if before_widget is None:
+            return widget
+
+        pack_info = widget.pack_info()
+        widget.pack_forget()
+        pack_info.pop('in', None)
+        pack_info['before'] = before_widget
+        widget.pack(**pack_info)
+
+        self._items.pop()
+        self._items.insert(index, widget)
+        return widget
+
+    def remove_item(self, index: int):
+        """Remove and destroy the item at the given index."""
+        try:
+            widget = self._items.pop(index)
+        except IndexError as exc:
+            raise IndexError(f"ContextMenu item index {index} out of range") from exc
+
+        try:
+            widget.destroy()
+        except TclError:
+            pass
+        return None
+
+    def move_item(self, from_index: int, to_index: int):
+        """Reorder an existing item to a new index."""
+        try:
+            widget = self._items.pop(from_index)
+        except IndexError as exc:
+            raise IndexError(f"ContextMenu item index {from_index} out of range") from exc
+
+        pack_info = widget.pack_info()
+        widget.pack_forget()
+
+        # Clamp destination to valid bounds
+        if to_index < 0:
+            to_index = 0
+        if to_index > len(self._items):
+            to_index = len(self._items)
+
+        self._items.insert(to_index, widget)
+        before_widget = self._items[to_index + 1] if to_index + 1 < len(self._items) else None
+
+        pack_info.pop('in', None)
+        pack_info.pop('in_', None)
+        pack_info.pop('before', None)
+        pack_info.pop('after', None)
+        if before_widget:
+            pack_info['before'] = before_widget
+        widget.pack(in_=self._frame, **pack_info)
+        return widget
+
+    def configure_item(self, index: int, option: str | None = None, **kwargs):
+        """Configure an individual menu item by index.
+
+        Args:
+            index: Zero-based index of the item in insertion order.
+            option: Optional option name to query (getter path).
+            **kwargs: Option values to set (setter path).
+
+        Returns:
+            - When called with no kwargs and no option: full option map for the item.
+            - When called with option only: a 5-tuple matching tkinter's configure.
+            - When called with kwargs: the result of the underlying widget's configure.
+        """
+        try:
+            widget = self._items[index]
+        except IndexError as exc:
+            raise IndexError(f"ContextMenu item index {index} out of range") from exc
+
+        # Getter: all options
+        if option is None and not kwargs:
+            return widget.configure()
+
+        # Getter: single option
+        if option is not None and not kwargs:
+            return widget.configure(option)
+
+        # Setter path
+        return widget.configure(**kwargs)
 
     def show(self, position: tuple[int, int] = None):
         """Show the context menu.
@@ -499,3 +595,97 @@ class ContextMenu:
             except TclError:
                 pass
         self._click_bind_after_id = None
+
+    # ----- Configuration delegates -------------------------------------------------
+
+    @configure_delegate('minwidth')
+    def _delegate_minwidth(self, value: int | None):
+        """Get or set the minimum width."""
+        if value is None:
+            return self._minwidth
+        self._minwidth = value
+        return self._toplevel.minsize(value or 0, self._minheight or 0)
+
+    @configure_delegate('minheight')
+    def _delegate_minheight(self, value: int | None):
+        """Get or set the minimum height."""
+        if value is None:
+            return self._minheight
+        self._minheight = value
+        return self._toplevel.minsize(self._minwidth or 0, value or 0)
+
+    @configure_delegate('width')
+    def _delegate_width(self, value: int | None):
+        """Get or set the fixed width."""
+        if value is None:
+            return self._width
+        self._width = value
+        return self._frame.configure(width=value if value is not None else '')
+
+    @configure_delegate('height')
+    def _delegate_height(self, value: int | None):
+        """Get or set the fixed height."""
+        if value is None:
+            return self._height
+        self._height = value
+        return self._frame.configure(height=value if value is not None else '')
+
+    @configure_delegate('anchor')
+    def _delegate_anchor(self, value: str | None):
+        """Get or set the menu anchor."""
+        if value is None:
+            return self._anchor
+        self._anchor = (value or 'nw').lower()
+        return None
+
+    @configure_delegate('attach')
+    def _delegate_attach(self, value: str | None):
+        """Get or set the target attach anchor."""
+        if value is None:
+            return self._attach
+        self._attach = (value or 'nw').lower()
+        return None
+
+    @configure_delegate('offset')
+    def _delegate_offset(self, value: tuple[int, int] | None):
+        """Get or set the positional offset."""
+        if value is None:
+            return self._offset
+        try:
+            dx, dy = value  # type: ignore[misc]
+        except Exception:
+            dx, dy = (0, 0)
+        self._offset = (dx, dy)
+        return None
+
+    @configure_delegate('hide_on_outside_click')
+    def _delegate_hide_on_outside_click(self, value: bool | None):
+        """Get or set outside-click hide behavior."""
+        if value is None:
+            return self._hide_on_outside_click
+        self._hide_on_outside_click = bool(value)
+        return None
+
+    @configure_delegate('target')
+    def _delegate_target(self, value: Widget | None):
+        """Get or set the target widget used for positioning."""
+        if value is None:
+            return self._target
+        self._target = value
+        return None
+
+    @configure_delegate('items')
+    def _delegate_items(self, value: list[ContextMenuItem] | None):
+        """Get or replace the menu items."""
+        if value is None:
+            return self._items
+
+        # Destroy existing widgets before replacing
+        for widget in self._items:
+            try:
+                widget.destroy()
+            except TclError:
+                pass
+        self._items = []
+        self.add_items(value)
+        return None
