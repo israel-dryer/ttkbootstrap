@@ -16,7 +16,7 @@ def change_style():
 frame = ttk.Frame(padding=10)
 frame.pack(padx=10, pady=10)
 
-ttk.Meter(
+m = ttk.Meter(
     master=frame,
     size=180,
     padding=5,
@@ -25,7 +25,9 @@ ttk.Meter(
     meter_type='semi',
     subtitle='miles per hour',
     interactive=True
-).pack(side=LEFT, padx=10)
+)
+m.pack(side=LEFT, padx=10)
+m.on_changed(print)
 
 ttk.Meter(
     master=frame,

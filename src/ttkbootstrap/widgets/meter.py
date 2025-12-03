@@ -1,6 +1,6 @@
 import math
 from tkinter import Canvas, DoubleVar, IntVar, StringVar, font as tkfont
-from typing import Any, Literal
+from typing import Any, Callable, Literal
 from warnings import warn
 
 from PIL import Image, ImageDraw, ImageTk
@@ -19,6 +19,10 @@ class Meter(Frame):
     The Meter widget displays a value as a circular arc indicator with optional value text,
     prefix/suffix labels, and subtitle. Supports both full circle and semi-circle styles,
     segmented or solid indicators, and interactive mode for user input.
+
+    Events:
+        <<Changed>>: Fired whenever the meter value changes (event.data includes
+            {"value": new_value, "prev_value": previous_value}).
     """
 
     def __init__(
@@ -88,6 +92,9 @@ class Meter(Frame):
             interactive: Whether the meter responds to mouse clicks/drags to change value.
             step_size: Increment step when in interactive mode.
             **kwargs: Additional keyword arguments passed to the Frame parent class.
+
+        Events:
+            <<Changed>>: Emitted when the value changes (see on_changed()).
         """
         legacy = Meter._coerce_legacy_params(kwargs)
         super().__init__(master, **kwargs)
@@ -128,6 +135,7 @@ class Meter(Frame):
 
         # widget variables
         value = legacy.get('value', value)
+        self._last_changed_value = value
         self._value_var = self._variable(value)
         self._value_var.trace_add('write', self._update_meter)  # Update meter when value changes
         self._value_display_var = StringVar(value=value_format.format(value))
@@ -450,6 +458,10 @@ class Meter(Frame):
         value = self._value_var.get()
         self._value_display_var.set(self._value_format.format(value))
         self._draw_meter()
+        if value != self._last_changed_value:
+            prev_value = self._last_changed_value
+            self._last_changed_value = value
+            self.event_generate('<<Changed>>', data={"value": value, "prev_value": prev_value})
 
     def _resolve_meter_styles(self):
         """Resolve theme colors for meter indicator, trough, and text."""
@@ -842,3 +854,11 @@ class Meter(Frame):
             self._value_var.set(minvalue + (minvalue - value_updated))
         else:
             self._value_var.set(value_updated)
+
+    def on_changed(self, callback: Callable[[Any], Any]) -> str:
+        """Bind a callback to the ``<<Changed>>`` virtual event."""
+        return self.bind('<<Changed>>', callback, add="+")
+
+    def off_changed(self, bind_id: str):
+        """Remove a previously registered ``<<Changed>>`` callback."""
+        self.unbind('<<Changed>>', bind_id)
