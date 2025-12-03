@@ -2,8 +2,11 @@ from __future__ import annotations
 
 from tkinter import ttk
 from typing import Any, TypedDict
+
 from typing_extensions import Unpack
+
 from ._internal.wrapper_base import TTKWrapperBase
+from .mixins import configure_delegate
 
 
 class FrameKwargs(TypedDict, total=False):
@@ -45,8 +48,13 @@ class Frame(TTKWrapperBase, ttk.Frame):
             show_border: If true, draws a border around the frame.
             style_options: Optional dict forwarded to the style builder.
         """
-        show_border = kwargs.pop('show_border', False)
-        style_options = kwargs.pop('style_options', {})
-        style_options['show_border'] = show_border
-        super().__init__(master, style_options=style_options, **kwargs)
+        kwargs.update(style_options=self._capture_style_options(['show_border'], kwargs))
+        super().__init__(master, **kwargs)
 
+    @configure_delegate('show_border')
+    def _delegate_show_border(self, value=None):
+        if value is not None:
+            return self.configure_style_options('show_border')
+        else:
+            self.configure_style_options(show_border=True)
+            return self.rebuild_style()

@@ -216,9 +216,9 @@ class Form(Frame):
         return self._textsignals.get(key)
 
     @configure_delegate('data')
-    def _config_data(self, value: Mapping[str, Any] = None):
+    def _delegate_data(self, value: Mapping[str, Any] = None):
         if value is None:
-            return self.data
+            return dict(self._collect_data())
         else:
             self._data = dict(value)
             self._suspend_sync = True

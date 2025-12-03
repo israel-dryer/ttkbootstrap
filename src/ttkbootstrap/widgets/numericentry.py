@@ -186,7 +186,7 @@ class NumericEntry(Field):
             Button, position="after", name="increment", icon="plus", command=self.increment, icon_only=True)
         self.insert_addon(
             Button, position="after", name="decrement", icon="dash", command=self.decrement, icon_only=True)
-        self._config_show_spin_buttons(show_spin_buttons)
+        self._delegate_show_spin_buttons(show_spin_buttons)
 
     @property
     def increment_widget(self):
@@ -207,7 +207,7 @@ class NumericEntry(Field):
         self.entry_widget.event_generate("<<Decrement>>")
 
     @configure_delegate('show_spin_buttons')
-    def _config_show_spin_buttons(self, value: bool = None):
+    def _delegate_show_spin_buttons(self, value: bool = None):
         """Get or set the visibility of spin buttons."""
         if value is None:
             return self._show_spin_buttons

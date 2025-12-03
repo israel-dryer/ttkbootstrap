@@ -1,9 +1,11 @@
 import tkinter as tk
 from typing import Any, Literal
 
+from ttkbootstrap.exceptions import ConfigurationWarning
 from ttkbootstrap.widgets.frame import Frame
-from ttkbootstrap.widgets.scale import Scale
 from ttkbootstrap.widgets.label import Label
+from ttkbootstrap.widgets.mixins import configure_delegate
+from ttkbootstrap.widgets.scale import Scale
 
 
 class LabeledScale(Frame):
@@ -144,6 +146,37 @@ class LabeledScale(Frame):
             value: The new value to set.
         """
         self._variable.set(value)
+
+    @configure_delegate('value')
+    def _delegate_value(self, value=None):
+        if value is not None:
+            return self.value
+        else:
+            self.value = value
+            return None
+
+    @configure_delegate('minvalue')
+    def _delegate_minvalue(self, value=None):
+        if value is not None:
+            return self.cget('from_')
+        else:
+            self.configure(from_=value)
+            return None
+
+    @configure_delegate('maxvalue')
+    def _delegate_maxvalue(self, value=None):
+        if value is not None:
+            return self.cget('to')
+        else:
+            self.configure(to=value)
+            return None
+
+    @configure_delegate('dtype')
+    def _delegate_dtype(self, value=None):
+        if value is None:
+            return self._dtype
+        else:
+            raise ConfigurationWarning('dtype must be configured in the widget constructor')
 
     def _adjust_value(self, *_):
         """Update label text and position to follow the slider handle."""

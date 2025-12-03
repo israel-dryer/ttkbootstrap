@@ -77,18 +77,16 @@ class OptionMenu(Menubutton):
                 show_dropdown_button: Toggle visibility of the dropdown chevron.
                 dropdown_button_icon: Icon name for the chevron; defaults to 'caret-down-fill'.
         """
+        style_options = kwargs.pop('style_options', {})
+        style_options.update(
+            self._capture_style_options(
+                options=['icon_only', 'icon', 'show_dropdown_button', 'dropdown_button_icon'],
+                source=kwargs
+            )
+        )
+
         self._bind_id = None
         self._menu_options = options if options is not None else []
-        self._show_dropdown_button = kwargs.pop('show_dropdown_button', True)
-        self._dropdown_button_icon = kwargs.pop('dropdown_button_icon', 'caret-down-fill')
-        self._style_options = kwargs.pop('style_options', {})
-        self._icon_only = kwargs.pop('icon_only', False)
-        self._style_options.update(
-            show_dropdown_button=self._show_dropdown_button,
-            dropdown_button_icon=self._dropdown_button_icon,
-            icon_only=self._icon_only,
-        )
-        kwargs.update(style_options=self._style_options)
 
         # Store the textvariable if provided, or create a new one
         self._textvariable = kwargs.pop('textvariable', None)
@@ -186,34 +184,19 @@ class OptionMenu(Menubutton):
         return None
 
     @configure_delegate('show_dropdown_button')
-    def _delegate_show_dropdown_button(self, value):
+    def _delegate_show_dropdown_button(self, value=None):
         """Get or set visibility of the dropdown chevron."""
         if value is None:
-            return self._show_dropdown_button
+            return self.configure_style_options('show_dropdown_button')
         else:
-            self._show_dropdown_button = value
-            self._style_options.update(show_dropdown_button=self._show_dropdown_button)
-            self._rebuild_style(self._style_options)
-        return None
+            self.configure_style_options(show_dropdown_button=value)
+            return self.rebuild_style()
 
     @configure_delegate('dropdown_button_icon')
     def _delegate_dropdown_button_icon(self, value):
         """Get or set the dropdown chevron icon name."""
         if value is None:
-            return self._dropdown_button_icon
+            return self.configure_style_options('dropdown_button_icon')
         else:
-            self._dropdown_button_icon = value
-            self._style_options.update(dropdown_button_icon=self._dropdown_button_icon)
-            self._rebuild_style(self._style_options)
-        return None
-
-    @configure_delegate('icon_only')
-    def _delegate_icon_only(self, value):
-        """Get or set the dropdown chevron icon name."""
-        if value is None:
-            return self._icon_only
-        else:
-            self._icon_only = value
-            self._style_options.update(icon_only=self._icon_only)
-            self._rebuild_style(self._style_options)
-        return None
+            self.configure_style_options(dropdown_button_icon=value)
+            return self.rebuild_style()
