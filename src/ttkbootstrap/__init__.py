@@ -86,6 +86,7 @@ from ttkbootstrap.widgets.datepicker import DatePicker as DatePicker
 from ttkbootstrap.widgets.selectbox import SelectBox as SelectBox
 from ttkbootstrap.widgets.timeentry import TimeEntry as TimeEntry
 from ttkbootstrap.widgets.contextmenu import ContextMenu as ContextMenu
+from ttkbootstrap.widgets.dropdownbutton import DropdownButton as DropdownButton
 
 # Import constants from widgets
 from ttkbootstrap.widgets import TTK_WIDGETS, TK_WIDGETS
@@ -120,6 +121,7 @@ __all__ = [
     'Window',
     'DateEntry',
     'DatePicker',
+    'DropdownButton',
     'Field',
     'FloodGauge',
     'LabeledScale',
