@@ -222,8 +222,24 @@ class Meter(Frame):
 
     # ------ Configuration Delegates ------
 
+    @configure_delegate('value')
+    def _delegate_value(self, value=None):
+        if value is not None:
+            return self.value
+        else:
+            self.value = value
+            return None
+
+    @configure_delegate('subtitle')
+    def _delegate_subtitle(self, value=None):
+        if value is not None:
+            return self.subtitle
+        else:
+            self.subtitle = value
+            return None
+
     @configure_delegate('bootstyle')
-    def _config_bootstyle(self, value=None):
+    def _delegate_bootstyle(self, value=None):
         if value is None:
             return self._bootstyle
         else:
@@ -233,7 +249,7 @@ class Meter(Frame):
         return None
 
     @configure_delegate('value')
-    def _config_value(self, value=None):
+    def _delegate_value(self, value=None):
         if value is None:
             return self.value
         else:
@@ -241,7 +257,7 @@ class Meter(Frame):
         return None
 
     @configure_delegate('minvalue')
-    def _config_minvalue(self, value=None):
+    def _delegate_minvalue(self, value=None):
         if value is None:
             return self._minvalue
         else:
@@ -250,7 +266,7 @@ class Meter(Frame):
         return None
 
     @configure_delegate('maxvalue')
-    def _config_maxvalue(self, value=None):
+    def _delegate_maxvalue(self, value=None):
         if value is None:
             return self._maxvalue
         else:
@@ -259,7 +275,7 @@ class Meter(Frame):
         return None
 
     @configure_delegate('value_format')
-    def _config_value_format(self, value=None):
+    def _delegate_value_format(self, value=None):
         if value is None:
             return self._value_format
         else:
@@ -268,7 +284,7 @@ class Meter(Frame):
         return None
 
     @configure_delegate('value_prefix')
-    def _config_value_prefix(self, value=None):
+    def _delegate_value_prefix(self, value=None):
         if value is None:
             return self._value_prefix
         else:
@@ -277,7 +293,7 @@ class Meter(Frame):
         return None
 
     @configure_delegate('value_suffix')
-    def _config_value_suffix(self, value=None):
+    def _delegate_value_suffix(self, value=None):
         if value is None:
             return self._value_suffix
         else:
@@ -286,7 +302,7 @@ class Meter(Frame):
         return None
 
     @configure_delegate('value_font')
-    def _config_value_font(self, value=None):
+    def _delegate_value_font(self, value=None):
         if value is None:
             return self._value_font
         else:
@@ -295,7 +311,7 @@ class Meter(Frame):
         return None
 
     @configure_delegate('dtype')
-    def _config_dtype(self, value=None):
+    def _delegate_dtype(self, value=None):
         if value is None:
             return self._dtype
         else:
@@ -303,7 +319,7 @@ class Meter(Frame):
         return None
 
     @configure_delegate('secondary_font')
-    def _config_secondary_font(self, value=None):
+    def _delegate_secondary_font(self, value=None):
         if value is None:
             return self._secondary_font
         else:
@@ -312,7 +328,7 @@ class Meter(Frame):
         return None
 
     @configure_delegate('secondary_style')
-    def _config_secondary_style(self, value=None):
+    def _delegate_secondary_style(self, value=None):
         if value is None:
             return self._secondary_style
         else:
@@ -322,7 +338,7 @@ class Meter(Frame):
         return None
 
     @configure_delegate('subtitle')
-    def _config_subtitle(self, value=None):
+    def _delegate_subtitle(self, value=None):
         if value is None:
             return self.subtitle
         else:
@@ -331,7 +347,7 @@ class Meter(Frame):
         return None
 
     @configure_delegate('size')
-    def _config_size(self, value=None):
+    def _delegate_size(self, value=None):
         if value is None:
             return self._size
         else:
@@ -342,7 +358,7 @@ class Meter(Frame):
         return None
 
     @configure_delegate('thickness')
-    def _config_thickness(self, value=None):
+    def _delegate_thickness(self, value=None):
         if value is None:
             return self._thickness
         else:
@@ -352,7 +368,7 @@ class Meter(Frame):
         return None
 
     @configure_delegate('indicator_width')
-    def _config_indicator_width(self, value=None):
+    def _delegate_indicator_width(self, value=None):
         if value is None:
             return self._indicator_width
         else:
@@ -361,7 +377,7 @@ class Meter(Frame):
         return None
 
     @configure_delegate('segment_width')
-    def _config_segment_width(self, value=None):
+    def _delegate_segment_width(self, value=None):
         if value is None:
             return self._segment_width
         else:
@@ -371,7 +387,7 @@ class Meter(Frame):
         return None
 
     @configure_delegate('arc_range')
-    def _config_arc_range(self, value=None):
+    def _delegate_arc_range(self, value=None):
         if value is None:
             return self._arc_range
         else:
@@ -381,7 +397,7 @@ class Meter(Frame):
         return None
 
     @configure_delegate('arc_offset')
-    def _config_arc_offset(self, value=None):
+    def _delegate_arc_offset(self, value=None):
         if value is None:
             return self._arc_offset
         else:
@@ -391,7 +407,7 @@ class Meter(Frame):
         return None
 
     @configure_delegate('meter_type')
-    def _config_meter_type(self, value=None):
+    def _delegate_meter_type(self, value=None):
         if value is None:
             return self._meter_type
         else:
@@ -401,7 +417,7 @@ class Meter(Frame):
         return None
 
     @configure_delegate('show_text')
-    def _config_show_text(self, value=None):
+    def _delegate_show_text(self, value=None):
         if value is None:
             return self._show_text
         else:
@@ -410,7 +426,7 @@ class Meter(Frame):
         return None
 
     @configure_delegate('interactive')
-    def _config_interactive(self, value=None):
+    def _delegate_interactive(self, value=None):
         if value is None:
             return self._interactive
         else:
@@ -419,7 +435,7 @@ class Meter(Frame):
         return None
 
     @configure_delegate('step_size')
-    def _config_step_size(self, value=None):
+    def _delegate_step_size(self, value=None):
         if value is None:
             return self._step_size
         else:
