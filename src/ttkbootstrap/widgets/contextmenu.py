@@ -13,6 +13,8 @@ from ttkbootstrap.widgets.frame import Frame
 from ttkbootstrap.widgets.radiobutton import Radiobutton
 from ttkbootstrap.widgets.separator import Separator
 
+# TODO expose a toplevel configuration API
+# TODO expose a menu item configuration API
 
 class ContextMenuItem:
     """Data class for context menu items.
@@ -163,6 +165,10 @@ class ContextMenu:
             callback: Function to call when an item is clicked
         """
         self._on_item_click_callback = callback
+
+    def off_item_click(self):
+        """Unregister callback for item clicks."""
+        self._on_item_click_callback = None
 
     def add_command(self, text: str = None, icon: str = None, command: Callable = None):
         """Add a command button to the menu.
