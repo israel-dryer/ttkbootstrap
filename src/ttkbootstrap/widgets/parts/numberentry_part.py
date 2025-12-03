@@ -323,7 +323,10 @@ class NumberEntryPart(TextEntryPart):
 
     @configure_delegate('minvalue')
     def _delegate_minvalue(self, value: Union[int, float]):
-        """Set the minimum allowed value and re-validate current value."""
+        """Get or set the minimum allowed value and re-validate current value."""
+        if value is None:
+            return self._minvalue
+
         self._minvalue = value
         if self._value is not None:
             self._value = self._apply_bounds(float(self._value))
@@ -331,7 +334,10 @@ class NumberEntryPart(TextEntryPart):
 
     @configure_delegate('maxvalue')
     def _delegate_maxvalue(self, value: Union[int, float]):
-        """Set the maximum allowed value and re-validate current value."""
+        """Get or set the maximum allowed value and re-validate current value."""
+        if value is None:
+            return self._maxvalue
+
         self._maxvalue = value
         if self._value is not None:
             self._value = self._apply_bounds(float(self._value))
@@ -339,10 +345,16 @@ class NumberEntryPart(TextEntryPart):
 
     @configure_delegate('increment')
     def _delegate_increment(self, value: Union[int, float]):
-        """Set the step increment value."""
+        """Get or set the step increment value."""
+        if value is None:
+            return self._increment
+
         self._increment = value
 
     @configure_delegate('wrap')
     def _delegate_wrap(self, value: bool):
-        """Set the wrap setting."""
+        """Get or set the wrap setting."""
+        if value is None:
+            return self._wrap
+
         self._wrap = bool(value)
