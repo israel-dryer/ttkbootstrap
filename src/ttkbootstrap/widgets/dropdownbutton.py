@@ -4,7 +4,6 @@ from typing import Any, Callable, Literal, Optional, TYPE_CHECKING, TypedDict
 
 from typing_extensions import Unpack
 
-from ttkbootstrap.style.bootstyle import Bootstyle
 from ttkbootstrap.widgets.contextmenu import ContextMenu, ContextMenuItem
 from ttkbootstrap.widgets.menubutton import Menubutton
 from ttkbootstrap.widgets.mixins import configure_delegate
@@ -65,19 +64,20 @@ class DropdownButton(Menubutton):
                 show_dropdown_button: Show/hide the chevron.
                 dropdown_button_icon: Icon name for the chevron.
         """
+        style_options = kwargs.pop('style_options', {})
+        style_options.update(
+            self._capture_style_options(
+                options=['icon', 'icon_only', 'show_dropdown_button', 'dropdown_button_icon'],
+                source=kwargs
+            )
+        )
+        style_options.setdefault('show_dropdown_button', True)
+        style_options.setdefault('dropdown_button_icon', 'caret-down-fill')
+        self._style_options = style_options
+        kwargs.update(style_options=self._style_options)
         self._item_click_callback = None
         self._items = items if items else []
-        self._show_dropdown_button = kwargs.pop('show_dropdown_button', True)
-        self._dropdown_button_icon = kwargs.pop('dropdown_button_icon', 'caret-down-fill')
-        self._style_options = kwargs.pop('style_options', {})
-        self._icon_only = kwargs.pop('icon_only', False)
         self._popdown_options = kwargs.pop('popdown_options', {})
-        self._style_options.update(
-            show_dropdown_button=self._show_dropdown_button,
-            dropdown_button_icon=self._dropdown_button_icon,
-            icon_only=self._icon_only,
-        )
-        kwargs.update(style_options=self._style_options)
 
         # Store the textvariable if provided, or create a new one
         super().__init__(master, text=text, **kwargs)
@@ -123,38 +123,19 @@ class DropdownButton(Menubutton):
         self._context_menu.show()
 
     @configure_delegate('show_dropdown_button')
-    def _delegate_show_dropdown_button(self, value):
+    def _delegate_show_dropdown_button(self, value=None):
         """Get or set visibility of the dropdown chevron."""
         if value is None:
-            return self._show_dropdown_button
+            return self.configure_style_options('show_dropdown_button')
         else:
-            self._show_dropdown_button = value
-            self._style_options.update(show_dropdown_button=self._show_dropdown_button)
-            self._rebuild_dropdown_style()
-        return None
+            self.configure_style_options(show_dropdown_button=value)
+            return self.rebuild_style()
 
     @configure_delegate('dropdown_button_icon')
-    def _delegate_dropdown_button_icon(self, value):
+    def _delegate_dropdown_button_icon(self, value=None):
         """Get or set the dropdown chevron icon name."""
         if value is None:
-            return self._dropdown_button_icon
+            return self.configure_style_options('dropdown_button_icon')
         else:
-            self._dropdown_button_icon = value
-            self._style_options.update(dropdown_button_icon=self._dropdown_button_icon)
-            self._rebuild_dropdown_style()
-        return None
-
-    @configure_delegate('icon_only')
-    def _delegate_icon_only(self, value):
-        """Get or set icon-only mode on the button content."""
-        if value is None:
-            return self._icon_only
-        else:
-            self._icon_only = value
-            self._style_options.update(icon_only=self._icon_only)
-            self._rebuild_dropdown_style()
-        return None
-
-    def _rebuild_dropdown_style(self):
-        """Rebuild style with current bootstyle and style_options."""
-        self._rebuild_style(self._style_options)
+            self.configure_style_options(dropdown_button_icon=value)
+            return self.rebuild_style()
