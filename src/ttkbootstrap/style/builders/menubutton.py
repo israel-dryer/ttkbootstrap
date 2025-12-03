@@ -11,21 +11,100 @@ from ttkbootstrap.style.element import Element, ElementImage
 from ttkbootstrap.style.utility import create_transparent_image, recolor_image
 
 
+def _menubutton_layout(ttk_style: str, show_dropdown: bool = True) -> Element:
+    """Create the layout for a menubutton."""
+    children = [Element("Menubutton.label", sticky="", side="left")]
+
+    if show_dropdown:
+        children.extend(
+            [
+                Element(f"{ttk_style}.chevron", side="right", sticky=""),
+                Element(f'{ttk_style}.spacer', side="right", sticky=""),
+            ])
+
+    return Element(f"{ttk_style}.border", sticky="nsew").children(
+        [
+            Element("Menubutton.padding", sticky="nsew").children(children)
+        ])
+
+
+def _create_chevron_images(
+        b: BootstyleBuilderTTk, ttk_style: str, foreground: str, disabled: str, active: str = None,
+        icon_name: str = 'caret-down-fill'):
+    """Create chevron icon images for dropdown indicator.
+
+    Args:
+        b: Style builder instance
+        ttk_style: TTK style name
+        foreground: Normal foreground color
+        disabled: Disabled color
+        active: Active/hover color (optional)
+        icon_name: Name of the icon to use (default: 'caret-down-fill')
+    """
+    icon = use_icon_provider()
+    normal_chevron = icon(icon_name, size=b.scale(18), color=foreground).image
+    disabled_chevron = icon(icon_name, size=b.scale(18), color=disabled).image
+
+    state_specs = [
+        ('disabled', disabled_chevron),
+    ]
+
+    if active:
+        active_chevron = icon(icon_name, size=b.scale(18), color=active).image
+        state_specs.extend(
+            [
+                ('hover !disabled', active_chevron),
+                ('pressed !disabled', active_chevron),
+            ])
+
+    state_specs.append(('', normal_chevron))
+
+    b.create_style_element_image(
+        ElementImage(f'{ttk_style}.chevron', normal_chevron).state_specs(state_specs)
+    )
+
+
+def _create_spacer(b: BootstyleBuilderTTk, ttk_style: str):
+    """Create a small spacer element."""
+    spacer_img = create_transparent_image(b.scale(8), b.scale(1))
+    b.create_style_element_image(ElementImage(f'{ttk_style}.spacer', spacer_img, sticky="ew", width=b.scale(8)))
+
+
+def _apply_icon_mapping(b: BootstyleBuilderTTk, options: dict, state_spec: dict) -> dict:
+    """Apply icon mapping if an icon is provided in options."""
+    icon = options.get('icon')
+    if icon is None:
+        return state_spec
+
+    icon = b.normalize_icon_spec(icon)
+    state_spec['image'] = b.map_stateful_icons(icon, state_spec['foreground'])
+    return state_spec
+
+
 @BootstyleBuilderTTk.register_builder('solid', 'TMenubutton')
 @BootstyleBuilderTTk.register_builder('default', 'TMenubutton')
 def build_solid_menubutton_style(b: BootstyleBuilderTTk, ttk_style: str, color: str = None, **options):
+    """Configure the solid menubutton style.
+
+    Style options include:
+        * show_dropdown_button: Show/hide the dropdown chevron (default: True)
+        * dropdown_button_icon: Icon name for the dropdown indicator (default: 'caret-down-fill')
+        * icon: Optional icon specification for the button content
+    """
     accent_token = color or 'primary'
     surface_token = options.get('surface_color', 'background')
+    show_dropdown = options.get('show_dropdown_button', True)
+    dropdown_icon = options.get('dropdown_button_icon', 'caret-down-fill')
 
     surface = b.color(surface_token)
     normal = b.color(accent_token)
     foreground = b.on_color(normal)
-    foreground_disabled = b.disabled('text')
     pressed = b.pressed(normal)
     hovered = focused = b.active(normal)
     focused_border = b.focus_border(normal)
     disabled = b.disabled()
     focused_ring = b.focus_ring(normal, surface)
+    foreground_disabled = b.disabled('text', disabled)
 
     normal_img = recolor_image('button', normal, normal, surface)
     pressed_img = recolor_image('button', pressed, pressed, surface)
@@ -35,23 +114,14 @@ def build_solid_menubutton_style(b: BootstyleBuilderTTk, ttk_style: str, color: 
     focused_pressed_img = recolor_image('button', pressed, focused_border, focused_ring)
     disabled_img = recolor_image('button', disabled, disabled, surface, surface)
 
-    spacer_img = create_transparent_image(8, 1)
-    b.create_style_element_image(ElementImage(f'{ttk_style}.spacer', spacer_img, sticky="ew"))
-
-    # chevron images
-    icon = use_icon_provider()
-    normal_chevron_img = icon('caret-down-fill', size=b.scale(14), color=foreground).image
-    disabled_chevron_img = icon('caret-down-fill', size=b.scale(14), color=disabled).image
-    b.create_style_element_image(
-        ElementImage(f'{ttk_style}.chevron', normal_chevron_img).state_specs(
-            [
-                ('disabled', disabled_chevron_img),
-                ('', normal_chevron_img),
-            ]))
+    if show_dropdown:
+        _create_spacer(b, ttk_style)
+        _create_chevron_images(b, ttk_style, foreground, disabled, icon_name=dropdown_icon)
 
     b.create_style_element_image(
         ElementImage(
-            f'{ttk_style}.border', normal_img, sticky="nsew", border=8, padding=8).state_specs(
+            f'{ttk_style}.border', normal_img, sticky="nsew", border=b.scale(10),
+            padding=b.scale(10)).state_specs(
             [
                 ('disabled', disabled_img),
                 ('focus pressed', focused_pressed_img),
@@ -61,16 +131,7 @@ def build_solid_menubutton_style(b: BootstyleBuilderTTk, ttk_style: str, color: 
                 ('hover', hovered_img),
             ]))
 
-    b.create_style_layout(
-        ttk_style, Element(f"{ttk_style}.border", sticky="nsew").children(
-            [
-                Element("Menubutton.padding", sticky="nsew").children(
-                    [
-                        Element("Menubutton.label", sticky="", side="left"),
-                        Element(f"{ttk_style}.chevron", side="right", sticky=""),
-                        Element(f'{ttk_style}.spacer', side="right", sticky=""),
-                    ])
-            ]))
+    b.create_style_layout(ttk_style, _menubutton_layout(ttk_style, show_dropdown))
 
     b.configure_style(
         ttk_style,
@@ -79,7 +140,9 @@ def build_solid_menubutton_style(b: BootstyleBuilderTTk, ttk_style: str, color: 
         stipple="gray12",
         relief='flat',
         font="body",
+        takefocus=True,
         padding=b.scale((8, 0, 4, 0)),
+        anchor="w"
     )
 
     state_spec = dict(
@@ -87,24 +150,21 @@ def build_solid_menubutton_style(b: BootstyleBuilderTTk, ttk_style: str, color: 
         background=[('disabled', disabled)]
     )
 
-    # map icon if available
-    icon = options.get('icon')
-
-    if icon is not None:
-        icon = b.normalize_icon_spec(icon)
-        state_spec['image'] = b.map_stateful_icons(icon, state_spec['foreground'])
-
+    state_spec = _apply_icon_mapping(b, options, state_spec)
     b.map_style(ttk_style, **state_spec)
 
 
 @BootstyleBuilderTTk.register_builder('outline', 'TMenubutton')
 def build_outline_menubutton_style(b: BootstyleBuilderTTk, ttk_style: str, color: str = None, **options):
+    """Configure the outline menubutton style."""
     accent_token = color or 'primary'
     surface_token = options.get('surface_color', 'background')
+    show_dropdown = options.get('show_dropdown_button', True)
+    dropdown_icon = options.get('dropdown_button_icon', 'caret-down-fill')
 
     surface = b.color(surface_token)
     foreground_normal = b.color(accent_token)
-    foreground_disabled = b.disabled('text')
+    foreground_disabled = b.disabled('text', surface)
     foreground_active = b.on_color(foreground_normal)
 
     disabled = foreground_disabled
@@ -123,26 +183,14 @@ def build_outline_menubutton_style(b: BootstyleBuilderTTk, ttk_style: str, color
     focused_pressed_img = recolor_image('button', pressed, focused_border, focused_ring)
     disabled_img = recolor_image('button', surface, disabled, surface, surface)
 
-    spacer_img = create_transparent_image(b.scale(8), b.scale(1))
-    b.create_style_element_image(ElementImage(f'{ttk_style}.spacer', spacer_img, sticky="ew"))
-
-    # chevron images
-    icon = use_icon_provider()
-    normal_chevron_img = icon('caret-down-fill', size=b.scale(14), color=foreground_normal).image
-    pressed_chevron_img = icon('caret-down-fill', size=b.scale(14), color=foreground_active).image
-    disabled_chevron_img = icon('caret-down-fill', size=b.scale(14), color=disabled).image
-    b.create_style_element_image(
-        ElementImage(f'{ttk_style}.chevron', normal_chevron_img).state_specs(
-            [
-                ('disabled', disabled_chevron_img),
-                ('hover !disabled', pressed_chevron_img),
-                ('pressed !disabled', pressed_chevron_img),
-                ('', normal_chevron_img),
-            ]))
+    if show_dropdown:
+        _create_spacer(b, ttk_style)
+        _create_chevron_images(b, ttk_style, foreground_normal, disabled, foreground_active, dropdown_icon)
 
     b.create_style_element_image(
         ElementImage(
-            f'{ttk_style}.border', normal_img, sticky="nsew", border=8, padding=8).state_specs(
+            f'{ttk_style}.border', normal_img, sticky="nsew", border=b.scale(10),
+            padding=b.scale(10)).state_specs(
             [
                 ('disabled', disabled_img),
                 ('focus pressed', focused_pressed_img),
@@ -152,29 +200,7 @@ def build_outline_menubutton_style(b: BootstyleBuilderTTk, ttk_style: str, color
                 ('hover', hovered_img),
             ]))
 
-    b.create_style_element_image(
-        ElementImage(
-            f'{ttk_style}.border', normal_img, sticky="nsew", border=8, padding=8).state_specs(
-            [
-                ('disabled', disabled_img),
-                ('focus pressed', focused_pressed_img),
-                ('focus hover', focused_hovered_img),
-                ('focus', focused_img),
-                ('pressed', pressed_img),
-                ('hover', hovered_img),
-            ])
-    )
-
-    b.create_style_layout(
-        ttk_style, Element(f"{ttk_style}.border", sticky="nsew").children(
-            [
-                Element("Menubutton.padding", sticky="nsew").children(
-                    [
-                        Element("Menubutton.label", sticky="", side="left"),
-                        Element(f"{ttk_style}.chevron", side="right", sticky=""),
-                        Element(f'{ttk_style}.spacer', side="right", sticky=""),
-                    ])
-            ]))
+    b.create_style_layout(ttk_style, _menubutton_layout(ttk_style, show_dropdown))
 
     b.configure_style(
         ttk_style,
@@ -183,7 +209,9 @@ def build_outline_menubutton_style(b: BootstyleBuilderTTk, ttk_style: str, color
         relief='flat',
         stipple="gray12",
         font="body",
-        padding=b.scale((8, 0, 4, 0))
+        takefocus=True,
+        padding=b.scale((8, 0, 4, 0)),
+        anchor="w"
     )
 
     state_spec = dict(
@@ -192,69 +220,45 @@ def build_outline_menubutton_style(b: BootstyleBuilderTTk, ttk_style: str, color
             ('focus', foreground_active),
             ('hover', foreground_active),
             ('', foreground_normal)
-        ], background=[('disabled', surface)]
+        ],
+        background=[('disabled', surface)]
     )
 
-    # map icon if available
-    icon = options.get('icon')
-
-    if icon is not None:
-        icon = b.normalize_icon_spec(icon)
-        state_spec['image'] = b.map_stateful_icons(icon, state_spec['foreground'])
-
+    state_spec = _apply_icon_mapping(b, options, state_spec)
     b.map_style(ttk_style, **state_spec)
 
 
 @BootstyleBuilderTTk.register_builder('text', 'TMenubutton')
 def build_text_menubutton_style(b: BootstyleBuilderTTk, ttk_style: str, color: str = None, **options):
+    """Configure the text menubutton style."""
     accent_token = color or 'foreground'
     surface_token = options.get('surface_color', 'background')
+    show_dropdown = options.get('show_dropdown_button', True)
+    dropdown_icon = options.get('dropdown_button_icon', 'caret-down-fill')
 
     surface = b.color(surface_token)
     foreground_normal = b.color(accent_token)
-    foreground_disabled = b.disabled('text')
-
-    disabled = foreground_disabled
-    focused_ring = b.focus_ring(foreground_normal, surface)
+    foreground_disabled = b.disabled('text', surface)
 
     # button element images
-    normal_img = recolor_image('button', surface, surface, surface)
-    focused_img = recolor_image('button', surface, surface, focused_ring)
-    disabled_img = recolor_image('button', surface, disabled, surface, surface)
+    normal_img = recolor_image('button', surface, surface, surface, surface)
+    focused_img = recolor_image('button', surface, surface, surface, surface)
+    disabled_img = recolor_image('button', surface, surface, surface, surface)
 
-    spacer_img = create_transparent_image(b.scale(8), b.scale(1))
-    b.create_style_element_image(ElementImage(f'{ttk_style}.spacer', spacer_img, sticky="ew"))
-
-    # chevron images
-    icon = use_icon_provider()
-    normal_chevron_img = icon('caret-down-fill', size=b.scale(14), color=foreground_normal).image
-    disabled_chevron_img = icon('caret-down-fill', size=b.scale(14), color=disabled).image
-    b.create_style_element_image(
-        ElementImage(f'{ttk_style}.chevron', normal_chevron_img).state_specs(
-            [
-                ('disabled', disabled_chevron_img),
-                ('', normal_chevron_img),
-            ]))
+    if show_dropdown:
+        _create_spacer(b, ttk_style)
+        _create_chevron_images(b, ttk_style, foreground_normal, foreground_disabled, icon_name=dropdown_icon)
 
     b.create_style_element_image(
         ElementImage(
-            f'{ttk_style}.border', normal_img, sticky="nsew", border=8, padding=8).state_specs(
+            f'{ttk_style}.border', normal_img, sticky="nsew", border=b.scale(10),
+            padding=b.scale(10)).state_specs(
             [
                 ('disabled', disabled_img),
                 ('focus', focused_img),
-            ])
-    )
-
-    b.create_style_layout(
-        ttk_style, Element(f"{ttk_style}.border", sticky="nsew").children(
-            [
-                Element("Menubutton.padding", sticky="nsew").children(
-                    [
-                        Element("Menubutton.label", sticky="", side="left"),
-                        Element(f"{ttk_style}.chevron", side="right", sticky=""),
-                        Element(f'{ttk_style}.spacer', side="right", sticky=""),
-                    ])
             ]))
+
+    b.create_style_layout(ttk_style, _menubutton_layout(ttk_style, show_dropdown))
 
     b.configure_style(
         ttk_style,
@@ -263,34 +267,34 @@ def build_text_menubutton_style(b: BootstyleBuilderTTk, ttk_style: str, color: s
         relief='flat',
         stipple="gray12",
         font="body",
-        padding=b.scale((8, 0, 4, 0))
+        takefocus=True,
+        padding=b.scale((8, 0, 4, 0)),
+        anchor="w"
     )
 
     state_spec = dict(
         foreground=[
             ('disabled', foreground_disabled),
             ('', foreground_normal)
-        ], background=[('disabled', surface)]
+        ],
+        background=[('disabled', surface)]
     )
 
-    # map icon if available
-    icon = options.get('icon')
-
-    if icon is not None:
-        icon = b.normalize_icon_spec(icon)
-        state_spec['image'] = b.map_stateful_icons(icon, state_spec['foreground'])
-
+    state_spec = _apply_icon_mapping(b, options, state_spec)
     b.map_style(ttk_style, **state_spec)
 
 
 @BootstyleBuilderTTk.register_builder('ghost', 'TMenubutton')
-def build_ghost_button_style(b: BootstyleBuilderTTk, ttk_style: str, color: str = None, **options):
+def build_ghost_menubutton_style(b: BootstyleBuilderTTk, ttk_style: str, color: str = None, **options):
+    """Configure the ghost menubutton style."""
     accent_token = color or 'primary'
     surface_token = options.get('surface_color', 'background')
+    show_dropdown = options.get('show_dropdown_button', True)
+    dropdown_icon = options.get('dropdown_button_icon', 'caret-down-fill')
 
     surface = b.color(surface_token)
     foreground_normal = b.color(accent_token)
-    foreground_disabled = b.disabled('text')
+    foreground_disabled = b.disabled('text', surface)
 
     normal = surface
     pressed = b.subtle(accent_token, surface)
@@ -306,23 +310,14 @@ def build_ghost_button_style(b: BootstyleBuilderTTk, ttk_style: str, color: str 
     focused_pressed_img = recolor_image('button', pressed, focused, focused_ring, surface)
     disabled_img = recolor_image('button', surface, surface, surface, surface)
 
-    spacer_img = create_transparent_image(b.scale(8), b.scale(1))
-    b.create_style_element_image(ElementImage(f'{ttk_style}.spacer', spacer_img, sticky="ew"))
-
-    # chevron images
-    icon = use_icon_provider()
-    normal_chevron_img = icon('caret-down-fill', size=b.scale(14), color=foreground_normal).image
-    disabled_chevron_img = icon('caret-down-fill', size=b.scale(14), color=foreground_disabled).image
-    b.create_style_element_image(
-        ElementImage(f'{ttk_style}.chevron', normal_chevron_img).state_specs(
-            [
-                ('disabled', disabled_chevron_img),
-                ('', normal_chevron_img),
-            ]))
+    if show_dropdown:
+        _create_spacer(b, ttk_style)
+        _create_chevron_images(b, ttk_style, foreground_normal, foreground_disabled, icon_name=dropdown_icon)
 
     b.create_style_element_image(
         ElementImage(
-            f'{ttk_style}.border', normal_img, sticky="nsew", border=8, padding=8).state_specs(
+            f'{ttk_style}.border', normal_img, sticky="nsew", border=b.scale(10),
+            padding=b.scale(10)).state_specs(
             [
                 ('disabled', disabled_img),
                 ('focus pressed', focused_pressed_img),
@@ -330,19 +325,9 @@ def build_ghost_button_style(b: BootstyleBuilderTTk, ttk_style: str, color: str 
                 ('focus', focused_img),
                 ('pressed', pressed_img),
                 ('hover', hovered_img),
-            ])
-    )
-
-    b.create_style_layout(
-        ttk_style, Element(f"{ttk_style}.border", sticky="nsew").children(
-            [
-                Element("Menubutton.padding", sticky="nsew").children(
-                    [
-                        Element("Menubutton.label", sticky="", side="left"),
-                        Element(f"{ttk_style}.chevron", side="right", sticky=""),
-                        Element(f'{ttk_style}.spacer', side="right", sticky=""),
-                    ])
             ]))
+
+    b.create_style_layout(ttk_style, _menubutton_layout(ttk_style, show_dropdown))
 
     b.configure_style(
         ttk_style,
@@ -351,7 +336,9 @@ def build_ghost_button_style(b: BootstyleBuilderTTk, ttk_style: str, color: str 
         relief='flat',
         stipple="gray12",
         font="body",
-        padding=b.scale((8, 0, 4, 0))
+        takefocus=True,
+        padding=b.scale((8, 0, 4, 0)),
+        anchor="w"
     )
 
     state_spec = dict(
@@ -359,11 +346,5 @@ def build_ghost_button_style(b: BootstyleBuilderTTk, ttk_style: str, color: str 
         background=[('disabled', surface)]
     )
 
-    # map icon if available
-    icon = options.get('icon')
-
-    if icon is not None:
-        icon = b.normalize_icon_spec(icon)
-        state_spec['image'] = b.map_stateful_icons(icon, state_spec['foreground'])
-
+    state_spec = _apply_icon_mapping(b, options, state_spec)
     b.map_style(ttk_style, **state_spec)

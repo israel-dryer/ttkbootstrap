@@ -22,6 +22,8 @@ from ttkbootstrap.style.bootstyle import (
     extract_variant_from_style,
 )
 from ttkbootstrap.style.token_maps import ORIENT_CLASSES
+from ttkbootstrap.style.bootstyle_builder_ttk import BootstyleBuilderTTk
+from ttkbootstrap.style.style import use_style
 from ttkbootstrap.widgets.mixins.configure_mixin import (
     ConfigureDelegationMixin,
     configure_delegate,
@@ -84,6 +86,29 @@ class TTKWrapperBase(FontMixin, ConfigureDelegationMixin):
         if key in ("bootstyle", "style") and getattr(self, "__class__", None).__name__ != "OptionMenu":
             return self.configure(cnf=key)
         return self._ttk_base.__getitem__(self, key)  # type: ignore[misc]
+
+    def _rebuild_style(self, style_options: dict[str, Any] | None = None):
+        """Recreate the widget's current style with updated style options.
+
+        This is useful when runtime style_options change (e.g., showing/hiding
+        dropdown chevrons) and you need the builder to regenerate assets.
+        """
+        style_name = self.cget("style") or self.winfo_class()
+        style_instance = use_style()
+        if style_instance is None:
+            return
+
+        widget_class = self.winfo_class()
+        color = extract_color_from_style(style_name, default=None)
+        variant = extract_variant_from_style(style_name) or BootstyleBuilderTTk.get_default_variant(widget_class)
+
+        style_instance.create_style(
+            widget_class=widget_class,
+            variant=variant,
+            ttk_style=style_name,
+            color=color,
+            options=style_options or {},
+        )
 
     # ----- Built-in delegated handlers -----
     @configure_delegate("bootstyle")
