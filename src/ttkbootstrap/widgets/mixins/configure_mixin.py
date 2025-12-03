@@ -111,4 +111,76 @@ class ConfigureDelegationMixin:
         return super().cget(key)
 
 
-__all__ = ["configure_delegate", "ConfigureDelegationMixin"]
+class CustomConfigMixin(ConfigureDelegationMixin):
+    """Tk-like configure/cget API for non-tkinter classes.
+
+    Stores arbitrary options locally while still honoring @configure_delegate
+    handlers for custom keys. Useful for helper classes that wrap tkinter
+    widgets but do not inherit from them directly.
+    """
+
+    def __init__(self, *args, **kwargs) -> None:
+        self._custom_config_store = {}
+        super().__init__(*args, **kwargs)
+
+    def _all_option_keys(self):
+        """Return all known option keys."""
+        return set(self._custom_config_store.keys()) | set(self._configure_delegate_map.keys())
+
+    def configure(self, cnf=None, **kwargs):
+        """Set or query options using a tkinter-compatible shape."""
+        # allow dict passthrough like tkinter
+        if isinstance(cnf, dict):
+            kwargs.update(cnf)
+            cnf = None
+
+        # Handle delegated setters first
+        if kwargs:
+            for _k in list(kwargs.keys()):
+                if _k in self._configure_delegate_map:
+                    if self._config_delegate_set(_k, kwargs[_k]):
+                        kwargs.pop(_k, None)
+
+        # Store any remaining options
+        for key, value in kwargs.items():
+            self._custom_config_store[key] = value
+
+        # Getter semantics
+        if cnf is None:
+            return {
+                key: (key, key, key.capitalize(), None, self.cget(key))
+                for key in self._all_option_keys()
+            }
+
+        if isinstance(cnf, str):
+            return (cnf, cnf, cnf.capitalize(), None, self.cget(cnf))
+
+        return None
+
+    config = configure
+
+    def __setitem__(self, key, value):
+        """Set option via dictionary style."""
+        if key in self._configure_delegate_map:
+            if self._config_delegate_set(key, value):
+                return
+        self._custom_config_store[key] = value
+
+    def __getitem__(self, key):
+        """Get option via dictionary style."""
+        if key in self._configure_delegate_map:
+            handled, value = self._config_delegate_get(key)
+            if handled:
+                return value
+        return self._custom_config_store.get(key)
+
+    def cget(self, key):
+        """Return the current value for an option."""
+        if key in self._configure_delegate_map:
+            handled, value = self._config_delegate_get(key)
+            if handled:
+                return value
+        return self._custom_config_store.get(key)
+
+
+__all__ = ["configure_delegate", "ConfigureDelegationMixin", "CustomConfigMixin"]
