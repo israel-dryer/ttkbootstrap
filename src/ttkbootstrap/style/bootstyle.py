@@ -155,6 +155,10 @@ def extract_color_from_style(ttk_style: str, default: str = 'primary') -> str:
     """Extract color token from TTK style name."""
     parts = ttk_style.split('.')
 
+    # Skip custom prefix if present (e.g., bs[hash] or custom_xyz)
+    if parts and (parts[0].startswith('bs[') or parts[0].startswith('custom_')):
+        parts = parts[1:]
+
     for part in parts:
         if part.lower() in COLOR_TOKENS:
             return part.lower()
@@ -165,6 +169,10 @@ def extract_color_from_style(ttk_style: str, default: str = 'primary') -> str:
 def extract_variant_from_style(ttk_style: str) -> Optional[str]:
     """Extract variant name from TTK style name."""
     parts = ttk_style.split('.')
+
+    # Skip custom prefix if present (e.g., bs[hash] or custom_xyz)
+    if parts and (parts[0].startswith('bs[') or parts[0].startswith('custom_')):
+        parts = parts[1:]
 
     for part in parts:
         part_lower = part.lower()

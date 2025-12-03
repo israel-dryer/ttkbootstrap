@@ -92,23 +92,48 @@ class TTKWrapperBase(FontMixin, ConfigureDelegationMixin):
 
         This is useful when runtime style_options change (e.g., showing/hiding
         dropdown chevrons) and you need the builder to regenerate assets.
+
+        Generates a new style name with the correct hash based on the new
+        style_options, then applies it to the widget.
         """
-        style_name = self.cget("style") or self.winfo_class()
-        style_instance = use_style()
-        if style_instance is None:
-            return
-
         widget_class = self.winfo_class()
-        color = extract_color_from_style(style_name, default=None)
-        variant = extract_variant_from_style(style_name) or BootstyleBuilderTTk.get_default_variant(widget_class)
 
-        style_instance.create_style(
+        # Extract current bootstyle tokens from the current style
+        current_style = self._ttk_base.cget(self, "style")  # type: ignore[misc]
+        color = extract_color_from_style(current_style, default=None) if current_style else None
+        variant = extract_variant_from_style(current_style) if current_style else None
+        tokens = [t for t in (color, variant) if t]
+
+        # If we have style_options but no color/variant tokens, we still need to
+        # create a custom style. Pass widget_class as bootstyle to prevent early return.
+        if tokens:
+            bootstyle = "-".join(tokens)
+        elif style_options:
+            bootstyle = widget_class  # Trigger custom style creation even without color/variant
+        else:
+            bootstyle = None
+
+        # Preserve surface_color and orientation in style_options
+        if not style_options:
+            style_options = {}
+        surface = getattr(self, "_surface_color", None)
+        if surface and surface != "background":
+            style_options["surface_color"] = surface
+        if widget_class in ORIENT_CLASSES:
+            try:
+                style_options["orient"] = str(self.cget("orient"))
+            except Exception:
+                pass
+
+        # Generate NEW style name with NEW hash based on new options
+        ttk_style = Bootstyle.create_ttk_style(
             widget_class=widget_class,
-            variant=variant,
-            ttk_style=style_name,
-            color=color,
-            options=style_options or {},
+            bootstyle=bootstyle,
+            style_options=style_options or None,
         )
+
+        # Apply the new style
+        return self._ttk_base.configure(self, style=ttk_style)  # type: ignore[misc]
 
     # ----- Built-in delegated handlers -----
     @configure_delegate("bootstyle")
