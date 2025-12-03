@@ -71,10 +71,6 @@ class DropdownButton(Menubutton):
                 source=kwargs
             )
         )
-        style_options.setdefault('show_dropdown_button', True)
-        style_options.setdefault('dropdown_button_icon', 'caret-down-fill')
-        self._style_options = style_options
-        kwargs.update(style_options=self._style_options)
         self._item_click_callback = None
         self._items = items if items else []
         self._popdown_options = kwargs.pop('popdown_options', {})
