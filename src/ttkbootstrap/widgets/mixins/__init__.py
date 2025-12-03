@@ -2,6 +2,7 @@
 
 from ttkbootstrap.widgets.mixins.configure_mixin import (
     ConfigureDelegationMixin,
+    CustomConfigMixin,
     configure_delegate,
 )
 from ttkbootstrap.widgets.mixins.font_mixin import FontMixin
@@ -12,6 +13,7 @@ from ttkbootstrap.widgets.mixins.entry_mixin import EntryMixin
 
 __all__ = [
     "ConfigureDelegationMixin",
+    "CustomConfigMixin",
     "configure_delegate",
     "FontMixin",
     "IconMixin",
