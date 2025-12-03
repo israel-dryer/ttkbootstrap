@@ -92,6 +92,13 @@ class DropdownButton(Menubutton):
         self.add_command = self._context_menu.add_command
         self.add_checkbutton = self._context_menu.add_checkbutton
         self.add_separator = self._context_menu.add_separator
+        self.add_item = self._context_menu.add_item
+        self.add_items = self._context_menu.add_items
+        self.insert_item = self._context_menu.insert_item
+        self.remove_item = self._context_menu.remove_item
+        self.move_item = self._context_menu.move_item
+        self.configure_item = self._context_menu.configure_item
+        self.items = self._context_menu.items
 
     def on_item_click(self, callback: Callable[[Any], Any]):
         """Bind a callback to menu item selections."""
@@ -112,11 +119,24 @@ class DropdownButton(Menubutton):
             self.on_item_click(self._item_click_callback)
         return cm
 
+    @property
+    def context_menu(self):
+        """Returns the context menu widget"""
+        return self._context_menu
+
     def show_menu(self):
         """Show the dropdown menu unless disabled or readonly."""
         if not self.instate(("!disabled", "!readonly")):
             return
         self._context_menu.show()
+
+    @configure_delegate('popdown_options')
+    def _delegate_popdown_options(self, value=None):
+        if value is None:
+            return self._popdown_options
+        else:
+            self._popdown_options = value
+            return self.context_menu.configure(**value)
 
     @configure_delegate('show_dropdown_button')
     def _delegate_show_dropdown_button(self, value=None):
