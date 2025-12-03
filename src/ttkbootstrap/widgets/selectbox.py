@@ -271,6 +271,7 @@ class SelectBox(Field):
 
     def _setup_selection_handler(self, tree, toplevel, popup_state):
         """Setup handler for item selection in treeview."""
+
         def bind_selection():
             if not tree.winfo_exists():
                 return
@@ -346,7 +347,7 @@ class SelectBox(Field):
         toplevel.destroy()
 
     @configure_delegate('items')
-    def _config_items(self, value: list[str] = None):
+    def _delegate_items(self, value: list[str] = None):
         """Get or set the available items for the SelectBox."""
         if value is None:
             return self._items
@@ -355,7 +356,7 @@ class SelectBox(Field):
         return None
 
     @configure_delegate('allow_custom_values')
-    def _config_allow_custom_values(self, value: bool = None):
+    def _delegate_allow_custom_values(self, value: bool = None):
         """Get or set whether free-form text entry is allowed."""
         if value is None:
             return self._allow_custom_values
@@ -368,7 +369,7 @@ class SelectBox(Field):
         return None
 
     @configure_delegate('search_enabled')
-    def _config_search_enabled(self, value: bool = None):
+    def _delegate_search_enabled(self, value: bool = None):
         """Get or set whether search filtering is enabled."""
         if value is None:
             return self._search_enabled
@@ -379,6 +380,14 @@ class SelectBox(Field):
             else:
                 self.readonly(True)
         return None
+
+    @configure_delegate('value')
+    def _delegate_value(self, value=None):
+        if value is not None:
+            return self.value
+        else:
+            self.value = value
+            return None
 
     @property
     def value(self):
