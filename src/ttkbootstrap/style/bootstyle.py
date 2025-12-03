@@ -10,10 +10,7 @@ from typing import Optional
 
 from ttkbootstrap.appconfig import AppConfig
 from ttkbootstrap.exceptions import BootstyleParsingError
-from ttkbootstrap.style.token_maps import (
-    COLOR_TOKENS, CONTAINER_CLASSES, ICON_CLASSES, ORIENT_CLASSES,
-    WIDGET_CLASS_MAP
-)
+from ttkbootstrap.style.token_maps import (COLOR_TOKENS, CONTAINER_CLASSES, ORIENT_CLASSES, WIDGET_CLASS_MAP)
 
 
 def parse_bootstyle_v2(bootstyle: str, widget_class: str) -> dict:
@@ -266,13 +263,9 @@ class Bootstyle:
             # extract bootstyle & style arguments
             had_style_kwarg = 'style' in kwargs
             bootstyle = kwargs.pop("bootstyle", "")
-            icon_only = kwargs.pop("icon_only", None)
             style_options = kwargs.pop("style_options", {})
-            if icon_only:
-                style_options['icon_only'] = icon_only
             inherit_surface_color = kwargs.pop('inherit_surface_color', None)
             surface_color_token = kwargs.pop('surface_color', None)
-            icon_spec = kwargs.pop('icon', None)
 
             func(self, *args, **kwargs)  # the actual widget constructor
 
@@ -317,9 +310,6 @@ class Bootstyle:
             # ==== Create actual ttk style & assign to widget =====
 
             if style_str and widget_class:
-                if widget_class in ICON_CLASSES and icon_spec is not None:
-                    # Merge icon into style_options
-                    style_options['icon'] = icon_spec
 
                 ttk_style = Bootstyle.create_ttk_style(
                     widget_class=widget_class,
@@ -335,9 +325,6 @@ class Bootstyle:
                 default_variant = BootstyleBuilderTTk.get_default_variant(widget_class)
 
                 if BootstyleBuilderTTk.has_builder(widget_class, default_variant):
-                    # Handle icon for image-capable widgets
-                    if widget_class in ICON_CLASSES and icon_spec is not None:
-                        style_options['icon'] = icon_spec
 
                     # Build options first so we can decide if a custom bs[...] prefix is needed
                     custom_prefix = None
@@ -366,6 +353,8 @@ class Bootstyle:
                         self.configure(style=ttk_style)
                 else:
                     self.configure(style=widget_class)
+
+            setattr(self, '_style_options', style_options)
 
         return __init__wrapper
 
