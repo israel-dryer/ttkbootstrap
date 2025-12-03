@@ -9,6 +9,7 @@ from typing import Any, Callable, Iterable, Literal, Optional
 import ttkbootstrap as ttk
 from ttkbootstrap.constants import BOTH, CENTER, LEFT, NSEW, PRIMARY, X, Y, YES
 from ttkbootstrap.localization import MessageCatalog
+from ttkbootstrap.widgets.mixins import configure_delegate
 
 
 class DatePicker(ttk.Frame):
@@ -22,7 +23,10 @@ class DatePicker(ttk.Frame):
 
     Virtual events:
         - ``<<DateSelected>>`` fired on selection with ``event.data`` containing
-          ``{"date": date, "range": (start, end)}`` (end may be None for range-in-progress).
+          ``{"date": last_click, "range": (start, end)}``.
+            * In single mode, ``date`` and ``range[0]`` are the same and ``range[1]`` is None.
+            * In range mode, ``date`` is the most recent click; the full selection is in ``range``
+              where ``range[1]`` may be None while selecting the end.
     """
 
     def __init__(
@@ -86,23 +90,26 @@ class DatePicker(ttk.Frame):
         self._build_ui()
 
     # --- public API --------------------------------------------------
-    @property
-    def date(self) -> date:
-        """Return the current selected date (end of range if set)."""
-        return self._selected_date
-
-    def set_date(self, value: date | datetime | str | None) -> None:
-        """Set the selected date and redraw the calendar."""
+    @configure_delegate("date")
+    def _delegate_date(self, value: date | datetime | str | None = None) -> Optional[date]:
+        """Get or set the current selected date."""
+        if value is None:
+            return self._selected_date
         new_date = self._coerce_date(value) or date.today()
         self._selected_date = new_date
         self._range_start = new_date
         self._range_end = None
         self._display_date = date(new_date.year, new_date.month, 1)
         self._refresh_calendar()
+        return None
 
     def on_date_selected(self, callback: Callable) -> str:
         """Bind to the ``<<DateSelected>>`` virtual event."""
         return self.bind("<<DateSelected>>", callback, add=True)
+
+    def off_date_selected(self, func_id: str):
+        """Remove the binding to <<DateSelected>>."""
+        return self.unbind("<<DateSelected>>", func_id)
 
     # --- UI construction --------------------------------------------
     def _build_ui(self) -> None:

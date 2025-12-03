@@ -282,6 +282,7 @@ class TextEntryPart(ValidationMixin, Entry):
         Note:
             Use on_changed() if you only care about Return when value changed.
         """
+
         def enrich_callback(event: Event) -> None:
             data = {"value": self._value, "text": self.textsignal.get()}
             event.data = data
@@ -381,16 +382,32 @@ class TextEntryPart(ValidationMixin, Entry):
             if fid:
                 self._on_input_fid = self.textsignal.subscribe(self._handle_change)
 
-    # Configuration delegation for value_format, allow_blank, and locale
+    @configure_delegate('text')
+    def _delegate_text(self, value=None):
+        if value is not None:
+            return self.text()
+        else:
+            return self.text(value)
+
+    @configure_delegate('value')
+    def _delegate_value(self, value=None):
+        if value is not None:
+            return self.value()
+        else:
+            return self.value(value)
+
     @configure_delegate('value_format')
     def _delegate_value_format(self, value: str):
-        """Set the value format pattern and reformat display.
+        """Get or set the value format pattern and reformat display.
 
         Can be accessed via:
             widget.configure(value_format='#,##0.00')
             widget['value_format'] = '#,##0.00'
             widget.cget('value_format')
         """
+        if value is None:
+            return self._value_format
+
         self._value_format = value
         # Reformat current value with new format
         if self._value is not None:
@@ -399,24 +416,30 @@ class TextEntryPart(ValidationMixin, Entry):
 
     @configure_delegate('allow_blank')
     def _delegate_allow_blank(self, value: bool):
-        """Set whether blank input is allowed.
+        """Get or set whether blank input is allowed.
 
         Can be accessed via:
             widget.configure(allow_blank=True)
             widget['allow_blank'] = True
             widget.cget('allow_blank')
         """
+        if value is None:
+            return self._allow_blank
+
         self._allow_blank = bool(value)
 
     @configure_delegate('locale')
     def _delegate_locale(self, value: str):
-        """Set the locale and recreate formatter.
+        """Get or set the locale and recreate formatter.
 
         Can be accessed via:
             widget.configure(locale='en_US')
             widget['locale'] = 'de_DE'
             widget.cget('locale')
         """
+        if value is None:
+            return self._locale
+
         self._locale = value
         self._fmt = IntlFormatter(locale=value)
         # Reformat current value with new locale

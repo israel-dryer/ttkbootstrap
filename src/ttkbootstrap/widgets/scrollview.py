@@ -125,7 +125,7 @@ class ScrollView(Frame):
         self._update_scrollbar_visibility()
 
     @configure_delegate('direction')
-    def _config_direction(self, value=None):
+    def _delegate_direction(self, value=None):
         if value is None:
             return self._direction
         else:
@@ -151,7 +151,7 @@ class ScrollView(Frame):
         return None
 
     @configure_delegate('show_scrollbar')
-    def _config_show_scrollbar(self, value=None):
+    def _delegate_show_scrollbar(self, value=None):
         if value is None:
             return self._show_scrollbar
         else:
@@ -183,7 +183,7 @@ class ScrollView(Frame):
         return None
 
     @configure_delegate('autohide_delay')
-    def _config_autohide_delay(self, value=None):
+    def _delegate_autohide_delay(self, value=None):
         if value is None:
             return self._autohide_delay
         else:
@@ -191,7 +191,7 @@ class ScrollView(Frame):
         return None
 
     @configure_delegate('scrollbar_style')
-    def _config_scrollbar_style(self, value=None):
+    def _delegate_scrollbar_style(self, value=None):
         if value is None:
             return self._scrollbar_style
         else:

@@ -14,7 +14,6 @@ This base class wires up:
 from __future__ import annotations
 
 from typing import Any
-from tkinter import ttk
 
 from ttkbootstrap.style.bootstyle import (
     Bootstyle,
@@ -22,8 +21,6 @@ from ttkbootstrap.style.bootstyle import (
     extract_variant_from_style,
 )
 from ttkbootstrap.style.token_maps import ORIENT_CLASSES
-from ttkbootstrap.style.bootstyle_builder_ttk import BootstyleBuilderTTk
-from ttkbootstrap.style.style import use_style
 from ttkbootstrap.widgets.mixins.configure_mixin import (
     ConfigureDelegationMixin,
     configure_delegate,
@@ -87,7 +84,7 @@ class TTKWrapperBase(FontMixin, ConfigureDelegationMixin):
             return self.configure(cnf=key)
         return self._ttk_base.__getitem__(self, key)  # type: ignore[misc]
 
-    def _rebuild_style(self, style_options: dict[str, Any] | None = None):
+    def rebuild_style(self):
         """Recreate the widget's current style with updated style options.
 
         This is useful when runtime style_options change (e.g., showing/hiding
@@ -95,8 +92,14 @@ class TTKWrapperBase(FontMixin, ConfigureDelegationMixin):
 
         Generates a new style name with the correct hash based on the new
         style_options, then applies it to the widget.
+
+        NOTE: Style options are updated via the `style_options()` method.
         """
         widget_class = self.winfo_class()
+
+        style_options = getattr(self, '_style_options', {})
+
+        print("DEBUG - rebuilding style with options", style_options)
 
         # Extract current bootstyle tokens from the current style
         current_style = self._ttk_base.cget(self, "style")  # type: ignore[misc]
@@ -179,6 +182,45 @@ class TTKWrapperBase(FontMixin, ConfigureDelegationMixin):
             style_options=style_options or None,
         )
         return self._ttk_base.configure(self, style=ttk_style)  # type: ignore[misc]
+
+    def configure_style_options(self, value=None, **kwargs):
+        """Get or set the widget style options if handled by the widget's style builder."""
+        options = getattr(self, "_style_options", {})
+        if value is None:
+            options.update(**kwargs)
+            setattr(self, "_style_options", options)
+            return None
+        else:
+            return options.get(value, None)
+
+    def _capture_style_options(self, options: list[str] = None, source: Any = None):
+        """Extract options from a dictionary source.
+
+        This method should be called before `super()` to capture the style options when they are explicitly exposed as
+        keyword arguments instead of being passed indirectly in the `style_options` parameter.
+
+        This method will also attempt to extract the style_options argument if provided.
+
+        Parameters:
+            options: A list of options to extract.
+            source: The dictionary of keyword arguments to extract from.
+
+        Returns:
+            A dict of style options. e.g. {"icon_only": True, "icon": "bootstrap-fill"}.
+        """
+        if source is None:
+            return {}
+
+        style_options = source.pop("style_options", {})
+
+        captured = {}
+        for option in options:
+            if option in source:
+                captured[option] = source.pop(option)
+        if captured:
+            style_options.update(**captured)
+
+        return style_options
 
 
 __all__ = ["TTKWrapperBase"]

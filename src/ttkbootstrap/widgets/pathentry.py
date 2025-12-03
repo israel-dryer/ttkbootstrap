@@ -221,7 +221,7 @@ class PathEntry(Field):
         return self._dialog_result
 
     @configure_delegate('dialog')
-    def _config_dialog(self, value: FileDialogType = None):
+    def _delegate_dialog(self, value: FileDialogType = None):
         """Get or set the file dialog type."""
         if value is None:
             return self._dialog
@@ -230,7 +230,7 @@ class PathEntry(Field):
         return None
 
     @configure_delegate('label')
-    def _config_label(self, value: str = None):
+    def _delegate_label(self, value: str = None):
         """Get or set the dialog button label text."""
         if value is None:
             return self._label

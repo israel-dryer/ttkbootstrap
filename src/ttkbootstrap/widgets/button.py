@@ -71,4 +71,5 @@ class Button(TextSignalMixin, IconMixin, TTKWrapperBase, ttk.Button):
             style_options: Optional dict forwarded to the style builder. Useful
                 for widget-specific options (e.g., {'icon': ...}).
         """
+        kwargs.update(style_options=self._capture_style_options(['icon_only', 'icon'], kwargs))
         super().__init__(master, **kwargs)

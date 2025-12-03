@@ -13,6 +13,8 @@ def main():
     picker = DatePicker(app, start_date=date.today(), bootstyle="success", selection_mode="range")
     picker.pack(fill=BOTH, expand=True)
 
+    picker.on_date_selected(print)
+
     # output = ttk.Label(app, text=f"Selected: {picker.date.isoformat()}", bootstyle="secondary")
     # output.pack(fill=X, padx=14, pady=(0, 10))
 

@@ -1,7 +1,6 @@
-from tkinter import Event, Misc
+from tkinter import Canvas, Event, IntVar, Misc, StringVar
 from typing import Any, Optional, Union
 
-from tkinter import Canvas, IntVar, StringVar
 from ttkbootstrap.widgets.mixins.configure_mixin import ConfigureDelegationMixin, configure_delegate
 
 
@@ -165,32 +164,44 @@ class FloodGauge(ConfigureDelegationMixin, Canvas):
     # ----- Configuration Delegates ------
 
     @configure_delegate('mode')
-    def _configure_mode(self, value):
+    def _delegate_mode(self, value=None):
+        if value is None:
+            return self._mode
         self._mode = value
         self._draw()
 
     @configure_delegate('mask')
-    def _configure_mask(self, value):
+    def _delegate_mask(self, value=None):
+        if value is None:
+            return self._mask
         self._mask = value
         self._draw()
 
     @configure_delegate('font')
-    def _configure_font(self, value):
+    def _delegate_font(self, value=None):
+        if value is None:
+            return self._font
         self._font = value
         self._draw()
 
     @configure_delegate('bootstyle')
-    def _configure_bootstyle(self, value):
+    def _delegate_bootstyle(self, value=None):
+        if value is None:
+            return self._bootstyle
         self._bootstyle = value
         self._update_theme_colors()  # calls _draw()
 
     @configure_delegate('orient')
-    def _configure_orient(self, value):
+    def _delegate_orient(self, value=None):
+        if value is None:
+            return self._orient
         self._orient = value
         self._draw()
 
     @configure_delegate('length')
-    def _configure_length(self, value):
+    def _delegate_length(self, value=None):
+        if value is None:
+            return self._length
         self._length = value
         if self._orient == "horizontal":
             self.configure(width=self._length)
@@ -199,7 +210,9 @@ class FloodGauge(ConfigureDelegationMixin, Canvas):
         self._draw()
 
     @configure_delegate('thickness')
-    def _configure_thickness(self, value):
+    def _delegate_thickness(self, value=None):
+        if value is None:
+            return self._thickness
         self._thickness = value
         if self._orient == "horizontal":
             self.configure(height=self._thickness)
@@ -208,27 +221,37 @@ class FloodGauge(ConfigureDelegationMixin, Canvas):
         self._draw()
 
     @configure_delegate('maximum')
-    def _configure_maximum(self, value):
+    def _delegate_maximum(self, value=None):
+        if value is None:
+            return self._maximum
         self._maximum = value
         self._draw()
 
     @configure_delegate('increment')
-    def _configure_increment(self, value):
+    def _delegate_increment(self, value=None):
+        if value is None:
+            return self._increment
         self._increment = value
         self._draw()
 
     @configure_delegate('value')
-    def _configure_value(self, value):
+    def _delegate_value(self, value=None):
+        if value is None:
+            return self._value
         # Variable trace triggers redraw
         self._variable.set(value)
 
     @configure_delegate('text')
-    def _configure_text(self, value):
+    def _delegate_text(self, value=None):
+        if value is None:
+            return self._text
         # Textvariable trace triggers redraw
         self._textvariable.set(value)
 
     @configure_delegate('variable')
-    def _configure_variable(self, value):
+    def _delegate_variable(self, value=None):
+        if value is None:
+            return self._variable
         self._variable.trace_remove('write', self._variable_trace_id)
         self._variable = value
         self._variable_trace_id = self._variable.trace_add("write", lambda n, i, m: self._on_var_change())
@@ -236,7 +259,9 @@ class FloodGauge(ConfigureDelegationMixin, Canvas):
         self._draw()
 
     @configure_delegate('textvariable')
-    def _configure_textvariable(self, value):
+    def _delegate_textvariable(self, value=None):
+        if value is None:
+            return self._textvariable
         self._textvariable.trace_remove('write', self._textvariable_trace_id)
         self._textvariable = value
         self._textvariable_trace_id = self._textvariable.trace_add("write", lambda n, i, m: self._on_text_change())

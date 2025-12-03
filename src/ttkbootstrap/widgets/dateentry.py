@@ -220,7 +220,7 @@ class DateEntry(Field):
             command=self._show_date_picker
         )
 
-        self._config_show_picker_button(self._show_picker_button)
+        self._delegate_show_picker_button(self._show_picker_button)
 
     @property
     def date_picker_button(self):
@@ -228,7 +228,7 @@ class DateEntry(Field):
         return self.addons.get('date-picker')
 
     @configure_delegate('show_picker_button')
-    def _config_show_picker_button(self, value: bool = None):
+    def _delegate_show_picker_button(self, value: bool = None):
         """Get or set the visibility of the calendar picker button."""
         if value is None:
             return self._show_picker_button

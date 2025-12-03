@@ -56,18 +56,15 @@ class ConfigureDelegationMixin:
         return True
 
     def _config_delegate_get(self, key: str) -> Tuple[bool, Any]:
-        # Check if this key has a delegate
-        if key not in self._configure_delegate_map:
+        method_name = self._configure_delegate_map.get(key)
+        if not method_name:
             return False, None
-        # Read directly from self._<key> attribute
-        attr_name = f"_{key}"
-        if hasattr(self, attr_name):
-            value = getattr(self, attr_name)
-            # For variable options, return the string name instead of the object
-            if key in ('variable', 'textvariable') and hasattr(value, '_name'):
-                return True, str(value)
-            return True, value
-        return False, None
+        handler = getattr(self, method_name)
+        value = handler(None)
+        # For variable options, return the string name instead of the object
+        if key in ('variable', 'textvariable') and hasattr(value, '_name'):
+            return True, str(value)
+        return True, value
 
     def configure(self, cnf=None, **kwargs):
         """Configure widget options, handling custom delegated options first."""
