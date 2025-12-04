@@ -19,7 +19,7 @@ print(f"Preparing {len(rows)} records")
 app = ttk.Window(themename="dark", size=(1200, 800))
 
 columns = [
-    {"text": "EmployeeNumber", "key": "EmployeeNumber"},
+    {"text": "EmployeeNumber", "key": "EmployeeNumber", "anchor": "w"},
     {"text": "CompanyName", "key": "CompanyName"},
     {"text": "Employee", "key": "Employee"},
     {"text": "Description", "key": "Description"},

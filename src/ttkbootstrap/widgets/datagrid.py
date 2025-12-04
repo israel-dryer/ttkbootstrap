@@ -22,6 +22,7 @@ from ttkbootstrap.widgets.textentry import TextEntry
 from ttkbootstrap.widgets.treeview import Treeview
 from ttkbootstrap.widgets.separator import Separator
 from ttkbootstrap.widgets.entry import Entry
+from ttkbootstrap.widgets.contextmenu import ContextMenu
 
 
 class DataGrid(Frame):
@@ -41,6 +42,7 @@ class DataGrid(Frame):
         cache_size: int = 5,
         show_yscroll: bool = True,
         show_xscroll: bool = False,
+        allow_header_sort: bool = True,
         **kwargs,
     ):
         super().__init__(master, **kwargs)
@@ -49,6 +51,7 @@ class DataGrid(Frame):
         self._virtual_scroll = virtual_scroll
         self._show_yscroll = show_yscroll
         self._show_xscroll = show_xscroll
+        self._allow_header_sort = allow_header_sort
         self._cache_size = max(0, cache_size)
         self._page_cache: OrderedDict[int, list[dict]] = OrderedDict()
         self._column_defs = columns or []
@@ -60,6 +63,14 @@ class DataGrid(Frame):
         self._heading_fg: str | None = None
         self._icon_sort_up = None
         self._icon_sort_down = None
+        self._column_anchors: list[str] = []
+        self._column_types: dict[str, str] = {}
+        self._alignment_sample: list[dict] | None = None
+        self._row_map: dict[str, dict] = {}
+        self._row_menu: ContextMenu | None = None
+        self._display_columns: list[int] = []
+        self._header_menu: ContextMenu | None = None
+        self._header_menu_col: int | None = None
 
         self._resolve_column_keys()
 
@@ -140,7 +151,7 @@ class DataGrid(Frame):
 
     def _build_search_bar(self) -> None:
         bar = Frame(self)
-        bar.pack(fill="x", padx=4, pady=(0, 4))
+        bar.pack(fill="x", pady=(0, 4))
 
         self._search_entry = TextEntry(bar)
         self._search_entry.pack(side="left", fill="x", expand=True, padx=(0, 6))
@@ -155,7 +166,7 @@ class DataGrid(Frame):
             search_enabled=False,
         )
         self._search_mode.pack(side="left", padx=(0, 6))
-        Button(bar, text="Clear", command=self._clear_search).pack(side="left", padx=(0, 4))
+        Button(bar, text="Clear", bootstyle="secondary", command=self._clear_search).pack(side="left", padx=(0, 4))
 
     def _build_tree(self) -> None:
         frame = Frame(self)
@@ -163,7 +174,8 @@ class DataGrid(Frame):
 
         cols = [self._col_text(c) for c in self._column_defs] or self._column_keys
         self._tree = Treeview(frame, columns=list(range(len(cols))), show="headings")
-        self._tree.pack(side="left", fill="both", expand=True)
+        self._tree.pack(side="left", fill="both", expand=True, padx=3)
+        self._display_columns = list(range(len(cols)))
 
         if self._show_yscroll:
             self._vsb = Scrollbar(frame, orient="vertical", command=self._tree.yview)
@@ -183,16 +195,29 @@ class DataGrid(Frame):
             self._hsb = None
 
         self._heading_texts = []
+        self._column_anchors = []
         for idx, text in enumerate(cols):
             self._heading_texts.append(text)
-            self._tree.heading(idx, text=text, command=lambda c=idx: self._on_sort(c))
-            self._tree.column(idx, anchor="w", width=120, stretch=True)
+            anchor = self._determine_anchor(idx)
+            self._column_anchors.append(anchor)
+            heading_kwargs = {"text": text, "anchor": anchor}
+            if self._allow_header_sort:
+                heading_kwargs["command"] = lambda c=idx: self._on_sort(c)
+            self._tree.heading(idx, **heading_kwargs)
+            self._tree.column(idx, anchor=anchor, width=120, stretch=True)
         self._update_heading_icons()
+        self._tree.bind("<Button-3>", self._on_tree_context)
 
     def _build_pagination_bar(self) -> None:
         bar = Frame(self)
         bar.pack(fill="x", pady=(4, 0))
-        Frame(bar).pack(side='left', fill='x', expand=True) # spacer
+        status_frame = Frame(bar)
+        status_frame.pack(side="left", fill="x", expand=True)
+        self._filter_label = Label(status_frame, text="", anchor="w", bootstyle="secondary")
+        self._filter_label.pack(side="left", padx=(0, 4))
+        self._sort_label = Label(status_frame, text="", anchor="w", bootstyle="secondary")
+        self._sort_label.pack(side="left", padx=(8, 4))
+
         info_frame = Frame(bar)
         info_frame.pack(side='left')
         Label(info_frame, text='Page').pack(side='left')
@@ -221,6 +246,92 @@ class DataGrid(Frame):
             return col.get("text") or col.get("key") or ""
         return str(col)
 
+    def _determine_anchor(self, idx: int) -> str:
+        """Pick an anchor for the given column index.
+
+        Priority:
+            1) Explicit anchor/align in column definition
+            2) Explicit dtype/type hint in column definition (numeric -> right)
+            3) Numeric columns -> right
+            4) Default -> left
+        """
+        if idx < len(self._column_defs):
+            coldef = self._column_defs[idx]
+            if isinstance(coldef, dict):
+                anchor = coldef.get("anchor") or coldef.get("align")
+                if anchor:
+                    return anchor
+                # Allow a dtype/type hint on the column definition
+                dtype = coldef.get("dtype") or coldef.get("type")
+                if dtype:
+                    dtype_upper = str(dtype).upper()
+                    if any(t in dtype_upper for t in ("INT", "REAL", "NUM", "DECIMAL", "DOUBLE", "FLOAT")):
+                        return "e"
+                    if "TEXT" in dtype_upper or "STR" in dtype_upper or "CHAR" in dtype_upper:
+                        return "w"
+        # Infer from type
+        key = self._column_keys[idx] if idx < len(self._column_keys) else None
+        ctype = self._get_column_type(key) if key else ""
+        if ctype and any(t in ctype.upper() for t in ("INT", "REAL", "NUM", "DECIMAL", "DOUBLE", "FLOAT")):
+            return "e"
+        # Fallback: sample values to detect numeric strings
+        if self._is_numeric_sample(idx):
+            return "e"
+        return "w"
+
+    def _get_column_type(self, key: str | None) -> str:
+        if not key:
+            return ""
+        if key in self._column_types:
+            return self._column_types[key]
+        # Try PRAGMA table_info
+        try:
+            cur = self._datasource.conn.execute(f"PRAGMA table_info({self._datasource._table})")
+            for cid, name, ctype, *_rest in cur.fetchall():
+                if name == key:
+                    self._column_types[key] = ctype or ""
+                    return self._column_types[key]
+        except Exception:
+            pass
+        return ""
+
+    def _load_alignment_sample(self) -> list[dict]:
+        if self._alignment_sample is not None:
+            return self._alignment_sample
+        try:
+            sample = self._datasource.get_page(0)
+        except Exception:
+            sample = []
+        self._alignment_sample = sample or []
+        return self._alignment_sample
+
+    def _is_numeric_sample(self, idx: int) -> bool:
+        """Check sample values to decide if a column with text storage is numeric-like."""
+        key = self._column_keys[idx] if idx < len(self._column_keys) else None
+        if not key:
+            return False
+        sample = self._load_alignment_sample()
+        if not sample:
+            return False
+
+        def is_num(val) -> bool:
+            if val is None or val == "":
+                return True
+            try:
+                float(val)
+                return True
+            except Exception:
+                return False
+
+        seen = 0
+        for rec in sample[: min(20, len(sample))]:
+            if key not in rec:
+                continue
+            seen += 1
+            if not is_num(rec.get(key)):
+                return False
+        return seen > 0
+
     def _to_records(self, rows: list) -> list[dict]:
         records: list[dict] = []
         if not rows:
@@ -235,15 +346,18 @@ class DataGrid(Frame):
 
     def _refresh_tree(self, records: list[dict]) -> None:
         self._tree.delete(*self._tree.get_children())
+        self._row_map.clear()
         if not self._column_keys and records:
             self._column_keys = list(records[0].keys())
         for rec in records:
             values = [rec.get(k, "") for k in self._column_keys]
-            self._tree.insert("", "end", values=values)
+            iid = self._tree.insert("", "end", values=values)
+            self._row_map[iid] = rec
     def _append_tree(self, records: list[dict]) -> None:
         for rec in records:
             values = [rec.get(k, "") for k in self._column_keys]
-            self._tree.insert("", "end", values=values)
+            iid = self._tree.insert("", "end", values=values)
+            self._row_map[iid] = rec
 
     def _total_pages(self) -> int:
         try:
@@ -280,6 +394,8 @@ class DataGrid(Frame):
             self._page_entry.insert(0, str(self._current_page + 1))
         if hasattr(self, "_page_label"):
             self._page_label.configure(text=f"of {self._total_pages()}")
+        self._update_status_labels()
+        self._update_status_labels()
 
     def _first_page(self) -> None:
         self._load_page(0)
@@ -347,6 +463,7 @@ class DataGrid(Frame):
             pass
         self._clear_cache()
         self._load_page(0)
+        self._update_status_labels()
 
     def _clear_search(self) -> None:
         self._search_entry.delete(0, 'end')
@@ -356,6 +473,7 @@ class DataGrid(Frame):
             pass
         self._clear_cache()
         self._load_page(0)
+        self._update_status_labels()
 
     def _on_sort(self, column_index: int) -> None:
         if column_index >= len(self._column_keys):
@@ -372,6 +490,174 @@ class DataGrid(Frame):
         self._clear_cache()
         self._update_heading_icons()
         self._load_page(0)
+        self._update_status_labels()
+
+    def _update_status_labels(self) -> None:
+        # Filter
+        filter_txt = ""
+        try:
+            where = getattr(self._datasource, "_where", "")
+            if where:
+                filter_txt = f"Filter: {where}"
+        except Exception:
+            pass
+        # Sort
+        sort_txt = ""
+        try:
+            order = getattr(self._datasource, "_order_by", "")
+            if order:
+                sort_txt = f"Sort: {order}"
+        except Exception:
+            pass
+
+        if hasattr(self, "_filter_label"):
+            self._filter_label.configure(text=filter_txt)
+        if hasattr(self, "_sort_label"):
+            self._sort_label.configure(text=sort_txt)
+
+    # ------------------------------------------------------------------ Row context menu
+    def _ensure_row_menu(self) -> None:
+        if self._row_menu:
+            return
+        menu = ContextMenu(master=self, target=self._tree)
+        menu.add_command(text="Sort Ascending", command=lambda: self._sort_selection(True))
+        menu.add_command(text="Sort Descending", command=lambda: self._sort_selection(False))
+        menu.add_separator()
+        menu.add_command(text="Filter by Value", command=self._filter_by_value)
+        menu.add_command(text="Clear Filter", command=self._clear_filter_cmd)
+        menu.add_separator()
+        menu.add_command(text="Move Up", command=self._move_row_up)
+        menu.add_command(text="Move Down", command=self._move_row_down)
+        menu.add_command(text="Move to Top", command=self._move_row_top)
+        menu.add_command(text="Move to Bottom", command=self._move_row_bottom)
+        menu.add_separator()
+        menu.add_command(text="Hide Selection", command=self._hide_selection)
+        menu.add_command(text="Delete Selection", command=self._delete_selection)
+        self._row_menu = menu
+
+    def _on_row_context(self, event) -> None:
+        iid = self._tree.identify_row(event.y)
+        col_id = self._tree.identify_column(event.x)
+        try:
+            col_idx = int(col_id.strip("#")) - 1
+        except Exception:
+            col_idx = 0
+        if iid:
+            if iid not in self._tree.selection():
+                self._tree.selection_set(iid)
+        if not self._tree.selection():
+            return
+        self._row_menu_col = col_idx
+        self._ensure_row_menu()
+        self._row_menu.show(position=(event.x_root, event.y_root))
+
+    def _filter_by_value(self) -> None:
+        selection = self._tree.selection()
+        if not selection:
+            return
+        iid = selection[0]
+        col_idx = max(0, min(self._row_menu_col or 0, len(self._column_keys) - 1))
+        key = self._column_keys[col_idx]
+        values = self._tree.item(iid, "values")
+        if col_idx >= len(values):
+            return
+        val = values[col_idx]
+        crit = str(val).replace("'", "''")
+        where = f"{key} = '{crit}'"
+        try:
+            self._datasource.set_filter(where)
+        except Exception:
+            return
+        self._clear_cache()
+        self._load_page(0)
+
+    def _sort_selection(self, ascending: bool) -> None:
+        selection = self._tree.selection()
+        if not selection:
+            return
+        iid = selection[0]
+        col_idx = max(0, min(self._row_menu_col or 0, len(self._column_keys) - 1))
+        key = self._column_keys[col_idx]
+        self._sort_state = {key: ascending}
+        order = "ASC" if ascending else "DESC"
+        try:
+            self._datasource.set_sort(f"{key} {order}")
+        except Exception:
+            pass
+        self._clear_cache()
+        self._update_heading_icons()
+        self._load_page(0)
+
+    def _clear_filter_cmd(self) -> None:
+        try:
+            self._datasource.set_filter("")
+        except Exception:
+            pass
+        self._clear_cache()
+        self._load_page(0)
+        self._update_status_labels()
+        self._update_status_labels()
+
+    def _move_row_up(self) -> None:
+        self._move_row_relative(-1)
+
+    def _move_row_down(self) -> None:
+        self._move_row_relative(1)
+
+    def _move_row_top(self) -> None:
+        self._move_row_absolute(0)
+
+    def _move_row_bottom(self) -> None:
+        children = list(self._tree.get_children())
+        if children:
+            self._move_row_absolute(len(children) - 1)
+
+    def _move_row_relative(self, delta: int) -> None:
+        sel = list(self._tree.selection())
+        if not sel:
+            return
+        target_iid = sel[0]
+        children = list(self._tree.get_children())
+        try:
+            idx = children.index(target_iid)
+        except ValueError:
+            return
+        new_idx = max(0, min(len(children) - 1, idx + delta))
+        if new_idx == idx:
+            return
+        self._tree.move(target_iid, "", new_idx)
+
+    def _move_row_absolute(self, new_idx: int) -> None:
+        sel = list(self._tree.selection())
+        if not sel:
+            return
+        target_iid = sel[0]
+        children = list(self._tree.get_children())
+        new_idx = max(0, min(len(children) - 1, new_idx))
+        self._tree.move(target_iid, "", new_idx)
+
+    def _hide_selection(self) -> None:
+        sel = list(self._tree.selection())
+        for iid in sel:
+            self._tree.delete(iid)
+            self._row_map.pop(iid, None)
+
+    def _delete_selection(self) -> None:
+        sel = list(self._tree.selection())
+        changed = False
+        for iid in sel:
+            rec = self._row_map.get(iid) or {}
+            rec_id = rec.get("id")
+            if rec_id is not None:
+                try:
+                    self._datasource.delete_record(rec_id)
+                    changed = True
+                except Exception:
+                    pass
+            self._row_map.pop(iid, None)
+        if changed:
+            self._clear_cache()
+            self._load_page(self._current_page)
 
     # ------------------------------------------------------------------ Cache helpers
     def _clear_cache(self) -> None:
@@ -431,3 +717,132 @@ class DataGrid(Frame):
         self._page_cache[page] = records
         if len(self._page_cache) > self._cache_size:
             self._page_cache.popitem(last=False)
+
+    # ------------------------------------------------------------------ Context dispatch
+    def _on_tree_context(self, event) -> None:
+        region = self._tree.identify_region(event.x, event.y)
+        if region == "heading":
+            self._on_header_context(event)
+        else:
+            self._on_row_context(event)
+
+    # ------------------------------------------------------------------ Header context menu
+    def _ensure_header_menu(self) -> None:
+        if self._header_menu:
+            return
+        menu = ContextMenu(master=self, target=self._tree)
+        menu.add_command(text="Align Left", icon="align-start", command=self._align_header_left)
+        menu.add_command(text="Align Center", icon="align-center", command=self._align_header_center)
+        menu.add_command(text="Align Right", icon="align-end", command=self._align_header_right)
+        menu.add_separator()
+        menu.add_command(text="Move Left", icon="arrow-left", command=self._move_header_left)
+        menu.add_command(text="Move Right", icon="arrow-right", command=self._move_header_right)
+        menu.add_command(text="Move First", icon="arrow-bar-left", command=self._move_header_first)
+        menu.add_command(text="Move Last", icon="arrow-bar-right", command=self._move_header_last)
+        menu.add_separator()
+        menu.add_command(text="Hide Column", icon="eye-slash", command=self._hide_header_column)
+        menu.add_command(text="Show All", icon="eye", command=self._show_all_columns)
+        menu.add_separator()
+        menu.add_command(text="Clear Sort", icon="x-lg", command=self._clear_sort)
+        menu.add_separator()
+        menu.add_command(text="Reset Table", icon="arrow-counterclockwise", command=self._reset_table)
+        self._header_menu = menu
+
+    def _on_header_context(self, event) -> None:
+        # Only handle header clicks
+        if self._tree.identify_region(event.x, event.y) != "heading":
+            return
+        col_id = self._tree.identify_column(event.x)  # e.g. "#1"
+        try:
+            idx = int(col_id.strip("#")) - 1
+        except Exception:
+            return
+        if idx < 0 or idx >= len(self._display_columns):
+            return
+        self._header_menu_col = self._display_columns[idx]
+        self._ensure_header_menu()
+
+        # Try to position at bottom-left of the clicked header
+        pos_x, pos_y = event.x_root, event.y_root
+        items = self._tree.get_children()
+        if items:
+            bbox = self._tree.bbox(items[0], col_id)
+            if bbox:
+                # bbox is relative to the widget; bbox[1] is header height offset
+                pos_x = self._tree.winfo_rootx() + bbox[0]
+                pos_y = self._tree.winfo_rooty() + bbox[1] + 2
+        self._header_menu.show(position=(pos_x, pos_y))
+
+    def _align_header_left(self) -> None:
+        self._set_heading_anchor("w")
+
+    def _align_header_center(self) -> None:
+        self._set_heading_anchor("center")
+
+    def _align_header_right(self) -> None:
+        self._set_heading_anchor("e")
+
+    def _set_heading_anchor(self, anchor: str) -> None:
+        """Align only the header text for the selected column."""
+        col = self._header_menu_col
+        if col is None:
+            return
+        self._tree.heading(col, anchor=anchor)
+        self._tree.column(col, anchor=anchor)
+
+    def _move_header_left(self) -> None:
+        self._move_column(-1)
+
+    def _move_header_right(self) -> None:
+        self._move_column(1)
+
+    def _move_header_first(self) -> None:
+        self._move_column(to_index=0)
+
+    def _move_header_last(self) -> None:
+        self._move_column(to_index=len(self._display_columns) - 1)
+
+    def _move_column(self, delta: int | None = None, to_index: int | None = None) -> None:
+        col = self._header_menu_col
+        if col is None or col not in self._display_columns:
+            return
+        current_pos = self._display_columns.index(col)
+        if to_index is not None:
+            new_pos = max(0, min(len(self._display_columns) - 1, to_index))
+        else:
+            new_pos = current_pos + (delta or 0)
+        new_pos = max(0, min(len(self._display_columns) - 1, new_pos))
+        if new_pos == current_pos:
+            return
+        self._display_columns.pop(current_pos)
+        self._display_columns.insert(new_pos, col)
+        self._tree.configure(displaycolumns=self._display_columns)
+
+    def _hide_header_column(self) -> None:
+        col = self._header_menu_col
+        if col is None or col not in self._display_columns:
+            return
+        self._display_columns.remove(col)
+        if not self._display_columns:
+            self._display_columns = list(range(len(self._heading_texts)))
+        self._tree.configure(displaycolumns=self._display_columns)
+
+    def _show_all_columns(self) -> None:
+        if not self._heading_texts:
+            return
+        self._display_columns = list(range(len(self._heading_texts)))
+        self._tree.configure(displaycolumns=self._display_columns)
+
+    def _reset_table(self) -> None:
+        # Reset sort, columns visibility/order, and reload first page
+        self._display_columns = list(range(len(self._heading_texts)))
+        self._tree.configure(displaycolumns=self._display_columns)
+        self._clear_sort()
+
+    def _clear_sort(self) -> None:
+        self._sort_state.clear()
+        self._datasource.set_sort("")
+        self._clear_cache()
+        self._update_heading_icons()
+        self._load_page(0)
+        self._update_status_labels()
