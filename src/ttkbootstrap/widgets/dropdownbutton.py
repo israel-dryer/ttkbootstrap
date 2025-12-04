@@ -71,6 +71,7 @@ class DropdownButton(Menubutton):
                 source=kwargs
             )
         )
+        kwargs['style_options'] = style_options
         self._item_click_callback = None
         self._items = items if items else []
         self._popdown_options = kwargs.pop('popdown_options', {})
