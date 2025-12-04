@@ -95,6 +95,7 @@ def build_solid_menubutton_style(b: BootstyleBuilderTTk, ttk_style: str, color: 
     surface_token = options.get('surface_color', 'background')
     show_dropdown = options.get('show_dropdown_button', True)
     dropdown_icon = options.get('dropdown_button_icon', 'caret-down-fill')
+    icon_only = options.get('icon_only', False)
 
     surface = b.color(surface_token)
     normal = b.color(accent_token)
@@ -141,8 +142,8 @@ def build_solid_menubutton_style(b: BootstyleBuilderTTk, ttk_style: str, color: 
         relief='flat',
         font="body",
         takefocus=True,
-        padding=b.scale((8, 0, 4, 0)),
-        anchor="w"
+        padding=0 if icon_only else b.scale((8, 0, 4, 0)),
+        anchor="center" if icon_only else "w"
     )
 
     state_spec = dict(
@@ -161,6 +162,7 @@ def build_outline_menubutton_style(b: BootstyleBuilderTTk, ttk_style: str, color
     surface_token = options.get('surface_color', 'background')
     show_dropdown = options.get('show_dropdown_button', True)
     dropdown_icon = options.get('dropdown_button_icon', 'caret-down-fill')
+    icon_only = options.get('icon_only', False)
 
     surface = b.color(surface_token)
     foreground_normal = b.color(accent_token)
@@ -210,8 +212,8 @@ def build_outline_menubutton_style(b: BootstyleBuilderTTk, ttk_style: str, color
         stipple="gray12",
         font="body",
         takefocus=True,
-        padding=b.scale((8, 0, 4, 0)),
-        anchor="w"
+        padding=0 if icon_only else b.scale((8, 0, 4, 0)),
+        anchor="center" if icon_only else "w"
     )
 
     state_spec = dict(
@@ -235,6 +237,7 @@ def build_text_menubutton_style(b: BootstyleBuilderTTk, ttk_style: str, color: s
     surface_token = options.get('surface_color', 'background')
     show_dropdown = options.get('show_dropdown_button', True)
     dropdown_icon = options.get('dropdown_button_icon', 'caret-down-fill')
+    icon_only = options.get('icon_only', False)
 
     surface = b.color(surface_token)
     foreground_normal = b.color(accent_token)
@@ -268,8 +271,8 @@ def build_text_menubutton_style(b: BootstyleBuilderTTk, ttk_style: str, color: s
         stipple="gray12",
         font="body",
         takefocus=True,
-        padding=b.scale((8, 0, 4, 0)),
-        anchor="w"
+        padding=0 if icon_only else b.scale((8, 0, 4, 0)),
+        anchor="center" if icon_only else "w"
     )
 
     state_spec = dict(
@@ -291,6 +294,7 @@ def build_ghost_menubutton_style(b: BootstyleBuilderTTk, ttk_style: str, color: 
     surface_token = options.get('surface_color', 'background')
     show_dropdown = options.get('show_dropdown_button', True)
     dropdown_icon = options.get('dropdown_button_icon', 'caret-down-fill')
+    icon_only = options.get('icon_only', False)
 
     surface = b.color(surface_token)
     foreground_normal = b.color(accent_token)
@@ -337,8 +341,8 @@ def build_ghost_menubutton_style(b: BootstyleBuilderTTk, ttk_style: str, color: 
         stipple="gray12",
         font="body",
         takefocus=True,
-        padding=b.scale((8, 0, 4, 0)),
-        anchor="w"
+        padding=0 if icon_only else b.scale((8, 0, 4, 0)),
+        anchor="center" if icon_only else "w"
     )
 
     state_spec = dict(
