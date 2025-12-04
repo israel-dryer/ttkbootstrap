@@ -28,6 +28,7 @@ from .colordropper import (
     ColorDropperDialog,
 )
 from .dialog import Dialog, DialogButton
+from .formdialog import FormDialog
 from .message import MessageDialog, MessageBox
 from .query import QueryDialog, QueryBox
 from .datedialog import DateDialog
@@ -37,6 +38,7 @@ __all__ = [
     # Base / core dialogs
     "Dialog",
     "DialogButton",
+    "FormDialog",
     "MessageDialog",
     "QueryDialog",
     "DateDialog",
