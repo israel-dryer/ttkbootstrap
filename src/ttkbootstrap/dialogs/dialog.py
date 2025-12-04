@@ -371,6 +371,11 @@ class Dialog:
         self._toplevel = ttk.Toplevel(self._master)
         self._toplevel.title(self._title)
         self._toplevel.protocol("WM_DELETE_WINDOW", self._on_close_request)
+        # Avoid initial flash at screen origin before we reposition
+        try:
+            self._toplevel.withdraw()
+        except Exception:
+            pass
 
         if self._minsize:
             self._toplevel.minsize(*self._minsize)
@@ -461,6 +466,7 @@ class Dialog:
             return
 
         # Update idletasks to get accurate window dimensions
+        # Do this BEFORE deiconifying to ensure all configure events fire while hidden
         self._toplevel.update_idletasks()
 
         if position is not None:
@@ -475,6 +481,15 @@ class Dialog:
         else:
             # Center on parent
             self._center_on_parent()
+
+        # Final update_idletasks to ensure configure events have all fired
+        self._toplevel.update_idletasks()
+
+        # NOW deiconify - everything should be properly sized and positioned
+        try:
+            self._toplevel.deiconify()
+        except Exception:
+            pass
 
     def _ensure_on_screen(self, x: int, y: int) -> tuple[int, int]:
         """Ensure dialog position keeps it fully visible on screen.
@@ -517,6 +532,11 @@ class Dialog:
         """Center the dialog on its parent window."""
         if not self._toplevel or not self._master:
             return
+
+        try:
+            self._master.update_idletasks()
+        except Exception:
+            pass
 
         # Get dialog dimensions
         dialog_width = self._toplevel.winfo_reqwidth()
