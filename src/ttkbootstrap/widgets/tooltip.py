@@ -179,8 +179,9 @@ class ToolTip:
         if self.toplevel:
             return
 
-        # Create the tooltip window at a temporary position
-        self.toplevel = ttk.window.Toplevel(position=(0, 0), **self.toplevel_kwargs)
+        # Create the tooltip window at a temporary position offscreen
+        offscreen_pos = -99999
+        self.toplevel = ttk.window.Toplevel(position=(offscreen_pos, offscreen_pos), **self.toplevel_kwargs)
 
         lbl = ttk.Label(
             master=self.toplevel,
