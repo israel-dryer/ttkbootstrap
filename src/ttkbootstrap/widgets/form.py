@@ -5,9 +5,9 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from datetime import date, datetime
 from tkinter import BooleanVar, DoubleVar, IntVar, StringVar, Text, Variable
-from typing import Any, Callable, Iterable, Literal, Mapping, Sequence
+from typing import Any, Callable, Iterable, Literal, Mapping, Sequence, TYPE_CHECKING
 
-from ttkbootstrap.dialogs.dialog import DialogButton
+from ttkbootstrap.constants import DEFAULT_MIN_COL_WIDTH
 from ttkbootstrap.widgets.button import Button
 from ttkbootstrap.widgets.checkbutton import Checkbutton
 from ttkbootstrap.widgets.dateentry import DateEntry
@@ -20,10 +20,12 @@ from ttkbootstrap.widgets.notebook import Notebook
 from ttkbootstrap.widgets.numericentry import NumericEntry
 from ttkbootstrap.widgets.passwordentry import PasswordEntry
 from ttkbootstrap.widgets.scale import Scale
-from ttkbootstrap.widgets.scrollview import ScrollView
 from ttkbootstrap.widgets.selectbox import SelectBox
 from ttkbootstrap.widgets.spinbox import Spinbox
 from ttkbootstrap.widgets.textentry import TextEntry
+
+if TYPE_CHECKING:
+    from ttkbootstrap.dialogs.dialog import DialogButton
 
 DType = Literal['int', 'float', 'bool', 'date', 'datetime', 'password', 'str'] | type | None
 
@@ -65,7 +67,7 @@ class GroupItem:
     items: list[FieldItem | Mapping[str, Any] | GroupItem | TabsItem] = field(default_factory=list)
     label: str | None = None
     col_count: int = 1
-    min_col_width: int = 200
+    min_col_width: int = DEFAULT_MIN_COL_WIDTH
     width: int | None = None
     height: int | None = None
     column: int | None = None
@@ -99,7 +101,7 @@ class TabsItem:
 
 
 FormItem = FieldItem | GroupItem | TabsItem
-ButtonInput = str | Mapping[str, Any] | DialogButton
+ButtonInput = str | Mapping[str, Any] | "DialogButton"
 
 
 class Form(Frame):
@@ -133,16 +135,29 @@ class Form(Frame):
             data: dict[str, Any] | None = None,
             items: Sequence[FormItem | Mapping[str, Any]] | None = None,
             col_count: int = 1,
-            min_col_width: int = 200,
+            min_col_width: int = DEFAULT_MIN_COL_WIDTH,
             on_data_changed: Callable[[dict[str, Any]], Any] | None = None,
-            width: int | None = None,
-            height: int | None = None,
-            scrollable: bool = True,
-            scrollview_options: dict[str, Any] | None = None,
+        width: int | None = None,
+        height: int | None = None,
             bootstyle: str | None = None,
             buttons: Sequence[ButtonInput] | None = None,
             **kwargs: Any,
     ) -> None:
+        """Build a configurable form from data or explicit items.
+
+        Args:
+            master: Parent widget.
+            data: Initial data backing the form; keys become field names.
+            items: Explicit form layout (FieldItem/GroupItem/TabsItem or mappings).
+            col_count: Number of columns at the top level.
+            min_col_width: Minimum width per column in pixels.
+            on_data_changed: Callback invoked with updated data when a field changes.
+            width: Requested form width; if None, size naturally.
+            height: Requested form height; if None, size naturally.
+            bootstyle: Bootstyle applied to the form container.
+            buttons: Optional footer buttons (DialogButton, mapping, or string).
+            **kwargs: Additional Frame configuration options.
+        """
         super().__init__(master=master, width=width, height=height, bootstyle=bootstyle, **kwargs)
 
         self._data: dict[str, Any] = dict(data) if data else {}
@@ -150,7 +165,6 @@ class Form(Frame):
         self._on_data_changed = on_data_changed
         self._col_count = col_count
         self._min_col_width = min_col_width
-        self._scrollview_options = scrollview_options or {}
         self._widgets: dict[str, Any] = {}
         self._variables: dict[str, Variable] = {}
         self._signals: dict[str, Any] = {}
@@ -163,19 +177,10 @@ class Form(Frame):
         self.columnconfigure(0, weight=1)
         self.rowconfigure(0, weight=1)
 
-        self._scrollview = None
-        if scrollable:
-            self._scrollview = ScrollView(self, direction='vertical', **self._scrollview_options)
-            self._scrollview.grid(row=0, column=0, sticky='nsew')
-            self._content_frame = Frame(self._scrollview)
-            self._scrollview.add(self._content_frame, anchor='nw')
-            self._scrollview.enable_scrolling()
-            container = self._scrollview
-        else:
-            container = Frame(self)
-            container.grid(row=0, column=0, sticky='nsew')
-            self._content_frame = Frame(container)
-            self._content_frame.pack(fill='both', expand=True)
+        container = Frame(self)
+        container.grid(row=0, column=0, sticky='nsew')
+        self._content_frame = Frame(container)
+        self._content_frame.pack(fill='both', expand=True)
 
         # Respect explicit width/height by preventing geometry propagation.
         if width or height:
@@ -300,6 +305,7 @@ class Form(Frame):
         label_text = item.label if item.label is not None else item.key.replace("_", " ").title()
 
         container = Frame(parent)
+        container.columnconfigure(0, weight=1)  # Allow field widgets to expand horizontally
 
         field_widget: Any
         if editor == 'textentry':
@@ -407,7 +413,7 @@ class Form(Frame):
                         items=list(raw.get('items', [])),
                         label=raw.get('label'),
                         col_count=raw.get('col_count', 1),
-                        min_col_width=raw.get('min_col_width', 200),
+                        min_col_width=raw.get('min_col_width', DEFAULT_MIN_COL_WIDTH),
                         width=raw.get('width'),
                         height=raw.get('height'),
                         column=raw.get('column'),
@@ -464,7 +470,9 @@ class Form(Frame):
                 normalized.append(TabItem(label=str(raw.get('label', 'Tab')), items=list(raw.get('items', []))))
         return normalized
 
-    def _normalize_buttons(self, buttons: Sequence[ButtonInput]) -> list[DialogButton]:
+    def _normalize_buttons(self, buttons: Sequence[ButtonInput]) -> list["DialogButton"]:
+        from ttkbootstrap.dialogs.dialog import DialogButton  # local import to avoid circular init
+
         normalized: list[DialogButton] = []
         for raw in buttons:
             if isinstance(raw, DialogButton):
