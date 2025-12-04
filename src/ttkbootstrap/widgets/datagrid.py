@@ -23,6 +23,7 @@ from ttkbootstrap.widgets.treeview import Treeview
 from ttkbootstrap.widgets.separator import Separator
 from ttkbootstrap.widgets.entry import Entry
 from ttkbootstrap.widgets.contextmenu import ContextMenu
+from ttkbootstrap.widgets.dropdownbutton import DropdownButton
 
 
 class DataGrid(Frame):
@@ -43,6 +44,10 @@ class DataGrid(Frame):
         show_yscroll: bool = True,
         show_xscroll: bool = False,
         allow_header_sort: bool = True,
+        show_table_status: bool = True,
+        show_searchbar: bool = True,
+        allow_export: bool = False,
+        export_options: list[str] | None = None,
         **kwargs,
     ):
         super().__init__(master, **kwargs)
@@ -52,6 +57,10 @@ class DataGrid(Frame):
         self._show_yscroll = show_yscroll
         self._show_xscroll = show_xscroll
         self._allow_header_sort = allow_header_sort
+        self._show_table_status = show_table_status
+        self._show_searchbar = show_searchbar
+        self._allow_export = allow_export
+        self._export_options = export_options or ["all", "selection", "page"]
         self._cache_size = max(0, cache_size)
         self._page_cache: OrderedDict[int, list[dict]] = OrderedDict()
         self._column_defs = columns or []
@@ -95,7 +104,8 @@ class DataGrid(Frame):
         self._ensure_column_metadata(seeded_records)
 
         # UI
-        self._build_search_bar()
+        if self._show_searchbar:
+            self._build_toolbar()
         self._build_tree()
         if not self._virtual_scroll:
             self._build_pagination_bar()
@@ -149,8 +159,8 @@ class DataGrid(Frame):
         if not self._column_defs:
             self._column_defs = [{"text": c} for c in self._column_keys]
 
-    def _build_search_bar(self) -> None:
-        bar = Frame(self)
+    def _build_toolbar(self) -> None:
+        bar = Frame(self, name="toolbar")
         bar.pack(fill="x", pady=(0, 4))
 
         self._search_entry = TextEntry(bar)
@@ -167,6 +177,25 @@ class DataGrid(Frame):
         )
         self._search_mode.pack(side="left", padx=(0, 6))
         Button(bar, text="Clear", bootstyle="secondary", command=self._clear_search).pack(side="left", padx=(0, 4))
+        if self._allow_export:
+            export_items = []
+            if "all" in self._export_options:
+                export_items.append({"type": "command", "text": "Export all", "command": self._export_all})
+            if "selection" in self._export_options:
+                export_items.append({"type": "command", "text": "Export selection", "command": self._export_selection})
+            if "page" in self._export_options:
+                export_items.append({"type": "command", "text": "Export page", "command": self._export_page})
+            if not export_items:
+                export_items.append({"type": "command", "text": "Export all", "command": self._export_all})
+            DropdownButton(
+                bar,
+                icon="download",
+                icon_only=True,
+                bootstyle="secondary",
+                compound="image",
+                items=export_items,
+                show_dropdown_button=False,
+            ).pack(side="left")
 
     def _build_tree(self) -> None:
         frame = Frame(self)
@@ -217,6 +246,8 @@ class DataGrid(Frame):
         self._filter_label.pack(side="left", padx=(0, 4))
         self._sort_label = Label(status_frame, text="", anchor="w", bootstyle="secondary")
         self._sort_label.pack(side="left", padx=(8, 4))
+        if not self._show_table_status:
+            status_frame.pack_forget()
 
         info_frame = Frame(bar)
         info_frame.pack(side='left')
@@ -394,8 +425,10 @@ class DataGrid(Frame):
             self._page_entry.insert(0, str(self._current_page + 1))
         if hasattr(self, "_page_label"):
             self._page_label.configure(text=f"of {self._total_pages()}")
-        self._update_status_labels()
-        self._update_status_labels()
+        if self._show_table_status:
+            self._update_status_labels()
+        if self._show_table_status:
+            self._update_status_labels()
 
     def _first_page(self) -> None:
         self._load_page(0)
@@ -717,6 +750,29 @@ class DataGrid(Frame):
         self._page_cache[page] = records
         if len(self._page_cache) > self._cache_size:
             self._page_cache.popitem(last=False)
+
+    # ------------------------------------------------------------------ Export helpers
+    def _export_all(self) -> None:
+        try:
+            rows = self._datasource.get_page_from_index(0, self._datasource.total_count())
+            self._tree.event_generate("<<DataGridExportAll>>", data=rows)
+        except Exception:
+            pass
+
+    def _export_selection(self) -> None:
+        try:
+            selected = [self._row_map[iid] for iid in self._tree.selection() if iid in self._row_map]
+            self._tree.event_generate("<<DataGridExportSelection>>", data=selected)
+        except Exception:
+            pass
+
+    def _export_page(self) -> None:
+        try:
+            start_index = self._current_page * self._page_size
+            rows = self._datasource.get_page_from_index(start_index, self._page_size)
+            self._tree.event_generate("<<DataGridExportPage>>", data=rows)
+        except Exception:
+            pass
 
     # ------------------------------------------------------------------ Context dispatch
     def _on_tree_context(self, event) -> None:

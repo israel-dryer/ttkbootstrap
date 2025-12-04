@@ -33,6 +33,8 @@ grid = DataGrid(
     rows=rows,
     page_size=200,
     show_yscroll=False,
+    allow_export=True,
+    export_options=['page', 'selection']
 )
 grid.pack(fill="both", expand=True, padx=5, pady=5)
 elapsed = time.perf_counter() - start
