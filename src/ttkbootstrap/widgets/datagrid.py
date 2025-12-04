@@ -24,6 +24,7 @@ from ttkbootstrap.widgets.separator import Separator
 from ttkbootstrap.widgets.entry import Entry
 from ttkbootstrap.widgets.contextmenu import ContextMenu
 from ttkbootstrap.widgets.dropdownbutton import DropdownButton
+from ttkbootstrap.widgets.button import Button as TtkButton
 
 
 class DataGrid(Frame):
@@ -48,6 +49,8 @@ class DataGrid(Frame):
         show_searchbar: bool = True,
         allow_export: bool = False,
         export_options: list[str] | None = None,
+        allow_edit: bool = False,
+        form_options: dict | None = None,
         **kwargs,
     ):
         super().__init__(master, **kwargs)
@@ -61,6 +64,8 @@ class DataGrid(Frame):
         self._show_searchbar = show_searchbar
         self._allow_export = allow_export
         self._export_options = export_options or ["all", "selection", "page"]
+        self._allow_edit = allow_edit
+        self._form_options = form_options or {}
         self._cache_size = max(0, cache_size)
         self._page_cache: OrderedDict[int, list[dict]] = OrderedDict()
         self._column_defs = columns or []
@@ -177,6 +182,14 @@ class DataGrid(Frame):
         )
         self._search_mode.pack(side="left", padx=(0, 6))
         Button(bar, text="Clear", bootstyle="secondary", command=self._clear_search).pack(side="left", padx=(0, 4))
+        if self._allow_edit:
+            Button(
+                bar,
+                icon="plus",
+                icon_only=True,
+                bootstyle="secondary",
+                command=self._open_new_record,
+            ).pack(side="left", padx=(0, 4))
         if self._allow_export:
             export_items = []
             if "all" in self._export_options:
@@ -236,6 +249,8 @@ class DataGrid(Frame):
             self._tree.column(idx, anchor=anchor, width=120, stretch=True)
         self._update_heading_icons()
         self._tree.bind("<Button-3>", self._on_tree_context)
+        if self._allow_edit:
+            self._tree.bind("<Double-1>", self._on_row_double_click)
 
     def _build_pagination_bar(self) -> None:
         bar = Frame(self)
@@ -583,6 +598,99 @@ class DataGrid(Frame):
         self._row_menu_col = col_idx
         self._ensure_row_menu()
         self._row_menu.show(position=(event.x_root, event.y_root))
+
+    def _on_row_double_click(self, event) -> None:
+        if not self._allow_edit:
+            return
+        region = self._tree.identify_region(event.x, event.y)
+        if region == "heading":
+            return
+        iid = self._tree.identify_row(event.y)
+        if not iid:
+            return
+        rec = self._row_map.get(iid, {})
+        self._open_form_dialog(rec)
+
+    def _open_new_record(self) -> None:
+        if not self._allow_edit:
+            return
+        self._open_form_dialog(None)
+
+    def _open_form_dialog(self, record: dict | None) -> None:
+        from ttkbootstrap.dialogs.formdialog import FormDialog
+
+        form_items = self._build_form_items()
+        initial_data = dict(record) if record else {}
+
+        form_options = dict(self._form_options)
+        form_options.setdefault('col_count', 2)
+        form_options.setdefault('min_col_width', 260)
+        form_options.setdefault('scrollable', True)
+        form_options.setdefault('resizable', True)
+        form_options.setdefault('buttons', ["Cancel", "Save"])
+
+        dialog = FormDialog(
+            master=self.winfo_toplevel() if hasattr(self, "winfo_toplevel") else self,
+            title="Edit Record" if record else "New Record",
+            data=initial_data,
+            items=form_items,
+            col_count=form_options.get('col_count', 2),
+            min_col_width=form_options.get('min_col_width', 260),
+            scrollable=form_options.get('scrollable', True),
+            buttons=form_options.get('buttons'),
+            resizable=(True, True) if form_options.get('resizable', True) else (False, False),
+        )
+
+        dialog.show()
+        data = dialog.result or {}
+
+        if not data:
+            return
+
+        if record and "id" in record:
+            rec_id = record["id"]
+            updates = dict(data)
+            updates.pop("id", None)
+            try:
+                self._datasource.update_record(rec_id, updates)
+            except Exception:
+                return
+        else:
+            try:
+                self._datasource.create_record(dict(data))
+            except Exception:
+                return
+        self._clear_cache()
+        self._load_page(self._current_page)
+
+    def _build_form_items(self) -> list[dict]:
+        items: list[dict] = []
+        for idx, key in enumerate(self._column_keys):
+            coldef = self._column_defs[idx] if idx < len(self._column_defs) else key
+            label = self._col_text(coldef)
+            editor_opts = {}
+            editor = None
+            dtype = None
+            readonly = False
+            if isinstance(coldef, dict):
+                editor_opts = dict(coldef.get("editor_options", {}))
+                editor = coldef.get("editor")
+                dtype = coldef.get("dtype") or coldef.get("type")
+                readonly = bool(coldef.get("readonly", False))
+                if coldef.get("required"):
+                    editor_opts.setdefault("required", True)
+            items.append(
+                {
+                    "key": key,
+                    "label": label,
+                    "dtype": dtype,
+                    "editor": editor,
+                    "editor_options": {**editor_opts},
+                    "readonly": readonly,
+                    "type": "field",
+                }
+            )
+        return items
 
     def _filter_by_value(self) -> None:
         selection = self._tree.selection()
