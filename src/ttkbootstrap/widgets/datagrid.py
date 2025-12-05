@@ -85,6 +85,7 @@ class DataGrid(Frame):
         self._display_columns: list[int] = []
         self._header_menu: ContextMenu | None = None
         self._header_menu_col: int | None = None
+        self._cached_total_count: int | None = None
 
         self._resolve_column_keys()
 
@@ -170,7 +171,7 @@ class DataGrid(Frame):
 
         self._search_entry = TextEntry(bar)
         self._search_entry.pack(side="left", fill="x", expand=True, padx=(0, 6))
-        self._search_entry.bind("<Return>", lambda e: self._run_search())
+        self._search_entry.on_enter(lambda _e: self._run_search())
 
         self._search_mode = SelectBox(
             bar,
@@ -407,7 +408,10 @@ class DataGrid(Frame):
 
     def _total_pages(self) -> int:
         try:
-            total = self._datasource.total_count()
+            # Use cached count to avoid expensive COUNT(*) queries on every navigation
+            if self._cached_total_count is None:
+                self._cached_total_count = self._datasource.total_count()
+            total = self._cached_total_count
             size = getattr(self._datasource, "page_size", self._page_size) or 1
             return max(1, (total + size - 1) // size)
         except Exception:
@@ -440,8 +444,6 @@ class DataGrid(Frame):
             self._page_entry.insert(0, str(self._current_page + 1))
         if hasattr(self, "_page_label"):
             self._page_label.configure(text=f"of {self._total_pages()}")
-        if self._show_table_status:
-            self._update_status_labels()
         if self._show_table_status:
             self._update_status_labels()
 
@@ -737,7 +739,6 @@ class DataGrid(Frame):
         self._clear_cache()
         self._load_page(0)
         self._update_status_labels()
-        self._update_status_labels()
 
     def _move_row_up(self) -> None:
         self._move_row_relative(-1)
@@ -804,6 +805,8 @@ class DataGrid(Frame):
     def _clear_cache(self) -> None:
         if self._page_cache:
             self._page_cache.clear()
+        # Invalidate total count cache when data/filter/sort changes
+        self._cached_total_count = None
 
     def _load_sort_icons(self) -> None:
         """Load and cache sort direction icons sized to match the heading color."""
