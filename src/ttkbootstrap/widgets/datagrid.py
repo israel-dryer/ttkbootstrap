@@ -8,6 +8,7 @@ renders the current page in a Treeview.
 from __future__ import annotations
 
 from collections import OrderedDict
+import logging
 from tkinter import Misc
 import tkinter.ttk as ttk
 
@@ -25,6 +26,8 @@ from ttkbootstrap.widgets.entry import Entry
 from ttkbootstrap.widgets.contextmenu import ContextMenu
 from ttkbootstrap.widgets.dropdownbutton import DropdownButton
 from ttkbootstrap.widgets.button import Button as TtkButton
+
+logger = logging.getLogger(__name__)
 
 
 class DataGrid(Frame):
@@ -656,21 +659,34 @@ class DataGrid(Frame):
         if not data:
             return
 
+        new_id = None
         if record and "id" in record:
             rec_id = record["id"]
             updates = dict(data)
             updates.pop("id", None)
             try:
+                logger.debug("Updating record id=%s with %s", rec_id, updates)
                 self._datasource.update_record(rec_id, updates)
             except Exception:
+                logger.exception("Failed to update record id=%s", rec_id)
                 return
         else:
             try:
-                self._datasource.create_record(dict(data))
+                logger.debug("Creating record %s", data)
+                new_id = self._datasource.create_record(dict(data))
+                logger.debug("Created record id=%s (total=%s)", new_id, self._datasource.total_count())
             except Exception:
+                logger.exception("Failed to create record from %s", data)
                 return
         self._clear_cache()
-        self._load_page(self._current_page)
+        target_page = self._current_page
+        if not record:
+            # After creating, compute last page using fresh count so the new row is visible
+            located_page = self._find_record_page(new_id) if new_id is not None else None
+            target_page = located_page if located_page is not None else max(0, self._total_pages() - 1)
+        self._load_page(target_page)
+        if new_id is not None:
+            self._focus_record(new_id)
 
     def _build_form_items(self) -> list[dict]:
         items: list[dict] = []
@@ -868,6 +884,34 @@ class DataGrid(Frame):
         self._page_cache[page] = records
         if len(self._page_cache) > self._cache_size:
             self._page_cache.popitem(last=False)
+
+    def _focus_record(self, record_id) -> None:
+        """Select and scroll to a record by id if it's on the current page."""
+        try:
+            rid = str(record_id)
+            for iid, rec in self._row_map.items():
+                if str(rec.get("id")) == rid:
+                    self._tree.selection_set(iid)
+                    self._tree.see(iid)
+                    break
+        except Exception:
+            pass
+
+    def _find_record_page(self, record_id) -> int | None:
+        """Locate the page index containing the given record id, if available."""
+        try:
+            rid = str(record_id)
+            total_pages = self._total_pages()
+            for page_idx in range(total_pages):
+                try:
+                    rows = self._datasource.get_page(page_idx)
+                except Exception:
+                    break
+                if any(str(rec.get("id")) == rid for rec in rows):
+                    return page_idx
+        except Exception:
+            pass
+        return None
 
     # ------------------------------------------------------------------ Export helpers
     def _export_all(self) -> None:
