@@ -272,8 +272,16 @@ class FormDialog:
 
     def show_centered(self, modal: Optional[bool] = None):
         """Convenience helper to center on the parent window."""
+        # Allow initial layout priming each time the dialog is shown
         self._initial_layout_done = False
+
         self._dialog.show_centered(modal=modal)
+
+        # Transfer the result from dialog to FormDialog
+        if self._dialog.result is not None:
+            self.result = self.form.data if self.form else None
+        else:
+            self.result = None
 
 
     def _build_form_content(self, parent):

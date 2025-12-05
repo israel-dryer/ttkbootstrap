@@ -495,6 +495,13 @@ class Dialog:
         except Exception:
             pass
 
+        # After deiconify, size may change; recenter only when using default centering
+        if position is None:
+            try:
+                self._center_on_parent()
+            except Exception:
+                pass
+
     def _ensure_on_screen(self, x: int, y: int) -> tuple[int, int]:
         """Ensure dialog position keeps it fully visible on screen.
 
@@ -535,22 +542,23 @@ class Dialog:
 
         try:
             self._master.update_idletasks()
+            self._toplevel.update_idletasks()
         except Exception:
             pass
 
         # Get dialog dimensions
-        dialog_width = self._toplevel.winfo_reqwidth()
-        dialog_height = self._toplevel.winfo_reqheight()
+        dialog_width = max(self._toplevel.winfo_reqwidth(), self._toplevel.winfo_width())
+        dialog_height = max(self._toplevel.winfo_reqheight(), self._toplevel.winfo_height())
 
         # Get parent dimensions and position
         parent_x = self._master.winfo_rootx()
         parent_y = self._master.winfo_rooty()
-        parent_width = self._master.winfo_width()
-        parent_height = self._master.winfo_height()
+        parent_width = max(self._master.winfo_width(), self._master.winfo_reqwidth())
+        parent_height = max(self._master.winfo_height(), self._master.winfo_reqheight())
 
         # Calculate center position
-        x = parent_x + (parent_width - dialog_width) // 2
-        y = parent_y + (parent_height - dialog_height) // 2
+        x = parent_x + max(0, (parent_width - dialog_width) // 2)
+        y = parent_y + max(0, (parent_height - dialog_height) // 2)
 
         # Keep dialog visible across multiple monitors
         x, y = self._ensure_on_screen(x, y)
