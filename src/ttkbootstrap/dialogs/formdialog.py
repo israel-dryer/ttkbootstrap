@@ -270,6 +270,12 @@ class FormDialog:
         else:
             self.result = None
 
+    def show_centered(self, modal: Optional[bool] = None):
+        """Convenience helper to center on the parent window."""
+        self._initial_layout_done = False
+        self._dialog.show_centered(modal=modal)
+
+
     def _build_form_content(self, parent):
         """Builder callback that creates the Form widget inside the dialog."""
         # Import Form here to avoid circular import

@@ -339,6 +339,10 @@ class Dialog:
                 self._toplevel.grab_set()
             self._master.wait_window(self._toplevel)
 
+    def show_centered(self, modal: Optional[bool] = None):
+        """Show the dialog centered on its parent using default positioning."""
+        self.show(position=None, modal=modal)
+
     @property
     def toplevel(self) -> ttk.Toplevel | None:
         """Read-only access to the underlying toplevel window."""
@@ -508,25 +512,21 @@ class Dialog:
         dialog_width = self._toplevel.winfo_reqwidth()
         dialog_height = self._toplevel.winfo_reqheight()
 
-        # Get screen dimensions
-        screen_width = self._toplevel.winfo_screenwidth()
-        screen_height = self._toplevel.winfo_screenheight()
+        # Use virtual root to account for multiple monitors
+        screen_x0 = self._toplevel.winfo_vrootx()
+        screen_y0 = self._toplevel.winfo_vrooty()
+        screen_width = self._toplevel.winfo_vrootwidth()
+        screen_height = self._toplevel.winfo_vrootheight()
+        screen_x1 = screen_x0 + screen_width
+        screen_y1 = screen_y0 + screen_height
 
-        # Ensure dialog doesn't go off the right edge
-        if x + dialog_width > screen_width:
-            x = screen_width - dialog_width - 20  # 20px margin
+        # Clamp within virtual screen bounds with a small margin
+        x = min(x, screen_x1 - dialog_width - 20)
+        y = min(y, screen_y1 - dialog_height - 60)  # leave room for taskbar/dock
+        x = max(screen_x0 + 20, x)
+        y = max(screen_y0 + 20, y)
 
-        # Ensure dialog doesn't go off the bottom edge
-        if y + dialog_height > screen_height:
-            y = screen_height - dialog_height - 60  # 60px margin for taskbar
-
-        # Ensure dialog doesn't go off the left edge
-        x = max(20, x)
-
-        # Ensure dialog doesn't go off the top edge
-        y = max(20, y)
-
-        return x, y
+        return int(x), int(y)
 
     def _center_on_parent(self) -> None:
         """Center the dialog on its parent window."""
@@ -552,9 +552,8 @@ class Dialog:
         x = parent_x + (parent_width - dialog_width) // 2
         y = parent_y + (parent_height - dialog_height) // 2
 
-        # Ensure dialog is not positioned off-screen
-        x = max(0, x)
-        y = max(0, y)
+        # Keep dialog visible across multiple monitors
+        x, y = self._ensure_on_screen(x, y)
 
         self._toplevel.geometry(f"+{x}+{y}")
 
