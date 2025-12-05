@@ -534,12 +534,37 @@ class FormDialog:
     def _wrap_button_commands(self):
         """Wrap button command callbacks to pass FormDialog instead of Dialog."""
         for button in self._buttons:
+            # For non-cancel buttons, handle validation and closing manually
+            if button.role != "cancel":
+                button.closes = False
             if button.command:
                 original_command = button.command
-                # Wrap the command to pass FormDialog (self) instead of Dialog
-                def wrapped_command(dlg, cmd=original_command):
-                    return cmd(self)  # Pass FormDialog, not Dialog
+                def wrapped_command(dlg, cmd=original_command, btn=button):
+                    # Validate form before running custom command
+                    if self.form and btn.role != "cancel":
+                        if not self.form.validate():
+                            return
+                    result = cmd(self)  # Pass FormDialog, not Dialog
+                    if result is False:
+                        return
+                    # Set result and close manually when not cancelled
+                    if self._dialog:
+                        self._dialog.result = btn.result if btn.result is not None else (self.form.data if self.form else None)
+                        if btn.closes is False and self._dialog.toplevel:
+                            self._dialog.toplevel.destroy()
+                    return result
                 button.command = wrapped_command
+            else:
+                # No custom command: inject validation and close behavior for non-cancel buttons
+                def auto_command(dlg=None, btn=button):
+                    if self.form and btn.role != "cancel":
+                        if not self.form.validate():
+                            return
+                    if self._dialog:
+                        self._dialog.result = btn.result if btn.result is not None else (self.form.data if self.form else None)
+                        if btn.closes is False and self._dialog.toplevel:
+                            self._dialog.toplevel.destroy()
+                button.command = auto_command
 
     def _normalize_buttons(self, buttons: Iterable[ButtonSpec | str] | None) -> list[DialogButton]:
         """Normalize button specifications, providing defaults if none given."""

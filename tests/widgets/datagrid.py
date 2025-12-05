@@ -12,7 +12,7 @@ with open(p, encoding="utf-8") as f:
     row_data = list(reader)
 
 # Upscale the dataset for a quick performance sanity check
-repeat = 1000
+repeat = 2003
 rows = row_data * repeat
 print(f"Preparing {len(rows)} records")
 
@@ -34,7 +34,8 @@ grid = DataGrid(
     page_size=200,
     show_yscroll=False,
     allow_export=True,
-    export_options=['page', 'selection']
+    export_options=['page', 'selection'],
+    allow_edit=True,
 )
 grid.pack(fill="both", expand=True, padx=5, pady=5)
 elapsed = time.perf_counter() - start

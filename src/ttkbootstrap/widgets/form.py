@@ -23,6 +23,7 @@ from ttkbootstrap.widgets.scale import Scale
 from ttkbootstrap.widgets.selectbox import SelectBox
 from ttkbootstrap.widgets.spinbox import Spinbox
 from ttkbootstrap.widgets.textentry import TextEntry
+from ttkbootstrap.widgets.mixins.validation_mixin import ValidationMixin
 
 if TYPE_CHECKING:
     from ttkbootstrap.dialogs.dialog import DialogButton
@@ -207,6 +208,53 @@ class Form(Frame):
     def data(self) -> dict[str, Any]:
         """Current data backing the form."""
         return dict(self._collect_data())
+
+    def validate(self) -> bool:
+        """Run validation rules on all field widgets; returns True if all pass."""
+        all_valid = True
+        first_invalid_widget = None
+
+        def _validate_field(widget: Field) -> bool:
+            entry = getattr(widget, "_entry", widget)
+            rules = getattr(entry, "_rules", [])
+            if not rules:
+                return True
+            value = widget.value
+            payload: dict[str, Any] = {"value": value, "is_valid": True, "message": ""}
+            is_valid = True
+            for rule in rules:
+                if rule.trigger not in ("always", "manual"):
+                    continue
+                result = rule.validate(value)
+                payload.update(is_valid=result.is_valid, message=result.message)
+                if not result.is_valid:
+                    is_valid = False
+                    try:
+                        entry.event_generate(ValidationMixin.EVENT_INVALID, data=payload)
+                        entry.event_generate(ValidationMixin.EVENT_VALIDATED, data=payload)
+                    except Exception:
+                        pass
+                    break
+            if is_valid:
+                try:
+                    entry.event_generate(ValidationMixin.EVENT_VALID, data=payload)
+                    entry.event_generate(ValidationMixin.EVENT_VALIDATED, data=payload)
+                except Exception:
+                    pass
+            return is_valid
+
+        for widget in self._widgets.values():
+            if isinstance(widget, Field):
+                ok = _validate_field(widget)
+                if not ok and first_invalid_widget is None:
+                    first_invalid_widget = widget
+                all_valid = all_valid and ok
+        if first_invalid_widget:
+            try:
+                first_invalid_widget.focus_set()
+            except Exception:
+                pass
+        return all_valid
 
     def get_field_variable(self, key: str) -> Variable | None:
         """Return the Tk variable associated with a field key, if any."""
@@ -679,6 +727,7 @@ class Form(Frame):
                     label=str(key).replace('_', ' ').title(),
                     dtype=self._infer_dtype_from_value(value),
                     editor=self._default_editor_for_dtype(self._infer_dtype_from_value(value), value),
+                    editor_options={"show_message": True},
                 )
             )
         return inferred
