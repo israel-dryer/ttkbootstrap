@@ -106,6 +106,12 @@ class SqliteDataSource(BaseDataSource):
         self._order_by = ""
         self._columns = []
 
+    @staticmethod
+    def _quote_identifier(name: str) -> str:
+        """Safely quote an identifier (column/table) for SQLite."""
+        text = str(name).replace('"', '""')
+        return f'"{text}"'
+
     def set_data(
         self,
         records: Union[Sequence[Primitive], Sequence[dict[str, Any]], Sequence[Sequence[Any]]],
@@ -166,6 +172,10 @@ class SqliteDataSource(BaseDataSource):
 
             # Infer types from first row (pad to keys length)
             padded_first = list(first) + [None] * (len(keys) - len(first))
+            if need_id and "id" in keys:
+                padded_first[keys.index("id")] = 0
+            if need_selected and "selected" in keys:
+                padded_first[keys.index("selected")] = 0
             col_types = {col: self._infer_type(padded_first[idx]) for idx, col in enumerate(keys)}
 
             rows_to_insert = []
@@ -181,7 +191,7 @@ class SqliteDataSource(BaseDataSource):
                 rows_to_insert.append(tuple(base_values))
 
         col_definitions = ", ".join(
-            f"{col} {col_types[col]}" + (" PRIMARY KEY" if col == "id" else "")
+            f"{self._quote_identifier(col)} {col_types[col]}" + (" PRIMARY KEY" if col == "id" else "")
             for col in self._columns
         )
         placeholders = ", ".join("?" for _ in self._columns)
@@ -253,8 +263,11 @@ class SqliteDataSource(BaseDataSource):
         if "selected" not in record:
             record["selected"] = 0
 
-        keys = record.keys()
-        cols = ", ".join(keys)
+        # Ensure table exists (handles empty datasources)
+        self._ensure_table_for_record(record)
+
+        keys = list(record.keys())
+        cols = ", ".join(self._quote_identifier(k) for k in keys)
         placeholders = ", ".join("?" for _ in keys)
         values = tuple(record[col] for col in keys)
 
@@ -272,7 +285,7 @@ class SqliteDataSource(BaseDataSource):
         """Update record fields by ID."""
         if not updates:
             return False
-        set_clause = ", ".join(f"{k} = ?" for k in updates)
+        set_clause = ", ".join(f"{self._quote_identifier(k)} = ?" for k in updates)
         values = tuple(updates.values()) + (record_id,)
         with self.conn:
             cur = self.conn.execute(f"UPDATE {self._table} SET {set_clause} WHERE id = ?", values)
@@ -286,9 +299,45 @@ class SqliteDataSource(BaseDataSource):
 
     def _generate_new_id(self) -> int:
         """Generate next available integer ID."""
-        cursor = self.conn.execute(f"SELECT MAX(id) FROM {self._table}")
-        max_id = cursor.fetchone()[0]
+        try:
+            cursor = self.conn.execute(f"SELECT MAX(id) FROM {self._table}")
+            max_id = cursor.fetchone()[0]
+        except Exception:
+            max_id = 0
         return (max_id or 0) + 1
+
+    # ------------------------------------------------------------------ helpers
+    def _ensure_table_for_record(self, record: Dict[str, Any]) -> None:
+        """Create the table if it does not yet exist, inferring columns from record."""
+        try:
+            # Quick existence check
+            self.conn.execute(f"SELECT 1 FROM {self._table} LIMIT 1")
+            return
+        except Exception:
+            pass
+
+        cols = list(self._columns) if self._columns else list(record.keys())
+        if "id" not in cols:
+            cols.append("id")
+        if "selected" not in cols:
+            cols.append("selected")
+        self._columns = cols
+
+        col_types = {}
+        for c in cols:
+            if c == "id":
+                col_types[c] = "INTEGER"
+            elif c == "selected":
+                col_types[c] = "INTEGER"
+            else:
+                col_types[c] = self._infer_type(record.get(c))
+
+        col_definitions = ", ".join(
+            f"{self._quote_identifier(col)} {col_types[col]}" + (" PRIMARY KEY" if col == "id" else "")
+            for col in cols
+        )
+        with self.conn:
+            self.conn.execute(f"CREATE TABLE IF NOT EXISTS {self._table} ({col_definitions})")
 
     # === SELECTION ====
 
