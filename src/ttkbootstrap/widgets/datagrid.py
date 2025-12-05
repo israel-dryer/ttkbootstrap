@@ -621,6 +621,13 @@ class DataGrid(Frame):
     def _open_form_dialog(self, record: dict | None) -> None:
         from ttkbootstrap.dialogs.formdialog import FormDialog
 
+        try:
+            # Ensure geometry info is current so centering uses real widget bounds
+            self.update_idletasks()
+        except Exception:
+            pass
+        dialog_master = self.winfo_toplevel() if hasattr(self, "winfo_toplevel") else self
+
         form_items = self._build_form_items()
         initial_data = dict(record) if record else {}
 
@@ -632,7 +639,7 @@ class DataGrid(Frame):
         form_options.setdefault('buttons', ["Cancel", "Save"])
 
         dialog = FormDialog(
-            master=self.winfo_toplevel() if hasattr(self, "winfo_toplevel") else self,
+            master=dialog_master,
             title="Edit Record" if record else "New Record",
             data=initial_data,
             items=form_items,
@@ -643,7 +650,7 @@ class DataGrid(Frame):
             resizable=(True, True) if form_options.get('resizable', True) else (False, False),
         )
 
-        dialog.show()
+        dialog.show_centered()
         data = dialog.result or {}
 
         if not data:
