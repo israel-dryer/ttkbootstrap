@@ -557,7 +557,10 @@ class FormDialog:
             else:
                 # No custom command: inject validation and close behavior for non-cancel buttons
                 def auto_command(dlg=None, btn=button):
-                    if self.form and btn.role != "cancel":
+                    if btn.role == "cancel":
+                        # Cancel button: leave result as None, dialog closes via default behavior
+                        return
+                    if self.form:
                         if not self.form.validate():
                             return
                     if self._dialog:
@@ -581,8 +584,16 @@ class FormDialog:
                 normalized.append(btn)
             elif isinstance(btn, str):
                 # Simple string becomes a button
-                role = "primary" if not normalized else "secondary"
-                result = btn.lower() if btn.lower() in ("ok", "submit", "save") else None
+                btn_lower = btn.lower()
+                if btn_lower == "cancel":
+                    role = "cancel"
+                    result = None
+                elif btn_lower in ("ok", "submit", "save"):
+                    role = "primary"
+                    result = btn_lower
+                else:
+                    role = "primary" if not normalized else "secondary"
+                    result = None
                 normalized.append(DialogButton(text=btn, role=role, result=result))
             elif isinstance(btn, Mapping):
                 normalized.append(DialogButton(**btn))
