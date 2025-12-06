@@ -40,6 +40,10 @@ def _apply_icon_mapping(
         icon = b.normalize_icon_spec(icon, default_size)
 
     state_spec['image'] = b.map_stateful_icons(icon, state_spec['foreground'])
+    # Set compound to 'left' so text is visible alongside the icon
+    icon_only = options.get('icon_only', False)
+    if not icon_only:
+        state_spec['compound'] = 'left'
     return state_spec
 
 
