@@ -53,6 +53,7 @@ class DataGrid(Frame):
             show_searchbar: bool = True,
             searchbar_mode: Literal['standard', 'advanced'] = 'simple',
             allow_export: bool = False,
+            allow_column_hiding: bool = True,
             export_options: list[str] | None = None,
             allow_edit: bool = False,
             form_options: dict | None = None,
@@ -68,9 +69,11 @@ class DataGrid(Frame):
         self._show_table_status = show_table_status
         self._show_column_chooser = show_column_chooser
         self._show_searchbar = show_searchbar
+        self._searchbar_mode = searchbar_mode
         self._allow_export = allow_export
         self._export_options = export_options or ["all", "selection", "page"]
         self._allow_edit = allow_edit
+        self._allow_column_hiding = allow_column_hiding
         self._form_options = form_options or {}
         self._cache_size = max(0, cache_size)
         self._page_cache: OrderedDict[int, list[dict]] = OrderedDict()
@@ -119,8 +122,7 @@ class DataGrid(Frame):
         self._ensure_column_metadata(seeded_records)
 
         # UI
-        if self._show_searchbar:
-            self._build_toolbar()
+        self._build_toolbar()
         self._build_tree()
         if not self._virtual_scroll:
             self._build_pagination_bar()
@@ -178,28 +180,34 @@ class DataGrid(Frame):
         bar = Frame(self, name="toolbar")
         bar.pack(fill="x", pady=(0, 4))
 
-        self._search_entry = TextEntry(bar)
-        self._search_entry.pack(side="left", fill="x", expand=True, padx=(0, 6))
-        self._search_entry.on_enter(lambda _e: self._run_search())
+        if self._show_searchbar:
+            self._search_entry = TextEntry(bar)
+            self._search_entry.insert_addon(Label, 'before', icon="search", icon_only=True)
+            self._search_entry.insert_addon(Button, 'after', icon="x-lg", icon_only=True, command=self._clear_search)
+            self._search_entry.pack(side="left", fill="x", expand=True, padx=(0, 6))
+            self._search_entry.on_enter(lambda _e: self._run_search())
 
-        self._search_mode = SelectBox(
-            bar,
-            items=["EQUALS", "CONTAINS", "STARTS WITH", "ENDS WITH", "SQL"],
-            value="EQUALS",
-            width=14,
-            allow_custom_values=False,
-            search_enabled=False,
-        )
-        self._search_mode.pack(side="left", padx=(0, 6))
-        Button(bar, text="Clear", bootstyle="ghost", command=self._clear_search).pack(side="left", padx=(0, 4))
-        if self._allow_edit:
-            Button(
+            if self._searchbar_mode == 'advanced':
+                self._search_mode = SelectBox(
+                    bar,
+                    items=["EQUALS", "CONTAINS", "STARTS WITH", "ENDS WITH", "SQL"],
+                    value="EQUALS",
+                    width=14,
+                    allow_custom_values=False,
+                    search_enabled=False,
+                )
+                self._search_mode.pack(side="left", padx=(0, 6))
+
+        if self._show_column_chooser:
+            self._column_chooser_btn = Button(
                 bar,
-                icon="plus",
+                icon="layout-three-columns",
                 icon_only=True,
                 bootstyle="ghost",
-                command=self._open_new_record,
-            ).pack(side="left", padx=(0, 4))
+                command=self._show_column_chooser_dialog,
+            )
+            self._column_chooser_btn.pack(side="right", padx=(4, 0))
+
         if self._allow_export:
             export_items = []
             if "all" in self._export_options:
@@ -218,25 +226,27 @@ class DataGrid(Frame):
                 compound="image",
                 items=export_items,
                 show_dropdown_button=False,
-            ).pack(side="left")
+            ).pack(side="right")
 
-        if self._show_column_chooser:
-            self._column_chooser_btn = Button(
+        if self._allow_edit:
+            Button(
                 bar,
-                icon="layout-three-columns",
-                icon_only=True,
+                icon="plus-lg",
+                text="Add Record",
                 bootstyle="ghost",
-                command=self._show_column_chooser_dialog,
-            )
-            self._column_chooser_btn.pack(side="left", padx=(4, 0))
+                command=self._open_new_record,
+            ).pack(side="right", padx=(0, 4))
 
     def _build_tree(self) -> None:
         frame = Frame(self)
         frame.pack(fill="both", expand=True)
 
         cols = [self._col_text(c) for c in self._column_defs] or self._column_keys
-        self._tree = Treeview(frame, columns=list(range(len(cols))), show="headings")
-        self._tree.pack(side="left", fill="both", expand=True, padx=3)
+        tree_container = Frame(frame)
+        tree_container.pack(side="left", fill="both", expand=True)
+
+        self._tree = Treeview(tree_container, columns=list(range(len(cols))), show="headings")
+        self._tree.pack(side="top", fill="both", expand=True, padx=3)
         self._display_columns = list(range(len(cols)))
 
         if self._show_yscroll:
@@ -250,7 +260,7 @@ class DataGrid(Frame):
             self._vsb = None
 
         if self._show_xscroll:
-            self._hsb = Scrollbar(frame, orient="horizontal", command=self._tree.xview)
+            self._hsb = Scrollbar(tree_container, orient="horizontal", command=self._tree.xview)
             self._hsb.pack(side="bottom", fill="x")
             self._tree.configure(xscrollcommand=self._hsb.set)
         else:
@@ -258,6 +268,7 @@ class DataGrid(Frame):
 
         self._heading_texts = []
         self._column_anchors = []
+        stretch_columns = not self._show_xscroll  # allow natural width when xscroll is enabled
         for idx, text in enumerate(cols):
             self._heading_texts.append(text)
             anchor = self._determine_anchor(idx)
@@ -265,12 +276,14 @@ class DataGrid(Frame):
             heading_kwargs = {"text": text, "anchor": anchor}
             # Don't use heading command - we'll handle clicks via Button-1 binding
             self._tree.heading(idx, **heading_kwargs)
-            self._tree.column(idx, anchor=anchor, width=120, stretch=True)
+            self._tree.column(idx, anchor=anchor, width=120, stretch=stretch_columns)
         self._update_heading_icons()
         self._tree.bind("<Button-1>", self._on_header_click)
         self._tree.bind("<Button-3>", self._on_tree_context)
         if self._allow_edit:
             self._tree.bind("<Double-1>", self._on_row_double_click)
+        # Track resize events to rebalance grouped layouts
+        self._tree.bind("<Configure>", self._on_tree_configure)
 
     def _build_pagination_bar(self) -> None:
         bar = Frame(self)
@@ -314,6 +327,17 @@ class DataGrid(Frame):
         if isinstance(col, dict):
             return col.get("text") or col.get("key") or ""
         return str(col)
+
+    def _quote_col(self, key: str) -> str:
+        """Quote column identifiers for safe SQL usage (handles reserved names)."""
+        try:
+            quote_fn = getattr(self._datasource, "_quote_identifier", None)
+            if callable(quote_fn):
+                return quote_fn(key)
+        except Exception:
+            pass
+        text = str(key).replace('"', '""')
+        return f'"{text}"'
 
     def _determine_anchor(self, idx: int) -> str:
         """Pick an anchor for the given column index.
@@ -524,22 +548,26 @@ class DataGrid(Frame):
     # ------------------------------------------------------------------ Search & sort
     def _run_search(self) -> None:
         text = self._search_entry.get()
-        mode = self._search_mode.get()
+        if hasattr(self, "_search_mode"):
+            mode = self._search_mode.get()
+        else:
+            mode = "CONTAINS"
         colnames = self._column_keys
+        quoted_cols = [self._quote_col(c) for c in colnames]
         where = ""
-        if text and colnames:
+        if text and quoted_cols:
             crit = text.replace("'", "''")
             mode_upper = mode.upper().replace(" ", "_")
             if mode_upper == "CONTAINS":
-                where = " OR ".join([f"{c} LIKE '%{crit}%'" for c in colnames])
+                where = " OR ".join([f"{c} LIKE '%{crit}%'" for c in quoted_cols])
             elif mode_upper == "STARTS_WITH":
-                where = " OR ".join([f"{c} LIKE '{crit}%'" for c in colnames])
+                where = " OR ".join([f"{c} LIKE '{crit}%'" for c in quoted_cols])
             elif mode_upper == "ENDS_WITH":
-                where = " OR ".join([f"{c} LIKE '%{crit}'" for c in colnames])
+                where = " OR ".join([f"{c} LIKE '%{crit}'" for c in quoted_cols])
             elif mode_upper == "SQL":
                 where = text
             else:  # equals
-                where = " OR ".join([f"{c} = '{crit}'" for c in colnames])
+                where = " OR ".join([f"{c} = '{crit}'" for c in quoted_cols])
         try:
             self._datasource.set_filter(where)
         except Exception:
@@ -562,12 +590,13 @@ class DataGrid(Frame):
         if column_index >= len(self._column_keys):
             return
         key = self._column_keys[column_index]
+        quoted_key = self._quote_col(key)
         asc = not self._sort_state.get(key, True)
         # Clear other sort states to keep single-column sort
         self._sort_state = {key: asc}
         order = "ASC" if asc else "DESC"
         try:
-            self._datasource.set_sort(f"{key} {order}")
+            self._datasource.set_sort(f"{quoted_key} {order}")
         except Exception:
             pass
         self._clear_cache()
@@ -596,7 +625,8 @@ class DataGrid(Frame):
         if self._group_by_key:
             try:
                 col_idx = self._column_keys.index(self._group_by_key)
-                heading_text = self._heading_texts[col_idx] if col_idx < len(self._heading_texts) else self._group_by_key
+                heading_text = self._heading_texts[col_idx] if col_idx < len(
+                    self._heading_texts) else self._group_by_key
             except Exception:
                 heading_text = self._group_by_key
             group_txt = f"Group: {heading_text}"
@@ -616,15 +646,17 @@ class DataGrid(Frame):
         menu.add_command(text="Sort Descending", command=lambda: self._sort_selection(False))
         menu.add_separator()
         menu.add_command(text="Filter by Value", command=self._filter_by_value)
+        menu.add_command(text="Hide Selection", command=self._hide_selection)
         menu.add_command(text="Clear Filter", command=self._clear_filter_cmd)
         menu.add_separator()
         menu.add_command(text="Move Up", command=self._move_row_up)
         menu.add_command(text="Move Down", command=self._move_row_down)
         menu.add_command(text="Move to Top", command=self._move_row_top)
         menu.add_command(text="Move to Bottom", command=self._move_row_bottom)
-        menu.add_separator()
-        menu.add_command(text="Hide Selection", command=self._hide_selection)
-        menu.add_command(text="Delete Selection", command=self._delete_selection)
+        if self._allow_edit:
+            menu.add_separator()
+            menu.add_command(text="Edit", icon="pencil", command=self._edit_selected_row)
+            menu.add_command(text="Delete", icon="trash", command=self._delete_selected_row)
         self._row_menu = menu
 
     def _on_row_context(self, event) -> None:
@@ -678,7 +710,12 @@ class DataGrid(Frame):
         form_options.setdefault('min_col_width', 260)
         form_options.setdefault('scrollable', True)
         form_options.setdefault('resizable', True)
-        form_options.setdefault('buttons', ["Cancel", "Save"])
+
+        # Build buttons: Cancel, Delete (only for existing records), Save
+        if record and "id" in record:
+            buttons = ["Cancel", {"text": "Delete", "role": "secondary", "result": "delete"}, "Save"]
+        else:
+            buttons = ["Cancel", "Save"]
 
         dialog = FormDialog(
             master=dialog_master,
@@ -688,16 +725,27 @@ class DataGrid(Frame):
             col_count=form_options.get('col_count', 2),
             min_col_width=form_options.get('min_col_width', 260),
             scrollable=form_options.get('scrollable', True),
-            buttons=form_options.get('buttons'),
+            buttons=buttons,
             resizable=(True, True) if form_options.get('resizable', True) else (False, False),
         )
 
         dialog.show_centered()
-        data = dialog.result
+        result = dialog.result
 
-        if data is None:
+        if result is None:
             return
 
+        # Handle delete action
+        if result == "delete" and record and "id" in record:
+            try:
+                self._datasource.delete_record(record["id"])
+                self._clear_cache()
+                self._load_page(self._current_page)
+            except Exception:
+                logger.exception("Failed to delete record id=%s", record["id"])
+            return
+
+        data = result
         new_id = None
         if record and "id" in record:
             rec_id = record["id"]
@@ -765,12 +813,13 @@ class DataGrid(Frame):
         iid = selection[0]
         col_idx = max(0, min(self._row_menu_col or 0, len(self._column_keys) - 1))
         key = self._column_keys[col_idx]
+        quoted_key = self._quote_col(key)
         values = self._tree.item(iid, "values")
         if col_idx >= len(values):
             return
         val = values[col_idx]
         crit = str(val).replace("'", "''")
-        where = f"{key} = '{crit}'"
+        where = f"{quoted_key} = '{crit}'"
         try:
             self._datasource.set_filter(where)
         except Exception:
@@ -785,10 +834,11 @@ class DataGrid(Frame):
         iid = selection[0]
         col_idx = max(0, min(self._row_menu_col or 0, len(self._column_keys) - 1))
         key = self._column_keys[col_idx]
+        quoted_key = self._quote_col(key)
         self._sort_state = {key: ascending}
         order = "ASC" if ascending else "DESC"
         try:
-            self._datasource.set_sort(f"{key} {order}")
+            self._datasource.set_sort(f"{quoted_key} {order}")
         except Exception:
             pass
         self._clear_cache()
@@ -847,6 +897,31 @@ class DataGrid(Frame):
         for iid in sel:
             self._tree.delete(iid)
             self._row_map.pop(iid, None)
+
+    def _edit_selected_row(self) -> None:
+        """Open the form dialog for the first selected row."""
+        sel = list(self._tree.selection())
+        if not sel:
+            return
+        iid = sel[0]
+        rec = self._row_map.get(iid, {})
+        self._open_form_dialog(rec)
+
+    def _delete_selected_row(self) -> None:
+        """Delete the first selected row from the datasource."""
+        sel = list(self._tree.selection())
+        if not sel:
+            return
+        iid = sel[0]
+        rec = self._row_map.get(iid, {})
+        rec_id = rec.get("id")
+        if rec_id is not None:
+            try:
+                self._datasource.delete_record(rec_id)
+                self._clear_cache()
+                self._load_page(self._current_page)
+            except Exception:
+                logger.exception("Failed to delete record id=%s", rec_id)
 
     def _delete_selection(self) -> None:
         sel = list(self._tree.selection())
@@ -948,6 +1023,41 @@ class DataGrid(Frame):
             pass
         return None
 
+    def _rebalance_grouped_widths(self) -> None:
+        """Distribute available width across data columns when grouped so the left tree column is included."""
+        # Only rebalance when grouping is active and xscroll is off (otherwise user can scroll)
+        if not self._group_by_key or self._show_xscroll:
+            return
+        try:
+            tree_width = max(0, int(self._tree.winfo_width()))
+            group_width = max(0, int(self._tree.column("#0", option="width") or 0))
+            vsb_width = 0
+            if getattr(self, "_vsb", None):
+                try:
+                    self._vsb.update_idletasks()
+                    if self._vsb.winfo_ismapped():
+                        vsb_width = int(self._vsb.winfo_width())
+                except Exception:
+                    vsb_width = 0
+            # Leave a small cushion to avoid oscillating scrollbar
+            available = tree_width - group_width - vsb_width - 8
+            if available <= 0:
+                return
+            cols = [c for c in self._display_columns if c < len(self._heading_texts)]
+            if not cols:
+                return
+            width = max(40, available // len(cols))
+            for c in cols:
+                self._tree.column(c, width=width, stretch=True)
+            # Keep the group column fixed so only data columns flex
+            self._tree.column("#0", stretch=False)
+        except Exception:
+            pass
+
+    def _on_tree_configure(self, _event=None) -> None:
+        """Handle resize events to keep grouped layouts sized to the available width."""
+        self._rebalance_grouped_widths()
+
     # ------------------------------------------------------------------ Export helpers
     def _export_all(self) -> None:
         try:
@@ -1025,11 +1135,12 @@ class DataGrid(Frame):
         for val in distinct_values:
             display_text = str(val) if val is not None else "(empty)"
             selected = current_filter is None or val in current_filter
-            items.append({
-                "text": display_text,
-                "value": val,
-                "selected": selected
-            })
+            items.append(
+                {
+                    "text": display_text,
+                    "value": val,
+                    "selected": selected
+                })
 
         # Position dialog below the header
         col_id = f"#{self._display_columns.index(column_idx) + 1}" if column_idx in self._display_columns else "#1"
@@ -1076,6 +1187,7 @@ class DataGrid(Frame):
                 # No values selected = filter out everything
                 clauses.append("1=0")
             else:
+                quoted_key = self._quote_col(key)
                 # Build IN clause
                 quoted_values = []
                 for v in values:
@@ -1088,11 +1200,11 @@ class DataGrid(Frame):
                 null_check = ""
                 if None in values:
                     quoted_values = [qv for qv in quoted_values if qv != "NULL"]
-                    null_check = f" OR {key} IS NULL"
+                    null_check = f" OR {quoted_key} IS NULL"
                 if quoted_values:
-                    clauses.append(f"({key} IN ({','.join(quoted_values)}){null_check})")
+                    clauses.append(f"({quoted_key} IN ({','.join(quoted_values)}){null_check})")
                 elif null_check:
-                    clauses.append(f"({key} IS NULL)")
+                    clauses.append(f"({quoted_key} IS NULL)")
 
         where = " AND ".join(clauses) if clauses else ""
         try:
@@ -1116,9 +1228,6 @@ class DataGrid(Frame):
         if self._header_menu:
             return
         menu = ContextMenu(master=self, target=self._tree)
-        menu.add_command(text="Filter", icon="filter", command=self._filter_header_column)
-        menu.add_command(text="Clear Filter", icon="x-lg", command=self._clear_filter_cmd)
-        menu.add_separator()
         menu.add_command(text="Align Left", icon="align-start", command=self._align_header_left)
         menu.add_command(text="Align Center", icon="align-center", command=self._align_header_center)
         menu.add_command(text="Align Right", icon="align-end", command=self._align_header_right)
@@ -1234,11 +1343,12 @@ class DataGrid(Frame):
         # Build items for the filter dialog
         items = []
         for idx, text in enumerate(self._heading_texts):
-            items.append({
-                "text": text,
-                "value": idx,
-                "selected": idx in self._display_columns
-            })
+            items.append(
+                {
+                    "text": text,
+                    "value": idx,
+                    "selected": idx in self._display_columns
+                })
 
         # Calculate position: align dialog's top-right to button's bottom-right
         btn = self._column_chooser_btn
@@ -1281,11 +1391,12 @@ class DataGrid(Frame):
         if col is None or col >= len(self._column_keys):
             return
         key = self._column_keys[col]
+        quoted_key = self._quote_col(key)
         self._group_by_key = key
         self._group_parents.clear()
         # Sort entire datasource by the grouping column so grouping reflects full dataset order
         try:
-            self._datasource.set_sort(f"{key} ASC")
+            self._datasource.set_sort(f"{quoted_key} ASC")
         except Exception:
             pass
         self._sort_state = {key: True}
@@ -1317,12 +1428,26 @@ class DataGrid(Frame):
             except Exception:
                 pass
             self._tree.heading("#0", text=heading, anchor="w")
-            self._tree.column("#0", width=200, anchor="w", stretch=True)
+            # Fix the group column width so it stays visible even when space is tight
+            self._tree.column("#0", width=200, minwidth=120, anchor="w", stretch=False)
+            try:
+                # Reset horizontal view so the group column is not scrolled out
+                self._tree.xview_moveto(0)
+            except Exception:
+                pass
+            self._rebalance_grouped_widths()
         else:
             self._tree.configure(show="headings")
             # Keep the tree column narrow/inert when unused
             self._tree.heading("#0", text="")
             self._tree.column("#0", width=0, minwidth=0, stretch=False)
+            # Restore stretch behavior for data columns based on scroll mode
+            try:
+                stretch_cols = not self._show_xscroll
+                for idx in range(len(self._heading_texts)):
+                    self._tree.column(idx, stretch=stretch_cols)
+            except Exception:
+                pass
 
     def _render_flat(self, records: list[dict]) -> None:
         """Insert records as flat rows."""
