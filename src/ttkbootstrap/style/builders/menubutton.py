@@ -297,7 +297,7 @@ def build_ghost_menubutton_style(b: BootstyleBuilderTTk, ttk_style: str, color: 
     icon_only = options.get('icon_only', False)
 
     surface = b.color(surface_token)
-    foreground_normal = b.color(accent_token)
+    foreground_normal = b.on_color(surface)
     foreground_disabled = b.disabled('text', surface)
 
     normal = surface
