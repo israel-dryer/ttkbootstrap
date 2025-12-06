@@ -704,6 +704,8 @@ class DataGrid(Frame):
                 readonly = bool(coldef.get("readonly", False))
                 if coldef.get("required"):
                     editor_opts.setdefault("required", True)
+            # Show validation messages to avoid layout jump on first error
+            editor_opts.setdefault("show_message", True)
             items.append(
                 {
                     "key": key,
