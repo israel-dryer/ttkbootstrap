@@ -451,3 +451,19 @@ class SqliteDataSource(BaseDataSource):
         query += f" LIMIT {count} OFFSET {start_index}"
         cursor = self.conn.execute(query)
         return [dict(row) for row in cursor.fetchall()]
+
+    def get_distinct_values(self, column: str, limit: int = 1000) -> List[Any]:
+        """Get distinct values for a column.
+
+        Args:
+            column: Column name to get distinct values from.
+            limit: Maximum number of distinct values to return.
+
+        Returns:
+            List of distinct values sorted alphabetically.
+        """
+        quoted_col = self._quote_identifier(column)
+        query = f"SELECT DISTINCT {quoted_col} FROM {self._table}"
+        query += f" ORDER BY {quoted_col} LIMIT {limit}"
+        cursor = self.conn.execute(query)
+        return [row[0] for row in cursor.fetchall()]
