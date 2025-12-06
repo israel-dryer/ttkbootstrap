@@ -46,17 +46,19 @@ class DataGrid(Frame):
             virtual_scroll: bool = False,
             cache_size: int = 5,
             show_yscroll: bool = True,
-            show_xscroll: bool = False,
-            allow_header_sort: bool = True,
+            show_xscroll: bool = True,
+            sort_on_header_click: bool = True,
             show_table_status: bool = True,
             show_column_chooser: bool = True,
             show_searchbar: bool = True,
+            show_context_menus: Literal["none", "headers", "rows", "all"] = "all",
             searchbar_mode: Literal['standard', 'advanced'] = 'simple',
-            allow_export: bool = False,
+            allow_exporting: bool = False,
             allow_column_hiding: bool = True,
             export_options: list[str] | None = None,
-            allow_edit: bool = False,
+            allow_editing: bool = False,
             form_options: dict | None = None,
+            min_col_width: int = 40,
             **kwargs,
     ):
         super().__init__(master, **kwargs)
@@ -65,16 +67,20 @@ class DataGrid(Frame):
         self._virtual_scroll = virtual_scroll
         self._show_yscroll = show_yscroll
         self._show_xscroll = show_xscroll
-        self._allow_header_sort = allow_header_sort
+        self._sort_on_header_click = sort_on_header_click
         self._show_table_status = show_table_status
         self._show_column_chooser = show_column_chooser
         self._show_searchbar = show_searchbar
         self._searchbar_mode = searchbar_mode
-        self._allow_export = allow_export
+        self._show_context_menus = (show_context_menus or "all").lower()
+        if self._show_context_menus not in ("none", "headers", "rows", "all"):
+            self._show_context_menus = "all"
+        self._allow_exporting = allow_exporting
         self._export_options = export_options or ["all", "selection", "page"]
-        self._allow_edit = allow_edit
+        self._allow_editing = allow_editing
         self._allow_column_hiding = allow_column_hiding
         self._form_options = form_options or {}
+        self._min_col_width = max(0, min_col_width)
         self._cache_size = max(0, cache_size)
         self._page_cache: OrderedDict[int, list[dict]] = OrderedDict()
         self._column_defs = columns or []
@@ -124,8 +130,8 @@ class DataGrid(Frame):
         # UI
         self._build_toolbar()
         self._build_tree()
-        if not self._virtual_scroll:
-            self._build_pagination_bar()
+        if self._show_table_status or not self._virtual_scroll:
+            self._build_footer()
 
         # Initial load
         self._load_page(0)
@@ -208,7 +214,7 @@ class DataGrid(Frame):
             )
             self._column_chooser_btn.pack(side="right", padx=(4, 0))
 
-        if self._allow_export:
+        if self._allow_exporting:
             export_items = []
             if "all" in self._export_options:
                 export_items.append({"type": "command", "text": "Export all", "command": self._export_all})
@@ -228,7 +234,7 @@ class DataGrid(Frame):
                 show_dropdown_button=False,
             ).pack(side="right")
 
-        if self._allow_edit:
+        if self._allow_editing:
             Button(
                 bar,
                 icon="plus-lg",
@@ -276,16 +282,25 @@ class DataGrid(Frame):
             heading_kwargs = {"text": text, "anchor": anchor}
             # Don't use heading command - we'll handle clicks via Button-1 binding
             self._tree.heading(idx, **heading_kwargs)
-            self._tree.column(idx, anchor=anchor, width=120, stretch=stretch_columns)
+            # Apply per-column width overrides, fall back to global defaults
+            width = 120
+            minwidth = self._min_col_width
+            if idx < len(self._column_defs):
+                coldef = self._column_defs[idx]
+                if isinstance(coldef, dict):
+                    width = coldef.get("width", width)
+                    minwidth = coldef.get("minwidth", coldef.get("min_width", minwidth))
+            self._tree.column(idx, anchor=anchor, width=width, minwidth=minwidth, stretch=stretch_columns)
         self._update_heading_icons()
         self._tree.bind("<Button-1>", self._on_header_click)
-        self._tree.bind("<Button-3>", self._on_tree_context)
-        if self._allow_edit:
+        if self._show_context_menus != "none":
+            self._tree.bind("<Button-3>", self._on_tree_context)
+        if self._allow_editing:
             self._tree.bind("<Double-1>", self._on_row_double_click)
         # Track resize events to rebalance grouped layouts
         self._tree.bind("<Configure>", self._on_tree_configure)
 
-    def _build_pagination_bar(self) -> None:
+    def _build_footer(self) -> None:
         bar = Frame(self)
         bar.pack(fill="x", pady=(4, 0))
         status_frame = Frame(bar)
@@ -294,9 +309,10 @@ class DataGrid(Frame):
         self._filter_label.pack(side="left", padx=(0, 4))
         self._sort_label = Label(status_frame, text="", anchor="w", bootstyle="secondary")
         self._sort_label.pack(side="left", padx=(8, 4))
+
         if not self._show_table_status:
             status_frame.pack_forget()
-
+        Frame(bar).pack(side='left', fill='x', expand=True)  # spacer
         info_frame = Frame(bar)
         info_frame.pack(side='left')
         Label(info_frame, text='Page').pack(side='left')
@@ -327,6 +343,12 @@ class DataGrid(Frame):
         if isinstance(col, dict):
             return col.get("text") or col.get("key") or ""
         return str(col)
+
+    def _header_context_enabled(self) -> bool:
+        return self._show_context_menus in ("all", "headers")
+
+    def _row_context_enabled(self) -> bool:
+        return self._show_context_menus in ("all", "rows")
 
     def _quote_col(self, key: str) -> str:
         """Quote column identifiers for safe SQL usage (handles reserved names)."""
@@ -639,6 +661,8 @@ class DataGrid(Frame):
 
     # ------------------------------------------------------------------ Row context menu
     def _ensure_row_menu(self) -> None:
+        if not self._row_context_enabled():
+            return
         if self._row_menu:
             return
         menu = ContextMenu(master=self, target=self._tree)
@@ -653,13 +677,15 @@ class DataGrid(Frame):
         menu.add_command(text="Move Down", command=self._move_row_down)
         menu.add_command(text="Move to Top", command=self._move_row_top)
         menu.add_command(text="Move to Bottom", command=self._move_row_bottom)
-        if self._allow_edit:
+        if self._allow_editing:
             menu.add_separator()
             menu.add_command(text="Edit", icon="pencil", command=self._edit_selected_row)
             menu.add_command(text="Delete", icon="trash", command=self._delete_selected_row)
         self._row_menu = menu
 
     def _on_row_context(self, event) -> None:
+        if not self._row_context_enabled():
+            return
         iid = self._tree.identify_row(event.y)
         col_id = self._tree.identify_column(event.x)
         try:
@@ -676,7 +702,7 @@ class DataGrid(Frame):
         self._row_menu.show(position=(event.x_root, event.y_root))
 
     def _on_row_double_click(self, event) -> None:
-        if not self._allow_edit:
+        if not self._allow_editing:
             return
         region = self._tree.identify_region(event.x, event.y)
         if region == "heading":
@@ -688,7 +714,7 @@ class DataGrid(Frame):
         self._open_form_dialog(rec)
 
     def _open_new_record(self) -> None:
-        if not self._allow_edit:
+        if not self._allow_editing:
             return
         self._open_form_dialog(None)
 
@@ -1046,7 +1072,7 @@ class DataGrid(Frame):
             cols = [c for c in self._display_columns if c < len(self._heading_texts)]
             if not cols:
                 return
-            width = max(40, available // len(cols))
+            width = max(self._min_col_width, available // len(cols))
             for c in cols:
                 self._tree.column(c, width=width, stretch=True)
             # Keep the group column fixed so only data columns flex
@@ -1088,7 +1114,7 @@ class DataGrid(Frame):
         if region != "heading":
             return
 
-        if not self._allow_header_sort:
+        if not self._sort_on_header_click:
             return
 
         col_id = self._tree.identify_column(event.x)  # e.g. "#1"
@@ -1217,14 +1243,22 @@ class DataGrid(Frame):
 
     # ------------------------------------------------------------------ Context dispatch
     def _on_tree_context(self, event) -> None:
+        if self._show_context_menus == "none":
+            return
         region = self._tree.identify_region(event.x, event.y)
         if region == "heading":
+            if not self._header_context_enabled():
+                return
             self._on_header_context(event)
         else:
+            if not self._row_context_enabled():
+                return
             self._on_row_context(event)
 
     # ------------------------------------------------------------------ Header context menu
     def _ensure_header_menu(self) -> None:
+        if not self._header_context_enabled():
+            return
         if self._header_menu:
             return
         menu = ContextMenu(master=self, target=self._tree)
@@ -1249,6 +1283,8 @@ class DataGrid(Frame):
         self._header_menu = menu
 
     def _on_header_context(self, event) -> None:
+        if not self._header_context_enabled():
+            return
         # Only handle header clicks
         if self._tree.identify_region(event.x, event.y) != "heading":
             return
