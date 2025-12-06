@@ -355,6 +355,9 @@ class Form(Frame):
         container = Frame(parent)
         container.columnconfigure(0, weight=1)  # Allow field widgets to expand horizontally
 
+        # Validation options that should only be passed to widgets supporting ValidationMixin
+        validation_options = {'show_message', 'required', 'validator'}
+
         field_widget: Any
         if editor == 'textentry':
             field_widget = TextEntry(
@@ -369,10 +372,13 @@ class Form(Frame):
         elif editor == 'dateentry':
             field_widget = DateEntry(container, value=initial_value, label=label_text, textvariable=variable, **options)
         else:
+            # Filter out validation options for widgets that don't support ValidationMixin
+            filtered_options = {k: v for k, v in options.items() if k not in validation_options}
+
             # Use inline label for checkbutton/toggle, otherwise show a Label widget.
             if editor in ("checkbutton", "toggle"):
-                if not options.get("text"):
-                    options["text"] = label_text
+                if not filtered_options.get("text"):
+                    filtered_options["text"] = label_text
             elif label_text != "" and editor not in ('selectbox', 'combobox'):
                 Label(container, text=label_text).pack(anchor='w', pady=(0, 2))
 
@@ -390,19 +396,19 @@ class Form(Frame):
                 if initial_value is not None and variable is not None:
                     variable.set(initial_value)
             elif editor == 'spinbox':
-                field_widget = Spinbox(container, textvariable=variable, **options)
+                field_widget = Spinbox(container, textvariable=variable, **filtered_options)
                 if initial_value is not None:
                     variable.set(initial_value)
             elif editor == 'text':
-                field_widget = Text(container, **options)
+                field_widget = Text(container, **filtered_options)
                 if initial_value:
                     field_widget.insert('1.0', str(initial_value))
             elif editor == 'toggle':
-                field_widget = Checkbutton(container, variable=variable, **options)
+                field_widget = Checkbutton(container, variable=variable, **filtered_options)
             elif editor == 'checkbutton':
-                field_widget = Checkbutton(container, variable=variable, **options)
+                field_widget = Checkbutton(container, variable=variable, **filtered_options)
             elif editor == 'scale':
-                field_widget = Scale(container, variable=variable, **options)
+                field_widget = Scale(container, variable=variable, **filtered_options)
             else:
                 field_widget = TextEntry(
                     container, value=initial_value or "", label=label_text, textvariable=variable, **options)
