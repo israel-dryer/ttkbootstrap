@@ -182,6 +182,7 @@ class ToolTip:
         # Create the tooltip window at a temporary position
         self.toplevel = ttk.window.Toplevel(position=(0, 0), **self.toplevel_kwargs)
 
+        self.toplevel.withdraw()
         lbl = ttk.Label(
             master=self.toplevel,
             text=self.text,
@@ -208,6 +209,7 @@ class ToolTip:
             y = self.widget.winfo_pointery() + 10
 
         self.toplevel.geometry(f"+{x}+{y}")
+        self.toplevel.deiconify()
 
     def move_tip(self, *_: Any) -> None:
         """Move the tooltip window"""
