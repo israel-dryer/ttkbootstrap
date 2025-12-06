@@ -334,8 +334,12 @@ class FilterDialog(ttk.Frame):
                 root = root.master.winfo_toplevel()
             root.bind('<Button-1>', self._on_click, add='+')
 
-    def show(self):
+    def show(self, position: tuple[int, int] | None = None):
         """Show the dialog and return the selected items.
+
+        Args:
+            position: Optional (x, y) coordinates to position the dialog.
+                If None, the dialog will be centered on the parent.
 
         Returns:
             List of selected item values, or None if cancelled.
@@ -361,5 +365,5 @@ class FilterDialog(ttk.Frame):
             frameless=self._frameless
         )
 
-        self._dialog.show()
+        self._dialog.show(position=position)
         return self.result
