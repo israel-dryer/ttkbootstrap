@@ -45,7 +45,6 @@ class DataGrid(Frame):
             page_size: int = 250,
             virtual_scroll: bool = False,
             cache_size: int = 5,
-            show_column_filters: bool = True,
             show_yscroll: bool = True,
             show_xscroll: bool = False,
             allow_header_sort: bool = True,
@@ -69,7 +68,6 @@ class DataGrid(Frame):
         self._show_table_status = show_table_status
         self._show_column_chooser = show_column_chooser
         self._show_searchbar = show_searchbar
-        self._show_column_filters = show_column_filters
         self._allow_export = allow_export
         self._export_options = export_options or ["all", "selection", "page"]
         self._allow_edit = allow_edit
@@ -85,7 +83,6 @@ class DataGrid(Frame):
         self._heading_fg: str | None = None
         self._icon_sort_up = None
         self._icon_sort_down = None
-        self._icon_filter = None
         self._column_anchors: list[str] = []
         self._column_filters: dict[str, list] = {}  # key -> list of allowed values
         self._column_types: dict[str, str] = {}
@@ -96,6 +93,8 @@ class DataGrid(Frame):
         self._header_menu: ContextMenu | None = None
         self._header_menu_col: int | None = None
         self._cached_total_count: int | None = None
+        self._group_by_key: str | None = None
+        self._group_parents: dict[str | None, str] = {}
 
         self._resolve_column_keys()
 
@@ -419,12 +418,18 @@ class DataGrid(Frame):
         self._row_map.clear()
         if not self._column_keys and records:
             self._column_keys = list(records[0].keys())
-        for rec in records:
-            values = [rec.get(k, "") for k in self._column_keys]
-            iid = self._tree.insert("", "end", values=values)
-            self._row_map[iid] = rec
+        grouped = bool(self._group_by_key) and self._group_by_key in self._column_keys
+        self._apply_group_show_state(grouped)
+        if grouped:
+            self._render_grouped(records)
+        else:
+            self._render_flat(records)
 
     def _append_tree(self, records: list[dict]) -> None:
+        # Grouped mode rebuilds the view instead of appending to keep hierarchy consistent
+        if self._group_by_key:
+            self._refresh_tree(records)
+            return
         for rec in records:
             values = [rec.get(k, "") for k in self._column_keys]
             iid = self._tree.insert("", "end", values=values)
@@ -493,6 +498,10 @@ class DataGrid(Frame):
 
     def _on_scroll(self, first: float, last: float) -> None:
         """Drive scrollbar and trigger lazy loading when near the bottom."""
+        # Grouped mode disables virtual scroll append to avoid breaking hierarchy
+        if self._group_by_key:
+            self._vsb.set(first, last)
+            return
         try:
             first_f = float(first)
             last_f = float(last)
@@ -583,11 +592,20 @@ class DataGrid(Frame):
                 sort_txt = f"Sort: {order}"
         except Exception:
             pass
+        group_txt = ""
+        if self._group_by_key:
+            try:
+                col_idx = self._column_keys.index(self._group_by_key)
+                heading_text = self._heading_texts[col_idx] if col_idx < len(self._heading_texts) else self._group_by_key
+            except Exception:
+                heading_text = self._group_by_key
+            group_txt = f"Group: {heading_text}"
 
         if hasattr(self, "_filter_label"):
             self._filter_label.configure(text=filter_txt)
         if hasattr(self, "_sort_label"):
-            self._sort_label.configure(text=sort_txt)
+            joined = " | ".join([t for t in (sort_txt, group_txt) if t])
+            self._sort_label.configure(text=joined)
 
     # ------------------------------------------------------------------ Row context menu
     def _ensure_row_menu(self) -> None:
@@ -675,9 +693,9 @@ class DataGrid(Frame):
         )
 
         dialog.show_centered()
-        data = dialog.result or {}
+        data = dialog.result
 
-        if not data:
+        if data is None:
             return
 
         new_id = None
@@ -855,17 +873,19 @@ class DataGrid(Frame):
         self._cached_total_count = None
 
     def _load_heading_icons(self) -> None:
-        """Load and cache heading icons (filter) sized to match the heading color."""
+        """Load and cache heading icons (sort arrows) sized to match the heading color."""
         try:
             from ttkbootstrap.appconfig import use_icon_provider
             provider = use_icon_provider()
             fg = self._get_heading_fg()
-            if fg == self._heading_fg and self._icon_filter:
+            if fg == self._heading_fg and self._icon_sort_up:
                 return
             self._heading_fg = fg
-            self._icon_filter = provider("filter", 20, fg)
+            self._icon_sort_up = provider("sort-up", 20, fg)
+            self._icon_sort_down = provider("sort-down", 20, fg)
         except Exception:
-            self._icon_filter = None
+            self._icon_sort_up = None
+            self._icon_sort_down = None
 
     def _get_heading_fg(self) -> str:
         """Resolve a heading foreground color with light-biased fallbacks."""
@@ -875,29 +895,20 @@ class DataGrid(Frame):
         return style.configure(f"{ttk_style}.Heading", 'foreground')
 
     def _update_heading_icons(self) -> None:
-        """Apply filter icons and sort direction arrows to headings."""
+        """Apply sort direction icons to headings."""
         if not self._heading_texts:
             return
         self._load_heading_icons()
-        # Determine active sort column (single-column sort)
-        active_key = None
-        for key, state in self._sort_state.items():
-            if state is not None:
-                active_key = key
-                break
         for idx, text in enumerate(self._heading_texts):
-            # Use filter icon for all columns
-            image = self._icon_filter if self._icon_filter else ""
-            # Add sort direction arrow to text if this column is sorted
-            display_text = text
-            if idx < len(self._column_keys) and active_key:
+            image = ""
+            if idx < len(self._column_keys):
                 key = self._column_keys[idx]
-                state = self._sort_state.get(key) if key == active_key else None
+                state = self._sort_state.get(key)
                 if state is True:
-                    display_text = f"{text} ▲"
+                    image = self._icon_sort_up if self._icon_sort_up else ""
                 elif state is False:
-                    display_text = f"{text} ▼"
-            self._tree.heading(idx, text=display_text, image=image)
+                    image = self._icon_sort_down if self._icon_sort_down else ""
+            self._tree.heading(idx, text=text, image=image)
 
     def _remember_page(self, page: int, records: list[dict]) -> None:
         if self._cache_size <= 0:
@@ -962,10 +973,10 @@ class DataGrid(Frame):
 
     # ------------------------------------------------------------------ Header click handling
     def _on_header_click(self, event) -> None:
-        """Handle left-click on headers - detect filter icon region vs sort area."""
+        """Handle left-click on headers for sorting."""
         region = self._tree.identify_region(event.x, event.y)
         if region != "heading":
-            return  # Not a header click, let default handling proceed
+            return
 
         if not self._allow_header_sort:
             return
@@ -980,40 +991,16 @@ class DataGrid(Frame):
             return
 
         column_idx = self._display_columns[display_idx]
+        self._on_sort(column_idx)
 
-        # Determine if click is in the filter icon region (rightmost ~24px)
-        # We need to get the column bounding box to check position
-        filter_region_width = 24  # Width of the filter icon clickable area
-        items = self._tree.get_children()
-        in_filter_region = False
+    def _filter_header_column(self) -> None:
+        """Show filter dialog for the currently selected header column."""
+        col = self._header_menu_col
+        if col is None or col >= len(self._column_keys):
+            return
+        self._show_column_filter_dialog(col)
 
-        if items:
-            bbox = self._tree.bbox(items[0], col_id)
-            if bbox:
-                col_left = bbox[0]
-                col_width = bbox[2]
-                col_right = col_left + col_width
-                # Check if click x is in the rightmost filter_region_width pixels
-                if event.x >= col_right - filter_region_width:
-                    in_filter_region = True
-        else:
-            # No items - try to estimate from column config
-            # Fall back to checking if click is near right edge based on column width
-            try:
-                col_info = self._tree.column(column_idx)
-                col_width = col_info.get('width', 120)
-                # This is an approximation when bbox isn't available
-                if event.x % col_width >= col_width - filter_region_width:
-                    in_filter_region = True
-            except Exception:
-                pass
-
-        if in_filter_region:
-            self._show_column_filter_dialog(column_idx, event)
-        else:
-            self._on_sort(column_idx)
-
-    def _show_column_filter_dialog(self, column_idx: int, event) -> None:
+    def _show_column_filter_dialog(self, column_idx: int) -> None:
         """Show FilterDialog with distinct values for the column."""
         from ttkbootstrap.dialogs.filterdialog import FilterDialog
 
@@ -1046,7 +1033,8 @@ class DataGrid(Frame):
 
         # Position dialog below the header
         col_id = f"#{self._display_columns.index(column_idx) + 1}" if column_idx in self._display_columns else "#1"
-        pos_x, pos_y = event.x_root, event.y_root
+        pos_x = self._tree.winfo_rootx()
+        pos_y = self._tree.winfo_rooty()
 
         tree_items = self._tree.get_children()
         if tree_items:
@@ -1128,6 +1116,9 @@ class DataGrid(Frame):
         if self._header_menu:
             return
         menu = ContextMenu(master=self, target=self._tree)
+        menu.add_command(text="Filter", icon="filter", command=self._filter_header_column)
+        menu.add_command(text="Clear Filter", icon="x-lg", command=self._clear_filter_cmd)
+        menu.add_separator()
         menu.add_command(text="Align Left", icon="align-start", command=self._align_header_left)
         menu.add_command(text="Align Center", icon="align-center", command=self._align_header_center)
         menu.add_command(text="Align Right", icon="align-end", command=self._align_header_right)
@@ -1141,6 +1132,9 @@ class DataGrid(Frame):
         menu.add_command(text="Show All", icon="eye", command=self._show_all_columns)
         menu.add_separator()
         menu.add_command(text="Clear Sort", icon="x-lg", command=self._clear_sort)
+        menu.add_separator()
+        menu.add_command(text="Group by This Column", command=self._group_header_column)
+        menu.add_command(text="Ungroup All", command=self._ungroup_all)
         menu.add_separator()
         menu.add_command(text="Reset Table", icon="arrow-counterclockwise", command=self._reset_table)
         self._header_menu = menu
@@ -1279,6 +1273,85 @@ class DataGrid(Frame):
         self._display_columns = list(range(len(self._heading_texts)))
         self._tree.configure(displaycolumns=self._display_columns)
         self._clear_sort()
+
+    # ------------------------------------------------------------------ Grouping
+    def _group_header_column(self) -> None:
+        """Group current view by the selected header column."""
+        col = self._header_menu_col
+        if col is None or col >= len(self._column_keys):
+            return
+        key = self._column_keys[col]
+        self._group_by_key = key
+        self._group_parents.clear()
+        # Sort entire datasource by the grouping column so grouping reflects full dataset order
+        try:
+            self._datasource.set_sort(f"{key} ASC")
+        except Exception:
+            pass
+        self._sort_state = {key: True}
+        self._clear_cache()
+        self._update_heading_icons()
+        # Restart at first page to reflect new ordering
+        self._load_page(0)
+        self._update_status_labels()
+
+    def _ungroup_all(self) -> None:
+        """Return to flat view."""
+        if not self._group_by_key:
+            return
+        self._group_by_key = None
+        self._group_parents.clear()
+        self._apply_group_show_state(False)
+        self._load_page(self._current_page)
+        self._update_status_labels()
+
+    def _apply_group_show_state(self, grouped: bool) -> None:
+        """Toggle tree column visibility when grouping."""
+        if grouped:
+            self._tree.configure(show="tree headings")
+            heading = "Group"
+            try:
+                if self._group_by_key and self._group_by_key in self._column_keys:
+                    col_idx = self._column_keys.index(self._group_by_key)
+                    heading = self._heading_texts[col_idx] if col_idx < len(self._heading_texts) else heading
+            except Exception:
+                pass
+            self._tree.heading("#0", text=heading, anchor="w")
+            self._tree.column("#0", width=200, anchor="w", stretch=True)
+        else:
+            self._tree.configure(show="headings")
+            # Keep the tree column narrow/inert when unused
+            self._tree.heading("#0", text="")
+            self._tree.column("#0", width=0, minwidth=0, stretch=False)
+
+    def _render_flat(self, records: list[dict]) -> None:
+        """Insert records as flat rows."""
+        for rec in records:
+            values = [rec.get(k, "") for k in self._column_keys]
+            iid = self._tree.insert("", "end", values=values)
+            self._row_map[iid] = rec
+
+    def _render_grouped(self, records: list[dict]) -> None:
+        """Insert records under parent nodes for the active group."""
+        key = self._group_by_key
+        if not key or key not in self._column_keys:
+            self._render_flat(records)
+            return
+        col_idx = self._column_keys.index(key)
+        heading_text = self._heading_texts[col_idx] if col_idx < len(self._heading_texts) else key
+        groups: OrderedDict[str | None, list[dict]] = OrderedDict()
+        for rec in records:
+            groups.setdefault(rec.get(key), []).append(rec)
+        self._group_parents.clear()
+        for val, items in groups.items():
+            label_val = "(None)" if val is None else str(val)
+            label = f"{heading_text}: {label_val} ({len(items)})"
+            parent_iid = self._tree.insert("", "end", text=label, open=True)
+            self._group_parents[val] = parent_iid
+            for rec in items:
+                values = [rec.get(k, "") for k in self._column_keys]
+                iid = self._tree.insert(parent_iid, "end", values=values)
+                self._row_map[iid] = rec
 
     def _clear_sort(self) -> None:
         self._sort_state.clear()
