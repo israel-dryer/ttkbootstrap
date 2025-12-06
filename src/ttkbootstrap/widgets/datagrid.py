@@ -49,12 +49,13 @@ class DataGrid(Frame):
             show_xscroll: bool = True,
             sort_on_header_click: bool = True,
             show_table_status: bool = True,
-            show_column_chooser: bool = True,
+            show_column_chooser: bool = False,
             show_searchbar: bool = True,
             show_context_menus: Literal["none", "headers", "rows", "all"] = "all",
             searchbar_mode: Literal['standard', 'advanced'] = 'simple',
             allow_exporting: bool = False,
-            allow_column_hiding: bool = True,
+            allow_column_hiding: bool = False,
+            allow_grouping: bool = False,
             export_options: list[str] | None = None,
             allow_editing: bool = False,
             form_options: dict | None = None,
@@ -72,6 +73,7 @@ class DataGrid(Frame):
         self._show_column_chooser = show_column_chooser
         self._show_searchbar = show_searchbar
         self._searchbar_mode = searchbar_mode
+        self._allow_grouping = allow_grouping
         self._show_context_menus = (show_context_menus or "all").lower()
         if self._show_context_menus not in ("none", "headers", "rows", "all"):
             self._show_context_menus = "all"
@@ -1274,12 +1276,14 @@ class DataGrid(Frame):
             menu.add_separator()
             menu.add_command(text="Hide Column", icon="eye-slash", command=self._hide_header_column)
             menu.add_command(text="Show All", icon="eye", command=self._show_all_columns)
+        if self._allow_grouping:
+            menu.add_separator()
+            menu.add_command(text="Group by This Column", command=self._group_header_column)
+            menu.add_command(text="Ungroup All", command=self._ungroup_all)
         menu.add_separator()
-        menu.add_command(text="Group by This Column", command=self._group_header_column)
-        menu.add_command(text="Ungroup All", command=self._ungroup_all)
+        menu.add_command(text="Reset Table", icon="arrow-counterclockwise", command=self._reset_table)
         menu.add_separator()
         menu.add_command(text="Clear Sort", icon="x-lg", command=self._clear_sort)
-        menu.add_command(text="Reset Table", icon="arrow-counterclockwise", command=self._reset_table)
         self._header_menu = menu
 
     def _on_header_context(self, event) -> None:
