@@ -7,25 +7,25 @@ renders the current page in a Treeview.
 
 from __future__ import annotations
 
-from collections import OrderedDict
 import logging
+from collections import OrderedDict
 from tkinter import Misc
-import tkinter.ttk as ttk
+
+from typing_extensions import Literal
 
 from ttkbootstrap import use_style
 from ttkbootstrap.datasource.sqlite_source import SqliteDataSource
 from ttkbootstrap.widgets.button import Button
-from ttkbootstrap.widgets.frame import Frame
-from ttkbootstrap.widgets.label import Label
-from ttkbootstrap.widgets.selectbox import SelectBox
-from ttkbootstrap.widgets.scrollbar import Scrollbar
-from ttkbootstrap.widgets.textentry import TextEntry
-from ttkbootstrap.widgets.treeview import Treeview
-from ttkbootstrap.widgets.separator import Separator
-from ttkbootstrap.widgets.entry import Entry
 from ttkbootstrap.widgets.contextmenu import ContextMenu
 from ttkbootstrap.widgets.dropdownbutton import DropdownButton
-from ttkbootstrap.widgets.button import Button as TtkButton
+from ttkbootstrap.widgets.entry import Entry
+from ttkbootstrap.widgets.frame import Frame
+from ttkbootstrap.widgets.label import Label
+from ttkbootstrap.widgets.scrollbar import Scrollbar
+from ttkbootstrap.widgets.selectbox import SelectBox
+from ttkbootstrap.widgets.separator import Separator
+from ttkbootstrap.widgets.textentry import TextEntry
+from ttkbootstrap.widgets.treeview import Treeview
 
 logger = logging.getLogger(__name__)
 
@@ -37,24 +37,27 @@ class DataGrid(Frame):
     """
 
     def __init__(
-        self,
-        master: Misc | None = None,
-        columns: list[str | dict] | None = None,
-        rows: list | None = None,
-        datasource: SqliteDataSource | None = None,
-        page_size: int = 250,
-        virtual_scroll: bool = False,
-        cache_size: int = 5,
-        show_yscroll: bool = True,
-        show_xscroll: bool = False,
-        allow_header_sort: bool = True,
-        show_table_status: bool = True,
-        show_searchbar: bool = True,
-        allow_export: bool = False,
-        export_options: list[str] | None = None,
-        allow_edit: bool = False,
-        form_options: dict | None = None,
-        **kwargs,
+            self,
+            master: Misc | None = None,
+            columns: list[str | dict] | None = None,
+            rows: list | None = None,
+            datasource: SqliteDataSource | None = None,
+            page_size: int = 250,
+            virtual_scroll: bool = False,
+            cache_size: int = 5,
+            show_header_filters: bool = True,
+            show_yscroll: bool = True,
+            show_xscroll: bool = False,
+            allow_header_sort: bool = True,
+            show_table_status: bool = True,
+            show_column_chooser: bool = True,
+            show_searchbar: bool = True,
+            searchbar_mode: Literal['standard', 'advanced'] = 'simple',
+            allow_export: bool = False,
+            export_options: list[str] | None = None,
+            allow_edit: bool = False,
+            form_options: dict | None = None,
+            **kwargs,
     ):
         super().__init__(master, **kwargs)
         self._datasource = datasource or SqliteDataSource(":memory:", page_size=page_size)
@@ -64,6 +67,7 @@ class DataGrid(Frame):
         self._show_xscroll = show_xscroll
         self._allow_header_sort = allow_header_sort
         self._show_table_status = show_table_status
+        self._show_column_chooser = show_column_chooser
         self._show_searchbar = show_searchbar
         self._allow_export = allow_export
         self._export_options = export_options or ["all", "selection", "page"]
@@ -185,13 +189,13 @@ class DataGrid(Frame):
             search_enabled=False,
         )
         self._search_mode.pack(side="left", padx=(0, 6))
-        Button(bar, text="Clear", bootstyle="secondary", command=self._clear_search).pack(side="left", padx=(0, 4))
+        Button(bar, text="Clear", bootstyle="ghost", command=self._clear_search).pack(side="left", padx=(0, 4))
         if self._allow_edit:
             Button(
                 bar,
                 icon="plus",
                 icon_only=True,
-                bootstyle="secondary",
+                bootstyle="ghost",
                 command=self._open_new_record,
             ).pack(side="left", padx=(0, 4))
         if self._allow_export:
@@ -208,11 +212,21 @@ class DataGrid(Frame):
                 bar,
                 icon="download",
                 icon_only=True,
-                bootstyle="secondary",
+                bootstyle="ghost",
                 compound="image",
                 items=export_items,
                 show_dropdown_button=False,
             ).pack(side="left")
+
+        if self._show_column_chooser:
+            self._column_chooser_btn = Button(
+                bar,
+                icon="layout-three-columns",
+                icon_only=True,
+                bootstyle="ghost",
+                command=self._show_column_chooser_dialog,
+            )
+            self._column_chooser_btn.pack(side="left", padx=(4, 0))
 
     def _build_tree(self) -> None:
         frame = Frame(self)
@@ -282,11 +296,14 @@ class DataGrid(Frame):
 
         btn_frame = Frame(bar)
         btn_frame.pack(side="right")
-        Button(btn_frame, icon="chevron-double-left", bootstyle="ghost", icon_only=True, command=self._first_page).pack(side="left")
-        Button(btn_frame, icon="chevron-left", icon_only=True, bootstyle="ghost", command=self._prev_page).pack(side="left")
-        Button(btn_frame, icon="chevron-right", icon_only=True, bootstyle="ghost", command=self._next_page).pack(side="left")
-        Button(btn_frame, icon="chevron-double-right", icon_only=True, bootstyle="ghost", command=self._last_page).pack(side="left")
-
+        Button(btn_frame, icon="chevron-double-left", bootstyle="ghost", icon_only=True, command=self._first_page).pack(
+            side="left")
+        Button(btn_frame, icon="chevron-left", icon_only=True, bootstyle="ghost", command=self._prev_page).pack(
+            side="left")
+        Button(btn_frame, icon="chevron-right", icon_only=True, bootstyle="ghost", command=self._next_page).pack(
+            side="left")
+        Button(btn_frame, icon="chevron-double-right", icon_only=True, bootstyle="ghost", command=self._last_page).pack(
+            side="left")
 
     # ------------------------------------------------------------------ Helpers
     def _col_text(self, col) -> str:
@@ -403,6 +420,7 @@ class DataGrid(Frame):
             values = [rec.get(k, "") for k in self._column_keys]
             iid = self._tree.insert("", "end", values=values)
             self._row_map[iid] = rec
+
     def _append_tree(self, records: list[dict]) -> None:
         for rec in records:
             values = [rec.get(k, "") for k in self._column_keys]
@@ -481,11 +499,11 @@ class DataGrid(Frame):
 
         self._vsb.set(first_f, last_f)
         if (
-            self._virtual_scroll
-            and last_f >= 0.85  # prefetch a bit earlier for smoother scrolling
-            and not self._loading_next
-            and hasattr(self._datasource, "has_next_page")
-            and self._datasource.has_next_page()
+                self._virtual_scroll
+                and last_f >= 0.85  # prefetch a bit earlier for smoother scrolling
+                and not self._loading_next
+                and hasattr(self._datasource, "has_next_page")
+                and self._datasource.has_next_page()
         ):
             # Load next page and keep appending rows
             self._loading_next = True
@@ -1052,6 +1070,50 @@ class DataGrid(Frame):
             return
         self._display_columns = list(range(len(self._heading_texts)))
         self._tree.configure(displaycolumns=self._display_columns)
+
+    def _show_column_chooser_dialog(self) -> None:
+        """Show a dialog to select which columns are visible."""
+        from ttkbootstrap.dialogs.filterdialog import FilterDialog
+
+        if not self._heading_texts:
+            return
+
+        # Build items for the filter dialog
+        items = []
+        for idx, text in enumerate(self._heading_texts):
+            items.append({
+                "text": text,
+                "value": idx,
+                "selected": idx in self._display_columns
+            })
+
+        # Calculate position: align dialog's top-right to button's bottom-right
+        btn = self._column_chooser_btn
+        btn.update_idletasks()
+        btn_right = btn.winfo_rootx() + btn.winfo_width()
+        btn_bottom = btn.winfo_rooty() + btn.winfo_height()
+        dialog_width = 250  # FilterDialog has fixed width of 250
+        pos_x = btn_right - dialog_width - 2  # 2px west
+        pos_y = btn_bottom + 2  # 2px south
+
+        dialog = FilterDialog(
+            master=self.winfo_toplevel(),
+            title="Columns",
+            items=items,
+            allow_search=False,
+            allow_select_all=True,
+            frameless=True
+        )
+
+        result = dialog.show(position=(pos_x, pos_y))
+
+        if result is not None:
+            # Update display columns based on selection
+            self._display_columns = [idx for idx in result if isinstance(idx, int)]
+            if not self._display_columns:
+                # Ensure at least one column is visible
+                self._display_columns = list(range(len(self._heading_texts)))
+            self._tree.configure(displaycolumns=self._display_columns)
 
     def _reset_table(self) -> None:
         # Reset sort, columns visibility/order, and reload first page

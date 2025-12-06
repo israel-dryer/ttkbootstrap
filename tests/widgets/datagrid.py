@@ -12,7 +12,7 @@ with open(p, encoding="utf-8") as f:
     row_data = list(reader)
 
 # Upscale the dataset for a quick performance sanity check
-repeat = 2003
+repeat = 200
 rows = row_data * repeat
 print(f"Preparing {len(rows)} records")
 
