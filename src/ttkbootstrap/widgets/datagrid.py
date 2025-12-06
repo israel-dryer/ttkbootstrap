@@ -34,6 +34,13 @@ class DataGrid(Frame):
     """
     Simple data grid that delegates filtering, sorting, and pagination to a
     SqliteDataSource (in-memory by default).
+
+    Key options:
+        - show_xscroll / show_yscroll: toggle horizontal/vertical scrollbars
+        - allow_column_hiding: enable column chooser and hide/show header actions
+        - allow_grouping: enable grouping via the header context menu
+        - show_context_menus: "none" | "headers" | "rows" | "all" to control right-click menus
+        - min_col_width: global minimum column width (overridden by per-column definitions)
     """
 
     def __init__(
@@ -62,6 +69,34 @@ class DataGrid(Frame):
             min_col_width: int = 40,
             **kwargs,
     ):
+        """
+        Create a DataGrid backed by an in-memory SqliteDataSource.
+
+        Args:
+            master: Parent widget.
+            columns: Column definitions (list of strings or dicts with keys like "text", "key", "width", "minwidth").
+            rows: Initial data to load (list of dicts or row-like sequences).
+            datasource: Custom SqliteDataSource; if omitted, an in-memory source is created.
+            page_size: Rows per page for pagination and virtual scrolling.
+            virtual_scroll: If True, appends additional pages on scroll instead of paging controls.
+            cache_size: Number of pages to keep in the LRU cache.
+            show_yscroll: Show vertical scrollbar.
+            show_xscroll: Show horizontal scrollbar.
+            sort_on_header_click: Enable header click sorting.
+            show_table_status: Show filter/sort/group status labels and pager.
+            show_column_chooser: Show column chooser button (requires allow_column_hiding).
+            show_searchbar: Show search bar above the grid.
+            show_context_menus: "none" | "headers" | "rows" | "all" to enable context menus.
+            searchbar_mode: "standard" | "advanced" to toggle search UI.
+            allow_exporting: Enable export dropdown (all/selection/page).
+            allow_column_hiding: Allow hide/show columns and column chooser.
+            allow_grouping: Allow grouping rows via header context menu.
+            export_options: Export modes to expose ("all", "selection", "page").
+            allow_editing: Enable add/edit/delete actions and double-click editing.
+            form_options: Form dialog options when editing/adding records.
+            min_col_width: Global minimum width for columns (overridden by per-column minwidth).
+            kwargs: Passed through to Frame.
+        """
         super().__init__(master, **kwargs)
         self._datasource = datasource or SqliteDataSource(":memory:", page_size=page_size)
         self._page_size = page_size
