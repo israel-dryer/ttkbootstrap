@@ -204,7 +204,7 @@ class DataGrid(Frame):
                 )
                 self._search_mode.pack(side="left", padx=(0, 6))
 
-        if self._show_column_chooser:
+        if self._allow_column_hiding and self._show_column_chooser:
             self._column_chooser_btn = Button(
                 bar,
                 icon="layout-three-columns",
@@ -1270,15 +1270,15 @@ class DataGrid(Frame):
         menu.add_command(text="Move Right", icon="arrow-right", command=self._move_header_right)
         menu.add_command(text="Move First", icon="arrow-bar-left", command=self._move_header_first)
         menu.add_command(text="Move Last", icon="arrow-bar-right", command=self._move_header_last)
-        menu.add_separator()
-        menu.add_command(text="Hide Column", icon="eye-slash", command=self._hide_header_column)
-        menu.add_command(text="Show All", icon="eye", command=self._show_all_columns)
-        menu.add_separator()
-        menu.add_command(text="Clear Sort", icon="x-lg", command=self._clear_sort)
+        if self._allow_column_hiding:
+            menu.add_separator()
+            menu.add_command(text="Hide Column", icon="eye-slash", command=self._hide_header_column)
+            menu.add_command(text="Show All", icon="eye", command=self._show_all_columns)
         menu.add_separator()
         menu.add_command(text="Group by This Column", command=self._group_header_column)
         menu.add_command(text="Ungroup All", command=self._ungroup_all)
         menu.add_separator()
+        menu.add_command(text="Clear Sort", icon="x-lg", command=self._clear_sort)
         menu.add_command(text="Reset Table", icon="arrow-counterclockwise", command=self._reset_table)
         self._header_menu = menu
 
@@ -1355,6 +1355,8 @@ class DataGrid(Frame):
         self._tree.configure(displaycolumns=self._display_columns)
 
     def _hide_header_column(self) -> None:
+        if not self._allow_column_hiding:
+            return
         col = self._header_menu_col
         if col is None or col not in self._display_columns:
             return
@@ -1364,6 +1366,8 @@ class DataGrid(Frame):
         self._tree.configure(displaycolumns=self._display_columns)
 
     def _show_all_columns(self) -> None:
+        if not self._allow_column_hiding:
+            return
         if not self._heading_texts:
             return
         self._display_columns = list(range(len(self._heading_texts)))
@@ -1373,6 +1377,8 @@ class DataGrid(Frame):
         """Show a dialog to select which columns are visible."""
         from ttkbootstrap.dialogs.filterdialog import FilterDialog
 
+        if not self._allow_column_hiding:
+            return
         if not self._heading_texts:
             return
 
