@@ -31,6 +31,7 @@ def main():
         text="Actions",
         items=items,
         bootstyle="primary",
+        icon="bootstrap-fill",
         dropdown_button_icon="chevron-down",
     )
     dd.pack(padx=16, pady=8, fill="x")
