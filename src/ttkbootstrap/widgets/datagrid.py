@@ -45,7 +45,7 @@ class DataGrid(Frame):
             page_size: int = 250,
             virtual_scroll: bool = False,
             cache_size: int = 5,
-            show_header_filters: bool = True,
+            show_column_filters: bool = True,
             show_yscroll: bool = True,
             show_xscroll: bool = False,
             allow_header_sort: bool = True,
@@ -69,6 +69,7 @@ class DataGrid(Frame):
         self._show_table_status = show_table_status
         self._show_column_chooser = show_column_chooser
         self._show_searchbar = show_searchbar
+        self._show_column_filters = show_column_filters
         self._allow_export = allow_export
         self._export_options = export_options or ["all", "selection", "page"]
         self._allow_edit = allow_edit
@@ -84,7 +85,9 @@ class DataGrid(Frame):
         self._heading_fg: str | None = None
         self._icon_sort_up = None
         self._icon_sort_down = None
+        self._icon_filter = None
         self._column_anchors: list[str] = []
+        self._column_filters: dict[str, list] = {}  # key -> list of allowed values
         self._column_types: dict[str, str] = {}
         self._alignment_sample: list[dict] | None = None
         self._row_map: dict[str, dict] = {}
@@ -261,11 +264,11 @@ class DataGrid(Frame):
             anchor = self._determine_anchor(idx)
             self._column_anchors.append(anchor)
             heading_kwargs = {"text": text, "anchor": anchor}
-            if self._allow_header_sort:
-                heading_kwargs["command"] = lambda c=idx: self._on_sort(c)
+            # Don't use heading command - we'll handle clicks via Button-1 binding
             self._tree.heading(idx, **heading_kwargs)
             self._tree.column(idx, anchor=anchor, width=120, stretch=True)
         self._update_heading_icons()
+        self._tree.bind("<Button-1>", self._on_header_click)
         self._tree.bind("<Button-3>", self._on_tree_context)
         if self._allow_edit:
             self._tree.bind("<Double-1>", self._on_row_double_click)
@@ -851,20 +854,18 @@ class DataGrid(Frame):
         # Invalidate total count cache when data/filter/sort changes
         self._cached_total_count = None
 
-    def _load_sort_icons(self) -> None:
-        """Load and cache sort direction icons sized to match the heading color."""
+    def _load_heading_icons(self) -> None:
+        """Load and cache heading icons (filter) sized to match the heading color."""
         try:
             from ttkbootstrap.appconfig import use_icon_provider
             provider = use_icon_provider()
             fg = self._get_heading_fg()
-            if fg == self._heading_fg and self._icon_sort_up and self._icon_sort_down:
+            if fg == self._heading_fg and self._icon_filter:
                 return
             self._heading_fg = fg
-            self._icon_sort_up = provider("sort-alpha-up", 20, fg)
-            self._icon_sort_down = provider("sort-alpha-down", 20, fg)
+            self._icon_filter = provider("filter", 20, fg)
         except Exception:
-            self._icon_sort_up = None
-            self._icon_sort_down = None
+            self._icon_filter = None
 
     def _get_heading_fg(self) -> str:
         """Resolve a heading foreground color with light-biased fallbacks."""
@@ -874,10 +875,10 @@ class DataGrid(Frame):
         return style.configure(f"{ttk_style}.Heading", 'foreground')
 
     def _update_heading_icons(self) -> None:
-        """Apply sort icons to the current sort column, clear others."""
+        """Apply filter icons and sort direction arrows to headings."""
         if not self._heading_texts:
             return
-        self._load_sort_icons()
+        self._load_heading_icons()
         # Determine active sort column (single-column sort)
         active_key = None
         for key, state in self._sort_state.items():
@@ -885,15 +886,18 @@ class DataGrid(Frame):
                 active_key = key
                 break
         for idx, text in enumerate(self._heading_texts):
-            image = ""
+            # Use filter icon for all columns
+            image = self._icon_filter if self._icon_filter else ""
+            # Add sort direction arrow to text if this column is sorted
+            display_text = text
             if idx < len(self._column_keys) and active_key:
                 key = self._column_keys[idx]
                 state = self._sort_state.get(key) if key == active_key else None
-                if state is True and self._icon_sort_up:
-                    image = self._icon_sort_up
-                elif state is False and self._icon_sort_down:
-                    image = self._icon_sort_down
-            self._tree.heading(idx, text=text, image=image)
+                if state is True:
+                    display_text = f"{text} ▲"
+                elif state is False:
+                    display_text = f"{text} ▼"
+            self._tree.heading(idx, text=display_text, image=image)
 
     def _remember_page(self, page: int, records: list[dict]) -> None:
         if self._cache_size <= 0:
@@ -955,6 +959,161 @@ class DataGrid(Frame):
             self._tree.event_generate("<<DataGridExportPage>>", data=rows)
         except Exception:
             pass
+
+    # ------------------------------------------------------------------ Header click handling
+    def _on_header_click(self, event) -> None:
+        """Handle left-click on headers - detect filter icon region vs sort area."""
+        region = self._tree.identify_region(event.x, event.y)
+        if region != "heading":
+            return  # Not a header click, let default handling proceed
+
+        if not self._allow_header_sort:
+            return
+
+        col_id = self._tree.identify_column(event.x)  # e.g. "#1"
+        try:
+            display_idx = int(col_id.strip("#")) - 1
+        except Exception:
+            return
+
+        if display_idx < 0 or display_idx >= len(self._display_columns):
+            return
+
+        column_idx = self._display_columns[display_idx]
+
+        # Determine if click is in the filter icon region (rightmost ~24px)
+        # We need to get the column bounding box to check position
+        filter_region_width = 24  # Width of the filter icon clickable area
+        items = self._tree.get_children()
+        in_filter_region = False
+
+        if items:
+            bbox = self._tree.bbox(items[0], col_id)
+            if bbox:
+                col_left = bbox[0]
+                col_width = bbox[2]
+                col_right = col_left + col_width
+                # Check if click x is in the rightmost filter_region_width pixels
+                if event.x >= col_right - filter_region_width:
+                    in_filter_region = True
+        else:
+            # No items - try to estimate from column config
+            # Fall back to checking if click is near right edge based on column width
+            try:
+                col_info = self._tree.column(column_idx)
+                col_width = col_info.get('width', 120)
+                # This is an approximation when bbox isn't available
+                if event.x % col_width >= col_width - filter_region_width:
+                    in_filter_region = True
+            except Exception:
+                pass
+
+        if in_filter_region:
+            self._show_column_filter_dialog(column_idx, event)
+        else:
+            self._on_sort(column_idx)
+
+    def _show_column_filter_dialog(self, column_idx: int, event) -> None:
+        """Show FilterDialog with distinct values for the column."""
+        from ttkbootstrap.dialogs.filterdialog import FilterDialog
+
+        if column_idx >= len(self._column_keys):
+            return
+
+        key = self._column_keys[column_idx]
+        heading_text = self._heading_texts[column_idx] if column_idx < len(self._heading_texts) else key
+
+        # Get distinct values from datasource
+        try:
+            distinct_values = self._datasource.get_distinct_values(key)
+        except Exception:
+            distinct_values = []
+
+        if not distinct_values:
+            return
+
+        # Build items for the filter dialog
+        current_filter = self._column_filters.get(key)
+        items = []
+        for val in distinct_values:
+            display_text = str(val) if val is not None else "(empty)"
+            selected = current_filter is None or val in current_filter
+            items.append({
+                "text": display_text,
+                "value": val,
+                "selected": selected
+            })
+
+        # Position dialog below the header
+        col_id = f"#{self._display_columns.index(column_idx) + 1}" if column_idx in self._display_columns else "#1"
+        pos_x, pos_y = event.x_root, event.y_root
+
+        tree_items = self._tree.get_children()
+        if tree_items:
+            bbox = self._tree.bbox(tree_items[0], col_id)
+            if bbox:
+                pos_x = self._tree.winfo_rootx() + bbox[0]
+                pos_y = self._tree.winfo_rooty() + bbox[1] + 2
+
+        dialog = FilterDialog(
+            master=self.winfo_toplevel(),
+            title=f"Filter: {heading_text}",
+            items=items,
+            allow_search=True,
+            allow_select_all=True,
+            frameless=True
+        )
+
+        result = dialog.show(position=(pos_x, pos_y))
+
+        if result is not None:
+            self._apply_column_filter(key, result, distinct_values)
+
+    def _apply_column_filter(self, key: str, selected_values: list, all_values: list) -> None:
+        """Apply column filter based on selected values."""
+        # If all values selected, clear the filter for this column
+        if set(selected_values) == set(all_values):
+            self._column_filters.pop(key, None)
+        else:
+            self._column_filters[key] = selected_values
+
+        # Build combined WHERE clause from all column filters
+        self._rebuild_filter_where()
+
+    def _rebuild_filter_where(self) -> None:
+        """Rebuild WHERE clause from all active column filters."""
+        clauses = []
+        for key, values in self._column_filters.items():
+            if not values:
+                # No values selected = filter out everything
+                clauses.append("1=0")
+            else:
+                # Build IN clause
+                quoted_values = []
+                for v in values:
+                    if v is None:
+                        quoted_values.append("NULL")
+                    else:
+                        escaped = str(v).replace("'", "''")
+                        quoted_values.append(f"'{escaped}'")
+                # Handle NULL separately since IN doesn't work with NULL
+                null_check = ""
+                if None in values:
+                    quoted_values = [qv for qv in quoted_values if qv != "NULL"]
+                    null_check = f" OR {key} IS NULL"
+                if quoted_values:
+                    clauses.append(f"({key} IN ({','.join(quoted_values)}){null_check})")
+                elif null_check:
+                    clauses.append(f"({key} IS NULL)")
+
+        where = " AND ".join(clauses) if clauses else ""
+        try:
+            self._datasource.set_filter(where)
+        except Exception:
+            pass
+        self._clear_cache()
+        self._load_page(0)
+        self._update_status_labels()
 
     # ------------------------------------------------------------------ Context dispatch
     def _on_tree_context(self, event) -> None:
