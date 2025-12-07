@@ -62,6 +62,7 @@ class Menubutton(TextSignalMixin, IconMixin, TTKWrapperBase, ttk.Menubutton):
             surface_color: Optional surface token; otherwise inherited.
             style_options: Optional dict forwarded to the style builder.
         """
+        kwargs.update(style_options=self._capture_style_options(['icon_only', 'icon'], kwargs))
         super().__init__(master, **kwargs)
 
         # Ensure the menubutton receives focus when clicked so focus styling is visible.

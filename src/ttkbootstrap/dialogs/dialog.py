@@ -210,6 +210,9 @@ class Dialog:
             - "modal": Blocks parent window interaction, requires user response
             - "popover": Closes automatically when focus leaves dialog
             Defaults to "modal".
+        frameless: If True, removes window decorations (title bar, borders) and adds
+            a solid border frame around the dialog content. Useful for dropdown-style
+            menus or popover UIs. Defaults to False.
 
     Example:
         Simple confirmation dialog:
@@ -282,6 +285,7 @@ class Dialog:
             resizable: tuple[bool, bool] | None = (False, False),
             alert: bool = False,
             mode: DialogMode = "modal",
+            frameless: bool = False,
     ):
         import tkinter
         self._master = master if master else tkinter._default_root
@@ -294,37 +298,36 @@ class Dialog:
         self._maxsize = maxsize
         self._resizable = resizable
         self._alert = alert
-        self._mode: DialogMode = mode
+        self._mode = mode
+        self._frameless = frameless
 
         self._toplevel: ttk.Toplevel | None = None
         self._content: ttk.Frame | None = None
         self._footer: ttk.Frame | None = None
+        self._border_frame: ttk.Frame | None = None
 
         self.result: Any = None
 
-    # ------------------------------------------------------------------ API
+    # --------------------------------------------------------------- API
 
     def show(self, position: Optional[tuple[int, int]] = None, modal: Optional[bool] = None):
-        """
-        Create and show the dialog.
+        """Create and show the dialog.
 
         Args:
             position: Optional (x, y) coordinates to position the dialog.
-                     If None, the dialog will be centered on the parent.
+                If None, the dialog will be centered on the parent.
             modal: Override the mode's default modality.
-                   - If None, uses mode:
-                       - "modal"   -> grab_set + wait_window
-                       - "popover" -> no grab, but wait_window
+                - If None, uses mode:
+                    - "modal": grab_set + wait_window
+                    - "popover": no grab, but wait_window
         """
         if modal is None:
             modal = (self._mode == "modal")
 
         self.result = None
         self._create_toplevel()
-        self._build_content()
         self._build_footer()
-
-        # Position the dialog
+        self._build_content()
         self._position_dialog(position)
 
         if self._alert:
@@ -339,12 +342,16 @@ class Dialog:
                 self._toplevel.grab_set()
             self._master.wait_window(self._toplevel)
 
+    def show_centered(self, modal: Optional[bool] = None):
+        """Show the dialog centered on its parent using default positioning."""
+        self.show(position=None, modal=modal)
+
     @property
     def toplevel(self) -> ttk.Toplevel | None:
         """Read-only access to the underlying toplevel window."""
         return self._toplevel
 
-    # ----------------------------------------------------------------- internals
+    # --------------------------------------------------------------- Internals
 
     def _normalize_buttons(
             self,
@@ -372,6 +379,11 @@ class Dialog:
         self._toplevel.title(self._title)
         self._toplevel.protocol("WM_DELETE_WINDOW", self._on_close_request)
 
+        try:
+            self._toplevel.withdraw()
+        except Exception:
+            pass
+
         if self._minsize:
             self._toplevel.minsize(*self._minsize)
         if self._maxsize:
@@ -379,37 +391,52 @@ class Dialog:
         if self._resizable is not None:
             self._toplevel.resizable(*self._resizable)
 
+        if self._frameless:
+            self._toplevel.overrideredirect(True)
+            self._border_frame = ttk.Frame(self._toplevel, show_border=True, padding=2)
+            self._border_frame.pack(fill='both', expand=True)
+
     def _build_content(self):
-        self._content = ttk.Frame(self._toplevel)
-        self._content.pack(fill="both", side="top", expand=True)
+        parent = self._border_frame if self._frameless else self._toplevel
+        padding = 2 if self._frameless else 0
+        self._content = ttk.Frame(parent, padding=padding)
+
+        if self._frameless:
+            self._content.pack(fill="both", side="top", expand=False)
+        else:
+            self._content.pack(fill="both", side="top", expand=True)
 
         if self._content_builder:
             self._content_builder(self._content)
 
     def _build_footer(self):
-        # Custom footer builder wins over buttons
+        parent = self._border_frame if self._frameless else self._toplevel
+        footer_padding = 6 if self._frameless else 4
+
         if self._footer_builder:
-            ttk.Separator(self._toplevel, orient="horizontal").pack(side="top", fill="x")
-            self._footer = ttk.Frame(self._toplevel, padding=4)
+            self._footer = ttk.Frame(parent, padding=footer_padding)
             self._footer.pack(side="bottom", fill="x")
+            ttk.Separator(parent, orient="horizontal").pack(side="bottom", fill="x")
             self._footer_builder(self._footer)
             return
 
         if not self._buttons:
-            return  # no footer at all
+            return
 
-        ttk.Separator(self._toplevel, orient="horizontal").pack(side="top", fill="x")
-        self._footer = ttk.Frame(self._toplevel, padding=4)
+        self._footer = ttk.Frame(parent, padding=footer_padding)
         self._footer.pack(side="bottom", fill="x")
+        ttk.Separator(parent, orient="horizontal").pack(side="bottom", fill="x")
 
         self._create_standard_buttons(self._footer)
 
     def _create_standard_buttons(self, parent: Widget):
-        """Create standardized footer buttons from self._buttons."""
+        """Create standardized footer buttons from self._buttons.
+
+        Buttons are packed right-to-left so first button appears rightmost.
+        """
         default_button: ttk.Button | None = None
         cancel_button: ttk.Button | None = None
 
-        # right-to-left so first spec appears rightmost (Bootstrap style)
         for spec in reversed(self._buttons):
             style = spec.bootstyle or self._style_for_role(spec.role)
 
@@ -460,21 +487,30 @@ class Dialog:
         if not self._toplevel:
             return
 
-        # Update idletasks to get accurate window dimensions
         self._toplevel.update_idletasks()
 
         if position is not None:
-            # Use explicit position, but ensure it stays on screen
             try:
                 x, y = position
                 x, y = self._ensure_on_screen(int(x), int(y))
                 self._toplevel.geometry(f"+{x}+{y}")
             except (TypeError, ValueError):
-                # Invalid position format, fall back to centering
                 self._center_on_parent()
         else:
-            # Center on parent
             self._center_on_parent()
+
+        self._toplevel.update_idletasks()
+
+        try:
+            self._toplevel.deiconify()
+        except Exception:
+            pass
+
+        if position is None:
+            try:
+                self._center_on_parent()
+            except Exception:
+                pass
 
     def _ensure_on_screen(self, x: int, y: int) -> tuple[int, int]:
         """Ensure dialog position keeps it fully visible on screen.
@@ -489,56 +525,50 @@ class Dialog:
         if not self._toplevel:
             return x, y
 
-        # Get dialog dimensions
         dialog_width = self._toplevel.winfo_reqwidth()
         dialog_height = self._toplevel.winfo_reqheight()
 
-        # Get screen dimensions
-        screen_width = self._toplevel.winfo_screenwidth()
-        screen_height = self._toplevel.winfo_screenheight()
+        screen_x0 = self._toplevel.winfo_vrootx()
+        screen_y0 = self._toplevel.winfo_vrooty()
+        screen_width = self._toplevel.winfo_vrootwidth()
+        screen_height = self._toplevel.winfo_vrootheight()
+        screen_x1 = screen_x0 + screen_width
+        screen_y1 = screen_y0 + screen_height
 
-        # Ensure dialog doesn't go off the right edge
-        if x + dialog_width > screen_width:
-            x = screen_width - dialog_width - 20  # 20px margin
+        x = min(x, screen_x1 - dialog_width - 20)
+        y = min(y, screen_y1 - dialog_height - 60)
+        x = max(screen_x0 + 20, x)
+        y = max(screen_y0 + 20, y)
 
-        # Ensure dialog doesn't go off the bottom edge
-        if y + dialog_height > screen_height:
-            y = screen_height - dialog_height - 60  # 60px margin for taskbar
-
-        # Ensure dialog doesn't go off the left edge
-        x = max(20, x)
-
-        # Ensure dialog doesn't go off the top edge
-        y = max(20, y)
-
-        return x, y
+        return int(x), int(y)
 
     def _center_on_parent(self) -> None:
         """Center the dialog on its parent window."""
         if not self._toplevel or not self._master:
             return
 
-        # Get dialog dimensions
-        dialog_width = self._toplevel.winfo_reqwidth()
-        dialog_height = self._toplevel.winfo_reqheight()
+        try:
+            self._master.update_idletasks()
+            self._toplevel.update_idletasks()
+        except Exception:
+            pass
 
-        # Get parent dimensions and position
+        dialog_width = max(self._toplevel.winfo_reqwidth(), self._toplevel.winfo_width())
+        dialog_height = max(self._toplevel.winfo_reqheight(), self._toplevel.winfo_height())
+
         parent_x = self._master.winfo_rootx()
         parent_y = self._master.winfo_rooty()
-        parent_width = self._master.winfo_width()
-        parent_height = self._master.winfo_height()
+        parent_width = max(self._master.winfo_width(), self._master.winfo_reqwidth())
+        parent_height = max(self._master.winfo_height(), self._master.winfo_reqheight())
 
-        # Calculate center position
-        x = parent_x + (parent_width - dialog_width) // 2
-        y = parent_y + (parent_height - dialog_height) // 2
+        x = parent_x + max(0, (parent_width - dialog_width) // 2)
+        y = parent_y + max(0, (parent_height - dialog_height) // 2)
 
-        # Ensure dialog is not positioned off-screen
-        x = max(0, x)
-        y = max(0, y)
+        x, y = self._ensure_on_screen(x, y)
 
         self._toplevel.geometry(f"+{x}+{y}")
 
-    # ----------------------------------------------------------------- mode helpers
+    # --------------------------------------------------------------- Event Handlers
 
     def _on_focus_out(self, _event):
         """For popover mode: close when focus leaves the dialog."""
@@ -558,7 +588,7 @@ class Dialog:
         if self._toplevel:
             self._toplevel.destroy()
 
-    # ----------------------------------------------------------------- helpers
+    # --------------------------------------------------------------- Helpers
 
     def _style_for_role(self, role: ButtonRole) -> str:
         if role == "primary":

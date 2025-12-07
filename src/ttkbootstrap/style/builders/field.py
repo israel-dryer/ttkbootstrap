@@ -168,7 +168,7 @@ def build_field_addon_style(b: BootstyleBuilderTTk, ttk_style: str, _: str, vari
 
     if icon is not None:
         icon = b.normalize_icon_spec(icon)
-        icon['size'] = 18
+        icon['size'] = b.scale(17)
         state_spec['image'] = b.map_stateful_icons(icon, state_spec['foreground'])
 
     b.map_style(ttk_style, **state_spec)

@@ -106,12 +106,22 @@ class SqliteDataSource(BaseDataSource):
         self._order_by = ""
         self._columns = []
 
+    @staticmethod
+    def _quote_identifier(name: str) -> str:
+        """Safely quote an identifier (column/table) for SQLite."""
+        text = str(name).replace('"', '""')
+        return f'"{text}"'
 
-    def set_data(self, records: Union[Sequence[Primitive], Sequence[dict[str, Any]]]):
+    def set_data(
+        self,
+        records: Union[Sequence[Primitive], Sequence[dict[str, Any]], Sequence[Sequence[Any]]],
+        column_keys: Optional[Sequence[str]] = None,
+    ):
         """Load records into database, creating table with inferred schema.
 
         Args:
-            records: Sequence of dicts or primitives (auto-wrapped as {"text": str(x)})
+            records: Sequence of dicts, primitives, or row sequences.
+            column_keys: Optional column names when supplying row sequences (lists/tuples).
 
         Returns:
             Self for method chaining
@@ -119,33 +129,83 @@ class SqliteDataSource(BaseDataSource):
         if not records:
             return self
 
-        # Coerce into a dictionary if not already
-        if not isinstance(records[0], dict):
+        # Apply fast, in-memory friendly pragmas when using ":memory:" to speed up bulk loads
+        try:
+            if self.conn.execute("PRAGMA database_list").fetchone()[2] == ":memory:":
+                self.conn.execute("PRAGMA synchronous = OFF")
+                self.conn.execute("PRAGMA journal_mode = MEMORY")
+                self.conn.execute("PRAGMA temp_store = MEMORY")
+        except Exception:
+            pass
+
+        # Normalize into a common structure: either dicts or row tuples with provided keys
+        first = records[0]
+        using_dicts = isinstance(first, dict)
+        # Turn primitives into dicts
+        if not using_dicts and not isinstance(first, (list, tuple)):
             records = [dict(text=str(x)) for x in records]
+            using_dicts = True
 
-        # Ensure each record has an 'id'
-        for i, record in enumerate(records):
-            if "id" not in record:
-                record["id"] = i
+        if using_dicts:
+            # Ensure helper columns
+            for i, record in enumerate(records):
+                if "id" not in record:
+                    record["id"] = i
+                if "selected" not in record:
+                    record["selected"] = 0
 
-            if "selected" not in record:
-                record["selected"] = 0
+            self._columns = list(records[0].keys())
+            col_types = {col: self._infer_type(records[0][col]) for col in self._columns}
+            rows_to_insert = [tuple(row.get(col) for col in self._columns) for row in records]
+        else:
+            # Sequence rows with provided column keys
+            keys = list(column_keys or [])
+            if not keys:
+                keys = [str(i) for i in range(len(first))]
+            need_id = "id" not in keys
+            need_selected = "selected" not in keys
+            if need_id:
+                keys.append("id")
+            if need_selected:
+                keys.append("selected")
+            self._columns = keys
 
-        self._columns = list(records[0].keys())
-        col_types = {col: self._infer_type(records[0][col]) for col in self._columns}
+            # Infer types from first row (pad to keys length)
+            padded_first = list(first) + [None] * (len(keys) - len(first))
+            if need_id and "id" in keys:
+                padded_first[keys.index("id")] = 0
+            if need_selected and "selected" in keys:
+                padded_first[keys.index("selected")] = 0
+            col_types = {col: self._infer_type(padded_first[idx]) for idx, col in enumerate(keys)}
+
+            rows_to_insert = []
+            id_idx = keys.index("id") if "id" in keys else None
+            sel_idx = keys.index("selected") if "selected" in keys else None
+            value_len = len(keys)
+            for i, row in enumerate(records):
+                base_values = list(row[: value_len]) + [""] * (value_len - len(row))
+                if id_idx is not None:
+                    base_values[id_idx] = i
+                if sel_idx is not None:
+                    base_values[sel_idx] = 0
+                rows_to_insert.append(tuple(base_values))
+
         col_definitions = ", ".join(
-            f"{col} {col_types[col]}" + (" PRIMARY KEY" if col == "id" else "")
+            f"{self._quote_identifier(col)} {col_types[col]}" + (" PRIMARY KEY" if col == "id" else "")
             for col in self._columns
         )
+        placeholders = ", ".join("?" for _ in self._columns)
 
-        self.conn.execute(f"DROP TABLE IF EXISTS {self._table}")
-        self.conn.execute(f"CREATE TABLE {self._table} ({col_definitions})")
-
-        with self.conn:
-            for row in records:
-                placeholders = ", ".join("?" for _ in self._columns)
-                values = tuple(row.get(col) for col in self._columns)
-                self.conn.execute(f"INSERT INTO {self._table} VALUES ({placeholders})", values)
+        # Recreate table and bulk insert in a single transaction for speed
+        original_row_factory = self.conn.row_factory
+        try:
+            self.conn.row_factory = None  # avoid row wrapping overhead during inserts
+            with self.conn:
+                self.conn.execute(f"DROP TABLE IF EXISTS {self._table}")
+                self.conn.execute(f"CREATE TABLE {self._table} ({col_definitions})")
+                self.conn.executemany(f"INSERT INTO {self._table} VALUES ({placeholders})", rows_to_insert)
+        finally:
+            self.conn.row_factory = original_row_factory
         return self
 
     def set_filter(self, where_sql: str = ""):
@@ -203,8 +263,11 @@ class SqliteDataSource(BaseDataSource):
         if "selected" not in record:
             record["selected"] = 0
 
-        keys = record.keys()
-        cols = ", ".join(keys)
+        # Ensure table exists (handles empty datasources)
+        self._ensure_table_for_record(record)
+
+        keys = list(record.keys())
+        cols = ", ".join(self._quote_identifier(k) for k in keys)
         placeholders = ", ".join("?" for _ in keys)
         values = tuple(record[col] for col in keys)
 
@@ -222,7 +285,7 @@ class SqliteDataSource(BaseDataSource):
         """Update record fields by ID."""
         if not updates:
             return False
-        set_clause = ", ".join(f"{k} = ?" for k in updates)
+        set_clause = ", ".join(f"{self._quote_identifier(k)} = ?" for k in updates)
         values = tuple(updates.values()) + (record_id,)
         with self.conn:
             cur = self.conn.execute(f"UPDATE {self._table} SET {set_clause} WHERE id = ?", values)
@@ -236,9 +299,45 @@ class SqliteDataSource(BaseDataSource):
 
     def _generate_new_id(self) -> int:
         """Generate next available integer ID."""
-        cursor = self.conn.execute(f"SELECT MAX(id) FROM {self._table}")
-        max_id = cursor.fetchone()[0]
+        try:
+            cursor = self.conn.execute(f"SELECT MAX(id) FROM {self._table}")
+            max_id = cursor.fetchone()[0]
+        except Exception:
+            max_id = 0
         return (max_id or 0) + 1
+
+    # ------------------------------------------------------------------ helpers
+    def _ensure_table_for_record(self, record: Dict[str, Any]) -> None:
+        """Create the table if it does not yet exist, inferring columns from record."""
+        try:
+            # Quick existence check
+            self.conn.execute(f"SELECT 1 FROM {self._table} LIMIT 1")
+            return
+        except Exception:
+            pass
+
+        cols = list(self._columns) if self._columns else list(record.keys())
+        if "id" not in cols:
+            cols.append("id")
+        if "selected" not in cols:
+            cols.append("selected")
+        self._columns = cols
+
+        col_types = {}
+        for c in cols:
+            if c == "id":
+                col_types[c] = "INTEGER"
+            elif c == "selected":
+                col_types[c] = "INTEGER"
+            else:
+                col_types[c] = self._infer_type(record.get(c))
+
+        col_definitions = ", ".join(
+            f"{self._quote_identifier(col)} {col_types[col]}" + (" PRIMARY KEY" if col == "id" else "")
+            for col in cols
+        )
+        with self.conn:
+            self.conn.execute(f"CREATE TABLE IF NOT EXISTS {self._table} ({col_definitions})")
 
     # === SELECTION ====
 
@@ -352,3 +451,19 @@ class SqliteDataSource(BaseDataSource):
         query += f" LIMIT {count} OFFSET {start_index}"
         cursor = self.conn.execute(query)
         return [dict(row) for row in cursor.fetchall()]
+
+    def get_distinct_values(self, column: str, limit: int = 1000) -> List[Any]:
+        """Get distinct values for a column.
+
+        Args:
+            column: Column name to get distinct values from.
+            limit: Maximum number of distinct values to return.
+
+        Returns:
+            List of distinct values sorted alphabetically.
+        """
+        quoted_col = self._quote_identifier(column)
+        query = f"SELECT DISTINCT {quoted_col} FROM {self._table}"
+        query += f" ORDER BY {quoted_col} LIMIT {limit}"
+        cursor = self.conn.execute(query)
+        return [row[0] for row in cursor.fetchall()]

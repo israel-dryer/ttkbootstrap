@@ -247,6 +247,8 @@ PAGES: Final[ViewArg] = "pages"
 # ---------------------------
 DEFAULT: Final[str] = "default"
 DEFAULT_THEME: Final[str] = "litera"
+# Shared minimum column width default for form layouts
+DEFAULT_MIN_COL_WIDTH: Final[int] = 275
 
 TTK_CLAM: Final[TtkTheme] = "clam"
 TTK_ALT: Final[TtkTheme] = "alt"
@@ -315,7 +317,7 @@ __all__ = [
     "PIESLICE", "CHORD", "ARC", "FIRST", "LAST",
     "BUTT", "PROJECTING", "ROUND", "BEVEL", "MITER",
     "MOVETO", "SCROLL", "UNITS", "PAGES",
-    "DEFAULT", "DEFAULT_THEME", "TTK_CLAM", "TTK_ALT", "TTK_DEFAULT",
+    "DEFAULT", "DEFAULT_THEME", "DEFAULT_MIN_COL_WIDTH", "TTK_CLAM", "TTK_ALT", "TTK_DEFAULT",
     "FULL", "SEMI", "DETERMINATE", "INDETERMINATE",
     "PRIMARY", "SECONDARY", "SUCCESS", "DANGER", "WARNING", "INFO", "LIGHT", "DARK",
     "OUTLINE", "LINK", "TOGGLE", "INVERSE", "STRIPED", "TOOLBUTTON", "SQUARE",

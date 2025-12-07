@@ -389,6 +389,7 @@ def use_icon_provider() -> Type[Any]:
         'ttkbootstrap_icons',
         'ttkbootstrap_icons.bootstrap_icon',
         'ttkbootstrap_icons.icons',
+        'ttkbootstrap_icons_bs'
     )
     for modname in candidates:
         try:

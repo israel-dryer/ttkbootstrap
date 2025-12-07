@@ -16,7 +16,7 @@ def create_treeview_style():
         container,
         columns=columns,
         show="headings",
-        height=4,
+        height=8,
     )
     tree.pack(fill="both", expand=True)
 

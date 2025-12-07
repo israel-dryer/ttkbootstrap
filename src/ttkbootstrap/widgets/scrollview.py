@@ -349,6 +349,16 @@ class ScrollView(Frame):
 
     def _on_mousewheel(self, event):
         """Handle vertical mouse wheel scrolling."""
+        # Check if vertical scrolling is actually possible
+        if self._direction in ('vertical', 'both'):
+            try:
+                first, last = self.canvas.yview()
+                # If first=0.0 and last=1.0, all content is visible, no need to scroll
+                if first <= 0.0 and last >= 1.0:
+                    return  # Content fits, don't scroll
+            except:
+                pass  # If we can't check, allow scrolling
+
         # Show scrollbar temporarily in on-scroll mode
         if self._show_scrollbar == 'on-scroll':
             self._show_scrollbars()
@@ -376,6 +386,16 @@ class ScrollView(Frame):
 
     def _on_shift_mousewheel(self, event):
         """Handle horizontal mouse wheel scrolling (Shift+MouseWheel)."""
+        # Check if horizontal scrolling is actually possible
+        if self._direction in ('horizontal', 'both'):
+            try:
+                first, last = self.canvas.xview()
+                # If first=0.0 and last=1.0, all content is visible, no need to scroll
+                if first <= 0.0 and last >= 1.0:
+                    return  # Content fits, don't scroll
+            except:
+                pass  # If we can't check, allow scrolling
+
         # Show scrollbar temporarily in on-scroll mode
         if self._show_scrollbar == 'on-scroll':
             self._show_scrollbars()

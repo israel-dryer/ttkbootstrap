@@ -129,7 +129,7 @@ class TextEntry(Field):
             message: Optional message text to display below the entry field.
                 This is replaced by validation error messages when validation fails.
             **kwargs: Additional keyword arguments from FieldOptions:
-                allow_blank: Allow empty input. Default is False.
+                allow_blank: Allow empty input. Default is True.
                 bootstyle: The accent color of the focus ring and active border.
                 cursor: Cursor style when hovering.
                 value_format: ICU format pattern for parsing/formatting.

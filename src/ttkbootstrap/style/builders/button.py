@@ -40,6 +40,10 @@ def _apply_icon_mapping(
         icon = b.normalize_icon_spec(icon, default_size)
 
     state_spec['image'] = b.map_stateful_icons(icon, state_spec['foreground'])
+    # Set compound to 'left' so text is visible alongside the icon
+    icon_only = options.get('icon_only', False)
+    if not icon_only:
+        state_spec['compound'] = 'left'
     return state_spec
 
 
@@ -306,13 +310,13 @@ def build_ghost_button_style(b: BootstyleBuilderTTk, ttk_style: str, color: str 
     surface_token = options.get('surface_color', 'background')
 
     surface = b.color(surface_token)
-    foreground_normal = b.color(accent_token)
+    foreground_normal = b.on_color(surface)
     foreground_disabled = b.disabled('text', surface)
 
+    accent = b.color(accent_token)
     normal = surface
-    pressed = b.subtle(accent_token, surface)
-    focused = hovered = pressed
-    focused_ring = b.focus_ring(focused, surface)
+    hovered = focused = pressed = b.subtle(accent_token, surface)
+    focused_ring = b.focus_ring(accent, surface)
 
     # button element images
     normal_img = recolor_image('button', normal, normal, surface, surface)
