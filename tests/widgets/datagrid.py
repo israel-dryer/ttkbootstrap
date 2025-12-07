@@ -33,11 +33,11 @@ columns = [
     {"text": "UserId", "key": "UserId"},
     {"text": "First", "key": "FirstName"},
     {"text": "Last", "key": "LastName"},
-    {"text": "Sex", "key": "Sex", "width": 80},
-    {"text": "Email", "key": "Email", "width": 200},
-    {"text": "Phone", "key": "Phone", "width": 140},
-    {"text": "BirthDate", "key": "BirthDate", "width": 110},
-    {"text": "JobTitle", "key": "JobTitle", "width": 200},
+    {"text": "Sex", "key": "Sex"},
+    {"text": "Email", "key": "Email"},
+    {"text": "Phone", "key": "Phone"},
+    {"text": "BirthDate", "key": "BirthDate"},
+    {"text": "JobTitle", "key": "JobTitle"},
 ]
 
 start = time.perf_counter()
@@ -45,14 +45,15 @@ grid = DataGrid(
     app,
     columns=columns,
     rows=rows,
-    # show_xscroll=False,
-    # page_size=200,
-    # virtual_scroll=False,
-    # allow_column_hiding=False,
-    # show_table_status=False,
-    # show_context_menus="headers",
+    search={"event": "enter"},
+    column_auto_width=True,
+    row_alternation={"enabled": True},
+    editing={"updating": True}
 )
 grid.pack(fill="both", expand=True, padx=5, pady=5)
+
+grid.on_row_click(print)
+
 elapsed = time.perf_counter() - start
 print(f"DataGrid build time: {elapsed:.3f}s for {len(rows)} rows")
 
