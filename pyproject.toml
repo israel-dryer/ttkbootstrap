@@ -7,8 +7,8 @@ name = "ttkbootstrap"
 version = "2.0.0a1"
 description = "A supercharged theme extension for tkinter that enables on-demand modern flat style themes inspired by Bootstrap."
 readme = "README.md"
-requires-python = ">=3.9"
-license = "MIT AND (Apache-2.0 OR BSD-2-Clause)"
+requires-python = ">=3.10"
+license = "MIT"
 authors = [
     { name = "Israel Dryer", email = "israel.dryer@gmail.com" }
 ]
@@ -34,7 +34,6 @@ classifiers = [
     "Environment :: X11 Applications :: GTK",
     "Intended Audience :: Developers",
     "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
@@ -45,16 +44,15 @@ classifiers = [
 
 dependencies = [
     "pillow>=10,<=12",
-    "ttkbootstrap-icons"
-]
+    "ttkbootstrap-icons>=4",
 
-[project.optional-dependencies]
-# Development-time helpers for localization (message extraction/compile)
-i18n = [
+    # Runtime localization/formatting stack
     "Babel>=2.12",
     "python-dateutil>=2.8",
     "dateparser>=1.1",
 ]
+
+[project.optional-dependencies]
 
 [project.urls]
 Homepage = "https://github.com/israel-dryer/ttkbootstrap"
