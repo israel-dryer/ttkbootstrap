@@ -6,15 +6,10 @@ from typing import List, Optional, Tuple, Union
 
 from typing_extensions import Any, TypedDict
 
+from ttkbootstrap import BootstrapIcon
 from ttkbootstrap.style.theme_provider import ThemeProvider, use_theme
-from ttkbootstrap.style.utility import (
-    best_foreground,
-    darken_color,
-    lighten_color,
-    mix_colors,
-    relative_luminance,
-    color_to_hsl,
-)
+from ttkbootstrap.style.utility import best_foreground, color_to_hsl, darken_color, lighten_color, mix_colors, \
+    relative_luminance
 from ttkbootstrap.utility import scale_size
 
 
@@ -457,9 +452,6 @@ class BootstyleBuilderBase:
             list[tuple[str, str]]: List of (state, image_name) tuples suitable
             for `ttk.Style.element_create(..., 'image', default, (state, image) ...)`.
         """
-        # Lazy imports to avoid circulars and keep base lightweight
-        from ttkbootstrap.appconfig import use_icon_provider
-
         # Normalize base values
         base_name: str = icon.get('name')  # type: ignore[assignment]
         if not base_name:
@@ -490,7 +482,6 @@ class BootstyleBuilderBase:
 
         # Obtain the provider callable (class or function). The provider itself
         # is called as the icon constructor: provider(name, size, color) -> icon
-        provider = use_icon_provider()
 
         def _resolve_fg(value: Any) -> str | None:  # noqa: ANN401
             """Extract a color string from the foreground state spec value."""
@@ -514,9 +505,9 @@ class BootstyleBuilderBase:
 
             # Call the provider directly; it returns an icon object with `.image`
             try:
-                icon_obj = provider(name=name, size=size, color=color)  # type: ignore[misc]
+                icon_obj = BootstrapIcon(name=name, size=size, color=color)  # type: ignore[misc]
             except TypeError:
-                icon_obj = provider(name, size, color)  # type: ignore[misc]
+                icon_obj = BootstrapIcon(name, size, color)  # type: ignore[misc]
             if icon_obj is None:
                 return None
 

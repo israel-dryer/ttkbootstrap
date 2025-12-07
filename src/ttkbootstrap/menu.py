@@ -44,7 +44,8 @@ from tkinter import font
 from typing import Any, Union
 
 import ttkbootstrap as ttk
-from ttkbootstrap import use_icon_provider, use_style
+from ttkbootstrap_icons_bs import BootstrapIcon
+from ttkbootstrap.style.style import use_style
 
 
 class MenuManager:
@@ -79,7 +80,6 @@ class MenuManager:
         """
         self.parent = parent
         self.style = use_style()
-        self.icon_provider = use_icon_provider()
         self.menu_items = {}  # Track menu items with icons for updates
 
         # Set up theme change monitoring
@@ -101,7 +101,7 @@ class MenuManager:
         # Update all menu items (including cascades)
         for menu, index, icon_name, size in self.menu_items.values():
             # Recreate the icon with new foreground color
-            new_icon = self.icon_provider(icon_name, size, fg_color)
+            new_icon = BootstrapIcon(icon_name, size, fg_color)
 
             try:
                 menu.entryconfigure(index, image=new_icon)
@@ -157,7 +157,7 @@ class MenuManager:
                     # Get foreground color
                     fg_color = self.style.style_builder.color('foreground')
                     # Create icon with current foreground color
-                    icon = self.icon_provider(icon_name, icon_size, fg_color)
+                    icon = BootstrapIcon(icon_name, icon_size, fg_color)
                     options['image'] = icon
                     options['compound'] = options.get('compound', 'left')
 
@@ -205,7 +205,7 @@ class MenuManager:
                         # Get foreground color
                         fg_color = self.style.style_builder.color('foreground')
                         # Create icon with current foreground color
-                        icon = self.icon_provider(icon_name, icon_size, fg_color)
+                        icon = BootstrapIcon(icon_name, icon_size, fg_color)
                         opts['image'] = icon
                         opts['compound'] = opts.get('compound', 'left')
 

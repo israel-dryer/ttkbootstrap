@@ -5,7 +5,7 @@ This module contains style builders for ttk.Checkbutton and Radiobutton toolbutt
 
 from __future__ import annotations
 
-from ttkbootstrap import use_icon_provider
+from ttkbootstrap import BootstrapIcon
 from ttkbootstrap.style.bootstyle_builder_ttk import BootstyleBuilderTTk
 from ttkbootstrap.style.element import Element, ElementImage
 from ttkbootstrap.style.utility import create_transparent_image, recolor_image
@@ -519,10 +519,9 @@ def build_dropdown_check_item_button_style(b: BootstyleBuilderTTk, ttk_style: st
         ]
     )
 
-    icon_provider = use_icon_provider()
     icon_empty = create_transparent_image(20, 20)
-    icon_pressed = icon_provider('check', 20, on_pressed)
-    icon_normal = icon_provider('check', 20, on_surface)
+    icon_pressed = BootstrapIcon('check', 20, on_pressed)
+    icon_normal = BootstrapIcon('check', 20, on_surface)
 
     state_spec['image'] = [
         ('selected pressed', icon_pressed),
@@ -570,10 +569,9 @@ def build_dropdown_radio_item_button_style(b: BootstyleBuilderTTk, ttk_style: st
         ]
     )
 
-    icon_provider = use_icon_provider()
     icon_empty = create_transparent_image(20, 20)
-    icon_pressed = icon_provider('check', 20, on_pressed)
-    icon_normal = icon_provider('check', 20, on_surface)
+    icon_pressed = BootstrapIcon('check', 20, on_pressed)
+    icon_normal = BootstrapIcon('check', 20, on_surface)
 
     state_spec['image'] = [
         ('selected pressed', icon_pressed),

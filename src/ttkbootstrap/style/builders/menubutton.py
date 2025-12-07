@@ -5,7 +5,7 @@ This module contains style builders for ttk.Menubutton widgets and variants.
 
 from __future__ import annotations
 
-from ttkbootstrap.appconfig import use_icon_provider
+from ttkbootstrap import BootstrapIcon
 from ttkbootstrap.style.bootstyle_builder_ttk import BootstyleBuilderTTk
 from ttkbootstrap.style.element import Element, ElementImage
 from ttkbootstrap.style.utility import create_transparent_image, recolor_image
@@ -41,18 +41,18 @@ def _create_chevron_images(
         active: Active/hover color (optional)
         icon_name: Name of the icon to use (default: 'caret-down-fill')
     """
-    icon = use_icon_provider()
-    normal_chevron = icon(icon_name, size=b.scale(18), color=foreground).image
-    disabled_chevron = icon(icon_name, size=b.scale(18), color=disabled).image
+    normal_chevron = BootstrapIcon(icon_name, size=b.scale(18), color=foreground).image
+    disabled_chevron = BootstrapIcon(icon_name, size=b.scale(18), color=disabled).image
 
     state_specs = [
         ('disabled', disabled_chevron),
     ]
 
     if active:
-        active_chevron = icon(icon_name, size=b.scale(18), color=active).image
+        active_chevron = BootstrapIcon(icon_name, size=b.scale(18), color=active).image
         state_specs.extend(
             [
+                ('focus !disabled', active_chevron),
                 ('hover !disabled', active_chevron),
                 ('pressed !disabled', active_chevron),
             ])
@@ -76,7 +76,7 @@ def _apply_icon_mapping(b: BootstyleBuilderTTk, options: dict, state_spec: dict)
     if icon is None:
         return state_spec
 
-    icon = b.normalize_icon_spec(icon)
+    icon = b.normalize_icon_spec(icon, b.scale(24))
     state_spec['image'] = b.map_stateful_icons(icon, state_spec['foreground'])
     return state_spec
 
