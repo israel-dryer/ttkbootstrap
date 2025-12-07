@@ -27,11 +27,22 @@ Example:
 
 For more information, see: https://ttkbootstrap.readthedocs.io/
 """
-from tkinter import (BooleanVar, Canvas as _tkCanvas, DoubleVar, Frame as _tkFrame, IntVar, Menu as _tkMenu, PhotoImage,
-                     StringVar, Text as _tkText, Tk as _tkTk, Variable)
 
-# Re-export tk widgets with original names BEFORE importing submodules
-# This prevents circular import issues when submodules try to import these
+from tkinter import (
+    BooleanVar,
+    Canvas as _tkCanvas,
+    DoubleVar,
+    Frame as _tkFrame,
+    IntVar,
+    Menu as _tkMenu,
+    PhotoImage,
+    StringVar,
+    Text as _tkText,
+    Tk as _tkTk,
+    Variable,
+)
+
+# Re-export tk widgets with original names before importing submodules
 Tk = _tkTk
 Menu = _tkMenu
 Text = _tkText
@@ -40,110 +51,128 @@ TkFrame = _tkFrame  # Exported as TkFrame to avoid conflict with ttk.Frame
 
 from ttkbootstrap.appconfig import AppConfig
 from ttkbootstrap_icons_bs import BootstrapIcon
-# Use the new Bootstyle implementation with constructor/configure overrides
-from ttkbootstrap.style.bootstyle import Bootstyle
-# Export the new Style implementation and a convenience accessor
-from ttkbootstrap.style.style import Style, use_style
-from ttkbootstrap.window import Toplevel, Window
 from ttkbootstrap.menu import MenuManager, create_menu
+from ttkbootstrap.style.bootstyle import Bootstyle
+from ttkbootstrap.style.style import Style, use_style
+from ttkbootstrap.widgets import TK_WIDGETS, TTK_WIDGETS
+from ttkbootstrap.widgets.button import Button
+from ttkbootstrap.widgets.checkbutton import Checkbutton
+from ttkbootstrap.widgets.combobox import Combobox
+from ttkbootstrap.widgets.entry import Entry
+from ttkbootstrap.widgets.frame import Frame
+from ttkbootstrap.widgets.label import Label
+from ttkbootstrap.widgets.labelframe import Labelframe
+from ttkbootstrap.widgets.menubutton import Menubutton
+from ttkbootstrap.widgets.notebook import Notebook
+from ttkbootstrap.widgets.panedwindow import Panedwindow
+from ttkbootstrap.widgets.progressbar import Progressbar
+from ttkbootstrap.widgets.radiobutton import Radiobutton
+from ttkbootstrap.widgets.scale import Scale
+from ttkbootstrap.widgets.scrollbar import Scrollbar
+from ttkbootstrap.widgets.separator import Separator
+from ttkbootstrap.widgets.sizegrip import Sizegrip
+from ttkbootstrap.widgets.spinbox import Spinbox
+from ttkbootstrap.widgets.treeview import Treeview
+from ttkbootstrap.widgets.optionmenu import OptionMenu
 
-# Export subclass-based ttk wrappers FIRST to avoid circular imports
-from ttkbootstrap.widgets.button import Button as Button
-from ttkbootstrap.widgets.label import Label as Label
-from ttkbootstrap.widgets.menubutton import Menubutton as Menubutton
-from ttkbootstrap.widgets.checkbutton import Checkbutton as Checkbutton
-from ttkbootstrap.widgets.radiobutton import Radiobutton as Radiobutton
-from ttkbootstrap.widgets.combobox import Combobox as Combobox
-from ttkbootstrap.widgets.entry import Entry as Entry
-from ttkbootstrap.widgets.frame import Frame as Frame
-from ttkbootstrap.widgets.notebook import Notebook as Notebook
-from ttkbootstrap.widgets.labelframe import Labelframe as Labelframe
-from ttkbootstrap.widgets.panedwindow import Panedwindow as Panedwindow
-from ttkbootstrap.widgets.progressbar import Progressbar as Progressbar
-from ttkbootstrap.widgets.scale import Scale as Scale
-from ttkbootstrap.widgets.scrollbar import Scrollbar as Scrollbar
-from ttkbootstrap.widgets.separator import Separator as Separator
-from ttkbootstrap.widgets.sizegrip import Sizegrip as Sizegrip
-from ttkbootstrap.widgets.spinbox import Spinbox as Spinbox
-from ttkbootstrap.widgets.treeview import Treeview as Treeview
-from ttkbootstrap.widgets.scrollview import ScrollView as ScrollView
-from ttkbootstrap.widgets.scrolledtext import ScrolledText as ScrolledText
-from ttkbootstrap.widgets.optionmenu import OptionMenu as OptionMenu
-
-# Import custom widgets (after basic widgets to avoid circular imports)
+from ttkbootstrap.widgets.scrollview import ScrollView
+from ttkbootstrap.widgets.scrolledtext import ScrolledText
 from ttkbootstrap.widgets.floodgauge import FloodGauge
 from ttkbootstrap.widgets.labeledscale import LabeledScale
 from ttkbootstrap.widgets.meter import Meter
+from ttkbootstrap.widgets.tableview import TableView
+
+from ttkbootstrap.widgets.contextmenu import ContextMenu
+from ttkbootstrap.widgets.dateentry import DateEntry
+from ttkbootstrap.widgets.datepicker import DatePicker
+from ttkbootstrap.widgets.dropdownbutton import DropdownButton
+from ttkbootstrap.widgets.field import Field
+from ttkbootstrap.widgets.form import Form
+from ttkbootstrap.widgets.numericentry import NumericEntry
+from ttkbootstrap.widgets.passwordentry import PasswordEntry
+from ttkbootstrap.widgets.pathentry import PathEntry
+from ttkbootstrap.widgets.selectbox import SelectBox
+from ttkbootstrap.widgets.textentry import TextEntry
+from ttkbootstrap.widgets.timeentry import TimeEntry
 from ttkbootstrap.widgets.toast import Toast
 from ttkbootstrap.widgets.tooltip import ToolTip
-from ttkbootstrap.widgets.form import Form as Form
-from ttkbootstrap.widgets.field import Field as Field
-from ttkbootstrap.widgets.textentry import TextEntry as TextEntry
-from ttkbootstrap.widgets.passwordentry import PasswordEntry as PasswordEntry
-from ttkbootstrap.widgets.numericentry import NumericEntry as NumericEntry
-from ttkbootstrap.widgets.pathentry import PathEntry as PathEntry
-from ttkbootstrap.widgets.dateentry import DateEntry as DateEntry
-from ttkbootstrap.widgets.datepicker import DatePicker as DatePicker
-from ttkbootstrap.widgets.tableview import TableView as TableView
-from ttkbootstrap.widgets.selectbox import SelectBox as SelectBox
-from ttkbootstrap.widgets.timeentry import TimeEntry as TimeEntry
-from ttkbootstrap.widgets.contextmenu import ContextMenu as ContextMenu
-from ttkbootstrap.widgets.dropdownbutton import DropdownButton as DropdownButton
+from ttkbootstrap.window import Toplevel, Window
 
-# Import constants from widgets
-from ttkbootstrap.widgets import TTK_WIDGETS, TK_WIDGETS
-
-# Patch Tk widgets for autostyle
+# Patch Tk widgets for autostyle and install enhanced events on import
 from ttkbootstrap.style.tk_patch import install_tk_autostyle
-
-install_tk_autostyle()
-
-# Install enhanced event system
 from ttkbootstrap.events import install_enhanced_events
 
+install_tk_autostyle()
 install_enhanced_events()
 
-__all__ = [
-    # Tk exports
-    'Tk', 'Menu', 'Text', 'Canvas', 'TkFrame', 'Variable', 'StringVar', 'IntVar', 'BooleanVar', 'DoubleVar',
-    'PhotoImage',
-
-    # TTK exports
-    'Button', 'Checkbutton', 'Combobox', 'Entry', 'Frame', 'Labelframe',
-    'Label', 'Menubutton', 'Notebook', 'Panedwindow', 'Progressbar', 'Radiobutton',
-    'Scale', 'Scrollbar', 'Separator', 'Sizegrip', 'Spinbox',
-    'Treeview', 'OptionMenu',
-
-    # TTkBootstrap exports
-    'BootstrapIcon',
-    'AppConfig',
-    'Bootstyle',
-    'ContextMenu',
-    'Style',
-    'Toplevel',
-    'Window',
-    'DateEntry',
-    'DatePicker',
-    'DropdownButton',
-    'Field',
-    'FloodGauge',
-    'LabeledScale',
-    'Meter',
-    'Form',
-    'TableView',
-    'PasswordEntry',
-    'PathEntry',
-    'Toast',
-    'ToolTip',
-    'TextEntry',
-    'TimeEntry',
-    'ScrollView',
-    'ScrolledText',
-    'SelectBox',
-    'MenuManager',
-    'NumericEntry',
-    'create_menu',
-    'TTK_WIDGETS',
-    'TK_WIDGETS',
-    'use_style'
+_TK_EXPORTS = [
+    "Tk",
+    "Menu",
+    "Text",
+    "Canvas",
+    "TkFrame",
+    "Variable",
+    "StringVar",
+    "IntVar",
+    "BooleanVar",
+    "DoubleVar",
+    "PhotoImage",
 ]
+
+_TTK_EXPORTS = [
+    "Button",
+    "Checkbutton",
+    "Combobox",
+    "Entry",
+    "Frame",
+    "Labelframe",
+    "Label",
+    "Menubutton",
+    "Notebook",
+    "Panedwindow",
+    "Progressbar",
+    "Radiobutton",
+    "Scale",
+    "Scrollbar",
+    "Separator",
+    "Sizegrip",
+    "Spinbox",
+    "Treeview",
+    "OptionMenu",
+]
+
+_TTKBOOTSTRAP_EXPORTS = [
+    "BootstrapIcon",
+    "AppConfig",
+    "Bootstyle",
+    "ContextMenu",
+    "Style",
+    "Toplevel",
+    "Window",
+    "DateEntry",
+    "DatePicker",
+    "DropdownButton",
+    "Field",
+    "FloodGauge",
+    "LabeledScale",
+    "Meter",
+    "Form",
+    "TableView",
+    "PasswordEntry",
+    "PathEntry",
+    "Toast",
+    "ToolTip",
+    "TextEntry",
+    "TimeEntry",
+    "ScrollView",
+    "ScrolledText",
+    "SelectBox",
+    "MenuManager",
+    "NumericEntry",
+    "create_menu",
+    "TTK_WIDGETS",
+    "TK_WIDGETS",
+    "use_style",
+]
+
+__all__ = [*_TK_EXPORTS, *_TTK_EXPORTS, *_TTKBOOTSTRAP_EXPORTS]
