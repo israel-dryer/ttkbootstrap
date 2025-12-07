@@ -210,6 +210,7 @@ class DataGrid(Frame):
         - Context menus: enable/disable per region (headers/rows) with sorting/filtering actions.
         - Appearance: optional alternating row colors (disabled when grouped).
         - Extensibility: optional exporting and editing capabilities via configuration.
+        - Events: virtual events for selection/row click/double/right-click and row insert/update/delete/move.
     """
 
     def __init__(
@@ -257,6 +258,16 @@ class DataGrid(Frame):
             column_min_width: Global minimum width for columns (overridden by per-column minwidth; default 40).
             column_auto_width: Automatically size columns to widest visible text on each page.
             kwargs: Passed through to Frame.
+
+        Virtual events:
+            <<SelectionChanged>>: event.data = {"records": list[dict], "iids": list[str]}
+            <<RowClick>>: event.data = {"record": dict, "iid": str}
+            <<RowDoubleClick>>: event.data = {"record": dict, "iid": str}
+            <<RowRightClick>>: event.data = {"record": dict, "iid": str}
+            <<RowInserted>>: event.data = {"records": list[dict]}
+            <<RowUpdated>>: event.data = {"records": list[dict]}
+            <<RowDeleted>>: event.data = {"records": list[dict]}
+            <<RowMoved>>: event.data = {"records": list[dict]}
         """
         super().__init__(master, **kwargs)
 
@@ -299,6 +310,7 @@ class DataGrid(Frame):
         self._cached_total_count: int | None = None
         self._group_by_key: str | None = None
         self._group_parents: dict[str | None, str] = {}
+        self._hidden_rows: dict[str, tuple[str, int]] = {}
 
         self._resolve_column_keys()
 
@@ -343,6 +355,361 @@ class DataGrid(Frame):
         self._ensure_column_metadata(seeded_records)
         self._clear_cache()
         self._load_page(0)
+
+    # ------------------------------------------------------------------ Public event API
+    def on_selection_changed(self, callback) -> str:
+        """Bind to selection changes. event.data = {'records': list, 'iids': list}."""
+        return self.bind("<<SelectionChanged>>", callback, add=True)
+
+    def off_selection_changed(self, funcid: str | None = None) -> None:
+        self.unbind("<<SelectionChanged>>", funcid)
+
+    def on_row_click(self, callback) -> str:
+        """Bind to row click. event.data = {'record': dict, 'iid': str}."""
+        return self.bind("<<RowClick>>", callback, add=True)
+
+    def off_row_click(self, funcid: str | None = None) -> None:
+        self.unbind("<<RowClick>>", funcid)
+
+    def on_row_double_click(self, callback) -> str:
+        """Bind to row double-click. event.data = {'record': dict, 'iid': str}."""
+        return self.bind("<<RowDoubleClick>>", callback, add=True)
+
+    def off_row_double_click(self, funcid: str | None = None) -> None:
+        self.unbind("<<RowDoubleClick>>", funcid)
+
+    def on_row_right_click(self, callback) -> str:
+        """Bind to row right-click/context. event.data = {'record': dict, 'iid': str}."""
+        return self.bind("<<RowRightClick>>", callback, add=True)
+
+    def off_row_right_click(self, funcid: str | None = None) -> None:
+        self.unbind("<<RowRightClick>>", funcid)
+
+    def on_row_deleted(self, callback) -> str:
+        """Bind to row delete events. event.data = {'records': list}."""
+        return self.bind("<<RowDeleted>>", callback, add=True)
+
+    def off_row_deleted(self, funcid: str | None = None) -> None:
+        self.unbind("<<RowDeleted>>", funcid)
+
+    def on_row_inserted(self, callback) -> str:
+        """Bind to row insert events. event.data = {'records': list}."""
+        return self.bind("<<RowInserted>>", callback, add=True)
+
+    def off_row_inserted(self, funcid: str | None = None) -> None:
+        self.unbind("<<RowInserted>>", funcid)
+
+    def on_row_updated(self, callback) -> str:
+        """Bind to row update events. event.data = {'records': list}."""
+        return self.bind("<<RowUpdated>>", callback, add=True)
+
+    def off_row_updated(self, funcid: str | None = None) -> None:
+        self.unbind("<<RowUpdated>>", funcid)
+
+    def on_row_moved(self, callback) -> str:
+        """Bind to row move events. event.data = {'records': list}."""
+        return self.bind("<<RowMoved>>", callback, add=True)
+
+    def off_row_moved(self, funcid: str | None = None) -> None:
+        self.unbind("<<RowMoved>>", funcid)
+
+    # ------------------------------------------------------------------ Public data/selection API
+    @property
+    def selected_rows(self) -> list[dict]:
+        """List of record dicts for the current Treeview selection."""
+        rows: list[dict] = []
+        for iid in self._tree.selection():
+            if iid in self._row_map:
+                rows.append(self._row_map[iid])
+        return rows
+
+    @property
+    def visible_rows(self) -> list[dict]:
+        """List of record dicts for rows currently rendered (flat traversal)."""
+        rows: list[dict] = []
+        queue = list(self._tree.get_children(""))
+        while queue:
+            iid = queue.pop(0)
+            if iid in self._row_map:
+                rows.append(self._row_map[iid])
+            queue.extend(list(self._tree.get_children(iid)))
+        return rows
+
+    # ------------------------------------------------------------------ Public row/column manipulation
+    def insert_rows(self, rows: list) -> None:
+        """Insert new rows via the datasource and refresh."""
+        recs = self._to_records(rows)
+        inserted: list[dict] = []
+        for rec in recs:
+            try:
+                new_id = self._datasource.create_record(dict(rec))
+                rec = dict(rec)
+                if new_id is not None:
+                    rec["id"] = new_id
+                inserted.append(rec)
+            except Exception:
+                logger.exception("Failed to insert record")
+        if inserted:
+            self._clear_cache()
+            self._load_page(self._current_page)
+            self.event_generate("<<RowInserted>>", data={"records": inserted})
+
+    def update_rows(self, rows: list[dict]) -> None:
+        """Update rows by id; each dict must include an 'id' key."""
+        updated: list[dict] = []
+        for rec in rows:
+            rec_id = rec.get("id")
+            if rec_id is None:
+                continue
+            updates = {k: v for k, v in rec.items() if k != "id"}
+            try:
+                self._datasource.update_record(rec_id, updates)
+                updated.append(rec)
+            except Exception:
+                logger.exception("Failed to update record id=%s", rec_id)
+        if updated:
+            self._clear_cache()
+            self._load_page(self._current_page)
+            self.event_generate("<<RowUpdated>>", data={"records": updated})
+
+    def delete_rows(self, rows_or_ids: list) -> None:
+        """Delete rows by id or row dicts containing an id key."""
+        deleted: list[dict] = []
+        for item in rows_or_ids:
+            rec_id = None
+            rec = {}
+            if isinstance(item, dict):
+                rec = item
+                rec_id = item.get("id")
+            else:
+                rec_id = item
+            if rec_id is None:
+                continue
+            try:
+                self._datasource.delete_record(rec_id)
+                if not rec:
+                    rec = {"id": rec_id}
+                deleted.append(rec)
+            except Exception:
+                logger.exception("Failed to delete record id=%s", rec_id)
+        if deleted:
+            self._clear_cache()
+            self._load_page(self._current_page)
+            self.event_generate("<<RowDeleted>>", data={"records": deleted})
+
+    def insert_columns(self, *_args, **_kwargs) -> None:
+        """Not currently supported; columns are defined at construction time."""
+        raise NotImplementedError("Dynamic column insertion is not supported yet")
+
+    def delete_columns(self, indices: list[int]) -> None:
+        """Hide columns at the given indices."""
+        self.hide_columns(indices)
+
+    def move_rows(self, iids: list[str], to_index: int) -> None:
+        """Move the given rows to a target index in the root list."""
+        children = list(self._tree.get_children(""))
+        to_index = max(0, min(len(children), to_index))
+        for offset, iid in enumerate(iids):
+            try:
+                self._tree.move(iid, "", to_index + offset)
+            except Exception:
+                pass
+        self._apply_row_alternation()
+        moved_recs = [self._row_map.get(i) for i in iids if i in self._row_map]
+        if moved_recs:
+            self.event_generate("<<RowMoved>>", data={"records": moved_recs})
+
+    def move_columns(self, from_index: int, to_index: int) -> None:
+        """Reorder a column from one index to another."""
+        if from_index < 0 or from_index >= len(self._display_columns):
+            return
+        to_index = max(0, min(len(self._display_columns) - 1, to_index))
+        col_id = self._display_columns.pop(from_index)
+        self._display_columns.insert(to_index, col_id)
+        self._tree.configure(displaycolumns=self._display_columns)
+
+    def hide_rows(self, iids: list[str]) -> None:
+        """Hide rows from view (not removed from datasource)."""
+        for iid in iids:
+            try:
+                parent = self._tree.parent(iid)
+                children = list(self._tree.get_children(parent))
+                idx = children.index(iid)
+                self._hidden_rows[iid] = (parent, idx)
+                self._tree.detach(iid)
+            except Exception:
+                pass
+
+    def unhide_rows(self, iids: list[str] | None = None) -> None:
+        """Restore previously hidden rows."""
+        targets = iids or list(self._hidden_rows.keys())
+        for iid in targets:
+            if iid not in self._hidden_rows:
+                continue
+            parent, idx = self._hidden_rows.pop(iid)
+            try:
+                self._tree.move(iid, parent, idx)
+            except Exception:
+                pass
+        self._apply_row_alternation()
+
+    def hide_columns(self, indices: list[int]) -> None:
+        """Remove columns from the displayed set."""
+        for idx in indices:
+            if idx in self._display_columns:
+                self._display_columns.remove(idx)
+        if not self._display_columns and self._heading_texts:
+            self._display_columns = list(range(len(self._heading_texts)))
+        self._tree.configure(displaycolumns=self._display_columns)
+
+    def unhide_columns(self, indices: list[int]) -> None:
+        """Add columns back into the displayed set."""
+        changed = False
+        for idx in indices:
+            if idx not in self._display_columns and 0 <= idx < len(self._heading_texts):
+                self._display_columns.append(idx)
+                changed = True
+        if changed:
+            self._display_columns = sorted(self._display_columns)
+            self._tree.configure(displaycolumns=self._display_columns)
+
+    def select_rows(self, iids: list[str]) -> None:
+        """Select the given row ids."""
+        self._tree.selection_set(iids)
+
+    def deselect_rows(self, iids: list[str] | None = None) -> None:
+        """Clear selection or remove specific iids from selection."""
+        if not iids:
+            self._tree.selection_remove(self._tree.selection())
+        else:
+            self._tree.selection_remove(iids)
+
+    def scroll_to_row(self, iid: str) -> None:
+        """Ensure the given row is visible."""
+        try:
+            self._tree.see(iid)
+        except Exception:
+            pass
+
+    # ------------------------------------------------------------------ Pagination helpers
+    def next_page(self) -> None:
+        self._next_page()
+
+    def previous_page(self) -> None:
+        self._prev_page()
+
+    def first_page(self) -> None:
+        self._first_page()
+
+    def last_page(self) -> None:
+        self._last_page()
+
+    def go_to_page(self, index: int) -> None:
+        self._load_page(max(0, index))
+
+    # ------------------------------------------------------------------ Filter/Sort/Group API
+    def get_filters(self) -> str:
+        """Return current SQL where clause string (if any)."""
+        try:
+            return getattr(self._datasource, "_where", "") or ""
+        except Exception:
+            return ""
+
+    def set_filters(self, where: str) -> None:
+        try:
+            self._datasource.set_filter(where or "")
+        except Exception:
+            return
+        self._clear_cache()
+        self._load_page(0)
+        self._update_status_labels()
+
+    def clear_filters(self) -> None:
+        self._clear_filter_cmd()
+
+    def get_sorting(self) -> dict[str, bool]:
+        """Return a copy of the current sort state {column_key: ascending}."""
+        return dict(self._sort_state)
+
+    def set_sorting(self, key: str, ascending: bool = True) -> None:
+        quoted_key = self._quote_col(key)
+        order = "ASC" if ascending else "DESC"
+        try:
+            self._datasource.set_sort(f"{quoted_key} {order}")
+        except Exception:
+            return
+        self._sort_state = {key: ascending}
+        self._clear_cache()
+        self._update_heading_icons()
+        self._load_page(0)
+        self._update_status_labels()
+
+    def clear_sorting(self) -> None:
+        self._clear_sort()
+
+    def get_grouping(self) -> str | None:
+        return self._group_by_key
+
+    def set_grouping(self, key: str | None) -> None:
+        if not key:
+            self._ungroup_all()
+            return
+        if key not in self._column_keys:
+            return
+        self._group_by_key = key
+        self._group_parents.clear()
+        try:
+            quoted_key = self._quote_col(key)
+            self._datasource.set_sort(f"{quoted_key} ASC")
+        except Exception:
+            pass
+        self._sort_state = {key: True}
+        self._clear_cache()
+        self._update_heading_icons()
+        self._load_page(0)
+        self._update_status_labels()
+
+    def clear_grouping(self) -> None:
+        self._ungroup_all()
+
+    # ------------------------------------------------------------------ Group expand/collapse
+    def expand_all(self) -> None:
+        for iid in self._tree.get_children(""):
+            try:
+                self._tree.item(iid, open=True)
+            except Exception:
+                pass
+
+    def collapse_all(self) -> None:
+        for iid in self._tree.get_children(""):
+            try:
+                self._tree.item(iid, open=False)
+            except Exception:
+                pass
+
+    def expand_group(self, group_value) -> None:
+        parent = self._group_parents.get(group_value)
+        if parent:
+            try:
+                self._tree.item(parent, open=True)
+            except Exception:
+                pass
+
+    def collapse_group(self, group_value) -> None:
+        parent = self._group_parents.get(group_value)
+        if parent:
+            try:
+                self._tree.item(parent, open=False)
+            except Exception:
+                pass
+
+    def select_all(self) -> None:
+        """Select all visible rows."""
+        self._tree.selection_set(self._tree.get_children(""))
+
+    def deselect_all(self) -> None:
+        """Clear the selection."""
+        self._tree.selection_remove(self._tree.selection())
 
     # ------------------------------------------------------------------ UI
 
@@ -517,6 +884,8 @@ class DataGrid(Frame):
             self._tree.column(idx, anchor=anchor, width=width, minwidth=minwidth, stretch=stretch_columns)
         self._update_heading_icons()
         self._tree.bind("<Button-1>", self._on_header_click)
+        self._tree.bind("<<TreeviewSelect>>", self._on_selection_event)
+        self._tree.bind("<ButtonRelease-1>", self._on_row_click_event)
         if self._context_menus != "none":
             self._tree.bind("<Button-3>", self._on_tree_context)
         if self._editing['updating']:
@@ -573,6 +942,7 @@ class DataGrid(Frame):
 
     def _row_context_enabled(self) -> bool:
         return self._context_menus in ("all", "rows")
+
 
     def _quote_col(self, key: str) -> str:
         """Quote column identifiers for safe SQL usage (handles reserved names)."""
@@ -933,6 +1303,8 @@ class DataGrid(Frame):
         if iid:
             if iid not in self._tree.selection():
                 self._tree.selection_set(iid)
+            rec = self._row_map.get(iid, {})
+            self.event_generate("<<RowRightClick>>", data={"record": rec, "iid": iid})
         if not self._tree.selection():
             return
         self._row_menu_col = col_idx
@@ -940,8 +1312,6 @@ class DataGrid(Frame):
         self._row_menu.show(position=(event.x_root, event.y_root))
 
     def _on_row_double_click(self, event) -> None:
-        if not self._editing['updating']:
-            return
         region = self._tree.identify_region(event.x, event.y)
         if region == "heading":
             return
@@ -949,7 +1319,9 @@ class DataGrid(Frame):
         if not iid:
             return
         rec = self._row_map.get(iid, {})
-        self._open_form_dialog(rec)
+        self.event_generate("<<RowDoubleClick>>", data={"record": rec, "iid": iid})
+        if self._editing['updating']:
+            self._open_form_dialog(rec)
 
     def _open_new_record(self) -> None:
         if not self._editing['adding']:
@@ -1150,6 +1522,9 @@ class DataGrid(Frame):
             return
         self._tree.move(target_iid, "", new_idx)
         self._apply_row_alternation()
+        rec = self._row_map.get(target_iid)
+        if rec:
+            self.event_generate("<<RowMoved>>", data={"records": [rec]})
 
     def _move_row_absolute(self, new_idx: int) -> None:
         sel = list(self._tree.selection())
@@ -1160,6 +1535,9 @@ class DataGrid(Frame):
         new_idx = max(0, min(len(children) - 1, new_idx))
         self._tree.move(target_iid, "", new_idx)
         self._apply_row_alternation()
+        rec = self._row_map.get(target_iid)
+        if rec:
+            self.event_generate("<<RowMoved>>", data={"records": [rec]})
 
     def _hide_selection(self) -> None:
         sel = list(self._tree.selection())
@@ -1189,14 +1567,18 @@ class DataGrid(Frame):
                 self._datasource.delete_record(rec_id)
                 self._clear_cache()
                 self._load_page(self._current_page)
+                self.event_generate("<<RowDeleted>>", data={"records": [rec]})
             except Exception:
                 logger.exception("Failed to delete record id=%s", rec_id)
 
     def _delete_selection(self) -> None:
         sel = list(self._tree.selection())
+        deleted_records: list[dict] = []
         changed = False
         for iid in sel:
-            rec = self._row_map.get(iid) or {}
+            rec = dict(self._row_map.get(iid) or {})
+            if rec:
+                deleted_records.append(rec)
             rec_id = rec.get("id")
             if rec_id is not None:
                 try:
@@ -1208,6 +1590,8 @@ class DataGrid(Frame):
         if changed:
             self._clear_cache()
             self._load_page(self._current_page)
+            if deleted_records:
+                self.event_generate("<<RowDeleted>>", data={"records": deleted_records})
 
     # ------------------------------------------------------------------ Cache helpers
     def _clear_cache(self) -> None:
@@ -1601,6 +1985,21 @@ class DataGrid(Frame):
             if not self._row_context_enabled():
                 return
             self._on_row_context(event)
+
+    def _on_selection_event(self, _event=None) -> None:
+        """Forward selection changes to subscribers."""
+        rows = self.selected_rows
+        self.event_generate("<<SelectionChanged>>", data={"records": rows, "iids": list(self._tree.selection())})
+
+    def _on_row_click_event(self, event) -> None:
+        region = self._tree.identify_region(event.x, event.y)
+        if region == "heading":
+            return
+        iid = self._tree.identify_row(event.y)
+        if not iid:
+            return
+        rec = self._row_map.get(iid, {})
+        self.event_generate("<<RowClick>>", data={"record": rec, "iid": iid})
 
     # ------------------------------------------------------------------ Header context menu
     def _ensure_header_menu(self) -> None:
