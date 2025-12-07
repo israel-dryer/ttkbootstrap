@@ -38,7 +38,8 @@ Text = _tkText
 Canvas = _tkCanvas
 TkFrame = _tkFrame  # Exported as TkFrame to avoid conflict with ttk.Frame
 
-from ttkbootstrap.appconfig import AppConfig, use_icon_provider
+from ttkbootstrap.appconfig import AppConfig
+from ttkbootstrap_icons_bs import BootstrapIcon
 # Use the new Bootstyle implementation with constructor/configure overrides
 from ttkbootstrap.style.bootstyle import Bootstyle
 # Export the new Style implementation and a convenience accessor
@@ -114,6 +115,7 @@ __all__ = [
     'Treeview', 'OptionMenu',
 
     # TTkBootstrap exports
+    'BootstrapIcon',
     'AppConfig',
     'Bootstyle',
     'ContextMenu',
@@ -143,6 +145,5 @@ __all__ = [
     'create_menu',
     'TTK_WIDGETS',
     'TK_WIDGETS',
-    'use_style',
-    'use_icon_provider',
+    'use_style'
 ]

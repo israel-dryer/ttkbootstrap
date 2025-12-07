@@ -15,7 +15,7 @@ from typing import Any
 
 from typing_extensions import Literal, TypedDict
 
-from ttkbootstrap import use_style
+from ttkbootstrap import BootstrapIcon, use_style
 from ttkbootstrap.datasource.sqlite_source import SqliteDataSource
 from ttkbootstrap.widgets.button import Button
 from ttkbootstrap.widgets.contextmenu import ContextMenu
@@ -1602,14 +1602,12 @@ class TableView(Frame):
     def _load_heading_icons(self) -> None:
         """Load and cache heading icons (sort arrows) sized to match the heading color."""
         try:
-            from ttkbootstrap.appconfig import use_icon_provider
-            provider = use_icon_provider()
             fg = self._get_heading_fg()
             if fg == self._heading_fg and self._icon_sort_up:
                 return
             self._heading_fg = fg
-            self._icon_sort_up = provider("sort-up", 20, fg)
-            self._icon_sort_down = provider("sort-down", 20, fg)
+            self._icon_sort_up = BootstrapIcon("sort-up", 20, fg)
+            self._icon_sort_down = BootstrapIcon("sort-down", 20, fg)
         except Exception:
             self._icon_sort_up = None
             self._icon_sort_down = None

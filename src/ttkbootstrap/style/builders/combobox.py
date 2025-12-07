@@ -5,7 +5,7 @@ This module contains style builders for ttk.Combobox widget and variants.
 
 from __future__ import annotations
 
-from ttkbootstrap.appconfig import use_icon_provider
+from ttkbootstrap import BootstrapIcon
 from ttkbootstrap.style.bootstyle_builder_ttk import BootstyleBuilderTTk
 from ttkbootstrap.style.element import Element, ElementImage
 from ttkbootstrap.style.utility import recolor_image
@@ -45,12 +45,12 @@ def build_combobox_style(b: BootstyleBuilderTTk, ttk_style: str, color: str = No
     )
 
     # add chevron image
-    icon = use_icon_provider()
-    chevron_normal_img = icon('caret-down-fill', color=foreground, size=b.scale(14)).image
-    chevron_disabled_img = icon('caret-down-fill', color=disabled_foreground, size=b.scale(14)).image
+    chevron_normal_img = BootstrapIcon('caret-down-fill', color=foreground, size=b.scale(14)).image
+    chevron_disabled_img = BootstrapIcon('caret-down-fill', color=disabled_foreground, size=b.scale(14)).image
 
     b.create_style_element_image(
-        ElementImage(f'{ttk_style}.chevron', chevron_normal_img, sticky='nsew', border=1, width=b.scale(16)).state_specs(
+        ElementImage(
+            f'{ttk_style}.chevron', chevron_normal_img, sticky='nsew', border=1, width=b.scale(16)).state_specs(
             [
                 ('disabled', chevron_disabled_img),
                 ('', chevron_normal_img),

@@ -5,7 +5,7 @@ This module contains style builders for ttk.Spinbox widget and variants.
 
 from __future__ import annotations
 
-from ttkbootstrap.appconfig import use_icon_provider
+from ttkbootstrap import BootstrapIcon
 from ttkbootstrap.style.bootstyle_builder_ttk import BootstyleBuilderTTk
 from ttkbootstrap.style.element import Element, ElementImage
 from ttkbootstrap.style.utility import recolor_image
@@ -46,11 +46,10 @@ def build_spinbox_style(b: BootstyleBuilderTTk, ttk_style: str, color: str = Non
 
     # add chevron image
     icon_size = b.scale(14)
-    icon = use_icon_provider()
-    arrow_up_normal_img = icon('caret-up-fill', color=foreground, size=icon_size).image
-    arrow_up_disabled_img = icon('caret-up-fill', color=disabled_foreground, size=icon_size).image
-    arrow_down_normal_img = icon('caret-down-fill', color=foreground, size=icon_size).image
-    arrow_down_disabled_img = icon('caret-down-fill', color=disabled_foreground, size=icon_size).image
+    arrow_up_normal_img = BootstrapIcon('caret-up-fill', color=foreground, size=icon_size).image
+    arrow_up_disabled_img = BootstrapIcon('caret-up-fill', color=disabled_foreground, size=icon_size).image
+    arrow_down_normal_img = BootstrapIcon('caret-down-fill', color=foreground, size=icon_size).image
+    arrow_down_disabled_img = BootstrapIcon('caret-down-fill', color=disabled_foreground, size=icon_size).image
 
     b.create_style_element_image(
         ElementImage(f'{ttk_style}.uparrow', arrow_up_normal_img, sticky='nsew').state_specs(

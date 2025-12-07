@@ -132,9 +132,6 @@ class AppConfig:
     _window_hdpi: Optional[bool] = None
     _window_alpha: Optional[float] = None
 
-    # Icons & Assets
-    _icon_provider: Optional[Type[Any]] = None
-
     # Localization
     _language: Optional[str] = None
     _date_format: Optional[str] = None
@@ -172,7 +169,6 @@ class AppConfig:
                 window_scaling (float): Window scaling factor
                 window_hdpi (bool): Enable high-DPI support
                 window_alpha (float): Window transparency (0.0 to 1.0)
-                icon_provider (type): Icon provider class (e.g., BootstrapIcon)
                 language (str): Default language code
                 date_format (str): Date format string
                 time_format (str): Time format string
@@ -199,8 +195,7 @@ class AppConfig:
             'legacy_bootstyle',
             'inherit_surface_color',
             'window_size', 'window_position', 'window_minsize', 'window_maxsize',
-            'window_resizable', 'window_scaling', 'window_hdpi', 'window_alpha',
-            'icon_provider',
+            'window_resizable', 'window_scaling', 'window_hdpi', 'window_alpha'
             'language', 'date_format', 'time_format', 'number_decimal', 'number_thousands'
         }
 
@@ -362,47 +357,3 @@ class AppConfig:
 
         items = [f"{k}={repr(v)}" for k, v in config.items()]
         return f"AppConfig({', '.join(items)})"
-
-
-def use_icon_provider() -> Type[Any]:
-    """Return the configured icon provider class.
-
-    Behavior:
-    - If `AppConfig.icon_provider` is set, return it.
-    - Otherwise, attempt to use the default `BootstrapIcon` from
-      the optional `ttkbootstrap_icons` package.
-
-    Returns:
-        Icon provider class.
-
-    Raises:
-        ImportError: If no provider is configured and the default
-            `BootstrapIcon` cannot be imported.
-    """
-    provider = AppConfig.get('icon_provider')
-    if provider is not None:
-        return provider  # type: ignore[return-value]
-
-    # Try importing the default BootstrapIcon from ttkbootstrap_icons
-    errors: list[str] = []
-    candidates = (
-        'ttkbootstrap_icons',
-        'ttkbootstrap_icons.bootstrap_icon',
-        'ttkbootstrap_icons.icons',
-        'ttkbootstrap_icons_bs'
-    )
-    for modname in candidates:
-        try:
-            mod = __import__(modname, fromlist=['BootstrapIcon'])
-            default = getattr(mod, 'BootstrapIcon')
-            # Cache for subsequent calls
-            AppConfig.set(icon_provider=default)
-            return default  # type: ignore[return-value]
-        except Exception as e:  # pragma: no cover - best-effort fallback
-            errors.append(f"{modname}: {e}")
-
-    raise ImportError(
-        "Icon provider is not configured and default BootstrapIcon could not be imported. "
-        "Install 'ttkbootstrap-icons' or set AppConfig.set(icon_provider=YourProviderClass).\n"
-        + "; ".join(errors)
-    )
