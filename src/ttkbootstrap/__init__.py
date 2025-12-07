@@ -83,7 +83,7 @@ from ttkbootstrap.widgets.numericentry import NumericEntry as NumericEntry
 from ttkbootstrap.widgets.pathentry import PathEntry as PathEntry
 from ttkbootstrap.widgets.dateentry import DateEntry as DateEntry
 from ttkbootstrap.widgets.datepicker import DatePicker as DatePicker
-from ttkbootstrap.widgets.tableview import TableView as DataGrid
+from ttkbootstrap.widgets.tableview import TableView as TableView
 from ttkbootstrap.widgets.selectbox import SelectBox as SelectBox
 from ttkbootstrap.widgets.timeentry import TimeEntry as TimeEntry
 from ttkbootstrap.widgets.contextmenu import ContextMenu as ContextMenu
