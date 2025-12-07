@@ -71,6 +71,7 @@ class DropdownButton(Menubutton):
                 source=kwargs
             )
         )
+        kwargs['style_options'] = style_options
         self._item_click_callback = None
         self._items = items if items else []
         self._popdown_options = kwargs.pop('popdown_options', {})
@@ -112,8 +113,8 @@ class DropdownButton(Menubutton):
 
     def _build_context_menu(self):
         """Construct the ContextMenu with current items and options."""
-        options = self._popdown_options.copy()
-        options.update(anchor="nw", attach="sw", offset=(2, 0))
+        options = {"anchor": "nw", "attach": "sw", "offset": (2, 0)}
+        options.update(self._popdown_options)
         cm = ContextMenu(self, target=self, items=self._items, **options)
         if self._item_click_callback:
             self.on_item_click(self._item_click_callback)

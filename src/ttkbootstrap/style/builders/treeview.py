@@ -44,7 +44,7 @@ def build_tree_style(b: BootstyleBuilderTTk, ttk_style: str, color: str = None, 
         heading_color = b.color(options.get('header_background'))
         heading_hover = b.active(heading_color)
     else:
-        heading_color = b.elevate(surface, 1)
+        heading_color = b.elevate(surface, 2)
         heading_hover = b.active(heading_color)
 
     on_heading = b.on_color(heading_color)
@@ -150,13 +150,13 @@ def build_tree_style(b: BootstyleBuilderTTk, ttk_style: str, color: str = None, 
         background=[
             ('active !disabled', hover),
             ('selected active !disabled', select_hover),
-            ('selected !disabled', select_background),
-            ('', surface)
+            ('selected !disabled', select_background)
+            # do not set fallback or it will override tag formats
         ],
         foreground=[
             ('disabled', on_surface_disabled),
-            ('selected !disabled', on_select),
-            ('', on_surface)
+            ('selected !disabled', on_select)
+            # do not set fallback or it will override tag formats
         ]
     )
 

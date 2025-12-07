@@ -5,9 +5,9 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from datetime import date, datetime
 from tkinter import BooleanVar, DoubleVar, IntVar, StringVar, Text, Variable
-from typing import Any, Callable, Iterable, Literal, Mapping, Sequence
+from typing import Any, Callable, Iterable, Literal, Mapping, Sequence, TYPE_CHECKING
 
-from ttkbootstrap.dialogs.dialog import DialogButton
+from ttkbootstrap.constants import DEFAULT_MIN_COL_WIDTH
 from ttkbootstrap.widgets.button import Button
 from ttkbootstrap.widgets.checkbutton import Checkbutton
 from ttkbootstrap.widgets.dateentry import DateEntry
@@ -20,10 +20,13 @@ from ttkbootstrap.widgets.notebook import Notebook
 from ttkbootstrap.widgets.numericentry import NumericEntry
 from ttkbootstrap.widgets.passwordentry import PasswordEntry
 from ttkbootstrap.widgets.scale import Scale
-from ttkbootstrap.widgets.scrollview import ScrollView
 from ttkbootstrap.widgets.selectbox import SelectBox
 from ttkbootstrap.widgets.spinbox import Spinbox
 from ttkbootstrap.widgets.textentry import TextEntry
+from ttkbootstrap.widgets.mixins.validation_mixin import ValidationMixin
+
+if TYPE_CHECKING:
+    from ttkbootstrap.dialogs.dialog import DialogButton
 
 DType = Literal['int', 'float', 'bool', 'date', 'datetime', 'password', 'str'] | type | None
 
@@ -65,7 +68,7 @@ class GroupItem:
     items: list[FieldItem | Mapping[str, Any] | GroupItem | TabsItem] = field(default_factory=list)
     label: str | None = None
     col_count: int = 1
-    min_col_width: int = 200
+    min_col_width: int = DEFAULT_MIN_COL_WIDTH
     width: int | None = None
     height: int | None = None
     column: int | None = None
@@ -99,7 +102,7 @@ class TabsItem:
 
 
 FormItem = FieldItem | GroupItem | TabsItem
-ButtonInput = str | Mapping[str, Any] | DialogButton
+ButtonInput = str | Mapping[str, Any] | "DialogButton"
 
 
 class Form(Frame):
@@ -133,16 +136,29 @@ class Form(Frame):
             data: dict[str, Any] | None = None,
             items: Sequence[FormItem | Mapping[str, Any]] | None = None,
             col_count: int = 1,
-            min_col_width: int = 200,
+            min_col_width: int = DEFAULT_MIN_COL_WIDTH,
             on_data_changed: Callable[[dict[str, Any]], Any] | None = None,
-            width: int | None = None,
-            height: int | None = None,
-            scrollable: bool = True,
-            scrollview_options: dict[str, Any] | None = None,
+        width: int | None = None,
+        height: int | None = None,
             bootstyle: str | None = None,
             buttons: Sequence[ButtonInput] | None = None,
             **kwargs: Any,
     ) -> None:
+        """Build a configurable form from data or explicit items.
+
+        Args:
+            master: Parent widget.
+            data: Initial data backing the form; keys become field names.
+            items: Explicit form layout (FieldItem/GroupItem/TabsItem or mappings).
+            col_count: Number of columns at the top level.
+            min_col_width: Minimum width per column in pixels.
+            on_data_changed: Callback invoked with updated data when a field changes.
+            width: Requested form width; if None, size naturally.
+            height: Requested form height; if None, size naturally.
+            bootstyle: Bootstyle applied to the form container.
+            buttons: Optional footer buttons (DialogButton, mapping, or string).
+            **kwargs: Additional Frame configuration options.
+        """
         super().__init__(master=master, width=width, height=height, bootstyle=bootstyle, **kwargs)
 
         self._data: dict[str, Any] = dict(data) if data else {}
@@ -150,7 +166,6 @@ class Form(Frame):
         self._on_data_changed = on_data_changed
         self._col_count = col_count
         self._min_col_width = min_col_width
-        self._scrollview_options = scrollview_options or {}
         self._widgets: dict[str, Any] = {}
         self._variables: dict[str, Variable] = {}
         self._signals: dict[str, Any] = {}
@@ -163,19 +178,10 @@ class Form(Frame):
         self.columnconfigure(0, weight=1)
         self.rowconfigure(0, weight=1)
 
-        self._scrollview = None
-        if scrollable:
-            self._scrollview = ScrollView(self, direction='vertical', **self._scrollview_options)
-            self._scrollview.grid(row=0, column=0, sticky='nsew')
-            self._content_frame = Frame(self._scrollview)
-            self._scrollview.add(self._content_frame, anchor='nw')
-            self._scrollview.enable_scrolling()
-            container = self._scrollview
-        else:
-            container = Frame(self)
-            container.grid(row=0, column=0, sticky='nsew')
-            self._content_frame = Frame(container)
-            self._content_frame.pack(fill='both', expand=True)
+        container = Frame(self)
+        container.grid(row=0, column=0, sticky='nsew')
+        self._content_frame = Frame(container)
+        self._content_frame.pack(fill='both', expand=True)
 
         # Respect explicit width/height by preventing geometry propagation.
         if width or height:
@@ -202,6 +208,53 @@ class Form(Frame):
     def data(self) -> dict[str, Any]:
         """Current data backing the form."""
         return dict(self._collect_data())
+
+    def validate(self) -> bool:
+        """Run validation rules on all field widgets; returns True if all pass."""
+        all_valid = True
+        first_invalid_widget = None
+
+        def _validate_field(widget: Field) -> bool:
+            entry = getattr(widget, "_entry", widget)
+            rules = getattr(entry, "_rules", [])
+            if not rules:
+                return True
+            value = widget.value
+            payload: dict[str, Any] = {"value": value, "is_valid": True, "message": ""}
+            is_valid = True
+            for rule in rules:
+                if rule.trigger not in ("always", "manual"):
+                    continue
+                result = rule.validate(value)
+                payload.update(is_valid=result.is_valid, message=result.message)
+                if not result.is_valid:
+                    is_valid = False
+                    try:
+                        entry.event_generate(ValidationMixin.EVENT_INVALID, data=payload)
+                        entry.event_generate(ValidationMixin.EVENT_VALIDATED, data=payload)
+                    except Exception:
+                        pass
+                    break
+            if is_valid:
+                try:
+                    entry.event_generate(ValidationMixin.EVENT_VALID, data=payload)
+                    entry.event_generate(ValidationMixin.EVENT_VALIDATED, data=payload)
+                except Exception:
+                    pass
+            return is_valid
+
+        for widget in self._widgets.values():
+            if isinstance(widget, Field):
+                ok = _validate_field(widget)
+                if not ok and first_invalid_widget is None:
+                    first_invalid_widget = widget
+                all_valid = all_valid and ok
+        if first_invalid_widget:
+            try:
+                first_invalid_widget.focus_set()
+            except Exception:
+                pass
+        return all_valid
 
     def get_field_variable(self, key: str) -> Variable | None:
         """Return the Tk variable associated with a field key, if any."""
@@ -300,6 +353,10 @@ class Form(Frame):
         label_text = item.label if item.label is not None else item.key.replace("_", " ").title()
 
         container = Frame(parent)
+        container.columnconfigure(0, weight=1)  # Allow field widgets to expand horizontally
+
+        # Validation options that should only be passed to widgets supporting ValidationMixin
+        validation_options = {'show_message', 'required', 'validator'}
 
         field_widget: Any
         if editor == 'textentry':
@@ -315,10 +372,13 @@ class Form(Frame):
         elif editor == 'dateentry':
             field_widget = DateEntry(container, value=initial_value, label=label_text, textvariable=variable, **options)
         else:
+            # Filter out validation options for widgets that don't support ValidationMixin
+            filtered_options = {k: v for k, v in options.items() if k not in validation_options}
+
             # Use inline label for checkbutton/toggle, otherwise show a Label widget.
             if editor in ("checkbutton", "toggle"):
-                if not options.get("text"):
-                    options["text"] = label_text
+                if not filtered_options.get("text"):
+                    filtered_options["text"] = label_text
             elif label_text != "" and editor not in ('selectbox', 'combobox'):
                 Label(container, text=label_text).pack(anchor='w', pady=(0, 2))
 
@@ -336,19 +396,19 @@ class Form(Frame):
                 if initial_value is not None and variable is not None:
                     variable.set(initial_value)
             elif editor == 'spinbox':
-                field_widget = Spinbox(container, textvariable=variable, **options)
+                field_widget = Spinbox(container, textvariable=variable, **filtered_options)
                 if initial_value is not None:
                     variable.set(initial_value)
             elif editor == 'text':
-                field_widget = Text(container, **options)
+                field_widget = Text(container, **filtered_options)
                 if initial_value:
                     field_widget.insert('1.0', str(initial_value))
             elif editor == 'toggle':
-                field_widget = Checkbutton(container, variable=variable, **options)
+                field_widget = Checkbutton(container, variable=variable, **filtered_options)
             elif editor == 'checkbutton':
-                field_widget = Checkbutton(container, variable=variable, **options)
+                field_widget = Checkbutton(container, variable=variable, **filtered_options)
             elif editor == 'scale':
-                field_widget = Scale(container, variable=variable, **options)
+                field_widget = Scale(container, variable=variable, **filtered_options)
             else:
                 field_widget = TextEntry(
                     container, value=initial_value or "", label=label_text, textvariable=variable, **options)
@@ -407,7 +467,7 @@ class Form(Frame):
                         items=list(raw.get('items', [])),
                         label=raw.get('label'),
                         col_count=raw.get('col_count', 1),
-                        min_col_width=raw.get('min_col_width', 200),
+                        min_col_width=raw.get('min_col_width', DEFAULT_MIN_COL_WIDTH),
                         width=raw.get('width'),
                         height=raw.get('height'),
                         column=raw.get('column'),
@@ -464,7 +524,9 @@ class Form(Frame):
                 normalized.append(TabItem(label=str(raw.get('label', 'Tab')), items=list(raw.get('items', []))))
         return normalized
 
-    def _normalize_buttons(self, buttons: Sequence[ButtonInput]) -> list[DialogButton]:
+    def _normalize_buttons(self, buttons: Sequence[ButtonInput]) -> list["DialogButton"]:
+        from ttkbootstrap.dialogs.dialog import DialogButton  # local import to avoid circular init
+
         normalized: list[DialogButton] = []
         for raw in buttons:
             if isinstance(raw, DialogButton):
@@ -671,6 +733,7 @@ class Form(Frame):
                     label=str(key).replace('_', ' ').title(),
                     dtype=self._infer_dtype_from_value(value),
                     editor=self._default_editor_for_dtype(self._infer_dtype_from_value(value), value),
+                    editor_options={"show_message": True},
                 )
             )
         return inferred

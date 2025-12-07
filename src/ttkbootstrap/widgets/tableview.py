@@ -1,2941 +1,2276 @@
-"""Table view widget with sorting, searching, and pagination for ttkbootstrap.
-
-This module provides a powerful table widget built on top of ttk.Treeview with
-enhanced features like column sorting, row striping, pagination, searching,
-and data loading from various sources.
-
-Classes:
-    TableColumn: Represents a column in the Tableview
-    Tableview: Enhanced treeview widget for displaying tabular data
-
-Features:
-    - Automatic column sorting with visual indicators
-    - Row striping for better readability
-    - Pagination with configurable page size
-    - Column-specific searching
-    - Loading data from lists, dicts, CSV files
-    - Row selection with callback events
-    - Autofit columns and autoalign numeric data
-    - Localization support for date formatting
-
-Example:
-    ```python
-    import ttkbootstrap as ttk
-    from ttkbootstrap.tableview import Tableview
-
-    app = ttk.Window()
-
-    # Define column structure
-    coldata = [
-        {"text": "Name", "stretch": False},
-        {"text": "Age", "stretch": False},
-        {"text": "Email", "stretch": True}
-    ]
-
-    # Define row data
-    rowdata = [
-        ["John Doe", 28, "john@example.com"],
-        ["Jane Smith", 35, "jane@example.com"],
-        ["Bob Wilson", 42, "bob@example.com"],
-    ]
-
-    # Create tableview
-    tv = Tableview(
-        master=app,
-        coldata=coldata,
-        rowdata=rowdata,
-        paginated=True,
-        searchable=True,
-        bootstyle="primary",
-        stripecolor=(None, None),
-    )
-    tv.pack(fill="both", expand=True, padx=10, pady=10)
-
-    app.mainloop()
-    ```
 """
-import tkinter as tk
-from datetime import datetime
-from math import ceil
-from tkinter import font
-from typing import Any, Callable, Dict, List, Optional, Sequence, Union
+TableView widget backed by an in-memory SQLite datasource.
 
-import ttkbootstrap as ttk
-from ttkbootstrap import utility
-from ttkbootstrap.constants import *
-from ttkbootstrap.localization import MessageCatalog
+The datasource performs filtering, sorting, and pagination while the widget
+renders the current page in a Treeview with optional grouping, striping, and
+context menus.
+"""
 
-UPARROW = "⬆"
-DOWNARROW = "⬇"
-ASCENDING = 0
-DESCENDING = 1
+from __future__ import annotations
+
+import logging
+from collections import OrderedDict
+from tkinter import Misc, font as tkfont
+from typing import Any
+
+from typing_extensions import Literal, TypedDict
+
+from ttkbootstrap import use_style
+from ttkbootstrap.datasource.sqlite_source import SqliteDataSource
+from ttkbootstrap.widgets.button import Button
+from ttkbootstrap.widgets.contextmenu import ContextMenu
+from ttkbootstrap.widgets.dropdownbutton import DropdownButton
+from ttkbootstrap.widgets.entry import Entry
+from ttkbootstrap.widgets.frame import Frame
+from ttkbootstrap.widgets.label import Label
+from ttkbootstrap.widgets.scrollbar import Scrollbar
+from ttkbootstrap.widgets.selectbox import SelectBox
+from ttkbootstrap.widgets.separator import Separator
+from ttkbootstrap.widgets.textentry import TextEntry
+from ttkbootstrap.widgets.treeview import Treeview
+
+logger = logging.getLogger(__name__)
 
 
-class TableColumn:
-    """Represents a column in a Tableview object."""
+class EditingOptions(TypedDict, total=False):
+    """Configure add/update/delete support and form dialog options."""
+    adding: bool
+    updating: bool
+    deleting: bool
+    form: dict[str, Any]
 
-    def __init__(
-            self,
-            tableview: "Tableview",
-            cid: int,
-            text: str,
-            image: Any = "",
-            command: Optional[Callable[[], None]] = None,
-            anchor: Anchor = W,
-            width: int = 200,
-            minwidth: int = 20,
-            stretch: bool = False,
-    ) -> None:
-        """
-        Parameters:
 
-            tableview (Tableview):
-                The parent tableview object.
+class SelectionOptions(TypedDict, total=False):
+    """Control selection mode (single/multiple/none) and select-all allowance."""
+    mode: Literal['single', 'multiple', 'none']
+    allow_select_all: bool  # not yet supported
 
-            cid (str):
-                The column id.
 
-            text (str):
-                The header text.
+class ExportingOptions(TypedDict, total=False):
+    """Configure export availability and formats."""
+    enabled: bool
+    allow_export_selected: bool
+    export_all_mode: Literal['page', 'all']
+    formats: list[Literal['csv', 'xlsx']]
 
-            image (PhotoImage):
-                An image that is displayed to the left of the header text.
 
-            command (Callable):
-                A function called whenever the header button is clicked.
+class PagingOptions(TypedDict, total=False):
+    """Paging mode and sizing; toggles x/y scrollbars."""
+    mode: Literal['standard', 'virtual']
+    page_size: int
+    page_index: int
+    cache_size: int
+    xscroll: bool
+    yscroll: bool
 
-            anchor (str):
-                The position of the header text within the header. One
-                of "e", "w", "center".
 
-            width (int):
-                Specifies the width of the column in pixels.
+class RowAlternationOptions(TypedDict, total=False):
+    """Alternating row striping (enabled flag and color token)."""
+    enabled: bool
+    color: str
 
-            minwidth (int):
-                Specifies the minimum width of the column in pixels.
 
-            stretch (bool):
-                Specifies whether or not the column width should be
-                adjusted whenever the widget is resized or the user
-                drags the column separator.
-        """
-        self._table = tableview
-        self._cid = cid
-        self._headertext = text
-        self._sort = ASCENDING
-        self._settings_column = {}
-        self._settings_heading = {}
+class FilteringOptions(TypedDict, total=False):
+    """Toggle filtering and which menus expose filter actions."""
+    enabled: bool
+    header_menu_filtering: bool
+    row_menu_filtering: bool
 
-        self.view: ttk.Treeview = tableview.view
-        self.view.column(
-            self._cid,
-            width=width,
-            minwidth=minwidth,
-            stretch=stretch,
-            anchor=anchor,
+
+class SearchOptions(TypedDict, total=False):
+    """Configure searchbar visibility, advanced mode, and trigger timing."""
+    enabled: bool
+    mode: Literal['standard', 'advanced']
+    event: Literal['input', 'enter']
+
+
+# ------ Helper methods --------
+
+def _parse_selection_mode(mode: str):
+    if mode == 'single':
+        return 'browse'
+    elif mode == 'multiple':
+        return 'extended'
+    else:
+        return 'none'
+
+
+def _normalize_row_alternation_options(options: RowAlternationOptions | None) -> RowAlternationOptions:
+    if options is None:
+        return dict(enabled=False, color='background[+1]')
+    options.setdefault('enabled', False)
+    options.setdefault('color', 'background[+1]')
+    return options
+
+
+def _normalize_selection_options(options: SelectionOptions | None) -> SelectionOptions:
+    if options is None:
+        return dict(
+            mode="single",
+            allow_select_all=False,
         )
-        self.view.heading(
-            self._cid,
-            text=text,
-            anchor=anchor,
-            image=image,
-            command=command,
+    options.setdefault('mode', 'single')
+    options.setdefault('allow_select_all', False)
+    return options
+
+
+def _normalize_filtering_options(options: FilteringOptions | None) -> FilteringOptions:
+    if options is None:
+        return dict(
+            enabled=True,
+            header_menu_filtering=True,
+            row_menu_filtering=True,
         )
-        self._capture_settings()
-        self._table._cidmap[self._cid] = self
-
-    @property
-    def headertext(self) -> str:
-        """Return the text on the column header label.
-
-        Returns:
-
-            str: The header text.
-        """
-        return self._headertext
-
-    @property
-    def columnsort(self) -> int:
-        """Return the sort direction used for this column.
-
-        Indicates how the column is to be sorted when sorting is
-        invoked.
-
-        Returns:
-
-            int: ``ASCENDING`` (0) or ``DESCENDING`` (1).
-        """
-        return self._sort
-
-    @columnsort.setter
-    def columnsort(self, value: int) -> None:
-        self._sort = value
-
-    @property
-    def cid(self) -> str:
-        """Return the unique column identifier.
-
-        Returns:
-
-            str: The column id.
-        """
-        return str(self._cid)
-
-    @property
-    def tableindex(self) -> Optional[int]:
-        """Return the index of the column in the table configuration.
-
-        Returns:
-
-            int | None: The configured index of the column, or None.
-        """
-        cols = self.view.cget("columns")
-        if cols is None:
-            return
-        try:
-            return cols.index(self.cid)
-        except IndexError:
-            return
-
-    @property
-    def displayindex(self) -> Optional[int]:
-        """Return the index of the column as displayed.
-
-        Returns:
-
-            int | None: The displayed index of the column, or None.
-        """
-        cols = self.view.cget("displaycolumns")
-        if "#all" in cols:
-            return self.tableindex
-        else:
-            return cols.index(self.cid)
-
-    def configure(self, opt: Optional[str] = None, **kwargs: Any) -> Union[Any, None]:
-        """Configure the column. If opt is provided, the
-        current value is returned, otherwise, sets the widget
-        options specified in kwargs. See the documentation for
-        `Tableview.insert_column` for configurable options.
-
-        Parameters:
-
-            opt (str):
-                A configuration option to query.
-
-            **kwargs (Dict):
-                Optional keyword arguments used to configure the
-                column and headers.
-        """
-        # return queried options
-        if opt is not None:
-            if opt in ("anchor", "width", "minwidth", "stretch"):
-                return self.view.column(self.cid, opt)
-            elif opt in ("command", "text", "image"):
-                return self.view.heading(self.cid, opt)
-            else:
-                return
-
-        # configure column and heading
-        for k, v in kwargs.items():
-            if k in ("anchor", "width", "minwidth", "stretch"):
-                self._settings_column[k] = v
-            elif k in ("command", "text", "image"):
-                self._settings_heading[k] = v
-        self.view.column(self._cid, **self._settings_column)
-        self.view.heading(self._cid, **self._settings_heading)
-        if "text" in kwargs:
-            self._headertext = kwargs["text"]
-
-    def show(self) -> None:
-        """Make the column visible in the tableview"""
-        displaycols = list(self.view.cget("displaycolumns"))
-        if "#all" in displaycols:
-            return
-        if self.cid in displaycols:
-            return
-        columns = list(self.view.cget("columns"))
-        index = columns.index(self.cid)
-        displaycols.insert(index, self.cid)
-        self.view.configure(displaycolumns=displaycols)
-
-    def hide(self) -> None:
-        """Hide the column in the tableview"""
-        displaycols = list(self.view.cget("displaycolumns"))
-        cols = list(self.view.cget("columns"))
-        if "#all" in displaycols:
-            displaycols = cols
-        displaycols.remove(self.cid)
-        self.view.configure(displaycolumns=displaycols)
-
-    def delete(self) -> None:
-        """Remove the column from the tableview permanently."""
-        # update the tablerow columns
-        index = self.tableindex
-        if index is None:
-            return
-
-        for row in self._table.tablerows:
-            row.values.pop(index)
-            row.refresh()
-
-        # actual columns
-        cols = list(self.view.cget("columns"))
-        cols.remove(self.cid)
-        self._table.tablecolumns.remove(self)
-
-        # visible columns
-        dcols = list(self.view.cget("displaycolumns"))
-        if "#all" in dcols:
-            dcols = cols
-        else:
-            dcols.remove(self.cid)
-
-        # remove cid mapping
-        self._table.cidmap.pop(self._cid)
-
-        # reconfigure the tableview column and displaycolumns
-        self.view.configure(columns=cols, displaycolumns=dcols)
-
-        # remove the internal object references
-        for i, column in enumerate(self._table.tablecolumns):
-            if column.cid == self.cid:
-                self._table.tablecolumns.pop(i)
-            else:
-                column.restore_settings()
-
-    def restore_settings(self) -> None:
-        """Update the configuration based on stored settings"""
-        self.view.column(self.cid, **self._settings_column)
-        self.view.heading(self.cid, **self._settings_heading)
-
-    def _capture_settings(self) -> None:
-        """Update the stored settings for the column and heading.
-        This is required because the settings are erased whenever
-        the `columns` parameter is configured in the underlying
-        Treeview widget."""
-        self._settings_heading = self.view.heading(self.cid)
-        self._settings_heading.pop("state")
-        self._settings_column = self.view.column(self.cid)
-        self._settings_column.pop("id")
-
-
-class TableRow:
-    """Represents a row in a Tableview object"""
-
-    _cnt = 0
-
-    def __init__(self, tableview: "Tableview", values: Sequence[Any]) -> None:
-        """
-        Parameters:
-
-            tableview (Tableview):
-                The Tableview widget that contains this row
-
-            values (list[Any, ...]):
-                A list of values to display in the row
-        """
-        self.view: ttk.Treeview = tableview.view
-        self._values = list(values)
-        self._iid = None
-        self._sort = TableRow._cnt + 1
-        self._table = tableview
-
-        # increment cnt
-        TableRow._cnt += 1
-
-    @property
-    def values(self) -> List[Any]:
-        """The table row values"""
-        return self._values
-
-    @values.setter
-    def values(self, values: Sequence[Any]) -> None:
-        self._values = values
-        self.refresh()
-
-    @property
-    def iid(self) -> str:
-        """A unique record identifier"""
-        return str(self._iid)
-
-    def configure(self, opt: Optional[str] = None, **kwargs: Any) -> Union[Any, None]:
-        """Configure the row. If opt is provided, the
-        current value is returned, otherwise, sets the widget
-        options specified in kwargs. See the documentation for
-        `Tableview.insert_row` for configurable options.
-
-        Parameters:
-
-            opt (str):
-                A configuration option to query.
-
-            **kwargs { values, tags }:
-                Optional keyword arguments used to configure the
-                row.
-        """
-        if self._iid is None:
-            self.build()
-
-        if opt is not None:
-            return self.view.item(self.iid, opt)
-        elif 'values' in kwargs:
-            values = kwargs.pop('values')
-            self.values = values
-        else:
-            self.view.item(self.iid, **kwargs)
-
-    def show(self, striped: bool = False) -> None:
-        """Show the row in the data table view"""
-        if self._iid is None:
-            self.build()
-        self.view.reattach(self.iid, "", END)
-
-        # remove existing stripes
-        tags = list(self.view.item(self.iid, "tags"))
-        try:
-            tags.remove("striped")
-        except ValueError:
-            pass
-
-        # add stripes (if needed)
-        if striped:
-            tags.append("striped")
-        self.view.item(self.iid, tags=tags)
-
-    def delete(self) -> None:
-        """Delete the row from the dataset"""
-        if self.iid:
-            self._table.iidmap.pop(self.iid)
-            self._table.tablerows_visible.remove(self)
-            self._table._tablerows.remove(self)
-            self._table.load_table_data()
-            self.view.delete(self.iid)
-
-    def hide(self) -> None:
-        """Remove the row from the data table view"""
-        self.view.detach(self.iid)
-
-    def refresh(self) -> None:
-        """Syncs the tableview values with the object values"""
-        if self._iid:
-            self.view.item(self.iid, values=self.values)
-
-    def build(self) -> None:
-        """Create the row object in the `Treeview` and capture
-        the resulting item id (iid).
-        """
-        if self._iid is None:
-            # Use custom iid from specified field if configured
-            if self._table._iid_field_index is not None:
-                try:
-                    custom_iid = str(self.values[self._table._iid_field_index])
-                    self._iid = self.view.insert("", END, iid=custom_iid, values=self.values)
-                except (IndexError, tk.TclError):
-                    # Fall back to auto-generated iid if field doesn't exist or iid already exists
-                    self._iid = self.view.insert("", END, values=self.values)
-            else:
-                self._iid = self.view.insert("", END, values=self.values)
-            self._table.iidmap[self.iid] = self
-
-
-class TableEvent:
-    """A container class for holding table event objects"""
-
-    def __init__(self, column: TableColumn, row: TableRow):
-        self.column = column
-        self.row = row
-
-
-class Tableview(ttk.Frame):
-    """A class built on the `ttk.Treeview` widget for arranging data in
-    rows and columns. The underlying Treeview object and its methods are
-    exposed in the `Tableview.view` property.
-
-    A Tableview object contains various features such has striped rows,
-    pagination, and autosized and autoaligned columns.
-
-    The pagination option is recommended when loading a lot of data as
-    the table records are inserted on-demand. Table records are only
-    created when requested to be in a page view. This allows the table
-    to be loaded very quickly even with hundreds of thousands of
-    records.
-
-    All table columns are sortable. Clicking a column header will toggle
-    between sorting "ascending" and "descending".
-
-    Columns are configurable by passing a simple list of header names or
-    by passing in a dictionary of column names with settings. You can
-    use both as well, as in the example below, where a column header
-    name is use for one column, and a dictionary of settings is used
-    for another.
-
-    The object has a right-click menu on the header and the cells that
-    allow you to configure various settings.
-
-    ![](../../assets/widgets/tableview-1.png)
-    ![](../../assets/widgets/tableview-2.png)
-
-    Examples:
-
-        Adding data with the constructor
-        ```python
-        import ttkbootstrap as ttk
-        from ttkbootstrap.tableview import Tableview
-        from ttkbootstrap.constants import *
-
-        app = ttk.Window()
-        colors = app.style.colors
-
-        coldata = [
-            {"text": "LicenseNumber", "stretch": False},
-            "CompanyName",
-            {"text": "UserCount", "stretch": False},
-        ]
-
-        rowdata = [
-            ('A123', 'IzzyCo', 12),
-            ('A136', 'Kimdee Inc.', 45),
-            ('A158', 'Farmadding Co.', 36)
-        ]
-
-        dt = Tableview(
-            master=app,
-            coldata=coldata,
-            rowdata=rowdata,
-            paginated=True,
-            searchable=True,
-            bootstyle=PRIMARY,
-            stripecolor=(colors.light, None),
+    options.setdefault('enabled', True)
+    options.setdefault('header_menu_filtering', True)
+    options.setdefault('row_menu_filtering', True)
+    return options
+
+
+def _normalize_editing_options(options: EditingOptions | None) -> EditingOptions:
+    if options is None:
+        return dict(
+            adding=False,
+            updating=False,
+            deleting=False,
+            form={}
         )
-        dt.pack(fill=BOTH, expand=YES, padx=10, pady=10)
+    options.setdefault('adding', False)
+    options.setdefault('updating', False)
+    options.setdefault('deleting', False)
+    options.setdefault('form', {})
+    return options
 
-        app.mainloop()
-        ```
 
-        Add data with methods
-        ```python
-        dt.insert_row('end', ['Marzale LLC', 26])
-        ```
+def _normalize_exporting_options(options: ExportingOptions | None) -> ExportingOptions:
+    if options is None:
+        return dict(
+            enabled=False,
+            allow_export_selected=False,
+            export_all_mode='page',
+            formats=['csv']
+        )
+    options.setdefault('enabled', False)
+    options.setdefault('allow_export_selected', False)
+    options.setdefault('export_all_mode', 'page')
+    options.setdefault('formats', ['csv'])
+    return options
+
+
+def _normalize_paging_options(options: PagingOptions | None) -> PagingOptions:
+    if options is None:
+        return dict(
+            mode='standard',
+            page_size=250,
+            page_index=0,
+            cache_size=5,
+            xscroll=True,
+            yscroll=True,
+        )
+    options.setdefault('mode', 'standard')
+    options.setdefault('page_size', 250)
+    options.setdefault('page_index', 0)
+    options.setdefault('cache_size', 5)
+    options.setdefault('xscroll', True)
+    options.setdefault('yscroll', True)
+    return options
+
+
+def _normalize_searchbar_options(options: SearchOptions | None) -> SearchOptions:
+    if options is None:
+        return dict(
+            enabled=True,
+            mode='standard',
+            event='enter'
+        )
+    options.setdefault('enabled', True)
+    options.setdefault('mode', 'standard')
+    options.setdefault('event', 'enter')
+    # Normalize event to allowed values
+    trig = str(options.get('event', 'enter')).lower()
+    if trig not in ('input', 'enter'):
+        trig = 'enter'
+    options['event'] = trig
+    return options
+
+
+class TableView(Frame):
+    """
+    TableView backed by an in-memory SqliteDataSource with sortable headers,
+    filtering/search, pagination or virtual scrolling, optional grouping,
+    column striping, and configurable exporting/editing. Context menus are
+    opt-in, the searchbar can trigger on enter or input, and columns can
+    auto-size to their visible content.
+
+    Highlights:
+        - Paging: standard pagination or virtual scroll; optional x/y scrollbars.
+        - Search: standard/advanced searchbar with trigger on enter (default) or input.
+        - Columns: global min width, optional auto-width sizing per page, chooser/hide actions.
+        - Grouping: optional grouping via header context menu with fixed group column.
+        - Context menus: enable/disable per region (headers/rows) with sorting/filtering actions.
+        - Appearance: optional alternating row colors (disabled when grouped).
+        - Extensibility: optional exporting and editing capabilities via configuration.
+        - Events: virtual events for selection/row click/double/right-click and row insert/update/delete/move.
     """
 
     def __init__(
             self,
-            master=None,
-            bootstyle=DEFAULT,
-            coldata=None,
-            rowdata=None,
-            paginated=False,
-            searchable=False,
-            yscrollbar=False,
-            autofit=False,
-            autoalign=True,
-            stripecolor=None,
-            pagesize=10,
-            height=10,
-            delimiter=",",
-            disable_right_click=False,
-            on_select=None,
-            iid_field=None,
+            master: Misc | None = None,
+            columns: list[str | dict] | None = None,
+            rows: list | None = None,
+            datasource: SqliteDataSource | None = None,
+            editing: EditingOptions | dict | None = None,
+            paging: PagingOptions | dict | None = None,
+            exporting: ExportingOptions | dict | None = None,
+            filtering: FilteringOptions | dict | None = None,
+            selection: SelectionOptions | dict | None = None,
+            search: SearchOptions | dict | None = None,
+            sorting: Literal['single', 'multiple', 'none'] = 'single',
+            row_alternation: RowAlternationOptions | dict | None = None,
+            allow_grouping: bool = False,
+            show_table_status: bool = True,
+            show_column_chooser: bool = False,
+            context_menus: Literal["none", "headers", "rows", "all"] = "all",
+            column_min_width: int = 40,
+            column_auto_width: bool = False,
+            **kwargs,
     ):
         """
-        Parameters:
+        Create a TableView backed by an in-memory SqliteDataSource.
 
-            master (Widget):
-                The parent widget.
+        Args:
+            master: Parent widget.
+            columns: Column definitions (list of strings or dicts with keys like "text", "key", "width", "minwidth").
+            rows: Initial data to load (list of dicts or row-like sequences).
+            datasource: Custom SqliteDataSource; if omitted, an in-memory source is created.
+            editing: EditingOptions or dict to enable adding/updating/deleting and form settings.
+            paging: PagingOptions or dict (mode 'standard'|'virtual', page_size, page_index, cache_size, xscroll, yscroll).
+            exporting: ExportingOptions or dict (enabled, allow_export_selected, export_all_mode 'page'|'all', formats).
+            filtering: FilteringOptions or dict (enabled, header_menu_filtering, row_menu_filtering).
+            selection: SelectionOptions or dict (mode 'single'|'multiple'|'none', allow_select_all).
+            search: SearchOptions or dict (enabled, mode 'standard'|'advanced', event 'input'|'enter'; default 'enter').
+            row_alternation: RowAlternationOptions (enabled flag, color token for striping; disabled when grouped).
+            allow_grouping: Allow grouping rows via header context menu.
+            sorting: Sorting mode ('single', 'multiple', or 'none' to disable sorting).
+            show_table_status: Show filter/sort/group status labels and pager.
+            show_column_chooser: Show column chooser button for toggling column visibility.
+            context_menus: "none" | "headers" | "rows" | "all" to enable region context menus.
+            column_min_width: Global minimum width for columns (overridden by per-column minwidth; default 40).
+            column_auto_width: Automatically size columns to widest visible text on each page.
+            kwargs: Passed through to Frame.
 
-            bootstyle (str):
-                A style keyword used to set the focus color of the entry
-                and the background color of the date button. Available
-                options include -> primary, secondary, success, info,
-                warning, danger, dark, light.
-
-            coldata (list[str | dict]):
-                An iterable containing either the heading name or a
-                dictionary of column settings. Configurable settings
-                include >> text, image, command, anchor, width, minwidth,
-                maxwidth, stretch. Also see `Tableview.insert_column`.
-
-            rowdata (List):
-                An iterable of row data. The lenth of each row of data
-                must match the number of columns. Also see
-                `Tableview.insert_row`.
-
-            paginated (bool):
-                Specifies that the data is to be paginated. A pagination
-                frame will be created below the table with controls that
-                enable the user to page forward and backwards in the
-                data set.
-
-            pagesize (int):
-                When `paginated=True`, this specifies the number of rows
-                to show per page.
-
-            searchable (bool):
-                If `True`, a searchbar will be created above the table.
-                Press the <Return> key to initiate a search. Searching
-                with an empty string will reset the search criteria, or
-                pressing the reset button to the right of the search
-                bar.
-
-                The search is case insensitive and handles special characters.
-                The filtered results are displayed in the table view. For
-                programmatic access with column-specific searching, use the
-                `search_table_data(criteria, *columns)` method.
-                
-            yscrollbar (bool):
-                If `True`, a vertical scrollbar will be created to the right
-                of the table.
-
-            autofit (bool):
-                If `True`, the table columns will be automatically sized
-                when loaded based on the records in the current view.
-                Also see `Tableview.autofit_columns`.
-
-            autoalign (bool):
-                If `True`, the column headers and data are automatically
-                aligned. Numbers and number headers are right-aligned
-                and all other data types are left-aligned. The auto
-                align method evaluates the first record in each column
-                to determine the data type for alignment. Also see
-                `Tableview.autoalign_columns`.
-
-            stripecolor (tuple[str, str]):
-                If provided, even numbered rows will be color using the
-                (background, foreground) specified. You may specify one
-                or the other by passing in **None**. For example,
-                `stripecolor=('green', None)` will set the stripe
-                background as green, but the foreground will remain as
-                default. You may use standand color names, hexadecimal
-                color codes, or bootstyle color keywords. For example,
-                ('light', '#222') will set the background to the "light"
-                themed ttkbootstrap color and the foreground to the
-                specified hexadecimal color. Also see
-                `Tableview.apply_table_stripes`.
-
-            height (int):
-                Specifies how many rows will appear in the table's viewport.
-                If the number of records extends beyond the table height,
-                the user may use the mousewheel or scrollbar to navigate
-                the data.
-
-            delimiter (str):
-                The character to use as a delimiter when exporting data
-                to CSV.
-
-            disable_right_click (bool):
-                When set to `True`, the built-in right click menus are disabled on the widget.
-
-            on_select (Callable[[list[TableRow]], None]):
-                Optional callback function to be invoked when the row selection changes.
-                The callback receives a list of selected TableRow objects as its argument.
-                When no rows are selected, the callback receives an empty list.
-
-                Example:
-                ```python
-                def handle_selection(selected_rows):
-                    print(f"Selected {len(selected_rows)} rows")
-                    for row in selected_rows:
-                        print(row.values)
-
-                tableview = Tableview(master, on_select=handle_selection, ...)
-                ```
-
-            iid_field (Union[int, str, None]):
-                Optional column index or header name to use as the unique identifier (iid)
-                for each row. If specified as an integer, it represents the column index.
-                If specified as a string, it represents the column header text. When set,
-                the value from this field will be used as the row's iid instead of the
-                auto-generated iid. This is useful when you have a natural key field like
-                an ID or unique code that you want to use for row identification.
-
-                Example:
-                ```python
-                # Using column index
-                tableview = Tableview(
-                    coldata=["ID", "Name", "Age"],
-                    rowdata=[[1, "Alice", 25], [2, "Bob", 30]],
-                    iid_field=0  # Use first column (ID) as iid
-                )
-
-                # Using column name
-                tableview = Tableview(
-                    coldata=["ID", "Name", "Age"],
-                    rowdata=[[1, "Alice", 25], [2, "Bob", 30]],
-                    iid_field="ID"  # Use ID column as iid
-                )
-                ```
+        Virtual events:
+            <<SelectionChanged>>: event.data = {"records": list[dict], "iids": list[str]}
+            <<RowClick>>: event.data = {"record": dict, "iid": str}
+            <<RowDoubleClick>>: event.data = {"record": dict, "iid": str}
+            <<RowRightClick>>: event.data = {"record": dict, "iid": str}
+            <<RowInserted>>: event.data = {"records": list[dict]}
+            <<RowUpdated>>: event.data = {"records": list[dict]}
+            <<RowDeleted>>: event.data = {"records": list[dict]}
+            <<RowMoved>>: event.data = {"records": list[dict]}
         """
-        super().__init__(master)
-        self._tablecols = []
-        self._tablerows = []
-        self._tablerows_filtered = []
-        self._viewdata = []
-        self._rowindex = tk.IntVar(value=0)
-        self._pageindex = tk.IntVar(value=1)
-        self._pagelimit = tk.IntVar(value=0)
-        self._height = height
-        self._pagesize = tk.IntVar(value=pagesize)
-        self._paginated = paginated
-        self._searchable = searchable
-        self._yscrollbar = yscrollbar
-        self._stripecolor = stripecolor
-        self._autofit = autofit
-        self._autoalign = autoalign
-        self._filtered = False
-        self._sorted = False
-        self._searchcriteria = tk.StringVar()
-        self._rightclickmenu_cell = None
-        self._delimiter = delimiter
-        self._iidmap = {}  # maps iid to row object
-        self._cidmap = {}  # maps cid to col object
-        self.disable_right_click = disable_right_click
-        self._on_select = on_select
-        self._iid_field = iid_field
-        self._iid_field_index = None  # Resolved column index for iid_field
-
-        self.view: ttk.Treeview = None
-        self._build_tableview_widget(coldata, rowdata, bootstyle)
-
-    @property
-    def tablerows(self):
-        """A list of all tablerow objects"""
-        return self._tablerows
-
-    @property
-    def tablerows_filtered(self):
-        """A list of filtered tablerow objects"""
-        return self._tablerows_filtered
-
-    @property
-    def tablerows_visible(self):
-        """A list of visible tablerow objects"""
-        return self._viewdata
-
-    @property
-    def tablecolumns(self):
-        """A list of table column objects"""
-        return self._tablecols
-
-    @property
-    def tablecolumns_visible(self):
-        """A list of visible table column objects"""
-        cids = list(self.view.cget("displaycolumns"))
-        if "#all" in cids:
-            return self._tablecols
-        columns = []
-        for cid in cids:
-            # the cidmap expects an integer
-            columns.append(self.cidmap.get(int(cid)))
-        return columns
-
-    @property
-    def is_filtered(self):
-        """Indicates whether the table is currently filtered"""
-        return self._filtered
-
-    @property
-    def searchcriteria(self):
-        """The criteria used to filter the records when the search
-        method is invoked"""
-        return self._searchcriteria.get()
-
-    @searchcriteria.setter
-    def searchcriteria(self, value):
-        self._searchcriteria.set(value)
-
-    @property
-    def pagesize(self):
-        """The number of records visible on a single page"""
-        return self._pagesize.get()
-
-    @pagesize.setter
-    def pagesize(self, value):
-        self._pagesize.set(value)
-
-    @property
-    def iidmap(self) -> dict[str, TableRow]:
-        """A map of iid to tablerow object"""
-        return self._iidmap
-
-    @property
-    def cidmap(self) -> dict[str, TableColumn]:
-        """A map of cid to tablecolumn object"""
-        return self._cidmap
-
-    def configure(self, cnf=None, **kwargs) -> Union[Any, None]:
-        """Configure the internal `Treeview` widget. If cnf is provided,
-        value of the option is return. Otherwise the widget is
-        configured via kwargs.
-
-        Parameters:
-
-            cnf (Any):
-                An option to query.
-
-            **kwargs (Dict):
-                Optional keyword arguments used to configure the internal
-                Treeview widget.
-
-        Returns:
-
-            Union[Any, None]:
-                The value of cnf or None.
-        """
-        try:
-            if "pagesize" in kwargs:
-                pagesize: int = kwargs.pop("pagesize")
-                self._pagesize.set(value=pagesize)
-
-            self.view.configure(cnf, **kwargs)
-        except:
-            super().configure(cnf, **kwargs)
-
-    # DATA HANDLING
-
-    def build_table_data(self, coldata, rowdata):
-        """Insert the specified column and row data.
-
-        The coldata can be either a string column name or a dictionary
-        of column settings that are passed to the `insert_column`
-        method. You may use a mixture of string and dictionary in
-        the list of coldata.
-
-        !!!warning "Existing table data will be erased.
-            This method will completely rebuild the underlying table
-            with the new column and row data. Any existing data will
-            be lost.
-
-        Parameters:
-
-            coldata (list[Union[str, dict]]):
-                An iterable of column names and/or settings.
-
-            rowdata (List):
-                An iterable of row values.
-        """
-        # destroy the existing data if existing
-        self.purge_table_data()
-
-        # build the table columns
-        for i, col in enumerate(coldata):
-            if isinstance(col, str):
-                # just a column name
-                self.insert_column(i, col)
-            else:
-                # a dictionary of column settings
-                self.insert_column(i, **col)
-
-        # resolve iid_field to column index
-        self._resolve_iid_field_index()
-
-        # build the table rows
-        for values in rowdata:
-            self.insert_row(values=values)
-
-        # load the table data
-        self.load_table_data()
-
-        # apply table formatting
-        if self._autofit:
-            self.autofit_columns()
-
-        if self._autoalign:
-            self.autoalign_columns()
-
-        if self._stripecolor is not None:
-            self.apply_table_stripes(self._stripecolor)
-
-        self.goto_first_page()
-
-    def insert_row(self, index=END, values=[]) -> TableRow:
-        """Insert a row into the tableview at index.
-
-        Inserting a row will reload the table data and clear the applied filters.
-
-        Parameters:
-
-            index (Union[int, str]):
-                A numerical index that specifieds where to insert
-                the record in the dataset. You may also use the string
-                'end' to append the record to the end of the data set.
-                If the index exceeds the record count, it will be
-                appended to the end of the dataset.
-
-            values (Iterable):
-                An iterable of values to insert into the data set.
-                The number of columns implied by the list of values
-                must match the number of columns in the data set for
-                the values to be visible.
-
-        Returns:
-
-            TableRow:
-                A table row object.
-        """
-        rowcount = len(self._tablerows)
-
-        # validate the index
-        if len(values) == 0:
-            print('[TableView] Cannot insert. No values found.')
-            return None
-        if index == END:
-            index = -1
-        elif index > rowcount - 1:
-            index = -1
-
-        record = TableRow(self, values)
-        if rowcount == 0 or index == -1:
-            self._tablerows.append(record)
-        else:
-            self._tablerows.insert(index, record)
-
-        self.load_table_data(self.is_filtered)
-
-        return record
-
-    def insert_rows(self, index, rowdata):
-        """Insert row after index for each row in *row. If index does
-        not exist then the records are appended to the end of the table.
-        You can also use the string 'end' to append records at the end
-        of the table.
-
-        Rows are inserted in reverse order.
-
-        Inserting rows will rebuild the table view and clear the filters.
-
-        Parameters:
-
-            index (Union[int, str]):
-                The location in the data set after where the records
-                will be inserted. You may use a numerical index or
-                the string 'end', which will append the records to the
-                end of the data set.
-
-            rowdata (list[Any, list]):
-                A list of row values to be inserted into the table.
-
-        Examples:
-
-            ```python
-            Tableview.insert_rows('end', ['one', 1], ['two', 2])
-            ```
-        """
-        if len(rowdata) == 0:
-            return
-        for values in reversed(rowdata):
-            self.insert_row(index, values)
-
-    def delete_column(self, index=None, cid=None, visible=True):
-        """Delete the specified column based on the column index or the
-        unique cid.
-
-        Unless otherwise specified, the index refers to the column index
-        as displayed in the tableview.
-
-        If cid is provided, the column associated with the cid is deleted
-        regardless of whether it is in the visible data sets.
-
-        Parameters:
-
-            index (int):
-                The numerical index of the column.
-
-            cid (str):
-                A unique column indentifier.
-
-            visible (bool):
-                Specifies that the index should refer to the visible
-                columns. Otherwise, if False, the original column
-                position is used.
-        """
-        if cid is not None:
-            column: TableColumn = self.cidmap(int(cid))
-            column.delete()
-
-        elif index is not None and visible:
-            self.tablecolumns_visible[int(index)].delete()
-
-        elif index is None and not visible:
-            self.tablecolumns[int(index)].delete()
-
-    def delete_columns(self, indices=None, cids=None, visible=True):
-        """Delete columns specified by indices or cids.
-
-        Unless specified otherwise, the index refers to the position
-        of the columns in the table from left to right starting with
-        index 0.
-
-        !!!Warning "Use this method with caution!
-            This method may or may not suffer performance issues.
-            Internally, this method calls the `delete_column` method
-            on each column specified in the list. The `delete_column`
-            method deletes the related column from each record in
-            the table data. So, if there are a lot of records this
-            could be problematic. It may be more beneficial to use
-            the `build_table_data` if you plan on changing the
-            structure of the table dramatically.
-
-        Parameters:
-
-            indices (list[int]):
-                A list of column indices to delete from the table.
-
-            cids (list[str]):
-                A list of unique column identifiers to delete from the
-                table.
-
-            visible (bool):
-                If True, the index refers to the visible position of the
-                column in the stable, from left to right starting at
-                index 0.
-        """
-        if cids is not None:
-            for cid in cids:
-                self.delete_column(cid=cid)
-        elif indices is not None:
-            for index in indices:
-                self.delete_column(index=index, visible=visible)
-
-    def delete_row(self, index=None, iid=None, visible=True):
-        """Delete a record from the data set.
-
-        Unless specified otherwise, the index refers to the record
-        position within the visible data set from top to bottom
-        starting with index 0.
-
-        If iid is provided, the record associated with the cid is deleted
-        regardless of whether it is in the visible data set.
-
-        Parameters:
-
-            index (int):
-                The numerical index of the record within the data set.
-
-            iid (str):
-                A unique record identifier.
-
-            visible (bool):
-                Indicates that the record index is relative to the current
-                records in view, otherwise, the original data set index is
-                used if False.
-        """
-        # delete from iid
-        if iid is not None:
-            record: TableRow = self.iidmap.get(iid)
-            record.delete()
-        elif index is not None:
-            # visible index
-            if visible:
-                record = self.tablerows_visible[index]
-                record.delete()
-            # original index
-            else:
-                for record in self.tablerows:
-                    if record._sort == index:
-                        record.delete()
-
-    def delete_rows(self, indices=None, iids=None, visible=True):
-        """Delete rows specified by indices or iids.
-
-        If both indices and iids are None, then all records in the
-        table will be deleted.
-        """
-        # remove records by iid
-        if iids is not None:
-            for iid in iids:
-                self.delete_row(iid=iid)
-        # remove records by index
-        elif indices is not None:
-            for index in indices:
-                self.delete_row(index=index, visible=visible)
-        # remove ALL records
-        else:
-            self._tablerows.clear()
-            self._tablerows_filtered.clear()
-            self._viewdata.clear()
-            self._iidmap.clear()
-            records = self.view.get_children()
-            self.view.delete(*records)
-        # route to new page if no records visible
-        if len(self._viewdata) == 0:
-            self.goto_page()
-
-    def insert_column(
-            self,
-            index,
-            text="",
-            image="",
-            command="",
-            anchor: Anchor = W,
-            width=200,
-            minwidth=20,
-            stretch=False,
-    ) -> TableColumn:
-        """
-        Parameters:
-
-            index (Union[int, str]):
-                A numerical index that specifieds where to insert
-                the column. You may also use the string 'end' to
-                insert the column in the right-most position. If the
-                index exceeds the column count, it will be inserted
-                at the right-most position.
-
-            text (str):
-                The header text.
-
-            image (PhotoImage):
-                An image that is displayed to the left of the header text.
-
-            command (Callable):
-                A function called whenever the header button is clicked.
-
-            anchor (str):
-                The position of the header text within the header. One
-                of "e", "w", "center".
-
-            width (int):
-                Specifies the width of the column in pixels.
-
-            minwidth (int):
-                Specifies the minimum width of the column in pixels.
-
-            stretch (bool):
-                Specifies whether or not the column width should be
-                adjusted whenever the widget is resized or the user
-                drags the column separator.
-
-        Returns:
-
-            TableColumn:
-                A table column object.
-        """
-        self.reset_table()
-        colcount = len(self.tablecolumns)
-        cid = colcount
-        if index == END:
-            index = -1
-        elif index > colcount - 1:
-            index = -1
-
-        # actual columns
-        cols = self.view.cget("columns")
-        if len(cols) > 0:
-            cols = [int(x) for x in cols]
-            cols.append(cid)
-        else:
-            cols = [cid]
-
-        # visible columns
-        dcols = self.view.cget("displaycolumns")
-        if "#all" in dcols:
-            dcols = cols
-        elif len(dcols) > 0:
-            dcols = [int(x) for x in dcols]
-            if index == -1:
-                dcols.append(cid)
-            else:
-                dcols.insert(index, cid)
-        else:
-            dcols = [cid]
-
-        self.view.configure(columns=cols, displaycolumns=dcols)
-
-        # configure new column
-        column = TableColumn(
-            tableview=self,
-            cid=cid,
-            text=text,
-            image=image,
-            command=command,
-            anchor=anchor,
-            width=width,
-            minwidth=minwidth,
-            stretch=stretch,
-        )
-        self._tablecols.append(column)
-        # must be called to show the header after initially creating it
-        # ad hoc, not sure why this should be the case;
-        self._column_sort_header_reset()
-
-        # update settings after they are erased when a column is
-        #   inserted
-        for column in self._tablecols:
-            column.restore_settings()
-
-        return column
-
-    def purge_table_data(self):
-        """Erase all table and column data.
-
-        This method will completely destroy the table data structure.
-        The table will need to be completely rebuilt after using this
-        method.
-        """
-        self.delete_rows()
-        self.cidmap.clear()
-        self.tablecolumns.clear()
-        self.view.configure(columns=[], displaycolumns=[])
-
-    def unload_table_data(self):
-        """Unload all data from the table"""
-        for row in self.tablerows_visible:
-            tmp_row_id = row.iid
-            for tmp in self._tablerows:
-                if tmp_row_id == tmp.iid:
-                    row.hide()
-        self.tablerows_visible.clear()
-
-    def load_table_data(self, clear_filters=False):
-        """Load records into the tableview.
-
-        Parameters:
-
-            clear_filters (bool):
-                Specifies that the table filters should be cleared
-                before loading the data into the view.
-        """
-        if len(self.tablerows) == 0:
-            return
-
-        if clear_filters:
-            self.reset_table()
-
-        self.unload_table_data()
-
-        if self._paginated:
-            page_start = self._rowindex.get()
-            page_end = self._rowindex.get() + self._pagesize.get()
-        else:
-            page_start = 0
-            page_end = len(self._tablerows)
-
-        if self._filtered:
-            rowdata = self._tablerows_filtered[page_start:page_end]
-            rowcount = len(self._tablerows_filtered)
-        else:
-            rowdata = self._tablerows[page_start:page_end]
-            rowcount = len(self._tablerows)
-
-        self._pagelimit.set(ceil(rowcount / self._pagesize.get()))
-
-        pageindex = ceil(page_end / self._pagesize.get())
-        pagelimit = self._pagelimit.get()
-        self._pageindex.set(min([pagelimit, pageindex]))
-
-        for i, row in enumerate(rowdata):
-            if self._stripecolor is not None and i % 2 == 0:
-                row.show(True)
-            else:
-                row.show(False)
-            self._viewdata.append(row)
-
-    def fill_empty_columns(self, fillvalue=""):
-        """Fill empty columns with the fillvalue.
-
-        This method can be used to fill in missing values when a column
-        column is inserted after data has already been inserted into
-        the tableview.
-
-        Parameters:
-
-            fillvalue (Any):
-                A value to insert into an empty column
-        """
-        rowcount = len(self._tablerows)
-        if rowcount == 0:
-            return
-        colcount = len(self._tablecols)
-        for row in self._tablerows:
-            var = colcount - len(row._values)
-            if var <= 0:
-                return
-            else:
-                for _ in range(var):
-                    row._values.append(fillvalue)
-                row.configure(values=row._values)
-
-    # CONFIGURATION
-
-    def get_columns(self) -> list[TableColumn]:
-        """Returns a list of all column objects. Same as using the
-        `Tableview.tablecolumns` property."""
-        return self._tablecols
-
-    def get_column(
-            self, index=None, visible=False, cid=None
-    ) -> TableColumn:
-        """Returns the `TableColumn` object from an index or a cid.
-
-        If index is specified, the column index refers to the index
-        within the original, unless the visible flag is set, in which
-        case the index is relative to the visible columns in view.
-
-        If cid is specified, the column associated with the cid is
-        return regardless of whether it is visible.
-
-        Parameters:
-
-            index (int):
-                The numerical index of the column.
-
-            visible (bool):
-                Use the index of the visible columns as they appear
-                in the table.
-
-        Returns:
-
-            Union[TableColumn, None]:
-                The table column object if found, otherwise None.
-        """
-        if cid is not None:
-            return self._cidmap.get(cid)
-
-        if not visible:
-            # original column index
+        super().__init__(master, **kwargs)
+
+        # configuration
+        self._editing = _normalize_editing_options(editing)
+        self._paging = _normalize_paging_options(paging)
+        self._exporting = _normalize_exporting_options(exporting)
+        self._filtering = _normalize_filtering_options(filtering)
+        self._selection = _normalize_selection_options(selection)
+        self._searchbar = _normalize_searchbar_options(search)
+        self._sorting = sorting
+        self._show_table_status = show_table_status
+        self._show_column_chooser = show_column_chooser
+        self._row_alternation = _normalize_row_alternation_options(row_alternation)
+        self._allow_grouping = allow_grouping
+        self._context_menus = (context_menus or "all").lower()
+        self._column_min_width = max(0, column_min_width)
+        self._column_auto_width = column_auto_width
+        self._datasource = datasource or SqliteDataSource(":memory:", page_size=self._paging['page_size'])
+
+        self._page_cache: OrderedDict[int, list[dict]] = OrderedDict()
+        self._column_defs = columns or []
+        self._column_keys: list[str] = []
+        self._heading_texts: list[str] = []
+        self._sort_state: dict[str, bool] = {}  # key -> ascending
+        self._current_page = self._paging['page_index']
+        self._loading_next = False
+        self._heading_fg: str | None = None
+        self._icon_sort_up = None
+        self._icon_sort_down = None
+        self._column_anchors: list[str] = []
+        self._column_filters: dict[str, list] = {}  # key -> list of allowed values
+        self._column_types: dict[str, str] = {}
+        self._alignment_sample: list[dict] | None = None
+        self._row_map: dict[str, dict] = {}
+        self._row_menu: ContextMenu | None = None
+        self._display_columns: list[int] = []
+        self._header_menu: ContextMenu | None = None
+        self._header_menu_col: int | None = None
+        self._cached_total_count: int | None = None
+        self._group_by_key: str | None = None
+        self._group_parents: dict[str | None, str] = {}
+        self._hidden_rows: dict[str, tuple[str, int]] = {}
+
+        self._resolve_column_keys()
+
+        seeded_records: list[dict] | None = None
+        if rows:
             try:
-                return self._tablecols[index]
-            except IndexError:
-                return None
-        else:
-            # visible column index
-            cols = self.view.cget("columns")
-            if len(cols) > 0:
-                cols = [int(x) for x in cols]
-            else:
-                cols = []
-
-            dcols = self.view.cget("displaycolumns")
-            if "#all" in dcols:
-                dcols = cols
-            else:
+                if self._column_keys:
+                    # Avoid per-row dict conversion when we already know the column order
+                    self._datasource.set_data(rows, column_keys=self._column_keys)
+                    seeded_records = None
+                else:
+                    seeded_records = self._to_records(rows)
+                    self._datasource.set_data(seeded_records)
+            except Exception:
+                # Last-resort fallback to dict conversion if direct load fails
+                seeded_records = self._to_records(rows)
                 try:
-                    x = int(dcols[index])
-                    for c in self._tablecols:
-                        if c.cid == x:
-                            return c
-                except ValueError:
-                    return None
+                    self._datasource.set_data(seeded_records)
+                except Exception:
+                    seeded_records = []
 
-    def get_rows(self, visible=False, filtered=False, selected=False) -> list[TableRow]:
-        """Return a list of TableRow objects.
+        self._ensure_column_metadata(seeded_records)
 
-        Return a subset of rows based on optional flags. Only ONE flag can be used
-        at a time. If more than one flag is set to `True`, then the first flag will
-        be used to return the data.
+        # UI
+        self._build_toolbar()
+        self._build_tree()
+        if self._show_table_status or not self._paging['mode'] == 'virtual':
+            self._build_footer()
 
-        Parameters:
+        # Initial load
+        self._load_page(0)
 
-            visible (bool):
-                If true, only records in the current view will be returned.
-
-            filtered (bool):
-                If True, only rows in the filtered dataset will be returned.
-
-            selected (bool):
-                If True, only rows that are currently selected will be returned.
-
-        Returns:
-
-            list[TableRow]:
-                A list of TableRow objects.
-        """
-        if visible:
-            return self._viewdata
-        elif filtered:
-            return self._tablerows_filtered
-        elif selected:
-            return [row for row in self._viewdata if row.iid in self.view.selection()]
+    # ------------------------------------------------------------------ Public API
+    def set_data(self, rows: list) -> None:
+        """Replace data in the datasource and refresh the grid."""
+        if self._column_keys:
+            self._datasource.set_data(rows, column_keys=self._column_keys)
+            seeded_records = None
         else:
-            return self._tablerows
+            seeded_records = self._to_records(rows)
+            self._datasource.set_data(seeded_records)
+        self._ensure_column_metadata(seeded_records)
+        self._clear_cache()
+        self._load_page(0)
 
-    def get_row(self, index=None, visible=False, filtered=False, iid=None) -> TableRow:
-        """Returns the `TableRow` object from an index or the iid.
+    # ------------------------------------------------------------------ Public event API
+    def on_selection_changed(self, callback) -> str:
+        """Bind to selection changes. event.data = {'records': list, 'iids': list}."""
+        return self.bind("<<SelectionChanged>>", callback, add=True)
 
-        If an index is specified, the row index refers to the index
-        within the original dataset. When choosing a subset of data,
-        the visible data takes priority over filtered if both flags
-        are set.
+    def off_selection_changed(self, funcid: str | None = None) -> None:
+        self.unbind("<<SelectionChanged>>", funcid)
 
-        If an iid is specified, the object attached to that iid is
-        returned regardless of whether or not it is visible or
-        filtered.
+    def on_row_click(self, callback) -> str:
+        """Bind to row click. event.data = {'record': dict, 'iid': str}."""
+        return self.bind("<<RowClick>>", callback, add=True)
 
-        Parameters:
+    def off_row_click(self, funcid: str | None = None) -> None:
+        self.unbind("<<RowClick>>", funcid)
 
-            index (int):
-                The numerical index of the column.
+    def on_row_double_click(self, callback) -> str:
+        """Bind to row double-click. event.data = {'record': dict, 'iid': str}."""
+        return self.bind("<<RowDoubleClick>>", callback, add=True)
 
-            iid (str):
-                A unique column identifier.
+    def off_row_double_click(self, funcid: str | None = None) -> None:
+        self.unbind("<<RowDoubleClick>>", funcid)
 
-            visible (bool):
-                Use the index of the visible rows as they appear
-                in the current table view.
+    def on_row_right_click(self, callback) -> str:
+        """Bind to row right-click/context. event.data = {'record': dict, 'iid': str}."""
+        return self.bind("<<RowRightClick>>", callback, add=True)
 
-            filtered (bool):
-                Use the index of the rows within the filtered data
-                set.
+    def off_row_right_click(self, funcid: str | None = None) -> None:
+        self.unbind("<<RowRightClick>>", funcid)
 
-        Returns:
+    def on_row_deleted(self, callback) -> str:
+        """Bind to row delete events. event.data = {'records': list}."""
+        return self.bind("<<RowDeleted>>", callback, add=True)
 
-            Union[TableRow, None]:
-                The table column object if found, otherwise None
-        """
-        if iid is not None:
-            return self.iidmap.get(iid)
+    def off_row_deleted(self, funcid: str | None = None) -> None:
+        self.unbind("<<RowDeleted>>", funcid)
 
-        if visible:
+    def on_row_inserted(self, callback) -> str:
+        """Bind to row insert events. event.data = {'records': list}."""
+        return self.bind("<<RowInserted>>", callback, add=True)
+
+    def off_row_inserted(self, funcid: str | None = None) -> None:
+        self.unbind("<<RowInserted>>", funcid)
+
+    def on_row_updated(self, callback) -> str:
+        """Bind to row update events. event.data = {'records': list}."""
+        return self.bind("<<RowUpdated>>", callback, add=True)
+
+    def off_row_updated(self, funcid: str | None = None) -> None:
+        self.unbind("<<RowUpdated>>", funcid)
+
+    def on_row_moved(self, callback) -> str:
+        """Bind to row move events. event.data = {'records': list}."""
+        return self.bind("<<RowMoved>>", callback, add=True)
+
+    def off_row_moved(self, funcid: str | None = None) -> None:
+        self.unbind("<<RowMoved>>", funcid)
+
+    # ------------------------------------------------------------------ Public data/selection API
+    @property
+    def selected_rows(self) -> list[dict]:
+        """List of record dicts for the current Treeview selection."""
+        rows: list[dict] = []
+        for iid in self._tree.selection():
+            if iid in self._row_map:
+                rows.append(self._row_map[iid])
+        return rows
+
+    @property
+    def visible_rows(self) -> list[dict]:
+        """List of record dicts for rows currently rendered (flat traversal)."""
+        rows: list[dict] = []
+        queue = list(self._tree.get_children(""))
+        while queue:
+            iid = queue.pop(0)
+            if iid in self._row_map:
+                rows.append(self._row_map[iid])
+            queue.extend(list(self._tree.get_children(iid)))
+        return rows
+
+    # ------------------------------------------------------------------ Public row/column manipulation
+    def insert_rows(self, rows: list) -> None:
+        """Insert new rows via the datasource and refresh."""
+        recs = self._to_records(rows)
+        inserted: list[dict] = []
+        for rec in recs:
             try:
-                return self.tablerows_visible[index]
-            except IndexError:
-                return None
-        elif filtered:
+                new_id = self._datasource.create_record(dict(rec))
+                rec = dict(rec)
+                if new_id is not None:
+                    rec["id"] = new_id
+                inserted.append(rec)
+            except Exception:
+                logger.exception("Failed to insert record")
+        if inserted:
+            self._clear_cache()
+            self._load_page(self._current_page)
+            self.event_generate("<<RowInserted>>", data={"records": inserted})
+
+    def update_rows(self, rows: list[dict]) -> None:
+        """Update rows by id; each dict must include an 'id' key."""
+        updated: list[dict] = []
+        for rec in rows:
+            rec_id = rec.get("id")
+            if rec_id is None:
+                continue
+            updates = {k: v for k, v in rec.items() if k != "id"}
             try:
-                return self.tablerows_filtered[index]
-            except IndexError:
-                return None
+                self._datasource.update_record(rec_id, updates)
+                updated.append(rec)
+            except Exception:
+                logger.exception("Failed to update record id=%s", rec_id)
+        if updated:
+            self._clear_cache()
+            self._load_page(self._current_page)
+            self.event_generate("<<RowUpdated>>", data={"records": updated})
+
+    def delete_rows(self, rows_or_ids: list) -> None:
+        """Delete rows by id or row dicts containing an id key."""
+        deleted: list[dict] = []
+        for item in rows_or_ids:
+            rec_id = None
+            rec = {}
+            if isinstance(item, dict):
+                rec = item
+                rec_id = item.get("id")
+            else:
+                rec_id = item
+            if rec_id is None:
+                continue
+            try:
+                self._datasource.delete_record(rec_id)
+                if not rec:
+                    rec = {"id": rec_id}
+                deleted.append(rec)
+            except Exception:
+                logger.exception("Failed to delete record id=%s", rec_id)
+        if deleted:
+            self._clear_cache()
+            self._load_page(self._current_page)
+            self.event_generate("<<RowDeleted>>", data={"records": deleted})
+
+    def insert_columns(self, *_args, **_kwargs) -> None:
+        """Not currently supported; columns are defined at construction time."""
+        raise NotImplementedError("Dynamic column insertion is not supported yet")
+
+    def delete_columns(self, indices: list[int]) -> None:
+        """Hide columns at the given indices."""
+        self.hide_columns(indices)
+
+    def move_rows(self, iids: list[str], to_index: int) -> None:
+        """Move the given rows to a target index in the root list."""
+        children = list(self._tree.get_children(""))
+        to_index = max(0, min(len(children), to_index))
+        for offset, iid in enumerate(iids):
+            try:
+                self._tree.move(iid, "", to_index + offset)
+            except Exception:
+                pass
+        self._apply_row_alternation()
+        moved_recs = [self._row_map.get(i) for i in iids if i in self._row_map]
+        if moved_recs:
+            self.event_generate("<<RowMoved>>", data={"records": moved_recs})
+
+    def move_columns(self, from_index: int, to_index: int) -> None:
+        """Reorder a column from one index to another."""
+        if from_index < 0 or from_index >= len(self._display_columns):
+            return
+        to_index = max(0, min(len(self._display_columns) - 1, to_index))
+        col_id = self._display_columns.pop(from_index)
+        self._display_columns.insert(to_index, col_id)
+        self._tree.configure(displaycolumns=self._display_columns)
+
+    def hide_rows(self, iids: list[str]) -> None:
+        """Hide rows from view (not removed from datasource)."""
+        for iid in iids:
+            try:
+                parent = self._tree.parent(iid)
+                children = list(self._tree.get_children(parent))
+                idx = children.index(iid)
+                self._hidden_rows[iid] = (parent, idx)
+                self._tree.detach(iid)
+            except Exception:
+                pass
+
+    def unhide_rows(self, iids: list[str] | None = None) -> None:
+        """Restore previously hidden rows."""
+        targets = iids or list(self._hidden_rows.keys())
+        for iid in targets:
+            if iid not in self._hidden_rows:
+                continue
+            parent, idx = self._hidden_rows.pop(iid)
+            try:
+                self._tree.move(iid, parent, idx)
+            except Exception:
+                pass
+        self._apply_row_alternation()
+
+    def hide_columns(self, indices: list[int]) -> None:
+        """Remove columns from the displayed set."""
+        for idx in indices:
+            if idx in self._display_columns:
+                self._display_columns.remove(idx)
+        if not self._display_columns and self._heading_texts:
+            self._display_columns = list(range(len(self._heading_texts)))
+        self._tree.configure(displaycolumns=self._display_columns)
+
+    def unhide_columns(self, indices: list[int]) -> None:
+        """Add columns back into the displayed set."""
+        changed = False
+        for idx in indices:
+            if idx not in self._display_columns and 0 <= idx < len(self._heading_texts):
+                self._display_columns.append(idx)
+                changed = True
+        if changed:
+            self._display_columns = sorted(self._display_columns)
+            self._tree.configure(displaycolumns=self._display_columns)
+
+    def select_rows(self, iids: list[str]) -> None:
+        """Select the given row ids."""
+        self._tree.selection_set(iids)
+
+    def deselect_rows(self, iids: list[str] | None = None) -> None:
+        """Clear selection or remove specific iids from selection."""
+        if not iids:
+            self._tree.selection_remove(self._tree.selection())
         else:
-            try:
-                return self.tablerows[index]
-            except IndexError:
-                return None
+            self._tree.selection_remove(iids)
 
-    # PAGE NAVIGATION
-
-    def _select_first_visible_item(self):
+    def scroll_to_row(self, iid: str) -> None:
+        """Ensure the given row is visible."""
         try:
-            iid = self.tablerows_visible[0].iid
-            self.view.selection_set(iid)
-            # must force focus, sometimes just focus on iid doesn't work
-            self.view.focus_force()
-            # this sets the focus on the specific row item
-            self.view.focus(iid)
-            # make sure the row is visible
-            self.view.see(iid)
-        except:
+            self._tree.see(iid)
+        except Exception:
             pass
 
-    def goto_first_page(self):
-        """Update table with first page of data"""
-        self._rowindex.set(0)
-        self.load_table_data()
-        self._select_first_visible_item()
+    # ------------------------------------------------------------------ Pagination helpers
+    def next_page(self) -> None:
+        self._next_page()
 
-    def goto_last_page(self):
-        """Update table with the last page of data"""
-        pagelimit = self._pagelimit.get() - 1
-        self._rowindex.set(self.pagesize * pagelimit)
-        self.load_table_data()
-        self._select_first_visible_item()
+    def previous_page(self) -> None:
+        self._prev_page()
 
-    def goto_next_page(self):
-        """Update table with next page of data"""
-        if self._pageindex.get() >= self._pagelimit.get():
+    def first_page(self) -> None:
+        self._first_page()
+
+    def last_page(self) -> None:
+        self._last_page()
+
+    def go_to_page(self, index: int) -> None:
+        self._load_page(max(0, index))
+
+    # ------------------------------------------------------------------ Filter/Sort/Group API
+    def get_filters(self) -> str:
+        """Return current SQL where clause string (if any)."""
+        try:
+            return getattr(self._datasource, "_where", "") or ""
+        except Exception:
+            return ""
+
+    def set_filters(self, where: str) -> None:
+        try:
+            self._datasource.set_filter(where or "")
+        except Exception:
             return
-        rowindex = self._rowindex.get()
-        self._rowindex.set(rowindex + self.pagesize)
-        self.load_table_data()
-        self._select_first_visible_item()
+        self._clear_cache()
+        self._load_page(0)
+        self._update_status_labels()
 
-    def goto_prev_page(self):
-        """Update table with prev page of data"""
-        if self._pageindex.get() <= 1:
+    def clear_filters(self) -> None:
+        self._clear_filter_cmd()
+
+    def get_sorting(self) -> dict[str, bool]:
+        """Return a copy of the current sort state {column_key: ascending}."""
+        return dict(self._sort_state)
+
+    def set_sorting(self, key: str, ascending: bool = True) -> None:
+        quoted_key = self._quote_col(key)
+        order = "ASC" if ascending else "DESC"
+        try:
+            self._datasource.set_sort(f"{quoted_key} {order}")
+        except Exception:
             return
-        rowindex = self._rowindex.get()
-        self._rowindex.set(rowindex - self.pagesize)
-        self.load_table_data()
-        self._select_first_visible_item()
+        self._sort_state = {key: ascending}
+        self._clear_cache()
+        self._update_heading_icons()
+        self._load_page(0)
+        self._update_status_labels()
 
-    def goto_page(self, *_):
-        """Go to a specific page indicated by the page entry widget."""
-        pagelimit = self._pagelimit.get()
-        pageindex = self._pageindex.get()
-        if pageindex > pagelimit:
-            pageindex = pagelimit
-            self._pageindex.set(pageindex)
-        elif pageindex <= 0:
-            pageindex = 1
-            self._pageindex.set(pageindex)
-        rowindex = (pageindex * self.pagesize) - self.pagesize
-        self._rowindex.set(rowindex)
-        self.load_table_data()
-        self._select_first_visible_item()
+    def clear_sorting(self) -> None:
+        self._clear_sort()
 
-    # COLUMN SORTING
+    def get_grouping(self) -> str | None:
+        return self._group_by_key
 
-    def sort_column_data(self, event=None, cid=None, sort=None):
-        """Sort the table rows by the specified column. This method
-        may be trigged by an event or manually.
-
-        Parameters:
-
-            event (Event):
-                A window event.
-
-            cid (int):
-                A unique column identifier; typically the numerical
-                index of the column relative to the original data set.
-
-            sort (int):
-                Determines the sort direction. 0 = ASCENDING. 1 = DESCENDING.
-        """
-        if event is not None:
-            eo = self._get_event_objects(event)
-            column = eo.column
-            index = column.tableindex
-        elif cid is not None:
-            column: TableColumn = self.cidmap.get(int(cid))
-            index = column.tableindex
-        else:
+    def set_grouping(self, key: str | None) -> None:
+        if not key:
+            self._ungroup_all()
             return
+        if key not in self._column_keys:
+            return
+        self._group_by_key = key
+        self._group_parents.clear()
+        try:
+            quoted_key = self._quote_col(key)
+            self._datasource.set_sort(f"{quoted_key} ASC")
+        except Exception:
+            pass
+        self._sort_state = {key: True}
+        self._clear_cache()
+        self._update_heading_icons()
+        self._load_page(0)
+        self._update_status_labels()
 
-        # update table data
-        if self.is_filtered:
-            tablerows = self.tablerows_filtered
-        else:
-            tablerows = self.tablerows
+    def clear_grouping(self) -> None:
+        self._ungroup_all()
 
-        if sort is not None:
-            columnsort = sort
-        else:
-            columnsort = self.tablecolumns[index].columnsort
+    # ------------------------------------------------------------------ Group expand/collapse
+    def expand_all(self) -> None:
+        for iid in self._tree.get_children(""):
+            try:
+                self._tree.item(iid, open=True)
+            except Exception:
+                pass
 
-        if columnsort == ASCENDING:
-            self._tablecols[index].columnsort = DESCENDING
-        else:
-            self._tablecols[index].columnsort = ASCENDING
+    def collapse_all(self) -> None:
+        for iid in self._tree.get_children(""):
+            try:
+                self._tree.item(iid, open=False)
+            except Exception:
+                pass
+
+    def expand_group(self, group_value) -> None:
+        parent = self._group_parents.get(group_value)
+        if parent:
+            try:
+                self._tree.item(parent, open=True)
+            except Exception:
+                pass
+
+    def collapse_group(self, group_value) -> None:
+        parent = self._group_parents.get(group_value)
+        if parent:
+            try:
+                self._tree.item(parent, open=False)
+            except Exception:
+                pass
+
+    def select_all(self) -> None:
+        """Select all visible rows."""
+        self._tree.selection_set(self._tree.get_children(""))
+
+    def deselect_all(self) -> None:
+        """Clear the selection."""
+        self._tree.selection_remove(self._tree.selection())
+
+    # ------------------------------------------------------------------ UI
+
+    def _resolve_alternating_row_color(self):
+        style = use_style()
+        color_token = self._row_alternation.get('color', 'background[+1]')
 
         try:
-            sortedrows = sorted(
-                tablerows, reverse=columnsort, key=lambda x: x.values[index]
-            )
-        except:
-            # when data is missing, or sometimes with numbers
-            # this is still not right, but it works most of the time
-            # fix sometime down the road when I have time
-            self.fill_empty_columns()
-            sortedrows = sorted(
-                tablerows, reverse=columnsort, key=lambda x: int(x.values[index])
-            )
-        if self.is_filtered:
-            self._tablerows_filtered = sortedrows
-        else:
-            self._tablerows = sortedrows
+            background = style.style_builder.color(color_token)
+        except Exception:
+            background = style.style_builder.color('background')
 
-        # update headers
-        self._column_sort_header_reset()
-        self._column_sort_header_update(column.cid)
-
-        self.unload_table_data()
-        self.load_table_data()
-        self._select_first_visible_item()
-
-    # DATA SEARCH & FILTERING
-
-    def search_table_data(self, criteria, *columns):
-        """Search the table data for records that match the search criteria.
-
-        The search is case insensitive and handles special characters safely.
-
-        Parameters:
-
-            criteria (Any):
-                The search value to look for in the table data. Can be any
-                data type (str, int, float, etc.) and will be converted to
-                a string for searching. If empty or None, resets the search
-                filter.
-
-            *columns (str):
-                Optional column names to search. If provided, only searches
-                the specified columns. Column names should match the headertext
-                of the desired columns. If no columns are specified, searches
-                all columns.
-
-        Examples:
-
-            Search all columns:
-            ```python
-            tableview.search_table_data("example")
-            tableview.search_table_data(12345)  # Search for numeric value
-            ```
-
-            Search specific columns:
-            ```python
-            tableview.search_table_data("example", "CompanyName")
-            tableview.search_table_data(100, "Price", "Quantity")
-            ```
-        """
-        import re
-
-        if criteria is None or (isinstance(criteria, str) and not criteria):
-            self.reset_row_filters()
-            return
-
-        search_text = str(criteria)
-
-        # Get column indices if specified
-        column_indices = None
-        if columns:
-            column_indices = []
-            for column_name in columns:
-                for col in self.tablecolumns:
-                    if col.headertext == column_name:
-                        column_indices.append(col.tableindex)
-                        break
-
-        # Escape special regex characters for literal search
-        search_text_escaped = re.escape(search_text.lower())
-
-        self._filtered = True
-        self.tablerows_filtered.clear()
-        self.unload_table_data()
-
-        for row in self.tablerows:
-            if column_indices:
-                # Search specific columns
-                for col_index in column_indices:
-                    try:
-                        col_value = str(row.values[col_index]).lower()
-                        if search_text_escaped in col_value:
-                            self.tablerows_filtered.append(row)
-                            break
-                    except IndexError:
-                        # Column doesn't exist in this row
-                        pass
-            else:
-                # Search all columns
-                for col in row.values:
-                    if search_text_escaped in str(col).lower():
-                        self.tablerows_filtered.append(row)
-                        break
-
-        self._rowindex.set(0)
-        self.load_table_data()
-
-    def reset_row_filters(self):
-        """Remove all row level filters; unhide all rows."""
-        self._filtered = False
-        self.searchcriteria = ""
-        self.unload_table_data()
-        self.load_table_data()
-
-    def reset_column_filters(self):
-        """Remove all column level filters; unhide all columns."""
-        cols = [col.cid for col in self.tablecolumns]
-        self.view.configure(displaycolumns=cols)
-
-    def reset_row_sort(self):
-        """Display all table rows by original insert index"""
-        ...
-
-    def reset_column_sort(self):
-        """Display all columns by original insert index"""
-        cols = sorted([col.cid for col in self.tablecolumns_visible], key=int)
-        self.view.configure(displaycolumns=cols)
-
-    def reset_table(self):
-        """Remove all table data filters and column sorts"""
-        self._filtered = False
-        self.searchcriteria = ""
         try:
-            sortedrows = sorted(self.tablerows, key=lambda x: x._sort)
-        except IndexError:
-            self.fill_empty_columns()
-            sortedrows = sorted(self.tablerows, key=lambda x: x._sort)
-        self._tablerows = sortedrows
-        self.unload_table_data()
+            foreground = style.style_builder.on_color(background)
+        except Exception:
+            foreground = style.style_builder.color('foreground')
+        return background, foreground
 
-        # reset the columns
-        self.reset_column_filters()
-        self.reset_column_sort()
-
-        self._column_sort_header_reset()
-        self.goto_first_page()  # needed?
-
-    def filter_column_to_value(self, event=None, cid=None, value=None):
-        """Hide all records except for records where the current
-        column exactly matches the provided value. This method may
-        be triggered by a window event or by specifying the column id.
-
-        Parameters:
-
-            event (Event):
-                A window click event.
-
-            cid (int):
-                A unique column identifier; typically the numerical
-                index of the column within the original dataset.
-
-            value (Any):
-                The criteria used to filter the column.
-        """
-        if event is not None:
-            eo = self._get_event_objects(event)
-            index = eo.column.tableindex
-            value = value or eo.row.values[index]
-        elif cid is not None:
-            column: TableColumn = self.cidmap.get(cid)
-            index = column.tableindex
-        else:
+    def _resolve_column_keys(self) -> None:
+        if not self._column_defs:
             return
-
-        self._filtered = True
-        self.tablerows_filtered.clear()
-        self.unload_table_data()
-
-        for row in self.tablerows:
-            if row.values[index] == value:
-                self.tablerows_filtered.append(row)
-
-        self._rowindex.set(0)
-        self.load_table_data()
-
-    def filter_to_selected_rows(self):
-        """Hide all records except for the selected rows"""
-        criteria = self.view.selection()
-        if len(criteria) == 0:
-            return  # nothing is selected
-
-        if self.is_filtered:
-            for row in self.tablerows_visible:
-                if row.iid not in criteria:
-                    row.hide()
-                    self.tablerows_filtered.remove(row)
-        else:
-            self._filtered = True
-            self.tablerows_filtered.clear()
-            for row in self.tablerows_visible:
-                if row.iid in criteria:
-                    self.tablerows_filtered.append(row)
-        self._rowindex.set(0)
-        self.load_table_data()
-
-    def hide_selected_rows(self):
-        """Hide the currently selected rows"""
-        selected = self.view.selection()
-        view_cnt = len(self._viewdata)
-        hide_cnt = len(selected)
-        self.view.detach(*selected)
-
-        tablerows = []
-        for row in self.tablerows_visible:
-            if row.iid in selected:
-                tablerows.append(row)
-
-        if not self.is_filtered:
-            self._filtered = True
-            self._tablerows_filtered = self.tablerows.copy()
-
-        for row in tablerows:
-            if self.is_filtered:
-                self.tablerows_filtered.remove(row)
-
-        if hide_cnt == view_cnt:
-            # assuming that if the count of the records on the page are
-            #   selected for hiding, then need to go to the next page
-            # The call to `load_table_data` is duplicative, but currently
-            #   this is the only way to get this to work until I've
-            #   refactored this bit.
-            self.load_table_data()
-            self.goto_page()
-        else:
-            self.load_table_data()
-
-    def hide_selected_column(self, event=None, cid=None):
-        """Detach the selected column from the tableview. This method
-        may be triggered by a window event or by specifying the column
-        id.
-
-        Parameters:
-
-            event (Event):
-                A window click event
-
-            cid (int):
-                A unique column identifier; typically the numerical
-                index of the column within the original dataset.
-        """
-        if event is not None:
-            eo = self._get_event_objects(event)
-            column = eo.column.hide()
-        elif cid is not None:
-            column: TableColumn = self.cidmap.get(cid)
-            column.hide()
-
-    def unhide_selected_column(self, event=None, cid=None):
-        """Attach the selected column to the tableview. This method
-        may be triggered by a window event or by specifying the column
-        id. The column is reinserted at the index in the original data
-        set.
-
-        Parameters:
-
-            event (Event):
-                An application click event
-
-            cid (int):
-                A unique column identifier; typically the numerical
-                index of the column within the original dataset.
-        """
-        if event is not None:
-            eo = self._get_event_objects(event)
-            eo.column.show()
-        elif cid is not None:
-            column = self.cidmap.get(cid)
-            column.show()
-
-    # DATA EXPORT
-
-    def export_all_records(self):
-        """Export all records to a csv file"""
-        headers = [col.headertext for col in self.tablecolumns]
-        records = [row.values for row in self.tablerows]
-        self.save_data_to_csv(headers, records, self._delimiter)
-
-    def export_current_page(self):
-        """Export records on current page to csv file"""
-        headers = [col.headertext for col in self.tablecolumns]
-        records = [row.values for row in self.tablerows_visible]
-        self.save_data_to_csv(headers, records, self._delimiter)
-
-    def export_current_selection(self):
-        """Export rows currently selected to csv file"""
-        headers = [col.headertext for col in self.tablecolumns]
-        selected = self.view.selection()
-        records = []
-        for iid in selected:
-            record: TableRow = self.iidmap.get(iid)
-            records.append(record.values)
-        self.save_data_to_csv(headers, records, self._delimiter)
-
-    def export_records_in_filter(self):
-        """Export rows currently filtered to csv file"""
-        headers = [col.headertext for col in self.tablecolumns]
-        if not self.is_filtered:
-            return
-        records = [row.values for row in self.tablerows_filtered]
-        self.save_data_to_csv(headers, records, self._delimiter)
-
-    def save_data_to_csv(self, headers, records, delimiter=","):
-        """Save data records to a csv file.
-
-        Parameters:
-
-            headers (list[str]):
-                A list of header labels.
-
-            records (list[tuple[...]]):
-                A list of table records.
-
-            delimiter (str):
-                The character to use for delimiting the values.
-        """
-        from tkinter.filedialog import asksaveasfilename
-        import csv
-
-        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-        initialfile = f"tabledata_{timestamp}.csv"
-        filetypes = [
-            ("CSV UTF-8 (Comma delimited)", "*.csv"),
-            ("All file types", "*.*"),
-        ]
-        filename = asksaveasfilename(
-            confirmoverwrite=True,
-            filetypes=filetypes,
-            defaultextension="csv",
-            initialfile=initialfile,
-        )
-        if filename:
-            with open(filename, "w", encoding="utf-8", newline="") as f:
-                writer = csv.writer(f, delimiter=delimiter)
-                writer.writerow(headers)
-                writer.writerows(records)
-
-    # ROW MOVEMENT
-
-    def move_selected_rows_to_top(self):
-        """Move the selected rows to the top of the data set"""
-        selected = self.view.selection()
-        if len(selected) == 0:
-            return
-
-        if self.is_filtered:
-            tablerows = self.tablerows_filtered.copy()
-        else:
-            tablerows = self.tablerows.copy()
-
-        for i, iid in enumerate(selected):
-            row = self.iidmap.get(iid)
-            tablerows.remove(row)
-            tablerows.insert(i, row)
-
-        if self.is_filtered:
-            self._tablerows_filtered = tablerows
-        else:
-            self._tablerows = tablerows
-
-        # refresh the table data
-        self.unload_table_data()
-        self.load_table_data()
-
-    def move_selected_rows_to_bottom(self):
-        """Move the selected rows to the bottom of the dataset"""
-        selected = self.view.selection()
-        if len(selected) == 0:
-            return
-
-        if self.is_filtered:
-            tablerows = self.tablerows_filtered.copy()
-        else:
-            tablerows = self.tablerows.copy()
-
-        for iid in selected:
-            row = self.iidmap.get(iid)
-            tablerows.remove(row)
-            tablerows.append(row)
-
-        if self.is_filtered:
-            self._tablerows_filtered = tablerows
-        else:
-            self._tablerows = tablerows
-
-        # refresh the table data
-        self.unload_table_data()
-        self.load_table_data()
-
-    def move_selected_row_up(self):
-        """Move the selected rows up one position in the dataset"""
-        selected = self.view.selection()
-        if len(selected) == 0:
-            return
-
-        if self.is_filtered:
-            tablerows = self._tablerows_filtered.copy()
-        else:
-            tablerows = self.tablerows.copy()
-
-        for iid in selected:
-            row = self.iidmap.get(iid)
-            index = tablerows.index(row) - 1
-            tablerows.remove(row)
-            tablerows.insert(index, row)
-
-        if self.is_filtered:
-            self._tablerows_filtered = tablerows
-        else:
-            self._tablerows = tablerows
-
-        # refresh the table data
-        self.unload_table_data()
-        self.load_table_data()
-
-    def move_row_down(self):
-        """Move the selected rows down one position in the dataset"""
-        selected = self.view.selection()
-        if len(selected) == 0:
-            return
-
-        if self._filtered:
-            tablerows = self._tablerows_filtered
-        else:
-            tablerows = self._tablerows
-
-        for iid in selected:
-            row = self.iidmap.get(iid)
-            index = tablerows.index(row) + 1
-            tablerows.remove(row)
-            tablerows.insert(index, row)
-
-        if self._filtered:
-            self._tablerows_filtered = tablerows
-        else:
-            self._tablerows = tablerows
-
-        # refresh the table data
-        self.unload_table_data()
-        self.load_table_data()
-
-    # COLUMN MOVEMENT
-
-    def move_column_left(self, event=None, cid=None):
-        """Move column one position to the left. This can be triggered
-        by either an event, or by passing in the `cid`, which is the
-        index of the column relative to the original data set.
-
-        Parameters:
-
-            event (Event):
-                An application click event.
-
-            cid (int):
-                A unique column identifier; typically the index of the
-                column relative to the original dataset.
-        """
-        if event is not None:
-            eo = self._get_event_objects(event)
-            column = eo.column
-        elif cid is not None:
-            column = self.cidmap.get(cid)
-        else:
-            return
-
-        displaycols = [x.cid for x in self.tablecolumns_visible]
-        old_index = column.displayindex
-        if old_index == 0:
-            return
-
-        new_index = column.displayindex - 1
-        displaycols.insert(new_index, displaycols.pop(old_index))
-        self.view.configure(displaycolumns=displaycols)
-
-    def move_column_right(self, event=None, cid=None):
-        """Move column one position to the right. This can be triggered
-        by either an event, or by passing in the `cid`, which is the
-        index of the column relative to the original data set.
-
-        Parameters:
-
-            event (Event):
-                An application click event.
-
-            cid (int):
-                A unique column identifier; typically the index of the
-                column relative to the original dataset.
-        """
-        if event is not None:
-            eo = self._get_event_objects(event)
-            column = eo.column
-        elif cid is not None:
-            column = self.cidmap.get(cid)
-        else:
-            return
-
-        displaycols = [x.cid for x in self.tablecolumns_visible]
-        old_index = column.displayindex
-        if old_index == len(displaycols) - 1:
-            return
-
-        new_index = old_index + 1
-        displaycols.insert(new_index, displaycols.pop(old_index))
-        self.view.configure(displaycolumns=displaycols)
-
-    def move_column_to_first(self, event=None, cid=None):
-        """Move column to leftmost position. This can be triggered by
-        either an event, or by passing in the `cid`, which is the index
-        of the column relative to the original data set.
-
-        Parameters:
-
-            event (Event):
-                An application click event.
-
-            cid (int):
-                A unique column identifier; typically the index of the
-                column relative to the original dataset.
-        """
-        if event is not None:
-            eo = self._get_event_objects(event)
-            column = eo.column
-        elif cid is not None:
-            column = self.cidmap.get(cid)
-        else:
-            return
-
-        displaycols = [x.cid for x in self.tablecolumns_visible]
-        old_index = column.displayindex
-        if old_index == 0:
-            return
-
-        displaycols.insert(0, displaycols.pop(old_index))
-        self.view.configure(displaycolumns=displaycols)
-
-    def move_column_to_last(self, event=None, cid=None):
-        """Move column to the rightmost position. This can be triggered
-        by either an event, or by passing in the `cid`, which is the
-        index of the column relative to the original data set.
-
-        Parameters:
-
-            event (Event):
-                An application click event.
-
-            cid (int):
-                A unique column identifier; typically the index of the
-                column relative to the original dataset.
-        """
-        if event is not None:
-            eo = self._get_event_objects(event)
-            column = eo.column
-        elif cid is not None:
-            column = self.cidmap.get(cid)
-        else:
-            return
-
-        displaycols = [x.cid for x in self.tablecolumns_visible]
-        old_index = column.displayindex
-        if old_index == len(displaycols) - 1:
-            return
-
-        new_index = len(displaycols) - 1
-        displaycols.insert(new_index, displaycols.pop(old_index))
-        self.view.configure(displaycolumns=displaycols)
-
-    # OTHER FORMATTING
-
-    def apply_table_stripes(self, stripecolor):
-        """Add stripes to even-numbered table rows as indicated by the
-        `stripecolor` of (background, foreground). Either element may be
-        specified as `None`, but both elements must be present.
-
-        Parameters:
-
-            stripecolor (tuple[str, str]):
-                A tuple of colors to apply to the table stripe. The
-                tuple represents (background, foreground).
-        """
-        style: ttk.Style = ttk.use_style()
-        colors = style.colors
-        if len(stripecolor) == 2:
-            self._stripecolor = stripecolor
-            bg, fg = stripecolor
-            kw = {}
-            if bg is None:
-                kw["background"] = colors.active
-            else:
-                kw["background"] = bg
-            if fg is None:
-                kw["foreground"] = colors.inputfg
-            else:
-                kw["foreground"] = fg
-            self.view.tag_configure("striped", **kw)
-
-    def autofit_columns(self):
-        """Autofit all columns in the current view"""
-        f = font.nametofont("TkDefaultFont")
-        pad = utility.scale_size(self, 20)
-        col_widths = []
-
-        # measure header sizes
-        for col in self.tablecolumns:
-            width = f.measure(f"{col._headertext} {DOWNARROW}") + pad
-            col_widths.append(width)
-
-        for row in self.tablerows_visible:
-            values = row.values
-            for i, value in enumerate(values):
-                old_width = col_widths[i]
-                new_width = f.measure(str(value)) + pad
-                width = max(old_width, new_width)
-                col_widths[i] = width
-
-        for i, width in enumerate(col_widths):
-            self.view.column(i, width=width)
-
-    # COLUMN AND HEADER ALIGNMENT
-
-    def autoalign_columns(self):
-        """Align the columns and headers based on the data type of the
-        values. Text is left-aligned; numbers are right-aligned. This
-        method will have no effect if there is no data in the tables."""
-        if len(self._tablerows) == 0:
-            return
-
-        values = self._tablerows[0]._values
-        for i, value in enumerate(values):
-            if str(value).isnumeric():
-                self.view.column(i, anchor=E)
-                self.view.heading(i, anchor=E)
-            else:
-                self.view.column(i, anchor=W)
-                self.view.heading(i, anchor=W)
-
-    def align_column_left(self, event=None, cid=None):
-        """Left align the column text. This can be triggered by
-        either an event, or by passing in the `cid`, which is the index
-        of the column relative to the original data set.
-
-        Parameters:
-
-            event (Event):
-                An application click event.
-
-            cid (int):
-                A unique column identifier; typically the index of the
-                column relative to the original dataset.
-        """
-        if event is not None:
-            eo = self._get_event_objects(event)
-            self.view.column(eo.column.cid, anchor=W)
-        elif cid is not None:
-            self.view.column(cid, anchor=W)
-
-    def align_column_right(self, event=None, cid=None):
-        """Right align the column text. This can be triggered by
-        either an event, or by passing in the `cid`, which is the index
-        of the column relative to the original data set.
-
-        Parameters:
-
-            event (Event):
-                An application event.
-
-            cid (int):
-                A unique column identifier; typically the index of the
-                column relative to the original dataset.
-        """
-        if event is not None:
-            eo = self._get_event_objects(event)
-            self.view.column(eo.column.cid, anchor=E)
-        elif cid is not None:
-            self.view.column(cid, anchor=E)
-
-    def align_column_center(self, event=None, cid=None):
-        """Center align the column text. This can be triggered by
-        either an event, or by passing in the `cid`, which is the index
-        of the column relative to the original data set.
-
-        Parameters:
-
-            event (Event):
-                An application event.
-
-            cid (int):
-                A unique column identifier; typically the index of the
-                column relative to the original dataset.
-        """
-        if event is not None:
-            eo = self._get_event_objects(event)
-            self.view.column(eo.column.cid, anchor=CENTER)
-        elif cid is not None:
-            self.view.column(cid, anchor=CENTER)
-
-    def align_heading_left(self, event=None, cid=None):
-        """Left align the heading text. This can be triggered by
-        either an event, or by passing in the `cid`, which is the index
-        of the heading relative to the original data set.
-
-        Parameters:
-
-            event (Event):
-                An application event.
-
-            cid (int):
-                A unique heading identifier; typically the index of the
-                heading relative to the original dataset.
-        """
-        if event is not None:
-            eo = self._get_event_objects(event)
-            self.view.heading(eo.column.cid, anchor=W)
-        elif cid is not None:
-            self.view.heading(cid, anchor=W)
-
-    def align_heading_right(self, event=None, cid=None):
-        """Right align the heading text. This can be triggered by
-        either an event, or by passing in the `cid`, which is the index
-        of the heading relative to the original data set.
-
-        Parameters:
-
-            event (Event):
-                An application event.
-
-            cid (int):
-                A unique heading identifier; typically the index of the
-                heading relative to the original dataset.
-        """
-        if event is not None:
-            eo = self._get_event_objects(event)
-            self.view.heading(eo.column.cid, anchor=E)
-        elif cid is not None:
-            self.view.heading(cid, anchor=E)
-
-    def align_heading_center(self, event=None, cid=None):
-        """Center align the heading text. This can be triggered by
-        either an event, or by passing in the `cid`, which is the index
-        of the heading relative to the original data set.
-
-        Parameters:
-
-            event (Event):
-                An application event.
-
-            cid (int):
-                A unique heading identifier; typically the index of the
-                heading relative to the original dataset.
-        """
-        if event is not None:
-            eo = self._get_event_objects(event)
-            self.view.heading(eo.column.cid, anchor=CENTER)
-        elif cid is not None:
-            self.view.heading(cid, anchor=CENTER)
-
-    # PRIVATE METHODS
-
-    def _get_event_objects(self, event):
-        iid = self.view.identify_row(event.y)
-        col = self.view.identify_column(event.x)
-        cid = int(self.view.column(col, "id"))
-        column: TableColumn = self.cidmap.get(cid)
-        row: TableRow = self.iidmap.get(iid)
-        data = TableEvent(column, row)
-        return data
-
-    def _search_table_data(self, _):
-        """Internal callback for the search entry widget. Calls the public
-        search_table_data method with the current searchcriteria value."""
-        criteria = self._searchcriteria.get()
-        if not criteria:
-            self.reset_row_filters()
-        else:
-            self.search_table_data(criteria)
-
-    def _on_selection_changed(self, event):
-        """Internal callback for selection change events. Calls the user-provided
-        on_select callback with the list of selected TableRow objects."""
-        if self._on_select is not None:
-            selected_rows = self.get_rows(selected=True)
-            self._on_select(selected_rows)
-
-    # PRIVATE METHODS - SORTING
-
-    def _column_sort_header_reset(self):
-        """Remove the sort character from the column headers"""
-        for col in self.tablecolumns:
-            self.view.heading(col.cid, text=col.headertext)
-
-    def _column_sort_header_update(self, cid):
-        """Add sort character to the sorted column"""
-        column: TableColumn = self.cidmap.get(int(cid))
-        arrow = UPARROW if column.columnsort == ASCENDING else DOWNARROW
-        headertext = f"{column.headertext} {arrow}"
-        self.view.heading(column.cid, text=headertext)
-
-    def _resolve_iid_field_index(self):
-        """Resolve the iid_field to a column index. This method should be called
-        after columns are built."""
-        if self._iid_field is None:
-            self._iid_field_index = None
-            return
-
-        # If it's an integer, use it directly as the index
-        if isinstance(self._iid_field, int):
-            if 0 <= self._iid_field < len(self.tablecolumns):
-                self._iid_field_index = self._iid_field
-            else:
-                raise ValueError(f"iid_field index {self._iid_field} is out of range")
-        # If it's a string, find the column by headertext
-        elif isinstance(self._iid_field, str):
-            for col in self.tablecolumns:
-                if col.headertext == self._iid_field:
-                    self._iid_field_index = col.tableindex
-                    return
-            raise ValueError(f"iid_field column '{self._iid_field}' not found")
-        else:
-            raise TypeError(f"iid_field must be int, str, or None, not {type(self._iid_field)}")
-
-    # PRIVATE METHODS - WIDGET BUILDERS
-
-    def _build_tableview_widget(self, coldata, rowdata, bootstyle):
-        """Build the data table"""
-        if self._searchable:
-            self._build_search_frame()
-
-        table_frame = ttk.Frame(self)
-        table_frame.pack(fill=BOTH, expand=YES, side=TOP)
-
-        self.view = ttk.Treeview(
-            master=table_frame,
-            columns=[x for x in range(len(coldata))],
-            height=self._height,
-            selectmode=EXTENDED,
-            show=HEADINGS,
-            bootstyle=f"{bootstyle}-table",
-        )
-        self.view.pack(fill=BOTH, expand=YES, side=LEFT)
-
-        if self._yscrollbar:
-            self.ybar = ttk.Scrollbar(
-                master=table_frame, command=self.view.yview, orient=VERTICAL
-            )
-            self.ybar.pack(fill=Y, side=RIGHT)
-            self.view.configure(yscrollcommand=self.ybar.set)
-
-        self.hbar = ttk.Scrollbar(
-            master=self, command=self.view.xview, orient=HORIZONTAL
-        )
-        self.hbar.pack(fill=X)
-        self.view.configure(xscrollcommand=self.hbar.set)
-
-        if self._paginated:
-            self._build_pagination_frame()
-
-        self.build_table_data(coldata, rowdata)
-
-        if not self.disable_right_click:
-            self._rightclickmenu_cell = TableCellRightClickMenu(self)
-            self._rightclickmenu_head = TableHeaderRightClickMenu(self)
-
-        self._set_widget_binding()
-
-    def _build_search_frame(self):
-        """Build the search frame containing the search widgets. This
-        frame is only created if `searchable=True` when creating the
-        widget.
-        """
-        frame = ttk.Frame(self, padding=5)
-        frame.pack(fill=X, side=TOP)
-        ttk.Label(frame, text=MessageCatalog.translate("Search")).pack(side=LEFT, padx=5)
-        searchterm = ttk.Entry(frame, textvariable=self._searchcriteria)
-        searchterm.pack(fill=X, side=LEFT, expand=YES)
-        searchterm.bind("<Return>", self._search_table_data)
-        searchterm.bind("<KP_Enter>", self._search_table_data)
-        if not self._paginated:
-            ttk.Button(
-                frame,
-                text=MessageCatalog.translate("⎌"),
-                command=self.reset_table,
-                style="symbol.Link.TButton",
-            ).pack(side=LEFT)
-
-    def _build_pagination_frame(self):
-        """Build the frame containing the pagination widgets. This
-        frame is only built if `pagination=True` when creating the
-        widget.
-        """
-        pageframe = ttk.Frame(self)
-        pageframe.pack(fill=X, anchor=N)
-
-        ttk.Button(
-            pageframe,
-            text=MessageCatalog.translate("⎌"),
-            command=self.reset_table,
-            style="symbol.Link.TButton",
-        ).pack(side=RIGHT)
-
-        ttk.Separator(pageframe, orient=VERTICAL).pack(side=RIGHT, padx=10)
-
-        ttk.Button(
-            master=pageframe,
-            text="»",
-            command=self.goto_last_page,
-            style="symbol.Link.TButton",
-        ).pack(side=RIGHT, fill=Y)
-        ttk.Button(
-            master=pageframe,
-            text="›",
-            command=self.goto_next_page,
-            style="symbol.Link.TButton",
-        ).pack(side=RIGHT, fill=Y)
-
-        ttk.Button(
-            master=pageframe,
-            text="‹",
-            command=self.goto_prev_page,
-            style="symbol.Link.TButton",
-        ).pack(side=RIGHT, fill=Y)
-        ttk.Button(
-            master=pageframe,
-            text="«",
-            command=self.goto_first_page,
-            style="symbol.Link.TButton",
-        ).pack(side=RIGHT, fill=Y)
-
-        ttk.Separator(pageframe, orient=VERTICAL).pack(side=RIGHT, padx=10)
-
-        lbl = ttk.Label(pageframe, textvariable=self._pagelimit)
-        lbl.pack(side=RIGHT, padx=(0, 5))
-        ttk.Label(pageframe, text=MessageCatalog.translate("of")).pack(side=RIGHT, padx=(5, 0))
-
-        index = ttk.Entry(pageframe, textvariable=self._pageindex, width=4)
-        index.pack(side=RIGHT)
-        index.bind("<Return>", self.goto_page, "+")
-        index.bind("<KP_Enter>", self.goto_page, "+")
-
-        ttk.Label(pageframe, text=MessageCatalog.translate("Page")).pack(side=RIGHT, padx=5)
-
-    def _build_table_rows(self, rowdata):
-        """Build, load, and configure the DataTableRow objects
-
-        Parameters:
-
-            rowdata (List):
-                An iterable of row data
-        """
-        for row in rowdata:
-            self.insert_row(END, row)
-
-    def _build_table_columns(self, coldata):
-        """Build, load, and configure the DataTableColumn objects
-
-        Parameters:
-
-            coldata (list[str|dict[str, Any]]):
-                An iterable of column names or a dictionary of column
-                configuration settings.
-        """
-        for cid, col in enumerate(coldata):
+        for idx, col in enumerate(self._column_defs):
             if isinstance(col, str):
-                self.tablecolumns.append(
-                    TableColumn(
-                        tableview=self,
-                        cid=cid,
-                        text=col,
-                    )
-                )
+                self._column_keys.append(col)
+            elif isinstance(col, dict):
+                self._column_keys.append(col.get("key") or col.get("text") or str(idx))
             else:
-                if "text" not in col:
-                    col["text"] = f"Column {cid}"
-                self.tablecolumns.append(
-                    TableColumn(tableview=self, cid=cid, **col)
-                )
+                self._column_keys.append(str(col))
 
-    # PRIVATE METHODS - WIDGET BINDING
+    def _ensure_column_metadata(self, sample_records: list[dict] | None) -> None:
+        """Guarantee we have column keys/defs before the Treeview is built."""
+        if self._column_keys:
+            return
 
-    def _set_widget_binding(self):
-        """Setup the widget binding"""
-        self.view.bind("<Double-Button-1>", self._header_double_leftclick)
-        self.view.bind("<Button-1>", self._header_leftclick)
+        inferred: list[str] = []
+        if sample_records:
+            first = sample_records[0]
+            if isinstance(first, dict):
+                inferred = list(first.keys())
+        if not inferred:
+            inferred = getattr(self._datasource, "_columns", []) or []
 
-        if not self.disable_right_click:
-            if self.tk.call("tk", "windowingsystem") == "aqua":
-                sequence = "<Button-2>"
+        inferred = [c for c in inferred if c not in ("id", "selected")]
+        if not inferred:
+            inferred = ["value"]
+
+        self._column_keys = inferred
+        if not self._column_defs:
+            self._column_defs = [{"text": c} for c in self._column_keys]
+
+    def _build_toolbar(self) -> None:
+        bar = Frame(self, name="toolbar")
+        bar.pack(fill="x", pady=(0, 4))
+
+        if self._searchbar['enabled']:
+            self._search_entry = TextEntry(bar)
+            self._search_entry.insert_addon(Label, 'before', icon="search", icon_only=True)
+            self._search_entry.insert_addon(Button, 'after', icon="x-lg", icon_only=True, command=self._clear_search)
+            self._search_entry.pack(side="left", fill="x", expand=True, padx=(0, 6))
+            trigger = str(self._searchbar.get('event', 'enter')).lower()
+            if trigger == 'input':
+                self._search_entry.on_input(lambda _e: self._run_search())
             else:
-                sequence = "<Button-3>"
-            self.view.bind(sequence, self._table_rightclick)
+                self._search_entry.on_enter(lambda _e: self._run_search())
+                # Clear filter when the box is emptied, but do not search on every keystroke
+                self._search_entry.on_input(lambda _e: self._clear_search() if not self._search_entry.get() else None)
 
-        # bind selection change event if callback provided
-        if self._on_select is not None:
-            self.view.bind("<<TreeviewSelect>>", self._on_selection_changed)
+            if self._searchbar['mode'] == 'advanced':
+                self._search_mode = SelectBox(
+                    bar,
+                    items=["EQUALS", "CONTAINS", "STARTS WITH", "ENDS WITH", "SQL"],
+                    value="EQUALS",
+                    width=14,
+                    allow_custom_values=False,
+                    search_enabled=False,
+                )
+                self._search_mode.pack(side="left", padx=(0, 6))
 
-        # add trace to track pagesize changes
-        self._pagesize.trace_add("write", self._trace_pagesize)
+        if self._show_column_chooser:
+            self._column_chooser_btn = Button(
+                bar,
+                icon="layout-three-columns",
+                icon_only=True,
+                bootstyle="ghost",
+                command=self._show_column_chooser_dialog,
+            )
+            self._column_chooser_btn.pack(side="right", padx=(4, 0))
 
-    # def _select_pagesize(self, event):
-    #     cbo: ttk.Combobox = self.nametowidget(event.widget)
-    #     cbo.select_clear()
-    #     self.goto_first_page()
+        if self._exporting['enabled']:
+            export_items = []
+            if self._exporting['export_all_mode'] == 'all':
+                export_items.append({"type": "command", "text": "Export all", "command": self._export_all})
+            if self._exporting["allow_export_selected"]:
+                export_items.append({"type": "command", "text": "Export selection", "command": self._export_selection})
+            if self._exporting['export_all_mode'] == "page":
+                export_items.append({"type": "command", "text": "Export page", "command": self._export_page})
+            if not export_items:
+                export_items.append({"type": "command", "text": "Export all", "command": self._export_all})
+            DropdownButton(
+                bar,
+                icon="download",
+                icon_only=True,
+                bootstyle="ghost",
+                compound="image",
+                items=export_items,
+                show_dropdown_button=False,
+            ).pack(side="right")
 
-    def _trace_pagesize(self, *_):
-        """Callback for changes to page size"""
-        self.goto_first_page()
+        if self._editing['adding']:
+            Button(
+                bar,
+                icon="plus-lg",
+                text="Add Record",
+                bootstyle="ghost",
+                command=self._open_new_record,
+            ).pack(side="right", padx=(0, 4))
 
-    def _header_double_leftclick(self, event):
-        """Callback for double-click events on the tableview header"""
-        region = self.view.identify_region(event.x, event.y)
-        if region == "separator":
-            self.autofit_columns()
+    def _build_tree(self) -> None:
+        frame = Frame(self)
+        frame.pack(fill="both", expand=True)
 
-    def _header_leftclick(self, event):
-        """Callback for left-click events"""
-        region = self.view.identify_region(event.x, event.y)
-        if region == "heading":
-            self.sort_column_data(event)
+        cols = [self._col_text(c) for c in self._column_defs] or self._column_keys
+        tree_container = Frame(frame)
+        tree_container.pack(side="left", fill="both", expand=True)
+        # Prevent the tree from expanding the container beyond the available viewport
+        tree_container.pack_propagate(False)
 
-    def _table_rightclick(self, event):
-        """Callback for right-click events"""
-        region = self.view.identify_region(event.x, event.y)
-        if region == "heading":
-            self._rightclickmenu_head.tk_popup(event)
-        elif region != "separator":
-            self._rightclickmenu_cell.tk_popup(event)
+        self._tree = Treeview(
+            tree_container,
+            columns=list(range(len(cols))),
+            selectmode=_parse_selection_mode(self._selection['mode']),
+            show="headings"
+        )
+        self._tree.pack(side="top", fill="both", expand=True, padx=3)
+        self._display_columns = list(range(len(cols)))
 
+        if self._paging['yscroll']:
+            self._vsb = Scrollbar(frame, orient="vertical", command=self._tree.yview)
+            self._vsb.pack(side="right", fill="y")
+            if self._paging['mode'] == "virtual":
+                self._tree.configure(yscrollcommand=self._on_scroll)
+            else:
+                self._tree.configure(yscrollcommand=self._vsb.set)
+        else:
+            self._vsb = None
 
-class TableCellRightClickMenu(tk.Menu):
-    """A right-click menu object for the tableview cells - INTERNAL"""
+        if self._paging['xscroll']:
+            self._hsb = Scrollbar(tree_container, orient="horizontal", command=self._tree.xview)
+            self._hsb.pack(side="bottom", fill="x")
+            self._tree.configure(xscrollcommand=self._hsb.set)
+        else:
+            self._hsb = None
 
-    def __init__(self, master: Tableview):
-        """
-        Parameters:
+        self._heading_texts = []
+        self._column_anchors = []
+        stretch_columns = not self._paging['xscroll']  # allow natural width when xscroll is enabled
+        for idx, text in enumerate(cols):
+            self._heading_texts.append(text)
+            anchor = self._determine_anchor(idx)
+            self._column_anchors.append(anchor)
+            heading_kwargs = {"text": text, "anchor": anchor}
+            # Don't use heading command - we'll handle clicks via Button-1 binding
+            self._tree.heading(idx, **heading_kwargs)
+            # Apply per-column width overrides, fall back to global defaults
+            width = 120
+            minwidth = self._column_min_width
+            if idx < len(self._column_defs):
+                coldef = self._column_defs[idx]
+                if isinstance(coldef, dict):
+                    width = coldef.get("width", width)
+                    minwidth = coldef.get("minwidth", coldef.get("min_width", minwidth))
+            self._tree.column(idx, anchor=anchor, width=width, minwidth=minwidth, stretch=stretch_columns)
+        self._update_heading_icons()
+        self._tree.bind("<Button-1>", self._on_header_click)
+        self._tree.bind("<<TreeviewSelect>>", self._on_selection_event)
+        self._tree.bind("<ButtonRelease-1>", self._on_row_click_event)
+        if self._context_menus != "none":
+            self._tree.bind("<Button-3>", self._on_tree_context)
+        if self._editing['updating']:
+            self._tree.bind("<Double-1>", self._on_row_double_click)
+        # Track resize events to rebalance grouped layouts
+        self._tree.bind("<Configure>", self._on_tree_configure)
 
-            master (Tableview):
-                The parent object
-        """
-        super().__init__(master, tearoff=False)
-        self.master: Tableview = master
-        self.view: ttk.Treeview = master.view
-        self.cid = None
-        self.iid = None
+    def _build_footer(self) -> None:
+        bar = Frame(self)
+        bar.pack(fill="x", pady=(4, 0))
+        status_frame = Frame(bar)
+        status_frame.pack(side="left", fill="x", expand=True)
+        self._filter_label = Label(status_frame, text="", anchor="w", bootstyle="secondary")
+        self._filter_label.pack(side="left", padx=(0, 4))
+        self._sort_label = Label(status_frame, text="", anchor="w", bootstyle="secondary")
+        self._sort_label.pack(side="left", padx=(8, 4))
 
-        config = {
-            "sortascending": {
-                "label": f'''⬆  {MessageCatalog.translate("Sort Ascending")}''',
-                "command": self.sort_column_ascending,
-            },
-            "sortdescending": {
-                "label": f'''⬇  {MessageCatalog.translate("Sort Descending")}''',
-                "command": self.sort_column_descending,
-            },
-            "clearfilter": {
-                "label": f'''{MessageCatalog.translate("⎌")} {MessageCatalog.translate("Clear filters")}''',
-                "command": self.master.reset_row_filters,
-            },
-            "filterbyvalue": {
-                "label": f'''{MessageCatalog.translate("Filter by cell's value")}''',
-                "command": self.filter_to_cell_value,
-            },
-            "hiderows": {
-                "label": f'''{MessageCatalog.translate("Hide select rows")}''',
-                "command": self.hide_selected_rows,
-            },
-            "showrows": {
-                "label": f'''{MessageCatalog.translate("Show only select rows")}''',
-                "command": self.filter_to_selected_rows,
-            },
-            "exportall": {
-                "label": f'''{MessageCatalog.translate("Export all records")}''',
-                "command": self.export_all_records,
-            },
-            "exportpage": {
-                "label": f'''{MessageCatalog.translate("Export current page")}''',
-                "command": self.export_current_page,
-            },
-            "exportselection": {
-                "label": f'''{MessageCatalog.translate("Export current selection")}''',
-                "command": self.export_current_selection,
-            },
-            "exportfiltered": {
-                "label": f'''{MessageCatalog.translate("Export records in filter")}''',
-                "command": self.export_records_in_filter,
-            },
-            "moveup": {
-                "label": f'''↑ {MessageCatalog.translate("Move up")}''',
-                "command": self.move_row_up
-            },
-            "movedown": {
-                "label": f'''↓ {MessageCatalog.translate("Move down")}''',
-                "command": self.move_row_down,
-            },
-            "movetotop": {
-                "label": f'''⤒ {MessageCatalog.translate("Move to top")}''',
-                "command": self.move_row_to_top,
-            },
-            "movetobottom": {
-                "label": f'''⤓ {MessageCatalog.translate("Move to bottom")}''',
-                "command": self.move_row_to_bottom,
-            },
-            "alignleft": {
-                "label": f'''◧  {MessageCatalog.translate("Align left")}''',
-                "command": self.align_column_left,
-            },
-            "aligncenter": {
-                "label": f'''◫  {MessageCatalog.translate("Align center")}''',
-                "command": self.align_column_center,
-            },
-            "alignright": {
-                "label": f'''◨  {MessageCatalog.translate("Align right")}''',
-                "command": self.align_column_right,
-            },
-            "deleterows": {
-                "label": f'''🞨  {MessageCatalog.translate("Delete selected rows")}''',
-                "command": self.delete_selected_rows,
-            },
-        }
-        sort_menu = tk.Menu(self, tearoff=False)
-        sort_menu.add_command(cnf=config["sortascending"])
-        sort_menu.add_command(cnf=config["sortdescending"])
-        self.add_cascade(menu=sort_menu, label=f'''⇅  {MessageCatalog.translate("Sort")}''')
+        if not self._show_table_status:
+            status_frame.pack_forget()
+        Frame(bar).pack(side='left', fill='x', expand=True)  # spacer
+        info_frame = Frame(bar)
+        info_frame.pack(side='left')
+        Label(info_frame, text='Page').pack(side='left')
+        self._page_entry = Entry(info_frame, width=6, justify="center")
+        self._page_entry.bind("<Return>", self._jump_page)
+        self._page_entry.pack(side="left", padx=8)
+        self._page_label = Label(info_frame, text="")
+        self._page_label.pack(side="left", padx=(0, 8))
 
-        filter_menu = tk.Menu(self, tearoff=False)
-        filter_menu.add_command(cnf=config["clearfilter"])
-        filter_menu.add_separator()
-        filter_menu.add_command(cnf=config["filterbyvalue"])
-        filter_menu.add_command(cnf=config["hiderows"])
-        filter_menu.add_command(cnf=config["showrows"])
-        self.add_cascade(menu=filter_menu, label=f'''⧨  {MessageCatalog.translate("Filter")}''')
+        sep = Separator(bar, orient="vertical")
+        sep.pack(side="left", fill="y", padx=8)
 
-        export_menu = tk.Menu(self, tearoff=False)
-        export_menu.add_command(cnf=config["exportall"])
-        export_menu.add_command(cnf=config["exportpage"])
-        export_menu.add_command(cnf=config["exportselection"])
-        export_menu.add_command(cnf=config["exportfiltered"])
-        self.add_cascade(menu=export_menu, label=f'''↔  {MessageCatalog.translate("Export")}''')
+        btn_frame = Frame(bar)
+        btn_frame.pack(side="right")
+        Button(btn_frame, icon="chevron-double-left", bootstyle="ghost", icon_only=True, command=self._first_page).pack(
+            side="left")
+        Button(btn_frame, icon="chevron-left", icon_only=True, bootstyle="ghost", command=self._prev_page).pack(
+            side="left")
+        Button(btn_frame, icon="chevron-right", icon_only=True, bootstyle="ghost", command=self._next_page).pack(
+            side="left")
+        Button(btn_frame, icon="chevron-double-right", icon_only=True, bootstyle="ghost", command=self._last_page).pack(
+            side="left")
 
-        move_menu = tk.Menu(self, tearoff=False)
-        move_menu.add_command(cnf=config["moveup"])
-        move_menu.add_command(cnf=config["movedown"])
-        move_menu.add_command(cnf=config["movetotop"])
-        move_menu.add_command(cnf=config["movetobottom"])
-        self.add_cascade(menu=move_menu, label=f'''⇵  {MessageCatalog.translate("Move")}''')
+    # ------------------------------------------------------------------ Helpers
+    def _col_text(self, col) -> str:
+        if isinstance(col, str):
+            return col
+        if isinstance(col, dict):
+            return col.get("text") or col.get("key") or ""
+        return str(col)
 
-        align_menu = tk.Menu(self, tearoff=False)
-        align_menu.add_command(cnf=config["alignleft"])
-        align_menu.add_command(cnf=config["aligncenter"])
-        align_menu.add_command(cnf=config["alignright"])
-        self.add_cascade(menu=align_menu, label=f'''↦  {MessageCatalog.translate("Align")}''')
-        self.add_command(cnf=config["deleterows"])
+    def _header_context_enabled(self) -> bool:
+        return self._context_menus in ("all", "headers")
 
-    def tk_popup(self, event):
-        """Display the menu below the selected cell.
+    def _row_context_enabled(self) -> bool:
+        return self._context_menus in ("all", "rows")
 
-        Parameters:
-
-            event (Event):
-                The click event that triggers menu.
-        """
-        # capture the column and item that invoked the menu
-        self.event = event
-        iid = self.view.identify_row(event.y)
-        col = self.view.identify_column(event.x)
-
-        # show the menu below the invoking cell
-        rootx = self.view.winfo_rootx()
-        rooty = self.view.winfo_rooty()
+    def _quote_col(self, key: str) -> str:
+        """Quote column identifiers for safe SQL usage (handles reserved names)."""
         try:
-            bbox = self.view.bbox(iid, col)
-        except:
+            quote_fn = getattr(self._datasource, "_quote_identifier", None)
+            if callable(quote_fn):
+                return quote_fn(key)
+        except Exception:
+            pass
+        text = str(key).replace('"', '""')
+        return f'"{text}"'
+
+    def _determine_anchor(self, idx: int) -> str:
+        """Pick an anchor for the given column index.
+
+        Priority:
+            1) Explicit anchor/align in column definition
+            2) Explicit dtype/type hint in column definition (numeric -> right)
+            3) Numeric columns -> right
+            4) Default -> left
+        """
+        if idx < len(self._column_defs):
+            coldef = self._column_defs[idx]
+            if isinstance(coldef, dict):
+                anchor = coldef.get("anchor") or coldef.get("align")
+                if anchor:
+                    return anchor
+                # Allow a dtype/type hint on the column definition
+                dtype = coldef.get("dtype") or coldef.get("type")
+                if dtype:
+                    dtype_upper = str(dtype).upper()
+                    if any(t in dtype_upper for t in ("INT", "REAL", "NUM", "DECIMAL", "DOUBLE", "FLOAT")):
+                        return "e"
+                    if "TEXT" in dtype_upper or "STR" in dtype_upper or "CHAR" in dtype_upper:
+                        return "w"
+        # Infer from type
+        key = self._column_keys[idx] if idx < len(self._column_keys) else None
+        ctype = self._get_column_type(key) if key else ""
+        if ctype and any(t in ctype.upper() for t in ("INT", "REAL", "NUM", "DECIMAL", "DOUBLE", "FLOAT")):
+            return "e"
+        # Fallback: sample values to detect numeric strings
+        if self._is_numeric_sample(idx):
+            return "e"
+        return "w"
+
+    def _get_column_type(self, key: str | None) -> str:
+        if not key:
+            return ""
+        if key in self._column_types:
+            return self._column_types[key]
+        # Try PRAGMA table_info
+        try:
+            cur = self._datasource.conn.execute(f"PRAGMA table_info({self._datasource._table})")
+            for cid, name, ctype, *_rest in cur.fetchall():
+                if name == key:
+                    self._column_types[key] = ctype or ""
+                    return self._column_types[key]
+        except Exception:
+            pass
+        return ""
+
+    def _load_alignment_sample(self) -> list[dict]:
+        if self._alignment_sample is not None:
+            return self._alignment_sample
+        try:
+            sample = self._datasource.get_page(0)
+        except Exception:
+            sample = []
+        self._alignment_sample = sample or []
+        return self._alignment_sample
+
+    def _is_numeric_sample(self, idx: int) -> bool:
+        """Check sample values to decide if a column with text storage is numeric-like."""
+        key = self._column_keys[idx] if idx < len(self._column_keys) else None
+        if not key:
+            return False
+        sample = self._load_alignment_sample()
+        if not sample:
+            return False
+
+        def is_num(val) -> bool:
+            if val is None or val == "":
+                return True
+            try:
+                float(val)
+                return True
+            except Exception:
+                return False
+
+        seen = 0
+        for rec in sample[: min(20, len(sample))]:
+            if key not in rec:
+                continue
+            seen += 1
+            if not is_num(rec.get(key)):
+                return False
+        return seen > 0
+
+    def _to_records(self, rows: list) -> list[dict]:
+        records: list[dict] = []
+        if not rows:
+            return records
+        keys = self._column_keys or [str(i) for i in range(len(rows[0]))]
+        for rec in rows:
+            if isinstance(rec, dict):
+                records.append(rec)
+            else:
+                records.append({k: rec[i] if i < len(rec) else "" for i, k in enumerate(keys)})
+        return records
+
+    def _refresh_tree(self, records: list[dict]) -> None:
+        self._tree.delete(*self._tree.get_children())
+        self._row_map.clear()
+        if not self._column_keys and records:
+            self._column_keys = list(records[0].keys())
+        grouped = bool(self._group_by_key) and self._group_by_key in self._column_keys
+        self._apply_group_show_state(grouped)
+        if grouped:
+            self._render_grouped(records)
+        else:
+            self._render_flat(records)
+        self._apply_row_alternation()
+
+    def _append_tree(self, records: list[dict]) -> None:
+        # Grouped mode rebuilds the view instead of appending to keep hierarchy consistent
+        if self._group_by_key:
+            self._refresh_tree(records)
+            return
+        stripe = self._row_alternation.get('enabled', False) and not self._group_by_key
+        start_idx = len(self._tree.get_children(""))
+        for offset, rec in enumerate(records):
+            values = [rec.get(k, "") for k in self._column_keys]
+            tags = ("altrow",) if stripe and (start_idx + offset) % 2 == 1 else ()
+            iid = self._tree.insert("", "end", values=values, tags=tags)
+            self._row_map[iid] = rec
+        self._apply_row_alternation()
+
+    def _total_pages(self) -> int:
+        try:
+            # Use cached count to avoid expensive COUNT(*) queries on every navigation
+            if self._cached_total_count is None:
+                self._cached_total_count = self._datasource.total_count()
+            total = self._cached_total_count
+            size = getattr(self._datasource, "page_size", self._paging['page_size']) or 1
+            return max(1, (total + size - 1) // size)
+        except Exception:
+            return 1
+
+    # ------------------------------------------------------------------ Paging
+    def _load_page(self, page: int, append: bool = False) -> None:
+        if not append and page in self._page_cache:
+            records = self._page_cache[page]
+        else:
+            try:
+                records = self._datasource.get_page(page)
+            except Exception:
+                records = []
+            if not append:
+                self._remember_page(page, records)
+        self._current_page = max(0, page)
+        try:
+            if append:
+                self._append_tree(records)
+            else:
+                self._refresh_tree(records)
+            if self._column_auto_width:
+                self._auto_size_columns(records if not append else None)
+            self._update_page_label()
+        finally:
+            self._loading_next = False
+
+    def _update_page_label(self) -> None:
+        if hasattr(self, "_page_entry"):
+            self._page_entry.delete(0, 'end')
+            self._page_entry.insert(0, str(self._current_page + 1))
+        if hasattr(self, "_page_label"):
+            self._page_label.configure(text=f"of {self._total_pages()}")
+        if self._show_table_status:
+            self._update_status_labels()
+
+    def _first_page(self) -> None:
+        self._load_page(0)
+
+    def _prev_page(self) -> None:
+        self._load_page(max(0, self._current_page - 1))
+
+    def _next_page(self) -> None:
+        self._load_page(min(self._total_pages() - 1, self._current_page + 1))
+
+    def _last_page(self) -> None:
+        self._load_page(self._total_pages() - 1)
+
+    def _jump_page(self, _event=None) -> None:
+        try:
+            target = int(self._page_entry.get()) - 1
+        except Exception:
+            return
+        target = max(0, min(self._total_pages() - 1, target))
+        self._load_page(target)
+
+    def _on_scroll(self, first: float, last: float) -> None:
+        """Drive scrollbar and trigger lazy loading when near the bottom."""
+        # Grouped mode disables virtual scroll append to avoid breaking hierarchy
+        if self._group_by_key:
+            self._vsb.set(first, last)
             return
         try:
-            super().tk_popup(rootx + bbox[0], rooty + bbox[1] + bbox[3])
-        except IndexError:
+            first_f = float(first)
+            last_f = float(last)
+        except Exception:
+            self._vsb.set(first, last)
+            return
+
+        self._vsb.set(first_f, last_f)
+        if (
+                self._paging['mode'] == "virtual"
+                and last_f >= 0.85  # prefetch a bit earlier for smoother scrolling
+                and not self._loading_next
+                and hasattr(self._datasource, "has_next_page")
+                and self._datasource.has_next_page()
+        ):
+            # Load next page and keep appending rows
+            self._loading_next = True
+            self._load_page(self._current_page + 1, append=True)
+
+    # ------------------------------------------------------------------ Search & sort
+    def _run_search(self) -> None:
+        text = self._search_entry.get()
+        if hasattr(self, "_search_mode"):
+            mode = self._search_mode.get()
+        else:
+            mode = "CONTAINS"
+        colnames = self._column_keys
+        quoted_cols = [self._quote_col(c) for c in colnames]
+        where = ""
+        if text and quoted_cols:
+            crit = text.replace("'", "''")
+            mode_upper = mode.upper().replace(" ", "_")
+            if mode_upper == "CONTAINS":
+                where = " OR ".join([f"{c} LIKE '%{crit}%'" for c in quoted_cols])
+            elif mode_upper == "STARTS_WITH":
+                where = " OR ".join([f"{c} LIKE '{crit}%'" for c in quoted_cols])
+            elif mode_upper == "ENDS_WITH":
+                where = " OR ".join([f"{c} LIKE '%{crit}'" for c in quoted_cols])
+            elif mode_upper == "SQL":
+                where = text
+            else:  # equals
+                where = " OR ".join([f"{c} = '{crit}'" for c in quoted_cols])
+        try:
+            self._datasource.set_filter(where)
+        except Exception:
+            logger.exception("Failed to apply search filter: %s", where)
+        self._clear_cache()
+        self._load_page(0)
+        self._update_status_labels()
+
+    def _clear_search(self) -> None:
+        self._search_entry.delete(0, 'end')
+        try:
+            self._datasource.set_filter("")
+        except Exception:
+            pass
+        self._clear_cache()
+        self._load_page(0)
+        self._update_status_labels()
+
+    def _on_sort(self, column_index: int) -> None:
+        if column_index >= len(self._column_keys):
+            return
+        key = self._column_keys[column_index]
+        quoted_key = self._quote_col(key)
+        asc = not self._sort_state.get(key, True)
+        # Clear other sort states to keep single-column sort
+        self._sort_state = {key: asc}
+        order = "ASC" if asc else "DESC"
+        try:
+            self._datasource.set_sort(f"{quoted_key} {order}")
+        except Exception:
+            pass
+        self._clear_cache()
+        self._update_heading_icons()
+        self._load_page(0)
+        self._update_status_labels()
+
+    def _update_status_labels(self) -> None:
+        # Filter
+        filter_txt = ""
+        try:
+            where = getattr(self._datasource, "_where", "")
+            if where:
+                filter_txt = f"Filter: {where}"
+        except Exception:
+            pass
+        # Sort
+        sort_txt = ""
+        try:
+            order = getattr(self._datasource, "_order_by", "")
+            if order:
+                sort_txt = f"Sort: {order}"
+        except Exception:
+            pass
+        group_txt = ""
+        if self._group_by_key:
+            try:
+                col_idx = self._column_keys.index(self._group_by_key)
+                heading_text = self._heading_texts[col_idx] if col_idx < len(
+                    self._heading_texts) else self._group_by_key
+            except Exception:
+                heading_text = self._group_by_key
+            group_txt = f"Group: {heading_text}"
+
+        if hasattr(self, "_filter_label"):
+            self._filter_label.configure(text=filter_txt)
+        if hasattr(self, "_sort_label"):
+            joined = " | ".join([t for t in (sort_txt, group_txt) if t])
+            self._sort_label.configure(text=joined)
+
+    # ------------------------------------------------------------------ Row context menu
+    def _ensure_row_menu(self) -> None:
+        if not self._row_context_enabled():
+            return
+        if self._row_menu:
+            return
+        menu = ContextMenu(master=self, target=self._tree)
+        if not self._sorting == 'none':
+            menu.add_command(text="Sort Ascending", command=lambda: self._sort_selection(True))
+            menu.add_command(text="Sort Descending", command=lambda: self._sort_selection(False))
+
+        if self._filtering['row_menu_filtering']:
+            menu.add_separator()
+            menu.add_command(text="Filter by Value", command=self._filter_by_value)
+            menu.add_command(text="Hide Selection", command=self._hide_selection)
+            menu.add_command(text="Clear Filter", command=self._clear_filter_cmd)
+
+        menu.add_separator()
+        menu.add_command(text="Move Up", command=self._move_row_up)
+        menu.add_command(text="Move Down", command=self._move_row_down)
+        menu.add_command(text="Move to Top", command=self._move_row_top)
+        menu.add_command(text="Move to Bottom", command=self._move_row_bottom)
+
+        if self._editing['updating'] or self._editing['deleting']:
+            menu.add_separator()
+            if self._editing['updating']:
+                menu.add_command(text="Edit", icon="pencil", command=self._edit_selected_row)
+            if self._editing['deleting']:
+                menu.add_command(text="Delete", icon="trash", command=self._delete_selected_row)
+        self._row_menu = menu
+
+    def _on_row_context(self, event) -> None:
+        if not self._row_context_enabled():
+            return
+        iid = self._tree.identify_row(event.y)
+        col_id = self._tree.identify_column(event.x)
+        try:
+            col_idx = int(col_id.strip("#")) - 1
+        except Exception:
+            col_idx = 0
+        if iid:
+            if iid not in self._tree.selection():
+                self._tree.selection_set(iid)
+            rec = self._row_map.get(iid, {})
+            self.event_generate("<<RowRightClick>>", data={"record": rec, "iid": iid})
+        if not self._tree.selection():
+            return
+        self._row_menu_col = col_idx
+        self._ensure_row_menu()
+        self._row_menu.show(position=(event.x_root, event.y_root))
+
+    def _on_row_double_click(self, event) -> None:
+        region = self._tree.identify_region(event.x, event.y)
+        if region == "heading":
+            return
+        iid = self._tree.identify_row(event.y)
+        if not iid:
+            return
+        rec = self._row_map.get(iid, {})
+        self.event_generate("<<RowDoubleClick>>", data={"record": rec, "iid": iid})
+        if self._editing['updating']:
+            self._open_form_dialog(rec)
+
+    def _open_new_record(self) -> None:
+        if not self._editing['adding']:
+            return
+        self._open_form_dialog(None)
+
+    def _open_form_dialog(self, record: dict | None) -> None:
+        from ttkbootstrap.dialogs.formdialog import FormDialog
+
+        try:
+            # Ensure geometry info is current so centering uses real widget bounds
+            self.update_idletasks()
+        except Exception:
+            pass
+        dialog_master = self.winfo_toplevel() if hasattr(self, "winfo_toplevel") else self
+
+        form_items = self._build_form_items()
+        initial_data = dict(record) if record else {}
+
+        form_options = dict(self._editing['form'])
+        form_options.setdefault('col_count', 2)
+        form_options.setdefault('min_col_width', 260)
+        form_options.setdefault('scrollable', True)
+        form_options.setdefault('resizable', True)
+
+        # Build buttons: Cancel, Delete (only for existing records), Save
+        if record and "id" in record:
+            buttons: list[str | dict] = ['Cancel']
+            if self._editing['deleting']:
+                buttons.append({"text": "Delete", "role": "secondary", "result": "delete"})
+            buttons.append("Save")
+        else:
+            buttons = ["Cancel", "Save"]
+
+        dialog = FormDialog(
+            master=dialog_master,
+            title="Edit Record" if record else "New Record",
+            data=initial_data,
+            items=form_items,
+            col_count=form_options.get('col_count', 2),
+            min_col_width=form_options.get('min_col_width', 260),
+            scrollable=form_options.get('scrollable', True),
+            buttons=buttons,
+            resizable=(True, True) if form_options.get('resizable', True) else (False, False),
+        )
+
+        dialog.show_centered()
+        result = dialog.result
+
+        if result is None:
+            return
+
+        # Handle delete action
+        if result == "delete" and record and "id" in record:
+            try:
+                self._datasource.delete_record(record["id"])
+                self._clear_cache()
+                self._load_page(self._current_page)
+            except Exception:
+                logger.exception("Failed to delete record id=%s", record["id"])
+            return
+
+        data = result
+        new_id = None
+        if record and "id" in record:
+            rec_id = record["id"]
+            updates = dict(data)
+            updates.pop("id", None)
+            try:
+                logger.debug("Updating record id=%s with %s", rec_id, updates)
+                self._datasource.update_record(rec_id, updates)
+            except Exception:
+                logger.exception("Failed to update record id=%s", rec_id)
+                return
+        else:
+            try:
+                logger.debug("Creating record %s", data)
+                new_id = self._datasource.create_record(dict(data))
+                logger.debug("Created record id=%s (total=%s)", new_id, self._datasource.total_count())
+            except Exception:
+                logger.exception("Failed to create record from %s", data)
+                return
+        self._clear_cache()
+        target_page = self._current_page
+        if not record:
+            # After creating, compute last page using fresh count so the new row is visible
+            located_page = self._find_record_page(new_id) if new_id is not None else None
+            target_page = located_page if located_page is not None else max(0, self._total_pages() - 1)
+        self._load_page(target_page)
+        if new_id is not None:
+            self._focus_record(new_id)
+
+    def _build_form_items(self) -> list[dict]:
+        items: list[dict] = []
+        for idx, key in enumerate(self._column_keys):
+            coldef = self._column_defs[idx] if idx < len(self._column_defs) else key
+            label = self._col_text(coldef)
+            editor_opts = {}
+            editor = None
+            dtype = None
+            readonly = False
+            if isinstance(coldef, dict):
+                editor_opts = dict(coldef.get("editor_options", {}))
+                editor = coldef.get("editor")
+                dtype = coldef.get("dtype") or coldef.get("type")
+                readonly = bool(coldef.get("readonly", False))
+                if coldef.get("required"):
+                    editor_opts.setdefault("required", True)
+            # Show validation messages to avoid layout jump on first error
+            editor_opts.setdefault("show_message", True)
+            items.append(
+                {
+                    "key": key,
+                    "label": label,
+                    "dtype": dtype,
+                    "editor": editor,
+                    "editor_options": {**editor_opts},
+                    "readonly": readonly,
+                    "type": "field",
+                }
+            )
+        return items
+
+    def _filter_by_value(self) -> None:
+        selection = self._tree.selection()
+        if not selection:
+            return
+        iid = selection[0]
+        col_idx = max(0, min(self._row_menu_col or 0, len(self._column_keys) - 1))
+        key = self._column_keys[col_idx]
+        quoted_key = self._quote_col(key)
+        values = self._tree.item(iid, "values")
+        if col_idx >= len(values):
+            return
+        val = values[col_idx]
+        crit = str(val).replace("'", "''")
+        where = f"{quoted_key} = '{crit}'"
+        try:
+            self._datasource.set_filter(where)
+        except Exception:
+            return
+        self._clear_cache()
+        self._load_page(0)
+
+    def _sort_selection(self, ascending: bool) -> None:
+        selection = self._tree.selection()
+        if not selection:
+            return
+        iid = selection[0]
+        col_idx = max(0, min(self._row_menu_col or 0, len(self._column_keys) - 1))
+        key = self._column_keys[col_idx]
+        quoted_key = self._quote_col(key)
+        self._sort_state = {key: ascending}
+        order = "ASC" if ascending else "DESC"
+        try:
+            self._datasource.set_sort(f"{quoted_key} {order}")
+        except Exception:
+            pass
+        self._clear_cache()
+        self._update_heading_icons()
+        self._load_page(0)
+
+    def _clear_filter_cmd(self) -> None:
+        try:
+            self._datasource.set_filter("")
+        except Exception:
+            pass
+        self._clear_cache()
+        self._load_page(0)
+        self._update_status_labels()
+
+    def _move_row_up(self) -> None:
+        self._move_row_relative(-1)
+
+    def _move_row_down(self) -> None:
+        self._move_row_relative(1)
+
+    def _move_row_top(self) -> None:
+        self._move_row_absolute(0)
+
+    def _move_row_bottom(self) -> None:
+        children = list(self._tree.get_children())
+        if children:
+            self._move_row_absolute(len(children) - 1)
+
+    def _move_row_relative(self, delta: int) -> None:
+        sel = list(self._tree.selection())
+        if not sel:
+            return
+        target_iid = sel[0]
+        children = list(self._tree.get_children())
+        try:
+            idx = children.index(target_iid)
+        except ValueError:
+            return
+        new_idx = max(0, min(len(children) - 1, idx + delta))
+        if new_idx == idx:
+            return
+        self._tree.move(target_iid, "", new_idx)
+        self._apply_row_alternation()
+        rec = self._row_map.get(target_iid)
+        if rec:
+            self.event_generate("<<RowMoved>>", data={"records": [rec]})
+
+    def _move_row_absolute(self, new_idx: int) -> None:
+        sel = list(self._tree.selection())
+        if not sel:
+            return
+        target_iid = sel[0]
+        children = list(self._tree.get_children())
+        new_idx = max(0, min(len(children) - 1, new_idx))
+        self._tree.move(target_iid, "", new_idx)
+        self._apply_row_alternation()
+        rec = self._row_map.get(target_iid)
+        if rec:
+            self.event_generate("<<RowMoved>>", data={"records": [rec]})
+
+    def _hide_selection(self) -> None:
+        sel = list(self._tree.selection())
+        for iid in sel:
+            self._tree.delete(iid)
+            self._row_map.pop(iid, None)
+
+    def _edit_selected_row(self) -> None:
+        """Open the form dialog for the first selected row."""
+        sel = list(self._tree.selection())
+        if not sel:
+            return
+        iid = sel[0]
+        rec = self._row_map.get(iid, {})
+        self._open_form_dialog(rec)
+
+    def _delete_selected_row(self) -> None:
+        """Delete the first selected row from the datasource."""
+        sel = list(self._tree.selection())
+        if not sel:
+            return
+        iid = sel[0]
+        rec = self._row_map.get(iid, {})
+        rec_id = rec.get("id")
+        if rec_id is not None:
+            try:
+                self._datasource.delete_record(rec_id)
+                self._clear_cache()
+                self._load_page(self._current_page)
+                self.event_generate("<<RowDeleted>>", data={"records": [rec]})
+            except Exception:
+                logger.exception("Failed to delete record id=%s", rec_id)
+
+    def _delete_selection(self) -> None:
+        sel = list(self._tree.selection())
+        deleted_records: list[dict] = []
+        changed = False
+        for iid in sel:
+            rec = dict(self._row_map.get(iid) or {})
+            if rec:
+                deleted_records.append(rec)
+            rec_id = rec.get("id")
+            if rec_id is not None:
+                try:
+                    self._datasource.delete_record(rec_id)
+                    changed = True
+                except Exception:
+                    pass
+            self._row_map.pop(iid, None)
+        if changed:
+            self._clear_cache()
+            self._load_page(self._current_page)
+            if deleted_records:
+                self.event_generate("<<RowDeleted>>", data={"records": deleted_records})
+
+    # ------------------------------------------------------------------ Cache helpers
+    def _clear_cache(self) -> None:
+        if self._page_cache:
+            self._page_cache.clear()
+        # Invalidate total count cache when data/filter/sort changes
+        self._cached_total_count = None
+
+    def _load_heading_icons(self) -> None:
+        """Load and cache heading icons (sort arrows) sized to match the heading color."""
+        try:
+            from ttkbootstrap.appconfig import use_icon_provider
+            provider = use_icon_provider()
+            fg = self._get_heading_fg()
+            if fg == self._heading_fg and self._icon_sort_up:
+                return
+            self._heading_fg = fg
+            self._icon_sort_up = provider("sort-up", 20, fg)
+            self._icon_sort_down = provider("sort-down", 20, fg)
+        except Exception:
+            self._icon_sort_up = None
+            self._icon_sort_down = None
+
+    def _get_heading_fg(self) -> str:
+        """Resolve a heading foreground color with light-biased fallbacks."""
+        style = use_style()
+        ttk_style = self._tree.cget('style')
+        # Try configured value first
+        return style.configure(f"{ttk_style}.Heading", 'foreground')
+
+    def _update_heading_icons(self) -> None:
+        """Apply sort direction icons to headings."""
+        if not self._heading_texts:
+            return
+        self._load_heading_icons()
+        for idx, text in enumerate(self._heading_texts):
+            image = ""
+            if idx < len(self._column_keys):
+                key = self._column_keys[idx]
+                state = self._sort_state.get(key)
+                if state is True:
+                    image = self._icon_sort_up if self._icon_sort_up else ""
+                elif state is False:
+                    image = self._icon_sort_down if self._icon_sort_down else ""
+            self._tree.heading(idx, text=text, image=image)
+
+    def _remember_page(self, page: int, records: list[dict]) -> None:
+        if self._paging['cache_size'] <= 0:
+            return
+        # Move/update LRU cache
+        if page in self._page_cache:
+            self._page_cache.pop(page)
+        self._page_cache[page] = records
+        if len(self._page_cache) > self._paging['cache_size']:
+            self._page_cache.popitem(last=False)
+
+    def _focus_record(self, record_id) -> None:
+        """Select and scroll to a record by id if it's on the current page."""
+        try:
+            rid = str(record_id)
+            for iid, rec in self._row_map.items():
+                if str(rec.get("id")) == rid:
+                    self._tree.selection_set(iid)
+                    self._tree.see(iid)
+                    break
+        except Exception:
             pass
 
-    def sort_column_ascending(self):
-        """Sort the column in ascending order."""
-        self.master.sort_column_data(self.event, sort=ASCENDING)
+    def _find_record_page(self, record_id) -> int | None:
+        """Locate the page index containing the given record id, if available."""
+        try:
+            rid = str(record_id)
+            total_pages = self._total_pages()
+            for page_idx in range(total_pages):
+                try:
+                    rows = self._datasource.get_page(page_idx)
+                except Exception:
+                    break
+                if any(str(rec.get("id")) == rid for rec in rows):
+                    return page_idx
+        except Exception:
+            pass
+        return None
 
-    def sort_column_descending(self):
-        """Sort the column in descending order."""
-        self.master.sort_column_data(self.event, sort=DESCENDING)
-
-    def filter_to_cell_value(self):
-        """Hide all records except for records where the current
-        column exactly matches the current cell value."""
-        self.master.filter_column_to_value(self.event)
-
-    def filter_to_selected_rows(self):
-        """Hide all records except for the selected rows."""
-        self.master.filter_to_selected_rows()
-
-    def export_all_records(self):
-        """Export all records to a csv file"""
-        self.master.export_all_records()
-
-    def export_current_page(self):
-        """Export records on current page"""
-        self.master.export_current_page()
-
-    def export_current_selection(self):
-        """Export rows currently selected"""
-        self.master.export_current_selection()
-
-    def export_records_in_filter(self):
-        """Export rows currently filtered"""
-        self.master.export_records_in_filter()
-
-    def hide_selected_rows(self):
-        """Hide the selected rows"""
-        self.master.hide_selected_rows()
-
-    def move_row_to_top(self):
-        """Move the row to the top of the data set"""
-        self.master.move_selected_rows_to_top()
-
-    def move_row_to_bottom(self):
-        """Move the row to the bottom of the dataset"""
-        self.master.move_selected_rows_to_bottom()
-
-    def move_row_up(self):
-        """Move the selected above the previous sibling"""
-        self.master.move_selected_row_up()
-
-    def move_row_down(self):
-        """Move the selected row below the next sibling"""
-        self.master.move_row_down()
-
-    def align_column_left(self):
-        "Left align the column text"
-        self.master.align_column_left(self.event)
-
-    def align_column_right(self):
-        """Right align the column text"""
-        self.master.align_column_right(self.event)
-
-    def align_column_center(self):
-        """Center align the column text"""
-        self.master.align_column_center(self.event)
-
-    def delete_selected_rows(self):
-        """Delete the selected rows"""
-        iids = self.view.selection()
-        if len(iids) > 0:
-            # setting to prev should be in master?
-            prev_item = self.view.prev(iids[0])
-            self.master.delete_rows(iids=iids)
-            self.view.focus(prev_item)
-            self.view.selection_set(prev_item)
-
-
-class TableHeaderRightClickMenu(tk.Menu):
-    """A right-click menu object for the tableview header - INTERNAL"""
-
-    def __init__(self, master: Tableview):
-        """
-        Parameters:
-
-            master (Tableview):
-                The parent object
-        """
-        super().__init__(master, tearoff=False)
-        self.master: Tableview = self.master
-        self.view: ttk.Treeview = master.view
-        self.event = None
-        self.columnvars = []
-        self._show_menu = None
-
-        config = {
-            "movetoright": {
-                "label": f'''→  {MessageCatalog.translate("Move to right")}''',
-                "command": self.move_column_right,
-            },
-            "movetoleft": {
-                "label": f'''←  {MessageCatalog.translate("Move to left")}''',
-                "command": self.move_column_left,
-            },
-            "movetofirst": {
-                "label": f'''⇤  {MessageCatalog.translate("Move to first")}''',
-                "command": self.move_column_to_first,
-            },
-            "movetolast": {
-                "label": f'''⇥  {MessageCatalog.translate("Move to last")}''',
-                "command": self.move_column_to_last,
-            },
-            "alignleft": {
-                "label": f'''◧  {MessageCatalog.translate("Align left")}''',
-                "command": self.align_heading_left,
-            },
-            "alignright": {
-                "label": f'''◨  {MessageCatalog.translate("Align right")}''',
-                "command": self.align_heading_right,
-            },
-            "aligncenter": {
-                "label": f'''◫  {MessageCatalog.translate("Align center")}''',
-                "command": self.align_heading_center,
-            },
-            "resettable": {
-                "label": f'''{MessageCatalog.translate("⎌")}  {MessageCatalog.translate("Reset table")}''',
-                "command": self.master.reset_table,
-            },
-            "deletecolumn": {
-                "label": f'''🞨  {MessageCatalog.translate("Delete column")}''',
-                "command": self.delete_column,
-            },
-            "hidecolumn": {
-                "label": f'''◑  {MessageCatalog.translate("Hide column")}''',
-                "command": self.hide_column,
-            },
-        }
-
-        self.add_command(cnf=config["resettable"])
-
-        # HIDE & SHOW
-        self._build_show_menu()
-        self.add_cascade(menu=self._show_menu, label=f'''±  {MessageCatalog.translate("Columns")}''')
-        self.add_separator()
-
-        # MOVE MENU
-        move_menu = tk.Menu(self, tearoff=False)
-        move_menu.add_command(cnf=config["movetoleft"])
-        move_menu.add_command(cnf=config["movetoright"])
-        move_menu.add_command(cnf=config["movetofirst"])
-        move_menu.add_command(cnf=config["movetolast"])
-        self.add_cascade(menu=move_menu, label=f'''⇄  {MessageCatalog.translate("Move")}''')
-
-        align_menu = tk.Menu(self, tearoff=False)
-        align_menu.add_command(cnf=config["alignleft"])
-        align_menu.add_command(cnf=config["aligncenter"])
-        align_menu.add_command(cnf=config["alignright"])
-        self.add_cascade(menu=align_menu, label=f'''↦  {MessageCatalog.translate("Align")}''')
-        self.add_command(cnf=config["hidecolumn"])
-        self.add_command(cnf=config["deletecolumn"])
-
-    def tk_popup(self, event):
-        # capture the column and item that invoked the menu
-        self.event = event
-        self._build_show_menu()
-
-        # show the menu below the invoking cell
-        rootx = self.view.winfo_rootx()
-        rooty = self.view.winfo_rooty()
-        super().tk_popup(rootx + event.x, rooty + event.y + 10)
-
-    def _build_show_menu(self):
-        """Build the show menu based on currently available columns"""
-        if self._show_menu is not None:
-            self._show_menu.delete(0, END)
-        else:
-            self._show_menu = tk.Menu(self, tearoff=False)
-
-        self._show_menu.add_command(
-            label=MessageCatalog.translate("Show All"), command=self.show_all_columns
-        )
-        self._show_menu.add_separator()
-
-        displaycolumns = [x.cid for x in self.master.tablecolumns_visible]
-        for column in self.master.tablecolumns:
-            varname = f"column_{column.cid}"
-            # self.columnvars.append(tk.Variable(name=varname, value=True))
-            self._show_menu.add_checkbutton(
-                label=column._headertext,
-                command=lambda w=column: self.toggle_columns(w.cid),
-                variable=varname,
-                onvalue=True,
-                offvalue=False,
+    def _auto_size_columns(self, records: list[dict] | None = None) -> None:
+        """Auto-size columns to the widest value among current rows/headings."""
+        if not self._column_keys:
+            return
+        try:
+            style = use_style()
+            # Prefer the Treeview body font; fall back to TLabel/body or default
+            tv_style = self._tree.cget("style") or "Treeview"
+            body_font = (
+                    style.lookup(tv_style, "font")
+                    or style.lookup("TLabel", "font")
+                    or getattr(style, "fonts", {}).get("body")
+                    or "TkDefaultFont"
             )
-            if column.cid in displaycolumns:
-                self.setvar(varname, True)
+            content_font = tkfont.nametofont(body_font)
+        except Exception:
+            content_font = None
+
+        pad_px = 20
+
+        # Gather samples from headings, provided records, and current tree values
+        tree_samples = []
+        for iid in self._tree.get_children(""):
+            tree_samples.append(self._tree.item(iid, "values"))
+            for ciid in self._tree.get_children(iid):
+                tree_samples.append(self._tree.item(ciid, "values"))
+
+        for idx, key in enumerate(self._column_keys):
+            samples = []
+            if idx < len(self._heading_texts):
+                samples.append(str(self._heading_texts[idx]))
+            if records:
+                for rec in records:
+                    samples.append(str(rec.get(key, "")))
+            for vals in tree_samples:
+                if idx < len(vals):
+                    samples.append(str(vals[idx]))
+
+            # Honor explicit column width if provided
+            explicit_width = None
+            if idx < len(self._column_defs):
+                coldef = self._column_defs[idx]
+                if isinstance(coldef, dict):
+                    explicit_width = coldef.get("width")
+
+            if explicit_width is not None:
+                try:
+                    self._tree.column(idx, width=explicit_width, minwidth=self._column_min_width)
+                except Exception:
+                    pass
+                continue
+
+            text = max(samples, key=len) if samples else ""
+            if content_font:
+                width = content_font.measure(text) + pad_px
             else:
-                self.setvar(varname, False)
+                width = 0
+            # Fallback to simple char-based estimate to avoid under-measuring
+            char_estimate = len(text) * 10 + pad_px
+            width = max(width, char_estimate, self._column_min_width)
+            # Cap width to available viewport so we don't force the tree wider than its frame
+            try:
+                avail = max(0, int(self._tree.winfo_width()) - pad_px)
+                if avail > 0:
+                    width = min(width, avail)
+            except Exception:
+                pass
+            try:
+                self._tree.column(idx, width=width, minwidth=self._column_min_width)
+            except Exception:
+                pass
 
-    def toggle_columns(self, cid):
-        """Toggles the visibility of the selected column"""
-        variable = f"column_{cid}"
-        toggled = self.getvar(variable)
-        if toggled:
-            self.master.unhide_selected_column(cid=int(cid))
+    def _apply_row_alternation(self) -> None:
+        """Apply alternating row colors via a tag."""
+        enabled = self._row_alternation.get('enabled', False)
+        if not enabled or self._group_by_key:
+            return
+        bg, fg = self._resolve_alternating_row_color()
+        try:
+            self._tree.tag_configure("altrow", background=bg, foreground=fg)
+            # Some themes honor the "striped" tag name; configure it too
+            self._tree.tag_configure("striped", background=bg, foreground=fg)
+        except Exception:
+            return
+
+        queue = list(self._tree.get_children(""))
+        idx = 0
+        while queue:
+            iid = queue.pop(0)
+            try:
+                tags = list(self._tree.item(iid, "tags") or [])
+                if idx % 2 == 1:
+                    if "altrow" not in tags:
+                        tags.append("altrow")
+                    if "striped" not in tags:
+                        tags.append("striped")
+                else:
+                    tags = [t for t in tags if t not in ("altrow", "striped")]
+                self._tree.item(iid, tags=tags)
+            except Exception:
+                pass
+            queue.extend(list(self._tree.get_children(iid)))
+            idx += 1
+
+    def _rebalance_grouped_widths(self) -> None:
+        """Distribute available width across data columns when grouped so the left tree column is included."""
+        # Only rebalance when grouping is active and xscroll is off (otherwise user can scroll)
+        if not self._group_by_key or self._paging['xscroll']:
+            return
+        try:
+            tree_width = max(0, int(self._tree.winfo_width()))
+            group_width = max(0, int(self._tree.column("#0", option="width") or 0))
+            vsb_width = 0
+            if getattr(self, "_vsb", None):
+                try:
+                    self._vsb.update_idletasks()
+                    if self._vsb.winfo_ismapped():
+                        vsb_width = int(self._vsb.winfo_width())
+                except Exception:
+                    vsb_width = 0
+            # Leave a small cushion to avoid oscillating scrollbar
+            available = tree_width - group_width - vsb_width - 8
+            if available <= 0:
+                return
+            cols = [c for c in self._display_columns if c < len(self._heading_texts)]
+            if not cols:
+                return
+            width = max(self._column_min_width, available // len(cols))
+            for c in cols:
+                self._tree.column(c, width=width, stretch=True)
+            # Keep the group column fixed so only data columns flex
+            self._tree.column("#0", stretch=False)
+        except Exception:
+            pass
+
+    def _on_tree_configure(self, _event=None) -> None:
+        """Handle resize events to keep grouped layouts sized to the available width."""
+        self._rebalance_grouped_widths()
+
+    # ------------------------------------------------------------------ Export helpers
+    def _export_all(self) -> None:
+        try:
+            rows = self._datasource.get_page_from_index(0, self._datasource.total_count())
+            self._tree.event_generate("<<TableViewExportAll>>", data=rows)
+        except Exception:
+            pass
+
+    def _export_selection(self) -> None:
+        try:
+            selected = [self._row_map[iid] for iid in self._tree.selection() if iid in self._row_map]
+            self._tree.event_generate("<<TableViewExportSelection>>", data=selected)
+        except Exception:
+            pass
+
+    def _export_page(self) -> None:
+        try:
+            start_index = self._current_page * self._paging['page_size']
+            rows = self._datasource.get_page_from_index(start_index, self._paging['page_size'])
+            self._tree.event_generate("<<TableViewExportPage>>", data=rows)
+        except Exception:
+            pass
+
+    # ------------------------------------------------------------------ Header click handling
+    def _on_header_click(self, event) -> None:
+        """Handle left-click on headers for sorting."""
+        region = self._tree.identify_region(event.x, event.y)
+        if region != "heading":
+            return
+
+        if self._sorting == 'none':
+            return
+
+        col_id = self._tree.identify_column(event.x)  # e.g. "#1"
+        try:
+            display_idx = int(col_id.strip("#")) - 1
+        except Exception:
+            return
+
+        if display_idx < 0 or display_idx >= len(self._display_columns):
+            return
+
+        column_idx = self._display_columns[display_idx]
+        self._on_sort(column_idx)
+
+    def _filter_header_column(self) -> None:
+        """Show filter dialog for the currently selected header column."""
+        col = self._header_menu_col
+        if col is None or col >= len(self._column_keys):
+            return
+        self._show_column_filter_dialog(col)
+
+    def _show_column_filter_dialog(self, column_idx: int) -> None:
+        """Show FilterDialog with distinct values for the column."""
+        from ttkbootstrap.dialogs.filterdialog import FilterDialog
+
+        if column_idx >= len(self._column_keys):
+            return
+
+        key = self._column_keys[column_idx]
+        heading_text = self._heading_texts[column_idx] if column_idx < len(self._heading_texts) else key
+
+        # Get distinct values from datasource
+        try:
+            distinct_values = self._datasource.get_distinct_values(key)
+        except Exception:
+            distinct_values = []
+
+        if not distinct_values:
+            return
+
+        # Build items for the filter dialog
+        current_filter = self._column_filters.get(key)
+        items = []
+        for val in distinct_values:
+            display_text = str(val) if val is not None else "(empty)"
+            selected = current_filter is None or val in current_filter
+            items.append(
+                {
+                    "text": display_text,
+                    "value": val,
+                    "selected": selected
+                })
+
+        # Position dialog below the header
+        col_id = f"#{self._display_columns.index(column_idx) + 1}" if column_idx in self._display_columns else "#1"
+        pos_x = self._tree.winfo_rootx()
+        pos_y = self._tree.winfo_rooty()
+
+        tree_items = self._tree.get_children()
+        if tree_items:
+            bbox = self._tree.bbox(tree_items[0], col_id)
+            if bbox:
+                pos_x = self._tree.winfo_rootx() + bbox[0]
+                pos_y = self._tree.winfo_rooty() + bbox[1] + 2
+
+        dialog = FilterDialog(
+            master=self.winfo_toplevel(),
+            title=f"Filter: {heading_text}",
+            items=items,
+            allow_search=True,
+            allow_select_all=True,
+            frameless=True
+        )
+
+        result = dialog.show(position=(pos_x, pos_y))
+
+        if result is not None:
+            self._apply_column_filter(key, result, distinct_values)
+
+    def _apply_column_filter(self, key: str, selected_values: list, all_values: list) -> None:
+        """Apply column filter based on selected values."""
+        # If all values selected, clear the filter for this column
+        if set(selected_values) == set(all_values):
+            self._column_filters.pop(key, None)
         else:
-            self.master.hide_selected_column(cid=int(cid))
+            self._column_filters[key] = selected_values
 
-    def show_all_columns(self):
-        """Show all columns"""
-        for var in self.columnvars:
-            var.set(value=True)
-        self.master.reset_column_filters()
+        # Build combined WHERE clause from all column filters
+        self._rebuild_filter_where()
 
-    def move_column_left(self):
-        """Move column one position to the left"""
-        self.master.move_column_left(self.event)
+    def _rebuild_filter_where(self) -> None:
+        """Rebuild WHERE clause from all active column filters."""
+        clauses = []
+        for key, values in self._column_filters.items():
+            if not values:
+                # No values selected = filter out everything
+                clauses.append("1=0")
+            else:
+                quoted_key = self._quote_col(key)
+                # Build IN clause
+                quoted_values = []
+                for v in values:
+                    if v is None:
+                        quoted_values.append("NULL")
+                    else:
+                        escaped = str(v).replace("'", "''")
+                        quoted_values.append(f"'{escaped}'")
+                # Handle NULL separately since IN doesn't work with NULL
+                null_check = ""
+                if None in values:
+                    quoted_values = [qv for qv in quoted_values if qv != "NULL"]
+                    null_check = f" OR {quoted_key} IS NULL"
+                if quoted_values:
+                    clauses.append(f"({quoted_key} IN ({','.join(quoted_values)}){null_check})")
+                elif null_check:
+                    clauses.append(f"({quoted_key} IS NULL)")
 
-    def move_column_right(self):
-        """Move column on position to the right"""
-        self.master.move_column_right(self.event)
+        where = " AND ".join(clauses) if clauses else ""
+        try:
+            self._datasource.set_filter(where)
+        except Exception:
+            pass
+        self._clear_cache()
+        self._load_page(0)
+        self._update_status_labels()
 
-    def move_column_to_first(self):
-        """Move column to leftmost position"""
-        self.master.move_column_to_first(self.event)
+    # ------------------------------------------------------------------ Context dispatch
+    def _on_tree_context(self, event) -> None:
+        if self._context_menus == "none":
+            return
+        region = self._tree.identify_region(event.x, event.y)
+        if region == "heading":
+            if not self._header_context_enabled():
+                return
+            self._on_header_context(event)
+        else:
+            if not self._row_context_enabled():
+                return
+            self._on_row_context(event)
 
-    def move_column_to_last(self):
-        """Move column to rightmost position"""
-        self.master.move_column_to_last(self.event)
+    def _on_selection_event(self, _event=None) -> None:
+        """Forward selection changes to subscribers."""
+        rows = self.selected_rows
+        self.event_generate("<<SelectionChanged>>", data={"records": rows, "iids": list(self._tree.selection())})
 
-    def align_heading_left(self):
-        """Left align the column header"""
-        self.master.align_heading_left(self.event)
+    def _on_row_click_event(self, event) -> None:
+        region = self._tree.identify_region(event.x, event.y)
+        if region == "heading":
+            return
+        iid = self._tree.identify_row(event.y)
+        if not iid:
+            return
+        rec = self._row_map.get(iid, {})
+        self.event_generate("<<RowClick>>", data={"record": rec, "iid": iid})
 
-    def align_heading_right(self):
-        """Right align the column header"""
-        self.master.align_heading_right(self.event)
+    # ------------------------------------------------------------------ Header context menu
+    def _ensure_header_menu(self) -> None:
+        if not self._header_context_enabled():
+            return
+        if self._header_menu:
+            return
+        menu = ContextMenu(master=self, target=self._tree)
+        menu.add_command(text="Align Left", icon="align-start", command=self._align_header_left)
+        menu.add_command(text="Align Center", icon="align-center", command=self._align_header_center)
+        menu.add_command(text="Align Right", icon="align-end", command=self._align_header_right)
+        menu.add_separator()
+        menu.add_command(text="Move Left", icon="arrow-left", command=self._move_header_left)
+        menu.add_command(text="Move Right", icon="arrow-right", command=self._move_header_right)
+        menu.add_command(text="Move First", icon="arrow-bar-left", command=self._move_header_first)
+        menu.add_command(text="Move Last", icon="arrow-bar-right", command=self._move_header_last)
+        menu.add_separator()
+        menu.add_command(text="Hide Column", icon="eye-slash", command=self._hide_header_column)
+        menu.add_command(text="Show All", icon="eye", command=self._show_all_columns)
+        if self._allow_grouping:
+            menu.add_separator()
+            menu.add_command(text="Group by This Column", command=self._group_header_column)
+            menu.add_command(text="Ungroup All", command=self._ungroup_all)
+        menu.add_separator()
+        menu.add_command(text="Reset Table", icon="arrow-counterclockwise", command=self._reset_table)
+        menu.add_separator()
+        if not self._sorting == 'none':
+            menu.add_command(text="Clear Sort", icon="x-lg", command=self._clear_sort)
+        self._header_menu = menu
 
-    def align_heading_center(self):
-        """Center align the column header"""
-        self.master.align_heading_center(self.event)
+    def _on_header_context(self, event) -> None:
+        if not self._header_context_enabled():
+            return
+        # Only handle header clicks
+        if self._tree.identify_region(event.x, event.y) != "heading":
+            return
+        col_id = self._tree.identify_column(event.x)  # e.g. "#1"
+        try:
+            idx = int(col_id.strip("#")) - 1
+        except Exception:
+            return
+        if idx < 0 or idx >= len(self._display_columns):
+            return
+        self._header_menu_col = self._display_columns[idx]
+        self._ensure_header_menu()
 
-    def delete_column(self):
-        """Delete the selected column"""
-        eo = self.master._get_event_objects(self.event)
-        eo.column.delete()
+        # Try to position at bottom-left of the clicked header
+        pos_x, pos_y = event.x_root, event.y_root
+        items = self._tree.get_children()
+        if items:
+            bbox = self._tree.bbox(items[0], col_id)
+            if bbox:
+                # bbox is relative to the widget; bbox[1] is header height offset
+                pos_x = self._tree.winfo_rootx() + bbox[0]
+                pos_y = self._tree.winfo_rooty() + bbox[1] + 2
+        self._header_menu.show(position=(pos_x, pos_y))
 
-    def hide_column(self):
-        """Hide the selected column"""
-        eo = self.master._get_event_objects(self.event)
-        eo.column.hide()
+    def _align_header_left(self) -> None:
+        self._set_heading_anchor("w")
+
+    def _align_header_center(self) -> None:
+        self._set_heading_anchor("center")
+
+    def _align_header_right(self) -> None:
+        self._set_heading_anchor("e")
+
+    def _set_heading_anchor(self, anchor: str) -> None:
+        """Align only the header text for the selected column."""
+        col = self._header_menu_col
+        if col is None:
+            return
+        self._tree.heading(col, anchor=anchor)
+        self._tree.column(col, anchor=anchor)
+
+    def _move_header_left(self) -> None:
+        self._move_column(-1)
+
+    def _move_header_right(self) -> None:
+        self._move_column(1)
+
+    def _move_header_first(self) -> None:
+        self._move_column(to_index=0)
+
+    def _move_header_last(self) -> None:
+        self._move_column(to_index=len(self._display_columns) - 1)
+
+    def _move_column(self, delta: int | None = None, to_index: int | None = None) -> None:
+        col = self._header_menu_col
+        if col is None or col not in self._display_columns:
+            return
+        current_pos = self._display_columns.index(col)
+        if to_index is not None:
+            new_pos = max(0, min(len(self._display_columns) - 1, to_index))
+        else:
+            new_pos = current_pos + (delta or 0)
+        new_pos = max(0, min(len(self._display_columns) - 1, new_pos))
+        if new_pos == current_pos:
+            return
+        self._display_columns.pop(current_pos)
+        self._display_columns.insert(new_pos, col)
+        self._tree.configure(displaycolumns=self._display_columns)
+
+    def _hide_header_column(self) -> None:
+        col = self._header_menu_col
+        if col is None or col not in self._display_columns:
+            return
+        self._display_columns.remove(col)
+        if not self._display_columns:
+            self._display_columns = list(range(len(self._heading_texts)))
+        self._tree.configure(displaycolumns=self._display_columns)
+
+    def _show_all_columns(self) -> None:
+        if not self._heading_texts:
+            return
+        self._display_columns = list(range(len(self._heading_texts)))
+        self._tree.configure(displaycolumns=self._display_columns)
+
+    def _show_column_chooser_dialog(self) -> None:
+        """Show a dialog to select which columns are visible."""
+        from ttkbootstrap.dialogs.filterdialog import FilterDialog
+
+        if not self._heading_texts:
+            return
+
+        # Build items for the filter dialog
+        items = []
+        for idx, text in enumerate(self._heading_texts):
+            items.append(
+                {
+                    "text": text,
+                    "value": idx,
+                    "selected": idx in self._display_columns
+                })
+
+        # Calculate position: align dialog's top-right to button's bottom-right
+        btn = self._column_chooser_btn
+        btn.update_idletasks()
+        btn_right = btn.winfo_rootx() + btn.winfo_width()
+        btn_bottom = btn.winfo_rooty() + btn.winfo_height()
+        dialog_width = 250  # FilterDialog has fixed width of 250
+        pos_x = btn_right - dialog_width - 2  # 2px west
+        pos_y = btn_bottom + 2  # 2px south
+
+        dialog = FilterDialog(
+            master=self.winfo_toplevel(),
+            title="Columns",
+            items=items,
+            allow_search=False,
+            allow_select_all=True,
+            frameless=True
+        )
+
+        result = dialog.show(position=(pos_x, pos_y))
+
+        if result is not None:
+            # Update display columns based on selection
+            self._display_columns = [idx for idx in result if isinstance(idx, int)]
+            if not self._display_columns:
+                # Ensure at least one column is visible
+                self._display_columns = list(range(len(self._heading_texts)))
+            self._tree.configure(displaycolumns=self._display_columns)
+
+    def _reset_table(self) -> None:
+        # Reset sort, columns visibility/order, and reload first page
+        self._display_columns = list(range(len(self._heading_texts)))
+        self._tree.configure(displaycolumns=self._display_columns)
+        self._clear_sort()
+
+    # ------------------------------------------------------------------ Grouping
+    def _group_header_column(self) -> None:
+        """Group current view by the selected header column."""
+        col = self._header_menu_col
+        if col is None or col >= len(self._column_keys):
+            return
+        key = self._column_keys[col]
+        quoted_key = self._quote_col(key)
+        self._group_by_key = key
+        self._group_parents.clear()
+        # Sort entire datasource by the grouping column so grouping reflects full dataset order
+        try:
+            self._datasource.set_sort(f"{quoted_key} ASC")
+        except Exception:
+            pass
+        self._sort_state = {key: True}
+        self._clear_cache()
+        self._update_heading_icons()
+        # Restart at first page to reflect new ordering
+        self._load_page(0)
+        self._update_status_labels()
+
+    def _ungroup_all(self) -> None:
+        """Return to flat view."""
+        if not self._group_by_key:
+            return
+        self._group_by_key = None
+        self._group_parents.clear()
+        self._apply_group_show_state(False)
+        self._load_page(self._current_page)
+        self._update_status_labels()
+
+    def _apply_group_show_state(self, grouped: bool) -> None:
+        """Toggle tree column visibility when grouping."""
+        if grouped:
+            self._tree.configure(show="tree headings")
+            heading = "Group"
+            try:
+                if self._group_by_key and self._group_by_key in self._column_keys:
+                    col_idx = self._column_keys.index(self._group_by_key)
+                    heading = self._heading_texts[col_idx] if col_idx < len(self._heading_texts) else heading
+            except Exception:
+                pass
+            self._tree.heading("#0", text=heading, anchor="w")
+            # Fix the group column width so it stays visible even when space is tight
+            self._tree.column("#0", width=200, minwidth=120, anchor="w", stretch=False)
+            try:
+                # Reset horizontal view so the group column is not scrolled out
+                self._tree.xview_moveto(0)
+            except Exception:
+                pass
+            self._rebalance_grouped_widths()
+        else:
+            self._tree.configure(show="headings")
+            # Keep the tree column narrow/inert when unused
+            self._tree.heading("#0", text="")
+            self._tree.column("#0", width=0, minwidth=0, stretch=False)
+            # Restore stretch behavior for data columns based on scroll mode
+            try:
+                stretch_cols = not self._paging['xscroll']
+                for idx in range(len(self._heading_texts)):
+                    self._tree.column(idx, stretch=stretch_cols)
+            except Exception:
+                pass
+
+    def _render_flat(self, records: list[dict]) -> None:
+        """Insert records as flat rows."""
+        stripe = self._row_alternation.get('enabled', False) and not self._group_by_key
+        for idx, rec in enumerate(records):
+            values = [rec.get(k, "") for k in self._column_keys]
+            tags = ("altrow",) if stripe and idx % 2 == 1 else ()
+            iid = self._tree.insert("", "end", values=values, tags=tags)
+            self._row_map[iid] = rec
+
+    def _render_grouped(self, records: list[dict]) -> None:
+        """Insert records under parent nodes for the active group."""
+        key = self._group_by_key
+        if not key or key not in self._column_keys:
+            self._render_flat(records)
+            return
+        col_idx = self._column_keys.index(key)
+        heading_text = self._heading_texts[col_idx] if col_idx < len(self._heading_texts) else key
+        groups: OrderedDict[str | None, list[dict]] = OrderedDict()
+        for rec in records:
+            groups.setdefault(rec.get(key), []).append(rec)
+        self._group_parents.clear()
+        for val, items in groups.items():
+            label_val = "(None)" if val is None else str(val)
+            label = f"{heading_text}: {label_val} ({len(items)})"
+            parent_iid = self._tree.insert("", "end", text=label, open=True)
+            self._group_parents[val] = parent_iid
+            for rec in items:
+                values = [rec.get(k, "") for k in self._column_keys]
+                iid = self._tree.insert(parent_iid, "end", values=values)
+                self._row_map[iid] = rec
+
+    def _clear_sort(self) -> None:
+        self._sort_state.clear()
+        self._datasource.set_sort("")
+        self._clear_cache()
+        self._update_heading_icons()
+        self._load_page(0)
+        self._update_status_labels()
+
+
+# Backwards-compatible alias for the legacy Tableview name
+Tableview = TableView

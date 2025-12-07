@@ -66,7 +66,7 @@ class TextEntryPart(ValidationMixin, Entry):
             value='',
             value_format=None,
             initial_focus: bool = False,
-            allow_blank: bool = False,
+            allow_blank: bool = True,
             locale: str = None,
             **kwargs
     ):
@@ -91,7 +91,7 @@ class TextEntryPart(ValidationMixin, Entry):
                 dialogs or forms where this field should be active immediately.
                 Default is False.
             allow_blank: If True, empty input is parsed as None. If False, empty
-                input preserves the previous value (rejects blank). Default is False.
+                input preserves the previous value (rejects blank). Default is True.
             locale: Locale identifier for formatting (e.g., 'en_US', 'de_DE', 'fr_FR').
                 Affects decimal separators, currency symbols, date formats, etc.
                 If None, uses the system default locale. Default is None.

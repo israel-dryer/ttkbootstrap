@@ -8,6 +8,7 @@ This package exposes Bootstrap-styled dialogs for common interactions:
 - ColorDropperDialog: pick a color from the screen with zoom preview
 - DateDialog: calendar date picker
 - FontDialog: font selection
+- FilterDialog: multi-select filter dialog with search
 
 Example:
 
@@ -28,6 +29,8 @@ from .colordropper import (
     ColorDropperDialog,
 )
 from .dialog import Dialog, DialogButton
+from .filterdialog import FilterDialog
+from .formdialog import FormDialog
 from .message import MessageDialog, MessageBox
 from .query import QueryDialog, QueryBox
 from .datedialog import DateDialog
@@ -37,6 +40,8 @@ __all__ = [
     # Base / core dialogs
     "Dialog",
     "DialogButton",
+    "FilterDialog",
+    "FormDialog",
     "MessageDialog",
     "QueryDialog",
     "DateDialog",

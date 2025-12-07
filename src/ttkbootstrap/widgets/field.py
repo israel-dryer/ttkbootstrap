@@ -63,7 +63,7 @@ class FieldOptions(TypedDict, total=False):
     take_focus: bool
     textvariable: Variable
     textsignal: Signal
-    width: str
+    width: int
     required: bool
     xscrollcommand: Callable[[int, int], None]
 
