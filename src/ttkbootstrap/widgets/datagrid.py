@@ -1,17 +1,19 @@
-﻿"""
+"""
 DataGrid widget backed by an in-memory SQLite datasource.
 
-The datasource handles filtering, sorting, and pagination; the widget only
-renders the current page in a Treeview.
+The datasource performs filtering, sorting, and pagination while the widget
+renders the current page in a Treeview with optional grouping, striping, and
+context menus.
 """
 
 from __future__ import annotations
 
 import logging
 from collections import OrderedDict
-from tkinter import Misc
+from tkinter import Misc, font as tkfont
+from typing import Any
 
-from typing_extensions import Literal
+from typing_extensions import Literal, TypedDict
 
 from ttkbootstrap import use_style
 from ttkbootstrap.datasource.sqlite_source import SqliteDataSource
@@ -30,17 +32,184 @@ from ttkbootstrap.widgets.treeview import Treeview
 logger = logging.getLogger(__name__)
 
 
+class EditingOptions(TypedDict, total=False):
+    """Configure add/update/delete support and form dialog options."""
+    adding: bool
+    updating: bool
+    deleting: bool
+    form: dict[str, Any]
+
+
+class SelectionOptions(TypedDict, total=False):
+    """Control selection mode (single/multiple/none) and select-all allowance."""
+    mode: Literal['single', 'multiple', 'none']
+    allow_select_all: bool  # not yet supported
+
+
+class ExportingOptions(TypedDict, total=False):
+    """Configure export availability and formats."""
+    enabled: bool
+    allow_export_selected: bool
+    export_all_mode: Literal['page', 'all']
+    formats: list[Literal['csv', 'xlsx']]
+
+
+class PagingOptions(TypedDict, total=False):
+    """Paging mode and sizing; toggles x/y scrollbars."""
+    mode: Literal['standard', 'virtual']
+    page_size: int
+    page_index: int
+    cache_size: int
+    xscroll: bool
+    yscroll: bool
+
+
+class RowAlternationOptions(TypedDict, total=False):
+    """Alternating row striping (enabled flag and color token)."""
+    enabled: bool
+    color: str
+
+
+class FilteringOptions(TypedDict, total=False):
+    """Toggle filtering and which menus expose filter actions."""
+    enabled: bool
+    header_menu_filtering: bool
+    row_menu_filtering: bool
+
+
+class SearchOptions(TypedDict, total=False):
+    """Configure searchbar visibility, advanced mode, and trigger timing."""
+    enabled: bool
+    mode: Literal['standard', 'advanced']
+    event: Literal['input', 'enter']
+
+
+# ------ Helper methods --------
+
+def _parse_selection_mode(mode: str):
+    if mode == 'single':
+        return 'browse'
+    elif mode == 'multiple':
+        return 'extended'
+    else:
+        return 'none'
+
+
+def _normalize_row_alternation_options(options: RowAlternationOptions | None) -> RowAlternationOptions:
+    if options is None:
+        return dict(enabled=False, color='background[+1]')
+    options.setdefault('enabled', False)
+    options.setdefault('color', 'background[+1]')
+    return options
+
+
+def _normalize_selection_options(options: SelectionOptions | None) -> SelectionOptions:
+    if options is None:
+        return dict(
+            mode="single",
+            allow_select_all=False,
+        )
+    options.setdefault('mode', 'single')
+    options.setdefault('allow_select_all', False)
+    return options
+
+
+def _normalize_filtering_options(options: FilteringOptions | None) -> FilteringOptions:
+    if options is None:
+        return dict(
+            enabled=True,
+            header_menu_filtering=True,
+            row_menu_filtering=True,
+        )
+    options.setdefault('enabled', True)
+    options.setdefault('header_menu_filtering', True)
+    options.setdefault('row_menu_filtering', True)
+    return options
+
+
+def _normalize_editing_options(options: EditingOptions | None) -> EditingOptions:
+    if options is None:
+        return dict(
+            adding=False,
+            updating=False,
+            deleting=False,
+            form={}
+        )
+    options.setdefault('adding', False)
+    options.setdefault('updating', False)
+    options.setdefault('deleting', False)
+    options.setdefault('form', {})
+    return options
+
+
+def _normalize_exporting_options(options: ExportingOptions | None) -> ExportingOptions:
+    if options is None:
+        return dict(
+            enabled=False,
+            allow_export_selected=False,
+            export_all_mode='page',
+            formats=['csv']
+        )
+    options.setdefault('enabled', False)
+    options.setdefault('allow_export_selected', False)
+    options.setdefault('export_all_mode', 'page')
+    options.setdefault('formats', ['csv'])
+    return options
+
+
+def _normalize_paging_options(options: PagingOptions | None) -> PagingOptions:
+    if options is None:
+        return dict(
+            mode='standard',
+            page_size=250,
+            page_index=0,
+            cache_size=5,
+            xscroll=True,
+            yscroll=True,
+        )
+    options.setdefault('mode', 'standard')
+    options.setdefault('page_size', 250)
+    options.setdefault('page_index', 0)
+    options.setdefault('cache_size', 5)
+    options.setdefault('xscroll', True)
+    options.setdefault('yscroll', True)
+    return options
+
+
+def _normalize_searchbar_options(options: SearchOptions | None) -> SearchOptions:
+    if options is None:
+        return dict(
+            enabled=True,
+            mode='standard',
+            event='enter'
+        )
+    options.setdefault('enabled', True)
+    options.setdefault('mode', 'standard')
+    options.setdefault('event', 'enter')
+    # Normalize event to allowed values
+    trig = str(options.get('event', 'enter')).lower()
+    if trig not in ('input', 'enter'):
+        trig = 'enter'
+    options['event'] = trig
+    return options
+
+
 class DataGrid(Frame):
     """
-    Simple data grid that delegates filtering, sorting, and pagination to a
-    SqliteDataSource (in-memory by default).
+    Data grid backed by an in-memory SqliteDataSource with sortable headers,
+    filtering/search, pagination or virtual scrolling, optional grouping,
+    column striping, and configurable exporting/editing. Context menus are
+    opt-in, the searchbar can trigger on enter or input, and columns can
+    auto-size to their visible content.
 
-    Key options:
-        - show_xscroll / show_yscroll: toggle horizontal/vertical scrollbars
-        - allow_column_hiding: enable column chooser and hide/show header actions
-        - allow_grouping: enable grouping via the header context menu
-        - show_context_menus: "none" | "headers" | "rows" | "all" to control right-click menus
-        - min_col_width: global minimum column width (overridden by per-column definitions)
+    Highlights:
+        - Paging: standard pagination or virtual scroll; optional x/y scrollbars.
+        - Search: standard/advanced searchbar with trigger on enter (default) or input.
+        - Columns: global min width, optional auto-width sizing per page, chooser/hide actions.
+        - Grouping: optional grouping via header context menu with fixed group column.
+        - Context menus: enable/disable per region (headers/rows) with sorting/filtering actions.
+        - Appearance: optional alternating row colors (disabled when grouped).
+        - Extensibility: optional exporting and editing capabilities via configuration.
     """
 
     def __init__(
@@ -49,24 +218,20 @@ class DataGrid(Frame):
             columns: list[str | dict] | None = None,
             rows: list | None = None,
             datasource: SqliteDataSource | None = None,
-            page_size: int = 250,
-            virtual_scroll: bool = False,
-            cache_size: int = 5,
-            show_yscroll: bool = True,
-            show_xscroll: bool = True,
-            sort_on_header_click: bool = True,
+            editing: EditingOptions | dict | None = None,
+            paging: PagingOptions | dict | None = None,
+            exporting: ExportingOptions | dict | None = None,
+            filtering: FilteringOptions | dict | None = None,
+            selection: SelectionOptions | dict | None = None,
+            search: SearchOptions | dict | None = None,
+            sorting: Literal['single', 'multiple', 'none'] = 'single',
+            row_alternation: RowAlternationOptions | dict | None = None,
+            allow_grouping: bool = False,
             show_table_status: bool = True,
             show_column_chooser: bool = False,
-            show_searchbar: bool = True,
-            show_context_menus: Literal["none", "headers", "rows", "all"] = "all",
-            searchbar_mode: Literal['standard', 'advanced'] = 'simple',
-            allow_exporting: bool = False,
-            allow_column_hiding: bool = False,
-            allow_grouping: bool = False,
-            export_options: list[str] | None = None,
-            allow_editing: bool = False,
-            form_options: dict | None = None,
-            min_col_width: int = 40,
+            context_menus: Literal["none", "headers", "rows", "all"] = "all",
+            column_min_width: int = 40,
+            column_auto_width: bool = False,
             **kwargs,
     ):
         """
@@ -77,54 +242,47 @@ class DataGrid(Frame):
             columns: Column definitions (list of strings or dicts with keys like "text", "key", "width", "minwidth").
             rows: Initial data to load (list of dicts or row-like sequences).
             datasource: Custom SqliteDataSource; if omitted, an in-memory source is created.
-            page_size: Rows per page for pagination and virtual scrolling.
-            virtual_scroll: If True, appends additional pages on scroll instead of paging controls.
-            cache_size: Number of pages to keep in the LRU cache.
-            show_yscroll: Show vertical scrollbar.
-            show_xscroll: Show horizontal scrollbar.
-            sort_on_header_click: Enable header click sorting.
-            show_table_status: Show filter/sort/group status labels and pager.
-            show_column_chooser: Show column chooser button (requires allow_column_hiding).
-            show_searchbar: Show search bar above the grid.
-            show_context_menus: "none" | "headers" | "rows" | "all" to enable context menus.
-            searchbar_mode: "standard" | "advanced" to toggle search UI.
-            allow_exporting: Enable export dropdown (all/selection/page).
-            allow_column_hiding: Allow hide/show columns and column chooser.
+            editing: EditingOptions or dict to enable adding/updating/deleting and form settings.
+            paging: PagingOptions or dict (mode 'standard'|'virtual', page_size, page_index, cache_size, xscroll, yscroll).
+            exporting: ExportingOptions or dict (enabled, allow_export_selected, export_all_mode 'page'|'all', formats).
+            filtering: FilteringOptions or dict (enabled, header_menu_filtering, row_menu_filtering).
+            selection: SelectionOptions or dict (mode 'single'|'multiple'|'none', allow_select_all).
+            search: SearchOptions or dict (enabled, mode 'standard'|'advanced', event 'input'|'enter'; default 'enter').
+            row_alternation: RowAlternationOptions (enabled flag, color token for striping; disabled when grouped).
             allow_grouping: Allow grouping rows via header context menu.
-            export_options: Export modes to expose ("all", "selection", "page").
-            allow_editing: Enable add/edit/delete actions and double-click editing.
-            form_options: Form dialog options when editing/adding records.
-            min_col_width: Global minimum width for columns (overridden by per-column minwidth).
+            sorting: Sorting mode ('single', 'multiple', or 'none' to disable sorting).
+            show_table_status: Show filter/sort/group status labels and pager.
+            show_column_chooser: Show column chooser button for toggling column visibility.
+            context_menus: "none" | "headers" | "rows" | "all" to enable region context menus.
+            column_min_width: Global minimum width for columns (overridden by per-column minwidth; default 40).
+            column_auto_width: Automatically size columns to widest visible text on each page.
             kwargs: Passed through to Frame.
         """
         super().__init__(master, **kwargs)
-        self._datasource = datasource or SqliteDataSource(":memory:", page_size=page_size)
-        self._page_size = page_size
-        self._virtual_scroll = virtual_scroll
-        self._show_yscroll = show_yscroll
-        self._show_xscroll = show_xscroll
-        self._sort_on_header_click = sort_on_header_click
+
+        # configuration
+        self._editing = _normalize_editing_options(editing)
+        self._paging = _normalize_paging_options(paging)
+        self._exporting = _normalize_exporting_options(exporting)
+        self._filtering = _normalize_filtering_options(filtering)
+        self._selection = _normalize_selection_options(selection)
+        self._searchbar = _normalize_searchbar_options(search)
+        self._sorting = sorting
         self._show_table_status = show_table_status
         self._show_column_chooser = show_column_chooser
-        self._show_searchbar = show_searchbar
-        self._searchbar_mode = searchbar_mode
+        self._row_alternation = _normalize_row_alternation_options(row_alternation)
         self._allow_grouping = allow_grouping
-        self._show_context_menus = (show_context_menus or "all").lower()
-        if self._show_context_menus not in ("none", "headers", "rows", "all"):
-            self._show_context_menus = "all"
-        self._allow_exporting = allow_exporting
-        self._export_options = export_options or ["all", "selection", "page"]
-        self._allow_editing = allow_editing
-        self._allow_column_hiding = allow_column_hiding
-        self._form_options = form_options or {}
-        self._min_col_width = max(0, min_col_width)
-        self._cache_size = max(0, cache_size)
+        self._context_menus = (context_menus or "all").lower()
+        self._column_min_width = max(0, column_min_width)
+        self._column_auto_width = column_auto_width
+        self._datasource = datasource or SqliteDataSource(":memory:", page_size=self._paging['page_size'])
+
         self._page_cache: OrderedDict[int, list[dict]] = OrderedDict()
         self._column_defs = columns or []
         self._column_keys: list[str] = []
         self._heading_texts: list[str] = []
         self._sort_state: dict[str, bool] = {}  # key -> ascending
-        self._current_page = 0
+        self._current_page = self._paging['page_index']
         self._loading_next = False
         self._heading_fg: str | None = None
         self._icon_sort_up = None
@@ -167,7 +325,7 @@ class DataGrid(Frame):
         # UI
         self._build_toolbar()
         self._build_tree()
-        if self._show_table_status or not self._virtual_scroll:
+        if self._show_table_status or not self._paging['mode'] == 'virtual':
             self._build_footer()
 
         # Initial load
@@ -187,6 +345,22 @@ class DataGrid(Frame):
         self._load_page(0)
 
     # ------------------------------------------------------------------ UI
+
+    def _resolve_alternating_row_color(self):
+        style = use_style()
+        color_token = self._row_alternation.get('color', 'background[+1]')
+
+        try:
+            background = style.style_builder.color(color_token)
+        except Exception:
+            background = style.style_builder.color('background')
+
+        try:
+            foreground = style.style_builder.on_color(background)
+        except Exception:
+            foreground = style.style_builder.color('foreground')
+        return background, foreground
+
     def _resolve_column_keys(self) -> None:
         if not self._column_defs:
             return
@@ -223,14 +397,20 @@ class DataGrid(Frame):
         bar = Frame(self, name="toolbar")
         bar.pack(fill="x", pady=(0, 4))
 
-        if self._show_searchbar:
+        if self._searchbar['enabled']:
             self._search_entry = TextEntry(bar)
             self._search_entry.insert_addon(Label, 'before', icon="search", icon_only=True)
             self._search_entry.insert_addon(Button, 'after', icon="x-lg", icon_only=True, command=self._clear_search)
             self._search_entry.pack(side="left", fill="x", expand=True, padx=(0, 6))
-            self._search_entry.on_enter(lambda _e: self._run_search())
+            trigger = str(self._searchbar.get('event', 'enter')).lower()
+            if trigger == 'input':
+                self._search_entry.on_input(lambda _e: self._run_search())
+            else:
+                self._search_entry.on_enter(lambda _e: self._run_search())
+                # Clear filter when the box is emptied, but do not search on every keystroke
+                self._search_entry.on_input(lambda _e: self._clear_search() if not self._search_entry.get() else None)
 
-            if self._searchbar_mode == 'advanced':
+            if self._searchbar['mode'] == 'advanced':
                 self._search_mode = SelectBox(
                     bar,
                     items=["EQUALS", "CONTAINS", "STARTS WITH", "ENDS WITH", "SQL"],
@@ -241,7 +421,7 @@ class DataGrid(Frame):
                 )
                 self._search_mode.pack(side="left", padx=(0, 6))
 
-        if self._allow_column_hiding and self._show_column_chooser:
+        if self._show_column_chooser:
             self._column_chooser_btn = Button(
                 bar,
                 icon="layout-three-columns",
@@ -251,13 +431,13 @@ class DataGrid(Frame):
             )
             self._column_chooser_btn.pack(side="right", padx=(4, 0))
 
-        if self._allow_exporting:
+        if self._exporting['enabled']:
             export_items = []
-            if "all" in self._export_options:
+            if self._exporting['export_all_mode'] == 'all':
                 export_items.append({"type": "command", "text": "Export all", "command": self._export_all})
-            if "selection" in self._export_options:
+            if self._exporting["allow_export_selected"]:
                 export_items.append({"type": "command", "text": "Export selection", "command": self._export_selection})
-            if "page" in self._export_options:
+            if self._exporting['export_all_mode'] == "page":
                 export_items.append({"type": "command", "text": "Export page", "command": self._export_page})
             if not export_items:
                 export_items.append({"type": "command", "text": "Export all", "command": self._export_all})
@@ -271,7 +451,7 @@ class DataGrid(Frame):
                 show_dropdown_button=False,
             ).pack(side="right")
 
-        if self._allow_editing:
+        if self._editing['adding']:
             Button(
                 bar,
                 icon="plus-lg",
@@ -287,22 +467,29 @@ class DataGrid(Frame):
         cols = [self._col_text(c) for c in self._column_defs] or self._column_keys
         tree_container = Frame(frame)
         tree_container.pack(side="left", fill="both", expand=True)
+        # Prevent the tree from expanding the container beyond the available viewport
+        tree_container.pack_propagate(False)
 
-        self._tree = Treeview(tree_container, columns=list(range(len(cols))), show="headings")
+        self._tree = Treeview(
+            tree_container,
+            columns=list(range(len(cols))),
+            selectmode=_parse_selection_mode(self._selection['mode']),
+            show="headings"
+        )
         self._tree.pack(side="top", fill="both", expand=True, padx=3)
         self._display_columns = list(range(len(cols)))
 
-        if self._show_yscroll:
+        if self._paging['yscroll']:
             self._vsb = Scrollbar(frame, orient="vertical", command=self._tree.yview)
             self._vsb.pack(side="right", fill="y")
-            if self._virtual_scroll:
+            if self._paging['mode'] == "virtual":
                 self._tree.configure(yscrollcommand=self._on_scroll)
             else:
                 self._tree.configure(yscrollcommand=self._vsb.set)
         else:
             self._vsb = None
 
-        if self._show_xscroll:
+        if self._paging['xscroll']:
             self._hsb = Scrollbar(tree_container, orient="horizontal", command=self._tree.xview)
             self._hsb.pack(side="bottom", fill="x")
             self._tree.configure(xscrollcommand=self._hsb.set)
@@ -311,7 +498,7 @@ class DataGrid(Frame):
 
         self._heading_texts = []
         self._column_anchors = []
-        stretch_columns = not self._show_xscroll  # allow natural width when xscroll is enabled
+        stretch_columns = not self._paging['xscroll']  # allow natural width when xscroll is enabled
         for idx, text in enumerate(cols):
             self._heading_texts.append(text)
             anchor = self._determine_anchor(idx)
@@ -321,7 +508,7 @@ class DataGrid(Frame):
             self._tree.heading(idx, **heading_kwargs)
             # Apply per-column width overrides, fall back to global defaults
             width = 120
-            minwidth = self._min_col_width
+            minwidth = self._column_min_width
             if idx < len(self._column_defs):
                 coldef = self._column_defs[idx]
                 if isinstance(coldef, dict):
@@ -330,9 +517,9 @@ class DataGrid(Frame):
             self._tree.column(idx, anchor=anchor, width=width, minwidth=minwidth, stretch=stretch_columns)
         self._update_heading_icons()
         self._tree.bind("<Button-1>", self._on_header_click)
-        if self._show_context_menus != "none":
+        if self._context_menus != "none":
             self._tree.bind("<Button-3>", self._on_tree_context)
-        if self._allow_editing:
+        if self._editing['updating']:
             self._tree.bind("<Double-1>", self._on_row_double_click)
         # Track resize events to rebalance grouped layouts
         self._tree.bind("<Configure>", self._on_tree_configure)
@@ -382,10 +569,10 @@ class DataGrid(Frame):
         return str(col)
 
     def _header_context_enabled(self) -> bool:
-        return self._show_context_menus in ("all", "headers")
+        return self._context_menus in ("all", "headers")
 
     def _row_context_enabled(self) -> bool:
-        return self._show_context_menus in ("all", "rows")
+        return self._context_menus in ("all", "rows")
 
     def _quote_col(self, key: str) -> str:
         """Quote column identifiers for safe SQL usage (handles reserved names)."""
@@ -507,16 +694,21 @@ class DataGrid(Frame):
             self._render_grouped(records)
         else:
             self._render_flat(records)
+        self._apply_row_alternation()
 
     def _append_tree(self, records: list[dict]) -> None:
         # Grouped mode rebuilds the view instead of appending to keep hierarchy consistent
         if self._group_by_key:
             self._refresh_tree(records)
             return
-        for rec in records:
+        stripe = self._row_alternation.get('enabled', False) and not self._group_by_key
+        start_idx = len(self._tree.get_children(""))
+        for offset, rec in enumerate(records):
             values = [rec.get(k, "") for k in self._column_keys]
-            iid = self._tree.insert("", "end", values=values)
+            tags = ("altrow",) if stripe and (start_idx + offset) % 2 == 1 else ()
+            iid = self._tree.insert("", "end", values=values, tags=tags)
             self._row_map[iid] = rec
+        self._apply_row_alternation()
 
     def _total_pages(self) -> int:
         try:
@@ -524,7 +716,7 @@ class DataGrid(Frame):
             if self._cached_total_count is None:
                 self._cached_total_count = self._datasource.total_count()
             total = self._cached_total_count
-            size = getattr(self._datasource, "page_size", self._page_size) or 1
+            size = getattr(self._datasource, "page_size", self._paging['page_size']) or 1
             return max(1, (total + size - 1) // size)
         except Exception:
             return 1
@@ -546,6 +738,8 @@ class DataGrid(Frame):
                 self._append_tree(records)
             else:
                 self._refresh_tree(records)
+            if self._column_auto_width:
+                self._auto_size_columns(records if not append else None)
             self._update_page_label()
         finally:
             self._loading_next = False
@@ -594,7 +788,7 @@ class DataGrid(Frame):
 
         self._vsb.set(first_f, last_f)
         if (
-                self._virtual_scroll
+                self._paging['mode'] == "virtual"
                 and last_f >= 0.85  # prefetch a bit earlier for smoother scrolling
                 and not self._loading_next
                 and hasattr(self._datasource, "has_next_page")
@@ -630,7 +824,7 @@ class DataGrid(Frame):
         try:
             self._datasource.set_filter(where)
         except Exception:
-            pass
+            logger.exception("Failed to apply search filter: %s", where)
         self._clear_cache()
         self._load_page(0)
         self._update_status_labels()
@@ -703,21 +897,28 @@ class DataGrid(Frame):
         if self._row_menu:
             return
         menu = ContextMenu(master=self, target=self._tree)
-        menu.add_command(text="Sort Ascending", command=lambda: self._sort_selection(True))
-        menu.add_command(text="Sort Descending", command=lambda: self._sort_selection(False))
-        menu.add_separator()
-        menu.add_command(text="Filter by Value", command=self._filter_by_value)
-        menu.add_command(text="Hide Selection", command=self._hide_selection)
-        menu.add_command(text="Clear Filter", command=self._clear_filter_cmd)
+        if not self._sorting == 'none':
+            menu.add_command(text="Sort Ascending", command=lambda: self._sort_selection(True))
+            menu.add_command(text="Sort Descending", command=lambda: self._sort_selection(False))
+
+        if self._filtering['row_menu_filtering']:
+            menu.add_separator()
+            menu.add_command(text="Filter by Value", command=self._filter_by_value)
+            menu.add_command(text="Hide Selection", command=self._hide_selection)
+            menu.add_command(text="Clear Filter", command=self._clear_filter_cmd)
+
         menu.add_separator()
         menu.add_command(text="Move Up", command=self._move_row_up)
         menu.add_command(text="Move Down", command=self._move_row_down)
         menu.add_command(text="Move to Top", command=self._move_row_top)
         menu.add_command(text="Move to Bottom", command=self._move_row_bottom)
-        if self._allow_editing:
+
+        if self._editing['updating'] or self._editing['deleting']:
             menu.add_separator()
-            menu.add_command(text="Edit", icon="pencil", command=self._edit_selected_row)
-            menu.add_command(text="Delete", icon="trash", command=self._delete_selected_row)
+            if self._editing['updating']:
+                menu.add_command(text="Edit", icon="pencil", command=self._edit_selected_row)
+            if self._editing['deleting']:
+                menu.add_command(text="Delete", icon="trash", command=self._delete_selected_row)
         self._row_menu = menu
 
     def _on_row_context(self, event) -> None:
@@ -739,7 +940,7 @@ class DataGrid(Frame):
         self._row_menu.show(position=(event.x_root, event.y_root))
 
     def _on_row_double_click(self, event) -> None:
-        if not self._allow_editing:
+        if not self._editing['updating']:
             return
         region = self._tree.identify_region(event.x, event.y)
         if region == "heading":
@@ -751,7 +952,7 @@ class DataGrid(Frame):
         self._open_form_dialog(rec)
 
     def _open_new_record(self) -> None:
-        if not self._allow_editing:
+        if not self._editing['adding']:
             return
         self._open_form_dialog(None)
 
@@ -768,7 +969,7 @@ class DataGrid(Frame):
         form_items = self._build_form_items()
         initial_data = dict(record) if record else {}
 
-        form_options = dict(self._form_options)
+        form_options = dict(self._editing['form'])
         form_options.setdefault('col_count', 2)
         form_options.setdefault('min_col_width', 260)
         form_options.setdefault('scrollable', True)
@@ -776,7 +977,10 @@ class DataGrid(Frame):
 
         # Build buttons: Cancel, Delete (only for existing records), Save
         if record and "id" in record:
-            buttons = ["Cancel", {"text": "Delete", "role": "secondary", "result": "delete"}, "Save"]
+            buttons: list[str | dict] = ['Cancel']
+            if self._editing['deleting']:
+                buttons.append({"text": "Delete", "role": "secondary", "result": "delete"})
+            buttons.append("Save")
         else:
             buttons = ["Cancel", "Save"]
 
@@ -945,6 +1149,7 @@ class DataGrid(Frame):
         if new_idx == idx:
             return
         self._tree.move(target_iid, "", new_idx)
+        self._apply_row_alternation()
 
     def _move_row_absolute(self, new_idx: int) -> None:
         sel = list(self._tree.selection())
@@ -954,6 +1159,7 @@ class DataGrid(Frame):
         children = list(self._tree.get_children())
         new_idx = max(0, min(len(children) - 1, new_idx))
         self._tree.move(target_iid, "", new_idx)
+        self._apply_row_alternation()
 
     def _hide_selection(self) -> None:
         sel = list(self._tree.selection())
@@ -1049,13 +1255,13 @@ class DataGrid(Frame):
             self._tree.heading(idx, text=text, image=image)
 
     def _remember_page(self, page: int, records: list[dict]) -> None:
-        if self._cache_size <= 0:
+        if self._paging['cache_size'] <= 0:
             return
         # Move/update LRU cache
         if page in self._page_cache:
             self._page_cache.pop(page)
         self._page_cache[page] = records
-        if len(self._page_cache) > self._cache_size:
+        if len(self._page_cache) > self._paging['cache_size']:
             self._page_cache.popitem(last=False)
 
     def _focus_record(self, record_id) -> None:
@@ -1086,10 +1292,114 @@ class DataGrid(Frame):
             pass
         return None
 
+    def _auto_size_columns(self, records: list[dict] | None = None) -> None:
+        """Auto-size columns to the widest value among current rows/headings."""
+        if not self._column_keys:
+            return
+        try:
+            style = use_style()
+            # Prefer the Treeview body font; fall back to TLabel/body or default
+            tv_style = self._tree.cget("style") or "Treeview"
+            body_font = (
+                    style.lookup(tv_style, "font")
+                    or style.lookup("TLabel", "font")
+                    or getattr(style, "fonts", {}).get("body")
+                    or "TkDefaultFont"
+            )
+            content_font = tkfont.nametofont(body_font)
+        except Exception:
+            content_font = None
+
+        pad_px = 20
+
+        # Gather samples from headings, provided records, and current tree values
+        tree_samples = []
+        for iid in self._tree.get_children(""):
+            tree_samples.append(self._tree.item(iid, "values"))
+            for ciid in self._tree.get_children(iid):
+                tree_samples.append(self._tree.item(ciid, "values"))
+
+        for idx, key in enumerate(self._column_keys):
+            samples = []
+            if idx < len(self._heading_texts):
+                samples.append(str(self._heading_texts[idx]))
+            if records:
+                for rec in records:
+                    samples.append(str(rec.get(key, "")))
+            for vals in tree_samples:
+                if idx < len(vals):
+                    samples.append(str(vals[idx]))
+
+            # Honor explicit column width if provided
+            explicit_width = None
+            if idx < len(self._column_defs):
+                coldef = self._column_defs[idx]
+                if isinstance(coldef, dict):
+                    explicit_width = coldef.get("width")
+
+            if explicit_width is not None:
+                try:
+                    self._tree.column(idx, width=explicit_width, minwidth=self._column_min_width)
+                except Exception:
+                    pass
+                continue
+
+            text = max(samples, key=len) if samples else ""
+            if content_font:
+                width = content_font.measure(text) + pad_px
+            else:
+                width = 0
+            # Fallback to simple char-based estimate to avoid under-measuring
+            char_estimate = len(text) * 10 + pad_px
+            width = max(width, char_estimate, self._column_min_width)
+            # Cap width to available viewport so we don't force the tree wider than its frame
+            try:
+                avail = max(0, int(self._tree.winfo_width()) - pad_px)
+                if avail > 0:
+                    width = min(width, avail)
+            except Exception:
+                pass
+            try:
+                self._tree.column(idx, width=width, minwidth=self._column_min_width)
+            except Exception:
+                pass
+
+    def _apply_row_alternation(self) -> None:
+        """Apply alternating row colors via a tag."""
+        enabled = self._row_alternation.get('enabled', False)
+        if not enabled or self._group_by_key:
+            return
+        bg, fg = self._resolve_alternating_row_color()
+        try:
+            self._tree.tag_configure("altrow", background=bg, foreground=fg)
+            # Some themes honor the "striped" tag name; configure it too
+            self._tree.tag_configure("striped", background=bg, foreground=fg)
+        except Exception:
+            return
+
+        queue = list(self._tree.get_children(""))
+        idx = 0
+        while queue:
+            iid = queue.pop(0)
+            try:
+                tags = list(self._tree.item(iid, "tags") or [])
+                if idx % 2 == 1:
+                    if "altrow" not in tags:
+                        tags.append("altrow")
+                    if "striped" not in tags:
+                        tags.append("striped")
+                else:
+                    tags = [t for t in tags if t not in ("altrow", "striped")]
+                self._tree.item(iid, tags=tags)
+            except Exception:
+                pass
+            queue.extend(list(self._tree.get_children(iid)))
+            idx += 1
+
     def _rebalance_grouped_widths(self) -> None:
         """Distribute available width across data columns when grouped so the left tree column is included."""
         # Only rebalance when grouping is active and xscroll is off (otherwise user can scroll)
-        if not self._group_by_key or self._show_xscroll:
+        if not self._group_by_key or self._paging['xscroll']:
             return
         try:
             tree_width = max(0, int(self._tree.winfo_width()))
@@ -1109,7 +1419,7 @@ class DataGrid(Frame):
             cols = [c for c in self._display_columns if c < len(self._heading_texts)]
             if not cols:
                 return
-            width = max(self._min_col_width, available // len(cols))
+            width = max(self._column_min_width, available // len(cols))
             for c in cols:
                 self._tree.column(c, width=width, stretch=True)
             # Keep the group column fixed so only data columns flex
@@ -1138,8 +1448,8 @@ class DataGrid(Frame):
 
     def _export_page(self) -> None:
         try:
-            start_index = self._current_page * self._page_size
-            rows = self._datasource.get_page_from_index(start_index, self._page_size)
+            start_index = self._current_page * self._paging['page_size']
+            rows = self._datasource.get_page_from_index(start_index, self._paging['page_size'])
             self._tree.event_generate("<<DataGridExportPage>>", data=rows)
         except Exception:
             pass
@@ -1151,7 +1461,7 @@ class DataGrid(Frame):
         if region != "heading":
             return
 
-        if not self._sort_on_header_click:
+        if self._sorting == 'none':
             return
 
         col_id = self._tree.identify_column(event.x)  # e.g. "#1"
@@ -1280,7 +1590,7 @@ class DataGrid(Frame):
 
     # ------------------------------------------------------------------ Context dispatch
     def _on_tree_context(self, event) -> None:
-        if self._show_context_menus == "none":
+        if self._context_menus == "none":
             return
         region = self._tree.identify_region(event.x, event.y)
         if region == "heading":
@@ -1307,10 +1617,9 @@ class DataGrid(Frame):
         menu.add_command(text="Move Right", icon="arrow-right", command=self._move_header_right)
         menu.add_command(text="Move First", icon="arrow-bar-left", command=self._move_header_first)
         menu.add_command(text="Move Last", icon="arrow-bar-right", command=self._move_header_last)
-        if self._allow_column_hiding:
-            menu.add_separator()
-            menu.add_command(text="Hide Column", icon="eye-slash", command=self._hide_header_column)
-            menu.add_command(text="Show All", icon="eye", command=self._show_all_columns)
+        menu.add_separator()
+        menu.add_command(text="Hide Column", icon="eye-slash", command=self._hide_header_column)
+        menu.add_command(text="Show All", icon="eye", command=self._show_all_columns)
         if self._allow_grouping:
             menu.add_separator()
             menu.add_command(text="Group by This Column", command=self._group_header_column)
@@ -1318,7 +1627,8 @@ class DataGrid(Frame):
         menu.add_separator()
         menu.add_command(text="Reset Table", icon="arrow-counterclockwise", command=self._reset_table)
         menu.add_separator()
-        menu.add_command(text="Clear Sort", icon="x-lg", command=self._clear_sort)
+        if not self._sorting == 'none':
+            menu.add_command(text="Clear Sort", icon="x-lg", command=self._clear_sort)
         self._header_menu = menu
 
     def _on_header_context(self, event) -> None:
@@ -1394,8 +1704,6 @@ class DataGrid(Frame):
         self._tree.configure(displaycolumns=self._display_columns)
 
     def _hide_header_column(self) -> None:
-        if not self._allow_column_hiding:
-            return
         col = self._header_menu_col
         if col is None or col not in self._display_columns:
             return
@@ -1405,8 +1713,6 @@ class DataGrid(Frame):
         self._tree.configure(displaycolumns=self._display_columns)
 
     def _show_all_columns(self) -> None:
-        if not self._allow_column_hiding:
-            return
         if not self._heading_texts:
             return
         self._display_columns = list(range(len(self._heading_texts)))
@@ -1416,8 +1722,6 @@ class DataGrid(Frame):
         """Show a dialog to select which columns are visible."""
         from ttkbootstrap.dialogs.filterdialog import FilterDialog
 
-        if not self._allow_column_hiding:
-            return
         if not self._heading_texts:
             return
 
@@ -1524,7 +1828,7 @@ class DataGrid(Frame):
             self._tree.column("#0", width=0, minwidth=0, stretch=False)
             # Restore stretch behavior for data columns based on scroll mode
             try:
-                stretch_cols = not self._show_xscroll
+                stretch_cols = not self._paging['xscroll']
                 for idx in range(len(self._heading_texts)):
                     self._tree.column(idx, stretch=stretch_cols)
             except Exception:
@@ -1532,9 +1836,11 @@ class DataGrid(Frame):
 
     def _render_flat(self, records: list[dict]) -> None:
         """Insert records as flat rows."""
-        for rec in records:
+        stripe = self._row_alternation.get('enabled', False) and not self._group_by_key
+        for idx, rec in enumerate(records):
             values = [rec.get(k, "") for k in self._column_keys]
-            iid = self._tree.insert("", "end", values=values)
+            tags = ("altrow",) if stripe and idx % 2 == 1 else ()
+            iid = self._tree.insert("", "end", values=values, tags=tags)
             self._row_map[iid] = rec
 
     def _render_grouped(self, records: list[dict]) -> None:
@@ -1566,3 +1872,4 @@ class DataGrid(Frame):
         self._update_heading_icons()
         self._load_page(0)
         self._update_status_labels()
+
