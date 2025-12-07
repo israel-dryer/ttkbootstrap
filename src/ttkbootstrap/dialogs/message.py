@@ -6,10 +6,10 @@ import tkinter
 from typing import Any, Callable, List, Optional
 
 import ttkbootstrap as ttk
-from ttkbootstrap.appconfig import use_icon_provider
+from ttkbootstrap import BootstrapIcon
 from ttkbootstrap.constants import *
 from ttkbootstrap.localization import MessageCatalog
-from .dialog import Dialog, DialogButton, ButtonRole
+from .dialog import ButtonRole, Dialog, DialogButton
 
 logger = logging.getLogger(__name__)
 
@@ -96,8 +96,6 @@ class MessageDialog:
 
         if self._icon:
             try:
-                icon_provider = use_icon_provider()
-
                 # Parse icon specification - initialize variables
                 icon_name: Optional[str] = None
                 icon_size: int = 32
@@ -115,9 +113,9 @@ class MessageDialog:
                 # Generate icon image
                 if icon_name:
                     if icon_color:
-                        icon_image = icon_provider(icon_name, icon_size, icon_color)
+                        icon_image = BootstrapIcon(icon_name, icon_size, icon_color).image
                     else:
-                        icon_image = icon_provider(icon_name, icon_size)
+                        icon_image = BootstrapIcon(icon_name, icon_size).image
 
                     self._img = icon_image
                     icon_lbl = ttk.Label(container, image=self._img)
@@ -182,9 +180,11 @@ class MessageDialog:
 
     def _make_command_callback(self) -> Callable[[Dialog], None]:
         """Create a callback wrapper for the custom command."""
+
         def callback(dialog: Dialog) -> None:
             if self._command:
                 self._command()
+
         return callback
 
     def show(self, position: Optional[tuple[int, int]] = None) -> None:

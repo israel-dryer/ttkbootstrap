@@ -1,3 +1,4 @@
+ttkbootstrap-icons-bs>=1.0
 dateparser
 typing-extensions
 mkdocs>=1.5,<2.0

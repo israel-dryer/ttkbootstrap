@@ -6,7 +6,7 @@ TODO there is a strange bug that causes the treeview to request more size when t
 """
 from tkinter import font
 
-from ttkbootstrap.appconfig import use_icon_provider
+from ttkbootstrap import BootstrapIcon
 from ttkbootstrap.style.bootstyle_builder_ttk import BootstyleBuilderTTk
 from ttkbootstrap.style.element import Element, ElementImage
 from ttkbootstrap.style.utility import create_transparent_image, recolor_image
@@ -66,16 +66,13 @@ def build_tree_style(b: BootstyleBuilderTTk, ttk_style: str, color: str = None, 
     f = font.nametofont('TkDefaultFont')
     row_height = int(f.metrics()['linespace'] * 1.75)
 
-    # customize indicator
-    icon = use_icon_provider()
-
     open_icon = options.get('open_icon', 'chevron-right')  # 'plus-square', plus-lg
     closed_icon = options.get('close_icon', 'chevron-down')  # 'dash-square', dash-lg
     icon_size = b.scale(16)
-    expand_icon_normal = icon(open_icon, icon_size, on_surface)
-    expand_icon_selected = icon(open_icon, icon_size, on_select)
-    collapse_icon_normal = icon(closed_icon, icon_size, on_surface)
-    collapse_icon_selected = icon(closed_icon, icon_size, on_select)
+    expand_icon_normal = BootstrapIcon(open_icon, icon_size, on_surface).image
+    expand_icon_selected = BootstrapIcon(open_icon, icon_size, on_select).image
+    collapse_icon_normal = BootstrapIcon(closed_icon, icon_size, on_surface).image
+    collapse_icon_selected = BootstrapIcon(closed_icon, icon_size, on_select).image
     leaf = create_transparent_image(icon_size, icon_size)
 
     b.create_style_element_image(

@@ -11,7 +11,7 @@ for color in colors:
 from tkinter import font
 print('font-height', font.nametofont('body').metrics()['linespace'])
 
-ttk.Button(app, icon="bootstrap-fill").pack()
+ttk.Button(app, icon="bootstrap-fill", icon_only=True).pack()
 b = ttk.Button(app, icon="bootstrap-fill", icon_only=True)
 b.pack()
 

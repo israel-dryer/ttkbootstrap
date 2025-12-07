@@ -47,9 +47,9 @@ import tkinter
 from typing import Any, Optional, Tuple, Union
 
 from ttkbootstrap import utility
+from ttkbootstrap_icons_bs import BootstrapIcon
 from ttkbootstrap.appconfig import AppConfig
 from ttkbootstrap.constants import *
-from ttkbootstrap.icons import Icon
 from ttkbootstrap.publisher import Publisher
 from ttkbootstrap.style.style import Style
 
@@ -313,7 +313,7 @@ class Window(tkinter.Tk):
         if iconphoto is not None:
             if iconphoto == '':
                 # the default ttkbootstrap icon
-                self._icon = tkinter.PhotoImage(master=self, data=Icon.icon)
+                self._icon = BootstrapIcon('feather', 24, 'black')
                 self.iconphoto(True, self._icon)
             else:
                 try:
@@ -323,7 +323,7 @@ class Window(tkinter.Tk):
                 except tkinter.TclError:
                     # The fallback icon if the user icon fails.
                     print('iconphoto path is bad; using default image.')
-                    self._icon = tkinter.PhotoImage(data=Icon.icon, master=self)
+                    self._icon = BootstrapIcon('feather', 24, 'black')
                     self.iconphoto(True, self._icon)
 
         self.title(title)
