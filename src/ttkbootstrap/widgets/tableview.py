@@ -1,5 +1,5 @@
 """
-DataGrid widget backed by an in-memory SQLite datasource.
+TableView widget backed by an in-memory SQLite datasource.
 
 The datasource performs filtering, sorting, and pagination while the widget
 renders the current page in a Treeview with optional grouping, striping, and
@@ -194,9 +194,9 @@ def _normalize_searchbar_options(options: SearchOptions | None) -> SearchOptions
     return options
 
 
-class DataGrid(Frame):
+class TableView(Frame):
     """
-    Data grid backed by an in-memory SqliteDataSource with sortable headers,
+    TableView backed by an in-memory SqliteDataSource with sortable headers,
     filtering/search, pagination or virtual scrolling, optional grouping,
     column striping, and configurable exporting/editing. Context menus are
     opt-in, the searchbar can trigger on enter or input, and columns can
@@ -236,7 +236,7 @@ class DataGrid(Frame):
             **kwargs,
     ):
         """
-        Create a DataGrid backed by an in-memory SqliteDataSource.
+        Create a TableView backed by an in-memory SqliteDataSource.
 
         Args:
             master: Parent widget.
@@ -1818,14 +1818,14 @@ class DataGrid(Frame):
     def _export_all(self) -> None:
         try:
             rows = self._datasource.get_page_from_index(0, self._datasource.total_count())
-            self._tree.event_generate("<<DataGridExportAll>>", data=rows)
+            self._tree.event_generate("<<TableViewExportAll>>", data=rows)
         except Exception:
             pass
 
     def _export_selection(self) -> None:
         try:
             selected = [self._row_map[iid] for iid in self._tree.selection() if iid in self._row_map]
-            self._tree.event_generate("<<DataGridExportSelection>>", data=selected)
+            self._tree.event_generate("<<TableViewExportSelection>>", data=selected)
         except Exception:
             pass
 
@@ -1833,7 +1833,7 @@ class DataGrid(Frame):
         try:
             start_index = self._current_page * self._paging['page_size']
             rows = self._datasource.get_page_from_index(start_index, self._paging['page_size'])
-            self._tree.event_generate("<<DataGridExportPage>>", data=rows)
+            self._tree.event_generate("<<TableViewExportPage>>", data=rows)
         except Exception:
             pass
 
@@ -2273,4 +2273,4 @@ class DataGrid(Frame):
 
 
 # Backwards-compatible alias for the legacy Tableview name
-Tableview = DataGrid
+Tableview = TableView

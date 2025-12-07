@@ -40,7 +40,7 @@ columns = [
 ]
 
 start = time.perf_counter()
-grid = ttk.DataGrid(
+grid = ttk.TableView(
     app,
     columns=columns,
     rows=rows,
