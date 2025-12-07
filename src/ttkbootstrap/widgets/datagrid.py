@@ -943,7 +943,6 @@ class DataGrid(Frame):
     def _row_context_enabled(self) -> bool:
         return self._context_menus in ("all", "rows")
 
-
     def _quote_col(self, key: str) -> str:
         """Quote column identifiers for safe SQL usage (handles reserved names)."""
         try:
@@ -2272,3 +2271,6 @@ class DataGrid(Frame):
         self._load_page(0)
         self._update_status_labels()
 
+
+# Backwards-compatible alias for the legacy Tableview name
+Tableview = DataGrid

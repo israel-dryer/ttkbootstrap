@@ -5,7 +5,6 @@ This module provides constants for backwards compatibility.
 """
 import tkinter as tk
 from tkinter import ttk
-from ttkbootstrap.widgets.datagrid import DataGrid
 
 # Constants from original widgets.py
 
@@ -51,4 +50,4 @@ TK_WIDGETS = (
     tk.Spinbox,
 )
 
-__all__ = ['TTK_WIDGETS', 'TK_WIDGETS', 'DataGrid']
+__all__ = ['TTK_WIDGETS', 'TK_WIDGETS']

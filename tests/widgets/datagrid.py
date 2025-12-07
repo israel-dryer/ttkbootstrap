@@ -3,7 +3,6 @@ import time
 from pathlib import Path
 
 import ttkbootstrap as ttk
-from ttkbootstrap.widgets.datagrid import DataGrid
 
 p = Path(__file__).parent / "people-1000.csv"
 with open(p, encoding="utf-8") as f:
@@ -41,7 +40,7 @@ columns = [
 ]
 
 start = time.perf_counter()
-grid = DataGrid(
+grid = ttk.DataGrid(
     app,
     columns=columns,
     rows=rows,
