@@ -3,10 +3,10 @@ from typing import Any, Optional, Tuple, Union
 
 from ttkbootstrap_icons_bs import BootstrapIcon
 
-from ttkbootstrap import utility
 from ttkbootstrap.core.appconfig import AppConfig
+from ttkbootstrap.core.publisher import Publisher
 from ttkbootstrap.constants import *
-from ttkbootstrap.publisher import Publisher
+from ttkbootstrap.runtime.utility import enable_high_dpi_awareness
 from ttkbootstrap.style.style import Style
 
 
@@ -250,7 +250,7 @@ class Window(tkinter.Tk):
             alpha = AppConfig.get("window_alpha")
 
         if hdpi:
-            utility.enable_high_dpi_awareness()
+            enable_high_dpi_awareness()
 
         super().__init__(**kwargs)
         self.winsys: str = self.tk.call('tk', 'windowingsystem')
@@ -262,9 +262,9 @@ class Window(tkinter.Tk):
         if hdpi:
             # Apply auto-detected scaling if no manual scaling specified
             if scaling is None:
-                utility.enable_high_dpi_awareness(self, 'auto')
+                enable_high_dpi_awareness(self, 'auto')
             else:
-                utility.enable_high_dpi_awareness(self, scaling)
+                enable_high_dpi_awareness(self, scaling)
 
         if iconphoto is not None:
             if iconphoto == '':

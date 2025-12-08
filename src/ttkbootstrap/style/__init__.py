@@ -66,7 +66,7 @@ from PIL.Image import Resampling, Transpose
 from ttkbootstrap.core import colorutils
 from ttkbootstrap.runtime import utility as util
 from ttkbootstrap.constants import *
-from ttkbootstrap.publisher import Channel, Publisher
+from ttkbootstrap.core.publisher import Channel, Publisher
 from ttkbootstrap.themes.standard import STANDARD_THEMES
 
 try:

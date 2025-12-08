@@ -16,7 +16,7 @@ from ttkbootstrap.widgets.primitives import (
     Treeview,
 )
 from ttkbootstrap.api.window import Window
-from ttkbootstrap import utility
+from ttkbootstrap.runtime.utility import scale_size
 from ttkbootstrap.constants import *
 from ttkbootstrap.dialogs.dialog import Dialog, DialogButton
 from ttkbootstrap.core.localization import MessageCatalog
@@ -122,8 +122,8 @@ class FontDialog:
     def _create_content(self, master: tkinter.Widget) -> None:
         """Create the dialog body with font selection controls."""
         # Set dialog size
-        width = utility.scale_size(master, 800)
-        height = utility.scale_size(master, 600)
+        width = scale_size(master, 800)
+        height = scale_size(master, 600)
         if self._dialog.toplevel:
             self._dialog.toplevel.geometry(f"{width}x{height}")
 
@@ -156,7 +156,7 @@ class FontDialog:
             show="",
             columns=[0],
         )
-        listbox.column(0, width=utility.scale_size(listbox, 250))
+        listbox.column(0, width=scale_size(listbox, 250))
         listbox.pack(side=LEFT, fill=BOTH, expand=YES)
 
         listbox_vbar = ttk.Scrollbar(
@@ -191,7 +191,7 @@ class FontDialog:
         header.pack(fill=X, pady=(0, 2), anchor=N)
 
         sizes_listbox = ttk.Treeview(container, height=7, columns=[0], show="")
-        sizes_listbox.column(0, width=utility.scale_size(sizes_listbox, 48))
+        sizes_listbox.column(0, width=scale_size(sizes_listbox, 48))
 
         sizes = [*range(8, 13), *range(13, 30, 2), 36, 48, 72]
         for s in sizes:
@@ -270,7 +270,7 @@ class FontDialog:
 
     def _font_preview(self, master: tkinter.Misc, padding: int) -> None:
         """Create the font preview text widget."""
-        container = ttk.Frame(master, padding=padding, height=utility.scale_size(master, 150))
+        container = ttk.Frame(master, padding=padding, height=scale_size(master, 150))
         container.pack(fill=BOTH, expand=YES, anchor=N)
         container.pack_propagate(False)
 

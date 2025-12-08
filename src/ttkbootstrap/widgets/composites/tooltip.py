@@ -5,7 +5,7 @@ from typing import Any, Literal, Optional, Union
 
 from ttkbootstrap.widgets.primitives import Button, Frame, Label
 from ttkbootstrap.api.window import Toplevel
-from ttkbootstrap import utility
+from ttkbootstrap.runtime.utility import scale_size
 from ttkbootstrap.constants import *
 
 ttk = SimpleNamespace(
@@ -126,7 +126,7 @@ class ToolTip:
         self._padding = padding
         self._justify = justify
         self._bootstyle = bootstyle
-        self._wraplength = wraplength if wraplength is not None else utility.scale_size(self._widget, 300)
+        self._wraplength = wraplength if wraplength is not None else scale_size(self._widget, 300)
         self._delay = delay
         self._image = image
         self._position = validated_position
