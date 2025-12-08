@@ -24,7 +24,8 @@ from PIL import ImageGrab, ImageTk
 from PIL.Image import Resampling
 
 import ttkbootstrap as ttk
-from ttkbootstrap import colorutils, utility
+import ttkbootstrap.core.colorutils as colorutils
+import ttkbootstrap.runtime.utility as utility
 from ttkbootstrap.constants import *
 
 ColorChoice = namedtuple('ColorChoice', 'rgb hsl hex')

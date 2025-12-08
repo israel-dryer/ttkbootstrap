@@ -7,7 +7,7 @@ from typing import Any, Callable, List, Optional
 
 import ttkbootstrap as ttk
 from ttkbootstrap.constants import *
-from ttkbootstrap.localization import MessageCatalog
+from ttkbootstrap.core.localization import MessageCatalog
 from ttkbootstrap.dialogs.datedialog import DateDialog
 from ttkbootstrap.dialogs.dialog import Dialog, DialogButton
 from ttkbootstrap.dialogs.fontdialog import FontDialog

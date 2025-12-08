@@ -8,7 +8,7 @@ from typing import Any, Callable, Iterable, Literal, Optional
 
 import ttkbootstrap as ttk
 from ttkbootstrap.constants import BOTH, CENTER, LEFT, NSEW, PRIMARY, X, Y, YES
-from ttkbootstrap.localization import MessageCatalog
+from ttkbootstrap.core.localization import MessageCatalog
 from ttkbootstrap.widgets.mixins import configure_delegate
 
 

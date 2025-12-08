@@ -10,7 +10,7 @@ from typing import Union
 from typing_extensions import Unpack
 
 from ttkbootstrap import AppConfig
-from ttkbootstrap.localization import IntlFormatter
+from ttkbootstrap.core.localization import IntlFormatter
 from ttkbootstrap.widgets.field import FieldOptions
 from ttkbootstrap.widgets.selectbox import SelectBox
 

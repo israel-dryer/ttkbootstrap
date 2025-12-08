@@ -8,7 +8,7 @@ from typing import Any, Callable, List, Optional
 import ttkbootstrap as ttk
 from ttkbootstrap_icons_bs import BootstrapIcon
 from ttkbootstrap.constants import *
-from ttkbootstrap.localization import MessageCatalog
+from ttkbootstrap.core.localization import MessageCatalog
 from .dialog import ButtonRole, Dialog, DialogButton
 
 logger = logging.getLogger(__name__)

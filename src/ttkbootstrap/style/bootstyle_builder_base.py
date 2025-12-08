@@ -10,7 +10,7 @@ from ttkbootstrap_icons_bs import BootstrapIcon
 from ttkbootstrap.style.theme_provider import ThemeProvider, use_theme
 from ttkbootstrap.style.utility import best_foreground, color_to_hsl, darken_color, lighten_color, mix_colors, \
     relative_luminance
-from ttkbootstrap.utility import scale_size
+from ttkbootstrap.runtime.utility import scale_size
 
 
 class IconSpec(TypedDict, total=False):
@@ -402,7 +402,7 @@ class BootstyleBuilderBase:
             Icon sizes are automatically scaled based on DPI settings. The default size of 20px provides
             a balanced appearance, being slightly larger than the visible text (16px) but not overwhelming.
         """
-        from ttkbootstrap.utility import scale_size
+        from ttkbootstrap.runtime.utility import scale_size
 
         # Apply DPI scaling to default size
         scaled_default = scale_size(default_size)

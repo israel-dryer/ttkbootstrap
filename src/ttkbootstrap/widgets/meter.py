@@ -6,7 +6,7 @@ from warnings import warn
 from PIL import Image, ImageDraw, ImageTk
 from PIL.Image import Resampling
 
-from ttkbootstrap.exceptions import ConfigurationWarning
+from ttkbootstrap.core.exceptions import ConfigurationWarning
 from ttkbootstrap.widgets.frame import Frame
 from ttkbootstrap.widgets.mixins.configure_mixin import configure_delegate
 

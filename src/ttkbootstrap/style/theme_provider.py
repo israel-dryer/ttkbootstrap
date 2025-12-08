@@ -4,7 +4,7 @@ import json
 # import tomllib
 from importlib import resources
 
-from ttkbootstrap.exceptions import ThemeError
+from ttkbootstrap.core.exceptions import ThemeError
 from ttkbootstrap.style.utility import shade_color, tint_color
 
 _registered_themes = {}

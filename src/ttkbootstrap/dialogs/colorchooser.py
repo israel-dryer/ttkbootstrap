@@ -51,10 +51,11 @@ from typing import Any, Callable, List, Optional, Tuple
 from PIL import ImageColor
 
 import ttkbootstrap as ttk
-from ttkbootstrap import colorutils, utility
-from ttkbootstrap.colorutils import HEX, HSL, HUE, LUM, RGB, SAT
+from ttkbootstrap.core import colorutils
+from ttkbootstrap.core.colorutils import HEX, HSL, HUE, LUM, RGB, SAT
 from ttkbootstrap.constants import *
-from ttkbootstrap.localization import MessageCatalog
+from ttkbootstrap.core.localization import MessageCatalog
+from ttkbootstrap.runtime import utility
 from ttkbootstrap.widgets.tooltip import ToolTip
 # from ttkbootstrap.validation import add_range_validation, add_validation, validator
 from .colordropper import ColorDropperDialog
