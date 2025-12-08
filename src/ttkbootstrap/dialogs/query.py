@@ -3,10 +3,17 @@
 import textwrap
 import tkinter
 from datetime import date
+from types import SimpleNamespace
 from typing import Any, Callable, List, Optional
 
-import ttkbootstrap as ttk
+from ttkbootstrap.api.widgets import Combobox, Frame, Label
 from ttkbootstrap.constants import *
+
+ttk = SimpleNamespace(
+    Combobox=Combobox,
+    Frame=Frame,
+    Label=Label,
+)
 from ttkbootstrap.core.localization import MessageCatalog
 from ttkbootstrap.dialogs.datedialog import DateDialog
 from ttkbootstrap.dialogs.dialog import Dialog, DialogButton

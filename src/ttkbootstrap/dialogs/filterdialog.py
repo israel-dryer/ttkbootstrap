@@ -6,10 +6,21 @@ both standard and frameless (borderless) display modes.
 """
 
 from typing import Any
+from types import SimpleNamespace
 
-import ttkbootstrap as ttk
+from ttkbootstrap.api.widgets import Checkbutton, Frame, Label, Separator, TextEntry
+from ttkbootstrap.api.window import Window
 from ttkbootstrap.dialogs import Dialog, DialogButton
 from ttkbootstrap.widgets.scrollview import ScrollView
+
+ttk = SimpleNamespace(
+    Checkbutton=Checkbutton,
+    Frame=Frame,
+    Label=Label,
+    Separator=Separator,
+    TextEntry=TextEntry,
+    Window=Window,
+)
 
 
 class FilterDialogContent(ttk.Frame):

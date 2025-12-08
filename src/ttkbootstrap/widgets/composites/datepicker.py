@@ -4,12 +4,23 @@ from __future__ import annotations
 import calendar
 import tkinter
 from datetime import date, datetime, timedelta
+from types import SimpleNamespace
+from tkinter import StringVar
 from typing import Any, Callable, Iterable, Literal, Optional
 
-import ttkbootstrap as ttk
+from ttkbootstrap.api.widgets import Button, Checkbutton, Frame, Label, Separator
 from ttkbootstrap.constants import BOTH, CENTER, LEFT, NSEW, PRIMARY, X, Y, YES
 from ttkbootstrap.core.localization import MessageCatalog
 from ttkbootstrap.widgets.mixins import configure_delegate
+
+ttk = SimpleNamespace(
+    Button=Button,
+    Checkbutton=Checkbutton,
+    Frame=Frame,
+    Label=Label,
+    Separator=Separator,
+    StringVar=StringVar,
+)
 
 
 class DatePicker(ttk.Frame):

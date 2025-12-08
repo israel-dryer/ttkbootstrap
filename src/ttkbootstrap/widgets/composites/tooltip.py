@@ -1,10 +1,19 @@
 import tkinter as tk
 from tkinter import Misc
+from types import SimpleNamespace
 from typing import Any, Literal, Optional, Union
 
-import ttkbootstrap as ttk
+from ttkbootstrap.api.widgets import Button, Frame, Label
+from ttkbootstrap.api.window import Toplevel
 from ttkbootstrap import utility
 from ttkbootstrap.constants import *
+
+ttk = SimpleNamespace(
+    Button=Button,
+    Frame=Frame,
+    Label=Label,
+    window=SimpleNamespace(Toplevel=Toplevel),
+)
 
 
 class ToolTip:

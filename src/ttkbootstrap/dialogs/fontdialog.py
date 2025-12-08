@@ -1,14 +1,31 @@
 """FontDialog implementation for selecting and previewing fonts."""
 
 import tkinter
-from tkinter import font
+from tkinter import font, Text, Variable
+from types import SimpleNamespace
 from typing import Any, Optional
 
-import ttkbootstrap as ttk
+from ttkbootstrap.api.style import use_style
+from ttkbootstrap.api.widgets import Checkbutton, Frame, Label, Labelframe, Radiobutton, Scrollbar, Treeview
+from ttkbootstrap.api.window import Window
 from ttkbootstrap import utility
 from ttkbootstrap.constants import *
 from ttkbootstrap.dialogs.dialog import Dialog, DialogButton
 from ttkbootstrap.core.localization import MessageCatalog
+
+ttk = SimpleNamespace(
+    Checkbutton=Checkbutton,
+    Frame=Frame,
+    Label=Label,
+    Labelframe=Labelframe,
+    Radiobutton=Radiobutton,
+    Scrollbar=Scrollbar,
+    Treeview=Treeview,
+    Text=Text,
+    Variable=Variable,
+    Window=Window,
+    use_style=use_style,
+)
 
 
 class FontDialog:

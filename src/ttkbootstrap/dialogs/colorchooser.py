@@ -46,19 +46,35 @@ Example:
 import tkinter
 from collections import namedtuple
 from tkinter import Frame as tkFrame, Label as tkLabel
+from types import SimpleNamespace
 from typing import Any, Callable, List, Optional, Tuple
 
 from PIL import ImageColor
 
-import ttkbootstrap as ttk
+from tkinter import Canvas, IntVar, StringVar
+from ttkbootstrap.api.style import use_style
+from ttkbootstrap.api.widgets import Button, Entry, Frame, Label, Notebook, Spinbox
+from ttkbootstrap.constants import *
 from ttkbootstrap.core import colorutils
 from ttkbootstrap.core.colorutils import HEX, HSL, HUE, LUM, RGB, SAT
-from ttkbootstrap.constants import *
 from ttkbootstrap.core.localization import MessageCatalog
 from ttkbootstrap.runtime import utility
 from ttkbootstrap.widgets.tooltip import ToolTip
 # from ttkbootstrap.validation import add_range_validation, add_validation, validator
 from .colordropper import ColorDropperDialog
+
+ttk = SimpleNamespace(
+    Button=Button,
+    Canvas=Canvas,
+    Entry=Entry,
+    Frame=Frame,
+    IntVar=IntVar,
+    Label=Label,
+    Notebook=Notebook,
+    Spinbox=Spinbox,
+    StringVar=StringVar,
+    use_style=use_style,
+)
 
 STD_SHADES: List[float] = [0.9, 0.8, 0.7, 0.4, 0.3]
 STD_COLORS: List[str] = [
