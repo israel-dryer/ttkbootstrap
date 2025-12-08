@@ -1,59 +1,56 @@
 # DateEntry
 
-This widget is composed of two widgets, the **Entry** widget and the **Button**
-widget. The **Entry** component behaves identically to the 
-[default entry widget](entry.md), and the calendar button behaves as the 
-[default solid button](button.md).
+このウィジェットは、**Entry**ウィジェットと**Button**ウィジェットの2つのウィジェットで構成されています。
+**Entry**コンポーネントは
+[デフォルトの入力ウィジェット](entry.md)と全く同じ動作をし、カレンダーボタンは
+[デフォルトのソリッドボタン](button.md)として動作します。
 
-The [DatePickerPopup](datepickerpopup.md) is invoked when the calendar
-button is pressed. The default color applied to the popup is **primary**.
+カレンダーボタンが押されると、[DatePickerPopup](datepickerpopup.md) が呼び出されます。
+ポップアップに適用されるデフォルトの色は **primary** です。
 
-This widget also supports special styles for [disabled state](#disabled-date-entry), 
-[readonly state](#readonly-date-entry),  and [invalid state](#invalid-date-entry).
+このウィジェットは、[無効状態](#disabled-date-entry)、
+[読み取り専用状態](#readonly-date-entry)、[無効状態](#invalid-date-entry) に対する特別なスタイルもサポートしています。
 
 ![date entries](../assets/widget-styles/date-entries.gif)
 
 ```python
-# default date entry
+# デフォルトの日付入力
 DateEntry()
 
-# success colored date entry
+# 成功色の日付入力
 DateEntry(bootstyle="success")
 ```
 
-## Other date entry styles
+## その他日付入力スタイル
 
-#### Disabled date entry
+#### 無効な日付入力
 
-This style _cannot be applied via keywords_; it is configured through widget 
-settings.
+このスタイルは_キーワード経由では適用できません_。ウィジェット設定を通じて構成します。
 
 ```python
-# create the date entry in a disabled state
+# 無効状態で日付入力を作成
 DateEntry(state="disabled")
 
-# disable a date entry after creation
+# 作成後に日付入力フィールドを無効化
 d = DateEntry()
 d.configure(state="disabled")
 ```
 
-#### Readonly date entry
+#### 読み取り専用日付入力
 
-This style _cannot be applied via keywords_; it is configured through widget 
-settings.
+このスタイルは_キーワード経由では適用できません_。ウィジェット設定を通じて構成します。
 
 ```python
-# create the date entry in a readonly state
+# 読み取り専用状態で日付入力を作成
 DateEntry(state="readonly")
 
-# set the date entry readonly state after creation
+# 作成後に読み取り専用状態を設定
 d = DateEntry()
 d.configure(state="readonly")
 ```
 
-#### Invalid date entry
+#### 無効な日付入力
 
-This style _cannot be applied via keywords_, but rather is the result of a 
-validation process implemented on the widget. In the **Cookbook** you will find 
-an example of [how to apply validation](../cookbook/validate-user-input.md) to an 
-`Entry` based widget.
+このスタイルは_キーワード経由では適用できません_。
+代わりに、ウィジェットに実装された検証プロセスの結果として生成されます。
+**Cookbook**では、`Entry`ベースのウィジェットに[検証を適用する方法](../cookbook/validate-user-input.md)の例を確認できます。
