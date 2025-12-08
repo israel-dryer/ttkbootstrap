@@ -30,7 +30,7 @@ Style Types:
 Example:
     ```python
     import ttkbootstrap as ttk
-    from ttkbootstrap.constants import *
+    from ttkbootstrap.core.constants import *
 
     # Create window with theme
     app = ttk.Window(themename="darkly")
@@ -65,7 +65,7 @@ from PIL.Image import Resampling, Transpose
 
 from ttkbootstrap.core import colorutils
 from ttkbootstrap.runtime import utility as util
-from ttkbootstrap.constants import *
+from ttkbootstrap.core.constants import *
 from ttkbootstrap.core.publisher import Channel, Publisher
 from ttkbootstrap.themes.standard import STANDARD_THEMES
 

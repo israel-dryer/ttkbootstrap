@@ -2,6 +2,6 @@
 
 from __future__ import annotations
 
-from ttkbootstrap.menu import MenuManager, create_menu
+from ttkbootstrap.runtime.menu import MenuManager, create_menu
 
 __all__ = ["MenuManager", "create_menu"]

@@ -22,7 +22,7 @@ class ScrolledText(Frame):
 
         ```python
         import ttkbootstrap as ttk
-        from ttkbootstrap.constants import *
+        from ttkbootstrap.core.constants import *
         from ttkbootstrap.widgets.composites.scrolledtext import ScrolledText
 
         app = ttk.Window()

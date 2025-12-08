@@ -13,7 +13,7 @@ This package provides:
 Example:
     ```python
     import ttkbootstrap as ttk
-    from ttkbootstrap.constants import *
+    from ttkbootstrap.core.constants import *
 
     # Create a themed window
     root = ttk.Window(themename="darkly")
@@ -212,7 +212,7 @@ def __dir__():
 
 # Patch Tk widgets for autostyle and install enhanced events on import
 from ttkbootstrap.runtime.tk_patch import install_tk_autostyle
-from ttkbootstrap.events import install_enhanced_events
+from ttkbootstrap.runtime.events import install_enhanced_events
 
 install_tk_autostyle()
 install_enhanced_events()

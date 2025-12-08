@@ -7,7 +7,7 @@ from types import SimpleNamespace
 from typing import Any, Callable, List, Optional
 
 from ttkbootstrap.widgets.primitives import Combobox, Frame, Label
-from ttkbootstrap.constants import *
+from ttkbootstrap.core.constants import *
 
 ttk = SimpleNamespace(
     Combobox=Combobox,

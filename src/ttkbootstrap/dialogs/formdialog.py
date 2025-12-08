@@ -87,7 +87,7 @@ if TYPE_CHECKING:
 
 from ttkbootstrap.dialogs.dialog import Dialog, DialogButton, ButtonSpec
 from ttkbootstrap.widgets.primitives.frame import Frame
-from ttkbootstrap.constants import DEFAULT_MIN_COL_WIDTH as FORM_MIN_COL_WIDTH
+from ttkbootstrap.core.constants import DEFAULT_MIN_COL_WIDTH as FORM_MIN_COL_WIDTH
 
 
 class FormDialog:

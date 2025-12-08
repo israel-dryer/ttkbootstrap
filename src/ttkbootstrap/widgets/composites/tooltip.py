@@ -6,7 +6,7 @@ from typing import Any, Literal, Optional, Union
 from ttkbootstrap.widgets.primitives import Button, Frame, Label
 from ttkbootstrap.api.window import Toplevel
 from ttkbootstrap.runtime.utility import scale_size
-from ttkbootstrap.constants import *
+from ttkbootstrap.core.constants import *
 
 ttk = SimpleNamespace(
     Button=Button,

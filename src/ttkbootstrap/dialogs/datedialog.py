@@ -12,7 +12,7 @@ from types import SimpleNamespace
 from typing import Any, Callable, Iterable, Optional
 
 from ttkbootstrap.widgets.primitives import Frame
-from ttkbootstrap.constants import BOTH, PRIMARY, YES
+from ttkbootstrap.core.constants import BOTH, PRIMARY, YES
 from ttkbootstrap.dialogs.dialog import Dialog
 from ttkbootstrap.widgets.composites.datepicker import DatePicker
 

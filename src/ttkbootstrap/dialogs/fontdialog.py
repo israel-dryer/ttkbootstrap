@@ -17,7 +17,7 @@ from ttkbootstrap.widgets.primitives import (
 )
 from ttkbootstrap.api.window import Window
 from ttkbootstrap.runtime.utility import scale_size
-from ttkbootstrap.constants import *
+from ttkbootstrap.core.constants import *
 from ttkbootstrap.dialogs.dialog import Dialog, DialogButton
 from ttkbootstrap.core.localization import MessageCatalog
 

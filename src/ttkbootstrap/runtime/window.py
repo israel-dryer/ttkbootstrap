@@ -5,7 +5,7 @@ from ttkbootstrap_icons_bs import BootstrapIcon
 
 from ttkbootstrap.core.appconfig import AppConfig
 from ttkbootstrap.core.publisher import Publisher
-from ttkbootstrap.constants import *
+from ttkbootstrap.core.constants import *
 from ttkbootstrap.runtime.utility import enable_high_dpi_awareness
 from ttkbootstrap.style.style import Style
 

@@ -7,7 +7,7 @@ from datetime import date, datetime
 from tkinter import BooleanVar, DoubleVar, IntVar, StringVar, Text, Variable
 from typing import Any, Callable, Iterable, Literal, Mapping, Sequence, TYPE_CHECKING
 
-from ttkbootstrap.constants import DEFAULT_MIN_COL_WIDTH
+from ttkbootstrap.core.constants import DEFAULT_MIN_COL_WIDTH
 from ttkbootstrap.widgets.primitives.button import Button
 from ttkbootstrap.widgets.primitives.checkbutton import Checkbutton
 from ttkbootstrap.widgets.composites.dateentry import DateEntry
