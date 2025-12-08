@@ -185,7 +185,7 @@ _LAZY_EXPORTS = {
     "Window": "ttkbootstrap.api.window",
 }
 
-for _name in _TTKBOOTSTRAP_EXPORTS:
+for _name in (*_TTKBOOTSTRAP_EXPORTS, *_TTK_EXPORTS):
     if _name not in _LAZY_EXPORTS:
         _LAZY_EXPORTS[_name] = "ttkbootstrap.api.widgets"
 

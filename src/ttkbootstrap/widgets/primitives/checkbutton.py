@@ -3,7 +3,7 @@ from __future__ import annotations
 from tkinter import ttk
 from typing import Any, Callable, Literal, Optional, TypedDict, TYPE_CHECKING
 from typing_extensions import Unpack
-from ._internal.wrapper_base import TTKWrapperBase
+from ttkbootstrap.widgets._internal.wrapper_base import TTKWrapperBase
 from ..mixins import IconMixin, SignalMixin, TextSignalMixin
 
 if TYPE_CHECKING:

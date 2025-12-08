@@ -3,7 +3,7 @@ from tkinter import Misc
 from types import SimpleNamespace
 from typing import Any, Literal, Optional, Union
 
-from ttkbootstrap.api.widgets import Button, Frame, Label
+from ttkbootstrap.widgets.primitives import Button, Frame, Label
 from ttkbootstrap.api.window import Toplevel
 from ttkbootstrap import utility
 from ttkbootstrap.constants import *

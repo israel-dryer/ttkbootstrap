@@ -135,8 +135,8 @@ class MenuManager:
         menubar = None
 
         # If parent is a window, create the menubar first
-        if not isinstance(parent, ttk.Menu):
-            menubar = ttk.Menu(parent, tearoff=0)
+        if not isinstance(parent, tk.Menu):
+            menubar = tk.Menu(parent, tearoff=0)
             parent['menu'] = menubar
             parent = menubar  # Now work with the menubar
 
@@ -163,7 +163,7 @@ class MenuManager:
             options.setdefault('tearoff', 0)
 
             # Create a menu for this item
-            menu = ttk.Menu(parent, tearoff=options.pop('tearoff'))
+            menu = tk.Menu(parent, tearoff=options.pop('tearoff'))
 
             # Add it as a cascade to the parent menu
             parent.add_cascade(menu=menu, **options)
@@ -178,9 +178,9 @@ class MenuManager:
             # Add all sub-items to this menu
             self._add_menu_items(menu, sub_items)
 
-        return parent if isinstance(parent, ttk.Menu) else menubar
+        return parent if isinstance(parent, tk.Menu) else menubar
 
-    def _add_menu_items(self, menu: ttk.Menu, items: list[dict]):
+    def _add_menu_items(self, menu: tk.Menu, items: list[dict]):
         """Add items to a menu with icon support and theme tracking."""
         for opts in items:
             opts = opts.copy()
@@ -234,13 +234,13 @@ class MenuManager:
                 elif opts['type'] == 'separator':
                     menu.add_separator()
 
-    def _track_icon(self, menu: ttk.Menu, index: int, icon_name: str, icon_size: int):
+    def _track_icon(self, menu: tk.Menu, index: int, icon_name: str, icon_size: int):
         """Register a menu item with an icon for automatic theme updates."""
         item_id = f"{id(menu)}_{index}"
         self.menu_items[item_id] = (menu, index, icon_name, icon_size)
 
 
-def create_menu(parent: Any, items: list[dict]) -> ttk.Menu:
+def create_menu(parent: Any, items: list[dict]) -> tk.Menu:
     """Create a menu with icon and theme support.
 
     This is a convenience function that creates or retrieves a MenuManager

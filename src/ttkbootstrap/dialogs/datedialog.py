@@ -11,7 +11,7 @@ from datetime import date, datetime
 from types import SimpleNamespace
 from typing import Any, Callable, Iterable, Optional
 
-from ttkbootstrap.api.widgets import Frame
+from ttkbootstrap.widgets.primitives import Frame
 from ttkbootstrap.constants import BOTH, PRIMARY, YES
 from ttkbootstrap.dialogs.dialog import Dialog
 from ttkbootstrap.widgets.datepicker import DatePicker

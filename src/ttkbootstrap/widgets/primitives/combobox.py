@@ -5,7 +5,7 @@ from typing import Any, Literal, TypedDict, TYPE_CHECKING
 
 from typing_extensions import Unpack
 
-from ._internal.wrapper_base import TTKWrapperBase
+from ttkbootstrap.widgets._internal.wrapper_base import TTKWrapperBase
 from ..mixins import TextSignalMixin
 
 if TYPE_CHECKING:

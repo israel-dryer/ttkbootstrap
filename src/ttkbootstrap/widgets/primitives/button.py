@@ -4,7 +4,7 @@ from tkinter import ttk
 from typing import Any, Callable, Literal, Optional, TypedDict, TYPE_CHECKING
 from typing_extensions import Unpack
 
-from ._internal.wrapper_base import TTKWrapperBase
+from ttkbootstrap.widgets._internal.wrapper_base import TTKWrapperBase
 from ..mixins import IconMixin, TextSignalMixin
 
 if TYPE_CHECKING:

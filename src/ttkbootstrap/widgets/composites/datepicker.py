@@ -8,7 +8,7 @@ from types import SimpleNamespace
 from tkinter import StringVar
 from typing import Any, Callable, Iterable, Literal, Optional
 
-from ttkbootstrap.api.widgets import Button, Checkbutton, Frame, Label, Separator
+from ttkbootstrap.widgets.primitives import Button, Checkbutton, Frame, Label, Separator
 from ttkbootstrap.constants import BOTH, CENTER, LEFT, NSEW, PRIMARY, X, Y, YES
 from ttkbootstrap.core.localization import MessageCatalog
 from ttkbootstrap.widgets.mixins import configure_delegate

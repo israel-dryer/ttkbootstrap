@@ -1,5 +1,5 @@
-﻿"""Shim for Field moved to the composites package."""
+"""Shim for Field moved to the composites package."""
 
-from ttkbootstrap.widgets.composites.field import Field
+from ttkbootstrap.widgets.composites.field import Field, FieldOptions
 
-__all__ = ["Field"]
+__all__ = ["Field", "FieldOptions"]

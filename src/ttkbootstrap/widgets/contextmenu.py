@@ -1,5 +1,5 @@
-﻿"""Shim for ContextMenu moved to the composites package."""
+"""Shim for ContextMenu moved to the composites package."""
 
-from ttkbootstrap.widgets.composites.contextmenu import ContextMenu
+from ttkbootstrap.widgets.composites.contextmenu import ContextMenu, ContextMenuItem
 
-__all__ = ["ContextMenu"]
+__all__ = ["ContextMenu", "ContextMenuItem"]

@@ -3,7 +3,7 @@ from __future__ import annotations
 from tkinter import ttk
 from typing import Any, TypedDict
 from typing_extensions import Unpack
-from ._internal.wrapper_base import TTKWrapperBase
+from ttkbootstrap.widgets._internal.wrapper_base import TTKWrapperBase
 
 
 class LabelframeKwargs(TypedDict, total=False):

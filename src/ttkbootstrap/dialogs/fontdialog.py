@@ -6,7 +6,15 @@ from types import SimpleNamespace
 from typing import Any, Optional
 
 from ttkbootstrap.api.style import use_style
-from ttkbootstrap.api.widgets import Checkbutton, Frame, Label, Labelframe, Radiobutton, Scrollbar, Treeview
+from ttkbootstrap.widgets.primitives import (
+    Checkbutton,
+    Frame,
+    Label,
+    Labelframe,
+    Radiobutton,
+    Scrollbar,
+    Treeview,
+)
 from ttkbootstrap.api.window import Window
 from ttkbootstrap import utility
 from ttkbootstrap.constants import *

@@ -5,7 +5,7 @@ from typing import Any, TypedDict
 
 from typing_extensions import Unpack
 
-from ._internal.wrapper_base import TTKWrapperBase
+from ttkbootstrap.widgets._internal.wrapper_base import TTKWrapperBase
 from ..mixins import configure_delegate
 
 

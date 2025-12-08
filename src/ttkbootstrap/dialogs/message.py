@@ -6,7 +6,7 @@ import tkinter
 from types import SimpleNamespace
 from typing import Any, Callable, List, Optional
 
-from ttkbootstrap.api.widgets import Frame, Label
+from ttkbootstrap.widgets.primitives import Frame, Label
 from ttkbootstrap_icons_bs import BootstrapIcon
 from ttkbootstrap.constants import *
 from ttkbootstrap.core.localization import MessageCatalog

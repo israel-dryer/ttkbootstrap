@@ -8,7 +8,8 @@ both standard and frameless (borderless) display modes.
 from typing import Any
 from types import SimpleNamespace
 
-from ttkbootstrap.api.widgets import Checkbutton, Frame, Label, Separator, TextEntry
+from ttkbootstrap.widgets.primitives import Checkbutton, Frame, Label, Separator
+from ttkbootstrap.widgets.composites.textentry import TextEntry
 from ttkbootstrap.api.window import Window
 from ttkbootstrap.dialogs import Dialog, DialogButton
 from ttkbootstrap.widgets.scrollview import ScrollView
