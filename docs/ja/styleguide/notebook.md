@@ -1,15 +1,15 @@
-# Notebook
+# ノートブック
 
-This widget style features minimal styling by default. However, you can add some
-flair to the _inactive_ tab by using any of the [available colors](index.md#colors) as 
-demonstrated in the exhibit below.
+このウィジェットスタイルはデフォルトで最小限のスタイリングが適用されています。ただし、
+以下の例に示すように、[利用可能な色](index.md#colors)のいずれかを使用して、
+_非アクティブ_タブにアクセントを加えることができます。
 
 ![notebook](../assets/widget-styles/notebook.png)
 
 ```python
-# default notebook style
+# デフォルトのノートブックスタイル
 Notebook()
 
-# info colored notebook style - inactive tab color
+# 情報色ノートブックスタイル - 非アクティブタブの色
 Notebook(bootstyle="info")
 ```
