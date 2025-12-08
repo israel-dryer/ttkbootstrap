@@ -255,8 +255,8 @@ class Window(tkinter.Tk):
         super().__init__(**kwargs)
         self.winsys: str = self.tk.call('tk', 'windowingsystem')
 
-        from ttkbootstrap.style.style import use_style
-        style = use_style()
+        from ttkbootstrap.style.style import get_style
+        style = get_style()
         style.theme_use(themename)
 
         if hdpi:
@@ -319,8 +319,8 @@ class Window(tkinter.Tk):
 
         apply_class_bindings(self)
         apply_all_bindings(self)
-        from ttkbootstrap.style.style import use_style
-        self._style = use_style(self)
+        from ttkbootstrap.style.style import get_style
+        self._style = get_style(self)
 
     @property
     def style(self) -> Style:
@@ -539,8 +539,8 @@ class Toplevel(tkinter.Toplevel):
     @property
     def style(self) -> Style:
         """Return a reference to the `ttkbootstrap.style.Style` object."""
-        from ttkbootstrap.style.style import use_style
-        return use_style()
+        from ttkbootstrap.style.style import get_style
+        return get_style()
 
     def place_window_center(self) -> None:
         """Position the toplevel in the center of the screen. Does not

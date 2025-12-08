@@ -1,9 +1,9 @@
 import ttkbootstrap as ttk
-from ttkbootstrap import use_style
+from ttkbootstrap import get_style
 from ttkbootstrap.constants import *
 
 root = ttk.Window()
-style = use_style()
+style = get_style()
 
 
 def change_style():

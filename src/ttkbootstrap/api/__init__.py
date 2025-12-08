@@ -6,7 +6,17 @@ import direction stays clear. Implementation lives in lower-layer packages.
 
 from __future__ import annotations
 
-from ttkbootstrap.api.style import BootstrapIcon, Bootstyle, Style, use_style
+from ttkbootstrap.api.style import (
+    BootstrapIcon,
+    Bootstyle,
+    Style,
+    get_style,
+    get_style_builder,
+    get_theme_provider,
+    get_active_theme,
+    get_theme_color,
+    set_active_theme,
+)
 from ttkbootstrap.api.widgets import (
     Button,
     CheckButton,
@@ -103,7 +113,12 @@ __all__ = [
     "Toplevel",
     "Window",
     "MenuManager",
-    "use_style",
+    "get_style",
+    "get_style_builder",
+    "get_active_theme",
+    "set_active_theme",
+    "get_theme_provider",
+    "get_theme_color",
     "create_menu",
     "TK_WIDGETS",
     "TTK_WIDGETS",

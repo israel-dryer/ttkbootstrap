@@ -241,8 +241,8 @@ class Bootstyle:
             orient=style_options.get('orient'),
         )
 
-        from ttkbootstrap.style.style import use_style
-        style = use_style()
+        from ttkbootstrap.style.style import get_style
+        style = get_style()
 
         style.create_style(
             widget_class=resolved_widget,
@@ -320,7 +320,7 @@ class Bootstyle:
 
             elif widget_class and not had_style_kwarg:
                 from ttkbootstrap.style.bootstyle_builder_ttk import BootstyleBuilderTTk
-                from ttkbootstrap.style.style import use_style
+                from ttkbootstrap.style.style import get_style
 
                 default_variant = BootstyleBuilderTTk.get_default_variant(widget_class)
 
@@ -342,7 +342,7 @@ class Bootstyle:
                         custom_prefix=custom_prefix,
                     )
 
-                    style_instance = use_style()
+                    style_instance = get_style()
                     if style_instance is not None:
                         style_instance.create_style(
                             widget_class=widget_class,
@@ -392,9 +392,9 @@ class Bootstyle:
 
             # ==== Update widget style & register for theme changes =====
 
-            from ttkbootstrap.style.style import use_style
+            from ttkbootstrap.style.style import get_style
             from ttkbootstrap.style.bootstyle_builder_tk import BootstyleBuilderBuilderTk
-            style = use_style()
+            style = get_style()
             builder_tk = BootstyleBuilderBuilderTk(
                 theme_provider=style.theme_provider if style else None,
                 style_instance=style

@@ -1,5 +1,5 @@
 import ttkbootstrap as ttk
-from ttkbootstrap.style.style import use_style
+from ttkbootstrap.style.style import get_style
 
 TTKBOOTSTRAP_DEBUG = 1
 
@@ -13,7 +13,7 @@ app = ttk.Window("Legacy Widgets")
 
 def change_theme():
     themename = app.getvar("themename")
-    style = use_style()
+    style = get_style()
     style.theme_use(themename)
     print("changing theme in app", themename)
 
