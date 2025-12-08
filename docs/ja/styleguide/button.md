@@ -1,71 +1,68 @@
-# Button
+# ボタン
 
-This widget features a variety of button style types that have a **primary**
-color by default, or the [selected color](index.md#colors).
+このウィジェットは、デフォルトで**プライマリ**カラー、
+または[選択したカラー](index.md#colors)を持つ様々なボタンスタイルタイプを備えています。
 
-This widget supports a special style for [disabled state](#other-button-styles).
+このウィジェットは、[無効状態](#other-button-styles) 用の特別なスタイルをサポートしています。
 
-## Solid button (default)
+## ソリッドボタン（デフォルト）
 
-The default style features a solid background that lightens on _hover_ and 
-darkens when _pressed_. A dashed ring appears inside the button when the widget
-has focus.
+デフォルトスタイルは、_ホバー_時に明るくなり、_押下_時に暗くなるソリッド背景が特徴です。
+ウィジェットがフォーカスを持つと、ボタン内部に破線のリングが表示されます。
 
 ![solid button](../assets/widget-styles/solid-buttons.gif)
 
 ```python
-# default style
+# デフォルトスタイル
 Button()
 
-# success style
+# 成功スタイル
 Button(bootstyle="success")
 ```
 
-## Outline button
+## アウトラインボタン
 
-This style features a thin styled outline. When _pressed_ or on _hover_, the
-button changes to a solid color similar to the default button style. A dashed
-ring appears inside the button when the widget has focus.
+このスタイルは細いアウトラインが特徴です。
+押下時またはホバー時には、デフォルトボタンと同様の単色に変化します。
+ウィジェットがフォーカスを得ると、ボタン内部に破線のリングが表示されます。
 
-![outline buttons](../assets/widget-styles/outline-buttons.gif)
+![アウトラインボタン](../assets/widget-styles/outline-buttons.gif)
 
 ```python
-# default outline style
+# デフォルトのアウトラインスタイル
 Button(bootstyle="outline")
 
-# success outline style
+# 成功アウトラインスタイル
 Button(bootstyle="success-outline")
 ```
 
-## Link button
+## リンクボタン
 
-This style features a button with the appearance of a label. The text color changes
-to **info** on _hover_ or when _pressed_ to simulate the effect you would expect on
-an HTML hyperlink. There is a slight shift-relief when the button is pressed that 
-gives the appearance of movement. A dashed ring appears inside the button when the
-widget has focus.
+このスタイルはラベルのような外観のボタンを特徴とします。テキストカラーは
+_ホバー_時または_押下_時に**info**色に変化し、HTMLハイパーリンクで期待される効果を
+再現します。ボタン押下時にはわずかな浮き上がりが生じ、動きのある外観を演出します。
+ウィジェットがフォーカスを取得すると、ボタン内部に破線のリングが表示されます。
 
-![link buttons](../assets/widget-styles/link-buttons.gif)
+![リンクボタン](../assets/widget-styles/link-buttons.gif)
 
 ```python
-# default link style
+# デフォルトリンクスタイル
 Button(bootstyle="link")
 
-# success link style
+# 成功リンクスタイル
 Button(bootstyle="success-link")
 ```
 
-## Other button styles
+## その他のボタンスタイル
 
-#### Disabled button
-This style _cannot be applied via keywords_; it is configured through widget 
-settings.
+#### 無効化ボタン
+このスタイルは_キーワード経由では適用不可_です。ウィジェット設定で構成します。
 
 ```python
-# create the button in a disabled state
+# 無効状態でボタンを作成
 Button(state="disabled")
 
-# disable a button after creation
+# 作成後にボタンを無効化
 b = Button()
 b.configure(state="disabled")
 ```
