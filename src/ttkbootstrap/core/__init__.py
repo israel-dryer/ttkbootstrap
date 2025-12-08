@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from ttkbootstrap.core.appconfig import AppConfig
-from ttkbootstrap.core import colorutils, publisher, localization, validation, signals
+from . import colorutils, publisher, localization, validation, signals
 from ttkbootstrap.core.exceptions import (
     TTKBootstrapError,
     LayoutError,

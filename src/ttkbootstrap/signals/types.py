@@ -1,3 +1,3 @@
-from typing import Literal
+﻿"""Shim for signal-related types."""
 
-TraceOperation = Literal["array", "read", "write", "unset"]
+from ttkbootstrap.core.signals.types import *  # noqa: F401,F403

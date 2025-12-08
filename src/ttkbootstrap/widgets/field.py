@@ -7,7 +7,7 @@ for creating specialized entry widgets like TextEntry, PasswordEntry, NumberEntr
 from tkinter import TclError, Variable
 from typing import Any, Callable, Literal, Type, TypedDict, Union
 
-from ttkbootstrap.signals import Signal
+from ttkbootstrap.core.signals import Signal
 from ttkbootstrap.widgets.button import Button
 from ttkbootstrap.widgets.frame import Frame
 from ttkbootstrap.widgets.label import Label

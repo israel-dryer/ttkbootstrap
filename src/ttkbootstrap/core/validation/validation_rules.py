@@ -1,8 +1,8 @@
 import re
 from typing import Callable
 
-from ttkbootstrap.validation.types import RuleTriggerType, RuleType
-from ttkbootstrap.validation.validation_result import ValidationResult
+from ttkbootstrap.core.validation.types import RuleTriggerType, RuleType
+from ttkbootstrap.core.validation.validation_result import ValidationResult
 
 
 class ValidationRule:

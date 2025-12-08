@@ -3,7 +3,7 @@ import weakref
 from itertools import count
 from typing import Any, Callable, Generic, Type, TypeVar
 
-from ttkbootstrap.signals.types import TraceOperation
+from ttkbootstrap.core.signals.types import TraceOperation
 
 T = TypeVar("T")
 U = TypeVar("U")

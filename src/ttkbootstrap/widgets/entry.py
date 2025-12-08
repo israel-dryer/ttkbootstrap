@@ -7,7 +7,7 @@ from ._internal.wrapper_base import TTKWrapperBase
 from .mixins import TextSignalMixin
 
 if TYPE_CHECKING:
-    from ttkbootstrap.signals import Signal
+    from ttkbootstrap.core.signals import Signal
 
 
 class EntryKwargs(TypedDict, total=False):

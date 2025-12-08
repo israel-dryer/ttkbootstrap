@@ -9,7 +9,7 @@ from ttkbootstrap.widgets.menubutton import Menubutton
 from ttkbootstrap.widgets.mixins import configure_delegate
 
 if TYPE_CHECKING:
-    from ttkbootstrap.signals import Signal
+    from ttkbootstrap.core.signals import Signal
 
 
 class DropdownButtonKwargs(TypedDict, total=False):

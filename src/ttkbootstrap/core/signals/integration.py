@@ -21,7 +21,7 @@ def _is_signal(obj: Any) -> bool:
         # Cheap duck-typing to avoid hard import dependency
         m = type(obj).__module__
         return (
-            m.startswith("ttkbootstrap.signals")
+            (m.startswith("ttkbootstrap.signals") or m.startswith("ttkbootstrap.core.signals"))
             and hasattr(obj, "name")
             and hasattr(obj, "var")
         )

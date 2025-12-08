@@ -7,7 +7,7 @@ from ._internal.wrapper_base import TTKWrapperBase
 from .mixins import SignalMixin
 
 if TYPE_CHECKING:
-    from ttkbootstrap.signals import Signal
+    from ttkbootstrap.core.signals import Signal
 
 
 class ScaleKwargs(TypedDict, total=False):

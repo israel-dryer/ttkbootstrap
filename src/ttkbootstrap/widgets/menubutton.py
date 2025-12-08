@@ -8,7 +8,7 @@ from .mixins.icon_mixin import IconMixin
 from .mixins import TextSignalMixin
 
 if TYPE_CHECKING:
-    from ttkbootstrap.signals import Signal
+    from ttkbootstrap.core.signals import Signal
 
 
 class MenubuttonKwargs(TypedDict, total=False):
