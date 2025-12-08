@@ -5,7 +5,7 @@
         - the legacy tk widgets do not update after DateDialog is used.
 """
 import ttkbootstrap as ttk
-from ttkbootstrap.constants import *
+from ttkbootstrap.core.constants import *
 from ttkbootstrap.dialogs import MessageBox
 from ttkbootstrap import ScrolledText
 
@@ -31,9 +31,12 @@ If the implementation is hard to explain, it's a bad idea.
 If the implementation is easy to explain, it may be a good idea.
 Namespaces are one honking great idea -- let's do more of those!"""
 
+    tokens = ['primary', 'secondary', 'success', 'info', 'warning' ,'danger', 'light', 'dark']
+
     root = ttk.Frame(master, padding=10)
-    style = ttk.Style()
-    theme_names = style.theme_names()
+    style = ttk.use_style()
+    theme_names = [s['name'] for s in style.theme_provider.list_themes()] + ['light', 'dark']
+    print(theme_names)
 
     theme_selection = ttk.Frame(root, padding=(10, 10, 10, 0))
     theme_selection.pack(fill=X, expand=YES)
@@ -49,7 +52,7 @@ Namespaces are one honking great idea -- let's do more of those!"""
         values=theme_names,
     )
     theme_cbo.pack(padx=10, side=RIGHT)
-    theme_cbo.current(theme_names.index(style.theme.name))
+    theme_cbo.current(theme_names.index(style.current_theme))
     lbl.pack(side=RIGHT)
 
     ttk.Separator(root).pack(fill=X, pady=10, padx=10)
@@ -74,7 +77,7 @@ Namespaces are one honking great idea -- let's do more of those!"""
     )
     color_group.pack(fill=X, side=TOP)
 
-    for color in style.colors:
+    for color in tokens:
         cb = ttk.Button(color_group, text=color, bootstyle=color)
         cb.pack(side=LEFT, expand=YES, padx=5, fill=X)
 
@@ -165,7 +168,7 @@ Namespaces are one honking great idea -- let's do more of those!"""
         master=lframe_inner,
         orient=HORIZONTAL,
         value=75,
-        bootstyle=(SUCCESS, STRIPED),
+        bootstyle='success-striped',
     ).pack(fill=X, pady=5, expand=YES)
 
     m = ttk.Meter(
@@ -186,7 +189,7 @@ Namespaces are one honking great idea -- let's do more of those!"""
     sb.pack(fill=X, pady=5, expand=YES)
 
     sb = ttk.Scrollbar(
-        master=lframe_inner, orient=HORIZONTAL, bootstyle=(DANGER, ROUND)
+        master=lframe_inner, orient=HORIZONTAL, bootstyle='danger'
     )
     sb.set(0.1, 0.9)
     sb.pack(fill=X, pady=5, expand=YES)
@@ -213,7 +216,7 @@ Namespaces are one honking great idea -- let's do more of those!"""
     cb = ttk.Checkbutton(
         master=btn_group,
         text="solid toolbutton",
-        bootstyle=(SUCCESS, TOOLBUTTON),
+        bootstyle='success-toolbutton',
     )
     cb.invoke()
     cb.pack(fill=X, pady=5)
@@ -221,7 +224,7 @@ Namespaces are one honking great idea -- let's do more of those!"""
     ob = ttk.Button(
         master=btn_group,
         text="outline button",
-        bootstyle=(INFO, OUTLINE),
+        bootstyle='info-outline',
         command=lambda: MessageBox.ok("You pushed an outline button"),
     )
     ob.pack(fill=X, pady=5)
@@ -229,7 +232,7 @@ Namespaces are one honking great idea -- let's do more of those!"""
     mb = ttk.Menubutton(
         master=btn_group,
         text="outline menubutton",
-        bootstyle=(WARNING, OUTLINE),
+        bootstyle='warning-outline',
         menu=menu,
     )
     mb.pack(fill=X, pady=5)
@@ -237,7 +240,7 @@ Namespaces are one honking great idea -- let's do more of those!"""
     cb = ttk.Checkbutton(
         master=btn_group,
         text="outline toolbutton",
-        bootstyle=(SUCCESS, OUTLINE, TOOLBUTTON),
+        bootstyle='success-outline-toolbutton',
     )
     cb.pack(fill=X, pady=5)
 
@@ -247,16 +250,10 @@ Namespaces are one honking great idea -- let's do more of those!"""
     cb1 = ttk.Checkbutton(
         master=btn_group,
         text="rounded toggle",
-        bootstyle=(SUCCESS, ROUND, TOGGLE),
+        bootstyle='success-toggle',
     )
     cb1.invoke()
     cb1.pack(fill=X, pady=5)
-
-    cb2 = ttk.Checkbutton(
-        master=btn_group, text="squared toggle", bootstyle=(SQUARE, TOGGLE)
-    )
-    cb2.pack(fill=X, pady=5)
-    cb2.invoke()
 
     input_group = ttk.Labelframe(
         master=rframe, text="Other input widgets", padding=10
@@ -280,7 +277,7 @@ Namespaces are one honking great idea -- let's do more of those!"""
         exportselection=False,
     )
     cbo.pack(fill=X, pady=5)
-    cbo.current(theme_names.index(style.theme.name))
+    cbo.current(theme_names.index(style.current_theme))
 
     de = ttk.DateEntry(input_group)
     de.pack(fill=X)
