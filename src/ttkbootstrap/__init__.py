@@ -51,6 +51,8 @@ Menu = _tkMenu
 Text = _tkText
 Canvas = _tkCanvas
 TkFrame = _tkFrame  # Exported as TkFrame to avoid conflict with ttk.Frame
+# Eagerly import BootstrapIcon to prevent circular import during style bootstrapping
+from ttkbootstrap_icons_bs import BootstrapIcon  # noqa: E402
 
 if TYPE_CHECKING:
     from ttkbootstrap.appconfig import AppConfig
@@ -171,18 +173,20 @@ _TTKBOOTSTRAP_EXPORTS = [
 ]
 
 _LAZY_EXPORTS = {
-    # Core app/config
+    # Style / app
     "AppConfig": "ttkbootstrap.appconfig",
     "BootstrapIcon": "ttkbootstrap_icons_bs",
     "Bootstyle": "ttkbootstrap.style.bootstyle",
     "Style": "ttkbootstrap.style.style",
     "use_style": "ttkbootstrap.style.style",
+
+    # Menu / window
     "MenuManager": "ttkbootstrap.menu",
     "create_menu": "ttkbootstrap.menu",
-    "TK_WIDGETS": "ttkbootstrap.widgets",
-    "TTK_WIDGETS": "ttkbootstrap.widgets",
+    "Toplevel": "ttkbootstrap.window",
+    "Window": "ttkbootstrap.window",
 
-    # TTK widgets
+    # Widgets
     "Button": "ttkbootstrap.widgets.button",
     "Checkbutton": "ttkbootstrap.widgets.checkbutton",
     "Combobox": "ttkbootstrap.widgets.combobox",
@@ -202,8 +206,6 @@ _LAZY_EXPORTS = {
     "Spinbox": "ttkbootstrap.widgets.spinbox",
     "Treeview": "ttkbootstrap.widgets.treeview",
     "OptionMenu": "ttkbootstrap.widgets.optionmenu",
-
-    # Composite/extended widgets
     "ScrollView": "ttkbootstrap.widgets.scrollview",
     "ScrolledText": "ttkbootstrap.widgets.scrolledtext",
     "FloodGauge": "ttkbootstrap.widgets.floodgauge",
@@ -224,10 +226,8 @@ _LAZY_EXPORTS = {
     "TimeEntry": "ttkbootstrap.widgets.timeentry",
     "Toast": "ttkbootstrap.widgets.toast",
     "ToolTip": "ttkbootstrap.widgets.tooltip",
-
-    # Windows
-    "Toplevel": "ttkbootstrap.window",
-    "Window": "ttkbootstrap.window",
+    "TK_WIDGETS": "ttkbootstrap.widgets",
+    "TTK_WIDGETS": "ttkbootstrap.widgets",
 }
 
 __all__ = [*_TK_EXPORTS, *_TTK_EXPORTS, *_TTKBOOTSTRAP_EXPORTS]
