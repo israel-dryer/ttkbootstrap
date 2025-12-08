@@ -212,7 +212,7 @@ class Style(ttkStyle):
         super().theme_use(name)
 
         # Initialize all default widget styles before rebuilding custom styles
-        #self._style_builder.initialize_all_default_styles()
+        # self._style_builder.initialize_all_default_styles()
 
         self._rebuild_all_styles()
 
@@ -342,7 +342,7 @@ class Style(ttkStyle):
         return f"<Style theme={self._current_theme} styles={len(self._style_registry)}>"
 
 
-def use_style(master=None) -> Style:
+def get_style(master=None) -> Style:
     """Return the global Style singleton instance.
 
     Convenience helper function that mirrors legacy usage and ensures a
@@ -358,3 +358,36 @@ def use_style(master=None) -> Style:
     if _style_instance is None:
         _style_instance = Style(master)
     return _style_instance
+
+
+def get_style_builder():
+    """Return the style builder for the currently active theme"""
+    style = get_style()
+    return style.style_builder
+
+
+def set_active_theme(name: str):
+    """Set the active application theme"""
+    style = get_style()
+    style.theme_use(name)
+
+
+def get_active_theme() -> str:
+    """Return the name of the active theme"""
+    style = get_style()
+    return style.theme_use()
+
+
+def get_theme_provider() -> ThemeProvider:
+    """Get the theme provider instance"""
+    style = get_style()
+    return style.theme_provider
+
+
+def get_theme_color(token: str) -> str:
+    """Returns a hex color value from the given color token based on the active theme"""
+    builder = get_style_builder()
+    try:
+        return builder.color(token)
+    except Exception:
+        raise ValueError(f"Invalid color token: {token}")

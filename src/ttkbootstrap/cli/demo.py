@@ -34,7 +34,7 @@ Namespaces are one honking great idea -- let's do more of those!"""
     tokens = ['primary', 'secondary', 'success', 'info', 'warning' ,'danger', 'light', 'dark']
 
     root = ttk.Frame(master, padding=10)
-    style = ttk.use_style()
+    style = ttk.get_style()
     theme_names = [s['name'] for s in style.theme_provider.list_themes()] + ['light', 'dark']
 
     theme_selection = ttk.Frame(root, padding=(10, 10, 10, 0))

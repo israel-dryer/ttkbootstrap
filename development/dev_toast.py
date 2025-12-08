@@ -1,5 +1,5 @@
 import ttkbootstrap as ttk
-from ttkbootstrap.style.style import use_style
+from ttkbootstrap.style.style import get_style
 
 root = ttk.Window()
 
@@ -7,7 +7,7 @@ root = ttk.Window()
 def show_toast(
         title=None, icon=None, message=None, memo=None, duration=None, buttons=None, show_close_button=True,
         bootstyle=None, position=None, alert=None):
-    style = use_style()
+    style = get_style()
 
     top = ttk.Toplevel()
     top.minsize(400, 30)

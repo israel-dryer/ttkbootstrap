@@ -52,7 +52,7 @@ from typing import Any, Callable, List, Optional, Tuple
 from PIL import ImageColor
 
 from tkinter import Canvas, IntVar, StringVar
-from ttkbootstrap.api.style import use_style
+from ttkbootstrap.api.style import get_style
 from ttkbootstrap.widgets.primitives import Button, Entry, Frame, Label, Notebook, Spinbox
 from ttkbootstrap.core.constants import *
 from ttkbootstrap.core import colorutils
@@ -73,7 +73,7 @@ ttk = SimpleNamespace(
     Notebook=Notebook,
     Spinbox=Spinbox,
     StringVar=StringVar,
-    use_style=use_style,
+    use_style=get_style,
 )
 
 STD_SHADES: List[float] = [0.9, 0.8, 0.7, 0.4, 0.3]

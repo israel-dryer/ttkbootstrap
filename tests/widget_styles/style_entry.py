@@ -1,6 +1,6 @@
 import ttkbootstrap as ttk
 from ttkbootstrap.constants import *
-from ttkbootstrap.style.style import use_style
+from ttkbootstrap.style.style import get_style
 
 
 def create_entry_test():
@@ -47,7 +47,7 @@ def change_style():
 if __name__ == '__main__':
     # create visual widget style tests
     root = ttk.Window()
-    style = use_style()
+    style = get_style()
 
     ttk.Button(text="Change Theme", command=change_style).pack(padx=10, pady=10)
 
