@@ -32,7 +32,17 @@ _sys.modules[__name__ + ".constants"] = _constants_module
 if TYPE_CHECKING:
     from ttkbootstrap.api.menu import MenuManager, create_menu
     from ttkbootstrap.api.window import Toplevel, Window
-    from ttkbootstrap.api.style import AppConfig, Bootstyle, Style, use_style
+    from ttkbootstrap.api.style import (
+        AppConfig,
+        Bootstyle,
+        Style,
+        get_style,
+        get_style_builder,
+        get_active_theme,
+        get_theme_provider,
+        set_active_theme,
+        get_theme_color,
+    )
     from ttkbootstrap.api.widgets import (
         Button,
         CheckButton,
@@ -160,7 +170,12 @@ _TTKBOOTSTRAP_EXPORTS = [
     "create_menu",
     "TTK_WIDGETS",
     "TK_WIDGETS",
-    "use_style",
+    "get_style",
+    "get_style_builder",
+    "get_active_theme",
+    "get_theme_provider",
+    "set_active_theme",
+    "get_theme_color"
 ]
 
 _LAZY_EXPORTS = {
@@ -168,7 +183,12 @@ _LAZY_EXPORTS = {
     "BootstrapIcon": "ttkbootstrap.api.style",
     "Bootstyle": "ttkbootstrap.api.style",
     "Style": "ttkbootstrap.api.style",
-    "use_style": "ttkbootstrap.api.style",
+    "get_style": "ttkbootstrap.api.style",
+    "get_style_builder": "ttkbootstrap.api.style",
+    "get_active_theme": "ttkbootstrap.api.style",
+    "get_theme_provider": "ttkbootstrap.api.style",
+    "set_active_theme": "ttkbootstrap.api.style",
+    "get_theme_color": "ttkbootstrap.api.style",
     "MenuManager": "ttkbootstrap.api.menu",
     "create_menu": "ttkbootstrap.api.menu",
     "Toplevel": "ttkbootstrap.api.window",
@@ -181,8 +201,8 @@ for _name in (*_TTKBOOTSTRAP_EXPORTS, *_TTK_EXPORTS):
 
 __all__ = [*_TK_EXPORTS, *_TTK_EXPORTS, *_TTKBOOTSTRAP_EXPORTS, *_DEPRECATED_ALIASES, "constants"]
 
-
 import warnings as _warnings
+
 
 def __getattr__(name):
     """Lazily import top-level attributes to avoid circular imports and speed import."""
@@ -212,7 +232,6 @@ def __getattr__(name):
         return value
 
     raise AttributeError(f"module 'ttkbootstrap' has no attribute '{name}'")
-
 
 
 def __dir__():

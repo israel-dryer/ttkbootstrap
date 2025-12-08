@@ -1,7 +1,7 @@
 from random import choice
 
 import ttkbootstrap as ttk
-from ttkbootstrap.style.style import use_style
+from ttkbootstrap.style.style import get_style
 
 DARK = 'dark'
 LIGHT = 'light'
@@ -57,7 +57,7 @@ def change_style():
 if __name__ == '__main__':
     # create visual widget style tests
     root = ttk.Window(themename="dark")
-    style = use_style()
+    style = get_style()
 
     button_style_frame('default', 'Solid Button').pack(side='left')
     button_style_frame('outline', 'Outline Button').pack(side='left')

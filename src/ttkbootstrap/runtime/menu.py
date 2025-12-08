@@ -44,7 +44,7 @@ from tkinter import font, ttk
 from typing import Any, Union
 
 from ttkbootstrap_icons_bs import BootstrapIcon
-from ttkbootstrap.style.style import use_style
+from ttkbootstrap.style.style import get_style
 
 
 class MenuManager:
@@ -78,7 +78,7 @@ class MenuManager:
                 to bind theme change events.
         """
         self.parent = parent
-        self.style = use_style()
+        self.style = get_style()
         self.menu_items = {}  # Track menu items with icons for updates
 
         # Set up theme change monitoring

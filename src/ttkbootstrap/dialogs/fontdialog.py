@@ -5,7 +5,7 @@ from tkinter import font, Text, Variable
 from types import SimpleNamespace
 from typing import Any, Optional
 
-from ttkbootstrap.api.style import use_style
+from ttkbootstrap.api.style import get_style
 from ttkbootstrap.widgets.primitives import (
     CheckButton,
     Frame,
@@ -32,7 +32,7 @@ ttk = SimpleNamespace(
     Text=Text,
     Variable=Variable,
     Window=Window,
-    use_style=use_style,
+    use_style=get_style,
 )
 
 

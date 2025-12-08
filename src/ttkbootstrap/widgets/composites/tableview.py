@@ -16,7 +16,7 @@ from typing import Any
 from typing_extensions import Literal, TypedDict
 
 from ttkbootstrap_icons_bs import BootstrapIcon
-from ttkbootstrap import use_style
+from ttkbootstrap import get_style
 from ttkbootstrap.datasource.sqlite_source import SqliteDataSource
 from ttkbootstrap.widgets.primitives.button import Button
 from ttkbootstrap.widgets.composites.contextmenu import ContextMenu
@@ -715,7 +715,7 @@ class TableView(Frame):
     # ------------------------------------------------------------------ UI
 
     def _resolve_alternating_row_color(self):
-        style = use_style()
+        style = get_style()
         color_token = self._row_alternation.get('color', 'background[+1]')
 
         try:
@@ -1615,7 +1615,7 @@ class TableView(Frame):
 
     def _get_heading_fg(self) -> str:
         """Resolve a heading foreground color with light-biased fallbacks."""
-        style = use_style()
+        style = get_style()
         ttk_style = self._tree.cget('style')
         # Try configured value first
         return style.configure(f"{ttk_style}.Heading", 'foreground')
@@ -1679,7 +1679,7 @@ class TableView(Frame):
         if not self._column_keys:
             return
         try:
-            style = use_style()
+            style = get_style()
             # Prefer the Treeview body font; fall back to TLabel/body or default
             tv_style = self._tree.cget("style") or "Treeview"
             body_font = (

@@ -309,8 +309,8 @@ if __name__ == "__main__":
 
 
     def change_theme():
-        from ttkbootstrap.style.style import use_style
-        style = use_style()
+        from ttkbootstrap.style.style import get_style
+        style = get_style()
         if style.theme_use() == 'dark':
             style.theme_use('light')
         else:
