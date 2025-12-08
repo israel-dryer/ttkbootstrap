@@ -31,7 +31,7 @@ from os import PathLike
 from pathlib import Path
 from typing import Any, Optional, Union
 
-from ttkbootstrap.window import get_default_root
+from ttkbootstrap.runtime.window import get_default_root
 
 
 class MessageCatalog:
