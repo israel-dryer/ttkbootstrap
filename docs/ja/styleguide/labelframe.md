@@ -1,16 +1,15 @@
-# Labelframe
+# ラベルフレーム
 
-This widget style features a styled border and label. By default, the border 
-and label use theme defined defaults for border and foreground colors. When a
-[selected color](index.md#colors) is used, both the label text and the border use this
-color.
+このウィジェットスタイルは、装飾された境界線とラベルを特徴とします。
+デフォルトでは、境界線とラベルはテーマで定義された境界線色と前景色を使用します。
+[選択された色](index.md#colors)が使用されると、ラベルテキストと境界線の両方がこの色になります。
 
 ![labelframe](../assets/widget-styles/labelframe.png)
 
 ```python
-# default labelframe style
+# デフォルトのラベルフレームスタイル
 Labelframe()
 
-# info colored labelframe style
+# 情報色付きラベルフレームスタイル
 Labelframe(bootstyle="info")
 ```
