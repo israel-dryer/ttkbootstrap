@@ -1,56 +1,52 @@
-# Entry
+# エントリー
 
-This widget style features a input box with a styled border. The border color 
-is muted by default and changes to **primary** or the 
-[selected color](index.md#colors) on _hover_. The border increases in thickness 
-on _focus_. 
+このウィジェットスタイルは、装飾された境界線を持つ入力ボックスを特徴とします。
+境界線の色はデフォルトで控えめな色合いで、ホバー時に**プライマリ**色または[選択色](index.md#colors)に変化します。
+フォーカス時には境界線の太さが増します。 
 
-This widget also supports special styles for [disabled state](#disabled-entry), 
-[readonly state](#readonly-entry), and [invalid state](#invalid-entry).
+このウィジェットは[無効状態](#disabled-entry)、
+[読み取り専用状態](#readonly-entry)、[無効状態](#invalid-entry)の特殊スタイルもサポートします。
 
 ![entry](../assets/widget-styles/entries.gif)
 
 ```python
-# default entry style
+# デフォルトのエントリスタイル
 Entry()
 
-# danger colored entry style
+# 危険色エントリースタイル
 Entry(bootstyle="danger")
 ```
 
-## Other entry styles
+## その他のエントリスタイル
 
-#### Disabled entry
+#### 無効化エントリー
 
-This style _cannot be applied via keywords_; it is configured through widget 
-settings.
+このスタイルは_キーワード経由では適用できません_。ウィジェット設定を通じて構成します。
 
 ```python
-# create the widget in a disabled state
+# 無効状態でウィジェットを作成
 Entry(state="disabled")
 
-# disable the widget after creation
+# 作成後にウィジェットを無効化
 e = Entry()
 e.configure(state="disabled")
 ```
 
-#### Readonly entry
+#### 読み取り専用エントリー
 
-This style _cannot be applied via keywords_; it is configured through widget 
-settings.
+このスタイルは_キーワード経由では適用できません_。ウィジェットの設定を通じて構成します。
 
 ```python
-# create the widget in a readonly state
+# ウィジェットを読み取り専用状態で作成
 Entry(state="readonly")
 
-# set the widget readonly state after creation
+# 作成後にウィジェットを読み取り専用状態に設定
 e = Entry()
 e.configure(state="readonly")
 ```
 
-#### Invalid entry
+#### 無効な入力
 
-This style _cannot be applied via keywords_, but rather is the result of a 
-validation process implemented on the widget. In the **Cookbook** you will find 
-an example of [how to apply validation](../cookbook/validate-user-input.md) to an 
-`Entry` based widget.
+このスタイルは_キーワード経由では適用できません_。
+代わりに、ウィジェットに実装された検証プロセスの結果として生成されます。
+**Cookbook**では、`Entry`ベースのウィジェットに[検証を適用する方法](../cookbook/validate-user-input.md)の例を確認できます。
