@@ -55,52 +55,53 @@ TkFrame = _tkFrame  # Exported as TkFrame to avoid conflict with ttk.Frame
 from ttkbootstrap_icons_bs import BootstrapIcon  # noqa: E402
 
 if TYPE_CHECKING:
-    from ttkbootstrap.core.appconfig import AppConfig
+    from ttkbootstrap.api.menu import MenuManager, create_menu
+    from ttkbootstrap.api.window import Toplevel, Window
+    from ttkbootstrap.api.style import AppConfig, Bootstyle, Style, use_style
+    from ttkbootstrap.api.widgets import (
+        Button,
+        Checkbutton,
+        Combobox,
+        ContextMenu,
+        DateEntry,
+        DatePicker,
+        DropdownButton,
+        Entry,
+        Field,
+        FloodGauge,
+        Form,
+        Frame,
+        Label,
+        Labelframe,
+        LabeledScale,
+        Menubutton,
+        Meter,
+        Notebook,
+        NumericEntry,
+        OptionMenu,
+        Panedwindow,
+        PasswordEntry,
+        PathEntry,
+        Progressbar,
+        Radiobutton,
+        Scale,
+        Scrollbar,
+        ScrolledText,
+        ScrollView,
+        SelectBox,
+        Separator,
+        Sizegrip,
+        Spinbox,
+        TableView,
+        TextEntry,
+        TimeEntry,
+        Toast,
+        ToolTip,
+        Treeview,
+        TK_WIDGETS,
+        TTK_WIDGETS,
+    )
     from ttkbootstrap_icons_bs import BootstrapIcon
-    from ttkbootstrap.menu import MenuManager, create_menu
-    from ttkbootstrap.style.bootstyle import Bootstyle
-    from ttkbootstrap.style.style import Style, use_style
-    from ttkbootstrap.widgets import TK_WIDGETS, TTK_WIDGETS
-    from ttkbootstrap.widgets.button import Button
-    from ttkbootstrap.widgets.checkbutton import Checkbutton
-    from ttkbootstrap.widgets.combobox import Combobox
-    from ttkbootstrap.widgets.contextmenu import ContextMenu
-    from ttkbootstrap.widgets.dateentry import DateEntry
-    from ttkbootstrap.widgets.datepicker import DatePicker
-    from ttkbootstrap.widgets.dropdownbutton import DropdownButton
-    from ttkbootstrap.widgets.entry import Entry
-    from ttkbootstrap.widgets.field import Field
-    from ttkbootstrap.widgets.floodgauge import FloodGauge
-    from ttkbootstrap.widgets.form import Form
-    from ttkbootstrap.widgets.frame import Frame
-    from ttkbootstrap.widgets.label import Label
-    from ttkbootstrap.widgets.labelframe import Labelframe
-    from ttkbootstrap.widgets.labeledscale import LabeledScale
-    from ttkbootstrap.widgets.menubutton import Menubutton
-    from ttkbootstrap.widgets.meter import Meter
-    from ttkbootstrap.widgets.notebook import Notebook
-    from ttkbootstrap.widgets.numericentry import NumericEntry
-    from ttkbootstrap.widgets.optionmenu import OptionMenu
-    from ttkbootstrap.widgets.panedwindow import Panedwindow
-    from ttkbootstrap.widgets.passwordentry import PasswordEntry
-    from ttkbootstrap.widgets.pathentry import PathEntry
-    from ttkbootstrap.widgets.progressbar import Progressbar
-    from ttkbootstrap.widgets.radiobutton import Radiobutton
-    from ttkbootstrap.widgets.scale import Scale
-    from ttkbootstrap.widgets.scrollbar import Scrollbar
-    from ttkbootstrap.widgets.scrolledtext import ScrolledText
-    from ttkbootstrap.widgets.scrollview import ScrollView
-    from ttkbootstrap.widgets.selectbox import SelectBox
-    from ttkbootstrap.widgets.separator import Separator
-    from ttkbootstrap.widgets.sizegrip import Sizegrip
-    from ttkbootstrap.widgets.spinbox import Spinbox
-    from ttkbootstrap.widgets.tableview import TableView
-    from ttkbootstrap.widgets.textentry import TextEntry
-    from ttkbootstrap.widgets.timeentry import TimeEntry
-    from ttkbootstrap.widgets.toast import Toast
-    from ttkbootstrap.widgets.tooltip import ToolTip
-    from ttkbootstrap.widgets.treeview import Treeview
-    from ttkbootstrap.window import Toplevel, Window
 
 _TK_EXPORTS = [
     "Tk",
@@ -173,62 +174,20 @@ _TTKBOOTSTRAP_EXPORTS = [
 ]
 
 _LAZY_EXPORTS = {
-    # Style / app
-    "AppConfig": "ttkbootstrap.core.appconfig",
-    "BootstrapIcon": "ttkbootstrap_icons_bs",
-    "Bootstyle": "ttkbootstrap.style.bootstyle",
-    "Style": "ttkbootstrap.style.style",
-    "use_style": "ttkbootstrap.style.style",
-
-    # Menu / window
-    "MenuManager": "ttkbootstrap.menu",
-    "create_menu": "ttkbootstrap.menu",
-    "Toplevel": "ttkbootstrap.window",
-    "Window": "ttkbootstrap.window",
-
-    # Widgets
-    "Button": "ttkbootstrap.widgets.button",
-    "Checkbutton": "ttkbootstrap.widgets.checkbutton",
-    "Combobox": "ttkbootstrap.widgets.combobox",
-    "Entry": "ttkbootstrap.widgets.entry",
-    "Frame": "ttkbootstrap.widgets.frame",
-    "Labelframe": "ttkbootstrap.widgets.labelframe",
-    "Label": "ttkbootstrap.widgets.label",
-    "Menubutton": "ttkbootstrap.widgets.menubutton",
-    "Notebook": "ttkbootstrap.widgets.notebook",
-    "Panedwindow": "ttkbootstrap.widgets.panedwindow",
-    "Progressbar": "ttkbootstrap.widgets.progressbar",
-    "Radiobutton": "ttkbootstrap.widgets.radiobutton",
-    "Scale": "ttkbootstrap.widgets.scale",
-    "Scrollbar": "ttkbootstrap.widgets.scrollbar",
-    "Separator": "ttkbootstrap.widgets.separator",
-    "Sizegrip": "ttkbootstrap.widgets.sizegrip",
-    "Spinbox": "ttkbootstrap.widgets.spinbox",
-    "Treeview": "ttkbootstrap.widgets.treeview",
-    "OptionMenu": "ttkbootstrap.widgets.optionmenu",
-    "ScrollView": "ttkbootstrap.widgets.scrollview",
-    "ScrolledText": "ttkbootstrap.widgets.scrolledtext",
-    "FloodGauge": "ttkbootstrap.widgets.floodgauge",
-    "LabeledScale": "ttkbootstrap.widgets.labeledscale",
-    "Meter": "ttkbootstrap.widgets.meter",
-    "TableView": "ttkbootstrap.widgets.tableview",
-    "ContextMenu": "ttkbootstrap.widgets.contextmenu",
-    "DateEntry": "ttkbootstrap.widgets.dateentry",
-    "DatePicker": "ttkbootstrap.widgets.datepicker",
-    "DropdownButton": "ttkbootstrap.widgets.dropdownbutton",
-    "Field": "ttkbootstrap.widgets.field",
-    "Form": "ttkbootstrap.widgets.form",
-    "NumericEntry": "ttkbootstrap.widgets.numericentry",
-    "PasswordEntry": "ttkbootstrap.widgets.passwordentry",
-    "PathEntry": "ttkbootstrap.widgets.pathentry",
-    "SelectBox": "ttkbootstrap.widgets.selectbox",
-    "TextEntry": "ttkbootstrap.widgets.textentry",
-    "TimeEntry": "ttkbootstrap.widgets.timeentry",
-    "Toast": "ttkbootstrap.widgets.toast",
-    "ToolTip": "ttkbootstrap.widgets.tooltip",
-    "TK_WIDGETS": "ttkbootstrap.widgets",
-    "TTK_WIDGETS": "ttkbootstrap.widgets",
+    "AppConfig": "ttkbootstrap.api.style",
+    "BootstrapIcon": "ttkbootstrap.api.style",
+    "Bootstyle": "ttkbootstrap.api.style",
+    "Style": "ttkbootstrap.api.style",
+    "use_style": "ttkbootstrap.api.style",
+    "MenuManager": "ttkbootstrap.api.menu",
+    "create_menu": "ttkbootstrap.api.menu",
+    "Toplevel": "ttkbootstrap.api.window",
+    "Window": "ttkbootstrap.api.window",
 }
+
+for _name in _TTKBOOTSTRAP_EXPORTS:
+    if _name not in _LAZY_EXPORTS:
+        _LAZY_EXPORTS[_name] = "ttkbootstrap.api.widgets"
 
 __all__ = [*_TK_EXPORTS, *_TTK_EXPORTS, *_TTKBOOTSTRAP_EXPORTS]
 
