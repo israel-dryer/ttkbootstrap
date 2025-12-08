@@ -9,7 +9,7 @@
 
 # ttkbootstrap v2
 
-ttkbootstrap v2 is a modern framework for building Tkinter applications.  
+ttkbootstrap v2 is a modern framework for building Tkinter applications.   
 It includes updated themes, a new design token system, enhanced widgets and dialogs, Signals for reactive state, DataSource for tables and lists, improved event handling, and first-class CLI + packaging support.
 
 > **v2 is currently under active development.**  
