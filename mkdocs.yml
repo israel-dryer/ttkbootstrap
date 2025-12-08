@@ -33,6 +33,17 @@ plugins:
           build: true
 
       nav_translations:
+        ja:
+          Home: ホーム
+          "Getting started": はじめに
+          "Style guide": スタイルガイド
+          "API": API
+          "Themes": テーマ
+          "Gallery": ギャラリー
+          "Cookbook": 料理本
+          "Changelog": 変更履歴
+
+      nav_translations:
         zh:
           Home: 主页
           "Getting started": 开始
