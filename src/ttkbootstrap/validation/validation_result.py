@@ -1,4 +1,3 @@
-class ValidationResult:
-    def __init__(self, is_valid: bool, message: str = ""):
-        self.is_valid = is_valid
-        self.message = message
+﻿"""Shim for validation results."""
+
+from ttkbootstrap.core.validation.validation_result import *  # noqa: F401,F403

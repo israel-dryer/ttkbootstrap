@@ -1,9 +1,9 @@
 from tkinter import Event, TclError
 from typing import Any, Callable
 
-from ttkbootstrap import AppConfig
-from ttkbootstrap.localization import IntlFormatter
-from ttkbootstrap.widgets.entry import Entry
+from ttkbootstrap.core.appconfig import AppConfig
+from ttkbootstrap.core.localization import IntlFormatter
+from ttkbootstrap.widgets.primitives.entry import Entry
 from ttkbootstrap.widgets.mixins import ValidationMixin
 from ttkbootstrap.widgets.mixins.configure_mixin import configure_delegate
 

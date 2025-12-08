@@ -83,11 +83,11 @@ from __future__ import annotations
 from typing import Any, Callable, Iterable, Literal, Mapping, Optional, Sequence, TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from ttkbootstrap.widgets.form import FormItem
+    from ttkbootstrap.widgets.composites.form import FormItem
 
 from ttkbootstrap.dialogs.dialog import Dialog, DialogButton, ButtonSpec
-from ttkbootstrap.widgets.frame import Frame
-from ttkbootstrap.constants import DEFAULT_MIN_COL_WIDTH as FORM_MIN_COL_WIDTH
+from ttkbootstrap.widgets.primitives.frame import Frame
+from ttkbootstrap.core.constants import DEFAULT_MIN_COL_WIDTH as FORM_MIN_COL_WIDTH
 
 
 class FormDialog:
@@ -287,8 +287,8 @@ class FormDialog:
     def _build_form_content(self, parent):
         """Builder callback that creates the Form widget inside the dialog."""
         # Import Form here to avoid circular import
-        from ttkbootstrap.widgets.form import Form
-        from ttkbootstrap.widgets.scrollview import ScrollView
+        from ttkbootstrap.widgets.composites.form import Form
+        from ttkbootstrap.widgets.composites.scrollview import ScrollView
 
         # Configure parent to allow stretching
         parent.columnconfigure(0, weight=1)
@@ -454,7 +454,7 @@ class FormDialog:
     def _calculate_required_width(self) -> int:
         """Calculate the required minimum width for the dialog based on form structure."""
         try:
-            from ttkbootstrap.widgets.form import GroupItem, TabsItem
+            from ttkbootstrap.widgets.composites.form import GroupItem, TabsItem
 
             # Start by finding the maximum width requirement
             max_content_width = self._find_max_content_width(self._items, self._col_count, self._min_col_width)
@@ -485,7 +485,7 @@ class FormDialog:
 
         # Check all items for nested layouts
         try:
-            from ttkbootstrap.widgets.form import GroupItem, TabsItem
+            from ttkbootstrap.widgets.composites.form import GroupItem, TabsItem
 
             for item in items:
                 if isinstance(item, dict):

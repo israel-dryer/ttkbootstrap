@@ -8,12 +8,15 @@ from __future__ import annotations
 
 import tkinter
 from datetime import date, datetime
+from types import SimpleNamespace
 from typing import Any, Callable, Iterable, Optional
 
-import ttkbootstrap as ttk
-from ttkbootstrap.constants import BOTH, PRIMARY, YES
+from ttkbootstrap.widgets.primitives import Frame
+from ttkbootstrap.core.constants import BOTH, PRIMARY, YES
 from ttkbootstrap.dialogs.dialog import Dialog
-from ttkbootstrap.widgets.datepicker import DatePicker
+from ttkbootstrap.widgets.composites.datepicker import DatePicker
+
+ttk = SimpleNamespace(Frame=Frame)
 
 __all__ = ["DateDialog"]
 

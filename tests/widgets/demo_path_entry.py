@@ -1,5 +1,5 @@
 import ttkbootstrap as ttk
-from ttkbootstrap.widgets.pathentry import PathEntry
+from ttkbootstrap import PathEntry
 
 app = ttk.Window()
 

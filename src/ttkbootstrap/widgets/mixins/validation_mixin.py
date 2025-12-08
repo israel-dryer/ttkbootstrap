@@ -10,8 +10,8 @@ from tkinter import TclError
 from tkinter.ttk import Widget
 from typing import Any, Callable, Optional
 
-from ttkbootstrap.validation import ValidationRule
-from ttkbootstrap.validation.types import RuleTriggerType, RuleType, ValidationOptions
+from ttkbootstrap.core.validation import ValidationRule
+from ttkbootstrap.core.validation.types import RuleTriggerType, RuleType, ValidationOptions
 
 
 class ValidationMixin(Widget):
@@ -115,7 +115,7 @@ class ValidationMixin(Widget):
 
         Example:
             ```python
-            from ttkbootstrap.validation import ValidationRule
+            from ttkbootstrap.core.validation import ValidationRule
 
             rules = [
                 ValidationRule('required'),

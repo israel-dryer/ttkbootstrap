@@ -1,5 +1,5 @@
 import ttkbootstrap as ttk
-from ttkbootstrap.widgets.numericentry import NumericEntry
+from ttkbootstrap import NumericEntry
 
 
 app = ttk.Window()

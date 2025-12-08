@@ -8,8 +8,8 @@ from __future__ import annotations
 
 from typing import Optional
 
-from ttkbootstrap.appconfig import AppConfig
-from ttkbootstrap.exceptions import BootstyleParsingError
+from ttkbootstrap.core.appconfig import AppConfig
+from ttkbootstrap.core.exceptions import BootstyleParsingError
 from ttkbootstrap.style.token_maps import (COLOR_TOKENS, CONTAINER_CLASSES, ORIENT_CLASSES, WIDGET_CLASS_MAP)
 
 

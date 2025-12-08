@@ -5,7 +5,7 @@ from typing import Callable, Dict, Optional
 
 from typing_extensions import Any, ParamSpec, Protocol, TypeVar
 
-from ttkbootstrap.exceptions import BootstyleBuilderError
+from ttkbootstrap.core.exceptions import BootstyleBuilderError
 from ttkbootstrap.style.bootstyle_builder_base import BootstyleBuilderBase
 from ttkbootstrap.style.element import Element, ElementImage
 from ttkbootstrap.style.theme_provider import ThemeProvider

@@ -8,7 +8,7 @@ from datetime import date
 
 import ttkbootstrap as ttk
 from ttkbootstrap.constants import *
-from ttkbootstrap.widgets.form import (
+from ttkbootstrap.widgets.composites.form import (
     FieldItem,
     Form,
     GroupItem,

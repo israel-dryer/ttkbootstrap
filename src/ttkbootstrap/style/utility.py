@@ -6,7 +6,7 @@ from PIL import Image, ImageColor, ImageOps
 from PIL.ImageTk import PhotoImage
 
 from ttkbootstrap.style.types import ColorModel
-from ttkbootstrap.utility import clamp
+from ttkbootstrap.runtime.utility import clamp
 
 # Cache for recolored images to avoid expensive pixel-by-pixel reprocessing
 _recolor_cache = {}
@@ -289,7 +289,7 @@ def recolor_image(
     """
     # Use automatic scaling if not specified
     if scale is None:
-        from ttkbootstrap.utility import _ScalingState
+        from ttkbootstrap.runtime.utility import _ScalingState
         scale = _ScalingState.get_image_scale(source_resolution=2.25)
 
     # Create cache key from all parameters

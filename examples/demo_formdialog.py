@@ -12,7 +12,7 @@ from datetime import date
 import ttkbootstrap as ttk
 from ttkbootstrap.constants import *
 from ttkbootstrap.dialogs import FormDialog, DialogButton
-from ttkbootstrap.widgets.form import FieldItem, GroupItem, TabItem, TabsItem
+from ttkbootstrap.widgets.composites.form import FieldItem, GroupItem, TabItem, TabsItem
 
 
 def demo_simple_form(parent):

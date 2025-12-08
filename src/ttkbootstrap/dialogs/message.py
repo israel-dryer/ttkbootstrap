@@ -3,13 +3,16 @@
 import logging
 import textwrap
 import tkinter
+from types import SimpleNamespace
 from typing import Any, Callable, List, Optional
 
-import ttkbootstrap as ttk
-from ttkbootstrap import BootstrapIcon
-from ttkbootstrap.constants import *
-from ttkbootstrap.localization import MessageCatalog
+from ttkbootstrap.widgets.primitives import Frame, Label
+from ttkbootstrap_icons_bs import BootstrapIcon
+from ttkbootstrap.core.constants import *
+from ttkbootstrap.core.localization import MessageCatalog
 from .dialog import ButtonRole, Dialog, DialogButton
+
+ttk = SimpleNamespace(Frame=Frame, Label=Label)
 
 logger = logging.getLogger(__name__)
 

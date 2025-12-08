@@ -1,5 +1,5 @@
 import ttkbootstrap as ttk
-from ttkbootstrap.widgets.dateentry import DateEntry
+from ttkbootstrap import DateEntry
 
 
 app = ttk.Window()

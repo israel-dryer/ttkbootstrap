@@ -58,6 +58,9 @@ dependencies = [
 Homepage = "https://github.com/israel-dryer/ttkbootstrap"
 Documentation = "https://ttkbootstrap.readthedocs.io/en/latest/"
 
+[project.scripts]
+ttkb = "ttkbootstrap.cli:main"
+
 [tool.setuptools.packages.find]
 where = ["src"]
 

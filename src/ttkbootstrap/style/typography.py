@@ -203,7 +203,7 @@ class Typography:
             >>> Typography.initialize_from_appconfig()
             # All typography tokens now use Arial with size ramp based on 11
         """
-        from ttkbootstrap.appconfig import AppConfig
+        from ttkbootstrap.core.appconfig import AppConfig
 
         if AppConfig.has('font'):
             family, size = AppConfig.get('font')

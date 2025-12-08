@@ -30,7 +30,7 @@ Style Types:
 Example:
     ```python
     import ttkbootstrap as ttk
-    from ttkbootstrap.constants import *
+    from ttkbootstrap.core.constants import *
 
     # Create window with theme
     app = ttk.Window(themename="darkly")
@@ -63,9 +63,10 @@ from typing import Any, Callable
 from PIL import Image, ImageColor, ImageDraw, ImageFont, ImageTk
 from PIL.Image import Resampling, Transpose
 
-from ttkbootstrap import colorutils, utility as util
-from ttkbootstrap.constants import *
-from ttkbootstrap.publisher import Channel, Publisher
+from ttkbootstrap.core import colorutils
+from ttkbootstrap.runtime import utility as util
+from ttkbootstrap.core.constants import *
+from ttkbootstrap.core.publisher import Channel, Publisher
 from ttkbootstrap.themes.standard import STANDARD_THEMES
 
 try:
@@ -607,7 +608,7 @@ class Style(ttk.Style):
         self.theme_use(theme)
 
         # initialize localization bridge (Babel/gettext + Tcl msgcat)
-        from ttkbootstrap.localization.msgcat import MessageCatalog
+        from ttkbootstrap.core.localization.msgcat import MessageCatalog
         MessageCatalog.init(locales_dir=None, domain="ttkbootstrap", default_locale="en")
 
     @property

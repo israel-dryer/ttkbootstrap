@@ -1,5 +1,5 @@
 import ttkbootstrap as ttk
-from ttkbootstrap.widgets.selectbox import SelectBox
+from ttkbootstrap import SelectBox
 
 
 app = ttk.Window(themename="darkly")
