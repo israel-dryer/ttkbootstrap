@@ -6,7 +6,7 @@ from typing_extensions import Unpack
 from ttkbootstrap.widgets._internal.wrapper_base import TTKWrapperBase
 
 
-class LabelframeKwargs(TypedDict, total=False):
+class LabelFrameKwargs(TypedDict, total=False):
     # Standard ttk.Labelframe options
     text: Any
     labelanchor: Any
@@ -26,12 +26,12 @@ class LabelframeKwargs(TypedDict, total=False):
     style_options: dict[str, Any]
 
 
-class Labelframe(TTKWrapperBase, ttk.Labelframe):
+class LabelFrame(TTKWrapperBase, ttk.LabelFrame):
     """ttkbootstrap wrapper for `ttk.Labelframe` with bootstyle support."""
 
     _ttk_base = ttk.Labelframe
 
-    def __init__(self, master=None, **kwargs: Unpack[LabelframeKwargs]) -> None:
+    def __init__(self, master=None, **kwargs: Unpack[LabelFrameKwargs]) -> None:
         """Create a themed ttkbootstrap Labelframe.
 
         Keyword Args:

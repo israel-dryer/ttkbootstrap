@@ -8,7 +8,7 @@ def create_treeview_style():
     frame = ttk.Frame(root, padding=5)
 
     # Create Treeview
-    tree = ttk.Treeview(root, show="tree")
+    tree = ttk.TreeView(root, show="tree")
     tree.pack(fill="both", expand=True, padx=10, pady=10)
 
     # Define columns (optional – here we use just the built-in #0 column for labels)

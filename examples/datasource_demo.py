@@ -63,7 +63,7 @@ class DataSourceDemo(ttk.Window):
         title.pack(pady=(0, 20))
 
         # Control panel
-        control_frame = ttk.Labelframe(container, text="Controls", padding=10)
+        control_frame = ttk.LabelFrame(container, text="Controls", padding=10)
         control_frame.pack(fill=X, pady=(0, 10))
 
         # Filter controls
@@ -145,7 +145,7 @@ class DataSourceDemo(ttk.Window):
         ).pack(side=LEFT)
 
         # Data display
-        data_frame = ttk.Labelframe(container, text="Employee Data", padding=10)
+        data_frame = ttk.LabelFrame(container, text="Employee Data", padding=10)
         data_frame.pack(fill=BOTH, expand=YES, pady=(0, 10))
 
         # Treeview with scrollbar
@@ -154,7 +154,7 @@ class DataSourceDemo(ttk.Window):
 
         # Create Treeview
         columns = ("id", "name", "age", "department", "salary")
-        self.tree = ttk.Treeview(
+        self.tree = ttk.TreeView(
             tree_frame,
             columns=columns,
             show="headings",
@@ -207,7 +207,7 @@ class DataSourceDemo(ttk.Window):
         self.count_label.pack(side=RIGHT)
 
         # Action panel
-        action_frame = ttk.Labelframe(container, text="Actions", padding=10)
+        action_frame = ttk.LabelFrame(container, text="Actions", padding=10)
         action_frame.pack(fill=X)
 
         # Selection actions

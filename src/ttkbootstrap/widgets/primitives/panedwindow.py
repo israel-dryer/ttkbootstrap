@@ -6,7 +6,7 @@ from typing_extensions import Unpack
 from ttkbootstrap.widgets._internal.wrapper_base import TTKWrapperBase
 
 
-class PanedwindowKwargs(TypedDict, total=False):
+class PanedWindowKwargs(TypedDict, total=False):
     # Standard ttk.Panedwindow options
     orient: Any
     padding: Any
@@ -23,12 +23,12 @@ class PanedwindowKwargs(TypedDict, total=False):
     style_options: dict[str, Any]
 
 
-class Panedwindow(TTKWrapperBase, ttk.Panedwindow):
+class PanedWindow(TTKWrapperBase, ttk.PanedWindow):
     """ttkbootstrap wrapper for `ttk.Panedwindow` with bootstyle support."""
 
     _ttk_base = ttk.Panedwindow
 
-    def __init__(self, master=None, **kwargs: Unpack[PanedwindowKwargs]) -> None:
+    def __init__(self, master=None, **kwargs: Unpack[PanedWindowKwargs]) -> None:
         """Create a themed ttkbootstrap Panedwindow.
 
         Keyword Args:

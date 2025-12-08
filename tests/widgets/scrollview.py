@@ -238,7 +238,7 @@ def demo_dynamic_content():
     ]
 
     for text, value in modes:
-        ttk.Radiobutton(
+        ttk.RadioButton(
             config_frame,
             text=text,
             value=value,
@@ -267,7 +267,7 @@ def demo_nested_frames():
 
     for i in range(10):
         # Create a labelframe for each section
-        lf = ttk.Labelframe(content, text=f"Section {i + 1}")
+        lf = ttk.LabelFrame(content, text=f"Section {i + 1}")
         lf.pack(fill=X, padx=10, pady=5)
 
         # Add nested frames with various widgets
@@ -279,7 +279,7 @@ def demo_nested_frames():
 
             ttk.Entry(nested_frame, width=15).pack(side=LEFT, padx=2)
 
-            ttk.Checkbutton(nested_frame, text="Option").pack(side=LEFT, padx=2)
+            ttk.CheckButton(nested_frame, text="Option").pack(side=LEFT, padx=2)
 
             ttk.Button(nested_frame, text="Action", width=10).pack(side=LEFT, padx=2)
 

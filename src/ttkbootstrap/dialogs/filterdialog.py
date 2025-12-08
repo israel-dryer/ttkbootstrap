@@ -8,14 +8,14 @@ both standard and frameless (borderless) display modes.
 from typing import Any
 from types import SimpleNamespace
 
-from ttkbootstrap.widgets.primitives import Checkbutton, Frame, Label, Separator
+from ttkbootstrap.widgets.primitives import CheckButton, Frame, Label, Separator
 from ttkbootstrap.widgets.composites.textentry import TextEntry
 from ttkbootstrap.api.window import Window
 from ttkbootstrap.dialogs import Dialog, DialogButton
 from ttkbootstrap.widgets.composites.scrollview import ScrollView
 
 ttk = SimpleNamespace(
-    Checkbutton=Checkbutton,
+    Checkbutton=CheckButton,
     Frame=Frame,
     Label=Label,
     Separator=Separator,

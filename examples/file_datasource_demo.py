@@ -110,13 +110,13 @@ class FileDataSourceDemo:
         main.pack(fill=BOTH, expand=YES)
 
         # Control panel
-        control_frame = ttk.Labelframe(main, text="File Loading Options", padding=10)
+        control_frame = ttk.LabelFrame(main, text="File Loading Options", padding=10)
         control_frame.pack(fill=X, padx=5, pady=5)
 
         self._create_controls(control_frame)
 
         # Data display
-        data_frame = ttk.Labelframe(main, text="Data View", padding=10)
+        data_frame = ttk.LabelFrame(main, text="Data View", padding=10)
         data_frame.pack(fill=BOTH, expand=YES, padx=5, pady=5)
 
         self._create_treeview(data_frame)
@@ -195,7 +195,7 @@ class FileDataSourceDemo:
         hsb.pack(side=BOTTOM, fill=X)
 
         # Treeview
-        self.tree = ttk.Treeview(
+        self.tree = ttk.TreeView(
             tree_frame,
             yscrollcommand=vsb.set,
             xscrollcommand=hsb.set,

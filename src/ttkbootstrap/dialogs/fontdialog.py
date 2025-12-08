@@ -7,13 +7,13 @@ from typing import Any, Optional
 
 from ttkbootstrap.api.style import use_style
 from ttkbootstrap.widgets.primitives import (
-    Checkbutton,
+    CheckButton,
     Frame,
     Label,
-    Labelframe,
-    Radiobutton,
+    LabelFrame,
+    RadioButton,
     Scrollbar,
-    Treeview,
+    TreeView,
 )
 from ttkbootstrap.api.window import Window
 from ttkbootstrap.runtime.utility import scale_size
@@ -22,13 +22,13 @@ from ttkbootstrap.dialogs.dialog import Dialog, DialogButton
 from ttkbootstrap.core.localization import MessageCatalog
 
 ttk = SimpleNamespace(
-    Checkbutton=Checkbutton,
+    Checkbutton=CheckButton,
     Frame=Frame,
     Label=Label,
-    Labelframe=Labelframe,
-    Radiobutton=Radiobutton,
+    Labelframe=LabelFrame,
+    Radiobutton=RadioButton,
     Scrollbar=Scrollbar,
-    Treeview=Treeview,
+    Treeview=TreeView,
     Text=Text,
     Variable=Variable,
     Window=Window,
