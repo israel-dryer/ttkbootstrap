@@ -9,7 +9,7 @@ Demonstrates various features of the ContextMenu widget including:
 """
 
 import ttkbootstrap as ttk
-from ttkbootstrap.widgets.contextmenu import ContextMenu
+from ttkbootstrap import ContextMenu
 
 
 def main():

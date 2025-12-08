@@ -1,5 +1,5 @@
 import ttkbootstrap as ttk
-from ttkbootstrap.widgets.custom.toast import Toast
+from ttkbootstrap import Toast
 
 root = ttk.Window()
 

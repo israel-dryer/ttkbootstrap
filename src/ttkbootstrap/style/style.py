@@ -220,7 +220,7 @@ class Style(ttkStyle):
         self._rebuild_all_tk_widgets()
 
         # Publish theme-change event for legacy subscribers
-        from ttkbootstrap.publisher import Channel, Publisher  # lazy import
+        from ttkbootstrap.core.publisher import Channel, Publisher  # lazy import
         Publisher.publish_message(Channel.STD)
 
         return self._current_theme

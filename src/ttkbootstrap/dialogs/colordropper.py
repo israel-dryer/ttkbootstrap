@@ -18,14 +18,19 @@ Example:
 """
 import tkinter as tk
 from collections import namedtuple
+from types import SimpleNamespace
 from typing import Any, Callable, Optional
 
+from tkinter import Canvas, Variable
 from PIL import ImageGrab, ImageTk
 from PIL.Image import Resampling
 
-import ttkbootstrap as ttk
-from ttkbootstrap import colorutils, utility
-from ttkbootstrap.constants import *
+from ttkbootstrap.api.window import Toplevel
+import ttkbootstrap.core.colorutils as colorutils
+import ttkbootstrap.runtime.utility as utility
+from ttkbootstrap.core.constants import *
+
+ttk = SimpleNamespace(Canvas=Canvas, Toplevel=Toplevel, Variable=Variable)
 
 ColorChoice = namedtuple('ColorChoice', 'rgb hsl hex')
 

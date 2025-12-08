@@ -2,7 +2,7 @@
 
 This module contains style builders for ttk.Scrollbar widget variants.
 """
-from ttkbootstrap import BootstrapIcon
+from ttkbootstrap_icons_bs import BootstrapIcon
 from ttkbootstrap.style.bootstyle_builder_ttk import BootstyleBuilderTTk
 from ttkbootstrap.style.element import Element, ElementImage
 from ttkbootstrap.style.utility import recolor_image

@@ -35,7 +35,7 @@ Usage
 Basic usage with Entry (TextSignalMixin)::
 
     from ttkbootstrap import ttk
-    from ttkbootstrap.signals import Signal
+    from ttkbootstrap.core.signals import Signal
 
     # Create entry with signal at construction
     sig = Signal("initial")
@@ -54,7 +54,7 @@ Basic usage with Entry (TextSignalMixin)::
 Basic usage with Checkbutton (SignalMixin)::
 
     from ttkbootstrap import ttk
-    from ttkbootstrap.signals import Signal
+    from ttkbootstrap.core.signals import Signal
 
     # Create checkbutton with signal
     checked = Signal(False)
@@ -102,7 +102,7 @@ import tkinter as tk
 from typing import Any, TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from ttkbootstrap.signals import Signal
+    from ttkbootstrap.core.signals import Signal
 
 from ttkbootstrap.widgets.mixins.configure_mixin import configure_delegate
 
@@ -214,7 +214,7 @@ class TextSignalMixin:
             var_to_set = value.var
         elif _is_variable(value):
             # It's a tk.Variable - create Signal from it
-            from ttkbootstrap.signals import Signal
+            from ttkbootstrap.core.signals import Signal
             self._textvariable = value
             self._textsignal = Signal.from_variable(value)
             var_to_set = value
@@ -244,19 +244,19 @@ class TextSignalMixin:
                 if var_name:
                     # There's a variable but we don't have it wrapped
                     # Create a new Variable and Signal (safest approach)
-                    from ttkbootstrap.signals import Signal
+                    from ttkbootstrap.core.signals import Signal
                     self._textsignal = Signal("")
                     self._textvariable = self._textsignal.var
                     self._ttk_base.configure(self, textvariable=self._textvariable)  # type: ignore[misc]
                 else:
                     # No variable - create fresh signal
-                    from ttkbootstrap.signals import Signal
+                    from ttkbootstrap.core.signals import Signal
                     self._textsignal = Signal("")
                     self._textvariable = self._textsignal.var
                     self._ttk_base.configure(self, textvariable=self._textvariable)  # type: ignore[misc]
             except:
                 # Fallback: create fresh signal
-                from ttkbootstrap.signals import Signal
+                from ttkbootstrap.core.signals import Signal
                 self._textsignal = Signal("")
                 self._textvariable = self._textsignal.var
                 try:
@@ -377,7 +377,7 @@ class SignalMixin:
             var_to_set = value.var
         elif _is_variable(value):
             # It's a tk.Variable - create Signal from it
-            from ttkbootstrap.signals import Signal
+            from ttkbootstrap.core.signals import Signal
             self._variable = value
             self._signal = Signal.from_variable(value)
             var_to_set = value
@@ -407,7 +407,7 @@ class SignalMixin:
                 if var_name:
                     # There's a variable but we don't have it wrapped
                     # Create a new Variable and Signal (safest approach)
-                    from ttkbootstrap.signals import Signal
+                    from ttkbootstrap.core.signals import Signal
                     # Infer default value based on widget type
                     default_value = self._infer_default_value()
                     self._signal = Signal(default_value)
@@ -415,14 +415,14 @@ class SignalMixin:
                     self._ttk_base.configure(self, variable=self._variable)  # type: ignore[misc]
                 else:
                     # No variable - create fresh signal
-                    from ttkbootstrap.signals import Signal
+                    from ttkbootstrap.core.signals import Signal
                     default_value = self._infer_default_value()
                     self._signal = Signal(default_value)
                     self._variable = self._signal.var
                     self._ttk_base.configure(self, variable=self._variable)  # type: ignore[misc]
             except:
                 # Fallback: create fresh signal with default value
-                from ttkbootstrap.signals import Signal
+                from ttkbootstrap.core.signals import Signal
                 default_value = self._infer_default_value()
                 self._signal = Signal(default_value)
                 self._variable = self._signal.var

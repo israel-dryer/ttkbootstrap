@@ -2,7 +2,7 @@ from typing import Any, Literal
 
 import ttkbootstrap as ttk
 from ttkbootstrap.dialogs import Dialog, DialogButton
-from ttkbootstrap.widgets.scrollview import ScrollView
+from ttkbootstrap import ScrollView
 
 
 class FilterDialogContent(ttk.Frame):
