@@ -1,23 +1,22 @@
-# Validate user input
+# ユーザー入力の検証
 
-Any widget that derives from `Entry` has the ability to validate the user input. When 
-the widget is in an **invalid** state, the border color changes to a **danger** color.
+`Entry`を継承するウィジェットは、ユーザー入力を検証する機能を備えています。ウィジェットが
+**無効**状態になると、境界線の色が**危険**色に変化します。
 
-![invalid entry](../assets/cookbook/entry-validation.gif)
+![無効な入力例](../assets/cookbook/entry-validation.gif)
 
-In this example, the validation type is `focus`, which means that the validation
-function is run everytime the widget receives or loses focus. There are several
-other types of validation, and many ways to configure the validation. A future
-tutorial will discuss this in more detail, but in the meantime, you can consult
-the [tcl/tk documentation](https://tcl.tk/man/tcl8.6/TkCmd/ttk_entry.htm) for more 
-information on what is available for validation.
+この例では検証タイプが`focus`です。
+つまり、ウィジェットがフォーカスを取得/喪失するたびに検証関数が実行されます。
+他にもいくつかの検証タイプがあり、検証を設定する方法は多数存在します。
+詳細については今後のチュートリアルで説明しますが、
+それまでは検証で利用可能な機能について詳しくは[tcl/tkドキュメント](https://tcl.tk/man/tcl8.6/TkCmd/ttk_entry.htm)を参照してください。
 
 ```python
 import ttkbootstrap as ttk
 from ttkbootstrap.constants import *
 
 def validate_number(x) -> bool:
-    """Validates that the input is a number"""
+    """入力が数字であるか検証"""
     if x.isdigit():
         return True
     elif x == "":
@@ -26,7 +25,7 @@ def validate_number(x) -> bool:
         return False
 
 def validate_alpha(x) -> bool:
-    """Validates that the input is alpha"""
+    """入力がアルファベットであることを検証"""
     if x.isdigit():
         return False
     elif x == "":
@@ -34,22 +33,22 @@ def validate_alpha(x) -> bool:
     else:
         return True
 
-# create the toplevel window
+# トップレベルウィンドウを作成
 root = ttk.Window()
 frame = ttk.Frame(root, padding=10)
 frame.pack(fill=BOTH, expand=YES)
 
-# register the validation callback
+# 検証コールバックを登録
 digit_func = root.register(validate_number)
 alpha_func = root.register(validate_alpha)
 
-# validate numeric entry
-ttk.Label(frame, text="Enter a number").pack()
+# 数値入力の検証
+ttk.Label(frame, text="数字を入力してください").pack()
 num_entry = ttk.Entry(frame, validate="focus", validatecommand=(digit_func, '%P'))
 num_entry.pack(padx=10, pady=10, expand=True)
 
-# validate alpha entry
-ttk.Label(frame, text="Enter a letter").pack()
+# アルファベット入力の検証
+ttk.Label(frame, text="アルファベットを入力してください").pack()
 let_entry = ttk.Entry(frame, validate="focus", validatecommand=(alpha_func, '%P'))
 let_entry.pack(padx=10, pady=10, expand=True)
 
