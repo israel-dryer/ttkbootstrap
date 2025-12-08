@@ -24,6 +24,7 @@ from ttkbootstrap.widgets.primitives.notebook import Notebook
 from ttkbootstrap.widgets.composites.numericentry import NumericEntry
 from ttkbootstrap.widgets.primitives.optionmenu import OptionMenu
 from ttkbootstrap.widgets.primitives.panedwindow import PanedWindow
+from ttkbootstrap.widgets.composites.pagestack import PageStack
 from ttkbootstrap.widgets.composites.passwordentry import PasswordEntry
 from ttkbootstrap.widgets.composites.pathentry import PathEntry
 from ttkbootstrap.widgets.primitives.progressbar import Progressbar
@@ -66,6 +67,7 @@ __all__ = [
     "Notebook",
     "NumericEntry",
     "OptionMenu",
+    "PageStack",
     "PanedWindow",
     "PasswordEntry",
     "PathEntry",
