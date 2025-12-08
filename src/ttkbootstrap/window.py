@@ -1,53 +1,9 @@
-"""Window and Toplevel classes for ttkbootstrap applications.
-
-This module provides enhanced Window and Toplevel classes that wrap tkinter.Tk
-and tkinter.Toplevel with integrated ttkbootstrap Style support, providing a
-consolidated API for application initialization and window creation.
-
-Classes:
-    Window: Main application window (wraps tk.Tk with Style)
-    Toplevel: Top-level popup window (wraps tk.Toplevel with Style)
-
-Features:
-    - Integrated ttkbootstrap theme support
-    - Simplified window configuration (size, position, title, etc.)
-    - High-DPI awareness configuration
-    - Window positioning utilities (center, place)
-    - Alpha transparency support
-    - Icon management (PhotoImage or file path)
-    - Resizable window control
-    - Theme-aware styling
-
-Example:
-    ```python
-    import ttkbootstrap as ttk
-    from ttkbootstrap.constants import *
-
-    # Create main window with theme
-    root = ttk.Window(
-        title="My Application",
-        themename="darkly",
-        size=(800, 600),
-        position=(100, 100),
-        resizable=(True, True)
-    )
-
-    # Add widgets
-    ttk.Label(root, text="Hello, World!").pack(padx=20, pady=20)
-    ttk.Button(root, text="Click Me", bootstyle="success").pack()
-
-    # Create toplevel popup
-    popup = ttk.Toplevel(title="Popup Window")
-    popup.geometry("400x300")
-
-    root.mainloop()
-    ```
-"""
 import tkinter
 from typing import Any, Optional, Tuple, Union
 
-from ttkbootstrap import utility
 from ttkbootstrap_icons_bs import BootstrapIcon
+
+from ttkbootstrap import utility
 from ttkbootstrap.appconfig import AppConfig
 from ttkbootstrap.constants import *
 from ttkbootstrap.publisher import Publisher
