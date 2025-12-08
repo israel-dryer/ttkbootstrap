@@ -40,10 +40,9 @@ Example:
     ```
 """
 import tkinter as tk
-from tkinter import font
+from tkinter import font, ttk
 from typing import Any, Union
 
-import ttkbootstrap as ttk
 from ttkbootstrap_icons_bs import BootstrapIcon
 from ttkbootstrap.style.style import use_style
 
