@@ -10,7 +10,7 @@ if TYPE_CHECKING:
     from ttkbootstrap.core.signals import Signal
 
 
-class CheckbuttonKwargs(TypedDict, total=False):
+class CheckButtonKwargs(TypedDict, total=False):
     # Standard ttk.Checkbutton options
     text: Any
     command: Optional[Callable[[], Any]]
@@ -39,12 +39,12 @@ class CheckbuttonKwargs(TypedDict, total=False):
     style_options: dict[str, Any]
 
 
-class Checkbutton(SignalMixin, TextSignalMixin, IconMixin, TTKWrapperBase, ttk.Checkbutton):
+class CheckButton(SignalMixin, TextSignalMixin, IconMixin, TTKWrapperBase, ttk.Checkbutton):
     """ttkbootstrap wrapper for `ttk.Checkbutton` with bootstyle and icon support."""
 
     _ttk_base = ttk.Checkbutton
 
-    def __init__(self, master=None, **kwargs: Unpack[CheckbuttonKwargs]) -> None:
+    def __init__(self, master=None, **kwargs: Unpack[CheckButtonKwargs]) -> None:
         """Create a themed ttkbootstrap Checkbutton.
 
         Keyword Args:

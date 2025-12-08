@@ -8,10 +8,10 @@ from tkinter import BooleanVar, IntVar, StringVar, TclError, Toplevel, Widget
 from typing import Any, Callable, Union
 
 from ttkbootstrap.widgets.primitives.button import Button
-from ttkbootstrap.widgets.primitives.checkbutton import Checkbutton
+from ttkbootstrap.widgets.primitives.checkbutton import CheckButton
 from ttkbootstrap.widgets.primitives.frame import Frame
 from ttkbootstrap.widgets.mixins import CustomConfigMixin, configure_delegate
-from ttkbootstrap.widgets.primitives.radiobutton import Radiobutton
+from ttkbootstrap.widgets.primitives.radiobutton import RadioButton
 from ttkbootstrap.widgets.primitives.separator import Separator
 
 
@@ -209,7 +209,7 @@ class ContextMenu(CustomConfigMixin):
         def on_toggle():
             self._handle_item_click('checkbutton', text, command, var.get())
 
-        cb = Checkbutton(
+        cb = CheckButton(
             self._frame,
             text=text,
             variable=var,
@@ -243,7 +243,7 @@ class ContextMenu(CustomConfigMixin):
         def on_select():
             self._handle_item_click('radiobutton', text, command, value)
 
-        rb = Radiobutton(
+        rb = RadioButton(
             self._frame,
             text=text,
             value=value,

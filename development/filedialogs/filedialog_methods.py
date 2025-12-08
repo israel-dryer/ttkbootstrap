@@ -53,7 +53,7 @@ def get_folder_contents(pathname):
     return contents
 
 def load_treeview_items(pathname):
-    treeview: ttk.Treeview = app.nametowidget('contentsview')
+    treeview: ttk.TreeView = app.nametowidget('contentsview')
     # remove existing items
     children  = treeview.get_children('')
     treeview.delete(*children)
@@ -193,7 +193,7 @@ if __name__ == '__main__':
     sidebar = ttk.Frame(name='sidebar')
     sidebar.pack(side=LEFT, fill=X, anchor=N)
 
-    contents_tv = ttk.Treeview(name='contentsview', show=TREEHEADINGS, columns=[0, 1, 2])
+    contents_tv = ttk.TreeView(name='contentsview', show=TREEHEADINGS, columns=[0, 1, 2])
     contents_tv.pack(side=LEFT, fill=ttk.BOTH, expand=ttk.YES)    
     contents_tv.column('#0', width=500)
     contents_tv.heading('#0', text='Name', anchor=W)

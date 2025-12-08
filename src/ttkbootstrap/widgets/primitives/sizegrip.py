@@ -6,7 +6,7 @@ from typing_extensions import Unpack
 from ttkbootstrap.widgets._internal.wrapper_base import TTKWrapperBase
 
 
-class SizegripKwargs(TypedDict, total=False):
+class SizeGripKwargs(TypedDict, total=False):
     # Standard ttk.Sizegrip options
     style: str
     class_: str
@@ -19,12 +19,12 @@ class SizegripKwargs(TypedDict, total=False):
     style_options: dict[str, Any]
 
 
-class Sizegrip(TTKWrapperBase, ttk.Sizegrip):
+class SizeGrip(TTKWrapperBase, ttk.Sizegrip):
     """ttkbootstrap wrapper for `ttk.Sizegrip` with bootstyle support."""
 
     _ttk_base = ttk.Sizegrip
 
-    def __init__(self, master=None, **kwargs: Unpack[SizegripKwargs]) -> None:
+    def __init__(self, master=None, **kwargs: Unpack[SizeGripKwargs]) -> None:
         """Create a themed ttkbootstrap Sizegrip.
 
         Keyword Args:

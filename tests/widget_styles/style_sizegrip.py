@@ -16,7 +16,7 @@ def create_sizegrip_style(bootstyle):
 
     # default
     ttk.Label(frame, text=bootstyle).pack(fill=X)
-    sg = ttk.Sizegrip(frame)
+    sg = ttk.SizeGrip(frame)
     sg.pack(padx=5, pady=5, fill=BOTH, expand=True)
 
     return frame

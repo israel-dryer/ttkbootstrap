@@ -10,7 +10,7 @@ if TYPE_CHECKING:
     from ttkbootstrap.core.signals import Signal
 
 
-class RadiobuttonKwargs(TypedDict, total=False):
+class RadioButtonKwargs(TypedDict, total=False):
     # Standard ttk.Radiobutton options
     text: Any
     command: Optional[Callable[[], Any]]
@@ -38,12 +38,12 @@ class RadiobuttonKwargs(TypedDict, total=False):
     style_options: dict[str, Any]
 
 
-class Radiobutton(SignalMixin, TextSignalMixin, IconMixin, TTKWrapperBase, ttk.Radiobutton):
+class RadioButton(SignalMixin, TextSignalMixin, IconMixin, TTKWrapperBase, ttk.Radiobutton):
     """ttkbootstrap wrapper for `ttk.Radiobutton` with bootstyle and icon support."""
 
     _ttk_base = ttk.Radiobutton
 
-    def __init__(self, master=None, **kwargs: Unpack[RadiobuttonKwargs]) -> None:
+    def __init__(self, master=None, **kwargs: Unpack[RadioButtonKwargs]) -> None:
         """Create a themed ttkbootstrap Radiobutton.
 
         Keyword Args:

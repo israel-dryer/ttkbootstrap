@@ -12,7 +12,7 @@ def create_treeview_style():
     # Create the Treeview
     columns = ("first_name", "last_name", "email")
 
-    tree = ttk.Treeview(
+    tree = ttk.TreeView(
         container,
         columns=columns,
         show="headings",

@@ -11,7 +11,7 @@ if TYPE_CHECKING:
     from ttkbootstrap.core.signals import Signal
 
 
-class MenubuttonKwargs(TypedDict, total=False):
+class MenuButtonKwargs(TypedDict, total=False):
     # Standard ttk.Menubutton options
     text: Any
     image: Any
@@ -36,12 +36,12 @@ class MenubuttonKwargs(TypedDict, total=False):
     style_options: dict[str, Any]
 
 
-class Menubutton(TextSignalMixin, IconMixin, TTKWrapperBase, ttk.Menubutton):
+class MenuButton(TextSignalMixin, IconMixin, TTKWrapperBase, ttk.Menubutton):
     """ttkbootstrap wrapper for `ttk.Menubutton` with bootstyle and icon support."""
 
     _ttk_base = ttk.Menubutton
 
-    def __init__(self, master=None, **kwargs: Unpack[MenubuttonKwargs]) -> None:
+    def __init__(self, master=None, **kwargs: Unpack[MenuButtonKwargs]) -> None:
         """Create a themed ttkbootstrap Menubutton.
 
         Keyword Args:

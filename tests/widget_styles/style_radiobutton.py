@@ -13,20 +13,20 @@ def create_radiobutton_test(bootstyle, testname):
     ttk.Separator(frame).pack(padx=5, pady=5, fill=X)
 
     # default style
-    cb = ttk.Radiobutton(frame, text='default', bootstyle=bootstyle, value=0)
+    cb = ttk.RadioButton(frame, text='default', bootstyle=bootstyle, value=0)
     cb.configure(variable=var)
     cb.pack(padx=5, pady=5, fill=BOTH)
     cb.invoke()
 
     # color styles
     for i, color in enumerate(['primary', 'secondary', 'success', 'info', 'warning', 'danger']):
-        cb = ttk.Radiobutton(frame, text=color, bootstyle=f'{color}-{bootstyle}')
+        cb = ttk.RadioButton(frame, text=color, bootstyle=f'{color}-{bootstyle}')
         cb.configure(variable=var, value=i + 1)
         cb.pack(padx=5, pady=5, fill=BOTH)
         cb.invoke()
 
     # disabled style
-    cb = ttk.Radiobutton(
+    cb = ttk.RadioButton(
         master=frame,
         text='disabled',
         bootstyle=bootstyle,

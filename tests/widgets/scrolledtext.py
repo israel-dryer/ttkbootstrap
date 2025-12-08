@@ -302,7 +302,7 @@ def demo_custom_styling():
 
     for text, value in [('Always', 'always'), ('Never', 'never'),
                         ('On Hover', 'on-hover'), ('On Scroll', 'on-scroll')]:
-        ttk.Radiobutton(
+        ttk.RadioButton(
             config_frame,
             text=text,
             value=value,
@@ -318,7 +318,7 @@ def demo_custom_styling():
         st.configure(scrollbar_style=style_var.get())
 
     for style in ['primary', 'success', 'danger', 'warning', 'info']:
-        ttk.Radiobutton(
+        ttk.RadioButton(
             config_frame,
             text=style.title(),
             value=style,

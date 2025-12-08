@@ -7,7 +7,7 @@ from ttkbootstrap.dialogs import QueryBox
 
 def enhanced_query_dialogs(root):
     """Test enhanced query dialogs with value_format."""
-    frame = ttk.Labelframe(root, text="Enhanced Query Dialogs", padding=10)
+    frame = ttk.LabelFrame(root, text="Enhanced Query Dialogs", padding=10)
     frame.pack(padx=10, pady=10, fill="both", expand=True)
 
     # Test basic dialogs (backward compatibility)

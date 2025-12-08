@@ -5,10 +5,10 @@ app.style.theme_use('dark')
 
 colors = ['default', 'primary', 'secondary', 'success', 'info', 'warning', 'danger']
 
-ttk.Labelframe(app, width=150, height=50, text='Default').pack(padx=20, pady=20)
+ttk.LabelFrame(app, width=150, height=50, text='Default').pack(padx=20, pady=20)
 
 for color in colors:
-    lf = ttk.Labelframe(app, width=150, height=50, bootstyle=color, text=color.title())
+    lf = ttk.LabelFrame(app, width=150, height=50, bootstyle=color, text=color.title())
     lf.pack(padx=20, pady=20)
 
 ttk.Button(app, text='Dark', command=lambda: app.style.theme_use('dark')).pack()

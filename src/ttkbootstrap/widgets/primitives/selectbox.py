@@ -5,7 +5,7 @@ from typing_extensions import Unpack
 from ttkbootstrap.widgets.primitives.button import Button
 from ttkbootstrap.widgets.composites.field import Field, FieldOptions
 from ttkbootstrap.widgets.mixins import configure_delegate
-from ttkbootstrap.widgets.primitives.treeview import Treeview
+from ttkbootstrap.widgets.primitives.treeview import TreeView
 
 
 class SelectBox(Field):
@@ -150,7 +150,7 @@ class SelectBox(Field):
 
     def _create_treeview(self, toplevel):
         """Create and configure the treeview widget."""
-        tree = Treeview(toplevel, bootstyle=self._bootstyle, show="tree", height=5, columns=['label'])
+        tree = TreeView(toplevel, bootstyle=self._bootstyle, show="tree", height=5, columns=['label'])
         tree.column("#0", width=0, stretch=False)
         tree.pack(fill="both", expand=1)
         return tree

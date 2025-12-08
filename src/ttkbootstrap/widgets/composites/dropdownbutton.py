@@ -5,7 +5,7 @@ from typing import Any, Callable, Literal, Optional, TYPE_CHECKING, TypedDict
 from typing_extensions import Unpack
 
 from ttkbootstrap.widgets.composites.contextmenu import ContextMenu, ContextMenuItem
-from ttkbootstrap.widgets.primitives.menubutton import Menubutton
+from ttkbootstrap.widgets.primitives.menubutton import MenuButton
 from ttkbootstrap.widgets.mixins import configure_delegate
 
 if TYPE_CHECKING:
@@ -38,7 +38,7 @@ class DropdownButtonKwargs(TypedDict, total=False):
     dropdown_button_icon: str | dict
 
 
-class DropdownButton(Menubutton):
+class DropdownButton(MenuButton):
 
     def __init__(
             self,

@@ -5,7 +5,7 @@
         - the legacy tk widgets do not update after DateDialog is used.
 """
 import ttkbootstrap as ttk
-from ttkbootstrap.core.constants import *
+from ttkbootstrap.constants import *
 from ttkbootstrap.dialogs import MessageBox
 from ttkbootstrap import ScrolledText
 
@@ -71,7 +71,7 @@ Namespaces are one honking great idea -- let's do more of those!"""
     rframe = ttk.Frame(root, padding=5)
     rframe.pack(side=RIGHT, fill=BOTH, expand=YES)
 
-    color_group = ttk.Labelframe(
+    color_group = ttk.LabelFrame(
         master=lframe, text="Theme color options", padding=10
     )
     color_group.pack(fill=X, side=TOP)
@@ -80,34 +80,34 @@ Namespaces are one honking great idea -- let's do more of those!"""
         cb = ttk.Button(color_group, text=color, bootstyle=color)
         cb.pack(side=LEFT, expand=YES, padx=5, fill=X)
 
-    rb_group = ttk.Labelframe(
+    rb_group = ttk.LabelFrame(
         lframe, text="Checkbuttons & radiobuttons", padding=10
     )
     rb_group.pack(fill=X, pady=10, side=TOP)
 
-    check1 = ttk.Checkbutton(rb_group, text="selected")
+    check1 = ttk.CheckButton(rb_group, text="selected")
     check1.pack(side=LEFT, expand=YES, padx=5)
     check1.invoke()
 
-    check2 = ttk.Checkbutton(rb_group, text="alternate")
+    check2 = ttk.CheckButton(rb_group, text="alternate")
     check2.pack(side=LEFT, expand=YES, padx=5)
 
-    check4 = ttk.Checkbutton(rb_group, text="deselected")
+    check4 = ttk.CheckButton(rb_group, text="deselected")
     check4.pack(side=LEFT, expand=YES, padx=5)
     check4.invoke()
     check4.invoke()
 
-    check3 = ttk.Checkbutton(rb_group, text="disabled", state=DISABLED)
+    check3 = ttk.CheckButton(rb_group, text="disabled", state=DISABLED)
     check3.pack(side=LEFT, expand=YES, padx=5)
 
-    radio1 = ttk.Radiobutton(rb_group, text="selected", value=1)
+    radio1 = ttk.RadioButton(rb_group, text="selected", value=1)
     radio1.pack(side=LEFT, expand=YES, padx=5)
     radio1.invoke()
 
-    radio2 = ttk.Radiobutton(rb_group, text="deselected", value=2)
+    radio2 = ttk.RadioButton(rb_group, text="deselected", value=2)
     radio2.pack(side=LEFT, expand=YES, padx=5)
 
-    radio3 = ttk.Radiobutton(
+    radio3 = ttk.RadioButton(
         master=rb_group, text="disabled", value=3, state=DISABLED
     )
     radio3.pack(side=LEFT, expand=YES, padx=5)
@@ -123,7 +123,7 @@ Namespaces are one honking great idea -- let's do more of those!"""
         ("Tahiti", 5),
     ]
 
-    tv = ttk.Treeview(master=ttframe, columns=[0, 1], show=HEADINGS, height=5)
+    tv = ttk.TreeView(master=ttframe, columns=[0, 1], show=HEADINGS, height=5)
     for row in table_data:
         tv.insert("", 'end', values=row)
 
@@ -193,7 +193,7 @@ Namespaces are one honking great idea -- let's do more of those!"""
     sb.set(0.1, 0.9)
     sb.pack(fill=X, pady=5, expand=YES)
 
-    btn_group = ttk.Labelframe(master=rframe, text="Buttons", padding=(10, 5))
+    btn_group = ttk.LabelFrame(master=rframe, text="Buttons", padding=(10, 5))
     btn_group.pack(fill=X)
 
     menu = ttk.Menu(root)
@@ -204,7 +204,7 @@ Namespaces are one honking great idea -- let's do more of those!"""
     default.pack(fill=X, pady=5)
     default.focus_set()
 
-    mb = ttk.Menubutton(
+    mb = ttk.MenuButton(
         master=btn_group,
         text="solid menubutton",
         bootstyle=SECONDARY,
@@ -212,7 +212,7 @@ Namespaces are one honking great idea -- let's do more of those!"""
     )
     mb.pack(fill=X, pady=5)
 
-    cb = ttk.Checkbutton(
+    cb = ttk.CheckButton(
         master=btn_group,
         text="solid toolbutton",
         bootstyle='success-toolbutton',
@@ -228,7 +228,7 @@ Namespaces are one honking great idea -- let's do more of those!"""
     )
     ob.pack(fill=X, pady=5)
 
-    mb = ttk.Menubutton(
+    mb = ttk.MenuButton(
         master=btn_group,
         text="outline menubutton",
         bootstyle='warning-outline',
@@ -236,7 +236,7 @@ Namespaces are one honking great idea -- let's do more of those!"""
     )
     mb.pack(fill=X, pady=5)
 
-    cb = ttk.Checkbutton(
+    cb = ttk.CheckButton(
         master=btn_group,
         text="outline toolbutton",
         bootstyle='success-outline-toolbutton',
@@ -246,7 +246,7 @@ Namespaces are one honking great idea -- let's do more of those!"""
     lb = ttk.Button(master=btn_group, text="link button", bootstyle=LINK)
     lb.pack(fill=X, pady=5)
 
-    cb1 = ttk.Checkbutton(
+    cb1 = ttk.CheckButton(
         master=btn_group,
         text="rounded toggle",
         bootstyle='success-toggle',
@@ -254,7 +254,7 @@ Namespaces are one honking great idea -- let's do more of those!"""
     cb1.invoke()
     cb1.pack(fill=X, pady=5)
 
-    input_group = ttk.Labelframe(
+    input_group = ttk.LabelFrame(
         master=rframe, text="Other input widgets", padding=10
     )
     input_group.pack(fill=BOTH, pady=(10, 5), expand=YES)

@@ -1,41 +1,41 @@
 """Primitive ttkbootstrap widgets."""
 
 from .button import Button
-from .checkbutton import Checkbutton
+from .checkbutton import CheckButton
 from .combobox import Combobox
 from .entry import Entry
 from .frame import Frame
 from .label import Label
-from .labelframe import Labelframe
-from .menubutton import Menubutton
+from .labelframe import LabelFrame
+from .menubutton import MenuButton
 from .notebook import Notebook
-from .panedwindow import Panedwindow
+from .panedwindow import PanedWindow
 from .progressbar import Progressbar
-from .radiobutton import Radiobutton
+from .radiobutton import RadioButton
 from .scale import Scale
 from .scrollbar import Scrollbar
 from .separator import Separator
-from .sizegrip import Sizegrip
+from .sizegrip import SizeGrip
 from .spinbox import Spinbox
-from .treeview import Treeview
+from .treeview import TreeView
 
 __all__ = [
     "Button",
-    "Checkbutton",
+    "CheckButton",
     "Combobox",
     "Entry",
     "Frame",
     "Label",
-    "Labelframe",
-    "Menubutton",
+    "LabelFrame",
+    "MenuButton",
     "Notebook",
-    "Panedwindow",
+    "PanedWindow",
     "Progressbar",
-    "Radiobutton",
+    "RadioButton",
     "Scale",
     "Scrollbar",
     "Separator",
-    "Sizegrip",
+    "SizeGrip",
     "Spinbox",
-    "Treeview",
+    "TreeView",
 ]

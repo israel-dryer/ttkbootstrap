@@ -80,7 +80,7 @@ class SignalsDemo(ttk.Window):
 
     def _create_entry_section(self, parent):
         """Create entry widget section with signal binding."""
-        frame = ttk.Labelframe(parent, text="Entry Widget with Signal", padding=15)
+        frame = ttk.LabelFrame(parent, text="Entry Widget with Signal", padding=15)
         frame.pack(fill="x", pady=(0, 15))
 
         ttk.Label(frame, text="Username:").grid(row=0, column=0, sticky="w", padx=(0, 10))
@@ -103,7 +103,7 @@ class SignalsDemo(ttk.Window):
 
     def _create_spinbox_section(self, parent):
         """Create spinbox widget section with signal binding."""
-        frame = ttk.Labelframe(parent, text="Spinbox Widget with Signal", padding=15)
+        frame = ttk.LabelFrame(parent, text="Spinbox Widget with Signal", padding=15)
         frame.pack(fill="x", pady=(0, 15))
 
         ttk.Label(frame, text="Age:").grid(row=0, column=0, sticky="w", padx=(0, 10))
@@ -132,7 +132,7 @@ class SignalsDemo(ttk.Window):
 
     def _create_combobox_section(self, parent):
         """Create combobox widget section with signal binding."""
-        frame = ttk.Labelframe(parent, text="Combobox Widget with Signal", padding=15)
+        frame = ttk.LabelFrame(parent, text="Combobox Widget with Signal", padding=15)
         frame.pack(fill="x", pady=(0, 15))
 
         ttk.Label(frame, text="Theme Color:").grid(row=0, column=0, sticky="w", padx=(0, 10))
@@ -169,7 +169,7 @@ class SignalsDemo(ttk.Window):
 
     def _create_scale_section(self, parent):
         """Create scale widget section with signal binding."""
-        frame = ttk.Labelframe(parent, text="Scale Widget with Signal", padding=15)
+        frame = ttk.LabelFrame(parent, text="Scale Widget with Signal", padding=15)
         frame.pack(fill="x", pady=(0, 15))
 
         ttk.Label(frame, text="Volume:").grid(row=0, column=0, sticky="w", padx=(0, 10))
@@ -204,7 +204,7 @@ class SignalsDemo(ttk.Window):
 
     def _create_progressbar_section(self, parent):
         """Create progressbar section synced with volume signal."""
-        frame = ttk.Labelframe(parent, text="Progressbar with Signal (Synced to Volume)", padding=15)
+        frame = ttk.LabelFrame(parent, text="Progressbar with Signal (Synced to Volume)", padding=15)
         frame.pack(fill="x", pady=(0, 15))
 
         # Progressbar connected to the same signal as the scale
@@ -227,7 +227,7 @@ class SignalsDemo(ttk.Window):
 
     def _create_derived_section(self, parent):
         """Create section displaying derived signal value."""
-        frame = ttk.Labelframe(parent, text="Derived Signal", padding=15)
+        frame = ttk.LabelFrame(parent, text="Derived Signal", padding=15)
         frame.pack(fill="x", pady=(0, 15))
 
         # Label that updates from computed signal

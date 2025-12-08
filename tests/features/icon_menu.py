@@ -42,7 +42,7 @@ menu_items = [
 ttk.create_menu(app, menu_items)
 
 # Add a menubutton as well
-mb = ttk.Menubutton(app, bootstyle="danger", text="Menubutton")
+mb = ttk.MenuButton(app, bootstyle="danger", text="Menubutton")
 mb['menu'] = ttk.create_menu(mb, menu_items)
 mb.pack(padx=10, pady=10)
 
