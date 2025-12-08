@@ -1,104 +1,99 @@
-# Checkbutton
+# チェックボタン
 
-This widget features a variety of checkbutton style types that are **primary**
-colored by default or the [selected color](index.md#colors).
+このウィジェットは、デフォルトで**プライマリ**カラーまたは[選択色](index.md#colors)で表示される様々なチェックボタンスタイルを備えています。
 
-This widget supports a special style for 
-[disabled state](#other-checkbutton-styles).
+このウィジェットは、
+[無効状態](#other-checkbutton-styles)用の特殊スタイルをサポートしています。
 
-## Checkbutton (default)
+## チェックボタン（デフォルト）
 
-The default style features a square checkbox and label. The checkbox has a
-muted color outline when not selected, and a filled square with checkmark when
-selected.
+デフォルトスタイルは正方形のチェックボックスとラベルで構成されます。
+チェックボックスは未選択時に淡色枠線、選択時に塗りつぶされたチェックマーク付き正方形を表示します。
 
 ![checkbutton](../assets/widget-styles/checkbuttons.png)
 
 ```python
-# default checkbutton style
+# デフォルトのチェックボタンスタイル
 Checkbutton()
 
-# success checkbutton style
+# 成功状態用チェックボタンスタイル
 Checkbutton(bootstyle="success")
 ```
 
-## Toolbutton
+## ツールボタン
 
-This style features a solid rectangular button that toggles between an _off_ 
-and _on_ color. The background is a muted gray when _off_ and a default
-or [selected color](index.md#colors) when _on_ or _active_.
+このスタイルは、_オフ_と_オン_の色を切り替えるソリッドな長方形ボタンを特徴とします。
+背景は_オフ_時は淡いグレー、_オン_または_アクティブ_時はデフォルト色または[選択色](index.md#colors)になります。
 
 ![solid toolbuttons](../assets/widget-styles/solid-toolbuttons.gif)
 
 ```python
-# default toolbutton style
+# デフォルトツールボタンスタイル
 Checkbutton(bootstyle="toolbutton")
 
-# success toolbutton style
+# 成功ツールボタンスタイル
 Checkbutton(bootstyle="success-toolbutton")
 ```
 
-## Outline toolbutton
+## アウトラインツールボタン
 
-This style features a rectangular button that toggles between a styled 
-**outline** when _off_ and a **solid** background when _on_ or 
-_active_.
+このスタイルは長方形のボタンで、_off_時はスタイリングされた
+**アウトライン**、_on_または_active_時は**ソリッド**背景に切り替わります。
 
-![outline toolbuttons](../assets/widget-styles/outline-toolbuttons.gif)
+![アウトラインツールボタン](../assets/widget-styles/outline-toolbuttons.gif)
 
 ```python
-# default outline toolbutton style
+# デフォルトのアウトラインツールボタンスタイル
 Checkbutton(bootstyle="outline-toolbutton")
 
-# success outline toolbutton style
+# 成功時のアウトラインツールボタンスタイル
 Checkbutton(bootstyle="success-outline-toolbutton")
 ```
 
-## Round toggle button
+## 丸形トグルボタン
 
-This style features a rounded button with a **round** indicator that changes
-color and position when toggled _off_ and _on_. The button is a muted outline
-with a muted color indicator when _off_. The button is filled with the default
-or [selected color](index.md#colors) with an accented indicator when _on_.
+このスタイルは丸みを帯びたボタンと、トグルの_オフ_時と_オン_時に色と位置が変化する**丸型**インジケーターが特徴です。
+_オフ_時は淡いアウトラインのボタンに淡い色のインジケーターが表示されます。
+_オン_時はデフォルト色または[選択色](index.md#colors)で塗りつぶされ、強調されたインジケーターが表示されます。
 
 ![round toggles](../assets/widget-styles/round-toggles.gif)
 
 ```python
-# default round toggle style
+# デフォルトの丸型トグルスタイル
 Checkbutton(bootstyle="round-toggle")
 
-# success round toggle style
+# 成功状態用丸形トグルスタイル
 Checkbutton(bootstyle="success-round-toggle")
 ```
 
-## Square toggle button
+## スクエアトグルボタン
 
-This style features a squared button with a **square** indicator that changes
-color and position when toggled _off_ and _on_. The button is a muted outline
-with a muted color indicator when _off_. The button is filled with the default
-or [selected color](index.md#colors) with an accented indicator when _on_.
+このスタイルは四角いボタンと**四角**のインジケーターを備え、
+トグルが_オフ_と_オン_で色と位置が変化します。_オフ_時は
+淡いアウトラインに淡い色のインジケーターです。_オン_時は
+デフォルト色または[選択色](index.md#colors)で塗りつぶされ、
+強調されたインジケーターが表示されます。
 
 ![square toggles](../assets/widget-styles/square-toggles.gif)
 
 ```python
-# default square toggle style
+# デフォルトのスクエア・トグルスタイル
 Checkbutton(bootstyle="square-toggle")
 
-# success square toggle style
+# 成功状態のスクエアトグルスタイル
 Checkbutton(bootstyle="success-square-toggle")
 ```
 
-## Other checkbutton styles
+## その他のチェックボタンスタイル
 
-#### Disabled checkbutton
-This style _cannot be applied via keywords_; it is configured through widget 
-settings.
+#### 無効化チェックボタン
+このスタイルは_キーワード経由では適用不可_です。ウィジェット設定で構成します。
 
 ```python
-# create the checkbutton in a disabled state
+# 無効状態でチェックボタンを作成
 Checkbutton(state="disabled")
 
-# disable a checkbutton after creation
+# 作成後に無効化する
 cb = Checkbutton()
 cb.configure(state="disabled")
 ```
