@@ -55,7 +55,7 @@ TkFrame = _tkFrame  # Exported as TkFrame to avoid conflict with ttk.Frame
 from ttkbootstrap_icons_bs import BootstrapIcon  # noqa: E402
 
 if TYPE_CHECKING:
-    from ttkbootstrap.appconfig import AppConfig
+    from ttkbootstrap.core.appconfig import AppConfig
     from ttkbootstrap_icons_bs import BootstrapIcon
     from ttkbootstrap.menu import MenuManager, create_menu
     from ttkbootstrap.style.bootstyle import Bootstyle
@@ -174,7 +174,7 @@ _TTKBOOTSTRAP_EXPORTS = [
 
 _LAZY_EXPORTS = {
     # Style / app
-    "AppConfig": "ttkbootstrap.appconfig",
+    "AppConfig": "ttkbootstrap.core.appconfig",
     "BootstrapIcon": "ttkbootstrap_icons_bs",
     "Bootstyle": "ttkbootstrap.style.bootstyle",
     "Style": "ttkbootstrap.style.style",

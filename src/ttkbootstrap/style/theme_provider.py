@@ -63,7 +63,7 @@ def load_system_themes():
     AppConfig.dark_theme or AppConfig.light_theme are also registered with
     'dark' and 'light' aliases for convenience.
     """
-    from ttkbootstrap.appconfig import AppConfig
+    from ttkbootstrap.core.appconfig import AppConfig
     from importlib import resources
 
     global _registered_themes
@@ -179,7 +179,7 @@ class ThemeProvider:
         Aliases such as ``\"light\"`` and ``\"dark\"`` are not included; only the
         canonical theme entries loaded into the provider are returned.
         """
-        from ttkbootstrap.appconfig import AppConfig
+        from ttkbootstrap.core.appconfig import AppConfig
 
         themes: list[dict[str, str]] = []
         seen: set[str] = set()

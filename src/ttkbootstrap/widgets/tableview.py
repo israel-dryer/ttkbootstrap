@@ -15,7 +15,8 @@ from typing import Any
 
 from typing_extensions import Literal, TypedDict
 
-from ttkbootstrap import BootstrapIcon, use_style
+from ttkbootstrap_icons_bs import BootstrapIcon
+from ttkbootstrap import use_style
 from ttkbootstrap.datasource.sqlite_source import SqliteDataSource
 from ttkbootstrap.widgets.button import Button
 from ttkbootstrap.widgets.contextmenu import ContextMenu

@@ -5,7 +5,7 @@ This module contains style builders for ttk.Menubutton widgets and variants.
 
 from __future__ import annotations
 
-from ttkbootstrap import BootstrapIcon
+from ttkbootstrap_icons_bs import BootstrapIcon
 from ttkbootstrap.style.bootstyle_builder_ttk import BootstyleBuilderTTk
 from ttkbootstrap.style.element import Element, ElementImage
 from ttkbootstrap.style.utility import create_transparent_image, recolor_image

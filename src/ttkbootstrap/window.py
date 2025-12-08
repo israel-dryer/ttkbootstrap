@@ -4,7 +4,7 @@ from typing import Any, Optional, Tuple, Union
 from ttkbootstrap_icons_bs import BootstrapIcon
 
 from ttkbootstrap import utility
-from ttkbootstrap.appconfig import AppConfig
+from ttkbootstrap.core.appconfig import AppConfig
 from ttkbootstrap.constants import *
 from ttkbootstrap.publisher import Publisher
 from ttkbootstrap.style.style import Style

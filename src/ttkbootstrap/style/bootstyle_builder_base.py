@@ -6,7 +6,7 @@ from typing import List, Optional, Tuple, Union
 
 from typing_extensions import Any, TypedDict
 
-from ttkbootstrap import BootstrapIcon
+from ttkbootstrap_icons_bs import BootstrapIcon
 from ttkbootstrap.style.theme_provider import ThemeProvider, use_theme
 from ttkbootstrap.style.utility import best_foreground, color_to_hsl, darken_color, lighten_color, mix_colors, \
     relative_luminance
