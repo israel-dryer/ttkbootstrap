@@ -248,7 +248,7 @@ def __dir__():
 
 
 # Patch Tk widgets for autostyle and install enhanced events on import
-from ttkbootstrap.style.tk_patch import install_tk_autostyle
+from ttkbootstrap.runtime.tk_patch import install_tk_autostyle
 from ttkbootstrap.events import install_enhanced_events
 
 install_tk_autostyle()
