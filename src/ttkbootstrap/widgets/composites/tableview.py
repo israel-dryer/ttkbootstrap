@@ -28,7 +28,7 @@ from ttkbootstrap.widgets.primitives.scrollbar import Scrollbar
 from ttkbootstrap.widgets.primitives.selectbox import SelectBox
 from ttkbootstrap.widgets.primitives.separator import Separator
 from ttkbootstrap.widgets.composites.textentry import TextEntry
-from ttkbootstrap.widgets.primitives.treeview import Treeview
+from ttkbootstrap.widgets.primitives.treeview import TreeView
 
 logger = logging.getLogger(__name__)
 
@@ -838,7 +838,7 @@ class TableView(Frame):
         # Prevent the tree from expanding the container beyond the available viewport
         tree_container.pack_propagate(False)
 
-        self._tree = Treeview(
+        self._tree = TreeView(
             tree_container,
             columns=list(range(len(cols))),
             selectmode=_parse_selection_mode(self._selection['mode']),

@@ -320,7 +320,7 @@ for label, command, style in advanced_demos:
     btn.pack(pady=5, fill='x')
 
 # Result display
-result_frame = ttk.Labelframe(content, text="Last Dialog Result", padding=15)
+result_frame = ttk.LabelFrame(content, text="Last Dialog Result", padding=15)
 result_frame.pack(fill='x', pady=(20, 0))
 
 result_label = ttk.Label(

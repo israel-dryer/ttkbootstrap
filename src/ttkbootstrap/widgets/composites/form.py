@@ -9,12 +9,12 @@ from typing import Any, Callable, Iterable, Literal, Mapping, Sequence, TYPE_CHE
 
 from ttkbootstrap.core.constants import DEFAULT_MIN_COL_WIDTH
 from ttkbootstrap.widgets.primitives.button import Button
-from ttkbootstrap.widgets.primitives.checkbutton import Checkbutton
+from ttkbootstrap.widgets.primitives.checkbutton import CheckButton
 from ttkbootstrap.widgets.composites.dateentry import DateEntry
 from ttkbootstrap.widgets.composites.field import Field
 from ttkbootstrap.widgets.primitives.frame import Frame
 from ttkbootstrap.widgets.primitives.label import Label
-from ttkbootstrap.widgets.primitives.labelframe import Labelframe
+from ttkbootstrap.widgets.primitives.labelframe import LabelFrame
 from ttkbootstrap.widgets.mixins import configure_delegate
 from ttkbootstrap.widgets.primitives.notebook import Notebook
 from ttkbootstrap.widgets.composites.numericentry import NumericEntry
@@ -300,7 +300,7 @@ class Form(Frame):
                 columnspan = item.columnspan
                 rowspan = item.rowspan
             elif isinstance(item, GroupItem):
-                container = Labelframe(parent, text=item.label, padding=item.padding) if item.label else Frame(
+                container = LabelFrame(parent, text=item.label, padding=item.padding) if item.label else Frame(
                     parent, padding=item.padding)
                 if item.width:
                     container.configure(width=item.width)
@@ -404,9 +404,9 @@ class Form(Frame):
                 if initial_value:
                     field_widget.insert('1.0', str(initial_value))
             elif editor == 'toggle':
-                field_widget = Checkbutton(container, variable=variable, **filtered_options)
+                field_widget = CheckButton(container, variable=variable, **filtered_options)
             elif editor == 'checkbutton':
-                field_widget = Checkbutton(container, variable=variable, **filtered_options)
+                field_widget = CheckButton(container, variable=variable, **filtered_options)
             elif editor == 'scale':
                 field_widget = Scale(container, variable=variable, **filtered_options)
             else:

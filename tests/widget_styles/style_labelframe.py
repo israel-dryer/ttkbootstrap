@@ -11,7 +11,7 @@ def create_labelframe_style():
     ttk.Separator(frame).pack(padx=5, pady=5, fill=X)
 
     # default
-    lbl = ttk.Labelframe(
+    lbl = ttk.LabelFrame(
         master=frame,
         text='default',
         width=150,
@@ -21,7 +21,7 @@ def create_labelframe_style():
 
     # colored
     for color in ['primary', 'secondary', 'success', 'info', 'warning', 'danger']:
-        lbl = ttk.Labelframe(
+        lbl = ttk.LabelFrame(
             master=frame,
             text=color,
             bootstyle=color,

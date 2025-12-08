@@ -6,7 +6,7 @@ from typing_extensions import Unpack
 from ttkbootstrap.widgets._internal.wrapper_base import TTKWrapperBase
 
 
-class TreeviewKwargs(TypedDict, total=False):
+class TreeViewKwargs(TypedDict, total=False):
     # Standard ttk.Treeview options
     columns: Any
     displaycolumns: Any
@@ -25,12 +25,12 @@ class TreeviewKwargs(TypedDict, total=False):
     style_options: dict[str, Any]
 
 
-class Treeview(TTKWrapperBase, ttk.Treeview):
+class TreeView(TTKWrapperBase, ttk.Treeview):
     """ttkbootstrap wrapper for `ttk.Treeview` with bootstyle support."""
 
     _ttk_base = ttk.Treeview
 
-    def __init__(self, master=None, **kwargs: Unpack[TreeviewKwargs]) -> None:
+    def __init__(self, master=None, **kwargs: Unpack[TreeViewKwargs]) -> None:
         """Create a themed ttkbootstrap Treeview.
 
         Keyword Args:

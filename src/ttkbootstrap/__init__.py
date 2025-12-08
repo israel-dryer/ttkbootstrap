@@ -1,34 +1,6 @@
-"""ttkbootstrap - A supercharged theme extension for tkinter.
-
-A modern flat style theme engine for tkinter that enables on-demand styling
-of ttk widgets with over a dozen built-in themes inspired by Bootstrap.
-
-This package provides:
-    - A comprehensive collection of modern, flat-style themes
-    - Custom widgets extending tkinter/ttk functionality
-    - Easy-to-use styling API with color keywords
-    - Window and Toplevel classes with enhanced functionality
-    - Cross-platform compatibility
-
-Example:
-    ```python
-    import ttkbootstrap as ttk
-    from ttkbootstrap.core.constants import *
-
-    # Create a themed window
-    root = ttk.Window(themename="darkly")
-
-    # Create styled widgets
-    btn = ttk.Button(root, text="Click Me", bootstyle="success")
-    btn.pack(padx=10, pady=10)
-
-    root.mainloop()
-    ```
-
-For more information, see: https://ttkbootstrap.readthedocs.io/
-"""
-
-import importlib
+import sys as _sys
+from ttkbootstrap.core import constants as _constants_module
+import importlib as _importlib
 from typing import TYPE_CHECKING
 
 from tkinter import (
@@ -54,13 +26,16 @@ TkFrame = _tkFrame  # Exported as TkFrame to avoid conflict with ttk.Frame
 # Eagerly import BootstrapIcon to prevent circular import during style bootstrapping
 from ttkbootstrap_icons_bs import BootstrapIcon  # noqa: E402
 
+constants = _constants_module
+_sys.modules[__name__ + ".constants"] = _constants_module
+
 if TYPE_CHECKING:
     from ttkbootstrap.api.menu import MenuManager, create_menu
     from ttkbootstrap.api.window import Toplevel, Window
     from ttkbootstrap.api.style import AppConfig, Bootstyle, Style, use_style
     from ttkbootstrap.api.widgets import (
         Button,
-        Checkbutton,
+        CheckButton,
         Combobox,
         ContextMenu,
         ContextMenuItem,
@@ -74,36 +49,45 @@ if TYPE_CHECKING:
         Form,
         Frame,
         Label,
-        Labelframe,
+        LabelFrame,
         LabeledScale,
-        Menubutton,
+        MenuButton,
         Meter,
         Notebook,
         NumericEntry,
         OptionMenu,
-        Panedwindow,
+        PanedWindow,
         PasswordEntry,
         PathEntry,
         Progressbar,
-        Radiobutton,
+        RadioButton,
         Scale,
         Scrollbar,
         ScrolledText,
         ScrollView,
         SelectBox,
         Separator,
-        Sizegrip,
+        SizeGrip,
         Spinbox,
         TableView,
         TextEntry,
         TimeEntry,
         Toast,
         ToolTip,
-        Treeview,
+        TreeView,
         TK_WIDGETS,
         TTK_WIDGETS,
     )
     from ttkbootstrap_icons_bs import BootstrapIcon
+
+_DEPRECATED_ALIASES = {
+    "Checkbutton": "CheckButton",
+    "Radiobutton": "RadioButton",
+    "Labelframe": "LabelFrame",
+    "Panedwindow": "PanedWindow",
+    "Treeview": "TreeView",
+    "Tableview": "TableView"
+}
 
 _TK_EXPORTS = [
     "Tk",
@@ -121,23 +105,23 @@ _TK_EXPORTS = [
 
 _TTK_EXPORTS = [
     "Button",
-    "Checkbutton",
+    "CheckButton",
     "Combobox",
     "Entry",
     "Frame",
-    "Labelframe",
+    "LabelFrame",
     "Label",
-    "Menubutton",
+    "MenuButton",
     "Notebook",
-    "Panedwindow",
+    "PanedWindow",
     "Progressbar",
-    "Radiobutton",
+    "RadioButton",
     "Scale",
     "Scrollbar",
     "Separator",
-    "Sizegrip",
+    "SizeGrip",
     "Spinbox",
-    "Treeview",
+    "TreeView",
     "OptionMenu",
 ]
 
@@ -193,17 +177,40 @@ for _name in (*_TTKBOOTSTRAP_EXPORTS, *_TTK_EXPORTS):
     if _name not in _LAZY_EXPORTS:
         _LAZY_EXPORTS[_name] = "ttkbootstrap.api.widgets"
 
-__all__ = [*_TK_EXPORTS, *_TTK_EXPORTS, *_TTKBOOTSTRAP_EXPORTS]
+__all__ = [*_TK_EXPORTS, *_TTK_EXPORTS, *_TTKBOOTSTRAP_EXPORTS, *_DEPRECATED_ALIASES, "constants"]
 
+
+import warnings as _warnings
 
 def __getattr__(name):
     """Lazily import top-level attributes to avoid circular imports and speed import."""
+    # Deprecated aliases
+    if name in _DEPRECATED_ALIASES:
+        new_name = _DEPRECATED_ALIASES[name]
+        _warnings.warn(
+            f"ttkbootstrap.{name} is deprecated and will be removed in a future version; "
+            f"use {new_name} instead.",
+            DeprecationWarning,
+            stacklevel=2,
+        )
+
+        # Look up the canonical class lazily
+        module = _importlib.import_module(_LAZY_EXPORTS[new_name])
+        value = getattr(module, new_name)
+
+        # Cache the alias so subsequent access is just a dict lookup
+        globals()[name] = value
+        return value
+
+    # Lazy exports
     if name in _LAZY_EXPORTS:
-        module = importlib.import_module(_LAZY_EXPORTS[name])
+        module = _importlib.import_module(_LAZY_EXPORTS[name])
         value = getattr(module, name)
         globals()[name] = value
         return value
+
     raise AttributeError(f"module 'ttkbootstrap' has no attribute '{name}'")
+
 
 
 def __dir__():

@@ -70,7 +70,7 @@ def main():
     root.bind('<Button-3>', show_context_menu)
 
     # Instructions
-    instructions = ttk.Labelframe(root, text="Instructions", padding=10)
+    instructions = ttk.LabelFrame(root, text="Instructions", padding=10)
     instructions.pack(fill='x', padx=20, pady=10)
 
     ttk.Label(
@@ -96,7 +96,7 @@ def main():
     status_label.pack(pady=20)
 
     # Example: Create menu programmatically with items list
-    frame2 = ttk.Labelframe(root, text="Programmatic Menu", padding=10)
+    frame2 = ttk.LabelFrame(root, text="Programmatic Menu", padding=10)
     frame2.pack(fill='x', padx=20, pady=10)
 
     ttk.Label(

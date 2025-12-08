@@ -14,7 +14,7 @@ def create_menubutton_frame(bootstyle, testname):
 
     ttk.Separator(frame).pack(padx=5, pady=5, fill=X)
 
-    btn = ttk.Menubutton(
+    btn = ttk.MenuButton(
         master=frame,
         bootstyle=bootstyle,
         text='default',
@@ -22,14 +22,14 @@ def create_menubutton_frame(bootstyle, testname):
     btn.pack(padx=5, pady=5, fill=BOTH)
 
     for color in ['primary', 'secondary', 'success', 'info', 'warning', 'danger']:
-        btn = ttk.Menubutton(
+        btn = ttk.MenuButton(
             master=frame,
             text=color,
             bootstyle=f"{color}-{bootstyle}"
         )
         btn.pack(padx=5, pady=5, fill=BOTH)
 
-    btn = ttk.Menubutton(
+    btn = ttk.MenuButton(
         master=frame,
         text='disabled',
         state=DISABLED,

@@ -26,8 +26,8 @@ class FilterDialogContent(ttk.Frame):
 
         self._filter: str | dict | None = None
 
-        self._check_buttons: dict[str, ttk.Checkbutton] = {}
-        self._select_all_cb: ttk.Checkbutton | None = None
+        self._check_buttons: dict[str, ttk.CheckButton] = {}
+        self._select_all_cb: ttk.CheckButton | None = None
         self._scroll_container: ttk.Frame | None = None
         self._build_content()
 
@@ -63,7 +63,7 @@ class FilterDialogContent(ttk.Frame):
 
         # add select all
         if self._allow_select_all:
-            self._select_all_cb = ttk.Checkbutton(self, text='Select All')
+            self._select_all_cb = ttk.CheckButton(self, text='Select All')
             self._select_all_cb.invoke()
             self._select_all_cb.invoke()
             self._select_all_cb['command'] = self._handle_select_all
@@ -86,7 +86,7 @@ class FilterDialogContent(ttk.Frame):
 
         # add items to scrollable container
         for item in self._items:
-            cb = ttk.Checkbutton(self._scroll_container, text=item['text'])
+            cb = ttk.CheckButton(self._scroll_container, text=item['text'])
             cb.invoke()
             if not item['selected']:
                 cb.invoke()
