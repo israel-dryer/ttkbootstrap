@@ -50,10 +50,42 @@ class TabOptions(TypedDict, total=False):
 
 
 class Notebook(TTKWrapperBase, ttk.Notebook):
-    """Public `ttkbootstrap.api.widgets.Notebook` proxy that adds ttkbootstrap styling.
+    """A themed tabbed container widget with enhanced navigation and event tracking.
 
-    Wraps ``ttk.Notebook`` so the widget can be configured with bootstyle tokens,
-    surface colors, and enriched tab lifecycle change events that the API exposes.
+    The Notebook widget provides a tabbed interface where only one tab's content
+    is visible at a time. It extends ttk.Notebook with ttkbootstrap styling,
+    key-based tab referencing, and enriched lifecycle events for tracking tab changes.
+
+    Features:
+        - Add tabs as existing widgets or create new Frame tabs
+        - Reference tabs by key, index, or widget instance
+        - Automatic key generation for tabs without explicit keys
+        - Enriched lifecycle events tracking tab activation/deactivation
+        - Hide/show tabs dynamically without removing them
+        - Query navigation state and tab metadata
+        - Full support for ttkbootstrap styling (bootstyle, surface_color)
+
+    Tab Referencing:
+        Tabs can be referenced in three ways:
+        - By key (str): Human-readable identifier like 'home', 'settings'
+        - By index (int): 0-based position in the tab bar
+        - By widget: The actual widget instance
+
+    Lifecycle Events:
+        - <<NotebookTabChanged>>: Triggered when the selected tab changes
+        - <<NotebookTabActivated>>: Triggered when a tab becomes active
+        - <<NotebookTabDeactivated>>: Triggered when a tab becomes inactive
+
+    Event Data:
+        All lifecycle events include a data dictionary with:
+        - current: TabRef dict with index, key, and label of current tab
+        - previous: TabRef dict with index, key, and label of previous tab
+        - reason: Change reason ('user', 'api', 'hide', 'forget', 'reorder')
+        - via: Change method ('click', 'key', 'programmatic')
+
+    Note:
+        This widget wraps ttk.Notebook and adds ttkbootstrap-specific features.
+        All standard ttk.Notebook options and methods remain available.
     """
 
     _ttk_base = ttk.Notebook
@@ -85,13 +117,35 @@ class Notebook(TTKWrapperBase, ttk.Notebook):
         self._last_change_via: ChangeMethod = 'unknown'
 
     # ---- Internal helpers ----
-    def _mark_api_change(self, reason: ChangeReason = 'api'):
-        """Record a programmatic change reason so the next change can report it"""
+    def _mark_api_change(self, reason: ChangeReason = 'api') -> None:
+        """Record a programmatic change reason so the next change can report it.
+
+        This method tracks the reason for tab changes initiated through the API
+        (as opposed to user interactions), allowing event handlers to provide
+        detailed change context.
+
+        Args:
+            reason: The reason for the change ('api', 'hide', 'forget', 'reorder').
+        """
         self._last_change_reason = reason
         self._last_change_via = 'programmatic'
 
     def _make_key(self, key: Optional[str]) -> str:
-        """Return a unique, stable key for a tab; auto generated (tabN) if none provided."""
+        """Return a unique, stable key for a tab; auto generated (tabN) if none provided.
+
+        Args:
+            key: Optional tab key. If None, generates an auto key like 'tab1', 'tab2', etc.
+
+        Returns:
+            A unique tab key string.
+
+        Raises:
+            NavigationError: If the key already exists in the registry.
+            ValueError: If key is an empty string.
+        """
+        if key is not None and not key:
+            raise ValueError("Tab key cannot be an empty string")
+
         if key in self._key_registry:
             raise NavigationError(
                 message=f"Duplicate tab key: {key}",
@@ -107,8 +161,27 @@ class Notebook(TTKWrapperBase, ttk.Notebook):
             if key not in self._key_registry:
                 return key
 
-    def _to_tab_id(self, tab: Tab):
-        """Resolve a tab reference (key/index/widget) to a tk tab id"""
+    def _to_tab_id(self, tab: Tab) -> str:
+        """Resolve a tab reference (key/index/widget) to a tkinter tab ID.
+
+        This method provides flexible tab referencing by accepting multiple
+        input types and converting them to the tkinter widget ID string format
+        that the underlying ttk.Notebook expects.
+
+        Args:
+            tab: Tab reference, which can be:
+                 - A widget instance (tkinter.Widget)
+                 - An integer index (0-based position)
+                 - A string key (from _key_registry)
+                 - A string widget ID (fallback)
+
+        Returns:
+            The tkinter widget ID string for the tab.
+
+        Raises:
+            NavigationError: If the tab reference is invalid, out of range,
+                           or of an unsupported type.
+        """
         # tab is widget
         if isinstance(tab, tkinter.Misc):
             return str(tab)
@@ -121,7 +194,7 @@ class Notebook(TTKWrapperBase, ttk.Notebook):
                 return tabs[tab]
             except Exception:
                 raise NavigationError(
-                    message=f"Tab index out of range: ${tab}",
+                    message=f"Tab index out of range: {tab}",
                     hint=f"Valid range is 0..{len(tabs) - 1}."
                 ) from None
 
@@ -138,8 +211,16 @@ class Notebook(TTKWrapperBase, ttk.Notebook):
             hint="Use a tab key (str), index (int), or widget"
         )
 
-    def _tab_ref(self, tabid: str | None) -> TabRef:
-        """Return a simplified tab reference ({index, key, label}) or None if invalid"""
+    def _tab_ref(self, tabid: str | None) -> TabRef | None:
+        """Return a simplified tab reference ({index, key, label}) or None if invalid.
+
+        Args:
+            tabid: The tkinter widget ID of the tab to reference.
+
+        Returns:
+            A TabRef dictionary with index, key, and label fields, or None if the
+            tabid is invalid or doesn't exist in the notebook.
+        """
         ref: TabRef = {"index": None, "key": None, "label": None}
         if not tabid:
             return None
@@ -151,16 +232,16 @@ class Notebook(TTKWrapperBase, ttk.Notebook):
         ref['key'] = self._tk_to_key.get(tabid)
         return ref
 
-    def hide(self, tab: Tab):
+    def hide(self, tab: Tab) -> None:
         """Hide a tab without removing it; selection may change implicitly"""
         self._mark_api_change('hide')
         super().hide(self._to_tab_id(tab))
 
-    def index(self, tab: Tab):
+    def index(self, tab: Tab) -> int:
         """Return the current position of a tab"""
         return super().index(self._to_tab_id(tab))
 
-    def select(self, tab: Tab = None):
+    def select(self, tab: Tab = None) -> str | None:
         """Select a tab or return the current tab id"""
         if tab is None:
             return super().select()
@@ -168,7 +249,7 @@ class Notebook(TTKWrapperBase, ttk.Notebook):
             self._mark_api_change('api')
             return super().select(self._to_tab_id(tab))
 
-    def add_frame(self, label: str = None, key: str = None, frame_options: dict=None, **kwargs: Unpack[TabOptions]) -> Frame:
+    def add_frame(self, label: str | None = None, key: str | None = None, frame_options: dict | None = None, **kwargs: Unpack[TabOptions]) -> Frame:
         """Create a new frame and add to Notebook.
 
         Args:
@@ -191,7 +272,7 @@ class Notebook(TTKWrapperBase, ttk.Notebook):
         return self.insert_frame('end', label=label, frame_options=frame_options, key=key, **kwargs)
 
     def insert_frame(
-            self, index: str | int = 'end', label=None, key: str = None, frame_options: dict=None, **kwargs: Unpack[TabOptions]) -> Frame:
+            self, index: str | int = 'end', label: str | None = None, key: str | None = None, frame_options: dict | None = None, **kwargs: Unpack[TabOptions]) -> Frame:
         """Create a new frame and insert to Notebook at position `index`.
 
         Args:
@@ -216,12 +297,12 @@ class Notebook(TTKWrapperBase, ttk.Notebook):
         self.insert(index, frame, key=key, text=label, **kwargs)
         return frame
 
-    def add(self, widget: tkinter.Widget, *, key: str = None, **kwargs):
+    def add(self, child: tkinter.Widget, *, key: str | None = None, **kwargs) -> None:
         """Adds a new tab to the notebook.
         If window is currently managed by the notebook but hidden, it is restored to its previous position.
 
         Args:
-            widget: The widget to add as a tab.
+            child: The widget to add as a tab.
             key: A unique human-friendly identifier for referencing the tab.
 
         Keyword Args:
@@ -233,14 +314,14 @@ class Notebook(TTKWrapperBase, ttk.Notebook):
             image: The image to display in the tab.
             underline: The integer index (0-based) of a character to underline in the label.
         """
-        super().insert('end', widget, key=key, **kwargs)
+        self.insert('end', child, key=key, **kwargs)
 
-    def insert(self, index: str | int, widget: tkinter.Widget, *, key: str = None, **kwargs):
+    def insert(self, index: str | int, child: tkinter.Widget, *, key: str | None = None, **kwargs) -> None:
         """Create a new frame and insert to Notebook at position `index`.
 
         Args:
             index: Indicates where to insert the widget. Defaults to 'end'.
-            widget: The widget to insert as a tab.
+            child: The widget to insert as a tab.
             key: A unique human-friendly identifier for referencing the tab.
 
         Keyword Args:
@@ -253,12 +334,12 @@ class Notebook(TTKWrapperBase, ttk.Notebook):
             underline: The integer index (0-based) of a character to underline in the label.
         """
         self._mark_api_change('reorder')
-        super().insert(index, widget, **kwargs)
+        super().insert(index, child, **kwargs)
         tab_key = self._make_key(key)
-        self._tk_to_key[str(widget)] = tab_key
-        self._key_registry[tab_key] = widget
+        self._tk_to_key[str(child)] = tab_key
+        self._key_registry[tab_key] = child
 
-    def remove(self, tab: Tab):
+    def remove(self, tab: Tab) -> None:
         """Remove a tab and clean registry"""
         self._mark_api_change('forget')
         tabid = self._to_tab_id(tab)
@@ -267,7 +348,7 @@ class Notebook(TTKWrapperBase, ttk.Notebook):
             self._key_registry.pop(key, None)
         self.forget(tabid)
 
-    def tab(self, tab: Tab, option: str = None, **kwargs):
+    def tab(self, tab: Tab, option: str = None, **kwargs) -> Any:
         """Configure or query tab configuration.
 
         Args:
@@ -292,7 +373,7 @@ class Notebook(TTKWrapperBase, ttk.Notebook):
 
     configure_tab = tab  # alias for tab
 
-    def on_tab_activated(self, callback: Callable[[Any], Any]):
+    def on_tab_activated(self, callback: Callable[[Any], Any]) -> str:
         """Bind to tab activation. <<NotebookTabActivated>> (public API event).
 
         The event maps the base event into a NotebookChanged event whose .data payload includes:
@@ -306,11 +387,11 @@ class Notebook(TTKWrapperBase, ttk.Notebook):
         """
         return self.bind("<<NotebookTabActivated>>", callback, add=True)
 
-    def off_tab_activated(self, funcid: str):
+    def off_tab_activated(self, funcid: str) -> None:
         """Remove the binding associated with funcid for <<NotebookTabActivated>>."""
         self.unbind("<<NotebookTabActivated>>", funcid)
 
-    def on_tab_deactivated(self, callback: Callable[[Any], Any]):
+    def on_tab_deactivated(self, callback: Callable[[Any], Any]) -> str:
         """Bind to tab deactivation. <<NotebookTabDeactivated>> (public API event).
 
         The event maps the base event into a NotebookChanged event whose .data payload includes:
@@ -324,11 +405,11 @@ class Notebook(TTKWrapperBase, ttk.Notebook):
         """
         return self.bind("<<NotebookTabDeactivated>>", callback, add=True)
 
-    def off_tab_deactivated(self, funcid: str):
+    def off_tab_deactivated(self, funcid: str) -> None:
         """Remove the binding associated with funcid on <<NotebookTabDeactivated>>"""
         self.unbind("<<NotebookTabDeactivated>>", funcid)
 
-    def on_tab_changed(self, callback: Callable[[Any], Any]):
+    def on_tab_changed(self, callback: Callable[[Any], Any]) -> str:
         """Bind to tab changed event (enriched API event surface).
 
         Emits:
@@ -346,7 +427,7 @@ class Notebook(TTKWrapperBase, ttk.Notebook):
             The funcid associated with this callback.
         """
 
-        def build_payload(event: Any):
+        def build_payload(event: Any) -> Any:
             """Attach NotebookChanged data payload to the event"""
             payload = dict(
                 current=self._tab_ref(self.select()),
@@ -357,7 +438,7 @@ class Notebook(TTKWrapperBase, ttk.Notebook):
             event.data = payload
             return event
 
-        def fire_lifecycle(event):
+        def fire_lifecycle(event: Any) -> None:
             """Emit per-tab lifecycle events when selection truly changes."""
             c, p = event.data["current"], event.data["previous"]
             c_key, p_key = (c or {}).get("key"), (p or {}).get("key")
@@ -373,7 +454,7 @@ class Notebook(TTKWrapperBase, ttk.Notebook):
             self._last_change_reason = 'unknown'
             self._last_change_via = 'unknown'
 
-        def wrapper(event):
+        def wrapper(event: Any) -> Any:
             payload = build_payload(event)
             fire_lifecycle(payload)
             commit(payload)
@@ -381,6 +462,6 @@ class Notebook(TTKWrapperBase, ttk.Notebook):
 
         return self.bind("<<NotebookTabChanged>>", wrapper, add=True)
 
-    def off_tab_changed(self, funcid: str):
+    def off_tab_changed(self, funcid: str) -> None:
         """Remove the binding associated with funcid for <<NotebookTabChanged>>."""
         self.unbind("<<NotebookTabChanged>>", funcid)
