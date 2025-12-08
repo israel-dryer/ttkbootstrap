@@ -1,6 +1,6 @@
 from typing_extensions import Unpack
 
-from ttkbootstrap.widgets.field import Field, FieldOptions
+from ttkbootstrap.widgets.composites.field import Field, FieldOptions
 
 
 class TextEntry(Field):
@@ -44,7 +44,7 @@ class TextEntry(Field):
     Example:
         ```python
         import ttkbootstrap as ttk
-        from ttkbootstrap.widgets.textentry import TextEntry
+        from ttkbootstrap.widgets.composites.textentry import TextEntry
 
         root = ttk.Window()
 

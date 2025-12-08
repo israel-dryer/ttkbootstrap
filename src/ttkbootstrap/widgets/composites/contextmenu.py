@@ -7,12 +7,12 @@ radiobuttons, and separators.
 from tkinter import BooleanVar, IntVar, StringVar, TclError, Toplevel, Widget
 from typing import Any, Callable, Union
 
-from ttkbootstrap.widgets.button import Button
-from ttkbootstrap.widgets.checkbutton import Checkbutton
-from ttkbootstrap.widgets.frame import Frame
+from ttkbootstrap.widgets.primitives.button import Button
+from ttkbootstrap.widgets.primitives.checkbutton import Checkbutton
+from ttkbootstrap.widgets.primitives.frame import Frame
 from ttkbootstrap.widgets.mixins import CustomConfigMixin, configure_delegate
-from ttkbootstrap.widgets.radiobutton import Radiobutton
-from ttkbootstrap.widgets.separator import Separator
+from ttkbootstrap.widgets.primitives.radiobutton import Radiobutton
+from ttkbootstrap.widgets.primitives.separator import Separator
 
 
 class ContextMenuItem:
@@ -44,7 +44,7 @@ class ContextMenu(CustomConfigMixin):
     Example:
         ```python
         import ttkbootstrap as ttk
-        from ttkbootstrap.widgets.contextmenu import ContextMenu
+        from ttkbootstrap.widgets.composites.contextmenu import ContextMenu
 
         root = ttk.Window()
 

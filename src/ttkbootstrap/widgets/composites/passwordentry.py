@@ -4,8 +4,8 @@ Provides a specialized text entry field for password input with masked character
 and an optional visibility toggle button.
 """
 
-from ttkbootstrap.widgets.button import Button
-from ttkbootstrap.widgets.field import Field, FieldOptions
+from ttkbootstrap.widgets.primitives.button import Button
+from ttkbootstrap.widgets.composites.field import Field, FieldOptions
 from typing_extensions import Unpack
 
 
@@ -34,7 +34,7 @@ class PasswordEntry(Field):
     Example:
         ```python
         import ttkbootstrap as ttk
-        from ttkbootstrap.widgets.passwordentry import PasswordEntry
+        from ttkbootstrap.widgets.composites.passwordentry import PasswordEntry
 
         root = ttk.Window()
 

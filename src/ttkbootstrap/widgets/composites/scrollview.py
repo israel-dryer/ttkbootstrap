@@ -3,9 +3,9 @@ from tkinter import Canvas
 from tkinter.ttk import Widget
 from typing import Literal, Optional
 
-from ttkbootstrap.widgets.frame import Frame
+from ttkbootstrap.widgets.primitives.frame import Frame
 from ttkbootstrap.widgets.mixins.configure_mixin import configure_delegate
-from ttkbootstrap.widgets.scrollbar import Scrollbar
+from ttkbootstrap.widgets.primitives.scrollbar import Scrollbar
 
 
 class ScrollView(Frame):

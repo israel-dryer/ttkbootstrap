@@ -2,10 +2,10 @@ from tkinter import Toplevel
 
 from typing_extensions import Unpack
 
-from ttkbootstrap.widgets.button import Button
-from ttkbootstrap.widgets.field import Field, FieldOptions
+from ttkbootstrap.widgets.primitives.button import Button
+from ttkbootstrap.widgets.composites.field import Field, FieldOptions
 from ttkbootstrap.widgets.mixins import configure_delegate
-from ttkbootstrap.widgets.treeview import Treeview
+from ttkbootstrap.widgets.primitives.treeview import Treeview
 
 
 class SelectBox(Field):

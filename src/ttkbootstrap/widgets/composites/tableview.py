@@ -18,17 +18,17 @@ from typing_extensions import Literal, TypedDict
 from ttkbootstrap_icons_bs import BootstrapIcon
 from ttkbootstrap import use_style
 from ttkbootstrap.datasource.sqlite_source import SqliteDataSource
-from ttkbootstrap.widgets.button import Button
-from ttkbootstrap.widgets.contextmenu import ContextMenu
-from ttkbootstrap.widgets.dropdownbutton import DropdownButton
-from ttkbootstrap.widgets.entry import Entry
-from ttkbootstrap.widgets.frame import Frame
-from ttkbootstrap.widgets.label import Label
-from ttkbootstrap.widgets.scrollbar import Scrollbar
-from ttkbootstrap.widgets.selectbox import SelectBox
-from ttkbootstrap.widgets.separator import Separator
-from ttkbootstrap.widgets.textentry import TextEntry
-from ttkbootstrap.widgets.treeview import Treeview
+from ttkbootstrap.widgets.primitives.button import Button
+from ttkbootstrap.widgets.composites.contextmenu import ContextMenu
+from ttkbootstrap.widgets.composites.dropdownbutton import DropdownButton
+from ttkbootstrap.widgets.primitives.entry import Entry
+from ttkbootstrap.widgets.primitives.frame import Frame
+from ttkbootstrap.widgets.primitives.label import Label
+from ttkbootstrap.widgets.primitives.scrollbar import Scrollbar
+from ttkbootstrap.widgets.primitives.selectbox import SelectBox
+from ttkbootstrap.widgets.primitives.separator import Separator
+from ttkbootstrap.widgets.composites.textentry import TextEntry
+from ttkbootstrap.widgets.primitives.treeview import Treeview
 
 logger = logging.getLogger(__name__)
 

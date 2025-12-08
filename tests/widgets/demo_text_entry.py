@@ -1,5 +1,5 @@
 import ttkbootstrap as ttk
-from ttkbootstrap.widgets.textentry import TextEntry
+from ttkbootstrap import TextEntry
 
 app = ttk.Window(themename="dark")
 

@@ -12,7 +12,7 @@ from ttkbootstrap.widgets.primitives import Checkbutton, Frame, Label, Separator
 from ttkbootstrap.widgets.composites.textentry import TextEntry
 from ttkbootstrap.api.window import Window
 from ttkbootstrap.dialogs import Dialog, DialogButton
-from ttkbootstrap.widgets.scrollview import ScrollView
+from ttkbootstrap.widgets.composites.scrollview import ScrollView
 
 ttk = SimpleNamespace(
     Checkbutton=Checkbutton,

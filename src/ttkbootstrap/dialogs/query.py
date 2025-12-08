@@ -19,9 +19,9 @@ from ttkbootstrap.dialogs.datedialog import DateDialog
 from ttkbootstrap.dialogs.dialog import Dialog, DialogButton
 from ttkbootstrap.dialogs.fontdialog import FontDialog
 from ttkbootstrap.dialogs.message import MessageBox
-from ttkbootstrap.widgets.textentry import TextEntry
-from ttkbootstrap.widgets.numericentry import NumericEntry
-from ttkbootstrap.widgets.dateentry import DateEntry
+from ttkbootstrap.widgets.composites.textentry import TextEntry
+from ttkbootstrap.widgets.composites.numericentry import NumericEntry
+from ttkbootstrap.widgets.composites.dateentry import DateEntry
 
 EntryWidget = TextEntry | NumericEntry | DateEntry
 

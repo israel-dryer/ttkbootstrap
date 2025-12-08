@@ -8,21 +8,21 @@ from tkinter import BooleanVar, DoubleVar, IntVar, StringVar, Text, Variable
 from typing import Any, Callable, Iterable, Literal, Mapping, Sequence, TYPE_CHECKING
 
 from ttkbootstrap.constants import DEFAULT_MIN_COL_WIDTH
-from ttkbootstrap.widgets.button import Button
-from ttkbootstrap.widgets.checkbutton import Checkbutton
-from ttkbootstrap.widgets.dateentry import DateEntry
-from ttkbootstrap.widgets.field import Field
-from ttkbootstrap.widgets.frame import Frame
-from ttkbootstrap.widgets.label import Label
-from ttkbootstrap.widgets.labelframe import Labelframe
+from ttkbootstrap.widgets.primitives.button import Button
+from ttkbootstrap.widgets.primitives.checkbutton import Checkbutton
+from ttkbootstrap.widgets.composites.dateentry import DateEntry
+from ttkbootstrap.widgets.composites.field import Field
+from ttkbootstrap.widgets.primitives.frame import Frame
+from ttkbootstrap.widgets.primitives.label import Label
+from ttkbootstrap.widgets.primitives.labelframe import Labelframe
 from ttkbootstrap.widgets.mixins import configure_delegate
-from ttkbootstrap.widgets.notebook import Notebook
-from ttkbootstrap.widgets.numericentry import NumericEntry
-from ttkbootstrap.widgets.passwordentry import PasswordEntry
-from ttkbootstrap.widgets.scale import Scale
-from ttkbootstrap.widgets.selectbox import SelectBox
-from ttkbootstrap.widgets.spinbox import Spinbox
-from ttkbootstrap.widgets.textentry import TextEntry
+from ttkbootstrap.widgets.primitives.notebook import Notebook
+from ttkbootstrap.widgets.composites.numericentry import NumericEntry
+from ttkbootstrap.widgets.composites.passwordentry import PasswordEntry
+from ttkbootstrap.widgets.primitives.scale import Scale
+from ttkbootstrap.widgets.primitives.selectbox import SelectBox
+from ttkbootstrap.widgets.primitives.spinbox import Spinbox
+from ttkbootstrap.widgets.composites.textentry import TextEntry
 from ttkbootstrap.widgets.mixins.validation_mixin import ValidationMixin
 
 if TYPE_CHECKING:

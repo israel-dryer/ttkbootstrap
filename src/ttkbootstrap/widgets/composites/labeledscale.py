@@ -2,10 +2,10 @@ import tkinter as tk
 from typing import Any, Literal
 
 from ttkbootstrap.core.exceptions import ConfigurationWarning
-from ttkbootstrap.widgets.frame import Frame
-from ttkbootstrap.widgets.label import Label
+from ttkbootstrap.widgets.primitives.frame import Frame
+from ttkbootstrap.widgets.primitives.label import Label
 from ttkbootstrap.widgets.mixins import configure_delegate
-from ttkbootstrap.widgets.scale import Scale
+from ttkbootstrap.widgets.primitives.scale import Scale
 
 
 class LabeledScale(Frame):

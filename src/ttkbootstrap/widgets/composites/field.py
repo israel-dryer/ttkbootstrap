@@ -8,9 +8,9 @@ from tkinter import TclError, Variable
 from typing import Any, Callable, Literal, Type, TypedDict, Union
 
 from ttkbootstrap.core.signals import Signal
-from ttkbootstrap.widgets.button import Button
-from ttkbootstrap.widgets.frame import Frame
-from ttkbootstrap.widgets.label import Label
+from ttkbootstrap.widgets.primitives.button import Button
+from ttkbootstrap.widgets.primitives.frame import Frame
+from ttkbootstrap.widgets.primitives.label import Label
 from ttkbootstrap.widgets.mixins import configure_delegate
 from ttkbootstrap.widgets.mixins.entry_mixin import EntryMixin
 from ttkbootstrap.widgets.parts.numberentry_part import NumberEntryPart

@@ -11,7 +11,7 @@ This script demonstrates various features and configurations of the ScrolledText
 
 import ttkbootstrap as ttk
 from ttkbootstrap.constants import *
-from ttkbootstrap.widgets.scrolledtext import ScrolledText
+from ttkbootstrap import ScrolledText
 
 
 SAMPLE_TEXT = """Lorem ipsum dolor sit amet, consectetur adipiscing elit.

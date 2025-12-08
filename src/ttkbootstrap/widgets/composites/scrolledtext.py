@@ -2,9 +2,9 @@
 import tkinter
 from typing import Any, Literal, Optional
 
-from ttkbootstrap.widgets.frame import Frame
+from ttkbootstrap.widgets.primitives.frame import Frame
 from ttkbootstrap.widgets.mixins.configure_mixin import configure_delegate
-from ttkbootstrap.widgets.scrollbar import Scrollbar
+from ttkbootstrap.widgets.primitives.scrollbar import Scrollbar
 
 
 class ScrolledText(Frame):
@@ -23,7 +23,7 @@ class ScrolledText(Frame):
         ```python
         import ttkbootstrap as ttk
         from ttkbootstrap.constants import *
-        from ttkbootstrap.widgets.scrolledtext import ScrolledText
+        from ttkbootstrap.widgets.composites.scrolledtext import ScrolledText
 
         app = ttk.Window()
 

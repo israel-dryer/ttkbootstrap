@@ -9,8 +9,8 @@ from typing import Any, Literal
 
 from typing_extensions import Unpack
 
-from ttkbootstrap.widgets.button import Button
-from ttkbootstrap.widgets.field import Field, FieldOptions
+from ttkbootstrap.widgets.primitives.button import Button
+from ttkbootstrap.widgets.composites.field import Field, FieldOptions
 from ttkbootstrap.widgets.mixins import configure_delegate
 
 FileDialogType = Literal[
@@ -57,7 +57,7 @@ class PathEntry(Field):
     Example:
         ```python
         import ttkbootstrap as ttk
-        from ttkbootstrap.widgets.pathentry import PathEntry
+        from ttkbootstrap.widgets.composites.pathentry import PathEntry
 
         root = ttk.Window()
 

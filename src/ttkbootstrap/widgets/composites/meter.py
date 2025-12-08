@@ -7,7 +7,7 @@ from PIL import Image, ImageDraw, ImageTk
 from PIL.Image import Resampling
 
 from ttkbootstrap.core.exceptions import ConfigurationWarning
-from ttkbootstrap.widgets.frame import Frame
+from ttkbootstrap.widgets.primitives.frame import Frame
 from ttkbootstrap.widgets.mixins.configure_mixin import configure_delegate
 
 DEFAULT_IMAGE_SCALE = 6

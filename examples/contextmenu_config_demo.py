@@ -2,7 +2,7 @@
 
 import ttkbootstrap as ttk
 from ttkbootstrap.constants import *
-from ttkbootstrap.widgets.contextmenu import ContextMenu
+from ttkbootstrap import ContextMenu
 
 
 def main():

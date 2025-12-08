@@ -6,12 +6,12 @@ from ttkbootstrap.widgets import TK_WIDGETS, TTK_WIDGETS
 from ttkbootstrap.widgets.primitives.button import Button
 from ttkbootstrap.widgets.primitives.checkbutton import Checkbutton
 from ttkbootstrap.widgets.primitives.combobox import Combobox
-from ttkbootstrap.widgets.composites.contextmenu import ContextMenu
+from ttkbootstrap.widgets.composites.contextmenu import ContextMenu, ContextMenuItem
 from ttkbootstrap.widgets.composites.dateentry import DateEntry
 from ttkbootstrap.widgets.composites.datepicker import DatePicker
 from ttkbootstrap.widgets.composites.dropdownbutton import DropdownButton
 from ttkbootstrap.widgets.primitives.entry import Entry
-from ttkbootstrap.widgets.composites.field import Field
+from ttkbootstrap.widgets.composites.field import Field, FieldOptions
 from ttkbootstrap.widgets.composites.floodgauge import FloodGauge
 from ttkbootstrap.widgets.composites.form import Form
 from ttkbootstrap.widgets.primitives.frame import Frame
@@ -48,11 +48,13 @@ __all__ = [
     "Checkbutton",
     "Combobox",
     "ContextMenu",
+    "ContextMenuItem",
     "DateEntry",
     "DatePicker",
     "DropdownButton",
     "Entry",
     "Field",
+    "FieldOptions",
     "FloodGauge",
     "Form",
     "Frame",

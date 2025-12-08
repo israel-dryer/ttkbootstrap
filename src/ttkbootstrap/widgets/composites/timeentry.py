@@ -11,8 +11,8 @@ from typing_extensions import Unpack
 
 from ttkbootstrap import AppConfig
 from ttkbootstrap.core.localization import IntlFormatter
-from ttkbootstrap.widgets.field import FieldOptions
-from ttkbootstrap.widgets.selectbox import SelectBox
+from ttkbootstrap.widgets.composites.field import FieldOptions
+from ttkbootstrap.widgets.primitives.selectbox import SelectBox
 
 
 class TimeEntry(SelectBox):
@@ -48,7 +48,7 @@ class TimeEntry(SelectBox):
     Example:
         ```python
         import ttkbootstrap as ttk
-        from ttkbootstrap.widgets.timeentry import TimeEntry
+        from ttkbootstrap.widgets.composites.timeentry import TimeEntry
         from datetime import time
 
         root = ttk.Window()

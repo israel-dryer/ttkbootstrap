@@ -4,7 +4,7 @@ from datetime import date
 
 import ttkbootstrap as ttk
 from ttkbootstrap.constants import BOTH, W
-from ttkbootstrap.widgets.form import FieldItem, Form, GroupItem, TabItem, TabsItem
+from ttkbootstrap.widgets.composites.form import FieldItem, Form, GroupItem, TabItem, TabsItem
 
 
 def main():

@@ -9,8 +9,8 @@ from typing import TYPE_CHECKING
 
 from typing_extensions import Unpack
 
-from ttkbootstrap.widgets.button import Button
-from ttkbootstrap.widgets.field import Field, FieldOptions
+from ttkbootstrap.widgets.primitives.button import Button
+from ttkbootstrap.widgets.composites.field import Field, FieldOptions
 from ttkbootstrap.widgets.mixins import configure_delegate
 
 if TYPE_CHECKING:
@@ -60,7 +60,7 @@ class DateEntry(Field):
     Example:
         ```python
         import ttkbootstrap as ttk
-        from ttkbootstrap.widgets.dateentry import DateEntry
+        from ttkbootstrap.widgets.composites.dateentry import DateEntry
         from datetime import date
 
         root = ttk.Window()

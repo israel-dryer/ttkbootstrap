@@ -4,7 +4,7 @@ from datetime import date
 
 import ttkbootstrap as ttk
 from ttkbootstrap.constants import BOTH, W, X
-from ttkbootstrap.widgets.datepicker import DatePicker
+from ttkbootstrap import DatePicker
 
 
 def main():

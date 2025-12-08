@@ -6,8 +6,8 @@ buttons and keyboard/mouse wheel support.
 
 from typing_extensions import Unpack
 
-from ttkbootstrap.widgets.button import Button
-from ttkbootstrap.widgets.field import Field, FieldOptions
+from ttkbootstrap.widgets.primitives.button import Button
+from ttkbootstrap.widgets.composites.field import Field, FieldOptions
 from ttkbootstrap.widgets.mixins import configure_delegate
 
 
@@ -39,7 +39,7 @@ class NumericEntry(Field):
     Example:
         ```python
         import ttkbootstrap as ttk
-        from ttkbootstrap.widgets.numericentry import NumericEntry
+        from ttkbootstrap.widgets.composites.numericentry import NumericEntry
 
         root = ttk.Window()
 
