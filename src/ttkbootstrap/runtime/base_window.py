@@ -80,6 +80,8 @@ class BaseWindow:
 
         This method should be called during window initialization to set up
         standard window properties. It handles platform differences automatically.
+        The window is temporarily hidden during setup so that sizing and
+        positioning are applied before it is shown.
 
         Args:
             title: Window title shown in titlebar.
@@ -96,6 +98,9 @@ class BaseWindow:
             The window must already be initialized (tkinter.Tk.__init__ or
             tkinter.Toplevel.__init__ called) before calling this method.
         """
+        # Hide window until we finish applying geometry/resizing to avoid flicker
+        self.withdraw()
+
         # Store window system for platform-specific behavior
         if not hasattr(self, 'winsys'):
             self.winsys = self.tk.call('tk', 'windowingsystem')
@@ -107,6 +112,9 @@ class BaseWindow:
         if size is not None:
             width, height = size
             self.geometry(f"{width}x{height}")
+
+        # Track whether we should center (defer until after constraints)
+        _should_center = (position is None)
 
         if position is not None:
             xpos, ypos = position
@@ -134,6 +142,17 @@ class BaseWindow:
 
         # Alpha transparency (platform-aware)
         self._setup_alpha(alpha)
+
+        # Center window on screen if no explicit position was provided
+        if _should_center:
+            # Update geometry to ensure size is applied before centering
+            self.update_idletasks()
+            x, y = WindowPositioning.center_on_screen(self)
+            x, y = WindowPositioning.ensure_on_screen(self, x, y)
+            self.geometry(f'+{x}+{y}')
+
+        # Show the window now that sizing and positioning are complete
+        self.deiconify()
 
     def _setup_alpha(self, alpha: float) -> None:
         """Configure window alpha transparency in a platform-aware manner.
