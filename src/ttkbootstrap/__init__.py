@@ -35,9 +35,10 @@ if TYPE_CHECKING:
         Style,
         get_style,
         get_style_builder,
-        get_active_theme,
+        get_theme,
         get_theme_provider,
-        set_active_theme,
+        set_theme,
+        toggle_theme,
         get_theme_color,
     )
     from ttkbootstrap.api.widgets import (
@@ -126,8 +127,9 @@ _MODULE_EXPORTS = {
     ],
     "ttkbootstrap.api.style": [
         "BootstrapIcon", "Bootstyle", "Style",
-        "get_style", "get_style_builder", "get_active_theme",
-        "get_theme_provider", "set_active_theme", "get_theme_color",
+        "get_style", "get_style_builder", "get_theme",
+        "get_theme_provider", "set_theme", "get_theme_color",
+        "toggle_theme"
     ],
     "ttkbootstrap.api.menu": [
         "MenuManager", "create_menu",

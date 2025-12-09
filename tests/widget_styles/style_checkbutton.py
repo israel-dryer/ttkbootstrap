@@ -25,7 +25,6 @@ def create_checkbutton_test(bootstyle, name):
         )
         cb.pack(padx=5, pady=5, fill=BOTH)
         cb.invoke()
-        print(cb.cget('style'))
 
     # disabled style
     cb = ttk.CheckButton(
@@ -40,24 +39,16 @@ def create_checkbutton_test(bootstyle, name):
     return frame
 
 
-def change_style():
-    if style.theme_use() == 'dark':
-        style.theme_use('light')
-    else:
-        style.theme_use('dark')
-
-
 if __name__ == '__main__':
     # create visual widget style tests
-    root = ttk.Window()
-    style = ttk.Style()
+    app = ttk.App("CheckButton Demo")
 
     test1 = create_checkbutton_test('default', 'Checkbutton')
     test1.pack(side='left', fill=BOTH)
     test3 = create_checkbutton_test('toggle', 'Toggle')
     test3.pack(side='left', fill=BOTH)
 
-    btn = ttk.Button(text="Change Theme", command=change_style)
+    btn = ttk.Button(text="Change Theme", command=ttk.toggle_theme)
     btn.pack(padx=10, pady=10)
 
-    root.mainloop()
+    app.mainloop()

@@ -6,6 +6,7 @@ import weakref
 from tkinter.ttk import Style as ttkStyle
 from typing import Dict, Optional, Set
 
+from ttkbootstrap.runtime.app import get_app_settings
 from ttkbootstrap.style.bootstyle_builder_ttk import BootstyleBuilderTTk
 from ttkbootstrap.style.theme_provider import ThemeProvider, use_theme
 
@@ -378,27 +379,43 @@ def get_style_builder():
 
 # --- Global Utilities ---
 
-def set_active_theme(name: str) -> None:
+def set_theme(name: str) -> None:
     """Set the active application theme.
 
     Args:
         name: Theme name to activate (e.g., "darkly", "cosmo", "superhero").
 
     Example:
-        >>> set_active_theme("darkly")
+        >>> set_theme("darkly")
     """
     style = get_style()
     style.theme_use(name)
 
 
-def get_active_theme() -> str:
+def toggle_theme():
+    """Toggle the active application theme between light and dark mode.
+
+    Uses the light and dark themes specified in app settings, or defaults
+    to bootstrap-light and bootstrap-dark
+    ."""
+    settings = get_app_settings()
+    light = settings.light_theme
+    dark = settings.dark_theme
+    theme = get_theme()
+    if theme == light or theme == "light":
+        set_theme(dark)
+    else:
+        set_theme(light)
+
+
+def get_theme() -> str:
     """Return the name of the currently active theme.
 
     Returns:
         Name of the active theme.
 
     Example:
-        >>> theme = get_active_theme()
+        >>> theme = get_theme()
         >>> print(theme)  # "darkly"
     """
     style = get_style()
