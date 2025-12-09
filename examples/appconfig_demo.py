@@ -89,7 +89,7 @@ def example2_override_defaults():
     # Create second window with explicit overrides
     window2 = ttk.Window(
         title="Window 2 (Overrides Defaults)",
-        themename="superhero",  # Override theme
+        theme="superhero",  # Override theme
         size=(400, 300),        # Override size
         position=(200, 200)     # Explicit position
     )

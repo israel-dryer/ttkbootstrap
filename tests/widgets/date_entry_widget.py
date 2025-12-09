@@ -1,7 +1,7 @@
 import ttkbootstrap as ttk
 from ttkbootstrap.constants import *
 
-root = ttk.Window(themename="dark")
+root = ttk.Window(theme="dark")
 
 frame = ttk.Frame(root, padding=10)
 frame.pack(padx=10, pady=10)

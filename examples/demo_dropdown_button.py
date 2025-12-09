@@ -3,7 +3,7 @@ from ttkbootstrap import ContextMenuItem
 
 
 def main():
-    root = ttk.Window(themename="flatly", title="DropdownButton Demo", size=(420, 320))
+    root = ttk.Window(theme="flatly", title="DropdownButton Demo", size=(420, 320))
 
     ttk.Label(root, text="DropdownButton", font=("Segoe UI", 16, "bold")).pack(pady=12)
 

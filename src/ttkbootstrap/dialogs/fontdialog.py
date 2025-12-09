@@ -15,7 +15,7 @@ from ttkbootstrap.widgets.primitives import (
     Scrollbar,
     TreeView,
 )
-from ttkbootstrap.api.window import Window
+from ttkbootstrap.api.app import Window
 from ttkbootstrap.runtime.utility import scale_size
 from ttkbootstrap.core.constants import *
 from ttkbootstrap.dialogs.dialog import Dialog, DialogButton

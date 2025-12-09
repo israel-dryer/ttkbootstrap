@@ -56,7 +56,7 @@ def change_style():
 
 if __name__ == '__main__':
     # create visual widget style tests
-    root = ttk.Window(themename="dark")
+    root = ttk.App(theme="dark")
     style = get_style()
 
     button_style_frame('default', 'Solid Button').pack(side='left')

@@ -6,7 +6,7 @@ from ttkbootstrap.dialogs import FontDialog
 
 def demo_fontdialog():
     """Test FontDialog with the new Dialog-based implementation."""
-    root = ttk.Window(themename="darkly")
+    root = ttk.Window(theme="darkly")
     root.title("FontDialog Test")
     root.geometry("400x300")
 

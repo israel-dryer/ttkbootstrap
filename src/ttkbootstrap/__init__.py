@@ -31,7 +31,7 @@ _sys.modules[__name__ + ".constants"] = _constants_module
 
 if TYPE_CHECKING:
     from ttkbootstrap.api.menu import MenuManager, create_menu
-    from ttkbootstrap.api.window import Toplevel, Window
+    from ttkbootstrap.api.app import Toplevel, App, App as Window
     from ttkbootstrap.api.style import (
         AppConfig,
         Bootstyle,
@@ -191,8 +191,9 @@ _LAZY_EXPORTS = {
     "get_theme_color": "ttkbootstrap.api.style",
     "MenuManager": "ttkbootstrap.api.menu",
     "create_menu": "ttkbootstrap.api.menu",
-    "Toplevel": "ttkbootstrap.api.window",
-    "Window": "ttkbootstrap.api.window",
+    "Toplevel": "ttkbootstrap.api.app",
+    "App": "ttkbootstrap.api.app",
+    "Window": "ttkbootstrap.api.app",
 }
 
 for _name in (*_TTKBOOTSTRAP_EXPORTS, *_TTK_EXPORTS):

@@ -119,7 +119,7 @@ def enhanced_query_dialogs(root):
 
 
 if __name__ == "__main__":
-    root = ttk.Window(themename="flatly")
+    root = ttk.Window(theme="flatly")
     root.title("Enhanced QueryDialog Test")
     root.geometry("700x450")
 

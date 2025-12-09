@@ -25,7 +25,7 @@ from tkinter import Canvas, Variable
 from PIL import ImageGrab, ImageTk
 from PIL.Image import Resampling
 
-from ttkbootstrap.api.window import Toplevel
+from ttkbootstrap.api.app import Toplevel
 import ttkbootstrap.core.colorutils as colorutils
 import ttkbootstrap.runtime.utility as utility
 from ttkbootstrap.core.constants import *

@@ -25,7 +25,7 @@ from ttkbootstrap.localization.msgcat import MessageCatalog
 
 def main():
     # Create the app window (auto-inits i18n via Style)
-    app = tb.Window(themename="flatly")
+    app = tb.Window(theme="flatly")
 
     # Style auto-initializes MessageCatalog with auto-discovery; no manual init needed.
 

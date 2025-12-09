@@ -176,7 +176,7 @@ def demo_no_icon():
 
 
 # Create main application window
-root = ttk.Window(themename="cosmo")
+root = ttk.Window(theme="cosmo")
 root.title("Message Dialog Demo")
 root.geometry("700x650")
 

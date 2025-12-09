@@ -300,7 +300,7 @@ def demo_registration_form(parent):
 
 
 def main():
-    app = ttk.Window(title="FormDialog Demo", themename="flatly")
+    app = ttk.Window(title="FormDialog Demo", theme="flatly")
     #app.geometry("600x400")
 
     # Title
