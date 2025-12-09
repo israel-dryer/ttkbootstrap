@@ -70,8 +70,8 @@ class WindowPositioning:
         """
         window.update_idletasks()
 
-        w_width = window.winfo_width()
-        w_height = window.winfo_height()
+        w_width = window.winfo_reqwidth()
+        w_height = window.winfo_reqheight()
         s_width = window.winfo_screenwidth()
         s_height = window.winfo_screenheight()
 
