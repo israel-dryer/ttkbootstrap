@@ -1,10 +1,17 @@
 """FontDialog implementation for selecting and previewing fonts."""
 
 import tkinter
-from tkinter import font, Text, Variable
+from tkinter import Text, Variable, font
 from types import SimpleNamespace
 from typing import Any, Optional
 
+from typing_extensions import Unpack
+
+from ttkbootstrap.constants import *
+from ttkbootstrap.core.localization import MessageCatalog
+from ttkbootstrap.dialogs.dialog import Dialog, DialogButton, ShowOptions
+from ttkbootstrap.runtime.app import Window
+from ttkbootstrap.runtime.utility import scale_size
 from ttkbootstrap.style.style import get_style
 from ttkbootstrap.widgets.primitives import (
     CheckButton,
@@ -15,11 +22,6 @@ from ttkbootstrap.widgets.primitives import (
     Scrollbar,
     TreeView,
 )
-from ttkbootstrap.runtime.app import Window
-from ttkbootstrap.runtime.utility import scale_size
-from ttkbootstrap.constants import *
-from ttkbootstrap.dialogs.dialog import Dialog, DialogButton
-from ttkbootstrap.core.localization import MessageCatalog
 
 ttk = SimpleNamespace(
     Checkbutton=CheckButton,
@@ -335,9 +337,11 @@ class FontDialog:
             except Exception:
                 pass
 
-    def show(self, position: Optional[tuple[int, int]] = None) -> None:
+    def show(self, **kwargs: Unpack[ShowOptions]) -> None:
         """Show the dialog."""
-        self._dialog.show(position=position, modal=True)
+        kwargs.setdefault('modal', True)
+        kwargs.setdefault('anchor_to', 'screen')
+        self._dialog.show(**kwargs)
 
     @property
     def result(self) -> Optional[font.Font]:
