@@ -29,7 +29,7 @@ For more information, see: https://ttkbootstrap.readthedocs.io/
 """
 from tkinter import (
     Menu as _tkMenu, Text as _tkText, Canvas as _tkCanvas, Tk as _tkTk,
-    Frame as _tkFrame,
+    Frame as _tkFrame, LabelFrame,
     Variable, StringVar, IntVar, BooleanVar, DoubleVar, PhotoImage
 )
 from tkinter.ttk import (Button, Checkbutton, Combobox, Entry, Frame, Label, Labelframe, Menubutton, Notebook,
@@ -752,7 +752,7 @@ if TYPE_CHECKING:
 __all__ = [
     # Tk exports
     Tk, Menu, Text, Canvas, TkFrame, Variable, StringVar, IntVar, BooleanVar, DoubleVar,
-    PhotoImage,
+    PhotoImage, LabelFrame,
 
     # TTk exports
     Button, Checkbutton, Combobox, Entry, Frame, Labelframe,

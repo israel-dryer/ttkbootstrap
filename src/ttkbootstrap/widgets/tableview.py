@@ -828,11 +828,11 @@ class Tableview(ttk.Frame):
         # resolve iid_field to column index
         self._resolve_iid_field_index()
 
-        # build the table rows
+        # build the table rows (without reloading after each insert for performance)
         for values in rowdata:
-            self.insert_row(values=values)
+            self.insert_row(values=values, reload=False)
 
-        # load the table data
+        # load the table data once after all rows are inserted
         self.load_table_data()
 
         # apply table formatting
@@ -847,7 +847,7 @@ class Tableview(ttk.Frame):
 
         self.goto_first_page()
 
-    def insert_row(self, index=END, values=[]) -> TableRow:
+    def insert_row(self, index=END, values=[], reload=True) -> TableRow:
         """Insert a row into the tableview at index.
 
         Inserting a row will reload the table data and clear the applied filters.
@@ -866,6 +866,11 @@ class Tableview(ttk.Frame):
                 The number of columns implied by the list of values
                 must match the number of columns in the data set for
                 the values to be visible.
+
+            reload (bool):
+                Whether to reload the table data after inserting.
+                Set to False when inserting multiple rows for better
+                performance. Defaults to True.
 
         Returns:
 
@@ -889,7 +894,8 @@ class Tableview(ttk.Frame):
         else:
             self._tablerows.insert(index, record)
 
-        self.load_table_data(self.is_filtered)
+        if reload:
+            self.load_table_data(self.is_filtered)
 
         return record
 
@@ -922,8 +928,11 @@ class Tableview(ttk.Frame):
         """
         if len(rowdata) == 0:
             return
+        # Insert all rows without reloading for better performance
         for values in reversed(rowdata):
-            self.insert_row(index, values)
+            self.insert_row(index, values, reload=False)
+        # Reload once after all rows are inserted
+        self.load_table_data(self.is_filtered)
 
     def delete_column(self, index=None, cid=None, visible=True):
         """Delete the specified column based on the column index or the
@@ -1180,10 +1189,7 @@ class Tableview(ttk.Frame):
     def unload_table_data(self):
         """Unload all data from the table"""
         for row in self.tablerows_visible:
-            tmp_row_id = row.iid
-            for tmp in self._tablerows:
-                if tmp_row_id == tmp.iid:
-                    row.hide()
+            row.hide()
         self.tablerows_visible.clear()
 
     def load_table_data(self, clear_filters=False):
