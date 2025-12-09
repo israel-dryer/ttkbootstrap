@@ -1,13 +1,61 @@
+from __future__ import annotations
+
 import tkinter
 from dataclasses import dataclass
 from typing import Any, Optional, Sequence, Tuple, TypedDict, Union
+
 from typing_extensions import Unpack
 
 from ttkbootstrap.constants import *
 from ttkbootstrap.core.publisher import Publisher
 from ttkbootstrap.runtime.base_window import BaseWindow
 from ttkbootstrap.runtime.utility import enable_high_dpi_awareness
-from ttkbootstrap.runtime._app_context import set_current_app, clear_current_app, has_current_app
+
+_current_app: App | None = None
+
+
+def set_current_app(app: App) -> None:
+    """Set the process-wide current App instance.
+
+    Intended to be called from App.__init__ for the first app created.
+    """
+    global _current_app
+    _current_app = app
+
+
+def get_app_settings() -> AppSettings:
+    """Return the settings for current App
+
+    Raises:
+        RuntimeError: If no active App instance is set.
+    """
+    return get_current_app().settings
+
+
+def clear_current_app(app: App) -> None:
+    """Clear the current app reference if it matches the given app."""
+    global _current_app
+    if _current_app is app:
+        _current_app = None
+
+
+def get_current_app() -> App:
+    """Return the current App instance.
+
+    Raises:
+        RuntimeError: If no App has been registered yet.
+    """
+    if _current_app is None:
+        raise RuntimeError(
+            "No current App instance is set. "
+            "Create an App first, e.g. `app = App()`."
+        )
+    return _current_app
+
+
+def has_current_app() -> bool:
+    """Return True if a current App instance is registered."""
+    return _current_app is not None
 
 
 def get_default_root(what: Optional[str] = None) -> tkinter.Tk:
@@ -126,10 +174,10 @@ class AppSettings:
     inherit_surface_color: bool = True
 
     # internationalization
-    locale: str | None = None          # e.g. "en_US"
-    language: str | None = None        # e.g. "en"
-    date_format: str | None = None     # override; otherwise use locale
-    time_format: str | None = None     # override
+    locale: str | None = None  # e.g. "en_US"
+    language: str | None = None  # e.g. "en"
+    date_format: str | None = None  # override; otherwise use locale
+    time_format: str | None = None  # override
     number_decimal: str | None = None
     number_thousands: str | None = None
 
@@ -200,19 +248,24 @@ class App(BaseWindow, tkinter.Tk):
         self._alpha = alpha
         self._override_redirect = override_redirect
 
+        # Register app
+        if not has_current_app():
+            set_current_app(self)
+
         # Enable HDPI before creating window
         if self._hdpi:
             enable_high_dpi_awareness()
 
         # Initialize Tk
         tkinter.Tk.__init__(self, **kwargs)
+        self.withdraw() # hide immediately until ready to show.
 
         # Setup window system info
         self.winsys: str = self.tk.call('tk', 'windowingsystem')
 
         # Apply theme (use resolved settings.theme)
-        from ttkbootstrap.api.style import set_active_theme
-        set_active_theme(self.settings.theme)
+        from ttkbootstrap.style.style import set_theme
+        set_theme(self.settings.theme)
 
         # Apply HDPI scaling after window creation
         if self._hdpi:
@@ -241,9 +294,12 @@ class App(BaseWindow, tkinter.Tk):
         apply_class_bindings(self)
         apply_all_bindings(self)
 
-        # Register app
-        if not has_current_app():
-            set_current_app(self)
+    def mainloop(self, n=0):
+        """Start the main Tk event loop"""
+        if self._position is None:
+            self.position_center()
+        self.show()
+        super().mainloop(n)
 
     def destroy(self) -> None:
         """Destroy the window and all its children."""
@@ -401,15 +457,3 @@ class Toplevel(BaseWindow, tkinter.Toplevel):
 
         if toolwindow and self.winsys == 'win32':
             self.attributes("-toolwindow", 1)
-
-
-if __name__ == "__main__":
-    # Test App class with new methods
-    root = App(theme="superhero", alpha=0.5, size=(800, 600))
-    root.place_center()  # New method from BaseWindow
-
-    # Test Window alias for backward compatibility
-    top = Toplevel(title="My Toplevel", alpha=0.4, size=(600, 400))
-    top.place_window_center()  # Old method still works
-
-    root.mainloop()
