@@ -93,6 +93,7 @@ from tkinter import Widget
 from typing import Any, Callable, Iterable, Literal, Mapping, Optional, Union
 
 import ttkbootstrap as ttk
+from ttkbootstrap.runtime.window_utilities import WindowPositioning
 
 # --- Types -----------------------------------------------------------------
 
@@ -487,86 +488,28 @@ class Dialog:
         if not self._toplevel:
             return
 
-        self._toplevel.update_idletasks()
-
-        if position is not None:
-            try:
-                x, y = position
-                x, y = self._ensure_on_screen(int(x), int(y))
-                self._toplevel.geometry(f"+{x}+{y}")
-            except (TypeError, ValueError):
-                self._center_on_parent()
-        else:
-            self._center_on_parent()
-
-        self._toplevel.update_idletasks()
+        # Use centralized positioning utility
+        WindowPositioning.position_window(
+            window=self._toplevel,
+            position=position,
+            parent=self._master,
+            center_on_parent=True,
+            ensure_visible=True
+        )
 
         try:
             self._toplevel.deiconify()
         except Exception:
             pass
 
+        # Second centering pass if no explicit position (handles dynamic sizing)
         if position is None:
             try:
-                self._center_on_parent()
+                x, y = WindowPositioning.center_on_parent(self._toplevel, self._master)
+                x, y = WindowPositioning.ensure_on_screen(self._toplevel, x, y)
+                self._toplevel.geometry(f"+{x}+{y}")
             except Exception:
                 pass
-
-    def _ensure_on_screen(self, x: int, y: int) -> tuple[int, int]:
-        """Ensure dialog position keeps it fully visible on screen.
-
-        Args:
-            x: Desired x coordinate
-            y: Desired y coordinate
-
-        Returns:
-            Adjusted (x, y) coordinates that keep dialog on screen
-        """
-        if not self._toplevel:
-            return x, y
-
-        dialog_width = self._toplevel.winfo_reqwidth()
-        dialog_height = self._toplevel.winfo_reqheight()
-
-        screen_x0 = self._toplevel.winfo_vrootx()
-        screen_y0 = self._toplevel.winfo_vrooty()
-        screen_width = self._toplevel.winfo_vrootwidth()
-        screen_height = self._toplevel.winfo_vrootheight()
-        screen_x1 = screen_x0 + screen_width
-        screen_y1 = screen_y0 + screen_height
-
-        x = min(x, screen_x1 - dialog_width - 20)
-        y = min(y, screen_y1 - dialog_height - 60)
-        x = max(screen_x0 + 20, x)
-        y = max(screen_y0 + 20, y)
-
-        return int(x), int(y)
-
-    def _center_on_parent(self) -> None:
-        """Center the dialog on its parent window."""
-        if not self._toplevel or not self._master:
-            return
-
-        try:
-            self._master.update_idletasks()
-            self._toplevel.update_idletasks()
-        except Exception:
-            pass
-
-        dialog_width = max(self._toplevel.winfo_reqwidth(), self._toplevel.winfo_width())
-        dialog_height = max(self._toplevel.winfo_reqheight(), self._toplevel.winfo_height())
-
-        parent_x = self._master.winfo_rootx()
-        parent_y = self._master.winfo_rooty()
-        parent_width = max(self._master.winfo_width(), self._master.winfo_reqwidth())
-        parent_height = max(self._master.winfo_height(), self._master.winfo_reqheight())
-
-        x = parent_x + max(0, (parent_width - dialog_width) // 2)
-        y = parent_y + max(0, (parent_height - dialog_height) // 2)
-
-        x, y = self._ensure_on_screen(x, y)
-
-        self._toplevel.geometry(f"+{x}+{y}")
 
     # --------------------------------------------------------------- Event Handlers
 
