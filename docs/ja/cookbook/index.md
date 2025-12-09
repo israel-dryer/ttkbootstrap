@@ -1,6 +1,6 @@
-# Cookbook
+# クックブック
 
-A growing collection of recipes that demonstrate how to do particular things in ttkbootstrap.
+ttkbootstrapで特定の操作を行う方法を示すレシピのコレクションです。
 <br><br> 
 
-![recipes](../assets/cookbook/code-cooking.jfif)
+![レシピ集](../assets/cookbook/code-cooking.jfif)

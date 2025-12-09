@@ -1,51 +1,49 @@
-# Menubutton
+# メニューボタン
 
-This widget features a styled button with an arrow that can be styled using
-any of the [available colors](index.md#colors). 
+このウィジェットは、矢印付きのスタイリングされたボタンを備えており、
+[利用可能な色](index.md#colors)のいずれかを使用してスタイルを設定できます。 
 
-This widget supports a special style for [disabled state](#disabled-menubutton).
+このウィジェットは、[無効状態](#disabled-menubutton) 用の特別なスタイルをサポートしています。
 
-## Solid (default)
+## ソリッド（デフォルト）
 
-This widget style features a solid background color that lightens on _hover_ 
-and darkens when _pressed_. 
+このスタイルは、_ホバー_時に明るくなり、_押下_時に暗くなる単色背景を採用しています。 
 
 ![solid menubutton](../assets/widget-styles/menubutton.gif)
 
 ```python
-# default solid menubutton style
+# デフォルトのソリッドメニューボタンスタイル
 Menubutton()
 
-# success colored solid menubutton style
+# 成功色ソリッドメニューボタンスタイル
 Menubutton(bootstyle="success")
 ```
 
-## Outline
+## アウトライン
 
-This style features a thin styled outline. When _pressed_ or on _hover_, the
-button changes to a solid color similar to the default menubutton style. 
+このスタイルは細いアウトラインが特徴です。押下時またはホバー時には、
+デフォルトのメニューボタンスタイルと同様の単色に変化します。 
 
 ![outline menubutton](../assets/widget-styles/outline-menubutton.gif)
 
 ```python
-# default outline menubutton style
+# デフォルトのアウトラインメニューボタンスタイル
 Menubutton(bootstyle="outline")
 
-# info colored outline menubutton style
+# 情報色のアウトラインメニューボタンスタイル
 Menubutton(bootstyle="info-outline")
 ```
 
-## Other menubutton styles
+## その他のメニューボタンスタイル
 
-#### Disabled menubutton
-This style _cannot be applied via keywords_; it is configured through widget 
-settings.
+#### 無効化メニューボタン
+このスタイルは_キーワード経由では適用不可_です。ウィジェット設定で構成します。
 
 ```python
-# create the menubutton in a disabled state
+# 無効状態でメニューボタンを作成
 Menubutton(state="disabled")
 
-# disable a menubutton after creation
+# 作成後にメニューボタンを無効化
 b = Menubutton()
 b.configure(state="disabled")
 ```

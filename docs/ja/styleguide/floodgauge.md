@@ -1,17 +1,16 @@
-# Floodgauge
+# 水位計
 
-A progressbar with an optional display text.
+オプションで表示テキストを設定可能なプログレスバー。
 
-This widget style features an indicator that is **primary** colored (default) 
-or the [selected color](index.md#colors). The trough color is a desaturated 
-variation of the indicator color. 
+このウィジェットスタイルは、**プライマリ**カラー（デフォルト）または[選択色](index.md#colors)のインジケーターを特徴とします。
+溝の色はインジケーターカラーの彩度を抑えたバリエーションです。 
 
 ![floodguage](../assets/widget-styles/floodgauge.gif)
 
 ```python
-# default floodgauge style
+# デフォルトのフラッドゲージスタイル
 Floodgauge()
 
-# success colored floodguage style
+# 成功色フラッドゲージスタイル
 Floodgauge(bootstyle="success")
 ```

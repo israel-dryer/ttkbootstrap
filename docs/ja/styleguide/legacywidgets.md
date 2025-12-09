@@ -1,26 +1,23 @@
-# Legacy widgets
+# レガシーウィジェット
 
-ttkbootstrap applies a default style to legacy tkinter widgets so that they do
-not look out-of-place when used with themed ttk widgets. The `Text` and `Canvas`
-widgets are commonly used with themed `ttk` widgets for example.
+ttkbootstrapはレガシーtkinterウィジェットにデフォルトスタイルを適用し、
+テーマ化されたttkウィジェットと併用しても違和感がないようにします。
+例えば`Text`や`Canvas`ウィジェットは、テーマ化された`ttk`ウィジェットと組み合わせて使用されることが一般的です。
 
-## Themed legacy widgets
+## テーマ化されたレガシーウィジェット
 
-To ensure the styles are updated when the theme is changed, each legacy widget
-is registered with the `Publisher` which sends an update message to each legacy
-widget when the theme is changed in order to initiate a theme configuration on
-the widget. 
+テーマ変更時にスタイルが確実に更新されるよう、各レガシーウィジェットは
+`Publisher`に登録されます。テーマ変更時にはPublisherが更新メッセージを各レガシーウィジェットに送信し、
+ウィジェット上でテーマ設定を起動します。 
 
-## Customizing legacy widgets
-While the theming functionality is appropriate in most cases, it also prevents
-the user from making custom changes to the widget. However, in version 1.2 an
-`autostyle` parameter was added to all legacy widgets. By default, `autostyle`
-is implicitly **True**. This means, that ttkbootstrap will handle all of the
-styling on legacy widgets. However, if you set the `autostyle` parameter to
-**False**, the widget styling will be delegated to the user. This will enable
-you to make custom changes to legacy widgets.
+## レガシーウィジェットのカスタマイズ
+テーマ機能は多くの場合適切ですが、ユーザーによるウィジェットのカスタマイズを変更できないという制約もあります。
+しかしバージョン1.2では、すべてのレガシーウィジェットに`autostyle`パラメータが追加されました。
+デフォルトでは`autostyle`は暗黙的に**True**です。 これは、ttkbootstrap がレガシーウィジェットの
+すべてのスタイリングを処理することを意味します。ただし、`autostyle` パラメータを
+**False** に設定すると、ウィジェットのスタイリングはユーザーに委譲されます。これにより、
+レガシーウィジェットにカスタム変更を加えることが可能になります。
 
-!!! warning "Turning off autostyle should be used with caution"
-    If you turn off autostyle on a widget, it will no longer receive theme
-    change updates; no styling will be applied by default, including fonts,
-    relief, etc...
+!!! 警告 "autostyleの無効化は慎重に行ってください"
+    ウィジェットでautostyleを無効化すると、テーマ変更の更新を受け取らなくなり、
+    フォントやレリーフなど、デフォルトのスタイリングが一切適用されなくなります。

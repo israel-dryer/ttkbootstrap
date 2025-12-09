@@ -1,40 +1,39 @@
-# Style guide
+# スタイルガイド
 
-This is a style guide for applying ttkbootstrap styles. All ttkbootstrap styles
-are applied using the **bootstyle** parameter that has been injected into the
-**ttk** widget constructor.
+これは ttkbootstrap スタイルを適用するためのスタイルガイドです。すべての ttkbootstrap スタイルは、
+**ttk** ウィジェットコンストラクタに注入された **bootstyle** パラメータを使用して適用されます。
 
-ℹ️ [Learn more about styling legacy widgets](legacywidgets.md).
+ℹ️ [レガシーウィジェットのスタイリングについて詳しく知る](legacywidgets.md)。
 
-## Colors
+## 色
 
-The following color options are available on _all_ widgets, except where 
-excluded, and can be used along with widget specific style keywords which 
-are described for each widget. Keywords are not required for default styles. 
+以下のカラーオプションは、除外されている場合を除き、_すべての_ウィジェットで使用可能です。
+各ウィジェットごとに説明されているウィジェット固有のスタイルキーワードと併用できます。
+デフォルトスタイルにはキーワードは不要です。 
 
-The actual color value of the keywords below are 
-[defined in each specific theme](../themes/definitions.md), but the 
-descriptions below are what you can expect typically from each color keyword.
+下記キーワードの実際の色値は
+[各テーマで定義されています](../themes/definitions.md)。
+ただし下記説明は各色キーワードの典型的な挙動を示します。
 
-| Keyword      | Description                           | Example |
+| キーワード      | 説明                           | 例 |
 | ---          | ---                                   | ---      |
-| primary    | The default color for most widgets    | ![primary](../assets/colors/primary.png) |
-| secondary  | Typically a _gray_ color              | ![secondary](../assets/colors/secondary.png) |
-| success    | Typically a _green_ color             | ![success](../assets/colors/success.png) |
-| info       | Typically a _blue_ color              | ![info](../assets/colors/info.png) |
-| warning    | Typically an _orange_ color           | ![warning](../assets/colors/warning.png) |
-| danger     | Typically a _red_ color               | ![danger](../assets/colors/danger.png) |
-| light      | Typically a _light gray_ color        | ![light](../assets/colors/light.png) |
-| dark       | Typically a _dark gray_ color         | ![dark](../assets/colors/dark.png) |
+| primary    | ほとんどのウィジェットのデフォルト色    | ![primary](../assets/colors/primary.png) |
+| secondary  | 通常は_灰色_のカラー              | ![secondary](../assets/colors/secondary.png) |
+| success    | 通常は_緑色_             | ![success](../assets/colors/success.png) |
+| info       | 通常は_青色_              | ![info](../assets/colors/info.png) |
+| warning    | 通常は_オレンジ色_           | ![warning](../assets/colors/warning.png) |
+| danger    | 通常は_赤色_               | ![danger](../assets/colors/danger.png) |
+| light      | 通常は_ライトグレー_色         | ![light](../assets/colors/light.png) |
+| dark       | 通常は_ダークグレー_色         | ![dark](../assets/colors/dark.png) |
 
 
 ```python
-# info colored button style
+# 情報色のボタンスタイル
 Button(bootstyle="info")
 
-# warning colored scale style
+# 警告色のスケールスタイル
 Scale(bootstyle="warning")
 
-# success colored progressbar
+# 成功色のプログレスバー
 Progressbar(bootstyle="success")
 ```

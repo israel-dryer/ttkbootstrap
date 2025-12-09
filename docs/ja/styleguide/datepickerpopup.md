@@ -1,19 +1,20 @@
 # DatePickerDialog
 
-This widget style encompasses a collection of button and label widgets. The 
-_header_ and _active date_ are **primary** colored (default) or the 
-[selected color](index.md#colors). The _weekdays header_ and _current date_ use the 
-`secondary` color.
+このウィジェットスタイルは、ボタンとラベルウィジェットの集合を包含します。
+_ヘッダー_と_アクティブな日付_は、**プライマリ**カラー（デフォルト）または
+[選択された色](index.md#colors)で表示されます。
+_曜日ヘッダー_と_現在の日付_は、
+`セカンダリ`カラーを使用します。
 
-Check out the [api documentation](../api/dialogs/datepickerdialog.md) for
-more information on how to use this widget.
+このウィジェットの使用方法の詳細については、
+[APIドキュメント](../api/dialogs/datepickerdialog.md) を参照してください。
 
 ![date picker](../assets/widget-styles/date-picker-popup.gif)
 
 ```python
-# default popup
+# デフォルトポップアップ
 DatePickerDialog()
 
-# warning colored popup
+# 警告色ポップアップ
 DatePickerDialog(bootstyle="warning")
 ```

@@ -1,5 +1,6 @@
 include LICENSE
 include README.md
+include README_ja.md
 include README_zh.md
 
 graft src/ttkbootstrap
