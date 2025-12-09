@@ -1,5 +1,5 @@
 import ttkbootstrap as ttk
-from ttkbootstrap.core.constants import *
+from ttkbootstrap.constants import *
 
 
 def create_checkbutton_test(bootstyle, name):

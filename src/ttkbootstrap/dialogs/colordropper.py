@@ -28,7 +28,7 @@ from PIL.Image import Resampling
 from ttkbootstrap.api.app import Toplevel
 import ttkbootstrap.core.colorutils as colorutils
 import ttkbootstrap.runtime.utility as utility
-from ttkbootstrap.core.constants import *
+from ttkbootstrap.constants import *
 
 ttk = SimpleNamespace(Canvas=Canvas, Toplevel=Toplevel, Variable=Variable)
 

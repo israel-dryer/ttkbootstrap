@@ -1,5 +1,3 @@
-import sys as _sys
-from ttkbootstrap.core import constants as _constants_module
 import importlib as _importlib
 from typing import TYPE_CHECKING
 
@@ -26,8 +24,8 @@ TkFrame = _tkFrame  # Exported as TkFrame to avoid conflict with ttk.Frame
 # Eagerly import BootstrapIcon to prevent circular import during style bootstrapping
 from ttkbootstrap_icons_bs import BootstrapIcon  # noqa: E402
 
-constants = _constants_module
-_sys.modules[__name__ + ".constants"] = _constants_module
+# Constants are available via ttkbootstrap.constants module
+# (see constants.py which re-exports from core.constants)
 
 if TYPE_CHECKING:
     from ttkbootstrap.api.menu import MenuManager, create_menu

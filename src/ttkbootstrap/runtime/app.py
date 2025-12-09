@@ -3,7 +3,7 @@ from dataclasses import dataclass
 from typing import Any, Optional, Sequence, Tuple, TypedDict, Union
 from typing_extensions import Unpack
 
-from ttkbootstrap.core.constants import *
+from ttkbootstrap.constants import *
 from ttkbootstrap.core.publisher import Publisher
 from ttkbootstrap.runtime.base_window import BaseWindow
 from ttkbootstrap.runtime.utility import enable_high_dpi_awareness

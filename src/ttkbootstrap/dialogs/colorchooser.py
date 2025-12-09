@@ -54,7 +54,7 @@ from PIL import ImageColor
 from tkinter import Canvas, IntVar, StringVar
 from ttkbootstrap.api.style import get_style
 from ttkbootstrap.widgets.primitives import Button, Entry, Frame, Label, Notebook, Spinbox
-from ttkbootstrap.core.constants import *
+from ttkbootstrap.constants import *
 from ttkbootstrap.core import colorutils
 from ttkbootstrap.core.colorutils import HEX, HSL, HUE, LUM, RGB, SAT
 from ttkbootstrap.core.localization import MessageCatalog
