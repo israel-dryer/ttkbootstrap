@@ -296,8 +296,6 @@ class App(BaseWindow, tkinter.Tk):
 
     def mainloop(self, n=0):
         """Start the main Tk event loop"""
-        if self._position is None:
-            self.position_center()
         self.show()
         super().mainloop(n)
 
