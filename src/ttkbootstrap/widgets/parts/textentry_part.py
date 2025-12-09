@@ -1,7 +1,7 @@
 from tkinter import Event, TclError
 from typing import Any, Callable
 
-from ttkbootstrap.api.app import get_app_settings
+from ttkbootstrap.runtime.app import get_app_settings
 from ttkbootstrap.core.localization import IntlFormatter
 from ttkbootstrap.widgets.primitives.entry import Entry
 from ttkbootstrap.widgets.mixins import ValidationMixin

@@ -4,7 +4,7 @@ import json
 # import tomllib
 from importlib import resources
 
-from ttkbootstrap.api.app import get_app_settings
+from ttkbootstrap.runtime.app import get_app_settings
 from ttkbootstrap.core.exceptions import ThemeError
 from ttkbootstrap.style.utility import shade_color, tint_color
 

@@ -8,7 +8,7 @@ from __future__ import annotations
 
 from typing import Optional
 
-from ttkbootstrap.api.app import get_app_settings
+from ttkbootstrap.runtime.app import get_app_settings
 from ttkbootstrap.core.exceptions import BootstyleParsingError
 from ttkbootstrap.style.token_maps import (COLOR_TOKENS, CONTAINER_CLASSES, ORIENT_CLASSES, WIDGET_CLASS_MAP)
 
@@ -236,7 +236,7 @@ class Bootstyle:
             orient=style_options.get('orient'),
         )
 
-        from ttkbootstrap.api.style import get_style
+        from ttkbootstrap.style.style import get_style
         style = get_style()
 
         style.create_style(
@@ -315,7 +315,7 @@ class Bootstyle:
 
             elif widget_class and not had_style_kwarg:
                 from ttkbootstrap.style.bootstyle_builder_ttk import BootstyleBuilderTTk
-                from ttkbootstrap.api.style import get_style
+                from ttkbootstrap.style.style import get_style
 
                 default_variant = BootstyleBuilderTTk.get_default_variant(widget_class)
 
@@ -387,7 +387,7 @@ class Bootstyle:
 
             # ==== Update widget style & register for theme changes =====
 
-            from ttkbootstrap.api.style import get_style
+            from ttkbootstrap.style.style import get_style
             from ttkbootstrap.style.bootstyle_builder_tk import BootstyleBuilderBuilderTk
             style = get_style()
             builder_tk = BootstyleBuilderBuilderTk(

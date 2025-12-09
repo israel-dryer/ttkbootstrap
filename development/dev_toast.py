@@ -1,5 +1,5 @@
 import ttkbootstrap as ttk
-from ttkbootstrap.api.style import get_style
+from ttkbootstrap.style.style import get_style
 
 root = ttk.Window()
 

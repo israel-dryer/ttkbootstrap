@@ -4,7 +4,7 @@ from types import SimpleNamespace
 from typing import Any, Literal, Optional, Union
 
 from ttkbootstrap.widgets.primitives import Button, Frame, Label
-from ttkbootstrap.api.app import Toplevel
+from ttkbootstrap.runtime.app import Toplevel
 from ttkbootstrap.runtime.utility import scale_size
 from ttkbootstrap.constants import *
 
@@ -309,7 +309,7 @@ if __name__ == "__main__":
 
 
     def change_theme():
-        from ttkbootstrap.api.style import get_style
+        from ttkbootstrap import get_style
         style = get_style()
         if style.theme_use() == 'dark':
             style.theme_use('light')

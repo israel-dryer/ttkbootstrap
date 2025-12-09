@@ -52,7 +52,7 @@ from typing import Any, Callable, List, Optional, Tuple
 from PIL import ImageColor
 
 from tkinter import Canvas, IntVar, StringVar
-from ttkbootstrap.api.style import get_style
+from ttkbootstrap.style.style import get_style
 from ttkbootstrap.widgets.primitives import Button, Entry, Frame, Label, Notebook, Spinbox
 from ttkbootstrap.constants import *
 from ttkbootstrap.core import colorutils

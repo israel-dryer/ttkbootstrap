@@ -270,7 +270,7 @@ class FloodGauge(ConfigureDelegationMixin, Canvas):
 
     def _update_theme_colors(self) -> None:
         """Update widget colors based on current theme and bootstyle."""
-        from ttkbootstrap.api.style import get_style
+        from ttkbootstrap.style.style import get_style
         style = get_style()
         b = style.style_builder
         surface = b.color('background')

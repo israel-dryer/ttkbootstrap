@@ -62,8 +62,8 @@ from ttkbootstrap.api.widgets import (
     TK_WIDGETS,
     TTK_WIDGETS,
 )
-from ttkbootstrap.api.app import Toplevel, App, App as Window
-from ttkbootstrap.api.menu import MenuManager, create_menu
+from ttkbootstrap.runtime.app import Toplevel, App, App as Window
+from ttkbootstrap.runtime.menu import MenuManager, create_menu
 
 __all__ = [
     "BootstrapIcon",

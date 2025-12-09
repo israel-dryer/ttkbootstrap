@@ -1,6 +1,6 @@
 import ttkbootstrap as ttk
 
-app = ttk.Window()
+app = ttk.App(theme="dark")
 
 colors = ['primary', 'secondary', 'success', 'info', 'warning', 'danger']
 

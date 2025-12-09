@@ -116,7 +116,7 @@ class Combobox(TextSignalMixin, TTKWrapperBase, ttk.Combobox):
     def _apply_popdown_style(self) -> None:
         """Apply theme-appropriate styling to the popdown listbox."""
         from ttkbootstrap.style.bootstyle_builder_mixed import BootstyleBuilderMixed
-        from ttkbootstrap.api.style import get_style
+        from ttkbootstrap.style.style import get_style
 
         try:
             style = get_style()

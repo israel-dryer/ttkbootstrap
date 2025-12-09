@@ -5,7 +5,7 @@ from tkinter import font, Text, Variable
 from types import SimpleNamespace
 from typing import Any, Optional
 
-from ttkbootstrap.api.style import get_style
+from ttkbootstrap.style.style import get_style
 from ttkbootstrap.widgets.primitives import (
     CheckButton,
     Frame,
@@ -15,7 +15,7 @@ from ttkbootstrap.widgets.primitives import (
     Scrollbar,
     TreeView,
 )
-from ttkbootstrap.api.app import Window
+from ttkbootstrap.runtime.app import Window
 from ttkbootstrap.runtime.utility import scale_size
 from ttkbootstrap.constants import *
 from ttkbootstrap.dialogs.dialog import Dialog, DialogButton

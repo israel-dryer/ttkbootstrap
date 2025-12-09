@@ -10,7 +10,7 @@ from types import SimpleNamespace
 
 from ttkbootstrap.widgets.primitives import CheckButton, Frame, Label, Separator
 from ttkbootstrap.widgets.composites.textentry import TextEntry
-from ttkbootstrap.api.app import Window
+from ttkbootstrap.runtime.app import Window
 from ttkbootstrap.dialogs import Dialog, DialogButton
 from ttkbootstrap.widgets.composites.scrollview import ScrollView
 

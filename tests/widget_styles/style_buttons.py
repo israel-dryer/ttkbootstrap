@@ -1,7 +1,7 @@
 from random import choice
 
 import ttkbootstrap as ttk
-from ttkbootstrap.api.style import get_style
+from ttkbootstrap import get_style
 
 DARK = 'dark'
 LIGHT = 'light'

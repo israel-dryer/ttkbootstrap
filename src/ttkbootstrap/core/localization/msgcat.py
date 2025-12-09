@@ -31,7 +31,6 @@ from os import PathLike
 from pathlib import Path
 from typing import Any, Optional, Union
 
-from ttkbootstrap.runtime.app import get_default_root
 
 
 class MessageCatalog:
@@ -82,6 +81,7 @@ class MessageCatalog:
                 locale changes (default ``"<<LocaleChanged>>"``).
         """
         # Ensure a Tk exists so msgcat calls work even if root is omitted
+        from ttkbootstrap.runtime.app import get_default_root
         _ = root or get_default_root()
 
         MessageCatalog._domain = domain
@@ -267,6 +267,7 @@ class MessageCatalog:
         Returns:
             Localized and formatted string.
         """
+        from ttkbootstrap.runtime.app import get_default_root
         root = get_default_root()
 
         # Fast-path: if an override exists for this locale and formatting args were
@@ -351,6 +352,7 @@ class MessageCatalog:
     @staticmethod
     def preferences() -> list[str]:
         """Return Tcl msgcat locale preferences (ordered)."""
+        from ttkbootstrap.runtime.app import get_default_root
         root = get_default_root()
         items = root.tk.eval("::msgcat::mcpreferences").split(" ")
         return items[0:-1] if len(items) > 0 else []

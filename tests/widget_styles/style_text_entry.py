@@ -1,6 +1,6 @@
 import ttkbootstrap as ttk
 from ttkbootstrap.constants import *
-from ttkbootstrap.api.style import get_style
+from ttkbootstrap import get_style
 
 
 def create_entry_test():
