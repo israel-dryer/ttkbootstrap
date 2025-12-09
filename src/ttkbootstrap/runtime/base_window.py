@@ -16,9 +16,9 @@ The BaseWindow mixin provides:
 from __future__ import annotations
 
 import tkinter
-from typing import Optional
+from typing import Literal, Optional, Tuple
 
-from ttkbootstrap.runtime.window_utilities import WindowPositioning, WindowSizing
+from ttkbootstrap.runtime.window_utilities import AnchorPoint, WindowPositioning, WindowSizing
 
 
 def on_visibility_alpha(event: tkinter.Event) -> None:
@@ -286,6 +286,112 @@ class BaseWindow:
         if ensure_visible:
             x, y = WindowPositioning.ensure_on_screen(self, x, y)
         self.geometry(f'+{x}+{y}')
+
+    def place_anchor(
+        self,
+        anchor_to: tkinter.Misc,
+        anchor_point: AnchorPoint = 'sw',
+        window_point: AnchorPoint = 'nw',
+        offset: Tuple[int, int] = (0, 0),
+        ensure_visible: bool = True
+    ) -> None:
+        """Position window relative to another widget using anchor points.
+
+        Uses tkinter's standard anchor naming (n, s, e, w, ne, nw, se, sw, center).
+        This is useful for dropdowns, tooltips, context menus, and popovers.
+
+        Args:
+            anchor_to: The widget to anchor this window to.
+            anchor_point: Which point on the anchor widget to use (default 'sw').
+            window_point: Which point on this window to align (default 'nw').
+            offset: Additional (x, y) offset in pixels.
+            ensure_visible: If True, adjusts position to keep window on screen.
+
+        Example:
+            >>> # Show dialog below button
+            >>> dialog = Toplevel()
+            >>> dialog.place_anchor(
+            ...     anchor_to=button,
+            ...     anchor_point='sw',  # button's bottom-left
+            ...     window_point='nw',  # dialog's top-left
+            ...     offset=(0, 5)
+            ... )
+        """
+        WindowPositioning.position_with_anchor(
+            window=self,
+            anchor_to=anchor_to,
+            anchor_point=anchor_point,
+            window_point=window_point,
+            offset=offset,
+            ensure_visible=ensure_visible
+        )
+
+    def place_dropdown(
+        self,
+        trigger_widget: tkinter.Misc,
+        prefer_below: bool = True,
+        align: Literal['left', 'right', 'center'] = 'left',
+        offset: Tuple[int, int] = (0, 2),
+        ensure_visible: bool = True,
+        auto_flip: bool = True
+    ) -> None:
+        """Position window as a dropdown relative to a trigger widget.
+
+        Smart positioning that automatically flips above/below based on
+        available space. Perfect for combobox dropdowns, autocomplete
+        suggestions, and dropdown menus.
+
+        Args:
+            trigger_widget: The widget that triggers the dropdown.
+            prefer_below: If True, tries to show below trigger; else tries above.
+            align: Horizontal alignment ('left', 'right', or 'center').
+            offset: Additional (x, y) offset in pixels.
+            ensure_visible: If True, adjusts position to keep window on screen.
+            auto_flip: If True, automatically flips above/below if no room.
+
+        Example:
+            >>> # Dropdown menu below button
+            >>> menu = Toplevel()
+            >>> menu.place_dropdown(
+            ...     trigger_widget=button,
+            ...     prefer_below=True,
+            ...     align='left'
+            ... )
+        """
+        WindowPositioning.position_dropdown(
+            window=self,
+            trigger_widget=trigger_widget,
+            prefer_below=prefer_below,
+            align=align,
+            offset=offset,
+            ensure_visible=ensure_visible,
+            auto_flip=auto_flip
+        )
+
+    def place_cursor(
+        self,
+        offset: Tuple[int, int] = (5, 5),
+        ensure_visible: bool = True
+    ) -> None:
+        """Position window at the current mouse cursor location.
+
+        Useful for context menus, tooltips that follow the cursor, or
+        click-to-show dialogs.
+
+        Args:
+            offset: Additional (x, y) offset from cursor in pixels.
+            ensure_visible: If True, adjusts position to keep window on screen.
+
+        Example:
+            >>> # Show context menu at cursor
+            >>> menu = Toplevel()
+            >>> menu.place_cursor(offset=(2, 2))
+        """
+        WindowPositioning.position_at_cursor(
+            window=self,
+            offset=offset,
+            ensure_visible=ensure_visible
+        )
 
     # Backward compatibility aliases
     def place_window_center(self) -> None:
