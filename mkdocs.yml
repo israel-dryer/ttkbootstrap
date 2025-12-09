@@ -28,6 +28,9 @@ plugins:
           name: English
           build: true
           default: true
+        - locale: ja
+          name: 日本語
+          build: true
         - locale: zh
           name: 简体中文
           build: true
