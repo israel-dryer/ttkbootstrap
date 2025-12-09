@@ -4,6 +4,7 @@ import json
 # import tomllib
 from importlib import resources
 
+from ttkbootstrap.api.app import get_app_settings
 from ttkbootstrap.core.exceptions import ThemeError
 from ttkbootstrap.style.utility import shade_color, tint_color
 
@@ -60,10 +61,9 @@ def load_system_themes():
 
     Loads all v2 themes from ``ttkbootstrap.assets.themes`` and all legacy
     themes from ``ttkbootstrap.assets.themes.legacy``. Themes matching
-    AppConfig.dark_theme or AppConfig.light_theme are also registered with
+    app settings dark_theme or .light_theme are also registered with
     'dark' and 'light' aliases for convenience.
     """
-    from ttkbootstrap.core.appconfig import AppConfig
     from importlib import resources
 
     global _registered_themes
@@ -72,8 +72,9 @@ def load_system_themes():
     legacy_package = 'ttkbootstrap.assets.themes.legacy'
 
     # Get configured theme names for dark/light aliases
-    dark_theme_name = AppConfig.get('dark_theme', 'bootstrap-dark')
-    light_theme_name = AppConfig.get('light_theme', 'bootstrap-light')
+    app_settings = get_app_settings()
+    dark_theme_name = app_settings.dark_theme
+    light_theme_name = app_settings.light_theme
 
     # Always load all v2 JSON themes from the primary themes package.
     try:
@@ -160,9 +161,8 @@ class ThemeProvider:
         self._colors = {}
         load_system_themes()
 
-        # Initialize typography from AppConfig if font is configured
         from ttkbootstrap.style.typography import Typography
-        Typography.initialize_from_appconfig()
+        Typography.initialize()
 
         self.use(name)
         self._initialized = True
@@ -179,8 +179,6 @@ class ThemeProvider:
         Aliases such as ``\"light\"`` and ``\"dark\"`` are not included; only the
         canonical theme entries loaded into the provider are returned.
         """
-        from ttkbootstrap.core.appconfig import AppConfig
-
         themes: list[dict[str, str]] = []
         seen: set[str] = set()
 
@@ -204,7 +202,7 @@ class ThemeProvider:
 
         # If the application has declared a specific set/order of themes
         # to expose, filter and order by that list.
-        select_themes = AppConfig.get("load_select_themes", None)
+        select_themes = get_app_settings().available_themes
         if select_themes:
             by_name = {t["name"]: t for t in themes}
             ordered: list[dict[str, str]] = []

@@ -100,8 +100,6 @@ class Style(ttkStyle):
 
         This delegates to the underlying ThemeProvider. Themes are always
         loaded from both the v2 and legacy theme packages; if
-        ``AppConfig.load_select_themes`` is set, the result is filtered
-        and ordered by that list.
         """
         return self._theme_provider.list_themes()
 

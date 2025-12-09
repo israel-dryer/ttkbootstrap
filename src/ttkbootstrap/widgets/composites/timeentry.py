@@ -9,7 +9,7 @@ from typing import Union
 
 from typing_extensions import Unpack
 
-from ttkbootstrap import AppConfig
+from ttkbootstrap.api.app import get_app_settings
 from ttkbootstrap.core.localization import IntlFormatter
 from ttkbootstrap.widgets.composites.field import FieldOptions
 from ttkbootstrap.widgets.primitives.selectbox import SelectBox
@@ -147,7 +147,7 @@ class TimeEntry(SelectBox):
         """
         self._interval = interval
         self._value_format = value_format
-        self._locale = kwargs.get('locale') or AppConfig.get("language")
+        self._locale = kwargs.get('locale') or get_app_settings().locale
 
         # Parse and store time range
         self._min_time = self._parse_time(min_time) if min_time else datetime.time(0, 0)

@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-from ttkbootstrap.core.appconfig import AppConfig
 from ttkbootstrap_icons_bs import BootstrapIcon
 from ttkbootstrap.style.bootstyle import Bootstyle
 from ttkbootstrap.style.style import Style
@@ -107,7 +106,6 @@ def get_theme_color(token: str) -> str:
 
 
 __all__ = [
-    "AppConfig",
     "BootstrapIcon",
     "Bootstyle",
     "Style",

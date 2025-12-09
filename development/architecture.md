@@ -13,7 +13,7 @@ This library is growing toward a framework-style surface. To keep imports sane, 
 Import direction: Core → Runtime → Style → Widgets (primitives) → Widgets (composites) → API.
 
 ## Current modules mapped to layers
-- Core: `ttkbootstrap.core.appconfig`, `ttkbootstrap.core.exceptions`, `ttkbootstrap.core.localization`, `ttkbootstrap.core.colorutils`, `ttkbootstrap.core.validation`, `ttkbootstrap.core.signals`, `ttkbootstrap.core.publisher`.
+- Core: `ttkbootstrap.core.exceptions`, `ttkbootstrap.core.localization`, `ttkbootstrap.core.colorutils`, `ttkbootstrap.core.validation`, `ttkbootstrap.core.signals`, `ttkbootstrap.core.publisher`.
 - Runtime: `ttkbootstrap.runtime.utility`, `ttkbootstrap.style.tk_patch`, (shims point to these layers).
 - Runtime: `ttkbootstrap.style.theme_provider`, `ttkbootstrap.style.utility`, `ttkbootstrap.style.tk_patch`, `ttkbootstrap.style.element`, `ttkbootstrap.style.bootstyle_builder_base`.
 - Style: `ttkbootstrap.style.bootstyle`, `ttkbootstrap.style.style`, `ttkbootstrap.style.builders.*`, `ttkbootstrap.style.bootstyle_builder_ttk`, `ttkbootstrap.style.token_maps`.

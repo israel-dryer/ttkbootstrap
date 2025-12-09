@@ -31,7 +31,6 @@ if TYPE_CHECKING:
     from ttkbootstrap.api.menu import MenuManager, create_menu
     from ttkbootstrap.api.app import Toplevel, App, App as Window
     from ttkbootstrap.api.style import (
-        AppConfig,
         Bootstyle,
         Style,
         get_style,
@@ -126,7 +125,7 @@ _MODULE_EXPORTS = {
         "App", "Toplevel", "Window",
     ],
     "ttkbootstrap.api.style": [
-        "AppConfig", "BootstrapIcon", "Bootstyle", "Style",
+        "BootstrapIcon", "Bootstyle", "Style",
         "get_style", "get_style_builder", "get_active_theme",
         "get_theme_provider", "set_active_theme", "get_theme_color",
     ],

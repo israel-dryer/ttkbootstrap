@@ -1,7 +1,7 @@
 from tkinter import Event, TclError
 from typing import Any, Callable
 
-from ttkbootstrap.core.appconfig import AppConfig
+from ttkbootstrap.api.app import get_app_settings
 from ttkbootstrap.core.localization import IntlFormatter
 from ttkbootstrap.widgets.primitives.entry import Entry
 from ttkbootstrap.widgets.mixins import ValidationMixin
@@ -138,7 +138,7 @@ class TextEntryPart(ValidationMixin, Entry):
 
         # configuration
         self._value_format = value_format
-        self._locale = locale or AppConfig.get("language")
+        self._locale = locale or get_app_settings().locale
         self._allow_blank = allow_blank
         self._on_input_fid = None
 
