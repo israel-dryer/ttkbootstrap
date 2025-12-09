@@ -44,7 +44,7 @@ from tkinter import font, ttk
 from typing import Any, Union
 
 from ttkbootstrap_icons_bs import BootstrapIcon
-from ttkbootstrap.style.style import get_style
+from ttkbootstrap.api.style import get_style
 
 
 class MenuManager:

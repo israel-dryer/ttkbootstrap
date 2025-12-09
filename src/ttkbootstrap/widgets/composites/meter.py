@@ -465,7 +465,7 @@ class Meter(Frame):
 
     def _resolve_meter_styles(self):
         """Resolve theme colors for meter indicator, trough, and text."""
-        from ttkbootstrap.style.style import get_style
+        from ttkbootstrap.api.style import get_style
         style = get_style()
         b = style.style_builder
 
