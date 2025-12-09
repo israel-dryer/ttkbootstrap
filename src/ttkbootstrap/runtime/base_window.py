@@ -151,8 +151,6 @@ class BaseWindow:
             x, y = WindowPositioning.ensure_on_screen(self, x, y)
             self.geometry(f'+{x}+{y}')
 
-        # Show the window now that sizing and positioning are complete
-        self.deiconify()
 
     def _setup_alpha(self, alpha: float) -> None:
         """Configure window alpha transparency in a platform-aware manner.
@@ -227,6 +225,12 @@ class BaseWindow:
 
     # ----------------------------------------------------------------- Positioning
     # Public positioning methods using WindowPositioning utilities
+
+    def show(self):
+        """Show the window after it has been fully initialized"""
+        self.update_idletasks()
+        self.deiconify()
+        self.update()
 
     def place_center(self) -> None:
         """Position the window in the center of the screen.
