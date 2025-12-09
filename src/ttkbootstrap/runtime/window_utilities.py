@@ -70,14 +70,13 @@ class WindowPositioning:
         """
         window.update_idletasks()
 
-        w_width = window.winfo_reqwidth()
-        w_height = window.winfo_reqheight()
+        w_width = max(window.winfo_reqwidth(), window.winfo_width())
+        w_height = max(window.winfo_reqheight(), window.winfo_height())
         s_width = window.winfo_screenwidth()
         s_height = window.winfo_screenheight()
 
         x = (s_width - w_width) // 2
         y = (s_height - w_height) // 2
-
         return x, y
 
     @staticmethod
@@ -124,7 +123,7 @@ class WindowPositioning:
         # Calculate centered position
         x = p_x + max(0, (p_width - w_width) // 2)
         y = p_y + max(0, (p_height - w_height) // 2)
-
+        print('Center on parent', {"w": w_width, "h": w_height})
         return x, y
 
     @staticmethod
