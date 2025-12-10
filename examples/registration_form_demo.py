@@ -8,7 +8,7 @@ from ttkbootstrap.widgets.composites.form import FieldItem, Form, GroupItem, Tab
 
 
 def main():
-    app = ttk.Window(title="Registration Form", themename="flatly")
+    app = ttk.Window(title="Registration Form", theme="flatly")
 
     initial_data = {
         "first_name": "",

@@ -10,7 +10,7 @@ from ttkbootstrap.signals.integration import enable_widget_integration
 
 
 def main() -> None:
-    app = ttk.Window(title="Signals + Widgets Demo", themename="flatly")
+    app = ttk.Window(title="Signals + Widgets Demo", theme="flatly")
     # Ensure Signals can be passed directly to textvariable/variable
     enable_widget_integration()
 

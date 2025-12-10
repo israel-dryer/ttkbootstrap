@@ -5,14 +5,16 @@ functionality. Items can be displayed with checkboxes, and the dialog supports
 both standard and frameless (borderless) display modes.
 """
 
-from typing import Any
+from tkinter import Widget
+from typing import Any, Literal, Optional, Tuple, Union
 from types import SimpleNamespace
 
 from ttkbootstrap.widgets.primitives import CheckButton, Frame, Label, Separator
 from ttkbootstrap.widgets.composites.textentry import TextEntry
-from ttkbootstrap.api.window import Window
+from ttkbootstrap.runtime.app import Window
 from ttkbootstrap.dialogs import Dialog, DialogButton
 from ttkbootstrap.widgets.composites.scrollview import ScrollView
+from ttkbootstrap.runtime.window_utilities import AnchorPoint
 
 ttk = SimpleNamespace(
     Checkbutton=CheckButton,
@@ -346,12 +348,40 @@ class FilterDialog(ttk.Frame):
                 root = root.master.winfo_toplevel()
             root.bind('<Button-1>', self._on_click, add='+')
 
-    def show(self, position: tuple[int, int] | None = None):
+    def show(
+            self,
+            position: Optional[Tuple[int, int]] = None,
+            modal: Optional[bool] = None,
+            *,
+            anchor_to: Optional[Union[Widget, Literal["screen", "cursor", "parent"]]] = None,
+            anchor_point: AnchorPoint = 'center',
+            window_point: AnchorPoint = 'center',
+            offset: Tuple[int, int] = (0, 0),
+            auto_flip: Union[bool, Literal['vertical', 'horizontal']] = False
+    ):
         """Show the dialog and return the selected items.
 
         Args:
             position: Optional (x, y) coordinates to position the dialog.
-                If None, the dialog will be centered on the parent.
+                If provided, takes precedence over anchor-based positioning.
+            modal: Override the mode's default modality.
+                If None, uses True (modal mode).
+            anchor_to: Positioning target. Can be:
+                - Widget: Anchor to a specific widget
+                - "screen": Anchor to screen edges/corners
+                - "cursor": Anchor to mouse cursor location
+                - "parent": Anchor to parent window (same as widget)
+                - None: Centers on parent (default)
+            anchor_point: Point on the anchor target (n, s, e, w, ne, nw, se, sw, center).
+                Default 'center'.
+            window_point: Point on the dialog window (n, s, e, w, ne, nw, se, sw, center).
+                Default 'center'.
+            offset: Additional (x, y) offset in pixels from the anchor position.
+            auto_flip: Smart positioning to keep window on screen.
+                - False: No flipping (default)
+                - True: Flip both vertically and horizontally as needed
+                - 'vertical': Only flip up/down
+                - 'horizontal': Only flip left/right
 
         Returns:
             List of selected item values, or None if cancelled.
@@ -377,5 +407,13 @@ class FilterDialog(ttk.Frame):
             frameless=self._frameless
         )
 
-        self._dialog.show(position=position)
+        self._dialog.show(
+            position=position,
+            modal=modal,
+            anchor_to=anchor_to,
+            anchor_point=anchor_point,
+            window_point=window_point,
+            offset=offset,
+            auto_flip=auto_flip
+        )
         return self.result

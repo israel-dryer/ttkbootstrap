@@ -1,7 +1,9 @@
-from tkinter import Toplevel
-from typing import Any, Callable, Optional, Sequence, Union
+from tkinter import Toplevel, Widget, Misc
+from typing import Any, Callable, Literal, Optional, Sequence, Tuple, Union
 
 from typing_extensions import TypedDict, Unpack
+
+from ttkbootstrap.runtime.window_utilities import WindowPositioning, AnchorPoint
 
 
 class IconSpec(TypedDict, total=False):
@@ -247,15 +249,6 @@ class Toast:
 
         top = Toplevel()
         top.minsize(400, 30)
-
-        winsys = top.tk.call('tk', 'windowingsystem')
-        if winsys in ['win32', 'aqua']:
-            default_position = "-25-75"
-        else:
-            default_position = "-25-25"
-
-        geometry = default_position if self._position is None else self._position
-        top.geometry(geometry)
         top.attributes('-topmost', True)
         top.attributes('-alpha', 0.97)
         top.overrideredirect(True)
@@ -334,6 +327,49 @@ class Toast:
                     **button_opts,
                     command=execute_command(button_options, func)
                 ).grid(column=i, row=0, sticky="ew")
+
+        # ------ Positioning -------
+
+        # Update layout to get final window size
+        top.update_idletasks()
+
+        # Apply positioning using WindowPositioning utilities
+        if self._position:
+            # Support legacy geometry strings (e.g., "-25-75")
+            if self._position.startswith(('+', '-')):
+                # Legacy geometry string - use directly
+                top.geometry(self._position)
+            else:
+                # New positioning - assume it's a corner specification
+                # (future enhancement: could support more complex positioning)
+                top.geometry(self._position)
+        else:
+            # Default positioning based on platform
+            winsys = top.tk.call('tk', 'windowingsystem')
+            if winsys in ['win32', 'aqua']:
+                # Bottom-right corner
+                WindowPositioning.position_anchored(
+                    window=top,
+                    anchor_to="screen",
+                    parent=None,
+                    anchor_point="se",
+                    window_point="se",
+                    offset=(-25, -75),
+                    auto_flip=False,
+                    ensure_visible=True
+                )
+            else:
+                # Top-right corner for X11
+                WindowPositioning.position_anchored(
+                    window=top,
+                    anchor_to="screen",
+                    parent=None,
+                    anchor_point="ne",
+                    window_point="ne",
+                    offset=(-25, 25),
+                    auto_flip=False,
+                    ensure_visible=True
+                )
 
         # ------ Other setup -------
 

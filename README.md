@@ -26,7 +26,7 @@ pip install ttkbootstrap
 ```python
 import ttkbootstrap as ttk
 
-app = ttk.Window(themename="flatly")
+app = ttk.Window(theme="flatly")
 ttk.Label(app, text="Hello from ttkbootstrap v2!").pack(pady=20)
 app.mainloop()
 ```

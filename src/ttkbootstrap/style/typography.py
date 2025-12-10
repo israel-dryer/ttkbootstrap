@@ -191,28 +191,9 @@ class Typography:
         return cls._fonts
 
     @classmethod
-    def initialize_from_appconfig(cls) -> None:
-        """Initialize typography from AppConfig if font is set.
-
-        If AppConfig.font is configured, this will rebuild the entire font token
-        system using the specified family and size as the base. Otherwise, uses
-        system defaults and applies them to Tk fonts.
-
-        Example:
-            >>> AppConfig.set(font=("Arial", 11))
-            >>> Typography.initialize_from_appconfig()
-            # All typography tokens now use Arial with size ramp based on 11
-        """
-        from ttkbootstrap.core.appconfig import AppConfig
-
-        if AppConfig.has('font'):
-            family, size = AppConfig.get('font')
-            # Build new token set with custom base
-            tokens = build_tokens_from_base(size, family)
-            cls.use_fonts(tokens)
-        else:
-            # Apply default tokens to Tk fonts (important for minimum size enforcement)
-            cls.use_fonts()
+    def initialize(cls) -> None:
+        """Initialize typography"""
+        cls.use_fonts()
 
     @classmethod
     def _register_fonts(cls) -> None:

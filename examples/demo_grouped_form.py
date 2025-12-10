@@ -340,7 +340,7 @@ def demo_mixed_layout(parent):
 
 
 def main():
-    app = ttk.Window(title="Grouped Form Demo", themename="flatly", size=(650, 500))
+    app = ttk.Window(title="Grouped Form Demo", theme="flatly", size=(650, 500))
 
     # Title
     title = ttk.Label(

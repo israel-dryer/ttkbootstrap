@@ -69,6 +69,6 @@ class CheckButton(SignalMixin, TextSignalMixin, IconMixin, TTKWrapperBase, ttk.C
             surface_color: Optional surface token; otherwise inherited.
             style_options: Optional dict forwarded to the style builder.
         """
+        kwargs.update(style_options=self._capture_style_options(['icon_only', 'icon'], kwargs))
         super().__init__(master, **kwargs)
-
 

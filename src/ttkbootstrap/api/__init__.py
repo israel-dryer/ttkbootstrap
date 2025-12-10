@@ -13,9 +13,10 @@ from ttkbootstrap.api.style import (
     get_style,
     get_style_builder,
     get_theme_provider,
-    get_active_theme,
+    get_theme,
     get_theme_color,
-    set_active_theme,
+    set_theme,
+    toggle_theme,
 )
 from ttkbootstrap.api.widgets import (
     Button,
@@ -62,8 +63,8 @@ from ttkbootstrap.api.widgets import (
     TK_WIDGETS,
     TTK_WIDGETS,
 )
-from ttkbootstrap.api.window import Toplevel, Window
-from ttkbootstrap.api.menu import MenuManager, create_menu
+from ttkbootstrap.runtime.app import Toplevel, App, App as Window
+from ttkbootstrap.runtime.menu import MenuManager, create_menu
 
 __all__ = [
     "BootstrapIcon",
@@ -111,12 +112,13 @@ __all__ = [
     "ToolTip",
     "TreeView",
     "Toplevel",
-    "Window",
+    "App",
     "MenuManager",
     "get_style",
     "get_style_builder",
-    "get_active_theme",
-    "set_active_theme",
+    "get_theme",
+    "set_theme",
+    "toggle_theme",
     "get_theme_provider",
     "get_theme_color",
     "create_menu",

@@ -80,14 +80,16 @@ Add validation before accepting the form data:
 
 from __future__ import annotations
 
-from typing import Any, Callable, Iterable, Literal, Mapping, Optional, Sequence, TYPE_CHECKING
+from tkinter import Widget
+from typing import Any, Callable, Iterable, Literal, Mapping, Optional, Sequence, Tuple, Union, TYPE_CHECKING
 
 if TYPE_CHECKING:
     from ttkbootstrap.widgets.composites.form import FormItem
 
 from ttkbootstrap.dialogs.dialog import Dialog, DialogButton, ButtonSpec
 from ttkbootstrap.widgets.primitives.frame import Frame
-from ttkbootstrap.core.constants import DEFAULT_MIN_COL_WIDTH as FORM_MIN_COL_WIDTH
+from ttkbootstrap.constants import DEFAULT_MIN_COL_WIDTH as FORM_MIN_COL_WIDTH
+from ttkbootstrap.runtime.window_utilities import AnchorPoint
 
 
 class FormDialog:
@@ -257,25 +259,55 @@ class FormDialog:
         self._scrollview = None
         self._window_id = None
 
-    def show(self, position: Optional[tuple[int, int]] = None, modal: Optional[bool] = None):
-        """Show the form dialog and populate `result` when closed."""
+    def show(
+            self,
+            position: Optional[Tuple[int, int]] = None,
+            modal: Optional[bool] = None,
+            *,
+            anchor_to: Optional[Union[Widget, Literal["screen", "cursor", "parent"]]] = None,
+            anchor_point: AnchorPoint = 'center',
+            window_point: AnchorPoint = 'center',
+            offset: Tuple[int, int] = (0, 0),
+            auto_flip: Union[bool, Literal['vertical', 'horizontal']] = False
+    ):
+        """Show the form dialog and populate `result` when closed.
+
+        Args:
+            position: Optional (x, y) coordinates to position the dialog.
+                If provided, takes precedence over anchor-based positioning.
+            modal: Override the mode's default modality.
+                - If None, uses mode:
+                    - "modal": grab_set + wait_window
+                    - "popover": no grab, but wait_window
+            anchor_to: Positioning target. Can be:
+                - Widget: Anchor to a specific widget
+                - "screen": Anchor to screen edges/corners
+                - "cursor": Anchor to mouse cursor location
+                - "parent": Anchor to parent window (same as widget)
+                - None: Centers on parent (default)
+            anchor_point: Point on the anchor target (n, s, e, w, ne, nw, se, sw, center).
+                Default 'center'.
+            window_point: Point on the dialog window (n, s, e, w, ne, nw, se, sw, center).
+                Default 'center'.
+            offset: Additional (x, y) offset in pixels from the anchor position.
+            auto_flip: Smart positioning to keep window on screen.
+                - False: No flipping (default)
+                - True: Flip both vertically and horizontally as needed
+                - 'vertical': Only flip up/down
+                - 'horizontal': Only flip left/right
+        """
         # Allow initial layout priming each time the dialog is shown
         self._initial_layout_done = False
 
-        self._dialog.show(position=position, modal=modal)
-
-        # Transfer the result from dialog to FormDialog
-        if self._dialog.result is not None:
-            self.result = self.form.data if self.form else None
-        else:
-            self.result = None
-
-    def show_centered(self, modal: Optional[bool] = None):
-        """Convenience helper to center on the parent window."""
-        # Allow initial layout priming each time the dialog is shown
-        self._initial_layout_done = False
-
-        self._dialog.show_centered(modal=modal)
+        self._dialog.show(
+            position=position,
+            modal=modal,
+            anchor_to=anchor_to,
+            anchor_point=anchor_point,
+            window_point=window_point,
+            offset=offset,
+            auto_flip=auto_flip
+        )
 
         # Transfer the result from dialog to FormDialog
         if self._dialog.result is not None:

@@ -1,7 +1,7 @@
 import ttkbootstrap as ttk
 from ttkbootstrap import TextEntry
 
-app = ttk.Window(themename="dark")
+app = ttk.Window(theme="dark")
 
 
 te = TextEntry(app, value="Israel", label="First Name", required=True, message="What shall we call you?")

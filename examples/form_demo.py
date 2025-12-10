@@ -18,7 +18,7 @@ from ttkbootstrap.widgets.composites.form import (
 
 
 def main():
-    app = ttk.Window(title="Form Demo", themename="flatly")
+    app = ttk.Window(title="Form Demo", theme="flatly")
     app.geometry("900x520")
 
     # --- inferred form -------------------------------------------------

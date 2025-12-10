@@ -1,5 +1,3 @@
-import sys as _sys
-from ttkbootstrap.core import constants as _constants_module
 import importlib as _importlib
 from typing import TYPE_CHECKING
 
@@ -26,21 +24,21 @@ TkFrame = _tkFrame  # Exported as TkFrame to avoid conflict with ttk.Frame
 # Eagerly import BootstrapIcon to prevent circular import during style bootstrapping
 from ttkbootstrap_icons_bs import BootstrapIcon  # noqa: E402
 
-constants = _constants_module
-_sys.modules[__name__ + ".constants"] = _constants_module
+# Constants are available via ttkbootstrap.constants module
+# (see constants.py which re-exports from core.constants)
 
 if TYPE_CHECKING:
     from ttkbootstrap.api.menu import MenuManager, create_menu
-    from ttkbootstrap.api.window import Toplevel, Window
+    from ttkbootstrap.api.app import Toplevel, App, App as Window
     from ttkbootstrap.api.style import (
-        AppConfig,
         Bootstyle,
         Style,
         get_style,
         get_style_builder,
-        get_active_theme,
+        get_theme,
         get_theme_provider,
-        set_active_theme,
+        set_theme,
+        toggle_theme,
         get_theme_color,
     )
     from ttkbootstrap.api.widgets import (
@@ -114,90 +112,49 @@ _TK_EXPORTS = [
     "PhotoImage",
 ]
 
-_TTK_EXPORTS = [
-    "Button",
-    "CheckButton",
-    "Combobox",
-    "Entry",
-    "Frame",
-    "LabelFrame",
-    "Label",
-    "MenuButton",
-    "Notebook",
-    "PanedWindow",
-    "Progressbar",
-    "RadioButton",
-    "Scale",
-    "Scrollbar",
-    "Separator",
-    "SizeGrip",
-    "Spinbox",
-    "TreeView",
-    "OptionMenu",
+# Single source of truth: module-to-exports mapping
+# Organized by category for clarity
+_TTK_PRIMITIVES = [
+    "Button", "CheckButton", "Combobox", "Entry", "Frame", "Label",
+    "LabelFrame", "MenuButton", "Notebook", "OptionMenu", "PanedWindow",
+    "Progressbar", "RadioButton", "Scale", "Scrollbar", "Separator",
+    "SizeGrip", "Spinbox", "TreeView",
 ]
 
-_TTKBOOTSTRAP_EXPORTS = [
-    "BootstrapIcon",
-    "AppConfig",
-    "Bootstyle",
-    "ContextMenu",
-    "ContextMenuItem",
-    "Style",
-    "Toplevel",
-    "Window",
-    "DateEntry",
-    "DatePicker",
-    "DropdownButton",
-    "Field",
-    "FieldOptions",
-    "FloodGauge",
-    "LabeledScale",
-    "Meter",
-    "Form",
-    "TableView",
-    "PageStack",
-    "PasswordEntry",
-    "PathEntry",
-    "Toast",
-    "ToolTip",
-    "TextEntry",
-    "TimeEntry",
-    "ScrollView",
-    "ScrolledText",
-    "SelectBox",
-    "MenuManager",
-    "NumericEntry",
-    "create_menu",
-    "TTK_WIDGETS",
-    "TK_WIDGETS",
-    "get_style",
-    "get_style_builder",
-    "get_active_theme",
-    "get_theme_provider",
-    "set_active_theme",
-    "get_theme_color"
-]
-
-_LAZY_EXPORTS = {
-    "AppConfig": "ttkbootstrap.api.style",
-    "BootstrapIcon": "ttkbootstrap.api.style",
-    "Bootstyle": "ttkbootstrap.api.style",
-    "Style": "ttkbootstrap.api.style",
-    "get_style": "ttkbootstrap.api.style",
-    "get_style_builder": "ttkbootstrap.api.style",
-    "get_active_theme": "ttkbootstrap.api.style",
-    "get_theme_provider": "ttkbootstrap.api.style",
-    "set_active_theme": "ttkbootstrap.api.style",
-    "get_theme_color": "ttkbootstrap.api.style",
-    "MenuManager": "ttkbootstrap.api.menu",
-    "create_menu": "ttkbootstrap.api.menu",
-    "Toplevel": "ttkbootstrap.api.window",
-    "Window": "ttkbootstrap.api.window",
+_MODULE_EXPORTS = {
+    "ttkbootstrap.api.app": [
+        "App", "Toplevel", "Window",
+    ],
+    "ttkbootstrap.api.style": [
+        "BootstrapIcon", "Bootstyle", "Style",
+        "get_style", "get_style_builder", "get_theme",
+        "get_theme_provider", "set_theme", "get_theme_color",
+        "toggle_theme"
+    ],
+    "ttkbootstrap.api.menu": [
+        "MenuManager", "create_menu",
+    ],
+    "ttkbootstrap.api.widgets": [
+        *_TTK_PRIMITIVES,
+        "ContextMenu", "ContextMenuItem", "DateEntry", "DatePicker",
+        "DropdownButton", "Field", "FieldOptions", "FloodGauge", "Form",
+        "LabeledScale", "Meter", "NumericEntry", "PageStack",
+        "PasswordEntry", "PathEntry", "ScrolledText", "ScrollView",
+        "SelectBox", "TableView", "TextEntry", "TimeEntry", "Toast",
+        "ToolTip", "TK_WIDGETS", "TTK_WIDGETS",
+    ],
 }
 
-for _name in (*_TTKBOOTSTRAP_EXPORTS, *_TTK_EXPORTS):
-    if _name not in _LAZY_EXPORTS:
-        _LAZY_EXPORTS[_name] = "ttkbootstrap.api.widgets"
+# Auto-generate lazy exports and categorized export lists
+_LAZY_EXPORTS = {}
+_TTK_EXPORTS = _TTK_PRIMITIVES.copy()
+_TTKBOOTSTRAP_EXPORTS = []
+
+for module, exports in _MODULE_EXPORTS.items():
+    for name in exports:
+        _LAZY_EXPORTS[name] = module
+        if name not in _TTK_EXPORTS:  # Already added TTK primitives
+            _TTKBOOTSTRAP_EXPORTS.append(name)
 
 __all__ = [*_TK_EXPORTS, *_TTK_EXPORTS, *_TTKBOOTSTRAP_EXPORTS, *_DEPRECATED_ALIASES, "constants"]
 

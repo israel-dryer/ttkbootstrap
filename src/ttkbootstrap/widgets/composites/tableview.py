@@ -1266,7 +1266,7 @@ class TableView(Frame):
             return
         if self._row_menu:
             return
-        menu = ContextMenu(master=self, target=self._tree)
+        menu = ContextMenu(master=self, target=self._tree, attach='sw')
         if not self._sorting == 'none':
             menu.add_command(text="Sort Ascending", command=lambda: self._sort_selection(True))
             menu.add_command(text="Sort Descending", command=lambda: self._sort_selection(False))
@@ -1368,7 +1368,7 @@ class TableView(Frame):
             resizable=(True, True) if form_options.get('resizable', True) else (False, False),
         )
 
-        dialog.show_centered()
+        dialog.show(anchor_to="screen")
         result = dialog.result
 
         if result is None:
@@ -2273,4 +2273,3 @@ class TableView(Frame):
 
 # Backwards-compatible alias for the legacy Tableview name
 Tableview = TableView
-

@@ -25,7 +25,7 @@ def on_changed(event):
     """Handle selection changes."""
     print(f"Selection changed: {event.data}")
 
-root = ttk.Window(themename="superhero")
+root = ttk.Window(theme="superhero")
 root.title("SelectBox Search Demo")
 root.geometry("500x600")
 

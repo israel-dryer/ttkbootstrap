@@ -167,7 +167,7 @@ def load_sidebar():
                 
 if __name__ == '__main__':
 
-    app = ttk.Window(themename='darkly')
+    app = ttk.Window(theme='darkly')
     item_path = Path.home()
     img_path = Path(__file__).parent
     app.setvar(name='contentspath', value=item_path.absolute())

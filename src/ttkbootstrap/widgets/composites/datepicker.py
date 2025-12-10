@@ -9,7 +9,7 @@ from tkinter import StringVar
 from typing import Any, Callable, Iterable, Literal, Optional
 
 from ttkbootstrap.widgets.primitives import Button, CheckButton, Frame, Label, Separator
-from ttkbootstrap.core.constants import BOTH, CENTER, LEFT, NSEW, PRIMARY, X, Y, YES
+from ttkbootstrap.constants import BOTH, CENTER, LEFT, NSEW, PRIMARY, X, Y, YES
 from ttkbootstrap.core.localization import MessageCatalog
 from ttkbootstrap.widgets.mixins import configure_delegate
 

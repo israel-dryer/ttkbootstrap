@@ -90,9 +90,10 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from tkinter import Widget
-from typing import Any, Callable, Iterable, Literal, Mapping, Optional, Union
+from typing import Any, Callable, Iterable, Literal, Mapping, Optional, Tuple, TypedDict, Union
 
 import ttkbootstrap as ttk
+from ttkbootstrap.runtime.window_utilities import AnchorPoint, WindowPositioning
 
 # --- Types -----------------------------------------------------------------
 
@@ -163,6 +164,42 @@ class DialogButton:
 
 
 ButtonSpec = Union[DialogButton, Mapping[str, Any]]
+
+
+class ShowOptions(TypedDict, total=False):
+    """Options for showing the window
+
+        Parameters:
+            position: Optional (x, y) coordinates to position the dialog.
+                If provided, takes precedence over anchor-based positioning.
+            modal: Override the mode's default modality.
+                - If None, uses mode:
+                    - "modal": grab_set + wait_window
+                    - "popover": no grab, but wait_window
+            anchor_to: Positioning target. Can be:
+                - Widget: Anchor to a specific widget
+                - "screen": Anchor to screen edges/corners
+                - "cursor": Anchor to mouse cursor location
+                - "parent": Anchor to parent window (same as widget)
+                - None: Centers on parent (default)
+            anchor_point: Point on the anchor target (n, s, e, w, ne, nw, se, sw, center).
+                Default 'center'.
+            window_point: Point on the dialog window (n, s, e, w, ne, nw, se, sw, center).
+                Default 'center'.
+            offset: Additional (x, y) offset in pixels from the anchor position.
+            auto_flip: Smart positioning to keep window on screen.
+                - False: No flipping (default)
+                - True: Flip both vertically and horizontally as needed
+                - 'vertical': Only flip up/down
+                - 'horizontal': Only flip left/right
+    """
+    position: Optional[Tuple[int, int]]
+    modal: Optional[bool]
+    anchor_to: Optional[Union[Widget, Literal["screen", "cursor", "parent"]]]
+    anchor_point: AnchorPoint
+    window_point: AnchorPoint
+    offset: Tuple[int, int]
+    auto_flip: Union[bool, Literal['vertical', 'horizontal']]
 
 
 # --- Dialog ----------------------------------------------------------------
@@ -272,6 +309,7 @@ class Dialog:
         ... )
         >>> dialog.show(position=(100, 100), modal=False)
     """
+
     def __init__(
             self,
             master=None,
@@ -310,16 +348,47 @@ class Dialog:
 
     # --------------------------------------------------------------- API
 
-    def show(self, position: Optional[tuple[int, int]] = None, modal: Optional[bool] = None):
-        """Create and show the dialog.
+    def show(
+            self,
+            position: Optional[Tuple[int, int]] = None,
+            modal: Optional[bool] = None,
+            *,
+            anchor_to: Optional[Union[Widget, Literal["screen", "cursor", "parent"]]] = None,
+            anchor_point: AnchorPoint = 'center',
+            window_point: AnchorPoint = 'center',
+            offset: Tuple[int, int] = (0, 0),
+            auto_flip: Union[bool, Literal['vertical', 'horizontal']] = False
+    ):
+        """Create and show the dialog with flexible positioning options.
 
         Args:
             position: Optional (x, y) coordinates to position the dialog.
-                If None, the dialog will be centered on the parent.
+                If provided, takes precedence over anchor-based positioning.
             modal: Override the mode's default modality.
                 - If None, uses mode:
                     - "modal": grab_set + wait_window
                     - "popover": no grab, but wait_window
+            anchor_to: Positioning target. Can be:
+                - Widget: Anchor to a specific widget
+                - "screen": Anchor to screen edges/corners
+                - "cursor": Anchor to mouse cursor location
+                - "parent": Anchor to parent window (same as widget)
+                - None: Centers on parent (default)
+            anchor_point: Point on the anchor target (n, s, e, w, ne, nw, se, sw, center).
+                Default 'center'.
+            window_point: Point on the dialog window (n, s, e, w, ne, nw, se, sw, center).
+                Default 'center'.
+            offset: Additional (x, y) offset in pixels from the anchor position.
+            auto_flip: Smart positioning to keep window on screen.
+                - False: No flipping (default)
+                - True: Flip both vertically and horizontally as needed
+                - 'vertical': Only flip up/down
+                - 'horizontal': Only flip left/right
+
+        Positioning Logic:
+            1. If position is provided: Use explicit coordinates
+            2. If anchor_to is provided: Use anchor-based positioning
+            3. Default: Center on parent window
         """
         if modal is None:
             modal = (self._mode == "modal")
@@ -328,7 +397,14 @@ class Dialog:
         self._create_toplevel()
         self._build_footer()
         self._build_content()
-        self._position_dialog(position)
+        self._position_dialog(
+            position=position,
+            anchor_to=anchor_to,
+            anchor_point=anchor_point,
+            window_point=window_point,
+            offset=offset,
+            auto_flip=auto_flip
+        )
 
         if self._alert:
             self._toplevel.bell()
@@ -341,10 +417,6 @@ class Dialog:
             if self._mode == "modal":
                 self._toplevel.grab_set()
             self._master.wait_window(self._toplevel)
-
-    def show_centered(self, modal: Optional[bool] = None):
-        """Show the dialog centered on its parent using default positioning."""
-        self.show(position=None, modal=modal)
 
     @property
     def toplevel(self) -> ttk.Toplevel | None:
@@ -478,95 +550,67 @@ class Dialog:
         else:
             self._toplevel.bind("<Escape>", lambda e: self._toplevel.destroy())
 
-    def _position_dialog(self, position: Optional[tuple[int, int]]) -> None:
-        """Position the dialog window.
+    def _position_dialog(
+            self,
+            position: Optional[Tuple[int, int]] = None,
+            anchor_to: Optional[Union[Widget, Literal["screen", "cursor", "parent"]]] = None,
+            anchor_point: AnchorPoint = 'center',
+            window_point: AnchorPoint = 'center',
+            offset: Tuple[int, int] = (0, 0),
+            auto_flip: Union[bool, Literal['vertical', 'horizontal']] = False
+    ) -> None:
+        """Position the dialog window using consolidated positioning logic.
 
-        Args:
-            position: Optional (x, y) coordinates. If None, centers on parent.
+        Positioning logic:
+        1. If position is provided: Use explicit coordinates
+        2. If anchor_to is provided: Use anchor-based positioning
+        3. Default: Center on parent
         """
         if not self._toplevel:
             return
 
-        self._toplevel.update_idletasks()
-
+        # Priority 1: Explicit position coordinates
         if position is not None:
-            try:
-                x, y = position
-                x, y = self._ensure_on_screen(int(x), int(y))
-                self._toplevel.geometry(f"+{x}+{y}")
-            except (TypeError, ValueError):
-                self._center_on_parent()
-        else:
-            self._center_on_parent()
+            x, y = position
+            x, y = WindowPositioning.ensure_on_screen(self._toplevel, int(x), int(y))
+            self._toplevel.geometry(f"+{x}+{y}")
 
-        self._toplevel.update_idletasks()
+        # Priority 2: Anchor-based positioning
+        elif anchor_to is not None:
+            WindowPositioning.position_anchored(
+                window=self._toplevel,
+                anchor_to=anchor_to,
+                parent=self._master,
+                anchor_point=anchor_point,
+                window_point=window_point,
+                offset=offset,
+                auto_flip=auto_flip,
+                ensure_visible=True
+            )
+
+        # Priority 3: Default - center on parent
+        else:
+            WindowPositioning.position_window(
+                window=self._toplevel,
+                position=None,
+                parent=self._master,
+                center_on_parent=True,
+                ensure_visible=True
+            )
 
         try:
             self._toplevel.deiconify()
         except Exception:
             pass
 
-        if position is None:
+        # Second centering pass for default positioning (handles dynamic sizing)
+        if position is None and anchor_to is None:
             try:
-                self._center_on_parent()
+                x, y = WindowPositioning.center_on_parent(self._toplevel, self._master)
+                x, y = WindowPositioning.ensure_on_screen(self._toplevel, x, y)
+                self._toplevel.geometry(f"+{x}+{y}")
             except Exception:
                 pass
-
-    def _ensure_on_screen(self, x: int, y: int) -> tuple[int, int]:
-        """Ensure dialog position keeps it fully visible on screen.
-
-        Args:
-            x: Desired x coordinate
-            y: Desired y coordinate
-
-        Returns:
-            Adjusted (x, y) coordinates that keep dialog on screen
-        """
-        if not self._toplevel:
-            return x, y
-
-        dialog_width = self._toplevel.winfo_reqwidth()
-        dialog_height = self._toplevel.winfo_reqheight()
-
-        screen_x0 = self._toplevel.winfo_vrootx()
-        screen_y0 = self._toplevel.winfo_vrooty()
-        screen_width = self._toplevel.winfo_vrootwidth()
-        screen_height = self._toplevel.winfo_vrootheight()
-        screen_x1 = screen_x0 + screen_width
-        screen_y1 = screen_y0 + screen_height
-
-        x = min(x, screen_x1 - dialog_width - 20)
-        y = min(y, screen_y1 - dialog_height - 60)
-        x = max(screen_x0 + 20, x)
-        y = max(screen_y0 + 20, y)
-
-        return int(x), int(y)
-
-    def _center_on_parent(self) -> None:
-        """Center the dialog on its parent window."""
-        if not self._toplevel or not self._master:
-            return
-
-        try:
-            self._master.update_idletasks()
-            self._toplevel.update_idletasks()
-        except Exception:
-            pass
-
-        dialog_width = max(self._toplevel.winfo_reqwidth(), self._toplevel.winfo_width())
-        dialog_height = max(self._toplevel.winfo_reqheight(), self._toplevel.winfo_height())
-
-        parent_x = self._master.winfo_rootx()
-        parent_y = self._master.winfo_rooty()
-        parent_width = max(self._master.winfo_width(), self._master.winfo_reqwidth())
-        parent_height = max(self._master.winfo_height(), self._master.winfo_reqheight())
-
-        x = parent_x + max(0, (parent_width - dialog_width) // 2)
-        y = parent_y + max(0, (parent_height - dialog_height) // 2)
-
-        x, y = self._ensure_on_screen(x, y)
-
-        self._toplevel.geometry(f"+{x}+{y}")
 
     # --------------------------------------------------------------- Event Handlers
 

@@ -331,7 +331,7 @@ def demo_custom_styling():
 if __name__ == '__main__':
     root = ttk.Window(
         title="ScrolledText Widget Demo",
-        themename="darkly",
+        theme="darkly",
         size=(1000, 700)
     )
 

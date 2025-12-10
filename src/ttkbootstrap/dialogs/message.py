@@ -8,7 +8,7 @@ from typing import Any, Callable, List, Optional
 
 from ttkbootstrap.widgets.primitives import Frame, Label
 from ttkbootstrap_icons_bs import BootstrapIcon
-from ttkbootstrap.core.constants import *
+from ttkbootstrap.constants import *
 from ttkbootstrap.core.localization import MessageCatalog
 from .dialog import ButtonRole, Dialog, DialogButton
 

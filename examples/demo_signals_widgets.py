@@ -20,7 +20,7 @@ class SignalsDemo(ttk.Window):
     """Demo application showcasing signal integration with widgets."""
 
     def __init__(self):
-        super().__init__(themename="darkly")
+        super().__init__(theme="darkly")
         self.title("ttkbootstrap Signals Demo")
         self.geometry("800x600")
 

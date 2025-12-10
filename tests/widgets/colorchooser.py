@@ -1,7 +1,7 @@
 import ttkbootstrap as ttk
 from ttkbootstrap.dialogs import ColorChooserDialog
 
-app = ttk.Window(themename="dark")
+app = ttk.App(theme="dark")
 
 cd = ColorChooserDialog(app, initial_color='#adadad')
 cd.on_dialog_result(print)

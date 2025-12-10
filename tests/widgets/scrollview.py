@@ -287,7 +287,7 @@ def demo_nested_frames():
 if __name__ == '__main__':
     root = ttk.Window(
         title="ScrollView Widget Demo",
-        themename="darkly"
+        theme="darkly"
     )
 
     # Header

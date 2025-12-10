@@ -47,19 +47,11 @@ def create_combobox_test(bootstyle, test_name):
     return frame
 
 
-def change_style():
-    if style.theme_use() == 'light':
-        style.theme_use('dark')
-    else:
-        style.theme_use('light')
-
-
 if __name__ == '__main__':
     # create visual widget style tests
-    root = ttk.Window()
-    style = ttk.Style()
+    root = ttk.App()
 
-    ttk.Button(text="Change Theme", command=change_style).pack(padx=10, pady=10)
+    ttk.Button(text="Change Theme", command=ttk.toggle_theme).pack(padx=10, pady=10)
 
     test1 = create_combobox_test(None, 'Combobox')
     test1.pack(side=LEFT, fill=BOTH)

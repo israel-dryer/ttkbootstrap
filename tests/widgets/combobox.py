@@ -1,14 +1,14 @@
 import ttkbootstrap as ttk
 
-app = ttk.Window()
+app = ttk.App()
 
 colors = ['primary', 'secondary', 'success', 'info', 'warning', 'danger']
 
 def change_theme():
-    if app.style.theme_use() == 'dark':
-        app.style.theme_use('light')
+    if ttk.get_theme() == 'dark':
+        ttk.set_theme('light')
     else:
-        app.style.theme_use('dark')
+        ttk.set_theme('dark')
 
 ttk.Button(app, text="Change Theme", command=change_theme).pack(pady=10)
 

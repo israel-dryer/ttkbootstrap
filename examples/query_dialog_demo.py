@@ -191,7 +191,7 @@ def demo_positioned_dialog():
 
 
 # Create main application window
-root = ttk.Window(themename="cosmo")
+root = ttk.Window(theme="cosmo")
 root.title("Query Dialog Demo")
 root.geometry("700x700")
 

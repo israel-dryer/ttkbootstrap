@@ -255,7 +255,7 @@ class PageStackDemo:
 
 
 def main():
-    root = ttk.Window(themename="cosmo")
+    root = ttk.Window(theme="cosmo")
     app = PageStackDemo(root)
     root.mainloop()
 

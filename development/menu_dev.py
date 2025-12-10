@@ -1,6 +1,6 @@
 import ttkbootstrap as ttk
 
-app = ttk.Window(themename="flatly")
+app = ttk.Window(theme="flatly")
 
 
 menu = ttk.Menu(app)

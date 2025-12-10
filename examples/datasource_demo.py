@@ -36,7 +36,7 @@ def create_sample_data():
 
 class DataSourceDemo(ttk.Window):
     def __init__(self):
-        super().__init__(title="DataSource Demo", themename="cosmo")
+        super().__init__(title="DataSource Demo", theme="cosmo")
         self.geometry("1000x700")
 
         # Initialize datasource (using MemoryDataSource for demo)

@@ -6,7 +6,7 @@ from ttkbootstrap import ContextMenu
 
 
 def main():
-    app = ttk.Window("ContextMenu config demo", themename="flatly", size=(480, 320))
+    app = ttk.Window("ContextMenu config demo", theme="flatly", size=(480, 320))
 
     status = ttk.Label(app, text="Right-click inside the box to open the menu.", anchor=W)
     status.pack(fill=X, padx=10, pady=(10, 0))

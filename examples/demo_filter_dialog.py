@@ -6,7 +6,7 @@ import ttkbootstrap as ttk
 from ttkbootstrap.dialogs import FilterDialog
 
 
-app = ttk.Window(themename="dark", size=(500, 500))
+app = ttk.Window(theme="dark", size=(500, 500))
 
 # Test button to show the filter dialog with window chrome
 def show_filter():

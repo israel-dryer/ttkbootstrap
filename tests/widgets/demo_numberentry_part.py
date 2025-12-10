@@ -9,7 +9,7 @@ from ttkbootstrap.widgets.parts.numberentry_part import NumberEntryPart
 
 def create_demo():
     """Create the demo window with various NumberEntryPart examples."""
-    root = ttk.Window(themename="darkly", title="NumberEntryPart Demo")
+    root = ttk.Window(theme="darkly", title="NumberEntryPart Demo")
 
     # Title
     ttk.Label(

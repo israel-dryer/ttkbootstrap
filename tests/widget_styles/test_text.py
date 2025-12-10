@@ -13,7 +13,7 @@ def change_style(window):
 
 if __name__ == '__main__':
     # create visual widget style tests
-    window = ttk.Window(themename='darkly')
+    window = ttk.Window(theme='darkly')
 
     ttk.Button(text="Change Theme", command=lambda x=window: change_style(x)).pack(padx=10, pady=10)
     text = ttk.Text(window, font='helvetica 24 bold')
