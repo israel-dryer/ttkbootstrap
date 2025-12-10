@@ -13,7 +13,7 @@ Features demonstrated:
 """
 
 import ttkbootstrap as ttk
-from ttkbootstrap.signals import Signal
+from ttkbootstrap.core.signals import Signal
 
 
 class SignalsDemo(ttk.Window):

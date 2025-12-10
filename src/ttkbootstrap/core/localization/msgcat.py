@@ -327,11 +327,11 @@ class MessageCatalog:
         return MessageCatalog._strip_ampersands(out) if MessageCatalog._strip_amp else out
 
     @staticmethod
-    def locale(newlocale: Optional[str] = None) -> str:
+    def locale(new_locale: Optional[str] = None) -> str:
         """Get or set the current locale.
 
         Args:
-            newlocale: If provided, switch both gettext and msgcat locales.
+            new_locale: If provided, switch both gettext and msgcat locales.
 
         Returns:
             The active normalized locale code (or Tcl's current code when
@@ -339,14 +339,14 @@ class MessageCatalog:
         """
         from ttkbootstrap.runtime.app import get_default_root
         root = get_default_root()
-        if newlocale:
+        if new_locale:
             # switch gettext + msgcat
-            MessageCatalog._install_gettext(newlocale)
-            MessageCatalog._sync_msgcat_locale(newlocale)
+            MessageCatalog._install_gettext(new_locale)
+            MessageCatalog._sync_msgcat_locale(new_locale)
             # notify listeners (optional)
             try:
                 if MessageCatalog._emit_event:
-                    root.event_generate(MessageCatalog._event_name, when="tail")
+                    root.event_generate(MessageCatalog._event_name, data={"locale": new_locale}, when="tail")
             except Exception:
                 pass
             return MessageCatalog._locale

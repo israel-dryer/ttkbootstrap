@@ -1,5 +1,5 @@
 from ttkbootstrap.dialogs import MessageBox, QueryBox
-from ttkbootstrap.localization import MessageCatalog
+from ttkbootstrap.core.localization import MessageCatalog
 from ttkbootstrap.window import Window
 from ttkbootstrap.dialogs import FontDialog
 
