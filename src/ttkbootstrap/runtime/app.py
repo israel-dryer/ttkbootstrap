@@ -4,12 +4,17 @@ import tkinter
 from dataclasses import dataclass
 from typing import Any, Optional, Sequence, Tuple, TypedDict, Union
 
+from babel.core import UnknownLocaleError
+from babel.dates import get_date_format, get_time_format
+from babel.numbers import get_decimal_symbol, get_group_symbol
 from typing_extensions import Unpack
 
 from ttkbootstrap.constants import *
 from ttkbootstrap.core.publisher import Publisher
 from ttkbootstrap.runtime.base_window import BaseWindow
 from ttkbootstrap.runtime.utility import enable_high_dpi_awareness
+from ttkbootstrap.core.localization.intl_format import detect_locale
+from ttkbootstrap.core.localization.msgcat import MessageCatalog
 
 _current_app: App | None = None
 
@@ -181,6 +186,68 @@ class AppSettings:
     number_decimal: str | None = None
     number_thousands: str | None = None
 
+    def __post_init__(self):
+        """Populate localization defaults when not explicitly configured."""
+        _apply_localization_defaults(self)
+
+
+DEFAULT_LOCALE = "en_US"
+
+
+def _apply_localization_defaults(settings: AppSettings) -> None:
+    """Ensure locale-based fields always have meaningful defaults."""
+    locale_code = settings.locale or detect_locale(DEFAULT_LOCALE)
+    settings.locale = locale_code
+
+    if settings.language is None:
+        settings.language = _language_from_locale(locale_code)
+
+    if settings.date_format is None:
+        settings.date_format = _safe_date_format(locale_code)
+
+    if settings.time_format is None:
+        settings.time_format = _safe_time_format(locale_code)
+
+    if settings.number_decimal is None:
+        settings.number_decimal = _safe_decimal_symbol(locale_code)
+
+    if settings.number_thousands is None:
+        settings.number_thousands = _safe_group_symbol(locale_code)
+
+
+def _language_from_locale(locale_code: str) -> str:
+    """Return the base language (e.g., en_US -> en)."""
+    base = locale_code.split("_", 1)[0]
+    return base.lower() if base else locale_code
+
+
+def _safe_date_format(locale_code: str) -> str:
+    try:
+        return str(get_date_format("short", locale=locale_code))
+    except (UnknownLocaleError, ValueError):
+        return str(get_date_format("short", locale=DEFAULT_LOCALE))
+
+
+def _safe_time_format(locale_code: str) -> str:
+    try:
+        return str(get_time_format("short", locale=locale_code))
+    except (UnknownLocaleError, ValueError):
+        return str(get_time_format("short", locale=DEFAULT_LOCALE))
+
+
+def _safe_decimal_symbol(locale_code: str) -> str:
+    try:
+        return get_decimal_symbol(locale_code)
+    except (UnknownLocaleError, ValueError):
+        return get_decimal_symbol(DEFAULT_LOCALE)
+
+
+def _safe_group_symbol(locale_code: str) -> str:
+    try:
+        return get_group_symbol(locale_code)
+    except (UnknownLocaleError, ValueError):
+        return get_group_symbol(DEFAULT_LOCALE)
+
 
 class TkKwargs(TypedDict, total=False):
     """The following attributes are available per the Tkinter API (not commonly used).
@@ -266,6 +333,14 @@ class App(BaseWindow, tkinter.Tk):
         # Apply theme (use resolved settings.theme)
         from ttkbootstrap.style.style import set_theme
         set_theme(self.settings.theme)
+
+        # Initialize the localization bridge so MessageCatalog.translate()
+        # and <<LocaleChanged>> are available throughout the app.
+        MessageCatalog.init(
+            locales_dir=None,
+            domain="ttkbootstrap",
+            default_locale=self.settings.locale or DEFAULT_LOCALE,
+        )
 
         # Apply HDPI scaling after window creation
         if self._hdpi:
