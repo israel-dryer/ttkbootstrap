@@ -11,6 +11,7 @@ from ttkbootstrap.core.signals import Signal
 from ttkbootstrap.widgets.primitives.button import Button
 from ttkbootstrap.widgets.primitives.frame import Frame
 from ttkbootstrap.widgets.primitives.label import Label
+from ttkbootstrap.widgets.primitives.checkbutton import CheckButton
 from ttkbootstrap.widgets.mixins import configure_delegate
 from ttkbootstrap.widgets.mixins.entry_mixin import EntryMixin
 from ttkbootstrap.widgets.parts.numberentry_part import NumberEntryPart
@@ -267,14 +268,14 @@ class Field(EntryMixin, Frame):
         # configuration
         self._message_text = message
         self._show_messages = show_message
-        self._addons: dict[str, Button | Label] = {}
+        self._addons: dict[str, Button | Label | CheckButton] = {}
         self._required = required
         self._kind = kind
         self._label_text = label
         self._value = value
 
         self._entry: TextEntryPart | NumberEntryPart
-        self._addons: dict[str, Union[Button, Label]] = {}
+        self._addons: dict[str, Union[Button, Label, CheckButton]] = {}
 
         # layout
         label_text = self._label_text or ''
@@ -432,14 +433,14 @@ class Field(EntryMixin, Frame):
 
     def insert_addon(
             self,
-            widget: Type[Union[Button, Label]],
+            widget: Type[Union[Button, Label, CheckButton]],
             position: Literal['before', 'after'],
             name=None, pack_options: dict[str, Any] = None,
             **kwargs
     ):
         """Insert a widget addon before or after the entry input.
 
-        Addons are Button or Label widgets positioned inside the field container,
+        Addons are Button, Label, or Checkbutton widgets positioned inside the field container,
         either before (left of) or after (right of) the entry input. Common use
         cases include search buttons, icons, clear buttons, or status indicators.
 
@@ -449,7 +450,7 @@ class Field(EntryMixin, Frame):
         - Is stored in the addons dictionary for later reference
 
         Args:
-            widget: Widget class to instantiate. Must be Button or Label.
+            widget: Widget class to instantiate. Must be Button, Label, or Checkbutton.
             position: Position relative to the entry input:
                 - 'before': Insert to the left of the entry (prefix)
                 - 'after': Insert to the right of the entry (suffix)
@@ -469,7 +470,7 @@ class Field(EntryMixin, Frame):
         bootstyle = "suffix-field" if position == "after" else "prefix-field"
         kwargs.update(bootstyle=bootstyle, takefocus=False)
 
-        if widget == Button:
+        if widget in (Button, CheckButton):
             if 'style_options' in kwargs:
                 kwargs['style_options'].update(use_active_states=True)
             else:
@@ -507,4 +508,3 @@ class Field(EntryMixin, Frame):
         """Clear the error message and restore the original message text."""
         self._message_lbl['text'] = self._message_text
         self._message_lbl['bootstyle'] = "secondary"
-
