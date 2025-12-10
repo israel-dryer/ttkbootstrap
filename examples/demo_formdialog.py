@@ -32,7 +32,7 @@ def demo_simple_form(parent):
         data=initial_data,
         col_count=2,
     )
-    dialog.show()
+    dialog.show(anchor_to="screen")
 
     if dialog.result:
         print("Simple form result:", dialog.result)
@@ -105,7 +105,7 @@ def demo_explicit_layout(parent):
         col_count=1,
         height=400,
     )
-    dialog.show()
+    dialog.show(anchor_to="screen")
 
     if dialog.result:
         print("Explicit layout result:", dialog.result)
@@ -178,7 +178,7 @@ def demo_with_validation(parent):
             DialogButton(text="Save", role="primary", command=validate_and_save, default=True),
         ],
     )
-    dialog.show()
+    dialog.show(anchor_to="screen")
 
     if dialog.result:
         print("Product saved:", dialog.result)
@@ -285,7 +285,7 @@ def demo_registration_form(parent):
             DialogButton(text="Register", role="primary", command=validate_registration, default=True),
         ],
     )
-    dialog.show()
+    dialog.show(anchor_to="screen")
 
     if dialog.result:
         print("Registration successful:", {k: v for k, v in dialog.result.items() if k not in ["password", "confirm_password"]})
