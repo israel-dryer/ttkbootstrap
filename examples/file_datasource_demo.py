@@ -511,7 +511,7 @@ class FileDataSourceDemo:
 
 
 if __name__ == '__main__':
-    app = ttk.Window(themename="superhero")
+    app = ttk.Window(theme="superhero")
     demo = FileDataSourceDemo(app)
 
     # Cleanup temp files on close

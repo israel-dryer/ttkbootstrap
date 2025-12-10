@@ -9,11 +9,13 @@ from __future__ import annotations
 import tkinter
 from datetime import date, datetime
 from types import SimpleNamespace
-from typing import Any, Callable, Iterable, Optional
+from typing import Any, Callable, Iterable, Literal, Optional, Tuple, Union
+from tkinter import Widget
 
 from ttkbootstrap.widgets.primitives import Frame
-from ttkbootstrap.core.constants import BOTH, PRIMARY, YES
+from ttkbootstrap.constants import BOTH, PRIMARY, YES
 from ttkbootstrap.dialogs.dialog import Dialog
+from ttkbootstrap.runtime.window_utilities import AnchorPoint
 from ttkbootstrap.widgets.composites.datepicker import DatePicker
 
 ttk = SimpleNamespace(Frame=Frame)
@@ -38,8 +40,28 @@ class _ChromeDialog(Dialog):
             except Exception:
                 pass
 
-    def show(self, position: Optional[tuple[int, int]] = None, modal: Optional[bool] = None):
-        """Override show to position before deiconify, avoiding placement flash."""
+    def show(
+            self,
+            position: Optional[Tuple[int, int]] = None,
+            modal: Optional[bool] = None,
+            *,
+            anchor_to: Optional[Union[Widget, Literal["screen", "cursor", "parent"]]] = None,
+            anchor_point: AnchorPoint = 'center',
+            window_point: AnchorPoint = 'center',
+            offset: Tuple[int, int] = (0, 0),
+            auto_flip: Union[bool, Literal['vertical', 'horizontal']] = False
+    ):
+        """Override show to position before deiconify, avoiding placement flash.
+
+        Args:
+            position: Optional (x, y) coordinates to position the dialog.
+            modal: Override the mode's default modality.
+            anchor_to: Positioning target (Widget, "screen", "cursor", "parent", or None).
+            anchor_point: Point on the anchor target (n, s, e, w, ne, nw, se, sw, center).
+            window_point: Point on the dialog window (n, s, e, w, ne, nw, se, sw, center).
+            offset: Additional (x, y) offset in pixels from the anchor position.
+            auto_flip: Smart positioning to keep window on screen.
+        """
         if modal is None:
             modal = (self._mode == "modal")
 
@@ -51,7 +73,14 @@ class _ChromeDialog(Dialog):
         self._build_content()
         self._build_footer()
 
-        self._position_dialog(position)
+        self._position_dialog(
+            position=position,
+            anchor_to=anchor_to,
+            anchor_point=anchor_point,
+            window_point=window_point,
+            offset=offset,
+            auto_flip=auto_flip
+        )
 
         if self._hide_window_chrome and self._toplevel:
             self._toplevel.deiconify()
@@ -234,14 +263,45 @@ class DateDialog:
         if self._dialog.toplevel:
             self._dialog.toplevel.after_idle(self._dialog.toplevel.destroy)
 
-    def show(self, position: Optional[tuple[int, int]] = None) -> None:
+    def show(
+            self,
+            position: Optional[Tuple[int, int]] = None,
+            modal: Optional[bool] = None,
+            *,
+            anchor_to: Optional[Union[Widget, Literal["screen", "cursor", "parent"]]] = None,
+            anchor_point: AnchorPoint = 'center',
+            window_point: AnchorPoint = 'center',
+            offset: Tuple[int, int] = (0, 0),
+            auto_flip: Union[bool, Literal['vertical', 'horizontal']] = False
+    ) -> None:
         """Display the dialog and block until closed.
 
         Args:
-            position: Optional ``(x, y)`` coordinates. If omitted, positions at
-                the parent's bottom-right when available, otherwise centers.
+            position: Optional (x, y) coordinates to position the dialog.
+                If provided, takes precedence over anchor-based positioning.
+                If omitted and anchor_to is not provided, positions at the parent's
+                bottom-right when available, otherwise centers.
+            modal: Override the mode's default modality.
+                If None, uses True for modal mode dialogs.
+            anchor_to: Positioning target. Can be:
+                - Widget: Anchor to a specific widget
+                - "screen": Anchor to screen edges/corners
+                - "cursor": Anchor to mouse cursor location
+                - "parent": Anchor to parent window (same as widget)
+                - None: Uses default positioning behavior
+            anchor_point: Point on the anchor target (n, s, e, w, ne, nw, se, sw, center).
+                Default 'center'.
+            window_point: Point on the dialog window (n, s, e, w, ne, nw, se, sw, center).
+                Default 'center'.
+            offset: Additional (x, y) offset in pixels from the anchor position.
+            auto_flip: Smart positioning to keep window on screen.
+                - False: No flipping (default)
+                - True: Flip both vertically and horizontally as needed
+                - 'vertical': Only flip up/down
+                - 'horizontal': Only flip left/right
         """
-        if position is None and self._master:
+        # Default positioning: bottom-right of parent if no positioning options provided
+        if position is None and anchor_to is None and self._master:
             try:
                 x = self._master.winfo_rootx() + self._master.winfo_width()
                 y = self._master.winfo_rooty() + self._master.winfo_height()
@@ -249,7 +309,19 @@ class DateDialog:
             except Exception:
                 pass
 
-        self._dialog.show(position=position, modal=True)
+        # Default modal to True if not specified
+        if modal is None:
+            modal = True
+
+        self._dialog.show(
+            position=position,
+            modal=modal,
+            anchor_to=anchor_to,
+            anchor_point=anchor_point,
+            window_point=window_point,
+            offset=offset,
+            auto_flip=auto_flip
+        )
 
     @property
     def result(self) -> Optional[date]:

@@ -21,7 +21,7 @@ from ttkbootstrap.constants import *
 def create_demo_window():
     """Create a demo window showing various font modifier examples."""
 
-    root = ttk.Window(title="Font Modifier Syntax Demo", themename="cosmo")
+    root = ttk.Window(title="Font Modifier Syntax Demo", theme="cosmo")
     root.geometry("800x900")
 
     # Main container

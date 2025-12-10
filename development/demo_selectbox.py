@@ -2,7 +2,7 @@ import ttkbootstrap as ttk
 from ttkbootstrap import SelectBox
 
 
-app = ttk.Window(themename="darkly")
+app = ttk.Window(theme="darkly")
 
 sb = SelectBox(app, "Python", label="Choose your language", items=['Javascript', 'Python', 'C#', 'Ruby', 'Rust'])
 sb.pack(padx=10, pady=10)

@@ -4,7 +4,7 @@ from typing import Any
 
 from typing_extensions import TypedDict, Unpack
 
-from ttkbootstrap.api.widgets import Frame
+from ttkbootstrap.widgets.primitives import Frame
 from ttkbootstrap.core import NavigationError
 
 

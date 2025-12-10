@@ -1,0 +1,53 @@
+# Auto detect text files and normalize line endings to CRLF on checkout
+* text=auto eol=crlf
+
+# Python files
+*.py text eol=crlf
+*.pyi text eol=crlf
+
+# Config files
+*.ini text eol=crlf
+*.cfg text eol=crlf
+*.conf text eol=crlf
+*.toml text eol=crlf
+*.yaml text eol=crlf
+*.yml text eol=crlf
+
+# Documentation
+*.md text eol=crlf
+*.rst text eol=crlf
+*.txt text eol=crlf
+
+# Shell scripts (if any)
+*.sh text eol=lf
+*.bash text eol=lf
+
+# Windows scripts
+*.bat text eol=crlf
+*.cmd text eol=crlf
+*.ps1 text eol=crlf
+
+# JSON and data files
+*.json text eol=crlf
+
+# Git files
+.gitignore text eol=crlf
+.gitattributes text eol=crlf
+
+# Binary files (don't try to normalize)
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.svg binary
+*.ttf binary
+*.woff binary
+*.woff2 binary
+*.eot binary
+*.pyc binary
+*.pyd binary
+*.so binary
+*.dll binary
+*.dylib binary
+*.exe binary

@@ -8,7 +8,7 @@ from ttkbootstrap import DatePicker
 
 
 def main():
-    app = ttk.Window(title="DatePicker Demo", themename="dark")
+    app = ttk.Window(title="DatePicker Demo", theme="dark")
 
     picker = DatePicker(app, start_date=date.today(), bootstyle="success", selection_mode="range")
     picker.pack(fill=BOTH, expand=True)

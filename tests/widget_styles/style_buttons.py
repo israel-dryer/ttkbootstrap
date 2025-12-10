@@ -1,7 +1,6 @@
 from random import choice
 
 import ttkbootstrap as ttk
-from ttkbootstrap.style.style import get_style
 
 DARK = 'dark'
 LIGHT = 'light'
@@ -48,22 +47,19 @@ def button_style_frame(bootstyle, widget_name):
     return frame
 
 
-def change_style():
-    theme = choice(['light', 'dark'])
-    style.theme_use(theme)
-    print(theme)
-
-
 if __name__ == '__main__':
     # create visual widget style tests
-    root = ttk.Window(themename="dark")
-    style = get_style()
+    root = ttk.App(theme="dark")
 
     button_style_frame('default', 'Solid Button').pack(side='left')
     button_style_frame('outline', 'Outline Button').pack(side='left')
     button_style_frame('ghost', 'Ghost Button').pack(side='left')
     button_style_frame('text', 'Text Button').pack(side='left')
     button_style_frame('link', 'Link Button').pack(side='left')
-    ttk.Button(root, cursor="hand2", icon="sun", command=lambda: style.theme_use('light'), style_options={"icon_only": True}).pack(padx=10, pady=10)
-    ttk.Button(root, cursor="hand2", icon="moon", command=lambda: style.theme_use('dark'), style_options={"icon_only": True}).pack(padx=10, pady=10)
+    ttk.Button(
+        root, cursor="hand2", icon="sun", command=lambda: ttk.set_theme('light'),
+        style_options={"icon_only": True}).pack(padx=10, pady=10)
+    ttk.Button(
+        root, cursor="hand2", icon="moon", command=lambda: ttk.set_theme('dark'),
+        style_options={"icon_only": True}).pack(padx=10, pady=10)
     root.mainloop()

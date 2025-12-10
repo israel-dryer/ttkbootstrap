@@ -53,6 +53,7 @@ class RadioButton(SignalMixin, TextSignalMixin, IconMixin, TTKWrapperBase, ttk.R
             command: Callable invoked when the value is selected.
             image: Image to display.
             icon: Theme-aware icon spec handled by the style system.
+            icon_only: Removes the additional padding added for label.
             compound: Placement of the image relative to text.
             variable: Linked tk variable that receives the selected value.
             signal: Reactive Signal that receives the selected value (auto-synced with variable).
@@ -67,6 +68,7 @@ class RadioButton(SignalMixin, TextSignalMixin, IconMixin, TTKWrapperBase, ttk.R
             surface_color: Optional surface token; otherwise inherited.
             style_options: Optional dict forwarded to the style builder.
         """
+        kwargs.update(style_options=self._capture_style_options(['icon_only', 'icon'], kwargs))
         super().__init__(master, **kwargs)
 
 

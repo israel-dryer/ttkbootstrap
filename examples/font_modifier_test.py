@@ -6,7 +6,7 @@ import ttkbootstrap as ttk
 from ttkbootstrap.constants import *
 
 # Create window
-root = ttk.Window(title="Font Modifier Test", themename="cosmo")
+root = ttk.Window(title="Font Modifier Test", theme="cosmo")
 root.geometry("600x400")
 
 container = ttk.Frame(root, padding=20)

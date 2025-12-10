@@ -1,7 +1,7 @@
 if __name__ == '__main__':
     import ttkbootstrap as ttk
 
-    root = ttk.Window(themename="dark", size=(200, 200))
+    root = ttk.Window(theme="dark", size=(200, 200))
 
     om = ttk.OptionMenu(
         root, value="Python", dropdown_button_icon="chevron-down",

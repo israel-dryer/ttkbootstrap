@@ -22,5 +22,5 @@ def build_tooltip_frame(b: BootstyleBuilderTTk, ttk_style: str, color: str = Non
         border_color=border_color,
         darkcolor=background,
         lightcolor=background,
-        relief='raised'
+        relief='flat',
         )

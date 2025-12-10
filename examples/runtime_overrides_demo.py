@@ -18,7 +18,7 @@ from ttkbootstrap.localization.msgcat import MessageCatalog
 
 
 def main():
-    app = tb.Window(themename="flatly")
+    app = tb.Window(theme="flatly")
     _ = MessageCatalog.translate
 
     # UI

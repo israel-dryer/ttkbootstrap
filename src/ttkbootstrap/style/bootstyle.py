@@ -8,7 +8,7 @@ from __future__ import annotations
 
 from typing import Optional
 
-from ttkbootstrap.core.appconfig import AppConfig
+from ttkbootstrap.runtime.app import get_app_settings
 from ttkbootstrap.core.exceptions import BootstyleParsingError
 from ttkbootstrap.style.token_maps import (COLOR_TOKENS, CONTAINER_CLASSES, ORIENT_CLASSES, WIDGET_CLASS_MAP)
 
@@ -128,14 +128,9 @@ def parse_bootstyle_legacy(bootstyle: str, widget_class: str) -> dict:
 def parse_bootstyle(bootstyle: str, widget_class: str) -> dict:
     """Parse bootstyle string using configured parsing method.
 
-    Main entry point for bootstyle parsing. Checks AppConfig.legacy_bootstyle
-    flag to determine parsing method (V1 legacy vs V2 new).
+    Main entry point for bootstyle parsing.
     """
-    use_legacy = AppConfig.get('legacy_bootstyle', False)
-    if use_legacy:
-        return parse_bootstyle_legacy(bootstyle, widget_class)
-    else:
-        return parse_bootstyle_v2(bootstyle, widget_class)
+    return parse_bootstyle_v2(bootstyle, widget_class)
 
 
 def extract_orient_from_style(ttk_style: str):
@@ -275,7 +270,7 @@ class Bootstyle:
             # ===== Surface color inheritance =====
 
             if inherit_surface_color is None:
-                inherit_surface_color = AppConfig.get('inherit_surface_color', True)
+                inherit_surface_color = get_app_settings().inherit_surface_color
 
             if hasattr(self, 'master') and self.master is not None:
                 parent_surface_token = getattr(self.master, '_surface_color', 'background')
@@ -368,7 +363,7 @@ class Bootstyle:
             auto_style = kwargs.pop("autostyle", True)
             inherit_surface_color = kwargs.pop('inherit_surface_color', None)
             if inherit_surface_color is None:
-                inherit_surface_color = AppConfig.get('inherit_surface_color', True)
+                inherit_surface_color = get_app_settings().inherit_surface_color
             surface_token = kwargs.pop('surface_color', None)
 
             func(self, *args, **kwargs)  # the actual constructor
