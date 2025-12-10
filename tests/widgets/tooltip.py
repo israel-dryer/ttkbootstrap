@@ -1,7 +1,7 @@
 import ttkbootstrap as ttk
 from ttkbootstrap.constants import *
 
-app = ttk.Window(size=(400, 100))
+app = ttk.App(size=(400, 100))
 
 b1 = ttk.Button(app, text="default tooltip")
 b1.pack(side=LEFT, padx=10, pady=10, fill=X, expand=YES)
@@ -14,6 +14,8 @@ b2 = ttk.Button(app, text="styled tooltip")
 b2.pack(side=LEFT, padx=10, pady=10, fill=X, expand=YES)
 ttk.ToolTip(
     b2,
+    anchor_point="ne",
+    window_point="nw",
     text="This is a styled tooltip with less padding. You can change this style by using the `bootstyle` parameter with label style keywords.",
     bootstyle="danger",
 )
