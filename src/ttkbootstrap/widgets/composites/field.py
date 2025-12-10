@@ -41,6 +41,7 @@ class FieldOptions(TypedDict, total=False):
         show_message: If True, displays message text below the field.
         padding: Padding around the entry widget.
         show: Character to display instead of typed characters (for password fields).
+        state: The widget state. One of 'normal', 'disabled', or 'readonly'.
         take_focus: If True, widget can receive focus via Tab key.
         textvariable: Tkinter Variable to link with the entry text.
         textsignal: Signal object for reactive text updates.
@@ -60,6 +61,7 @@ class FieldOptions(TypedDict, total=False):
     show_message: bool
     padding: str
     show: str
+    state: Literal['normal', 'disabled', 'readonly']
     take_focus: bool
     textvariable: Variable
     textsignal: Signal
