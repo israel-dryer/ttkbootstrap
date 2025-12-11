@@ -63,7 +63,7 @@ class FontDialog:
 
     def __init__(
             self,
-            title: str = "Font Selector",
+            title: str = "font.selector",  # Use semantic key as default
             master: Optional[tkinter.Misc] = None,
             default_font: str = "TkDefaultFont"
     ):
@@ -71,12 +71,13 @@ class FontDialog:
 
         Args:
             title: The dialog window title. Will be localized automatically.
+                Defaults to semantic key 'font.selector'.
             master: Parent widget. The dialog will be modal and centered on this widget.
             default_font: Name of the initial font to display. Can be any valid tkinter
                 font name (e.g., 'TkDefaultFont', 'TkFixedFont', 'TkTextFont',
                 'TkHeadingFont', etc.) or a custom font name.
         """
-        title = MessageCatalog.translate(title)
+        # Title is now automatically localized by BaseWindow._setup_window
         self._style = ttk.use_style()
         self._default = font.nametofont(default_font)
         self._actual = self._default.actual()
@@ -107,12 +108,12 @@ class FontDialog:
             content_builder=self._create_content,
             buttons=[
                 DialogButton(
-                    text=MessageCatalog.translate("Cancel"),
+                    text="button.cancel",  # Use semantic key - built-in localization
                     role="cancel",
                     result=None,
                 ),
                 DialogButton(
-                    text=MessageCatalog.translate("OK"),
+                    text="button.ok",  # Use semantic key - built-in localization
                     role="primary",
                     default=True,
                     command=lambda dlg: self._on_submit(),
@@ -147,7 +148,7 @@ class FontDialog:
 
         header = ttk.Label(
             container,
-            text=MessageCatalog.translate("Family"),
+            text="font.family",  # Use semantic key - built-in localization
             font="TkHeadingFont",
         )
         header.pack(fill=X, pady=(0, 2), anchor=N)
@@ -187,7 +188,7 @@ class FontDialog:
 
         header = ttk.Label(
             container,
-            text=MessageCatalog.translate("Size"),
+            text="font.size",  # Use semantic key - built-in localization
             font="TkHeadingFont",
         )
         header.pack(fill=X, pady=(0, 2), anchor=N)
@@ -219,7 +220,7 @@ class FontDialog:
         container = ttk.Frame(master, padding=padding)
         container.pack(fill=X, padx=2, pady=2, anchor=N)
 
-        weight_lframe = ttk.Labelframe(container, text=MessageCatalog.translate("Weight"), padding=5)
+        weight_lframe = ttk.Labelframe(container, text="font.weight", padding=5)  # Use semantic key
         weight_lframe.pack(side=LEFT, fill=X, expand=YES)
         opt_normal = ttk.Radiobutton(
             master=weight_lframe,
@@ -237,7 +238,7 @@ class FontDialog:
         )
         opt_bold.pack(side=LEFT, padx=5, pady=5)
 
-        slant_lframe = ttk.Labelframe(container, text=MessageCatalog.translate("Slant"), padding=5)
+        slant_lframe = ttk.Labelframe(container, text="font.slant", padding=5)  # Use semantic key
         slant_lframe.pack(side=LEFT, fill=X, padx=10, expand=YES)
         opt_roman = ttk.Radiobutton(
             master=slant_lframe,
@@ -255,7 +256,7 @@ class FontDialog:
         )
         opt_italic.pack(side=LEFT, padx=5, pady=5)
 
-        effects_lframe = ttk.Labelframe(container, text=MessageCatalog.translate("Effects"), padding=5)
+        effects_lframe = ttk.Labelframe(container, text="font.effects", padding=5)  # Use semantic key
         effects_lframe.pack(side=LEFT, padx=(2, 0), fill=X, expand=YES)
         opt_underline = ttk.Checkbutton(
             master=effects_lframe,
@@ -278,7 +279,7 @@ class FontDialog:
 
         header = ttk.Label(
             container,
-            text=MessageCatalog.translate("Preview"),
+            text="font.preview",  # Use semantic key - built-in localization
             font="TkHeadingFont",
         )
         header.pack(fill=X, pady=2, anchor=N)

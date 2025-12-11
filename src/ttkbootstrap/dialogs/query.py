@@ -86,12 +86,12 @@ class QueryDialog:
             content_builder=self._create_content,
             buttons=[
                 DialogButton(
-                    text=MessageCatalog.translate("Cancel"),
+                    text="button.cancel",  # Use semantic key - built-in localization
                     role="cancel",
                     result=None,
                 ),
                 DialogButton(
-                    text=MessageCatalog.translate("Submit"),
+                    text="button.submit",  # Use semantic key - built-in localization
                     role="primary",
                     default=True,
                     command=lambda dlg: self._on_submit(),
@@ -206,40 +206,40 @@ class QueryDialog:
         try:
             converted_result = self._datatype(result)
         except ValueError:
-            msg = MessageCatalog.translate("Should be of data type")
+            msg = MessageCatalog.translate("validation.should_be_type")
             MessageBox.ok(
                 message=f"{msg} `{self._datatype}`",
-                title=MessageCatalog.translate("Invalid data type"),
+                title=MessageCatalog.translate("validation.invalid_type"),
                 master=self._dialog.toplevel,
             )
             return False
 
         # Check max value range
         if self._maxvalue is not None and converted_result > self._maxvalue:
-            msg = MessageCatalog.translate("Number cannot be greater than")
+            msg = MessageCatalog.translate("validation.greater_than")
             MessageBox.ok(
                 message=f"{msg} {self._maxvalue}",
-                title=MessageCatalog.translate("Out of range"),
+                title=MessageCatalog.translate("validation.out_of_range"),
                 master=self._dialog.toplevel,
             )
             return False
 
         # Check min value range
         if self._minvalue is not None and converted_result < self._minvalue:
-            msg = MessageCatalog.translate("Number cannot be less than")
+            msg = MessageCatalog.translate("validation.less_than")
             MessageBox.ok(
                 message=f"{msg} {self._minvalue}",
-                title=MessageCatalog.translate("Out of range"),
+                title=MessageCatalog.translate("validation.out_of_range"),
                 master=self._dialog.toplevel,
             )
             return False
 
         # Check if item is in list
         if self._items is not None and len(self._items) > 0 and result not in self._items:
-            msg = MessageCatalog.translate("Select an item from the list")
+            msg = MessageCatalog.translate("validation.select_item")
             MessageBox.ok(
                 message=msg,
-                title=MessageCatalog.translate("Out of range"),
+                title=MessageCatalog.translate("validation.out_of_range"),
                 master=self._dialog.toplevel,
             )
             return False

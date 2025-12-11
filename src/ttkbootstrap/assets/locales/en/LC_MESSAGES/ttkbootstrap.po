@@ -143,6 +143,28 @@ msgstr "Blue"
 msgid "color.dropper"
 msgstr "color dropper"
 
+# Color value labels (with colon suffix for label display)
+msgid "color.hue:"
+msgstr "Hue:"
+
+msgid "color.sat:"
+msgstr "Sat:"
+
+msgid "color.lum:"
+msgstr "Lum:"
+
+msgid "color.hex:"
+msgstr "Hex:"
+
+msgid "color.red:"
+msgstr "Red:"
+
+msgid "color.green:"
+msgstr "Green:"
+
+msgid "color.blue:"
+msgstr "Blue:"
+
 # ============================================================================
 # Validation Messages
 # ============================================================================
@@ -161,6 +183,9 @@ msgstr "Number cannot be less than"
 
 msgid "validation.out_of_range"
 msgstr "Out of range"
+
+msgid "validation.select_item"
+msgstr "Select an item from the list"
 
 # ============================================================================
 # Table View
@@ -498,6 +523,28 @@ msgstr "Blue"
 msgid "color dropper"
 msgstr "color dropper"
 
+# Color labels with colons (legacy - for backwards compatibility)
+msgid "Hue:"
+msgstr "Hue:"
+
+msgid "Sat:"
+msgstr "Sat:"
+
+msgid "Lum:"
+msgstr "Lum:"
+
+msgid "Hex:"
+msgstr "Hex:"
+
+msgid "Red:"
+msgstr "Red:"
+
+msgid "Green:"
+msgstr "Green:"
+
+msgid "Blue:"
+msgstr "Blue:"
+
 # Validation (legacy)
 msgid "Should be of data type"
 msgstr "Should be of data type"
@@ -513,6 +560,9 @@ msgstr "Number cannot be less than"
 
 msgid "Out of range"
 msgstr "Out of range"
+
+msgid "Select an item from the list"
+msgstr "Select an item from the list"
 
 # Table view (legacy)
 msgid "Search"
