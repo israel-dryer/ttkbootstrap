@@ -251,6 +251,24 @@ msgstr "Move to first"
 msgid "table.move_last"
 msgstr "Move to last"
 
+msgid "table.add_record"
+msgstr "Add Record"
+
+msgid "table.edit"
+msgstr "Edit"
+
+msgid "table.delete_row"
+msgstr "Delete"
+
+msgid "table.group_by_column"
+msgstr "Group by This Column"
+
+msgid "table.ungroup_all"
+msgstr "Ungroup All"
+
+msgid "table.clear_sort"
+msgstr "Clear Sort"
+
 msgid "table.align_left"
 msgstr "Align left"
 
@@ -301,6 +319,36 @@ msgstr "Export current selection"
 
 msgid "table.export_filter"
 msgstr "Export records in filter"
+
+msgid "table.sort_status"
+msgstr "Sort: %s"
+
+msgid "table.filter_status"
+msgstr "Filter: %s"
+
+msgid "table.group_status"
+msgstr "Group: %s"
+
+msgid "table.filter_column"
+msgstr "Filter: %s"
+
+msgid "table.empty"
+msgstr "(empty)"
+
+msgid "table.search_mode_equals"
+msgstr "Equals"
+
+msgid "table.search_mode_contains"
+msgstr "Contains"
+
+msgid "table.search_mode_starts_with"
+msgstr "Starts with"
+
+msgid "table.search_mode_ends_with"
+msgstr "Ends with"
+
+msgid "table.search_mode_sql"
+msgstr "SQL"
 
 msgid "table.move_up"
 msgstr "Move up"
