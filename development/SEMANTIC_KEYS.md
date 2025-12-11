@@ -117,24 +117,52 @@ _("validation.out_of_range")     # Out of range
 
 ### Table View
 ```python
-_("table.search")           # Search
-_("table.page")             # Page
-_("table.of")               # of
-_("table.sort")             # Sort
-_("table.filter")           # Filter
-_("table.export")           # Export
-_("table.columns")          # Columns
-_("table.reset")            # Reset table
-_("table.sort_asc")         # Sort Ascending
-_("table.sort_desc")        # Sort Descending
-_("table.clear_filters")    # Clear filters
-_("table.delete_selected")  # Delete selected rows
-_("table.move_up")          # Move up
-_("table.move_down")        # Move down
-_("table.align_left")       # Align left
-_("table.align_center")     # Align center
-_("table.align_right")      # Align right
-# ... and many more table.* keys
+_("table.search")             # Search
+_("table.page")               # Page
+_("table.of")                 # of
+_("table.sort")               # Sort
+_("table.filter")             # Filter
+_("table.export")             # Export
+_("table.columns")            # Columns
+_("table.add_record")         # Add Record
+_("table.export_all")         # Export all
+_("table.export_selection")   # Export selection
+_("table.export_page")        # Export page
+_("table.reset")              # Reset table
+_("table.sort_asc")           # Sort Ascending
+_("table.sort_desc")          # Sort Descending
+_("table.clear_filters")      # Clear filters
+_("table.delete_selected")    # Delete selected rows
+_("table.hide_select")         # Hide select rows
+_("table.move_up")            # Move up
+_("table.move_down")          # Move down
+_("table.move_top")           # Move to top
+_("table.move_bottom")        # Move to bottom
+_("table.align_left")         # Align left
+_("table.align_center")       # Align center
+_("table.align_right")        # Align right
+_("table.move_left")          # Move left
+_("table.move_right")         # Move right
+_("table.move_first")         # Move first
+_("table.move_last")          # Move last
+_("table.hide_column")        # Hide column
+_("table.show_all")           # Show all columns
+_("table.group_by_column")    # Group by column
+_("table.ungroup_all")        # Ungroup all columns
+_("table.edit")               # Edit row
+_("table.delete_row")         # Delete row
+_("table.clear_sort")         # Clear sort
+_("table.filter_by_value")    # Filter by value
+_("table.sort_status")        # Sort: %s
+_("table.filter_status")      # Filter: %s
+_("table.group_status")       # Group: %s
+_("table.filter_column")      # Filter: %s
+_("table.empty")              # (empty)
+_("table.search_mode_equals")      # Equals
+_("table.search_mode_contains")    # Contains
+_("table.search_mode_starts_with") # Starts with
+_("table.search_mode_ends_with")   # Ends with
+_("table.search_mode_sql")         # SQL
 ```
 
 ### Days of Week
