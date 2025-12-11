@@ -230,7 +230,7 @@ class LocalizationMixin(Misc):
                 pass
 
         # Check for variable (for 'value' or other fields)
-        if hasattr(self, '_variable') and self._variable:
+        if hasattr(self, '_variable') and self._variable and field_name != 'text':
             self._variable.set(value)
             return
 
