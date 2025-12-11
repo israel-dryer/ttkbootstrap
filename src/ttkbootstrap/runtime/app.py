@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import tkinter
 from dataclasses import dataclass
-from typing import Literal, Optional, Sequence, TypedDict
+from typing import Literal, Optional, Sequence, TypedDict, Union
 
 from babel.core import UnknownLocaleError
 from babel.dates import get_date_format, get_time_format
@@ -164,7 +164,7 @@ def on_select_all(event: tkinter.Event) -> None:
         widget.icursor(END)
 
 
-LocalizeMode = Literal['auto', 'on', 'off']
+LocalizeMode = Union[bool, Literal['auto']]
 
 
 @dataclass
@@ -337,7 +337,7 @@ class App(BaseWindow, tkinter.Tk):
                 application-wide settings. If not provided, default settings
                 are used.
             localize: The localization mode for the application. Can be
-                'auto', 'on', or 'off'. This overrides the `localize_mode`
+                'auto', `True`, or `False`. This overrides the `localize_mode`
                 in `settings`.
             size: A tuple specifying the window's initial width and height.
             position: A tuple specifying the window's initial x and y
