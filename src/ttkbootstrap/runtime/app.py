@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import tkinter
 from dataclasses import dataclass
-from typing import Optional, Sequence, TypedDict
+from typing import Literal, Optional, Sequence, TypedDict
 
 from babel.core import UnknownLocaleError
 from babel.dates import get_date_format, get_time_format
@@ -164,6 +164,9 @@ def on_select_all(event: tkinter.Event) -> None:
         widget.icursor(END)
 
 
+LocalizeMode = Literal['auto', 'on', 'off']
+
+
 @dataclass
 class AppSettings:
     # information
@@ -185,6 +188,9 @@ class AppSettings:
     time_format: str | None = None  # override
     number_decimal: str | None = None
     number_thousands: str | None = None
+
+    # localization behavior
+    localize_mode: LocalizeMode = "auto"
 
     def __post_init__(self):
         """Populate localization defaults when not explicitly configured."""
@@ -290,6 +296,12 @@ class TkKwargs(TypedDict, total=False):
 
 
 class App(BaseWindow, tkinter.Tk):
+    """The primary application window and entry point.
+
+    This class provides a pre-configured tkinter.Tk instance with ttkbootstrap
+    styling, high-DPI awareness, and localization support. It serves as the
+    root window for the application.
+    """
 
     def __init__(
             self,
@@ -298,6 +310,7 @@ class App(BaseWindow, tkinter.Tk):
             icon: tkinter.PhotoImage | None = None,
 
             settings: AppSettings | AppSettingsKwargs | None = None,
+            localize: LocalizeMode | None = None,
 
             # window settings
             size: tuple[int, int] | None = None,
@@ -312,7 +325,38 @@ class App(BaseWindow, tkinter.Tk):
             override_redirect: bool = False,
             **kwargs: Unpack[TkKwargs],
     ) -> None:
+        """Initializes the application window.
 
+        Args:
+            title: The text to display in the window's title bar. This
+                overrides the `app_name` in `settings` if provided.
+            theme: The name of the theme to use. This overrides the `theme`
+                in `settings` if provided.
+            icon: An image to use as the window's icon.
+            settings: A dictionary or `AppSettings` object containing
+                application-wide settings. If not provided, default settings
+                are used.
+            localize: The localization mode for the application. Can be
+                'auto', 'on', or 'off'. This overrides the `localize_mode`
+                in `settings`.
+            size: A tuple specifying the window's initial width and height.
+            position: A tuple specifying the window's initial x and y
+                coordinates on the screen.
+            minsize: A tuple specifying the window's minimum width and height.
+            maxsize: A tuple specifying the window's maximum width and height.
+            resizable: A tuple of booleans specifying whether the window can
+                be resized horizontally and vertically.
+            scaling: The DPI scaling factor for the window. If `None`,
+                automatic scaling is used.
+            hdpi: If `True`, enables high-DPI awareness for the application.
+            alpha: The window's transparency level, from 0.0 (fully
+                transparent) to 1.0 (fully opaque).
+            transient: The parent window for this window.
+            override_redirect: If `True`, creates a window without standard
+                decorations (title bar, borders, etc.).
+            **kwargs: Additional keyword arguments to pass to the
+                underlying `tkinter.Tk` constructor.
+        """
         # --- Settings ---------------------------------------------------
         if settings is None:
             self.settings = AppSettings()
@@ -330,6 +374,9 @@ class App(BaseWindow, tkinter.Tk):
         # If app_name is still None, give it a sensible default
         if self.settings.app_name is None:
             self.settings.app_name = "ttkbootstrap"
+
+        if localize is not None:
+            self.settings.localize_mode = localize
 
         # --- Window options ---------------------------------------------
         self._size = size
@@ -398,12 +445,12 @@ class App(BaseWindow, tkinter.Tk):
         apply_all_bindings(self)
 
     def mainloop(self, n=0):
-        """Start the main Tk event loop"""
+        """Starts the main Tkinter event loop."""
         self.show()
         super().mainloop(n)
 
     def destroy(self) -> None:
-        """Destroy the window and all its children."""
+        """Destroys the window and all its children."""
         clear_current_app(self)
         super().destroy()
 
