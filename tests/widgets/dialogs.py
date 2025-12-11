@@ -1,7 +1,5 @@
 from ttkbootstrap.dialogs import MessageBox, QueryBox
-from ttkbootstrap.core.localization import MessageCatalog
-from ttkbootstrap.window import Window
-from ttkbootstrap.dialogs import FontDialog
+import ttkbootstrap as ttk
 
 
 def run_test():
@@ -25,13 +23,12 @@ def run_test():
     QueryBox.get_string("Querybox.get_string")
     QueryBox.get_font(title="Querybox.get_font")
     QueryBox.get_item(
-        "Querybox.get_item", initialvalue="apple",
+        "Querybox.get_item", value="apple",
         items=["apple", "banana", "grape", "kiwi", "orange", "pear"],
         position=(500, 500))
 
 
-root = Window()
-root.geometry("1000x1000+1000+500")
+root = ttk.App(settings=ttk.AppSettings(locale='ko'))
 
 root.after(100, run_test)
 
