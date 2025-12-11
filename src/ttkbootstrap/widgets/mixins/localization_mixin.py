@@ -42,11 +42,6 @@ class LocalizationMixin(Misc):
         # Get 'text' for localization without removing it from kwargs.
         text_to_localize = kwargs.get('text')
 
-        # If localizing and text is provided, ensure textvariable exists.
-        # This allows localized values to be applied to the variable.
-        if localize and text_to_localize is not None and 'textvariable' not in kwargs:
-            kwargs['textvariable'] = StringVar()
-
         # Call the next class in the MRO with the remaining kwargs.
         # 'text' is still in kwargs for the underlying widget to use.
         super().__init__(*args, **kwargs)
