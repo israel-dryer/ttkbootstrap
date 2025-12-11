@@ -85,6 +85,9 @@ class LocalizationMixin(Misc):
         if value is None:
             return
 
+        if isinstance(value, str) and value == "":
+            return
+
         localize_mode = self._localize_mode if localize is None else localize
 
         if isinstance(value, LocalizedSpec):
