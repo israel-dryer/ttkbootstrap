@@ -104,7 +104,7 @@ class FilterDialogContent(ttk.Frame):
 
         # Select all checkbox
         if self._allow_select_all:
-            self._select_all_cb = ttk.Checkbutton(self, text='Select All')
+            self._select_all_cb = ttk.Checkbutton(self, text='edit.select_all')
             self._select_all_cb.invoke()
             self._select_all_cb.invoke()
             self._select_all_cb['command'] = self._handle_select_all
@@ -391,9 +391,9 @@ class FilterDialog(ttk.Frame):
             title=self._title,
             content_builder=self._build_content,
             buttons=[
-                DialogButton(text="Cancel", role="cancel", result=None),
+                DialogButton(text="button.cancel", role="cancel", result=None),
                 DialogButton(
-                    text="OK",
+                    text="button.ok",
                     role="primary",
                     result=True,
                     default=True,
