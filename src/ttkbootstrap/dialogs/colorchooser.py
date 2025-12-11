@@ -55,6 +55,7 @@ from PIL import ImageColor
 from ttkbootstrap.constants import *
 from ttkbootstrap.core import colorutils
 from ttkbootstrap.core.colorutils import HEX, HSL, HUE, LUM, RGB, SAT
+from ttkbootstrap.core.localization import MessageCatalog
 from ttkbootstrap.runtime import utility
 from ttkbootstrap.style.style import get_style
 from ttkbootstrap.widgets.composites.tooltip import ToolTip
@@ -287,7 +288,7 @@ class ColorChooser(ttk.Frame):
         )
         tkLabel(
             master=old,
-            text='color.current',
+            text=MessageCatalog.translate("color.current"),
             background=self.initial_color,
             foreground=constrast_fg,
             autostyle=False,
@@ -307,7 +308,7 @@ class ColorChooser(ttk.Frame):
         self.preview.pack(side=LEFT, fill=BOTH, expand=YES, padx=(2, 0))
         self.preview_lbl = tkLabel(
             master=self.preview,
-            text='color.new',
+            text=MessageCatalog.translate("color.new"),
             background=self.initial_color,
             foreground=constrast_fg,
             autostyle=False,
