@@ -29,7 +29,7 @@ from ttkbootstrap_icons_bs import BootstrapIcon  # noqa: E402
 
 if TYPE_CHECKING:
     from ttkbootstrap.api.menu import MenuManager, create_menu
-    from ttkbootstrap.api.app import Toplevel, App, App as Window
+    from ttkbootstrap.api.app import App, App as Window, Toplevel
     from ttkbootstrap.api.style import (
         Bootstyle,
         Style,
@@ -160,7 +160,7 @@ for module, exports in _MODULE_EXPORTS.items():
         if name not in _TTK_EXPORTS:  # Already added TTK primitives
             _TTKBOOTSTRAP_EXPORTS.append(name)
 
-__all__ = [*_TK_EXPORTS, *_TTK_EXPORTS, *_TTKBOOTSTRAP_EXPORTS, *_DEPRECATED_ALIASES, "constants"]
+__all__ = [*_TK_EXPORTS, *_TTK_EXPORTS, *_TTKBOOTSTRAP_EXPORTS, *_DEPRECATED_ALIASES]
 
 import warnings as _warnings
 
