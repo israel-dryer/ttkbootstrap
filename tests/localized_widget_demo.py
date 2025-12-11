@@ -1,25 +1,22 @@
 import ttkbootstrap as ttk
-from ttkbootstrap import MessageCatalog
-from ttkbootstrap import IntlFormatter
 
-app = ttk.App()
+app = ttk.App(
+    title="Localization Demo",
+    settings=ttk.AppSettings(locale="ja")
+)
 
+var = ttk.DoubleVar(value=100)
 
-MessageCatalog.locale('zh')
-formatter = IntlFormatter('zh')
-
-ttk.Label(app, text='Cancel').pack(padx=10, pady=10)
-
-sl = ttk.Scale(app, from_=0, to=1000000)
+sl = ttk.Scale(app, variable=var, from_=0, to=1000000)
 sl.pack(fill='x')
 
-# Use signal.map to create a new, formatted signal
-formatted_signal = sl.signal.map(lambda v: formatter.format(v, 'currency'))
+# Label uses a shared variable
+ttk.Label(app, textvariable=var, value_format='thousands').pack(padx=10, pady=10)
 
-# The Label now uses the new formatted signal
-ttk.Label(app, textsignal=formatted_signal).pack(padx=10, pady=10)
-ttk.Button(app, text='Ok').pack(padx=10, pady=10)
-ttk.CheckButton(app, text='Submit').pack(padx=10, pady=10)
+# Label uses the scale variable
+ttk.Label(app, textvariable=sl.variable, value_format='fixedPoint').pack(padx=10, pady=10)
 
+# Label uses the scale signal
+ttk.Label(app, textvariable=sl.signal, value_format='currency').pack(padx=10, pady=10)
 
 app.mainloop()
