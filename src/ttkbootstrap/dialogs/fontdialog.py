@@ -8,6 +8,7 @@ from typing import Any, Optional
 from typing_extensions import Unpack
 
 from ttkbootstrap.constants import *
+from ttkbootstrap.core.localization import MessageCatalog
 from ttkbootstrap.dialogs.dialog import Dialog, DialogButton, ShowOptions
 from ttkbootstrap.runtime.app import Window
 from ttkbootstrap.runtime.utility import scale_size
@@ -43,7 +44,7 @@ class FontDialog:
     This dialog provides a comprehensive interface for selecting fonts,
     including family, size, weight, slant, and effects (underline, overstrike).
     The selected font is returned as a tkinter.font.Font object when OK is
-    pressed, or None if cancelled.
+    pressed, or None if canceled.
 
     Example:
         ```python
@@ -107,12 +108,12 @@ class FontDialog:
             content_builder=self._create_content,
             buttons=[
                 DialogButton(
-                    text="button.cancel",  # Use semantic key - built-in localization
+                    text="button.cancel",
                     role="cancel",
                     result=None,
                 ),
                 DialogButton(
-                    text="button.ok",  # Use semantic key - built-in localization
+                    text="button.ok",
                     role="primary",
                     default=True,
                     command=lambda dlg: self._on_submit(),
@@ -147,7 +148,7 @@ class FontDialog:
 
         header = ttk.Label(
             container,
-            text="font.family",  # Use semantic key - built-in localization
+            text="font.family",
             font="TkHeadingFont",
         )
         header.pack(fill=X, pady=(0, 2), anchor=N)
@@ -187,7 +188,7 @@ class FontDialog:
 
         header = ttk.Label(
             container,
-            text="font.size",  # Use semantic key - built-in localization
+            text="font.size",
             font="TkHeadingFont",
         )
         header.pack(fill=X, pady=(0, 2), anchor=N)
@@ -278,12 +279,12 @@ class FontDialog:
 
         header = ttk.Label(
             container,
-            text="font.preview",  # Use semantic key - built-in localization
+            text="font.preview",
             font="TkHeadingFont",
         )
         header.pack(fill=X, pady=2, anchor=N)
 
-        content = "font.preview.text"
+        content = MessageCatalog.translate("font.preview_text")
         self._preview_text = ttk.Text(
             master=container,
             height=3,
@@ -345,5 +346,5 @@ class FontDialog:
 
     @property
     def result(self) -> Optional[font.Font]:
-        """The selected font, or None if cancelled."""
+        """The selected font, or None if canceled."""
         return self._dialog.result

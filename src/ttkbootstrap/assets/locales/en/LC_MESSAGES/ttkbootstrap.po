@@ -97,6 +97,24 @@ msgstr "Font Selector"
 msgid "font.preview_text"
 msgstr "The quick brown fox jumps over the lazy dog."
 
+msgid "font.weight.normal"
+msgstr "Normal"
+
+msgid "font.weight.bold"
+msgstr "Bold"
+
+msgid "font.slant.roman"
+msgstr "Roman"
+
+msgid "font.slant.italic"
+msgstr "Italic"
+
+msgid "font.effects.underline"
+msgstr "Underline"
+
+msgid "font.effects.overstrike"
+msgstr "Overstrike"
+
 # ============================================================================
 # Color Chooser
 # ============================================================================

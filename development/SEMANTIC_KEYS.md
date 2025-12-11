@@ -80,6 +80,12 @@ _("font.effects")       # Effects
 _("font.preview")       # Preview
 _("font.selector")      # Font Selector
 _("font.preview_text")  # The quick brown fox jumps over the lazy dog.
+_("font.weight.normal")   # Normal
+_("font.weight.bold")     # Bold
+_("font.slant.roman")      # Roman
+_("font.slant.italic")    # Italic
+_("font.effects.underline")  # Underline
+_("font.effects.overstrike") # Overstrike
 ```
 
 ### Color Chooser
