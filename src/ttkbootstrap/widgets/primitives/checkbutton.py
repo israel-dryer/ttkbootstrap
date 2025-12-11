@@ -1,10 +1,12 @@
 from __future__ import annotations
 
 from tkinter import ttk
-from typing import Any, Callable, Literal, Optional, TypedDict, TYPE_CHECKING
+from typing import Any, Callable, Literal, Optional, TYPE_CHECKING, TypedDict
+
 from typing_extensions import Unpack
+
 from ttkbootstrap.widgets._internal.wrapper_base import TTKWrapperBase
-from ..mixins import IconMixin, SignalMixin, TextSignalMixin
+from ttkbootstrap.widgets.mixins import IconMixin, LocalizationMixin, SignalMixin, TextSignalMixin
 
 if TYPE_CHECKING:
     from ttkbootstrap.core.signals import Signal
@@ -16,7 +18,7 @@ class CheckButtonKwargs(TypedDict, total=False):
     command: Optional[Callable[[], Any]]
     image: Any
     icon: Any
-    compound: Literal['text','image','top','bottom','left','right','center','none'] | str
+    compound: Literal['text', 'image', 'top', 'bottom', 'left', 'right', 'center', 'none'] | str
     variable: Any
     signal: Signal[Any]
     onvalue: Any
@@ -24,7 +26,7 @@ class CheckButtonKwargs(TypedDict, total=False):
     padding: Any
     width: int
     underline: int
-    state: Literal['normal','active','disabled','readonly'] | str
+    state: Literal['normal', 'active', 'disabled', 'readonly'] | str
     takefocus: Any
     style: str
     class_: str
@@ -39,7 +41,7 @@ class CheckButtonKwargs(TypedDict, total=False):
     style_options: dict[str, Any]
 
 
-class CheckButton(SignalMixin, TextSignalMixin, IconMixin, TTKWrapperBase, ttk.Checkbutton):
+class CheckButton(LocalizationMixin, SignalMixin, TextSignalMixin, IconMixin, TTKWrapperBase, ttk.Checkbutton):
     """ttkbootstrap wrapper for `ttk.Checkbutton` with bootstyle and icon support."""
 
     _ttk_base = ttk.Checkbutton
@@ -56,6 +58,7 @@ class CheckButton(SignalMixin, TextSignalMixin, IconMixin, TTKWrapperBase, ttk.C
             icon: Theme-aware icon spec handled by the style system.
             compound: Placement of the image relative to text.
             variable: Linked variable controlling the on/off state.
+            localize: If true, translates the text.
             signal: Reactive Signal controlling the on/off state (auto-synced with variable).
             onvalue: Value set in `variable` when selected.
             offvalue: Value set in `variable` when deselected.
@@ -71,4 +74,3 @@ class CheckButton(SignalMixin, TextSignalMixin, IconMixin, TTKWrapperBase, ttk.C
         """
         kwargs.update(style_options=self._capture_style_options(['icon_only', 'icon'], kwargs))
         super().__init__(master, **kwargs)
-
