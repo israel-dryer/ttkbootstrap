@@ -84,7 +84,6 @@ class NumberEntryPart(TextEntryPart):
             wrap: bool = False,
             initial_focus: bool = False,
             allow_blank: bool = True,
-            locale: str = None,
             **kwargs
     ):
         """Initialize a NumberEntryPart widget.
@@ -129,7 +128,6 @@ class NumberEntryPart(TextEntryPart):
             value_format=value_format,
             initial_focus=initial_focus,
             allow_blank=allow_blank,
-            locale=locale,
             **kwargs
         )
 
