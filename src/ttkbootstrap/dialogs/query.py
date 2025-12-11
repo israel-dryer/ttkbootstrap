@@ -316,7 +316,7 @@ class QueryBox:
             **kwargs: Additional arguments including 'position'.
 
         Returns:
-            Selected color or None if cancelled.
+            Selected color or None if canceled.
         """
         from ttkbootstrap.dialogs.colorchooser import ColorChooserDialog
 
@@ -350,7 +350,7 @@ class QueryBox:
             **kwargs: Additional arguments including 'position'.
 
         Returns:
-            Selected date or None if cancelled.
+            Selected date or None if canceled.
         """
         position = kwargs.pop("position", None)
         dialog = DateDialog(
@@ -388,7 +388,7 @@ class QueryBox:
             **kwargs: Additional arguments including 'position'.
 
         Returns:
-            Input string or None if cancelled.
+            Input string or None if canceled.
         """
         value = value or ""
         position = kwargs.pop("position", None)
@@ -427,7 +427,7 @@ class QueryBox:
             **kwargs: Additional arguments including 'position'.
 
         Returns:
-            Selected item or None if cancelled.
+            Selected item or None if canceled.
         """
         value = value or ""
         position = kwargs.pop("position", None)
@@ -472,7 +472,7 @@ class QueryBox:
             **kwargs: Additional arguments including 'position'.
 
         Returns:
-            Integer value or None if cancelled.
+            Integer value or None if canceled.
         """
         value = value or ""
         position = kwargs.pop("position", None)
@@ -521,7 +521,7 @@ class QueryBox:
             **kwargs: Additional arguments including 'position'.
 
         Returns:
-            Float value or None if cancelled.
+            Float value or None if canceled.
         """
         value = value or ""
         position = kwargs.pop("position", None)
@@ -551,9 +551,9 @@ class QueryBox:
             **kwargs: Additional arguments including 'position'.
 
         Returns:
-            Selected font or None if cancelled.
+            Selected font or None if canceled.
         """
         position = kwargs.pop("position", None)
         dialog = FontDialog(master=master, **kwargs)
-        dialog.show(position)
+        dialog.show(position=position)
         return dialog.result
