@@ -25,7 +25,11 @@ with open(p, encoding="utf-8") as f:
 # Keep the sample size modest for demo purposes
 print(f"Preparing {len(rows)} records")
 
-app = ttk.App(theme="dark", size=(1200, 800))
+app = ttk.App(
+    theme="dark",
+    size=(1200, 800),
+    settings=ttk.AppSettings(locale='ja')
+)
 
 columns = [
     {"text": "Index", "key": "Index", "anchor": "e"},
