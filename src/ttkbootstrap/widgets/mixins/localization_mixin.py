@@ -9,6 +9,7 @@ from ttkbootstrap.core.localization.specs import (
     LocalizedTextSpec,
     LocalizedValueSpec,
 )
+from ttkbootstrap.runtime.app import get_app_settings
 
 
 class LocalizationMixin(Misc):
@@ -33,8 +34,9 @@ class LocalizationMixin(Misc):
         underlying widget. It consumes 'localize' and 'value_format' as they
         are not standard ttk options.
         """
-        # Pop arguments intended only for this mixin.
-        localize = kwargs.pop('localize', 'auto')
+        # Determine the localization mode. A widget-specific 'localize' argument
+        # overrides the global app setting. This argument is consumed from kwargs.
+        localize = kwargs.pop('localize', get_app_settings().localize_mode)
         value_format = kwargs.pop('value_format', None)
 
         # Get 'text' for localization without removing it from kwargs.
