@@ -93,6 +93,7 @@ from tkinter import Widget
 from typing import Any, Callable, Iterable, Literal, Mapping, Optional, Tuple, TypedDict, Union
 
 import ttkbootstrap as ttk
+from ttkbootstrap.runtime.toplevel import Toplevel
 from ttkbootstrap.runtime.window_utilities import AnchorPoint, WindowPositioning
 
 # --- Types -----------------------------------------------------------------
@@ -339,7 +340,7 @@ class Dialog:
         self._mode = mode
         self._frameless = frameless
 
-        self._toplevel: ttk.Toplevel | None = None
+        self._toplevel: Toplevel | None = None
         self._content: ttk.Frame | None = None
         self._footer: ttk.Frame | None = None
         self._border_frame: ttk.Frame | None = None
@@ -419,7 +420,7 @@ class Dialog:
             self._master.wait_window(self._toplevel)
 
     @property
-    def toplevel(self) -> ttk.Toplevel | None:
+    def toplevel(self) -> Toplevel | None:
         """Read-only access to the underlying toplevel window."""
         return self._toplevel
 
@@ -447,7 +448,7 @@ class Dialog:
         return normalized
 
     def _create_toplevel(self):
-        self._toplevel = ttk.Toplevel(self._master)
+        self._toplevel = Toplevel(self._master)
         self._toplevel.title(self._title)
         self._toplevel.protocol("WM_DELETE_WINDOW", self._on_close_request)
 
