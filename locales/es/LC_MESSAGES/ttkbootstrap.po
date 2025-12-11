@@ -14,375 +14,284 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: tools/convert_msgs_to_po.py\n"
 
-#: legacy msgs.py
+
+#: legacy messages
 msgid "OK"
 msgstr "OK"
 
-#: legacy msgs.py
 msgid "Ok"
 msgstr "Ok"
 
-#: legacy msgs.py
 msgid "Retry"
 msgstr "Reintentar"
 
-#: legacy msgs.py
 msgid "Next"
 msgstr "Próximo"
 
-#: legacy msgs.py
 msgid "Prev"
 msgstr "Anterior"
 
-#: legacy msgs.py
 msgid "Yes"
 msgstr "Sí"
 
-#: legacy msgs.py
 msgid "No"
 msgstr "No"
 
-#: legacy msgs.py
 msgid "Open"
 msgstr "Abrir"
 
-#: legacy msgs.py
 msgid "Close"
 msgstr "Cerrar"
 
-#: legacy msgs.py
 msgid "Add"
 msgstr "Agregar"
 
-#: legacy msgs.py
 msgid "Delete"
 msgstr "Borrar"
 
-#: legacy msgs.py
 msgid "Cancel"
 msgstr "Cancelar"
 
-#: legacy msgs.py
 msgid "Remove"
 msgstr "Eliminar"
 
-#: legacy msgs.py
 msgid "Submit"
 msgstr "Enviar"
 
-#: legacy msgs.py
 msgid "Family"
 msgstr "Familia"
 
-#: legacy msgs.py
 msgid "Weight"
 msgstr "Peso"
 
-#: legacy msgs.py
 msgid "Slant"
 msgstr "Inclinación"
 
-#: legacy msgs.py
 msgid "Effects"
 msgstr "Efectos"
 
-#: legacy msgs.py
 msgid "Preview"
 msgstr "Vista previa"
 
-#: legacy msgs.py
 msgid "Size"
 msgstr "Tamaño"
 
-#: legacy msgs.py
 msgid "Should be of data type"
 msgstr "Debe ser del tipo de datos"
 
-#: legacy msgs.py
 msgid "Invalid data type"
 msgstr "Tipo de datos inválido"
 
-#: legacy msgs.py
 msgid "Number cannot be greater than"
 msgstr "El número no puede ser mayor que"
 
-#: legacy msgs.py
 msgid "Number cannot be less than"
 msgstr "El número no puede ser menor que"
 
-#: legacy msgs.py
 msgid "Select an item from the list"
 msgstr "Seleccionar un elemento de la lista"
 
-#: legacy msgs.py
 msgid "Out of range"
 msgstr "Fuera de rango"
 
-#: legacy msgs.py
 msgid "Previous"
 msgstr "Anterior"
 
-#: legacy msgs.py
 msgid "The quick brown fox jumps over the lazy dog."
 msgstr "La cigüeña tocaba el saxofón detrás del palenque de paja."
 
-#: legacy msgs.py
 msgid "Font Selector"
 msgstr "Selector de fuentes"
 
-#: legacy msgs.py
 msgid "normal"
 msgstr "normal"
 
-#: legacy msgs.py
 msgid "bold"
 msgstr "negrita"
 
-#: legacy msgs.py
 msgid "roman"
 msgstr "romana"
 
-#: legacy msgs.py
 msgid "italic"
 msgstr "cursiva"
 
-#: legacy msgs.py
 msgid "underline"
 msgstr "subrayado"
 
-#: legacy msgs.py
 msgid "overstrike"
 msgstr "tachado"
 
-#: legacy msgs.py
 msgid "Color Chooser"
 msgstr "Selector de color"
 
-#: legacy msgs.py
 msgid "Advanced"
 msgstr "Avanzado"
 
-#: legacy msgs.py
 msgid "Themed"
 msgstr "Tema"
 
-#: legacy msgs.py
 msgid "Standard"
 msgstr "Estándar"
 
-#: legacy msgs.py
 msgid "Current"
 msgstr "Actual"
 
-#: legacy msgs.py
 msgid "New"
 msgstr "Nuevo"
 
-#: legacy msgs.py
 msgid "Hue"
 msgstr "Tono"
 
-#: legacy msgs.py
 msgid "Sat"
 msgstr "Sat"
 
-#: legacy msgs.py
 msgid "Lum"
 msgstr "Lum"
 
-#: legacy msgs.py
 msgid "Hex"
 msgstr "Hex"
 
-#: legacy msgs.py
 msgid "Red"
 msgstr "Rojo"
 
-#: legacy msgs.py
 msgid "Green"
 msgstr "Verde"
 
-#: legacy msgs.py
 msgid "Blue"
 msgstr "Azul"
 
-#: legacy msgs.py
 msgid "color dropper"
 msgstr "selector de color"
 
-#: legacy msgs.py
 msgid "Cancel"
 msgstr "Cancelar"
 
-#: legacy msgs.py
 msgid "Search"
 msgstr "Buscar"
 
-#: legacy msgs.py
 msgid "Page"
 msgstr "Página"
 
-#: legacy msgs.py
 msgid "of"
 msgstr "de"
 
-#: legacy msgs.py
 msgid "⎌"
 msgstr "⎌"
 
-#: legacy msgs.py
 msgid "Reset table"
 msgstr "Reiniciar tabla"
 
-#: legacy msgs.py
 msgid "Columns"
 msgstr "Columnas"
 
-#: legacy msgs.py
 msgid "Move"
 msgstr "Mover"
 
-#: legacy msgs.py
 msgid "Align"
 msgstr "Alinear"
 
-#: legacy msgs.py
 msgid "Hide column"
 msgstr "Ocultar columna"
 
-#: legacy msgs.py
 msgid "Delete column"
 msgstr "Eliminar columna"
 
-#: legacy msgs.py
 msgid "Show All"
 msgstr "Mostrar todos"
 
-#: legacy msgs.py
 msgid "Move to left"
 msgstr "Mover a la izquierda"
 
-#: legacy msgs.py
 msgid "Move to right"
 msgstr "Mover a la derecha"
 
-#: legacy msgs.py
 msgid "Move to first"
 msgstr "Mover al inicio"
 
-#: legacy msgs.py
 msgid "Move to last"
 msgstr "Mover al final"
 
-#: legacy msgs.py
 msgid "Align left"
 msgstr "Alinear a la izquierda"
 
-#: legacy msgs.py
 msgid "Align center"
 msgstr "Alinear al centro"
 
-#: legacy msgs.py
 msgid "Align right"
 msgstr "Alinear a la derecha"
 
-#: legacy msgs.py
 msgid "Sort"
 msgstr "Ordenar"
 
-#: legacy msgs.py
 msgid "Filter"
 msgstr "Filtrar"
 
-#: legacy msgs.py
 msgid "Export"
 msgstr "Exportar"
 
-#: legacy msgs.py
 msgid "Delete selected rows"
 msgstr "Eliminar filas seleccionadas"
 
-#: legacy msgs.py
 msgid "Sort Ascending"
 msgstr "Ordenar ascendente"
 
-#: legacy msgs.py
 msgid "Sort Descending"
 msgstr "Ordenar descendente"
 
-#: legacy msgs.py
 msgid "Clear filters"
 msgstr "Limpiar filtros"
 
-#: legacy msgs.py
 msgid "Filter by cell's value"
 msgstr "Filtrar por valor de celda"
 
-#: legacy msgs.py
 msgid "Hide select rows"
 msgstr "Ocultar filas seleccionadas"
 
-#: legacy msgs.py
 msgid "Show only select rows"
 msgstr "Mostrar solo filas seleccionadas"
 
-#: legacy msgs.py
 msgid "Export all records"
 msgstr "Exportar todos los registros"
 
-#: legacy msgs.py
 msgid "Export current page"
 msgstr "Exportar página actual"
 
-#: legacy msgs.py
 msgid "Export current selection"
 msgstr "Exportar selección actual"
 
-#: legacy msgs.py
 msgid "Export records in filter"
 msgstr "Exportar registros en filtro"
 
-#: legacy msgs.py
 msgid "Move up"
 msgstr "Mover hacia arriba"
 
-#: legacy msgs.py
 msgid "Move down"
 msgstr "Mover hacia abajo"
 
-#: legacy msgs.py
 msgid "Move to top"
 msgstr "Mover al inicio"
 
-#: legacy msgs.py
 msgid "Move to bottom"
 msgstr "Mover al final"
 
-#: legacy msgs.py
 msgid "Mo"
 msgstr "Lu"
 
-#: legacy msgs.py
 msgid "Tu"
 msgstr "Ma"
 
-#: legacy msgs.py
 msgid "We"
 msgstr "Mi"
 
-#: legacy msgs.py
 msgid "Th"
 msgstr "Ju"
 
-#: legacy msgs.py
 msgid "Fr"
 msgstr "Vi"
 
-#: legacy msgs.py
 msgid "Sa"
 msgstr "Sa"
 
-#: legacy msgs.py
 msgid "Su"
 msgstr "Do"
 
