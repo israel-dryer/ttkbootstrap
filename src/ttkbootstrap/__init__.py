@@ -29,7 +29,7 @@ from ttkbootstrap_icons_bs import BootstrapIcon  # noqa: E402
 
 if TYPE_CHECKING:
     from ttkbootstrap.api.menu import MenuManager, create_menu
-    from ttkbootstrap.api.app import App, App as Window, Toplevel
+    from ttkbootstrap.api.app import App, App as Window, Toplevel, AppSettings, get_app_settings, get_current_app
     from ttkbootstrap.api.style import (
         Bootstyle,
         Style,
@@ -124,7 +124,7 @@ _TTK_PRIMITIVES = [
 
 _MODULE_EXPORTS = {
     "ttkbootstrap.api.app": [
-        "App", "Toplevel", "Window",
+        "App", "Toplevel", "Window", "AppSettings", "get_app_settings", "get_current_app",
     ],
     "ttkbootstrap.api.style": [
         "BootstrapIcon", "Bootstyle", "Style",
