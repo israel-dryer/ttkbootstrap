@@ -54,8 +54,17 @@ class LocalizationMixin(Misc):
         root = self.winfo_toplevel()  # event is generated on root
         root.bind("<<LocaleChanged>>", self._on_locale_changed, add="+")
 
-        # Register the text field for localization now that the widget is initialized.
-        self.register_localized_field('text', text_to_localize, value_format=value_format)
+        # Check if widget has a textsignal or textvariable with value_format
+        if value_format and (hasattr(self, '_textsignal') or hasattr(self, '_textvariable') or self._has_textvariable_configured()):
+            # Ensure textsignal exists (triggers lazy creation if needed)
+            if not hasattr(self, '_textsignal'):
+                # Access the property to trigger lazy creation
+                _ = self.textsignal
+            # Subscribe to signal and format its values
+            self._setup_signal_formatting(value_format)
+        else:
+            # Register the text field for static localization
+            self.register_localized_field('text', text_to_localize, value_format=value_format)
 
     def register_localized_field(
         self,
@@ -116,6 +125,12 @@ class LocalizationMixin(Misc):
         """
         self._refresh_localized_fields()
 
+        # If we have signal formatting, trigger a re-format with new locale
+        if hasattr(self, '_signal_formatter'):
+            value_format, formatter, source_signal = self._signal_formatter
+            # Re-format current value from source signal with new locale
+            formatter(source_signal.get())
+
     def _refresh_localized_fields(self) -> None:
         """Refresh all registered localized fields with the current locale."""
         locale = MessageCatalog.locale()
@@ -124,6 +139,61 @@ class LocalizationMixin(Misc):
                 continue
             value = spec.resolve(locale)
             self._apply_localized_value(field_name, value)
+
+    def _has_textvariable_configured(self) -> bool:
+        """Check if the widget has a textvariable configured.
+
+        Returns:
+            True if a textvariable is configured on the widget.
+        """
+        try:
+            textvariable_name = self.cget('textvariable')
+            return bool(textvariable_name)
+        except Exception:
+            return False
+
+    def _setup_signal_formatting(self, value_format: str) -> None:
+        """Subscribe to textsignal and format its values.
+
+        When formatting is enabled, this creates a private textvariable for this widget
+        and subscribes to the source signal to format and display values independently.
+
+        Args:
+            value_format: The format spec (e.g., 'currency', 'decimal')
+        """
+        # Save reference to the source signal (the one we're subscribing to)
+        source_signal = self._textsignal
+
+        # Create a NEW private textvariable for formatted display
+        # This ensures multiple widgets can share the same source without conflict
+        from ttkbootstrap.core.signals import Signal
+        formatted_signal = Signal("")
+
+        # Update our internal references to use the new private signal/variable
+        self._textsignal = formatted_signal
+        self._textvariable = formatted_signal.var
+
+        # Configure widget to use the new private variable
+        try:
+            self._ttk_base.configure(self, textvariable=self._textvariable)  # type: ignore[misc]
+        except:
+            pass
+
+        def format_signal_value(value):
+            """Format the signal value using current locale."""
+            # Create a spec for this value
+            spec = LocalizedValueSpec(value=value, format_spec=value_format)
+            locale = MessageCatalog.locale()
+            formatted = spec.resolve(locale)
+
+            # Update the private textvariable for this widget
+            formatted_signal.set(formatted)
+
+        # Subscribe to the SOURCE signal (not our new private one!)
+        source_signal.subscribe(format_signal_value, immediate=True)
+
+        # Store references for locale changes
+        self._signal_formatter = (value_format, format_signal_value, source_signal)
 
     def _apply_localized_value(self, field_name: str, value: str) -> None:
         """Apply a localized value to the widget field.
