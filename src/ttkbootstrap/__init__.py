@@ -87,7 +87,7 @@ if TYPE_CHECKING:
         TK_WIDGETS,
         TTK_WIDGETS,
     )
-    from ttkbootstrap.api.localization import MessageCatalog, L, LV
+    from ttkbootstrap.api.localization import MessageCatalog, L, LV,IntlFormatter
     from ttkbootstrap_icons_bs import BootstrapIcon
 
 _DEPRECATED_ALIASES = {
@@ -145,7 +145,7 @@ _MODULE_EXPORTS = {
         "ToolTip", "TK_WIDGETS", "TTK_WIDGETS",
     ],
     "ttkbootstrap.api.localization": [
-        "MessageCatalog", "L", "LV",
+        "MessageCatalog", "L", "LV", "IntlFormatter"
     ],
 }
 
