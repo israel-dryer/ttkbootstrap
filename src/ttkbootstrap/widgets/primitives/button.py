@@ -61,7 +61,7 @@ class Button(LocalizationMixin, TextSignalMixin, IconMixin, TTKWrapperBase, ttk.
             icon_only: If true, removes the extra padding reserved for the text labels.
             compound: Placement of the image relative to text (e.g., 'left').
             padding: Extra space around the button content.
-            localize: If true, translates the text.
+            localize: Determines the widgets localization mode. 'auto', True, False.
             value_format: Format specification for the label value.
             width: Width of the button in characters.
             underline: Index of the character to underline in `text`.

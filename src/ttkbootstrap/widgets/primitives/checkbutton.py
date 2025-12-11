@@ -39,6 +39,7 @@ class CheckButtonKwargs(TypedDict, total=False):
     bootstyle: str
     surface_color: str
     style_options: dict[str, Any]
+    localize: bool | Literal['auto']
 
 
 class CheckButton(LocalizationMixin, SignalMixin, TextSignalMixin, IconMixin, TTKWrapperBase, ttk.Checkbutton):
@@ -58,7 +59,7 @@ class CheckButton(LocalizationMixin, SignalMixin, TextSignalMixin, IconMixin, TT
             icon: Theme-aware icon spec handled by the style system.
             compound: Placement of the image relative to text.
             variable: Linked variable controlling the on/off state.
-            localize: If true, translates the text.
+            localize: Determines the widgets localization mode. 'auto', True, False.
             signal: Reactive Signal controlling the on/off state (auto-synced with variable).
             onvalue: Value set in `variable` when selected.
             offvalue: Value set in `variable` when deselected.

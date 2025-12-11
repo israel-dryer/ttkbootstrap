@@ -64,7 +64,7 @@ class Label(LocalizationMixin, TextSignalMixin, IconMixin, TTKWrapperBase, ttk.L
             compound: Placement of the image relative to text.
             anchor: Alignment of the label's content within its area.
             justify: How to justify multiple lines of text.
-            localize: If true, translates the text.
+            localize: Determines the widgets localization mode. 'auto', True, False.
             value_format: Format specification for the label value.
             padding: Extra space around the label content.
             width: Width of the label in characters.

@@ -18,8 +18,8 @@ formatted_signal = sl.signal.map(lambda v: formatter.format(v, 'currency'))
 
 # The Label now uses the new formatted signal
 ttk.Label(app, textsignal=formatted_signal).pack(padx=10, pady=10)
-
 ttk.Button(app, text='Ok').pack(padx=10, pady=10)
+ttk.CheckButton(app, text='Submit').pack(padx=10, pady=10)
 
 
 app.mainloop()

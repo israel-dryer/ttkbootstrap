@@ -1,11 +1,12 @@
 from __future__ import annotations
 
 from tkinter import ttk
-from typing import Any, Literal, Optional, TypedDict, TYPE_CHECKING
+from typing import Any, Literal, TYPE_CHECKING, TypedDict
+
 from typing_extensions import Unpack
+
 from ttkbootstrap.widgets._internal.wrapper_base import TTKWrapperBase
-from ..mixins.icon_mixin import IconMixin
-from ..mixins import TextSignalMixin
+from ttkbootstrap.widgets.mixins import IconMixin, LocalizationMixin, TextSignalMixin
 
 if TYPE_CHECKING:
     from ttkbootstrap.core.signals import Signal
@@ -17,11 +18,11 @@ class MenuButtonKwargs(TypedDict, total=False):
     image: Any
     icon: Any
     icon_only: bool
-    compound: Literal['text','image','top','bottom','left','right','center','none'] | str
+    compound: Literal['text', 'image', 'top', 'bottom', 'left', 'right', 'center', 'none'] | str
     direction: Any
     menu: Any
     padding: Any
-    state: Literal['normal','active','disabled','readonly'] | str
+    state: Literal['normal', 'active', 'disabled', 'readonly'] | str
     takefocus: Any
     style: str
     class_: str
@@ -34,9 +35,10 @@ class MenuButtonKwargs(TypedDict, total=False):
     bootstyle: str
     surface_color: str
     style_options: dict[str, Any]
+    localize: bool | Literal['auto']
 
 
-class MenuButton(TextSignalMixin, IconMixin, TTKWrapperBase, ttk.Menubutton):
+class MenuButton(LocalizationMixin, TextSignalMixin, IconMixin, TTKWrapperBase, ttk.Menubutton):
     """ttkbootstrap wrapper for `ttk.Menubutton` with bootstyle and icon support."""
 
     _ttk_base = ttk.Menubutton
@@ -61,11 +63,10 @@ class MenuButton(TextSignalMixin, IconMixin, TTKWrapperBase, ttk.Menubutton):
             bootstyle: ttkbootstrap style tokens (e.g., 'primary', 'ghost').
             surface_color: Optional surface token; otherwise inherited.
             style_options: Optional dict forwarded to the style builder.
+            localize: Determines the widgets localization mode. 'auto', True, False.
         """
         kwargs.update(style_options=self._capture_style_options(['icon_only', 'icon'], kwargs))
         super().__init__(master, **kwargs)
 
         # Ensure the menubutton receives focus when clicked so focus styling is visible.
         self.bind("<Button-1>", lambda _: self.focus_set(), add="+")
-
-
