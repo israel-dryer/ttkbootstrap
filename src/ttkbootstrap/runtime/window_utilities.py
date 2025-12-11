@@ -104,8 +104,8 @@ class WindowPositioning:
             to the parent.
 
         Example:
-            >>> parent = tkinter.Tk()
-            >>> dialog = tkinter.Toplevel(parent)
+import ttkbootstrap.runtime.toplevel            >>> parent = tkinter.Tk()
+            >>> dialog = ttkbootstrap.runtime.toplevel.Toplevel(parent)
             >>> dialog.update_idletasks()
             >>> parent.update_idletasks()
             >>> x, y = WindowPositioning.center_on_parent(dialog, parent)
