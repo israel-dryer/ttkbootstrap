@@ -8,7 +8,6 @@ from typing import Any, Optional
 from typing_extensions import Unpack
 
 from ttkbootstrap.constants import *
-from ttkbootstrap.core.localization import MessageCatalog
 from ttkbootstrap.dialogs.dialog import Dialog, DialogButton, ShowOptions
 from ttkbootstrap.runtime.app import Window
 from ttkbootstrap.runtime.utility import scale_size
@@ -224,7 +223,7 @@ class FontDialog:
         weight_lframe.pack(side=LEFT, fill=X, expand=YES)
         opt_normal = ttk.Radiobutton(
             master=weight_lframe,
-            text=MessageCatalog.translate("normal"),
+            text="font.weight.normal",
             value="normal",
             variable=self._weight,
         )
@@ -232,7 +231,7 @@ class FontDialog:
         opt_normal.pack(side=LEFT, padx=5, pady=5)
         opt_bold = ttk.Radiobutton(
             master=weight_lframe,
-            text=MessageCatalog.translate("bold"),
+            text="font.weight.bold",
             value="bold",
             variable=self._weight,
         )
@@ -242,7 +241,7 @@ class FontDialog:
         slant_lframe.pack(side=LEFT, fill=X, padx=10, expand=YES)
         opt_roman = ttk.Radiobutton(
             master=slant_lframe,
-            text=MessageCatalog.translate("roman"),
+            text="font.slant.roman",
             value="roman",
             variable=self._slant,
         )
@@ -250,7 +249,7 @@ class FontDialog:
         opt_roman.pack(side=LEFT, padx=5, pady=5)
         opt_italic = ttk.Radiobutton(
             master=slant_lframe,
-            text=MessageCatalog.translate("italic"),
+            text="font.slant.italic",
             value="italic",
             variable=self._slant,
         )
@@ -260,13 +259,13 @@ class FontDialog:
         effects_lframe.pack(side=LEFT, padx=(2, 0), fill=X, expand=YES)
         opt_underline = ttk.Checkbutton(
             master=effects_lframe,
-            text=MessageCatalog.translate("underline"),
+            text="font.effects.underline",
             variable=self._underline,
         )
         opt_underline.pack(side=LEFT, padx=5, pady=5)
         opt_overstrike = ttk.Checkbutton(
             master=effects_lframe,
-            text=MessageCatalog.translate("overstrike"),
+            text="font.effects.overstrike",
             variable=self._overstrike,
         )
         opt_overstrike.pack(side=LEFT, padx=5, pady=5)
@@ -284,7 +283,7 @@ class FontDialog:
         )
         header.pack(fill=X, pady=2, anchor=N)
 
-        content = MessageCatalog.translate("The quick brown fox jumps over the lazy dog.")
+        content = "font.preview.text"
         self._preview_text = ttk.Text(
             master=container,
             height=3,
