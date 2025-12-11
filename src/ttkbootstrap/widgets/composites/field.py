@@ -5,7 +5,7 @@ for creating specialized entry widgets like TextEntry, PasswordEntry, NumberEntr
 """
 
 from tkinter import TclError, Variable
-from typing import Any, Callable, Literal, Type, TypedDict, Union
+from typing import Any, Callable, Literal, Type, TypedDict, Union, cast
 
 from ttkbootstrap.core.signals import Signal
 from ttkbootstrap.widgets.primitives.button import Button
@@ -49,6 +49,7 @@ class FieldOptions(TypedDict, total=False):
         width: Width of the entry in characters.
         required: If True, field cannot be empty (adds validation rule).
         xscrollcommand: Callback for horizontal scrolling.
+        localize: Determines the field label localization mode. 'auto', True, False.
     """
     allow_blank: bool
     bootstyle: str
@@ -69,6 +70,7 @@ class FieldOptions(TypedDict, total=False):
     width: int
     required: bool
     xscrollcommand: Callable[[int, int], None]
+    localize: bool | Literal['auto']
 
 
 class Field(EntryMixin, Frame):
@@ -262,6 +264,7 @@ class Field(EntryMixin, Frame):
         show_message = kwargs.pop('show_message', show_message)
 
         self._bootstyle = kwargs.pop('bootstyle', 'default')
+        self._localize = cast(bool | Literal['auto'], kwargs.pop('localize', 'auto'))
 
         super().__init__(master)
 
@@ -281,10 +284,11 @@ class Field(EntryMixin, Frame):
         label_text = self._label_text or ''
         self._label_lbl = Label(
             self,
+            localize=self._localize,
             text=f"{label_text}*" if required else label_text,
             font="label[normal]"
         )
-        self._message_lbl = Label(self, text=message or '', font="caption", bootstyle="secondary")
+        self._message_lbl = Label(self, localize=self._localize, text=message or '', font="caption", bootstyle="secondary")
 
         # field container & field
         self._field = Frame(self, bootstyle=self._bootstyle, padding=5, class_="TField")
