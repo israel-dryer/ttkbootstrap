@@ -1,0 +1,802 @@
+# Turkish translations for ttkbootstrap
+# Copyright (C) 2024 Israel Dryer
+# This file is distributed under the same license as the ttkbootstrap project.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: ttkbootstrap\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2024-01-01 12:00+0000\n"
+"PO-Revision-Date: 2025-12-11 00:00+0000\n"
+"Last-Translator: ttkbootstrap team <>\n"
+"Language: tr\n"
+"Language-Team: Turkish\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: ttkbootstrap localization\n"
+
+# ============================================================================
+# Common Buttons
+# ============================================================================
+
+msgid "button.ok"
+msgstr "Tamam"
+
+msgid "button.cancel"
+msgstr "İptal"
+
+msgid "button.yes"
+msgstr "Evet"
+
+msgid "button.no"
+msgstr "Hayır"
+
+msgid "button.retry"
+msgstr "Yeniden dene"
+
+msgid "button.delete"
+msgstr "Sil"
+
+msgid "button.next"
+msgstr "İleri"
+
+msgid "button.previous"
+msgstr "Geri"
+
+msgid "button.prev"
+msgstr "Önceki"
+
+msgid "button.open"
+msgstr "Aç"
+
+msgid "button.close"
+msgstr "Kapat"
+
+msgid "button.add"
+msgstr "Ekle"
+
+msgid "button.remove"
+msgstr "Kaldır"
+
+msgid "button.submit"
+msgstr "Gönder"
+
+msgid "button.save"
+msgstr "Kaydet"
+
+msgid "button.apply"
+msgstr "Uygula"
+
+# ============================================================================
+# Font Dialog
+# ============================================================================
+
+msgid "font.family"
+msgstr "Yazı tipi"
+
+msgid "font.weight"
+msgstr "Kalınlık"
+
+msgid "font.slant"
+msgstr "Eğim"
+
+msgid "font.effects"
+msgstr "Efektler"
+
+msgid "font.preview"
+msgstr "Önizleme"
+
+msgid "font.size"
+msgstr "Boyut"
+
+msgid "font.selector"
+msgstr "Yazı tipi seçici"
+
+msgid "font.preview_text"
+msgstr "Hızlı kahverengi tilki tembel köpeğin üzerinden atlar."
+
+msgid "font.weight.normal"
+msgstr "Normal"
+
+msgid "font.weight.bold"
+msgstr "Kalın"
+
+msgid "font.slant.roman"
+msgstr "Düz"
+
+msgid "font.slant.italic"
+msgstr "İtalik"
+
+msgid "font.effects.underline"
+msgstr "Altı çizili"
+
+msgid "font.effects.overstrike"
+msgstr "Üstü çizili"
+
+# ============================================================================
+# Color Chooser
+# ============================================================================
+
+msgid "color.chooser"
+msgstr "Renk seçici"
+
+msgid "color.advanced"
+msgstr "Gelişmiş"
+
+msgid "color.themed"
+msgstr "Tema"
+
+msgid "color.standard"
+msgstr "Standart"
+
+msgid "color.current"
+msgstr "Mevcut"
+
+msgid "color.new"
+msgstr "Yeni"
+
+msgid "color.hue"
+msgstr "Ton"
+
+msgid "color.sat"
+msgstr "Doygunluk"
+
+msgid "color.lum"
+msgstr "Parlaklık"
+
+msgid "color.hex"
+msgstr "Hex"
+
+msgid "color.red"
+msgstr "Kırmızı"
+
+msgid "color.green"
+msgstr "Yeşil"
+
+msgid "color.blue"
+msgstr "Mavi"
+
+msgid "color.dropper"
+msgstr "Renk damlalığı"
+
+# Value labels
+msgid "color.hue:"
+msgstr "Ton:"
+
+msgid "color.sat:"
+msgstr "Doygunluk:"
+
+msgid "color.lum:"
+msgstr "Parlaklık:"
+
+msgid "color.hex:"
+msgstr "Hex:"
+
+msgid "color.red:"
+msgstr "Kırmızı:"
+
+msgid "color.green:"
+msgstr "Yeşil:"
+
+msgid "color.blue:"
+msgstr "Mavi:"
+
+# ============================================================================
+# Validation
+# ============================================================================
+
+msgid "validation.should_be_type"
+msgstr "Veri türü şu olmalıdır:"
+
+msgid "validation.invalid_type"
+msgstr "Geçersiz veri türü"
+
+msgid "validation.greater_than"
+msgstr "Sayı şundan büyük olamaz:"
+
+msgid "validation.less_than"
+msgstr "Sayı şundan küçük olamaz:"
+
+msgid "validation.out_of_range"
+msgstr "Aralık dışında"
+
+msgid "validation.select_item"
+msgstr "Listeden bir öğe seçin"
+
+# ============================================================================
+# Table View
+# ============================================================================
+
+msgid "table.search"
+msgstr "Ara"
+
+msgid "table.page"
+msgstr "Sayfa"
+
+msgid "table.of"
+msgstr " / "
+
+msgid "table.reset"
+msgstr "Tabloyu sıfırla"
+
+msgid "table.columns"
+msgstr "Sütunlar"
+
+msgid "table.move"
+msgstr "Taşı"
+
+msgid "table.align"
+msgstr "Hizala"
+
+msgid "table.hide_column"
+msgstr "Sütunu gizle"
+
+msgid "table.delete_column"
+msgstr "Sütunu sil"
+
+msgid "table.show_all"
+msgstr "Tümünü göster"
+
+msgid "table.move_left"
+msgstr "Sola taşı"
+
+msgid "table.move_right"
+msgstr "Sağa taşı"
+
+msgid "table.move_first"
+msgstr "Başa taşı"
+
+msgid "table.move_last"
+msgstr "Sona taşı"
+
+msgid "table.add_record"
+msgstr "Kayıt ekle"
+
+msgid "table.edit"
+msgstr "Düzenle"
+
+msgid "table.delete_row"
+msgstr "Sil"
+
+msgid "table.group_by_column"
+msgstr "Bu sütuna göre grupla"
+
+msgid "table.ungroup_all"
+msgstr "Gruplamayı kaldır"
+
+msgid "table.clear_sort"
+msgstr "Sıralamayı temizle"
+
+msgid "table.align_left"
+msgstr "Sola hizala"
+
+msgid "table.align_center"
+msgstr "Ortala"
+
+msgid "table.align_right"
+msgstr "Sağa hizala"
+
+msgid "table.sort"
+msgstr "Sırala"
+
+msgid "table.filter"
+msgstr "Filtrele"
+
+msgid "table.export"
+msgstr "Dışa aktar"
+
+msgid "table.delete_selected"
+msgstr "Seçili satırları sil"
+
+msgid "table.sort_asc"
+msgstr "Artan"
+
+msgid "table.sort_desc"
+msgstr "Azalan"
+
+msgid "table.clear_filters"
+msgstr "Filtreleri temizle"
+
+msgid "table.filter_by_value"
+msgstr "Hücre değerine göre filtrele"
+
+msgid "table.hide_select"
+msgstr "Seçili satırları gizle"
+
+msgid "table.show_select"
+msgstr "Yalnızca seçili satırları göster"
+
+msgid "table.export_all"
+msgstr "Tüm kayıtları dışa aktar"
+
+msgid "table.export_page"
+msgstr "Geçerli sayfayı dışa aktar"
+
+msgid "table.export_selection"
+msgstr "Seçimi dışa aktar"
+
+msgid "table.export_filter"
+msgstr "Filtreli kayıtları dışa aktar"
+
+msgid "table.sort_status"
+msgstr "Sıralama: %s"
+
+msgid "table.filter_status"
+msgstr "Filtre: %s"
+
+msgid "table.group_status"
+msgstr "Grup: %s"
+
+msgid "table.filter_column"
+msgstr "Filtre: %s"
+
+msgid "table.empty"
+msgstr "(boş)"
+
+msgid "table.search_mode_equals"
+msgstr "Eşittir"
+
+msgid "table.search_mode_contains"
+msgstr "İçerir"
+
+msgid "table.search_mode_starts_with"
+msgstr "Şununla başlar"
+
+msgid "table.search_mode_ends_with"
+msgstr "Şununla biter"
+
+msgid "table.search_mode_sql"
+msgstr "SQL"
+
+msgid "table.move_up"
+msgstr "Yukarı taşı"
+
+msgid "table.move_down"
+msgstr "Aşağı taşı"
+
+msgid "table.move_top"
+msgstr "En üste taşı"
+
+msgid "table.move_bottom"
+msgstr "En alta taşı"
+
+# ============================================================================
+# Days of Week
+# ============================================================================
+
+msgid "day.mo"
+msgstr "Pzt"
+
+msgid "day.tu"
+msgstr "Sal"
+
+msgid "day.we"
+msgstr "Çar"
+
+msgid "day.th"
+msgstr "Per"
+
+msgid "day.fr"
+msgstr "Cum"
+
+msgid "day.sa"
+msgstr "Cmt"
+
+msgid "day.su"
+msgstr "Paz"
+
+# ============================================================================
+# Dialog Messages
+# ============================================================================
+
+msgid "dialog.error"
+msgstr "Hata"
+
+msgid "dialog.warning"
+msgstr "Uyarı"
+
+msgid "dialog.info"
+msgstr "Bilgi"
+
+msgid "dialog.question"
+msgstr "Soru"
+
+msgid "dialog.confirm"
+msgstr "Onayla"
+
+# ============================================================================
+# File Operations
+# ============================================================================
+
+msgid "file.new"
+msgstr "Yeni"
+
+msgid "file.open"
+msgstr "Aç"
+
+msgid "file.save"
+msgstr "Kaydet"
+
+msgid "file.save_as"
+msgstr "Farklı kaydet"
+
+msgid "file.close"
+msgstr "Kapat"
+
+msgid "file.exit"
+msgstr "Çıkış"
+
+# ============================================================================
+# Edit Operations
+# ============================================================================
+
+msgid "edit.cut"
+msgstr "Kes"
+
+msgid "edit.copy"
+msgstr "Kopyala"
+
+msgid "edit.paste"
+msgstr "Yapıştır"
+
+msgid "edit.undo"
+msgstr "Geri al"
+
+msgid "edit.redo"
+msgstr "Yinele"
+
+msgid "edit.select_all"
+msgstr "Tümünü seç"
+
+# ============================================================================
+# Help
+# ============================================================================
+
+msgid "help.about"
+msgstr "Hakkında"
+
+msgid "help.help"
+msgstr "Yardım"
+
+msgid "help.documentation"
+msgstr "Dokümantasyon"
+
+# ============================================================================
+# LEGACY MAPPINGS — English msgid → Turkish msgstr
+# ============================================================================
+
+msgid "OK"
+msgstr "Tamam"
+
+msgid "Ok"
+msgstr "Tamam"
+
+msgid "Cancel"
+msgstr "İptal"
+
+msgid "Yes"
+msgstr "Evet"
+
+msgid "No"
+msgstr "Hayır"
+
+msgid "Retry"
+msgstr "Yeniden dene"
+
+msgid "Delete"
+msgstr "Sil"
+
+msgid "Next"
+msgstr "İleri"
+
+msgid "Previous"
+msgstr "Geri"
+
+msgid "Prev"
+msgstr "Önceki"
+
+msgid "Open"
+msgstr "Aç"
+
+msgid "Close"
+msgstr "Kapat"
+
+msgid "Add"
+msgstr "Ekle"
+
+msgid "Remove"
+msgstr "Kaldır"
+
+msgid "Submit"
+msgstr "Gönder"
+
+msgid "Save"
+msgstr "Kaydet"
+
+msgid "Apply"
+msgstr "Uygula"
+
+# Font legacy
+msgid "Family"
+msgstr "Yazı tipi"
+
+msgid "Weight"
+msgstr "Kalınlık"
+
+msgid "Slant"
+msgstr "Eğim"
+
+msgid "Effects"
+msgstr "Efektler"
+
+msgid "Preview"
+msgstr "Önizleme"
+
+msgid "Size"
+msgstr "Boyut"
+
+msgid "Font Selector"
+msgstr "Yazı tipi seçici"
+
+msgid "The quick brown fox jumps over the lazy dog."
+msgstr "Hızlı kahverengi tilki tembel köpeğin üzerinden atlar."
+
+# Color chooser legacy
+msgid "Color Chooser"
+msgstr "Renk seçici"
+
+msgid "Advanced"
+msgstr "Gelişmiş"
+
+msgid "Themed"
+msgstr "Tema"
+
+msgid "Standard"
+msgstr "Standart"
+
+msgid "Current"
+msgstr "Mevcut"
+
+msgid "New"
+msgstr "Yeni"
+
+msgid "Hue"
+msgstr "Ton"
+
+msgid "Sat"
+msgstr "Doygunluk"
+
+msgid "Lum"
+msgstr "Parlaklık"
+
+msgid "Hex"
+msgstr "Hex"
+
+msgid "Red"
+msgstr "Kırmızı"
+
+msgid "Green"
+msgstr "Yeşil"
+
+msgid "Blue"
+msgstr "Mavi"
+
+msgid "color dropper"
+msgstr "Renk damlalığı"
+
+# Label legacy
+msgid "Hue:"
+msgstr "Ton:"
+
+msgid "Sat:"
+msgstr "Doygunluk:"
+
+msgid "Lum:"
+msgstr "Parlaklık:"
+
+msgid "Hex:"
+msgstr "Hex:"
+
+msgid "Red:"
+msgstr "Kırmızı:"
+
+msgid "Green:"
+msgstr "Yeşil:"
+
+msgid "Blue:"
+msgstr "Mavi:"
+
+# Validation legacy
+msgid "Should be of data type"
+msgstr "Veri türü şu olmalıdır:"
+
+msgid "Invalid data type"
+msgstr "Geçersiz veri türü"
+
+msgid "Number cannot be greater than"
+msgstr "Sayı şundan büyük olamaz:"
+
+msgid "Number cannot be less than"
+msgstr "Sayı şundan küçük olamaz:"
+
+msgid "Out of range"
+msgstr "Aralık dışında"
+
+msgid "Select an item from the list"
+msgstr "Listeden bir öğe seçin"
+
+# Table legacy
+msgid "Search"
+msgstr "Ara"
+
+msgid "Page"
+msgstr "Sayfa"
+
+msgid "of"
+msgstr " / "
+
+msgid "Reset table"
+msgstr "Tabloyu sıfırla"
+
+msgid "Columns"
+msgstr "Sütunlar"
+
+msgid "Move"
+msgstr "Taşı"
+
+msgid "Align"
+msgstr "Hizala"
+
+msgid "Hide column"
+msgstr "Sütunu gizle"
+
+msgid "Delete column"
+msgstr "Sütunu sil"
+
+msgid "Show All"
+msgstr "Tümünü göster"
+
+msgid "Move to left"
+msgstr "Sola taşı"
+
+msgid "Move to right"
+msgstr "Sağa taşı"
+
+msgid "Move to first"
+msgstr "Başa taşı"
+
+msgid "Move to last"
+msgstr "Sona taşı"
+
+msgid "Sort"
+msgstr "Sırala"
+
+msgid "Filter"
+msgstr "Filtrele"
+
+msgid "Export"
+msgstr "Dışa aktar"
+
+msgid "Delete selected rows"
+msgstr "Seçili satırları sil"
+
+msgid "Sort Ascending"
+msgstr "Artan"
+
+msgid "Sort Descending"
+msgstr "Azalan"
+
+msgid "Clear filters"
+msgstr "Filtreleri temizle"
+
+msgid "Filter by cell's value"
+msgstr "Hücre değerine göre filtrele"
+
+msgid "Hide select rows"
+msgstr "Seçili satırları gizle"
+
+msgid "Show only select rows"
+msgstr "Yalnızca seçili satırları göster"
+
+msgid "Export all records"
+msgstr "Tüm kayıtları dışa aktar"
+
+msgid "Export current page"
+msgstr "Geçerli sayfayı dışa aktar"
+
+msgid "Export current selection"
+msgstr "Seçimi dışa aktar"
+
+msgid "Export records in filter"
+msgstr "Filtreli kayıtları dışa aktar"
+
+msgid "Move up"
+msgstr "Yukarı taşı"
+
+msgid "Move down"
+msgstr "Aşağı taşı"
+
+msgid "Move to top"
+msgstr "En üste taşı"
+
+msgid "Move to bottom"
+msgstr "En alta taşı"
+
+# Days legacy
+msgid "Mo"
+msgstr "Pzt"
+
+msgid "Tu"
+msgstr "Sal"
+
+msgid "We"
+msgstr "Çar"
+
+msgid "Th"
+msgstr "Per"
+
+msgid "Fr"
+msgstr "Cum"
+
+msgid "Sa"
+msgstr "Cmt"
+
+msgid "Su"
+msgstr "Paz"
+
+# Dialogs legacy
+msgid "Error"
+msgstr "Hata"
+
+msgid "Warning"
+msgstr "Uyarı"
+
+msgid "Information"
+msgstr "Bilgi"
+
+msgid "Question"
+msgstr "Soru"
+
+msgid "Confirm"
+msgstr "Onayla"
+
+# File legacy
+msgid "New"
+msgstr "Yeni"
+
+msgid "Save As"
+msgstr "Farklı kaydet"
+
+msgid "Exit"
+msgstr "Çıkış"
+
+# Edit legacy
+msgid "Cut"
+msgstr "Kes"
+
+msgid "Copy"
+msgstr "Kopyala"
+
+msgid "Paste"
+msgstr "Yapıştır"
+
+msgid "Undo"
+msgstr "Geri al"
+
+msgid "Redo"
+msgstr "Yinele"
+
+msgid "Select All"
+msgstr "Tümünü seç"
+
+# Help legacy
+msgid "About"
+msgstr "Hakkında"
+
+msgid "Help"
+msgstr "Yardım"
+
+msgid "Documentation"
+msgstr "Dokümantasyon"

@@ -1,0 +1,802 @@
+# Swedish translations for ttkbootstrap
+# Copyright (C) 2024 Israel Dryer
+# This file is distributed under the same license as the ttkbootstrap project.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: ttkbootstrap\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2024-01-01 12:00+0000\n"
+"PO-Revision-Date: 2025-12-11 00:00+0000\n"
+"Last-Translator: ttkbootstrap team <>\n"
+"Language: sv\n"
+"Language-Team: Swedish\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: ttkbootstrap localization\n"
+
+# ============================================================================
+# Common Buttons
+# ============================================================================
+
+msgid "button.ok"
+msgstr "OK"
+
+msgid "button.cancel"
+msgstr "Avbryt"
+
+msgid "button.yes"
+msgstr "Ja"
+
+msgid "button.no"
+msgstr "Nej"
+
+msgid "button.retry"
+msgstr "Försök igen"
+
+msgid "button.delete"
+msgstr "Ta bort"
+
+msgid "button.next"
+msgstr "Nästa"
+
+msgid "button.previous"
+msgstr "Föregående"
+
+msgid "button.prev"
+msgstr "Föregående"
+
+msgid "button.open"
+msgstr "Öppna"
+
+msgid "button.close"
+msgstr "Stäng"
+
+msgid "button.add"
+msgstr "Lägg till"
+
+msgid "button.remove"
+msgstr "Ta bort"
+
+msgid "button.submit"
+msgstr "Skicka"
+
+msgid "button.save"
+msgstr "Spara"
+
+msgid "button.apply"
+msgstr "Verkställ"
+
+# ============================================================================
+# Font Dialog
+# ============================================================================
+
+msgid "font.family"
+msgstr "Typsnitt"
+
+msgid "font.weight"
+msgstr "Vikt"
+
+msgid "font.slant"
+msgstr "Stil"
+
+msgid "font.effects"
+msgstr "Effekter"
+
+msgid "font.preview"
+msgstr "Förhandsvisning"
+
+msgid "font.size"
+msgstr "Storlek"
+
+msgid "font.selector"
+msgstr "Typsnittsväljare"
+
+msgid "font.preview_text"
+msgstr "Den snabba bruna räven hoppar över den lata hunden."
+
+msgid "font.weight.normal"
+msgstr "Normal"
+
+msgid "font.weight.bold"
+msgstr "Fet"
+
+msgid "font.slant.roman"
+msgstr "Rak"
+
+msgid "font.slant.italic"
+msgstr "Kursiv"
+
+msgid "font.effects.underline"
+msgstr "Understruken"
+
+msgid "font.effects.overstrike"
+msgstr "Genomstruken"
+
+# ============================================================================
+# Color Chooser
+# ============================================================================
+
+msgid "color.chooser"
+msgstr "Färgväljare"
+
+msgid "color.advanced"
+msgstr "Avancerat"
+
+msgid "color.themed"
+msgstr "Tema"
+
+msgid "color.standard"
+msgstr "Standard"
+
+msgid "color.current"
+msgstr "Aktuell"
+
+msgid "color.new"
+msgstr "Ny"
+
+msgid "color.hue"
+msgstr "Nyans"
+
+msgid "color.sat"
+msgstr "Mättnad"
+
+msgid "color.lum"
+msgstr "Ljushet"
+
+msgid "color.hex"
+msgstr "Hex"
+
+msgid "color.red"
+msgstr "Röd"
+
+msgid "color.green"
+msgstr "Grön"
+
+msgid "color.blue"
+msgstr "Blå"
+
+msgid "color.dropper"
+msgstr "Färgväljare"
+
+# Value labels
+msgid "color.hue:"
+msgstr "Nyans:"
+
+msgid "color.sat:"
+msgstr "Mättnad:"
+
+msgid "color.lum:"
+msgstr "Ljushet:"
+
+msgid "color.hex:"
+msgstr "Hex:"
+
+msgid "color.red:"
+msgstr "Röd:"
+
+msgid "color.green:"
+msgstr "Grön:"
+
+msgid "color.blue:"
+msgstr "Blå:"
+
+# ============================================================================
+# Validation
+# ============================================================================
+
+msgid "validation.should_be_type"
+msgstr "Måste vara av typen"
+
+msgid "validation.invalid_type"
+msgstr "Ogiltig datatyp"
+
+msgid "validation.greater_than"
+msgstr "Tal får inte vara större än"
+
+msgid "validation.less_than"
+msgstr "Tal får inte vara mindre än"
+
+msgid "validation.out_of_range"
+msgstr "Utanför intervallet"
+
+msgid "validation.select_item"
+msgstr "Välj ett objekt från listan"
+
+# ============================================================================
+# Table View
+# ============================================================================
+
+msgid "table.search"
+msgstr "Sök"
+
+msgid "table.page"
+msgstr "Sida"
+
+msgid "table.of"
+msgstr "av"
+
+msgid "table.reset"
+msgstr "Återställ tabell"
+
+msgid "table.columns"
+msgstr "Kolumner"
+
+msgid "table.move"
+msgstr "Flytta"
+
+msgid "table.align"
+msgstr "Justera"
+
+msgid "table.hide_column"
+msgstr "Dölj kolumn"
+
+msgid "table.delete_column"
+msgstr "Ta bort kolumn"
+
+msgid "table.show_all"
+msgstr "Visa alla"
+
+msgid "table.move_left"
+msgstr "Flytta åt vänster"
+
+msgid "table.move_right"
+msgstr "Flytta åt höger"
+
+msgid "table.move_first"
+msgstr "Flytta till början"
+
+msgid "table.move_last"
+msgstr "Flytta till slutet"
+
+msgid "table.add_record"
+msgstr "Lägg till post"
+
+msgid "table.edit"
+msgstr "Redigera"
+
+msgid "table.delete_row"
+msgstr "Ta bort"
+
+msgid "table.group_by_column"
+msgstr "Gruppera efter denna kolumn"
+
+msgid "table.ungroup_all"
+msgstr "Ta bort gruppering"
+
+msgid "table.clear_sort"
+msgstr "Rensa sortering"
+
+msgid "table.align_left"
+msgstr "Vänsterjustera"
+
+msgid "table.align_center"
+msgstr "Centrera"
+
+msgid "table.align_right"
+msgstr "Högerjustera"
+
+msgid "table.sort"
+msgstr "Sortera"
+
+msgid "table.filter"
+msgstr "Filtrera"
+
+msgid "table.export"
+msgstr "Exportera"
+
+msgid "table.delete_selected"
+msgstr "Ta bort markerade rader"
+
+msgid "table.sort_asc"
+msgstr "Stigande"
+
+msgid "table.sort_desc"
+msgstr "Fallande"
+
+msgid "table.clear_filters"
+msgstr "Rensa filter"
+
+msgid "table.filter_by_value"
+msgstr "Filtrera efter cellvärde"
+
+msgid "table.hide_select"
+msgstr "Dölj markerade rader"
+
+msgid "table.show_select"
+msgstr "Visa endast markerade rader"
+
+msgid "table.export_all"
+msgstr "Exportera alla poster"
+
+msgid "table.export_page"
+msgstr "Exportera aktuell sida"
+
+msgid "table.export_selection"
+msgstr "Exportera markering"
+
+msgid "table.export_filter"
+msgstr "Exportera filtrerade poster"
+
+msgid "table.sort_status"
+msgstr "Sortering: %s"
+
+msgid "table.filter_status"
+msgstr "Filter: %s"
+
+msgid "table.group_status"
+msgstr "Grupp: %s"
+
+msgid "table.filter_column"
+msgstr "Filter: %s"
+
+msgid "table.empty"
+msgstr "(tom)"
+
+msgid "table.search_mode_equals"
+msgstr "Lika med"
+
+msgid "table.search_mode_contains"
+msgstr "Innehåller"
+
+msgid "table.search_mode_starts_with"
+msgstr "Börjar med"
+
+msgid "table.search_mode_ends_with"
+msgstr "Slutar med"
+
+msgid "table.search_mode_sql"
+msgstr "SQL"
+
+msgid "table.move_up"
+msgstr "Flytta upp"
+
+msgid "table.move_down"
+msgstr "Flytta ner"
+
+msgid "table.move_top"
+msgstr "Flytta till toppen"
+
+msgid "table.move_bottom"
+msgstr "Flytta till botten"
+
+# ============================================================================
+# Days of Week
+# ============================================================================
+
+msgid "day.mo"
+msgstr "Må"
+
+msgid "day.tu"
+msgstr "Ti"
+
+msgid "day.we"
+msgstr "On"
+
+msgid "day.th"
+msgstr "To"
+
+msgid "day.fr"
+msgstr "Fr"
+
+msgid "day.sa"
+msgstr "Lö"
+
+msgid "day.su"
+msgstr "Sö"
+
+# ============================================================================
+# Dialog Messages
+# ============================================================================
+
+msgid "dialog.error"
+msgstr "Fel"
+
+msgid "dialog.warning"
+msgstr "Varning"
+
+msgid "dialog.info"
+msgstr "Information"
+
+msgid "dialog.question"
+msgstr "Fråga"
+
+msgid "dialog.confirm"
+msgstr "Bekräfta"
+
+# ============================================================================
+# File Operations
+# ============================================================================
+
+msgid "file.new"
+msgstr "Ny"
+
+msgid "file.open"
+msgstr "Öppna"
+
+msgid "file.save"
+msgstr "Spara"
+
+msgid "file.save_as"
+msgstr "Spara som"
+
+msgid "file.close"
+msgstr "Stäng"
+
+msgid "file.exit"
+msgstr "Avsluta"
+
+# ============================================================================
+# Edit Operations
+# ============================================================================
+
+msgid "edit.cut"
+msgstr "Klipp ut"
+
+msgid "edit.copy"
+msgstr "Kopiera"
+
+msgid "edit.paste"
+msgstr "Klistra in"
+
+msgid "edit.undo"
+msgstr "Ångra"
+
+msgid "edit.redo"
+msgstr "Gör om"
+
+msgid "edit.select_all"
+msgstr "Markera allt"
+
+# ============================================================================
+# Help
+# ============================================================================
+
+msgid "help.about"
+msgstr "Om"
+
+msgid "help.help"
+msgstr "Hjälp"
+
+msgid "help.documentation"
+msgstr "Dokumentation"
+
+# ============================================================================
+# LEGACY MAPPINGS — English msgid → Swedish msgstr
+# ============================================================================
+
+msgid "OK"
+msgstr "OK"
+
+msgid "Ok"
+msgstr "Ok"
+
+msgid "Cancel"
+msgstr "Avbryt"
+
+msgid "Yes"
+msgstr "Ja"
+
+msgid "No"
+msgstr "Nej"
+
+msgid "Retry"
+msgstr "Försök igen"
+
+msgid "Delete"
+msgstr "Ta bort"
+
+msgid "Next"
+msgstr "Nästa"
+
+msgid "Previous"
+msgstr "Föregående"
+
+msgid "Prev"
+msgstr "Föregående"
+
+msgid "Open"
+msgstr "Öppna"
+
+msgid "Close"
+msgstr "Stäng"
+
+msgid "Add"
+msgstr "Lägg till"
+
+msgid "Remove"
+msgstr "Ta bort"
+
+msgid "Submit"
+msgstr "Skicka"
+
+msgid "Save"
+msgstr "Spara"
+
+msgid "Apply"
+msgstr "Verkställ"
+
+# Font legacy
+msgid "Family"
+msgstr "Typsnitt"
+
+msgid "Weight"
+msgstr "Vikt"
+
+msgid "Slant"
+msgstr "Stil"
+
+msgid "Effects"
+msgstr "Effekter"
+
+msgid "Preview"
+msgstr "Förhandsvisning"
+
+msgid "Size"
+msgstr "Storlek"
+
+msgid "Font Selector"
+msgstr "Typsnittsväljare"
+
+msgid "The quick brown fox jumps over the lazy dog."
+msgstr "Den snabba bruna räven hoppar över den lata hunden."
+
+# Color chooser legacy
+msgid "Color Chooser"
+msgstr "Färgväljare"
+
+msgid "Advanced"
+msgstr "Avancerat"
+
+msgid "Themed"
+msgstr "Tema"
+
+msgid "Standard"
+msgstr "Standard"
+
+msgid "Current"
+msgstr "Aktuell"
+
+msgid "New"
+msgstr "Ny"
+
+msgid "Hue"
+msgstr "Nyans"
+
+msgid "Sat"
+msgstr "Mättnad"
+
+msgid "Lum"
+msgstr "Ljushet"
+
+msgid "Hex"
+msgstr "Hex"
+
+msgid "Red"
+msgstr "Röd"
+
+msgid "Green"
+msgstr "Grön"
+
+msgid "Blue"
+msgstr "Blå"
+
+msgid "color dropper"
+msgstr "Färgväljare"
+
+# Label legacy
+msgid "Hue:"
+msgstr "Nyans:"
+
+msgid "Sat:"
+msgstr "Mättnad:"
+
+msgid "Lum:"
+msgstr "Ljushet:"
+
+msgid "Hex:"
+msgstr "Hex:"
+
+msgid "Red:"
+msgstr "Röd:"
+
+msgid "Green:"
+msgstr "Grön:"
+
+msgid "Blue:"
+msgstr "Blå:"
+
+# Validation legacy
+msgid "Should be of data type"
+msgstr "Måste vara av typen"
+
+msgid "Invalid data type"
+msgstr "Ogiltig datatyp"
+
+msgid "Number cannot be greater than"
+msgstr "Tal får inte vara större än"
+
+msgid "Number cannot be less than"
+msgstr "Tal får inte vara mindre än"
+
+msgid "Out of range"
+msgstr "Utanför intervallet"
+
+msgid "Select an item from the list"
+msgstr "Välj ett objekt från listan"
+
+# Table legacy
+msgid "Search"
+msgstr "Sök"
+
+msgid "Page"
+msgstr "Sida"
+
+msgid "of"
+msgstr "av"
+
+msgid "Reset table"
+msgstr "Återställ tabell"
+
+msgid "Columns"
+msgstr "Kolumner"
+
+msgid "Move"
+msgstr "Flytta"
+
+msgid "Align"
+msgstr "Justera"
+
+msgid "Hide column"
+msgstr "Dölj kolumn"
+
+msgid "Delete column"
+msgstr "Ta bort kolumn"
+
+msgid "Show All"
+msgstr "Visa alla"
+
+msgid "Move to left"
+msgstr "Flytta åt vänster"
+
+msgid "Move to right"
+msgstr "Flytta åt höger"
+
+msgid "Move to first"
+msgstr "Flytta till början"
+
+msgid "Move to last"
+msgstr "Flytta till slutet"
+
+msgid "Sort"
+msgstr "Sortera"
+
+msgid "Filter"
+msgstr "Filtrera"
+
+msgid "Export"
+msgstr "Exportera"
+
+msgid "Delete selected rows"
+msgstr "Ta bort markerade rader"
+
+msgid "Sort Ascending"
+msgstr "Stigande"
+
+msgid "Sort Descending"
+msgstr "Fallande"
+
+msgid "Clear filters"
+msgstr "Rensa filter"
+
+msgid "Filter by cell's value"
+msgstr "Filtrera efter cellvärde"
+
+msgid "Hide select rows"
+msgstr "Dölj markerade rader"
+
+msgid "Show only select rows"
+msgstr "Visa endast markerade rader"
+
+msgid "Export all records"
+msgstr "Exportera alla poster"
+
+msgid "Export current page"
+msgstr "Exportera aktuell sida"
+
+msgid "Export current selection"
+msgstr "Exportera markering"
+
+msgid "Export records in filter"
+msgstr "Exportera filtrerade poster"
+
+msgid "Move up"
+msgstr "Flytta upp"
+
+msgid "Move down"
+msgstr "Flytta ner"
+
+msgid "Move to top"
+msgstr "Flytta till toppen"
+
+msgid "Move to bottom"
+msgstr "Flytta till botten"
+
+# Days legacy
+msgid "Mo"
+msgstr "Må"
+
+msgid "Tu"
+msgstr "Ti"
+
+msgid "We"
+msgstr "On"
+
+msgid "Th"
+msgstr "To"
+
+msgid "Fr"
+msgstr "Fr"
+
+msgid "Sa"
+msgstr "Lö"
+
+msgid "Su"
+msgstr "Sö"
+
+# Dialogs legacy
+msgid "Error"
+msgstr "Fel"
+
+msgid "Warning"
+msgstr "Varning"
+
+msgid "Information"
+msgstr "Information"
+
+msgid "Question"
+msgstr "Fråga"
+
+msgid "Confirm"
+msgstr "Bekräfta"
+
+# File legacy
+msgid "New"
+msgstr "Ny"
+
+msgid "Save As"
+msgstr "Spara som"
+
+msgid "Exit"
+msgstr "Avsluta"
+
+# Edit legacy
+msgid "Cut"
+msgstr "Klipp ut"
+
+msgid "Copy"
+msgstr "Kopiera"
+
+msgid "Paste"
+msgstr "Klistra in"
+
+msgid "Undo"
+msgstr "Ångra"
+
+msgid "Redo"
+msgstr "Gör om"
+
+msgid "Select All"
+msgstr "Markera allt"
+
+# Help legacy
+msgid "About"
+msgstr "Om"
+
+msgid "Help"
+msgstr "Hjälp"
+
+msgid "Documentation"
+msgstr "Dokumentation"

@@ -1,0 +1,811 @@
+# Hebrew translations for ttkbootstrap
+# Copyright (C) 2024 Israel Dryer
+# This file is distributed under the same license as the ttkbootstrap project.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: ttkbootstrap\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2024-01-01 12:00+0000\n"
+"PO-Revision-Date: 2025-12-11 00:00+0000\n"
+"Last-Translator: ttkbootstrap team <>\n"
+"Language: he\n"
+"Language-Team: Hebrew\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: ttkbootstrap localization\n"
+
+# ============================================================================
+# Common Buttons
+# ============================================================================
+
+msgid "button.ok"
+msgstr "אישור"
+
+msgid "button.cancel"
+msgstr "ביטול"
+
+msgid "button.yes"
+msgstr "כן"
+
+msgid "button.no"
+msgstr "לא"
+
+msgid "button.retry"
+msgstr "נסה שוב"
+
+msgid "button.delete"
+msgstr "מחיקה"
+
+msgid "button.next"
+msgstr "הבא"
+
+msgid "button.previous"
+msgstr "הקודם"
+
+msgid "button.prev"
+msgstr "הקודם"
+
+msgid "button.open"
+msgstr "פתח"
+
+msgid "button.close"
+msgstr "סגור"
+
+msgid "button.add"
+msgstr "הוספה"
+
+msgid "button.remove"
+msgstr "הסרה"
+
+msgid "button.submit"
+msgstr "שליחה"
+
+msgid "button.save"
+msgstr "שמירה"
+
+msgid "button.apply"
+msgstr "החלה"
+
+# ============================================================================
+# Font Dialog
+# ============================================================================
+
+msgid "font.family"
+msgstr "גופן"
+
+msgid "font.weight"
+msgstr "משקל"
+
+msgid "font.slant"
+msgstr "נטייה"
+
+msgid "font.effects"
+msgstr "אפקטים"
+
+msgid "font.preview"
+msgstr "תצוגה מקדימה"
+
+msgid "font.size"
+msgstr "גודל"
+
+msgid "font.selector"
+msgstr "בחירת גופן"
+
+msgid "font.preview_text"
+msgstr "דג עם חלום צבעוני ישן בתוך קופסה."
+
+msgid "font.weight.normal"
+msgstr "רגיל"
+
+msgid "font.weight.bold"
+msgstr "מודגש"
+
+msgid "font.slant.roman"
+msgstr "רגיל"
+
+msgid "font.slant.italic"
+msgstr "נטוי"
+
+msgid "font.effects.underline"
+msgstr "קו תחתון"
+
+msgid "font.effects.overstrike"
+msgstr "קו חוצה"
+
+# ============================================================================
+# Color Chooser
+# ============================================================================
+
+msgid "color.chooser"
+msgstr "בחירת צבע"
+
+msgid "color.advanced"
+msgstr "מתקדם"
+
+msgid "color.themed"
+msgstr "על פי ערכת נושא"
+
+msgid "color.standard"
+msgstr "סטנדרטי"
+
+msgid "color.current"
+msgstr "נוכחי"
+
+msgid "color.new"
+msgstr "חדש"
+
+msgid "color.hue"
+msgstr "גוון"
+
+msgid "color.sat"
+msgstr "רוויה"
+
+msgid "color.lum"
+msgstr "בהירות"
+
+msgid "color.hex"
+msgstr "Hex"
+
+msgid "color.red"
+msgstr "אדום"
+
+msgid "color.green"
+msgstr "ירוק"
+
+msgid "color.blue"
+msgstr "כחול"
+
+msgid "color.dropper"
+msgstr "טפטפת צבע"
+
+# Color value labels
+msgid "color.hue:"
+msgstr "גוון:"
+
+msgid "color.sat:"
+msgstr "רוויה:"
+
+msgid "color.lum:"
+msgstr "בהירות:"
+
+msgid "color.hex:"
+msgstr "Hex:"
+
+msgid "color.red:"
+msgstr "אדום:"
+
+msgid "color.green:"
+msgstr "ירוק:"
+
+msgid "color.blue:"
+msgstr "כחול:"
+
+# ============================================================================
+# Validation
+# ============================================================================
+
+msgid "validation.should_be_type"
+msgstr "צריך להיות מסוג"
+
+msgid "validation.invalid_type"
+msgstr "סוג נתונים לא תקין"
+
+msgid "validation.greater_than"
+msgstr "המספר לא יכול להיות גדול מ־"
+
+msgid "validation.less_than"
+msgstr "המספר לא יכול להיות קטן מ־"
+
+msgid "validation.out_of_range"
+msgstr "מחוץ לטווח"
+
+msgid "validation.select_item"
+msgstr "בחר פריט מהרשימה"
+
+# ============================================================================
+# Table View
+# ============================================================================
+
+msgid "table.search"
+msgstr "חיפוש"
+
+msgid "table.page"
+msgstr "עמוד"
+
+msgid "table.of"
+msgstr "מתוך"
+
+msgid "table.reset"
+msgstr "איפוס טבלה"
+
+msgid "table.columns"
+msgstr "עמודות"
+
+msgid "table.move"
+msgstr "הזזה"
+
+msgid "table.align"
+msgstr "יישור"
+
+msgid "table.hide_column"
+msgstr "הסתר עמודה"
+
+msgid "table.delete_column"
+msgstr "מחק עמודה"
+
+msgid "table.show_all"
+msgstr "הצג הכול"
+
+msgid "table.move_left"
+msgstr "הזזה שמאלה"
+
+msgid "table.move_right"
+msgstr "הזזה ימינה"
+
+msgid "table.move_first"
+msgstr "הזזה להתחלה"
+
+msgid "table.move_last"
+msgstr "הזזה לסוף"
+
+msgid "table.add_record"
+msgstr "הוסף רשומה"
+
+msgid "table.edit"
+msgstr "עריכה"
+
+msgid "table.delete_row"
+msgstr "מחיקה"
+
+msgid "table.group_by_column"
+msgstr "קיבוץ לפי עמודה זו"
+
+msgid "table.ungroup_all"
+msgstr "בטל קיבוץ"
+
+msgid "table.clear_sort"
+msgstr "נקה מיון"
+
+msgid "table.align_left"
+msgstr "יישור לשמאל"
+
+msgid "table.align_center"
+msgstr "יישור למרכז"
+
+msgid "table.align_right"
+msgstr "יישור לימין"
+
+msgid "table.sort"
+msgstr "מיון"
+
+msgid "table.filter"
+msgstr "סינון"
+
+msgid "table.export"
+msgstr "ייצוא"
+
+msgid "table.delete_selected"
+msgstr "מחיקת שורות שנבחרו"
+
+msgid "table.sort_asc"
+msgstr "מיון עולה"
+
+msgid "table.sort_desc"
+msgstr "מיון יורד"
+
+msgid "table.clear_filters"
+msgstr "ניקוי מסננים"
+
+msgid "table.filter_by_value"
+msgstr "סינון לפי ערך התא"
+
+msgid "table.hide_select"
+msgstr "הסתר שורות נבחרות"
+
+msgid "table.show_select"
+msgstr "הצג רק שורות נבחרות"
+
+msgid "table.export_all"
+msgstr "ייצוא כל הרשומות"
+
+msgid "table.export_page"
+msgstr "ייצוא העמוד הנוכחי"
+
+msgid "table.export_selection"
+msgstr "ייצוא הבחירה הנוכחית"
+
+msgid "table.export_filter"
+msgstr "ייצוא רשומות מסוננות"
+
+msgid "table.sort_status"
+msgstr "מיון: %s"
+
+msgid "table.filter_status"
+msgstr "מסנן: %s"
+
+msgid "table.group_status"
+msgstr "קבוצה: %s"
+
+msgid "table.filter_column"
+msgstr "מסנן: %s"
+
+msgid "table.empty"
+msgstr "(ריק)"
+
+msgid "table.search_mode_equals"
+msgstr "שווה"
+
+msgid "table.search_mode_contains"
+msgstr "מכיל"
+
+msgid "table.search_mode_starts_with"
+msgstr "מתחיל ב־"
+
+msgid "table.search_mode_ends_with"
+msgstr "מסתיים ב־"
+
+msgid "table.search_mode_sql"
+msgstr "SQL"
+
+msgid "table.move_up"
+msgstr "הזזה למעלה"
+
+msgid "table.move_down"
+msgstr "הזזה למטה"
+
+msgid "table.move_top"
+msgstr "הזזה לראש"
+
+msgid "table.move_bottom"
+msgstr "הזזה לתחתית"
+
+# ============================================================================
+# Days of Week
+# ============================================================================
+
+msgid "day.mo"
+msgstr "ב׳"
+
+msgid "day.tu"
+msgstr "ג׳"
+
+msgid "day.we"
+msgstr "ד׳"
+
+msgid "day.th"
+msgstr "ה׳"
+
+msgid "day.fr"
+msgstr "ו׳"
+
+msgid "day.sa"
+msgstr "ש׳"
+
+msgid "day.su"
+msgstr "א׳"
+
+# ============================================================================
+# Common Dialog Messages
+# ============================================================================
+
+msgid "dialog.error"
+msgstr "שגיאה"
+
+msgid "dialog.warning"
+msgstr "אזהרה"
+
+msgid "dialog.info"
+msgstr "מידע"
+
+msgid "dialog.question"
+msgstr "שאלה"
+
+msgid "dialog.confirm"
+msgstr "אישור"
+
+# ============================================================================
+# File Operations
+# ============================================================================
+
+msgid "file.new"
+msgstr "חדש"
+
+msgid "file.open"
+msgstr "פתח"
+
+msgid "file.save"
+msgstr "שמור"
+
+msgid "file.save_as"
+msgstr "שמור בשם"
+
+msgid "file.close"
+msgstr "סגור"
+
+msgid "file.exit"
+msgstr "יציאה"
+
+# ============================================================================
+# Edit Operations
+# ============================================================================
+
+msgid "edit.cut"
+msgstr "גזור"
+
+msgid "edit.copy"
+msgstr "העתק"
+
+msgid "edit.paste"
+msgstr "הדבק"
+
+msgid "edit.undo"
+msgstr "בטל"
+
+msgid "edit.redo"
+msgstr "בצע שוב"
+
+msgid "edit.select_all"
+msgstr "בחר הכול"
+
+# ============================================================================
+# Help
+# ============================================================================
+
+msgid "help.about"
+msgstr "אודות"
+
+msgid "help.help"
+msgstr "עזרה"
+
+msgid "help.documentation"
+msgstr "תיעוד"
+
+# ============================================================================
+# LEGACY MAPPINGS — English msgid → Hebrew msgstr
+# ============================================================================
+
+msgid "OK"
+msgstr "אישור"
+
+msgid "Ok"
+msgstr "אישור"
+
+msgid "Cancel"
+msgstr "ביטול"
+
+msgid "Yes"
+msgstr "כן"
+
+msgid "No"
+msgstr "לא"
+
+msgid "Retry"
+msgstr "נסה שוב"
+
+msgid "Delete"
+msgstr "מחיקה"
+
+msgid "Next"
+msgstr "הבא"
+
+msgid "Previous"
+msgstr "הקודם"
+
+msgid "Prev"
+msgstr "הקודם"
+
+msgid "Open"
+msgstr "פתח"
+
+msgid "Close"
+msgstr "סגור"
+
+msgid "Add"
+msgstr "הוספה"
+
+msgid "Remove"
+msgstr "הסרה"
+
+msgid "Submit"
+msgstr "שליחה"
+
+msgid "Save"
+msgstr "שמירה"
+
+msgid "Apply"
+msgstr "החלה"
+
+# Font dialog (legacy)
+msgid "Family"
+msgstr "גופן"
+
+msgid "Weight"
+msgstr "משקל"
+
+msgid "Slant"
+msgstr "נטייה"
+
+msgid "Effects"
+msgstr "אפקטים"
+
+msgid "Preview"
+msgstr "תצוגה מקדימה"
+
+msgid "Size"
+msgstr "גודל"
+
+msgid "Font Selector"
+msgstr "בחירת גופן"
+
+msgid "The quick brown fox jumps over the lazy dog."
+msgstr "דג עם חלום צבעוני ישן בתוך קופסה."
+
+# Color chooser (legacy)
+msgid "Color Chooser"
+msgstr "בחירת צבע"
+
+msgid "Advanced"
+msgstr "מתקדם"
+
+msgid "Themed"
+msgstr "על פי ערכת נושא"
+
+msgid "Standard"
+msgstr "סטנדרטי"
+
+msgid "Current"
+msgstr "נוכחי"
+
+msgid "New"
+msgstr "חדש"
+
+msgid "Hue"
+msgstr "גוון"
+
+msgid "Sat"
+msgstr "רוויה"
+
+msgid "Lum"
+msgstr "בהירות"
+
+msgid "Hex"
+msgstr "Hex"
+
+msgid "Red"
+msgstr "אדום"
+
+msgid "Green"
+msgstr "ירוק"
+
+msgid "Blue"
+msgstr "כחול"
+
+msgid "color dropper"
+msgstr "טפטפת צבע"
+
+# Color labels legacy
+msgid "Hue:"
+msgstr "גוון:"
+
+msgid "Sat:"
+msgstr "רוויה:"
+
+msgid "Lum:"
+msgstr "בהירות:"
+
+msgid "Hex:"
+msgstr "Hex:"
+
+msgid "Red:"
+msgstr "אדום:"
+
+msgid "Green:"
+msgstr "ירוק:"
+
+msgid "Blue:"
+msgstr "כחול:"
+
+# Validation (legacy)
+msgid "Should be of data type"
+msgstr "צריך להיות מסוג"
+
+msgid "Invalid data type"
+msgstr "סוג נתונים לא תקין"
+
+msgid "Number cannot be greater than"
+msgstr "המספר לא יכול להיות גדול מ־"
+
+msgid "Number cannot be less than"
+msgstr "המספר לא יכול להיות קטן מ־"
+
+msgid "Out of range"
+msgstr "מחוץ לטווח"
+
+msgid "Select an item from the list"
+msgstr "בחר פריט מהרשימה"
+
+# Table view (legacy)
+msgid "Search"
+msgstr "חיפוש"
+
+msgid "Page"
+msgstr "עמוד"
+
+msgid "of"
+msgstr "מתוך"
+
+msgid "Reset table"
+msgstr "איפוס טבלה"
+
+msgid "Columns"
+msgstr "עמודות"
+
+msgid "Move"
+msgstr "הזזה"
+
+msgid "Align"
+msgstr "יישור"
+
+msgid "Hide column"
+msgstr "הסתר עמודה"
+
+msgid "Delete column"
+msgstr "מחק עמודה"
+
+msgid "Show All"
+msgstr "הצג הכול"
+
+msgid "Move to left"
+msgstr "הזזה שמאלה"
+
+msgid "Move to right"
+msgstr "הזזה ימינה"
+
+msgid "Move to first"
+msgstr "הזזה להתחלה"
+
+msgid "Move to last"
+msgstr "הזזה לסוף"
+
+msgid "Align left"
+msgstr "יישור לשמאל"
+
+msgid "Align center"
+msgstr "יישור למרכז"
+
+msgid "Align right"
+msgstr "יישור לימין"
+
+msgid "Sort"
+msgstr "מיון"
+
+msgid "Filter"
+msgstr "סינון"
+
+msgid "Export"
+msgstr "ייצוא"
+
+msgid "Delete selected rows"
+msgstr "מחיקת שורות שנבחרו"
+
+msgid "Sort Ascending"
+msgstr "מיון עולה"
+
+msgid "Sort Descending"
+msgstr "מיון יורד"
+
+msgid "Clear filters"
+msgstr "ניקוי מסננים"
+
+msgid "Filter by cell's value"
+msgstr "סינון לפי ערך התא"
+
+msgid "Hide select rows"
+msgstr "הסתר שורות נבחרות"
+
+msgid "Show only select rows"
+msgstr "הצג רק שורות נבחרות"
+
+msgid "Export all records"
+msgstr "ייצוא כל הרשומות"
+
+msgid "Export current page"
+msgstr "ייצוא העמוד הנוכחי"
+
+msgid "Export current selection"
+msgstr "ייצוא הבחירה הנוכחית"
+
+msgid "Export records in filter"
+msgstr "ייצוא רשומות מסוננות"
+
+msgid "Move up"
+msgstr "הזזה למעלה"
+
+msgid "Move down"
+msgstr "הזזה למטה"
+
+msgid "Move to top"
+msgstr "הזזה לראש"
+
+msgid "Move to bottom"
+msgstr "הזזה לתחתית"
+
+# Days (legacy)
+msgid "Mo"
+msgstr "ב׳"
+
+msgid "Tu"
+msgstr "ג׳"
+
+msgid "We"
+msgstr "ד׳"
+
+msgid "Th"
+msgstr "ה׳"
+
+msgid "Fr"
+msgstr "ו׳"
+
+msgid "Sa"
+msgstr "ש׳"
+
+msgid "Su"
+msgstr "א׳"
+
+# Dialogs (legacy)
+msgid "Error"
+msgstr "שגיאה"
+
+msgid "Warning"
+msgstr "אזהרה"
+
+msgid "Information"
+msgstr "מידע"
+
+msgid "Question"
+msgstr "שאלה"
+
+msgid "Confirm"
+msgstr "אישור"
+
+# File operations (legacy)
+msgid "New"
+msgstr "חדש"
+
+msgid "Save As"
+msgstr "שמור בשם"
+
+msgid "Exit"
+msgstr "יציאה"
+
+# Edit (legacy)
+msgid "Cut"
+msgstr "גזור"
+
+msgid "Copy"
+msgstr "העתק"
+
+msgid "Paste"
+msgstr "הדבק"
+
+msgid "Undo"
+msgstr "בטל"
+
+msgid "Redo"
+msgstr "בצע שוב"
+
+msgid "Select All"
+msgstr "בחר הכול"
+
+# Help (legacy)
+msgid "About"
+msgstr "אודות"
+
+msgid "Help"
+msgstr "עזרה"
+
+msgid "Documentation"
+msgstr "תיעוד"

@@ -1,0 +1,802 @@
+# Slovenian translations for ttkbootstrap
+# Copyright (C) 2024 Israel Dryer
+# This file is distributed under the same license as the ttkbootstrap project.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: ttkbootstrap\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2024-01-01 12:00+0000\n"
+"PO-Revision-Date: 2025-12-11 00:00+0000\n"
+"Last-Translator: ttkbootstrap team <>\n"
+"Language: sl\n"
+"Language-Team: Slovenian\n"
+"Plural-Forms: nplurals=4; plural=(n%100==1 ? 0 : n%100==2 ? 1 : (n%100>=3 && n%100<=4) ? 2 : 3);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: ttkbootstrap localization\n"
+
+# ============================================================================
+# Common Buttons
+# ============================================================================
+
+msgid "button.ok"
+msgstr "V redu"
+
+msgid "button.cancel"
+msgstr "Prekliči"
+
+msgid "button.yes"
+msgstr "Da"
+
+msgid "button.no"
+msgstr "Ne"
+
+msgid "button.retry"
+msgstr "Poskusi znova"
+
+msgid "button.delete"
+msgstr "Izbriši"
+
+msgid "button.next"
+msgstr "Naprej"
+
+msgid "button.previous"
+msgstr "Nazaj"
+
+msgid "button.prev"
+msgstr "Prejšnje"
+
+msgid "button.open"
+msgstr "Odpri"
+
+msgid "button.close"
+msgstr "Zapri"
+
+msgid "button.add"
+msgstr "Dodaj"
+
+msgid "button.remove"
+msgstr "Odstrani"
+
+msgid "button.submit"
+msgstr "Pošlji"
+
+msgid "button.save"
+msgstr "Shrani"
+
+msgid "button.apply"
+msgstr "Uporabi"
+
+# ============================================================================
+# Font Dialog
+# ============================================================================
+
+msgid "font.family"
+msgstr "Pisava"
+
+msgid "font.weight"
+msgstr "Debelina"
+
+msgid "font.slant"
+msgstr "Nagib"
+
+msgid "font.effects"
+msgstr "Učinki"
+
+msgid "font.preview"
+msgstr "Predogled"
+
+msgid "font.size"
+msgstr "Velikost"
+
+msgid "font.selector"
+msgstr "Izbirnik pisave"
+
+msgid "font.preview_text"
+msgstr "Hiter rjav lisjak skoči čez lenega psa."
+
+msgid "font.weight.normal"
+msgstr "Navadno"
+
+msgid "font.weight.bold"
+msgstr "Krepko"
+
+msgid "font.slant.roman"
+msgstr "Pokončno"
+
+msgid "font.slant.italic"
+msgstr "Ležeče"
+
+msgid "font.effects.underline"
+msgstr "Podčrtano"
+
+msgid "font.effects.overstrike"
+msgstr "Prečrtano"
+
+# ============================================================================
+# Color Chooser
+# ============================================================================
+
+msgid "color.chooser"
+msgstr "Izbirnik barv"
+
+msgid "color.advanced"
+msgstr "Napredno"
+
+msgid "color.themed"
+msgstr "Tematsko"
+
+msgid "color.standard"
+msgstr "Standardno"
+
+msgid "color.current"
+msgstr "Trenutno"
+
+msgid "color.new"
+msgstr "Novo"
+
+msgid "color.hue"
+msgstr "Odtenek"
+
+msgid "color.sat"
+msgstr "Nasičenost"
+
+msgid "color.lum"
+msgstr "Svetlost"
+
+msgid "color.hex"
+msgstr "Hex"
+
+msgid "color.red"
+msgstr "Rdeča"
+
+msgid "color.green"
+msgstr "Zelena"
+
+msgid "color.blue"
+msgstr "Modra"
+
+msgid "color.dropper"
+msgstr "Kapalka"
+
+# Value labels
+msgid "color.hue:"
+msgstr "Odtenek:"
+
+msgid "color.sat:"
+msgstr "Nasičenost:"
+
+msgid "color.lum:"
+msgstr "Svetlost:"
+
+msgid "color.hex:"
+msgstr "Hex:"
+
+msgid "color.red:"
+msgstr "Rdeča:"
+
+msgid "color.green:"
+msgstr "Zelena:"
+
+msgid "color.blue:"
+msgstr "Modra:"
+
+# ============================================================================
+# Validation
+# ============================================================================
+
+msgid "validation.should_be_type"
+msgstr "Mora biti tipa"
+
+msgid "validation.invalid_type"
+msgstr "Neveljaven tip podatkov"
+
+msgid "validation.greater_than"
+msgstr "Število ne sme biti večje od"
+
+msgid "validation.less_than"
+msgstr "Število ne sme biti manjše od"
+
+msgid "validation.out_of_range"
+msgstr "Izven območja"
+
+msgid "validation.select_item"
+msgstr "Izberite element s seznama"
+
+# ============================================================================
+# Table View
+# ============================================================================
+
+msgid "table.search"
+msgstr "Iskanje"
+
+msgid "table.page"
+msgstr "Stran"
+
+msgid "table.of"
+msgstr "od"
+
+msgid "table.reset"
+msgstr "Ponastavi tabelo"
+
+msgid "table.columns"
+msgstr "Stolpci"
+
+msgid "table.move"
+msgstr "Premakni"
+
+msgid "table.align"
+msgstr "Poravnaj"
+
+msgid "table.hide_column"
+msgstr "Skrij stolpec"
+
+msgid "table.delete_column"
+msgstr "Izbriši stolpec"
+
+msgid "table.show_all"
+msgstr "Prikaži vse"
+
+msgid "table.move_left"
+msgstr "Premakni levo"
+
+msgid "table.move_right"
+msgstr "Premakni desno"
+
+msgid "table.move_first"
+msgstr "Premakni na začetek"
+
+msgid "table.move_last"
+msgstr "Premakni na konec"
+
+msgid "table.add_record"
+msgstr "Dodaj zapis"
+
+msgid "table.edit"
+msgstr "Uredi"
+
+msgid "table.delete_row"
+msgstr "Izbriši"
+
+msgid "table.group_by_column"
+msgstr "Združi po tem stolpcu"
+
+msgid "table.ungroup_all"
+msgstr "Odstrani združevanje"
+
+msgid "table.clear_sort"
+msgstr "Počisti razvrščanje"
+
+msgid "table.align_left"
+msgstr "Poravnaj levo"
+
+msgid "table.align_center"
+msgstr "Poravnaj sredinsko"
+
+msgid "table.align_right"
+msgstr "Poravnaj desno"
+
+msgid "table.sort"
+msgstr "Razvrsti"
+
+msgid "table.filter"
+msgstr "Filtriraj"
+
+msgid "table.export"
+msgstr "Izvozi"
+
+msgid "table.delete_selected"
+msgstr "Izbriši izbrane vrstice"
+
+msgid "table.sort_asc"
+msgstr "Naraščajoče"
+
+msgid "table.sort_desc"
+msgstr "Padajoče"
+
+msgid "table.clear_filters"
+msgstr "Počisti filtre"
+
+msgid "table.filter_by_value"
+msgstr "Filtriraj po vrednosti celice"
+
+msgid "table.hide_select"
+msgstr "Skrij izbrane vrstice"
+
+msgid "table.show_select"
+msgstr "Prikaži samo izbrane vrstice"
+
+msgid "table.export_all"
+msgstr "Izvozi vse zapise"
+
+msgid "table.export_page"
+msgstr "Izvozi trenutno stran"
+
+msgid "table.export_selection"
+msgstr "Izvozi izbor"
+
+msgid "table.export_filter"
+msgstr "Izvozi filtrirane zapise"
+
+msgid "table.sort_status"
+msgstr "Razvrščanje: %s"
+
+msgid "table.filter_status"
+msgstr "Filter: %s"
+
+msgid "table.group_status"
+msgstr "Skupina: %s"
+
+msgid "table.filter_column"
+msgstr "Filter: %s"
+
+msgid "table.empty"
+msgstr "(prazno)"
+
+msgid "table.search_mode_equals"
+msgstr "Enako"
+
+msgid "table.search_mode_contains"
+msgstr "Vsebuje"
+
+msgid "table.search_mode_starts_with"
+msgstr "Se začne z"
+
+msgid "table.search_mode_ends_with"
+msgstr "Se konča z"
+
+msgid "table.search_mode_sql"
+msgstr "SQL"
+
+msgid "table.move_up"
+msgstr "Premakni gor"
+
+msgid "table.move_down"
+msgstr "Premakni dol"
+
+msgid "table.move_top"
+msgstr "Premakni na vrh"
+
+msgid "table.move_bottom"
+msgstr "Premakni na dno"
+
+# ============================================================================
+# Days of Week
+# ============================================================================
+
+msgid "day.mo"
+msgstr "Po"
+
+msgid "day.tu"
+msgstr "To"
+
+msgid "day.we"
+msgstr "Sr"
+
+msgid "day.th"
+msgstr "Če"
+
+msgid "day.fr"
+msgstr "Pe"
+
+msgid "day.sa"
+msgstr "So"
+
+msgid "day.su"
+msgstr "Ne"
+
+# ============================================================================
+# Dialog Messages
+# ============================================================================
+
+msgid "dialog.error"
+msgstr "Napaka"
+
+msgid "dialog.warning"
+msgstr "Opozorilo"
+
+msgid "dialog.info"
+msgstr "Informacije"
+
+msgid "dialog.question"
+msgstr "Vprašanje"
+
+msgid "dialog.confirm"
+msgstr "Potrdi"
+
+# ============================================================================
+# File Operations
+# ============================================================================
+
+msgid "file.new"
+msgstr "Novo"
+
+msgid "file.open"
+msgstr "Odpri"
+
+msgid "file.save"
+msgstr "Shrani"
+
+msgid "file.save_as"
+msgstr "Shrani kot"
+
+msgid "file.close"
+msgstr "Zapri"
+
+msgid "file.exit"
+msgstr "Izhod"
+
+# ============================================================================
+# Edit Operations
+# ============================================================================
+
+msgid "edit.cut"
+msgstr "Izreži"
+
+msgid "edit.copy"
+msgstr "Kopiraj"
+
+msgid "edit.paste"
+msgstr "Prilepi"
+
+msgid "edit.undo"
+msgstr "Razveljavi"
+
+msgid "edit.redo"
+msgstr "Ponovi"
+
+msgid "edit.select_all"
+msgstr "Izberi vse"
+
+# ============================================================================
+# Help
+# ============================================================================
+
+msgid "help.about"
+msgstr "O programu"
+
+msgid "help.help"
+msgstr "Pomoč"
+
+msgid "help.documentation"
+msgstr "Dokumentacija"
+
+# ============================================================================
+# LEGACY MAPPINGS — English msgid → Slovenian msgstr
+# ============================================================================
+
+msgid "OK"
+msgstr "V redu"
+
+msgid "Ok"
+msgstr "V redu"
+
+msgid "Cancel"
+msgstr "Prekliči"
+
+msgid "Yes"
+msgstr "Da"
+
+msgid "No"
+msgstr "Ne"
+
+msgid "Retry"
+msgstr "Poskusi znova"
+
+msgid "Delete"
+msgstr "Izbriši"
+
+msgid "Next"
+msgstr "Naprej"
+
+msgid "Previous"
+msgstr "Nazaj"
+
+msgid "Prev"
+msgstr "Prejšnje"
+
+msgid "Open"
+msgstr "Odpri"
+
+msgid "Close"
+msgstr "Zapri"
+
+msgid "Add"
+msgstr "Dodaj"
+
+msgid "Remove"
+msgstr "Odstrani"
+
+msgid "Submit"
+msgstr "Pošlji"
+
+msgid "Save"
+msgstr "Shrani"
+
+msgid "Apply"
+msgstr "Uporabi"
+
+# Font legacy
+msgid "Family"
+msgstr "Pisava"
+
+msgid "Weight"
+msgstr "Debelina"
+
+msgid "Slant"
+msgstr "Nagib"
+
+msgid "Effects"
+msgstr "Učinki"
+
+msgid "Preview"
+msgstr "Predogled"
+
+msgid "Size"
+msgstr "Velikost"
+
+msgid "Font Selector"
+msgstr "Izbirnik pisave"
+
+msgid "The quick brown fox jumps over the lazy dog."
+msgstr "Hiter rjav lisjak skoči čez lenega psa."
+
+# Color chooser legacy
+msgid "Color Chooser"
+msgstr "Izbirnik barv"
+
+msgid "Advanced"
+msgstr "Napredno"
+
+msgid "Themed"
+msgstr "Tematsko"
+
+msgid "Standard"
+msgstr "Standardno"
+
+msgid "Current"
+msgstr "Trenutno"
+
+msgid "New"
+msgstr "Novo"
+
+msgid "Hue"
+msgstr "Odtenek"
+
+msgid "Sat"
+msgstr "Nasičenost"
+
+msgid "Lum"
+msgstr "Svetlost"
+
+msgid "Hex"
+msgstr "Hex"
+
+msgid "Red"
+msgstr "Rdeča"
+
+msgid "Green"
+msgstr "Zelena"
+
+msgid "Blue"
+msgstr "Modra"
+
+msgid "color dropper"
+msgstr "Kapalka"
+
+# Labels
+msgid "Hue:"
+msgstr "Odtenek:"
+
+msgid "Sat:"
+msgstr "Nasičenost:"
+
+msgid "Lum:"
+msgstr "Svetlost:"
+
+msgid "Hex:"
+msgstr "Hex:"
+
+msgid "Red:"
+msgstr "Rdeča:"
+
+msgid "Green:"
+msgstr "Zelena:"
+
+msgid "Blue:"
+msgstr "Modra:"
+
+# Validation legacy
+msgid "Should be of data type"
+msgstr "Mora biti tipa"
+
+msgid "Invalid data type"
+msgstr "Neveljaven tip podatkov"
+
+msgid "Number cannot be greater than"
+msgstr "Število ne sme biti večje od"
+
+msgid "Number cannot be less than"
+msgstr "Število ne sme biti manjše od"
+
+msgid "Out of range"
+msgstr "Izven območja"
+
+msgid "Select an item from the list"
+msgstr "Izberite element s seznama"
+
+# Table legacy
+msgid "Search"
+msgstr "Iskanje"
+
+msgid "Page"
+msgstr "Stran"
+
+msgid "of"
+msgstr "od"
+
+msgid "Reset table"
+msgstr "Ponastavi tabelo"
+
+msgid "Columns"
+msgstr "Stolpci"
+
+msgid "Move"
+msgstr "Premakni"
+
+msgid "Align"
+msgstr "Poravnaj"
+
+msgid "Hide column"
+msgstr "Skrij stolpec"
+
+msgid "Delete column"
+msgstr "Izbriši stolpec"
+
+msgid "Show All"
+msgstr "Prikaži vse"
+
+msgid "Move to left"
+msgstr "Premakni levo"
+
+msgid "Move to right"
+msgstr "Premakni desno"
+
+msgid "Move to first"
+msgstr "Premakni na začetek"
+
+msgid "Move to last"
+msgstr "Premakni na konec"
+
+msgid "Sort"
+msgstr "Razvrsti"
+
+msgid "Filter"
+msgstr "Filtriraj"
+
+msgid "Export"
+msgstr "Izvozi"
+
+msgid "Delete selected rows"
+msgstr "Izbriši izbrane vrstice"
+
+msgid "Sort Ascending"
+msgstr "Naraščajoče"
+
+msgid "Sort Descending"
+msgstr "Padajoče"
+
+msgid "Clear filters"
+msgstr "Počisti filtre"
+
+msgid "Filter by cell's value"
+msgstr "Filtriraj po vrednosti celice"
+
+msgid "Hide select rows"
+msgstr "Skrij izbrane vrstice"
+
+msgid "Show only select rows"
+msgstr "Prikaži samo izbrane vrstice"
+
+msgid "Export all records"
+msgstr "Izvozi vse zapise"
+
+msgid "Export current page"
+msgstr "Izvozi trenutno stran"
+
+msgid "Export current selection"
+msgstr "Izvozi izbor"
+
+msgid "Export records in filter"
+msgstr "Izvozi filtrirane zapise"
+
+msgid "Move up"
+msgstr "Premakni gor"
+
+msgid "Move down"
+msgstr "Premakni dol"
+
+msgid "Move to top"
+msgstr "Premakni na vrh"
+
+msgid "Move to bottom"
+msgstr "Premakni na dno"
+
+# Days legacy
+msgid "Mo"
+msgstr "Po"
+
+msgid "Tu"
+msgstr "To"
+
+msgid "We"
+msgstr "Sr"
+
+msgid "Th"
+msgstr "Če"
+
+msgid "Fr"
+msgstr "Pe"
+
+msgid "Sa"
+msgstr "So"
+
+msgid "Su"
+msgstr "Ne"
+
+# Dialogs legacy
+msgid "Error"
+msgstr "Napaka"
+
+msgid "Warning"
+msgstr "Opozorilo"
+
+msgid "Information"
+msgstr "Informacije"
+
+msgid "Question"
+msgstr "Vprašanje"
+
+msgid "Confirm"
+msgstr "Potrdi"
+
+# File legacy
+msgid "New"
+msgstr "Novo"
+
+msgid "Save As"
+msgstr "Shrani kot"
+
+msgid "Exit"
+msgstr "Izhod"
+
+# Edit legacy
+msgid "Cut"
+msgstr "Izreži"
+
+msgid "Copy"
+msgstr "Kopiraj"
+
+msgid "Paste"
+msgstr "Prilepi"
+
+msgid "Undo"
+msgstr "Razveljavi"
+
+msgid "Redo"
+msgstr "Ponovi"
+
+msgid "Select All"
+msgstr "Izberi vse"
+
+# Help legacy
+msgid "About"
+msgstr "O programu"
+
+msgid "Help"
+msgstr "Pomoč"
+
+msgid "Documentation"
+msgstr "Dokumentacija"

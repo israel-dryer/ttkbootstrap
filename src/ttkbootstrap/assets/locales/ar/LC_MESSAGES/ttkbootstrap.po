@@ -1,0 +1,813 @@
+# Arabic translations for ttkbootstrap
+# Copyright (C) 2024 Israel Dryer
+# This file is distributed under the same license as the ttkbootstrap project.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: ttkbootstrap\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2024-01-01 12:00+0000\n"
+"PO-Revision-Date: 2025-12-11 00:00+0000\n"
+"Last-Translator: ttkbootstrap team\n"
+"Language: ar\n"
+"Language-Team: Arabic\n"
+"Plural-Forms: nplurals=6; plural=n==0?0:n==1?1:n==2?2:n%100>=3 && n%100<=10?3:n%100>=11 && n%100<=99?4:5;\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: ttkbootstrap localization\n"
+
+# ============================================================================
+# Common Buttons
+# ============================================================================
+
+msgid "button.ok"
+msgstr "موافق"
+
+msgid "button.cancel"
+msgstr "إلغاء"
+
+msgid "button.yes"
+msgstr "نعم"
+
+msgid "button.no"
+msgstr "لا"
+
+msgid "button.retry"
+msgstr "إعادة المحاولة"
+
+msgid "button.delete"
+msgstr "حذف"
+
+msgid "button.next"
+msgstr "التالي"
+
+msgid "button.previous"
+msgstr "السابق"
+
+msgid "button.prev"
+msgstr "السابق"
+
+msgid "button.open"
+msgstr "فتح"
+
+msgid "button.close"
+msgstr "إغلاق"
+
+msgid "button.add"
+msgstr "إضافة"
+
+msgid "button.remove"
+msgstr "إزالة"
+
+msgid "button.submit"
+msgstr "إرسال"
+
+msgid "button.save"
+msgstr "حفظ"
+
+msgid "button.apply"
+msgstr "تطبيق"
+
+# ============================================================================
+# Font Dialog
+# ============================================================================
+
+msgid "font.family"
+msgstr "الخط"
+
+msgid "font.weight"
+msgstr "السُّمك"
+
+msgid "font.slant"
+msgstr "الميلان"
+
+msgid "font.effects"
+msgstr "التأثيرات"
+
+msgid "font.preview"
+msgstr "معاينة"
+
+msgid "font.size"
+msgstr "الحجم"
+
+msgid "font.selector"
+msgstr "محدِّد الخط"
+
+msgid "font.preview_text"
+msgstr "الثعلب البني السريع يقفز فوق الكلب الكسول."
+
+msgid "font.weight.normal"
+msgstr "عادي"
+
+msgid "font.weight.bold"
+msgstr "عريض"
+
+msgid "font.slant.roman"
+msgstr "روماني"
+
+msgid "font.slant.italic"
+msgstr "مائل"
+
+msgid "font.effects.underline"
+msgstr "تحته خط"
+
+msgid "font.effects.overstrike"
+msgstr "يتوسطه خط"
+
+# ============================================================================
+# Color Chooser
+# ============================================================================
+
+msgid "color.chooser"
+msgstr "مُنتقي الألوان"
+
+msgid "color.advanced"
+msgstr "متقدم"
+
+msgid "color.themed"
+msgstr "حسب السمة"
+
+msgid "color.standard"
+msgstr "قياسي"
+
+msgid "color.current"
+msgstr "الحالي"
+
+msgid "color.new"
+msgstr "جديد"
+
+msgid "color.hue"
+msgstr "التدرج اللوني"
+
+msgid "color.sat"
+msgstr "التشبع"
+
+msgid "color.lum"
+msgstr "السطوع"
+
+msgid "color.hex"
+msgstr "ست عشري"
+
+msgid "color.red"
+msgstr "أحمر"
+
+msgid "color.green"
+msgstr "أخضر"
+
+msgid "color.blue"
+msgstr "أزرق"
+
+msgid "color.dropper"
+msgstr "قطّارة اللون"
+
+# Color value labels (with colon suffix for label display)
+msgid "color.hue:"
+msgstr "التدرج اللوني:"
+
+msgid "color.sat:"
+msgstr "التشبع:"
+
+msgid "color.lum:"
+msgstr "السطوع:"
+
+msgid "color.hex:"
+msgstr "ست عشري:"
+
+msgid "color.red:"
+msgstr "أحمر:"
+
+msgid "color.green:"
+msgstr "أخضر:"
+
+msgid "color.blue:"
+msgstr "أزرق:"
+
+# ============================================================================
+# Validation Messages
+# ============================================================================
+
+msgid "validation.should_be_type"
+msgstr "يجب أن يكون من نوع البيانات"
+
+msgid "validation.invalid_type"
+msgstr "نوع بيانات غير صالح"
+
+msgid "validation.greater_than"
+msgstr "لا يمكن أن تكون القيمة أكبر من"
+
+msgid "validation.less_than"
+msgstr "لا يمكن أن تكون القيمة أقل من"
+
+msgid "validation.out_of_range"
+msgstr "خارج النطاق"
+
+msgid "validation.select_item"
+msgstr "اختر عنصرًا من القائمة"
+
+# ============================================================================
+# Table View
+# ============================================================================
+
+msgid "table.search"
+msgstr "بحث"
+
+msgid "table.page"
+msgstr "صفحة"
+
+msgid "table.of"
+msgstr "من"
+
+msgid "table.reset"
+msgstr "إعادة تعيين الجدول"
+
+msgid "table.columns"
+msgstr "الأعمدة"
+
+msgid "table.move"
+msgstr "نقل"
+
+msgid "table.align"
+msgstr "محاذاة"
+
+msgid "table.hide_column"
+msgstr "إخفاء العمود"
+
+msgid "table.delete_column"
+msgstr "حذف العمود"
+
+msgid "table.show_all"
+msgstr "إظهار الكل"
+
+msgid "table.move_left"
+msgstr "نقل إلى اليسار"
+
+msgid "table.move_right"
+msgstr "نقل إلى اليمين"
+
+msgid "table.move_first"
+msgstr "نقل إلى البداية"
+
+msgid "table.move_last"
+msgstr "نقل إلى النهاية"
+
+msgid "table.add_record"
+msgstr "إضافة سجل"
+
+msgid "table.edit"
+msgstr "تحرير"
+
+msgid "table.delete_row"
+msgstr "حذف"
+
+msgid "table.group_by_column"
+msgstr "تجميع حسب هذا العمود"
+
+msgid "table.ungroup_all"
+msgstr "إلغاء كل التجميع"
+
+msgid "table.clear_sort"
+msgstr "مسح الفرز"
+
+msgid "table.align_left"
+msgstr "محاذاة إلى اليسار"
+
+msgid "table.align_center"
+msgstr "محاذاة إلى الوسط"
+
+msgid "table.align_right"
+msgstr "محاذاة إلى اليمين"
+
+msgid "table.sort"
+msgstr "فرز"
+
+msgid "table.filter"
+msgstr "تصفية"
+
+msgid "table.export"
+msgstr "تصدير"
+
+msgid "table.delete_selected"
+msgstr "حذف الصفوف المحددة"
+
+msgid "table.sort_asc"
+msgstr "فرز تصاعدي"
+
+msgid "table.sort_desc"
+msgstr "فرز تنازلي"
+
+msgid "table.clear_filters"
+msgstr "مسح عوامل التصفية"
+
+msgid "table.filter_by_value"
+msgstr "تصفية حسب قيمة الخلية"
+
+msgid "table.hide_select"
+msgstr "إخفاء الصفوف المحددة"
+
+msgid "table.show_select"
+msgstr "إظهار الصفوف المحددة فقط"
+
+msgid "table.export_all"
+msgstr "تصدير كل السجلات"
+
+msgid "table.export_page"
+msgstr "تصدير الصفحة الحالية"
+
+msgid "table.export_selection"
+msgstr "تصدير التحديد الحالي"
+
+msgid "table.export_filter"
+msgstr "تصدير السجلات المصفاة"
+
+msgid "table.sort_status"
+msgstr "الفرز: %s"
+
+msgid "table.filter_status"
+msgstr "التصفية: %s"
+
+msgid "table.group_status"
+msgstr "المجموعة: %s"
+
+msgid "table.filter_column"
+msgstr "التصفية: %s"
+
+msgid "table.empty"
+msgstr "(فارغ)"
+
+msgid "table.search_mode_equals"
+msgstr "يساوي"
+
+msgid "table.search_mode_contains"
+msgstr "يحتوي على"
+
+msgid "table.search_mode_starts_with"
+msgstr "يبدأ بـ"
+
+msgid "table.search_mode_ends_with"
+msgstr "ينتهي بـ"
+
+msgid "table.search_mode_sql"
+msgstr "SQL"
+
+msgid "table.move_up"
+msgstr "نقل إلى الأعلى"
+
+msgid "table.move_down"
+msgstr "نقل إلى الأسفل"
+
+msgid "table.move_top"
+msgstr "نقل إلى أعلى"
+
+msgid "table.move_bottom"
+msgstr "نقل إلى أسفل"
+
+# ============================================================================
+# Days of Week (abbreviated)
+# ============================================================================
+
+msgid "day.mo"
+msgstr "اث"
+
+msgid "day.tu"
+msgstr "ثل"
+
+msgid "day.we"
+msgstr "أر"
+
+msgid "day.th"
+msgstr "خم"
+
+msgid "day.fr"
+msgstr "جم"
+
+msgid "day.sa"
+msgstr "سب"
+
+msgid "day.su"
+msgstr "أح"
+
+# ============================================================================
+# Common Dialog Messages
+# ============================================================================
+
+msgid "dialog.error"
+msgstr "خطأ"
+
+msgid "dialog.warning"
+msgstr "تحذير"
+
+msgid "dialog.info"
+msgstr "معلومات"
+
+msgid "dialog.question"
+msgstr "سؤال"
+
+msgid "dialog.confirm"
+msgstr "تأكيد"
+
+# ============================================================================
+# File Operations
+# ============================================================================
+
+msgid "file.new"
+msgstr "جديد"
+
+msgid "file.open"
+msgstr "فتح"
+
+msgid "file.save"
+msgstr "حفظ"
+
+msgid "file.save_as"
+msgstr "حفظ باسم"
+
+msgid "file.close"
+msgstr "إغلاق"
+
+msgid "file.exit"
+msgstr "إنهاء"
+
+# ============================================================================
+# Edit Operations
+# ============================================================================
+
+msgid "edit.cut"
+msgstr "قص"
+
+msgid "edit.copy"
+msgstr "نسخ"
+
+msgid "edit.paste"
+msgstr "لصق"
+
+msgid "edit.undo"
+msgstr "تراجع"
+
+msgid "edit.redo"
+msgstr "إعادة"
+
+msgid "edit.select_all"
+msgstr "تحديد الكل"
+
+# ============================================================================
+# Help
+# ============================================================================
+
+msgid "help.about"
+msgstr "حول"
+
+msgid "help.help"
+msgstr "مساعدة"
+
+msgid "help.documentation"
+msgstr "التوثيق"
+
+# ============================================================================
+# LEGACY MAPPINGS FOR BACKWARDS COMPATIBILITY
+# English text as msgid -> Localized text as msgstr
+# ============================================================================
+
+# Common buttons (legacy)
+msgid "OK"
+msgstr "موافق"
+
+msgid "Ok"
+msgstr "موافق"
+
+msgid "Cancel"
+msgstr "إلغاء"
+
+msgid "Yes"
+msgstr "نعم"
+
+msgid "No"
+msgstr "لا"
+
+msgid "Retry"
+msgstr "إعادة المحاولة"
+
+msgid "Delete"
+msgstr "حذف"
+
+msgid "Next"
+msgstr "التالي"
+
+msgid "Previous"
+msgstr "السابق"
+
+msgid "Prev"
+msgstr "السابق"
+
+msgid "Open"
+msgstr "فتح"
+
+msgid "Close"
+msgstr "إغلاق"
+
+msgid "Add"
+msgstr "إضافة"
+
+msgid "Remove"
+msgstr "إزالة"
+
+msgid "Submit"
+msgstr "إرسال"
+
+msgid "Save"
+msgstr "حفظ"
+
+msgid "Apply"
+msgstr "تطبيق"
+
+# Font dialog (legacy)
+msgid "Family"
+msgstr "الخط"
+
+msgid "Weight"
+msgstr "السُّمك"
+
+msgid "Slant"
+msgstr "الميلان"
+
+msgid "Effects"
+msgstr "التأثيرات"
+
+msgid "Preview"
+msgstr "معاينة"
+
+msgid "Size"
+msgstr "الحجم"
+
+msgid "Font Selector"
+msgstr "محدِّد الخط"
+
+msgid "The quick brown fox jumps over the lazy dog."
+msgstr "الثعلب البني السريع يقفز فوق الكلب الكسول."
+
+# Color chooser (legacy)
+msgid "Color Chooser"
+msgstr "مُنتقي الألوان"
+
+msgid "Advanced"
+msgstr "متقدم"
+
+msgid "Themed"
+msgstr "حسب السمة"
+
+msgid "Standard"
+msgstr "قياسي"
+
+msgid "Current"
+msgstr "الحالي"
+
+msgid "New"
+msgstr "جديد"
+
+msgid "Hue"
+msgstr "التدرج اللوني"
+
+msgid "Sat"
+msgstr "التشبع"
+
+msgid "Lum"
+msgstr "السطوع"
+
+msgid "Hex"
+msgstr "ست عشري"
+
+msgid "Red"
+msgstr "أحمر"
+
+msgid "Green"
+msgstr "أخضر"
+
+msgid "Blue"
+msgstr "أزرق"
+
+msgid "color dropper"
+msgstr "قطّارة اللون"
+
+# Color labels with colons (legacy - for backwards compatibility)
+msgid "Hue:"
+msgstr "التدرج اللوني:"
+
+msgid "Sat:"
+msgstr "التشبع:"
+
+msgid "Lum:"
+msgstr "السطوع:"
+
+msgid "Hex:"
+msgstr "ست عشري:"
+
+msgid "Red:"
+msgstr "أحمر:"
+
+msgid "Green:"
+msgstr "أخضر:"
+
+msgid "Blue:"
+msgstr "أزرق:"
+
+# Validation (legacy)
+msgid "Should be of data type"
+msgstr "يجب أن يكون من نوع البيانات"
+
+msgid "Invalid data type"
+msgstr "نوع بيانات غير صالح"
+
+msgid "Number cannot be greater than"
+msgstr "لا يمكن أن تكون القيمة أكبر من"
+
+msgid "Number cannot be less than"
+msgstr "لا يمكن أن تكون القيمة أقل من"
+
+msgid "Out of range"
+msgstr "خارج النطاق"
+
+msgid "Select an item from the list"
+msgstr "اختر عنصرًا من القائمة"
+
+# Table view (legacy)
+msgid "Search"
+msgstr "بحث"
+
+msgid "Page"
+msgstr "صفحة"
+
+msgid "of"
+msgstr "من"
+
+msgid "Reset table"
+msgstr "إعادة تعيين الجدول"
+
+msgid "Columns"
+msgstr "الأعمدة"
+
+msgid "Move"
+msgstr "نقل"
+
+msgid "Align"
+msgstr "محاذاة"
+
+msgid "Hide column"
+msgstr "إخفاء العمود"
+
+msgid "Delete column"
+msgstr "حذف العمود"
+
+msgid "Show All"
+msgstr "إظهار الكل"
+
+msgid "Move to left"
+msgstr "نقل إلى اليسار"
+
+msgid "Move to right"
+msgstr "نقل إلى اليمين"
+
+msgid "Move to first"
+msgstr "نقل إلى البداية"
+
+msgid "Move to last"
+msgstr "نقل إلى النهاية"
+
+msgid "Align left"
+msgstr "محاذاة إلى اليسار"
+
+msgid "Align center"
+msgstr "محاذاة إلى الوسط"
+
+msgid "Align right"
+msgstr "محاذاة إلى اليمين"
+
+msgid "Sort"
+msgstr "فرز"
+
+msgid "Filter"
+msgstr "تصفية"
+
+msgid "Export"
+msgstr "تصدير"
+
+msgid "Delete selected rows"
+msgstr "حذف الصفوف المحددة"
+
+msgid "Sort Ascending"
+msgstr "فرز تصاعدي"
+
+msgid "Sort Descending"
+msgstr "فرز تنازلي"
+
+msgid "Clear filters"
+msgstr "مسح عوامل التصفية"
+
+msgid "Filter by cell's value"
+msgstr "تصفية حسب قيمة الخلية"
+
+msgid "Hide select rows"
+msgstr "إخفاء الصفوف المحددة"
+
+msgid "Show only select rows"
+msgstr "إظهار الصفوف المحددة فقط"
+
+msgid "Export all records"
+msgstr "تصدير كل السجلات"
+
+msgid "Export current page"
+msgstr "تصدير الصفحة الحالية"
+
+msgid "Export current selection"
+msgstr "تصدير التحديد الحالي"
+
+msgid "Export records in filter"
+msgstr "تصدير السجلات المصفاة"
+
+msgid "Move up"
+msgstr "نقل إلى الأعلى"
+
+msgid "Move down"
+msgstr "نقل إلى الأسفل"
+
+msgid "Move to top"
+msgstr "نقل إلى أعلى"
+
+msgid "Move to bottom"
+msgstr "نقل إلى أسفل"
+
+# Days of week (legacy)
+msgid "Mo"
+msgstr "اث"
+
+msgid "Tu"
+msgstr "ثل"
+
+msgid "We"
+msgstr "أر"
+
+msgid "Th"
+msgstr "خم"
+
+msgid "Fr"
+msgstr "جم"
+
+msgid "Sa"
+msgstr "سب"
+
+msgid "Su"
+msgstr "أح"
+
+# Dialogs (legacy)
+msgid "Error"
+msgstr "خطأ"
+
+msgid "Warning"
+msgstr "تحذير"
+
+msgid "Information"
+msgstr "معلومات"
+
+msgid "Question"
+msgstr "سؤال"
+
+msgid "Confirm"
+msgstr "تأكيد"
+
+# File operations (legacy)
+msgid "New"
+msgstr "جديد"
+
+msgid "Save As"
+msgstr "حفظ باسم"
+
+msgid "Exit"
+msgstr "إنهاء"
+
+# Edit operations (legacy)
+msgid "Cut"
+msgstr "قص"
+
+msgid "Copy"
+msgstr "نسخ"
+
+msgid "Paste"
+msgstr "لصق"
+
+msgid "Undo"
+msgstr "تراجع"
+
+msgid "Redo"
+msgstr "إعادة"
+
+msgid "Select All"
+msgstr "تحديد الكل"
+
+# Help (legacy)
+msgid "About"
+msgstr "حول"
+
+msgid "Help"
+msgstr "مساعدة"
+
+msgid "Documentation"
+msgstr "التوثيق"

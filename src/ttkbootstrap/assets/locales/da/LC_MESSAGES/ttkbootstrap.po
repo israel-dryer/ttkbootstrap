@@ -1,0 +1,813 @@
+# Danish translations for ttkbootstrap
+# Copyright (C) 2024 Israel Dryer
+# This file is distributed under the same license as the ttkbootstrap project.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: ttkbootstrap\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2024-01-01 12:00+0000\n"
+"PO-Revision-Date: 2025-12-11 00:00+0000\n"
+"Last-Translator: ttkbootstrap team <>\n"
+"Language: da\n"
+"Language-Team: Danish\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: ttkbootstrap localization\n"
+
+# ============================================================================
+# Common Buttons
+# ============================================================================
+
+msgid "button.ok"
+msgstr "OK"
+
+msgid "button.cancel"
+msgstr "Annuller"
+
+msgid "button.yes"
+msgstr "Ja"
+
+msgid "button.no"
+msgstr "Nej"
+
+msgid "button.retry"
+msgstr "Prøv igen"
+
+msgid "button.delete"
+msgstr "Slet"
+
+msgid "button.next"
+msgstr "Næste"
+
+msgid "button.previous"
+msgstr "Forrige"
+
+msgid "button.prev"
+msgstr "Forrige"
+
+msgid "button.open"
+msgstr "Åbn"
+
+msgid "button.close"
+msgstr "Luk"
+
+msgid "button.add"
+msgstr "Tilføj"
+
+msgid "button.remove"
+msgstr "Fjern"
+
+msgid "button.submit"
+msgstr "Send"
+
+msgid "button.save"
+msgstr "Gem"
+
+msgid "button.apply"
+msgstr "Anvend"
+
+# ============================================================================
+# Font Dialog
+# ============================================================================
+
+msgid "font.family"
+msgstr "Skrifttype"
+
+msgid "font.weight"
+msgstr "Vægt"
+
+msgid "font.slant"
+msgstr "Hældning"
+
+msgid "font.effects"
+msgstr "Effekter"
+
+msgid "font.preview"
+msgstr "Forhåndsvisning"
+
+msgid "font.size"
+msgstr "Størrelse"
+
+msgid "font.selector"
+msgstr "Skrifttypevælger"
+
+msgid "font.preview_text"
+msgstr "Quizdeltagerne spiste jordbær med fløde mens cirkusklovnen spillede på xylofon."
+
+msgid "font.weight.normal"
+msgstr "Normal"
+
+msgid "font.weight.bold"
+msgstr "Fed"
+
+msgid "font.slant.roman"
+msgstr "Normal"
+
+msgid "font.slant.italic"
+msgstr "Kursiv"
+
+msgid "font.effects.underline"
+msgstr "Understreget"
+
+msgid "font.effects.overstrike"
+msgstr "Gennemstreget"
+
+# ============================================================================
+# Color Chooser
+# ============================================================================
+
+msgid "color.chooser"
+msgstr "Farvevælger"
+
+msgid "color.advanced"
+msgstr "Avanceret"
+
+msgid "color.themed"
+msgstr "Tema"
+
+msgid "color.standard"
+msgstr "Standard"
+
+msgid "color.current"
+msgstr "Aktuel"
+
+msgid "color.new"
+msgstr "Ny"
+
+msgid "color.hue"
+msgstr "Farvetone"
+
+msgid "color.sat"
+msgstr "Mætning"
+
+msgid "color.lum"
+msgstr "Lysstyrke"
+
+msgid "color.hex"
+msgstr "Hex"
+
+msgid "color.red"
+msgstr "Rød"
+
+msgid "color.green"
+msgstr "Grøn"
+
+msgid "color.blue"
+msgstr "Blå"
+
+msgid "color.dropper"
+msgstr "Farvepipette"
+
+# Color value labels (with colon suffix for label display)
+msgid "color.hue:"
+msgstr "Farvetone:"
+
+msgid "color.sat:"
+msgstr "Mætning:"
+
+msgid "color.lum:"
+msgstr "Lysstyrke:"
+
+msgid "color.hex:"
+msgstr "Hex:"
+
+msgid "color.red:"
+msgstr "Rød:"
+
+msgid "color.green:"
+msgstr "Grøn:"
+
+msgid "color.blue:"
+msgstr "Blå:"
+
+# ============================================================================
+# Validation Messages
+# ============================================================================
+
+msgid "validation.should_be_type"
+msgstr "Skal være af datatypen"
+
+msgid "validation.invalid_type"
+msgstr "Ugyldig datatype"
+
+msgid "validation.greater_than"
+msgstr "Tal må ikke være større end"
+
+msgid "validation.less_than"
+msgstr "Tal må ikke være mindre end"
+
+msgid "validation.out_of_range"
+msgstr "Uden for gyldigt område"
+
+msgid "validation.select_item"
+msgstr "Vælg et element fra listen"
+
+# ============================================================================
+# Table View
+# ============================================================================
+
+msgid "table.search"
+msgstr "Søg"
+
+msgid "table.page"
+msgstr "Side"
+
+msgid "table.of"
+msgstr "af"
+
+msgid "table.reset"
+msgstr "Nulstil tabel"
+
+msgid "table.columns"
+msgstr "Kolonner"
+
+msgid "table.move"
+msgstr "Flyt"
+
+msgid "table.align"
+msgstr "Justering"
+
+msgid "table.hide_column"
+msgstr "Skjul kolonne"
+
+msgid "table.delete_column"
+msgstr "Slet kolonne"
+
+msgid "table.show_all"
+msgstr "Vis alle"
+
+msgid "table.move_left"
+msgstr "Flyt til venstre"
+
+msgid "table.move_right"
+msgstr "Flyt til højre"
+
+msgid "table.move_first"
+msgstr "Flyt til start"
+
+msgid "table.move_last"
+msgstr "Flyt til slutning"
+
+msgid "table.add_record"
+msgstr "Tilføj post"
+
+msgid "table.edit"
+msgstr "Rediger"
+
+msgid "table.delete_row"
+msgstr "Slet"
+
+msgid "table.group_by_column"
+msgstr "Gruppér efter denne kolonne"
+
+msgid "table.ungroup_all"
+msgstr "Fjern alle grupper"
+
+msgid "table.clear_sort"
+msgstr "Ryd sortering"
+
+msgid "table.align_left"
+msgstr "Justér til venstre"
+
+msgid "table.align_center"
+msgstr "Centrér"
+
+msgid "table.align_right"
+msgstr "Justér til højre"
+
+msgid "table.sort"
+msgstr "Sortér"
+
+msgid "table.filter"
+msgstr "Filtrér"
+
+msgid "table.export"
+msgstr "Eksportér"
+
+msgid "table.delete_selected"
+msgstr "Slet valgte rækker"
+
+msgid "table.sort_asc"
+msgstr "Sortér stigende"
+
+msgid "table.sort_desc"
+msgstr "Sortér faldende"
+
+msgid "table.clear_filters"
+msgstr "Ryd filtre"
+
+msgid "table.filter_by_value"
+msgstr "Filtrér efter celleværdi"
+
+msgid "table.hide_select"
+msgstr "Skjul valgte rækker"
+
+msgid "table.show_select"
+msgstr "Vis kun valgte rækker"
+
+msgid "table.export_all"
+msgstr "Eksportér alle poster"
+
+msgid "table.export_page"
+msgstr "Eksportér aktuel side"
+
+msgid "table.export_selection"
+msgstr "Eksportér aktuelt valg"
+
+msgid "table.export_filter"
+msgstr "Eksportér filtrerede poster"
+
+msgid "table.sort_status"
+msgstr "Sortering: %s"
+
+msgid "table.filter_status"
+msgstr "Filter: %s"
+
+msgid "table.group_status"
+msgstr "Gruppe: %s"
+
+msgid "table.filter_column"
+msgstr "Filter: %s"
+
+msgid "table.empty"
+msgstr "(tom)"
+
+msgid "table.search_mode_equals"
+msgstr "Lige med"
+
+msgid "table.search_mode_contains"
+msgstr "Indeholder"
+
+msgid "table.search_mode_starts_with"
+msgstr "Starter med"
+
+msgid "table.search_mode_ends_with"
+msgstr "Slutter med"
+
+msgid "table.search_mode_sql"
+msgstr "SQL"
+
+msgid "table.move_up"
+msgstr "Flyt op"
+
+msgid "table.move_down"
+msgstr "Flyt ned"
+
+msgid "table.move_top"
+msgstr "Flyt til top"
+
+msgid "table.move_bottom"
+msgstr "Flyt til bund"
+
+# ============================================================================
+# Days of Week (abbreviated)
+# ============================================================================
+
+msgid "day.mo"
+msgstr "Ma"
+
+msgid "day.tu"
+msgstr "Ti"
+
+msgid "day.we"
+msgstr "On"
+
+msgid "day.th"
+msgstr "To"
+
+msgid "day.fr"
+msgstr "Fr"
+
+msgid "day.sa"
+msgstr "Lø"
+
+msgid "day.su"
+msgstr "Sø"
+
+# ============================================================================
+# Common Dialog Messages
+# ============================================================================
+
+msgid "dialog.error"
+msgstr "Fejl"
+
+msgid "dialog.warning"
+msgstr "Advarsel"
+
+msgid "dialog.info"
+msgstr "Information"
+
+msgid "dialog.question"
+msgstr "Spørgsmål"
+
+msgid "dialog.confirm"
+msgstr "Bekræft"
+
+# ============================================================================
+# File Operations
+# ============================================================================
+
+msgid "file.new"
+msgstr "Ny"
+
+msgid "file.open"
+msgstr "Åbn"
+
+msgid "file.save"
+msgstr "Gem"
+
+msgid "file.save_as"
+msgstr "Gem som"
+
+msgid "file.close"
+msgstr "Luk"
+
+msgid "file.exit"
+msgstr "Afslut"
+
+# ============================================================================
+# Edit Operations
+# ============================================================================
+
+msgid "edit.cut"
+msgstr "Klip"
+
+msgid "edit.copy"
+msgstr "Kopiér"
+
+msgid "edit.paste"
+msgstr "Sæt ind"
+
+msgid "edit.undo"
+msgstr "Fortryd"
+
+msgid "edit.redo"
+msgstr "Gentag"
+
+msgid "edit.select_all"
+msgstr "Markér alt"
+
+# ============================================================================
+# Help
+# ============================================================================
+
+msgid "help.about"
+msgstr "Om"
+
+msgid "help.help"
+msgstr "Hjælp"
+
+msgid "help.documentation"
+msgstr "Dokumentation"
+
+# ============================================================================
+# LEGACY MAPPINGS FOR BACKWARDS COMPATIBILITY
+# English text as msgid -> Localized text as msgstr
+# ============================================================================
+
+# Common buttons (legacy)
+msgid "OK"
+msgstr "OK"
+
+msgid "Ok"
+msgstr "Ok"
+
+msgid "Cancel"
+msgstr "Annuller"
+
+msgid "Yes"
+msgstr "Ja"
+
+msgid "No"
+msgstr "Nej"
+
+msgid "Retry"
+msgstr "Prøv igen"
+
+msgid "Delete"
+msgstr "Slet"
+
+msgid "Next"
+msgstr "Næste"
+
+msgid "Previous"
+msgstr "Forrige"
+
+msgid "Prev"
+msgstr "Forrige"
+
+msgid "Open"
+msgstr "Åbn"
+
+msgid "Close"
+msgstr "Luk"
+
+msgid "Add"
+msgstr "Tilføj"
+
+msgid "Remove"
+msgstr "Fjern"
+
+msgid "Submit"
+msgstr "Send"
+
+msgid "Save"
+msgstr "Gem"
+
+msgid "Apply"
+msgstr "Anvend"
+
+# Font dialog (legacy)
+msgid "Family"
+msgstr "Skrifttype"
+
+msgid "Weight"
+msgstr "Vægt"
+
+msgid "Slant"
+msgstr "Hældning"
+
+msgid "Effects"
+msgstr "Effekter"
+
+msgid "Preview"
+msgstr "Forhåndsvisning"
+
+msgid "Size"
+msgstr "Størrelse"
+
+msgid "Font Selector"
+msgstr "Skrifttypevælger"
+
+msgid "The quick brown fox jumps over the lazy dog."
+msgstr "Quizdeltagerne spiste jordbær med fløde mens cirkusklovnen spillede på xylofon."
+
+# Color chooser (legacy)
+msgid "Color Chooser"
+msgstr "Farvevælger"
+
+msgid "Advanced"
+msgstr "Avanceret"
+
+msgid "Themed"
+msgstr "Tema"
+
+msgid "Standard"
+msgstr "Standard"
+
+msgid "Current"
+msgstr "Aktuel"
+
+msgid "New"
+msgstr "Ny"
+
+msgid "Hue"
+msgstr "Farvetone"
+
+msgid "Sat"
+msgstr "Mætning"
+
+msgid "Lum"
+msgstr "Lysstyrke"
+
+msgid "Hex"
+msgstr "Hex"
+
+msgid "Red"
+msgstr "Rød"
+
+msgid "Green"
+msgstr "Grøn"
+
+msgid "Blue"
+msgstr "Blå"
+
+msgid "color dropper"
+msgstr "Farvepipette"
+
+# Color labels with colons (legacy - for backwards compatibility)
+msgid "Hue:"
+msgstr "Farvetone:"
+
+msgid "Sat:"
+msgstr "Mætning:"
+
+msgid "Lum:"
+msgstr "Lysstyrke:"
+
+msgid "Hex:"
+msgstr "Hex:"
+
+msgid "Red:"
+msgstr "Rød:"
+
+msgid "Green:"
+msgstr "Grøn:"
+
+msgid "Blue:"
+msgstr "Blå:"
+
+# Validation (legacy)
+msgid "Should be of data type"
+msgstr "Skal være af datatypen"
+
+msgid "Invalid data type"
+msgstr "Ugyldig datatype"
+
+msgid "Number cannot be greater than"
+msgstr "Tal må ikke være større end"
+
+msgid "Number cannot be less than"
+msgstr "Tal må ikke være mindre end"
+
+msgid "Out of range"
+msgstr "Uden for gyldigt område"
+
+msgid "Select an item from the list"
+msgstr "Vælg et element fra listen"
+
+# Table view (legacy)
+msgid "Search"
+msgstr "Søg"
+
+msgid "Page"
+msgstr "Side"
+
+msgid "of"
+msgstr "af"
+
+msgid "Reset table"
+msgstr "Nulstil tabel"
+
+msgid "Columns"
+msgstr "Kolonner"
+
+msgid "Move"
+msgstr "Flyt"
+
+msgid "Align"
+msgstr "Justering"
+
+msgid "Hide column"
+msgstr "Skjul kolonne"
+
+msgid "Delete column"
+msgstr "Slet kolonne"
+
+msgid "Show All"
+msgstr "Vis alle"
+
+msgid "Move to left"
+msgstr "Flyt til venstre"
+
+msgid "Move to right"
+msgstr "Flyt til højre"
+
+msgid "Move to first"
+msgstr "Flyt til start"
+
+msgid "Move to last"
+msgstr "Flyt til slutning"
+
+msgid "Align left"
+msgstr "Justér til venstre"
+
+msgid "Align center"
+msgstr "Centrér"
+
+msgid "Align right"
+msgstr "Justér til højre"
+
+msgid "Sort"
+msgstr "Sortér"
+
+msgid "Filter"
+msgstr "Filtrér"
+
+msgid "Export"
+msgstr "Eksportér"
+
+msgid "Delete selected rows"
+msgstr "Slet valgte rækker"
+
+msgid "Sort Ascending"
+msgstr "Sortér stigende"
+
+msgid "Sort Descending"
+msgstr "Sortér faldende"
+
+msgid "Clear filters"
+msgstr "Ryd filtre"
+
+msgid "Filter by cell's value"
+msgstr "Filtrér efter celleværdi"
+
+msgid "Hide select rows"
+msgstr "Skjul valgte rækker"
+
+msgid "Show only select rows"
+msgstr "Vis kun valgte rækker"
+
+msgid "Export all records"
+msgstr "Eksportér alle poster"
+
+msgid "Export current page"
+msgstr "Eksportér aktuel side"
+
+msgid "Export current selection"
+msgstr "Eksportér aktuelt valg"
+
+msgid "Export records in filter"
+msgstr "Eksportér filtrerede poster"
+
+msgid "Move up"
+msgstr "Flyt op"
+
+msgid "Move down"
+msgstr "Flyt ned"
+
+msgid "Move to top"
+msgstr "Flyt til top"
+
+msgid "Move to bottom"
+msgstr "Flyt til bund"
+
+# Days of week (legacy)
+msgid "Mo"
+msgstr "Ma"
+
+msgid "Tu"
+msgstr "Ti"
+
+msgid "We"
+msgstr "On"
+
+msgid "Th"
+msgstr "To"
+
+msgid "Fr"
+msgstr "Fr"
+
+msgid "Sa"
+msgstr "Lø"
+
+msgid "Su"
+msgstr "Sø"
+
+# Dialogs (legacy)
+msgid "Error"
+msgstr "Fejl"
+
+msgid "Warning"
+msgstr "Advarsel"
+
+msgid "Information"
+msgstr "Information"
+
+msgid "Question"
+msgstr "Spørgsmål"
+
+msgid "Confirm"
+msgstr "Bekræft"
+
+# File operations (legacy)
+msgid "New"
+msgstr "Ny"
+
+msgid "Save As"
+msgstr "Gem som"
+
+msgid "Exit"
+msgstr "Afslut"
+
+# Edit operations (legacy)
+msgid "Cut"
+msgstr "Klip"
+
+msgid "Copy"
+msgstr "Kopiér"
+
+msgid "Paste"
+msgstr "Sæt ind"
+
+msgid "Undo"
+msgstr "Fortryd"
+
+msgid "Redo"
+msgstr "Gentag"
+
+msgid "Select All"
+msgstr "Markér alt"
+
+# Help (legacy)
+msgid "About"
+msgstr "Om"
+
+msgid "Help"
+msgstr "Hjælp"
+
+msgid "Documentation"
+msgstr "Dokumentation"

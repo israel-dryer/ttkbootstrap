@@ -1,0 +1,802 @@
+# Korean translations for ttkbootstrap
+# Copyright (C) 2024 Israel Dryer
+# This file is distributed under the same license as the ttkbootstrap project.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: ttkbootstrap\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2024-01-01 12:00+0000\n"
+"PO-Revision-Date: 2025-12-11 00:00+0000\n"
+"Last-Translator: ttkbootstrap team <>\n"
+"Language: ko\n"
+"Language-Team: Korean\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: ttkbootstrap localization\n"
+
+# ============================================================================
+# Common Buttons
+# ============================================================================
+
+msgid "button.ok"
+msgstr "확인"
+
+msgid "button.cancel"
+msgstr "취소"
+
+msgid "button.yes"
+msgstr "예"
+
+msgid "button.no"
+msgstr "아니요"
+
+msgid "button.retry"
+msgstr "다시 시도"
+
+msgid "button.delete"
+msgstr "삭제"
+
+msgid "button.next"
+msgstr "다음"
+
+msgid "button.previous"
+msgstr "이전"
+
+msgid "button.prev"
+msgstr "이전"
+
+msgid "button.open"
+msgstr "열기"
+
+msgid "button.close"
+msgstr "닫기"
+
+msgid "button.add"
+msgstr "추가"
+
+msgid "button.remove"
+msgstr "제거"
+
+msgid "button.submit"
+msgstr "제출"
+
+msgid "button.save"
+msgstr "저장"
+
+msgid "button.apply"
+msgstr "적용"
+
+# ============================================================================
+# Font Dialog
+# ============================================================================
+
+msgid "font.family"
+msgstr "글꼴"
+
+msgid "font.weight"
+msgstr "굵기"
+
+msgid "font.slant"
+msgstr "기울임"
+
+msgid "font.effects"
+msgstr "효과"
+
+msgid "font.preview"
+msgstr "미리보기"
+
+msgid "font.size"
+msgstr "크기"
+
+msgid "font.selector"
+msgstr "글꼴 선택기"
+
+msgid "font.preview_text"
+msgstr "빠른 갈색 여우가 게으른 개 위를 뛰어넘는다."
+
+msgid "font.weight.normal"
+msgstr "보통"
+
+msgid "font.weight.bold"
+msgstr "굵게"
+
+msgid "font.slant.roman"
+msgstr "보통"
+
+msgid "font.slant.italic"
+msgstr "기울임"
+
+msgid "font.effects.underline"
+msgstr "밑줄"
+
+msgid "font.effects.overstrike"
+msgstr "취소선"
+
+# ============================================================================
+# Color Chooser
+# ============================================================================
+
+msgid "color.chooser"
+msgstr "색상 선택"
+
+msgid "color.advanced"
+msgstr "고급"
+
+msgid "color.themed"
+msgstr "테마 색상"
+
+msgid "color.standard"
+msgstr "표준"
+
+msgid "color.current"
+msgstr "현재 색상"
+
+msgid "color.new"
+msgstr "새 색상"
+
+msgid "color.hue"
+msgstr "색조"
+
+msgid "color.sat"
+msgstr "채도"
+
+msgid "color.lum"
+msgstr "명도"
+
+msgid "color.hex"
+msgstr "Hex"
+
+msgid "color.red"
+msgstr "빨강"
+
+msgid "color.green"
+msgstr "초록"
+
+msgid "color.blue"
+msgstr "파랑"
+
+msgid "color.dropper"
+msgstr "스포이트"
+
+# Value labels
+msgid "color.hue:"
+msgstr "색조:"
+
+msgid "color.sat:"
+msgstr "채도:"
+
+msgid "color.lum:"
+msgstr "명도:"
+
+msgid "color.hex:"
+msgstr "Hex:"
+
+msgid "color.red:"
+msgstr "빨강:"
+
+msgid "color.green:"
+msgstr "초록:"
+
+msgid "color.blue:"
+msgstr "파랑:"
+
+# ============================================================================
+# Validation
+# ============================================================================
+
+msgid "validation.should_be_type"
+msgstr "다음 데이터 형식이어야 합니다"
+
+msgid "validation.invalid_type"
+msgstr "잘못된 데이터 형식입니다"
+
+msgid "validation.greater_than"
+msgstr "값이 다음보다 클 수 없습니다:"
+
+msgid "validation.less_than"
+msgstr "값이 다음보다 작을 수 없습니다:"
+
+msgid "validation.out_of_range"
+msgstr "범위를 벗어났습니다"
+
+msgid "validation.select_item"
+msgstr "목록에서 항목을 선택하십시오"
+
+# ============================================================================
+# Table View
+# ============================================================================
+
+msgid "table.search"
+msgstr "검색"
+
+msgid "table.page"
+msgstr "페이지"
+
+msgid "table.of"
+msgstr "/"
+
+msgid "table.reset"
+msgstr "테이블 초기화"
+
+msgid "table.columns"
+msgstr "열"
+
+msgid "table.move"
+msgstr "이동"
+
+msgid "table.align"
+msgstr "정렬"
+
+msgid "table.hide_column"
+msgstr "열 숨기기"
+
+msgid "table.delete_column"
+msgstr "열 삭제"
+
+msgid "table.show_all"
+msgstr "모두 표시"
+
+msgid "table.move_left"
+msgstr "왼쪽으로 이동"
+
+msgid "table.move_right"
+msgstr "오른쪽으로 이동"
+
+msgid "table.move_first"
+msgstr "처음으로 이동"
+
+msgid "table.move_last"
+msgstr "마지막으로 이동"
+
+msgid "table.add_record"
+msgstr "레코드 추가"
+
+msgid "table.edit"
+msgstr "편집"
+
+msgid "table.delete_row"
+msgstr "삭제"
+
+msgid "table.group_by_column"
+msgstr "이 열로 그룹화"
+
+msgid "table.ungroup_all"
+msgstr "모든 그룹 해제"
+
+msgid "table.clear_sort"
+msgstr "정렬 해제"
+
+msgid "table.align_left"
+msgstr "왼쪽 정렬"
+
+msgid "table.align_center"
+msgstr "가운데 정렬"
+
+msgid "table.align_right"
+msgstr "오른쪽 정렬"
+
+msgid "table.sort"
+msgstr "정렬"
+
+msgid "table.filter"
+msgstr "필터"
+
+msgid "table.export"
+msgstr "내보내기"
+
+msgid "table.delete_selected"
+msgstr "선택한 행 삭제"
+
+msgid "table.sort_asc"
+msgstr "오름차순"
+
+msgid "table.sort_desc"
+msgstr "내림차순"
+
+msgid "table.clear_filters"
+msgstr "필터 지우기"
+
+msgid "table.filter_by_value"
+msgstr "셀 값으로 필터링"
+
+msgid "table.hide_select"
+msgstr "선택한 행 숨기기"
+
+msgid "table.show_select"
+msgstr "선택한 행만 표시"
+
+msgid "table.export_all"
+msgstr "모든 레코드 내보내기"
+
+msgid "table.export_page"
+msgstr "현재 페이지 내보내기"
+
+msgid "table.export_selection"
+msgstr "선택 항목 내보내기"
+
+msgid "table.export_filter"
+msgstr "필터된 레코드 내보내기"
+
+msgid "table.sort_status"
+msgstr "정렬: %s"
+
+msgid "table.filter_status"
+msgstr "필터: %s"
+
+msgid "table.group_status"
+msgstr "그룹: %s"
+
+msgid "table.filter_column"
+msgstr "필터: %s"
+
+msgid "table.empty"
+msgstr "(비어 있음)"
+
+msgid "table.search_mode_equals"
+msgstr "같음"
+
+msgid "table.search_mode_contains"
+msgstr "포함"
+
+msgid "table.search_mode_starts_with"
+msgstr "시작 문자"
+
+msgid "table.search_mode_ends_with"
+msgstr "끝 문자"
+
+msgid "table.search_mode_sql"
+msgstr "SQL"
+
+msgid "table.move_up"
+msgstr "위로 이동"
+
+msgid "table.move_down"
+msgstr "아래로 이동"
+
+msgid "table.move_top"
+msgstr "맨 위로 이동"
+
+msgid "table.move_bottom"
+msgstr "맨 아래로 이동"
+
+# ============================================================================
+# Days of Week
+# ============================================================================
+
+msgid "day.mo"
+msgstr "월"
+
+msgid "day.tu"
+msgstr "화"
+
+msgid "day.we"
+msgstr "수"
+
+msgid "day.th"
+msgstr "목"
+
+msgid "day.fr"
+msgstr "금"
+
+msgid "day.sa"
+msgstr "토"
+
+msgid "day.su"
+msgstr "일"
+
+# ============================================================================
+# Dialog Messages
+# ============================================================================
+
+msgid "dialog.error"
+msgstr "오류"
+
+msgid "dialog.warning"
+msgstr "경고"
+
+msgid "dialog.info"
+msgstr "정보"
+
+msgid "dialog.question"
+msgstr "질문"
+
+msgid "dialog.confirm"
+msgstr "확인"
+
+# ============================================================================
+# File Operations
+# ============================================================================
+
+msgid "file.new"
+msgstr "새로 만들기"
+
+msgid "file.open"
+msgstr "열기"
+
+msgid "file.save"
+msgstr "저장"
+
+msgid "file.save_as"
+msgstr "다른 이름으로 저장"
+
+msgid "file.close"
+msgstr "닫기"
+
+msgid "file.exit"
+msgstr "종료"
+
+# ============================================================================
+# Edit
+# ============================================================================
+
+msgid "edit.cut"
+msgstr "잘라내기"
+
+msgid "edit.copy"
+msgstr "복사"
+
+msgid "edit.paste"
+msgstr "붙여넣기"
+
+msgid "edit.undo"
+msgstr "실행 취소"
+
+msgid "edit.redo"
+msgstr "다시 실행"
+
+msgid "edit.select_all"
+msgstr "전체 선택"
+
+# ============================================================================
+# Help
+# ============================================================================
+
+msgid "help.about"
+msgstr "정보"
+
+msgid "help.help"
+msgstr "도움말"
+
+msgid "help.documentation"
+msgstr "문서"
+
+# ============================================================================
+# LEGACY MAPPINGS
+# ============================================================================
+
+msgid "OK"
+msgstr "확인"
+
+msgid "Ok"
+msgstr "확인"
+
+msgid "Cancel"
+msgstr "취소"
+
+msgid "Yes"
+msgstr "예"
+
+msgid "No"
+msgstr "아니요"
+
+msgid "Retry"
+msgstr "다시 시도"
+
+msgid "Delete"
+msgstr "삭제"
+
+msgid "Next"
+msgstr "다음"
+
+msgid "Previous"
+msgstr "이전"
+
+msgid "Prev"
+msgstr "이전"
+
+msgid "Open"
+msgstr "열기"
+
+msgid "Close"
+msgstr "닫기"
+
+msgid "Add"
+msgstr "추가"
+
+msgid "Remove"
+msgstr "제거"
+
+msgid "Submit"
+msgstr "제출"
+
+msgid "Save"
+msgstr "저장"
+
+msgid "Apply"
+msgstr "적용"
+
+# Font (legacy)
+msgid "Family"
+msgstr "글꼴"
+
+msgid "Weight"
+msgstr "굵기"
+
+msgid "Slant"
+msgstr "기울임"
+
+msgid "Effects"
+msgstr "효과"
+
+msgid "Preview"
+msgstr "미리보기"
+
+msgid "Size"
+msgstr "크기"
+
+msgid "Font Selector"
+msgstr "글꼴 선택기"
+
+msgid "The quick brown fox jumps over the lazy dog."
+msgstr "빠른 갈색 여우가 게으른 개 위를 뛰어넘는다."
+
+# Colors (legacy)
+msgid "Color Chooser"
+msgstr "색상 선택"
+
+msgid "Advanced"
+msgstr "고급"
+
+msgid "Themed"
+msgstr "테마 색상"
+
+msgid "Standard"
+msgstr "표준"
+
+msgid "Current"
+msgstr "현재 색상"
+
+msgid "New"
+msgstr "새 색상"
+
+msgid "Hue"
+msgstr "색조"
+
+msgid "Sat"
+msgstr "채도"
+
+msgid "Lum"
+msgstr "명도"
+
+msgid "Hex"
+msgstr "Hex"
+
+msgid "Red"
+msgstr "빨강"
+
+msgid "Green"
+msgstr "초록"
+
+msgid "Blue"
+msgstr "파랑"
+
+msgid "color dropper"
+msgstr "스포이트"
+
+# Color labels (legacy)
+msgid "Hue:"
+msgstr "색조:"
+
+msgid "Sat:"
+msgstr "채도:"
+
+msgid "Lum:"
+msgstr "명도:"
+
+msgid "Hex:"
+msgstr "Hex:"
+
+msgid "Red:"
+msgstr "빨강:"
+
+msgid "Green:"
+msgstr "초록:"
+
+msgid "Blue:"
+msgstr "파랑:"
+
+# Validation (legacy)
+msgid "Should be of data type"
+msgstr "다음 데이터 형식이어야 합니다"
+
+msgid "Invalid data type"
+msgstr "잘못된 데이터 형식입니다"
+
+msgid "Number cannot be greater than"
+msgstr "값이 다음보다 클 수 없습니다:"
+
+msgid "Number cannot be less than"
+msgstr "값이 다음보다 작을 수 없습니다:"
+
+msgid "Out of range"
+msgstr "범위를 벗어났습니다"
+
+msgid "Select an item from the list"
+msgstr "목록에서 항목을 선택하십시오"
+
+# Table (legacy)
+msgid "Search"
+msgstr "검색"
+
+msgid "Page"
+msgstr "페이지"
+
+msgid "of"
+msgstr "/"
+
+msgid "Reset table"
+msgstr "테이블 초기화"
+
+msgid "Columns"
+msgstr "열"
+
+msgid "Move"
+msgstr "이동"
+
+msgid "Align"
+msgstr "정렬"
+
+msgid "Hide column"
+msgstr "열 숨기기"
+
+msgid "Delete column"
+msgstr "열 삭제"
+
+msgid "Show All"
+msgstr "모두 표시"
+
+msgid "Move to left"
+msgstr "왼쪽으로 이동"
+
+msgid "Move to right"
+msgstr "오른쪽으로 이동"
+
+msgid "Move to first"
+msgstr "처음으로 이동"
+
+msgid "Move to last"
+msgstr "마지막으로 이동"
+
+msgid "Sort"
+msgstr "정렬"
+
+msgid "Filter"
+msgstr "필터"
+
+msgid "Export"
+msgstr "내보내기"
+
+msgid "Delete selected rows"
+msgstr "선택한 행 삭제"
+
+msgid "Sort Ascending"
+msgstr "오름차순"
+
+msgid "Sort Descending"
+msgstr "내림차순"
+
+msgid "Clear filters"
+msgstr "필터 지우기"
+
+msgid "Filter by cell's value"
+msgstr "셀 값으로 필터링"
+
+msgid "Hide select rows"
+msgstr "선택한 행 숨기기"
+
+msgid "Show only select rows"
+msgstr "선택한 행만 표시"
+
+msgid "Export all records"
+msgstr "모든 레코드 내보내기"
+
+msgid "Export current page"
+msgstr "현재 페이지 내보내기"
+
+msgid "Export current selection"
+msgstr "선택 항목 내보내기"
+
+msgid "Export records in filter"
+msgstr "필터된 레코드 내보내기"
+
+msgid "Move up"
+msgstr "위로 이동"
+
+msgid "Move down"
+msgstr "아래로 이동"
+
+msgid "Move to top"
+msgstr "맨 위로 이동"
+
+msgid "Move to bottom"
+msgstr "맨 아래로 이동"
+
+# Days (legacy)
+msgid "Mo"
+msgstr "월"
+
+msgid "Tu"
+msgstr "화"
+
+msgid "We"
+msgstr "수"
+
+msgid "Th"
+msgstr "목"
+
+msgid "Fr"
+msgstr "금"
+
+msgid "Sa"
+msgstr "토"
+
+msgid "Su"
+msgstr "일"
+
+# Dialogs (legacy)
+msgid "Error"
+msgstr "오류"
+
+msgid "Warning"
+msgstr "경고"
+
+msgid "Information"
+msgstr "정보"
+
+msgid "Question"
+msgstr "질문"
+
+msgid "Confirm"
+msgstr "확인"
+
+# File (legacy)
+msgid "New"
+msgstr "새로 만들기"
+
+msgid "Save As"
+msgstr "다른 이름으로 저장"
+
+msgid "Exit"
+msgstr "종료"
+
+# Edit (legacy)
+msgid "Cut"
+msgstr "잘라내기"
+
+msgid "Copy"
+msgstr "복사"
+
+msgid "Paste"
+msgstr "붙여넣기"
+
+msgid "Undo"
+msgstr "실행 취소"
+
+msgid "Redo"
+msgstr "다시 실행"
+
+msgid "Select All"
+msgstr "전체 선택"
+
+# Help (legacy)
+msgid "About"
+msgstr "정보"
+
+msgid "Help"
+msgstr "도움말"
+
+msgid "Documentation"
+msgstr "문서"

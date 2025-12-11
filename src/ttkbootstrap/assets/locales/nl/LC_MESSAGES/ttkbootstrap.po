@@ -1,0 +1,801 @@
+# Dutch translations for ttkbootstrap
+# Copyright (C) 2024 Israel Dryer
+# This file is distributed under the same license as the ttkbootstrap project.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: ttkbootstrap\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2024-01-01 12:00+0000\n"
+"PO-Revision-Date: 2025-12-11 00:00+0000\n"
+"Last-Translator: ttkbootstrap team <>\n"
+"Language: nl\n"
+"Language-Team: Dutch\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: ttkbootstrap localization\n"
+
+# ============================================================================
+# Common Buttons
+# ============================================================================
+
+msgid "button.ok"
+msgstr "OK"
+
+msgid "button.cancel"
+msgstr "Annuleren"
+
+msgid "button.yes"
+msgstr "Ja"
+
+msgid "button.no"
+msgstr "Nee"
+
+msgid "button.retry"
+msgstr "Opnieuw proberen"
+
+msgid "button.delete"
+msgstr "Verwijderen"
+
+msgid "button.next"
+msgstr "Volgende"
+
+msgid "button.previous"
+msgstr "Vorige"
+
+msgid "button.prev"
+msgstr "Vorige"
+
+msgid "button.open"
+msgstr "Openen"
+
+msgid "button.close"
+msgstr "Sluiten"
+
+msgid "button.add"
+msgstr "Toevoegen"
+
+msgid "button.remove"
+msgstr "Verwijderen"
+
+msgid "button.submit"
+msgstr "Verzenden"
+
+msgid "button.save"
+msgstr "Opslaan"
+
+msgid "button.apply"
+msgstr "Toepassen"
+
+# ============================================================================
+# Font Dialog
+# ============================================================================
+
+msgid "font.family"
+msgstr "Lettertype"
+
+msgid "font.weight"
+msgstr "Dikte"
+
+msgid "font.slant"
+msgstr "Stijl"
+
+msgid "font.effects"
+msgstr "Effecten"
+
+msgid "font.preview"
+msgstr "Voorbeeld"
+
+msgid "font.size"
+msgstr "Grootte"
+
+msgid "font.selector"
+msgstr "Lettertypeselectie"
+
+msgid "font.preview_text"
+msgstr "De snelle bruine vos springt over de luie hond."
+
+msgid "font.weight.normal"
+msgstr "Normaal"
+
+msgid "font.weight.bold"
+msgstr "Vet"
+
+msgid "font.slant.roman"
+msgstr "Recht"
+
+msgid "font.slant.italic"
+msgstr "Cursief"
+
+msgid "font.effects.underline"
+msgstr "Onderstrepen"
+
+msgid "font.effects.overstrike"
+msgstr "Doorhalen"
+
+# ============================================================================
+# Color Chooser
+# ============================================================================
+
+msgid "color.chooser"
+msgstr "Kleurenkiezer"
+
+msgid "color.advanced"
+msgstr "Geavanceerd"
+
+msgid "color.themed"
+msgstr "Themakleuren"
+
+msgid "color.standard"
+msgstr "Standaard"
+
+msgid "color.current"
+msgstr "Huidige"
+
+msgid "color.new"
+msgstr "Nieuw"
+
+msgid "color.hue"
+msgstr "Tint"
+
+msgid "color.sat"
+msgstr "Verzadiging"
+
+msgid "color.lum"
+msgstr "Lichtheid"
+
+msgid "color.hex"
+msgstr "Hex"
+
+msgid "color.red"
+msgstr "Rood"
+
+msgid "color.green"
+msgstr "Groen"
+
+msgid "color.blue"
+msgstr "Blauw"
+
+msgid "color.dropper"
+msgstr "Pipet"
+
+msgid "color.hue:"
+msgstr "Tint:"
+
+msgid "color.sat:"
+msgstr "Verzadiging:"
+
+msgid "color.lum:"
+msgstr "Lichtheid:"
+
+msgid "color.hex:"
+msgstr "Hex:"
+
+msgid "color.red:"
+msgstr "Rood:"
+
+msgid "color.green:"
+msgstr "Groen:"
+
+msgid "color.blue:"
+msgstr "Blauw:"
+
+# ============================================================================
+# Validation
+# ============================================================================
+
+msgid "validation.should_be_type"
+msgstr "Moet van het type zijn"
+
+msgid "validation.invalid_type"
+msgstr "Ongeldig gegevenstype"
+
+msgid "validation.greater_than"
+msgstr "Getal mag niet groter zijn dan"
+
+msgid "validation.less_than"
+msgstr "Getal mag niet kleiner zijn dan"
+
+msgid "validation.out_of_range"
+msgstr "Buiten bereik"
+
+msgid "validation.select_item"
+msgstr "Selecteer een item uit de lijst"
+
+# ============================================================================
+# Table View
+# ============================================================================
+
+msgid "table.search"
+msgstr "Zoeken"
+
+msgid "table.page"
+msgstr "Pagina"
+
+msgid "table.of"
+msgstr "van"
+
+msgid "table.reset"
+msgstr "Tabel resetten"
+
+msgid "table.columns"
+msgstr "Kolommen"
+
+msgid "table.move"
+msgstr "Verplaatsen"
+
+msgid "table.align"
+msgstr "Uitlijnen"
+
+msgid "table.hide_column"
+msgstr "Kolom verbergen"
+
+msgid "table.delete_column"
+msgstr "Kolom verwijderen"
+
+msgid "table.show_all"
+msgstr "Alles tonen"
+
+msgid "table.move_left"
+msgstr "Naar links verplaatsen"
+
+msgid "table.move_right"
+msgstr "Naar rechts verplaatsen"
+
+msgid "table.move_first"
+msgstr "Naar eerste verplaatsen"
+
+msgid "table.move_last"
+msgstr "Naar laatste verplaatsen"
+
+msgid "table.add_record"
+msgstr "Record toevoegen"
+
+msgid "table.edit"
+msgstr "Bewerken"
+
+msgid "table.delete_row"
+msgstr "Verwijderen"
+
+msgid "table.group_by_column"
+msgstr "Groeperen op deze kolom"
+
+msgid "table.ungroup_all"
+msgstr "Groepering verwijderen"
+
+msgid "table.clear_sort"
+msgstr "Sortering wissen"
+
+msgid "table.align_left"
+msgstr "Links uitlijnen"
+
+msgid "table.align_center"
+msgstr "Centreren"
+
+msgid "table.align_right"
+msgstr "Rechts uitlijnen"
+
+msgid "table.sort"
+msgstr "Sorteren"
+
+msgid "table.filter"
+msgstr "Filteren"
+
+msgid "table.export"
+msgstr "Exporteren"
+
+msgid "table.delete_selected"
+msgstr "Geselecteerde rijen verwijderen"
+
+msgid "table.sort_asc"
+msgstr "Oplopend"
+
+msgid "table.sort_desc"
+msgstr "Aflopend"
+
+msgid "table.clear_filters"
+msgstr "Filters verwijderen"
+
+msgid "table.filter_by_value"
+msgstr "Filteren op celwaarde"
+
+msgid "table.hide_select"
+msgstr "Geselecteerde rijen verbergen"
+
+msgid "table.show_select"
+msgstr "Alleen geselecteerde rijen tonen"
+
+msgid "table.export_all"
+msgstr "Alle records exporteren"
+
+msgid "table.export_page"
+msgstr "Huidige pagina exporteren"
+
+msgid "table.export_selection"
+msgstr "Selectie exporteren"
+
+msgid "table.export_filter"
+msgstr "Gefilterde records exporteren"
+
+msgid "table.sort_status"
+msgstr "Sortering: %s"
+
+msgid "table.filter_status"
+msgstr "Filter: %s"
+
+msgid "table.group_status"
+msgstr "Groep: %s"
+
+msgid "table.filter_column"
+msgstr "Filter: %s"
+
+msgid "table.empty"
+msgstr "(leeg)"
+
+msgid "table.search_mode_equals"
+msgstr "Gelijk aan"
+
+msgid "table.search_mode_contains"
+msgstr "Bevat"
+
+msgid "table.search_mode_starts_with"
+msgstr "Begint met"
+
+msgid "table.search_mode_ends_with"
+msgstr "Eindigt met"
+
+msgid "table.search_mode_sql"
+msgstr "SQL"
+
+msgid "table.move_up"
+msgstr "Omhoog verplaatsen"
+
+msgid "table.move_down"
+msgstr "Omlaag verplaatsen"
+
+msgid "table.move_top"
+msgstr "Naar boven verplaatsen"
+
+msgid "table.move_bottom"
+msgstr "Naar beneden verplaatsen"
+
+# ============================================================================
+# Days of Week
+# ============================================================================
+
+msgid "day.mo"
+msgstr "Ma"
+
+msgid "day.tu"
+msgstr "Di"
+
+msgid "day.we"
+msgstr "Wo"
+
+msgid "day.th"
+msgstr "Do"
+
+msgid "day.fr"
+msgstr "Vr"
+
+msgid "day.sa"
+msgstr "Za"
+
+msgid "day.su"
+msgstr "Zo"
+
+# ============================================================================
+# Dialog Messages
+# ============================================================================
+
+msgid "dialog.error"
+msgstr "Fout"
+
+msgid "dialog.warning"
+msgstr "Waarschuwing"
+
+msgid "dialog.info"
+msgstr "Informatie"
+
+msgid "dialog.question"
+msgstr "Vraag"
+
+msgid "dialog.confirm"
+msgstr "Bevestigen"
+
+# ============================================================================
+# File Operations
+# ============================================================================
+
+msgid "file.new"
+msgstr "Nieuw"
+
+msgid "file.open"
+msgstr "Openen"
+
+msgid "file.save"
+msgstr "Opslaan"
+
+msgid "file.save_as"
+msgstr "Opslaan als"
+
+msgid "file.close"
+msgstr "Sluiten"
+
+msgid "file.exit"
+msgstr "Afsluiten"
+
+# ============================================================================
+# Edit Operations
+# ============================================================================
+
+msgid "edit.cut"
+msgstr "Knippen"
+
+msgid "edit.copy"
+msgstr "Kopiëren"
+
+msgid "edit.paste"
+msgstr "Plakken"
+
+msgid "edit.undo"
+msgstr "Ongedaan maken"
+
+msgid "edit.redo"
+msgstr "Opnieuw"
+
+msgid "edit.select_all"
+msgstr "Alles selecteren"
+
+# ============================================================================
+# Help
+# ============================================================================
+
+msgid "help.about"
+msgstr "Over"
+
+msgid "help.help"
+msgstr "Help"
+
+msgid "help.documentation"
+msgstr "Documentatie"
+
+# ============================================================================
+# LEGACY MAPPINGS — English msgid → Dutch msgstr
+# ============================================================================
+
+msgid "OK"
+msgstr "OK"
+
+msgid "Ok"
+msgstr "Ok"
+
+msgid "Cancel"
+msgstr "Annuleren"
+
+msgid "Yes"
+msgstr "Ja"
+
+msgid "No"
+msgstr "Nee"
+
+msgid "Retry"
+msgstr "Opnieuw proberen"
+
+msgid "Delete"
+msgstr "Verwijderen"
+
+msgid "Next"
+msgstr "Volgende"
+
+msgid "Previous"
+msgstr "Vorige"
+
+msgid "Prev"
+msgstr "Vorige"
+
+msgid "Open"
+msgstr "Openen"
+
+msgid "Close"
+msgstr "Sluiten"
+
+msgid "Add"
+msgstr "Toevoegen"
+
+msgid "Remove"
+msgstr "Verwijderen"
+
+msgid "Submit"
+msgstr "Verzenden"
+
+msgid "Save"
+msgstr "Opslaan"
+
+msgid "Apply"
+msgstr "Toepassen"
+
+# Font dialog legacy
+msgid "Family"
+msgstr "Lettertype"
+
+msgid "Weight"
+msgstr "Dikte"
+
+msgid "Slant"
+msgstr "Stijl"
+
+msgid "Effects"
+msgstr "Effecten"
+
+msgid "Preview"
+msgstr "Voorbeeld"
+
+msgid "Size"
+msgstr "Grootte"
+
+msgid "Font Selector"
+msgstr "Lettertypeselectie"
+
+msgid "The quick brown fox jumps over the lazy dog."
+msgstr "De snelle bruine vos springt over de luie hond."
+
+# Color chooser legacy
+msgid "Color Chooser"
+msgstr "Kleurenkiezer"
+
+msgid "Advanced"
+msgstr "Geavanceerd"
+
+msgid "Themed"
+msgstr "Themakleuren"
+
+msgid "Standard"
+msgstr "Standaard"
+
+msgid "Current"
+msgstr "Huidige"
+
+msgid "New"
+msgstr "Nieuw"
+
+msgid "Hue"
+msgstr "Tint"
+
+msgid "Sat"
+msgstr "Verzadiging"
+
+msgid "Lum"
+msgstr "Lichtheid"
+
+msgid "Hex"
+msgstr "Hex"
+
+msgid "Red"
+msgstr "Rood"
+
+msgid "Green"
+msgstr "Groen"
+
+msgid "Blue"
+msgstr "Blauw"
+
+msgid "color dropper"
+msgstr "Pipet"
+
+# Color labels
+msgid "Hue:"
+msgstr "Tint:"
+
+msgid "Sat:"
+msgstr "Verzadiging:"
+
+msgid "Lum:"
+msgstr "Lichtheid:"
+
+msgid "Hex:"
+msgstr "Hex:"
+
+msgid "Red:"
+msgstr "Rood:"
+
+msgid "Green:"
+msgstr "Groen:"
+
+msgid "Blue:"
+msgstr "Blauw:"
+
+# Validation legacy
+msgid "Should be of data type"
+msgstr "Moet van het type zijn"
+
+msgid "Invalid data type"
+msgstr "Ongeldig gegevenstype"
+
+msgid "Number cannot be greater than"
+msgstr "Getal mag niet groter zijn dan"
+
+msgid "Number cannot be less than"
+msgstr "Getal mag niet kleiner zijn dan"
+
+msgid "Out of range"
+msgstr "Buiten bereik"
+
+msgid "Select an item from the list"
+msgstr "Selecteer een item uit de lijst"
+
+# Table legacy
+msgid "Search"
+msgstr "Zoeken"
+
+msgid "Page"
+msgstr "Pagina"
+
+msgid "of"
+msgstr "van"
+
+msgid "Reset table"
+msgstr "Tabel resetten"
+
+msgid "Columns"
+msgstr "Kolommen"
+
+msgid "Move"
+msgstr "Verplaatsen"
+
+msgid "Align"
+msgstr "Uitlijnen"
+
+msgid "Hide column"
+msgstr "Kolom verbergen"
+
+msgid "Delete column"
+msgstr "Kolom verwijderen"
+
+msgid "Show All"
+msgstr "Alles tonen"
+
+msgid "Move to left"
+msgstr "Naar links verplaatsen"
+
+msgid "Move to right"
+msgstr "Naar rechts verplaatsen"
+
+msgid "Move to first"
+msgstr "Naar eerste verplaatsen"
+
+msgid "Move to last"
+msgstr "Naar laatste verplaatsen"
+
+msgid "Sort"
+msgstr "Sorteren"
+
+msgid "Filter"
+msgstr "Filteren"
+
+msgid "Export"
+msgstr "Exporteren"
+
+msgid "Delete selected rows"
+msgstr "Geselecteerde rijen verwijderen"
+
+msgid "Sort Ascending"
+msgstr "Oplopend"
+
+msgid "Sort Descending"
+msgstr "Aflopend"
+
+msgid "Clear filters"
+msgstr "Filters verwijderen"
+
+msgid "Filter by cell's value"
+msgstr "Filteren op celwaarde"
+
+msgid "Hide select rows"
+msgstr "Geselecteerde rijen verbergen"
+
+msgid "Show only select rows"
+msgstr "Alleen geselecteerde rijen tonen"
+
+msgid "Export all records"
+msgstr "Alle records exporteren"
+
+msgid "Export current page"
+msgstr "Huidige pagina exporteren"
+
+msgid "Export current selection"
+msgstr "Selectie exporteren"
+
+msgid "Export records in filter"
+msgstr "Gefilterde records exporteren"
+
+msgid "Move up"
+msgstr "Omhoog verplaatsen"
+
+msgid "Move down"
+msgstr "Omlaag verplaatsen"
+
+msgid "Move to top"
+msgstr "Naar boven verplaatsen"
+
+msgid "Move to bottom"
+msgstr "Naar beneden verplaatsen"
+
+# Days legacy
+msgid "Mo"
+msgstr "Ma"
+
+msgid "Tu"
+msgstr "Di"
+
+msgid "We"
+msgstr "Wo"
+
+msgid "Th"
+msgstr "Do"
+
+msgid "Fr"
+msgstr "Vr"
+
+msgid "Sa"
+msgstr "Za"
+
+msgid "Su"
+msgstr "Zo"
+
+# Dialogs legacy
+msgid "Error"
+msgstr "Fout"
+
+msgid "Warning"
+msgstr "Waarschuwing"
+
+msgid "Information"
+msgstr "Informatie"
+
+msgid "Question"
+msgstr "Vraag"
+
+msgid "Confirm"
+msgstr "Bevestigen"
+
+# File legacy
+msgid "New"
+msgstr "Nieuw"
+
+msgid "Save As"
+msgstr "Opslaan als"
+
+msgid "Exit"
+msgstr "Afsluiten"
+
+# Edit legacy
+msgid "Cut"
+msgstr "Knippen"
+
+msgid "Copy"
+msgstr "Kopiëren"
+
+msgid "Paste"
+msgstr "Plakken"
+
+msgid "Undo"
+msgstr "Ongedaan maken"
+
+msgid "Redo"
+msgstr "Opnieuw"
+
+msgid "Select All"
+msgstr "Alles selecteren"
+
+# Help legacy
+msgid "About"
+msgstr "Over"
+
+msgid "Help"
+msgstr "Help"
+
+msgid "Documentation"
+msgstr "Documentatie"

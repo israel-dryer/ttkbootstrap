@@ -1,0 +1,813 @@
+# French translations for ttkbootstrap
+# Copyright (C) 2024 Israel Dryer
+# This file is distributed under the same license as the ttkbootstrap project.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: ttkbootstrap\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2024-01-01 12:00+0000\n"
+"PO-Revision-Date: 2025-12-11 00:00+0000\n"
+"Last-Translator: ttkbootstrap team <>\n"
+"Language: fr\n"
+"Language-Team: French\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: ttkbootstrap localization\n"
+
+# ============================================================================
+# Common Buttons
+# ============================================================================
+
+msgid "button.ok"
+msgstr "OK"
+
+msgid "button.cancel"
+msgstr "Annuler"
+
+msgid "button.yes"
+msgstr "Oui"
+
+msgid "button.no"
+msgstr "Non"
+
+msgid "button.retry"
+msgstr "Réessayer"
+
+msgid "button.delete"
+msgstr "Supprimer"
+
+msgid "button.next"
+msgstr "Suivant"
+
+msgid "button.previous"
+msgstr "Précédent"
+
+msgid "button.prev"
+msgstr "Précédent"
+
+msgid "button.open"
+msgstr "Ouvrir"
+
+msgid "button.close"
+msgstr "Fermer"
+
+msgid "button.add"
+msgstr "Ajouter"
+
+msgid "button.remove"
+msgstr "Retirer"
+
+msgid "button.submit"
+msgstr "Soumettre"
+
+msgid "button.save"
+msgstr "Enregistrer"
+
+msgid "button.apply"
+msgstr "Appliquer"
+
+# ============================================================================
+# Font Dialog
+# ============================================================================
+
+msgid "font.family"
+msgstr "Police"
+
+msgid "font.weight"
+msgstr "Graisse"
+
+msgid "font.slant"
+msgstr "Inclinaison"
+
+msgid "font.effects"
+msgstr "Effets"
+
+msgid "font.preview"
+msgstr "Aperçu"
+
+msgid "font.size"
+msgstr "Taille"
+
+msgid "font.selector"
+msgstr "Sélecteur de police"
+
+msgid "font.preview_text"
+msgstr "Portez ce vieux whisky au juge blond qui fume."
+
+msgid "font.weight.normal"
+msgstr "Normal"
+
+msgid "font.weight.bold"
+msgstr "Gras"
+
+msgid "font.slant.roman"
+msgstr "Normal"
+
+msgid "font.slant.italic"
+msgstr "Italique"
+
+msgid "font.effects.underline"
+msgstr "Souligné"
+
+msgid "font.effects.overstrike"
+msgstr "Barré"
+
+# ============================================================================
+# Color Chooser
+# ============================================================================
+
+msgid "color.chooser"
+msgstr "Sélecteur de couleur"
+
+msgid "color.advanced"
+msgstr "Avancé"
+
+msgid "color.themed"
+msgstr "Thème"
+
+msgid "color.standard"
+msgstr "Standard"
+
+msgid "color.current"
+msgstr "Actuel"
+
+msgid "color.new"
+msgstr "Nouveau"
+
+msgid "color.hue"
+msgstr "Teinte"
+
+msgid "color.sat"
+msgstr "Saturation"
+
+msgid "color.lum"
+msgstr "Luminance"
+
+msgid "color.hex"
+msgstr "Hex"
+
+msgid "color.red"
+msgstr "Rouge"
+
+msgid "color.green"
+msgstr "Vert"
+
+msgid "color.blue"
+msgstr "Bleu"
+
+msgid "color.dropper"
+msgstr "pipette de couleur"
+
+# Color value labels (with colon suffix for label display)
+msgid "color.hue:"
+msgstr "Teinte:"
+
+msgid "color.sat:"
+msgstr "Saturation:"
+
+msgid "color.lum:"
+msgstr "Luminance:"
+
+msgid "color.hex:"
+msgstr "Hex :"
+
+msgid "color.red:"
+msgstr "Rouge :"
+
+msgid "color.green:"
+msgstr "Vert :"
+
+msgid "color.blue:"
+msgstr "Bleu :"
+
+# ============================================================================
+# Validation Messages
+# ============================================================================
+
+msgid "validation.should_be_type"
+msgstr "Doit être du type de données"
+
+msgid "validation.invalid_type"
+msgstr "Type de données invalide"
+
+msgid "validation.greater_than"
+msgstr "Le nombre ne peut pas être supérieur à"
+
+msgid "validation.less_than"
+msgstr "Le nombre ne peut pas être inférieur à"
+
+msgid "validation.out_of_range"
+msgstr "Hors limites"
+
+msgid "validation.select_item"
+msgstr "Sélectionnez un élément dans la liste"
+
+# ============================================================================
+# Table View
+# ============================================================================
+
+msgid "table.search"
+msgstr "Rechercher"
+
+msgid "table.page"
+msgstr "Page"
+
+msgid "table.of"
+msgstr "de"
+
+msgid "table.reset"
+msgstr "Réinitialiser la table"
+
+msgid "table.columns"
+msgstr "Colonnes"
+
+msgid "table.move"
+msgstr "Déplacer"
+
+msgid "table.align"
+msgstr "Aligner"
+
+msgid "table.hide_column"
+msgstr "Masquer la colonne"
+
+msgid "table.delete_column"
+msgstr "Supprimer la colonne"
+
+msgid "table.show_all"
+msgstr "Tout afficher"
+
+msgid "table.move_left"
+msgstr "Déplacer à gauche"
+
+msgid "table.move_right"
+msgstr "Déplacer à droite"
+
+msgid "table.move_first"
+msgstr "Déplacer au début"
+
+msgid "table.move_last"
+msgstr "Déplacer à la fin"
+
+msgid "table.add_record"
+msgstr "Ajouter un enregistrement"
+
+msgid "table.edit"
+msgstr "Modifier"
+
+msgid "table.delete_row"
+msgstr "Supprimer"
+
+msgid "table.group_by_column"
+msgstr "Grouper par cette colonne"
+
+msgid "table.ungroup_all"
+msgstr "Dégrouper tout"
+
+msgid "table.clear_sort"
+msgstr "Effacer le tri"
+
+msgid "table.align_left"
+msgstr "Aligner à gauche"
+
+msgid "table.align_center"
+msgstr "Aligner au centre"
+
+msgid "table.align_right"
+msgstr "Aligner à droite"
+
+msgid "table.sort"
+msgstr "Trier"
+
+msgid "table.filter"
+msgstr "Filtrer"
+
+msgid "table.export"
+msgstr "Exporter"
+
+msgid "table.delete_selected"
+msgstr "Supprimer les lignes sélectionnées"
+
+msgid "table.sort_asc"
+msgstr "Trier par ordre croissant"
+
+msgid "table.sort_desc"
+msgstr "Trier par ordre décroissant"
+
+msgid "table.clear_filters"
+msgstr "Effacer les filtres"
+
+msgid "table.filter_by_value"
+msgstr "Filtrer par valeur de la cellule"
+
+msgid "table.hide_select"
+msgstr "Masquer les lignes sélectionnées"
+
+msgid "table.show_select"
+msgstr "Afficher uniquement les lignes sélectionnées"
+
+msgid "table.export_all"
+msgstr "Exporter tous les enregistrements"
+
+msgid "table.export_page"
+msgstr "Exporter la page actuelle"
+
+msgid "table.export_selection"
+msgstr "Exporter la sélection actuelle"
+
+msgid "table.export_filter"
+msgstr "Exporter les enregistrements filtrés"
+
+msgid "table.sort_status"
+msgstr "Tri : %s"
+
+msgid "table.filter_status"
+msgstr "Filtre : %s"
+
+msgid "table.group_status"
+msgstr "Groupe : %s"
+
+msgid "table.filter_column"
+msgstr "Filtre : %s"
+
+msgid "table.empty"
+msgstr "(vide)"
+
+msgid "table.search_mode_equals"
+msgstr "Égal à"
+
+msgid "table.search_mode_contains"
+msgstr "Contient"
+
+msgid "table.search_mode_starts_with"
+msgstr "Commence par"
+
+msgid "table.search_mode_ends_with"
+msgstr "Se termine par"
+
+msgid "table.search_mode_sql"
+msgstr "SQL"
+
+msgid "table.move_up"
+msgstr "Déplacer vers le haut"
+
+msgid "table.move_down"
+msgstr "Déplacer vers le bas"
+
+msgid "table.move_top"
+msgstr "Déplacer en haut"
+
+msgid "table.move_bottom"
+msgstr "Déplacer en bas"
+
+# ============================================================================
+# Days of Week (abbreviated)
+# ============================================================================
+
+msgid "day.mo"
+msgstr "Lu"
+
+msgid "day.tu"
+msgstr "Ma"
+
+msgid "day.we"
+msgstr "Me"
+
+msgid "day.th"
+msgstr "Je"
+
+msgid "day.fr"
+msgstr "Ve"
+
+msgid "day.sa"
+msgstr "Sa"
+
+msgid "day.su"
+msgstr "Di"
+
+# ============================================================================
+# Common Dialog Messages
+# ============================================================================
+
+msgid "dialog.error"
+msgstr "Erreur"
+
+msgid "dialog.warning"
+msgstr "Avertissement"
+
+msgid "dialog.info"
+msgstr "Information"
+
+msgid "dialog.question"
+msgstr "Question"
+
+msgid "dialog.confirm"
+msgstr "Confirmer"
+
+# ============================================================================
+# File Operations
+# ============================================================================
+
+msgid "file.new"
+msgstr "Nouveau"
+
+msgid "file.open"
+msgstr "Ouvrir"
+
+msgid "file.save"
+msgstr "Enregistrer"
+
+msgid "file.save_as"
+msgstr "Enregistrer sous"
+
+msgid "file.close"
+msgstr "Fermer"
+
+msgid "file.exit"
+msgstr "Quitter"
+
+# ============================================================================
+# Edit Operations
+# ============================================================================
+
+msgid "edit.cut"
+msgstr "Couper"
+
+msgid "edit.copy"
+msgstr "Copier"
+
+msgid "edit.paste"
+msgstr "Coller"
+
+msgid "edit.undo"
+msgstr "Annuler"
+
+msgid "edit.redo"
+msgstr "Rétablir"
+
+msgid "edit.select_all"
+msgstr "Tout sélectionner"
+
+# ============================================================================
+# Help
+# ============================================================================
+
+msgid "help.about"
+msgstr "À propos"
+
+msgid "help.help"
+msgstr "Aide"
+
+msgid "help.documentation"
+msgstr "Documentation"
+
+# ============================================================================
+# LEGACY MAPPINGS FOR BACKWARDS COMPATIBILITY
+# English text as msgid -> Localized text as msgstr
+# ============================================================================
+
+# Common buttons (legacy)
+msgid "OK"
+msgstr "OK"
+
+msgid "Ok"
+msgstr "Ok"
+
+msgid "Cancel"
+msgstr "Annuler"
+
+msgid "Yes"
+msgstr "Oui"
+
+msgid "No"
+msgstr "Non"
+
+msgid "Retry"
+msgstr "Réessayer"
+
+msgid "Delete"
+msgstr "Supprimer"
+
+msgid "Next"
+msgstr "Suivant"
+
+msgid "Previous"
+msgstr "Précédent"
+
+msgid "Prev"
+msgstr "Précédent"
+
+msgid "Open"
+msgstr "Ouvrir"
+
+msgid "Close"
+msgstr "Fermer"
+
+msgid "Add"
+msgstr "Ajouter"
+
+msgid "Remove"
+msgstr "Retirer"
+
+msgid "Submit"
+msgstr "Soumettre"
+
+msgid "Save"
+msgstr "Enregistrer"
+
+msgid "Apply"
+msgstr "Appliquer"
+
+# Font dialog (legacy)
+msgid "Family"
+msgstr "Police"
+
+msgid "Weight"
+msgstr "Graisse"
+
+msgid "Slant"
+msgstr "Inclinaison"
+
+msgid "Effects"
+msgstr "Effets"
+
+msgid "Preview"
+msgstr "Aperçu"
+
+msgid "Size"
+msgstr "Taille"
+
+msgid "Font Selector"
+msgstr "Sélecteur de police"
+
+msgid "The quick brown fox jumps over the lazy dog."
+msgstr "Portez ce vieux whisky au juge blond qui fume."
+
+# Color chooser (legacy)
+msgid "Color Chooser"
+msgstr "Sélecteur de couleur"
+
+msgid "Advanced"
+msgstr "Avancé"
+
+msgid "Themed"
+msgstr "Thème"
+
+msgid "Standard"
+msgstr "Standard"
+
+msgid "Current"
+msgstr "Actuel"
+
+msgid "New"
+msgstr "Nouveau"
+
+msgid "Hue"
+msgstr "Teinte"
+
+msgid "Sat"
+msgstr "Saturation"
+
+msgid "Lum"
+msgstr "Luminance"
+
+msgid "Hex"
+msgstr "Hex"
+
+msgid "Red"
+msgstr "Rouge"
+
+msgid "Green"
+msgstr "Vert"
+
+msgid "Blue"
+msgstr "Bleu"
+
+msgid "color dropper"
+msgstr "pipette de couleur"
+
+# Color labels with colons (legacy - for backwards compatibility)
+msgid "Hue:"
+msgstr "Teinte:"
+
+msgid "Sat:"
+msgstr "Saturation:"
+
+msgid "Lum:"
+msgstr "Luminance:"
+
+msgid "Hex:"
+msgstr "Hex :"
+
+msgid "Red:"
+msgstr "Rouge :"
+
+msgid "Green:"
+msgstr "Vert :"
+
+msgid "Blue:"
+msgstr "Bleu :"
+
+# Validation (legacy)
+msgid "Should be of data type"
+msgstr "Doit être du type de données"
+
+msgid "Invalid data type"
+msgstr "Type de données invalide"
+
+msgid "Number cannot be greater than"
+msgstr "Le nombre ne peut pas être supérieur à"
+
+msgid "Number cannot be less than"
+msgstr "Le nombre ne peut pas être inférieur à"
+
+msgid "Out of range"
+msgstr "Hors limites"
+
+msgid "Select an item from the list"
+msgstr "Sélectionnez un élément dans la liste"
+
+# Table view (legacy)
+msgid "Search"
+msgstr "Rechercher"
+
+msgid "Page"
+msgstr "Page"
+
+msgid "of"
+msgstr "de"
+
+msgid "Reset table"
+msgstr "Réinitialiser la table"
+
+msgid "Columns"
+msgstr "Colonnes"
+
+msgid "Move"
+msgstr "Déplacer"
+
+msgid "Align"
+msgstr "Aligner"
+
+msgid "Hide column"
+msgstr "Masquer la colonne"
+
+msgid "Delete column"
+msgstr "Supprimer la colonne"
+
+msgid "Show All"
+msgstr "Tout afficher"
+
+msgid "Move to left"
+msgstr "Déplacer à gauche"
+
+msgid "Move to right"
+msgstr "Déplacer à droite"
+
+msgid "Move to first"
+msgstr "Déplacer au début"
+
+msgid "Move to last"
+msgstr "Déplacer à la fin"
+
+msgid "Align left"
+msgstr "Aligner à gauche"
+
+msgid "Align center"
+msgstr "Aligner au centre"
+
+msgid "Align right"
+msgstr "Aligner à droite"
+
+msgid "Sort"
+msgstr "Trier"
+
+msgid "Filter"
+msgstr "Filtrer"
+
+msgid "Export"
+msgstr "Exporter"
+
+msgid "Delete selected rows"
+msgstr "Supprimer les lignes sélectionnées"
+
+msgid "Sort Ascending"
+msgstr "Trier par ordre croissant"
+
+msgid "Sort Descending"
+msgstr "Trier par ordre décroissant"
+
+msgid "Clear filters"
+msgstr "Effacer les filtres"
+
+msgid "Filter by cell's value"
+msgstr "Filtrer par valeur de la cellule"
+
+msgid "Hide select rows"
+msgstr "Masquer les lignes sélectionnées"
+
+msgid "Show only select rows"
+msgstr "Afficher uniquement les lignes sélectionnées"
+
+msgid "Export all records"
+msgstr "Exporter tous les enregistrements"
+
+msgid "Export current page"
+msgstr "Exporter la page actuelle"
+
+msgid "Export current selection"
+msgstr "Exporter la sélection actuelle"
+
+msgid "Export records in filter"
+msgstr "Exporter les enregistrements filtrés"
+
+msgid "Move up"
+msgstr "Déplacer vers le haut"
+
+msgid "Move down"
+msgstr "Déplacer vers le bas"
+
+msgid "Move to top"
+msgstr "Déplacer en haut"
+
+msgid "Move to bottom"
+msgstr "Déplacer en bas"
+
+# Days of week (legacy)
+msgid "Mo"
+msgstr "Lu"
+
+msgid "Tu"
+msgstr "Ma"
+
+msgid "We"
+msgstr "Me"
+
+msgid "Th"
+msgstr "Je"
+
+msgid "Fr"
+msgstr "Ve"
+
+msgid "Sa"
+msgstr "Sa"
+
+msgid "Su"
+msgstr "Di"
+
+# Dialogs (legacy)
+msgid "Error"
+msgstr "Erreur"
+
+msgid "Warning"
+msgstr "Avertissement"
+
+msgid "Information"
+msgstr "Information"
+
+msgid "Question"
+msgstr "Question"
+
+msgid "Confirm"
+msgstr "Confirmer"
+
+# File operations (legacy)
+msgid "New"
+msgstr "Nouveau"
+
+msgid "Save As"
+msgstr "Enregistrer sous"
+
+msgid "Exit"
+msgstr "Quitter"
+
+# Edit operations (legacy)
+msgid "Cut"
+msgstr "Couper"
+
+msgid "Copy"
+msgstr "Copier"
+
+msgid "Paste"
+msgstr "Coller"
+
+msgid "Undo"
+msgstr "Annuler"
+
+msgid "Redo"
+msgstr "Rétablir"
+
+msgid "Select All"
+msgstr "Tout sélectionner"
+
+# Help (legacy)
+msgid "About"
+msgstr "À propos"
+
+msgid "Help"
+msgstr "Aide"
+
+msgid "Documentation"
+msgstr "Documentation"
