@@ -37,6 +37,7 @@ from ttkbootstrap.widgets.primitives.selectbox import SelectBox
 from ttkbootstrap.widgets.primitives.separator import Separator
 from ttkbootstrap.widgets.primitives.sizegrip import SizeGrip
 from ttkbootstrap.widgets.primitives.spinbox import Spinbox
+from ttkbootstrap.widgets.composites.spinnerentry import SpinnerEntry
 from ttkbootstrap.widgets.composites.tableview import TableView
 from ttkbootstrap.widgets.composites.textentry import TextEntry
 from ttkbootstrap.widgets.composites.timeentry import TimeEntry
@@ -81,6 +82,7 @@ __all__ = [
     "Separator",
     "SizeGrip",
     "Spinbox",
+    "SpinnerEntry",
     "TableView",
     "TextEntry",
     "TimeEntry",
