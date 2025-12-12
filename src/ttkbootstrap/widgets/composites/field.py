@@ -16,13 +16,15 @@ from ttkbootstrap.widgets.mixins import configure_delegate
 from ttkbootstrap.widgets.mixins.entry_mixin import EntryMixin
 from ttkbootstrap.widgets.parts.numberentry_part import NumberEntryPart
 from ttkbootstrap.widgets.parts.textentry_part import TextEntryPart
+from ttkbootstrap.widgets.parts.spinnerentry_part import SpinnerEntryPart
 
-FieldKind = Literal['text', 'numeric']
+FieldKind = Literal['text', 'numeric', 'spinbox']
 """Type alias for field kind specification.
 
 Determines which entry part widget to use:
     - 'text': Uses TextEntryPart for text input with formatting support
     - 'numeric': Uses NumberEntryPart for numeric input with bounds and stepping
+    - 'spinbox': Uses SpinnerEntryPart for spinner input (supports text or numeric values)
 """
 
 
@@ -277,7 +279,7 @@ class Field(EntryMixin, Frame):
         self._label_text = label
         self._value = value
 
-        self._entry: TextEntryPart | NumberEntryPart
+        self._entry: TextEntryPart | NumberEntryPart | SpinnerEntryPart
         self._addons: dict[str, Union[Button, Label, CheckButton]] = {}
 
         # layout
@@ -295,6 +297,8 @@ class Field(EntryMixin, Frame):
 
         if kind == "numeric":
             self._entry = NumberEntryPart(self._field, value=value, **kwargs)
+        elif kind == "spinbox":
+            self._entry = SpinnerEntryPart(self._field, value=value, **kwargs)
         else:
             self._entry = TextEntryPart(self._field, value=value, **kwargs)
 
