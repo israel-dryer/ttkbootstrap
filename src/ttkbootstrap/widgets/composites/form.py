@@ -365,7 +365,8 @@ class Form(Frame):
         elif editor == 'numericentry':
             numeric_value = initial_value if initial_value is not None else 0
             field_widget = NumericEntry(
-                container, value=numeric_value, label=label_text, textvariable=variable, **options)
+                container, value=numeric_value, label=label_text, **options)
+            self._bind_numeric_variable(item.key, field_widget, variable)
         elif editor == 'passwordentry':
             field_widget = PasswordEntry(
                 container, value=initial_value or "", label=label_text, textvariable=variable, **options)
@@ -421,9 +422,10 @@ class Form(Frame):
         if isinstance(field_widget, Field):
             field_widget.bind("<<Changed>>", lambda _e, k=item.key: self._sync_value_from_widget(k))
             field_widget.pack(fill='both', expand=True)
-            traced_var = getattr(field_widget, "variable", None)
-            if traced_var is not None:
-                self._register_variable(item.key, traced_var)
+            if not isinstance(field_widget, NumericEntry):
+                traced_var = getattr(field_widget, "variable", None)
+                if traced_var is not None:
+                    self._register_variable(item.key, traced_var)
         elif isinstance(field_widget, Text):
             text_var = variable or StringVar(value=str(initial_value) if initial_value is not None else "")
             self._register_variable(item.key, text_var)
@@ -689,6 +691,34 @@ class Form(Frame):
         if var is not None:
             var.trace_add("write", _on_var_change)
 
+    def _bind_numeric_variable(self, key: str, widget: NumericEntry, var: Variable | None) -> None:
+        if var is None:
+            return
+
+        self._register_variable(key, var)
+
+        def _sync_numeric_var(*_args):
+            new_value = widget.value
+            if new_value is None:
+                return
+            try:
+                current_value = var.get()
+            except Exception:
+                current_value = None
+            if current_value == new_value:
+                return
+            previous_suspend = self._suspend_sync
+            self._suspend_sync = True
+            try:
+                var.set(new_value)
+            finally:
+                self._suspend_sync = previous_suspend
+
+        text_signal = getattr(widget, "signal", None)
+        if text_signal is not None:
+            text_signal.subscribe(lambda *_: _sync_numeric_var())
+        _sync_numeric_var()
+
     def _set_readonly(self, widget: Any) -> None:
         if isinstance(widget, Field):
             widget.readonly(True)
@@ -760,4 +790,3 @@ __all__ = [
     "TabItem",
     "EditorType",
 ]
-
