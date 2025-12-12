@@ -127,9 +127,11 @@ class MessageCatalog:
 
         Priority order:
         1) ``TTKBOOTSTRAP_LOCALES`` environment variable
-        2) Repository root ``locales/``
-        3) Package-local ``ttkbootstrap/locales``
-        4) Current working directory ``./locales``
+        2) Package asset ``src/ttkbootstrap/assets/locales``
+        3) Module-local ``ttkbootstrap/localization/locales``
+        4) Package-local ``src/ttkbootstrap/locales``
+        5) Repository root ``locales/``
+        6) Current working directory ``./locales``
         """
         import os
         env = os.environ.get("TTKBOOTSTRAP_LOCALES")
@@ -139,9 +141,9 @@ class MessageCatalog:
                 return p
         here = Path(__file__).resolve()
         candidates = [
-            here.parents[1] / "assets" / "locales",     # in-package assets: ttkbootstrap/assets/locales
+            here.parents[2] / "assets" / "locales",      # package assets: src/ttkbootstrap/assets/locales
             here.parent / "locales",                     # module-local: ttkbootstrap/localization/locales
-            here.parents[1] / "locales",                 # package-local: ttkbootstrap/locales
+            here.parents[1] / "locales",                 # package-local: src/ttkbootstrap/locales
             here.parents[3] / "locales",                 # repo root: .../ttkbootstrap/locales
             Path.cwd() / "locales",                      # current working dir
         ]
@@ -161,6 +163,7 @@ class MessageCatalog:
         Args:
             lang: Locale code (e.g. ``en``, ``de_DE``).
         """
+        from ttkbootstrap.runtime.app import get_default_root
         root = get_default_root()
 
         tcl_lang = MessageCatalog._to_msgcat_locale(lang)
@@ -324,25 +327,26 @@ class MessageCatalog:
         return MessageCatalog._strip_ampersands(out) if MessageCatalog._strip_amp else out
 
     @staticmethod
-    def locale(newlocale: Optional[str] = None) -> str:
+    def locale(new_locale: Optional[str] = None) -> str:
         """Get or set the current locale.
 
         Args:
-            newlocale: If provided, switch both gettext and msgcat locales.
+            new_locale: If provided, switch both gettext and msgcat locales.
 
         Returns:
             The active normalized locale code (or Tcl's current code when
             queried).
         """
+        from ttkbootstrap.runtime.app import get_default_root
         root = get_default_root()
-        if newlocale:
+        if new_locale:
             # switch gettext + msgcat
-            MessageCatalog._install_gettext(newlocale)
-            MessageCatalog._sync_msgcat_locale(newlocale)
+            MessageCatalog._install_gettext(new_locale)
+            MessageCatalog._sync_msgcat_locale(new_locale)
             # notify listeners (optional)
             try:
                 if MessageCatalog._emit_event:
-                    root.event_generate(MessageCatalog._event_name, when="tail")
+                    root.event_generate(MessageCatalog._event_name, data={"locale": new_locale}, when="tail")
             except Exception:
                 pass
             return MessageCatalog._locale
@@ -368,6 +372,7 @@ class MessageCatalog:
             Number of files loaded, as reported by Tcl.
         """
         msgs = Path(dirname).as_posix()
+        from ttkbootstrap.runtime.app import get_default_root
         root = get_default_root()
         return int(root.tk.eval(f"::msgcat::mcload [list {msgs}]"))
 
@@ -382,6 +387,7 @@ class MessageCatalog:
         """
         loc = MessageCatalog._normalize_lang(locale)
         MessageCatalog._overrides.setdefault(loc, {})[src] = translated or ""
+        from ttkbootstrap.runtime.app import get_default_root
         root = get_default_root()
         root.tk.eval("::msgcat::mcset %s {%s} {%s}" % (MessageCatalog._to_msgcat_locale(locale), src, translated or ""))
 
@@ -405,6 +411,7 @@ class MessageCatalog:
             MessageCatalog._overrides.setdefault(loc, {})[k] = v
 
         # update Tcl msgcat
+        from ttkbootstrap.runtime.app import get_default_root
         root = get_default_root()
         messages = " ".join(["{%s}" % x for x in args])
         out = f"::msgcat::mcmset {MessageCatalog._to_msgcat_locale(locale)} {{{messages}}}"
@@ -412,6 +419,6 @@ class MessageCatalog:
 
     @staticmethod
     def max(*src: str) -> int:
+        from ttkbootstrap.runtime.app import get_default_root
         root = get_default_root()
         return int(root.tk.eval(f"::msgcat::mcmax {' '.join(src)}"))
-

@@ -1,0 +1,842 @@
+# Hindi translations for ttkbootstrap
+# Copyright (C) 2024 Israel Dryer
+# This file is distributed under the same license as the ttkbootstrap project.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: ttkbootstrap\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2024-01-01 12:00+0000\n"
+"PO-Revision-Date: 2025-12-11 00:00+0000\n"
+"Last-Translator: ttkbootstrap team <>\n"
+"Language: hi\n"
+"Language-Team: Hindi\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: ttkbootstrap localization\n"
+
+# ============================================================================
+# Common Buttons
+# ============================================================================
+
+msgid "button.ok"
+msgstr "ठीक है"
+
+msgid "button.cancel"
+msgstr "रद्द करें"
+
+msgid "button.yes"
+msgstr "हाँ"
+
+msgid "button.no"
+msgstr "नहीं"
+
+msgid "button.retry"
+msgstr "पुनः प्रयास करें"
+
+msgid "button.delete"
+msgstr "हटाएँ"
+
+msgid "button.next"
+msgstr "अगला"
+
+msgid "button.previous"
+msgstr "पिछला"
+
+msgid "button.prev"
+msgstr "पिछला"
+
+msgid "button.open"
+msgstr "खोलें"
+
+msgid "button.close"
+msgstr "बंद करें"
+
+msgid "button.add"
+msgstr "जोड़ें"
+
+msgid "button.remove"
+msgstr "हटाएँ"
+
+msgid "button.submit"
+msgstr "सबमिट करें"
+
+msgid "button.save"
+msgstr "सहेजें"
+
+msgid "button.apply"
+msgstr "लागू करें"
+
+# ============================================================================
+# Font Dialog
+# ============================================================================
+
+msgid "font.family"
+msgstr "फ़ॉन्ट परिवार"
+
+msgid "font.weight"
+msgstr "वजन"
+
+msgid "font.slant"
+msgstr "झुकाव"
+
+msgid "font.effects"
+msgstr "इफेक्ट्स"
+
+msgid "font.preview"
+msgstr "पूर्वावलोकन"
+
+msgid "font.size"
+msgstr "आकार"
+
+msgid "font.selector"
+msgstr "फ़ॉन्ट चयनकर्ता"
+
+msgid "font.preview_text"
+msgstr "तेज़ भूरी लोमड़ी सुस्त कुत्ते के ऊपर कूदती है।"
+
+msgid "font.weight.normal"
+msgstr "सामान्य"
+
+msgid "font.weight.bold"
+msgstr "मोटा"
+
+msgid "font.slant.roman"
+msgstr "सामान्य"
+
+msgid "font.slant.italic"
+msgstr "तिरछा"
+
+msgid "font.effects.underline"
+msgstr "रेखांकन"
+
+msgid "font.effects.overstrike"
+msgstr "ओवरस्ट्राइक"
+
+# ============================================================================
+# Color Chooser
+# ============================================================================
+
+msgid "color.chooser"
+msgstr "रंग चयनकर्ता"
+
+msgid "color.advanced"
+msgstr "उन्नत"
+
+msgid "color.themed"
+msgstr "थीम आधारित"
+
+msgid "color.standard"
+msgstr "मानक"
+
+msgid "color.current"
+msgstr "वर्तमान"
+
+msgid "color.new"
+msgstr "नया"
+
+msgid "color.hue"
+msgstr "ह्यू"
+
+msgid "color.sat"
+msgstr "सैचुरेशन"
+
+msgid "color.lum"
+msgstr "चमक"
+
+msgid "color.hex"
+msgstr "Hex"
+
+msgid "color.red"
+msgstr "लाल"
+
+msgid "color.green"
+msgstr "हरा"
+
+msgid "color.blue"
+msgstr "नीला"
+
+msgid "color.dropper"
+msgstr "रंग ड्रॉपर"
+
+# Color value labels
+msgid "color.hue:"
+msgstr "ह्यू:"
+
+msgid "color.sat:"
+msgstr "सैचुरेशन:"
+
+msgid "color.lum:"
+msgstr "चमक:"
+
+msgid "color.hex:"
+msgstr "Hex:"
+
+msgid "color.red:"
+msgstr "लाल:"
+
+msgid "color.green:"
+msgstr "हरा:"
+
+msgid "color.blue:"
+msgstr "नीला:"
+
+# ============================================================================
+# Validation
+# ============================================================================
+
+msgid "validation.should_be_type"
+msgstr "इस प्रकार का होना चाहिए"
+
+msgid "validation.invalid_type"
+msgstr "अमान्य डेटा प्रकार"
+
+msgid "validation.greater_than"
+msgstr "संख्या इससे अधिक नहीं हो सकती"
+
+msgid "validation.less_than"
+msgstr "संख्या इससे कम नहीं हो सकती"
+
+msgid "validation.out_of_range"
+msgstr "सीमा से बाहर"
+
+msgid "validation.select_item"
+msgstr "सूची से एक आइटम चुनें"
+
+# ============================================================================
+# Table View
+# ============================================================================
+
+msgid "table.search"
+msgstr "खोजें"
+
+msgid "table.page"
+msgstr "पृष्ठ"
+
+msgid "table.of"
+msgstr "का"
+
+msgid "table.reset"
+msgstr "तालिका रीसेट करें"
+
+msgid "table.columns"
+msgstr "स्तंभ"
+
+msgid "table.move"
+msgstr "स्थानांतरित करें"
+
+msgid "table.align"
+msgstr "संरेखित करें"
+
+msgid "table.hide_column"
+msgstr "स्तंभ छिपाएँ"
+
+msgid "table.delete_column"
+msgstr "स्तंभ हटाएँ"
+
+msgid "table.show_all"
+msgstr "सभी दिखाएँ"
+
+msgid "table.move_left"
+msgstr "बाएँ ले जाएँ"
+
+msgid "table.move_right"
+msgstr "दाएँ ले जाएँ"
+
+msgid "table.move_first"
+msgstr "शुरू में ले जाएँ"
+
+msgid "table.move_last"
+msgstr "अंत में ले जाएँ"
+
+msgid "table.add_record"
+msgstr "रिकॉर्ड जोड़ें"
+
+msgid "table.edit"
+msgstr "संपादित करें"
+
+msgid "table.delete_row"
+msgstr "हटाएँ"
+
+msgid "table.group_by_column"
+msgstr "इस स्तंभ के अनुसार समूह बनाएँ"
+
+msgid "table.ungroup_all"
+msgstr "सभी समूह हटाएँ"
+
+msgid "table.clear_sort"
+msgstr "क्रम हटाएँ"
+
+msgid "table.align_left"
+msgstr "बाएँ संरेखित"
+
+msgid "table.align_center"
+msgstr "मध्य संरेखित"
+
+msgid "table.align_right"
+msgstr "दाएँ संरेखित"
+
+msgid "table.sort"
+msgstr "क्रमित करें"
+
+msgid "table.filter"
+msgstr "फ़िल्टर करें"
+
+msgid "table.export"
+msgstr "निर्यात करें"
+
+msgid "table.delete_selected"
+msgstr "चयनित पंक्तियाँ हटाएँ"
+
+msgid "table.sort_asc"
+msgstr "आरोही क्रम"
+
+msgid "table.sort_desc"
+msgstr "अवरोही क्रम"
+
+msgid "table.clear_filters"
+msgstr "फ़िल्टर हटाएँ"
+
+msgid "table.filter_by_value"
+msgstr "सेल मान के अनुसार फ़िल्टर करें"
+
+msgid "table.hide_select"
+msgstr "चयनित पंक्तियाँ छिपाएँ"
+
+msgid "table.show_select"
+msgstr "केवल चयनित पंक्तियाँ दिखाएँ"
+
+msgid "table.export_all"
+msgstr "सभी रिकॉर्ड निर्यात करें"
+
+msgid "table.export_page"
+msgstr "वर्तमान पृष्ठ निर्यात करें"
+
+msgid "table.export_selection"
+msgstr "वर्तमान चयन निर्यात करें"
+
+msgid "table.export_filter"
+msgstr "फ़िल्टर किए गए रिकॉर्ड निर्यात करें"
+
+msgid "table.sort_status"
+msgstr "क्रम: %s"
+
+msgid "table.filter_status"
+msgstr "फ़िल्टर: %s"
+
+msgid "table.group_status"
+msgstr "समूह: %s"
+
+msgid "table.filter_column"
+msgstr "फ़िल्टर: %s"
+
+msgid "table.empty"
+msgstr "(खाली)"
+
+msgid "table.search_mode_equals"
+msgstr "बराबर"
+
+msgid "table.search_mode_contains"
+msgstr "शामिल है"
+
+msgid "table.search_mode_starts_with"
+msgstr "से शुरू होता है"
+
+msgid "table.search_mode_ends_with"
+msgstr "पर समाप्त होता है"
+
+msgid "table.search_mode_sql"
+msgstr "SQL"
+
+msgid "table.move_up"
+msgstr "ऊपर ले जाएँ"
+
+msgid "table.move_down"
+msgstr "नीचे ले जाएँ"
+
+msgid "table.move_top"
+msgstr "शीर्ष पर ले जाएँ"
+
+msgid "table.move_bottom"
+msgstr "नीचे ले जाएँ"
+
+# ============================================================================
+# Days of Week
+# ============================================================================
+
+msgid "day.mo"
+msgstr "सो"
+
+msgid "day.tu"
+msgstr "मं"
+
+msgid "day.we"
+msgstr "बु"
+
+msgid "day.th"
+msgstr "गु"
+
+msgid "day.fr"
+msgstr "शु"
+
+msgid "day.sa"
+msgstr "श"
+
+msgid "day.su"
+msgstr "र"
+
+# ============================================================================
+# Common Dialog Messages
+# ============================================================================
+
+msgid "dialog.error"
+msgstr "त्रुटि"
+
+msgid "dialog.warning"
+msgstr "चेतावनी"
+
+msgid "dialog.info"
+msgstr "जानकारी"
+
+msgid "dialog.question"
+msgstr "प्रश्न"
+
+msgid "dialog.confirm"
+msgstr "पुष्टि"
+
+# ============================================================================
+# File Operations
+# ============================================================================
+
+msgid "file.new"
+msgstr "नया"
+
+msgid "file.open"
+msgstr "खोलें"
+
+msgid "file.save"
+msgstr "सहेजें"
+
+msgid "file.save_as"
+msgstr "इस नाम से सहेजें"
+
+msgid "file.close"
+msgstr "बंद करें"
+
+msgid "file.exit"
+msgstr "बाहर निकलें"
+
+# ============================================================================
+# Edit Operations
+# ============================================================================
+
+msgid "edit.cut"
+msgstr "काटें"
+
+msgid "edit.copy"
+msgstr "कॉपी करें"
+
+msgid "edit.paste"
+msgstr "पेस्ट करें"
+
+msgid "edit.undo"
+msgstr "पूर्ववत करें"
+
+msgid "edit.redo"
+msgstr "फिर से करें"
+
+msgid "edit.select_all"
+msgstr "सभी चुनें"
+
+# ============================================================================
+# Help
+# ============================================================================
+
+msgid "help.about"
+msgstr "के बारे में"
+
+msgid "help.help"
+msgstr "सहायता"
+
+msgid "help.documentation"
+msgstr "दस्तावेज़"
+
+# ============================================================================
+# LEGACY MAPPINGS
+# ============================================================================
+
+msgid "OK"
+msgstr "ठीक है"
+
+msgid "Ok"
+msgstr "ठीक है"
+
+msgid "Cancel"
+msgstr "रद्द करें"
+
+msgid "Yes"
+msgstr "हाँ"
+
+msgid "No"
+msgstr "नहीं"
+
+msgid "Retry"
+msgstr "पुनः प्रयास करें"
+
+msgid "Delete"
+msgstr "हटाएँ"
+
+msgid "Next"
+msgstr "अगला"
+
+msgid "Previous"
+msgstr "पिछला"
+
+msgid "Prev"
+msgstr "पिछला"
+
+msgid "Open"
+msgstr "खोलें"
+
+msgid "Close"
+msgstr "बंद करें"
+
+msgid "Add"
+msgstr "जोड़ें"
+
+msgid "Remove"
+msgstr "हटाएँ"
+
+msgid "Submit"
+msgstr "सबमिट करें"
+
+msgid "Save"
+msgstr "सहेजें"
+
+msgid "Apply"
+msgstr "लागू करें"
+
+# Font (legacy)
+msgid "Family"
+msgstr "फ़ॉन्ट परिवार"
+
+msgid "Weight"
+msgstr "वजन"
+
+msgid "Slant"
+msgstr "झुकाव"
+
+msgid "Effects"
+msgstr "इफेक्ट्स"
+
+msgid "Preview"
+msgstr "पूर्वावलोकन"
+
+msgid "Size"
+msgstr "आकार"
+
+msgid "Font Selector"
+msgstr "फ़ॉन्ट चयनकर्ता"
+
+msgid "The quick brown fox jumps over the lazy dog."
+msgstr "तेज़ भूरी लोमड़ी सुस्त कुत्ते के ऊपर कूदती है।"
+
+# Colors (legacy)
+msgid "Color Chooser"
+msgstr "रंग चयनकर्ता"
+
+msgid "Advanced"
+msgstr "उन्नत"
+
+msgid "Themed"
+msgstr "थीम आधारित"
+
+msgid "Standard"
+msgstr "मानक"
+
+msgid "Current"
+msgstr "वर्तमान"
+
+msgid "New"
+msgstr "नया"
+
+msgid "Hue"
+msgstr "ह्यू"
+
+msgid "Sat"
+msgstr "सैचुरेशन"
+
+msgid "Lum"
+msgstr "चमक"
+
+msgid "Hex"
+msgstr "Hex"
+
+msgid "Red"
+msgstr "लाल"
+
+msgid "Green"
+msgstr "हरा"
+
+msgid "Blue"
+msgstr "नीला"
+
+msgid "color dropper"
+msgstr "रंग ड्रॉपर"
+
+# Color labels (legacy)
+msgid "Hue:"
+msgstr "ह्यू:"
+
+msgid "Sat:"
+msgstr "सैचुरेशन:"
+
+msgid "Lum:"
+msgstr "चमक:"
+
+msgid "Hex:"
+msgstr "Hex:"
+
+msgid "Red:"
+msgstr "लाल:"
+
+msgid "Green:"
+msgstr "हरा:"
+
+msgid "Blue:"
+msgstr "नीला:"
+
+# Validation (legacy)
+msgid "Should be of data type"
+msgstr "इस प्रकार का होना चाहिए"
+
+msgid "Invalid data type"
+msgstr "अमान्य डेटा प्रकार"
+
+msgid "Number cannot be greater than"
+msgstr "संख्या इससे अधिक नहीं हो सकती"
+
+msgid "Number cannot be less than"
+msgstr "संख्या इससे कम नहीं हो सकती"
+
+msgid "Out of range"
+msgstr "सीमा से बाहर"
+
+msgid "Select an item from the list"
+msgstr "सूची से एक आइटम चुनें"
+
+# Table (legacy)
+msgid "Search"
+msgstr "खोजें"
+
+msgid "Page"
+msgstr "पृष्ठ"
+
+msgid "of"
+msgstr "का"
+
+msgid "Reset table"
+msgstr "तालिका रीसेट करें"
+
+msgid "Columns"
+msgstr "स्तंभ"
+
+msgid "Move"
+msgstr "स्थानांतरित करें"
+
+msgid "Align"
+msgstr "संरेखित करें"
+
+msgid "Hide column"
+msgstr "स्तंभ छिपाएँ"
+
+msgid "Delete column"
+msgstr "स्तंभ हटाएँ"
+
+msgid "Show All"
+msgstr "सभी दिखाएँ"
+
+msgid "Move to left"
+msgstr "बाएँ ले जाएँ"
+
+msgid "Move to right"
+msgstr "दाएँ ले जाएँ"
+
+msgid "Move to first"
+msgstr "शुरू में ले जाएँ"
+
+msgid "Move to last"
+msgstr "अंत में ले जाएँ"
+
+msgid "Sort"
+msgstr "क्रमित करें"
+
+msgid "Filter"
+msgstr "फ़िल्टर करें"
+
+msgid "Export"
+msgstr "निर्यात करें"
+
+msgid "Delete selected rows"
+msgstr "चयनित पंक्तियाँ हटाएँ"
+
+msgid "Sort Ascending"
+msgstr "आरोही क्रम"
+
+msgid "Sort Descending"
+msgstr "अवरोही क्रम"
+
+msgid "Clear filters"
+msgstr "फ़िल्टर हटाएँ"
+
+msgid "Filter by cell's value"
+msgstr "सेल मान के अनुसार फ़िल्टर करें"
+
+msgid "Hide select rows"
+msgstr "चयनित पंक्तियाँ छिपाएँ"
+
+msgid "Show only select rows"
+msgstr "केवल चयनित पंक्तियाँ दिखाएँ"
+
+msgid "Export all records"
+msgstr "सभी रिकॉर्ड निर्यात करें"
+
+msgid "Export current page"
+msgstr "वर्तमान पृष्ठ निर्यात करें"
+
+msgid "Export current selection"
+msgstr "वर्तमान चयन निर्यात करें"
+
+msgid "Export records in filter"
+msgstr "फ़िल्टर किए गए रिकॉर्ड निर्यात करें"
+
+msgid "Move up"
+msgstr "ऊपर ले जाएँ"
+
+msgid "Move down"
+msgstr "नीचे ले जाएँ"
+
+msgid "Move to top"
+msgstr "शीर्ष पर ले जाएँ"
+
+msgid "Move to bottom"
+msgstr "नीचे ले जाएँ"
+
+# Days (legacy)
+msgid "Mo"
+msgstr "सो"
+
+msgid "Tu"
+msgstr "मं"
+
+msgid "We"
+msgstr "बु"
+
+msgid "Th"
+msgstr "गु"
+
+msgid "Fr"
+msgstr "शु"
+
+msgid "Sa"
+msgstr "श"
+
+msgid "Su"
+msgstr "र"
+
+# Dialogs (legacy)
+msgid "Error"
+msgstr "त्रुटि"
+
+msgid "Warning"
+msgstr "चेतावनी"
+
+msgid "Information"
+msgstr "जानकारी"
+
+msgid "Question"
+msgstr "प्रश्न"
+
+msgid "Confirm"
+msgstr "पुष्टि"
+
+# File (legacy)
+msgid "New"
+msgstr "नया"
+
+msgid "Save As"
+msgstr "इस नाम से सहेजें"
+
+msgid "Exit"
+msgstr "बाहर निकलें"
+
+# Edit (legacy)
+msgid "Cut"
+msgstr "काटें"
+
+msgid "Copy"
+msgstr "कॉपी करें"
+
+msgid "Paste"
+msgstr "पेस्ट करें"
+
+msgid "Undo"
+msgstr "पूर्ववत करें"
+
+msgid "Redo"
+msgstr "फिर से करें"
+
+msgid "Select All"
+msgstr "सभी चुनें"
+
+# Help (legacy)
+msgid "About"
+msgstr "के बारे में"
+
+msgid "Help"
+msgstr "सहायता"
+
+msgid "Documentation"
+msgstr "दस्तावेज़"
+
+# ---------------------------------------------------------------------------
+# Calendar tokens (autogenerated)
+# ---------------------------------------------------------------------------
+msgid "month.january"
+msgstr "January"
+
+msgid "month.february"
+msgstr "February"
+
+msgid "month.march"
+msgstr "March"
+
+msgid "month.april"
+msgstr "April"
+
+msgid "month.may"
+msgstr "May"
+
+msgid "month.june"
+msgstr "June"
+
+msgid "month.july"
+msgstr "July"
+
+msgid "month.august"
+msgstr "August"
+
+msgid "month.september"
+msgstr "September"
+
+msgid "month.october"
+msgstr "October"
+
+msgid "month.november"
+msgstr "November"
+
+msgid "month.december"
+msgstr "December"
+

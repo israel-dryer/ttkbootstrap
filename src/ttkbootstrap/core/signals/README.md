@@ -31,7 +31,7 @@ Key behaviors
 Usage
 1) Quick start
 ```python
-from ttkbootstrap.signals import Signal
+from ttkbootstrap.core.signals import Signal
 
 count = Signal(0)
 print(count.get())    # -> 0
@@ -43,7 +43,7 @@ print(count())        # -> 1 (callable alias of get)
 ```python
 import tkinter as tk
 import ttkbootstrap as ttk
-from ttkbootstrap.signals import Signal
+from ttkbootstrap.core.signals import Signal
 
 root = ttk.Window()
 name = Signal("")
@@ -61,7 +61,7 @@ root.mainloop()
 
 3) Derived signals with ``map``
 ```python
-from ttkbootstrap.signals import Signal
+from ttkbootstrap.core.signals import Signal
 
 price = Signal(10.0)
 with_tax = price.map(lambda p: round(p * 1.07, 2))
@@ -73,7 +73,7 @@ price.set(12.0)
 4) Wrap existing tkinter variables
 ```python
 import tkinter as tk
-from ttkbootstrap.signals import Signal
+from ttkbootstrap.core.signals import Signal
 
 root = tk.Tk()
 tk_var = tk.IntVar(value=5)
@@ -86,7 +86,7 @@ sig.set(7)     # keeps both in sync
 
 5) Multiple subscriptions and immediate firing
 ```python
-from ttkbootstrap.signals import Signal
+from ttkbootstrap.core.signals import Signal
 
 flag = Signal(False)
 
@@ -100,7 +100,7 @@ flag.unsubscribe(lambda v: print("B:", v))  # remove all B callbacks
 
 Import path
 - Public API is re-exported at the package level:
-  - ``from ttkbootstrap.signals import Signal, TraceOperation``
+  - ``from ttkbootstrap.core.signals import Signal, TraceOperation``
 
 Notes
 - Tkinter is not thread-safe. Perform cross-thread updates using ``after``

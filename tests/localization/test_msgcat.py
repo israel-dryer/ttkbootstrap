@@ -1,6 +1,6 @@
 from pathlib import Path
 
-from ttkbootstrap.localization.msgcat import MessageCatalog
+from ttkbootstrap.core.localization import MessageCatalog
 
 # Initialize Babel/gettext bridge for tests using absolute locales path
 _ROOT = Path(__file__).resolve().parents[2]

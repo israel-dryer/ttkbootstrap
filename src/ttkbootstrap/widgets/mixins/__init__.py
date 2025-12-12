@@ -10,6 +10,7 @@ from ttkbootstrap.widgets.mixins.icon_mixin import IconMixin
 from ttkbootstrap.widgets.mixins.signal_mixin import SignalMixin, TextSignalMixin
 from ttkbootstrap.widgets.mixins.validation_mixin import ValidationMixin
 from ttkbootstrap.widgets.mixins.entry_mixin import EntryMixin
+from ttkbootstrap.widgets.mixins.localization_mixin import LocalizationMixin
 
 __all__ = [
     "ConfigureDelegationMixin",
@@ -20,4 +21,5 @@ __all__ = [
     "SignalMixin",
     "TextSignalMixin",
     "ValidationMixin",
+    "LocalizationMixin",
 ]

@@ -86,12 +86,12 @@ class QueryDialog:
             content_builder=self._create_content,
             buttons=[
                 DialogButton(
-                    text=MessageCatalog.translate("Cancel"),
+                    text="button.cancel",  # Use semantic key - built-in localization
                     role="cancel",
                     result=None,
                 ),
                 DialogButton(
-                    text=MessageCatalog.translate("Submit"),
+                    text="button.submit",  # Use semantic key - built-in localization
                     role="primary",
                     default=True,
                     command=lambda dlg: self._on_submit(),
@@ -206,40 +206,40 @@ class QueryDialog:
         try:
             converted_result = self._datatype(result)
         except ValueError:
-            msg = MessageCatalog.translate("Should be of data type")
+            msg = MessageCatalog.translate("validation.should_be_type")
             MessageBox.ok(
                 message=f"{msg} `{self._datatype}`",
-                title=MessageCatalog.translate("Invalid data type"),
+                title=MessageCatalog.translate("validation.invalid_type"),
                 master=self._dialog.toplevel,
             )
             return False
 
         # Check max value range
         if self._maxvalue is not None and converted_result > self._maxvalue:
-            msg = MessageCatalog.translate("Number cannot be greater than")
+            msg = MessageCatalog.translate("validation.greater_than")
             MessageBox.ok(
                 message=f"{msg} {self._maxvalue}",
-                title=MessageCatalog.translate("Out of range"),
+                title=MessageCatalog.translate("validation.out_of_range"),
                 master=self._dialog.toplevel,
             )
             return False
 
         # Check min value range
         if self._minvalue is not None and converted_result < self._minvalue:
-            msg = MessageCatalog.translate("Number cannot be less than")
+            msg = MessageCatalog.translate("validation.less_than")
             MessageBox.ok(
                 message=f"{msg} {self._minvalue}",
-                title=MessageCatalog.translate("Out of range"),
+                title=MessageCatalog.translate("validation.out_of_range"),
                 master=self._dialog.toplevel,
             )
             return False
 
         # Check if item is in list
         if self._items is not None and len(self._items) > 0 and result not in self._items:
-            msg = MessageCatalog.translate("Select an item from the list")
+            msg = MessageCatalog.translate("validation.select_item")
             MessageBox.ok(
                 message=msg,
-                title=MessageCatalog.translate("Out of range"),
+                title=MessageCatalog.translate("validation.out_of_range"),
                 master=self._dialog.toplevel,
             )
             return False
@@ -316,7 +316,7 @@ class QueryBox:
             **kwargs: Additional arguments including 'position'.
 
         Returns:
-            Selected color or None if cancelled.
+            Selected color or None if canceled.
         """
         from ttkbootstrap.dialogs.colorchooser import ColorChooserDialog
 
@@ -350,7 +350,7 @@ class QueryBox:
             **kwargs: Additional arguments including 'position'.
 
         Returns:
-            Selected date or None if cancelled.
+            Selected date or None if canceled.
         """
         position = kwargs.pop("position", None)
         dialog = DateDialog(
@@ -388,7 +388,7 @@ class QueryBox:
             **kwargs: Additional arguments including 'position'.
 
         Returns:
-            Input string or None if cancelled.
+            Input string or None if canceled.
         """
         value = value or ""
         position = kwargs.pop("position", None)
@@ -427,7 +427,7 @@ class QueryBox:
             **kwargs: Additional arguments including 'position'.
 
         Returns:
-            Selected item or None if cancelled.
+            Selected item or None if canceled.
         """
         value = value or ""
         position = kwargs.pop("position", None)
@@ -472,7 +472,7 @@ class QueryBox:
             **kwargs: Additional arguments including 'position'.
 
         Returns:
-            Integer value or None if cancelled.
+            Integer value or None if canceled.
         """
         value = value or ""
         position = kwargs.pop("position", None)
@@ -521,7 +521,7 @@ class QueryBox:
             **kwargs: Additional arguments including 'position'.
 
         Returns:
-            Float value or None if cancelled.
+            Float value or None if canceled.
         """
         value = value or ""
         position = kwargs.pop("position", None)
@@ -551,9 +551,9 @@ class QueryBox:
             **kwargs: Additional arguments including 'position'.
 
         Returns:
-            Selected font or None if cancelled.
+            Selected font or None if canceled.
         """
         position = kwargs.pop("position", None)
         dialog = FontDialog(master=master, **kwargs)
-        dialog.show(position)
+        dialog.show(position=position)
         return dialog.result

@@ -29,8 +29,17 @@ from ttkbootstrap.widgets.primitives.selectbox import SelectBox
 from ttkbootstrap.widgets.primitives.separator import Separator
 from ttkbootstrap.widgets.composites.textentry import TextEntry
 from ttkbootstrap.widgets.primitives.treeview import TreeView
+from ttkbootstrap.core.localization import MessageCatalog
 
 logger = logging.getLogger(__name__)
+
+_TABLE_SEARCH_MODE_OPTIONS = [
+    ("table.search_mode_equals", "EQUALS"),
+    ("table.search_mode_contains", "CONTAINS"),
+    ("table.search_mode_starts_with", "STARTS WITH"),
+    ("table.search_mode_ends_with", "ENDS WITH"),
+    ("table.search_mode_sql", "SQL"),
+]
 
 
 class EditingOptions(TypedDict, total=False):
@@ -279,6 +288,7 @@ class TableView(Frame):
         self._filtering = _normalize_filtering_options(filtering)
         self._selection = _normalize_selection_options(selection)
         self._searchbar = _normalize_searchbar_options(search)
+        self._search_mode_map: dict[str, str] = {}
         self._sorting = sorting
         self._show_table_status = show_table_status
         self._show_column_chooser = show_column_chooser
@@ -779,10 +789,17 @@ class TableView(Frame):
                 self._search_entry.on_input(lambda _e: self._clear_search() if not self._search_entry.get() else None)
 
             if self._searchbar['mode'] == 'advanced':
+                search_items = []
+                self._search_mode_map = {}
+                for token, code in _TABLE_SEARCH_MODE_OPTIONS:
+                    label = MessageCatalog.translate(token)
+                    search_items.append(label)
+                    self._search_mode_map[label] = code
+                default_value = search_items[0] if search_items else "EQUALS"
                 self._search_mode = SelectBox(
                     bar,
-                    items=["EQUALS", "CONTAINS", "STARTS WITH", "ENDS WITH", "SQL"],
-                    value="EQUALS",
+                    items=search_items,
+                    value=default_value,
                     width=14,
                     allow_custom_values=False,
                     search_enabled=False,
@@ -802,13 +819,13 @@ class TableView(Frame):
         if self._exporting['enabled']:
             export_items = []
             if self._exporting['export_all_mode'] == 'all':
-                export_items.append({"type": "command", "text": "Export all", "command": self._export_all})
+                export_items.append({"type": "command", "text": "table.export_all", "command": self._export_all})
             if self._exporting["allow_export_selected"]:
-                export_items.append({"type": "command", "text": "Export selection", "command": self._export_selection})
+                export_items.append({"type": "command", "text": "table.export_selection", "command": self._export_selection})
             if self._exporting['export_all_mode'] == "page":
-                export_items.append({"type": "command", "text": "Export page", "command": self._export_page})
+                export_items.append({"type": "command", "text": "table.export_page", "command": self._export_page})
             if not export_items:
-                export_items.append({"type": "command", "text": "Export all", "command": self._export_all})
+                export_items.append({"type": "command", "text": "table.export_all", "command": self._export_all})
             DropdownButton(
                 bar,
                 icon="download",
@@ -823,7 +840,7 @@ class TableView(Frame):
             Button(
                 bar,
                 icon="plus-lg",
-                text="Add Record",
+                text="table.add_record",
                 bootstyle="ghost",
                 command=self._open_new_record,
             ).pack(side="right", padx=(0, 4))
@@ -909,7 +926,7 @@ class TableView(Frame):
         Frame(bar).pack(side='left', fill='x', expand=True)  # spacer
         info_frame = Frame(bar)
         info_frame.pack(side='left')
-        Label(info_frame, text='Page').pack(side='left')
+        Label(info_frame, text="table.page").pack(side='left')
         self._page_entry = Entry(info_frame, width=6, justify="center")
         self._page_entry.bind("<Return>", self._jump_page)
         self._page_entry.pack(side="left", padx=8)
@@ -1119,7 +1136,8 @@ class TableView(Frame):
             self._page_entry.delete(0, 'end')
             self._page_entry.insert(0, str(self._current_page + 1))
         if hasattr(self, "_page_label"):
-            self._page_label.configure(text=f"of {self._total_pages()}")
+            of_text = MessageCatalog.translate("table.of")
+            self._page_label.configure(text=f"{of_text} {self._total_pages()}")
         if self._show_table_status:
             self._update_status_labels()
 
@@ -1171,8 +1189,9 @@ class TableView(Frame):
     # ------------------------------------------------------------------ Search & sort
     def _run_search(self) -> None:
         text = self._search_entry.get()
-        if hasattr(self, "_search_mode"):
-            mode = self._search_mode.get()
+        if hasattr(self, "_search_mode") and self._search_mode_map:
+            display_mode = self._search_mode.get()
+            mode = self._search_mode_map.get(display_mode, "CONTAINS")
         else:
             mode = "CONTAINS"
         colnames = self._column_keys
@@ -1233,7 +1252,7 @@ class TableView(Frame):
         try:
             where = getattr(self._datasource, "_where", "")
             if where:
-                filter_txt = f"Filter: {where}"
+                filter_txt = MessageCatalog.translate("table.filter_status", where)
         except Exception:
             pass
         # Sort
@@ -1241,7 +1260,7 @@ class TableView(Frame):
         try:
             order = getattr(self._datasource, "_order_by", "")
             if order:
-                sort_txt = f"Sort: {order}"
+                sort_txt = MessageCatalog.translate("table.sort_status", order)
         except Exception:
             pass
         group_txt = ""
@@ -1252,7 +1271,7 @@ class TableView(Frame):
                     self._heading_texts) else self._group_by_key
             except Exception:
                 heading_text = self._group_by_key
-            group_txt = f"Group: {heading_text}"
+            group_txt = MessageCatalog.translate("table.group_status", heading_text)
 
         if hasattr(self, "_filter_label"):
             self._filter_label.configure(text=filter_txt)
@@ -1268,27 +1287,27 @@ class TableView(Frame):
             return
         menu = ContextMenu(master=self, target=self._tree, attach='sw')
         if not self._sorting == 'none':
-            menu.add_command(text="Sort Ascending", command=lambda: self._sort_selection(True))
-            menu.add_command(text="Sort Descending", command=lambda: self._sort_selection(False))
+            menu.add_command(text="table.sort_asc", command=lambda: self._sort_selection(True))
+            menu.add_command(text="table.sort_desc", command=lambda: self._sort_selection(False))
 
         if self._filtering['row_menu_filtering']:
             menu.add_separator()
-            menu.add_command(text="Filter by Value", command=self._filter_by_value)
-            menu.add_command(text="Hide Selection", command=self._hide_selection)
-            menu.add_command(text="Clear Filter", command=self._clear_filter_cmd)
+            menu.add_command(text="table.filter_by_value", command=self._filter_by_value)
+            menu.add_command(text="table.hide_select", command=self._hide_selection)
+            menu.add_command(text="table.clear_filters", command=self._clear_filter_cmd)
 
         menu.add_separator()
-        menu.add_command(text="Move Up", command=self._move_row_up)
-        menu.add_command(text="Move Down", command=self._move_row_down)
-        menu.add_command(text="Move to Top", command=self._move_row_top)
-        menu.add_command(text="Move to Bottom", command=self._move_row_bottom)
+        menu.add_command(text="table.move_up", command=self._move_row_up)
+        menu.add_command(text="table.move_down", command=self._move_row_down)
+        menu.add_command(text="table.move_top", command=self._move_row_top)
+        menu.add_command(text="table.move_bottom", command=self._move_row_bottom)
 
         if self._editing['updating'] or self._editing['deleting']:
             menu.add_separator()
             if self._editing['updating']:
-                menu.add_command(text="Edit", icon="pencil", command=self._edit_selected_row)
+                menu.add_command(text="table.edit", icon="pencil", command=self._edit_selected_row)
             if self._editing['deleting']:
-                menu.add_command(text="Delete", icon="trash", command=self._delete_selected_row)
+                menu.add_command(text="table.delete_row", icon="trash", command=self._delete_selected_row)
         self._row_menu = menu
 
     def _on_row_context(self, event) -> None:
@@ -1884,11 +1903,12 @@ class TableView(Frame):
         if not distinct_values:
             return
 
+        empty_text = MessageCatalog.translate("table.empty")
         # Build items for the filter dialog
         current_filter = self._column_filters.get(key)
         items = []
         for val in distinct_values:
-            display_text = str(val) if val is not None else "(empty)"
+            display_text = str(val) if val is not None else empty_text
             selected = current_filter is None or val in current_filter
             items.append(
                 {
@@ -1911,7 +1931,7 @@ class TableView(Frame):
 
         dialog = FilterDialog(
             master=self.winfo_toplevel(),
-            title=f"Filter: {heading_text}",
+            title=MessageCatalog.translate("table.filter_column", heading_text),
             items=items,
             allow_search=True,
             allow_select_all=True,
@@ -2006,26 +2026,26 @@ class TableView(Frame):
         if self._header_menu:
             return
         menu = ContextMenu(master=self, target=self._tree)
-        menu.add_command(text="Align Left", icon="align-start", command=self._align_header_left)
-        menu.add_command(text="Align Center", icon="align-center", command=self._align_header_center)
-        menu.add_command(text="Align Right", icon="align-end", command=self._align_header_right)
+        menu.add_command(text="table.align_left", icon="align-start", command=self._align_header_left)
+        menu.add_command(text="table.align_center", icon="align-center", command=self._align_header_center)
+        menu.add_command(text="table.align_right", icon="align-end", command=self._align_header_right)
         menu.add_separator()
-        menu.add_command(text="Move Left", icon="arrow-left", command=self._move_header_left)
-        menu.add_command(text="Move Right", icon="arrow-right", command=self._move_header_right)
-        menu.add_command(text="Move First", icon="arrow-bar-left", command=self._move_header_first)
-        menu.add_command(text="Move Last", icon="arrow-bar-right", command=self._move_header_last)
+        menu.add_command(text="table.move_left", icon="arrow-left", command=self._move_header_left)
+        menu.add_command(text="table.move_right", icon="arrow-right", command=self._move_header_right)
+        menu.add_command(text="table.move_first", icon="arrow-bar-left", command=self._move_header_first)
+        menu.add_command(text="table.move_last", icon="arrow-bar-right", command=self._move_header_last)
         menu.add_separator()
-        menu.add_command(text="Hide Column", icon="eye-slash", command=self._hide_header_column)
-        menu.add_command(text="Show All", icon="eye", command=self._show_all_columns)
+        menu.add_command(text="table.hide_column", icon="eye-slash", command=self._hide_header_column)
+        menu.add_command(text="table.show_all", icon="eye", command=self._show_all_columns)
         if self._allow_grouping:
             menu.add_separator()
-            menu.add_command(text="Group by This Column", command=self._group_header_column)
-            menu.add_command(text="Ungroup All", command=self._ungroup_all)
+            menu.add_command(text="table.group_by_column", command=self._group_header_column)
+            menu.add_command(text="table.ungroup_all", command=self._ungroup_all)
         menu.add_separator()
-        menu.add_command(text="Reset Table", icon="arrow-counterclockwise", command=self._reset_table)
+        menu.add_command(text="table.reset", icon="arrow-counterclockwise", command=self._reset_table)
         menu.add_separator()
         if not self._sorting == 'none':
-            menu.add_command(text="Clear Sort", icon="x-lg", command=self._clear_sort)
+            menu.add_command(text="table.clear_sort", icon="x-lg", command=self._clear_sort)
         self._header_menu = menu
 
     def _on_header_context(self, event) -> None:

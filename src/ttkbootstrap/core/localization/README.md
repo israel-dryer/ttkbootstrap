@@ -15,7 +15,7 @@ Directory structure
 
 Marking strings for translation
 - In modules that render UI:
-  - `from ttkbootstrap.localization.msgcat import MessageCatalog`
+  - `from ttkbootstrap.core.localization import MessageCatalog`
   - `_ = MessageCatalog.translate`
   - Example: `ttk.Label(root, text=_('Cancel'))`
 - Formatting:

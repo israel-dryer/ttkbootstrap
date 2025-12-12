@@ -7,6 +7,7 @@ from typing import Any, Callable, Literal, Optional, TypedDict
 from typing_extensions import Unpack
 
 from ttkbootstrap.core import NavigationError
+from ttkbootstrap.core.localization import MessageCatalog
 from ttkbootstrap.widgets._internal.wrapper_base import TTKWrapperBase
 from ttkbootstrap.widgets.primitives import Frame
 
@@ -47,6 +48,7 @@ class TabOptions(TypedDict, total=False):
     compound: Literal["top", "left", "center", "right", "bottom", "none"]
     image: Any
     underline: int
+    fmtargs: tuple[Any, ...] | list[Any]
 
 
 class Notebook(TTKWrapperBase, ttk.Notebook):
@@ -110,6 +112,8 @@ class Notebook(TTKWrapperBase, ttk.Notebook):
         self._key_registry: dict[str, tkinter.Misc] = {}  # key -> widget
         self._tk_to_key: dict[str, str] = {}  # tk id -> key
         self._auto_counter = 0  # for auto keys: tab1, tab2, ...
+        self._tab_locale_tokens: dict[str, tuple[str, tuple[Any, ...]]] = {}
+        self.bind("<<LocaleChanged>>", self._refresh_tab_labels, add="+")
 
         # change tracking for enriched events
         self._last_selected: str | None = None
@@ -232,6 +236,20 @@ class Notebook(TTKWrapperBase, ttk.Notebook):
         ref['key'] = self._tk_to_key.get(tabid)
         return ref
 
+    def _register_tab_token(self, tabid: str, token: str | None, fmtargs: tuple[Any, ...]) -> None:
+        """Track the semantic key used for a tab so it can be retranslated."""
+        if not token:
+            self._tab_locale_tokens.pop(tabid, None)
+            return
+        self._tab_locale_tokens[tabid] = (token, fmtargs)
+
+    def _refresh_tab_labels(self, event: Any = None) -> None:
+        """Refresh all tab labels when the locale changes."""
+        for tabid, (token, fmtargs) in list(self._tab_locale_tokens.items()):
+            text = MessageCatalog.translate(token, *fmtargs)
+            ttk.Notebook.tab(self, tabid, text=text)
+
+
     def hide(self, tab: Tab) -> None:
         """Hide a tab without removing it; selection may change implicitly"""
         self._mark_api_change('hide')
@@ -334,10 +352,15 @@ class Notebook(TTKWrapperBase, ttk.Notebook):
             underline: The integer index (0-based) of a character to underline in the label.
         """
         self._mark_api_change('reorder')
+        fmtargs = tuple(kwargs.pop('fmtargs', ()))
+        text_token = kwargs.get('text')
+        if text_token is not None:
+            kwargs['text'] = MessageCatalog.translate(text_token, *fmtargs)
         super().insert(index, child, **kwargs)
         tab_key = self._make_key(key)
         self._tk_to_key[str(child)] = tab_key
         self._key_registry[tab_key] = child
+        self._register_tab_token(str(child), text_token, fmtargs)
 
     def remove(self, tab: Tab) -> None:
         """Remove a tab and clean registry"""
@@ -346,7 +369,14 @@ class Notebook(TTKWrapperBase, ttk.Notebook):
         key = self._tk_to_key.pop(tabid, None)
         if key:
             self._key_registry.pop(key, None)
-        self.forget(tabid)
+        self._tab_locale_tokens.pop(tabid, None)
+        super().forget(tabid)
+
+    def forget(self, tab: Tab) -> None:
+        """Hide or forget a tab while keeping the registry consistent."""
+        tabid = self._to_tab_id(tab)
+        self._tab_locale_tokens.pop(tabid, None)
+        super().forget(tabid)
 
     def tab(self, tab: Tab, option: str = None, **kwargs) -> Any:
         """Configure or query tab configuration.
@@ -369,7 +399,14 @@ class Notebook(TTKWrapperBase, ttk.Notebook):
             The value of option if specified, otherwise None.
         """
         tabid = self._to_tab_id(tab)
-        return super().tab(tabid, option, **kwargs)
+        fmtargs = tuple(kwargs.pop('fmtargs', ()))
+        text_token = kwargs.get('text')
+        if text_token is not None:
+            kwargs['text'] = MessageCatalog.translate(text_token, *fmtargs)
+        result = super().tab(tabid, option, **kwargs)
+        if text_token is not None:
+            self._register_tab_token(tabid, text_token, fmtargs)
+        return result
 
     configure_tab = tab  # alias for tab
 

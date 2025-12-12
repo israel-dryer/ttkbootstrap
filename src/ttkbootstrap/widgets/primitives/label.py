@@ -1,10 +1,12 @@
 from __future__ import annotations
 
 from tkinter import ttk
-from typing import Any, Literal, TypedDict, TYPE_CHECKING
+from typing import Any, Literal, TYPE_CHECKING, TypedDict
+
 from typing_extensions import Unpack
+
 from ttkbootstrap.widgets._internal.wrapper_base import TTKWrapperBase
-from ..mixins import IconMixin, TextSignalMixin
+from ttkbootstrap.widgets.mixins import IconMixin, LocalizationMixin, TextSignalMixin
 
 if TYPE_CHECKING:
     from ttkbootstrap.core.signals import Signal
@@ -26,8 +28,11 @@ class LabelKwargs(TypedDict, total=False):
     foreground: str
     background: str
     relief: Any
+    localize: bool | Literal['auto']
+    value_format: dict | str
     state: Literal['normal', 'active', 'disabled', 'readonly'] | str
     takefocus: Any
+    format_spec: str | dict
     style: str
     class_: str
     cursor: str
@@ -41,7 +46,7 @@ class LabelKwargs(TypedDict, total=False):
     style_options: dict[str, Any]
 
 
-class Label(TextSignalMixin, IconMixin, TTKWrapperBase, ttk.Label):
+class Label(LocalizationMixin, TextSignalMixin, IconMixin, TTKWrapperBase, ttk.Label):
     """ttkbootstrap wrapper for `ttk.Label` with bootstyle and icon support."""
 
     _ttk_base = ttk.Label
@@ -59,6 +64,8 @@ class Label(TextSignalMixin, IconMixin, TTKWrapperBase, ttk.Label):
             compound: Placement of the image relative to text.
             anchor: Alignment of the label's content within its area.
             justify: How to justify multiple lines of text.
+            localize: Determines the widgets localization mode. 'auto', True, False.
+            value_format: Format specification for the label value.
             padding: Extra space around the label content.
             width: Width of the label in characters.
             wraplength: Maximum width before wrapping text.
@@ -75,4 +82,3 @@ class Label(TextSignalMixin, IconMixin, TTKWrapperBase, ttk.Label):
         """
         kwargs.update(style_options=self._capture_style_options(['icon_only', 'icon'], kwargs))
         super().__init__(master, **kwargs)
-

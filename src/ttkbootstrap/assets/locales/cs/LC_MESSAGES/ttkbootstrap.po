@@ -1,0 +1,853 @@
+# Czech translations for ttkbootstrap
+# Copyright (C) 2024 Israel Dryer
+# This file is distributed under the same license as the ttkbootstrap project.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: ttkbootstrap\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2024-01-01 12:00+0000\n"
+"PO-Revision-Date: 2025-12-11 00:00+0000\n"
+"Last-Translator: ttkbootstrap team <>\n"
+"Language: cs\n"
+"Language-Team: Czech\n"
+"Plural-Forms: nplurals=3; plural=(n==1)?0:(n>=2 && n<=4)?1:2;\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: ttkbootstrap localization\n"
+
+# ============================================================================
+# Common Buttons
+# ============================================================================
+
+msgid "button.ok"
+msgstr "OK"
+
+msgid "button.cancel"
+msgstr "Zrušit"
+
+msgid "button.yes"
+msgstr "Ano"
+
+msgid "button.no"
+msgstr "Ne"
+
+msgid "button.retry"
+msgstr "Zkusit znovu"
+
+msgid "button.delete"
+msgstr "Odstranit"
+
+msgid "button.next"
+msgstr "Další"
+
+msgid "button.previous"
+msgstr "Předchozí"
+
+msgid "button.prev"
+msgstr "Předchozí"
+
+msgid "button.open"
+msgstr "Otevřít"
+
+msgid "button.close"
+msgstr "Zavřít"
+
+msgid "button.add"
+msgstr "Přidat"
+
+msgid "button.remove"
+msgstr "Odebrat"
+
+msgid "button.submit"
+msgstr "Odeslat"
+
+msgid "button.save"
+msgstr "Uložit"
+
+msgid "button.apply"
+msgstr "Použít"
+
+# ============================================================================
+# Font Dialog
+# ============================================================================
+
+msgid "font.family"
+msgstr "Písmo"
+
+msgid "font.weight"
+msgstr "Tloušťka písma"
+
+msgid "font.slant"
+msgstr "Sklon"
+
+msgid "font.effects"
+msgstr "Efekty"
+
+msgid "font.preview"
+msgstr "Náhled"
+
+msgid "font.size"
+msgstr "Velikost"
+
+msgid "font.selector"
+msgstr "Výběr písma"
+
+msgid "font.preview_text"
+msgstr "Příliš žluťoučký kůň úpěl ďábelské ódy."
+
+msgid "font.weight.normal"
+msgstr "Normální"
+
+msgid "font.weight.bold"
+msgstr "Tučné"
+
+msgid "font.slant.roman"
+msgstr "Normální"
+
+msgid "font.slant.italic"
+msgstr "Kurzíva"
+
+msgid "font.effects.underline"
+msgstr "Podtržení"
+
+msgid "font.effects.overstrike"
+msgstr "Přeškrtnuté"
+
+# ============================================================================
+# Color Chooser
+# ============================================================================
+
+msgid "color.chooser"
+msgstr "Výběr barvy"
+
+msgid "color.advanced"
+msgstr "Pokročilé"
+
+msgid "color.themed"
+msgstr "Tématické"
+
+msgid "color.standard"
+msgstr "Standardní"
+
+msgid "color.current"
+msgstr "Aktuální"
+
+msgid "color.new"
+msgstr "Nová"
+
+msgid "color.hue"
+msgstr "Odstín"
+
+msgid "color.sat"
+msgstr "Sytost"
+
+msgid "color.lum"
+msgstr "Jas"
+
+msgid "color.hex"
+msgstr "Hex"
+
+msgid "color.red"
+msgstr "Červená"
+
+msgid "color.green"
+msgstr "Zelená"
+
+msgid "color.blue"
+msgstr "Modrá"
+
+msgid "color.dropper"
+msgstr "Kapátko"
+
+# Color value labels (with colon suffix for label display)
+msgid "color.hue:"
+msgstr "Odstín:"
+
+msgid "color.sat:"
+msgstr "Sytost:"
+
+msgid "color.lum:"
+msgstr "Jas:"
+
+msgid "color.hex:"
+msgstr "Hex:"
+
+msgid "color.red:"
+msgstr "Červená:"
+
+msgid "color.green:"
+msgstr "Zelená:"
+
+msgid "color.blue:"
+msgstr "Modrá:"
+
+# ============================================================================
+# Validation Messages
+# ============================================================================
+
+msgid "validation.should_be_type"
+msgstr "Měl by být datového typu"
+
+msgid "validation.invalid_type"
+msgstr "Neplatný datový typ"
+
+msgid "validation.greater_than"
+msgstr "Číslo nesmí být větší než"
+
+msgid "validation.less_than"
+msgstr "Číslo nesmí být menší než"
+
+msgid "validation.out_of_range"
+msgstr "Mimo rozsah"
+
+msgid "validation.select_item"
+msgstr "Vyberte položku ze seznamu"
+
+# ============================================================================
+# Table View
+# ============================================================================
+
+msgid "table.search"
+msgstr "Hledat"
+
+msgid "table.page"
+msgstr "Strana"
+
+msgid "table.of"
+msgstr "z"
+
+msgid "table.reset"
+msgstr "Obnovit tabulku"
+
+msgid "table.columns"
+msgstr "Sloupce"
+
+msgid "table.move"
+msgstr "Přesunout"
+
+msgid "table.align"
+msgstr "Zarovnání"
+
+msgid "table.hide_column"
+msgstr "Skrýt sloupec"
+
+msgid "table.delete_column"
+msgstr "Odstranit sloupec"
+
+msgid "table.show_all"
+msgstr "Zobrazit vše"
+
+msgid "table.move_left"
+msgstr "Přesunout doleva"
+
+msgid "table.move_right"
+msgstr "Přesunout doprava"
+
+msgid "table.move_first"
+msgstr "Přesunout na začátek"
+
+msgid "table.move_last"
+msgstr "Přesunout na konec"
+
+msgid "table.add_record"
+msgstr "Přidat záznam"
+
+msgid "table.edit"
+msgstr "Upravit"
+
+msgid "table.delete_row"
+msgstr "Odstranit"
+
+msgid "table.group_by_column"
+msgstr "Seskupit podle tohoto sloupce"
+
+msgid "table.ungroup_all"
+msgstr "Zrušit všechny skupiny"
+
+msgid "table.clear_sort"
+msgstr "Zrušit řazení"
+
+msgid "table.align_left"
+msgstr "Zarovnat vlevo"
+
+msgid "table.align_center"
+msgstr "Zarovnat na střed"
+
+msgid "table.align_right"
+msgstr "Zarovnat vpravo"
+
+msgid "table.sort"
+msgstr "Řadit"
+
+msgid "table.filter"
+msgstr "Filtrovat"
+
+msgid "table.export"
+msgstr "Exportovat"
+
+msgid "table.delete_selected"
+msgstr "Odstranit vybrané řádky"
+
+msgid "table.sort_asc"
+msgstr "Řadit vzestupně"
+
+msgid "table.sort_desc"
+msgstr "Řadit sestupně"
+
+msgid "table.clear_filters"
+msgstr "Vymazat filtry"
+
+msgid "table.filter_by_value"
+msgstr "Filtrovat podle hodnoty buňky"
+
+msgid "table.hide_select"
+msgstr "Skrýt vybrané řádky"
+
+msgid "table.show_select"
+msgstr "Zobrazit pouze vybrané řádky"
+
+msgid "table.export_all"
+msgstr "Exportovat všechny záznamy"
+
+msgid "table.export_page"
+msgstr "Exportovat aktuální stranu"
+
+msgid "table.export_selection"
+msgstr "Exportovat aktuální výběr"
+
+msgid "table.export_filter"
+msgstr "Exportovat filtrované záznamy"
+
+msgid "table.sort_status"
+msgstr "Řazení: %s"
+
+msgid "table.filter_status"
+msgstr "Filtr: %s"
+
+msgid "table.group_status"
+msgstr "Skupina: %s"
+
+msgid "table.filter_column"
+msgstr "Filtr: %s"
+
+msgid "table.empty"
+msgstr "(prázdné)"
+
+msgid "table.search_mode_equals"
+msgstr "Rovno"
+
+msgid "table.search_mode_contains"
+msgstr "Obsahuje"
+
+msgid "table.search_mode_starts_with"
+msgstr "Začíná na"
+
+msgid "table.search_mode_ends_with"
+msgstr "Končí na"
+
+msgid "table.search_mode_sql"
+msgstr "SQL"
+
+msgid "table.move_up"
+msgstr "Přesunout nahoru"
+
+msgid "table.move_down"
+msgstr "Přesunout dolů"
+
+msgid "table.move_top"
+msgstr "Přesunout na začátek"
+
+msgid "table.move_bottom"
+msgstr "Přesunout na konec"
+
+# ============================================================================
+# Days of Week (abbreviated)
+# ============================================================================
+
+msgid "day.mo"
+msgstr "Po"
+
+msgid "day.tu"
+msgstr "Út"
+
+msgid "day.we"
+msgstr "St"
+
+msgid "day.th"
+msgstr "Čt"
+
+msgid "day.fr"
+msgstr "Pá"
+
+msgid "day.sa"
+msgstr "So"
+
+msgid "day.su"
+msgstr "Ne"
+
+# ============================================================================
+# Common Dialog Messages
+# ============================================================================
+
+msgid "dialog.error"
+msgstr "Chyba"
+
+msgid "dialog.warning"
+msgstr "Varování"
+
+msgid "dialog.info"
+msgstr "Informace"
+
+msgid "dialog.question"
+msgstr "Dotaz"
+
+msgid "dialog.confirm"
+msgstr "Potvrzení"
+
+# ============================================================================
+# File Operations
+# ============================================================================
+
+msgid "file.new"
+msgstr "Nový"
+
+msgid "file.open"
+msgstr "Otevřít"
+
+msgid "file.save"
+msgstr "Uložit"
+
+msgid "file.save_as"
+msgstr "Uložit jako"
+
+msgid "file.close"
+msgstr "Zavřít"
+
+msgid "file.exit"
+msgstr "Ukončit"
+
+# ============================================================================
+# Edit Operations
+# ============================================================================
+
+msgid "edit.cut"
+msgstr "Vyjmout"
+
+msgid "edit.copy"
+msgstr "Kopírovat"
+
+msgid "edit.paste"
+msgstr "Vložit"
+
+msgid "edit.undo"
+msgstr "Zpět"
+
+msgid "edit.redo"
+msgstr "Znovu"
+
+msgid "edit.select_all"
+msgstr "Vybrat vše"
+
+# ============================================================================
+# Help
+# ============================================================================
+
+msgid "help.about"
+msgstr "O aplikaci"
+
+msgid "help.help"
+msgstr "Nápověda"
+
+msgid "help.documentation"
+msgstr "Dokumentace"
+
+# ============================================================================
+# LEGACY MAPPINGS FOR BACKWARDS COMPATIBILITY
+# English text as msgid -> Localized text as msgstr
+# ============================================================================
+
+# Common buttons (legacy)
+msgid "OK"
+msgstr "OK"
+
+msgid "Ok"
+msgstr "Ok"
+
+msgid "Cancel"
+msgstr "Zrušit"
+
+msgid "Yes"
+msgstr "Ano"
+
+msgid "No"
+msgstr "Ne"
+
+msgid "Retry"
+msgstr "Zkusit znovu"
+
+msgid "Delete"
+msgstr "Odstranit"
+
+msgid "Next"
+msgstr "Další"
+
+msgid "Previous"
+msgstr "Předchozí"
+
+msgid "Prev"
+msgstr "Předchozí"
+
+msgid "Open"
+msgstr "Otevřít"
+
+msgid "Close"
+msgstr "Zavřít"
+
+msgid "Add"
+msgstr "Přidat"
+
+msgid "Remove"
+msgstr "Odebrat"
+
+msgid "Submit"
+msgstr "Odeslat"
+
+msgid "Save"
+msgstr "Uložit"
+
+msgid "Apply"
+msgstr "Použít"
+
+# Font dialog (legacy)
+msgid "Family"
+msgstr "Písmo"
+
+msgid "Weight"
+msgstr "Tloušťka písma"
+
+msgid "Slant"
+msgstr "Sklon"
+
+msgid "Effects"
+msgstr "Efekty"
+
+msgid "Preview"
+msgstr "Náhled"
+
+msgid "Size"
+msgstr "Velikost"
+
+msgid "Font Selector"
+msgstr "Výběr písma"
+
+msgid "The quick brown fox jumps over the lazy dog."
+msgstr "Příliš žluťoučký kůň úpěl ďábelské ódy."
+
+# Color chooser (legacy)
+msgid "Color Chooser"
+msgstr "Výběr barvy"
+
+msgid "Advanced"
+msgstr "Pokročilé"
+
+msgid "Themed"
+msgstr "Tématické"
+
+msgid "Standard"
+msgstr "Standardní"
+
+msgid "Current"
+msgstr "Aktuální"
+
+msgid "New"
+msgstr "Nová"
+
+msgid "Hue"
+msgstr "Odstín"
+
+msgid "Sat"
+msgstr "Sytost"
+
+msgid "Lum"
+msgstr "Jas"
+
+msgid "Hex"
+msgstr "Hex"
+
+msgid "Red"
+msgstr "Červená"
+
+msgid "Green"
+msgstr "Zelená"
+
+msgid "Blue"
+msgstr "Modrá"
+
+msgid "color dropper"
+msgstr "Kapátko"
+
+# Color labels with colons (legacy - for backwards compatibility)
+msgid "Hue:"
+msgstr "Odstín:"
+
+msgid "Sat:"
+msgstr "Sytost:"
+
+msgid "Lum:"
+msgstr "Jas:"
+
+msgid "Hex:"
+msgstr "Hex:"
+
+msgid "Red:"
+msgstr "Červená:"
+
+msgid "Green:"
+msgstr "Zelená:"
+
+msgid "Blue:"
+msgstr "Modrá:"
+
+# Validation (legacy)
+msgid "Should be of data type"
+msgstr "Měl by být datového typu"
+
+msgid "Invalid data type"
+msgstr "Neplatný datový typ"
+
+msgid "Number cannot be greater than"
+msgstr "Číslo nesmí být větší než"
+
+msgid "Number cannot be less than"
+msgstr "Číslo nesmí být menší než"
+
+msgid "Out of range"
+msgstr "Mimo rozsah"
+
+msgid "Select an item from the list"
+msgstr "Vyberte položku ze seznamu"
+
+# Table view (legacy)
+msgid "Search"
+msgstr "Hledat"
+
+msgid "Page"
+msgstr "Strana"
+
+msgid "of"
+msgstr "z"
+
+msgid "Reset table"
+msgstr "Obnovit tabulku"
+
+msgid "Columns"
+msgstr "Sloupce"
+
+msgid "Move"
+msgstr "Přesunout"
+
+msgid "Align"
+msgstr "Zarovnání"
+
+msgid "Hide column"
+msgstr "Skrýt sloupec"
+
+msgid "Delete column"
+msgstr "Odstranit sloupec"
+
+msgid "Show All"
+msgstr "Zobrazit vše"
+
+msgid "Move to left"
+msgstr "Přesunout doleva"
+
+msgid "Move to right"
+msgstr "Přesunout doprava"
+
+msgid "Move to first"
+msgstr "Přesunout na začátek"
+
+msgid "Move to last"
+msgstr "Přesunout na konec"
+
+msgid "Align left"
+msgstr "Zarovnat vlevo"
+
+msgid "Align center"
+msgstr "Zarovnat na střed"
+
+msgid "Align right"
+msgstr "Zarovnat vpravo"
+
+msgid "Sort"
+msgstr "Řadit"
+
+msgid "Filter"
+msgstr "Filtrovat"
+
+msgid "Export"
+msgstr "Exportovat"
+
+msgid "Delete selected rows"
+msgstr "Odstranit vybrané řádky"
+
+msgid "Sort Ascending"
+msgstr "Řadit vzestupně"
+
+msgid "Sort Descending"
+msgstr "Řadit sestupně"
+
+msgid "Clear filters"
+msgstr "Vymazat filtry"
+
+msgid "Filter by cell's value"
+msgstr "Filtrovat podle hodnoty buňky"
+
+msgid "Hide select rows"
+msgstr "Skrýt vybrané řádky"
+
+msgid "Show only select rows"
+msgstr "Zobrazit pouze vybrané řádky"
+
+msgid "Export all records"
+msgstr "Exportovat všechny záznamy"
+
+msgid "Export current page"
+msgstr "Exportovat aktuální stranu"
+
+msgid "Export current selection"
+msgstr "Exportovat aktuální výběr"
+
+msgid "Export records in filter"
+msgstr "Exportovat filtrované záznamy"
+
+msgid "Move up"
+msgstr "Přesunout nahoru"
+
+msgid "Move down"
+msgstr "Přesunout dolů"
+
+msgid "Move to top"
+msgstr "Přesunout na začátek"
+
+msgid "Move to bottom"
+msgstr "Přesunout na konec"
+
+# Days of week (legacy)
+msgid "Mo"
+msgstr "Po"
+
+msgid "Tu"
+msgstr "Út"
+
+msgid "We"
+msgstr "St"
+
+msgid "Th"
+msgstr "Čt"
+
+msgid "Fr"
+msgstr "Pá"
+
+msgid "Sa"
+msgstr "So"
+
+msgid "Su"
+msgstr "Ne"
+
+# Dialogs (legacy)
+msgid "Error"
+msgstr "Chyba"
+
+msgid "Warning"
+msgstr "Varování"
+
+msgid "Information"
+msgstr "Informace"
+
+msgid "Question"
+msgstr "Dotaz"
+
+msgid "Confirm"
+msgstr "Potvrzení"
+
+# File operations (legacy)
+msgid "New"
+msgstr "Nový"
+
+msgid "Save As"
+msgstr "Uložit jako"
+
+msgid "Exit"
+msgstr "Ukončit"
+
+# Edit operations (legacy)
+msgid "Cut"
+msgstr "Vyjmout"
+
+msgid "Copy"
+msgstr "Kopírovat"
+
+msgid "Paste"
+msgstr "Vložit"
+
+msgid "Undo"
+msgstr "Zpět"
+
+msgid "Redo"
+msgstr "Znovu"
+
+msgid "Select All"
+msgstr "Vybrat vše"
+
+# Help (legacy)
+msgid "About"
+msgstr "O aplikaci"
+
+msgid "Help"
+msgstr "Nápověda"
+
+msgid "Documentation"
+msgstr "Dokumentace"
+
+# ---------------------------------------------------------------------------
+# Calendar tokens (autogenerated)
+# ---------------------------------------------------------------------------
+msgid "month.january"
+msgstr "January"
+
+msgid "month.february"
+msgstr "February"
+
+msgid "month.march"
+msgstr "March"
+
+msgid "month.april"
+msgstr "April"
+
+msgid "month.may"
+msgstr "May"
+
+msgid "month.june"
+msgstr "June"
+
+msgid "month.july"
+msgstr "July"
+
+msgid "month.august"
+msgstr "August"
+
+msgid "month.september"
+msgstr "September"
+
+msgid "month.october"
+msgstr "October"
+
+msgid "month.november"
+msgstr "November"
+
+msgid "month.december"
+msgstr "December"
+

@@ -1,8 +1,7 @@
 from tkinter import Event, TclError
 from typing import Any, Callable
 
-from ttkbootstrap.runtime.app import get_app_settings
-from ttkbootstrap.core.localization import IntlFormatter
+from ttkbootstrap.core.localization import MessageCatalog, IntlFormatter
 from ttkbootstrap.widgets.primitives.entry import Entry
 from ttkbootstrap.widgets.mixins import ValidationMixin
 from ttkbootstrap.widgets.mixins.configure_mixin import configure_delegate
@@ -47,7 +46,6 @@ class TextEntryPart(ValidationMixin, Entry):
             root,
             value='1234.56',
             value_format='¤#,##0.00',
-            locale='en_US'
         )
         entry.pack()
 
@@ -67,7 +65,6 @@ class TextEntryPart(ValidationMixin, Entry):
             value_format=None,
             initial_focus: bool = False,
             allow_blank: bool = True,
-            locale: str = None,
             **kwargs
     ):
         """Initialize a TextEntryPart widget with internationalization support.
@@ -92,9 +89,6 @@ class TextEntryPart(ValidationMixin, Entry):
                 Default is False.
             allow_blank: If True, empty input is parsed as None. If False, empty
                 input preserves the previous value (rejects blank). Default is True.
-            locale: Locale identifier for formatting (e.g., 'en_US', 'de_DE', 'fr_FR').
-                Affects decimal separators, currency symbols, date formats, etc.
-                If None, uses the system default locale. Default is None.
             **kwargs: Additional keyword arguments passed to the Entry base class.
                 Common options include: width, textvariable, font, bootstyle, etc.
 
@@ -108,7 +102,6 @@ class TextEntryPart(ValidationMixin, Entry):
                 root,
                 value='1234.56',
                 value_format='¤#,##0.00',
-                locale='en_US'
             )
 
             # Percentage entry with auto-focus
@@ -138,11 +131,9 @@ class TextEntryPart(ValidationMixin, Entry):
 
         # configuration
         self._value_format = value_format
-        self._locale = locale or get_app_settings().locale
         self._allow_blank = allow_blank
         self._on_input_fid = None
-
-        self._fmt = IntlFormatter(locale=locale)
+        self._fmt = IntlFormatter(locale=MessageCatalog.locale())
 
         # set the initial display value
         # Convert to string if it's a number
@@ -177,6 +168,7 @@ class TextEntryPart(ValidationMixin, Entry):
         self.bind('<FocusIn>', self._store_prev_value, add=True)
         self.bind('<FocusOut>', self._handle_focus_out, add=True)
         self.bind('<Return>', self._handle_return, add=True)
+        self.winfo_toplevel().bind('<<LocaleChanged>>', self._on_locale_changed, add='+')
 
         # set initial focus
         if initial_focus:
@@ -382,16 +374,25 @@ class TextEntryPart(ValidationMixin, Entry):
             if fid:
                 self._on_input_fid = self.textsignal.subscribe(self._handle_change)
 
+    def _on_locale_changed(self, event=None):
+        """Respond to global changes in locale by updating formatter and text"""
+        self._fmt = IntlFormatter(locale=MessageCatalog.locale())
+
+        # reformat current value with new locale + same value_format
+        if self._value is not None:
+            formatted_text = self._format_value(self._value)
+            self.textsignal.set(formatted_text)
+
     @configure_delegate('text')
     def _delegate_text(self, value=None):
-        if value is not None:
+        if value is None:
             return self.text()
         else:
             return self.text(value)
 
     @configure_delegate('value')
     def _delegate_value(self, value=None):
-        if value is not None:
+        if value is None:
             return self.value()
         else:
             return self.value(value)
@@ -428,31 +429,12 @@ class TextEntryPart(ValidationMixin, Entry):
 
         self._allow_blank = bool(value)
 
-    @configure_delegate('locale')
-    def _delegate_locale(self, value: str):
-        """Get or set the locale and recreate formatter.
-
-        Can be accessed via:
-            widget.configure(locale='en_US')
-            widget['locale'] = 'de_DE'
-            widget.cget('locale')
-        """
-        if value is None:
-            return self._locale
-
-        self._locale = value
-        self._fmt = IntlFormatter(locale=value)
-        # Reformat current value with new locale
-        if self._value is not None:
-            formatted_text = self._format_value(self._value)
-            self.textsignal.set(formatted_text)
-
     def destroy(self):
         """Clean up signal subscriptions and destroy the widget."""
         if self._on_input_fid:
             try:
                 self.textsignal.unsubscribe(self._on_input_fid)
-            except TclError:
-                pass
+            except Exception:
+                pass  # Ignore all errors during cleanup
             self._on_input_fid = None
-            super().destroy()
+        super().destroy()

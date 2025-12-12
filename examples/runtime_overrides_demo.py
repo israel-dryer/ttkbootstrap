@@ -14,7 +14,7 @@ from tkinter import ttk
 from tkinter import messagebox as mbox
 
 import ttkbootstrap as tb
-from ttkbootstrap.localization.msgcat import MessageCatalog
+from ttkbootstrap.core.localization import MessageCatalog
 
 
 def main():

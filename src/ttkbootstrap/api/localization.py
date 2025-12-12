@@ -1,0 +1,16 @@
+"""Localization API for ttkbootstrap.
+
+This module provides the public API for internationalization and localization,
+including message translation and locale-aware value formatting.
+"""
+
+from ttkbootstrap.core.localization.msgcat import MessageCatalog
+from ttkbootstrap.core.localization.specs import L, LV
+from ttkbootstrap.core.localization.intl_format import IntlFormatter
+
+__all__ = [
+    "MessageCatalog",
+    "L",
+    "LV",
+    "IntlFormatter"
+]
