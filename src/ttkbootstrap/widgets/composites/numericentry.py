@@ -183,9 +183,9 @@ class NumericEntry(Field):
 
         # buttons
         self.insert_addon(
-            Button, position="after", name="increment", icon="plus", command=self.increment, icon_only=True)
-        self.insert_addon(
             Button, position="after", name="decrement", icon="dash", command=self.decrement, icon_only=True)
+        self.insert_addon(
+            Button, position="after", name="increment", icon="plus", command=self.increment, icon_only=True)
         self._delegate_show_spin_buttons(show_spin_buttons)
 
     @property
