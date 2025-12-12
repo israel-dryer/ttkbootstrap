@@ -11,7 +11,9 @@ This document describes the enhanced window positioning features added to ttkboo
 Position windows relative to any widget using tkinter's standard anchor points (n, s, e, w, ne, nw, se, sw, center).
 
 **Example:**
+
 ```python
+import ttkbootstrap as ttk
 # Show a toplevel below a button
 toplevel = ttk.Toplevel()
 toplevel.place_anchor(
@@ -27,8 +29,11 @@ toplevel.place_anchor(
 Automatically position windows as dropdowns with smart above/below flipping when space is limited.
 
 **Example:**
+
 ```python
 # Show a dropdown menu
+import ttkbootstrap as ttk
+
 dropdown = ttk.Toplevel()
 dropdown.place_dropdown(
     trigger_widget=button,
@@ -43,8 +48,11 @@ dropdown.place_dropdown(
 Position windows at the current mouse cursor location - perfect for context menus.
 
 **Example:**
+
 ```python
 # Show a context menu at cursor
+import ttkbootstrap as ttk
+
 menu = ttk.Toplevel()
 menu.place_cursor(offset=(5, 5))
 ```
@@ -202,18 +210,24 @@ sw -------- s -------- se
 ## Common Use Cases
 
 ### Tooltip Above Widget
+
 ```python
+import ttkbootstrap as ttk
+
 tooltip = ttk.Toplevel()
 tooltip.place_anchor(
     anchor_to=widget,
-    anchor_point='n',   # widget's top
-    window_point='s',   # tooltip's bottom
+    anchor_point='n',  # widget's top
+    window_point='s',  # tooltip's bottom
     offset=(0, -5)
 )
 ```
 
 ### Dropdown Menu Below Button
+
 ```python
+import ttkbootstrap as ttk
+
 menu = ttk.Toplevel()
 menu.place_dropdown(
     trigger_widget=button,
@@ -223,10 +237,15 @@ menu.place_dropdown(
 ```
 
 ### Context Menu at Click
+
 ```python
+import ttkbootstrap as ttk
+
+
 def show_context_menu(event):
     menu = ttk.Toplevel()
     menu.place_cursor(offset=(0, 0))
+
 
 widget.bind("<Button-3>", show_context_menu)
 ```

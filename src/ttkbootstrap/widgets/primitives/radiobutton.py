@@ -1,10 +1,12 @@
 from __future__ import annotations
 
 from tkinter import ttk
-from typing import Any, Callable, Literal, Optional, TypedDict, TYPE_CHECKING
+from typing import Any, Callable, Literal, Optional, TYPE_CHECKING, TypedDict
+
 from typing_extensions import Unpack
+
 from ttkbootstrap.widgets._internal.wrapper_base import TTKWrapperBase
-from ..mixins import IconMixin, SignalMixin, TextSignalMixin
+from ttkbootstrap.widgets.mixins import IconMixin, LocalizationMixin, SignalMixin, TextSignalMixin
 
 if TYPE_CHECKING:
     from ttkbootstrap.core.signals import Signal
@@ -16,14 +18,14 @@ class RadioButtonKwargs(TypedDict, total=False):
     command: Optional[Callable[[], Any]]
     image: Any
     icon: Any
-    compound: Literal['text','image','top','bottom','left','right','center','none'] | str
+    compound: Literal['text', 'image', 'top', 'bottom', 'left', 'right', 'center', 'none'] | str
     variable: Any
     signal: Signal[Any]
     value: Any
     padding: Any
     width: int
     underline: int
-    state: Literal['normal','active','disabled','readonly'] | str
+    state: Literal['normal', 'active', 'disabled', 'readonly'] | str
     takefocus: Any
     style: str
     class_: str
@@ -36,9 +38,10 @@ class RadioButtonKwargs(TypedDict, total=False):
     bootstyle: str
     surface_color: str
     style_options: dict[str, Any]
+    localize: bool | Literal['auto']
 
 
-class RadioButton(SignalMixin, TextSignalMixin, IconMixin, TTKWrapperBase, ttk.Radiobutton):
+class RadioButton(LocalizationMixin, SignalMixin, TextSignalMixin, IconMixin, TTKWrapperBase, ttk.Radiobutton):
     """ttkbootstrap wrapper for `ttk.Radiobutton` with bootstyle and icon support."""
 
     _ttk_base = ttk.Radiobutton
@@ -67,8 +70,7 @@ class RadioButton(SignalMixin, TextSignalMixin, IconMixin, TTKWrapperBase, ttk.R
             bootstyle: ttkbootstrap style tokens (e.g., 'primary', 'success').
             surface_color: Optional surface token; otherwise inherited.
             style_options: Optional dict forwarded to the style builder.
+            localize: Determines the widgets localization mode. 'auto', True, False.
         """
         kwargs.update(style_options=self._capture_style_options(['icon_only', 'icon'], kwargs))
         super().__init__(master, **kwargs)
-
-

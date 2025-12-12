@@ -171,16 +171,20 @@ class TextSignalMixin:
     """
 
     def __init__(self, *args, **kwargs):
-        """Initialize mixin and extract textsignal parameter before tkinter sees it."""
-        # Extract textsignal before passing kwargs to tkinter
+        """Initialize mixin and extract textsignal/textvariable parameters before tkinter sees them."""
+        # Extract textsignal and textvariable before passing kwargs to tkinter
         textsignal_value = kwargs.pop('textsignal', None)
+        textvariable_value = kwargs.pop('textvariable', None)
 
         # Call parent __init__
         super().__init__(*args, **kwargs)
 
-        # Apply textsignal after widget construction
+        # Apply textsignal or textvariable after widget construction
+        # Prefer textsignal if both are provided
         if textsignal_value is not None:
             self._config_delegate_set('textsignal', textsignal_value)
+        elif textvariable_value is not None:
+            self._config_delegate_set('textvariable', textvariable_value)
 
     @configure_delegate("textvariable", "textsignal")
     def _delegate_textsignal(self, value: Any = None):
@@ -334,16 +338,20 @@ class SignalMixin:
     """
 
     def __init__(self, *args, **kwargs):
-        """Initialize mixin and extract signal parameter before tkinter sees it."""
-        # Extract signal before passing kwargs to tkinter
+        """Initialize mixin and extract signal/variable parameters before tkinter sees them."""
+        # Extract signal and variable before passing kwargs to tkinter
         signal_value = kwargs.pop('signal', None)
+        variable_value = kwargs.pop('variable', None)
 
         # Call parent __init__
         super().__init__(*args, **kwargs)
 
-        # Apply signal after widget construction
+        # Apply signal or variable after widget construction
+        # Prefer signal if both are provided
         if signal_value is not None:
             self._config_delegate_set('signal', signal_value)
+        elif variable_value is not None:
+            self._config_delegate_set('variable', variable_value)
 
     @configure_delegate("variable", "signal")
     def _delegate_signal(self, value: Any = None):

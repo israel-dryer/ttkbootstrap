@@ -15,19 +15,18 @@ Tip:
         python tools/make_i18n.py compile -d locales -D ttkbootstrap
 """
 from __future__ import annotations
-
-import tkinter as tk
-from tkinter import messagebox as mbox, ttk
-
 import ttkbootstrap as tb
-from ttkbootstrap.localization.msgcat import MessageCatalog
+from ttkbootstrap.dialogs import MessageBox
+from ttkbootstrap.core.localization import MessageCatalog
 
 
 def main():
     # Create the app window (auto-inits i18n via Style)
-    app = tb.Window(theme="flatly")
+    app = tb.App(theme="flatly")
 
     # Style auto-initializes MessageCatalog with auto-discovery; no manual init needed.
+    print('tcl locale code', MessageCatalog.locale('zh_CN'))
+    print(MessageCatalog.translate('Cancel'))
 
     # Recommended alias so you can write _(...) around user-facing strings
     _ = MessageCatalog.translate
@@ -53,63 +52,64 @@ def main():
     # React to locale changes via virtual event emitted by MessageCatalog
     app.bind("<<LocaleChanged>>", lambda e: apply_language())
     # Menu with a few common actions using localized labels
-    menubar = tk.Menu(app)
+    menubar = tb.Menu(app)
     app.configure(menu=menubar)
 
     def do_open():
-        mbox.showinfo(title=_("Open"), message=_("Open"))
+        MessageBox.show_info(title=_("Open"), message=_("Open"))
 
     def do_close():
-        mbox.showinfo(title=_("Close"), message=_("Close"))
+        MessageBox.show_info(title=_("Close"), message=_("Close"))
 
     menubar.add_command(label=_("Open"), command=do_open)
     menubar.add_command(label=_("Close"), command=do_close)
     menubar.add_command(label=_("Exit"), command=app.destroy)
 
     # Main content
-    container = ttk.Frame(app, padding=20)
+    container = tb.Frame(app, padding=20)
     container.pack(fill="both", expand=True)
 
-    lbl_hello = ttk.Label(container, text=_("Hello, world!"))
+    lbl_hello = tb.Label(container, text=_("Hello, world!"))
     lbl_hello.pack(anchor="w")
 
-    lbl_hint = ttk.Label(container, text=_("Choose a language:"))
+    lbl_hint = tb.Label(container, text=_("Choose a language:"))
     lbl_hint.pack(anchor="w", pady=(12, 4))
 
     # Language selector (discover languages from compiled catalogs)
     # Available language list (keep simple for demo)
     langs = ["en", "de", "fr", "nl", "zh_CN"]
     start_lang = "nl"
-    lang_var = tk.StringVar(value=start_lang)
+    lang_var = tb.StringVar(value=start_lang)
 
     def on_lang_change(*_):
         MessageCatalog.locale(lang_var.get())
 
-    lang_menu = ttk.OptionMenu(container, lang_var, lang_var.get(), *langs, command=lambda *_: on_lang_change())
+    lang_menu = tb.OptionMenu(container, lang_var.get(), langs, textvariable=lang_var)
+    lang_var.trace("w", on_lang_change)
     lang_menu.pack(anchor="w")
 
     # Row of localized buttons
-    btn_row = ttk.Frame(container)
+    btn_row = tb.Frame(container)
     btn_row.pack(fill="x", pady=(16, 0))
-    btn_ok = ttk.Button(btn_row, text=_("OK"), width=12, command=lambda: mbox.showinfo(_("OK"), _("OK")))
+    btn_ok = tb.Button(btn_row, text=_("OK"), width=12, command=lambda: MessageBox.show_info(_("OK"), _("OK")))
     btn_ok.pack(side="left", padx=(0, 8))
-    btn_cancel = ttk.Button(
-        btn_row, text=_("Cancel"), width=12, command=lambda: mbox.showinfo(_("Cancel"), _("Cancel")))
+    btn_cancel = tb.Button(
+        btn_row, text=_("Cancel"), width=12, command=lambda: MessageBox.show_info(_("Cancel"), _("Cancel")))
     btn_cancel.pack(side="left")
 
     # Formatting example using translate with a value from an entry
-    entry_var = tk.StringVar(value="string value")
-    entry = ttk.Entry(container, textvariable=entry_var, width=30)
+    entry_var = tb.StringVar(value="string value")
+    entry = tb.Entry(container, textvariable=entry_var, width=30)
     entry.pack(anchor="w", pady=(16, 4))
-    fmt_label = ttk.Label(container)
+    fmt_label = tb.Label(container)
     fmt_label.pack(anchor="w")
 
     # Always-present samples for obvious change
-    sample_row = ttk.Frame(container)
+    sample_row = tb.Frame(container)
     sample_row.pack(anchor="w", pady=(8, 0))
-    sample_cancel = ttk.Label(sample_row)
+    sample_cancel = tb.Label(sample_row)
     sample_cancel.pack(side="left", padx=(0, 12))
-    sample_open = ttk.Label(sample_row)
+    sample_open = tb.Label(sample_row)
     sample_open.pack(side="left")
 
     def on_entry_change(*_):

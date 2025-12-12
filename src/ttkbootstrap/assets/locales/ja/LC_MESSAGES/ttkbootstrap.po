@@ -1,0 +1,842 @@
+# Japanese translations for ttkbootstrap
+# Copyright (C) 2024 Israel Dryer
+# This file is distributed under the same license as the ttkbootstrap project.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: ttkbootstrap\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2024-01-01 12:00+0000\n"
+"PO-Revision-Date: 2025-12-11 00:00+0000\n"
+"Last-Translator: ttkbootstrap team <>\n"
+"Language: ja\n"
+"Language-Team: Japanese\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: ttkbootstrap localization\n"
+
+# ============================================================================
+# Common Buttons
+# ============================================================================
+
+msgid "button.ok"
+msgstr "OK"
+
+msgid "button.cancel"
+msgstr "キャンセル"
+
+msgid "button.yes"
+msgstr "はい"
+
+msgid "button.no"
+msgstr "いいえ"
+
+msgid "button.retry"
+msgstr "再試行"
+
+msgid "button.delete"
+msgstr "削除"
+
+msgid "button.next"
+msgstr "次へ"
+
+msgid "button.previous"
+msgstr "前へ"
+
+msgid "button.prev"
+msgstr "前へ"
+
+msgid "button.open"
+msgstr "開く"
+
+msgid "button.close"
+msgstr "閉じる"
+
+msgid "button.add"
+msgstr "追加"
+
+msgid "button.remove"
+msgstr "削除"
+
+msgid "button.submit"
+msgstr "送信"
+
+msgid "button.save"
+msgstr "保存"
+
+msgid "button.apply"
+msgstr "適用"
+
+# ============================================================================
+# Font Dialog
+# ============================================================================
+
+msgid "font.family"
+msgstr "フォント"
+
+msgid "font.weight"
+msgstr "太さ"
+
+msgid "font.slant"
+msgstr "スタイル"
+
+msgid "font.effects"
+msgstr "効果"
+
+msgid "font.preview"
+msgstr "プレビュー"
+
+msgid "font.size"
+msgstr "サイズ"
+
+msgid "font.selector"
+msgstr "フォント選択"
+
+msgid "font.preview_text"
+msgstr "素早い茶色の狐がのんびり犬の上を飛び越える。"
+
+msgid "font.weight.normal"
+msgstr "標準"
+
+msgid "font.weight.bold"
+msgstr "太字"
+
+msgid "font.slant.roman"
+msgstr "標準"
+
+msgid "font.slant.italic"
+msgstr "イタリック"
+
+msgid "font.effects.underline"
+msgstr "下線"
+
+msgid "font.effects.overstrike"
+msgstr "取り消し線"
+
+# ============================================================================
+# Color Chooser
+# ============================================================================
+
+msgid "color.chooser"
+msgstr "色の選択"
+
+msgid "color.advanced"
+msgstr "詳細設定"
+
+msgid "color.themed"
+msgstr "テーマ色"
+
+msgid "color.standard"
+msgstr "標準"
+
+msgid "color.current"
+msgstr "現在の色"
+
+msgid "color.new"
+msgstr "新しい色"
+
+msgid "color.hue"
+msgstr "色相"
+
+msgid "color.sat"
+msgstr "彩度"
+
+msgid "color.lum"
+msgstr "明度"
+
+msgid "color.hex"
+msgstr "Hex"
+
+msgid "color.red"
+msgstr "赤"
+
+msgid "color.green"
+msgstr "緑"
+
+msgid "color.blue"
+msgstr "青"
+
+msgid "color.dropper"
+msgstr "カラードロッパー"
+
+# Color value labels
+msgid "color.hue:"
+msgstr "色相:"
+
+msgid "color.sat:"
+msgstr "彩度:"
+
+msgid "color.lum:"
+msgstr "明度:"
+
+msgid "color.hex:"
+msgstr "Hex:"
+
+msgid "color.red:"
+msgstr "赤:"
+
+msgid "color.green:"
+msgstr "緑:"
+
+msgid "color.blue:"
+msgstr "青:"
+
+# ============================================================================
+# Validation Messages
+# ============================================================================
+
+msgid "validation.should_be_type"
+msgstr "次のデータ型である必要があります"
+
+msgid "validation.invalid_type"
+msgstr "無効なデータ型です"
+
+msgid "validation.greater_than"
+msgstr "数値はこれより大きくできません:"
+
+msgid "validation.less_than"
+msgstr "数値はこれより小さくできません:"
+
+msgid "validation.out_of_range"
+msgstr "範囲外です"
+
+msgid "validation.select_item"
+msgstr "リストから項目を選択してください"
+
+# ============================================================================
+# Table View
+# ============================================================================
+
+msgid "table.search"
+msgstr "検索"
+
+msgid "table.page"
+msgstr "ページ"
+
+msgid "table.of"
+msgstr "／"
+
+msgid "table.reset"
+msgstr "テーブルリセット"
+
+msgid "table.columns"
+msgstr "列"
+
+msgid "table.move"
+msgstr "移動"
+
+msgid "table.align"
+msgstr "配置"
+
+msgid "table.hide_column"
+msgstr "列を非表示"
+
+msgid "table.delete_column"
+msgstr "列を削除"
+
+msgid "table.show_all"
+msgstr "すべて表示"
+
+msgid "table.move_left"
+msgstr "左へ移動"
+
+msgid "table.move_right"
+msgstr "右へ移動"
+
+msgid "table.move_first"
+msgstr "最初へ移動"
+
+msgid "table.move_last"
+msgstr "最後へ移動"
+
+msgid "table.add_record"
+msgstr "レコード追加"
+
+msgid "table.edit"
+msgstr "編集"
+
+msgid "table.delete_row"
+msgstr "削除"
+
+msgid "table.group_by_column"
+msgstr "この列でグループ化"
+
+msgid "table.ungroup_all"
+msgstr "グループ解除"
+
+msgid "table.clear_sort"
+msgstr "並べ替えクリア"
+
+msgid "table.align_left"
+msgstr "左揃え"
+
+msgid "table.align_center"
+msgstr "中央揃え"
+
+msgid "table.align_right"
+msgstr "右揃え"
+
+msgid "table.sort"
+msgstr "並べ替え"
+
+msgid "table.filter"
+msgstr "フィルター"
+
+msgid "table.export"
+msgstr "エクスポート"
+
+msgid "table.delete_selected"
+msgstr "選択した行を削除"
+
+msgid "table.sort_asc"
+msgstr "昇順"
+
+msgid "table.sort_desc"
+msgstr "降順"
+
+msgid "table.clear_filters"
+msgstr "フィルタークリア"
+
+msgid "table.filter_by_value"
+msgstr "セルの値でフィルター"
+
+msgid "table.hide_select"
+msgstr "選択行を非表示"
+
+msgid "table.show_select"
+msgstr "選択行のみ表示"
+
+msgid "table.export_all"
+msgstr "すべてのレコードをエクスポート"
+
+msgid "table.export_page"
+msgstr "現在のページをエクスポート"
+
+msgid "table.export_selection"
+msgstr "選択範囲をエクスポート"
+
+msgid "table.export_filter"
+msgstr "フィルターされたレコードをエクスポート"
+
+msgid "table.sort_status"
+msgstr "並べ替え: %s"
+
+msgid "table.filter_status"
+msgstr "フィルター: %s"
+
+msgid "table.group_status"
+msgstr "グループ: %s"
+
+msgid "table.filter_column"
+msgstr "フィルター: %s"
+
+msgid "table.empty"
+msgstr "(空)"
+
+msgid "table.search_mode_equals"
+msgstr "一致"
+
+msgid "table.search_mode_contains"
+msgstr "含む"
+
+msgid "table.search_mode_starts_with"
+msgstr "で始まる"
+
+msgid "table.search_mode_ends_with"
+msgstr "で終わる"
+
+msgid "table.search_mode_sql"
+msgstr "SQL"
+
+msgid "table.move_up"
+msgstr "上へ移動"
+
+msgid "table.move_down"
+msgstr "下へ移動"
+
+msgid "table.move_top"
+msgstr "一番上へ移動"
+
+msgid "table.move_bottom"
+msgstr "一番下へ移動"
+
+# ============================================================================
+# Days of Week
+# ============================================================================
+
+msgid "day.mo"
+msgstr "月"
+
+msgid "day.tu"
+msgstr "火"
+
+msgid "day.we"
+msgstr "水"
+
+msgid "day.th"
+msgstr "木"
+
+msgid "day.fr"
+msgstr "金"
+
+msgid "day.sa"
+msgstr "土"
+
+msgid "day.su"
+msgstr "日"
+
+# ============================================================================
+# Dialogs
+# ============================================================================
+
+msgid "dialog.error"
+msgstr "エラー"
+
+msgid "dialog.warning"
+msgstr "警告"
+
+msgid "dialog.info"
+msgstr "情報"
+
+msgid "dialog.question"
+msgstr "質問"
+
+msgid "dialog.confirm"
+msgstr "確認"
+
+# ============================================================================
+# File Operations
+# ============================================================================
+
+msgid "file.new"
+msgstr "新規"
+
+msgid "file.open"
+msgstr "開く"
+
+msgid "file.save"
+msgstr "保存"
+
+msgid "file.save_as"
+msgstr "名前を付けて保存"
+
+msgid "file.close"
+msgstr "閉じる"
+
+msgid "file.exit"
+msgstr "終了"
+
+# ============================================================================
+# Edit Operations
+# ============================================================================
+
+msgid "edit.cut"
+msgstr "切り取り"
+
+msgid "edit.copy"
+msgstr "コピー"
+
+msgid "edit.paste"
+msgstr "貼り付け"
+
+msgid "edit.undo"
+msgstr "元に戻す"
+
+msgid "edit.redo"
+msgstr "やり直し"
+
+msgid "edit.select_all"
+msgstr "すべて選択"
+
+# ============================================================================
+# Help
+# ============================================================================
+
+msgid "help.about"
+msgstr "バージョン情報"
+
+msgid "help.help"
+msgstr "ヘルプ"
+
+msgid "help.documentation"
+msgstr "ドキュメント"
+
+# ============================================================================
+# LEGACY MAPPINGS — English msgid → Japanese msgstr
+# ============================================================================
+
+msgid "OK"
+msgstr "OK"
+
+msgid "Ok"
+msgstr "Ok"
+
+msgid "Cancel"
+msgstr "キャンセル"
+
+msgid "Yes"
+msgstr "はい"
+
+msgid "No"
+msgstr "いいえ"
+
+msgid "Retry"
+msgstr "再試行"
+
+msgid "Delete"
+msgstr "削除"
+
+msgid "Next"
+msgstr "次へ"
+
+msgid "Previous"
+msgstr "前へ"
+
+msgid "Prev"
+msgstr "前へ"
+
+msgid "Open"
+msgstr "開く"
+
+msgid "Close"
+msgstr "閉じる"
+
+msgid "Add"
+msgstr "追加"
+
+msgid "Remove"
+msgstr "削除"
+
+msgid "Submit"
+msgstr "送信"
+
+msgid "Save"
+msgstr "保存"
+
+msgid "Apply"
+msgstr "適用"
+
+# Font dialog legacy
+msgid "Family"
+msgstr "フォント"
+
+msgid "Weight"
+msgstr "太さ"
+
+msgid "Slant"
+msgstr "スタイル"
+
+msgid "Effects"
+msgstr "効果"
+
+msgid "Preview"
+msgstr "プレビュー"
+
+msgid "Size"
+msgstr "サイズ"
+
+msgid "Font Selector"
+msgstr "フォント選択"
+
+msgid "The quick brown fox jumps over the lazy dog."
+msgstr "素早い茶色の狐がのんびり犬の上を飛び越える。"
+
+# Color chooser legacy
+msgid "Color Chooser"
+msgstr "色の選択"
+
+msgid "Advanced"
+msgstr "詳細設定"
+
+msgid "Themed"
+msgstr "テーマ色"
+
+msgid "Standard"
+msgstr "標準"
+
+msgid "Current"
+msgstr "現在の色"
+
+msgid "New"
+msgstr "新しい色"
+
+msgid "Hue"
+msgstr "色相"
+
+msgid "Sat"
+msgstr "彩度"
+
+msgid "Lum"
+msgstr "明度"
+
+msgid "Hex"
+msgstr "Hex"
+
+msgid "Red"
+msgstr "赤"
+
+msgid "Green"
+msgstr "緑"
+
+msgid "Blue"
+msgstr "青"
+
+msgid "color dropper"
+msgstr "カラードロッパー"
+
+# Color labels (legacy)
+msgid "Hue:"
+msgstr "色相:"
+
+msgid "Sat:"
+msgstr "彩度:"
+
+msgid "Lum:"
+msgstr "明度:"
+
+msgid "Hex:"
+msgstr "Hex:"
+
+msgid "Red:"
+msgstr "赤:"
+
+msgid "Green:"
+msgstr "緑:"
+
+msgid "Blue:"
+msgstr "青:"
+
+# Validation (legacy)
+msgid "Should be of data type"
+msgstr "次のデータ型である必要があります"
+
+msgid "Invalid data type"
+msgstr "無効なデータ型です"
+
+msgid "Number cannot be greater than"
+msgstr "数値はこれより大きくできません:"
+
+msgid "Number cannot be less than"
+msgstr "数値はこれより小さくできません:"
+
+msgid "Out of range"
+msgstr "範囲外です"
+
+msgid "Select an item from the list"
+msgstr "リストから項目を選択してください"
+
+# Table (legacy)
+msgid "Search"
+msgstr "検索"
+
+msgid "Page"
+msgstr "ページ"
+
+msgid "of"
+msgstr "／"
+
+msgid "Reset table"
+msgstr "テーブルリセット"
+
+msgid "Columns"
+msgstr "列"
+
+msgid "Move"
+msgstr "移動"
+
+msgid "Align"
+msgstr "配置"
+
+msgid "Hide column"
+msgstr "列を非表示"
+
+msgid "Delete column"
+msgstr "列を削除"
+
+msgid "Show All"
+msgstr "すべて表示"
+
+msgid "Move to left"
+msgstr "左へ移動"
+
+msgid "Move to right"
+msgstr "右へ移動"
+
+msgid "Move to first"
+msgstr "最初へ移動"
+
+msgid "Move to last"
+msgstr "最後へ移動"
+
+msgid "Sort"
+msgstr "並べ替え"
+
+msgid "Filter"
+msgstr "フィルター"
+
+msgid "Export"
+msgstr "エクスポート"
+
+msgid "Delete selected rows"
+msgstr "選択した行を削除"
+
+msgid "Sort Ascending"
+msgstr "昇順"
+
+msgid "Sort Descending"
+msgstr "降順"
+
+msgid "Clear filters"
+msgstr "フィルタークリア"
+
+msgid "Filter by cell's value"
+msgstr "セルの値でフィルター"
+
+msgid "Hide select rows"
+msgstr "選択行を非表示"
+
+msgid "Show only select rows"
+msgstr "選択行のみ表示"
+
+msgid "Export all records"
+msgstr "すべてのレコードをエクスポート"
+
+msgid "Export current page"
+msgstr "現在のページをエクスポート"
+
+msgid "Export current selection"
+msgstr "選択範囲をエクスポート"
+
+msgid "Export records in filter"
+msgstr "フィルターされたレコードをエクスポート"
+
+msgid "Move up"
+msgstr "上へ移動"
+
+msgid "Move down"
+msgstr "下へ移動"
+
+msgid "Move to top"
+msgstr "一番上へ移動"
+
+msgid "Move to bottom"
+msgstr "一番下へ移動"
+
+# Days (legacy)
+msgid "Mo"
+msgstr "月"
+
+msgid "Tu"
+msgstr "火"
+
+msgid "We"
+msgstr "水"
+
+msgid "Th"
+msgstr "木"
+
+msgid "Fr"
+msgstr "金"
+
+msgid "Sa"
+msgstr "土"
+
+msgid "Su"
+msgstr "日"
+
+# Dialogs (legacy)
+msgid "Error"
+msgstr "エラー"
+
+msgid "Warning"
+msgstr "警告"
+
+msgid "Information"
+msgstr "情報"
+
+msgid "Question"
+msgstr "質問"
+
+msgid "Confirm"
+msgstr "確認"
+
+# File (legacy)
+msgid "New"
+msgstr "新規"
+
+msgid "Save As"
+msgstr "名前を付けて保存"
+
+msgid "Exit"
+msgstr "終了"
+
+# Edit (legacy)
+msgid "Cut"
+msgstr "切り取り"
+
+msgid "Copy"
+msgstr "コピー"
+
+msgid "Paste"
+msgstr "貼り付け"
+
+msgid "Undo"
+msgstr "元に戻す"
+
+msgid "Redo"
+msgstr "やり直し"
+
+msgid "Select All"
+msgstr "すべて選択"
+
+# Help (legacy)
+msgid "About"
+msgstr "バージョン情報"
+
+msgid "Help"
+msgstr "ヘルプ"
+
+msgid "Documentation"
+msgstr "ドキュメント"
+
+# ---------------------------------------------------------------------------
+# Calendar tokens (autogenerated)
+# ---------------------------------------------------------------------------
+msgid "month.january"
+msgstr "January"
+
+msgid "month.february"
+msgstr "February"
+
+msgid "month.march"
+msgstr "March"
+
+msgid "month.april"
+msgstr "April"
+
+msgid "month.may"
+msgstr "May"
+
+msgid "month.june"
+msgstr "June"
+
+msgid "month.july"
+msgstr "July"
+
+msgid "month.august"
+msgstr "August"
+
+msgid "month.september"
+msgstr "September"
+
+msgid "month.october"
+msgstr "October"
+
+msgid "month.november"
+msgstr "November"
+
+msgid "month.december"
+msgstr "December"
+

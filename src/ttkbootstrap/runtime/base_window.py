@@ -18,6 +18,7 @@ from __future__ import annotations
 import tkinter
 from typing import Literal, Optional, Tuple
 
+from ttkbootstrap.core.localization import MessageCatalog
 from ttkbootstrap.runtime.window_utilities import AnchorPoint, WindowPositioning, WindowSizing
 
 
@@ -65,16 +66,16 @@ class BaseWindow:
     """
 
     def _setup_window(
-        self,
-        title: str = "ttkbootstrap",
-        size: Optional[tuple[int, int]] = None,
-        position: Optional[tuple[int, int]] = None,
-        minsize: Optional[tuple[int, int]] = None,
-        maxsize: Optional[tuple[int, int]] = None,
-        resizable: Optional[tuple[bool, bool]] = None,
-        transient: Optional[tkinter.Misc] = None,
-        overrideredirect: bool = False,
-        alpha: float = 1.0,
+            self,
+            title: str = "ttkbootstrap",
+            size: Optional[tuple[int, int]] = None,
+            position: Optional[tuple[int, int]] = None,
+            minsize: Optional[tuple[int, int]] = None,
+            maxsize: Optional[tuple[int, int]] = None,
+            resizable: Optional[tuple[bool, bool]] = None,
+            transient: Optional[tkinter.Misc] = None,
+            overrideredirect: bool = False,
+            alpha: float = 1.0,
     ) -> None:
         """Configure common window properties.
 
@@ -105,8 +106,11 @@ class BaseWindow:
         if not hasattr(self, 'winsys'):
             self.winsys = self.tk.call('tk', 'windowingsystem')
 
-        # Basic configuration
+        # Basic configuration - localize title automatically
         self.title(title)
+
+        # Bind locale changes
+        self.winfo_toplevel().bind("<<LocaleChanged>>", self._handle_locale_changed)
 
         # Geometry
         if size is not None:
@@ -150,7 +154,6 @@ class BaseWindow:
             x, y = WindowPositioning.center_on_screen(self)
             x, y = WindowPositioning.ensure_on_screen(self, x, y)
             self.geometry(f'+{x}+{y}')
-
 
     def _setup_alpha(self, alpha: float) -> None:
         """Configure window alpha transparency in a platform-aware manner.
@@ -223,6 +226,18 @@ class BaseWindow:
                     except (ImportError, Exception):
                         pass
 
+    def title(self, value: str | None = None):
+        """Set or query the window title"""
+        if value is None:
+            return super().title()
+        else:
+            self._title_message_id = value
+            return super().title(MessageCatalog.translate(self._title_message_id))
+
+    def _handle_locale_changed(self, *_):
+        if self._title_message_id:
+            self.title(self._title_message_id)
+
     # ----------------------------------------------------------------- Positioning
     # Public positioning methods using WindowPositioning utilities
 
@@ -288,12 +303,12 @@ class BaseWindow:
         self.geometry(f'+{x}+{y}')
 
     def place_anchor(
-        self,
-        anchor_to: tkinter.Misc,
-        anchor_point: AnchorPoint = 'sw',
-        window_point: AnchorPoint = 'nw',
-        offset: Tuple[int, int] = (0, 0),
-        ensure_visible: bool = True
+            self,
+            anchor_to: tkinter.Misc,
+            anchor_point: AnchorPoint = 'sw',
+            window_point: AnchorPoint = 'nw',
+            offset: Tuple[int, int] = (0, 0),
+            ensure_visible: bool = True
     ) -> None:
         """Position window relative to another widget using anchor points.
 
@@ -327,13 +342,13 @@ class BaseWindow:
         )
 
     def place_dropdown(
-        self,
-        trigger_widget: tkinter.Misc,
-        prefer_below: bool = True,
-        align: Literal['left', 'right', 'center'] = 'left',
-        offset: Tuple[int, int] = (0, 2),
-        ensure_visible: bool = True,
-        auto_flip: bool = True
+            self,
+            trigger_widget: tkinter.Misc,
+            prefer_below: bool = True,
+            align: Literal['left', 'right', 'center'] = 'left',
+            offset: Tuple[int, int] = (0, 2),
+            ensure_visible: bool = True,
+            auto_flip: bool = True
     ) -> None:
         """Position window as a dropdown relative to a trigger widget.
 
@@ -369,9 +384,9 @@ class BaseWindow:
         )
 
     def place_cursor(
-        self,
-        offset: Tuple[int, int] = (5, 5),
-        ensure_visible: bool = True
+            self,
+            offset: Tuple[int, int] = (5, 5),
+            ensure_visible: bool = True
     ) -> None:
         """Position window at the current mouse cursor location.
 
@@ -413,13 +428,13 @@ class WindowMixin(BaseWindow):
     """
 
     def set_default_size(
-        self,
-        width_ratio: float = 0.6,
-        height_ratio: float = 0.7,
-        min_width: int = 400,
-        min_height: int = 300,
-        max_width: Optional[int] = None,
-        max_height: Optional[int] = None
+            self,
+            width_ratio: float = 0.6,
+            height_ratio: float = 0.7,
+            min_width: int = 400,
+            min_height: int = 300,
+            max_width: Optional[int] = None,
+            max_height: Optional[int] = None
     ) -> None:
         """Set window size as a percentage of screen size.
 
@@ -447,10 +462,10 @@ class WindowMixin(BaseWindow):
         self.geometry(f"{width}x{height}")
 
     def apply_size_constraints(
-        self,
-        minsize: Optional[tuple[int, int]] = None,
-        maxsize: Optional[tuple[int, int]] = None,
-        resizable: Optional[tuple[bool, bool]] = None
+            self,
+            minsize: Optional[tuple[int, int]] = None,
+            maxsize: Optional[tuple[int, int]] = None,
+            resizable: Optional[tuple[bool, bool]] = None
     ) -> None:
         """Apply multiple size constraints at once.
 

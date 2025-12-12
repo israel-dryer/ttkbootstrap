@@ -9,7 +9,7 @@ def demo_show_info():
     result = MessageBox.show_info(
         message="This is an informational message.\nThe operation completed successfully.",
         title="Information",
-        master=root
+        master=app
     )
     result_label.config(text=f"Result: {result}")
 
@@ -19,7 +19,7 @@ def demo_show_warning():
     result = MessageBox.show_warning(
         message="Warning: This action may have consequences.\nPlease proceed with caution.",
         title="Warning",
-        master=root
+        master=app
     )
     result_label.config(text=f"Result: {result}")
 
@@ -29,7 +29,7 @@ def demo_show_error():
     result = MessageBox.show_error(
         message="Error: The operation failed.\nPlease check your settings and try again.",
         title="Error",
-        master=root
+        master=app
     )
     result_label.config(text=f"Result: {result}")
 
@@ -39,7 +39,7 @@ def demo_show_question():
     result = MessageBox.show_question(
         message="Do you have any questions about this feature?\nFeel free to ask for help.",
         title="Question",
-        master=root
+        master=app
     )
     result_label.config(text=f"Result: {result}")
 
@@ -49,7 +49,7 @@ def demo_ok():
     result = MessageBox.ok(
         message="This is a simple notification.\nClick OK to continue.",
         title="Notification",
-        master=root
+        master=app
     )
     result_label.config(text=f"Result: {result}")
 
@@ -59,7 +59,7 @@ def demo_okcancel():
     result = MessageBox.okcancel(
         message="Do you want to proceed with this action?",
         title="Confirm",
-        master=root
+        master=app
     )
     if result == "OK":
         result_label.config(text=f"User confirmed: {result}", bootstyle="success")
@@ -72,7 +72,7 @@ def demo_yesno():
     result = MessageBox.yesno(
         message="Would you like to save your changes?",
         title="Save Changes",
-        master=root
+        master=app
     )
     if result == "Yes":
         result_label.config(text=f"User selected: {result}", bootstyle="success")
@@ -85,7 +85,7 @@ def demo_yesnocancel():
     result = MessageBox.yesnocancel(
         message="You have unsaved changes.\nDo you want to save them before closing?",
         title="Unsaved Changes",
-        master=root
+        master=app
     )
     result_label.config(text=f"User selected: {result}")
 
@@ -95,7 +95,7 @@ def demo_retrycancel():
     result = MessageBox.retrycancel(
         message="Connection to server failed.\nWould you like to retry?",
         title="Connection Error",
-        master=root
+        master=app
     )
     if result == "Retry":
         result_label.config(text=f"User selected: {result}", bootstyle="info")
@@ -108,7 +108,7 @@ def demo_custom_icon_string():
     result = MessageDialog(
         message="This dialog uses a custom heart icon!",
         title="Custom Icon (String)",
-        master=root,
+        master=app,
         icon="heart-fill",
         buttons=["Close:primary"]
     )
@@ -121,7 +121,7 @@ def demo_custom_icon_dict():
     result = MessageDialog(
         message="This dialog uses a large, colored star icon!",
         title="Custom Icon (Dict)",
-        master=root,
+        master=app,
         icon={"name": "star-fill", "size": 48, "color": "#ffc107"},
         buttons=["Awesome:success", "Close:secondary"]
     )
@@ -134,7 +134,7 @@ def demo_custom_buttons():
     result = MessageDialog(
         message="This dialog has custom button configurations.\nEach button has its own style!",
         title="Custom Buttons",
-        master=root,
+        master=app,
         icon="gear-fill",
         buttons=["Cancel:danger", "Maybe:warning", "Sure:info", "Yes:success"],
         default="Yes"
@@ -156,7 +156,7 @@ Each paragraph will be properly formatted and displayed."""
     result = MessageDialog(
         message=long_message,
         title="Long Message Example",
-        master=root,
+        master=app,
         icon="file-text-fill",
         buttons=["Got it:primary"],
         width=60
@@ -170,18 +170,21 @@ def demo_no_icon():
     result = MessageBox.okcancel(
         message="This dialog has no icon.\nSometimes simpler is better.",
         title="Simple Dialog",
-        master=root
+        master=app
     )
     result_label.config(text=f"No-icon dialog result: {result}")
 
 
 # Create main application window
-root = ttk.Window(theme="cosmo")
-root.title("Message Dialog Demo")
-root.geometry("700x650")
+app = ttk.App(
+    theme="cosmo",
+    title="Message Dialog Demo",
+    size=(700, 650),
+    settings=ttk.AppSettings(locale='fr')
+)
 
 # Header
-header = ttk.Frame(root, bootstyle="primary")
+header = ttk.Frame(app, bootstyle="primary")
 header.pack(fill='x', pady=(0, 20))
 title_label = ttk.Label(
     header,
@@ -192,7 +195,7 @@ title_label = ttk.Label(
 title_label.pack(pady=15)
 
 # Main content
-content = ttk.Frame(root, padding=20)
+content = ttk.Frame(app, padding=20)
 content.pack(fill='both', expand=True)
 
 # Instructions
@@ -286,11 +289,11 @@ result_label.pack()
 
 # Footer
 footer = ttk.Label(
-    root,
+    app,
     text="Press ESC in any dialog to cancel • Icons provided by icon provider",
     font='TkDefaultFont 9 italic',
     bootstyle="secondary"
 )
 footer.pack(pady=10)
 
-root.mainloop()
+app.mainloop()

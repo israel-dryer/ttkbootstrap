@@ -4,7 +4,7 @@ from types import SimpleNamespace
 from typing import Any, Literal, Optional, Union
 
 from ttkbootstrap.widgets.primitives import Button, Frame, Label
-from ttkbootstrap.runtime.app import Toplevel
+from ttkbootstrap.runtime.toplevel import Toplevel
 from ttkbootstrap.runtime.utility import scale_size
 from ttkbootstrap.runtime.window_utilities import WindowPositioning, AnchorPoint
 from ttkbootstrap.constants import *
@@ -194,7 +194,7 @@ class ToolTip:
             return
 
         # Create the tooltip window (position will be set after content is built)
-        self._toplevel = ttk.window.Toplevel(**self.toplevel_kwargs)
+        self._toplevel = Toplevel(**self.toplevel_kwargs)
         bootstyle = 'background[+1]-tooltip' if self._bootstyle is None else f'{self._bootstyle}-tooltip'
         frame = ttk.Frame(
             self._toplevel,

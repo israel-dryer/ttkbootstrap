@@ -45,21 +45,21 @@ Example:
 """
 import tkinter
 from collections import namedtuple
+from tkinter import Canvas, IntVar, StringVar
 from tkinter import Frame as tkFrame, Label as tkLabel
 from types import SimpleNamespace
 from typing import Any, Callable, List, Optional, Tuple
 
 from PIL import ImageColor
 
-from tkinter import Canvas, IntVar, StringVar
-from ttkbootstrap.style.style import get_style
-from ttkbootstrap.widgets.primitives import Button, Entry, Frame, Label, Notebook, Spinbox
 from ttkbootstrap.constants import *
 from ttkbootstrap.core import colorutils
 from ttkbootstrap.core.colorutils import HEX, HSL, HUE, LUM, RGB, SAT
 from ttkbootstrap.core.localization import MessageCatalog
 from ttkbootstrap.runtime import utility
+from ttkbootstrap.style.style import get_style
 from ttkbootstrap.widgets.composites.tooltip import ToolTip
+from ttkbootstrap.widgets.primitives import Button, Entry, Frame, Label, Notebook, Spinbox
 # from ttkbootstrap.validation import add_range_validation, add_validation, validator
 from .colordropper import ColorDropperDialog
 
@@ -160,7 +160,7 @@ class ColorChooser(ttk.Frame):
         self.color_spectrum.pack(fill=X, side=TOP)
         self.luminance_scale = self.create_luminance_scale(self.tframe)
         self.luminance_scale.pack(fill=X)
-        self.notebook.add(spectrum_frame, text=MessageCatalog.translate('Advanced'))
+        self.notebook.add(spectrum_frame, text='color.advanced')
 
         palette_keys = ("primary", "secondary", "success", "info", "warning", "danger", "light", "dark")
         themed_colors = [
@@ -172,8 +172,8 @@ class ColorChooser(ttk.Frame):
             self.notebook, themed_colors)
         self.standard_swatches = self.create_swatches(
             self.notebook, STD_COLORS)
-        self.notebook.add(self.themed_swatches, text=MessageCatalog.translate('Themed'))
-        self.notebook.add(self.standard_swatches, text=MessageCatalog.translate('Standard'))
+        self.notebook.add(self.themed_swatches, text='color.themed')
+        self.notebook.add(self.standard_swatches, text='color.standard')
         preview_frame = self.create_preview(self.bframe)
         preview_frame.pack(side=LEFT, fill=BOTH, expand=YES, padx=(0, 5))
         self.color_entries = self.create_value_inputs(self.bframe)
@@ -288,7 +288,7 @@ class ColorChooser(ttk.Frame):
         )
         tkLabel(
             master=old,
-            text=MessageCatalog.translate('Current'),
+            text=MessageCatalog.translate("color.current"),
             background=self.initial_color,
             foreground=constrast_fg,
             autostyle=False,
@@ -308,7 +308,7 @@ class ColorChooser(ttk.Frame):
         self.preview.pack(side=LEFT, fill=BOTH, expand=YES, padx=(2, 0))
         self.preview_lbl = tkLabel(
             master=self.preview,
-            text=MessageCatalog.translate('New'),
+            text=MessageCatalog.translate("color.new"),
             background=self.initial_color,
             foreground=constrast_fg,
             autostyle=False,
@@ -324,15 +324,15 @@ class ColorChooser(ttk.Frame):
         for x in range(4):
             container.columnconfigure(x, weight=1)
 
-        # value labels
+        # value labels - use semantic keys with built-in localization
         lbl_cnf = {'master': container, 'anchor': E}
-        ttk.Label(**lbl_cnf, text=f'''{MessageCatalog.translate('Hue')}:''').grid(row=0, column=0, sticky=E)
-        ttk.Label(**lbl_cnf, text=f'''{MessageCatalog.translate('Sat')}:''').grid(row=1, column=0, sticky=E)
-        ttk.Label(**lbl_cnf, text=f'''{MessageCatalog.translate('Lum')}:''').grid(row=2, column=0, sticky=E)
-        ttk.Label(**lbl_cnf, text=f'''{MessageCatalog.translate('Hex')}:''').grid(row=3, column=0, sticky=E)
-        ttk.Label(**lbl_cnf, text=f'''{MessageCatalog.translate('Red')}:''').grid(row=0, column=2, sticky=E)
-        ttk.Label(**lbl_cnf, text=f'''{MessageCatalog.translate('Green')}:''').grid(row=1, column=2, sticky=E)
-        ttk.Label(**lbl_cnf, text=f'''{MessageCatalog.translate('Blue')}:''').grid(row=2, column=2, sticky=E)
+        ttk.Label(**lbl_cnf, text='color.hue:').grid(row=0, column=0, sticky=E)
+        ttk.Label(**lbl_cnf, text='color.sat:').grid(row=1, column=0, sticky=E)
+        ttk.Label(**lbl_cnf, text='color.lum:').grid(row=2, column=0, sticky=E)
+        ttk.Label(**lbl_cnf, text='color.hex:').grid(row=3, column=0, sticky=E)
+        ttk.Label(**lbl_cnf, text='color.red:').grid(row=0, column=2, sticky=E)
+        ttk.Label(**lbl_cnf, text='color.green:').grid(row=1, column=2, sticky=E)
+        ttk.Label(**lbl_cnf, text='color.blue:').grid(row=2, column=2, sticky=E)
 
         # value spinners and entry widgets
         rgb_cnf = {'master': container, 'from_': 0, 'to': 255, 'width': 3}
@@ -584,11 +584,12 @@ class ColorChooserDialog:
     def __init__(
             self,
             master: Optional[tkinter.Misc] = None,
-            title: str = "Color Chooser",
+            title: str = "color.chooser",
             initial_color: Optional[str] = None,
     ) -> None:
         self._master = master
-        self._title = MessageCatalog.translate(title)
+        # Title is now automatically localized by BaseWindow._setup_window
+        self._title = title
         self._initial_color = initial_color
         self.result: Optional[ColorChoice] = None
         self._emitted_result = False
@@ -620,14 +621,14 @@ class ColorChooserDialog:
             winsys = ""
         if winsys != 'aqua':
             dropper = ttk.Label(frame, text=PEN, font=('-size 16'))
-            ToolTip(dropper, MessageCatalog.translate('color dropper'))
+            ToolTip(dropper, 'color.dropper')
             dropper.pack(side=LEFT, padx=2)
             dropper.bind("<Button-1>", self._on_show_color_dropper)
 
         ok = ttk.Button(
             frame,
             bootstyle=PRIMARY,
-            text=MessageCatalog.translate('OK'),
+            text='button.ok',
             command=self._on_ok,
         )
         ok.pack(padx=2, side=RIGHT)
@@ -635,7 +636,7 @@ class ColorChooserDialog:
         cancel = ttk.Button(
             frame,
             bootstyle=SECONDARY,
-            text=MessageCatalog.translate('Cancel'),
+            text='button.cancel',
             command=self._on_cancel,
         )
         cancel.pack(padx=2, side=RIGHT)

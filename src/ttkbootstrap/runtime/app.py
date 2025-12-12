@@ -2,11 +2,16 @@ from __future__ import annotations
 
 import tkinter
 from dataclasses import dataclass
-from typing import Any, Optional, Sequence, Tuple, TypedDict, Union
+from typing import Literal, Optional, Sequence, TypedDict, Union
 
+from babel.core import UnknownLocaleError
+from babel.dates import get_date_format, get_time_format
+from babel.numbers import get_decimal_symbol, get_group_symbol
 from typing_extensions import Unpack
 
 from ttkbootstrap.constants import *
+from ttkbootstrap.core.localization.intl_format import detect_locale
+from ttkbootstrap.core.localization.msgcat import MessageCatalog
 from ttkbootstrap.core.publisher import Publisher
 from ttkbootstrap.runtime.base_window import BaseWindow
 from ttkbootstrap.runtime.utility import enable_high_dpi_awareness
@@ -73,7 +78,7 @@ def get_default_root(what: Optional[str] = None) -> tkinter.Tk:
     return tkinter._default_root
 
 
-def apply_class_bindings(window: tkinter.Widget) -> None:
+def apply_class_bindings(window: tkinter.Widget | App) -> None:
     """Add class level event bindings in application"""
     for className in ["TEntry", "TSpinbox", "TCombobox", "Text"]:
         window.bind_class(
@@ -105,7 +110,7 @@ def apply_class_bindings(window: tkinter.Widget) -> None:
     window.bind_class("TButton", "<KP_Enter>", button_default_binding, add="+")
 
 
-def apply_all_bindings(window: tkinter.Widget) -> None:
+def apply_all_bindings(window: tkinter.Widget | App) -> None:
     """Add bindings to all widgets in the application"""
     window.bind_all('<Map>', on_map_child, '+')
     window.bind_all('<Destroy>', lambda e: Publisher.unsubscribe(e.widget))
@@ -159,6 +164,9 @@ def on_select_all(event: tkinter.Event) -> None:
         widget.icursor(END)
 
 
+LocalizeMode = Union[bool, Literal['auto']]
+
+
 @dataclass
 class AppSettings:
     # information
@@ -181,6 +189,92 @@ class AppSettings:
     number_decimal: str | None = None
     number_thousands: str | None = None
 
+    # localization behavior
+    localize_mode: LocalizeMode = "auto"
+
+    def __post_init__(self):
+        """Populate localization defaults when not explicitly configured."""
+        _apply_localization_defaults(self)
+
+
+class AppSettingsKwargs(TypedDict, total=False):
+    app_name: str
+    app_author: str
+    app_version: str
+
+    # theme
+    theme: str
+    light_theme: str
+    dark_theme: str
+    available_themes: Sequence[str]
+    inherit_surface_color: bool
+
+    # localization
+    locale: str
+    language: str
+    date_format: str
+    time_format: str
+    number_decimal: str
+    number_thousands: str
+
+
+DEFAULT_LOCALE = "en_US"
+
+
+def _apply_localization_defaults(settings: AppSettings) -> None:
+    """Ensure locale-based fields always have meaningful defaults."""
+    locale_code = settings.locale or detect_locale(DEFAULT_LOCALE)
+    settings.locale = locale_code
+
+    if settings.language is None:
+        settings.language = _language_from_locale(locale_code)
+
+    if settings.date_format is None:
+        settings.date_format = _safe_date_format(locale_code)
+
+    if settings.time_format is None:
+        settings.time_format = _safe_time_format(locale_code)
+
+    if settings.number_decimal is None:
+        settings.number_decimal = _safe_decimal_symbol(locale_code)
+
+    if settings.number_thousands is None:
+        settings.number_thousands = _safe_group_symbol(locale_code)
+
+
+def _language_from_locale(locale_code: str) -> str:
+    """Return the base language (e.g., en_US -> en)."""
+    base = locale_code.split("_", 1)[0]
+    return base.lower() if base else locale_code
+
+
+def _safe_date_format(locale_code: str) -> str:
+    try:
+        return str(get_date_format("short", locale=locale_code))
+    except (UnknownLocaleError, ValueError):
+        return str(get_date_format("short", locale=DEFAULT_LOCALE))
+
+
+def _safe_time_format(locale_code: str) -> str:
+    try:
+        return str(get_time_format("short", locale=locale_code))
+    except (UnknownLocaleError, ValueError):
+        return str(get_time_format("short", locale=DEFAULT_LOCALE))
+
+
+def _safe_decimal_symbol(locale_code: str) -> str:
+    try:
+        return get_decimal_symbol(locale_code)
+    except (UnknownLocaleError, ValueError):
+        return get_decimal_symbol(DEFAULT_LOCALE)
+
+
+def _safe_group_symbol(locale_code: str) -> str:
+    try:
+        return get_group_symbol(locale_code)
+    except (UnknownLocaleError, ValueError):
+        return get_group_symbol(DEFAULT_LOCALE)
+
 
 class TkKwargs(TypedDict, total=False):
     """The following attributes are available per the Tkinter API (not commonly used).
@@ -202,13 +296,21 @@ class TkKwargs(TypedDict, total=False):
 
 
 class App(BaseWindow, tkinter.Tk):
+    """The primary application window and entry point.
+
+    This class provides a pre-configured tkinter.Tk instance with ttkbootstrap
+    styling, high-DPI awareness, and localization support. It serves as the
+    root window for the application.
+    """
 
     def __init__(
             self,
             title: str | None = None,
             theme: str | None = None,
             icon: tkinter.PhotoImage | None = None,
-            settings: AppSettings | None = None,
+
+            settings: AppSettings | AppSettingsKwargs | None = None,
+            localize: LocalizeMode | None = None,
 
             # window settings
             size: tuple[int, int] | None = None,
@@ -223,8 +325,45 @@ class App(BaseWindow, tkinter.Tk):
             override_redirect: bool = False,
             **kwargs: Unpack[TkKwargs],
     ) -> None:
+        """Initializes the application window.
+
+        Args:
+            title: The text to display in the window's title bar. This
+                overrides the `app_name` in `settings` if provided.
+            theme: The name of the theme to use. This overrides the `theme`
+                in `settings` if provided.
+            icon: An image to use as the window's icon.
+            settings: A dictionary or `AppSettings` object containing
+                application-wide settings. If not provided, default settings
+                are used.
+            localize: The localization mode for the application. Can be
+                'auto', `True`, or `False`. This overrides the `localize_mode`
+                in `settings`.
+            size: A tuple specifying the window's initial width and height.
+            position: A tuple specifying the window's initial x and y
+                coordinates on the screen.
+            minsize: A tuple specifying the window's minimum width and height.
+            maxsize: A tuple specifying the window's maximum width and height.
+            resizable: A tuple of booleans specifying whether the window can
+                be resized horizontally and vertically.
+            scaling: The DPI scaling factor for the window. If `None`,
+                automatic scaling is used.
+            hdpi: If `True`, enables high-DPI awareness for the application.
+            alpha: The window's transparency level, from 0.0 (fully
+                transparent) to 1.0 (fully opaque).
+            transient: The parent window for this window.
+            override_redirect: If `True`, creates a window without standard
+                decorations (title bar, borders, etc.).
+            **kwargs: Additional keyword arguments to pass to the
+                underlying `tkinter.Tk` constructor.
+        """
         # --- Settings ---------------------------------------------------
-        self.settings = settings or AppSettings()
+        if settings is None:
+            self.settings = AppSettings()
+        elif isinstance(settings, AppSettings):
+            self.settings = settings
+        else:
+            self.settings = AppSettings(**settings)
 
         # App-level overrides from ctor
         if theme is not None:
@@ -235,6 +374,9 @@ class App(BaseWindow, tkinter.Tk):
         # If app_name is still None, give it a sensible default
         if self.settings.app_name is None:
             self.settings.app_name = "ttkbootstrap"
+
+        if localize is not None:
+            self.settings.localize_mode = localize
 
         # --- Window options ---------------------------------------------
         self._size = size
@@ -258,7 +400,7 @@ class App(BaseWindow, tkinter.Tk):
 
         # Initialize Tk
         tkinter.Tk.__init__(self, **kwargs)
-        self.withdraw() # hide immediately until ready to show.
+        self.withdraw()  # hide immediately until ready to show.
 
         # Setup window system info
         self.winsys: str = self.tk.call('tk', 'windowingsystem')
@@ -266,6 +408,14 @@ class App(BaseWindow, tkinter.Tk):
         # Apply theme (use resolved settings.theme)
         from ttkbootstrap.style.style import set_theme
         set_theme(self.settings.theme)
+
+        # Initialize the localization bridge so MessageCatalog.translate()
+        # and <<LocaleChanged>> are available throughout the app.
+        MessageCatalog.init(
+            locales_dir=None,
+            domain="ttkbootstrap",
+            default_locale=self.settings.locale or DEFAULT_LOCALE,
+        )
 
         # Apply HDPI scaling after window creation
         if self._hdpi:
@@ -295,163 +445,15 @@ class App(BaseWindow, tkinter.Tk):
         apply_all_bindings(self)
 
     def mainloop(self, n=0):
-        """Start the main Tk event loop"""
+        """Starts the main Tkinter event loop."""
         self.show()
         super().mainloop(n)
 
     def destroy(self) -> None:
-        """Destroy the window and all its children."""
+        """Destroys the window and all its children."""
         clear_current_app(self)
         super().destroy()
 
 
 # Backward compatibility alias
 Window = App
-
-
-class Toplevel(BaseWindow, tkinter.Toplevel):
-    """A class that wraps the tkinter.Toplevel class in order to
-    provide a more convenient api with additional bells and whistles.
-    For more information on how to use the inherited `Toplevel`
-    methods, see the [tcl/tk documentation](https://tcl.tk/man/tcl8.6/TkCmd/toplevel.htm)
-    and the [Python documentation](https://docs.python.org/3/library/tkinter.html#tkinter.Toplevel).
-
-    ![](../../assets/window/window-toplevel.png)
-
-    Examples:
-
-        ```python
-        app = Toplevel(title="My Toplevel")
-        app.mainloop()
-        ```
-    """
-
-    def __init__(
-            self,
-            title: str = "ttkbootstrap",
-            icon: tkinter.PhotoImage | None = None,
-            size: Optional[Tuple[int, int]] = None,
-            position: Optional[Tuple[int, int]] = None,
-            minsize: Optional[Tuple[int, int]] = None,
-            maxsize: Optional[Tuple[int, int]] = None,
-            resizable: Optional[Tuple[bool, bool]] = None,
-            transient: Optional[tkinter.Misc] = None,
-            overrideredirect: bool = False,
-            windowtype: Optional[str] = None,
-            topmost: bool = False,
-            toolwindow: bool = False,
-            alpha: float = 1.0,
-            **kwargs: Any,
-    ) -> None:
-        """
-        Parameters:
-
-            title (str):
-                The title that appears on the application titlebar.
-
-            icon (tkinter.PhotoImage):
-                A PhotoImage used for the titlebar icon.
-                Internally this is passed to the `Toplevel.iconphoto` method.
-                No default icon is used for Toplevel windows.
-
-            size (tuple[int, int]):
-                The width and height of the application window.
-                Internally, this argument is passed to the
-                `Toplevel.geometry` method.
-
-            position (tuple[int, int]):
-                The horizontal and vertical position of the window on
-                the screen relative to the top-left coordinate.
-                Internally this is passed to the `Toplevel.geometry`
-                method.
-
-            minsize (tuple[int, int]):
-                Specifies the minimum permissible dimensions for the
-                window. Internally, this argument is passed to the
-                `Toplevel.minsize` method.
-
-            maxsize (tuple[int, int]):
-                Specifies the maximum permissible dimensions for the
-                window. Internally, this argument is passed to the
-                `Toplevel.maxsize` method.
-
-            resizable (tuple[bool, bool]):
-                Specifies whether the user may interactively resize the
-                toplevel window. Must pass in two arguments that specify
-                this flag for _horizontal_ and _vertical_ dimensions.
-                This can be adjusted after the window is created by using
-                the `Toplevel.resizable` method.
-
-            transient (Union[Tk, Widget]):
-                Instructs the window manager that this widget is
-                transient with regard to the widget master. Internally
-                this is passed to the `Toplevel.transient` method.
-
-            overrideredirect (bool):
-                Instructs the window manager to ignore this widget if
-                True. Internally, this argument is processed as
-                `Toplevel.overrideredirect(1)`.
-
-            windowtype (str):
-                On X11, requests that the window should be interpreted by
-                the window manager as being of the specified type. Internally,
-                this is passed to the `Toplevel.attributes('-type', windowtype)`.
-
-                See the [-type option](https://tcl.tk/man/tcl8.6/TkCmd/wm.htm#M64)
-                for a list of available options.
-
-            topmost (bool):
-                Specifies whether this is a topmost window (displays above all
-                other windows). Internally, this processed by the window as
-                `Toplevel.attributes('-topmost', 1)`.
-
-            toolwindow (bool):
-                On Windows, specifies a toolwindow style. Internally, this is
-                processed as `Toplevel.attributes('-toolwindow', 1)`.
-
-            alpha (float):
-                On Windows, specifies the alpha transparency level of the
-                toplevel. Where not supported, alpha remains at 1.0. Internally,
-                this is processed as `Toplevel.attributes('-alpha', alpha)`.
-
-            **kwargs (Dict):
-                Other optional keyword arguments.
-        """
-        # Extract iconify kwarg if present
-        iconify = kwargs.pop('iconify', None)
-
-        # Initialize Toplevel
-        tkinter.Toplevel.__init__(self, **kwargs)
-
-        # Setup window system info
-        self.winsys: str = self.tk.call('tk', 'windowingsystem')
-
-        # Setup icon (no default for Toplevel)
-        self._setup_icon(icon, default_icon_enabled=False)
-
-        # Setup window using BaseWindow
-        self._setup_window(
-            title=title,
-            size=size,
-            position=position,
-            minsize=minsize,
-            maxsize=maxsize,
-            resizable=resizable,
-            transient=transient,
-            overrideredirect=overrideredirect,
-            alpha=alpha
-        )
-
-        # Handle iconify
-        if iconify:
-            self.iconify()
-
-        # Toplevel-specific window attributes
-        if windowtype is not None and self.winsys == 'x11':
-            self.attributes("-type", windowtype)
-
-        if topmost:
-            self.attributes("-topmost", 1)
-
-        if toolwindow and self.winsys == 'win32':
-            self.attributes("-toolwindow", 1)

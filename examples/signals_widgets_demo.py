@@ -5,8 +5,8 @@ changes with a subscriber.
 """
 
 import ttkbootstrap as ttk
-from ttkbootstrap.signals import Signal
-from ttkbootstrap.signals.integration import enable_widget_integration
+from ttkbootstrap.core.signals import Signal
+from ttkbootstrap.core.signals.integration import enable_widget_integration
 
 
 def main() -> None:

@@ -72,9 +72,10 @@ class MessageDialog:
         self._img = None  # Store icon image to prevent garbage collection
 
         if buttons is None:
+            # Use semantic keys - widgets now have built-in localization
             button_labels = [
-                f"{MessageCatalog.translate('Cancel')}",
-                f"{MessageCatalog.translate('OK')}",
+                "button.cancel",
+                "button.ok",
             ]
         else:
             button_labels = buttons

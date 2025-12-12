@@ -22,7 +22,7 @@ except Exception:  # optional dependency
 from babel.core import Locale, UnknownLocaleError
 from babel.dates import format_date, format_datetime, format_time, get_date_format
 # Babel: formatting only (and parse_decimal for numbers)
-from babel.numbers import (format_currency, format_decimal, format_percent, format_scientific, parse_decimal)
+from babel.numbers import (format_currency, format_decimal, format_percent, format_scientific, parse_decimal, get_territory_currencies)
 # Parsing stack
 from dateutil import parser as duparser
 
@@ -271,7 +271,7 @@ class IntlFormatter:
             return format_percent(x, format=percent_pattern, locale=self.locale)
 
         if opt["type"] == "currency":
-            curr = opt.get("currency") or "USD"
+            curr = opt.get("currency") or self._get_default_currency()
             prec = opt.get("precision")
             if prec is None:
                 # Use locale default currency pattern (includes symbol & spacing)
@@ -363,6 +363,44 @@ class IntlFormatter:
 
     def _locale_decimal_mark_is_comma(self) -> bool:
         return "," in format_decimal(1.1, locale=self.locale)
+
+    def _get_default_currency(self) -> str:
+        """
+        Get the default currency for the current locale based on its territory.
+
+        Returns:
+            Currency code (e.g., 'JPY', 'USD', 'EUR') or 'USD' as fallback.
+        """
+        # Map common language codes to their primary territories when no territory is specified
+        LANG_TO_TERRITORY = {
+            'ja': 'JP',  'en': 'US',  'de': 'DE',  'fr': 'FR',  'es': 'ES',
+            'it': 'IT',  'pt': 'BR',  'zh': 'CN',  'ko': 'KR',  'ru': 'RU',
+            'ar': 'SA',  'nl': 'NL',  'sv': 'SE',  'pl': 'PL',  'tr': 'TR',
+            'da': 'DK',  'fi': 'FI',  'no': 'NO',  'cs': 'CZ',  'hu': 'HU',
+            'ro': 'RO',  'th': 'TH',  'vi': 'VN',  'id': 'ID',  'he': 'IL',
+            'el': 'GR',  'uk': 'UA',  'bg': 'BG',  'hr': 'HR',  'sk': 'SK',
+        }
+
+        try:
+            loc = Locale.parse(self.locale)
+
+            # If no territory specified, infer from language
+            if not loc.territory and loc.language:
+                territory = LANG_TO_TERRITORY.get(loc.language)
+                if territory:
+                    currencies = get_territory_currencies(territory)
+                    if currencies:
+                        return currencies[0]
+
+            # Try with the territory if present
+            if loc.territory:
+                currencies = get_territory_currencies(loc.territory)
+                if currencies:
+                    # Return the first (primary/official) currency
+                    return currencies[0]
+        except (UnknownLocaleError, ValueError):
+            pass
+        return "USD"  # fallback
 
     # ---------- Dates / Times ----------
     def _format_date(self, d: date, spec: LooseSpec) -> str:

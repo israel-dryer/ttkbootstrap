@@ -606,8 +606,8 @@ class FormDialog:
         if buttons is None:
             # Default buttons: Cancel and OK
             return [
-                DialogButton(text="Cancel", role="cancel", result=None),
-                DialogButton(text="OK", role="primary", result="ok", default=True),
+                DialogButton(text="button.cancel", role="cancel", result=None),
+                DialogButton(text="button.ok", role="primary", result="ok", default=True),
             ]
 
         normalized: list[DialogButton] = []

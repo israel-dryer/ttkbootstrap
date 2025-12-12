@@ -63,7 +63,8 @@ from ttkbootstrap.api.widgets import (
     TK_WIDGETS,
     TTK_WIDGETS,
 )
-from ttkbootstrap.runtime.app import Toplevel, App, App as Window
+from ttkbootstrap.runtime.app import App, App as Window
+from ttkbootstrap.runtime.toplevel import Toplevel
 from ttkbootstrap.runtime.menu import MenuManager, create_menu
 
 __all__ = [
@@ -113,6 +114,7 @@ __all__ = [
     "TreeView",
     "Toplevel",
     "App",
+    "Window",
     "MenuManager",
     "get_style",
     "get_style_builder",

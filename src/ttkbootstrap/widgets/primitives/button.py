@@ -5,7 +5,7 @@ from typing import Any, Callable, Literal, Optional, TypedDict, TYPE_CHECKING
 from typing_extensions import Unpack
 
 from ttkbootstrap.widgets._internal.wrapper_base import TTKWrapperBase
-from ..mixins import IconMixin, TextSignalMixin
+from ttkbootstrap.widgets.mixins import IconMixin, TextSignalMixin, LocalizationMixin
 
 if TYPE_CHECKING:
     from ttkbootstrap.core.signals import Signal
@@ -24,6 +24,8 @@ class ButtonKwargs(TypedDict, total=False):
     underline: int
     state: Literal['normal', 'active', 'disabled', 'readonly'] | str
     takefocus: Any
+    localize: bool | Literal['auto']
+    value_format: dict | str
     style: str
     class_: str
     cursor: str
@@ -38,7 +40,7 @@ class ButtonKwargs(TypedDict, total=False):
     style_options: dict[str, Any]
 
 
-class Button(TextSignalMixin, IconMixin, TTKWrapperBase, ttk.Button):
+class Button(LocalizationMixin, TextSignalMixin, IconMixin, TTKWrapperBase, ttk.Button):
     """TTK Bootstrap Button
 
     ttkbootstrap wrapper for `ttk.Button` with bootstyle and icon support.
@@ -59,6 +61,8 @@ class Button(TextSignalMixin, IconMixin, TTKWrapperBase, ttk.Button):
             icon_only: If true, removes the extra padding reserved for the text labels.
             compound: Placement of the image relative to text (e.g., 'left').
             padding: Extra space around the button content.
+            localize: Determines the widgets localization mode. 'auto', True, False.
+            value_format: Format specification for the label value.
             width: Width of the button in characters.
             underline: Index of the character to underline in `text`.
             state: Widget state (e.g., 'normal', 'disabled').
@@ -73,4 +77,3 @@ class Button(TextSignalMixin, IconMixin, TTKWrapperBase, ttk.Button):
         """
         kwargs.update(style_options=self._capture_style_options(['icon_only', 'icon'], kwargs))
         super().__init__(master, **kwargs)
-

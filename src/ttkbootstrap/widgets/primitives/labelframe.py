@@ -1,9 +1,12 @@
 from __future__ import annotations
 
 from tkinter import ttk
-from typing import Any, TypedDict
+from typing import Any, Literal, TypedDict
+
 from typing_extensions import Unpack
+
 from ttkbootstrap.widgets._internal.wrapper_base import TTKWrapperBase
+from ttkbootstrap.widgets.mixins import LocalizationMixin
 
 
 class LabelFrameKwargs(TypedDict, total=False):
@@ -24,9 +27,10 @@ class LabelFrameKwargs(TypedDict, total=False):
     bootstyle: str
     surface_color: str
     style_options: dict[str, Any]
+    localize: bool | Literal['auto']
 
 
-class LabelFrame(TTKWrapperBase, ttk.LabelFrame):
+class LabelFrame(LocalizationMixin, TTKWrapperBase, ttk.LabelFrame):
     """ttkbootstrap wrapper for `ttk.Labelframe` with bootstyle support."""
 
     _ttk_base = ttk.Labelframe
@@ -46,7 +50,6 @@ class LabelFrame(TTKWrapperBase, ttk.LabelFrame):
             bootstyle: ttkbootstrap style tokens.
             surface_color: Optional surface token; otherwise inherited.
             style_options: Optional dict forwarded to the style builder.
+            localize: Determines the widgets localization mode. 'auto', True, False.
         """
         super().__init__(master, **kwargs)
-
-

@@ -29,7 +29,7 @@ from ttkbootstrap_icons_bs import BootstrapIcon  # noqa: E402
 
 if TYPE_CHECKING:
     from ttkbootstrap.api.menu import MenuManager, create_menu
-    from ttkbootstrap.api.app import Toplevel, App, App as Window
+    from ttkbootstrap.api.app import App, App as Window, Toplevel, AppSettings, get_app_settings, get_current_app
     from ttkbootstrap.api.style import (
         Bootstyle,
         Style,
@@ -87,6 +87,7 @@ if TYPE_CHECKING:
         TK_WIDGETS,
         TTK_WIDGETS,
     )
+    from ttkbootstrap.api.localization import MessageCatalog, L, LV,IntlFormatter
     from ttkbootstrap_icons_bs import BootstrapIcon
 
 _DEPRECATED_ALIASES = {
@@ -123,7 +124,7 @@ _TTK_PRIMITIVES = [
 
 _MODULE_EXPORTS = {
     "ttkbootstrap.api.app": [
-        "App", "Toplevel", "Window",
+        "App", "Toplevel", "Window", "AppSettings", "get_app_settings", "get_current_app",
     ],
     "ttkbootstrap.api.style": [
         "BootstrapIcon", "Bootstyle", "Style",
@@ -143,6 +144,9 @@ _MODULE_EXPORTS = {
         "SelectBox", "TableView", "TextEntry", "TimeEntry", "Toast",
         "ToolTip", "TK_WIDGETS", "TTK_WIDGETS",
     ],
+    "ttkbootstrap.api.localization": [
+        "MessageCatalog", "L", "LV", "IntlFormatter"
+    ],
 }
 
 # Auto-generate lazy exports and categorized export lists
@@ -156,7 +160,7 @@ for module, exports in _MODULE_EXPORTS.items():
         if name not in _TTK_EXPORTS:  # Already added TTK primitives
             _TTKBOOTSTRAP_EXPORTS.append(name)
 
-__all__ = [*_TK_EXPORTS, *_TTK_EXPORTS, *_TTKBOOTSTRAP_EXPORTS, *_DEPRECATED_ALIASES, "constants"]
+__all__ = [*_TK_EXPORTS, *_TTK_EXPORTS, *_TTKBOOTSTRAP_EXPORTS, *_DEPRECATED_ALIASES]
 
 import warnings as _warnings
 
