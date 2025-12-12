@@ -282,13 +282,17 @@ class DateEntry(Field):
             initial_date=current_value,
             bootstyle=self._bootstyle,
             hide_window_chrome=True,
-            close_on_click_outside=True,
+            close_on_click_outside=False,  # Disabled to avoid interference with button clicks
         )
 
         self._active_date_dialog = dialog
 
         def _on_result(payload):
-            self.value = payload.data['result']
+            if isinstance(payload, dict):
+                result = payload.get('result')
+                self.value = result
+            else:
+                self.value = payload
 
         dialog.on_result(lambda x: _on_result(x))
         dialog.show(position=position)
@@ -316,9 +320,12 @@ class DateEntry(Field):
     def _picker_position(self):
         """Choose a dialog position beneath the entry mirroring SelectBox spacing."""
         try:
-            self.update_idletasks()
-            x = self.winfo_rootx() + 4
-            y = self.winfo_rooty() + self.winfo_height() + 6
+            # Position relative to the inner field widget, not the whole container
+            # This ensures proper positioning even when message label is visible
+            field_widget = self._field
+            field_widget.update_idletasks()
+            x = field_widget.winfo_rootx() + 4
+            y = field_widget.winfo_rooty() + field_widget.winfo_height() + 2
             return x, y
         except Exception:
             pass
