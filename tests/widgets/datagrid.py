@@ -39,7 +39,7 @@ columns = [
     {"text": "Sex", "key": "Sex"},
     {"text": "Email", "key": "Email"},
     {"text": "Phone", "key": "Phone"},
-    {"text": "BirthDate", "key": "BirthDate"},
+    {"text": "BirthDate", "key": "BirthDate", "dtype": "date"},
     {"text": "JobTitle", "key": "JobTitle"},
 ]
 
