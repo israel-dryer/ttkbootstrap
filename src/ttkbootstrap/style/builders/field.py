@@ -6,6 +6,8 @@ the Entry containers.
 
 from __future__ import annotations
 
+from ttkbootstrap_icons_bs import BootstrapIcon
+
 from ttkbootstrap.style.bootstyle_builder_ttk import BootstyleBuilderTTk
 from ttkbootstrap.style.element import Element, ElementImage
 from ttkbootstrap.style.utility import recolor_image
@@ -63,6 +65,86 @@ def build_field_input_style(b: BootstyleBuilderTTk, ttk_style: str, color: str =
                         Element('Entry.textarea', sticky="nsew")
                     ])
             ]))
+
+    b.configure_style(
+        ttk_style,
+        relief='flat',
+        foreground=foreground,
+        background=surface,
+        fieldbackground=surface,
+        selectborderwidth=0,
+        bordercolor=surface,
+        darkcolor=surface,
+        lightcolor=surface,
+        insertcolor=foreground,
+        padding=(7, 0),
+        selectforeground=b.on_color(b.color('primary')),
+        selectbackground=b.color('primary')
+    )
+
+    b.map_style(
+        ttk_style,
+        background=[('disabled', disabled_bg), ('readonly', disabled_bg)],
+        fieldbackground=[('disabled', disabled_bg)],
+        selectforeground=[],
+        selectbackground=[],
+        bordercolor=[('disabled', disabled_bg)],
+        darkcolor=[('disabled', disabled_bg)],
+        lightcolor=[('disabled', disabled_bg)],
+        foreground=[('disabled !readonly', disabled_fg), ('', foreground)],
+    )
+
+@BootstyleBuilderTTk.register_builder('spinner', 'TField')
+def build_spinner_input_style(b: BootstyleBuilderTTk, ttk_style: str, color: str = None, **options):
+    surface_token = options.get('surface_color', 'background')
+
+    surface = b.color(surface_token)
+    disabled_bg = b.disabled('background')
+    disabled_fg = b.disabled('text')
+    foreground = b.on_color(surface)
+
+    normal_img = recolor_image('field', surface)
+    b.create_style_element_image(ElementImage(f'{ttk_style}.field', normal_img, sticky="nsew", height=b.scale(31)))
+
+    # add chevron image
+    icon_size = b.scale(14)
+    arrow_up_normal_img = BootstrapIcon('caret-up-fill', color=foreground, size=icon_size).image
+    arrow_up_disabled_img = BootstrapIcon('caret-up-fill', color=disabled_fg, size=icon_size).image
+    arrow_down_normal_img = BootstrapIcon('caret-down-fill', color=foreground, size=icon_size).image
+    arrow_down_disabled_img = BootstrapIcon('caret-down-fill', color=disabled_fg, size=icon_size).image
+
+    b.create_style_element_image(
+        ElementImage(f'{ttk_style}.uparrow', arrow_up_normal_img, sticky='nsew', width=b.scale(16)).state_specs(
+            [
+                ('disabled', arrow_up_disabled_img),
+                ('', arrow_up_normal_img),
+            ])
+    )
+
+    b.create_style_element_image(
+        ElementImage(f'{ttk_style}.downarrow', arrow_down_normal_img, sticky='nsew', width=b.scale(16)).state_specs(
+            [
+                ('disabled', arrow_down_disabled_img),
+                ('', arrow_down_normal_img),
+            ])
+    )
+
+
+    b.create_style_layout(
+        ttk_style,
+        Element(f'{ttk_style}.field', sticky="ew", side="top").children(
+            [
+                Element('null', side='right', sticky='').children(
+                    [
+                        Element(f'{ttk_style}.uparrow', side='top', sticky='e'),
+                        Element(f'{ttk_style}.downarrow', side='bottom', sticky='e'),
+                    ]),
+                Element('Spinbox.padding', sticky='nsew').children(
+                    [
+                        Element('Spinbox.textarea', sticky='nsew'),
+                    ])
+            ]),
+    )
 
     b.configure_style(
         ttk_style,

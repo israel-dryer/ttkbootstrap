@@ -52,7 +52,7 @@ def build_spinbox_style(b: BootstyleBuilderTTk, ttk_style: str, color: str = Non
     arrow_down_disabled_img = BootstrapIcon('caret-down-fill', color=disabled_foreground, size=icon_size).image
 
     b.create_style_element_image(
-        ElementImage(f'{ttk_style}.uparrow', arrow_up_normal_img, sticky='nsew').state_specs(
+        ElementImage(f'{ttk_style}.uparrow', arrow_up_normal_img, sticky='nsew', width=b.scale(16)).state_specs(
             [
                 ('disabled', arrow_up_disabled_img),
                 ('', arrow_up_normal_img),
@@ -60,7 +60,7 @@ def build_spinbox_style(b: BootstyleBuilderTTk, ttk_style: str, color: str = Non
     )
 
     b.create_style_element_image(
-        ElementImage(f'{ttk_style}.downarrow', arrow_down_normal_img, sticky='nsew').state_specs(
+        ElementImage(f'{ttk_style}.downarrow', arrow_down_normal_img, sticky='nsew', width=b.scale(16)).state_specs(
             [
                 ('disabled', arrow_down_disabled_img),
                 ('', arrow_down_normal_img),
