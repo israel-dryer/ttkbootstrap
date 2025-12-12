@@ -56,8 +56,8 @@ class SpinnerEntry(Field):
             root,
             label="Quantity",
             value=1,
-            from_=1,
-            to=100,
+            minvalue=1,
+            maxvalue=100,
             increment=1,
             message="Enter quantity"
         )
@@ -78,8 +78,8 @@ class SpinnerEntry(Field):
             root,
             label="Price",
             value=99.99,
-            from_=0,
-            to=1000,
+            minvalue=0,
+            maxvalue=1000,
             increment=10,
             value_format='¤#,##0.00'
         )
@@ -113,8 +113,8 @@ class SpinnerEntry(Field):
             label: str = None,
             message: str = None,
             values: List[str] = None,
-            from_: Union[int, float] = None,
-            to: Union[int, float] = None,
+            minvalue: Union[int, float] = None,
+            maxvalue: Union[int, float] = None,
             increment: Union[int, float] = 1,
             wrap: bool = False,
             **kwargs: Unpack[FieldOptions]
@@ -137,13 +137,13 @@ class SpinnerEntry(Field):
                 validation fails.
             values: List of valid string values for the spinner. If provided,
                 the spinner cycles through these values. Mutually exclusive with
-                from_/to/increment. Example: ['Low', 'Medium', 'High']
-            from_: Minimum numeric value (inclusive). Only used for numeric spinners.
-                If provided along with 'to', creates a numeric range spinner.
-            to: Maximum numeric value (inclusive). Only used for numeric spinners.
-                If provided along with 'from_', creates a numeric range spinner.
+                minvalue/maxvalue/increment. Example: ['Low', 'Medium', 'High']
+            minvalue: Minimum numeric value (inclusive). Only used for numeric spinners.
+                If provided along with 'maxvalue', creates a numeric range spinner.
+            maxvalue: Maximum numeric value (inclusive). Only used for numeric spinners.
+                If provided along with 'minvalue', creates a numeric range spinner.
             increment: Step size for increment/decrement in numeric mode.
-                Default is 1. Only applies when using from_/to.
+                Default is 1. Only applies when using minvalue/maxvalue.
             wrap: If True, values wrap around at boundaries (cycle back to start
                 after reaching end). If False, stops at min/max boundaries.
                 Default is False.
@@ -169,7 +169,7 @@ class SpinnerEntry(Field):
                 xscrollcommand: Callback for horizontal scrolling
 
         Note:
-            Use either 'values' (for text mode) OR 'from_/to' (for numeric mode),
+            Use either 'values' (for text mode) OR 'minvalue/maxvalue' (for numeric mode),
             not both. If both are provided, 'values' takes precedence.
 
         Example:
@@ -184,18 +184,19 @@ class SpinnerEntry(Field):
             # Numeric mode
             spinner2 = SpinnerEntry(
                 root,
-                from_=0,
-                to=100,
+                minvalue=0,
+                maxvalue=100,
                 increment=5,
                 value=50
             )
             ```
         """
         # Build kwargs for Field initialization
+        # Map minvalue/maxvalue to from_/to for the underlying Spinbox
         field_kwargs = {
             'values': values,
-            'from_': from_,
-            'to': to,
+            'from_': minvalue,
+            'to': maxvalue,
             'increment': increment,
             'wrap': wrap,
         }
@@ -212,8 +213,8 @@ class SpinnerEntry(Field):
 
         # Store configuration
         self._values = values
-        self._from = from_
-        self._to = to
+        self._minvalue = minvalue
+        self._maxvalue = maxvalue
         self._increment = increment
         self._wrap = wrap
 
@@ -242,40 +243,40 @@ class SpinnerEntry(Field):
             pass
         return None
 
-    @configure_delegate('from_')
-    def _delegate_from(self, value: Union[int, float] = None):
+    @configure_delegate('minvalue')
+    def _delegate_minvalue(self, value: Union[int, float] = None):
         """Get or set the minimum value (numeric mode).
 
         Can be accessed via:
-            widget.configure(from_=0)
-            widget['from_'] = 0
-            widget.cget('from_')
+            widget.configure(minvalue=0)
+            widget['minvalue'] = 0
+            widget.cget('minvalue')
         """
         if value is None:
-            return self._from
+            return self._minvalue
 
-        self._from = value
-        # Update the underlying spinbox
+        self._minvalue = value
+        # Update the underlying spinbox (uses from_)
         try:
             self.entry_widget.configure(from_=value)
         except Exception:
             pass
         return None
 
-    @configure_delegate('to')
-    def _delegate_to(self, value: Union[int, float] = None):
+    @configure_delegate('maxvalue')
+    def _delegate_maxvalue(self, value: Union[int, float] = None):
         """Get or set the maximum value (numeric mode).
 
         Can be accessed via:
-            widget.configure(to=100)
-            widget['to'] = 100
-            widget.cget('to')
+            widget.configure(maxvalue=100)
+            widget['maxvalue'] = 100
+            widget.cget('maxvalue')
         """
         if value is None:
-            return self._to
+            return self._maxvalue
 
-        self._to = value
-        # Update the underlying spinbox
+        self._maxvalue = value
+        # Update the underlying spinbox (uses to)
         try:
             self.entry_widget.configure(to=value)
         except Exception:
