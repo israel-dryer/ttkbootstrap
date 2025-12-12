@@ -122,11 +122,24 @@ class _ChromeDialog(Dialog):
             widget = getattr(event, "widget", None)
             if widget is None:
                 return
-            if str(widget).startswith(str(self._toplevel)):
-                return
+
+            # Walk up the widget hierarchy to check if any parent is the toplevel
+            current = widget
+            toplevel_str = str(self._toplevel)
+            while current:
+                current_str = str(current)
+                if current_str == toplevel_str or current_str.startswith(toplevel_str + "."):
+                    return
+                try:
+                    current = current.master
+                except AttributeError:
+                    break
+
+            # Schedule destroy for after current event processing completes
+            # This allows button commands inside the dialog to execute first
             try:
                 if self._toplevel.winfo_exists():
-                    self._toplevel.destroy()
+                    self._toplevel.after_idle(lambda: self._destroy_if_exists())
             except Exception:
                 pass
 
@@ -135,6 +148,14 @@ class _ChromeDialog(Dialog):
             self._toplevel.bind("<Destroy>", lambda e: self._unbind_outside_click(), add="+")
         except Exception:
             self._outside_click_binding = None
+
+    def _destroy_if_exists(self) -> None:
+        """Destroy the toplevel if it still exists."""
+        try:
+            if self._toplevel and self._toplevel.winfo_exists():
+                self._toplevel.destroy()
+        except Exception:
+            pass
 
     def _unbind_outside_click(self) -> None:
         if self._toplevel and self._outside_click_binding:
@@ -246,7 +267,8 @@ class DateDialog:
         """Handle <<DateSelected>> from the embedded DatePicker."""
         if not self._picker:
             return
-        if getattr(self._picker, "_last_trigger_reason", None) != "select":
+        trigger_reason = getattr(self._picker, "_last_trigger_reason", None)
+        if trigger_reason != "select":
             return
 
         payload = getattr(event, "data", None)
