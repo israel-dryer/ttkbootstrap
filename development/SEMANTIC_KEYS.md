@@ -176,6 +176,22 @@ _("day.sa")             # Sa
 _("day.su")             # Su
 ```
 
+### Months
+```python
+_("month.january")      # January
+_("month.february")     # February
+_("month.march")        # March
+_("month.april")        # April
+_("month.may")          # May
+_("month.june")         # June
+_("month.july")         # July
+_("month.august")       # August
+_("month.september")    # September
+_("month.october")      # October
+_("month.november")     # November
+_("month.december")     # December
+```
+
 ### Dialogs
 ```python
 _("dialog.error")       # Error

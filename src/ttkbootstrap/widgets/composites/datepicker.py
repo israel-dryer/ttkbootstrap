@@ -8,6 +8,7 @@ from types import SimpleNamespace
 from tkinter import StringVar
 from typing import Any, Callable, Iterable, Literal, Optional
 
+from babel import dates
 from ttkbootstrap.widgets.primitives import Button, CheckButton, Frame, Label, Separator
 from ttkbootstrap.constants import BOTH, CENTER, LEFT, NSEW, PRIMARY, X, Y, YES
 from ttkbootstrap.core.localization import MessageCatalog
@@ -21,6 +22,50 @@ ttk = SimpleNamespace(
     Separator=Separator,
     StringVar=StringVar,
 )
+
+_WEEKDAY_TOKENS = (
+    "day.mo",
+    "day.tu",
+    "day.we",
+    "day.th",
+    "day.fr",
+    "day.sa",
+    "day.su",
+)
+
+_MONTH_TOKENS = (
+    None,
+    "month.january",
+    "month.february",
+    "month.march",
+    "month.april",
+    "month.may",
+    "month.june",
+    "month.july",
+    "month.august",
+    "month.september",
+    "month.october",
+    "month.november",
+    "month.december",
+)
+
+
+def _localized_month_name(month_index: int) -> str:
+    if 1 <= month_index < len(_MONTH_TOKENS):
+        token = _MONTH_TOKENS[month_index]
+        if token:
+            return MessageCatalog.translate(token)
+    return calendar.month_name[month_index] if 1 <= month_index <= 12 else ""
+
+
+def _format_month_year(month_date: date) -> str:
+    """Format month/year in the current locale via Babel, falling back to English."""
+    locale_code = MessageCatalog.locale().replace("_", "-")
+    try:
+        return dates.format_skeleton("yMMMM", month_date, locale=locale_code)
+    except Exception:
+        month_name = _localized_month_name(month_date.month)
+        return f"{month_name} {month_date.year}"
 
 
 class DatePicker(ttk.Frame):
@@ -99,6 +144,7 @@ class DatePicker(ttk.Frame):
         self._month_views: list[dict[str, Any]] = []
 
         self._build_ui()
+        self.bind("<<LocaleChanged>>", lambda *_: self._refresh_calendar(), add="+")
 
     # --- public API --------------------------------------------------
     @configure_delegate("date")
@@ -330,7 +376,7 @@ class DatePicker(ttk.Frame):
             if title_var is None:
                 title_var = ttk.StringVar()
                 view["title_var"] = title_var
-            title_var.set(f"{MessageCatalog.translate(month_date.strftime('%B'))} {month_date.year}")
+            title_var.set(_format_month_year(month_date))
 
             # Show/hide nav buttons depending on column
             prev_year = view.get("prev_year_btn")
@@ -599,16 +645,8 @@ class DatePicker(ttk.Frame):
                 pass
 
     def _header_columns(self) -> list[str]:
-        weekdays = [
-            MessageCatalog.translate("Mo"),
-            MessageCatalog.translate("Tu"),
-            MessageCatalog.translate("We"),
-            MessageCatalog.translate("Th"),
-            MessageCatalog.translate("Fr"),
-            MessageCatalog.translate("Sa"),
-            MessageCatalog.translate("Su"),
-        ]
-        return weekdays[self._first_weekday:] + weekdays[: self._first_weekday]
+        localized_weekdays = [MessageCatalog.translate(token) for token in _WEEKDAY_TOKENS]
+        return localized_weekdays[self._first_weekday:] + localized_weekdays[: self._first_weekday]
 
     def _is_disabled(self, d: date) -> bool:
         if d in self._disabled_dates:
@@ -649,9 +687,7 @@ class DatePicker(ttk.Frame):
         return True
 
     def _set_title(self) -> None:
-        month_name = MessageCatalog.translate(self._display_date.strftime("%B"))
-        year_str = f"{self._display_date.year}"
-        self._title_var.set(f"{month_name} {year_str}".capitalize())
+        self._title_var.set(_format_month_year(self._display_date))
 
     @staticmethod
     def _add_months(d: date, n: int) -> date:
@@ -681,4 +717,3 @@ class DatePicker(ttk.Frame):
 
 
 __all__ = ["DatePicker"]
-
