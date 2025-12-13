@@ -69,6 +69,6 @@ For linear progress or determinate tracking without a gauge, fall back to `Progr
 
 ## Related widgets
 
-- `Progressbar` (linear progress)
-- `Label` (value/subtitle text)
-- `Toast` (completion feedback)
+- **Progressbar**
+- **FloodGauge**
+
