@@ -71,6 +71,6 @@ app.mainloop()
 
 ## When to use DropdownButton
 
-Choose DropdownButton when you want a single control that reveals a menu of related actions and don’t need the full context menu infrastructure elsewhere. For simple click + menu combos, it beats wiring `Button + ContextMenu` manually.
+- **Button**
+- **MenuButton**
 
-For menu bars or custom popovers, consider `MenuButton` or `ContextMenu` directly.
