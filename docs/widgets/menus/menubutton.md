@@ -1,6 +1,6 @@
 ---
 title: MenuButton
-icon: fontawesome/solid/caret-down
+icon: fontawesome/solid/chevron-down
 ---
 
 # MenuButton
