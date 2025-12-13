@@ -1,4 +1,5 @@
 site_name: ttkbootstrap 2
+repo_url: https://github.com/israel-dryer/ttkbootstrap
 
 theme:
   icon:
