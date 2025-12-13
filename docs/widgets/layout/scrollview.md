@@ -1,6 +1,6 @@
 ---
 title: ScrollView
-icon: fontawesome/solid/border-top-left
+icon: fontawesome/solid/arrows-up-down
 ---
 
 
@@ -77,6 +77,6 @@ For simple one-off scrolling use `ScrolledText`; for tabular data prefer `TableV
 
 ## Related widgets
 
-- `Frame` (wrap content before adding)
-- `ScrollBar` (custom standalone scrollbars)
-- `Label`/`Entry` (common scroll targets)
+- **Scrollbar**
+- **ScrolledText**
+
