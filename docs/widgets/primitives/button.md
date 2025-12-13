@@ -1,6 +1,6 @@
 ---
 title: Button
-icon: fontawesome/solid/square-check
+icon: fontawesome/solid/square
 ---
 
 # Button
@@ -30,7 +30,7 @@ ttkbootstrap buttons are designed to:
 ## Quick Example
 
 ```python
-from ttkbootstrap import ttk
+import ttkbootstrap as ttk
 
 app = ttk.App(theme="solar")
 
