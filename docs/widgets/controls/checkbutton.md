@@ -232,30 +232,6 @@ ttk.CheckButton(app, text="settings.notifications", localize="auto").pack()
 
 ---
 
-## Surface-aware styling
-
-If you use inherited surfaces (elevated panels), you can pin the checkbutton to a specific surface token.
-
-```python
-import ttkbootstrap as ttk
-
-app = ttk.App()
-
-panel = ttk.Frame(app, padding=20, bootstyle="background")
-panel.pack(fill="both", expand=True)
-
-ttk.CheckButton(
-    panel,
-    text="Option",
-    bootstyle="primary",
-    surface_color="background[+1]",
-).pack(anchor="w")
-
-app.mainloop()
-```
-
----
-
 ## When should I use CheckButton?
 
 Use `CheckButton` when:
