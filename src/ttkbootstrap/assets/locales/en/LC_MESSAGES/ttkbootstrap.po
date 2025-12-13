@@ -95,7 +95,7 @@ msgid "font.selector"
 msgstr "Font Selector"
 
 msgid "font.preview_text"
-msgstr "Preview Text"
+msgstr "The quick brown fox jumps over the lazy dog."
 
 msgid "font.weight.normal"
 msgstr "Normal"
