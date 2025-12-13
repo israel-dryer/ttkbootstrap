@@ -1,6 +1,6 @@
 ---
 title: DateEntry
-icon: fontawesome/solid/calendar-day
+icon: fontawesome/solid/calendar-days
 ---
 
 
@@ -62,6 +62,24 @@ iso_date.pack(fill="x", padx=16, pady=8)
 app.mainloop()
 ```
 
+> _Image placeholder:_  
+> Screenshot of `DateEntry` showing label + input + helper text (and error state if applicable).
+
+---
+
+## Field anatomy
+
+- **Label**: describes the value.
+- **Input**: the editable control.
+- **Message area**: helper text (hint) or validation feedback.
+
+Most `*Entry` controls support the same high-level ideas:
+
+- `label=` — label text
+- `message=` — helper text shown under the field
+- `required=` — mark as required (and validate)
+- validation rules / error messages
+
 ---
 
 ## Formatting, presets, & parsing
@@ -108,8 +126,9 @@ If you need a broader date/time field (including time), combine it with `TimeEnt
 
 ## Related widgets
 
-- `TimeEntry`
-- `TextEntry`
-- `Form`
-- `SpinnerEntry`
-
+- **TextEntry**
+- **NumericEntry**
+- **PasswordEntry**
+- **TimeEntry**
+- **PathEntry**
+- **Form**
