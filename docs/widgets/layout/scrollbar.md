@@ -1,6 +1,6 @@
 ---
 title: Scrollbar
-icon: fontawesome/solid/arrows-up-down
+icon: fontawesome/solid/grip-lines-vertical
 ---
 
 
@@ -62,6 +62,6 @@ app.mainloop()
 
 ## Related widgets
 
-- `ScrollView` / `ScrolledText` (themed containers that already include scrollbars)
-- `Frame` (layout container around custom scrollbars)
-- `Text`, `TreeView`, `Canvas` (common targets for scrollbar commands)
+- **ScrollView**
+- **ScrolledText**
+
