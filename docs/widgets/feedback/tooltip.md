@@ -1,6 +1,6 @@
 ---
 title: ToolTip
-icon: fontawesome/solid/info-circle
+icon: fontawesome/solid/message
 ---
 
 
