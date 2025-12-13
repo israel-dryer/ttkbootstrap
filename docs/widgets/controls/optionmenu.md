@@ -1,6 +1,6 @@
 ---
 title: OptionMenu
-icon: fontawesome/solid/list-ol
+icon: fontawesome/solid/caret-down
 ---
 
 # OptionMenu
@@ -145,9 +145,8 @@ The dropdown chevron can be hidden or customized:
 OptionMenu(show_dropdown_button=False)
 ```
 
-```python
-OptionMenu(dropdown_button_icon="caret-down-fill")
-```
+> _Image placeholder:_  
+> OptionMenu opened showing a short list of options.
 
 ---
 
