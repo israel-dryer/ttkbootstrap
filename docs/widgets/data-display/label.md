@@ -1,6 +1,6 @@
 ---
 title: Label
-icon: fontawesome/solid/align-left
+icon: fontawesome/solid/tag
 ---
 
 
@@ -79,7 +79,6 @@ If you need editable text, swap to `TextEntry`; for button-like actions, conside
 
 ## Related widgets
 
-- `Button` (when users click on text)
-- `LabelFrame` (for framed sections)
-- `Form` (labels paired with fields)
-- `TextEntry` (for editable labels)
+- **TextEntry** (field labels + messages)
+- **Tooltip** (contextual help)
+
