@@ -1,6 +1,6 @@
 ---
 title: PasswordEntry
-icon: fontawesome/solid/key
+icon: fontawesome/solid/lock
 ---
 
 
