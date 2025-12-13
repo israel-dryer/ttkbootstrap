@@ -32,7 +32,7 @@ The widget produces the same consistent experience whether you are asking for qu
 ```python
 import ttkbootstrap as ttk
 
-app = ttk.App(title="Numeric Entry Demo", themename="cosmo")
+app = ttk.App(title="Numeric Entry Demo", theme="cosmo")
 
 age = ttk.NumericEntry(
     app,
@@ -126,3 +126,4 @@ If you only need a bare `ttk.Entry`, use `Entry`; if you want the same features 
 - `DateEntry`
 - `TimeEntry`
 - `Form`
+

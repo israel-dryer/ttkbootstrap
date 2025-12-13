@@ -35,7 +35,7 @@ The control keeps user input constrained to valid choices while remaining compac
 ```python
 import ttkbootstrap as ttk
 
-app = ttk.App(title="Spinner Entry Demo", themename="cosmo")
+app = ttk.App(title="Spinner Entry Demo", theme="cosmo")
 
 size_spinner = ttk.SpinnerEntry(
     app,
@@ -136,3 +136,4 @@ If you only need basic numeric typing with optional steppers, consider `NumericE
 - `TextEntry`
 - `Entry`
 - `Form`
+

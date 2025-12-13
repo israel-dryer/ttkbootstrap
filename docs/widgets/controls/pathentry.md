@@ -31,7 +31,7 @@ The control is ideal for upload/download interfaces, configuration screens, and 
 ```python
 import ttkbootstrap as ttk
 
-app = ttk.App(title="Path Entry Demo", themename="cosmo")
+app = ttk.App(title="Path Entry Demo", theme="cosmo")
 
 file_entry = ttk.PathEntry(
     app,
@@ -98,3 +98,4 @@ For manual text input without dialogs, prefer `TextEntry`. When you need both da
 - `TextEntry`
 - `Field`
 - `Form`
+

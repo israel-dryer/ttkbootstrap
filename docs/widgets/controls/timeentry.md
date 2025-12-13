@@ -34,7 +34,7 @@ The widget is ideal for scheduling UIs, appointment dialogs, and other areas whe
 import ttkbootstrap as ttk
 from datetime import time
 
-app = ttk.App(title="Time Entry Demo", themename="cosmo")
+app = ttk.App(title="Time Entry Demo", theme="cosmo")
 
 start_time = ttk.TimeEntry(
     app,
@@ -116,3 +116,4 @@ For pure text validation, `TextEntry` works; for full datetime capture, combine 
 - `TextEntry`
 - `SelectBox`
 - `Form`
+

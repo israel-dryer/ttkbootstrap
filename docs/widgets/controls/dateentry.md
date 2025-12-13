@@ -32,7 +32,7 @@ The control was built for forms where dates must be displayed consistently and v
 import ttkbootstrap as ttk
 from datetime import date
 
-app = ttk.App(title="Date Entry Demo", themename="cosmo")
+app = ttk.App(title="Date Entry Demo", theme="cosmo")
 
 birth_date = ttk.DateEntry(
     app,
@@ -112,3 +112,4 @@ If you need a broader date/time field (including time), combine it with `TimeEnt
 - `TextEntry`
 - `Form`
 - `SpinnerEntry`
+

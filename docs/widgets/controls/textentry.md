@@ -108,3 +108,4 @@ Use `Entry` when you need a minimal, raw ttk widget.
 - DateEntry
 - TimeEntry
 - Form
+

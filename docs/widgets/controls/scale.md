@@ -31,7 +31,7 @@ Key features of `Scale`:
 import ttkbootstrap as ttk
 from ttkbootstrap.core.signals import Signal
 
-app = ttk.App(title="Scale Demo", themename="cosmo")
+app = ttk.App(title="Scale Demo", theme="cosmo")
 
 value_signal = Signal(50)
 
@@ -91,3 +91,4 @@ For discrete choices, consider `SpinnerEntry` or `SelectBox`; for simple numeric
 - `NumericEntry`
 - `SelectBox`
 - `Form`
+

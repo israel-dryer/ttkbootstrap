@@ -31,7 +31,7 @@ The widget is built for forms where security and usability must coexist.
 ```python
 import ttkbootstrap as ttk
 
-app = ttk.App(title="Password Entry Demo", themename="cosmo")
+app = ttk.App(title="Password Entry Demo", theme="cosmo")
 
 password = ttk.PasswordEntry(
     app,
@@ -91,3 +91,4 @@ If you only need plain text input, use `TextEntry`. For general-purpose `Entry` 
 - `TextEntry`
 - `Entry`
 - `Form`
+
