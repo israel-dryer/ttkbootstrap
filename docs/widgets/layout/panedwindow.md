@@ -1,6 +1,6 @@
 ---
 title: PanedWindow
-icon: fontawesome/solid/grip-lines
+icon: fontawesome/solid/columns
 ---
 
 
