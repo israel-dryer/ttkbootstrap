@@ -3,91 +3,192 @@ title: Scale
 icon: fontawesome/solid/sliders
 ---
 
-
 # Scale
 
-`Scale` is a **themed ttk.Scale wrapper** that adds ttkbootstrap bootstyle tokens, surface colors, and signal wiring to the familiar slider control.
+`Scale` lets users choose a numeric value by dragging a thumb along a track.
 
-Use it when you need a thumb slider for numeric input, volume controls, brightness tweaks, or any continuous range selection with consistent, theme-aware styling.
+In ttkbootstrap, `Scale` is still the familiar ttk widget, but it’s designed to *fit the rest of the v2 ecosystem*:
 
----
+- Works with a Tk variable (`variable=...`) **and/or** a reactive signal (`signal=...`)
+- Uses **Bootstyle tokens** via `bootstyle="primary"`, `bootstyle="success"`, etc.
+- Respects surface colors (`surface_color=...`) so it blends into elevated / inherited backgrounds
 
-## Overview
-
-Key features of `Scale`:
-
-- Exposes all `ttk.Scale` options (`from_`, `to`, `orient`, `length`, `command`, etc.) with themed defaults.
-- Supports `bootstyle`, `surface_color`, and `style_options` to tune appearance without touching raw styles.
-- Mixes in `SignalMixin`, so you can supply a reactive `Signal` object instead of a `variable`.
-- Works with `ttkbootstrap` variables or plain `tk` variables and keeps the `command` callback for imperative hooks.
-
-`Scale` is minimal but flexible, allowing horizontal or vertical tracks, optional notation, and automatic theming.
+> **Screenshot placeholder:**  
+> `![Scale examples](../_img/widgets/scale/overview.png)`  
+> (Show horizontal + vertical scales, plus a labeled value readout.)
 
 ---
 
-## Quick example
+## Basic usage
 
 ```python
 import ttkbootstrap as ttk
-from ttkbootstrap import Signal
 
-app = ttk.App(title="Scale Demo", theme="cosmo")
+app = ttk.App()
 
-value_signal = Signal(50)
+value = ttk.DoubleVar(value=50)
 
 scale = ttk.Scale(
     app,
-    bootstyle="primary",
     from_=0,
     to=100,
-    orient="horizontal",
-    length=300,
-    signal=value_signal,
+    variable=value,
+    bootstyle="primary",
 )
-scale.pack(padx=24, pady=24)
-
-label = ttk.Label(app, textvariable=value_signal)
-label.pack(pady=(0, 16))
+scale.pack(fill="x", padx=20, pady=20)
 
 app.mainloop()
 ```
 
 ---
 
-## Appearance & customization
+## Common options
 
-- `bootstyle` defines semantic colors (`primary`, `danger`, etc.) and works without manual style creation.
-- `surface_color` overrides the surface token for the track background when you need a darker/light look.
-- `style_options` accepts a dict that is forwarded to the style builder (e.g., `{"gripcolor": "secondary"}`).
-- The underlying Tcl widget honors `orient="vertical"` plus `length` to draw tall sliders.
-- Provide `command` to react imperatively, or use `signal`/`variable` for reactive bindings.
+### Range and initial value
+- `from_`: start of the range (float)
+- `to`: end of the range (float)
+- `variable`: a `DoubleVar` or `IntVar` to store the value
+- `value`: (when supported in your wrapper) an initial value you want reflected in the widget
 
-You can also configure `takefocus`, `cursor`, `state`, and other native ttk options as you would with a `ttk.Scale`.
+```python
+value = ttk.DoubleVar(value=0)
+
+ttk.Scale(app, from_=-1, to=1, variable=value).pack(fill="x")
+```
+
+### Orientation
+
+```python
+ttk.Scale(app, from_=0, to=10, orient="horizontal").pack(fill="x")
+ttk.Scale(app, from_=0, to=10, orient="vertical").pack(fill="y")
+```
+
+> **Screenshot placeholder:**  
+> `![Vertical scale](../_img/widgets/scale/vertical.png)`
+
+### Length
+
+`length` controls the pixel length of the control (especially useful for vertical scales).
+
+```python
+ttk.Scale(app, from_=0, to=100, orient="vertical", length=240).pack(padx=20, pady=20)
+```
+
+### Command callback
+
+`command=` is called as the thumb moves. Ttk passes the value as a **string**, so convert it if you need a number.
+
+```python
+def on_change(raw: str) -> None:
+    v = float(raw)
+    print("value:", v)
+
+ttk.Scale(app, from_=0, to=1, command=on_change).pack(fill="x", padx=20, pady=10)
+```
+
+If you already use `variable=...`, a common pattern is to read from the variable inside the callback.
 
 ---
 
-## Events, signals & variables
+## Styling with Bootstyle
 
-- `command` fires with the new float value whenever the thumb moves.
-- Supply a `Signal` from `ttkbootstrap.core.signals` to keep the slider synced with other widgets; the `SignalMixin` auto-updates the bound variable.
-- Alternatively, pass a `variable` (Tk `DoubleVar`/`IntVar`) for two-way binding.
-- `Scale` emits the standard `<<VariableChanged>>` signal when tied to a `Signal` or Tk variable, making it easy to hook other widgets.
+A `Scale` accepts `bootstyle` like other widgets.
 
-For accessibility, `Scale` honors keyboard controls (arrow keys, PageUp/PageDown) inherited from `ttk.Scale`.
+```python
+ttk.Scale(app, from_=0, to=100, bootstyle="primary").pack(fill="x", pady=6)
+ttk.Scale(app, from_=0, to=100, bootstyle="success").pack(fill="x", pady=6)
+ttk.Scale(app, from_=0, to=100, bootstyle="danger").pack(fill="x", pady=6)
+```
+
+> **Screenshot placeholder:**  
+> `![Scale bootstyles](../_img/widgets/scale/bootstyles.png)`  
+> (Show the same scale in several colors.)
+
+### Surface-aware backgrounds
+
+If your UI uses elevated surfaces (frames with inherited surface tokens), you can pin the scale to a surface token:
+
+```python
+ttk.Scale(
+    app,
+    from_=0,
+    to=100,
+    bootstyle="primary",
+    surface_color="background[+1]",
+).pack(fill="x", padx=20, pady=20)
+```
 
 ---
 
-## When to use Scale
+## Showing the value next to the Scale
 
-Choose `Scale` for continuous numeric controls: volume, threshold, progress tuning, or any range input that benefits from a slider. It keeps the interface aligned with ttkbootstrap theming while offering both imperative callbacks and reactive signals.
+A common desktop pattern is “slider + live value readout”.
 
-For discrete choices, consider `SpinnerEntry` or `SelectBox`; for simple numeric typing, use `NumericEntry`.
+```python
+import ttkbootstrap as ttk
+
+app = ttk.App()
+
+value = ttk.DoubleVar(value=25)
+
+row = ttk.Frame(app, padding=20)
+row.pack(fill="x")
+
+scale = ttk.Scale(row, from_=0, to=100, variable=value, bootstyle="primary")
+scale.pack(side="left", fill="x", expand=True)
+
+label = ttk.Label(row, textvariable=value, width=6, anchor="e")
+label.pack(side="left", padx=(10, 0))
+
+app.mainloop()
+```
+
+
+!!! tip "Formatting percent, currency, etc..." 
+    Render the label yourself in a callback instead of using `textvariable` directly.
+
+---
+
+## Signals
+
+If you use the v2 reactive layer, `Scale` can be bound to a `signal=` so changes flow through your app state.
+
+```python
+import ttkbootstrap as ttk
+
+app = ttk.App()
+
+# Example only — use your real signal creation API
+volume = ttk.Signal(50)  # pseudo-code
+
+ttk.Scale(app, from_=0, to=100, signal=volume, bootstyle="info").pack(fill="x", padx=20, pady=20)
+
+volume.subscribe(lambda v: print("volume changed:", v))
+
+app.mainloop()
+```
+
+!!! note "Keep `variable=` and `signal=` consistent." 
+    In most apps you pick one source of truth (signals for reactive apps, variables for simple forms).
+
+---
+
+## When should I use Scale?
+
+Use `Scale` when:
+
+- the value is naturally continuous (volume, brightness, thresholds)
+- users benefit from *relative* adjustment instead of typing exact numbers
+
+Prefer a numeric input (like `NumericEntry` / `SpinnerEntry`) when:
+
+- users must enter precise values
+- you need formatting, units, or validation messages
 
 ---
 
 ## Related widgets
 
-- `SpinnerEntry`
-- `NumericEntry`
-- `SelectBox`
-- `Form`
+- **SpinnerEntry** — precise numeric adjustment with step controls
+- **NumericEntry** — formatted numeric input with validation
+- **LabeledScale** — scale with a built-in label/value presentation (if you prefer the composite widget)
