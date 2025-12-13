@@ -40,6 +40,7 @@ if TYPE_CHECKING:
         set_theme,
         toggle_theme,
         get_theme_color,
+        get_themes,
     )
     from ttkbootstrap.api.widgets import (
         Button,
@@ -130,7 +131,7 @@ _MODULE_EXPORTS = {
         "BootstrapIcon", "Bootstyle", "Style",
         "get_style", "get_style_builder", "get_theme",
         "get_theme_provider", "set_theme", "get_theme_color",
-        "toggle_theme"
+        "toggle_theme", "get_themes"
     ],
     "ttkbootstrap.api.menu": [
         "MenuManager", "create_menu",
