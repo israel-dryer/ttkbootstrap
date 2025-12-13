@@ -28,11 +28,10 @@ Use `Label` for titles, value displays, or status text where simple formatting a
 
 ```python
 import ttkbootstrap as ttk
-from ttkbootstrap import Signal
 
 app = ttk.App(title="Label Demo", theme="cosmo")
 
-status = Signal("Ready")
+status = ttk.Signal("Ready")
 
 ttk.Label(
     app,
@@ -53,7 +52,7 @@ app.mainloop()
 
 - `bootstyle` describes intent (`secondary`, `info`, `muted`, etc.) and controls text/icon colors automatically.
 - `surface_color` overrides the label background surface when you need contrast against a split layout.
-- Use `style_options` to pass builder-specific tokens such as `{"padding": (8, 4)}` for fine-grained tweaks. For icon-only badges, simply set `icon_only=True` when you construct the widget (no additional `style_options` needed).
+- For icon-only badges, simply set `icon_only=True` when you construct the widget.
 - `font`, `foreground`, `justify`, and `anchor` come straight from `ttk.Label` and behave as expected.
 
 Combine labels with `LabelFrame`, `Frame`, or layout managers to build consistent form rows, headers, or status bars.
@@ -62,7 +61,7 @@ Combine labels with `LabelFrame`, `Frame`, or layout managers to build consisten
 
 ## Icons, localization & signals
 
-- `icon` supports any icon spec understood by the theme (Font Awesome, emoji, etc.) and pairs with text via `compound`.
+- `icon` supports any icon spec understood by the theme and pairs with text via `compound`.
 - `icon_only=True` removes extra text padding so icon-only badges stay compact.
 - Set `localize=True` or `localize="auto"` to have the label participate in your localization engine.
 - `textsignal` (or `textvariable`) keeps the label content reactive to external state, especially when paired with `Signal` objects.
