@@ -1,26 +1,162 @@
 ---
+title: Project Templates
 icon: fontawesome/solid/layer-group
 ---
 
 # Project Templates
 
-ttkbootstrap 2 ships with opinionated starter projects so you can jump into a packaged layout, theming setup, and feature surface without reinventing the wheel. Each template follows the new layout guidance, keeps Bootstyle tokens consistent, and demonstrates the runtime helpers discussed in Getting Started.
+ttkbootstrap v2 includes a set of **starter project templates** designed to help you begin building applications with a
+solid structure from day one.
 
-![Template preview](https://placehold.co/800x800/FFFFFF/333333.webp?text=Template%20Preview&font=lato)
+Each template demonstrates:
 
-## Template catalog
+- recommended application structure,
+- container-driven layout,
+- consistent use of bootstyle tokens,
+- theme-aware behavior,
+- and common real-world patterns.
 
-- **Minimal App**: A single-window starter that initializes `ttk.App`, applies a theme, and documents the recommended folder structure. Ideal for experimentation.
-- **Navigation App**: Demonstrates `PageStack`-based navigation, contextual menus, and how to wire a toolbar/dashboard that remains responsive across palette changes.
-- **Themed App**: Ships with multiple palette JSON files, a custom `ThemeProvider`, and a theme switcher widget so you can sample how `Style.colors` keeps colors in sync.
-- **Form & Data App**: Shows `Form` widgets, `FormDialog`, `TableView`, and the signal-aware entries (TextEntry, PasswordEntry, SpinnerEntry, SelectBox) that keep model data live.
-- **Localized App**: Bundles `MessageCatalog`, `LocalizedSpec`, and sample `.mo` assets so you can display translated labels, dates, and currency values right away.
+Templates are not meant to lock you in—they are meant to give you a **strong starting point** without reinventing the
+basics.
 
-## Getting started with a template
+---
 
-1. Clone the template directory or generate it through the CLI when the official scaffolding lands.
-2. Install dependencies via `python -m pip install -r requirements.txt` and configure any `.env` values (theme name, locale, API endpoints).
-3. Run the template to confirm the layout, then gradually swap in your business logic while preserving the shared Bootstyle strings and typography tokens.
-4. Update the theme assets or localization catalogs as needed and rerun `ttk.set_theme()` or `ttk.toggle_theme()` to test the runtime transitions.
+## Why Use a Template?
 
-Each template includes documentation and example widgets to guide you toward production-ready code while keeping the design system front and center.
+Starting from a template helps you:
+
+- avoid early architectural mistakes,
+- see how design concepts translate into real code,
+- understand how widgets, layout, and theming work together,
+- move faster from idea to working application.
+
+You can treat templates as:
+
+- a learning tool,
+- a reference implementation,
+- or the foundation of a production project.
+
+---
+
+## Template Catalog
+
+### Minimal App
+
+A single-window starter focused on fundamentals.
+
+Demonstrates:
+
+- initializing the application shell,
+- applying a theme,
+- basic container layout,
+- a recommended folder structure.
+
+Ideal for experimentation, prototypes, or small utilities.
+
+---
+
+### Navigation App
+
+A multi-view application showcasing structured navigation.
+
+Demonstrates:
+
+- `PageStack`-based navigation,
+- contextual menus,
+- toolbars and dashboards,
+- navigation that adapts cleanly to theme changes.
+
+Useful for applications with multiple screens or workflows.
+
+---
+
+### Themed App
+
+A template focused on appearance and customization.
+
+Demonstrates:
+
+- multiple theme definitions,
+- centralized palette management,
+- runtime theme switching,
+- consistent use of semantic color and typography tokens.
+
+Useful for applications that require strong branding or user-selectable themes.
+
+---
+
+### Form & Data App
+
+A template centered on data entry and presentation.
+
+Demonstrates:
+
+- form composition,
+- dialog-based data entry,
+- validation-friendly inputs,
+- live data display using tables and indicators.
+
+Useful for tools that manage structured data or workflows.
+
+---
+
+### Localized App
+
+A template designed for internationalized applications.
+
+Demonstrates:
+
+- message catalogs,
+- translated labels and messages,
+- locale-aware formatting,
+- runtime language switching.
+
+Useful for applications intended for global or multilingual users.
+
+---
+
+## Getting Started with a Template
+
+A typical workflow looks like this:
+
+1. Copy or generate a template as your starting point.
+2. Install dependencies and run the application to verify setup.
+3. Replace example views and logic with your own functionality.
+4. Keep the layout structure, design tokens, and patterns intact.
+5. Customize themes, localization assets, and widgets as needed.
+
+Templates are intentionally well-documented to help you understand *why* things are structured the way they are.
+
+---
+
+## When to Move Beyond Templates
+
+As your application grows, you may:
+
+- reorganize modules,
+- extract shared components,
+- introduce additional views or dialogs.
+
+The patterns shown in the templates are meant to scale and adapt—not restrict you.
+
+---
+
+## Where to Go Next
+
+After exploring templates, you can:
+
+- build your own **First Application** from scratch,
+- dive deeper into **Guides** for specific patterns,
+- explore the **Widget Catalog** to expand functionality,
+- customize appearance using the **Design System**.
+
+Templates help you start strong, but the framework is flexible enough to grow with you.
+
+---
+
+## Summary
+
+Project templates provide practical, well-structured starting points that reflect how ttkbootstrap is designed to be
+used.
+
+By beginning with a template, you gain clarity, consistency, and momentum—without sacrificing control.

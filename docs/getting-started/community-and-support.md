@@ -4,30 +4,84 @@ icon: fontawesome/solid/comments
 
 # Community & Support
 
-ttkbootstrap 2 thrives because of its contributors, users, and helpful discussions. This page lists the places you can ask questions, report issues, and contribute patches or documentation improvements.
+This page describes where you can ask questions, report issues, and contribute improvements to ttkbootstrap.
 
-![Community](https://placehold.co/800x800/FFFFFF/333333.webp?text=Community&font=lato)
+Whether you are just getting started or actively building applications, these channels are the best way to get help,
+stay informed, and participate in the project.
 
-## Discussion channels
+---
 
-- **GitHub Discussions** hosts usage questions, layout tips, and prototype reviews with a community that stays close to the release train.
-- **Discord/Matrix** (when available) surfaces real-time pairing sessions, quick triage, and conversation around upcoming features.
-- **Stack Overflow** keeps the most common troubleshooting answers visible; tag posts with `ttkbootstrap` so other users can find them.
+## Discussion Channels
 
-## Reporting issues
+For most users, **GitHub Discussions** is the best place to start.
 
-1. Search the existing issues before filing a new one so duplicates do not slow the maintainers down.
-2. Share a minimal reproduction (code snippet, theme, Python version, traceback) so the bug can be validated quickly.
-3. Tag the report with the right label (`bug`, `enhancement`, `documentation`, etc.) and mention `Python 3.10+` if it is part of the context.
+- **GitHub Discussions**  
+  Use Discussions for questions, design feedback, usage help, and general conversation. This is the primary community
+  forum for ttkbootstrap.
 
-## Contribution workflow
+- **Chat (Discord / Matrix)**  
+  Real-time chat may be available in the future for informal discussion and coordination. When available, links will be
+  provided from the project repository.
 
-- Fork the repository, work in a feature branch, and keep commits focused (docs, widgets, tests, tooling updates).
-- Run the available checks (`python -m pytest` when configured, or the `ttkbootstrap dev` CLI once it ships) before opening a pull request.
-- Improve docs, examples, or templates when you spot outdated guidance; every page in Getting Started benefits from new clarity.
+- **Stack Overflow**  
+  Stack Overflow can be useful for searchable, long-term Q&A. When posting, include the `ttkbootstrap` tag where
+  appropriate.
 
-## Support tiers
+---
 
-- **Self-serve**: Read the Getting Started section, the Guides, and explore the Showcase until you feel confident.
-- **Community support**: Lean on Discussions, chats, and the repo issue tracker when you need extra context or pair-programming help.
-- **Professional services**: Reach out to the maintainers if you need paid consulting, onboarding, or workshops for your team.
+## Reporting Issues
+
+If you believe you have found a bug or regression, please open an issue on GitHub.
+
+Before filing a new issue:
+
+1. Search existing issues to avoid duplicates.
+2. Reduce the problem to a minimal reproducible example.
+3. Include relevant environment details (OS, Python version, ttkbootstrap version).
+
+Clear, focused reports help issues get resolved more quickly.
+
+---
+
+## Contributing
+
+Contributions of all kinds are welcome.
+
+You can contribute by:
+
+- fixing bugs,
+- improving documentation,
+- adding examples or templates,
+- refining APIs,
+- or helping review issues and pull requests.
+
+If you are new to contributing, documentation and example improvements are a great place to start.
+
+---
+
+## Professional Support
+
+For organizations or individuals who require dedicated assistance—such as consulting, feature development, or long-term
+maintenance—professional support may be available.
+
+If you are interested, please reach out via the project’s GitHub repository to discuss options.
+
+---
+
+## Where Should I Go?
+
+If you are unsure where to start:
+
+- **How do I use something?** → GitHub Discussions
+- **I found a bug** → GitHub Issues
+- **I want to improve the docs or code** → Pull Requests
+- **I need dedicated support** → Contact via GitHub
+
+---
+
+## Summary
+
+ttkbootstrap is developed and supported as an open-source project.
+
+By using the appropriate channels and contributing when possible, you help improve the framework for everyone. Community
+participation—whether through questions, bug reports, or code—plays a vital role in the project’s growth.

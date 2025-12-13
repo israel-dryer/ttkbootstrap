@@ -1,37 +1,146 @@
 ---
+title: Why ttkbootstrap v2?
 icon: fontawesome/solid/star
 ---
 
-# Why ttkbootstrap 2?
+# Why ttkbootstrap v2?
 
-ttkbootstrap 2 is the library overhaul you asked for: redesigned theming, a richer widget catalog, a modern signal surface, and stronger localization while keeping the Tk/Ttk core stable.
+ttkbootstrap v2 is a **deliberate evolution**, not a rewrite.
 
-## Theming & typography tokens
+It builds on the stability of Tkinter and Ttk while modernizing how applications are **styled, structured, localized,
+and composed**. The goal is to make ttkbootstrap feel like a *framework*—not just a theming layer—without abandoning the
+strengths of the underlying toolkit.
 
-- **Semantic palettes**: `Style.colors` and the `ThemeProvider.use_theme()` helpers keep the live map of tokens in sync with every registered palette. Use `ttk.set_theme()` to pick a palette and `ttk.toggle_theme()` to alternate between light and dark without rebuilding widgets.
-- **Typography system**: Named font tokens (`body`, `body-lg`, `heading-md`, `display-xl`, etc.) plus FontMixin modifiers such as `body[bold][underline]` let you update fonts in the constructor without creating new Tk `Font` objects. `Typography.update_font_token()` and `Typography.set_global_family()` adjust the tokens globally, while FontMixin modifiers tweak the current font inline.
+This page explains *why v2 exists* and what problems it is designed to solve.
 
-## Widgets & controls
+---
 
-- **New entries**: TextEntry, PasswordEntry, PathEntry, TimeEntry, and the signal-aware SpinnerEntry give you specialty inputs that honor Bootstyle tokens.
-- **Data display & feedback**: The upgraded TableView, FloodGauge, Meter, and ScrollView work with live data, while SelectBox, DropDownButton, and ContextMenu provide modern drop-down and contextual affordances.
-- **Navigation & layout**: PageStack, Notebook helpers, and ScrollView provide structured navigation surfaces that pair with Bootstyle-styled controls.
-- **Form helpers**: The Form widget and FormDialog simplify complex data entry flows, pooling validation, signals, and layout in one place.
-- **Integrated icons**: The built-in `ttkbootstrap-icons` provider powers every `icon` parameter, exposes Bootstrap Icons glyphs (browse via `ttkbootstrap-icons` or `https://icons.getbootstrap.com`), and hooks into the icon mixin/stateful icon specs so hover/pressed/selected imagery stays aligned with Bootstyle colors.
+## What Stayed the Same
 
-## Reactive signals & events
+ttkbootstrap v2 intentionally preserves the foundation you already trust:
 
-- Widgets that support `textvariable` or `variable` now expose subscribable and mappable signals, so you can attach listeners, chain transformations, and push computed values without extra plumbing.
-- The virtual event system accepts payloads now: `widget.event_generate("<<VirtualEvent>>", data={"key": value})` carries contextual data to subscribers.
-- Most widgets provide `on_*` and `off_*` helpers (for example, `Notebook.on_tab_changed(...)`) to keep callbacks expressive while working with the signal surface.
+- Tkinter and Ttk remain the underlying UI toolkit
+- Native geometry management (`pack` and `grid`) is unchanged
+- Widgets are still standard Ttk widgets
+- Applications remain lightweight and portable
 
-## Dialogs & navigation
+If you already know Tkinter, your existing knowledge still applies.
 
-- Dialog, MessageDialog, QueryDialog, and the generalized Dialog API give you shared theming and layout hooks.
-- ContextMenu, FormDialog, and the updated Form widget pair with buttons, drop-downs, and PageStack navigation so you can craft multi-step flows without rebuilding scaffolding.
+---
 
-## Tooling, localization & runtime
+## What Changed — and Why It Matters
 
-- Reactive signals, Bootstyle tokens, and the new typography system combine with the CLI templates, runtime helpers, and localized message catalogs.
-- MessageCatalog, LocalizedSpec, and the LocalizationMixin keep translations, numeric/date formatting, and the `<<LocaleChanged>>` event in sync with your UI.
-- The enhanced CLI templates, learning resources, and docs mirror the upgraded library surface so you can apply these features right away.
+### A Real Design System
+
+Previous versions focused primarily on theming.  
+v2 introduces a **cohesive design system** built around intent rather than configuration.
+
+You now work with:
+
+- semantic color tokens instead of raw colors,
+- typography roles instead of font tuples,
+- variants and states instead of ad-hoc styling,
+- themes as centralized appearance definitions.
+
+This makes interfaces more consistent, adaptable, and easier to reason about.
+
+---
+
+### A Richer Widget Catalog
+
+v2 expands beyond basic controls to cover real application needs:
+
+- purpose-built input widgets (dates, times, paths, passwords),
+- modern data display components,
+- feedback widgets like toasts and tooltips,
+- structured navigation surfaces.
+
+These widgets are designed to work *with* the design system, not around it.
+
+---
+
+### Forms and Dialogs as First-Class Patterns
+
+Data entry and user flows are common pain points in desktop applications.
+
+v2 introduces:
+
+- form helpers that unify layout, validation, and signals,
+- dialog primitives that share theming and structure,
+- reusable patterns for multi-step and modal interactions.
+
+This reduces boilerplate and improves consistency across applications.
+
+---
+
+### Reactive Signals & Events
+
+v2 modernizes how widgets communicate:
+
+- widget variables expose reactive signals,
+- signals can be transformed and observed,
+- virtual events can carry structured payloads,
+- common widgets provide expressive `on_*` helpers.
+
+This enables reactive patterns without introducing a new programming model.
+
+---
+
+### Localization Built In
+
+Localization is no longer an afterthought.
+
+v2 treats localization as a system concern:
+
+- translated messages,
+- locale-aware number and date formatting,
+- runtime language changes,
+- consistent propagation across the UI.
+
+Applications can scale globally without embedding localization logic everywhere.
+
+---
+
+### Tooling That Matches the Framework
+
+The surrounding ecosystem has been updated to match the new architecture:
+
+- CLI tools and project templates
+- structured documentation and guides
+- clearer migration paths from v1
+
+The goal is to reduce setup friction and shorten the path from idea to application.
+
+---
+
+## Who v2 Is For
+
+ttkbootstrap v2 is designed for developers who want:
+
+- modern UI patterns without abandoning Tkinter,
+- consistency without excessive abstraction,
+- flexibility without fragile customization,
+- a framework that scales from small tools to real applications.
+
+If you’ve ever felt that Tkinter was powerful but *underdocumented at the design level*, v2 is built for you.
+
+---
+
+## Where to Go Next
+
+To see v2 in action:
+
+- build your **First Application**,
+- explore the **Design System** to understand how layout and styling work,
+- browse **Widgets** to see what components are available.
+
+Understanding *why* v2 exists will make everything else easier to use.
+
+---
+
+## Summary
+
+ttkbootstrap v2 modernizes **how** desktop applications are built—not by replacing Tkinter, but by organizing it.
+
+By focusing on design intent, consistency, and system-level patterns, v2 makes Tkinter applications easier to build,
+maintain, and evolve—without sacrificing stability.

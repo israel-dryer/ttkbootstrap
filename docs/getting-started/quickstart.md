@@ -1,59 +1,132 @@
 ---
+title: Quickstart (5-Minute App)
 icon: fontawesome/solid/rocket
 ---
 
 # Quickstart (5-Minute App)
 
-Get a themed Tk window on screen and configure a couple of controls without leaving this page. The following steps walk through the prerequisites, install, and runtime helpers you need for a runnable ttkbootstrap 2 app.
+This quickstart gets a themed ttkbootstrap window on screen in just a few minutes.
 
-![Quickstart hero](https://placehold.co/800x800/FFFFFF/333333.webp?text=Quickstart&font=lato)
+You will:
 
-## 1. Verify prerequisites
+- install the package,
+- create a minimal application,
+- run it,
+- and learn how to change themes at runtime.
 
-- Python 3.10 or newer with Tk support (Tk 8.6 ships with most installers).
-- python --version and python -m pip --version confirm the interpreter matches the requirement.
-- Upgrade pip before installing to keep wheels current: python -m pip install --upgrade pip.
+The goal is to give you a **working mental model**, not to introduce every feature.
 
-## 2. Install the package
+---
 
-`ash
+## 1. Verify Prerequisites
+
+Make sure your environment meets these requirements:
+
+- **Python 3.10 or newer**, with Tk support  
+  (Tk 8.6 ships with most official Python installers)
+
+- Verify your interpreter:
+  ```bash
+  python --version
+  python -m pip --version
+  ```
+
+- Upgrade pip to ensure the latest wheels are used:
+  ```bash
+  python -m pip install --upgrade pip
+  ```
+
+---
+
+## 2. Install ttkbootstrap
+
+Install the package using pip:
+
+```bash
 python -m pip install ttkbootstrap
-`
+```
 
-Use pipx install ttkbootstrap to isolate the CLI helpers, or pin the version (	tkbootstrap==2.0.0) if you need to freeze dependencies.
+Optional:
 
-## 3. Create the minimal app
+- Use a virtual environment for isolation
+- Pin a specific version if needed:
+  ```bash
+  python -m pip install ttkbootstrap==2.0.0
+  ```
 
-Save this to main.py:
+---
 
-`python
-from ttkbootstrap import ttk
+## 3. Create a Minimal Application
+
+Create a file named `main.py` with the following contents:
+
+```python
+import ttkbootstrap as ttk
 
 app = ttk.App(theme="solar")
 
 frame = ttk.Frame(app.window, padding=20)
 frame.pack(fill="both", expand=True)
 
-ttk.Label(frame, text="Welcome to ttkbootstrap 2").pack(pady=(0, 10))
-ttk.Button(frame, bootstyle="success", text="Launch").pack()
+ttk.Label(frame, text="Welcome to ttkbootstrap v2").pack(pady=(0, 10))
+ttk.Button(frame, text="Launch", bootstyle="success").pack()
 
 app.mainloop()
-`
+```
 
-## 4. Run it
+This example demonstrates:
 
-`
+- the application shell,
+- a container-driven layout,
+- semantic styling via bootstyle tokens,
+- and theme-aware widgets.
+
+---
+
+## 4. Run the Application
+
+Run the script from your terminal:
+
+```bash
 python main.py
-`
+```
 
-## 5. Tweak themes at runtime
+You should see a themed window appear immediately.
 
-- 	tk.set_theme("cosmo") applies a specific registered theme without restarting the app.
-- 	tk.toggle_theme() switches between light and dark palettes on demand.
-- Explore Style.list_themes() if you need to populate a selector of available palettes.
+---
 
-## 6. Next steps
+## 5. Change Themes at Runtime
 
-- Build on this frame by experimenting with inputs, data display widgets, and Bootstyle tokens.
-- Read the Installation and First Application pages for runtime helpers and layout guidance.
-- Visit the Design system section to align your widgets with shared colors, typography, and stateful variants.
+Themes can be changed without restarting the application.
+
+Common helpers include:
+
+- Apply a specific theme:
+  ```python
+  ttk.set_theme("cosmo")
+  ```
+
+- Toggle between light and dark variants:
+  ```python
+  ttk.toggle_theme()
+  ```
+
+- List available themes:
+  ```python
+  ttk.get_themes()
+  ```
+
+All widgets update automatically when the theme changes.
+
+---
+
+## 6. Next Steps
+
+Once you have this running, you can:
+
+- explore additional **Widgets** such as inputs, dialogs, and data views,
+- read **First Application** to understand layout and structure more deeply,
+- review **Installation** for advanced setup and extras,
+- explore the **Design System** to understand color, typography, layout, and interaction patterns.
+
+This quickstart is intentionally simple—everything else builds on this foundation.
