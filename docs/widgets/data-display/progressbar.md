@@ -1,6 +1,6 @@
 ---
 title: Progressbar
-icon: fontawesome/solid/ellipsis-h
+icon: fontawesome/solid/bars-progress
 ---
 
 
