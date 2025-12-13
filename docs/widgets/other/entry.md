@@ -51,6 +51,6 @@ app.mainloop()
 
 ## Related widgets
 
-- `TextEntry` / `PasswordEntry` (Field-based composites with labels/validation)
-- `Form` (layout around Entry controls)
-- `ToolTip` (inline guidance for the entry)
+- **TextEntry**
+- **Form**
+
