@@ -95,7 +95,7 @@ msgid "font.selector"
 msgstr "フォント選択"
 
 msgid "font.preview_text"
-msgstr "プレビューテキスト"
+msgstr "素早い茶色の狐がのんびり犬の上を飛び越える。"
 
 msgid "font.weight.normal"
 msgstr "標準"
