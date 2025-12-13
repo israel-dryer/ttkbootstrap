@@ -144,7 +144,7 @@ This is especially useful when you want **display formatting** without interferi
 
 ## Events
 
-`TextEntry` emits structured virtual events:
+`TextEntry` emits structured virtual events with related `on_*` and `off_*` convenience bindings:
 
 - `<<Input>>` — every keystroke
 - `<<Changed>>` — committed value changed
@@ -153,10 +153,12 @@ This is especially useful when you want **display formatting** without interferi
 Example:
 
 ```python
-def on_changed(event):
+def on_event(event):
     print("new value:", event.data["value"])
 
-name.bind("<<Changed>>", on_changed)
+name.on_input(on_event)
+name.on_changed(on_event)
+name.on_valid(on_event)
 ```
 
 ---
