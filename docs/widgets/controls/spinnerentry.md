@@ -1,6 +1,6 @@
 ---
 title: SpinnerEntry
-icon: fontawesome/solid/arrows-spin
+icon: fontawesome/solid/sort
 ---
 
 
