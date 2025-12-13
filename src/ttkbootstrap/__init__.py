@@ -148,6 +148,9 @@ _MODULE_EXPORTS = {
     "ttkbootstrap.api.localization": [
         "MessageCatalog", "L", "LV", "IntlFormatter"
     ],
+    "ttkbootstrap.core.signals": [
+        "Signal",
+    ],
 }
 
 # Auto-generate lazy exports and categorized export lists
