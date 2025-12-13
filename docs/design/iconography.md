@@ -4,45 +4,192 @@ icon: fontawesome/solid/icons
 
 # Iconography
 
-ttkbootstrap 2 uses the `ttkbootstrap-icons` provider, which exposes the Bootstrap Icons library as the built-in source for every internal widget icon and the default provider when you pass the `icon` parameter to buttons, labels, toolbuttons, menus, SelectBox dropdowns, and other controls. Look up names on the Bootstrap Icons site (`https://icons.getbootstrap.com`) or run the built-in browser (`ttkbootstrap-icons`) to explore every glyph, then plug the names directly into widgets such as `ttk.Button(..., icon='arrow-right-square')`. Treat icons as supporting elements (affordances, status indicators, navigation cues) so keep them aligned with the current color tokens and typography sizes (icons should match the surrounding `body` or `label` text).
+Icons in ttkbootstrap are treated as **semantic UI elements**, not decorative images.
 
-### Guidelines
-- Reserve icons for meaning (actions, states, callouts) and avoid crowding text blocks.
-- Combine icons with `bootstyle` tokens so their fills follow theme colors like `success`, `info`, or `danger`.
-- Prefer semantic icon names (`rocket`, `palette`, `table`) that reinforce the copy and are easy to search.
+They are used to:
 
-If you need custom glyphs, render them as `ttk.Label` children and pair them with the typography tokens for consistent sizing.
+- reinforce meaning,
+- improve scanability,
+- communicate state,
+- and support common desktop interaction patterns.
 
-## Icon specs and state helpers
+This page explains the **design intent and architectural role** of iconography in ttkbootstrap so new users understand
+how icons are meant to be used before applying them in code.
 
-The `icon` option accepts either a string (the name of the glyph) or a dictionary that describes `name`, `size`, and `color`. For example:
+Practical usage examples and APIs are covered in the Guides and Reference sections.
 
-```python
-ttk.Button(..., icon={"name": "arrow-up-square", "size": 25, "color": "red"})
-```
+---
 
-The dictionary form plugs directly into the icon mixin and builder helpers, which normalize sizes, keep Bootstyle tokens intact, and rebuild the style when the icon changes.
+## Design Goals
 
-You can also configure per-state overrides inside the spec using the `state` key (a list of `(state, override)` tuples). Each override can supply a new `name` or `color` (or both) for the requested state, so you can animate hover, pressed, or selected icons without writing extra bindings:
+The iconography system is guided by a small set of principles:
 
-```python
-ttk.Button(
-    ...,
-    icon={
-        "name": "play-fill",
-        "state": [
-            ("hover", {"name": "play-circle"}),
-            ("pressed", {"color": "#f0ad4e"}),
-        ],
-    },
-)
-```
+- **Semantic clarity**  
+  Icons should convey meaning consistently, not style arbitrarily.
 
-The builders translate these overrides into image state maps so the icon updates automatically when Tk reports the selected, pressed, or hovered states.  
-Use this surface to keep Bootstyle colors, typography, and iconography harmonized across every widget.
+- **Consistency**  
+  The same icon should represent the same concept everywhere.
 
-## Browsing icons
+- **State awareness**  
+  Icons should clearly reflect interaction and application state.
 
-`ttkbootstrap-icons` ships with a built-in browser that lists every glyph, previews colors, and shows the exact name you pass to the `icon` parameter. Run the `ttkbootstrap-icons` CLI command to open the browser locally and copy names into widget constructors, or use the screenshot below for a quick reference when you cannot run the CLI.
+- **Theme integration**  
+  Icons should adapt naturally to light/dark themes and color schemes.
 
-![Icon browser](https://github.com/israel-dryer/ttkbootstrap-icons/raw/main/packages/ttkbootstrap-icons/browser.png)
+- **Scalability**  
+  Icons must scale cleanly across DPI settings and screen densities.
+
+To support these goals, ttkbootstrap treats icons as **first-class UI resources** rather than static images.
+
+---
+
+## Semantic Usage
+
+Icons are most effective when they **reinforce an existing concept**, rather than introducing new meaning.
+
+Common semantic roles include:
+
+- actions (save, delete, search),
+- navigation (back, forward, expand),
+- status (success, warning, error),
+- affordances (dropdown, close, more options).
+
+Icons should complement text, not replace it, unless the meaning is universally understood.
+
+> **Design rule:**  
+> If an icon requires a tooltip to explain its meaning, it may not be appropriate on its own.
+
+---
+
+## Icon Sets
+
+ttkbootstrap does not mandate a single icon set.
+
+Instead, it supports working with **icon providers**, allowing applications to choose icon families that match their
+brand and platform expectations.
+
+Common characteristics of a good icon set:
+
+- complete coverage of common UI actions,
+- consistent stroke weight and visual style,
+- availability at multiple sizes,
+- compatibility with recoloring.
+
+Icon sets should be chosen **once per application** and used consistently.
+
+---
+
+## Size & Alignment
+
+Icons are typically displayed at discrete, intentional sizes.
+
+Rather than arbitrary scaling, icons should:
+
+- align visually with surrounding text,
+- match control height and density,
+- preserve pixel alignment where possible.
+
+Consistent sizing helps maintain visual rhythm and prevents icons from drawing unintended attention.
+
+---
+
+## Color & State
+
+Icons participate fully in the application’s color system.
+
+They may reflect:
+
+- default state,
+- hover and active states,
+- disabled state,
+- semantic intent (e.g., danger, success).
+
+Icon color should always derive from **semantic color tokens**, not hardcoded values.
+
+This ensures icons remain legible and appropriate across themes.
+
+---
+
+## Interactive Icons
+
+In desktop applications, icons are often interactive.
+
+Common patterns include:
+
+- icon buttons,
+- disclosure indicators,
+- contextual menus,
+- status toggles.
+
+Interactive icons should:
+
+- provide clear affordance,
+- respond visually to interaction,
+- respect accessibility and focus behavior.
+
+Icons should never be the *only* indicator of critical state or action.
+
+---
+
+## Platform Considerations
+
+Desktop platforms differ in icon conventions:
+
+- icon metaphors,
+- default sizes,
+- visual density,
+- contrast expectations.
+
+The iconography system is designed to:
+
+- respect platform norms,
+- allow platform-specific icon choices when necessary,
+- maintain consistent meaning across environments.
+
+A visually native feel is often more important than strict visual uniformity.
+
+---
+
+## ttkbootstrap’s Role
+
+In v2, ttkbootstrap does not invent new icon standards.
+
+Instead, it:
+
+- provides infrastructure for managing icons as reusable resources,
+- integrates icons with theming and state,
+- encourages semantic and consistent usage,
+- avoids hardcoding icon imagery into widget logic.
+
+Icon selection and visual style remain application-level decisions.
+
+---
+
+## What This Section Does Not Cover
+
+This page does not include:
+
+- icon loading APIs,
+- provider-specific configuration,
+- widget-level icon examples,
+- asset packaging instructions.
+
+Those topics are covered in:
+
+- **Guides → Icon Usage**
+- **Reference → Icon Providers**
+- **Widgets → Icon Support**
+
+---
+
+## Summary
+
+The ttkbootstrap iconography system emphasizes **meaning, consistency, and adaptability**.
+
+By treating icons as semantic UI elements rather than decoration:
+
+- interfaces become easier to scan,
+- interaction states are clearer,
+- and visual language remains cohesive.
+
+Understanding this model will help you use icons effectively across your application.

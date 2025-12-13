@@ -4,35 +4,211 @@ icon: fontawesome/solid/droplet
 
 # Color System
 
-The color system lets you express semantic intent while styling widgets. Every widget accepts a `bootstyle` string that encodes a color token, an optional variant, and an optional widget suffix. Builders combine those inputs with the widget's defaults so `bootstyle="success-outline"` yields a green outline button and `bootstyle="info"` respects the informative accent.
+The ttkbootstrap color system is designed to help you style desktop interfaces using **semantic intent**, not raw
+colors.
 
-## Bootstyle anatomy
+Instead of assigning hex values or referencing low-level TTK style names, you describe *what a color means* in the
+interface—such as “primary action”, “warning state”, or “background surface”—and ttkbootstrap resolves the actual colors
+based on the active theme.
 
-- **Color token** (for example `primary`, `success`, `danger`) describes the intent behind the hue.
-- **Variant** (such as `outline`, `ghost`, `link`, `solid`) defines the treatment around the color.
-- **Widget suffix** (defaults to the widget class) scopes the variant to a specific control when you need cross-widget overrides.
+This approach allows applications to remain:
 
-The Bootstyle token system assumes the widget unless a suffix is provided, and the variant defaults to `default` when omitted.
+- visually consistent,
+- theme-aware,
+- adaptable to light and dark modes,
+- and resilient to future design changes.
 
-## Anchoring to the theme
+This page explains **how the color system is structured and how it is meant to be used conceptually**. Practical
+examples and recipes are covered in the Guides section.
 
-Use the shared palette, not isolated hex values: `ThemeProvider` instances and `ttk.set_theme()`/`ttk.toggle_theme()` keep every registered `Style` in sync via the live `Style.colors` map. Pick colors from the published token list so every component remains harmonized, and extend the palette with hashed styles only when extra options (border, icon, icon separator, rounded corners) require a unique style.
+---
 
-When you need to anchor a style to the current theme or inspect which tokens are available, read `Style.colors` directly or rely on Bootstyle strings that reuse semantic names, avoiding inventing your own palette choices. The builder only emits hashed style names such as `bs[2fb014e9].success.Outline.TButton` when it combines color, variant, widget, and extra options.
+## Design Goals
+
+The color system is built around a few core goals:
+
+- **Semantic clarity**  
+  Colors communicate meaning, not just appearance.
+
+- **Theme independence**  
+  Applications should not depend on specific color values.
+
+- **Consistency across widgets**  
+  The same intent should look consistent everywhere.
+
+- **Adaptability**  
+  Colors should respond automatically to theme changes, contrast modes, and platform differences.
+
+To support these goals, ttkbootstrap organizes colors into **tokens**, **variants**, and **modifiers**.
+
+---
+
+## Color Tokens
+
+A **color token** represents a semantic role in the interface.
+
+Examples include:
+
+- `primary`
+- `secondary`
+- `success`
+- `warning`
+- `danger`
+- `info`
+- `background`
+- `foreground`
+
+Tokens do not describe how a color looks.  
+They describe **what the color represents**.
+
+For example:
+
+- `primary` represents the main action or emphasis color.
+- `background` represents surfaces behind content.
+- `danger` represents destructive or error-related actions.
+
+Each theme defines how these tokens are rendered visually.
+
+---
+
+## Variants
+
+Variants describe **how a color is applied** to a widget.
+
+Common variants include:
+
+- `solid`
+- `outline`
+- `link`
+- `ghost`
+
+Variants affect:
+
+- fill vs border usage,
+- emphasis level,
+- interaction affordances.
+
+For example, a `primary-outline` button communicates the same intent as `primary`, but with reduced visual weight.
+
+Variants allow consistent styling choices without redefining color meaning.
+
+---
+
+## Bootstyle Strings
+
+Colors are typically applied using **bootstyle strings**, which combine intent and variant into a single declarative
+value.
+
+A bootstyle string is composed of:
+
+```
+<color token>-<variant>
+```
+
+Examples:
+
+- `primary`
+- `secondary-outline`
+- `danger-link`
+- `success-ghost`
+
+Bootstyle strings allow widgets to be styled consistently without referencing raw TTK style names or color values.
+
+---
 
 ## Modifiers
 
-Modifiers inside brackets adjust the selected token before the builder applies the variant:
+Modifiers refine a color’s appearance while preserving its semantic meaning.
 
-- `[shade]` selects a specific shade (for example, `primary[100]`).
-- `[elevation]` shifts the color lighter or darker relative to the base (for example, `background[+1]`).
-- `[subtle]` blends the color with the surface tone for softer backgrounds.
-- `[muted]` derives a respectful foreground with enough contrast for text on busy surfaces.
+Examples include:
 
-Chain modifiers like `primary[100][muted]` or `background[+2][subtle]` to fine-tune emphasis while staying aligned with the semantic token.
+- subtle emphasis
+- elevated or recessed surfaces
+- hover or active state adjustments
 
-## Hashed style names
+Modifiers are intended to make **small visual adjustments**, not to redefine the meaning of a color.
 
-When you include a widget suffix or tweak borders, icons, or padding through the builder, the style registry hashes those extras into a deterministic name (`bs[2fb014e9].success.Outline.TButton`). Treat hashed names as implementation details; configure the widget API, and let Bootstyle handle the actual TTK style name. Only introduce `bs[...]` styles when the combination cannot be represented by the semantic color, variant, and widget names alone.
+> **Design rule:**  
+> If a color requires extensive modification to “look right,” the underlying token choice is likely incorrect.
 
-Use this page to track the tokens available in each theme and rely on Bootstyle strings or `Style.colors` to reuse palette choices. Custom hashed styles should be rare and reserved for tweaks that would otherwise prevent sharing colors across widgets.
+Modifiers should be used sparingly and consistently to maintain a coherent visual language.
+
+---
+
+## Theme Resolution
+
+Each theme defines a complete color palette for all supported tokens.
+
+When a theme is active:
+
+- tokens are resolved to concrete color values,
+- variants are rendered appropriately,
+- modifiers are applied consistently.
+
+Applications do not need to know—or care—about the actual color values being used.
+
+Switching themes updates the entire interface automatically.
+
+---
+
+## Hashed Style Names
+
+Internally, ttkbootstrap generates hashed TTK style names to ensure:
+
+- uniqueness,
+- isolation between widgets,
+- compatibility with TTK’s style engine.
+
+These hashed names are an **implementation detail**.
+
+> **Important:**  
+> Hashed style names are not part of the public API and are not guaranteed to remain stable across versions.  
+> Application code should never reference them directly.
+
+All styling should be expressed through tokens, variants, and bootstyle strings.
+
+---
+
+## ttkbootstrap’s Role
+
+In v2, ttkbootstrap does not invent a new color model.
+
+Instead, it:
+
+- formalizes semantic color usage,
+- documents consistent styling patterns,
+- centralizes theme-defined palettes,
+- and integrates color behavior cleanly with widgets, layout, and application structure.
+
+This allows developers to focus on **design intent**, while ttkbootstrap handles resolution and consistency.
+
+---
+
+## What This Section Does Not Cover
+
+This page does not include:
+
+- widget-specific styling examples,
+- complete token lists,
+- theme creation tutorials,
+- or application code.
+
+Those topics are covered in:
+
+- **Guides → Theming & Appearance**
+- **Reference → Color Tokens**
+- **Widgets → Styling Conventions**
+
+---
+
+## Summary
+
+The ttkbootstrap color system encourages you to think in terms of **meaning**, not values.
+
+By using semantic tokens, variants, and modifiers:
+
+- your UI remains consistent,
+- your application adapts naturally to different themes,
+- and your styling decisions scale as the project grows.
+
+Understanding this model will make the rest of ttkbootstrap easier to use—and harder to misuse.

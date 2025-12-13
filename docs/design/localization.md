@@ -4,48 +4,184 @@ icon: fontawesome/solid/language
 
 # Localization
 
-Localization in ttkbootstrap 2 is designed for people building real desktop apps who need translated strings, locale-aware numbers, and coordinated widgets that refresh whenever the user changes language.
+Localization in ttkbootstrap is designed to make applications **language-aware, region-aware, and culturally adaptable**
+without complicating widget logic or application structure.
 
-## How the catalog works
+Rather than hardcoding text, formats, or language-specific behavior into widgets, ttkbootstrap encourages you to treat
+localization as a **cross-cutting system concern** that integrates cleanly with the application runtime, theming, and
+widgets.
 
-`MessageCatalog` combines a gettext translator (loaded from `locales/<lang>/LC_MESSAGES/*.mo`) with Tcl/Tk msgcat so the toolkit understands both modern gettext keys and legacy Tcl formatting (like `%1$s`). It keeps runtime overrides in sync between gettext and msgcat, strips mnemonic `&` markers, and fires the `<<LocaleChanged>>` virtual event whenever `MessageCatalog.locale(...)` switches to a new locale. Your widgets listen to that event (the `LocalizationMixin` already does) so they can update their currently registered text or value specs.
+This page explains the **design philosophy and architectural intent** behind localization in ttkbootstrap so new users
+understand how internationalization is meant to work before applying it in code.
 
-The catalog also exposes helpers such as `set`, `set_many`, `max`, and `preferences` if you need to inject translations at runtime without editing the compiled catalogs. `MessageCatalog.translate` prefers your overrides first, then gettext, and finally Tcl msgcat to keep formatting consistent even when you use positional arguments.
+Practical usage, APIs, and workflows are covered in the Guides and Reference sections.
 
-## Localized specs and formatting
+---
 
-Two helper classes describe what needs translation:
+## Design Goals
 
-- `LocalizedTextSpec` (shortcut `L(key, *fmtargs)`) signals that a string should be translated using the catalog and optional formatting arguments.
-- `LocalizedValueSpec` (shortcut `LV(value, format_spec)`) tells ttkbootstrap to format numbers, dates, and currencies through `IntlFormatter` so they look native to the active locale.
+The localization system is built around the following goals:
 
-The `LocalizationMixin` is included in most widgets. It captures `localize` and `value_format` arguments, stores the specs in `_localized_fields`, and resolves them whenever `<<LocaleChanged>>` fires. The mixin pushes the localized results into your widget via a `textvariable`, `StringVar`, `variable`, or direct `configure()` call. If a widget exposes reactive signals (`textsignal`/`textvariable`), the mixin can insert a private formatter so the signal values are also localized on each update.
+- **Separation of concerns**  
+  Language and formatting should not be embedded in widget logic.
 
-## Field widgets make localization easy
+- **Consistency**  
+  The same message or value should be rendered consistently across the application.
 
-Field-style composites (`Field`, `TextEntry`, `PasswordEntry`, `NumberEntry`, etc.) hook into the mixin from the start. When you pass `label`, `message`, or `value_format`, the field registers those strings via `LocalizationMixin.register_localized_field`. That means:
+- **Automatic adaptation**  
+  Applications should adapt naturally to locale, language, and region.
 
-- Labels, helper text, and validation messages automatically translate when the locale changes.
-- Passing `localize='auto'` or `True` lets the mixin translate literal strings. Set `localize=False` to keep text verbatim.
-- Numeric fields can use `value_format` (e.g., `'currency'`, `'percent'`) or share a signal so every update respects the locale.
-- Validation hints and add-on labels share the same localization logic, so your form messages stay synchronized.
+- **Minimal developer friction**  
+  Localization should not require rewriting widgets or duplicating logic.
 
-## Recommended steps for new users
+- **Desktop-first behavior**  
+  Localization should respect platform conventions for dates, numbers, and text direction.
 
-1. Generate gettext catalogs (Babel, gettext, etc.) and place them under `locales/<lang>/LC_MESSAGES/messages.mo`.
-2. Call `MessageCatalog.init(locales_dir=...)` before building widgets so both gettext and Tcl msgcat are configured.
-3. Prefer `L()` and `LV()` specs for any text or observable value that should translate.
-4. Pass `localize` and `value_format` to widgets that support them, or register additional fields manually with `register_localized_field()` if you have extra labels or tooltips.
-5. Use field widgets when possible?they already tie labels, helper text, validation, and numeric formatting into the localization system.
+To support these goals, ttkbootstrap treats localization as a **first-class application capability** rather than an
+optional add-on.
 
-## App settings you can tweak
+---
 
-`get_app_settings()` exposes a shared `AppSettings` object for every `ttk.App`. You can configure these values when creating the app (e.g., `App(settings=AppSettings(locale="ja"))`) to override the initial locale and formatting policy before any widgets are built. The settings include:
+## Text Localization
 
-- `locale` and `language` to define the initial locale (e.g., `en_US`) and base language.
-- `date_format`, `time_format`, `number_decimal`, and `number_thousands` so you can override the defaults that `IntlFormatter` and numeric fields will honor.
-- `localize_mode` (`"auto"`, `True`, `False`) which controls the default behavior for wrapping literal widget strings in localization specs. Widgets respect this global policy but you can override it per widget using the `localize` argument.
+Text localization focuses on translating **user-facing strings**.
 
-Adjust these settings before creating widgets if you want to lock down a specific policy, or mutate them afterward to influence future widgets. Together with the catalog, specs, mixin, and field composites, these settings give you a consistent localization story across the app.
+Rather than embedding literal strings directly into widgets, ttkbootstrap encourages defining messages externally and
+resolving them at runtime based on the active language.
 
-If you only need to rotate locales at runtime, call `ttk.MessageCatalog.locale("ja")` (or another locale code) so gettext/msgcat swap languages and every widget hears `<<LocaleChanged>>`.
+This approach:
+
+- enables language switching without code changes,
+- avoids duplication of translated strings,
+- supports tooling and translation workflows,
+- keeps widget definitions clean.
+
+The same widget can render different text without changing its configuration.
+
+---
+
+## Message Identity
+
+Localized messages are identified by **stable message identifiers**, not by their translated text.
+
+This allows:
+
+- translations to evolve independently of code,
+- backward compatibility when messages change,
+- tooling to detect missing or outdated translations.
+
+Message identifiers represent **meaning**, not phrasing.
+
+---
+
+## Value & Format Localization
+
+Localization extends beyond text.
+
+Desktop applications must also adapt how values are displayed, including:
+
+- dates and times,
+- numbers and currency,
+- measurement units,
+- pluralization rules.
+
+ttkbootstrap integrates locale-aware formatting so values are rendered appropriately for the user’s region without
+requiring manual formatting logic throughout the application.
+
+Formatting is treated as **presentation**, not business logic.
+
+---
+
+## Directionality & Layout
+
+Some languages require **right-to-left (RTL)** text direction.
+
+Localization-aware applications must consider:
+
+- text alignment,
+- reading order,
+- icon mirroring,
+- layout flow.
+
+While Tkinter provides the underlying support for text direction, ttkbootstrap ensures that localization concerns are *
+*explicitly acknowledged in design**, even when full RTL adaptation is platform-dependent.
+
+---
+
+## Runtime Adaptation
+
+Localization is not limited to application startup.
+
+The design supports:
+
+- language selection at runtime,
+- locale-based formatting updates,
+- consistent re-rendering of localized content.
+
+Applications can respond to localization changes without restarting or rebuilding widgets.
+
+---
+
+## Platform Considerations
+
+Desktop platforms differ in their localization expectations:
+
+- default system language and locale,
+- number and date formats,
+- font fallback behavior,
+- text shaping and rendering.
+
+The localization system is designed to:
+
+- respect platform defaults when appropriate,
+- allow explicit overrides when needed,
+- behave predictably across environments.
+
+This ensures applications feel native while remaining portable.
+
+---
+
+## ttkbootstrap’s Role
+
+In v2, ttkbootstrap does not invent a new internationalization standard.
+
+Instead, it:
+
+- integrates established localization practices into the framework,
+- provides structure for managing messages and formats,
+- connects localization with widgets and application state,
+- avoids embedding locale logic directly into UI components.
+
+Localization remains configurable, explicit, and application-driven.
+
+---
+
+## What This Section Does Not Cover
+
+This page does not include:
+
+- translation file formats,
+- message catalog APIs,
+- tooling workflows,
+- widget-level localization examples,
+- language review processes.
+
+Those topics are covered in:
+
+- **Guides → Localization**
+- **Reference → Localization APIs**
+- **Widgets → Localized Widgets**
+
+---
+
+## Summary
+
+The ttkbootstrap localization system is designed to make applications **globally usable without global complexity**.
+
+By treating localization as a system-level concern:
+
+- applications remain clean and maintainable,
+- language and formatting adapt naturally,
+- and internationalization scales as projects grow.
+
+Understanding this model will help you design applications that are inclusive, adaptable, and future-ready.
