@@ -1,195 +1,199 @@
 ---
 title: Button
-icon: fontawesome/solid/square
+icon: fontawesome/solid/hand-pointer
 ---
 
 # Button
 
-Buttons trigger an action. In ttkbootstrap v2, `Button` is a wrapper around `ttk.Button` that adds **Bootstyle tokens**,
-**theme-aware icons**, and optional **signals and localization** on top of standard ttk behavior.
+`Button` triggers an action when clicked.
+
+In ttkbootstrap v2, `Button` is a wrapper around Tkinter’s `ttk.Button` that keeps the familiar API but adds a few “app-ready” conveniences:
+
+- **Bootstyle tokens** (`bootstyle="primary-outline"`, `bootstyle="danger"`, etc.)
+- **Theme-aware icons** via `icon=...` (preferred over raw `image=...`)
+- Optional **reactive text binding** with `textsignal=...`
+- **Surface-aware** styling via `surface_color=...` (or inherit from the parent surface)
+
+> _Image placeholder:_  
+> `![Button variants](../_img/widgets/button/overview.png)`  
+> Suggested shot: solid / outline / ghost / link + disabled + icon-only.
 
 ---
 
-## Overview
-
-Buttons are one of the most common interactive elements in a desktop application.
-ttkbootstrap buttons are designed to:
-
-- follow the active theme automatically,
-- express intent through semantic variants (`primary`, `danger`, etc.),
-- support icon-only and icon+text usage,
-- behave consistently across hover, focus, pressed, and disabled states.
-
-<!-- IMAGE PLACEHOLDER -->
-<!-- widgets-button-overview.png -->
-<!-- A small gallery showing several buttons side-by-side:
-     primary, primary-outline, primary-ghost, primary-link, icon+text -->
-
----
-
-## Quick Example
+## Basic usage
 
 ```python
 import ttkbootstrap as ttk
 
-app = ttk.App(theme="solar")
+app = ttk.App()
 
-ttk.Button(
-    app.window,
-    text="Save",
-    bootstyle="success",
-    command=lambda: print("Saved"),
-).pack(padx=16, pady=16)
+def on_save():
+    print("Saved!")
+
+ttk.Button(app, text="Save", bootstyle="primary", command=on_save).pack(padx=20, pady=20)
 
 app.mainloop()
 ```
 
 ---
 
-## Bootstyle Variants
+## Common options
 
-Buttons use **Bootstyle tokens** to describe both intent and treatment.
-
-### Common variants
-
-- **Solid (default)**
-  `primary`, `success`, `danger`, `warning`
-
-- **Outline**
-  `primary-outline`, `danger-outline`
-
-- **Ghost**
-  `primary-ghost`
-  Subtle background, often used in toolbars or secondary actions.
-
-- **Text**
-  `primary-text`, `foreground-text`
-  No background or border.
-
-- **Link**
-  `primary-link`
-  Styled like a hyperlink, including cursor and underline behavior.
+### `text` and `command`
 
 ```python
-import ttkbootstrap as ttk
-
-ttk.Button(parent, text="Delete", bootstyle="danger-outline")
+ttk.Button(app, text="Run", command=lambda: print("run")).pack()
 ```
 
-<!-- IMAGE PLACEHOLDER -->
-<!-- widgets-button-variants.png -->
-<!-- Same label rendered in solid / outline / ghost / text / link -->
+### `state`
+
+Disable a button until the user has completed a step.
+
+```python
+btn = ttk.Button(app, text="Continue", bootstyle="primary", state="disabled")
+btn.pack()
+
+# later…
+btn.configure(state="normal")
+```
+
+### `padding`, `width`, and `underline`
+
+```python
+ttk.Button(app, text="Wide", width=18, padding=(12, 6)).pack(pady=6)
+ttk.Button(app, text="E_xit", underline=1).pack(pady=6)  # Alt+X mnemonic on some platforms
+```
+
+---
+
+## Bootstyle variants
+
+Buttons are typically styled with a **color token** and an optional **variant**.
+
+```python
+ttk.Button(app, text="Primary", bootstyle="primary").pack(pady=4)
+ttk.Button(app, text="Outline", bootstyle="primary-outline").pack(pady=4)
+ttk.Button(app, text="Ghost", bootstyle="primary-ghost").pack(pady=4)
+ttk.Button(app, text="Link", bootstyle="primary-link").pack(pady=4)
+ttk.Button(app, text="Text", bootstyle="text").pack(pady=4)
+```
 
 ---
 
 ## Icons
 
-Buttons support both raw Tk images and **theme-aware icons**.
+### Theme-aware icon (recommended)
 
-### Icon + Text
+Use `icon=...` so the icon can respond to hover/disabled state and theme changes.
 
 ```python
-import ttkbootstrap as ttk
-
 ttk.Button(
-    parent,
-    text="Settings",
-    icon="gear",
-    bootstyle="secondary",
-)
+    app,
+    text="Download",
+    bootstyle="primary",
+    icon="download",          # placeholder: your icon spec / provider name
+).pack(pady=6)
 ```
 
-When an icon is present, the button automatically lays out the icon and label together.
+> _Image placeholder:_  
+> `![Button with icon](../_img/widgets/button/icon-text.png)`
 
-<!-- IMAGE PLACEHOLDER -->
-<!-- widgets-button-icon-text.png -->
-<!-- Side-by-side: text-only button vs icon+text button -->
+### Icon-only buttons
 
----
-
-## Icon-Only Buttons
-
-For toolbar-style actions, you can create icon-only buttons:
+Use `icon_only=True` for compact toolbar buttons.
 
 ```python
-import ttkbootstrap as ttk
-
 ttk.Button(
-    parent,
-    icon="trash",
+    app,
+    bootstyle="secondary",
+    icon="gear",              # placeholder
     icon_only=True,
-    bootstyle="secondary",
-    command=delete_item,
-)
+).pack(pady=6)
 ```
 
-Icon-only buttons:
+> _Image placeholder:_  
+> `![Icon-only toolbar buttons](../_img/widgets/button/icon-only.png)`
 
-- remove extra text padding,
-- use a slightly larger default icon size,
-- are ideal for compact toolbars.
-
-<!-- IMAGE PLACEHOLDER -->
-<!-- widgets-button-icon-only.png -->
-<!-- A toolbar row with 3–4 icon-only buttons -->
+!!! warning "Using `image=...`"
+    You can still pass a Tk `PhotoImage` via `image=...`, but it won’t automatically recolor for theme changes.
 
 ---
 
-## States and Interaction
+## Surface-aware backgrounds
 
-Buttons follow the standard ttk state model:
+If your app uses inherited surfaces (elevated frames), you can pin the button to a specific surface token.
 
-- normal
-- hover
-- pressed
-- focused
-- disabled
+```python
+panel = ttk.Frame(app, padding=20, bootstyle="background")  # example surface
+panel.pack(fill="both", expand=True)
 
-Each state is styled by the active theme to provide clear visual feedback for both mouse and keyboard users.
-
-<!-- IMAGE PLACEHOLDER -->
-<!-- widgets-button-states.png -->
-<!-- Grid showing normal / hover / pressed / focused / disabled -->
+ttk.Button(
+    panel,
+    text="Action",
+    bootstyle="primary-outline",
+    surface_color="background[+1]",
+).pack()
+```
 
 ---
 
-## Localization & Signals
+## Reactive text with `textsignal`
 
-Buttons integrate with ttkbootstrap’s localization and reactive systems.
-
-- `localize` controls whether the label participates in localization
-- `textsignal` allows the label to update reactively from a signal
+If your v2 app uses signals, you can bind the label text to a signal (so the button text updates automatically).
 
 ```python
 import ttkbootstrap as ttk
 
-# Conceptual example
-# status = Signal("Save")
-# ttk.Button(parent, textsignal=status, bootstyle="success")
+app = ttk.App()
+
+# Example only — use your real signal creation API
+label = ttk.Signal("Start")  # pseudo-code
+
+btn = ttk.Button(app, bootstyle="primary", textsignal=label)
+btn.pack(padx=20, pady=20)
+
+# later…
+label.set("Stop")
+
+app.mainloop()
 ```
 
-This is useful for dynamic labels such as “Save”, “Saving…”, or localized text.
+---
+
+## Localization
+
+If you use message catalogs, `localize="auto"` (or `True`) allows a label to be treated as a localization key.
+
+```python
+ttk.Button(app, text="button.ok", localize="auto", bootstyle="primary").pack()
+```
 
 ---
 
-## Common Options
+## Patterns
 
-In addition to all standard `ttk.Button` options, the most commonly used ttkbootstrap options are:
+### Primary + secondary actions
 
-- `bootstyle` – semantic style token (preferred over raw `style=`)
-- `icon` – theme-aware icon
-- `icon_only` – icon-only button mode
-- `compound` – icon/text placement
-- `padding`, `width`
-- `state`
-- `surface_color` – override surface token for this button only
+```python
+row = ttk.Frame(app, padding=20)
+row.pack(fill="x")
+
+ttk.Button(row, text="Cancel", bootstyle="secondary").pack(side="right", padx=(8, 0))
+ttk.Button(row, text="Save", bootstyle="primary").pack(side="right")
+```
+
+### Destructive actions
+
+```python
+ttk.Button(app, text="Delete", bootstyle="danger").pack(pady=6)
+ttk.Button(app, text="Delete", bootstyle="danger-outline").pack(pady=6)
+```
 
 ---
 
-## Related Widgets
+## Related widgets
 
-- **DropdownButton** — button that opens a menu surface
-- **MenuButton / OptionMenu** — menu-based selection
-- **ContextMenu** — right-click actions
-- **Dialogs** — buttons commonly drive dialog actions
-- **Toast** — buttons often trigger feedback messages
+- **CheckButton** — boolean toggle (on/off)
+- **RadioButton** — single selection in a group
+- **MenuButton** / **DropdownButton** — button that opens a menu
+- **Dialog** / **MessageDialog** — action buttons inside modal flows
