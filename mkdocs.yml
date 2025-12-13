@@ -4,10 +4,33 @@ repo_url: https://github.com/israel-dryer/ttkbootstrap
 theme:
   icon:
     logo: fontawesome/solid/feather-pointed
+
   features:
     - navigation.tabs
     - navigation.path
     - navigation.sections
+
+  palette:
+
+    # Palette toggle for automatic mode
+    - media: "(prefers-color-scheme)"
+      toggle:
+        icon: lucide/sun-moon
+        name: Switch to light mode
+
+    # Palette toggle for light mode
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      toggle:
+        icon: lucide/sun
+        name: Switch to dark mode
+
+    # Palette toggle for dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      toggle:
+        icon: lucide/moon
+        name: Switch to system preference
 
 nav:
   - Getting Started:
