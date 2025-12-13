@@ -1,6 +1,6 @@
 ---
 title: LabelFrame
-icon: fontawesome/solid/rectangle-list
+icon: fontawesome/solid/window-maximize
 ---
 
 
