@@ -65,6 +65,6 @@ Choose `Toast` for ephemeral, non-blocking notifications that should not interru
 
 ## Related widgets
 
-- `ToolTip` (hover-intent help)
-- `Dialog`/`Form` (modal interactions)
-- `Button` (triggers for notifications)
+- **Dialogs** (blocking confirmations)
+- **Tooltip**
+
