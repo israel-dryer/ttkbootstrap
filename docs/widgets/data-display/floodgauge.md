@@ -1,6 +1,6 @@
 ---
 title: FloodGauge
-icon: fontawesome/solid/wave-square
+icon: fontawesome/solid/water
 ---
 
 
@@ -82,6 +82,6 @@ If you just need a straightforward determinate progress indicator, use `Progress
 
 ## Related widgets
 
-- `Progressbar` (linear progress)
-- `Meter` (circular gauge)
-- `Label` (masked text or subtitles)
+- **Meter**
+- **Progressbar**
+
