@@ -2,6 +2,7 @@ venv
 .idea
 build
 dist
+site
 *.egg-info
 *.mp4
 *_build

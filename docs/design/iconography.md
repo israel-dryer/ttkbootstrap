@@ -1,0 +1,3 @@
+---
+icon: fontawesome/solid/icons
+---
