@@ -1,11 +1,11 @@
 ---
-title: Checkbutton
+title: CheckButton
 icon: fontawesome/solid/square-check
 ---
 
-# Checkbutton
+# CheckButton
 
-Checkbuttons represent a boolean or tri-state choice. In ttkbootstrap v2, `Checkbutton` extends `ttk.Checkbutton` with
+CheckButtons represent a boolean or tri-state choice. In ttkbootstrap v2, `CheckButton` extends `ttk.Checkutton` with
 semantic styling, theme-aware indicators, icons, localization, and reactive signals—while remaining fully compatible
 with Tk’s native behavior.
 
@@ -13,7 +13,7 @@ with Tk’s native behavior.
 
 ## Overview
 
-Checkbuttons are commonly used in forms, settings panels, and toolbars to represent on/off or optional features.
+CheckButtons are commonly used in forms, settings panels, and toolbars to represent on/off or optional features.
 
 ttkbootstrap checkbuttons are designed to:
 
@@ -31,7 +31,7 @@ import ttkbootstrap as ttk
 
 var = ttk.BooleanVar(value=True)
 
-ttk.Checkbutton(
+ttk.CheckButton(
     parent,
     text="Enable notifications",
     variable=var,
@@ -43,7 +43,7 @@ ttk.Checkbutton(
 
 ## Checkbox and Toggle Styles
 
-The same `Checkbutton` widget can be rendered in two distinct visual styles depending on intent.
+The same `CheckButton` widget can be rendered in two distinct visual styles depending on intent.
 
 ### Checkbox (default)
 
@@ -54,7 +54,7 @@ The classic checkbox style:
 - emphasizes precision over immediacy
 
 ```python
-ttk.Checkbutton(
+ttk.CheckButton(
     parent,
     text="Send usage data",
     variable=var,
@@ -70,7 +70,7 @@ The toggle style uses a switch metaphor:
 - emphasizes quick enable/disable actions
 
 ```python
-ttk.Checkbutton(
+ttk.CheckButton(
     parent,
     text="Dark mode",
     bootstyle="toggle",
@@ -85,7 +85,7 @@ ttk.Checkbutton(
 
 ## States and Interaction
 
-Checkbuttons support the full ttk state model:
+CheckButtons support the full ttk state model:
 
 - selected
 - not selected
@@ -103,10 +103,10 @@ The active theme controls how these states are rendered, ensuring clear feedback
 
 ## Icons and Labels
 
-Checkbuttons may include icons alongside their labels.
+CheckButtons may include icons alongside their labels.
 
 ```python
-ttk.Checkbutton(
+ttk.CheckButton(
     parent,
     text="Wi-Fi",
     icon="wifi",
@@ -124,7 +124,7 @@ Icons are recolored automatically to match the current theme and widget state.
 
 ## Variables, Signals, and Localization
 
-Checkbuttons can be bound to traditional Tk variables or reactive signals.
+CheckButtons can be bound to traditional Tk variables or reactive signals.
 
 - `variable` connects to a `BooleanVar`, `IntVar`, or similar
 - `signal` allows state to be driven reactively
@@ -133,7 +133,7 @@ Checkbuttons can be bound to traditional Tk variables or reactive signals.
 ```python
 # Conceptual example
 # enabled = Signal(False)
-# ttk.Checkbutton(text="Sync automatically", signal=enabled)
+# ttk.CheckButton(text="Sync automatically", signal=enabled)
 ```
 
 This makes checkbuttons suitable for dynamic settings and localized applications.
@@ -142,7 +142,7 @@ This makes checkbuttons suitable for dynamic settings and localized applications
 
 ## Toolbutton Styles
 
-Checkbuttons also participate in **toolbutton styles**, which are optimized for icon-centric, selectable UI elements
+CheckButtons also participate in **toolbutton styles**, which are optimized for icon-centric, selectable UI elements
 such as toolbars and context menus.
 
 Toolbutton styles emphasize selection state over labels and are documented separately.
@@ -165,7 +165,7 @@ In addition to all standard `ttk.Checkbutton` options, the most commonly used tt
 
 ## Related Widgets
 
-- **Radiobutton** — mutually exclusive choices
-- **Toolbutton** — selectable toolbar buttons
+- **RadioButton** — mutually exclusive choices
+- **ToolButton** — selectable toolbar buttons
 - **Form** — structured input groups
 - **ContextMenu** — selectable menu items

@@ -3,7 +3,7 @@ repo_url: https://github.com/israel-dryer/ttkbootstrap
 
 theme:
   icon:
-      logo: fontawesome/solid/feather-pointed
+    logo: fontawesome/solid/feather-pointed
   features:
     - navigation.tabs
     - navigation.path
@@ -24,27 +24,28 @@ nav:
       - Overview: widgets/overview.md
       - Conventions: widgets/conventions.md
 
-      - Inputs:
-          - Form: widgets/inputs/form.md
-          - Entry: widgets/inputs/entry.md
-          - Combobox: widgets/inputs/combobox.md
-          - Spinbox: widgets/inputs/spinbox.md
-          - Scale: widgets/inputs/scale.md
-          - SelectBox: widgets/inputs/selectbox.md
-          - DropdownButton: widgets/inputs/dropdownbutton.md
-          - PasswordEntry: widgets/inputs/passwordentry.md
-          - NumericEntry: widgets/inputs/numericentry.md
-          - DateEntry: widgets/inputs/dateentry.md
-          - TimeEntry: widgets/inputs/timeentry.md
-          - PathEntry: widgets/inputs/pathentry.md
-          - SpinnerEntry: widgets/inputs/spinnerentry.md
+      - Controls:
+          - Button: widgets/controls/button.md
+          - CheckButton: widgets/controls/checkbutton.md
+          - RadioButton: widgets/controls/radiobutton.md
+          - TextEntry: widgets/controls/textentry.md
+          - NumericEntry: widgets/controls/numericentry.md
+          - SpinnerEntry: widgets/controls/spinnerentry.md
+          - DateEntry: widgets/controls/dateentry.md
+          - TimeEntry: widgets/controls/timeentry.md
+          - PasswordEntry: widgets/controls/passwordentry.md
+          - PathEntry: widgets/controls/pathentry.md
+          - Scale: widgets/controls/scale.md
+          - SelectBox: widgets/controls/selectbox.md
+          - OptionMenu: widgets/controls/optionmenu.md
+          - Form: widgets/controls/form.md
 
       - Data Display:
           - Label: widgets/data-display/label.md
           - Progressbar: widgets/data-display/progressbar.md
           - Meter: widgets/data-display/meter.md
           - FloodGauge: widgets/data-display/floodgauge.md
-          - Treeview: widgets/data-display/treeview.md
+          - TreeView: widgets/data-display/treeview.md
           - TableView: widgets/data-display/tableview.md
 
       - Feedback:
@@ -54,40 +55,27 @@ nav:
 
       - Layout:
           - Frame: widgets/layout/frame.md
-          - Labelframe: widgets/layout/labelframe.md
-          - Panedwindow: widgets/layout/panedwindow.md
+          - LabelFrame: widgets/layout/labelframe.md
+          - PanedWindow: widgets/layout/panedwindow.md
           - ScrollView: widgets/layout/scrollview.md
           - ScrolledText: widgets/layout/scrolledtext.md
           - Scrollbar: widgets/layout/scrollbar.md
           - Separator: widgets/layout/separator.md
-          - Sizegrip: widgets/layout/sizegrip.md
+          - SizeGrip: widgets/layout/sizegrip.md
 
-      - Navigation:
-          - Notebook: widgets/navigation/notebook.md
-          - PageStack: widgets/navigation/pagestack.md
-          - MenuButton: widgets/navigation/menubutton.md
-          - OptionMenu: widgets/navigation/optionmenu.md
-          - ContextMenu: widgets/navigation/contextmenu.md
+      - Views:
+          - Notebook: widgets/views/notebook.md
+          - PageStack: widgets/views/pagestack.md
 
-      - Primitives (ttk):
-          - Button: widgets/primitives/button.md
-          - Checkbutton: widgets/primitives/checkbutton.md
-          - Radiobutton: widgets/primitives/radiobutton.md
-          - Menubutton: widgets/navigation/menubutton.md
-          - OptionMenu: widgets/navigation/optionmenu.md
-          - Entry: widgets/inputs/entry.md
-          - Combobox: widgets/inputs/combobox.md
-          - Spinbox: widgets/inputs/spinbox.md
-          - Scale: widgets/inputs/scale.md
-          - Frame: widgets/layout/frame.md
-          - Labelframe: widgets/layout/labelframe.md
-          - Panedwindow: widgets/layout/panedwindow.md
-          - Notebook: widgets/navigation/notebook.md
-          - Treeview: widgets/data-display/treeview.md
-          - Progressbar: widgets/data-display/progressbar.md
-          - Scrollbar: widgets/layout/scrollbar.md
-          - Separator: widgets/layout/separator.md
-          - Sizegrip: widgets/layout/sizegrip.md
+      - Menus:
+          - DropdownButton: widgets/menus/dropdownbutton.md
+          - MenuButton: widgets/menus/menubutton.md
+          - ContextMenu: widgets/menus/contextmenu.md
+
+      - Tk Widgets:
+          - Combobox: widgets/other/combobox.md
+          - Entry: widgets/other/entry.md
+          - Spinbox: widgets/other/spinbox.md
 
   - Design:
       - Design System: design/overview.md
