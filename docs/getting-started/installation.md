@@ -4,44 +4,31 @@ icon: fontawesome/solid/download
 
 # Installation
 
-ttkbootstrap 2 installs on Python 3.10+ interpreters that include Tk (standard in most desktop distributions). This page shows the recommended commands plus notes about optional extras and compatibility.
+ttkbootstrap 2 targets Python 3.10 and newer interpreters that already include Tk (8.6 or later). This page walks through the platform notes, pip commands, optional extras, and verification steps you need for a repeatable install.
 
-## Supported platforms
+![Installation hero](https://placehold.co/800x800/FFFFFF/333333.webp?text=Installation&font=lato)
 
-- Windows 10/11 (Tk ships with official Python installers).
-- macOS (use the official Python installer or Homebrew).
-- Linux desktops (Tk is available via system packages like `python3-tk` or `tk-dev`).
+## Requirements
+
+- **Python 3.10+**: Run `python --version` to confirm and upgrade the interpreter if it reports an earlier release.
+- **Tk support**: Most official installers already ship Tk. On Linux, install the system package (`python3-tk`, `tk-dev`, etc.) before the first launch.
+- **Up-to-date pip**: Keep wheels current via `python -m pip install --upgrade pip` so the install pulls prebuilt binaries.
 
 ## Installing with pip
-
-Before installing, confirm your interpreter meets the minimum requirement:
-
-```bash
-python --version
-```
-
-If the version is lower than 3.10, upgrade your interpreter or use a pyenv/virtual environment before proceeding.
 
 ```bash
 python -m pip install ttkbootstrap
 ```
 
-For quicker installs, pin the version or use `pipx` to isolate the CLI tools:
+Pin a release (`ttkbootstrap==2.0.0`) or use `pipx install ttkbootstrap` to isolate the CLI helpers while leaving other environments untouched.
 
-```bash
-python -m pip install ttkbootstrap==2.0.0
-# or
-pipx install ttkbootstrap
-```
+## Optional extras
 
-## Optional dependencies
+- `ttkbootstrap[cli]` bundles project generators, linting helpers, and template scaffolding.
+- `ttkbootstrap[full]` adds advanced theming utilities, palette assets, and extended typography controls.
+- Combine extras as needed: `python -m pip install "ttkbootstrap[cli,full]"`.
 
-- **ttkbootstrap[cli]** includes CLI scaffolding helpers for faster projects (`python -m pip install "ttkbootstrap[cli]"`).
-- **ttkbootstrap[full]** bundles optional theming utilities if you plan to ship advanced palettes or custom fonts.
-
-## Verification
-
-Run `python -m ttkbootstrap --version` to ensure the CLI is on your path, or import the package interactively:
+## Verify the install
 
 ```python
 >>> import ttkbootstrap
@@ -49,4 +36,10 @@ Run `python -m ttkbootstrap --version` to ensure the CLI is on your path, or imp
 '2.0.0'
 ```
 
-If you see errors about missing `_tkinter`, install your system’s Tk dependencies (e.g., `sudo apt install python3-tk` on Ubuntu).
+Or run `python -m ttkbootstrap --version` to ensure the CLI tools are on your PATH.
+
+## Troubleshooting
+
+- **Missing `_tkinter`**: Install the relevant Tk package (for example, `sudo apt install python3-tk` on Debian/Ubuntu or `brew install tcl-tk` on macOS) before rerunning the pip install.
+- **Virtual environments**: Activate the venv before installing so Tk and the package bind to the correct interpreter.
+- **Permission errors**: Use `--user` or a virtual environment instead of a system-wide install when permissions are restricted.

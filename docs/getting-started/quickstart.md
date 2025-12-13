@@ -4,21 +4,29 @@ icon: fontawesome/solid/rocket
 
 # Quickstart (5-Minute App)
 
-This page mirrors the “5-minute app” so you can bootstrap a themed window and a few widgets without reading the full reference. The entire flow should take less than five minutes if your environment is ready.
+Get a themed Tk window on screen and configure a couple of controls without leaving this page. The following steps walk through the prerequisites, install, and runtime helpers you need for a runnable ttkbootstrap 2 app.
 
 ![Quickstart hero](https://placehold.co/800x800/FFFFFF/333333.webp?text=Quickstart&font=lato)
 
-## 1. Install the package
+## 1. Verify prerequisites
 
-```bash
+- Python 3.10 or newer with Tk support (Tk 8.6 ships with most installers).
+- python --version and python -m pip --version confirm the interpreter matches the requirement.
+- Upgrade pip before installing to keep wheels current: python -m pip install --upgrade pip.
+
+## 2. Install the package
+
+`ash
 python -m pip install ttkbootstrap
-```
+`
 
-## 2. Create a minimal app
+Use pipx install ttkbootstrap to isolate the CLI helpers, or pin the version (	tkbootstrap==2.0.0) if you need to freeze dependencies.
 
-Save the following to `main.py`:
+## 3. Create the minimal app
 
-```python
+Save this to main.py:
+
+`python
 from ttkbootstrap import ttk
 
 app = ttk.App(theme="solar")
@@ -30,17 +38,22 @@ ttk.Label(frame, text="Welcome to ttkbootstrap 2").pack(pady=(0, 10))
 ttk.Button(frame, bootstyle="success", text="Launch").pack()
 
 app.mainloop()
-```
+`
 
-Run it:
+## 4. Run it
 
-```bash
+`
 python main.py
-```
+`
 
-## 3. Next steps
+## 5. Tweak themes at runtime
 
-- Switch the theme by calling `ttk.set_theme("cyborg")` or reopen the app with a different `theme` argument.
-- Toggle between light and dark with `ttk.toggle_theme()`.
-- Inspect other widgets in the new catalog (see Widgets → Inputs/Data Display/Feedback).
-- Check the Guides section for runtime, theming, and deployment advice once the UI is stable.
+- 	tk.set_theme("cosmo") applies a specific registered theme without restarting the app.
+- 	tk.toggle_theme() switches between light and dark palettes on demand.
+- Explore Style.list_themes() if you need to populate a selector of available palettes.
+
+## 6. Next steps
+
+- Build on this frame by experimenting with inputs, data display widgets, and Bootstyle tokens.
+- Read the Installation and First Application pages for runtime helpers and layout guidance.
+- Visit the Design system section to align your widgets with shared colors, typography, and stateful variants.
