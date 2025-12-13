@@ -1,6 +1,6 @@
 ---
 title: Notebook
-icon: fontawesome/solid/book
+icon: fontawesome/solid/folder
 ---
 
 
