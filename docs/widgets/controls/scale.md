@@ -29,7 +29,7 @@ Key features of `Scale`:
 
 ```python
 import ttkbootstrap as ttk
-from ttkbootstrap.core.signals import Signal
+from ttkbootstrap import Signal
 
 app = ttk.App(title="Scale Demo", theme="cosmo")
 
@@ -91,4 +91,3 @@ For discrete choices, consider `SpinnerEntry` or `SelectBox`; for simple numeric
 - `NumericEntry`
 - `SelectBox`
 - `Form`
-
