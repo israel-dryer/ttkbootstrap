@@ -3,7 +3,6 @@ title: TextEntry
 icon: fontawesome/solid/i-cursor
 ---
 
-
 # TextEntry
 
 `TextEntry` is a **high-level text input control** designed for real-world desktop applications.  
@@ -62,6 +61,8 @@ app.mainloop()
 ## Formatting & localization
 
 ```python
+import ttkbootstrap as ttk
+
 amount = ttk.TextEntry(
     app,
     label="Amount",
@@ -77,6 +78,8 @@ amount.pack(fill="x")
 ## Validation
 
 ```python
+import ttkbootstrap as ttk
+
 email = ttk.TextEntry(app, label="Email", required=True)
 email.add_validation_rule("email", message="Invalid email address")
 email.pack(fill="x")
@@ -87,6 +90,8 @@ email.pack(fill="x")
 ## Add-ons
 
 ```python
+import ttkbootstrap as ttk
+
 search = ttk.TextEntry(app, label="Search")
 search.insert_addon(ttk.Button, "after", text="Go")
 search.pack(fill="x")

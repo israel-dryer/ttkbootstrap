@@ -30,6 +30,8 @@ ttkbootstrap radiobuttons:
 ```python
 import ttkbootstrap as ttk
 
+app = ttk.App()
+
 choice = ttk.StringVar(value="daily")
 
 ttk.RadioButton(
@@ -46,6 +48,8 @@ ttk.RadioButton(
     value="weekly",
     variable=choice,
 ).pack(anchor="w")
+
+app.mainloop()
 ```
 
 ---
@@ -84,6 +88,8 @@ The indicator is recolored dynamically to match the active theme and state.
 RadioButtons may include icons alongside their labels.
 
 ```python
+import ttkbootstrap as ttk
+
 ttk.RadioButton(
     parent,
     text="Wi-Fi",
@@ -127,6 +133,8 @@ RadioButtons can be bound to traditional Tk variables or reactive signals.
 - `localize` controls whether labels participate in localization
 
 ```python
+import ttkbootstrap as ttk
+
 # Conceptual example
 # mode = Signal("list")
 # ttk.RadioButton(text="Grid", value="grid", signal=mode)

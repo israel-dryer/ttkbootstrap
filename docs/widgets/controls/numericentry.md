@@ -3,27 +3,22 @@ title: NumericEntry
 icon: fontawesome/solid/hashtag
 ---
 
-
 # NumericEntry
 
-`NumericEntry` is a **specialized numeric field control** that builds on `TextEntry` and `Entry` to deliver
-stepper buttons, bounds checking, locale-aware formatting, and data-aware events in one composable widget.
-
-Use it whenever you accept integer or floating-point input and want consistent validation, messaging, and keyboard/mouse-friendly stepping.
+`NumericEntry` is a `Field`-backed numeric spinner that combines themed spin buttons with validation, formatting, and structured events.
 
 ---
 
 ## Overview
 
-`NumericEntry` renders an entry field augmented with:
+`NumericEntry` bundles:
 
-- **Spin buttons** (plus/minus icons) for mouse-friendly stepping.
-- **Keyboard stepping** via Up/Down arrow keys and optional mouse-wheel support.
-- **Min/max bounds checking** with optional wrapping behavior.
-- **Locale-aware value formatting** through `value_format` and `locale` arguments.
-- **All `Field` features** such as labels, messages, validation hooks, and addons.
+- Spin buttons (`plus`/`minus` icons) plus keyboard/mouse wheel stepping.
+- Min/max bounds enforcement with optional `wrap` behavior.
+- Locale-aware formatting via `value_format`, `locale`, and `increment`.
+- Full `Field` features (labels, messages, validation rules, addons, bootstyle tokens).
 
-The widget produces the same consistent experience whether you are asking for quantities, prices, ratios, or percentages.
+Use it when you need numeric input that stays consistent with your theme and validation rules.
 
 ---
 
@@ -32,7 +27,7 @@ The widget produces the same consistent experience whether you are asking for qu
 ```python
 import ttkbootstrap as ttk
 
-app = ttk.App(title="Numeric Entry Demo", theme="cosmo")
+app = ttk.App(theme="cosmo")
 
 age = ttk.NumericEntry(
     app,
@@ -40,7 +35,7 @@ age = ttk.NumericEntry(
     value=25,
     minvalue=0,
     maxvalue=120,
-    message="Use arrows, wheel, or buttons to adjust"
+    message="Use the arrows or wheel to adjust"
 )
 age.pack(fill="x", padx=16, pady=8)
 
@@ -51,7 +46,8 @@ price = ttk.NumericEntry(
     minvalue=0,
     maxvalue=10000,
     increment=0.25,
-    value_format="$#,##0.00"
+    value_format="$#,##0.00",
+    bootstyle="success"
 )
 price.pack(fill="x", padx=16, pady=8)
 
@@ -64,17 +60,19 @@ app.mainloop()
 
 `NumericEntry` enforces bounds automatically:
 
-- Use `minvalue`/`maxvalue` to clamp values to a known range.
-- Set `wrap=True` to cycle at the boundaries (handy for degrees, clocks, etc.).
-- The underlying `Field` validation infrastructure surfaces messages in the `message` area, and you can still call `add_validation_rule` for business-specific checks.
-
-You can also enable `required=True` or `allow_blank=True` from `FieldOptions` to control whether empty input is permitted.
+- `minvalue`/`maxvalue` clamp numeric ranges.
+- `wrap=True` cycles values when the user hits the boundary (handy for degrees or times).
+- Field validation messages appear in the message area, and you can still call `add_validation_rule()` or use `required=True`/`allow_blank=True` for business logic.
 
 ---
 
 ## Formatting & localization
 
 ```python
+import ttkbootstrap as ttk
+
+app = ttk.App(theme="cosmo")
+
 rate = ttk.NumericEntry(
     app,
     label="Tax rate",
@@ -84,24 +82,29 @@ rate = ttk.NumericEntry(
     locale="en_US"
 )
 rate.pack(fill="x", padx=16)
+
+app.mainloop()
 ```
 
-Set `value_format` to any format that `IntlFormatter` supports (decimal, percent, currency, or a custom pattern like `#,##0.00`).
-Combine that with `locale` to keep formatting consistent across regions.
+For `value_format`, use any `IntlFormatter` pattern (`decimal`, `percent`, `currency`, or custom `#,##0.00`) and pair it with `locale` for audience-specific formatting.
 
 ---
 
 ## Events & interaction
 
-`NumericEntry` exposes event hooks from the internal spin buttons and entry part:
+`NumericEntry` exposes Field events plus spin-specific hooks:
 
-- `<<Increment>>` / `<<Decrement>>`: fire before a step occurs.
-- `<<Changed>>`: fires whenever the parsed value commits (on blur or Enter).
-- `<<Input>>`, `<<Valid>>`, and `<<Invalid>>` behave the same as other `Field` widgets.
+- `<<Increment>>` / `<<Decrement>>` fire before a step and support `on_increment`, `on_decrement`, or manual `step()` calls.
+- `<<Changed>>` fires when the parsed value commits, and `<<Input>>`, `<<Valid>>`, and `<<Invalid>>` behave like other `Field` widgets.
+- Hide the spin buttons (`show_spin_buttons=False`) when you only want keyboard input but still benefit from formatting and validation.
 
-You can also call `on_increment`, `on_decrement`, and `step()` to customize behavior programmatically.
+---
 
-Spin buttons can be hidden via `show_spin_buttons=False` if you only want the `Entry` experience while keeping validation and formatting.
+## Styling & appearance
+
+- `bootstyle` selects accent colors (`primary`, `danger`, `success`) and `surface_color` tweaks the fill when embedded in cards.
+- Use `style_options` to forward tokens (e.g., `{"padding": (8, 6)}`) when you need finer layout control.
+- Combine `increment`, `wrap`, and `show_spin_buttons` to define the control’s behavior and message (e.g., add hints when wrapping or hide the buttons for compact forms).
 
 ---
 
@@ -109,13 +112,12 @@ Spin buttons can be hidden via `show_spin_buttons=False` if you only want the `E
 
 Choose `NumericEntry` when you need:
 
-- an entry that speaks numbers rather than free text,
-- built-in stepping via mouse/keyboard + spin buttons,
-- automatic min/max clamping or wrapping,
-- formatted values tied to a locale or currency,
-- and every `Field` nicety (labels, messages, validation, addons).
+- a numeric field that honors bootstyle tokens and validation messaging,
+- built-in spin buttons plus keyboard/mouse stepping,
+- automatic bounds, wrapping, and locale-aware formatting,
+- Field conveniences (labels, messages, addons, structured events).
 
-If you only need a bare `ttk.Entry`, use `Entry`; if you want the same features with a wider range of edit types, consider `TextEntry` or `Form` integrations.
+If you only need an unlabeled text field, use `Entry`; for multi-field forms consider `TextEntry`, `Form`, or `SpinnerEntry`.
 
 ---
 
@@ -126,4 +128,3 @@ If you only need a bare `ttk.Entry`, use `Entry`; if you want the same features 
 - `DateEntry`
 - `TimeEntry`
 - `Form`
-

@@ -71,6 +71,8 @@ Buttons use **Bootstyle tokens** to describe both intent and treatment.
   Styled like a hyperlink, including cursor and underline behavior.
 
 ```python
+import ttkbootstrap as ttk
+
 ttk.Button(parent, text="Delete", bootstyle="danger-outline")
 ```
 
@@ -87,6 +89,8 @@ Buttons support both raw Tk images and **theme-aware icons**.
 ### Icon + Text
 
 ```python
+import ttkbootstrap as ttk
+
 ttk.Button(
     parent,
     text="Settings",
@@ -108,6 +112,8 @@ When an icon is present, the button automatically lays out the icon and label to
 For toolbar-style actions, you can create icon-only buttons:
 
 ```python
+import ttkbootstrap as ttk
+
 ttk.Button(
     parent,
     icon="trash",
@@ -155,6 +161,8 @@ Buttons integrate with ttkbootstrap’s localization and reactive systems.
 - `textsignal` allows the label to update reactively from a signal
 
 ```python
+import ttkbootstrap as ttk
+
 # Conceptual example
 # status = Signal("Save")
 # ttk.Button(parent, textsignal=status, bootstyle="success")

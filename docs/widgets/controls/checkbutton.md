@@ -29,6 +29,8 @@ ttkbootstrap checkbuttons are designed to:
 ```python
 import ttkbootstrap as ttk
 
+app = ttk.App()
+
 var = ttk.BooleanVar(value=True)
 
 ttk.CheckButton(
@@ -37,6 +39,8 @@ ttk.CheckButton(
     variable=var,
     bootstyle="primary",
 ).pack(padx=16, pady=8)
+
+app.mainloop()
 ```
 
 ---
@@ -54,6 +58,8 @@ The classic checkbox style:
 - emphasizes precision over immediacy
 
 ```python
+import ttkbootstrap as ttk
+
 ttk.CheckButton(
     parent,
     text="Send usage data",
@@ -70,6 +76,8 @@ The toggle style uses a switch metaphor:
 - emphasizes quick enable/disable actions
 
 ```python
+import ttkbootstrap as ttk
+
 ttk.CheckButton(
     parent,
     text="Dark mode",
@@ -106,6 +114,8 @@ The active theme controls how these states are rendered, ensuring clear feedback
 CheckButtons may include icons alongside their labels.
 
 ```python
+import ttkbootstrap as ttk
+
 ttk.CheckButton(
     parent,
     text="Wi-Fi",
@@ -131,6 +141,8 @@ CheckButtons can be bound to traditional Tk variables or reactive signals.
 - `localize` controls whether the label participates in localization
 
 ```python
+import ttkbootstrap as ttk
+
 # Conceptual example
 # enabled = Signal(False)
 # ttk.CheckButton(text="Sync automatically", signal=enabled)

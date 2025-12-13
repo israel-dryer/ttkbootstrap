@@ -3,7 +3,6 @@ title: SpinnerEntry
 icon: fontawesome/solid/sort
 ---
 
-
 # SpinnerEntry
 
 `SpinnerEntry` is a **Field-powered spinner control** that blends `Spinbox` behaviors with all the
@@ -18,13 +17,13 @@ and locale-aware formatting, so it works equally well for enumerations, units, d
 
 `SpinnerEntry` builds on `Field` to deliver:
 
-- **Spinner controls** (up/down arrows) built in next to the `Entry`.
+- **Spinner controls** (up/down arrows) built in next to the entry and optional `show_spin_buttons`.
 - **Text mode** (`values`) that cycles through a list you provide.
-- **Numeric mode** (`minvalue`/`maxvalue`/`increment`) for ranged steps.
+- **Numeric mode** (`minvalue`/`maxvalue`/`increment`) for stepped ranges.
 - **Keyboard + mouse wheel** support for adjustment.
 - **Optional wrap** to cycle at boundaries instead of clamping.
 - **Locale-aware number formatting** via `value_format` and `locale`.
-- **Field goodness** (labels, messages, validation, addons, bootstyles).
+- **Field goodness** (labels, messages, validation, addons, bootstyle tokens).
 
 The control keeps user input constrained to valid choices while remaining compact and keyboard-friendly.
 
@@ -90,6 +89,8 @@ use `required=True`, or configure `allow_blank=True` to handle optional input.
 ## Formatting & localization
 
 ```python
+import ttkbootstrap as ttk
+
 spinner = ttk.SpinnerEntry(
     app,
     label="Tax rate",
@@ -120,6 +121,15 @@ You also get keyboard + mouse wheel handling out of the box, so users can step w
 
 ---
 
+## Styling & appearance
+
+- `bootstyle` and `surface_color` drive the spinner’s accent and fill colors so it matches your theme.
+- `style_options` accepts builder tokens (e.g., `{"padding": (4, 4)}`) when the surrounding layout needs tighter spacing.
+- Toggle the built-in arrows with `show_spin_buttons=False` when you want to reduce chrome but keep formatting/message behavior.
+- `locale`, `value_format`, and `wrap` together define how values appear, especially for currency, percent, or localized labels.
+
+---
+
 ## When to choose SpinnerEntry
 
 Use `SpinnerEntry` whenever your input is a **fixed enumeration or bounded range** that users should cycle through,
@@ -136,4 +146,3 @@ If you only need basic numeric typing with optional steppers, consider `NumericE
 - `TextEntry`
 - `Entry`
 - `Form`
-
