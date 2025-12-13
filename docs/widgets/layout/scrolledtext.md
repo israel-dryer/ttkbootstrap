@@ -1,6 +1,6 @@
 ---
 title: ScrolledText
-icon: fontawesome/solid/scroll
+icon: fontawesome/solid/align-left
 ---
 
 
@@ -65,6 +65,6 @@ Pick `ScrolledText` over a bare `Text` when you want scrollbars without manual c
 
 ## Related widgets
 
-- `TextEntry` (single-line text input)
-- `Frame` / `ScrollView` (container-based scrolling)
-- `ToolTip` (inline text hints)
+- **TextEntry** (single-line field)
+- **ScrollView**
+
