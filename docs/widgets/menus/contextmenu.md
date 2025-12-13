@@ -1,6 +1,6 @@
 ---
 title: ContextMenu
-icon: fontawesome/solid/caret-right
+icon: fontawesome/solid/ellipsis-vertical
 ---
 
 
