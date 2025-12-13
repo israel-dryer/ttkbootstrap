@@ -185,4 +185,3 @@ In addition to all standard `ttk.Button` options, the most commonly used ttkboot
 - **ContextMenu** — right-click actions
 - **Dialogs** — buttons commonly drive dialog actions
 - **Toast** — buttons often trigger feedback messages
-
