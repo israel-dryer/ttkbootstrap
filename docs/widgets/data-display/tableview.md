@@ -1,6 +1,6 @@
 ---
 title: TableView
-icon: fontawesome/solid/table-list
+icon: fontawesome/solid/table
 ---
 
 
