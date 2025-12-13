@@ -214,7 +214,8 @@ app.mainloop()
 
 ## Events
 
-`NumericEntry` forwards structured virtual events from the underlying numeric entry part, including:
+`NumericEntry` forwards structured virtual events from the underlying numeric entry part. Related `on_*` and `off_*` 
+convenience bindings are available for the following generated events:
 
 - `<<Input>>` — each keystroke (raw text)
 - `<<Changed>>` — committed value changed (blur/Enter)
@@ -231,11 +232,11 @@ app = ttk.App()
 qty = ttk.NumericEntry(app, label="Quantity", value=1, minvalue=0, maxvalue=20)
 qty.pack(fill="x", padx=20, pady=10)
 
-def on_changed(event):
+def handle_changed(event):
     # event.data typically includes: value, prev_value, text
     print("changed:", event.data)
 
-qty.bind("<<Changed>>", on_changed)
+qty.on_changed(handle_changed)
 
 app.mainloop()
 ```
@@ -243,10 +244,10 @@ app.mainloop()
 Example: intercept increment/decrement requests
 
 ```python
-def on_increment(event):
+def handle_increment(event):
     print("increment requested")
-
-qty.bind("<<Increment>>", on_increment)
+    
+qty.on_increment(handle_increment)
 ```
 
 ---
