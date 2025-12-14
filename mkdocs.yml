@@ -32,6 +32,9 @@ theme:
         icon: lucide/moon
         name: Switch to system preference
 
+markdown_extends:
+  - md_in_html
+
 nav:
   - Getting Started:
       - What is ttkbootstrap?: getting-started/what-is-v2.md

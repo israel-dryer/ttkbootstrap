@@ -9,8 +9,12 @@ icon: fontawesome/solid/square-check
 
 Use `CheckButton` when the user is turning something **on/off** (or selecting multiple items independently).
 
-![CheckButton states](../../assets/dark/widgets-checkbutton.png#only-dark)  
-![CheckButton states](../../assets/light/widgets-checkbutton.png#only-light)  
+---
+
+<figure markdown>
+![CheckButton states](../../assets/light/widgets-checkbutton.png#only-light)
+![CheckButton states](../../assets/dark/widgets-checkbutton.png#only-dark)
+</figure>
 
 ---
 

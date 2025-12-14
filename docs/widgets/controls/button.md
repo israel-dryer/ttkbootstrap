@@ -15,9 +15,11 @@ In ttkbootstrap v2, `Button` is a wrapper around Tkinter’s `ttk.Button` that k
 - Optional **reactive text binding** with `textsignal=...`
 - **Surface-aware** styling via `surface_color=...` (or inherit from the parent surface)
 
+---
+<figure markdown>
 ![Button variants](../../assets/dark/widgets-button.png#only-dark)  
 ![Button variants](../../assets/light/widgets-button.png#only-light)
-
+</figure>
 !!! note "Ghost and Link are displayed above in _active_ state. Normal state appears same as text."
 
 ---
