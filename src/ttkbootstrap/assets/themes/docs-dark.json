@@ -1,0 +1,32 @@
+{
+  "name": "docs-dark",
+  "display_name": "Docs Dark",
+  "mode": "dark",
+  "foreground": "#f8f9fa",
+  "background": "#0B0C0E",
+  "white": "#ffffff",
+  "black": "#000000",
+  "shades": {
+    "blue": "#4D76F6",
+    "indigo": "#6610f2",
+    "purple": "#6f42c1",
+    "red": "#dc3545",
+    "orange": "#fd7e14",
+    "yellow": "#ffc107",
+    "green": "#198754",
+    "teal": "#20c997",
+    "cyan": "#0dcaf0",
+    "gray": "#adb5bd",
+    "pink": "#d63384"
+  },
+  "semantic": {
+    "primary": "blue[500]",
+    "secondary": "gray[400]",
+    "success": "green[400]",
+    "info": "cyan[400]",
+    "warning": "yellow[400]",
+    "danger": "red[400]",
+    "light": "gray[100]",
+    "dark": "gray[900]"
+  }
+}
