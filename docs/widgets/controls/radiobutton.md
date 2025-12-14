@@ -14,9 +14,12 @@ It wraps Tkinter’s `ttk.Radiobutton`, keeping the familiar API while adding tt
 - Optional **signals** for reactive apps (`signal=...`)
 - **Surface-aware** styling (`surface_color=...`)
 
-> _Image placeholder:_  
-> `![RadioButton group](../_img/widgets/radiobutton/overview.png)`  
-> Suggested shot: 3-option group + disabled option + different bootstyles.
+---  
+
+<figure markdown>
+![Radiobutton states](../../assets/light/widgets-radiobutton.png#only-light)
+![Radiobutton states](../../assets/dark/widgets-radiobutton.png#only-dark)
+</figure>
 
 ---
 
