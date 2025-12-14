@@ -1,99 +1,429 @@
 ---
 title: Form
-icon: fontawesome/solid/list-check
+icon: fontawesome/solid/rectangle-list
 ---
-
 
 # Form
 
-`Form` is a **data-driven layout container** that renders labeled field widgets, groups, tabs, and footer buttons from either a data dictionary or an explicit `FieldItem`/`GroupItem` description. It pairs ttkbootstrap field controls with automatic two-way binding and validation, so you can spin up CRUD panels or dialogs without wiring every individual widget yourself.
+`Form` builds a complete data entry UI from a definition or data dictionary.
+
+In ttkbootstrap v2, `Form` wraps a `Frame` to create structured layouts with:
+
+- **Automatic field generation** from data dictionaries
+- **Explicit layout control** with `FieldItem`, `GroupItem`, and `TabsItem`
+- **Multiple field types** (textentry, numericentry, dateentry, checkbutton, selectbox, etc.)
+- **Built-in validation** with `.validate()` method
+- **Data syncing** via `.data` property
+- **Footer buttons** with automatic styling
+- **Flexible layouts** with multi-column grids, groups, and tabs
+
+Use `Form` when building dialogs, settings panels, or any structured data entry interface.
+
+> _Image placeholder:_
+> `![Form example](../_img/widgets/form/overview.png)`
+> Suggested shot: multi-field form with labels, validation messages, grouped sections, and footer buttons.
 
 ---
 
-## Overview
+## Basic usage
 
-`Form` sits on top of `Frame` and:
+### From data dictionary
 
-- Accepts `data` (a `dict[str, Any]`) whose keys become field names and whose value types infer editors (`TextEntry`, `NumericEntry`, `DateEntry`, `PasswordEntry`, checkbuttons, etc.).
-- Or receives an explicit `items` layout consisting of `FieldItem`, `GroupItem`, and `TabsItem` definitions (or plain mappings) to control labels, positioning, editor types, and visibility.
-- Supports `col_count`, `min_col_width`, and nested groups/tabs to create responsive grids.
-- Offers `buttons` (strings, `DialogButton`, or mapping configs) rendered in a footer row that automatically emit `<<Changed>>` events and populate `form.result`.
-- Fires `on_data_changed` with the current data snapshot when any field updates.
-- Provides helpers such as `form.data`, `validate()`, `get_field_variable()`, and `get_field_signal()` so you can integrate the form into dialogs or seats of logic.
-
-Use `Form` when you want forms that stay in sync with your data model without manually orchestrating the widgets yourself.
-
----
-
-## Quick example
+The simplest way to use `Form` is to pass a data dictionary. Fields are inferred from the keys and value types.
 
 ```python
 import ttkbootstrap as ttk
-from ttkbootstrap.widgets.composites.form import Form
 
-app = ttk.App(title="Form Demo", theme="cosmo")
+app = ttk.App()
 
 data = {
-    "name": "Alice",
-    "email": "alice@example.com",
-    "birthdate": "1990-01-15",
-    "notifications": True
+    "name": "John Doe",
+    "email": "john@example.com",
+    "age": 30,
+    "subscribe": True,
 }
 
-form = Form(
-    app,
-    data=data,
-    col_count=2,
-    buttons=[
-        {"text": "Save", "role": "primary"},
-        "Cancel"
-    ],
-    on_data_changed=lambda d: print("Form data:", d)
-)
-form.pack(fill="both", padx=16, pady=16, expand=True)
+form = ttk.Form(app, data=data)
+form.pack(fill="both", expand=True, padx=20, pady=20)
+
+print(form.data)  # Get current form values
 
 app.mainloop()
 ```
 
 ---
 
-## Layout, editors, and nesting
+## Explicit field definitions
 
-- When `items` is omitted, `Form` infers field definitions from the `data` dict via `FieldItem`, choosing editors per dtype (`numericentry`, `dateentry`, `passwordentry`, etc.).
-- Override editors or layouts by passing explicit `items`. Each `FieldItem` lets you set `editor`, `editor_options`, `column`, `row`, `visible`, `readonly`, and spans—perfect for custom grids.
-- Use `GroupItem` to wrap fields in a labeled `LabelFrame` (with padding, width, height). Nest groups inside each other for complex layouts.
-- Attach tabs via `TabsItem` + `TabItem` so you can split forms across tab panels while still exposing the same data binding.
-- `Form` also accepts `scrollable=True` when you need the body to scroll independently.
+For more control, use `FieldItem` to define each field explicitly.
 
----
+```python
+import ttkbootstrap as ttk
+from ttkbootstrap.widgets.composites.form import FieldItem
 
-## Buttons, data binding & helpers
+app = ttk.App()
 
-- Footer `buttons` can be strings, `DialogButton` instances, or dictionaries. They are built with semantic bootstyles (primary/secondary/danger) and call the provided handler before storing `form.result`.
-- Call `form.data` to get the current snapshot. Assign to `form.data = {...}` to push values into the widgets programmatically.
-- `get_field_variable(key)` / `get_field_signal(key)` / `get_field_textsignal(key)` let you tap into the underlying Tk variables or signals for custom bindings.
-- When `on_data_changed` is provided, it receives a fresh dict every time a field commit occurs, letting you validate, sync, or enable other UI.
+items = [
+    FieldItem(key="username", label="Username", editor="textentry"),
+    FieldItem(key="password", label="Password", editor="passwordentry"),
+    FieldItem(key="remember", label="Remember me", editor="checkbutton"),
+]
 
----
+form = ttk.Form(app, items=items, data={"username": "", "password": "", "remember": False})
+form.pack(fill="both", expand=True, padx=20, pady=20)
 
-## Validation & interaction
-
-- `Form.validate()` loops through every field, runs validation rules on widgets that support `ValidationMixin`, and focuses the first invalid control. It returns `True` only when all widgets pass.
-- Every field still emits standard `<</>>` events (e.g., `<<Changed>>`, `<<Input>>`, `<<Valid>>`, `<<Invalid>>`), so you can listen directly on individual widgets if needed.
-- `FieldItem.editor_options` can include validation helpers like `required`, `validator`, or `show_message` so the control surfaces inline feedback.
+app.mainloop()
+```
 
 ---
 
-## When to use Form
+## Field types
 
-Use `Form` when you need a data-driven layout—like dialog forms, admin panels, or settings pages—without manually wiring every field. If you only need a single control, keep using `TextEntry`, `NumericEntry`, or `DateEntry` directly; `Form` shines when you want many fields rendered consistently and synced with your model.
+`Form` supports multiple editor types. If not specified, the editor is inferred from `dtype` or the data value.
 
-For guided dialogs, pair `Form` with `DialogButton` definitions or wrap it inside `FormDialog`.
+### Available editors
+
+| Editor | Description | Default for |
+|--------|-------------|-------------|
+| `textentry` | Text input with validation | `str` values |
+| `numericentry` | Numeric input | `int`, `float` values |
+| `passwordentry` | Masked password input | `dtype='password'` |
+| `dateentry` | Date picker | `date`, `datetime` values |
+| `checkbutton` | Checkbox | `bool` values |
+| `toggle` | Toggle switch | - |
+| `selectbox` | Dropdown selection | - |
+| `spinbox` | Numeric spinner | - |
+| `scale` | Slider control | - |
+| `text` | Multi-line text area | - |
+
+### Specifying editors
+
+```python
+items = [
+    FieldItem(key="priority", label="Priority", editor="selectbox",
+              editor_options={"items": ["Low", "Medium", "High"]}),
+    FieldItem(key="volume", label="Volume", editor="scale",
+              editor_options={"from_": 0, "to": 100}),
+    FieldItem(key="notes", label="Notes", editor="text",
+              editor_options={"height": 5}),
+]
+```
+
+---
+
+## Layout options
+
+### Multi-column layout
+
+Use `col_count` to arrange fields in columns.
+
+```python
+form = ttk.Form(
+    app,
+    data={"first_name": "", "last_name": "", "email": "", "phone": ""},
+    col_count=2,  # Two columns
+)
+```
+
+### Explicit positioning
+
+Control the exact grid position of fields.
+
+```python
+items = [
+    FieldItem(key="title", label="Title", row=0, column=0, columnspan=2),
+    FieldItem(key="first_name", label="First Name", row=1, column=0),
+    FieldItem(key="last_name", label="Last Name", row=1, column=1),
+]
+```
+
+---
+
+## Groups
+
+Use `GroupItem` to organize fields into labeled sections.
+
+```python
+from ttkbootstrap.widgets.composites.form import FieldItem, GroupItem
+
+items = [
+    GroupItem(
+        label="Personal Information",
+        items=[
+            FieldItem(key="name", label="Name"),
+            FieldItem(key="email", label="Email"),
+        ],
+    ),
+    GroupItem(
+        label="Account Settings",
+        items=[
+            FieldItem(key="username", label="Username"),
+            FieldItem(key="password", label="Password", editor="passwordentry"),
+        ],
+    ),
+]
+
+form = ttk.Form(app, items=items, data={})
+```
+
+### Multi-column groups
+
+Groups can have their own column layout.
+
+```python
+GroupItem(
+    label="Address",
+    col_count=2,  # Two columns within this group
+    items=[
+        FieldItem(key="street", label="Street", columnspan=2),
+        FieldItem(key="city", label="City"),
+        FieldItem(key="state", label="State"),
+    ],
+)
+```
+
+---
+
+## Tabs
+
+Use `TabsItem` to organize fields across multiple tabs.
+
+```python
+from ttkbootstrap.widgets.composites.form import TabsItem, TabItem
+
+items = [
+    TabsItem(
+        tabs=[
+            TabItem(
+                label="General",
+                items=[
+                    FieldItem(key="name", label="Name"),
+                    FieldItem(key="email", label="Email"),
+                ],
+            ),
+            TabItem(
+                label="Advanced",
+                items=[
+                    FieldItem(key="debug", label="Debug mode", editor="checkbutton"),
+                    FieldItem(key="timeout", label="Timeout", editor="numericentry"),
+                ],
+            ),
+        ],
+    ),
+]
+
+form = ttk.Form(app, items=items, data={})
+```
+
+---
+
+## Data handling
+
+### Getting form data
+
+Use the `.data` property to retrieve current values.
+
+```python
+form = ttk.Form(app, data={"name": "Alice", "age": 25})
+form.pack()
+
+# Later...
+current_data = form.data
+print(current_data)  # {"name": "...", "age": ...}
+```
+
+### Setting form data
+
+Update all fields by assigning to `.data` or using `configure(data=...)`.
+
+```python
+form.data = {"name": "Bob", "age": 30}
+
+# Or
+form.configure(data={"name": "Bob", "age": 30})
+```
+
+### Reacting to changes
+
+Use `on_data_changed` callback to respond when any field changes.
+
+```python
+def handle_change(data):
+    print("Form data changed:", data)
+
+form = ttk.Form(app, data={}, on_data_changed=handle_change)
+```
+
+---
+
+## Validation
+
+Call `.validate()` to run validation rules on all fields. Returns `True` if all fields are valid.
+
+```python
+items = [
+    FieldItem(
+        key="email",
+        label="Email",
+        editor="textentry",
+        editor_options={"required": True, "show_message": True},
+    ),
+]
+
+form = ttk.Form(app, items=items, data={"email": ""})
+form.pack()
+
+if form.validate():
+    print("All fields valid!")
+    print(form.data)
+else:
+    print("Validation failed")
+```
+
+> See **TextEntry**, **NumericEntry**, and other `*Entry` widgets for validation options.
+
+---
+
+## Footer buttons
+
+Add action buttons to the bottom of the form.
+
+```python
+form = ttk.Form(
+    app,
+    data={"name": ""},
+    buttons=["Cancel", "Save"],
+)
+```
+
+### Custom button configuration
+
+```python
+from ttkbootstrap.dialogs.dialog import DialogButton
+
+buttons = [
+    DialogButton(text="Cancel", role="cancel"),
+    DialogButton(text="Save", role="primary", result="save"),
+]
+
+form = ttk.Form(app, data={}, buttons=buttons)
+```
+
+After a button is clicked, check `form.result` for the button's result value.
+
+---
+
+## Accessing field widgets
+
+### Get field variables
+
+```python
+var = form.get_field_variable("name")
+print(var.get())
+```
+
+### Get field signals
+
+```python
+signal = form.get_field_signal("age")
+textsignal = form.get_field_textsignal("email")
+```
+
+### Access widgets directly
+
+```python
+# Widgets are stored in form._widgets
+name_widget = form._widgets.get("name")
+```
+
+---
+
+## Field options
+
+### Common `FieldItem` options
+
+```python
+FieldItem(
+    key="field_name",          # Required: unique identifier
+    label="Field Label",       # Optional: display label (defaults to key)
+    dtype='str',               # Optional: data type hint
+    editor='textentry',        # Optional: editor type
+    editor_options={},         # Optional: options passed to the editor widget
+    readonly=False,            # Optional: make field read-only
+    visible=True,              # Optional: show/hide field
+    row=None,                  # Optional: explicit grid row
+    column=None,               # Optional: explicit grid column
+    columnspan=1,              # Optional: span multiple columns
+    rowspan=1,                 # Optional: span multiple rows
+)
+```
+
+### Common `editor_options`
+
+For validation-enabled editors (`textentry`, `numericentry`, etc.):
+
+```python
+editor_options={
+    "required": True,
+    "show_message": True,
+    "bootstyle": "primary",
+}
+```
+
+For `selectbox`:
+
+```python
+editor_options={
+    "items": ["Option 1", "Option 2", "Option 3"],
+}
+```
+
+For `scale`:
+
+```python
+editor_options={
+    "from_": 0,
+    "to": 100,
+    "orient": "horizontal",
+}
+```
+
+---
+
+## Bootstyle
+
+Apply a bootstyle to the form container.
+
+```python
+form = ttk.Form(app, data={}, bootstyle="secondary")
+```
+
+---
+
+## When should I use Form?
+
+Use `Form` when:
+
+- building dialogs with multiple input fields
+- creating settings panels
+- you need consistent field layout and validation
+- data is structured as key-value pairs
+- you want automatic field generation from data
+
+Prefer individual widgets when:
+
+- you only need 1-2 input fields
+- you need complete custom layout control
+- the form structure is very dynamic
 
 ---
 
 ## Related widgets
 
-- `FormDialog` (forms inside a dialog shell)
-- `TextEntry` / `NumericEntry` / `DateEntry` (field builders used by `Form`)
-- `Button` (footer actions rendered by the form)
+- **TextEntry** — text input with validation
+- **NumericEntry** — numeric input with validation
+- **DateEntry** — date picker
+- **PasswordEntry** — masked password input
+- **SelectBox** — dropdown selection
+- **Dialog** — modal dialogs with forms
+- **Field** — base class for form fields

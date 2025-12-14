@@ -1,201 +1,339 @@
 ---
 title: OptionMenu
-icon: fontawesome/solid/caret-down
+icon: fontawesome/solid/square-caret-down
 ---
 
 # OptionMenu
 
-`OptionMenu` presents a single selected value from a list of options using a button-based dropdown.
-In ttkbootstrap v2, `OptionMenu` is implemented as a MenuButton backed by a ContextMenu, providing a modern, theme-aware
-alternative to Tk’s classic option menu.
+`OptionMenu` lets users pick one value from a list.
+
+In ttkbootstrap v2, `OptionMenu` wraps Tkinter's `ttk.Menubutton` to create a simple dropdown control. It adds:
+
+- **Bootstyle tokens** (`bootstyle="primary"`, `bootstyle="outline"`, etc.)
+- **Theme-aware icons** via `icon=...`
+- Optional **reactive binding** with `textsignal=...`
+- **Surface-aware** styling via `surface_color=...`
+- Built-in **`<<Changed>>` events** with `on_changed(...)`
+
+Use `OptionMenu` when the list is short (3–15 items) and users know the available choices. For longer lists with search/filter, prefer **SelectBox**.
+
+> _Image placeholder:_
+> `![OptionMenu states](../_img/widgets/optionmenu/overview.png)`
+> Suggested shot: collapsed + open menu + disabled + selected item highlighted.
 
 ---
 
-## Overview
-
-Use `OptionMenu` when:
-
-- exactly one value should be selected from a list,
-- screen space is limited,
-- a dropdown interaction is preferred over radio groups.
-
-Unlike Tk’s legacy option menu, ttkbootstrap’s `OptionMenu`:
-
-- uses real widgets instead of menu hacks,
-- supports icons, themes, and localization,
-- emits structured change events,
-- integrates naturally with toolbutton styles.
-
----
-
-## Quick Example
+## Basic usage
 
 ```python
 import ttkbootstrap as ttk
 
-app = ttk.Window()
+app = ttk.App()
 
-option = ttk.OptionMenu(
+choice = ttk.StringVar(value="Medium")
+
+menu = ttk.OptionMenu(
     app,
-    value="Daily",
-    options=["Daily", "Weekly", "Monthly"],
-    bootstyle="primary-outline",
+    value="Medium",
+    options=["Low", "Medium", "High"],
+    bootstyle="primary",
 )
+menu.pack(padx=20, pady=20)
 
-option.pack(padx=16, pady=16)
 app.mainloop()
 ```
 
 ---
 
-## How It Works
+## Common options
 
-Internally, `OptionMenu` is composed of:
-
-- a MenuButton (visible control)
-- a ContextMenu (dropdown list)
-- a shared StringVar or signal
-- radiobutton-style menu items
-
-This architecture allows the widget to behave like a real control instead of a legacy menu construct.
-
-<!-- IMAGE PLACEHOLDER -->
-<!-- widgets-optionmenu-structure.png -->
-<!-- Button + dropdown menu relationship -->
-
----
-
-## Value and Options
-
-### Setting the Initial Value
+### Initial value and options list
 
 ```python
-OptionMenu(
-    value="Medium",
-    options=["Low", "Medium", "High"],
+import ttkbootstrap as ttk
+
+app = ttk.App()
+
+menu = ttk.OptionMenu(
+    app,
+    value="Red",
+    options=["Red", "Green", "Blue"],
 )
+menu.pack(padx=20, pady=10)
+
+app.mainloop()
 ```
 
-Values are coerced to strings internally for consistency.
+### Using a variable
 
-### Updating Options at Runtime
-
-Options can be replaced dynamically:
+You can provide a `textvariable` to sync with other widgets or app state.
 
 ```python
-option.configure(options=["Small", "Medium", "Large"])
+import ttkbootstrap as ttk
+
+app = ttk.App()
+
+color = ttk.StringVar(value="Green")
+
+menu = ttk.OptionMenu(
+    app,
+    textvariable=color,
+    options=["Red", "Green", "Blue"],
+)
+menu.pack(padx=20, pady=10)
+
+print("selected:", color.get())
+
+app.mainloop()
 ```
 
-The underlying menu is rebuilt automatically.
+### `state`
+
+Disable the menu when selection shouldn't be changed.
+
+```python
+menu = ttk.OptionMenu(app, value="Locked", options=["A", "B"], state="disabled")
+menu.pack()
+
+# later…
+menu.configure(state="normal")
+```
+
+### `width` and `padding`
+
+```python
+ttk.OptionMenu(app, value="A", options=["A", "B"], width=20, padding=(10, 6)).pack(pady=6)
+```
 
 ---
 
-## Change Events
+## Getting and setting the value
 
-When the selected value changes, `OptionMenu` emits a virtual event:
-
-```
-<<Changed>>
-```
-
-The event includes structured data:
+### `.value` property
 
 ```python
-def on_changed(event):
-    print(event.data["value"])
+import ttkbootstrap as ttk
 
+app = ttk.App()
 
-option.on_changed(on_changed)
+menu = ttk.OptionMenu(app, value="Medium", options=["Low", "Medium", "High"])
+menu.pack(padx=20, pady=10)
+
+print("current:", menu.value)
+
+# Change the value
+menu.value = "High"
+
+app.mainloop()
+```
+
+### Using `configure(value=...)`
+
+```python
+menu.configure(value="Low")
 ```
 
 ---
 
-## Signals and Localization
+## Updating the options list
 
-`OptionMenu` supports both traditional Tk variables and signals.
+Use `configure(options=...)` to change the available choices.
 
-- `textvariable` binds to a StringVar
-- `textsignal` binds to a reactive signal
-- `localize` controls localization behavior
+```python
+import ttkbootstrap as ttk
 
-The displayed value updates automatically when the signal or variable changes.
+app = ttk.App()
+
+menu = ttk.OptionMenu(app, value="Apple", options=["Apple", "Banana"])
+menu.pack(padx=20, pady=10)
+
+def add_more():
+    menu.configure(options=["Apple", "Banana", "Cherry", "Date"])
+
+ttk.Button(app, text="Add more fruits", command=add_more).pack(pady=10)
+
+app.mainloop()
+```
 
 ---
 
-## Visual Styling
+## Bootstyle variants
 
-### Bootstyle Variants
+`OptionMenu` accepts the same bootstyle variants as `MenuButton`.
 
-`OptionMenu` supports the same bootstyle variants as MenuButton:
-
-- solid
-- outline
-- ghost
-- text
+### Solid (default)
 
 ```python
-OptionMenu(bootstyle="secondary-ghost")
+ttk.OptionMenu(app, value="A", options=["A", "B"], bootstyle="primary").pack(pady=4)
+ttk.OptionMenu(app, value="A", options=["A", "B"], bootstyle="success").pack(pady=4)
+ttk.OptionMenu(app, value="A", options=["A", "B"], bootstyle="danger").pack(pady=4)
 ```
 
-### Dropdown Indicator
-
-The dropdown chevron can be hidden or customized:
+### Outline
 
 ```python
-OptionMenu(show_dropdown_button=False)
+ttk.OptionMenu(app, value="A", options=["A", "B"], bootstyle="primary-outline").pack(pady=4)
+ttk.OptionMenu(app, value="A", options=["A", "B"], bootstyle="secondary-outline").pack(pady=4)
 ```
 
-> _Image placeholder:_  
-> OptionMenu opened showing a short list of options.
+### Ghost
 
----
+```python
+ttk.OptionMenu(app, value="A", options=["A", "B"], bootstyle="primary-ghost").pack(pady=4)
+ttk.OptionMenu(app, value="A", options=["A", "B"], bootstyle="info-ghost").pack(pady=4)
+```
 
-## Disabled and Read-Only States
+### Text
 
-`OptionMenu` respects standard ttk states:
+```python
+ttk.OptionMenu(app, value="A", options=["A", "B"], bootstyle="text").pack(pady=4)
+```
 
-- disabled — menu cannot be opened
-- readonly — value cannot be changed
+> _Image placeholder:_
+> `![OptionMenu bootstyles](../_img/widgets/optionmenu/bootstyles.png)`
+> (Show solid / outline / ghost / text variants.)
 
 ---
 
 ## Icons
 
-Icons may be used on the button label:
+### Theme-aware icon (recommended)
+
+Use `icon=...` for an icon that responds to the current theme.
 
 ```python
-OptionMenu(
-    icon="calendar",
-    value="Today",
-    options=["Today", "Tomorrow", "Next Week"],
+import ttkbootstrap as ttk
+
+app = ttk.App()
+
+menu = ttk.OptionMenu(
+    app,
+    value="Dark",
+    options=["Light", "Dark", "Auto"],
+    icon="palette",  # placeholder: your icon spec / provider name
+    bootstyle="primary",
 )
+menu.pack(padx=20, pady=10)
+
+app.mainloop()
 ```
 
-Icons are recolored automatically to match theme and state.
+> _Image placeholder:_
+> `![OptionMenu with icon](../_img/widgets/optionmenu/icon.png)`
+
+!!! warning "Using `image=...`"
+    You can still pass a Tk `PhotoImage` via `image=...`, but it won't automatically recolor for theme changes.
 
 ---
 
-## Common Options
+## Dropdown indicator
 
-Commonly used options include:
+By default, `OptionMenu` shows a dropdown chevron on the right. You can hide it or customize the icon.
 
-- value
-- options
-- bootstyle
-- icon
-- icon_only
-- show_dropdown_button
-- dropdown_button_icon
-- textvariable
-- textsignal
-- surface_color
-- style_options
+### Hide the dropdown button
+
+```python
+ttk.OptionMenu(
+    app,
+    value="A",
+    options=["A", "B", "C"],
+    show_dropdown_button=False,
+).pack(pady=6)
+```
+
+### Custom dropdown icon
+
+```python
+ttk.OptionMenu(
+    app,
+    value="A",
+    options=["A", "B", "C"],
+    dropdown_button_icon="chevron-down",  # placeholder: your icon name
+).pack(pady=6)
+```
 
 ---
 
-## Related Widgets
+## Events
 
-- MenuButton — opens a menu without selection state
-- ContextMenu — reusable popup menu component
-- Radiobutton — explicit single-selection groups
-- SelectBox — list-based selection control
+### `on_changed(...)` and `off_changed(...)`
+
+`OptionMenu` emits a `<<Changed>>` event when the user selects a new value. Use `on_changed(...)` to bind a callback.
+
+```python
+import ttkbootstrap as ttk
+
+app = ttk.App()
+
+menu = ttk.OptionMenu(app, value="Medium", options=["Low", "Medium", "High"])
+menu.pack(padx=20, pady=10)
+
+def handle_change(event):
+    print("Selected:", event.data["value"])
+
+menu.on_changed(handle_change)
+
+app.mainloop()
+```
+
+To unbind:
+
+```python
+bind_id = menu.on_changed(handle_change)
+menu.off_changed(bind_id)
+```
+
+---
+
+## Signals
+
+If your app uses signals, you can bind the text to a `textsignal=` so changes flow through your app state.
+
+```python
+import ttkbootstrap as ttk
+
+app = ttk.App()
+
+# Example only — use your real signal creation API
+selected = ttk.Signal("Medium")  # pseudo-code
+
+menu = ttk.OptionMenu(
+    app,
+    textsignal=selected,
+    options=["Low", "Medium", "High"],
+)
+menu.pack(padx=20, pady=10)
+
+selected.subscribe(lambda v: print("value changed:", v))
+
+app.mainloop()
+```
+
+---
+
+## When should I use OptionMenu?
+
+Use `OptionMenu` when:
+
+- the list is short (3–15 items)
+- the dropdown is purely value selection
+- you want a classic, compact desktop control
+
+Prefer **SelectBox** when:
+
+- the list is long (more than 15 items)
+- users need search/filter
+- you want richer presentation (icons, descriptions, grouping)
+
+Prefer **RadioButton** when:
+
+- there are only 2–4 options and showing them inline improves clarity
+
+---
+
+## Related widgets
+
+- **SelectBox** — dropdown picker with search and filtering
+- **DropdownButton** — button that opens an action menu (not a persistent selection)
+- **RadioButton** — small enumerations displayed inline
+- **MenuButton** — the base widget for custom menu-triggered buttons
