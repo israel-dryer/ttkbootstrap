@@ -3,92 +3,175 @@ title: PasswordEntry
 icon: fontawesome/solid/lock
 ---
 
-
 # PasswordEntry
 
-`PasswordEntry` is a **Field-based password control** that automatically masks characters and adds a visibility toggle so users can verify their input without compromising security.
+`PasswordEntry` is a **secure, high-level text input control** for passwords, PINs, and other sensitive values.
 
-It layers the label/message/validation infrastructure of `Field` with a press-and-hold eye icon that reveals the password temporarily, making it a secure option for login forms, vaults, or credential prompts.
+It builds on `TextEntry`, adding masking, optional reveal behavior, and password-specific validation patterns — while preserving
+the same label, message, validation, localization, and event model used throughout ttkbootstrap v2.
 
----
+Use `PasswordEntry` whenever user input should **not be displayed in clear text**.
 
-## Overview
-
-`PasswordEntry` gives you:
-
-- **Masking** via the `show` option (default `●`), hiding characters as they are typed.
-- **Visibility toggle button** (eye icon) that temporarily reveals the password while held.
-- **Full `Field` behavior**, including labels, messages, validation hooks, bootstyles, and addon slots.
-- **Custom mask characters** if you prefer `•`, `*`, or another glyph.
-- **Optional toggle hiding** via `show_visible_toggle=False` when no reveal button is desired.
-
-The widget is built for forms where security and usability must coexist.
+> _Image placeholder:_  
+> `![PasswordEntry overview](../_img/widgets/passwordentry/overview.png)`  
+> Suggested shot: masked field + reveal toggle + validation message.
 
 ---
 
-## Quick example
+## Basic usage
 
 ```python
 import ttkbootstrap as ttk
 
-app = ttk.App(title="Password Entry Demo", theme="cosmo")
+app = ttk.App()
 
-password = ttk.PasswordEntry(
+pwd = ttk.PasswordEntry(
     app,
     label="Password",
+    required=True,
     message="Must be at least 8 characters",
-    required=True
 )
-password.pack(fill="x", padx=16, pady=8)
-
-pin = ttk.PasswordEntry(
-    app,
-    label="PIN",
-    show="*",
-    message="Numeric PIN only",
-    show_visible_toggle=False
-)
-pin.pack(fill="x", padx=16, pady=8)
+pwd.pack(fill="x", padx=20, pady=10)
 
 app.mainloop()
 ```
 
 ---
 
-## Masking, toggle, & validation
+## What problem does PasswordEntry solve?
 
-- The `show` option controls the mask character (`'●'` by default). Pass `show="*"` for a traditional look.
-- The eye icon (visibility toggle) reveals the password only while pressed, preserving privacy when focus leaves the field.
-- Toggle visibility can be hidden with `show_visible_toggle=False` for stricter workflows.
-- Inherited `Field` validation rules (`required`, `add_validation_rule`, etc.) keep the control ready for secure forms.
-- Message labels display hints or validation feedback, and the field emits `<<Valid>>` / `<<Invalid>>` events like any other `Field` widget.
+A plain `Entry` can mask characters, but applications usually need more:
 
----
+- consistent masking behavior
+- validation feedback (length, complexity)
+- reveal / hide interaction
+- consistent change events
+- form-friendly behavior
 
-## Events & interaction
-
-`PasswordEntry` forwards the standard `Field` events:
-
-- `<<Input>>`: fires on every keystroke (useful for live strength meters or feedback).
-- `<<Changed>>`: fires when a new value commits (Enter, blur, etc.).
-- `<<Valid>>` / `<<Invalid>>`: report validation state changes triggered by `Field` rules.
-- `<<Validated>>`: also available through the inherited `Field` implementation.
-
-The visibility button itself emits `<ButtonPress>`/`<ButtonRelease>` internally to toggle masking, but you rarely need to interact with those bindings directly.
+`PasswordEntry` standardizes these concerns so password fields behave the same everywhere.
 
 ---
 
-## When to use PasswordEntry
+## Masking behavior
 
-Choose `PasswordEntry` for login screens, password creation flows, and any form where secret text needs both masking and optional verification. It guarantees consistent messaging, validation, and bootstyle treatment across your app.
+By default, typed characters are hidden using a mask character.
 
-If you only need plain text input, use `TextEntry`. For general-purpose `Entry` fields without labels/messages, prefer `Entry` from `ttkbootstrap.widgets.primitives`.
+```python
+pwd = ttk.PasswordEntry(app, label="Password")
+```
+
+The mask is applied only to the **displayed text** — the committed value remains accessible programmatically.
+
+---
+
+## Text vs value
+
+Like other entry controls, `PasswordEntry` separates **what is shown** from **what is stored**.
+
+| Concept | Meaning |
+|------|---------|
+| Text | Masked display text |
+| Value | Actual password value |
+
+```python
+secret = pwd.value      # committed value
+raw = pwd.get()         # raw internal text
+```
+
+---
+
+## Reveal / hide behavior
+
+Many applications allow users to temporarily reveal their password.
+
+If supported by your implementation, this may be exposed via:
+
+- a suffix button
+- a toggle icon
+- programmatic control
+
+```python
+pwd = ttk.PasswordEntry(
+    app,
+    label="Password",
+    reveal=True,   # example option
+)
+```
+
+> _Image placeholder:_  
+> `![PasswordEntry reveal](../_img/widgets/passwordentry/reveal.png)`
+
+---
+
+## Validation
+
+Password validation is typically applied on **commit**, not per keystroke.
+
+```python
+pwd = ttk.PasswordEntry(app, label="Password", required=True)
+pwd.add_validation_rule("min_length", 8, message="Minimum 8 characters")
+```
+
+Common validation rules include:
+
+- required
+- minimum length
+- character class rules
+- confirmation match
+
+---
+
+## Events
+
+`PasswordEntry` emits the same field events as other entry widgets:
+
+- `<<Input>>` — text editing
+- `<<Changed>>` — committed value changed
+- `<<Valid>>`, `<<Invalid>>`, `<<Validated>>`
+
+Use the convenience helpers instead of manual `bind(...)` calls.
+
+```python
+def handle_changed(event):
+    print("Password updated")
+
+pwd.on_changed(handle_changed)
+```
+
+!!! tip "Live Typing"
+    Use `on_input(...)` only for UX feedback (e.g., strength meters).  
+    Use `on_changed(...)` for authentication or submission logic.
+
+---
+
+## Add-ons
+
+You can add prefix or suffix widgets just like other entry controls.
+
+```python
+pwd.insert_addon(ttk.Label, position="before", text="🔒")
+```
+
+---
+
+## When should I use PasswordEntry?
+
+Use `PasswordEntry` when:
+
+- input should be masked
+- validation rules apply
+- values are sensitive
+- fields participate in a form
+
+Use `TextEntry` when:
+
+- masking is not required
+- input is descriptive rather than secret
 
 ---
 
 ## Related widgets
 
-- `TextEntry`
-- `Entry`
-- `Form`
-
+- **TextEntry** — general text field
+- **NumericEntry** — numeric input
+- **Form** — structured field layout and submission
