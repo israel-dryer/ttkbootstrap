@@ -1,218 +1,174 @@
 ---
 title: MenuButton
-icon: fontawesome/solid/chevron-down
+icon: fontawesome/solid/square-caret-down
 ---
 
 # MenuButton
 
-A MenuButton displays a button that opens an associated menu. In ttkbootstrap v2, `MenuButton` extends `ttk.Menubutton`
-with bootstyle variants, theme-aware icons, dropdown indicators, and automatic focus handling.
+`MenuButton` is a styled wrapper around `ttk.Menubutton` that integrates ttkbootstrap’s theming, icon system, and localization features. It represents the **primitive menu-triggering button** upon which higher-level widgets like `DropdownButton` are built.
+
+<!--
+IMAGE: MenuButton with attached menu
+Suggested: Simple MenuButton with text and icon, menu open below
+Theme variants: light / dark
+-->
 
 ---
 
-## Overview
+## Basic usage
 
-MenuButtons are commonly used when:
-
-- an action has multiple related choices,
-- a compact control is preferred over a full menu bar,
-- a button should expose secondary actions.
-
-ttkbootstrap MenuButtons are designed to:
-
-- look and behave like standard buttons,
-- clearly indicate the presence of a dropdown menu,
-- integrate icons consistently with other controls,
-- respond correctly to hover, focus, and disabled states.
-
----
-
-## Quick Example
+`MenuButton` is used when you already have (or want to manage) a `tk.Menu` instance directly.
 
 ```python
 import ttkbootstrap as ttk
+from tkinter import Menu
 
 app = ttk.Window()
 
-menu = ttk.Menu(app, tearoff=0)
-menu.add_command(label="Open")
-menu.add_command(label="Save")
+menu = Menu(app, tearoff=False)
+menu.add_command(label="Open", command=lambda: print("Open"))
+menu.add_command(label="Save", command=lambda: print("Save"))
 menu.add_separator()
 menu.add_command(label="Exit", command=app.destroy)
 
-ttk.MenuButton(
-    app,
-    text="File",
-    menu=menu,
-    bootstyle="primary",
-).pack(padx=16, pady=16)
+btn = ttk.MenuButton(app, text="File", menu=menu, bootstyle="secondary")
+btn.pack(padx=20, pady=20)
 
 app.mainloop()
 ```
 
----
-
-## Visual Structure
-
-A MenuButton consists of:
-
-- a button surface (styled like `Button`)
-- optional icon content
-- a dropdown chevron indicator
-- optional spacer to separate content and indicator
-
-The dropdown indicator is part of the style system and is recolored automatically to match widget state.
-
-<!-- IMAGE PLACEHOLDER -->
-<!-- widgets-menubutton-structure.png -->
-<!-- Button showing label + chevron indicator -->
+<!--
+IMAGE: Basic MenuButton example
+Suggested: “File” MenuButton with native tk.Menu visible
+-->
 
 ---
 
-## Bootstyle Variants
+## What problem it solves
 
-MenuButtons support the same semantic variants as regular buttons:
+Tk’s native `ttk.Menubutton` provides minimal styling and no built-in support for icons, localization, or modern theme tokens. `MenuButton` solves this by:
 
-- solid (default)
-- outline
-- ghost
-- text
+- Integrating with ttkbootstrap’s `bootstyle` system
+- Supporting theme-aware icons
+- Participating in localization and reactive text updates
+- Providing consistent focus and interaction styling
+
+---
+
+## Core concepts
+
+### MenuButton vs DropdownButton
+
+It’s important to distinguish these two widgets:
+
+**MenuButton**
+
+- Uses a native `tk.Menu`
+- Lower-level primitive
+- Best when integrating with existing menu code or menubars
+
+**DropdownButton**
+
+- Uses a widget-backed `ContextMenu`
+- Higher-level control
+- Supports icons, checks, radios, and unified events
+
+In most application UI, prefer **DropdownButton** unless you specifically need a native `tk.Menu`.
+
+---
+
+### Icon and text behavior
+
+`MenuButton` supports all standard ttk menubutton options plus ttkbootstrap extensions:
 
 ```python
-ttk.MenuButton(text="Options", bootstyle="secondary-outline")
-```
-
-Each variant defines:
-
-- surface treatment
-- focus ring behavior
-- hover and pressed feedback
-- chevron color mapping
-
-<!-- IMAGE PLACEHOLDER -->
-<!-- widgets-menubutton-variants.png -->
-<!-- Same MenuButton rendered in solid / outline / ghost / text -->
-
----
-
-## Icons
-
-MenuButtons support theme-aware icons via the `icon` option.
-
-```python
-ttk.MenuButton(
-    text="Settings",
+btn = ttk.MenuButton(
+    app,
+    text="Options",
     icon="gear",
-    bootstyle="secondary",
-)
-```
-
-Icons are:
-
-- normalized to a consistent size,
-- recolored per widget state,
-- aligned with text automatically.
-
-<!-- IMAGE PLACEHOLDER -->
-<!-- widgets-menubutton-icon.png -->
-<!-- MenuButton with icon + label + chevron -->
-
----
-
-## Icon-Only MenuButtons
-
-For toolbar usage, MenuButtons may be icon-only.
-
-```python
-ttk.MenuButton(
-    icon="three-dots",
-    icon_only=True,
+    compound="left",
     bootstyle="ghost",
 )
 ```
 
-Icon-only MenuButtons:
+- `icon` is resolved through the ttkbootstrap icon system
+- `icon_only=True` removes extra padding reserved for text
+- `compound` controls icon/text placement
 
-- remove extra label padding,
-- center the icon,
-- remain keyboard-accessible.
-
-<!-- IMAGE PLACEHOLDER -->
-<!-- widgets-menubutton-icon-only.png -->
-<!-- Toolbar row with icon-only MenuButtons -->
+<!--
+IMAGE: MenuButton icon placement
+Suggested: Same MenuButton with icon on left vs icon-only mode
+-->
 
 ---
 
-## Dropdown Indicator Control
+## Common options & patterns
 
-The dropdown chevron is configurable through style options:
+### Localization and reactive text
 
-- show_dropdown_button (default: True)
-- dropdown_button_icon (default: caret-down)
-
-These options are forwarded to the style builder.
+`MenuButton` supports both `textvariable` and `textsignal`:
 
 ```python
-ttk.MenuButton(
-    text="More",
-    bootstyle="text",
-    style_options={
-        "show_dropdown_button": False
-    }
+btn = ttk.MenuButton(
+    app,
+    textsignal=my_signal,
+    localize="auto",
 )
 ```
 
----
-
-## Focus and Interaction
-
-MenuButtons request focus on click to ensure:
-
-- focus rings appear correctly,
-- keyboard navigation remains predictable,
-- visual state matches interaction state.
-
-This behavior is handled automatically by the widget wrapper.
+This allows the button label to update automatically when locale or signal values change.
 
 ---
 
-## Menus and Theme Awareness
+### Focus behavior
 
-MenuButton works naturally with:
+When clicked, `MenuButton` explicitly receives focus so that focus styling is visible:
 
-- standard tk.Menu
-- ttkbootstrap menu utilities
-
-For declarative, icon-aware menus that respond to theme changes, see:
-
-- MenuManager
-- create_menu
-
-```python
-from ttkbootstrap.menu import create_menu
+```text
+<Button-1> → focus_set()
 ```
 
----
-
-## Common Options
-
-In addition to standard ttk.Menubutton options, commonly used ttkbootstrap options include:
-
-- bootstyle
-- icon
-- icon_only
-- menu
-- direction
-- padding
-- surface_color
-- style_options
-- localize
+This ensures consistent keyboard and accessibility feedback.
 
 ---
 
-## Related Widgets
+## Keyboard behavior
 
-- Button — basic action button
-- DropdownButton — button-like menu pattern
-- ContextMenu — right-click menus
-- Toolbutton — toolbar-optimized selectable buttons
+- Activates via mouse click
+- Participates in focus traversal when `takefocus=True`
+- Menu navigation is handled by the attached `tk.Menu`
+
+!!! note "Native menu behavior"
+    Keyboard navigation and accessibility depend on the underlying `tk.Menu` implementation and platform conventions.
+
+---
+
+## UX guidance
+
+- Use `MenuButton` for **traditional menus** or when integrating with existing Tk menu code
+- Prefer `DropdownButton` for modern, toolbar-style action menus
+- Avoid mixing `MenuButton` and `ContextMenu` patterns in the same toolbar
+
+---
+
+## When to use / when not to
+
+**Use MenuButton when:**
+
+- You already rely on `tk.Menu`
+- Building a menubar-style UI
+- You need platform-native menu behavior
+
+**Avoid MenuButton when:**
+
+- You want rich, widget-based menus with icons and toggles
+- You need unified item events
+- You want consistent styling across all menu items
+
+---
+
+## Related widgets
+
+- **DropdownButton** — higher-level, widget-backed alternative
+- **ContextMenu** — widget-backed pop-up menu
+- **OptionMenu** — value-selection dropdown
