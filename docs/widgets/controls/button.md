@@ -102,7 +102,7 @@ ttk.Button(app, text="Text", bootstyle="text")
 
 ---
 
-## Common options
+## Other common options
 
 Other common options include:
 
