@@ -5,26 +5,12 @@ icon: fontawesome/solid/hand-pointer
 
 # Button
 
-`Button` triggers an action when clicked.
+Buttons allow users to take actions and make choices with a single click. They communicate available actions and are commonly used throughout an interface—such as in dialogs, forms, and toolbars.
 
-In ttkbootstrap v2, `Button` is a wrapper around Tkinter’s `ttk.Button` that keeps the familiar API but adds a few
-“app-ready” conveniences:
-
-- **Bootstyle tokens** (`bootstyle="primary-outline"`, `bootstyle="danger"`, etc.)
-- **Theme-aware icons** via `icon=...` (preferred over raw `image=...`)
-- Optional **reactive text binding** with `textsignal=...`
-- **Surface-aware** styling via `surface_color=...` (or inherit from the parent surface)
-
----
-<figure markdown>
-![Button variants](../../assets/dark/widgets-button.png#only-dark)  
-![Button variants](../../assets/light/widgets-button.png#only-light)
-</figure>
-!!! note "Ghost and Link are displayed above in _active_ state. Normal state appears same as text."
-
----
 
 ## Basic usage
+
+Typically, a button will show text and handle a button press via the `text` and `command` options.
 
 ```python
 import ttkbootstrap as ttk
@@ -36,20 +22,89 @@ def on_save():
     print("Saved!")
 
 
-ttk.Button(app, text="Save", bootstyle="primary", command=on_save).pack(padx=20, pady=20)
+ttk.Button(app, text="Save", command=on_save).pack(padx=20, pady=20)
 
 app.mainloop()
 ```
 
 ---
 
-## Common options
+## Variants
 
-### `text` and `command`
+### Solid (default)
+
+Use for the primary, highest-emphasis action on a view (e.g., “Save”, “Submit”, “Continue”).
+
+<figure markdown>
+![solid button](../../assets/dark/widgets-button-solid.png#only-dark)
+![solid button](../../assets/light/widgets-button-solid.png#only-light)
+</figure>
 
 ```python
-ttk.Button(app, text="Run", command=lambda: print("run")).pack()
+ttk.Button(app, text="Solid")
 ```
+
+### Outline
+
+Use for secondary actions that should stay visible but clearly defer to the primary button (e.g., “Cancel”, “Back”,
+“Learn more”).
+
+<figure markdown>
+![outline button](../../assets/dark/widgets-button-outline.png#only-dark)
+![outline button](../../assets/light/widgets-button-outline.png#only-light)
+</figure>
+
+```python
+ttk.Button(app, text="Outline", bootstyle="outline") 
+```
+
+### Ghost
+
+Use for low-emphasis, contextual actions embedded in panels, lists, or toolbars where the UI should stay visually quiet
+until hover/press.
+
+<figure markdown>
+![ghost button](../../assets/dark/widgets-button-ghost.png#only-dark)
+![ghost button](../../assets/light/widgets-button-ghost.png#only-light)
+</figure>
+
+```python
+ttk.Button(app, text="Ghost", bootstyle="ghost")
+```
+
+### Link
+
+Use for navigation or “take me somewhere” actions that should read like text and feel lightweight (e.g., “View details”,
+“Open settings”).
+
+<figure markdown>
+![link button](../../assets/dark/widgets-button-link.png#only-dark)
+![link button](../../assets/light/widgets-button-link.png#only-light)
+</figure>
+
+```python
+ttk.Button(app, text="Link", bootstyle="link")
+```
+
+### Text
+
+Use for the lowest-emphasis utility actions—especially in dense UIs—where you want minimal chrome but still want button
+semantics (e.g., “Edit”, “Clear”, “Dismiss”).
+
+<figure markdown>
+![link button](../../assets/dark/widgets-button-link.png#only-dark)
+![link button](../../assets/light/widgets-button-link.png#only-light)
+</figure>
+
+```python
+ttk.Button(app, text="Text", bootstyle="text")
+```
+
+---
+
+## Common options
+
+Other common options include:
 
 ### `state`
 
@@ -63,83 +118,62 @@ btn.pack()
 btn.configure(state="normal")
 ```
 
-### `padding`, `width`, and `underline`
+### `padding`, `width`, `underline`
 
 ```python
 ttk.Button(app, text="Wide", width=18, padding=(12, 6)).pack(pady=6)
-ttk.Button(app, text="E_xit", underline=1).pack(pady=6)  # Alt+X mnemonic on some platforms
+ttk.Button(app, text="Exit", underline=1).pack(pady=6)
 ```
 
 ---
 
-## Bootstyle variants
+## Colors
 
-Buttons are typically styled with a **color token** and an optional **variant**.
+The `bootstyle` accepts color tokens that are typically combined with the button variant:
+
+<figure markdown>
+![button colors](../../assets/dark/widgets-button-colors.png#only-dark)
+![button colors](../../assets/light/widgets-button-colors.png#only-light)
+</figure>
 
 ```python
 ttk.Button(app, text="Primary", bootstyle="primary").pack(pady=4)
 ttk.Button(app, text="Outline", bootstyle="primary-outline").pack(pady=4)
 ttk.Button(app, text="Ghost", bootstyle="primary-ghost").pack(pady=4)
 ttk.Button(app, text="Link", bootstyle="primary-link").pack(pady=4)
-ttk.Button(app, text="Text", bootstyle="text").pack(pady=4)
+ttk.Button(app, text="Text", bootstyle="secondary-text").pack(pady=4)
 ```
 
 ---
 
 ## Icons
 
-### Theme-aware icon (recommended)
+Icons are integrated into the button widget and provide theme-aware and state-enabled icons.
 
-Use `icon=...` so the icon can respond to hover/disabled state and theme changes.
-
-```python
-ttk.Button(
-    app,
-    text="Download",
-    bootstyle="primary",
-    icon="download",  # placeholder: your icon spec / provider name
-).pack(pady=6)
-```
-
-> _Image placeholder:_  
-> `![Button with icon](../_img/widgets/button/icon-text.png)`
-
-### Icon-only buttons
-
-Use `icon_only=True` for compact toolbar buttons.
+<figure markdown>
+![icon button](../../assets/dark/widgets-button-icons.png#only-dark)
+![icon button](../../assets/light/widgets-button-icons.png#only-light)
+</figure>
 
 ```python
 ttk.Button(
     app,
-    bootstyle="secondary",
-    icon="gear",  # placeholder
-    icon_only=True,
+    text="Settings",
+    icon="gear"
 ).pack(pady=6)
 ```
 
-> _Image placeholder:_  
-> `![Icon-only toolbar buttons](../_img/widgets/button/icon-only.png)`
+!!! note "Default icon position"
+    When an icon is used, the default `compound` is set to left. The `compound` option controls where the icon is
+    positioned relative to the text. You can use other values: left, right, top, bottom, center.
 
-!!! warning "Using `image=...`"
-You can still pass a Tk `PhotoImage` via `image=...`, but it won’t automatically recolor for theme changes.
+Use the `icon_only` option when you are only showing an icon. This will remove the extra padding added for text and will
+make the default
+icon a bit larger.
 
----
-
-## Surface-aware backgrounds
-
-If your app uses inherited surfaces (elevated frames), you can pin the button to a specific surface token.
-
-```python
-panel = ttk.Frame(app, padding=20, bootstyle="background")  # example surface
-panel.pack(fill="both", expand=True)
-
-ttk.Button(
-    panel,
-    text="Action",
-    bootstyle="primary-outline",
-    surface_color="background[+1]",
-).pack()
-```
+!!! tip "Customizing icons"
+    You can pass an icon spec instead of a string to customize the color, size, and state of the icon. See iconography for
+    details.
 
 ---
 
@@ -172,27 +206,6 @@ If you use message catalogs, `localize="auto"` (or `True`) allows a label to be 
 
 ```python
 ttk.Button(app, text="button.ok", localize="auto", bootstyle="primary").pack()
-```
-
----
-
-## Patterns
-
-### Primary + secondary actions
-
-```python
-row = ttk.Frame(app, padding=20)
-row.pack(fill="x")
-
-ttk.Button(row, text="Cancel", bootstyle="secondary").pack(side="right", padx=(8, 0))
-ttk.Button(row, text="Save", bootstyle="primary").pack(side="right")
-```
-
-### Destructive actions
-
-```python
-ttk.Button(app, text="Delete", bootstyle="danger").pack(pady=6)
-ttk.Button(app, text="Delete", bootstyle="danger-outline").pack(pady=6)
 ```
 
 ---
