@@ -7,16 +7,18 @@ icon: fontawesome/solid/hand-pointer
 
 `Button` triggers an action when clicked.
 
-In ttkbootstrap v2, `Button` is a wrapper around Tkinter’s `ttk.Button` that keeps the familiar API but adds a few “app-ready” conveniences:
+In ttkbootstrap v2, `Button` is a wrapper around Tkinter’s `ttk.Button` that keeps the familiar API but adds a few
+“app-ready” conveniences:
 
 - **Bootstyle tokens** (`bootstyle="primary-outline"`, `bootstyle="danger"`, etc.)
 - **Theme-aware icons** via `icon=...` (preferred over raw `image=...`)
 - Optional **reactive text binding** with `textsignal=...`
 - **Surface-aware** styling via `surface_color=...` (or inherit from the parent surface)
 
-> _Image placeholder:_  
-> `![Button variants](../_img/widgets/button/overview.png)`  
-> Suggested shot: solid / outline / ghost / link + disabled + icon-only.
+![Button variants](../../assets/dark/widgets-button.png#only-dark)  
+![Button variants](../../assets/light/widgets-button.png#only-light)
+
+!!! note "Ghost and Link are displayed above in _active_ state. Normal state appears same as text."
 
 ---
 
@@ -27,8 +29,10 @@ import ttkbootstrap as ttk
 
 app = ttk.App()
 
+
 def on_save():
     print("Saved!")
+
 
 ttk.Button(app, text="Save", bootstyle="primary", command=on_save).pack(padx=20, pady=20)
 
@@ -91,7 +95,7 @@ ttk.Button(
     app,
     text="Download",
     bootstyle="primary",
-    icon="download",          # placeholder: your icon spec / provider name
+    icon="download",  # placeholder: your icon spec / provider name
 ).pack(pady=6)
 ```
 
@@ -106,7 +110,7 @@ Use `icon_only=True` for compact toolbar buttons.
 ttk.Button(
     app,
     bootstyle="secondary",
-    icon="gear",              # placeholder
+    icon="gear",  # placeholder
     icon_only=True,
 ).pack(pady=6)
 ```
@@ -115,7 +119,7 @@ ttk.Button(
 > `![Icon-only toolbar buttons](../_img/widgets/button/icon-only.png)`
 
 !!! warning "Using `image=...`"
-    You can still pass a Tk `PhotoImage` via `image=...`, but it won’t automatically recolor for theme changes.
+You can still pass a Tk `PhotoImage` via `image=...`, but it won’t automatically recolor for theme changes.
 
 ---
 
