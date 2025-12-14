@@ -82,19 +82,14 @@ raw = pwd.get()         # raw internal text
 
 ## Reveal / hide behavior
 
-Many applications allow users to temporarily reveal their password.
-
-If supported by your implementation, this may be exposed via:
-
-- a suffix button
-- a toggle icon
-- programmatic control
+This widget includes a reveal button by default. You can optionally remove this button by setting the 
+`show_visible_toggle` flag.
 
 ```python
 pwd = ttk.PasswordEntry(
     app,
     label="Password",
-    reveal=True,   # example option
+    show_visible_toggle=False
 )
 ```
 
@@ -149,7 +144,7 @@ pwd.on_changed(handle_changed)
 You can add prefix or suffix widgets just like other entry controls.
 
 ```python
-pwd.insert_addon(ttk.Label, position="before", text="🔒")
+pwd.insert_addon(ttk.Label, position="before", icon="lock", icon_only=True)
 ```
 
 ---
