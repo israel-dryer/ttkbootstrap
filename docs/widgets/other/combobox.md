@@ -1,34 +1,23 @@
 ---
 title: Combobox
-icon: fontawesome/solid/chevron-down
+icon: fontawesome/solid/caret-down
 ---
 
 # Combobox
 
-`Combobox` allows users to select a value from a predefined list, optionally allowing free text entry.
-In ttkbootstrap v2, `Combobox` extends `ttk.Combobox` with bootstyle variants, theme-aware popdown styling, icons,
-localization, and reactive signals, while preserving native Tk behavior.
+`Combobox` is a themed wrapper around `ttk.Combobox` that integrates ttkbootstrap’s styling system and reactive text support. It provides a familiar dropdown-selection control with consistent theming for both the entry field and the popdown list.
+
+<!--
+IMAGE: Combobox closed and open
+Suggested: Combobox showing selected value, with dropdown list open below
+Theme variants: light / dark
+-->
 
 ---
 
-## Overview
+## Basic usage
 
-Use a Combobox when:
-
-- users should choose from a known set of values,
-- screen space is limited compared to list-based controls,
-- free-form input may be allowed (non-readonly mode).
-
-ttkbootstrap’s Combobox improves on the native widget by:
-
-- styling the dropdown list to match the active theme,
-- recoloring the chevron indicator and field consistently,
-- automatically reapplying styles when the theme changes,
-- integrating cleanly with signals and localization.
-
----
-
-## Quick Example
+Use `Combobox` when you want to present a list of predefined values that the user can select from.
 
 ```python
 import ttkbootstrap as ttk
@@ -39,110 +28,157 @@ combo = ttk.Combobox(
     app,
     values=["Low", "Medium", "High"],
     state="readonly",
-    bootstyle="primary",
 )
+combo.pack(padx=20, pady=20)
 
-combo.pack(padx=16, pady=16)
 app.mainloop()
 ```
 
+<!--
+IMAGE: Basic Combobox example
+Suggested: Readonly combobox with simple text values
+-->
+
 ---
 
-## Editable vs Readonly
+## What problem it solves
 
-Combobox behavior depends on its state.
+The native `ttk.Combobox` popdown is styled separately from the main widget and often does not match the active theme. ttkbootstrap’s `Combobox` ensures:
 
-### Readonly Combobox
+- Consistent theming between the entry field and dropdown list
+- Automatic restyling when the application theme changes
+- A modern look that matches other ttkbootstrap controls
 
-- selection is restricted to listed values
-- recommended for settings and forms
-- prevents invalid input
+---
+
+## Core concepts
+
+### Editable vs readonly modes
+
+`Combobox` supports two primary interaction modes:
+
+- **Editable (`state="normal"`)**
+  Users may type arbitrary text or select from the list.
+
+- **Readonly (`state="readonly"`)**
+  Users must select from the provided values.
 
 ```python
-ttk.Combobox(state="readonly")
+ttk.Combobox(app, values=items, state="normal")
+ttk.Combobox(app, values=items, state="readonly")
 ```
 
-### Editable Combobox
+Readonly mode is recommended for most selection-driven UI.
 
-- users may type arbitrary text
-- suitable for filtering or search-like inputs
+---
+
+### Values and selection
+
+The `values` option defines the list shown in the dropdown:
 
 ```python
-ttk.Combobox(state="normal")
+combo.configure(values=["One", "Two", "Three"])
 ```
 
----
+The currently selected value can be accessed or controlled via:
 
-## Dropdown Styling
-
-Unlike the standard ttk Combobox, ttkbootstrap styles the popdown listbox:
-
-- background and foreground colors match the active theme
-- selection colors respect semantic tokens
-- styling is applied lazily on first open
-- styles are automatically reapplied on theme changes
-
-<!-- IMAGE PLACEHOLDER -->
-<!-- widgets-combobox-popdown.png -->
-<!-- Combobox opened, showing themed dropdown list -->
-
----
-
-## Chevron Indicator
-
-The dropdown chevron is part of the style system:
-
-- recolored per widget state
-- disabled styling applied automatically
-- sized consistently with other controls
-
-<!-- IMAGE PLACEHOLDER -->
-<!-- widgets-combobox-chevron.png -->
-<!-- Close-up of chevron in normal vs disabled state -->
-
----
-
-## Signals and Variables
-
-Combobox supports both Tk variables and reactive signals.
-
-- `textvariable` binds to a Tk variable
-- `textsignal` binds to a reactive Signal
-- both remain synchronized automatically
-
-```python
-# Conceptual example
-# selection = Signal("Medium")
-# ttk.Combobox(values=levels, textsignal=selection)
-```
-
----
-
-## Localization
-
-Displayed values may participate in localization when `localize` is enabled.
-This is useful when the underlying value is stable but the label should be translated.
-
----
-
-## Common Options
-
-In addition to standard ttk.Combobox options, commonly used ttkbootstrap options include:
-
-- `values`
-- `state` (`normal`, `readonly`, `disabled`)
-- `bootstyle`
-- `surface_color`
-- `style_options`
+- `get()` / `set()`
 - `textvariable`
 - `textsignal`
-- `postcommand`
 
 ---
 
-## Related Widgets
+### Reactive text with `textsignal`
 
-- **OptionMenu** — value selection via menu
-- **SelectBox** — list-based selection control
-- **Entry** — free-form text input
-- **DropdownButton** — menu-based actions
+`Combobox` supports `textsignal`, allowing the selected value to reactively synchronize with application state:
+
+```python
+combo = ttk.Combobox(app, textsignal=my_signal)
+```
+
+This is useful in signal-driven or declarative-style UIs.
+
+---
+
+## Common options & patterns
+
+### Styling with bootstyle
+
+```python
+ttk.Combobox(app, values=items, bootstyle="primary")
+ttk.Combobox(app, values=items, bootstyle="secondary")
+```
+
+The `bootstyle` affects both the entry field and the dropdown list.
+
+---
+
+### Customizing dropdown height
+
+Control how many rows appear in the dropdown:
+
+```python
+ttk.Combobox(app, values=items, height=8)
+```
+
+---
+
+### Using postcommand
+
+A `postcommand` runs just before the dropdown opens. ttkbootstrap wraps this internally to ensure the popdown is styled before first use.
+
+```python
+def before_open():
+    print("Opening dropdown")
+
+ttk.Combobox(app, values=items, postcommand=before_open)
+```
+
+---
+
+## Events
+
+`Combobox` emits standard ttk events:
+
+- `<<ComboboxSelected>>` when the selection changes
+
+You can bind directly:
+
+```python
+combo.bind("<<ComboboxSelected>>", lambda e: print(combo.get()))
+```
+
+!!! tip "Higher-level controls"
+    For forms and validated input, consider using `SelectBox`, which builds on Combobox-like behavior with labels, messages, and validation.
+
+---
+
+## UX guidance
+
+- Use readonly mode whenever free-form input is not desired
+- Keep option lists short and scannable
+- For large or searchable lists, prefer `SelectBox`
+
+---
+
+## When to use / when not to
+
+**Use Combobox when:**
+
+- You need a lightweight, native-feeling dropdown
+- Values are known and relatively small
+- You want editable or readonly selection behavior
+
+**Avoid Combobox when:**
+
+- You need validation, labels, or helper text (use `SelectBox`)
+- You need search/filter or complex item rendering
+- You want a unified form-level API
+
+---
+
+## Related widgets
+
+- **SelectBox** — higher-level, form-ready selection control
+- **OptionMenu** — simpler selection dropdown
+- **DropdownButton** — action-based menus
