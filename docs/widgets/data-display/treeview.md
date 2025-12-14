@@ -229,7 +229,8 @@ tree.pack(fill="both", expand=True, padx=20, pady=20)
 app.mainloop()
 ```
 
-Available bootstyle colors:
+Available bootstyle colors:  
+
 - `primary` (default)
 - `secondary`
 - `success`
