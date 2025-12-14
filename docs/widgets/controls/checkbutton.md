@@ -5,58 +5,137 @@ icon: fontawesome/solid/square-check
 
 # CheckButton
 
-`CheckButton` is a **boolean (or tri-state) control**. It wraps Tkinter’s `ttk.Checkbutton`, adding ttkbootstrap features like **Bootstyle tokens**, **theme-aware icons**, **signals**, and **surface-aware** styling.
-
-Use `CheckButton` when the user is turning something **on/off** (or selecting multiple items independently).
-
----
-
-<figure markdown>
-![CheckButton states](../../assets/light/widgets-checkbutton.png#only-light)
-![CheckButton states](../../assets/dark/widgets-checkbutton.png#only-dark)
-</figure>
+CheckButtons allow users to turn options on or off, or represent a mixed (indeterminate) state when a choice is not fully applied.
+Use `CheckButton` when the user is enabling or disabling features, or selecting multiple items independently.
 
 ---
 
 ## Basic usage
+
+A `CheckButton` represents an on/off (or mixed) choice. You can control its **initial state**
+using the `value` option.
 
 ```python
 import ttkbootstrap as ttk
 
 app = ttk.App()
 
-agree = ttk.BooleanVar(value=False)
-
+# Checked by default
 ttk.CheckButton(
     app,
-    text="I agree to the terms",
-    variable=agree,
-    bootstyle="primary",
-).pack(padx=20, pady=20)
+    text="Enable notifications",
+    value=True,
+).pack(padx=20, pady=6)
+
+# Unchecked by default
+ttk.CheckButton(
+    app,
+    text="Send anonymous usage data",
+    value=False,
+).pack(padx=20, pady=6)
+
+# Indeterminate (mixed) by default
+ttk.CheckButton(
+    app,
+    text="Apply to all",
+    value=None,
+).pack(padx=20, pady=6)
 
 app.mainloop()
+```
+
+By default, `value=None`, which places the checkbutton in an **indeterminate** state.
+
+---
+
+## Variants
+
+### Checkbutton (default)
+
+Use when you have multiple independent selections.
+
+<figure markdown>
+![checkbutton](../../assets/dark/widgets-checkbutton-states.png#only-dark)
+![checkbutton](../../assets/light/widgets-checkbutton-states.png#only-light)
+</figure>
+
+```python
+ttk.CheckButton(app)
+```
+
+### Toggle (switch)
+
+Use when the control represents a single on/off feature.
+
+<figure markdown>
+![toggle](../../assets/dark/widgets-checkbutton-toggle.png#only-dark)
+![toggle](../../assets/light/widgets-checkbutton-toggle.png#only-light)
+</figure>
+
+```python
+ttk.CheckButton(app, bootstyle="toggle")
+```
+
+---
+
+## Label
+
+You can provide a label to the checkbutton using the `text` option.
+
+<figure markdown>
+![labeled](../../assets/dark/widgets-checkbutton-labeled.png#only-dark)
+![labeled](../../assets/light/widgets-checkbutton-labeled.png#only-light)
+</figure>
+
+```python
+ttk.CheckButton(app, text="CheckButton")
+ttk.CheckButton(app, text="Toggle", bootstyle="toggle")
 ```
 
 ---
 
 ## How the value works
 
-A `CheckButton` stores its state in a Tk variable.
+`CheckButton` uses a single **logical value** to represent its state.
 
-- **Unchecked** → `offvalue`
-- **Checked** → `onvalue`
+The `value` option sets the **initial state**:
+
+- `True` → checked
+- `False` → unchecked
+- `None` → indeterminate (mixed)
+
+```python
+ttk.CheckButton(app, text="Auto-sync", value=True)
+ttk.CheckButton(app, text="Enable logging", value=False)
+ttk.CheckButton(app, text="Apply to all", value=None)
+```
+
+Internally, the widget synchronizes this value with either:
+
+- a reactive `signal=...` (recommended), or
+- a Tkinter `variable=...`
+
+Once bound, the signal or variable becomes the source of truth.
+
+!!! note "Value precedence"
+    The `value` option is used only to establish the initial state.
+    After initialization, the bound signal or variable controls the widget state.
+
+---
+
+## Binding to signals or variables
 
 ```python
 import ttkbootstrap as ttk
 
 app = ttk.App()
 
-v = ttk.StringVar(value="no")
+v = ttk.Signal("no")
 
 cb = ttk.CheckButton(
     app,
     text="Enable feature",
-    variable=v,
+    signal=v,
     onvalue="yes",
     offvalue="no",
 )
@@ -65,40 +144,41 @@ cb.pack(padx=20, pady=20)
 app.mainloop()
 ```
 
+!!! note "Variable binding"
+    You can also bind a Tkinter variable using the `variable` option, though signals
+    are generally more powerful and easier to reason about in v2 applications.
+
 ---
 
 ## Tri-state (indeterminate) checkboxes
 
-Tk checkbuttons support a third “indeterminate” state (often used for “mixed selection” in tree views).
+The indeterminate state (`value=None`) is useful when:
 
-In ttk, this is represented by the **alternate** state, and ttkbootstrap styles include an indeterminate indicator image. (Your builder maps the `alternate !selected` state.)  
+- a selection is partially applied
+- a parent option represents mixed child values
+- the user has not yet made an explicit choice
+
+<figure markdown>
+![indeterminate](../../assets/dark/widgets-checkbutton-indeterminate.png#only-dark)
+![indeterminate](../../assets/light/widgets-checkbutton-indeterminate.png#only-light)
+</figure>
 
 ```python
 import ttkbootstrap as ttk
 
 app = ttk.App()
 
-v = ttk.StringVar(value="mixed")
-
-cb = ttk.CheckButton(app, text="Partially selected", variable=v,
-                     onvalue="on", offvalue="off")
+cb = ttk.CheckButton(app, text="Partially selected", value=None)
 cb.pack(padx=20, pady=10)
-
-# show indeterminate
-cb.state(["alternate"])
-cb.state(["!selected"])  # common: alternate + not selected
 
 app.mainloop()
 ```
 
-> _Image placeholder:_  
-> `![Indeterminate CheckButton](../_img/widgets/checkbutton/indeterminate.png)`
-
 ---
 
-## `command` and common options
+## Other common options
 
-### Run logic when toggled
+### `command` — run a callback when toggled
 
 ```python
 import ttkbootstrap as ttk
@@ -110,12 +190,17 @@ flag = ttk.BooleanVar(value=True)
 def on_toggle():
     print("now:", flag.get())
 
-ttk.CheckButton(app, text="Send notifications", variable=flag, command=on_toggle).pack(padx=20, pady=20)
+ttk.CheckButton(
+    app,
+    text="Send notifications",
+    variable=flag,
+    command=on_toggle,
+).pack(padx=20, pady=20)
 
 app.mainloop()
 ```
 
-### Disable / enable
+### `state` — disable / enable
 
 ```python
 cb = ttk.CheckButton(app, text="Locked", state="disabled")
@@ -134,98 +219,36 @@ ttk.CheckButton(app, text="E_xport", underline=1).pack(pady=6)
 
 ---
 
-## Bootstyle and variants
+## Colors
 
-### Standard checkbox styles
+The `bootstyle` accepts color tokens that are typically combined with the button variant:
 
-Use intent colors like `primary`, `success`, `warning`, `danger`, etc.
-
-```python
-import ttkbootstrap as ttk
-
-app = ttk.App()
-
-for style in ["primary", "success", "warning", "danger"]:
-    ttk.CheckButton(app, text=style.title(), bootstyle=style).pack(anchor="w", padx=20, pady=2)
-
-app.mainloop()
-```
-
-### Toggle (switch) style
-
-ttkbootstrap also supports a **toggle / switch** presentation for checkbuttons (registered as the `toggle` variant in the style builder).
+<figure markdown>
+![colors](../../assets/dark/widgets-checkbutton-colors.png#only-dark)
+![colors](../../assets/light/widgets-checkbutton-colors.png#only-light)
+</figure>
 
 ```python
-import ttkbootstrap as ttk
+# standard checkbutton
+ttk.CheckButton(app)  # primary is default
+ttk.CheckButton(app, bootstyle="secondary")
+ttk.CheckButton(app, bootstyle="success")
+ttk.CheckButton(app, bootstyle="info")
+ttk.CheckButton(app, bootstyle="warning")
+ttk.CheckButton(app, bootstyle="danger")
 
-app = ttk.App()
-
-dark = ttk.BooleanVar(value=False)
-
-ttk.CheckButton(
-    app,
-    text="Dark mode",
-    variable=dark,
-    bootstyle="primary-toggle",
-).pack(padx=20, pady=20)
-
-app.mainloop()
+# toggle
+ttk.CheckButton(app, bootstyle="toggle")  # primary is default
+ttk.CheckButton(app, bootstyle="secondary-toggle")
+ttk.CheckButton(app, bootstyle="success-toggle")
+ttk.CheckButton(app, bootstyle="info-toggle")
+ttk.CheckButton(app, bootstyle="warning-toggle")
+ttk.CheckButton(app, bootstyle="danger-toggle")
 ```
-
-> _Image placeholder:_  
-> `![Toggle CheckButton](../_img/widgets/checkbutton/toggle.png)`
 
 ---
 
-## Icons
-
-`CheckButton` supports:
-
-- `icon=...` (theme-aware, preferred)
-- `image=...` (raw Tk image)
-
-```python
-import ttkbootstrap as ttk
-
-app = ttk.App()
-
-ttk.CheckButton(
-    app,
-    text="Remember me",
-    bootstyle="secondary",
-    icon="bookmark",  # placeholder for your icon spec/provider
-).pack(padx=20, pady=20)
-
-app.mainloop()
-```
-
-If you need an icon-only checkbox in a toolbar-like scenario, you can combine `icon_only=True` with an icon spec (supported as a captured style option).
-
----
-
-## Signals and localization
-
-### Signals
-
-`CheckButton` supports a reactive `signal=...` binding (auto-synced with the underlying Tk `variable`).
-
-```python
-import ttkbootstrap as ttk
-
-app = ttk.App()
-
-# Example only — use your real signal creation API
-enabled = ttk.Signal(False)  # pseudo-code
-
-cb = ttk.CheckButton(app, text="Enabled", signal=enabled)
-cb.pack(padx=20, pady=20)
-
-enabled.set(True)
-
-app.mainloop()
-```
-
-### Localization
+## Localization
 
 If you use message catalogs, `localize="auto"` (or `True`) treats the `text` as a translation key.
 
@@ -240,7 +263,7 @@ ttk.CheckButton(app, text="settings.notifications", localize="auto").pack()
 Use `CheckButton` when:
 
 - multiple selections can be on at once
-- the value is on/off (or mixed/indeterminate)
+- the value is on/off or mixed (indeterminate)
 
 Use **RadioButton** when:
 
