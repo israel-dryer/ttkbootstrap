@@ -3,117 +3,203 @@ title: TimeEntry
 icon: fontawesome/solid/clock
 ---
 
-
 # TimeEntry
 
-`TimeEntry` is a **time-focused SelectBox** that combines a searchable dropdown of time intervals with ttkbootstrap’s `Field` behaviors (labels, messages, validation, bootstyles).
+`TimeEntry` is a **high-level time input control**.
 
-It prefills a list of values between `min_time` and `max_time` at the configured `interval`, formats them via ICU patterns, and still allows typing or pasting custom times.
+It combines a typed time field with a picker-style interaction (where supported), built on ttkbootstrap’s `Field`
+foundation — so it matches the rest of your controls:
 
----
+- a **label** and **message** area
+- **validation** + validation feedback
+- optional **localization** and **formatting**
+- consistent **virtual events** with `on_*` / `off_*` helpers
 
-## Overview
+Use `TimeEntry` when users need to enter a time reliably (appointments, cutoffs, schedules, durations).
 
-TimeEntry delivers:
-
-- **Auto-generated dropdown** of formatted times (default 30-minute steps).
-- **Searchable SelectBox**, so typing filters the choices instantly.
-- **Locale-aware formatting** with presets like `shortTime`, `longTime`, or custom patterns (`HH:mm`, `h:mm a`).
-- **Configurable range** through `min_time`, `max_time`, and `interval`.
-- **Clock icon button** and SelectBox keyboard/mouse interactions.
-- **Field validation** and messaging (via underlying `SelectBox`).
-- **Optional custom values**, so users can enter times not present in the dropdown.
-
-The widget is ideal for scheduling UIs, appointment dialogs, and other areas where consistent time input matters.
+> _Image placeholder:_  
+> `![TimeEntry overview](../_img/widgets/timeentry/overview.png)`  
+> Suggested shot: standard time field + invalid state + 24h example.
 
 ---
 
-## Quick example
+## Basic usage
 
 ```python
 import ttkbootstrap as ttk
-from datetime import time
 
-app = ttk.App(title="Time Entry Demo", theme="cosmo")
+app = ttk.App()
 
-start_time = ttk.TimeEntry(
+t = ttk.TimeEntry(
     app,
     label="Start time",
-    interval=15,
-    min_time="08:00",
-    max_time="17:00",
-    value_format="h:mm a"
+    value="09:30",
+    message="Type a time, or use the picker (if enabled)",
 )
-start_time.pack(fill="x", padx=16, pady=8)
-
-end_time = ttk.TimeEntry(
-    app,
-    label="End time",
-    value_format="HH:mm",
-    value=time(17, 30),
-    allow_blank=True,
-    message="You can still type a custom time"
-)
-end_time.pack(fill="x", padx=16, pady=8)
+t.pack(fill="x", padx=20, pady=10)
 
 app.mainloop()
 ```
 
 ---
 
-## Intervals, ranges, & custom input
+## What problem does TimeEntry solve?
 
-- `interval` (minutes) controls how granular the dropdown values are; 5, 15, 30, 60 are common choices.
-- `min_time`/`max_time` define the bounds of the dropdown; you can use `datetime.time` or strings like `"9:00 AM"`.
-- `allow_custom_values` remains enabled so users can commit times that fall between intervals or extend the range without breaking validation.
-- The dropdown wraps at midnight by default (generating values even when `max_time` is earlier than `min_time`).
+A plain `Entry` can accept time text, but apps usually need more:
 
-If you need stricter validation, layer in `SelectBox` validation rules or make the field `required=True`.
+- consistent parsing (e.g., `9:30`, `0930`, `9.30`, `9:30 AM`)
+- a stable display format (12h/24h)
+- validation (required, valid time, business hours)
+- a consistent change event model
 
----
-
-## Formatting & locale
-
-TimeEntry uses ICU presets or patterns supported by `IntlFormatter`.
-
-- `shortTime` (default) renders times like `3:30 PM`.
-- `longTime` includes seconds and time zone.
-- `HH:mm` forces 24-hour formatting.
-- You can supply any pattern that `IntlFormatter` understands (`h:mm a`, `hh:mm`, etc.).
-
-Pair `value_format` with `locale` when you need to respect user regional settings.
+`TimeEntry` standardizes those behaviors so every time field works the same.
 
 ---
 
-## Events & interaction
+## Text vs value
 
-Inherited `Field` events apply:
+Like other v2 entry controls, `TimeEntry` distinguishes:
 
-- `<<Changed>>`: fires when the selected or typed time commits.
-- `<<Input>>`: fires on every keystroke (useful for custom filtering/UI feedback).
-- `<<Valid>>` / `<<Invalid>>`: report validation state transitions.
+| Concept | Meaning |
+|---|---|
+| Text | what the user is typing |
+| Value | committed time value after parsing/validation |
 
-The dropdown is searchable, so typing filters in real time, and the `SelectBox` keyboard handling (Arrow keys, Enter, Escape) works as expected.
+```python
+# committed value (implementation may return time/datetime or normalized string)
+current = t.value
+
+# set programmatically
+t.value = "13:45"
+```
+
+To read raw typed text:
+
+```python
+raw = t.get()
+```
 
 ---
 
-## When to choose TimeEntry
+## Formatting and locale
 
-Pick `TimeEntry` when you want a time picker that:
+`TimeEntry` can display times in a locale-aware format and parse user input accordingly.
 
-- Ships with sensible defaults (intervals, icons, formatting).
-- Lets users type or choose times.
-- Keeps values consistent via presets and locales.
-- Integrates with `Field` for validation messaging.
+```python
+import ttkbootstrap as ttk
 
-For pure text validation, `TextEntry` works; for full datetime capture, combine `DateEntry` + `TimeEntry` in a `Form`.
+app = ttk.App()
+
+time24 = ttk.TimeEntry(
+    app,
+    label="Start time",
+    value="13:45",
+    locale="en_GB",
+    time_format="HH:mm",    # example format
+)
+time24.pack(fill="x", padx=20, pady=10)
+
+app.mainloop()
+```
+
+!!! note "Formatting vs storage"
+    Keep your stored value in a stable format (often ISO-like strings), and let `TimeEntry` handle localized display.
+
+---
+
+## Validation
+
+Because `TimeEntry` is field-based, you can add the same validation rules used by `TextEntry`.
+
+```python
+import ttkbootstrap as ttk
+
+app = ttk.App()
+
+t = ttk.TimeEntry(app, label="Time", required=True)
+t.add_validation_rule("required", message="Time is required")
+t.pack(fill="x", padx=20, pady=10)
+
+app.mainloop()
+```
+
+Common validation patterns:
+
+- required time
+- valid time
+- within business hours (e.g., 08:00–18:00)
+
+---
+
+## Events
+
+`TimeEntry` emits standard field events:
+
+- `<<Input>>` — text editing
+- `<<Changed>>` — committed value changed (blur/Enter, or picker selection)
+- `<<Valid>>`, `<<Invalid>>`, `<<Validated>>`
+
+You can attach handlers using the `on_*` helpers (and remove them with `off_*`).
+
+```python
+import ttkbootstrap as ttk
+
+app = ttk.App()
+
+t = ttk.TimeEntry(app, label="Start time")
+t.pack(fill="x", padx=20, pady=10)
+
+def handle_changed(event):
+    print("changed:", event.data)
+
+t.on_changed(handle_changed)
+
+app.mainloop()
+```
+
+!!! tip "Live Typing"
+    Use `on_input(...)` when you want “live typing” behavior, and `on_changed(...)` when you want the committed value.
+
+---
+
+## Add-ons
+
+Like other field controls, you can insert prefix/suffix add-ons.
+
+```python
+import ttkbootstrap as ttk
+
+app = ttk.App()
+
+t = ttk.TimeEntry(app, label="Reminder time")
+t.insert_addon(ttk.Label, position="before", text="⏰")
+t.pack(fill="x", padx=20, pady=10)
+
+app.mainloop()
+```
+
+> _Image placeholder:_  
+> `![TimeEntry addons](../_img/widgets/timeentry/addons.png)`
+
+---
+
+## When should I use TimeEntry?
+
+Use `TimeEntry` when:
+
+- you want reliable parsing and consistent display
+- you need validation and helper messaging
+- you’re building forms or dialogs
+
+Prefer `TextEntry` when:
+
+- the user may enter non-time values like “ASAP”, “after lunch”, or “end of day”
 
 ---
 
 ## Related widgets
 
-- `DateEntry`
-- `TextEntry`
-- `SelectBox`
-- `Form`
-
+- **DateEntry** — date input control
+- **TextEntry** — general field control
+- **NumericEntry** — numeric field with bounds and stepping
+- **SpinnerEntry** — stepped input control (useful for minute increments)
