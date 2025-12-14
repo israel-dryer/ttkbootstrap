@@ -5,17 +5,14 @@ icon: fontawesome/solid/sliders
 
 # Scale
 
-`Scale` lets users choose a numeric value by dragging a thumb along a track.
+`Scale` is a **direct-manipulation control** for selecting a numeric value from a continuous or stepped range.
 
-In ttkbootstrap, `Scale` is still the familiar ttk widget, but it’s designed to *fit the rest of the v2 ecosystem*:
+Unlike `NumericEntry`, which is optimized for precise values, `Scale` is designed for **gesture-based adjustment** —
+making it ideal for volume, zoom, thresholds, or any value where users benefit from immediate visual feedback.
 
-- Works with a Tk variable (`variable=...`) **and/or** a reactive signal (`signal=...`)
-- Uses **Bootstyle tokens** via `bootstyle="primary"`, `bootstyle="success"`, etc.
-- Respects surface colors (`surface_color=...`) so it blends into elevated / inherited backgrounds
-
-> **Screenshot placeholder:**  
-> `![Scale examples](../_img/widgets/scale/overview.png)`  
-> (Show horizontal + vertical scales, plus a labeled value readout.)
+> _Image placeholder:_  
+> `![Scale overview](../_img/widgets/scale/overview.png)`  
+> Suggested shot: horizontal scale + value label + live update.
 
 ---
 
@@ -26,150 +23,125 @@ import ttkbootstrap as ttk
 
 app = ttk.App()
 
-value = ttk.DoubleVar(value=50)
-
 scale = ttk.Scale(
     app,
     from_=0,
     to=100,
-    variable=value,
-    bootstyle="primary",
+    value=50,
 )
-scale.pack(fill="x", padx=20, pady=20)
+scale.pack(fill="x", padx=20, pady=10)
 
 app.mainloop()
 ```
 
 ---
 
-## Common options
+## What problem does Scale solve?
 
-### Range and initial value
-- `from_`: start of the range (float)
-- `to`: end of the range (float)
-- `variable`: a `DoubleVar` or `IntVar` to store the value
-- `value`: (when supported in your wrapper) an initial value you want reflected in the widget
+Numeric values are not always best entered by typing:
 
-```python
-value = ttk.DoubleVar(value=0)
+- users may not know the exact value
+- relative adjustment matters more than precision
+- live feedback improves usability
 
-ttk.Scale(app, from_=-1, to=1, variable=value).pack(fill="x")
-```
-
-### Orientation
-
-```python
-ttk.Scale(app, from_=0, to=10, orient="horizontal").pack(fill="x")
-ttk.Scale(app, from_=0, to=10, orient="vertical").pack(fill="y")
-```
-
-> **Screenshot placeholder:**  
-> `![Vertical scale](../_img/widgets/scale/vertical.png)`
-
-### Length
-
-`length` controls the pixel length of the control (especially useful for vertical scales).
-
-```python
-ttk.Scale(app, from_=0, to=100, orient="vertical", length=240).pack(padx=20, pady=20)
-```
-
-### Command callback
-
-`command=` is called as the thumb moves. Ttk passes the value as a **string**, so convert it if you need a number.
-
-```python
-def on_change(raw: str) -> None:
-    v = float(raw)
-    print("value:", v)
-
-ttk.Scale(app, from_=0, to=1, command=on_change).pack(fill="x", padx=20, pady=10)
-```
-
-If you already use `variable=...`, a common pattern is to read from the variable inside the callback.
+`Scale` allows users to **drag to explore values**, while still producing a usable numeric result.
 
 ---
 
-## Styling with Bootstyle
-
-A `Scale` accepts `bootstyle` like other widgets.
+## Range and orientation
 
 ```python
-ttk.Scale(app, from_=0, to=100, bootstyle="primary").pack(fill="x", pady=6)
-ttk.Scale(app, from_=0, to=100, bootstyle="success").pack(fill="x", pady=6)
-ttk.Scale(app, from_=0, to=100, bootstyle="danger").pack(fill="x", pady=6)
+scale = ttk.Scale(
+    app,
+    from_=10,
+    to=200,
+    orient="horizontal",  # or "vertical"
+)
 ```
 
-> **Screenshot placeholder:**  
-> `![Scale bootstyles](../_img/widgets/scale/bootstyles.png)`  
-> (Show the same scale in several colors.)
+!!! note "Orientation"
+    Horizontal scales are preferred for most desktop layouts.  
+    Vertical scales work best for audio levels or side panels.
 
-### Surface-aware backgrounds
+---
 
-If your UI uses elevated surfaces (frames with inherited surface tokens), you can pin the scale to a surface token:
+## Step resolution
+
+If your implementation supports stepping, use it to constrain values.
 
 ```python
-ttk.Scale(
+scale = ttk.Scale(
     app,
     from_=0,
-    to=100,
-    bootstyle="primary",
-    surface_color="background[+1]",
-).pack(fill="x", padx=20, pady=20)
+    to=10,
+    step=1,    # example option
+)
 ```
+
+!!! note "Continuous vs stepped"
+    Continuous scales are best for perception-based adjustment.  
+    Stepped scales are best when values must align to discrete states.
 
 ---
 
-## Showing the value next to the Scale
+## Displaying the current value
 
-A common desktop pattern is “slider + live value readout”.
+It’s common to show the selected value alongside a scale.
 
 ```python
-import ttkbootstrap as ttk
+value_label = ttk.Label(app, text="50")
 
-app = ttk.App()
+def update_value(event):
+    value_label.config(text=str(int(event.data)))
 
-value = ttk.DoubleVar(value=25)
-
-row = ttk.Frame(app, padding=20)
-row.pack(fill="x")
-
-scale = ttk.Scale(row, from_=0, to=100, variable=value, bootstyle="primary")
-scale.pack(side="left", fill="x", expand=True)
-
-label = ttk.Label(row, textvariable=value, width=6, anchor="e")
-label.pack(side="left", padx=(10, 0))
-
-app.mainloop()
+scale.on_input(update_value)
 ```
 
-
-!!! tip "Formatting percent, currency, etc..." 
-    Render the label yourself in a callback instead of using `textvariable` directly.
+!!! tip "Live feedback"
+    Use `on_input(...)` to update previews or labels while dragging.  
+    Use `on_changed(...)` when the value is committed.
 
 ---
 
-## Signals
+## Text vs value
 
-If you use the v2 reactive layer, `Scale` can be bound to a `signal=` so changes flow through your app state.
+`Scale` always represents a numeric value, but the distinction between
+**live changes** and **committed changes** still matters.
+
+| Event | When it fires |
+|------|---------------|
+| `on_input` | while the thumb is moving |
+| `on_changed` | when the user releases the thumb |
+
+---
+
+## Validation and constraints
+
+Scales inherently constrain values to their range, so validation is usually minimal.
+
+Use validation when:
+
+- the scale is conditionally enabled
+- the range changes dynamically
+- the value must satisfy cross-field rules
+
+---
+
+## Events
+
+`Scale` emits standard change events:
+
+- `<<Input>>` — value changing while dragging
+- `<<Changed>>` — final value committed
+
+Attach handlers using the convenience helpers:
 
 ```python
-import ttkbootstrap as ttk
+def handle_changed(event):
+    print("final value:", event.data)
 
-app = ttk.App()
-
-# Example only — use your real signal creation API
-volume = ttk.Signal(50)  # pseudo-code
-
-ttk.Scale(app, from_=0, to=100, signal=volume, bootstyle="info").pack(fill="x", padx=20, pady=20)
-
-volume.subscribe(lambda v: print("volume changed:", v))
-
-app.mainloop()
+scale.on_changed(handle_changed)
 ```
-
-!!! note "Keep `variable=` and `signal=` consistent." 
-    In most apps you pick one source of truth (signals for reactive apps, variables for simple forms).
 
 ---
 
@@ -177,18 +149,20 @@ app.mainloop()
 
 Use `Scale` when:
 
-- the value is naturally continuous (volume, brightness, thresholds)
-- users benefit from *relative* adjustment instead of typing exact numbers
+- users benefit from visual, continuous adjustment
+- live previews matter
+- exact precision is not critical
 
-Prefer a numeric input (like `NumericEntry` / `SpinnerEntry`) when:
+Prefer `NumericEntry` when:
 
-- users must enter precise values
-- you need formatting, units, or validation messages
+- users need to type exact values
+- values must be validated strictly
+- accessibility via keyboard input is primary
 
 ---
 
 ## Related widgets
 
-- **SpinnerEntry** — precise numeric adjustment with step controls
-- **NumericEntry** — formatted numeric input with validation
-- **LabeledScale** — scale with a built-in label/value presentation (if you prefer the composite widget)
+- **NumericEntry** — precise numeric input
+- **Progressbar** — display progress, not input
+- **Meter** — display proportional values

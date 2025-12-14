@@ -133,7 +133,7 @@ def handle_changed(event):
 pwd.on_changed(handle_changed)
 ```
 
-!!! tip "Live Typing"
+!!! tip "Bind to widget events"
     Use `on_input(...)` only for UX feedback (e.g., strength meters).  
     Use `on_changed(...)` for authentication or submission logic.
 
