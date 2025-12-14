@@ -1,6 +1,6 @@
 import ttkbootstrap as ttk
 
-app = ttk.App(theme="docs-light")
+app = ttk.App(theme="docs-dark")
 
 r1 = ttk.Frame(app, padding=10)
 r1.pack(side='top', fill='x')
