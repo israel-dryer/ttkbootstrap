@@ -45,7 +45,6 @@ nav:
 
   - Widgets:
       - Overview: widgets/overview.md
-      - Conventions: widgets/conventions.md
 
       - Controls:
           - Button: widgets/controls/button.md
