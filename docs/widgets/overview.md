@@ -14,17 +14,19 @@ This page explains the conventions used throughout the widget documentation.
 ## Controls vs primitives
 
 **Primitives**
+
 - Low-level ttk wrappers
 - Minimal UX
 - Examples: `Entry`, `Spinbox`, `Scrollbar`
 
 **Controls**
+
 - App-facing widgets
 - Validation, labels, messages, events
 - Examples: `TextEntry`, `NumericEntry`, `SpinnerEntry`
 
-**Rule of thumb:**  
-If you are building a form, prefer controls.
+!!! tip "Rule of Thumb"  
+    If you are building a form, prefer controls.
 
 ---
 
@@ -33,6 +35,7 @@ If you are building a form, prefer controls.
 Layout widgets exist to **structure space**, not collect input.
 
 Examples:
+
 - `Frame`
 - `LabelFrame`
 - `PanedWindow`
