@@ -5,7 +5,7 @@ icon: fontawesome/solid/message
 
 # Tooltip
 
-`ToolTip` is a lightweight, attach-by-reference helper that shows a small informational popup when the user hovers a widget. It supports two positioning modes: **mouse-following** tooltips, and **anchor-based** tooltips that “stick” to a specific edge or corner of the target widget.
+`ToolTip` is a lightweight helper that displays short, contextual information when the user hovers a widget. It provides discoverable guidance without adding permanent visual clutter and supports both mouse-following and anchored positioning modes.
 
 <!--
 IMAGE: Basic tooltip on hover
@@ -15,11 +15,28 @@ Theme variants: light / dark
 
 ---
 
-## What it is
+## Basic usage
 
-A `ToolTip` provides short, contextual help without adding visual clutter. It appears after a short delay when the user hovers a widget and disappears automatically when the pointer leaves or the user clicks.
+Attach a tooltip to any Tk or ttk widget:
 
-Tooltips are ideal for icon-only buttons, dense layouts, and advanced controls where discoverability matters.
+```python
+import ttkbootstrap as ttk
+
+app = ttk.Window()
+
+btn = ttk.Button(app, text="Hover me")
+btn.pack(padx=20, pady=20)
+
+ttk.ToolTip(btn, text="This button launches the wizard.")
+app.mainloop()
+```
+
+The tooltip appears after a short delay when the mouse enters the widget and hides automatically when the mouse leaves or the user clicks.
+
+<!--
+IMAGE: Simple tooltip attached to a button
+Suggested: Button widget with visible tooltip after hover delay
+-->
 
 ---
 
@@ -27,36 +44,10 @@ Tooltips are ideal for icon-only buttons, dense layouts, and advanced controls w
 
 Desktop applications often need to explain *what something does* without permanently occupying screen space. `ToolTip` solves this by providing:
 
-- Delayed show-on-hover (prevents flicker)
+- Delayed show-on-hover behavior (prevents flicker)
 - Screen-safe positioning
 - Optional anchored positioning
 - Automatic flipping when near screen edges
-
----
-
-## Basic usage
-
-Attach a tooltip to any Tk or ttk widget:
-
-```python
-import ttkbootstrap as ttk
-from ttkbootstrap.widgets.composites.tooltip import ToolTip
-
-app = ttk.Window()
-
-btn = ttk.Button(app, text="Hover me")
-btn.pack(padx=20, pady=20)
-
-ToolTip(btn, text="This button launches the wizard.")
-app.mainloop()
-```
-
-The tooltip appears after a short delay when the mouse enters the widget and hides automatically when the mouse leaves or a button is pressed.
-
-<!--
-IMAGE: Simple tooltip attached to a button
-Suggested: Button widget with visible tooltip after hover delay
--->
 
 ---
 
@@ -69,10 +60,10 @@ Suggested: Button widget with visible tooltip after hover delay
 If no anchor is provided, the tooltip follows the mouse cursor with a small offset.
 
 ```python
-ToolTip(btn, text="Follows the cursor")
+ttk.ToolTip(btn, text="Follows the cursor")
 ```
 
-This is best for simple hints and icon-only controls.
+This mode is best for simple hints and icon-only controls.
 
 <!--
 IMAGE: Mouse-following tooltip
@@ -84,7 +75,7 @@ Suggested: Cursor with tooltip offset following pointer
 If an `anchor_point` is provided, the tooltip is positioned relative to the widget itself and does **not** track mouse movement.
 
 ```python
-ToolTip(
+ttk.ToolTip(
     btn,
     text="Anchored below the button",
     anchor_point="s",
@@ -107,7 +98,7 @@ IMAGE GROUP: Anchored tooltip positioning
 Anchored tooltips can automatically flip if they would appear offscreen.
 
 ```python
-ToolTip(
+ttk.ToolTip(
     btn,
     text="Smart positioning",
     anchor_point="e",
@@ -140,7 +131,7 @@ IMAGE GROUP: Auto-flip behavior
 - An optional image may be displayed below the text
 
 ```python
-ToolTip(
+ttk.ToolTip(
     btn,
     text="Wrapped tooltip text",
     wraplength=220,
@@ -160,7 +151,7 @@ Suggested: Narrow tooltip showing multi-line wrapped content
 
 - `<Enter>` schedules display
 - `<Leave>` cancels and hides
-- `<Motion>` updates position (mouse-follow mode)
+- `<Motion>` updates position (mouse-follow mode only)
 - `<ButtonPress>` hides immediately
 
 !!! note "Cleanup"
