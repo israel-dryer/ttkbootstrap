@@ -22,7 +22,7 @@ Create a scrollable region and add a single child container (usually a `Frame`).
 ```python
 import ttkbootstrap as ttk
 
-app = ttk.Window()
+app = ttk.App()
 
 scroll = ttk.ScrollView(app, direction="vertical", show_scrollbar="on-scroll")
 scroll.pack(fill="both", expand=True, padx=20, pady=20)

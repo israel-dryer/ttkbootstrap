@@ -22,7 +22,7 @@ Use a numeric range spinbox:
 ```python
 import ttkbootstrap as ttk
 
-app = ttk.Window()
+app = ttk.App()
 
 spin = ttk.Spinbox(app, from_=0, to=10, increment=1, width=8)
 spin.pack(padx=20, pady=20)
@@ -35,7 +35,7 @@ Use a fixed list of values:
 ```python
 import ttkbootstrap as ttk
 
-app = ttk.Window()
+app = ttk.App()
 
 spin = ttk.Spinbox(app, values=("XS", "S", "M", "L", "XL"), wrap=True, width=8)
 spin.pack(padx=20, pady=20)

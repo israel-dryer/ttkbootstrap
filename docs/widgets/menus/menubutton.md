@@ -23,7 +23,7 @@ Theme variants: light / dark
 import ttkbootstrap as ttk
 from tkinter import Menu
 
-app = ttk.Window()
+app = ttk.App()
 
 menu = Menu(app, tearoff=False)
 menu.add_command(label="Open", command=lambda: print("Open"))

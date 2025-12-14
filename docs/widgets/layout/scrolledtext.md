@@ -22,7 +22,7 @@ Create a scrollable text area and insert content:
 ```python
 import ttkbootstrap as ttk
 
-app = ttk.Window()
+app = ttk.App()
 
 st = ttk.ScrolledText(app, height=10, show_scrollbar="on-scroll")
 st.pack(fill="both", expand=True, padx=20, pady=20)

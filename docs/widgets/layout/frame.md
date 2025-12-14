@@ -22,7 +22,7 @@ Use `Frame` as a container and place child widgets inside it:
 ```python
 import ttkbootstrap as ttk
 
-app = ttk.Window()
+app = ttk.App()
 
 frame = ttk.Frame(app, padding=10)
 frame.pack(fill="both", expand=True, padx=20, pady=20)

@@ -24,7 +24,7 @@ Attach a scrollbar to a scrollable widget by wiring the widget’s `xview`/`yvie
 ```python
 import ttkbootstrap as ttk
 
-app = ttk.Window()
+app = ttk.App()
 
 text = ttk.Text(app, height=8, width=40)
 text.grid(row=0, column=0, sticky="nsew")
@@ -45,7 +45,7 @@ app.mainloop()
 ```python
 import ttkbootstrap as ttk
 
-app = ttk.Window()
+app = ttk.App()
 
 text = ttk.Text(app, wrap="none", height=8, width=40)
 text.grid(row=0, column=0, sticky="nsew")

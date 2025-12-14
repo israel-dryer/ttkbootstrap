@@ -22,7 +22,7 @@ Attach a tooltip to any Tk or ttk widget:
 ```python
 import ttkbootstrap as ttk
 
-app = ttk.Window()
+app = ttk.App()
 
 btn = ttk.Button(app, text="Hover me")
 btn.pack(padx=20, pady=20)

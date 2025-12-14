@@ -22,7 +22,7 @@ Create a horizontal split with two panes:
 ```python
 import ttkbootstrap as ttk
 
-app = ttk.Window()
+app = ttk.App()
 
 pw = ttk.PanedWindow(app, orient="horizontal")
 pw.pack(fill="both", expand=True, padx=20, pady=20)
@@ -44,7 +44,7 @@ Create a vertical split:
 ```python
 import ttkbootstrap as ttk
 
-app = ttk.Window()
+app = ttk.App()
 
 pw = ttk.PanedWindow(app, orient="vertical")
 pw.pack(fill="both", expand=True, padx=20, pady=20)

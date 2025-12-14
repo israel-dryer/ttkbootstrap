@@ -22,7 +22,7 @@ Use `LabelFrame` to group a set of widgets under a caption:
 ```python
 import ttkbootstrap as ttk
 
-app = ttk.Window()
+app = ttk.App()
 
 group = ttk.LabelFrame(app, text="Account", padding=10)
 group.pack(fill="x", padx=20, pady=20)

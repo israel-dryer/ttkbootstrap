@@ -22,7 +22,7 @@ Use `Combobox` when you want to present a list of predefined values that the use
 ```python
 import ttkbootstrap as ttk
 
-app = ttk.Window()
+app = ttk.App()
 
 combo = ttk.Combobox(
     app,

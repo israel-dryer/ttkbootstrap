@@ -22,7 +22,7 @@ Create a horizontal separator between sections:
 ```python
 import ttkbootstrap as ttk
 
-app = ttk.Window()
+app = ttk.App()
 
 ttk.Label(app, text="General").pack(anchor="w", padx=20, pady=(20, 6))
 

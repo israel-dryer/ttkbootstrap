@@ -20,7 +20,7 @@ Theme variants: light / dark
 ```python
 import ttkbootstrap as ttk
 
-app = ttk.Window()
+app = ttk.App()
 
 items = [
     ttk.ContextMenuItem("command", text="Open", icon="folder2-open", command=lambda: print("Open")),

@@ -22,7 +22,7 @@ Use `Entry` when you need a simple single-line text input.
 ```python
 import ttkbootstrap as ttk
 
-app = ttk.Window()
+app = ttk.App()
 
 entry = ttk.Entry(app)
 entry.pack(padx=20, pady=20)
@@ -113,7 +113,7 @@ Tk validation is powerful but low-level. Use it when you need immediate, per-key
 ```python
 import ttkbootstrap as ttk
 
-app = ttk.Window()
+app = ttk.App()
 
 def validate_text(new_value: str) -> bool:
     return new_value.isdigit() or new_value == ""

@@ -22,7 +22,7 @@ A `ContextMenu` is typically shown in response to a right-click, but it can be d
 ```python
 import ttkbootstrap as ttk
 
-app = ttk.Window()
+app = ttk.App()
 
 menu = ttk.ContextMenu(app)
 menu.add_command(text="Open", icon="folder2-open", command=lambda: print("Open"))
