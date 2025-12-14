@@ -5,144 +5,297 @@ icon: fontawesome/solid/sort
 
 # SpinnerEntry
 
-`SpinnerEntry` is a **Field-powered spinner control** that blends `Spinbox` behaviors with all the
-labeling, messaging, and validation helpers you expect from ttkbootstrap composites.
+`SpinnerEntry` is a **high-level “spinbox-style” field control**.
 
-It supports both **predefined lists of values** and **numeric ranges**, complete with optional wrapping
-and locale-aware formatting, so it works equally well for enumerations, units, dates, and amounts.
+It looks and behaves like a modern input with **up/down step buttons**, but it’s built on ttkbootstrap’s `Field`
+foundation — so you also get:
 
----
+- A **label** and **message** area
+- **Validation** + validation feedback
+- Optional **localization** and **formatting**
+- Consistent **virtual events**
+- A layout that fits naturally in **forms** and **dialogs**
 
-## Overview
+Use `SpinnerEntry` when the user is choosing from a *stepped* set of values:
+quantities, small ranges, enums like “Low / Medium / High”, or time intervals.
 
-`SpinnerEntry` builds on `Field` to deliver:
-
-- **Spinner controls** (up/down arrows) built in next to the entry and optional `show_spin_buttons`.
-- **Text mode** (`values`) that cycles through a list you provide.
-- **Numeric mode** (`minvalue`/`maxvalue`/`increment`) for stepped ranges.
-- **Keyboard + mouse wheel** support for adjustment.
-- **Optional wrap** to cycle at boundaries instead of clamping.
-- **Locale-aware number formatting** via `value_format` and `locale`.
-- **Field goodness** (labels, messages, validation, addons, bootstyle tokens).
-
-The control keeps user input constrained to valid choices while remaining compact and keyboard-friendly.
+> _Image placeholder:_  
+> `![SpinnerEntry overview](../_img/widgets/spinnerentry/overview.png)`  
+> Suggested shot: integer stepping, list stepping, disabled, error state.
 
 ---
 
-## Quick example
+## Basic usage (numeric stepping)
 
 ```python
 import ttkbootstrap as ttk
 
-app = ttk.App(title="Spinner Entry Demo", theme="cosmo")
+app = ttk.App()
 
-size_spinner = ttk.SpinnerEntry(
+count = ttk.SpinnerEntry(
     app,
-    label="Size",
-    values=["XS", "S", "M", "L", "XL"],
-    value="M",
-    message="Choose a size"
-)
-size_spinner.pack(fill="x", padx=16, pady=8)
-
-quantity_spinner = ttk.SpinnerEntry(
-    app,
-    label="Quantity",
-    minvalue=1,
+    label="Count",
+    value=1,
+    minvalue=0,
     maxvalue=20,
     increment=1,
-    value=1,
-    message="Use arrows or type a number"
+    message="Use the arrows or type a value",
 )
-quantity_spinner.pack(fill="x", padx=16, pady=8)
-
-currency_spinner = ttk.SpinnerEntry(
-    app,
-    label="Price",
-    value=9.99,
-    minvalue=0,
-    maxvalue=999.99,
-    increment=0.25,
-    value_format="$#,##0.00",
-    wrap=True
-)
-currency_spinner.pack(fill="x", padx=16, pady=8)
+count.pack(fill="x", padx=20, pady=10)
 
 app.mainloop()
 ```
 
 ---
 
-## Modes, wrapping, and validation
+## What problem does SpinnerEntry solve?
 
-SpinnerEntry has two mutually exclusive modes:
+A raw `Spinbox` is useful, but it’s still a low-level widget:
 
-- **Text mode** (`values` arg): cycles through the provided list and ignores `minvalue`/`maxvalue`.
-- **Numeric mode** (`minvalue` + `maxvalue`): steps through a numeric range with `increment`.
+- No label or helper/error message
+- Validation is ad-hoc per screen
+- Styling often differs from other controls
+- UX patterns (required fields, errors, add-ons) must be rebuilt repeatedly
 
-Use `wrap=True` to loop values at the boundaries (useful for priority wheels, days of the week, etc.).
-The widget also inherits all `Field` validation hooks, so you can call `add_validation_rule`,
-use `required=True`, or configure `allow_blank=True` to handle optional input.
+`SpinnerEntry` standardizes these behaviors using the same field patterns as `TextEntry` and `NumericEntry`.
+
+---
+
+## Text vs value
+
+Like other entry controls, `SpinnerEntry` distinguishes:
+
+| Concept | Meaning                                         |
+|---------|-------------------------------------------------|
+| Text    | Raw display text while typing                   |
+| Value   | Committed value after validation (blur / Enter) |
+
+```python
+# committed value
+current = count.value
+
+# set value programmatically
+count.value = 10
+```
+
+To read raw text at any time:
+
+```python
+raw = count.get()
+```
+
+---
+
+## Numeric options
+
+`SpinnerEntry` supports the common numeric configuration knobs:
+
+- `minvalue` / `maxvalue` — bounds
+- `increment` — step size
+- `wrap` — wrap around at boundaries (optional)
+
+```python
+import ttkbootstrap as ttk
+
+app = ttk.App()
+
+percent = ttk.SpinnerEntry(
+    app,
+    label="Percent",
+    value=50,
+    minvalue=0,
+    maxvalue=100,
+    increment=5,
+    wrap=True,
+)
+percent.pack(fill="x", padx=20, pady=10)
+
+app.mainloop()
+```
+
+> _Image placeholder:_  
+> `![SpinnerEntry wrap](../_img/widgets/spinnerentry/wrap.png)`
+
+---
+
+## Stepping behavior
+
+Users can step values via:
+
+- up/down buttons
+- Up/Down arrow keys
+- mouse wheel (platform-dependent)
+
+You can hide the step buttons if you only want keyboard stepping:
+
+```python
+field = ttk.SpinnerEntry(
+    app,
+    label="Count",
+    value=1,
+    show_spin_buttons=False,
+)
+field.pack(fill="x", padx=20, pady=10)
+```
+
+---
+
+## List / enum stepping
+
+`SpinnerEntry` can also step through a fixed list of values (commonly used for enums or presets).
+
+```python
+import ttkbootstrap as ttk
+
+app = ttk.App()
+
+priority = ttk.SpinnerEntry(
+    app,
+    label="Priority",
+    items=["Low", "Medium", "High"],
+    value="Medium",
+)
+priority.pack(fill="x", padx=20, pady=10)
+
+app.mainloop()
+```
+
+> Tip: Use `SelectBox` when you want a dropdown list; use `SpinnerEntry` when users benefit from
+> quick stepping without opening a popup.
 
 ---
 
 ## Formatting & localization
 
+If you want formatted display on commit, use `value_format` and optionally `locale`.
+
 ```python
 import ttkbootstrap as ttk
 
-spinner = ttk.SpinnerEntry(
+app = ttk.App()
+
+price = ttk.SpinnerEntry(
     app,
-    label="Tax rate",
+    label="Unit Price",
+    value=9.99,
     minvalue=0,
-    maxvalue=1,
+    maxvalue=10000,
     increment=0.01,
-    value=0.07,
-    value_format="percent",
-    locale="en_US"
+    value_format="$#,##0.00",
+    locale="en_US",
 )
-spinner.pack(fill="x", padx=16)
+price.pack(fill="x", padx=20, pady=10)
+
+app.mainloop()
 ```
 
-`value_format` accepts any `IntlFormatter` pattern (`percent`, `currency`, `#,##0.00`, etc.)
-and `locale` keeps the formatting consistent for your audience.
+---
+
+## Validation
+
+Because `SpinnerEntry` is `Field`-based, you can add the same validation rules you use for `TextEntry`.
+
+```python
+import ttkbootstrap as ttk
+
+app = ttk.App()
+
+qty = ttk.SpinnerEntry(app, label="Quantity", required=True, minvalue=1, maxvalue=99)
+qty.add_validation_rule("required", message="Quantity is required")
+qty.pack(fill="x", padx=20, pady=10)
+
+app.mainloop()
+```
+
+Use bounds (`minvalue` / `maxvalue`) for numeric constraints and rules for business logic.
 
 ---
 
-## Events & interaction
+## Events
 
-SpinnerEntry forwards the familiar `Field` events:
+`SpinnerEntry` emits the standard “field” events, plus stepping-related ones. Convenience `on_*` and `off_*` methods
+are available for all of these generated events.
 
-- `<<Changed>>`: fires when the committed value changes (blur, Enter, spinner buttons).
-- `<<Input>>`: emits on every keystroke.
-- `<<Valid>>` / `<<Invalid>>`: tied to validation state changes.
+### Common field events
 
-You also get keyboard + mouse wheel handling out of the box, so users can step without touching the buttons.
+- `<<Input>>` — raw typing
+- `<<Changed>>` — committed value changed
+- `<<Valid>>`, `<<Invalid>>`, `<<Validated>>`
+
+### Spinner events
+
+- `<<Increment>>` — increment requested
+- `<<Decrement>>` — decrement requested
+
+Example:
+
+```python
+import ttkbootstrap as ttk
+
+app = ttk.App()
+
+field = ttk.SpinnerEntry(app, label="Count", value=1, minvalue=0, maxvalue=10)
+field.pack(fill="x", padx=20, pady=10)
+
+
+def handle_changed(e):
+    print("changed:", e.data)
+
+
+field.on_changed(handle_changed)
+
+app.mainloop()
+```
 
 ---
 
-## Styling & appearance
+## Add-ons (prefix / suffix widgets)
 
-- `bootstyle` and `surface_color` drive the spinner’s accent and fill colors so it matches your theme.
-- `style_options` accepts builder tokens (e.g., `{"padding": (4, 4)}`) when the surrounding layout needs tighter spacing.
-- Toggle the built-in arrows with `show_spin_buttons=False` when you want to reduce chrome but keep formatting/message behavior.
-- `locale`, `value_format`, and `wrap` together define how values appear, especially for currency, percent, or localized labels.
+Because this is a field control, you can insert add-ons into the field layout.
+
+```python
+import ttkbootstrap as ttk
+
+app = ttk.App()
+
+minutes = ttk.SpinnerEntry(app, label="Timeout", value=5, minvalue=0, maxvalue=60, increment=5)
+minutes.insert_addon(ttk.Label, position="after", text="min")
+minutes.pack(fill="x", padx=20, pady=10)
+
+app.mainloop()
+```
+
+> _Image placeholder:_  
+> `![SpinnerEntry addon](../_img/widgets/spinnerentry/addon.png)`
 
 ---
 
-## When to choose SpinnerEntry
+## When should I use SpinnerEntry?
 
-Use `SpinnerEntry` whenever your input is a **fixed enumeration or bounded range** that users should cycle through,
-and you want built-in spin buttons and strict value control.
+Use `SpinnerEntry` when:
 
-If you need freeform text input that still validates (with formatting or addons), pick `TextEntry`.  
-If you only need basic numeric typing with optional steppers, consider `NumericEntry`.
+- users should step through values quickly
+- the value is a small numeric range or preset list
+- you want the full “field” experience (label, message, validation)
+
+Prefer **NumericEntry** when:
+
+- the value is strictly numeric and you want numeric-first behavior everywhere
+
+Prefer **SelectBox** when:
+
+- users need to browse or search a longer list
+
+Prefer base **Spinbox** when:
+
+- you want the raw ttk widget with minimal structure
 
 ---
 
 ## Related widgets
 
-- `NumericEntry`
-- `TextEntry`
-- `Entry`
-- `Form`
+- **NumericEntry** — numeric field with bounds and stepping
+- **TextEntry** — general text field with label and validation
+- **SelectBox** — dropdown picker with optional search
+- **Scale** — slider-style numeric adjustment
+- **Form** — build complete forms using field controls
