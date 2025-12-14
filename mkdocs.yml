@@ -71,11 +71,6 @@ nav:
           - TreeView: widgets/data-display/treeview.md
           - TableView: widgets/data-display/tableview.md
 
-      - Feedback:
-          - Tooltip: widgets/feedback/tooltip.md
-          - Toast: widgets/feedback/toast.md
-          - Dialogs: widgets/feedback/dialogs.md
-
       - Layout:
           - Frame: widgets/layout/frame.md
           - LabelFrame: widgets/layout/labelframe.md
@@ -94,6 +89,19 @@ nav:
           - DropdownButton: widgets/menus/dropdownbutton.md
           - MenuButton: widgets/menus/menubutton.md
           - ContextMenu: widgets/menus/contextmenu.md
+
+      - Feedback:
+          - Tooltip: widgets/feedback/tooltip.md
+          - Toast: widgets/feedback/toast.md
+          - Dialog: widgets/feedback/dialog.md
+          - DateDialog: widgets/feedback/datedialog.md
+          - FontDialog: widgets/feedback/fontdialog.md
+          - FilterDialog: widgets/feedback/filterdialog.md
+          - FormDialog: widgets/feedback/formdialog.md
+          - MessageBox: widgets/feedback/messagebox.md
+          - QueryBox: widgets/feedback/querybox.md
+          - ColorChooser: widgets/feedback/colorchooser.md
+          - ColorDropper: widgets/feedback/colordropper.md
 
       - Tk Widgets:
           - Combobox: widgets/other/combobox.md
