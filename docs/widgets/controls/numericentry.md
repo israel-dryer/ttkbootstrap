@@ -42,6 +42,38 @@ app.mainloop()
 
 ---
 
+## Text vs value
+
+All Entry-based controls separate **what the user is typing** from the **committed value**.
+
+| Concept | Meaning |
+|---|---|
+| Text | Raw, editable string while the field is focused |
+| Value | Parsed, validated value committed on blur or Enter |
+
+```python
+# get committed value
+current = field.value
+
+# set committed value programmatically
+field.value = ...
+```
+
+If you need the raw text at any time:
+
+```python
+raw = field.get()
+```
+
+!!! tip "Commit semantics"
+    Parsing, validation, and `value_format` are applied **only when the value is committed**
+    (blur or Enter), never on every keystroke.
+
+For numeric controls, the committed `value` is typically an `int` or `float`
+after parsing and validation.
+
+---
+
 ## Min/Max bounds
 
 Use `minvalue` and `maxvalue` to constrain input.
@@ -135,7 +167,6 @@ These examples show common numeric formats you’ll use in real apps:
 
 </figure>
 
-
 ```python
 import ttkbootstrap as ttk
 
@@ -171,7 +202,6 @@ app.mainloop()
 !!! tip "Commit-time formatting"
     `value_format` is applied when the value is committed (blur/Enter). While focused, users can type naturally.
 
-
 ---
 
 ## Showing or hiding spin buttons
@@ -192,31 +222,6 @@ field = ttk.NumericEntry(
 field.pack(fill="x", padx=20, pady=10)
 
 app.mainloop()
-```
-
----
-
-## Reading and setting the value
-
-`NumericEntry` separates:
-
-- **Text**: what the user is typing
-- **Value**: parsed numeric value committed on blur/Enter
-
-Common patterns:
-
-```python
-# get committed value
-current = field.value
-
-# set committed value
-field.value = 42
-```
-
-If you need the raw text at any time, use:
-
-```python
-raw_text = field.get()
 ```
 
 ---

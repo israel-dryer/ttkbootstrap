@@ -54,26 +54,32 @@ The native `Entry` widget is intentionally low-level:
 
 ## Text vs value
 
-`TextEntry` separates **what the user is typing** from **the committed value**.
+All Entry-based controls separate **what the user is typing** from the **committed value**.
 
 | Concept | Meaning |
-|-------|---------|
-| Text  | Raw, editable display text |
+|---|---|
+| Text | Raw, editable string while the field is focused |
 | Value | Parsed, validated value committed on blur or Enter |
 
 ```python
-# committed value
-current = name.value
+# get committed value
+current = field.value
 
-# update value programmatically
-name.value = "Alice"
+# set committed value programmatically
+field.value = ...
 ```
 
-If you need the raw text while the user is typing:
+If you need the raw text at any time:
 
 ```python
-raw = name.get()
+raw = field.get()
 ```
+
+!!! tip "Commit semantics"
+    Parsing, validation, and `value_format` are applied **only when the value is committed**
+    (blur or Enter), never on every keystroke.
+
+For text controls, the committed `value` is typically a `str` unless formatting/parsing rules apply.
 
 ---
 
@@ -129,6 +135,8 @@ This allows you to:
 
 Formatting is applied **on commit** (blur or Enter), so it never interferes with typing.
 
+`value_format` affects how the committed value is displayed after commit.
+
 ### Named formats
 
 In v2, `value_format` supports a set of **semantic format names**.
@@ -166,11 +174,6 @@ ttk.TextEntry(
 !!! tip "Flexible input"
     The initial `value` does not need to be pre-formatted.
     Strings, numbers, and date-like values are parsed and normalized automatically.
-
-!!! note "Text vs value (revisited)"
-    `value_format` controls **how the committed value is displayed**.
-    While the field is focused, the user edits raw text.
-    When the value is committed, it is parsed, validated, and reformatted.
 
 ---
 
