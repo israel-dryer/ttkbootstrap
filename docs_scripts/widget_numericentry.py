@@ -9,10 +9,10 @@ r2 = ttk.Frame(app, padding=16)
 r2.pack(side='top')
 
 # entry states
-ttk.NumericEntry(r1, value=123456, label='Active', show_message=True).pack(side='left', padx=10)
-ttk.NumericEntry(r1, value=123456, label='Normal', required=True, message='This field is required', show_message=True).pack(side='left', padx=10)
-ttk.NumericEntry(r2, value=123456, state='readonly', label='Readonly', show_message=True).pack(side='left', padx=10)
-ttk.NumericEntry(r2, value=123456, state='disabled', label='Disabled', show_message=True).pack(side='left', padx=10)
+ttk.NumericEntry(r1, value=123456, label='Active', show_message=True, width=15).pack(side='left', padx=10)
+ttk.NumericEntry(r1, value=123456, label='Normal', required=True, message='This field is required', show_message=True, width=15).pack(side='left', padx=10)
+ttk.NumericEntry(r1, value=123456, state='readonly', label='Readonly', show_message=True, width=15).pack(side='left', padx=10)
+ttk.NumericEntry(r1, value=123456, state='disabled', label='Disabled', show_message=True, width=15).pack(side='left', padx=10)
 
 
 # colors

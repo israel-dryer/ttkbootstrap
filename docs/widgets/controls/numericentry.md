@@ -5,21 +5,17 @@ icon: fontawesome/solid/hashtag
 
 # NumericEntry
 
-`NumericEntry` is a **high-level numeric input control** for desktop apps.
+`NumericEntry` is a fully featured numeric input control including a label, input field, and message text.
 
-It builds on ttkbootstrap’s field foundation (label + input + message + validation) and adds:
+It builds on ttkbootstrap’s field system and numeric primitives, adding the behavior you almost always need when
+working with numbers in real applications.
 
-- **Min/Max bounds**
-- **Stepping** (spin buttons, Up/Down keys, mouse wheel)
-- Optional **wrap** at boundaries
-- **Commit-time formatting** via `value_format`
-- Structured events like `<<Input>>`, `<<Changed>>`, `<<Valid>>`, `<<Invalid>>` (and more)
+If you are building forms, dialogs, or data-driven UIs, `NumericEntry` should usually be your **default numeric input**.
 
 <figure markdown>
 ![NumericEntry states](../../assets/dark/widgets-numericentry-states.png#only-dark)
 ![NumericEntry states](../../assets/light/widgets-numericentry-states.png#only-light)
 </figure>
-
 
 ---
 
