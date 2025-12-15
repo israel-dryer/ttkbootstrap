@@ -195,7 +195,7 @@ name.on_valid(on_event)
 
 ---
 
-## Add-ons (prefix / suffix widgets)
+## Add-ons
 
 Because `TextEntry` is a field control, you can insert widgets inside its layout. This is a **powerful** feature that allows you
 to create customized and specialized entry fields.
@@ -221,6 +221,33 @@ search.pack(side="left", padx=10, anchor="s")
 
 !!! note "Power Play"
     Most of the specialized _Entry_ widgets in v2 have been created using this very method.
+
+---
+
+## Colors
+
+TextEntry support standard ttkbootstrap styling and theming.
+
+<div class="only-dark" style="text-align: center;" markdown="1">
+  <video controls autoplay muted loop playsinline width="600">
+    <source src="../../../assets/dark/widgets-textentry-colors.mp4" type="video/mp4">
+  </video>
+</div>
+
+<div class="only-light" style="text-align: center;" markdown="1">
+  <video controls autoplay muted loop playsinline width="600">
+    <source src="../../../assets/light/widgets-textentry-colors.mp4" type="video/mp4">
+  </video>
+</div>
+
+```python
+ttk.TextEntry(app)  # primary is default
+ttk.TextEntry(app, bootstyle="secondary")
+ttk.TextEntry(app, bootstyle="success")
+ttk.TextEntry(app, bootstyle="info")
+ttk.TextEntry(app, bootstyle="warning")
+ttk.TextEntry(app, bootstyle="danger")
+```
 
 ---
 
