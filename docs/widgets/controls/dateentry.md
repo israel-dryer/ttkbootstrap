@@ -5,20 +5,17 @@ icon: fontawesome/solid/calendar-days
 
 # DateEntry
 
-`DateEntry` is a **high-level date input control**.
+`DateEntry` is a fully featured date input control including a label, input field, and message text.
 
-It combines a familiar text field with a date picker popup, built on ttkbootstrap’s `Field` foundation — so it behaves like
-your other entry controls (label, message, validation, localization, events), while making date entry fast and consistent.
+It combines a familiar text field with a calendar picker popup, built on ttkbootstrap’s field foundation—so it behaves like
+your other entry controls (messages, validation, localization, events), while making date entry fast and consistent.
 
-Use `DateEntry` when:
+If you are building forms, dialogs, or data-driven UIs, `DateEntry` should usually be your **default calendar date input**.
 
-- users can type a date **or** pick one from a calendar
-- you want locale-aware formatting and parsing
-- you want the same “field” experience as `TextEntry` / `NumericEntry`
-
-> _Image placeholder:_  
-> `![DateEntry overview](../_img/widgets/dateentry/overview.png)`  
-> Suggested shot: closed field + open calendar popup + error state.
+<figure markdown>
+![dateentry states](../../assets/dark/widgets-dateentry-states.png#only-dark)
+![dateentry states](../../assets/light/widgets-dateentry-states.png#only-light)
+</figure>
 
 ---
 
@@ -32,8 +29,8 @@ app = ttk.App()
 due = ttk.DateEntry(
     app,
     label="Due date",
-    value="2025-12-13",
-    message="Pick a date or type one (YYYY-MM-DD)",
+    value="2025-12-31",
+    message="Pick a date or type one",
 )
 due.pack(fill="x", padx=20, pady=10)
 
@@ -42,67 +39,35 @@ app.mainloop()
 
 ---
 
-## What problem does DateEntry solve?
-
-A plain text `Entry` can accept dates, but apps quickly need more:
-
-- a consistent date format
-- parsing (“12/13/25”, “Dec 13”, etc.)
-- validation and helpful error messages
-- a date picker for speed and accessibility
-
-`DateEntry` standardizes those concerns in one control.
-
----
-
 ## Text vs value
 
-Like other v2 entry controls, `DateEntry` distinguishes:
+All Entry-based controls separate **what the user is typing** from the **committed value**.
 
 | Concept | Meaning |
 |---|---|
-| Text | what the user types |
-| Value | a committed date value after parsing/validation |
+| Text | Raw, editable string while the field is focused |
+| Value | Parsed, validated value committed on blur or Enter |
 
 ```python
-# committed value (implementation may return date/datetime or normalized string)
-current = due.value
+# get committed value
+current = field.value
 
-# set a new date
-due.value = "2025-12-31"
+# set committed value programmatically
+field.value = ...
 ```
 
-To read raw typed text:
+If you need the raw text at any time:
 
 ```python
-raw = due.get()
+raw = field.get()
 ```
 
----
+!!! tip "Commit semantics"
+    Parsing, validation, and `value_format` are applied **only when the value is committed**
+    (blur or Enter), never on every keystroke.
 
-## Formatting and locale
-
-`DateEntry` can display dates in a locale-appropriate format and parse user input accordingly.
-
-```python
-import ttkbootstrap as ttk
-
-app = ttk.App()
-
-birthday = ttk.DateEntry(
-    app,
-    label="Birthday",
-    value="1990-07-04",
-    locale="en_US",
-    date_format="MM/dd/yyyy",     # example format
-)
-birthday.pack(fill="x", padx=20, pady=10)
-
-app.mainloop()
-```
-
-!!! tip "Use stable formats"
-    Keep your **storage format** stable (e.g., ISO strings) and let the control handle display formatting.
+For date controls, the committed `value` is typically a date-like value (or a normalized string),
+after parsing and validation.
 
 ---
 
@@ -112,13 +77,60 @@ app.mainloop()
 
 Common behaviors:
 
-- click the calendar button → opens picker
-- click a day → commits the date and closes the popup
+- Click the calendar button → opens the picker
+- Click a day → commits the date and closes the popup
 - Escape → closes the popup without changing the committed value
 
-> _Image placeholder:_  
-> `![DateEntry picker](../_img/widgets/dateentry/picker.png)`  
-> Suggested shot: open picker with a selected date.
+<figure markdown>
+![dateentry picker](../../assets/dark/widgets-dateentry-popup.png#only-dark)
+![dateentry picker](../../assets/dark/widgets-dateentry-popup.png#only-light)
+</figure>
+
+---
+
+## Formatting with `value_format`
+
+`DateEntry` supports the same **commit-time formatting** model as `TextEntry` and `NumericEntry`.
+
+Formatting is applied when the value is committed (blur or Enter), allowing users to type naturally while editing.
+
+`value_format` uses the app’s active locale/format settings (configured globally in `AppSettings`),
+unless you override formatting behavior at the widget level.
+
+### Named date formats
+
+```python
+import ttkbootstrap as ttk
+
+app = ttk.App()
+
+row = ttk.Frame(app, padding=10)
+row.pack(fill="x")
+
+ttk.DateEntry(
+    row,
+    label="Short Date",
+    value="March 14, 1981",
+    value_format="shortDate",
+).pack(side="left", padx=10)
+
+ttk.DateEntry(
+    row,
+    label="Long Date",
+    value="1981-03-14",
+    value_format="longDate",
+).pack(side="left", padx=10)
+
+app.mainloop()
+```
+
+!!! tip "Stable storage, friendly display"
+    Keep your **storage format** stable (e.g., ISO strings) and let the control handle display formatting.
+
+<figure markdown>
+![dateentry picker](../../assets/dark/widgets-dateentry-formats.png#only-dark)
+![dateentry picker](../../assets/dark/widgets-dateentry-formats.png#only-light)
+</figure>
 
 ---
 
@@ -191,15 +203,43 @@ import ttkbootstrap as ttk
 
 app = ttk.App()
 
-d = ttk.DateEntry(app, label="Start date")
-d.insert_addon(ttk.Label, position="before", text="📅")
+d = ttk.DateEntry(app, label="Birthday")
+d.insert_addon(ttk.Label, position="before", icon='cake-fill')
 d.pack(fill="x", padx=20, pady=10)
 
 app.mainloop()
 ```
 
-> _Image placeholder:_  
-> `![DateEntry addons](../_img/widgets/dateentry/addons.png)`
+<figure markdown>
+![dateentry picker](../../assets/dark/widgets-dateentry-addons.png#only-dark)
+![dateentry picker](../../assets/dark/widgets-dateentry-addons.png#only-light)
+</figure>
+
+---
+
+## Localization
+
+Localization behavior is controlled by the **global application settings**.
+
+By default, widgets use `localize="auto"`. In this mode, `label`, `message`, and `text`
+are treated as localization keys **when a translation exists**.
+If no translation is found, the value is shown as **plain text**.
+
+You can override this behavior per widget if needed.
+
+```python
+# global app localization (default)
+ttk.DateEntry(app, label="order.due_date", message="order.due_date.help").pack(fill="x")
+
+# explicitly enable localization
+ttk.DateEntry(app, label="order.due_date", localize=True).pack(fill="x")
+
+# explicitly disable localization
+ttk.DateEntry(app, label="Due date", message="Pick a date", localize=False).pack(fill="x")
+```
+
+!!! tip "Safe to pass literal text"
+    With `localize="auto"`, you may pass either localization keys or literal strings.
 
 ---
 
@@ -222,4 +262,4 @@ Prefer `TextEntry` when:
 - **TimeEntry** — time input control
 - **TextEntry** — general field control with validation and formatting
 - **NumericEntry** — numeric field with bounds and stepping
-- **DateDialog** — date selection in a modal dialog (if you prefer dialogs)
+- **DateDialog** — date selection in a modal dialog
