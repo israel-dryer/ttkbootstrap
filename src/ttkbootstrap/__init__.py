@@ -141,6 +141,7 @@ _MODULE_EXPORTS = {
         *_TTK_PRIMITIVES,
         "Badge",
         "CheckToggle",
+        "RadioToggle",
         "ContextMenu", "ContextMenuItem", "DateEntry", "DatePicker",
         "DropdownButton", "Field", "FieldOptions", "FloodGauge", "Form",
         "LabeledScale", "Meter", "NumericEntry", "PageStack",
