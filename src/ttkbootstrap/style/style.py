@@ -422,6 +422,20 @@ def get_theme() -> str:
     return style.theme_use()
 
 
+def get_themes() -> list[dict[str, str]]:
+    """Return the list of all registered themes.
+
+    Returns:
+        List of dictionaries containing ``name`` and ``display_name`` for each theme.
+
+    Example:
+        >>> themes = get_themes()
+        >>> print([theme["name"] for theme in themes])
+    """
+    style = get_style()
+    return style.list_themes()
+
+
 def get_theme_provider() -> ThemeProvider:
     """Get the theme provider instance for the active theme.
 

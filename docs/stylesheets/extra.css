@@ -1,0 +1,5 @@
+.only-dark { display: none; }
+.only-light { display: block; }
+
+[data-md-color-scheme="slate"] .only-dark { display: block; }
+[data-md-color-scheme="slate"] .only-light { display: none; }

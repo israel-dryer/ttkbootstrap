@@ -21,6 +21,7 @@ class CheckButtonKwargs(TypedDict, total=False):
     compound: Literal['text', 'image', 'top', 'bottom', 'left', 'right', 'center', 'none'] | str
     variable: Any
     signal: Signal[Any]
+    value: Any
     onvalue: Any
     offvalue: Any
     padding: Any
@@ -61,6 +62,7 @@ class CheckButton(LocalizationMixin, SignalMixin, TextSignalMixin, IconMixin, TT
             variable: Linked variable controlling the on/off state.
             localize: Determines the widgets localization mode. 'auto', True, False.
             signal: Reactive Signal controlling the on/off state (auto-synced with variable).
+            value: Initial state for the widget's associated variable (defaults to None when unset).
             onvalue: Value set in `variable` when selected.
             offvalue: Value set in `variable` when deselected.
             padding: Extra space around the content.
@@ -73,5 +75,10 @@ class CheckButton(LocalizationMixin, SignalMixin, TextSignalMixin, IconMixin, TT
             surface_color: Optional surface token; otherwise inherited.
             style_options: Optional dict forwarded to the style builder.
         """
+        signal_provided = 'signal' in kwargs
+        variable_provided = 'variable' in kwargs
+        initial_value = kwargs.pop('value', None)
         kwargs.update(style_options=self._capture_style_options(['icon_only', 'icon'], kwargs))
         super().__init__(master, **kwargs)
+        if initial_value is not None and not signal_provided and not variable_provided:
+            self.variable.set(initial_value)

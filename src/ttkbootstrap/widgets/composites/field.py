@@ -309,6 +309,9 @@ class Field(EntryMixin, Frame):
         self._field.pack(side='top', fill='x', expand=True)
         self._entry.pack(side='left', fill='x', expand=True, padx=0, pady=0)
 
+        self._entry.bind('<<StateChanged>>', self._sync_addon_state, add=True)
+        self._sync_addon_state()
+
         if self._show_messages:
             self._message_lbl.pack(side='top', fill='x', padx=4)
 
@@ -411,21 +414,13 @@ class Field(EntryMixin, Frame):
         """Disable the field, preventing user input."""
         self._entry.state(['disabled !readonly'])
         self._field.state(['disabled'])
-        for item in self._addons.values():
-            try:
-                item.configure(state="disabled")
-            except TclError:
-                pass
+        self._set_addons_state(True)
 
     def enable(self):
         """Enable the field, allowing user input."""
         self._entry.state(['!disabled !readonly'])
         self._field.state(['!disabled'])
-        for item in self._addons.values():
-            try:
-                item.configure(state='!disabled')
-            except TclError:
-                pass
+        self._set_addons_state(False)
 
     def readonly(self, value: bool = None):
         """Set or toggle the readonly state of the field."""
@@ -438,6 +433,7 @@ class Field(EntryMixin, Frame):
         else:
             self._entry.state(['readonly !disabled'])
             self._field.state(['disabled'])
+        self._sync_addon_state()
 
     def insert_addon(
             self,
@@ -496,11 +492,7 @@ class Field(EntryMixin, Frame):
         instance.pack(**options)
 
         # match parent disabled state
-        if 'disabled' in self._entry.state():
-            try:
-                instance.configure(state="disabled")
-            except TclError:
-                pass
+        self._sync_addon_state()
 
         # bind focus events to field frame
         instance.bind('<FocusIn>', lambda _: self._field.state(['focus']), add=True)
@@ -516,3 +508,18 @@ class Field(EntryMixin, Frame):
         """Clear the error message and restore the original message text."""
         self._message_lbl['text'] = self._message_text
         self._message_lbl['bootstyle'] = "secondary"
+
+    def _set_addons_state(self, disabled: bool) -> None:
+        """Configure addon widgets based on whether the entry is interactive."""
+        state_value = 'disabled' if disabled else '!disabled'
+        for item in self._addons.values():
+            try:
+                item.configure(state=state_value)
+            except TclError:
+                pass
+
+    def _sync_addon_state(self, event: Any = None) -> None:
+        """Ensure addons match the entry's interactivity state."""
+        entry_states = self._entry.state()
+        disabled = 'disabled' in entry_states or 'readonly' in entry_states
+        self._set_addons_state(disabled)
