@@ -7,7 +7,6 @@ icon: fontawesome/solid/hand-pointer
 
 Buttons allow users to take actions and make choices with a single click. They communicate available actions and are commonly used throughout an interface—such as in dialogs, forms, and toolbars.
 
-
 ## Basic usage
 
 Typically, a button will show text and handle a button press via the `text` and `command` options.
@@ -167,9 +166,8 @@ ttk.Button(
     When an icon is used, the default `compound` is set to left. The `compound` option controls where the icon is
     positioned relative to the text. You can use other values: left, right, top, bottom, center.
 
-Use the `icon_only` option when you are only showing an icon. This will remove the extra padding added for text and will
-make the default
-icon a bit larger.
+    Use the `icon_only` option when you are only showing an icon. This will remove the extra padding added for text and will
+    make the default icon a bit larger.
 
 !!! tip "Customizing icons"
     You can pass an icon spec instead of a string to customize the color, size, and state of the icon. See iconography for
@@ -202,11 +200,28 @@ app.mainloop()
 
 ## Localization
 
-If you use message catalogs, `localize="auto"` (or `True`) allows a label to be treated as a localization key.
+Localization behavior is controlled by the **global application settings**.
+
+By default, widgets use `localize="auto"`. In this mode, the `text` is treated as a localization
+key **when a translation exists**. If the key is not found in the active message catalog, the
+widget falls back to using the value as **plain text**.
+
+You can override this behavior per widget if needed.
 
 ```python
-ttk.Button(app, text="button.ok", localize="auto", bootstyle="primary").pack()
+# uses global app localization settings (default)
+ttk.Button(app, text="button.ok", bootstyle="primary").pack()
+
+# explicitly enable localization
+ttk.Button(app, text="button.ok", localize=True, bootstyle="primary").pack()
+
+# explicitly disable localization (always treat text as a literal)
+ttk.Button(app, text="OK", localize=False, bootstyle="primary").pack()
 ```
+
+!!! tip "Safe to pass literal text"
+    With `localize="auto"`, you can pass either a localization key or a literal label.
+    If no translation is found, the label is shown as-is.
 
 ---
 
