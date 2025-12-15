@@ -4,6 +4,8 @@ Provides a specialized entry field for numeric input with increment/decrement
 buttons and keyboard/mouse wheel support.
 """
 
+from typing import Any
+from tkinter import TclError
 from typing_extensions import Unpack
 
 from ttkbootstrap.widgets.primitives.button import Button
@@ -112,8 +114,8 @@ class NumericEntry(Field):
             label: str = None,
             message: str = None,
             show_spin_buttons: bool = True,
-            minvalue: int | float = 0,
-            maxvalue: int | float = 100,
+            minvalue: int | float | None = None,
+            maxvalue: int | float | None = None,
             increment: int | float = 1,
             **kwargs: Unpack[FieldOptions]
     ):
@@ -188,6 +190,9 @@ class NumericEntry(Field):
             Button, position="after", name="increment", icon="plus", command=self.increment, icon_only=True)
         self._delegate_show_spin_buttons(show_spin_buttons)
 
+        self.entry_widget.bind('<<StateChanged>>', self._on_entry_state_changed, add=True)
+        self._update_spin_button_states()
+
     @property
     def increment_widget(self):
         """Get the increment spin button widget."""
@@ -200,11 +205,33 @@ class NumericEntry(Field):
 
     def increment(self):
         """Increment the numeric value by one step."""
+        if not self._entry_is_interactive():
+            return
         self.entry_widget.event_generate("<<Increment>>")
 
     def decrement(self):
         """Decrement the numeric value by one step."""
+        if not self._entry_is_interactive():
+            return
         self.entry_widget.event_generate("<<Decrement>>")
+
+    def _entry_is_interactive(self) -> bool:
+        """Return True if the entry widget is not disabled or readonly."""
+        state = self.entry_widget.state()
+        return 'disabled' not in state and 'readonly' not in state
+
+    def _on_entry_state_changed(self, _: Any = None):
+        """Sync spin buttons whenever the entry state mutates."""
+        self._update_spin_button_states()
+
+    def _update_spin_button_states(self):
+        """Enable or disable spin buttons based on entry interactivity."""
+        state_value = 'disabled' if not self._entry_is_interactive() else '!disabled'
+        for control in (self.increment_widget, self.decrement_widget):
+            try:
+                control.configure(state=state_value)
+            except TclError:
+                pass
 
     @configure_delegate('show_spin_buttons')
     def _delegate_show_spin_buttons(self, value: bool = None):
@@ -224,4 +251,3 @@ class NumericEntry(Field):
                 self.increment_widget.pack_forget()
                 self.decrement_widget.pack_forget()
         return None
-

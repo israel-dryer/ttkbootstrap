@@ -78,8 +78,8 @@ class NumberEntryPart(TextEntryPart):
             *,
             value: Union[int, float, str] = 0,
             value_format: str = None,
-            minvalue: Union[int, float] = 0,
-            maxvalue: Union[int, float] = 100,
+            minvalue: Union[int, float, None] = None,
+            maxvalue: Union[int, float, None] = None,
             increment: Union[int, float] = 1,
             wrap: bool = False,
             initial_focus: bool = False,
@@ -90,11 +90,11 @@ class NumberEntryPart(TextEntryPart):
 
         Args:
             master: Parent widget
-            value: Initial numeric value (int, float, or string representation)
+            value: Initial numeric value (int, float, string, or None)
             value_format: Number format specification for IntlFormatter.
                 Examples: 'decimal', 'percent', 'currency', '#,##0.00', etc.
-            minvalue: Minimum allowed value (inclusive)
-            maxvalue: Maximum allowed value (inclusive)
+            minvalue: Minimum allowed value (inclusive), or None for no lower bound
+            maxvalue: Maximum allowed value (inclusive), or None for no upper bound
             increment: Step size for increment/decrement operations
             wrap: If True, values wrap around at min/max boundaries.
                 If False, values are clamped at boundaries.
@@ -110,9 +110,20 @@ class NumberEntryPart(TextEntryPart):
         self._wrap = wrap
 
         # Determine numeric type (float if any parameter is float)
+        def _has_fractional(x: Union[int, float, None]) -> bool:
+            if x is None:
+                return False
+            if isinstance(x, float):
+                return True
+            if isinstance(x, (int, float)) and float(x) != int(x):
+                return True
+            return False
+
         self._num_type = float if any(
-            isinstance(x, float) or (isinstance(x, (int, float)) and float(x) != int(x))
-            for x in (minvalue, maxvalue, increment, value if not isinstance(value, str) else 0)
+            _has_fractional(x) for x in (
+                minvalue, maxvalue, increment,
+                value if not isinstance(value, str) else 0
+            )
         ) else int
 
         # Initialize base TextEntryPart
@@ -120,7 +131,7 @@ class NumberEntryPart(TextEntryPart):
         if isinstance(value, str):
             initial_value = value
         else:
-            initial_value = self._num_type(value)
+            initial_value = None if value is None else self._num_type(value)
 
         super().__init__(
             master=master,
@@ -158,16 +169,22 @@ class NumberEntryPart(TextEntryPart):
 
     def _handle_up_key(self, event):
         """Handle Up arrow key press - emit increment event."""
+        if not self._is_interactive():
+            return 'break'
         self.event_generate('<<Increment>>')
         return 'break'  # Prevent default behavior
 
     def _handle_down_key(self, event):
         """Handle Down arrow key press - emit decrement event."""
+        if not self._is_interactive():
+            return 'break'
         self.event_generate('<<Decrement>>')
         return 'break'  # Prevent default behavior
 
     def _handle_mouse_wheel(self, event):
         """Handle mouse wheel on Windows/macOS."""
+        if not self._is_interactive():
+            return 'break'
         try:
             delta = int(event.delta)
         except (AttributeError, ValueError):
@@ -182,48 +199,66 @@ class NumberEntryPart(TextEntryPart):
 
     def _handle_wheel_up(self, event):
         """Handle mouse wheel up on Linux/X11."""
+        if not self._is_interactive():
+            return 'break'
         self.event_generate('<<Increment>>')
         return 'break'
 
     def _handle_wheel_down(self, event):
         """Handle mouse wheel down on Linux/X11."""
+        if not self._is_interactive():
+            return 'break'
         self.event_generate('<<Decrement>>')
         return 'break'
 
     def _handle_increment_event(self, event):
         """Handle <<Increment>> event by stepping up."""
+        if not self._is_interactive():
+            return 'break'
         self.step(+1)
 
     def _handle_decrement_event(self, event):
         """Handle <<Decrement>> event by stepping down."""
+        if not self._is_interactive():
+            return 'break'
         self.step(-1)
 
     def _apply_bounds(self, x: float) -> float:
         """Apply min/max bounds with optional wrapping."""
-        lo, hi = float(self._minvalue), float(self._maxvalue)
+        lo = float(self._minvalue) if self._minvalue is not None else None
+        hi = float(self._maxvalue) if self._maxvalue is not None else None
 
-        if not self._wrap:
-            # Clamp to bounds
-            return min(max(x, lo), hi)
+        if self._wrap and lo is not None and hi is not None:
+            if hi <= lo:
+                return lo
 
-        # Wrap around bounds
-        if hi <= lo:
-            return lo
+            span = hi - lo
+            while x < lo:
+                x += span
+            while x > hi:
+                x -= span
+            return x
 
-        span = hi - lo
-        # Normalize with wrap (handle large jumps gracefully)
-        while x < lo:
-            x += span
-        while x > hi:
-            x -= span
+        if lo is not None and x < lo:
+            x = lo
+        if hi is not None and x > hi:
+            x = hi
+
         return x
+
+    def _is_interactive(self) -> bool:
+        """Return True if the widget is not readonly or disabled."""
+        current_states = self.state()
+        return 'disabled' not in current_states and 'readonly' not in current_states
 
     def step(self, n: int = 1):
         """Increment or decrement value by n steps."""
+        if not self._is_interactive():
+            return self
         # Get current value (default to min if None)
         current = self._value
         if current is None:
-            base = float(self._minvalue)
+            base = float(self._minvalue) if self._minvalue is not None else 0.0
         else:
             base = float(current)
 

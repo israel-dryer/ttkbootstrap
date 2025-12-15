@@ -1,3 +1,5 @@
+from typing import Any
+
 from typing_extensions import Unpack
 
 from ttkbootstrap.widgets.composites.field import Field, FieldOptions
@@ -113,7 +115,7 @@ class TextEntry(Field):
     """
 
     def __init__(
-            self, master=None, value: str = "", label: str = None, message: str = None,
+            self, master=None, value: Any = None, label: str = None, message: str = None,
             **kwargs: Unpack[FieldOptions]):
         """Initialize a TextEntry widget.
 
@@ -123,7 +125,7 @@ class TextEntry(Field):
 
         Args:
             master: Parent widget. If None, uses the default root window.
-            value: Initial value to display. Default is empty string.
+            value: Initial value to display. Default is None.
             label: Optional label text to display above the entry field.
                 If required=True, an asterisk (*) is automatically appended.
             message: Optional message text to display below the entry field.

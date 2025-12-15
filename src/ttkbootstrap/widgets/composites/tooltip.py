@@ -3,11 +3,11 @@ from tkinter import Misc
 from types import SimpleNamespace
 from typing import Any, Literal, Optional, Union
 
-from ttkbootstrap.widgets.primitives import Button, Frame, Label
+from ttkbootstrap.constants import *
 from ttkbootstrap.runtime.toplevel import Toplevel
 from ttkbootstrap.runtime.utility import scale_size
 from ttkbootstrap.runtime.window_utilities import WindowPositioning, AnchorPoint
-from ttkbootstrap.constants import *
+from ttkbootstrap.widgets.primitives import Button, Frame, Label
 
 ttk = SimpleNamespace(
     Button=Button,
@@ -18,34 +18,6 @@ ttk = SimpleNamespace(
 
 
 class ToolTip:
-    """A semi-transparent tooltip popup that displays on hover.
-
-    This class creates a tooltip window that appears when the mouse hovers over
-    a widget and automatically closes when the mouse leaves or on click. The tooltip
-    supports Bootstrap styling, custom positioning, text wrapping, and optional images.
-
-    Examples:
-        ```python
-        import ttkbootstrap as ttk
-        from ttkbootstrap.constants import *
-        from ttkbootstrap.tooltip import ToolTip
-
-        app = ttk.Window()
-        b1 = ttk.Button(app, text="default tooltip")
-        b1.pack()
-        b2 = ttk.Button(app, text="styled tooltip")
-        b2.pack()
-
-        # default tooltip
-        ToolTip(b1, text="This is the default style")
-
-        # styled tooltip
-        ToolTip(b2, text="This is dangerous", bootstyle=(DANGER, INVERSE))
-
-        app.mainloop()
-        ```
-    """
-
     # Position offset from mouse pointer
     _MOUSE_OFFSET_X = 25
     _MOUSE_OFFSET_Y = 10
