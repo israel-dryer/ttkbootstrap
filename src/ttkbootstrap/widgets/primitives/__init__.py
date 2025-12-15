@@ -1,5 +1,6 @@
 """Primitive ttkbootstrap widgets."""
 
+from .badge import Badge
 from .button import Button
 from .checkbutton import CheckButton
 from .combobox import Combobox
@@ -20,6 +21,7 @@ from .spinbox import Spinbox
 from .treeview import TreeView
 
 __all__ = [
+    "Badge",
     "Button",
     "CheckButton",
     "Combobox",
