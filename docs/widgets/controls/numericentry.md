@@ -5,19 +5,21 @@ icon: fontawesome/solid/hashtag
 
 # NumericEntry
 
-`NumericEntry` is a **high-level numeric input control** designed for real desktop apps.
+`NumericEntry` is a **high-level numeric input control** for desktop apps.
 
-It builds on ttkbootstrap’s `Field` foundation (label + input + message + validation) and uses a numeric entry part under the hood, adding:
+It builds on ttkbootstrap’s field foundation (label + input + message + validation) and adds:
 
 - **Min/Max bounds**
 - **Stepping** (spin buttons, Up/Down keys, mouse wheel)
 - Optional **wrap** at boundaries
-- Optional **locale-aware formatting** via `value_format` + `locale`
-- Structured virtual events like `<<Input>>`, `<<Changed>>`, `<<Valid>>`, `<<Invalid>>` (and more)
+- **Commit-time formatting** via `value_format`
+- Structured events like `<<Input>>`, `<<Changed>>`, `<<Valid>>`, `<<Invalid>>` (and more)
 
-> _Image placeholder:_  
-> `![NumericEntry overview](../_img/widgets/numericentry/overview.png)`  
-> Suggested shot: quantity + price + percent examples, with spin buttons.
+<figure markdown>
+![NumericEntry states](../../assets/dark/widgets-numericentry-states.png#only-dark)
+![NumericEntry states](../../assets/light/widgets-numericentry-states.png#only-light)
+</figure>
+
 
 ---
 
@@ -35,7 +37,7 @@ qty = ttk.NumericEntry(
     minvalue=0,
     maxvalue=999,
     increment=1,
-    message="How many items?"
+    message="How many items?",
 )
 qty.pack(fill="x", padx=20, pady=10)
 
@@ -76,15 +78,12 @@ percent = ttk.NumericEntry(
     minvalue=0,
     maxvalue=100,
     increment=5,
-    wrap=True
+    wrap=True,
 )
 percent.pack(fill="x", padx=20, pady=10)
 
 app.mainloop()
 ```
-
-> _Image placeholder:_  
-> `![NumericEntry wrap](../_img/widgets/numericentry/wrap.png)`
 
 ---
 
@@ -94,7 +93,7 @@ app.mainloop()
 
 - **Spin buttons** (default)
 - **Up / Down** arrow keys
-- **Mouse wheel** (when supported by platform)
+- **Mouse wheel** (when supported by the platform)
 
 Control step size with `increment`.
 
@@ -118,29 +117,64 @@ app.mainloop()
 
 ---
 
-## Formatting & locale
+## Formatting with `value_format`
 
-If you want formatting on commit (blur/Enter), use `value_format` and optionally `locale`.
+`NumericEntry` supports powerful, locale-aware formatting via `value_format`.
+
+This allows you to:
+
+- accept plain numeric input while editing
+- normalize the committed value
+- reformat the display when the user finishes editing
+
+Formatting is applied **on commit** (blur or Enter), so it doesn’t fight the user while typing.
+
+### Named numeric formats
+
+These examples show common numeric formats you’ll use in real apps:
+
+<figure markdown>
+![numeric formats](../../assets/dark/widgets-numericentry-formats.png#only-dark)
+![numeric formats](../../assets/light/widgets-numericentry-formats.png#only-light)
+
+</figure>
+
 
 ```python
 import ttkbootstrap as ttk
 
 app = ttk.App()
 
-amount = ttk.NumericEntry(
-    app,
-    label="Amount",
+row = ttk.Frame(app, padding=10)
+row.pack(fill="x")
+
+ttk.NumericEntry(
+    row,
+    label="Currency",
     value=1234.56,
-    value_format="$#,##0.00",
-    locale="en_US",
-)
-amount.pack(fill="x", padx=20, pady=10)
+    value_format="currency",
+).pack(side="left", padx=10)
+
+ttk.NumericEntry(
+    row,
+    label="Fixed Point",
+    value=15422354,
+    value_format="fixedPoint",
+).pack(side="left", padx=10)
+
+ttk.NumericEntry(
+    row,
+    label="Percent",
+    value=0.35,
+    value_format="percent",
+).pack(side="left", padx=10)
 
 app.mainloop()
 ```
 
-> _Image placeholder:_  
-> `![NumericEntry formatted](../_img/widgets/numericentry/formatting.png)`
+!!! tip "Commit-time formatting"
+    `value_format` is applied when the value is committed (blur/Enter). While focused, users can type naturally.
+
 
 ---
 
@@ -193,7 +227,7 @@ raw_text = field.get()
 
 ## Validation
 
-Because it’s a `Field`-based control, you can add validation rules the same way you do for `TextEntry`.
+Because it’s a field-based control, you can add validation rules the same way you do for `TextEntry`.
 
 ```python
 import ttkbootstrap as ttk
@@ -207,20 +241,21 @@ qty.pack(fill="x", padx=20, pady=10)
 app.mainloop()
 ```
 
-!!! tip "Numeric contraints"
-    Rely on `minvalue`/`maxvalue`, and use validation rules for “business rules” (e.g., required, max digits, etc.).
+!!! tip "Numeric constraints"
+    Rely on `minvalue`/`maxvalue` for numeric bounds, and use validation rules for “business rules”
+    (e.g., required, maximum digits, etc.).
 
 ---
 
 ## Events
 
-`NumericEntry` forwards structured virtual events from the underlying numeric entry part. Related `on_*` and `off_*` 
-convenience bindings are available for the following generated events:
+`NumericEntry` forwards structured virtual events from the underlying entry part. Related `on_*` and `off_*`
+convenience bindings are available for the generated events:
 
 - `<<Input>>` — each keystroke (raw text)
 - `<<Changed>>` — committed value changed (blur/Enter)
 - `<<Valid>>`, `<<Invalid>>`, `<<Validated>>` — validation outcomes
-- `<<Increment>>`, `<<Decrement>>` — stepping requested (before step occurs)
+- `<<Increment>>`, `<<Decrement>>` — stepping requested (before the step occurs)
 
 Example: reacting to committed changes
 
@@ -246,7 +281,7 @@ Example: intercept increment/decrement requests
 ```python
 def handle_increment(event):
     print("increment requested")
-    
+
 qty.on_increment(handle_increment)
 ```
 
@@ -254,22 +289,84 @@ qty.on_increment(handle_increment)
 
 ## Add-ons
 
-Because this is a `Field`, you can add prefix/suffix widgets inside the field container.
+Because `NumericEntry` is a field control, you can insert widgets inside its layout. This is a **powerful** feature that allows you
+to create customized and specialized entry fields.
+
+<figure markdown>
+![addons](../../assets/dark/widgets-numericentry-addons.png#only-dark)
+![addons](../../assets/light/widgets-numericentry-addons.png#only-light)
+</figure>
 
 ```python
-import ttkbootstrap as ttk
+# email entry
+email = ttk.TextEntry(app, label="Email")
+email.insert_addon(ttk.Label, position="before", icon="envelope")
+email.pack(side="left", padx=10, anchor="s")
 
-app = ttk.App()
+def handle_search():
+    ...
 
-amount = ttk.NumericEntry(app, label="Amount", value=0, minvalue=0, maxvalue=9999)
-amount.insert_addon(ttk.Label, position="before", text="$")
-amount.pack(fill="x", padx=20, pady=10)
-
-app.mainloop()
+search = ttk.TextEntry(app)
+search.insert_addon(ttk.Button, position="after", icon="search", command=handle_search)
+search.pack(side="left", padx=10, anchor="s")
 ```
 
-> _Image placeholder:_  
-> `![NumericEntry addon](../_img/widgets/numericentry/addons.png)`
+!!! note "Power Play"
+    Most of the specialized _Entry_ widgets in v2 have been created using this very method.
+
+---
+
+## Colors
+
+NumericEntry support standard ttkbootstrap styling and theming.
+
+<div class="only-dark" style="text-align: center;" markdown="1">
+  <video controls autoplay muted loop playsinline width="700">
+    <source src="../../../assets/dark/widgets-numericentry-colors.mp4" type="video/mp4">
+  </video>
+</div>
+
+<div class="only-light" style="text-align: center;" markdown="1">
+  <video controls autoplay muted loop playsinline width="700">
+    <source src="../../../assets/light/widgets-numericentry-colors.mp4" type="video/mp4">
+  </video>
+</div>
+
+```python
+ttk.NumericEntry(app, value=123456)  # primary is default
+ttk.NumericEntry(app, value=123456, bootstyle="secondary")
+ttk.NumericEntry(app, value=123456, bootstyle="success")
+ttk.NumericEntry(app, value=123456, bootstyle="info")
+ttk.NumericEntry(app, value=123456, bootstyle="warning")
+ttk.NumericEntry(app, value=123456, bootstyle="danger")
+```
+
+---
+
+## Localization
+
+Localization behavior is controlled by the **global application settings**.
+
+By default, widgets use `localize="auto"`. In this mode, `label`, `message`, and `text` are treated as localization
+keys **when a translation exists**. If a key is not found in the active message catalog, the widget falls back to using
+the value as **plain text**.
+
+You can override this behavior per widget if needed.
+
+```python
+# uses global app localization settings (default)
+ttk.NumericEntry(app, label="order.quantity", message="order.quantity.help").pack(fill="x")
+
+# explicitly enable localization for this widget
+ttk.NumericEntry(app, label="order.quantity", localize=True).pack(fill="x")
+
+# explicitly disable localization (always treat strings as literals)
+ttk.NumericEntry(app, label="Quantity", message="How many items?", localize=False).pack(fill="x")
+```
+
+!!! tip "Safe to pass literal text"
+    With `localize="auto"`, you can mix localization keys and literal strings.
+    If no translation is found, the string is shown as-is.
 
 ---
 
@@ -279,7 +376,7 @@ Use `NumericEntry` when:
 
 - you want a **single, consistent numeric input control**
 - you need **bounds**, **stepping**, and a **message/validation area**
-- you’re building forms or dialogs and want a “ready” control
+- you want commit-time numeric formatting via `value_format`
 
 Use the base `Spinbox` / raw `Entry` when:
 
