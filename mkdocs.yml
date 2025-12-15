@@ -1,6 +1,9 @@
 site_name: ttkbootstrap
 repo_url: https://github.com/israel-dryer/ttkbootstrap
 
+extra_css:
+  - stylesheets/extra.css
+
 theme:
   icon:
     logo: fontawesome/solid/feather-pointed
