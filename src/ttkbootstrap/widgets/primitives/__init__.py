@@ -3,6 +3,7 @@
 from .badge import Badge
 from .button import Button
 from .checkbutton import CheckButton
+from .checktoggle import CheckToggle
 from .combobox import Combobox
 from .entry import Entry
 from .frame import Frame
@@ -24,6 +25,7 @@ __all__ = [
     "Badge",
     "Button",
     "CheckButton",
+    "CheckToggle",
     "Combobox",
     "Entry",
     "Frame",

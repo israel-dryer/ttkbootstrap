@@ -6,6 +6,7 @@ from ttkbootstrap.widgets import TK_WIDGETS, TTK_WIDGETS
 from ttkbootstrap.widgets.primitives.badge import Badge
 from ttkbootstrap.widgets.primitives.button import Button
 from ttkbootstrap.widgets.primitives.checkbutton import CheckButton
+from ttkbootstrap.widgets.primitives.checktoggle import CheckToggle
 from ttkbootstrap.widgets.primitives.combobox import Combobox
 from ttkbootstrap.widgets.composites.contextmenu import ContextMenu, ContextMenuItem
 from ttkbootstrap.widgets.composites.dateentry import DateEntry
@@ -50,6 +51,7 @@ __all__ = [
     "Badge",
     "Button",
     "CheckButton",
+    "CheckToggle",
     "Combobox",
     "ContextMenu",
     "ContextMenuItem",

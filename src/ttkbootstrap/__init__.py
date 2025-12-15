@@ -140,6 +140,7 @@ _MODULE_EXPORTS = {
     "ttkbootstrap.api.widgets": [
         *_TTK_PRIMITIVES,
         "Badge",
+        "CheckToggle",
         "ContextMenu", "ContextMenuItem", "DateEntry", "DatePicker",
         "DropdownButton", "Field", "FieldOptions", "FloodGauge", "Form",
         "LabeledScale", "Meter", "NumericEntry", "PageStack",
