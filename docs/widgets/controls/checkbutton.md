@@ -8,6 +8,12 @@ icon: fontawesome/solid/square-check
 CheckButtons allow users to turn options on or off, or represent a mixed (indeterminate) state when a choice is not fully applied.
 Use `CheckButton` when the user is enabling or disabling features, or selecting multiple items independently.
 
+<figure markdown>
+![checkbutton](../../assets/dark/widgets-checkbutton-states.png#only-dark)
+![checkbutton](../../assets/light/widgets-checkbutton-states.png#only-light)
+</figure>
+
+
 ---
 
 ## Basic usage
@@ -250,11 +256,28 @@ ttk.CheckButton(app, bootstyle="danger-toggle")
 
 ## Localization
 
-If you use message catalogs, `localize="auto"` (or `True`) treats the `text` as a translation key.
+Localization behavior is controlled by the **global application settings**.
+
+By default, widgets use `localize="auto"`. In this mode, the `text` is treated as a localization
+key **when a translation exists**. If the key is not found in the active message catalog, the
+widget falls back to using the value as **plain text**.
+
+You can override this behavior per widget if needed.
 
 ```python
-ttk.CheckButton(app, text="settings.notifications", localize="auto").pack()
+# uses global app localization settings (default)
+ttk.CheckButton(app, text="settings.notifications").pack()
+
+# explicitly enable localization
+ttk.CheckButton(app, text="settings.notifications", localize=True).pack()
+
+# explicitly disable localization (always treat text as a literal)
+ttk.CheckButton(app, text="Notifications", localize=False).pack()
 ```
+
+!!! tip "Safe to pass literal text"
+    With `localize="auto"`, you can pass either a localization key or a literal label.
+    If no translation is found, the label is shown as-is.
 
 ---
 
