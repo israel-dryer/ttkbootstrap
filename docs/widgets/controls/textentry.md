@@ -5,21 +5,16 @@ icon: fontawesome/solid/i-cursor
 
 # TextEntry
 
-`TextEntry` is a **high-level text input control** designed for real-world desktop applications.
+`TextEntry` is a fully featured input control including a label, input, and message text.
 
-It builds on Tkinter’s native `Entry`, but adds the things you almost always need in practice:
-
-- A **label** and **message** area
-- **Validation** and validation feedback
-- Optional **localization** and **formatting**
-- Structured **virtual events**
-- A consistent layout that works in forms and dialogs
+It builds on Tkinter’s native `ttk.Entry`, but adds the things you almost always need in practice.
 
 If you are building forms, dialogs, or data-driven UIs, `TextEntry` should usually be your **default text input**.
 
-> _Image placeholder:_  
-> `![TextEntry overview](../_img/widgets/textentry/overview.png)`  
-> Suggested shot: label + entry + helper message + error state.
+<figure markdown>
+![textentry states](../../assets/dark/widgets-textentry-states.png#only-dark)
+![textentry states](../../assets/light/widgets-textentry-states.png#only-light)
+</figure>
 
 ---
 
@@ -123,22 +118,59 @@ Validation results are reflected visually and via events.
 
 ---
 
-## Formatting & localization
+## Formatting with `value_format`
 
-You can apply formatting when the value is committed.
+`TextEntry` supports powerful, locale-aware formatting via the `value_format` option.
+
+This allows you to:
+- accept flexible user input (strings, numbers, dates)
+- normalize and parse it into a committed value
+- reformat it for display when the user finishes editing
+
+Formatting is applied **on commit** (blur or Enter), so it never interferes with typing.
+
+### Named formats
+
+In v2, `value_format` supports a set of **semantic format names**.
+These formats automatically apply the correct parsing and display rules
+based on the active locale.
+
+<figure markdown>
+![localized](../../assets/dark/widgets-textentry-localization.png#only-dark)
+![localized](../../assets/light/widgets-textentry-localization.png#only-light)
+</figure>
 
 ```python
-amount = ttk.TextEntry(
-    app,
-    label="Amount",
+ttk.TextEntry(
+    r3,
+    label="Currency",
     value=1234.56,
-    value_format="$#,##0.00",
-    locale="en_US",
-)
-amount.pack(fill="x", padx=20, pady=10)
+    value_format="currency",
+).pack(side="left", padx=10)
+
+ttk.TextEntry(
+    r3,
+    label="Short Date",
+    value="March 14, 1981",
+    value_format="shortDate",
+).pack(side="left", padx=10)
+
+ttk.TextEntry(
+    r3,
+    label="Fixed Point",
+    value=15422354,
+    value_format="fixedPoint",
+).pack(side="left", padx=10)
 ```
 
-This is especially useful when you want **display formatting** without interfering with typing.
+!!! tip "Flexible input"
+    The initial `value` does not need to be pre-formatted.
+    Strings, numbers, and date-like values are parsed and normalized automatically.
+
+!!! note "Text vs value (revisited)"
+    `value_format` controls **how the committed value is displayed**.
+    While the field is focused, the user edits raw text.
+    When the value is committed, it is parsed, validated, and reformatted.
 
 ---
 
@@ -165,31 +197,57 @@ name.on_valid(on_event)
 
 ## Add-ons (prefix / suffix widgets)
 
-Because `TextEntry` is a field control, you can insert widgets inside its layout.
+Because `TextEntry` is a field control, you can insert widgets inside its layout. This is a **powerful** feature that allows you
+to create customized and specialized entry fields.
+
+<figure markdown>
+![addons](../../assets/dark/widgets-textentry-addons.png#only-dark)
+![addons](../../assets/light/widgets-textentry-addons.png#only-light)
+</figure>
 
 ```python
-search = ttk.TextEntry(app, label="Search")
-search.insert_addon(ttk.Button, position="after", text="Go")
-search.pack(fill="x", padx=20, pady=10)
+# email entry
+email = ttk.TextEntry(app, label="Email")
+email.insert_addon(ttk.Label, position="before", icon="envelope")
+email.pack(side="left", padx=10, anchor="s")
+
+def handle_search():
+    ...
+
+search = ttk.TextEntry(app)
+search.insert_addon(ttk.Button, position="after", icon="search", command=handle_search)
+search.pack(side="left", padx=10, anchor="s")
 ```
 
-> _Image placeholder:_  
-> `![TextEntry addon](../_img/widgets/textentry/addon.png)`
+!!! note "Power Play"
+    Most of the specialized _Entry_ widgets in v2 have been created using this very method.
 
 ---
 
 ## Localization
 
-If you use message catalogs, `localize="auto"` (or `True`) treats `label`, `message`, and `text` as translation keys.
+Localization behavior is controlled by the **global application settings**.
+
+By default, widgets use `localize="auto"`. In this mode, `label`, `message`, and `text` are treated as localization
+keys **when a translation exists**. If a key is not found in the active message catalog, the widget falls back to using
+the value as **plain text**.
+
+You can override this behavior per widget if needed.
 
 ```python
-ttk.TextEntry(
-    app,
-    label="user.name",
-    message="user.name.help",
-    localize="auto",
-).pack(fill="x")
+# uses global app localization settings (default)
+ttk.TextEntry(app, label="user.name", message="user.name.help").pack(fill="x")
+
+# explicitly enable localization for this widget
+ttk.TextEntry(app, label="user.name", localize=True).pack(fill="x")
+
+# explicitly disable localization (always treat strings as literals)
+ttk.TextEntry(app, label="Name", message="Enter your full name", localize=False).pack(fill="x")
 ```
+
+!!! tip "Safe to pass literal text"
+    With `localize="auto"`, you can mix localization keys and literal strings.
+    If no translation is found, the string is shown as-is.
 
 ---
 
