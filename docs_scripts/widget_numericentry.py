@@ -35,9 +35,9 @@ for color in ['info', 'warning', 'danger']:
 r2 = ttk.Frame(app, padding=16)
 r2.pack(side='top')
 
-currency = ttk.NumericEntry(r2, label="Salary")
-currency.insert_addon(ttk.Label, position='before', icon='currency-euro')
-currency.pack(side='left', padx=10, anchor='s')
+salary = ttk.NumericEntry(r2, label="Salary")
+salary.insert_addon(ttk.Label, position='before', icon='currency-euro')
+salary.pack(side='left', padx=10, anchor='s')
 
 size = ttk.NumericEntry(r2, label="Size", show_spin_buttons=False)
 size.insert_addon(ttk.Button, position='before', icon='rulers')

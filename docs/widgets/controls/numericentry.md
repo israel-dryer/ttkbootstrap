@@ -298,17 +298,14 @@ to create customized and specialized entry fields.
 </figure>
 
 ```python
-# email entry
-email = ttk.TextEntry(app, label="Email")
-email.insert_addon(ttk.Label, position="before", icon="envelope")
-email.pack(side="left", padx=10, anchor="s")
+salary = ttk.NumericEntry(app, label="Salary")
+salary.insert_addon(ttk.Label, position='before', icon='currency-euro')
+salary.pack(side='left', padx=10, anchor='s')
 
-def handle_search():
-    ...
-
-search = ttk.TextEntry(app)
-search.insert_addon(ttk.Button, position="after", icon="search", command=handle_search)
-search.pack(side="left", padx=10, anchor="s")
+size = ttk.NumericEntry(app, label="Size", show_spin_buttons=False)
+size.insert_addon(ttk.Button, position='before', icon='rulers')
+size.insert_addon(ttk.Label, position='after', text='cm', font='label[9]')
+size.pack(side='left', padx=10, anchor='s')
 ```
 
 !!! note "Power Play"
