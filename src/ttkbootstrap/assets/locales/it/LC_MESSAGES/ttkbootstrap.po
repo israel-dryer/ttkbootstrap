@@ -40,13 +40,13 @@ msgid "button.delete"
 msgstr "Elimina"
 
 msgid "button.next"
-msgstr "Avanti"     # !VERIFY
+msgstr "Avanti"
 
 msgid "button.previous"
-msgstr "Precedente" # !VERIFY
+msgstr "Indietro"
 
 msgid "button.prev"
-msgstr "Precedente" # !VERIFY
+msgstr "Indietro"
 
 msgid "button.open"
 msgstr "Apri"
@@ -489,13 +489,16 @@ msgid "Delete"
 msgstr "Elimina"
 
 msgid "Next"
-msgstr "Avanti"     # !VERIFY
+msgstr "Successivo"
+# msgstr "Avanti"
 
 msgid "Previous"
-msgstr "Precedente" # !VERIFY
+msgstr "Precedente"
+# msgstr "Indietro"
 
 msgid "Prev"
-msgstr "Precedente" # !VERIFY
+msgstr "Prec."
+# msgstr "Indietro"
 
 msgid "Open"
 msgstr "Apri"
