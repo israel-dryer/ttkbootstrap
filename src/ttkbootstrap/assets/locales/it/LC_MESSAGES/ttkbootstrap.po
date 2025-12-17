@@ -489,16 +489,13 @@ msgid "Delete"
 msgstr "Elimina"
 
 msgid "Next"
-msgstr "Successivo"
-# msgstr "Avanti"
+msgstr "Avanti"
 
 msgid "Previous"
-msgstr "Precedente"
-# msgstr "Indietro"
+msgstr "Indietro"
 
 msgid "Prev"
-msgstr "Prec."
-# msgstr "Indietro"
+msgstr "Indietro"
 
 msgid "Open"
 msgstr "Apri"

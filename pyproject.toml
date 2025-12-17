@@ -45,12 +45,12 @@ classifiers = [
 dependencies = [
     "pillow>=10,<=12",
     "ttkbootstrap-icons>=4",
+    "ttkbootstrap-icons-bs (>=1.0.0,<2.0.0)",
 
     # Runtime localization/formatting stack
     "Babel>=2.12",
     "python-dateutil>=2.8",
     "dateparser>=1.1",
-    "ttkbootstrap-icons-bs (>=1.0.0,<2.0.0)",
 ]
 
 [project.optional-dependencies]
@@ -72,4 +72,3 @@ where = ["src"]
     # ship compiled gettext catalogs within the package
     "assets/locales/**/LC_MESSAGES/*.mo",
 ]
-
