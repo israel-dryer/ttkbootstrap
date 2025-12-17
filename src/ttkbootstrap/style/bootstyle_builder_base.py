@@ -183,6 +183,9 @@ class BootstyleBuilderBase:
     def focus(self, color: str) -> str:
         return self._state_color(color, "focus")
 
+    def selected(self, color: str) -> str:
+        return self._state_color(color, "selected")
+
     def focus_border(self, color: str) -> str:
         lum = relative_luminance(color)
         if self.provider.mode == "dark":
@@ -207,6 +210,28 @@ class BootstyleBuilderBase:
                 brightened = lighten_color(color, 0.25)
                 mixed = mix_colors(brightened, surface, 0.25)
         return mixed
+
+    def focus_inner(self, fill: str) -> str:
+        """Internal focus line (2–3px), slightly brighter but not glowy."""
+        from ttkbootstrap.style.utility import contrast_ratio, hex_to_rgb
+
+        on = self.on_color(fill)
+
+        # Brighter defaults
+        w = 0.26 if self.provider.mode == "light" else 0.20
+        ring = mix_colors(on, fill, w)
+
+        # If still not distinct enough, bump once (bounded)
+        try:
+            bg = hex_to_rgb(fill)
+            fg = hex_to_rgb(ring)
+            if contrast_ratio(bg, fg) < 2.4:
+                w2 = min(w + 0.08, 0.34 if self.provider.mode == "light" else 0.28)
+                ring = mix_colors(on, fill, w2)
+        except Exception:
+            pass
+
+        return ring
 
     def border(self, color: str) -> str:
         if self.provider.mode == "dark":
@@ -377,11 +402,18 @@ class BootstyleBuilderBase:
     def _state_color(color: str, state: str) -> str:
         if state == "focus":
             return color
+
         delta = {
             "active": 0.08,
+            "selected": 0.18,  # was effectively ~0.10–0.16; bump a bit
             "pressed": 0.12,
             "focus": 0.08,
         }[state]
+
+        # Selected should read as "latched": always darken.
+        if state == "selected":
+            return darken_color(color, delta)
+
         lum = relative_luminance(color)
         if lum < 0.5:
             return lighten_color(color, delta)
@@ -543,6 +575,8 @@ class BootstyleBuilderBase:
                 return k
             if k in ('pressed', 'active'):
                 return 'pressed !disabled'
+            if k == 'selected':
+                return 'selected !disabled'
             if k == 'hover':
                 return 'hover !disabled'
             return k

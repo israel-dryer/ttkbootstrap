@@ -84,6 +84,7 @@ if TYPE_CHECKING:
         TextEntry,
         TimeEntry,
         Toast,
+        ToggleGroup,
         ToolTip,
         TreeView,
         TK_WIDGETS,
@@ -146,7 +147,7 @@ _MODULE_EXPORTS = {
         "DropdownButton", "Field", "FieldOptions", "FloodGauge", "Form",
         "LabeledScale", "Meter", "NumericEntry", "PageStack",
         "PasswordEntry", "PathEntry", "ScrolledText", "ScrollView", "SpinnerEntry",
-        "SelectBox", "TableView", "TextEntry", "TimeEntry", "Toast",
+        "SelectBox", "TableView", "TextEntry", "TimeEntry", "Toast", "ToggleGroup",
         "ToolTip", "TK_WIDGETS", "TTK_WIDGETS",
     ],
     "ttkbootstrap.api.localization": [

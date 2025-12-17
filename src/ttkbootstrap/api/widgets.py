@@ -45,6 +45,7 @@ from ttkbootstrap.widgets.composites.tableview import TableView
 from ttkbootstrap.widgets.composites.textentry import TextEntry
 from ttkbootstrap.widgets.composites.timeentry import TimeEntry
 from ttkbootstrap.widgets.composites.toast import Toast
+from ttkbootstrap.widgets.composites.togglegroup import ToggleGroup
 from ttkbootstrap.widgets.composites.tooltip import ToolTip
 from ttkbootstrap.widgets.primitives.treeview import TreeView
 
@@ -93,6 +94,7 @@ __all__ = [
     "TextEntry",
     "TimeEntry",
     "Toast",
+    "ToggleGroup",
     "ToolTip",
     "TreeView",
     "TK_WIDGETS",
