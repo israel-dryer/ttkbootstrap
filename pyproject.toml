@@ -71,4 +71,3 @@ where = ["src"]
     # ship compiled gettext catalogs within the package
     "assets/locales/**/LC_MESSAGES/*.mo",
 ]
-
