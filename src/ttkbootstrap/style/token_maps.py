@@ -32,7 +32,8 @@ WIDGET_CLASS_MAP = {
     'field': 'TField',
     'toolbutton': 'Toolbutton',
     'tooltip': 'Tooltip',
-    'calendar': 'TCalendar'
+    'calendar': 'TCalendar',
+    'buttongroup': 'ButtonGroup'
 }
 
 WIDGET_NAME_MAP = {v: k for k, v in WIDGET_CLASS_MAP.items()}

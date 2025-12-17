@@ -99,8 +99,6 @@ class TTKWrapperBase(FontMixin, ConfigureDelegationMixin):
 
         style_options = getattr(self, '_style_options', {})
 
-        print("DEBUG - rebuilding style with options", style_options)
-
         # Extract current bootstyle tokens from the current style
         current_style = self._ttk_base.cget(self, "style")  # type: ignore[misc]
         color = extract_color_from_style(current_style, default=None) if current_style else None
@@ -164,7 +162,8 @@ class TTKWrapperBase(FontMixin, ConfigureDelegationMixin):
 
         # Set path
         widget_class = self.winfo_class()
-        style_options: dict[str, Any] = {}
+        # Use stored style_options if available, otherwise create new dict
+        style_options = getattr(self, '_style_options', {}).copy()
 
         surface = getattr(self, "_surface_color", None)
         if surface and surface != "background":

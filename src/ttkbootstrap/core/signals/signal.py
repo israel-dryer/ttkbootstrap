@@ -4,6 +4,7 @@ from itertools import count
 from typing import Any, Callable, Generic, Type, TypeVar
 
 from ttkbootstrap.core.signals.types import TraceOperation
+from ttkbootstrap.core.variables import SetVar
 
 T = TypeVar("T")
 U = TypeVar("U")
@@ -102,6 +103,8 @@ class Signal(Generic[T]):
             return tk.IntVar(master=self._master, name=self._name, value=value)
         elif isinstance(value, float):
             return tk.DoubleVar(master=self._master, name=self._name, value=value)
+        elif isinstance(value, set):
+            return SetVar(master=self._master, name=self._name, value=value)
         else:
             return tk.StringVar(master=self._master, name=self._name, value=value)
 
@@ -156,6 +159,8 @@ class Signal(Generic[T]):
                 py_type = int
             elif isinstance(tk_var, tk.DoubleVar):
                 py_type = float
+            elif isinstance(tk_var, SetVar):
+                py_type = set
             else:
                 py_type = str
         else:
@@ -181,6 +186,8 @@ class Signal(Generic[T]):
                 current = 0
             elif py_type is bool:  # type: ignore[comparison-overlap]
                 current = False
+            elif py_type is set:
+                current = set()
             else:
                 current = ""
         self._last = current  # type: ignore[assignment]
