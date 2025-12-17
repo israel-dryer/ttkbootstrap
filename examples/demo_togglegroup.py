@@ -14,8 +14,7 @@ class ToggleGroupDemo(ttk.App):
         single_group = ttk.ToggleGroup(
             self,
             mode='single',
-            signal=view_signal,
-            bootstyle='primary'
+            signal=view_signal
         )
         single_group.add(text="Grid", value="grid", icon='grid-fill', icon_only=True)
         single_group.add(text="List", value="list", icon='list', icon_only=True)
@@ -40,7 +39,7 @@ class ToggleGroupDemo(ttk.App):
         multi_group.add(text="In Stock", value="in_stock")
         multi_group.add(text="On Sale", value="on_sale")
         multi_group.add(text="Backorder", value="backorder")
-        multi_group.pack(pady=5)
+        multi_group.pack(pady=1)
 
         # Live update label for multi mode
         multi_label = ttk.Label(self, text=f"Selected Filters: {filter_signal.get()}")
@@ -54,13 +53,13 @@ class ToggleGroupDemo(ttk.App):
         style_frame.pack(pady=5)
 
         # Outline style
-        outline_group = ttk.ToggleGroup(style_frame, bootstyle='info-outline', value='b')
+        outline_group = ttk.ToggleGroup(style_frame, bootstyle='outline', value='b')
         outline_group.add("A", "a")
         outline_group.add("B", "b")
         outline_group.pack(side='left', padx=10)
 
         # Ghost style
-        ghost_group = ttk.ToggleGroup(style_frame, bootstyle='warning-ghost', value='y')
+        ghost_group = ttk.ToggleGroup(style_frame, bootstyle='success-ghost', value='y')
         ghost_group.add("X", "x")
         ghost_group.add("Y", "y")
         ghost_group.pack(side='left', padx=10)
@@ -71,7 +70,7 @@ class ToggleGroupDemo(ttk.App):
         vertical_group = ttk.ToggleGroup(
             self,
             mode='multi',
-            orientation='vertical',
+            orient='vertical',
             bootstyle='danger',
             value={'red'}
         )

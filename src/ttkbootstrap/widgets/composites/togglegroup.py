@@ -1,23 +1,26 @@
 from __future__ import annotations
+
 from tkinter import StringVar
 from typing import Any, Literal, TYPE_CHECKING
+
 from typing_extensions import TypedDict, Unpack
 
-from ttkbootstrap.widgets.primitives import Frame
-from ttkbootstrap.widgets.primitives.checktoggle import CheckToggle
-from ttkbootstrap.widgets.primitives.radiotoggle import RadioToggle
+from ttkbootstrap import RadioButton, CheckButton
 from ttkbootstrap.core.variables import SetVar
+from ttkbootstrap.widgets.mixins.configure_mixin import configure_delegate
+from ttkbootstrap.widgets.primitives import Frame
 
 if TYPE_CHECKING:
     from ttkbootstrap.core.signals import Signal
     import tkinter as tk
+
 
 class ToggleGroupKwargs(TypedDict, total=False):
     mode: Literal['single', 'multi']
     variable: Any
     signal: Signal[Any]
     value: str | set[str]
-    orientation: Literal['horizontal', 'vertical']
+    orient: Literal['horizontal', 'vertical']
     bootstyle: str
     show_border: bool
     surface_color: str
@@ -27,42 +30,71 @@ class ToggleGroupKwargs(TypedDict, total=False):
     width: int
     height: int
 
+
 class ToggleGroup(Frame):
-    """A group of toggle buttons with single or multi-selection support."""
+    """A group of toggle buttons with single or multi-selection support.
+
+    The ToggleGroup widget provides a convenient way to create groups of toggle
+    buttons with automatic position tracking and styling. It supports both single
+    selection (radio button behavior) and multi-selection (checkbox behavior).
+
+    Button positions are automatically tracked and styled with appropriate border
+    images based on their position in the group (first, middle, last).
+    """
 
     def __init__(self, master: Any = None, **kwargs: Unpack[ToggleGroupKwargs]):
-        """
-        Initialize the ToggleGroup.
+        """Initialize the ToggleGroup.
 
         Args:
-            master (Any): The parent widget.
-            **kwargs: Keyword arguments for configuration.
+            master: The parent widget.
+            mode: Selection mode - 'single' for radio button behavior (default),
+                  or 'multi' for checkbox behavior allowing multiple selections.
+            orient: Layout orientation - 'horizontal' (default) or 'vertical'.
+            bootstyle: The color/variant style (e.g., 'primary', 'danger-outline').
+                       Defaults to 'primary'.
+            variable: Optional tk.Variable for controlling the value. For single mode,
+                      use StringVar; for multi mode, use SetVar.
+            signal: Optional Signal instance for reactive programming.
+            value: Initial value - string for single mode, set for multi mode.
+            style_options: Additional style options passed to child buttons.
+            padding: Frame padding. Defaults to 1.
+            **kwargs: Additional Frame configuration options.
+
+        Examples:
+            # Single selection group (radio behavior)
+            group = ToggleGroup(mode='single', bootstyle='primary')
+            group.add("Option A", "a")
+            group.add("Option B", "b")
+
+            # Multi-selection group (checkbox behavior)
+            group = ToggleGroup(mode='multi', orient='vertical')
+            group.add("Feature 1", "f1")
+            group.add("Feature 2", "f2")
+
+            # With signal for reactive updates
+            signal = Signal()
+            group = ToggleGroup(signal=signal)
+            signal.subscribe(lambda v: print(f"Selected: {v}"))
         """
         # Extract ToggleGroup-specific options before super().__init__
         self._mode = kwargs.pop('mode', 'single')
-        self._orientation = kwargs.pop('orientation', 'horizontal')
-        self._bootstyle = kwargs.pop('bootstyle', 'Toolbutton')
-        show_border = kwargs.pop('show_border', False)
+        self._orientation = kwargs.pop('orient', 'horizontal')
+        self._bootstyle = kwargs.pop('bootstyle', 'primary')
 
         # Handle signal/variable/value similar to CheckButton pattern
-        signal_provided = 'signal' in kwargs
-        variable_provided = 'variable' in kwargs
         initial_value = kwargs.pop('value', None)
 
-        # Add border configuration to kwargs
-        if show_border:
-            kwargs['borderwidth'] = 1
-            kwargs['relief'] = 'solid'
+        style_options = kwargs.pop('style_options', {})
 
         # Initialize internal state
-        self._buttons: dict[str, CheckToggle | RadioToggle] = {}
+        self._buttons: dict[str, RadioButton | CheckButton] = {}
 
         # Extract signal/variable before Frame init
         signal_value = kwargs.pop('signal', None)
         variable_value = kwargs.pop('variable', None)
 
         # Call super().__init__() - just Frame now
-        super().__init__(master, **kwargs)
+        super().__init__(master, style_options=style_options, padding=1, **kwargs)
 
         # Handle variable/signal setup manually
         if signal_value is not None:
@@ -110,55 +142,102 @@ class ToggleGroup(Frame):
         self._signal = value
         self._variable = value.var
 
-
-    def add(self, text=None, value=None, key=None, **kwargs) -> CheckToggle | RadioToggle:
-        """
-        Creates and adds a new toggle button to the group.
+    def add(self, text=None, value=None, key=None, **kwargs) -> RadioButton | CheckButton:
+        """Add a toggle button to the group.
 
         Args:
-            text (str, optional): The text to display on the button.
-            value (Any, optional): The value this button represents. Required.
-            key (str, optional): A unique identifier for the button. Defaults to the value.
-            **kwargs: Additional keyword arguments passed to the CheckToggle or RadioToggle.
+            text: Text to display on the button.
+            value: Value this button represents (required).
+            key: Unique identifier. Defaults to value.
+            **kwargs: Additional arguments passed to RadioButton or CheckButton.
 
         Returns:
-            CheckToggle | RadioToggle: The created button widget.
+            The created button widget.
         """
         if value is None:
             raise ValueError("The 'value' argument is required.")
-        
+
         key = key or value
         if key in self._buttons:
             raise ValueError(f"A button with the key '{key}' already exists.")
 
         btn_kwargs = kwargs.copy()
-        if self._bootstyle:
-            btn_kwargs.setdefault('bootstyle', self._bootstyle)
+        # Set the buttongroup variant - position will be updated by _update_button_positions
+        # If user provides custom bootstyle, append -buttongroup suffix
+        custom_bootstyle = btn_kwargs.pop('bootstyle', self._bootstyle)
+        btn_kwargs['bootstyle'] = f'{custom_bootstyle}-buttongroup'
+        # Merge orient and initial position into style_options
+        existing_style_opts = btn_kwargs.get('style_options', {}).copy()
+        existing_style_opts['orient'] = self._orientation
+        existing_style_opts.setdefault('position', 'before')  # Default position, will be corrected later
+        btn_kwargs['style_options'] = existing_style_opts
 
         if self._mode == 'single':
-            button = RadioToggle(self, text=text, value=value, variable=self.variable, **btn_kwargs)
-        else: # multi
-            button = CheckToggle(self, text=text, **btn_kwargs)
+            button = RadioButton(self, text=text, value=value, variable=self.variable, **btn_kwargs)
+        else:  # multi
+            button = CheckButton(self, text=text, **btn_kwargs)
 
             # Set initial state based on current SetVar value
             current_set = self.variable.get()
+            if not isinstance(current_set, set):
+                current_set = set()
             button.variable.set(value in current_set)
 
             # Bind command to update SetVar
-            original_command = btn_kwargs.get('command')
+            # Pop command to avoid double-calling
+            original_command = btn_kwargs.pop('command', None)
+
             def toggle_command():
                 self._on_multi_toggle(value)
                 if original_command:
                     original_command()
+
             button.configure(command=toggle_command)
 
         if self._orientation == 'horizontal':
-            button.pack(side='left', padx=1, pady=1)
+            button.pack(side='left')
         else:  # vertical
-            button.pack(side='top', fill='x', padx=1, pady=1)
+            button.pack(side='top', fill='x')
 
         self._buttons[key] = button
+        self._update_button_positions()
         return button
+
+    def _update_button_positions(self):
+        """Update button bootstyles based on their position in the group.
+
+        Note: Relies on dictionary insertion order (Python 3.7+) to maintain
+        button order based on when they were added.
+        """
+        # List conversion maintains insertion order (Python 3.7+)
+        button_list = list(self._buttons.values())
+        num_buttons = len(button_list)
+
+        if num_buttons == 0:
+            return
+
+        base_style = self._bootstyle
+
+        for idx, button in enumerate(button_list):
+            if num_buttons == 1:
+                # Single button - use 'before' style for consistent appearance
+                position = 'before'
+            elif idx == 0:
+                # First button
+                position = 'before'
+            elif idx == num_buttons - 1:
+                # Last button
+                position = 'after'
+            else:
+                # Middle button
+                position = 'center'
+
+            # Only update if position has changed (performance optimization)
+            current_position = button.configure_style_options('position')
+            if current_position != position:
+                button.configure_style_options(position=position)
+                new_bootstyle = f'{base_style}-buttongroup'
+                button.configure(bootstyle=new_bootstyle)
 
     def _on_multi_toggle(self, value: str):
         """Callback to update the SetVar when a CheckToggle is clicked."""
@@ -170,58 +249,90 @@ class ToggleGroup(Frame):
         self.set(current_set)
 
     def get(self) -> str | set[str]:
-        """Returns the current value from the underlying variable."""
+        """Get the current value (string for single mode, set for multi mode)."""
         return self.variable.get()
 
     def set(self, value: str | set[str]):
-        """Sets the underlying variable to a new value."""
+        """Set the value (string for single mode, set for multi mode)."""
+        # Validate value type matches mode
+        if self._mode == 'single':
+            if not isinstance(value, str):
+                raise TypeError(f"Single mode requires a string value, got {type(value).__name__}")
+        else:  # multi mode
+            if not isinstance(value, set):
+                raise TypeError(f"Multi mode requires a set value, got {type(value).__name__}")
+
         self.variable.set(value)
 
         # For multi mode, update CheckToggle states to match new value
-        if self._mode == 'multi' and isinstance(value, set):
+        if self._mode == 'multi':
             for key, button in self._buttons.items():
                 button.variable.set(key in value)
 
     def remove(self, key: str):
-        """Removes a button by its key and destroys the widget."""
+        """Remove a button by its key."""
         if key in self._buttons:
             button = self._buttons.pop(key)
             button.destroy()
+            self._update_button_positions()
 
     def clear(self):
-        """Removes all buttons from the group."""
+        """Remove all buttons from the group."""
         for key in list(self._buttons.keys()):
             self.remove(key)
 
-    def buttons(self) -> tuple[CheckToggle | RadioToggle, ...]:
-        """Returns a tuple of all button widgets in the group."""
+    def buttons(self) -> tuple[RadioButton | CheckButton, ...]:
+        """Get all button widgets in the group."""
         return tuple(self._buttons.values())
 
-    def get_button(self, key: str) -> CheckToggle | RadioToggle:
-        """Returns the button widget corresponding to the given key.
-
-        Args:
-            key: The button key.
-
-        Returns:
-            The button widget.
-
-        Raises:
-            KeyError: If key doesn't exist.
-        """
+    def get_button(self, key: str) -> RadioButton | CheckButton:
+        """Get a button by its key."""
         if key not in self._buttons:
             raise KeyError(f"No button with key '{key}'")
         return self._buttons[key]
 
     def configure_button(self, key: str, **kwargs):
-        """Configures a specific button in the group.
-
-        Args:
-            key (str): The key of the button to configure.
-            **kwargs: Keyword arguments to pass to the button's configure method.
-
-        Raises:
-            KeyError: If key doesn't exist.
-        """
+        """Configure a specific button by its key."""
         button = self.get_button(key)
         button.configure(**kwargs)
+
+    def on_changed(self, func):
+        """Subscribe to value change events. Returns subscription ID for unsubscribing."""
+        return self._signal.subscribe(func)
+
+    def off_changed(self, bind_id):
+        """Unsubscribe from value change events using the subscription ID."""
+        self._signal.unsubscribe(bind_id)
+
+    @configure_delegate('bootstyle')
+    def _delegate_bootstyle(self, value=None):
+        """Get or set the bootstyle. Updates all buttons when changed."""
+        if value is None:
+            return self._bootstyle
+
+        self._bootstyle = value
+        # Update all buttons with new bootstyle
+        self._update_button_positions()
+
+    @configure_delegate('orient')
+    def _delegate_orient(self, value=None):
+        """Get or set orientation ('horizontal' or 'vertical'). Repacks buttons when changed."""
+        if value is None:
+            return self._orientation
+
+        if value not in ('horizontal', 'vertical'):
+            raise ValueError("orient must be 'horizontal' or 'vertical'")
+
+        self._orientation = value
+
+        # Repack all buttons in new orientation
+        for button in self._buttons.values():
+            button.pack_forget()
+            button.configure_style_options(orient=value)
+            if self._orientation == 'horizontal':
+                button.pack(side='left')
+            else:
+                button.pack(side='top', fill='x')
+
+        # Update button styles with new orientation
+        self._update_button_positions()
