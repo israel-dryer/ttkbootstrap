@@ -6,8 +6,6 @@ dist
 *.mp4
 *_build
 *_static
-*_local
-*.lock
 .vscode
 __pycache__
 testing_notes.txt
