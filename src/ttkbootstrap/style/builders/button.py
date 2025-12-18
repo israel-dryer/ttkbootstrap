@@ -248,7 +248,7 @@ def build_text_button_style(b: BootstyleBuilderTTk, ttk_style: str, color: str =
 
 @BootstyleBuilderTTk.register_builder('link', 'TButton')
 def build_link_button_style(b: BootstyleBuilderTTk, ttk_style: str, color: str = None, **options):
-    accent_token = color or 'foreground'
+    accent_token = color or 'primary'
     surface_token = options.get('surface_color', 'background')
 
     surface = b.color(surface_token)
