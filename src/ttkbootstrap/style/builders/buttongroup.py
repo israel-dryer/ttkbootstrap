@@ -45,17 +45,21 @@ def build_button_group_style(b: BootstyleBuilderTTk, ttk_style: str, color: str 
         * icon_only
         * position
         * orientation
+        * active_state
     """
     accent_token = color or 'primary'
     surface_token = options.get('surface_color', 'background')
     orient = options.get('orient', 'horizontal')
     position = options.get('position', 'before')
     image_asset = f'button-group-{orient}-{position}'
+    active_state = options.get('active_state', False)
 
     surface = b.color(surface_token)
 
     accent = b.color(accent_token)
     selected = b.selected(accent)
+    active = b.active(accent)
+    pressed = b.pressed(accent)
     focus_ring = b.focus_inner(accent)
     focus_border = b.focus_border(accent)
     on_selected = b.on_color(selected)
@@ -66,22 +70,40 @@ def build_button_group_style(b: BootstyleBuilderTTk, ttk_style: str, color: str 
 
     normal_img = recolor_image(image_asset, accent, accent, accent, surface)
     normal_focus_img = recolor_image(image_asset, accent, focus_border, focus_ring, surface)
+    active_img = recolor_image(image_asset, active, active, active, surface)
+    active_focus_img = recolor_image(image_asset, active, focus_border, focus_ring, surface)
+    pressed_img = recolor_image(image_asset, pressed, focus_border, focus_ring, surface)
     selected_img = recolor_image(image_asset, selected, selected, selected, surface)
     selected_focus_img = recolor_image(image_asset, selected, focus_border, focus_ring, surface)
 
     disabled_img = recolor_image(image_asset, disabled, disabled, surface, disabled)
 
-    b.create_style_element_image(
-        ElementImage(
-            f'{ttk_style}.border', normal_img, sticky="nsew", border=b.scale(8), padding=b.scale(8)).state_specs(
-            [
-                ('disabled', disabled_img),
-                ('pressed', selected_focus_img),
-                ('focus selected', selected_focus_img),
-                ('focus !selected', normal_focus_img),
-                ('selected', selected_img),
-                ('', normal_img)
-            ]))
+    if active_state:
+        b.create_style_element_image(
+            ElementImage(
+                f'{ttk_style}.border', normal_img, sticky="nsew", border=b.scale(8), padding=b.scale(8)).state_specs(
+                [
+                    ('disabled', disabled_img),
+                    ('pressed !selected', pressed_img),
+                    ('active focus', active_focus_img),
+                    ('focus selected', selected_focus_img),
+                    ('focus !selected', normal_focus_img),
+                    ('active', active_img),
+                    ('selected', selected_img),
+                    ('', normal_img)
+                ]))
+    else:
+        b.create_style_element_image(
+            ElementImage(
+                f'{ttk_style}.border', normal_img, sticky="nsew", border=b.scale(8), padding=b.scale(8)).state_specs(
+                [
+                    ('disabled', disabled_img),
+                    ('pressed !selected', pressed_img),
+                    ('focus selected', selected_focus_img),
+                    ('focus !selected', normal_focus_img),
+                    ('selected', selected_img),
+                    ('', normal_img)
+                ]))
 
     b.create_style_layout(
         ttk_style,
@@ -125,16 +147,20 @@ def build_outline_button_group_style(b: BootstyleBuilderTTk, ttk_style: str, col
         * icon_only
         * position
         * orientation
+        * active_state
     """
     accent_token = color or 'primary'
     surface_token = options.get('surface_color', 'background')
     orient = options.get('orient', 'horizontal')
     position = options.get('position', 'before')
     image_asset = f'button-group-{orient}-{position}'
+    active_state = options.get('active_state', False)
 
     surface = b.color(surface_token)
 
     accent = b.color(accent_token)
+    active = b.active(accent)
+    pressed = b.pressed(accent)
     focus_ring = b.focus_inner(accent)
     focus_border = b.focus_border(accent)
 
@@ -148,22 +174,40 @@ def build_outline_button_group_style(b: BootstyleBuilderTTk, ttk_style: str, col
 
     normal_img = recolor_image(image_asset, surface, accent, surface, surface)
     normal_focus_img = recolor_image(image_asset, surface, focus_border, focus_ring, surface)
+    active_img = recolor_image(image_asset, active, active, active, surface)
+    active_focus_img = recolor_image(image_asset, active, focus_border, focus_ring, surface)
+    pressed_img = recolor_image(image_asset, pressed, focus_border, focus_ring, surface)
     selected_img = recolor_image(image_asset, accent, accent, accent, surface)
     selected_focus_img = recolor_image(image_asset, accent_focus, focus_border, focus_ring, surface)
 
     disabled_img = recolor_image(image_asset, disabled, disabled, surface, disabled)
 
-    b.create_style_element_image(
-        ElementImage(
-            f'{ttk_style}.border', normal_img, sticky="nsew", border=b.scale(8), padding=b.scale(8)).state_specs(
-            [
-                ('disabled', disabled_img),
-                ('pressed', selected_focus_img),
-                ('focus selected', selected_focus_img),
-                ('focus !selected', normal_focus_img),
-                ('selected', selected_img),
-                ('', normal_img)
-            ]))
+    if active_state:
+        b.create_style_element_image(
+            ElementImage(
+                f'{ttk_style}.border', normal_img, sticky="nsew", border=b.scale(8), padding=b.scale(8)).state_specs(
+                [
+                    ('disabled', disabled_img),
+                    ('pressed !selected', pressed_img),
+                    ('active focus', active_focus_img),
+                    ('focus selected', selected_focus_img),
+                    ('focus !selected', normal_focus_img),
+                    ('active', active_img),
+                    ('selected', selected_img),
+                    ('', normal_img)
+                ]))
+    else:
+        b.create_style_element_image(
+            ElementImage(
+                f'{ttk_style}.border', normal_img, sticky="nsew", border=b.scale(8), padding=b.scale(8)).state_specs(
+                [
+                    ('disabled', disabled_img),
+                    ('pressed !selected', pressed_img),
+                    ('focus selected', selected_focus_img),
+                    ('focus !selected', normal_focus_img),
+                    ('selected', selected_img),
+                    ('', normal_img)
+                ]))
 
     b.create_style_layout(
         ttk_style,
@@ -183,13 +227,23 @@ def build_outline_button_group_style(b: BootstyleBuilderTTk, ttk_style: str, col
         font="body"
     )
 
-    state_spec = dict(
-        foreground=[
-            ('disabled', on_disabled),
-            ('pressed', on_accent),
-            ('selected', on_selected),
-            ('', accent)],
-    )
+    if active_state:
+        state_spec = dict(
+            foreground=[
+                ('disabled', on_disabled),
+                ('active', on_accent),
+                ('pressed', on_accent),
+                ('selected', on_selected),
+                ('', accent)],
+        )
+    else:
+        state_spec = dict(
+            foreground=[
+                ('disabled', on_disabled),
+                ('pressed', on_accent),
+                ('selected', on_selected),
+                ('', accent)],
+        )
 
     icon_only = options.get('icon_only', False)
     default_size = b.scale(24) if icon_only else b.scale(20)
@@ -207,16 +261,21 @@ def build_ghost_button_group_style(b: BootstyleBuilderTTk, ttk_style: str, color
         * icon_only
         * position
         * orientation
+        * active_state
     """
     accent_token = color or 'primary'
     surface_token = options.get('surface_color', 'background')
     orient = options.get('orient', 'horizontal')
     position = options.get('position', 'before')
     image_asset = f'button-group-{orient}-{position}'
+    active_state = options.get('active_state', False)
 
     surface = b.color(surface_token)
     accent = b.subtle(accent_token, surface)
-    focus_ring = b.focus_border(accent)
+    active = accent
+    pressed = b.active(accent)
+    focus_border = b.focus_border(accent)
+    focus_ring = b.focus_inner(accent)
 
     on_accent = b.on_color(accent)
 
@@ -224,23 +283,42 @@ def build_ghost_button_group_style(b: BootstyleBuilderTTk, ttk_style: str, color
     on_disabled = b.disabled('text', disabled)
 
     normal_img = recolor_image(image_asset, surface, accent, surface, surface)
-    normal_focus_img = recolor_image(image_asset, surface, focus_ring, focus_ring, surface)
+    normal_focus_img = recolor_image(image_asset, surface, focus_border, focus_ring, surface)
+    active_img = recolor_image(image_asset, active, focus_border, focus_ring, surface)
+    active_focus_img = recolor_image(image_asset, active, focus_border, focus_ring, surface)
+    pressed_img = recolor_image(image_asset, pressed, focus_border, focus_ring, surface)
     selected_img = recolor_image(image_asset, accent, accent, accent, surface)
     selected_focus_img = recolor_image(image_asset, accent, focus_ring, focus_ring, surface)
 
     disabled_img = recolor_image(image_asset, disabled, disabled, surface, disabled)
 
-    b.create_style_element_image(
-        ElementImage(
-            f'{ttk_style}.border', normal_img, sticky="nsew", border=b.scale(8), padding=b.scale(8)).state_specs(
-            [
-                ('disabled', disabled_img),
-                ('pressed', selected_focus_img),
-                ('focus selected', selected_focus_img),
-                ('focus !selected', normal_focus_img),
-                ('selected', selected_img),
-                ('', normal_img)
-            ]))
+    if active_state:
+        b.create_style_element_image(
+            ElementImage(
+                f'{ttk_style}.border', normal_img, sticky="nsew", border=b.scale(8), padding=b.scale(8)).state_specs(
+                [
+                    ('disabled', disabled_img),
+                    ('pressed !selected', pressed_img),
+                    ('active focus', active_focus_img),
+                    ('focus selected', selected_focus_img),
+                    ('focus !selected', normal_focus_img),
+                    ('active', active_img),
+                    ('selected', selected_img),
+                    ('', normal_img)
+                ]))
+
+    else:
+        b.create_style_element_image(
+            ElementImage(
+                f'{ttk_style}.border', normal_img, sticky="nsew", border=b.scale(8), padding=b.scale(8)).state_specs(
+                [
+                    ('disabled', disabled_img),
+                    ('pressed !selected', pressed_img),
+                    ('focus selected', selected_focus_img),
+                    ('focus !selected', normal_focus_img),
+                    ('selected', selected_img),
+                    ('', normal_img)
+                ]))
 
     b.create_style_layout(
         ttk_style,
