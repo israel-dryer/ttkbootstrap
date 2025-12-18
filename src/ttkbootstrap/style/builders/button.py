@@ -310,13 +310,15 @@ def build_ghost_button_style(b: BootstyleBuilderTTk, ttk_style: str, color: str 
     surface_token = options.get('surface_color', 'background')
 
     surface = b.color(surface_token)
-    foreground_normal = b.on_color(surface)
-    foreground_disabled = b.disabled('text', surface)
 
     accent = b.color(accent_token)
     normal = surface
     hovered = focused = pressed = b.subtle(accent_token, surface)
     focused_ring = b.focus_ring(accent, surface)
+
+    foreground_normal = accent
+    foreground_disabled = b.disabled('text', surface)
+
 
     # button element images
     normal_img = recolor_image('button', normal, normal, surface, surface)
