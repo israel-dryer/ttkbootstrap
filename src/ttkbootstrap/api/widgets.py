@@ -5,6 +5,7 @@ from __future__ import annotations
 from ttkbootstrap.widgets import TK_WIDGETS, TTK_WIDGETS
 from ttkbootstrap.widgets.primitives.badge import Badge
 from ttkbootstrap.widgets.primitives.button import Button
+from ttkbootstrap.widgets.composites.buttongroup import ButtonGroup
 from ttkbootstrap.widgets.primitives.checkbutton import CheckButton
 from ttkbootstrap.widgets.primitives.checktoggle import CheckToggle
 from ttkbootstrap.widgets.primitives.combobox import Combobox
@@ -53,6 +54,7 @@ from ttkbootstrap.widgets.primitives.treeview import TreeView
 __all__ = [
     "Badge",
     "Button",
+    "ButtonGroup",
     "CheckButton",
     "CheckToggle",
     "Combobox",
