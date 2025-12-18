@@ -55,23 +55,25 @@ def build_solid_toolbutton_style(b: BootstyleBuilderTTk, ttk_style: str, color: 
     surface_token = options.get('surface_color', 'background')
 
     surface = b.color(surface_token)
-    on_surface = b.on_color(surface)
 
     accent = b.color(accent_token)
 
-    surface_active = b.active(surface)
+    active = b.active(accent)
     accent_focus = b.focus(accent)
     on_accent = b.on_color(accent)
+
+    selected = b.selected(accent)
+
 
     focus_ring = b.focus_ring(accent_focus, surface)
     disabled = b.disabled()
     on_disabled = b.disabled('text', disabled)
 
-    normal_img = recolor_image('button', surface, surface, surface, surface)
-    normal_focus_img = recolor_image('button', surface, surface, focus_ring, surface)
-    active_img = recolor_image('button', surface_active, surface_active, surface, surface)
-    selected_img = recolor_image('button', accent, accent, surface, surface)
-    selected_focus_img = recolor_image('button', accent_focus, accent_focus, focus_ring, surface)
+    normal_img = recolor_image('button', accent, accent, surface, surface)
+    normal_focus_img = recolor_image('button', accent, accent, focus_ring, surface)
+    active_img = recolor_image('button', active, active, surface, surface)
+    selected_img = recolor_image('button', selected, selected, surface, surface)
+    selected_focus_img = recolor_image('button', selected, selected, focus_ring, surface)
 
     disabled_img = recolor_image('button', disabled, disabled, surface, surface)
 
@@ -107,7 +109,7 @@ def build_solid_toolbutton_style(b: BootstyleBuilderTTk, ttk_style: str, color: 
     )
 
     state_spec = dict(
-        foreground=[('disabled', on_disabled), ('pressed', on_accent), ('selected', on_accent), ('', on_surface)],
+        foreground=[('disabled', on_disabled), ('', on_accent)],
     )
 
     icon_only = options.get('icon_only', False)
