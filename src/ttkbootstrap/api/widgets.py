@@ -31,6 +31,7 @@ from ttkbootstrap.widgets.composites.passwordentry import PasswordEntry
 from ttkbootstrap.widgets.composites.pathentry import PathEntry
 from ttkbootstrap.widgets.primitives.progressbar import Progressbar
 from ttkbootstrap.widgets.primitives.radiobutton import RadioButton
+from ttkbootstrap.widgets.composites.radiogroup import RadioGroup
 from ttkbootstrap.widgets.primitives.radiotoggle import RadioToggle
 from ttkbootstrap.widgets.primitives.scale import Scale
 from ttkbootstrap.widgets.primitives.scrollbar import Scrollbar
@@ -80,6 +81,7 @@ __all__ = [
     "PathEntry",
     "Progressbar",
     "RadioButton",
+    "RadioGroup",
     "RadioToggle",
     "Scale",
     "Scrollbar",
