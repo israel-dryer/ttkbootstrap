@@ -115,6 +115,18 @@ class DataSourceProtocol(Protocol):
         """Reload data from the data source."""
         ...
 
+    def move_record(self, record_id: Any, target_index: int) -> bool:
+        """Move a record to a new position.
+
+        Args:
+            record_id: Record identifier to move.
+            target_index: Zero-based index to move the record to.
+
+        Returns:
+            True if the record was moved.
+        """
+        ...
+
 
 class MemoryDataSource:
     """In-memory data source implementation for ListView.
@@ -255,6 +267,38 @@ class MemoryDataSource:
         """
         pass
 
+    def move_record(self, record_id: Any, target_index: int) -> bool:
+        """Move a record to a new position.
+
+        Args:
+            record_id: Record identifier to move.
+            target_index: Zero-based index to move the record to.
+
+        Returns:
+            True if the record was moved.
+        """
+        if not self._data:
+            return False
+
+        source_index = None
+        for i, record in enumerate(self._data):
+            if record.get('id') == record_id:
+                source_index = i
+                break
+
+        if source_index is None:
+            return False
+
+        clamped_target = max(0, min(target_index, len(self._data) - 1))
+        if source_index == clamped_target:
+            return False
+
+        record = self._data.pop(source_index)
+        if clamped_target > source_index:
+            clamped_target -= 1
+        self._data.insert(clamped_target, record)
+        return True
+
 
 class ListView(Frame):
     """A virtual scrolling list widget for efficiently displaying large datasets.
@@ -273,6 +317,9 @@ class ListView(Frame):
         <<ItemInserted>>: Fired when a new item is inserted.
         <<ItemUpdated>>: Fired when an item is updated.
         <<ItemClick>>: Fired when an item is clicked.
+        <<ItemDragStart>>: Fired when a drag begins.
+        <<ItemDragging>>: Fired when an item is being dragged.
+        <<ItemDragEnd>>: Fired when a drag ends.
 
     Examples:
         >>> # Simple usage with a list
@@ -367,6 +414,9 @@ class ListView(Frame):
         self._page_size = VISIBLE_ROWS + OVERSCAN_ROWS
         self._rows: list[ListItem] = []
         self._focused_record_id = None
+        self._drag_state: dict | None = None
+        self._drag_indicator: Frame | None = None
+        self._drag_scroll_counter = 0
 
         # Row factory
         self._row_factory = row_factory or self._default_row_factory
@@ -391,6 +441,9 @@ class ListView(Frame):
         self._container.bind('<<ItemDeleting>>', self._on_item_deleting, add='+')
         self._container.bind('<<ItemFocused>>', self._on_item_focused, add='+')
         self._container.bind('<<ItemClick>>', self._on_item_click, add='+')
+        self._container.bind('<<ItemDragStart>>', self._on_item_drag_start, add='+')
+        self._container.bind('<<ItemDragging>>', self._on_item_dragging, add='+')
+        self._container.bind('<<ItemDragEnd>>', self._on_item_drag_end, add='+')
 
         # Initial update
         self.after(10, self._remeasure_and_relayout)
@@ -618,6 +671,221 @@ class ListView(Frame):
             event: Event with `data` for the clicked item.
         """
         self.event_generate('<<ItemClick>>', data=event.data)
+
+    def _on_item_drag_start(self, event):
+        """Handle item drag start event from `ListItem`.
+
+        Args:
+            event: Event with `data` for the dragged item.
+        """
+        record_id = event.data.get('id')
+        source_index = event.data.get('source_index')
+        if record_id is None or record_id == '__empty__' or source_index is None:
+            return
+
+        self._drag_state = dict(
+            record_id=record_id,
+            source_index=source_index,
+            target_index=source_index,
+            record_data=dict(event.data),
+        )
+        self._drag_scroll_counter = 0
+        self._show_drag_indicator()
+        self._update_drag_indicator_position(source_index)
+        self.event_generate('<<ItemDragStart>>', data=event.data)
+
+    def _on_item_dragging(self, event):
+        """Handle item dragging event from `ListItem`.
+
+        Args:
+            event: Event with `data` for the dragged item.
+        """
+        if not self._drag_state:
+            return
+
+        y_current = event.data.get('y_current')
+        target_index = self._get_drop_index(y_current)
+        self._drag_state['target_index'] = target_index
+        self._auto_scroll_for_drag(y_current)
+        self._update_drag_indicator_position(target_index)
+        payload = dict(self._drag_state.get('record_data', {}))
+        payload.update(
+            dict(
+                source_index=self._drag_state.get('source_index'),
+                target_index=target_index,
+                y_current=y_current,
+            )
+        )
+        self.event_generate('<<ItemDragging>>', data=payload)
+
+    def _on_item_drag_end(self, event):
+        """Handle item drag end event from `ListItem`.
+
+        Args:
+            event: Event with `data` for the dragged item.
+        """
+        if not self._drag_state:
+            return
+
+        self._hide_drag_indicator()
+
+        record_id = self._drag_state.get('record_id')
+        target_index = self._drag_state.get('target_index')
+        moved = self._move_record(record_id, target_index)
+        if moved:
+            self._update_rows()
+
+        payload = dict(self._drag_state.get('record_data', {}))
+        payload.update(
+            dict(
+                source_index=self._drag_state.get('source_index'),
+                target_index=target_index,
+                y_end=event.data.get('y_end'),
+                y_start=event.data.get('y_start'),
+            )
+        )
+        payload['target_index'] = target_index
+        payload['moved'] = moved
+        self.event_generate('<<ItemDragEnd>>', data=payload)
+        self._drag_state = None
+
+    def _get_drop_index(self, y_root: int | None) -> int:
+        """Calculate the drop index for a drag operation.
+
+        Args:
+            y_root: Screen Y coordinate.
+
+        Returns:
+            Zero-based index for the drop position.
+        """
+        total = self._datasource.total_count()
+        if total <= 0:
+            return 0
+
+        if y_root is None:
+            return max(0, min(self._start_index, total - 1))
+
+        container_top = self._container.winfo_rooty()
+        container_height = self._container.winfo_height()
+        if container_height <= 0:
+            return max(0, min(self._start_index, total - 1))
+
+        y_local = y_root - container_top
+        y_local = max(0, min(y_local, container_height - 1))
+        offset = int(y_local // max(1, self._row_height))
+        target = self._start_index + offset
+        return max(0, min(target, total - 1))
+
+    def _auto_scroll_for_drag(self, y_root: int | None) -> None:
+        """Auto-scroll while dragging near the list edges.
+
+        Args:
+            y_root: Screen Y coordinate.
+        """
+        if y_root is None:
+            return
+
+        container_top = self._container.winfo_rooty()
+        container_height = self._container.winfo_height()
+        if container_height <= 0:
+            return
+
+        scroll_zone_height = max(10, int(container_height * 0.2))
+        container_bottom = container_top + container_height
+        self._drag_scroll_counter += 1
+        should_scroll = self._drag_scroll_counter % 8 == 0
+        if should_scroll:
+            if y_root < container_top + scroll_zone_height:
+                self._start_index -= 1
+            elif y_root > container_bottom - scroll_zone_height:
+                self._start_index += 1
+            else:
+                return
+        else:
+            return
+
+        self._clamp_indices()
+        self._update_rows()
+
+    def _move_record(self, record_id: Any, target_index: int | None) -> bool:
+        """Move a record in the data source if supported.
+
+        Args:
+            record_id: Record identifier to move.
+            target_index: Target index to move the record to.
+
+        Returns:
+            True if the record was moved.
+        """
+        if record_id is None or target_index is None:
+            return False
+
+        mover = getattr(self._datasource, 'move_record', None)
+        if callable(mover):
+            return bool(mover(record_id, target_index))
+
+        # Fallback for simple in-memory lists
+        try:
+            total = self._datasource.total_count()
+            all_records = self._datasource.get_page_from_index(0, total)
+            source_index = None
+            for i, record in enumerate(all_records):
+                if record.get('id') == record_id:
+                    source_index = i
+                    break
+            if source_index is None:
+                return False
+            clamped_target = max(0, min(target_index, len(all_records) - 1))
+            if source_index == clamped_target:
+                return False
+            record = all_records.pop(source_index)
+            if clamped_target > source_index:
+                clamped_target -= 1
+            all_records.insert(clamped_target, record)
+            setter = getattr(self._datasource, 'set_data', None)
+            if callable(setter):
+                setter(all_records)
+                return True
+        except Exception:
+            return False
+
+        return False
+
+    def _show_drag_indicator(self) -> None:
+        """Create and show the drag drop indicator line."""
+        if self._drag_indicator is None:
+            self._drag_indicator = Frame(self._container, bootstyle=self._selection_background)
+
+    def _update_drag_indicator_position(self, target_index: int) -> None:
+        """Update the drag indicator to show drop location."""
+        if self._drag_indicator is None:
+            return
+
+        try:
+            visual_index = target_index - self._start_index
+            if 0 <= visual_index < len(self._rows):
+                y_pos = visual_index * max(1, self._row_height)
+                self._drag_indicator.place(
+                    x=0,
+                    y=y_pos,
+                    width=self._container.winfo_width(),
+                    height=3,
+                )
+                self._drag_indicator.lift()
+            else:
+                self._drag_indicator.place_forget()
+        except Exception:
+            pass
+
+    def _hide_drag_indicator(self) -> None:
+        """Hide and destroy the drag indicator."""
+        if self._drag_indicator is not None:
+            try:
+                self._drag_indicator.place_forget()
+                self._drag_indicator.destroy()
+            except Exception:
+                pass
+            self._drag_indicator = None
 
     # Public API
 

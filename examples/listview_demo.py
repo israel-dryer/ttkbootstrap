@@ -131,6 +131,7 @@ def main():
         show_selection_controls=True,
         enable_focus_state=True,
         show_separator=True,
+        enable_dragging=True,
         enable_deleting=True,
         show_chevron=True
     )
