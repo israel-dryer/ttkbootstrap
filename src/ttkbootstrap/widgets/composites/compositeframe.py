@@ -1,6 +1,8 @@
 import tkinter as tk
 from tkinter import ttk
 
+from ttkbootstrap.widgets.primitives.frame import Frame
+
 
 class Composite:
     """State coordinator for composite widgets.
@@ -229,8 +231,8 @@ class Composite:
         return self._event_target.unbind('<<CompositeInvoke>>', func_id)
 
 
-class CompositeFrame(ttk.Frame):
-    """A ttk.Frame that uses Composite for state coordination.
+class CompositeFrame(Frame):
+    """A ttkbootstrap Frame that uses Composite for state coordination.
 
     CompositeFrame is a convenience wrapper that combines ttk.Frame with the
     Composite state coordinator. It provides a simple way to create containers
