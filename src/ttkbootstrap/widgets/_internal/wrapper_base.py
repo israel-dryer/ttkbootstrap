@@ -19,8 +19,9 @@ from ttkbootstrap.style.bootstyle import (
     Bootstyle,
     extract_color_from_style,
     extract_variant_from_style,
+    parse_bootstyle,
 )
-from ttkbootstrap.style.token_maps import ORIENT_CLASSES
+from ttkbootstrap.style.token_maps import CONTAINER_CLASSES, ORIENT_CLASSES
 from ttkbootstrap.widgets.mixins.configure_mixin import (
     ConfigureDelegationMixin,
     configure_delegate,
@@ -175,6 +176,13 @@ class TTKWrapperBase(FontMixin, ConfigureDelegationMixin):
             except Exception:
                 pass
 
+        if widget_class in CONTAINER_CLASSES:
+            parsed = parse_bootstyle(str(value), widget_class)
+            color = parsed.get("color")
+            if color:
+                style_options["surface_color"] = color
+                setattr(self, "_surface_color", color)
+
         ttk_style = Bootstyle.create_ttk_style(
             widget_class=widget_class,
             bootstyle=str(value),
@@ -188,6 +196,9 @@ class TTKWrapperBase(FontMixin, ConfigureDelegationMixin):
         if value is None:
             options.update(**kwargs)
             setattr(self, "_style_options", options)
+            if "surface_color" in kwargs:
+                surface_color = kwargs.get("surface_color")
+                setattr(self, "_surface_color", surface_color or "background")
             return None
         else:
             return options.get(value, None)
