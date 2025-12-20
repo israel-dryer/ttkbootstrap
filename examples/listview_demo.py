@@ -29,7 +29,7 @@ def create_sample_data(count=1000):
 
 def main():
     """Main demo application."""
-    root = ttk.Window(title="ListView Widget Demo", theme="docs-dark")
+    root = ttk.App(title="ListView Widget Demo", theme="docs-light", size=(1200, 700))
     root.geometry("1200x700")
 
     # Main container
