@@ -1,5 +1,6 @@
 from tkinter import TclError
 
+from ttkbootstrap.widgets.composites.compositeframe import CompositeFrame
 from ttkbootstrap.widgets.mixins import configure_delegate
 from ttkbootstrap.widgets.primitives.button import Button
 from ttkbootstrap.widgets.primitives.frame import Frame
@@ -7,14 +8,22 @@ from ttkbootstrap.widgets.primitives.label import Label
 from ttkbootstrap.widgets.primitives.separator import Separator
 
 
-class ListItem(Frame):
+class ListItem(CompositeFrame):
+    """A list item widget with support for icons, text, badges, and interactive controls.
+
+    ListItem extends CompositeFrame to provide automatic state synchronization
+    across all child widgets. It supports selection modes, focus states, dragging,
+    deletion, and various visual customizations.
+
+    The widget automatically handles hover, pressed, and focus states across all
+    registered child widgets using the Composite state coordinator.
+    """
 
     def __init__(self, master=None, **kwargs):
         # state tracking
         self._data = {}
         self._state = {}
         self._item_index = 0
-        self._ignore_selection_by_click = False
         self._selection_icon = None
         self._drag_state = None
 
@@ -32,14 +41,18 @@ class ListItem(Frame):
         self._alternating_row_color = kwargs.pop('alternating_row_color', 'background[+1]')
         self._alternating_row_mode = kwargs.pop('alternating_row_mode', 'even')
 
-        if self._selection_mode == 'none':
-            select_by_click = kwargs.get('select_by_click', False)
-            self._ignore_selection_by_click = False if not self._show_selection_controls else not select_by_click
+        # Determine if clicking should trigger selection
+        # If selection mode is active (single/multi), enable click selection
+        # If selection mode is 'none', respect the select_by_click parameter
+        select_by_click = kwargs.pop('select_by_click', self._selection_mode != 'none')
+        self._select_by_click = select_by_click
 
         self._get_selection_icon()
 
+        # Initialize CompositeFrame with selection disabled (we handle it ourselves)
         super().__init__(
             master=master,
+            select_on_click=False,
             bootstyle='list_item_separated' if self._show_separator else 'list_item',
             takefocus=self._enable_focus_state,
             padding=(8, 4),
@@ -83,24 +96,34 @@ class ListItem(Frame):
         self._chevron_widget = None
         self._drag_widget = None
 
-        self._composite_widgets = set()
-        for widget in [self, self._left_frame, self._center_frame, self._right_frame]:
-            self._add_composite_widget(widget, ignore_click=self._ignore_selection_by_click)
+        # Register container frames with composite coordinator
+        for widget in [self._left_frame, self._center_frame, self._right_frame]:
+            self.register_composite(widget)
 
-        # row-level pointer events (Enter/Leave are handled by shared bindtag)
-        self.bind('<FocusIn>', self._on_focusin, add='+')
-        self.bind('<FocusOut>', self._on_focusout, add='+')
-        self.bind('<space>', self._on_mousedown, add='+')
+        # Bind to composite invoke for selection handling
+        if self._select_by_click:
+            self.on_invoke(self._on_click)
+
+        # Focus event handling (notify ListView of focus changes)
+        if self._enable_focus_state:
+            self.bind('<FocusIn>', self._on_focus_in, add='+')
+            self.bind('<FocusOut>', self._on_focus_out, add='+')
+
+        # row-level keyboard events
+        self.bind('<space>', self._on_space, add='+')
 
     @property
     def selected(self):
+        """bool: Current selection state from data."""
         return self._data.get('selected')
 
     @property
     def data(self):
+        """dict: The data record associated with this list item."""
         return self._data
 
     def _get_selection_icon(self):
+        """Determine the selection icon based on selection mode."""
         if self._selection_mode == 'multi':
             self._selection_icon = dict(name='square', state=[('selected', "check-square-fill")])
         elif self._selection_mode == 'single':
@@ -108,50 +131,41 @@ class ListItem(Frame):
         else:
             self._selection_icon = None
 
-    def _add_composite_widget(self, widget, ignore_click=False):
-        self._composite_widgets.add(widget)
+    def _on_click(self, event):
+        """Handle click on the list item."""
+        if self._enable_focus_state:
+            self.focus()
+        # notify parent list that item has been clicked
+        self.master.event_generate('<<ItemClick>>', data=self._data)
+        self.select()
 
-        # Use a shared bindtag for hover management across all composite widgets
-        # This prevents child widgets from independently managing hover state
-        hover_tag = f'ListItemHover{id(self)}'
-        current_tags = list(widget.bindtags())
+    def _on_space(self, event):
+        """Handle space key press."""
+        if self._enable_focus_state:
+            self.focus()
+        # notify parent list that item has been clicked
+        self.master.event_generate('<<ItemClick>>', data=self._data)
+        self.select()
 
-        # Insert the shared hover tag before the widget's class tag
-        # This ensures our hover handler runs before widget-specific handlers
-        if hover_tag not in current_tags:
-            if len(current_tags) > 1:
-                current_tags.insert(1, hover_tag)
-            else:
-                current_tags.append(hover_tag)
-            widget.bindtags(tuple(current_tags))
+    def _on_focus_in(self, event):
+        """Handle focus in event - notify ListView."""
+        self._data['focused'] = True
+        self.master.event_generate('<<ItemFocused>>', data=self._data)
 
-        # Bind Enter/Leave to the shared tag (only once per ListItem)
-        if not hasattr(self, '_hover_tag_bound'):
-            widget.bind_class(hover_tag, '<Enter>', self._on_enter)
-            widget.bind_class(hover_tag, '<Leave>', self._on_leave)
-            self._hover_tag_bound = True
-
-        widget.bind('<FocusIn>', self._on_focusin, add='+')
-        widget.bind('<FocusOut>', self._on_focusout, add='+')
-
-        if not ignore_click:
-            widget.bind('<ButtonPress-1>', self._on_mousedown, add='+')
-            widget.bind('<ButtonRelease-1>', self._on_mouseup, add='+')
-
+    def _on_focus_out(self, event):
+        """Handle focus out event - check if focus moved to descendant."""
+        # Keep focus styling if focus moved to a descendant of this row
+        related = getattr(event, 'related', None)
         try:
-            current = set(self.state())
+            if related is not None and str(related).startswith(str(self)):
+                return 'break'
         except TclError:
-            current = set()
+            pass
 
-        for s in ('hover', 'pressed', 'selected', 'focus'):
-            if s in current:
-                try:
-                    widget.state([s])
-                except TclError:
-                    pass
+        self._data['focused'] = False
 
     def _update_selection(self, selected: bool = False):
-        """Apply selection state atomically (style + icon) with null guards"""
+        """Apply selection state atomically (style + icon) with null guards."""
         mode = self._selection_mode
 
         if mode == 'none':
@@ -160,23 +174,18 @@ class ListItem(Frame):
                     self._selection_widget.pack_forget()
                 except TclError:
                     pass
-                self._composite_widgets.discard(self._selection_widget)
                 try:
                     self._selection_widget.destroy()
                 except TclError:
                     pass
 
             self._selection_widget = None
-            # clear selected state on row + composites
+            # Use CompositeFrame's set_selected to clear selection
+            self.set_selected(False)
 
-            try:
-                self.state(['!selected'])
-            except TclError:
-                pass
-
-            for w in list(self._composite_widgets):
+            # Notify widgets
+            for w in self._composite._composites:
                 try:
-                    w.state(['!selected'])
                     w.event_generate('<<CompositeDeselect>>')
                 except TclError:
                     pass
@@ -203,17 +212,14 @@ class ListItem(Frame):
             )
             if self._show_selection_controls:
                 self._selection_widget.pack(side='left', padx=5)
-            self._add_composite_widget(self._selection_widget)
+            self.register_composite(self._selection_widget)
 
-        # apply selected state to the row + all composites (styles co-update)
-        try:
-            self.state(['selected' if selected else '!selected'])
-        except TclError:
-            pass
+        # Use CompositeFrame's set_selected to apply state
+        self.set_selected(selected)
 
-        for w in list(self._composite_widgets):
+        # Notify widgets
+        for w in self._composite._composites:
             try:
-                w.state(['selected' if selected else '!selected'])
                 w.event_generate('<<CompositeSelect>>' if selected else '<<CompositeDeselect>>')
             except TclError:
                 pass
@@ -222,7 +228,7 @@ class ListItem(Frame):
         self._state['selected'] = bool(selected)
 
     def _update_icon(self, icon=None):
-        """Update icon widget, or create if not existing"""
+        """Update icon widget, or create if not existing."""
         if icon is not None:
             if not self._icon_widget:
                 self._icon_widget = Label(
@@ -234,14 +240,13 @@ class ListItem(Frame):
                     style_options=dict(selection_background=self._selection_background)
                 )
                 self._icon_widget.pack(side='left', padx=5)
-                self._add_composite_widget(self._icon_widget, ignore_click=self._ignore_selection_by_click)
+                self.register_composite(self._icon_widget)
             else:
                 self._icon_widget.configure(icon=icon)
         else:
             if self._icon_widget:
                 try:
                     self._icon_widget.pack_forget()
-                    self._composite_widgets.discard(self._icon_widget)
                     self._icon_widget.destroy()
                 except TclError:
                     pass
@@ -249,6 +254,7 @@ class ListItem(Frame):
                     self._icon_widget = None
 
     def _update_title(self, text=None):
+        """Update title widget."""
         if text is not None:
             if not self._title_widget:
                 self._title_widget = Label(
@@ -260,14 +266,13 @@ class ListItem(Frame):
                     style_options=dict(selection_background=self._selection_background)
                 )
                 self._title_widget.pack(side='top', fill='x', anchor='w', padx=(0, 3))
-                self._add_composite_widget(self._title_widget, ignore_click=self._ignore_selection_by_click)
+                self.register_composite(self._title_widget)
             else:
                 self._title_widget.configure(text=text)
         else:
             if self._title_widget:
                 try:
                     self._title_widget.pack_forget()
-                    self._composite_widgets.discard(self._title_widget)
                     self._title_widget.destroy()
                 except TclError:
                     pass
@@ -275,6 +280,7 @@ class ListItem(Frame):
                     self._title_widget = None
 
     def _update_text(self, text=None):
+        """Update text widget."""
         if text is not None:
             if not self._text_widget:
                 self._text_widget = Label(
@@ -285,14 +291,13 @@ class ListItem(Frame):
                     style_options=dict(selection_background=self._selection_background)
                 )
                 self._text_widget.pack(side='top', fill='x', padx=(0, 3))
-                self._add_composite_widget(self._text_widget, ignore_click=self._ignore_selection_by_click)
+                self.register_composite(self._text_widget)
             else:
                 self._text_widget.configure(text=text)
         else:
             if self._text_widget:
                 try:
                     self._text_widget.pack_forget()
-                    self._composite_widgets.discard(self._text_widget)
                     self._text_widget.destroy()
                 except TclError:
                     pass
@@ -300,6 +305,7 @@ class ListItem(Frame):
                     self._text_widget = None
 
     def _update_caption(self, text=None):
+        """Update caption widget."""
         if text is not None:
             if not self._caption_widget:
                 self._caption_widget = Label(
@@ -312,14 +318,13 @@ class ListItem(Frame):
                     style_options=dict(selection_background=self._selection_background)
                 )
                 self._caption_widget.pack(side='top', fill='x', padx=(0, 3))
-                self._add_composite_widget(self._caption_widget, ignore_click=self._ignore_selection_by_click)
+                self.register_composite(self._caption_widget)
             else:
                 self._caption_widget.configure(text=text)
         else:
             if self._caption_widget:
                 try:
                     self._caption_widget.pack_forget()
-                    self._composite_widgets.discard(self._caption_widget)
                     self._caption_widget.destroy()
                 except TclError:
                     pass
@@ -327,6 +332,7 @@ class ListItem(Frame):
                     self._caption_widget = None
 
     def _update_badge(self, text=None):
+        """Update badge widget."""
         if text is not None:
             if not self._badge_widget:
                 self._badge_widget = Label(
@@ -336,14 +342,13 @@ class ListItem(Frame):
                     style_options=dict(selection_background=self._selection_background)
                 )
                 self._badge_widget.pack(side='right', padx=6)
-                self._add_composite_widget(self._badge_widget, ignore_click=self._ignore_selection_by_click)
+                self.register_composite(self._badge_widget)
             else:
                 self._badge_widget.configure(text=text)
         else:
             if self._badge_widget:
                 try:
                     self._badge_widget.pack_forget()
-                    self._composite_widgets.discard(self._badge_widget)
                     self._badge_widget.destroy()
                 except TclError:
                     pass
@@ -351,6 +356,7 @@ class ListItem(Frame):
                     self._badge_widget = None
 
     def _update_chevron(self):
+        """Update or create chevron widget."""
         if self._show_chevron:
             if not self._chevron_widget:
                 self._chevron_widget = Button(
@@ -362,12 +368,11 @@ class ListItem(Frame):
                     style_options=dict(selection_background=self._selection_background)
                 )
                 self._chevron_widget.pack(side='right', padx=6)
-                self._add_composite_widget(self._chevron_widget, ignore_click=self._ignore_selection_by_click)
+                self.register_composite(self._chevron_widget)
         else:
             if self._chevron_widget:
                 try:
                     self._chevron_widget.pack_forget()
-                    self._composite_widgets.discard(self._chevron_widget)
                     self._chevron_widget.destroy()
                 except TclError:
                     pass
@@ -375,6 +380,7 @@ class ListItem(Frame):
                     self._chevron_widget = None
 
     def _update_delete(self):
+        """Update or create delete button widget."""
         if self._enable_deleting:
             if not self._delete_widget:
                 self._delete_widget = Button(
@@ -383,16 +389,15 @@ class ListItem(Frame):
                     icon_only=True,
                     bootstyle='list_icon',
                     takefocus=False,
+                    command=self.delete,
                     style_options=dict(selection_background=self._selection_background)
                 )
                 self._delete_widget.pack(side='right', padx=6)
-                self._delete_widget.bind('<ButtonPress-1>', lambda _: self.delete())
-                self._add_composite_widget(self._delete_widget, ignore_click=self._ignore_selection_by_click)
+                self.register_composite(self._delete_widget)
         else:
             if self._delete_widget:
                 try:
                     self._delete_widget.pack_forget()
-                    self._composite_widgets.discard(self._delete_widget)
                     self._delete_widget.destroy()
                 except TclError:
                     pass
@@ -400,6 +405,7 @@ class ListItem(Frame):
                     self._delete_widget = None
 
     def _update_drag(self):
+        """Update or create drag handle widget."""
         if self._enable_dragging:
             if not self._drag_widget:
                 self._drag_widget = Button(
@@ -418,12 +424,11 @@ class ListItem(Frame):
                 self._drag_widget.bind('<ButtonPress-1>', self._on_drag_mouse_down, add='+')
                 self._drag_widget.bind('<B1-Motion>', self._on_drag_mouse_motion, add='+')
                 self._drag_widget.bind('<ButtonRelease-1>', self._on_drag_mouse_up, add='+')
-                self._add_composite_widget(self._drag_widget, ignore_click=True)
+                self.register_composite(self._drag_widget)
         else:
             if self._drag_widget:
                 try:
                     self._drag_widget.pack_forget()
-                    self._composite_widgets.discard(self._drag_widget)
                     self._drag_widget.destroy()
                 except TclError:
                     pass
@@ -431,17 +436,17 @@ class ListItem(Frame):
                     self._drag_widget = None
                     self._drag_state = None
 
-    # ---- Event Handlers
+    # ---- Event Handlers (Drag-related) ----
 
     def _on_drag_mouse_down(self, event):
-        """Mouse pressed on drag handle - prepare for drag"""
+        """Mouse pressed on drag handle - prepare for drag."""
         if not hasattr(self, '_drag_state'):
             self._drag_state = {}
         self._drag_state['start_y'] = event.y_root
         self._drag_state['dragging'] = False
 
     def _on_drag_mouse_motion(self, event):
-        """Mouse moving with button held - this is a drag"""
+        """Mouse moving with button held - this is a drag."""
         if not hasattr(self, '_drag_state') or self._drag_state.get('start_y') is None:
             return
 
@@ -466,7 +471,7 @@ class ListItem(Frame):
         )
 
     def _on_drag_mouse_up(self, event):
-        """Mouse release - end drag if we were dragging"""
+        """Mouse release - end drag if we were dragging."""
         if not hasattr(self, '_drag_state'):
             return
 
@@ -481,128 +486,6 @@ class ListItem(Frame):
                                        })
         # reset drag state
         self._drag_state = {'dragging': False, 'start_y': None}
-
-    def _on_enter(self, event):
-        try:
-            self.state(['hover'])
-        except TclError:
-            pass
-
-        for widget in self._composite_widgets:
-            try:
-                widget.state(['hover'])
-            except TclError:
-                pass
-
-    def _on_leave(self, event):
-        related = getattr(event, 'related', None)
-
-        # Check if we're leaving to another widget within this ListItem
-        # If so, don't remove hover state since we're still inside the item
-        if related is not None:
-            try:
-                related_str = str(related)
-                self_str = str(self)
-
-                # Check if related widget is a child of this ListItem
-                if related_str.startswith(self_str + '.'):
-                    return 'break'
-
-                # Also check if related is one of our composite widgets
-                for widget in self._composite_widgets:
-                    if str(widget) == related_str:
-                        return 'break'
-            except Exception:
-                pass
-
-        # We're truly leaving the ListItem, remove hover from all widgets
-        try:
-            self.state(['!hover'])
-        except TclError:
-            pass
-
-        for widget in self._composite_widgets:
-            try:
-                widget.state(['!hover'])
-            except TclError:
-                pass
-        return None
-
-    def _on_focusin(self, _):
-        if not self._enable_focus_state:
-            return
-
-        self._set_focus_state(True)
-        self._data['focused'] = True
-        # notify parent list that item is focused
-        self.master.event_generate('<<ItemFocused>>', data=self._data)
-
-    def _on_focusout(self, event):
-        if not self._enable_focus_state:
-            return None
-
-        # Keep focus styling if focus moved to a descendant of this row
-        related = getattr(event, 'related', None)
-        try:
-            if related is not None and str(related).startswith(str(self)):
-                return 'break'
-        except TclError:
-            pass
-
-        self._set_focus_state(False)
-        self._data['focused'] = False
-        return None
-
-    def _on_keydown_space(self, _):
-        ...
-
-    def _on_mousedown(self, _):
-        if self._enable_focus_state:
-            self.focus()
-        # notify parent list that item has been clicked
-        self.master.event_generate('<<ItemClick>>', data=self._data)
-        self.select()
-        for widget in self._composite_widgets:
-            try:
-                widget.state(['pressed'])
-            except TclError:
-                pass
-
-    def _on_mouseup(self, _):
-        for widget in self._composite_widgets:
-            try:
-                widget.state(['!pressed'])
-            except TclError:
-                pass
-
-    def _set_focus_state(self, focused: bool):
-        # helper to apply guaranteed transition to row + composites
-        targets = [self, *list(self._composite_widgets)]
-
-        for w in targets:
-            try:
-                # force a real transition so ttk recomputes maps
-                # clear then set, even if we think it's already that value
-                w.state(['!focus'])
-                if focused:
-                    w.state(['focus'])
-            except TclError:
-                pass
-
-            try:
-                # nudge reassign style to force re-resolve
-                style = w.cget('style')
-                if style:
-                    w.configure(style=style)
-            except TclError:
-                pass
-
-        if focused:
-            for w in targets:
-                try:
-                    w.state(['!active'])
-                except TclError:
-                    pass
 
     # --- Configuration delegates ---
 
@@ -633,6 +516,11 @@ class ListItem(Frame):
     # ---- Public API ----
 
     def select(self):
+        """Toggle or set the selection state based on selection mode.
+
+        Returns:
+            bool or None: True if selected, False if deselected, None if no action.
+        """
         mode = self._selection_mode
         if mode == 'none':
             return None
@@ -650,11 +538,16 @@ class ListItem(Frame):
         return True
 
     def delete(self):
-        """Notify subscribers to handle delete action"""
+        """Notify subscribers to handle delete action."""
         self.master.event_generate('<<ItemDeleting>>', data=self._data)
 
     def update_data(self, record: dict | None):
-        """Efficiency update row visuals only when values have changed"""
+        """Update row visuals efficiently when values have changed.
+
+        Args:
+            record: Dictionary containing the item data. If None or contains
+                '__empty__' key, the item will be hidden.
+        """
         if record is None or '__empty__' in record:
             self.pack_forget()
             return
@@ -678,11 +571,12 @@ class ListItem(Frame):
                 # this record should have focus - give tkinter focus to this widget
                 try:
                     self.focus_set()
+                    self._data['focused'] = True
                 except TclError:
                     pass
             else:
-                # This record lost focus - clear focus styling
-                self._set_focus_state(False)
+                # This record lost focus - just update data
+                self._data['focused'] = False
             self._state['focused'] = focused
 
         # direct update for high-priority visuals
