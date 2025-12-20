@@ -491,27 +491,34 @@ class ListItem(CompositeFrame):
 
     @configure_delegate('selection_mode')
     def _delegate_selection_mode(self, value=None):
-        ...
+        self._selection_mode = value
+        self._get_selection_icon()
+
 
     @configure_delegate('show_selection_controls')
     def _delegate_show_selection_controls(self, value=None):
-        ...
+        self._show_selection_controls = value
+        self._get_selection_icon()
+        self._update_selection(False)
 
     @configure_delegate('selection_background')
     def _delegate_selection_background(self, value=None):
-        ...
+        self._selection_background = value
 
     @configure_delegate('show_chevron')
     def _delegate_show_chevron(self, value=None):
-        ...
+        self._show_chevron = value
+        self._update_chevron()
 
     @configure_delegate('enable_dragging')
     def _delegate_enable_dragging(self, value=None):
-        ...
+        self._enable_dragging = value
+        self._update_drag()
 
     @configure_delegate('enable_deleting')
     def _delegate_enable_deleting(self, value=None):
-        ...
+        self._enable_deleting = value
+        self._update_delete()
 
     # ---- Public API ----
 
