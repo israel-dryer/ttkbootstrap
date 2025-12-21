@@ -24,14 +24,14 @@ class TextEntry(Field):
         - Add-on widget support (prefix/suffix icons or buttons)
         - Three-tier event system:
             - <<Input>>: Fires on every keystroke with raw text
-            - <<Changed>>: Fires when committed value changes
+            - <<Change>>: Fires when committed value changes
             - <<Valid>>/<<Invalid>>: Fires on validation results
 
     Events:
         <<Input>>: Triggered on each keystroke
             event.data = {"text": str}
 
-        <<Changed>>: Triggered when value changes after commit (FocusOut/Return)
+        <<Change>>: Triggered when value changes after commit (FocusOut/Return)
             event.data = {"value": Any, "prev_value": Any, "text": str}
 
         <<Valid>>: Triggered when validation passes
@@ -40,7 +40,7 @@ class TextEntry(Field):
         <<Invalid>>: Triggered when validation fails
             event.data = {"value": Any, "is_valid": False, "message": str}
 
-        <<Validated>>: Triggered after any validation
+        <<Validate>>: Triggered after any validation
             event.data = {"value": Any, "is_valid": bool, "message": str}
 
     Example:

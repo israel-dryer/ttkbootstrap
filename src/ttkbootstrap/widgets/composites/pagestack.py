@@ -39,16 +39,16 @@ class PageStack(Frame):
         - Add pages as existing widgets or create new Frame pages
         - Navigate between pages with automatic history management
         - Back/forward navigation with browser-like behavior
-        - Page lifecycle events (PageUnmounted, PageWillMount, PageMounted, PageChanged)
+        - Page lifecycle events (PageUnmount, PageWillMount, PageMount, PageChange)
         - Pass data between pages during navigation
         - Replace current page in history without creating new entries
         - Query navigation state (can_back, can_forward)
 
     Lifecycle Events:
-        - <<PageUnmounted>>: Triggered when the current page is hidden
+        - <<PageUnmount>>: Triggered when the current page is hidden
         - <<PageWillMount>>: Triggered before a new page is displayed
-        - <<PageMounted>>: Triggered after a new page is displayed
-        - <<PageChanged>>: Triggered after page navigation completes
+        - <<PageMount>>: Triggered after a new page is displayed
+        - <<PageChange>>: Triggered after page navigation completes
 
     Event Data:
         Navigation events include a data dictionary with:
@@ -164,8 +164,8 @@ class PageStack(Frame):
         """Navigate to the page with the given key.
 
         This method handles page transitions, manages navigation history,
-        and triggers lifecycle events (<<PageUnmounted>>, <<PageWillMount>>,
-        <<PageMounted>>, <<PageChanged>>).
+        and triggers lifecycle events (<<PageUnmount>>, <<PageWillMount>>,
+        <<PageMount>>, <<PageChange>>).
 
         Args:
             key: The identifier of the page to navigate to
@@ -209,7 +209,7 @@ class PageStack(Frame):
 
         # Unmount previous page
         if self._current is not None:
-            self._pages[self._current].event_generate('<<PageUnmounted>>', when="tail")
+            self._pages[self._current].event_generate('<<PageUnmount>>', when="tail")
             self._pages[self._current].grid_remove()
 
         # Normalized payload (self-contained snapshot)
@@ -232,8 +232,8 @@ class PageStack(Frame):
         page.event_generate('<<PageWillMount>>', data=payload, when="tail")
         page.grid()
         self._current = key
-        self.event_generate('<<PageMounted>>', data=payload, when="tail")
-        self.event_generate('<<PageChanged>>', data=payload, when="tail")
+        self.event_generate('<<PageMount>>', data=payload, when="tail")
+        self.event_generate('<<PageChange>>', data=payload, when="tail")
 
     def back(self) -> None:
         """Navigate to the previous page in the navigation history.
@@ -328,7 +328,7 @@ class PageStack(Frame):
         return self._pages.values()
 
     def on_page_changed(self, callback) -> str:
-        """Bind a callback to the <<PageChanged>> event.
+        """Bind a callback to the <<PageChange>> event.
 
         Args:
             callback: Function to call when the page changes. The callback
@@ -338,12 +338,12 @@ class PageStack(Frame):
             The function ID that can be used with off_page_changed() to
             remove this binding.
         """
-        return self.bind('<<PageChanged>>', callback, add="+")
+        return self.bind('<<PageChange>>', callback, add="+")
 
     def off_page_changed(self, funcid) -> None:
-        """Remove a callback binding from the <<PageChanged>> event.
+        """Remove a callback binding from the <<PageChange>> event.
 
         Args:
             funcid: The function ID returned by on_page_changed()
         """
-        self.unbind("<<PageChanged>>", funcid)
+        self.unbind("<<PageChange>>", funcid)

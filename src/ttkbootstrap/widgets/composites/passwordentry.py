@@ -26,10 +26,10 @@ class PasswordEntry(Field):
 
     Events (inherited from Field):
         <<Input>>: Triggered on each keystroke
-        <<Changed>>: Triggered when value changes after commit
+        <<Change>>: Triggered when value changes after commit
         <<Valid>>: Triggered when validation passes
         <<Invalid>>: Triggered when validation fails
-        <<Validated>>: Triggered after any validation
+        <<Validate>>: Triggered after any validation
 
     Example:
         ```python

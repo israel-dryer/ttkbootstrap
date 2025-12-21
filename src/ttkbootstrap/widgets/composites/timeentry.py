@@ -40,7 +40,7 @@ class TimeEntry(SelectBox):
         - Custom: Any ICU date format pattern (e.g., "HH:mm", "h:mm a")
 
     Events (inherited from Field):
-        <<Changed>>: Fired when time value changes after commit
+        <<Change>>: Fired when time value changes after commit
         <<Input>>: Fired on each keystroke
         <<Valid>>: Fired when validation passes
         <<Invalid>>: Fired when validation fails

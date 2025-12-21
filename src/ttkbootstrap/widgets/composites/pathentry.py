@@ -49,7 +49,7 @@ class PathEntry(Field):
         - All Field features (label, validation, messages, etc.)
 
     Events (inherited from Field):
-        <<Changed>>: Fired when a path is selected from the dialog
+        <<Change>>: Fired when a path is selected from the dialog
         <<Input>>: Fired when user manually types in the entry
         <<Valid>>: Fired when validation passes
         <<Invalid>>: Fired when validation fails
@@ -256,7 +256,7 @@ class PathEntry(Field):
         if result:
             self.variable.set(result)
             self.entry_widget.event_generate(
-                '<<Changed>>', data={
+                '<<Change>>', data={
                     'value': result, 'prev_value': self.entry_widget._prev_changed_value
                 }, when="tail")
             self.entry_widget.commit()

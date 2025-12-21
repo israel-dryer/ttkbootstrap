@@ -21,7 +21,7 @@ class Meter(Frame):
     segmented or solid indicators, and interactive mode for user input.
 
     Events:
-        <<Changed>>: Fired whenever the meter value changes (event.data includes
+        <<Change>>: Fired whenever the meter value changes (event.data includes
             {"value": new_value, "prev_value": previous_value}).
     """
 
@@ -94,7 +94,7 @@ class Meter(Frame):
             **kwargs: Additional keyword arguments passed to the Frame parent class.
 
         Events:
-            <<Changed>>: Emitted when the value changes (see on_changed()).
+            <<Change>>: Emitted when the value changes (see on_changed()).
         """
         legacy = Meter._coerce_legacy_params(kwargs)
         super().__init__(master, **kwargs)
@@ -461,7 +461,7 @@ class Meter(Frame):
         if value != self._last_changed_value:
             prev_value = self._last_changed_value
             self._last_changed_value = value
-            self.event_generate('<<Changed>>', data={"value": value, "prev_value": prev_value})
+            self.event_generate('<<Change>>', data={"value": value, "prev_value": prev_value})
 
     def _resolve_meter_styles(self):
         """Resolve theme colors for meter indicator, trough, and text."""
@@ -856,10 +856,10 @@ class Meter(Frame):
             self._value_var.set(value_updated)
 
     def on_changed(self, callback: Callable[[Any], Any]) -> str:
-        """Bind a callback to the ``<<Changed>>`` virtual event."""
-        return self.bind('<<Changed>>', callback, add="+")
+        """Bind a callback to the ``<<Change>>`` virtual event."""
+        return self.bind('<<Change>>', callback, add="+")
 
     def off_changed(self, bind_id: str):
-        """Remove a previously registered ``<<Changed>>`` callback."""
-        self.unbind('<<Changed>>', bind_id)
+        """Remove a previously registered ``<<Change>>`` callback."""
+        self.unbind('<<Change>>', bind_id)
 

@@ -74,9 +74,9 @@ class Notebook(TTKWrapperBase, ttk.Notebook):
         - By widget: The actual widget instance
 
     Lifecycle Events:
-        - <<NotebookTabChanged>>: Triggered when the selected tab changes
-        - <<NotebookTabActivated>>: Triggered when a tab becomes active
-        - <<NotebookTabDeactivated>>: Triggered when a tab becomes inactive
+        - <<NotebookTabChange>>: Triggered when the selected tab changes
+        - <<NotebookTabActivate>>: Triggered when a tab becomes active
+        - <<NotebookTabDeactivate>>: Triggered when a tab becomes inactive
 
     Event Data:
         All lifecycle events include a data dictionary with:
@@ -411,7 +411,7 @@ class Notebook(TTKWrapperBase, ttk.Notebook):
     configure_tab = tab  # alias for tab
 
     def on_tab_activated(self, callback: Callable[[Any], Any]) -> str:
-        """Bind to tab activation. <<NotebookTabActivated>> (public API event).
+        """Bind to tab activation. <<NotebookTabActivate>> (public API event).
 
         The event maps the base event into a NotebookChanged event whose .data payload includes:
             - `current`: TabRef | None
@@ -422,14 +422,14 @@ class Notebook(TTKWrapperBase, ttk.Notebook):
         Returns
             The funcid associated with this callback.
         """
-        return self.bind("<<NotebookTabActivated>>", callback, add=True)
+        return self.bind("<<NotebookTabActivate>>", callback, add=True)
 
     def off_tab_activated(self, funcid: str) -> None:
-        """Remove the binding associated with funcid for <<NotebookTabActivated>>."""
-        self.unbind("<<NotebookTabActivated>>", funcid)
+        """Remove the binding associated with funcid for <<NotebookTabActivate>>."""
+        self.unbind("<<NotebookTabActivate>>", funcid)
 
     def on_tab_deactivated(self, callback: Callable[[Any], Any]) -> str:
-        """Bind to tab deactivation. <<NotebookTabDeactivated>> (public API event).
+        """Bind to tab deactivation. <<NotebookTabDeactivate>> (public API event).
 
         The event maps the base event into a NotebookChanged event whose .data payload includes:
             - `current`: TabRef | None
@@ -440,19 +440,19 @@ class Notebook(TTKWrapperBase, ttk.Notebook):
         Returns
             The funcid associated with this callback.
         """
-        return self.bind("<<NotebookTabDeactivated>>", callback, add=True)
+        return self.bind("<<NotebookTabDeactivate>>", callback, add=True)
 
     def off_tab_deactivated(self, funcid: str) -> None:
-        """Remove the binding associated with funcid on <<NotebookTabDeactivated>>"""
-        self.unbind("<<NotebookTabDeactivated>>", funcid)
+        """Remove the binding associated with funcid on <<NotebookTabDeactivate>>"""
+        self.unbind("<<NotebookTabDeactivate>>", funcid)
 
     def on_tab_changed(self, callback: Callable[[Any], Any]) -> str:
         """Bind to tab changed event (enriched API event surface).
 
         Emits:
-            <<NotebookTabChanged>>
-            <<NotebookTabActivated>>
-            <<NotebookTabDeactivated>>
+            <<NotebookTabChange>>
+            <<NotebookTabActivate>>
+            <<NotebookTabDeactivate>>
 
         The event maps the base event into a NotebookChanged event whose .data payload includes:
             - `current`: TabRef | None
@@ -481,9 +481,9 @@ class Notebook(TTKWrapperBase, ttk.Notebook):
             c_key, p_key = (c or {}).get("key"), (p or {}).get("key")
             changed = (c_key != p_key) if (c_key or p_key) else ((c or {}).get("index") != (p or {}).get("index"))
             if p and changed:
-                self.event_generate("<<NotebookTabDeactivated>>", data={"tab": p})
+                self.event_generate("<<NotebookTabDeactivate>>", data={"tab": p})
             if c and changed:
-                self.event_generate("<<NotebookTabActivated>>", data={"tab": c})
+                self.event_generate("<<NotebookTabActivate>>", data={"tab": c})
 
         def commit(event: Any) -> None:
             """Reset change-tracking fields after dispatching the change event."""
@@ -497,8 +497,8 @@ class Notebook(TTKWrapperBase, ttk.Notebook):
             commit(payload)
             return callback(event)
 
-        return self.bind("<<NotebookTabChanged>>", wrapper, add=True)
+        return self.bind("<<NotebookTabChange>>", wrapper, add=True)
 
     def off_tab_changed(self, funcid: str) -> None:
-        """Remove the binding associated with funcid for <<NotebookTabChanged>>."""
-        self.unbind("<<NotebookTabChanged>>", funcid)
+        """Remove the binding associated with funcid for <<NotebookTabChange>>."""
+        self.unbind("<<NotebookTabChange>>", funcid)

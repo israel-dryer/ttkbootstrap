@@ -78,7 +78,7 @@ class DatePicker(ttk.Frame):
         - Optional week numbers and outside-month days (default: show outside in single, hide in range)
 
     Virtual events:
-        - ``<<DateSelected>>`` fired on selection with ``event.data`` containing
+        - ``<<DateSelect>>`` fired on selection with ``event.data`` containing
           ``{"date": last_click, "range": (start, end)}``.
             * In single mode, ``date`` and ``range[0]`` are the same and ``range[1]`` is None.
             * In range mode, ``date`` is the most recent click; the full selection is in ``range``
@@ -161,12 +161,12 @@ class DatePicker(ttk.Frame):
         return None
 
     def on_date_selected(self, callback: Callable) -> str:
-        """Bind to the ``<<DateSelected>>`` virtual event."""
-        return self.bind("<<DateSelected>>", callback, add=True)
+        """Bind to the ``<<DateSelect>>`` virtual event."""
+        return self.bind("<<DateSelect>>", callback, add=True)
 
     def off_date_selected(self, func_id: str):
-        """Remove the binding to <<DateSelected>>."""
-        return self.unbind("<<DateSelected>>", func_id)
+        """Remove the binding to <<DateSelect>>."""
+        return self.unbind("<<DateSelect>>", func_id)
 
     # --- UI construction --------------------------------------------
     def _build_ui(self) -> None:
@@ -611,7 +611,7 @@ class DatePicker(ttk.Frame):
         self._range_end = None
         self._refresh_calendar()
         self.event_generate(
-            "<<DateSelected>>", data={"date": self._selected_date, "range": (self._range_start, self._range_end)})
+            "<<DateSelect>>", data={"date": self._selected_date, "range": (self._range_start, self._range_end)})
 
     def _on_date_selected_by_date(self, target: date) -> None:
         if self._is_disabled(target):
@@ -632,7 +632,7 @@ class DatePicker(ttk.Frame):
 
         self._draw_calendar()
         self.event_generate(
-            "<<DateSelected>>", data={"date": self._selected_date, "range": (self._range_start, self._range_end)})
+            "<<DateSelect>>", data={"date": self._selected_date, "range": (self._range_start, self._range_end)})
 
     # --- helpers ------------------------------------------------------
     def _lock_size(self) -> None:

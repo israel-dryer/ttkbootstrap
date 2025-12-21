@@ -27,7 +27,7 @@ class SpinnerEntryPart(ValidationMixin, Spinbox):
         - Spinbox integration: Works with values list or from/to/increment
         - Three-tier event system:
             - <<Input>>: Fires on every keystroke with raw text
-            - <<Changed>>: Fires when committed value changes (FocusOut/Return)
+            - <<Change>>: Fires when committed value changes (FocusOut/Return)
             - <Return>: Fires on Enter key with current value and text
         - Validation support via ValidationMixin
         - Automatic text normalization after parsing
@@ -37,7 +37,7 @@ class SpinnerEntryPart(ValidationMixin, Spinbox):
         <<Input>>: Triggered on each keystroke
             event.data = {"text": str}
 
-        <<Changed>>: Triggered when value changes after commit
+        <<Change>>: Triggered when value changes after commit
             event.data = {"value": Any, "prev_value": Any, "text": str}
 
         <Return>: Triggered on Enter key press
@@ -208,14 +208,14 @@ class SpinnerEntryPart(ValidationMixin, Spinbox):
         self.event_generate('<<Input>>', data={"text": text})
 
     def _check_if_changed(self):
-        """Emit <<Changed>> event if parsed value changed since focus-in."""
+        """Emit <<Change>> event if parsed value changed since focus-in."""
         if self._value != self._prev_changed_value:
             data = {
                 "value": self._value,
                 "prev_value": self._prev_changed_value,
                 "text": self.textsignal.get()
             }
-            self.event_generate('<<Changed>>', data={"value": self._value})
+            self.event_generate('<<Change>>', data={"value": self._value})
             self._prev_changed_value = self._value
 
     def _parse_or_none(self, s: str):
@@ -292,7 +292,7 @@ class SpinnerEntryPart(ValidationMixin, Spinbox):
         self.unbind('<Return>', funcid)
 
     def on_changed(self, callback: Callable[[Any], Any]) -> str:
-        """Bind callback to <<Changed>> event (fires when value changes on commit).
+        """Bind callback to <<Change>> event (fires when value changes on commit).
 
         Args:
             callback: Function receiving event.data = {"value": Any, "prev_value": Any, "text": str}
@@ -300,11 +300,11 @@ class SpinnerEntryPart(ValidationMixin, Spinbox):
         Returns:
             Binding identifier for use with off_changed()
         """
-        return self.bind("<<Changed>>", callback)
+        return self.bind("<<Change>>", callback)
 
     def off_changed(self, funcid: str):
-        """Remove callback from <<Changed>> event."""
-        self.unbind('<<Changed>>', funcid)
+        """Remove callback from <<Change>> event."""
+        self.unbind('<<Change>>', funcid)
 
     def value(self, value=None):
         """Get or set the parsed/committed value.

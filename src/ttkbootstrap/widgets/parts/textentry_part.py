@@ -19,7 +19,7 @@ class TextEntryPart(ValidationMixin, Entry):
         - International formatting: Locale-aware number, date, and currency formatting
         - Three-tier event system:
             - <<Input>>: Fires on every keystroke with raw text
-            - <<Changed>>: Fires when committed value changes (FocusOut/Return)
+            - <<Change>>: Fires when committed value changes (FocusOut/Return)
             - <Return>: Fires on Enter key with current value and text
         - Validation support via ValidationMixin
         - Automatic text normalization after parsing
@@ -28,7 +28,7 @@ class TextEntryPart(ValidationMixin, Entry):
         <<Input>>: Triggered on each keystroke
             event.data = {"text": str}
 
-        <<Changed>>: Triggered when value changes after commit
+        <<Change>>: Triggered when value changes after commit
             event.data = {"value": Any, "prev_value": Any, "text": str}
 
         <Return>: Triggered on Enter key press
@@ -124,7 +124,7 @@ class TextEntryPart(ValidationMixin, Entry):
         Note:
             The widget automatically subscribes to text changes and sets up
             event handlers for <FocusIn>, <FocusOut>, and <Return>. These
-            handlers manage value commits and trigger <<Changed>> events.
+            handlers manage value commits and trigger <<Change>> events.
         """
         kwargs.update(bootstyle='field-input')
         super().__init__(master, **kwargs)
@@ -198,14 +198,14 @@ class TextEntryPart(ValidationMixin, Entry):
         self.event_generate('<<Input>>', data={"text": text})
 
     def _check_if_changed(self):
-        """Emit <<Changed>> event if parsed value changed since focus-in."""
+        """Emit <<Change>> event if parsed value changed since focus-in."""
         if self._value != self._prev_changed_value:
             data = {
                 "value": self._value,
                 "prev_value": self._prev_changed_value,
                 "text": self.textsignal.get()
             }
-            self.event_generate('<<Changed>>', data={"value": self._value})
+            self.event_generate('<<Change>>', data={"value": self._value})
             self._prev_changed_value = self._value
 
     def _parse_or_none(self, s: str):
@@ -287,7 +287,7 @@ class TextEntryPart(ValidationMixin, Entry):
         self.unbind('<Return>', funcid)
 
     def on_changed(self, callback: Callable[[Any], Any]) -> str:
-        """Bind callback to <<Changed>> event (fires when value changes on commit).
+        """Bind callback to <<Change>> event (fires when value changes on commit).
 
         Args:
             callback: Function receiving event.data = {"value": Any, "prev_value": Any, "text": str}
@@ -295,11 +295,11 @@ class TextEntryPart(ValidationMixin, Entry):
         Returns:
             Binding identifier for use with off_changed()
         """
-        return self.bind("<<Changed>>", callback)
+        return self.bind("<<Change>>", callback)
 
     def off_changed(self, funcid: str):
-        """Remove callback from <<Changed>> event."""
-        self.unbind('<<Changed>>', funcid)
+        """Remove callback from <<Change>> event."""
+        self.unbind('<<Change>>', funcid)
 
     def value(self, value=None):
         """Get or set the parsed/committed value.

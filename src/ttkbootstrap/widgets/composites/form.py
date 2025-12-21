@@ -420,7 +420,7 @@ class Form(Frame):
                 field_widget.pack(fill='both', expand=True)
 
         if isinstance(field_widget, Field):
-            field_widget.bind("<<Changed>>", lambda _e, k=item.key: self._sync_value_from_widget(k))
+            field_widget.bind("<<Change>>", lambda _e, k=item.key: self._sync_value_from_widget(k))
             field_widget.pack(fill='both', expand=True)
             if not isinstance(field_widget, NumericEntry):
                 traced_var = getattr(field_widget, "variable", None)

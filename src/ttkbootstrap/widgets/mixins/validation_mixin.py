@@ -20,7 +20,7 @@ class ValidationMixin(Widget):
     Features:
         - Debounced auto-validate on key/blur
         - Emits virtual events with data payload:
-            <<Valid>>, <<Invalid>>, <<Validated>>
+            <<Valid>>, <<Invalid>>, <<Validate>>
         - Event data accessible via event.data in handlers
 
     Events:
@@ -30,7 +30,7 @@ class ValidationMixin(Widget):
         <<Invalid>>: Fired when validation fails
             event.data = {"value": Any, "is_valid": False, "message": str}
 
-        <<Validated>>: Fired after any validation
+        <<Validate>>: Fired after any validation
             event.data = {"value": Any, "is_valid": bool, "message": str}
 
     Example:
@@ -57,7 +57,7 @@ class ValidationMixin(Widget):
 
     EVENT_VALID = '<<Valid>>'
     EVENT_INVALID = '<<Invalid>>'
-    EVENT_VALIDATED = '<<Validated>>'
+    EVENT_VALIDATED = '<<Validate>>'
     SEQ_KEYUP = '<KeyRelease>'
     SEQ_BLUR = '<FocusOut>'
 
@@ -129,7 +129,7 @@ class ValidationMixin(Widget):
     def validate(self, value: Any, trigger: RuleTriggerType = "manual") -> bool:
         """Run validation rules against a value.
 
-        Emits <<Valid>>, <<Invalid>>, and <<Validated>> events
+        Emits <<Valid>>, <<Invalid>>, and <<Validate>> events
         with data payload containing validation results.
 
         Args:
@@ -191,7 +191,7 @@ class ValidationMixin(Widget):
 
     def off_validated(self, funcid: str):
         """Remove the callback for validated event"""
-        self.unbind('<<Validated>>', funcid)
+        self.unbind('<<Validate>>', funcid)
 
     # ---------------- Internals ----------------
 
