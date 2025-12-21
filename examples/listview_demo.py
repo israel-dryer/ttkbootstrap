@@ -61,6 +61,7 @@ def main():
         items=simple_data,
         enable_focus_state=True,
         alternating_row_mode='even',
+        enable_hover_state=False,
         show_separator=True,
 
     )

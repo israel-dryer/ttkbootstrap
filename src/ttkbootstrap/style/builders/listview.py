@@ -7,6 +7,7 @@ from ttkbootstrap.style.utility import recolor_image
 
 @BootstyleBuilderTTk.register_builder('list', 'TFrame')
 def build_list_frame_style(b: BootstyleBuilderTTk, ttk_style: str, color: str = None, **options):
+    enable_hover_state = options.get('enable_hover_state', True)
     accent_token = color or 'primary'
     surface_token = options.get('surface_color', 'background')
     background = b.color(surface_token)
@@ -15,21 +16,21 @@ def build_list_frame_style(b: BootstyleBuilderTTk, ttk_style: str, color: str = 
     selected = b.color(accent_token)
     selected_active = b.active(selected)
     b.configure_style(ttk_style, background=background, relief='flat')
-    b.map_style(
-        ttk_style,
-        background=[
-            ('focus selected hover', selected_active),
-            ('focus selected', selected_active),
-            ('selected hover', selected_active),
-            ('selected', selected),
-            ('focus pressed', pressed),
-            ('pressed', pressed),
-            ('focus hover', active),
-            ('hover', active),
-            ('focus', active),
-            ('', background)
-        ]
-    )
+
+    background_state_map = [
+        ('focus selected hover', selected_active) if enable_hover_state else None,
+        ('focus selected', selected_active),
+        ('selected hover', selected_active) if enable_hover_state else None,
+        ('selected', selected) if enable_hover_state else None,
+        ('focus pressed', pressed),
+        ('pressed', pressed),
+        ('focus hover', active) if enable_hover_state else None,
+        ('hover', active) if enable_hover_state else None,
+        ('focus', active),
+        ('', background)
+    ]
+
+    b.map_style(ttk_style, background=[x for x in background_state_map if x is not None])
 
 
 @BootstyleBuilderTTk.register_builder('list_item', 'TFrame')
@@ -42,8 +43,14 @@ def build_list_item_separated_style(b: BootstyleBuilderTTk, ttk_style: str, colo
     build_list_item_style(b, ttk_style, color, 'list-item-separated', **options)
 
 
-def build_list_item_style(b: BootstyleBuilderTTk, ttk_style: str, color: str = None, variant: str = 'list_item',
-                          **options):
+def build_list_item_style(
+        b: BootstyleBuilderTTk,
+        ttk_style: str,
+        color: str = None,
+        variant: str = 'list_item',
+        **options
+):
+    enable_hover_state = options.get('enable_hover_state', True)
     surface_token = options.get('surface_color', 'background')
     accent_token = color or 'primary'
     focus_token = options.get('focus_color', None)
@@ -72,20 +79,22 @@ def build_list_item_style(b: BootstyleBuilderTTk, ttk_style: str, color: str = N
     focus_active_img = recolor_image('list-item-focus', active, border_normal, focus_color)
     focus_selected_img = recolor_image('list-item-focus', selected_active, border_normal, focus_color)
 
+    image_state_specs = [
+        ('focus selected hover', focus_selected_img) if enable_hover_state else None,
+        ('focus selected', focus_selected_img),
+        ('selected hover', selected_active_img) if enable_hover_state else None,
+        ('selected', selected_img),
+        ('focus pressed', focus_pressed_img),
+        ('pressed', pressed_img),
+        ('focus hover', focus_active_img) if enable_hover_state else None,
+        ('hover', active_img) if enable_hover_state else None,
+        ('focus', focus_img),
+        ('', normal_img),
+    ]
+
     b.create_style_element_image(
         ElementImage(f'{ttk_style}.border', normal_img, sticky='nsew', border=b.scale(8)).state_specs(
-            [
-                ('focus selected hover', focus_selected_img),
-                ('focus selected', focus_selected_img),
-                ('selected hover', selected_active_img),
-                ('selected', selected_img),
-                ('focus pressed', focus_pressed_img),
-                ('pressed', pressed_img),
-                ('focus hover', focus_active_img),
-                ('hover', active_img),
-                ('focus', focus_img),
-                ('', normal_img),
-            ]
+            [x for x in image_state_specs if x is not None]
         )
     )
 
@@ -102,6 +111,7 @@ def build_list_item_style(b: BootstyleBuilderTTk, ttk_style: str, color: str = N
 
 @BootstyleBuilderTTk.register_builder('list', 'TButton')
 def build_list_item_button_style(b: BootstyleBuilderTTk, ttk_style: str, color: str = None, **options):
+    enable_hover_state = options.get('enable_hover_state', True)
     surface_token = options.get('surface_color', 'background')
 
     background = b.color(surface_token)
@@ -119,21 +129,23 @@ def build_list_item_button_style(b: BootstyleBuilderTTk, ttk_style: str, color: 
         ])
     )
 
+    background_state_spec = [
+        ('focus selected hover', selected_active) if enable_hover_state else None,
+        ('focus selected', selected_active),
+        ('selected hover', selected_active) if enable_hover_state else None,
+        ('selected', selected),
+        ('focus pressed', pressed),
+        ('pressed', pressed),
+        ('focus hover', active) if enable_hover_state else None,
+        ('hover', active) if enable_hover_state else None,
+        ('focus', active)
+    ]
+
     b.configure_style(ttk_style, background=background, padding=0, relief='flat', stipple='gray12', font='body')
     b.map_style(
         ttk_style,
         foreground=[],
-        background=[
-            ('focus selected hover', selected_active),
-            ('focus selected', selected_active),
-            ('selected hover', selected_active),
-            ('selected', selected),
-            ('focus pressed', pressed),
-            ('pressed', pressed),
-            ('focus hover', active),
-            ('hover', active),
-            ('focus', active)
-        ]
+        background=[x for x in background_state_spec if x is not None]
     )
 
 
@@ -155,6 +167,7 @@ def build_list_item_default_label(b: BootstyleBuilderTTk, ttk_style: str, color:
 @BootstyleBuilderTTk.register_builder('list_icon', 'TButton')
 @BootstyleBuilderTTk.register_builder('list_icon', 'TLabel')
 def build_list_icon(b: BootstyleBuilderTTk, ttk_style: str, color: str = None, **options):
+    enable_hover_state = options.get('enable_hover_state', True)
     surface_token = options.get('surface_color', 'background')
     select_background_token = options.get('selection_background', 'primary')
 
@@ -188,32 +201,37 @@ def build_list_icon(b: BootstyleBuilderTTk, ttk_style: str, color: str = None, *
         font='body',
     )
 
+    foreground_state_spec = [
+        ('disabled', on_disabled),
+        ('selected pressed', on_selected),
+        ('selected hover', on_selected) if enable_hover_state else None,
+        ('selected', on_selected),
+        ('pressed', on_selected),
+        ('', on_background)
+    ]
+
+    background_state_spec = [
+        ('focus selected hover', selected_active) if enable_hover_state else None,
+        ('focus selected', selected_active),
+        ('selected hover', selected_active) if enable_hover_state else None,
+        ('selected', selected),
+        ('focus pressed', pressed),
+        ('pressed', pressed),
+        ('focus hover', active) if enable_hover_state else None,
+        ('hover', active) if enable_hover_state else None,
+        ('focus', active)
+    ]
+
     # Prepare state spec
     state_spec = dict(
-        foreground=[
-            ('disabled', on_disabled),
-            ('selected pressed', on_selected),
-            ('selected hover', on_selected),
-            ('selected', on_selected),
-            ('pressed', on_selected),
-            ('', on_background)
-        ],
-        background=[
-            ('focus selected hover', selected_active),
-            ('focus selected', selected_active),
-            ('selected hover', selected_active),
-            ('selected', selected),
-            ('focus pressed', pressed),
-            ('pressed', pressed),
-            ('focus hover', active),
-            ('hover', active),
-            ('focus', active)
-        ]
+        foreground=[x for x in foreground_state_spec if x is not None],
+        background=[x for x in background_state_spec if x is not None]
     )
 
     # Apply icon mapping if icon is provided
     state_spec = _apply_icon_mapping(b, options, state_spec, 18)
     b.map_style(ttk_style, **state_spec)
+
 
 def _apply_icon_mapping(b: BootstyleBuilderTTk, options: dict, state_spec: dict, default_size: int | None):
     icon = options.get('icon')
@@ -239,8 +257,10 @@ def build_list_item_label(b: BootstyleBuilderTTk, ttk_style: str, color: str = N
     Style Options
     * surface_color
     * selection_background
+    * enable_hover_state
     * foreground
     """
+    enable_hover_state = options.get('enable_hover_state', True)
     surface_token = options.get('surface_color', 'background')
     select_background_token = options.get('selection_background', 'primary')
     foreground_token = options.get('foreground', None)
@@ -253,21 +273,21 @@ def build_list_item_label(b: BootstyleBuilderTTk, ttk_style: str, color: str = N
     on_selected = b.on_color(selected)
     on_background = b.color(foreground_token) if foreground_token else b.on_color(background)
 
+    background_state_spec = [
+        ('focus selected hover', selected_active) if enable_hover_state else None,
+        ('focus selected', selected_active),
+        ('selected hover', selected_active) if enable_hover_state else None,
+        ('selected', selected),
+        ('focus pressed', pressed),
+        ('pressed', pressed),
+        ('focus hover', active) if enable_hover_state else None,
+        ('hover', active) if enable_hover_state else None,
+        ('focus', active)
+    ]
+
     b.configure_style(ttk_style, background=background, foreground=on_background)
     b.map_style(
         ttk_style,
-        background=[
-            ('focus selected hover', selected_active),
-            ('focus selected', selected_active),
-            ('selected hover', selected_active),
-            ('selected', selected),
-            ('focus pressed', pressed),
-            ('pressed', pressed),
-            ('focus hover', active),
-            ('hover', active),
-            ('focus', active)
-        ],
-        foreground=[
-            ('selected', on_selected)
-        ]
+        background=[x for x in background_state_spec if x is not None],
+        foreground=[('selected', on_selected)]
     )

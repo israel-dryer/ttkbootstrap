@@ -31,7 +31,8 @@ class ListItem(CompositeFrame):
         self._focus_color = kwargs.pop('focus_color', None)
         self._show_separator = kwargs.pop('show_separator', False)
         self._show_chevron = kwargs.pop('show_chevron', False)
-        self._enable_focus_state = kwargs.pop('enable_focus_state')
+        self._enable_focus_state = kwargs.pop('enable_focus_state', True)
+        self._enable_hover_state = kwargs.pop('enable_hover_state', False)
         self._enable_dragging = kwargs.pop('enable_dragging', False)
         self._enable_deleting = kwargs.pop('enable_deleting', False)
         self._selection_background = kwargs.pop('selection_background', 'primary')
@@ -53,7 +54,11 @@ class ListItem(CompositeFrame):
             bootstyle='list_item_separated' if self._show_separator else 'list_item',
             takefocus=self._enable_focus_state,
             padding=(8, 4),
-            style_options=dict(selection_background=self._selection_background, focus_color=self._focus_color)
+            style_options=dict(
+                selection_background=self._selection_background,
+                focus_color=self._focus_color,
+                enable_hover_state=self._enable_hover_state
+            )
         )
 
         # composite container widgets
@@ -61,7 +66,8 @@ class ListItem(CompositeFrame):
             self,
             bootstyle='list',
             takefocus=False,
-            style_options=dict(selection_background=self._selection_background)
+            style_options=dict(selection_background=self._selection_background,
+                               enable_hover_state=self._enable_hover_state)
         )
         self._left_frame.pack(side='left')
 
@@ -69,7 +75,8 @@ class ListItem(CompositeFrame):
             self,
             bootstyle='list',
             takefocus=False,
-            style_options=dict(selection_background=self._selection_background)
+            style_options=dict(selection_background=self._selection_background,
+                               enable_hover_state=self._enable_hover_state)
         )
         self._center_frame.pack(side='left', fill='x', expand=True)
 
@@ -77,7 +84,8 @@ class ListItem(CompositeFrame):
             self,
             bootstyle='list',
             takefocus=False,
-            style_options=dict(selection_background=self._selection_background)
+            style_options=dict(selection_background=self._selection_background,
+                               enable_hover_state=self._enable_hover_state)
         )
         self._right_frame.pack(side='left')
 
@@ -204,7 +212,8 @@ class ListItem(CompositeFrame):
                 icon=self._selection_icon,
                 bootstyle='list_icon',
                 icon_only=True,
-                style_options=dict(selection_background=self._selection_background),
+                style_options=dict(selection_background=self._selection_background,
+                                   enable_hover_state=self._enable_hover_state),
                 takefocus=False,
             )
             if self._show_selection_controls:
@@ -234,7 +243,8 @@ class ListItem(CompositeFrame):
                     bootstyle='list_icon',
                     takefocus=False,
                     icon_only=True,
-                    style_options=dict(selection_background=self._selection_background)
+                    style_options=dict(selection_background=self._selection_background,
+                                       enable_hover_state=self._enable_hover_state),
                 )
                 self._icon_widget.pack(side='left', padx=5)
                 self.register_composite(self._icon_widget)
@@ -260,7 +270,8 @@ class ListItem(CompositeFrame):
                     font='heading-lg',
                     bootstyle='list',
                     takefocus=False,
-                    style_options=dict(selection_background=self._selection_background)
+                    style_options=dict(selection_background=self._selection_background,
+                                       enable_hover_state=self._enable_hover_state),
                 )
                 self._title_widget.pack(side='top', fill='x', anchor='w', padx=(0, 3))
                 self.register_composite(self._title_widget)
@@ -285,7 +296,8 @@ class ListItem(CompositeFrame):
                     text=text,
                     bootstyle='list',
                     takefocus=False,
-                    style_options=dict(selection_background=self._selection_background)
+                    style_options=dict(selection_background=self._selection_background,
+                                       enable_hover_state=self._enable_hover_state),
                 )
                 self._text_widget.pack(side='top', fill='x', padx=(0, 3))
                 self.register_composite(self._text_widget)
@@ -312,7 +324,8 @@ class ListItem(CompositeFrame):
                     anchor='w',
                     bootstyle='list',
                     takefocus=False,
-                    style_options=dict(selection_background=self._selection_background)
+                    style_options=dict(selection_background=self._selection_background,
+                                       enable_hover_state=self._enable_hover_state),
                 )
                 self._caption_widget.pack(side='top', fill='x', padx=(0, 3))
                 self.register_composite(self._caption_widget)
@@ -336,7 +349,8 @@ class ListItem(CompositeFrame):
                     self._right_frame,
                     text=text,
                     bootstyle='list',
-                    style_options=dict(selection_background=self._selection_background)
+                    style_options=dict(selection_background=self._selection_background,
+                                       enable_hover_state=self._enable_hover_state),
                 )
                 self._badge_widget.pack(side='right', padx=6)
                 self.register_composite(self._badge_widget)
@@ -362,7 +376,8 @@ class ListItem(CompositeFrame):
                     icon_only=True,
                     bootstyle='list_icon',
                     takefocus=False,
-                    style_options=dict(selection_background=self._selection_background)
+                    style_options=dict(selection_background=self._selection_background,
+                                       enable_hover_state=self._enable_hover_state),
                 )
                 self._chevron_widget.pack(side='right', padx=6)
                 self.register_composite(self._chevron_widget)
@@ -387,7 +402,8 @@ class ListItem(CompositeFrame):
                     bootstyle='list_icon',
                     takefocus=False,
                     command=self.delete,
-                    style_options=dict(selection_background=self._selection_background)
+                    style_options=dict(selection_background=self._selection_background,
+                                       enable_hover_state=self._enable_hover_state),
                 )
                 self._delete_widget.pack(side='right', padx=6)
                 self.register_composite(self._delete_widget)
@@ -412,7 +428,8 @@ class ListItem(CompositeFrame):
                     bootstyle='list_icon',
                     cursor='fleur',
                     takefocus=False,
-                    style_options=dict(selection_background=self._selection_background)
+                    style_options=dict(selection_background=self._selection_background,
+                                       enable_hover_state=self._enable_hover_state),
                 )
                 self._drag_widget.pack(side='right', padx=6)
 

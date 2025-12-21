@@ -366,6 +366,7 @@ class ListView(Frame):
             alternating_row_mode: Literal['odd', 'even', 'none'] = 'even',
             show_separator: bool = True,
             enable_focus_state: bool = True,
+            enable_hover_state: bool = True,
             focus_color: str = None,
             selection_background: str = 'primary',
             **kwargs
@@ -386,6 +387,7 @@ class ListView(Frame):
             alternating_row_color: The alternating row color.
             show_separator: Show separator line between items.
             enable_focus_state: Allow items to receive focus.
+            enable_hover_state: Show active state on hover.
             focus_color: Color for the focus indicator.
             selection_background: Background color for selected items.
             **kwargs: Additional keyword arguments forwarded to `Frame`.
@@ -400,6 +402,7 @@ class ListView(Frame):
         self._enable_dragging = enable_dragging
         self._show_separator = show_separator
         self._enable_focus_state = enable_focus_state
+        self._enable_hover_state = enable_hover_state
         self._alternating_row_mode = alternating_row_mode
         self._alternating_row_color = alternating_row_color
         self._focus_color = focus_color
@@ -487,6 +490,7 @@ class ListView(Frame):
                 enable_dragging=self._enable_dragging,
                 show_separator=self._show_separator,
                 enable_focus_state=self._enable_focus_state,
+                enable_hover_state=self._enable_hover_state,
                 focus_color=self._focus_color,
                 selection_background=self._selection_background
             )
