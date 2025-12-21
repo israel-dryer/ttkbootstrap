@@ -6,6 +6,7 @@ from typing import Protocol, Any, Callable, Literal, runtime_checkable
 from ttkbootstrap.widgets.composites.listitem import ListItem
 from ttkbootstrap.widgets.primitives.frame import Frame
 from ttkbootstrap.widgets.primitives.scrollbar import Scrollbar
+from ttkbootstrap.widgets.mixins import configure_delegate
 
 # Constants
 VISIBLE_ROWS = 20
@@ -138,6 +139,7 @@ class MemoryDataSource:
         """Initialize an empty data source."""
         self._data: list[dict] = []
         self._selected_ids: set = set()
+        self._id_index: dict[Any, int] = {}  # Maps record ID to index for O(1) lookups
 
     def set_data(self, data: list) -> 'MemoryDataSource':
         """Set the data and return self for chaining.
@@ -149,14 +151,18 @@ class MemoryDataSource:
             This instance for chaining.
         """
         self._data = []
+        self._id_index = {}
         for i, item in enumerate(data or []):
             if isinstance(item, dict):
                 if 'id' not in item:
                     item['id'] = i
                 self._data.append(item)
+                self._id_index[item['id']] = i
             else:
                 # Convert primitives to dict
-                self._data.append({'id': i, 'value': str(item)})
+                record = {'id': i, 'value': str(item)}
+                self._data.append(record)
+                self._id_index[i] = i
 
         return self
 
@@ -226,7 +232,16 @@ class MemoryDataSource:
         Args:
             record_id: Record identifier to delete.
         """
-        self._data = [r for r in self._data if r.get('id') != record_id]
+        # Use index for O(1) lookup
+        index = self._id_index.get(record_id)
+        if index is not None:
+            # Remove from data
+            del self._data[index]
+            # Remove from index
+            del self._id_index[record_id]
+            # Rebuild index for all records after the deleted one
+            for i in range(index, len(self._data)):
+                self._id_index[self._data[i]['id']] = i
         self._selected_ids.discard(record_id)
 
     def create_record(self, data: dict) -> Any:
@@ -241,7 +256,9 @@ class MemoryDataSource:
         max_id = max((r.get('id', 0) for r in self._data), default=0)
         new_id = max_id + 1 if isinstance(max_id, int) else len(self._data)
         data['id'] = new_id
+        new_index = len(self._data)
         self._data.append(data)
+        self._id_index[new_id] = new_index
         return new_id
 
     def update_record(self, record_id: Any, data: dict) -> bool:
@@ -254,10 +271,11 @@ class MemoryDataSource:
         Returns:
             True if the record was updated.
         """
-        for record in self._data:
-            if record.get('id') == record_id:
-                record.update(data)
-                return True
+        # Use index for O(1) lookup
+        index = self._id_index.get(record_id)
+        if index is not None:
+            self._data[index].update(data)
+            return True
         return False
 
     def reload(self) -> None:
@@ -280,12 +298,8 @@ class MemoryDataSource:
         if not self._data:
             return False
 
-        source_index = None
-        for i, record in enumerate(self._data):
-            if record.get('id') == record_id:
-                source_index = i
-                break
-
+        # Use index for O(1) lookup
+        source_index = self._id_index.get(record_id)
         if source_index is None:
             return False
 
@@ -293,10 +307,18 @@ class MemoryDataSource:
         if source_index == clamped_target:
             return False
 
+        # Move the record
         record = self._data.pop(source_index)
         if clamped_target > source_index:
             clamped_target -= 1
         self._data.insert(clamped_target, record)
+
+        # Rebuild index for affected range
+        start = min(source_index, clamped_target)
+        end = max(source_index, clamped_target) + 1
+        for i in range(start, end):
+            self._id_index[self._data[i]['id']] = i
+
         return True
 
 
@@ -311,14 +333,14 @@ class ListView(Frame):
     implementation for more complex scenarios (database, API, etc.).
 
     Virtual events:
-        <<SelectionChanged>>: Fired when selection state changes.
-        <<ItemDeleted>>: Fired when an item is deleted.
-        <<ItemDeleteFailed>>: Fired when item deletion fails.
-        <<ItemInserted>>: Fired when a new item is inserted.
-        <<ItemUpdated>>: Fired when an item is updated.
+        <<SelectionChange>>: Fired when selection state changes.
+        <<ItemDelete>>: Fired when an item is deleted.
+        <<ItemDeleteFail>>: Fired when item deletion fails.
+        <<ItemInsert>>: Fired when a new item is inserted.
+        <<ItemUpdate>>: Fired when an item is updated.
         <<ItemClick>>: Fired when an item is clicked.
         <<ItemDragStart>>: Fired when a drag begins.
-        <<ItemDragging>>: Fired when an item is being dragged.
+        <<ItemDrag>>: Fired when an item is being dragged.
         <<ItemDragEnd>>: Fired when a drag ends.
 
     Examples:
@@ -462,14 +484,97 @@ class ListView(Frame):
         # Bind ListItem events
         self._container.bind('<<ItemSelecting>>', self._on_item_selecting, add='+')
         self._container.bind('<<ItemDeleting>>', self._on_item_deleting, add='+')
-        self._container.bind('<<ItemFocused>>', self._on_item_focused, add='+')
+        self._container.bind('<<ItemFocus>>', self._on_item_focused, add='+')
         self._container.bind('<<ItemClick>>', self._on_item_click, add='+')
         self._container.bind('<<ItemDragStart>>', self._on_item_drag_start, add='+')
-        self._container.bind('<<ItemDragging>>', self._on_item_dragging, add='+')
+        self._container.bind('<<ItemDrag>>', self._on_item_dragging, add='+')
         self._container.bind('<<ItemDragEnd>>', self._on_item_drag_end, add='+')
 
         # Initial update
         self.after(10, self._remeasure_and_relayout)
+
+    @configure_delegate('selection_mode')
+    def _delegate_selection_mode(self, value=None):
+        """Get or set the selection mode.
+
+        Args:
+            value: If provided, sets the selection mode to 'none', 'single', or 'multi'.
+                If None, returns the current selection mode.
+
+        Returns:
+            Current selection mode when called without arguments.
+        """
+        if value is None:
+            return self._selection_mode
+        else:
+            self._selection_mode = value
+            # Recreate row pool to apply new selection mode
+            self._ensure_row_pool(self._page_size)
+            self._update_rows()
+        return None
+
+    @configure_delegate('show_scrollbar')
+    def _delegate_show_scrollbar(self, value=None):
+        """Get or set scrollbar visibility.
+
+        Args:
+            value: If provided, sets scrollbar visibility (True/False).
+                If None, returns current visibility state.
+
+        Returns:
+            Current show_scrollbar value when called without arguments.
+        """
+        if value is None:
+            return self._show_scrollbar
+        else:
+            old_value = self._show_scrollbar
+            self._show_scrollbar = bool(value)
+            if old_value != self._show_scrollbar:
+                if self._show_scrollbar:
+                    self._scrollbar.pack(side='right', fill='y')
+                else:
+                    self._scrollbar.pack_forget()
+        return None
+
+    @configure_delegate('alternating_row_mode')
+    def _delegate_alternating_row_mode(self, value=None):
+        """Get or set alternating row mode.
+
+        Args:
+            value: If provided, sets mode to 'odd', 'even', or 'none'.
+                If None, returns the current mode.
+
+        Returns:
+            Current alternating_row_mode when called without arguments.
+        """
+        if value is None:
+            return self._alternating_row_mode
+        else:
+            self._alternating_row_mode = value
+            # Reapply surface colors to all rows
+            for i, row in enumerate(self._rows):
+                self._apply_widget_surface(row, i)
+        return None
+
+    @configure_delegate('alternating_row_color')
+    def _delegate_alternating_row_color(self, value=None):
+        """Get or set alternating row color.
+
+        Args:
+            value: If provided, sets the alternating row color.
+                If None, returns the current color.
+
+        Returns:
+            Current alternating_row_color when called without arguments.
+        """
+        if value is None:
+            return self._alternating_row_color
+        else:
+            self._alternating_row_color = value
+            # Reapply surface colors to all rows
+            for i, row in enumerate(self._rows):
+                self._apply_widget_surface(row, i)
+        return None
 
     @staticmethod
     def _default_row_factory(master, **kwargs):
@@ -784,7 +889,7 @@ class ListView(Frame):
                     self._datasource.select_record(record_id)
 
             self._update_rows()
-            self.event_generate('<<SelectionChanged>>')
+            self.event_generate('<<SelectionChange>>')
 
     def _on_item_deleting(self, event: Any):
         """Handle item delete event from `ListItem`.
@@ -797,9 +902,9 @@ class ListView(Frame):
             try:
                 self._datasource.delete_record(record_id)
                 self._update_rows()
-                self.event_generate('<<ItemDeleted>>')
+                self.event_generate('<<ItemDelete>>')
             except Exception as e:
-                self.event_generate('<<ItemDeleteFailed>>')
+                self.event_generate('<<ItemDeleteFail>>')
 
     def _on_item_focused(self, event: Any):
         """Handle item focus event from `ListItem`.
@@ -913,7 +1018,7 @@ class ListView(Frame):
                 y_current=y_current,
             )
         )
-        self.event_generate('<<ItemDragging>>', data=payload)
+        self.event_generate('<<ItemDrag>>', data=payload)
 
     def _on_item_drag_end(self, event: Any):
         """Handle item drag end event from `ListItem`.
@@ -1126,16 +1231,16 @@ class ListView(Frame):
                 if record_id:
                     self._datasource.select_record(record_id)
             self._update_rows()
-            self.event_generate('<<SelectionChanged>>')
+            self.event_generate('<<SelectionChange>>')
 
     def clear_selection(self):
         """Clear all item selections.
 
-        Deselects all items and generates a <<SelectionChanged>> event.
+        Deselects all items and generates a <<SelectionChange>> event.
         """
         self._datasource.unselect_all()
         self._update_rows()
-        self.event_generate('<<SelectionChanged>>')
+        self.event_generate('<<SelectionChange>>')
 
     def scroll_to_top(self):
         """Scroll to the beginning of the list.
@@ -1172,7 +1277,7 @@ class ListView(Frame):
         """
         self._datasource.create_record(data)
         self._update_rows()
-        self.event_generate('<<ItemInserted>>')
+        self.event_generate('<<ItemInsert>>')
 
     def update_item(self, record_id: Any, data: dict):
         """Update an existing item's data.
@@ -1190,7 +1295,7 @@ class ListView(Frame):
         """
         if self._datasource.update_record(record_id, data):
             self._update_rows()
-            self.event_generate('<<ItemUpdated>>')
+            self.event_generate('<<ItemUpdate>>')
 
     def delete_item(self, record_id: Any):
         """Delete an item from the list.
@@ -1206,7 +1311,7 @@ class ListView(Frame):
         """
         self._datasource.delete_record(record_id)
         self._update_rows()
-        self.event_generate('<<ItemDeleted>>')
+        self.event_generate('<<ItemDelete>>')
 
     def get_datasource(self) -> DataSourceProtocol:
         """Get the underlying datasource.
