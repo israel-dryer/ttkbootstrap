@@ -105,8 +105,8 @@ class ListItem(CompositeFrame):
         for widget in [self._left_frame, self._center_frame, self._right_frame]:
             self.register_composite(widget)
 
-        # Bind to composite invoke for selection handling
-        if self._select_by_click:
+        # Bind to composite invoke for selection and/or focus handling
+        if self._select_by_click or self._enable_focus_state:
             self.on_invoke(self._on_click)
 
         # Focus event handling (notify ListView of focus changes)
