@@ -22,9 +22,9 @@ class ListItem(CompositeFrame):
         <<ItemClick>>: Fired when the item is clicked.
         <<ItemSelecting>>: Fired when the item is being selected/deselected.
         <<ItemDeleting>>: Fired when the delete button is clicked.
-        <<ItemFocused>>: Fired when the item receives keyboard focus.
+        <<ItemFocus>>: Fired when the item receives keyboard focus.
         <<ItemDragStart>>: Fired when a drag operation begins.
-        <<ItemDragging>>: Fired during a drag operation.
+        <<ItemDrag>>: Fired during a drag operation.
         <<ItemDragEnd>>: Fired when a drag operation ends.
 
     Data fields:
@@ -195,7 +195,7 @@ class ListItem(CompositeFrame):
     def _on_focus_in(self, event):
         """Handle focus in event - notify ListView."""
         self._data['focused'] = True
-        self.master.event_generate('<<ItemFocused>>', data=self._data)
+        self.master.event_generate('<<ItemFocus>>', data=self._data)
 
     def _on_focus_out(self, event):
         """Handle focus out event - check if focus moved to descendant."""
@@ -536,7 +536,7 @@ class ListItem(CompositeFrame):
 
         # emit drag motion event
         self.master.event_generate(
-            '<<ItemDragging>>',
+            '<<ItemDrag>>',
             data={
                 **self._data,
                 'source_index': self._item_index,
