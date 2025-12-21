@@ -554,14 +554,16 @@ class ListView(Frame):
                 # Remove top row
                 top_row = self._rows.pop(0)
 
+                # Calculate new data index
+                data_index = self._start_index + len(self._rows)
+
+                # Update data BEFORE moving widget to prevent focus tracking widget
+                self._update_single_row(top_row, data_index)
+
                 # Move to bottom
                 top_row.pack_forget()
                 top_row.pack(side='top', fill='x')
                 self._rows.append(top_row)
-
-                # Update with new data at the bottom
-                data_index = self._start_index + len(self._rows) - 1
-                self._update_single_row(top_row, data_index)
 
         elif scroll_distance < 0:
             # Scrolling up: move bottom rows to top
@@ -572,6 +574,12 @@ class ListView(Frame):
                 # Remove bottom row
                 bottom_row = self._rows.pop()
 
+                # Calculate new data index
+                data_index = self._start_index
+
+                # Update data BEFORE moving widget to prevent focus tracking widget
+                self._update_single_row(bottom_row, data_index)
+
                 # Move to top
                 bottom_row.pack_forget()
                 if self._rows:
@@ -579,10 +587,6 @@ class ListView(Frame):
                 else:
                     bottom_row.pack(side='top', fill='x')
                 self._rows.insert(0, bottom_row)
-
-                # Update with new data at the top
-                data_index = self._start_index
-                self._update_single_row(bottom_row, data_index)
 
     def _full_update_rows(self):
         """Perform a full update of all visible rows."""

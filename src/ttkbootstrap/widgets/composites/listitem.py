@@ -608,7 +608,13 @@ class ListItem(CompositeFrame):
                 except TclError:
                     pass
             else:
-                # This record lost focus - just update data
+                # This record lost focus - clear tkinter focus if we have it
+                try:
+                    if self.focus_get() == self:
+                        # Move focus to parent container
+                        self.master.focus_set()
+                except (TclError, AttributeError):
+                    pass
                 self._data['focused'] = False
             self._state['focused'] = focused
 
