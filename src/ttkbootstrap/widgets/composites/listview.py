@@ -61,16 +61,16 @@ class DataSourceProtocol(Protocol):
         """
         ...
 
-    def unselect_record(self, record_id: Any) -> None:
-        """Unselect a record.
+    def deselect_record(self, record_id: Any) -> None:
+        """Deselect a record.
 
         Args:
-            record_id: Record identifier to unselect.
+            record_id: Record identifier to deselect.
         """
         ...
 
-    def unselect_all(self) -> None:
-        """Unselect all records."""
+    def deselect_all(self) -> None:
+        """Deselect all records."""
         ...
 
     def get_selected(self) -> list[Any]:
@@ -206,16 +206,16 @@ class MemoryDataSource:
         """
         self._selected_ids.add(record_id)
 
-    def unselect_record(self, record_id: Any) -> None:
-        """Unselect a record.
+    def deselect_record(self, record_id: Any) -> None:
+        """Deselect a record.
 
         Args:
-            record_id: Record identifier to unselect.
+            record_id: Record identifier to deselect.
         """
         self._selected_ids.discard(record_id)
 
-    def unselect_all(self) -> None:
-        """Unselect all records."""
+    def deselect_all(self) -> None:
+        """Deselect all records."""
         self._selected_ids.clear()
 
     def get_selected(self) -> list[Any]:
@@ -880,11 +880,11 @@ class ListView(Frame):
         record_id = event.data.get('id')
         if record_id is not None and record_id != '__empty__':
             if self._selection_mode == 'single':
-                self._datasource.unselect_all()
+                self._datasource.deselect_all()
                 self._datasource.select_record(record_id)
             elif self._selection_mode == 'multi':
                 if self._datasource.is_selected(record_id):
-                    self._datasource.unselect_record(record_id)
+                    self._datasource.deselect_record(record_id)
                 else:
                     self._datasource.select_record(record_id)
 
@@ -923,6 +923,21 @@ class ListView(Frame):
         Args:
             event: Event with `data` for the clicked item.
         """
+        # Fetch fresh state from datasource to ensure accurate selection/focus state
+        record_id = event.data.get('id')
+        if record_id is not None and record_id != '__empty__':
+            item_index = event.data.get('item_index')
+            if item_index is not None:
+                page_data = self._datasource.get_page_from_index(item_index, 1)
+                if page_data:
+                    record = page_data[0].copy()
+                    record['selected'] = self._datasource.is_selected(record_id)
+                    record['focused'] = (record_id == self._focused_record_id)
+                    record['item_index'] = item_index
+                    self.event_generate('<<ItemClick>>', data=record)
+                    return
+
+        # Fallback to original data if we can't fetch fresh state
         self.event_generate('<<ItemClick>>', data=event.data)
 
     def _apply_widget_surface(self, row: ListItem, widget_index: int) -> None:
@@ -946,33 +961,6 @@ class ListView(Frame):
 
         if hasattr(row, "set_surface_color"):
             row.set_surface_color(surface)
-
-    def _apply_row_surface(self, row: ListItem, item_index: int) -> None:
-        """Apply surface color to a row based on alternation settings.
-
-        DEPRECATED: This method is kept for backwards compatibility but is no
-        longer used internally. Use _apply_widget_surface() instead for better
-        performance with virtual scrolling.
-        """
-        base_surface = getattr(self, "_surface_color", "background")
-        if self._alternating_row_mode == 'none':
-            surface = base_surface
-        else:
-            is_even = (item_index % 2) == 0
-            match = is_even if self._alternating_row_mode == 'even' else not is_even
-            surface = self._alternating_row_color if match else base_surface
-
-        if hasattr(row, "set_surface_color"):
-            row.set_surface_color(surface)
-            return
-
-        current_surface = getattr(row, "_surface_color", "background")
-        row.configure_style_options(surface_color=surface)
-        if current_surface != surface:
-            row.rebuild_style()
-            refresh = getattr(row, "_refresh_descendant_surfaces", None)
-            if callable(refresh):
-                refresh(current_surface, surface)
 
     def _on_item_drag_start(self, event: Any):
         """Handle item drag start event from `ListItem`.
@@ -1238,7 +1226,7 @@ class ListView(Frame):
 
         Deselects all items and generates a <<SelectionChange>> event.
         """
-        self._datasource.unselect_all()
+        self._datasource.deselect_all()
         self._update_rows()
         self.event_generate('<<SelectionChange>>')
 
@@ -1325,27 +1313,238 @@ class ListView(Frame):
         """
         return self._datasource
 
-    def on_item_selected(self, callback):
-        """Bind a callback to item selection events.
+    # Event handler API
+
+    def on_selection_change(self, callback: Callable):
+        """Bind a callback to selection change events.
 
         Args:
-            callback: Function to call when an item is selected. The callback
-                receives an event object with a 'data' attribute containing
-                the item's record.
+            callback: Function to call when selection state changes.
+                The callback receives an event object.
+
+        Returns:
+            Binding identifier that can be passed to off_selection_change().
 
         Example:
-            >>> def on_select(event):
-            ...     print(f"Selected: {event.data}")
-            >>> listview.on_item_selected(on_select)
+            >>> def on_change(event):
+            ...     selected = listview.get_selected()
+            ...     print(f"Selection changed: {len(selected)} items")
+            >>> listview.on_selection_change(on_change)
         """
-        return self._container.bind('<<ItemSelected>>', callback, add='+')
+        return self.bind('<<SelectionChange>>', callback, add='+')
 
-    def off_item_selected(self, func_id):
-        return self._container.unbind('<<ItemSelected>>', func_id)
+    def off_selection_change(self, func_id: str):
+        """Unbind a selection change event handler.
 
-    def on_item_selecting(self, callback):
-        """Bind a callback to item selecting event"""
-        return self._container.bind('<<ItemSelecting>>', callback, add='+')
+        Args:
+            func_id: Binding identifier returned from on_selection_change().
+        """
+        self.unbind('<<SelectionChange>>', func_id)
 
-    def off_item_selecting(self, func_id):
-        self._container.unbind('<<ItemSelecting>>', func_id)
+    def on_item_delete(self, callback: Callable):
+        """Bind a callback to item deletion events.
+
+        Args:
+            callback: Function to call when an item is deleted.
+                The callback receives an event object.
+
+        Returns:
+            Binding identifier that can be passed to off_item_delete().
+
+        Example:
+            >>> def on_delete(event):
+            ...     print("Item deleted")
+            >>> listview.on_item_delete(on_delete)
+        """
+        return self.bind('<<ItemDelete>>', callback, add='+')
+
+    def off_item_delete(self, func_id: str):
+        """Unbind an item deletion event handler.
+
+        Args:
+            func_id: Binding identifier returned from on_item_delete().
+        """
+        self.unbind('<<ItemDelete>>', func_id)
+
+    def on_item_delete_fail(self, callback: Callable):
+        """Bind a callback to failed item deletion events.
+
+        Args:
+            callback: Function to call when item deletion fails.
+                The callback receives an event object.
+
+        Returns:
+            Binding identifier that can be passed to off_item_delete_fail().
+
+        Example:
+            >>> def on_fail(event):
+            ...     print("Delete failed")
+            >>> listview.on_item_delete_fail(on_fail)
+        """
+        return self.bind('<<ItemDeleteFail>>', callback, add='+')
+
+    def off_item_delete_fail(self, func_id: str):
+        """Unbind a failed item deletion event handler.
+
+        Args:
+            func_id: Binding identifier returned from on_item_delete_fail().
+        """
+        self.unbind('<<ItemDeleteFail>>', func_id)
+
+    def on_item_insert(self, callback: Callable):
+        """Bind a callback to item insertion events.
+
+        Args:
+            callback: Function to call when an item is inserted.
+                The callback receives an event object.
+
+        Returns:
+            Binding identifier that can be passed to off_item_insert().
+
+        Example:
+            >>> def on_insert(event):
+            ...     print("Item inserted")
+            >>> listview.on_item_insert(on_insert)
+        """
+        return self.bind('<<ItemInsert>>', callback, add='+')
+
+    def off_item_insert(self, func_id: str):
+        """Unbind an item insertion event handler.
+
+        Args:
+            func_id: Binding identifier returned from on_item_insert().
+        """
+        self.unbind('<<ItemInsert>>', func_id)
+
+    def on_item_update(self, callback: Callable):
+        """Bind a callback to item update events.
+
+        Args:
+            callback: Function to call when an item is updated.
+                The callback receives an event object.
+
+        Returns:
+            Binding identifier that can be passed to off_item_update().
+
+        Example:
+            >>> def on_update(event):
+            ...     print("Item updated")
+            >>> listview.on_item_update(on_update)
+        """
+        return self.bind('<<ItemUpdate>>', callback, add='+')
+
+    def off_item_update(self, func_id: str):
+        """Unbind an item update event handler.
+
+        Args:
+            func_id: Binding identifier returned from on_item_update().
+        """
+        self.unbind('<<ItemUpdate>>', func_id)
+
+    def on_item_click(self, callback: Callable):
+        """Bind a callback to item click events.
+
+        Args:
+            callback: Function to call when an item is clicked.
+                The callback receives an event object with a 'data'
+                attribute containing the clicked item's record.
+
+        Returns:
+            Binding identifier that can be passed to off_item_click().
+
+        Example:
+            >>> def on_click(event):
+            ...     print(f"Clicked: {event.data}")
+            >>> listview.on_item_click(on_click)
+        """
+        return self.bind('<<ItemClick>>', callback, add='+')
+
+    def off_item_click(self, func_id: str):
+        """Unbind an item click event handler.
+
+        Args:
+            func_id: Binding identifier returned from on_item_click().
+        """
+        self.unbind('<<ItemClick>>', func_id)
+
+    def on_item_drag_start(self, callback: Callable):
+        """Bind a callback to drag start events.
+
+        Args:
+            callback: Function to call when a drag operation begins.
+                The callback receives an event object with a 'data'
+                attribute containing the dragged item's record.
+
+        Returns:
+            Binding identifier that can be passed to off_item_drag_start().
+
+        Example:
+            >>> def on_drag_start(event):
+            ...     print(f"Drag started: {event.data}")
+            >>> listview.on_item_drag_start(on_drag_start)
+        """
+        return self.bind('<<ItemDragStart>>', callback, add='+')
+
+    def off_item_drag_start(self, func_id: str):
+        """Unbind a drag start event handler.
+
+        Args:
+            func_id: Binding identifier returned from on_item_drag_start().
+        """
+        self.unbind('<<ItemDragStart>>', func_id)
+
+    def on_item_drag(self, callback: Callable):
+        """Bind a callback to item dragging events.
+
+        Args:
+            callback: Function to call during drag operations.
+                The callback receives an event object with a 'data'
+                attribute containing drag state including source_index,
+                target_index, and current position.
+
+        Returns:
+            Binding identifier that can be passed to off_item_drag().
+
+        Example:
+            >>> def on_drag(event):
+            ...     data = event.data
+            ...     print(f"Dragging from {data['source_index']} to {data['target_index']}")
+            >>> listview.on_item_drag(on_drag)
+        """
+        return self.bind('<<ItemDrag>>', callback, add='+')
+
+    def off_item_drag(self, func_id: str):
+        """Unbind an item dragging event handler.
+
+        Args:
+            func_id: Binding identifier returned from on_item_drag().
+        """
+        self.unbind('<<ItemDrag>>', func_id)
+
+    def on_item_drag_end(self, callback: Callable):
+        """Bind a callback to drag end events.
+
+        Args:
+            callback: Function to call when a drag operation ends.
+                The callback receives an event object with a 'data'
+                attribute containing the final drag state including
+                whether the item was moved.
+
+        Returns:
+            Binding identifier that can be passed to off_item_drag_end().
+
+        Example:
+            >>> def on_drag_end(event):
+            ...     if event.data['moved']:
+            ...         print(f"Item moved to index {event.data['target_index']}")
+            >>> listview.on_item_drag_end(on_drag_end)
+        """
+        return self.bind('<<ItemDragEnd>>', callback, add='+')
+
+    def off_item_drag_end(self, func_id: str):
+        """Unbind a drag end event handler.
+
+        Args:
+            func_id: Binding identifier returned from on_item_drag_end().
+        """
+        self.unbind('<<ItemDragEnd>>', func_id)

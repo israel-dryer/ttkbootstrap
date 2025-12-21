@@ -98,7 +98,7 @@ def main():
         selected = multi_list.get_selected()
         selected_label.config(text=f"Selected: {len(selected)}")
 
-    multi_list.bind('<<SelectionChanged>>', update_multi_selection)
+    multi_list.bind('<<SelectionChange>>', update_multi_selection)
 
     ttk.Button(
         multi_controls,
@@ -149,7 +149,7 @@ def main():
         count = datasource.total_count()
         feature_label.config(text=f"Total: {count} items")
 
-    feature_list.bind('<<ItemDeleted>>', update_feature_count)
+    feature_list.bind('<<ItemDelete>>', update_feature_count)
 
     ttk.Button(
         feature_controls,
@@ -205,9 +205,14 @@ def main():
     for instruction in instructions:
         ttk.Label(instructions_frame, text=instruction, font=('Helvetica', 9)).pack(anchor='w', padx=10)
 
-    simple_list.on_item_selected(lambda x: print(x.data))
-    multi_list.on_item_selected(lambda x: print(x.data))
-    feature_list.on_item_selected(lambda x: print(x.data))
+    # Demonstrate click events (fires when item is clicked, before selection changes)
+    simple_list.on_item_click(lambda x: print(f"[Click] {x.data['title']} - selected: {x.data['selected']}"))
+    multi_list.on_item_click(lambda x: print(f"[Click] {x.data['title']} - selected: {x.data['selected']}"))
+    feature_list.on_item_click(lambda x: print(f"[Click] {x.data['title']} - selected: {x.data['selected']}"))
+
+    # Demonstrate selection events (fires after selection state changes)
+    multi_list.on_selection_change(lambda x: print(f"[Selection Changed] Multi-list now has {len(multi_list.get_selected())} selected"))
+    feature_list.on_selection_change(lambda x: print(f"[Selection Changed] Feature-list now has {len(feature_list.get_selected())} selected"))
 
     root.mainloop()
 
