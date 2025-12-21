@@ -110,10 +110,10 @@ class OptionMenu(MenuButton):
         self.bind('<KP_Enter>', lambda _: self.show_menu(), add="+")
 
     def _bind_change_event(self):
-        """(Re)bind textsignal to emit <<Changed>> Tk events."""
+        """(Re)bind textsignal to emit <<Change>> Tk events."""
         if self._bind_id is not None:
             self.textsignal.unsubscribe(self._bind_id)
-        return self.textsignal.subscribe(lambda v: self.event_generate('<<Changed>>', data={"value": v}))
+        return self.textsignal.subscribe(lambda v: self.event_generate('<<Change>>', data={"value": v}))
 
     def _build_context_menu(self):
         # Create menu items that update the shared variable
@@ -145,12 +145,12 @@ class OptionMenu(MenuButton):
         self._textvariable.set(str(value))
 
     def on_changed(self, callback: Callable[[Any], Any]):
-        """Bind a callback to <<Changed>>; event.data contains {"value": v}."""
-        return self.bind('<<Changed>>', callback, add="+")
+        """Bind a callback to <<Change>>; event.data contains {"value": v}."""
+        return self.bind('<<Change>>', callback, add="+")
 
     def off_changed(self, bind_id: str):
-        """Unbind a previously registered <<Changed>> callback."""
-        self.unbind('<<Changed>>', bind_id)
+        """Unbind a previously registered <<Change>> callback."""
+        self.unbind('<<Change>>', bind_id)
 
     @configure_delegate('options')
     def _delegate_options(self, value=None):

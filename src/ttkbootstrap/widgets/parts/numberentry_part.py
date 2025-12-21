@@ -36,7 +36,7 @@ class NumberEntryPart(TextEntryPart):
             Can be intercepted to prevent or customize decrement behavior.
 
         Plus all events from TextEntryPart:
-            <<Input>>, <<Changed>>, <Return>
+            <<Input>>, <<Change>>, <Return>
 
     Example:
         ```python
@@ -287,7 +287,7 @@ class NumberEntryPart(TextEntryPart):
         if self._value != prev_value:
             self._prev_changed_value = self._value
             self.event_generate(
-                '<<Changed>>', data={
+                '<<Change>>', data={
                     "value": self._value,
                     "prev_value": prev_value,
                     "text": self.textsignal.get()

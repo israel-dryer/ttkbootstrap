@@ -29,7 +29,7 @@ class SpinnerEntry(Field):
         - All Field features (label, validation, messages, etc.)
 
     Events (forwarded from SpinnerEntryPart):
-        <<Changed>>: Fired when value changes after commit
+        <<Change>>: Fired when value changes after commit
         <<Input>>: Fired on each keystroke
         <<Valid>>: Fired when validation passes
         <<Invalid>>: Fired when validation fails

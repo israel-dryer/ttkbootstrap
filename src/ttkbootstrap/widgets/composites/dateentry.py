@@ -52,7 +52,7 @@ class DateEntry(Field):
         - Custom: Any ICU date format pattern (e.g., "yyyy-MM-dd")
 
     Events (inherited from Field):
-        <<Changed>>: Fired when date value changes after commit
+        <<Change>>: Fired when date value changes after commit
         <<Input>>: Fired on each keystroke
         <<Valid>>: Fired when validation passes
         <<Invalid>>: Fired when validation fails

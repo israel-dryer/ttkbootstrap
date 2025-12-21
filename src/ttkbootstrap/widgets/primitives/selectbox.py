@@ -13,13 +13,13 @@ class SelectBox(Field):
 
     A SelectBox renders a standard field with a suffix button that opens a small
     popup window containing a ``Treeview`` of the available items. Selecting an
-    item updates the field value and emits ``<<Changed>>`` so consumers can
+    item updates the field value and emits ``<<Change>>`` so consumers can
     react to both user-driven and programmatic value updates.
 
     Features:
         - Inline dropdown button that opens a popup list of items
         - Uses the underlying entry widget for value storage and events
-        - Emits ``<<Changed>>`` when the selection changes (user or code)
+        - Emits ``<<Change>>`` when the selection changes (user or code)
         - Items can be configured at runtime via ``configure(items=[...])``
         - Optional search/filter functionality
     """
@@ -396,7 +396,7 @@ class SelectBox(Field):
 
     @value.setter
     def value(self, value):
-        """Set the selected value and emit ``<<Changed>>`` when it differs."""
+        """Set the selected value and emit ``<<Change>>`` when it differs."""
         prev_value = Field.value.fget(self)
         Field.value.fset(self, value)
         new_value = Field.value.fget(self)
@@ -404,7 +404,7 @@ class SelectBox(Field):
             self.entry_widget._prev_changed_value = new_value
             if not getattr(self, "_suppress_changed_event", False):
                 self.entry_widget.event_generate(
-                    '<<Changed>>',
+                    '<<Change>>',
                     data={
                         'value': new_value,
                         'prev_value': prev_value,

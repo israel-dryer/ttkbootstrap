@@ -223,11 +223,11 @@ class TableView(Frame):
         self._load_page(0)
 
     # ------------------------------------------------------------------ Public event API
-    def on_selection_change(self, callback) -> str:
+    def on_selection_changed(self, callback) -> str:
         """Bind to selection changes. event.data = {'records': list, 'iids': list}."""
         return self.bind("<<SelectionChange>>", callback, add=True)
 
-    def off_selection_change(self, funcid: str | None = None) -> None:
+    def off_selection_changed(self, funcid: str | None = None) -> None:
         self.unbind("<<SelectionChange>>", funcid)
 
     def on_row_click(self, callback) -> str:
@@ -251,32 +251,32 @@ class TableView(Frame):
     def off_row_right_click(self, funcid: str | None = None) -> None:
         self.unbind("<<RowRightClick>>", funcid)
 
-    def on_row_delete(self, callback) -> str:
+    def on_row_deleted(self, callback) -> str:
         """Bind to row delete events. event.data = {'records': list}."""
         return self.bind("<<RowDelete>>", callback, add=True)
 
-    def off_row_delete(self, funcid: str | None = None) -> None:
+    def off_row_deleted(self, funcid: str | None = None) -> None:
         self.unbind("<<RowDelete>>", funcid)
 
-    def on_row_insert(self, callback) -> str:
+    def on_row_inserted(self, callback) -> str:
         """Bind to row insert events. event.data = {'records': list}."""
         return self.bind("<<RowInsert>>", callback, add=True)
 
-    def off_row_insert(self, funcid: str | None = None) -> None:
+    def off_row_inserted(self, funcid: str | None = None) -> None:
         self.unbind("<<RowInsert>>", funcid)
 
-    def on_row_update(self, callback) -> str:
+    def on_row_updated(self, callback) -> str:
         """Bind to row update events. event.data = {'records': list}."""
         return self.bind("<<RowUpdate>>", callback, add=True)
 
-    def off_row_update(self, funcid: str | None = None) -> None:
+    def off_row_updated(self, funcid: str | None = None) -> None:
         self.unbind("<<RowUpdate>>", funcid)
 
-    def on_row_move(self, callback) -> str:
+    def on_row_moved(self, callback) -> str:
         """Bind to row move events. event.data = {'records': list}."""
         return self.bind("<<RowMove>>", callback, add=True)
 
-    def off_row_move(self, funcid: str | None = None) -> None:
+    def off_row_moved(self, funcid: str | None = None) -> None:
         self.unbind("<<RowMove>>", funcid)
 
     # ------------------------------------------------------------------ Public data/selection API
@@ -1691,14 +1691,14 @@ class TableView(Frame):
     def _export_all(self) -> None:
         try:
             rows = self._datasource.get_page_from_index(0, self._datasource.total_count())
-            self.event_generate("<<ExportAll>>", data={"records": rows})
+            self._tree.event_generate("<<TableViewExportAll>>", data=rows)
         except Exception:
             pass
 
     def _export_selection(self) -> None:
         try:
             selected = [self._row_map[iid] for iid in self._tree.selection() if iid in self._row_map]
-            self.event_generate("<<ExportSelection>>", data={"records": selected})
+            self._tree.event_generate("<<TableViewExportSelection>>", data=selected)
         except Exception:
             pass
 
@@ -1706,7 +1706,7 @@ class TableView(Frame):
         try:
             start_index = self._current_page * self._paging['page_size']
             rows = self._datasource.get_page_from_index(start_index, self._paging['page_size'])
-            self.event_generate("<<ExportPage>>", data={"records": rows})
+            self._tree.event_generate("<<TableViewExportPage>>", data=rows)
         except Exception:
             pass
 

@@ -264,7 +264,7 @@ class DateDialog:
         self._picker.on_date_selected(self._on_date_selected)
 
     def _on_date_selected(self, event: tkinter.Event) -> None:
-        """Handle <<DateSelected>> from the embedded DatePicker."""
+        """Handle <<DateSelect>> from the embedded DatePicker."""
         if not self._picker:
             return
         trigger_reason = getattr(self._picker, "_last_trigger_reason", None)
