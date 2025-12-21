@@ -11,9 +11,8 @@ from __future__ import annotations
 import logging
 from collections import OrderedDict
 from tkinter import Misc, font as tkfont
-from typing import Any
 
-from typing_extensions import Literal, TypedDict
+from typing_extensions import Literal
 
 from ttkbootstrap_icons_bs import BootstrapIcon
 from ttkbootstrap import get_style
@@ -31,6 +30,24 @@ from ttkbootstrap.widgets.composites.textentry import TextEntry
 from ttkbootstrap.widgets.primitives.treeview import TreeView
 from ttkbootstrap.core.localization import MessageCatalog
 
+from .types import (
+    EditingOptions,
+    SelectionOptions,
+    ExportingOptions,
+    PagingOptions,
+    RowAlternationOptions,
+    FilteringOptions,
+    SearchOptions,
+    parse_selection_mode as _parse_selection_mode,
+    normalize_row_alternation_options as _normalize_row_alternation_options,
+    normalize_selection_options as _normalize_selection_options,
+    normalize_filtering_options as _normalize_filtering_options,
+    normalize_editing_options as _normalize_editing_options,
+    normalize_exporting_options as _normalize_exporting_options,
+    normalize_paging_options as _normalize_paging_options,
+    normalize_searchbar_options as _normalize_searchbar_options,
+)
+
 logger = logging.getLogger(__name__)
 
 _TABLE_SEARCH_MODE_OPTIONS = [
@@ -40,168 +57,6 @@ _TABLE_SEARCH_MODE_OPTIONS = [
     ("table.search_mode_ends_with", "ENDS WITH"),
     ("table.search_mode_sql", "SQL"),
 ]
-
-
-class EditingOptions(TypedDict, total=False):
-    """Configure add/update/delete support and form dialog options."""
-    adding: bool
-    updating: bool
-    deleting: bool
-    form: dict[str, Any]
-
-
-class SelectionOptions(TypedDict, total=False):
-    """Control selection mode (single/multiple/none) and select-all allowance."""
-    mode: Literal['single', 'multiple', 'none']
-    allow_select_all: bool  # not yet supported
-
-
-class ExportingOptions(TypedDict, total=False):
-    """Configure export availability and formats."""
-    enabled: bool
-    allow_export_selected: bool
-    export_all_mode: Literal['page', 'all']
-    formats: list[Literal['csv', 'xlsx']]
-
-
-class PagingOptions(TypedDict, total=False):
-    """Paging mode and sizing; toggles x/y scrollbars."""
-    mode: Literal['standard', 'virtual']
-    page_size: int
-    page_index: int
-    cache_size: int
-    xscroll: bool
-    yscroll: bool
-
-
-class RowAlternationOptions(TypedDict, total=False):
-    """Alternating row striping (enabled flag and color token)."""
-    enabled: bool
-    color: str
-
-
-class FilteringOptions(TypedDict, total=False):
-    """Toggle filtering and which menus expose filter actions."""
-    enabled: bool
-    header_menu_filtering: bool
-    row_menu_filtering: bool
-
-
-class SearchOptions(TypedDict, total=False):
-    """Configure searchbar visibility, advanced mode, and trigger timing."""
-    enabled: bool
-    mode: Literal['standard', 'advanced']
-    event: Literal['input', 'enter']
-
-
-# ------ Helper methods --------
-
-def _parse_selection_mode(mode: str):
-    if mode == 'single':
-        return 'browse'
-    elif mode == 'multiple':
-        return 'extended'
-    else:
-        return 'none'
-
-
-def _normalize_row_alternation_options(options: RowAlternationOptions | None) -> RowAlternationOptions:
-    if options is None:
-        return dict(enabled=False, color='background[+1]')
-    options.setdefault('enabled', False)
-    options.setdefault('color', 'background[+1]')
-    return options
-
-
-def _normalize_selection_options(options: SelectionOptions | None) -> SelectionOptions:
-    if options is None:
-        return dict(
-            mode="single",
-            allow_select_all=False,
-        )
-    options.setdefault('mode', 'single')
-    options.setdefault('allow_select_all', False)
-    return options
-
-
-def _normalize_filtering_options(options: FilteringOptions | None) -> FilteringOptions:
-    if options is None:
-        return dict(
-            enabled=True,
-            header_menu_filtering=True,
-            row_menu_filtering=True,
-        )
-    options.setdefault('enabled', True)
-    options.setdefault('header_menu_filtering', True)
-    options.setdefault('row_menu_filtering', True)
-    return options
-
-
-def _normalize_editing_options(options: EditingOptions | None) -> EditingOptions:
-    if options is None:
-        return dict(
-            adding=False,
-            updating=False,
-            deleting=False,
-            form={}
-        )
-    options.setdefault('adding', False)
-    options.setdefault('updating', False)
-    options.setdefault('deleting', False)
-    options.setdefault('form', {})
-    return options
-
-
-def _normalize_exporting_options(options: ExportingOptions | None) -> ExportingOptions:
-    if options is None:
-        return dict(
-            enabled=False,
-            allow_export_selected=False,
-            export_all_mode='page',
-            formats=['csv']
-        )
-    options.setdefault('enabled', False)
-    options.setdefault('allow_export_selected', False)
-    options.setdefault('export_all_mode', 'page')
-    options.setdefault('formats', ['csv'])
-    return options
-
-
-def _normalize_paging_options(options: PagingOptions | None) -> PagingOptions:
-    if options is None:
-        return dict(
-            mode='standard',
-            page_size=250,
-            page_index=0,
-            cache_size=5,
-            xscroll=True,
-            yscroll=True,
-        )
-    options.setdefault('mode', 'standard')
-    options.setdefault('page_size', 250)
-    options.setdefault('page_index', 0)
-    options.setdefault('cache_size', 5)
-    options.setdefault('xscroll', True)
-    options.setdefault('yscroll', True)
-    return options
-
-
-def _normalize_searchbar_options(options: SearchOptions | None) -> SearchOptions:
-    if options is None:
-        return dict(
-            enabled=True,
-            mode='standard',
-            event='enter'
-        )
-    options.setdefault('enabled', True)
-    options.setdefault('mode', 'standard')
-    options.setdefault('event', 'enter')
-    # Normalize event to allowed values
-    trig = str(options.get('event', 'enter')).lower()
-    if trig not in ('input', 'enter'):
-        trig = 'enter'
-    options['event'] = trig
-    return options
 
 
 class TableView(Frame):
@@ -270,14 +125,14 @@ class TableView(Frame):
             kwargs: Passed through to Frame.
 
         Virtual events:
-            <<SelectionChanged>>: event.data = {"records": list[dict], "iids": list[str]}
+            <<SelectionChange>>: event.data = {"records": list[dict], "iids": list[str]}
             <<RowClick>>: event.data = {"record": dict, "iid": str}
             <<RowDoubleClick>>: event.data = {"record": dict, "iid": str}
             <<RowRightClick>>: event.data = {"record": dict, "iid": str}
-            <<RowInserted>>: event.data = {"records": list[dict]}
-            <<RowUpdated>>: event.data = {"records": list[dict]}
-            <<RowDeleted>>: event.data = {"records": list[dict]}
-            <<RowMoved>>: event.data = {"records": list[dict]}
+            <<RowInsert>>: event.data = {"records": list[dict]}
+            <<RowUpdate>>: event.data = {"records": list[dict]}
+            <<RowDelete>>: event.data = {"records": list[dict]}
+            <<RowMove>>: event.data = {"records": list[dict]}
         """
         super().__init__(master, **kwargs)
 
@@ -368,12 +223,12 @@ class TableView(Frame):
         self._load_page(0)
 
     # ------------------------------------------------------------------ Public event API
-    def on_selection_changed(self, callback) -> str:
+    def on_selection_change(self, callback) -> str:
         """Bind to selection changes. event.data = {'records': list, 'iids': list}."""
-        return self.bind("<<SelectionChanged>>", callback, add=True)
+        return self.bind("<<SelectionChange>>", callback, add=True)
 
-    def off_selection_changed(self, funcid: str | None = None) -> None:
-        self.unbind("<<SelectionChanged>>", funcid)
+    def off_selection_change(self, funcid: str | None = None) -> None:
+        self.unbind("<<SelectionChange>>", funcid)
 
     def on_row_click(self, callback) -> str:
         """Bind to row click. event.data = {'record': dict, 'iid': str}."""
@@ -396,33 +251,33 @@ class TableView(Frame):
     def off_row_right_click(self, funcid: str | None = None) -> None:
         self.unbind("<<RowRightClick>>", funcid)
 
-    def on_row_deleted(self, callback) -> str:
+    def on_row_delete(self, callback) -> str:
         """Bind to row delete events. event.data = {'records': list}."""
-        return self.bind("<<RowDeleted>>", callback, add=True)
+        return self.bind("<<RowDelete>>", callback, add=True)
 
-    def off_row_deleted(self, funcid: str | None = None) -> None:
-        self.unbind("<<RowDeleted>>", funcid)
+    def off_row_delete(self, funcid: str | None = None) -> None:
+        self.unbind("<<RowDelete>>", funcid)
 
-    def on_row_inserted(self, callback) -> str:
+    def on_row_insert(self, callback) -> str:
         """Bind to row insert events. event.data = {'records': list}."""
-        return self.bind("<<RowInserted>>", callback, add=True)
+        return self.bind("<<RowInsert>>", callback, add=True)
 
-    def off_row_inserted(self, funcid: str | None = None) -> None:
-        self.unbind("<<RowInserted>>", funcid)
+    def off_row_insert(self, funcid: str | None = None) -> None:
+        self.unbind("<<RowInsert>>", funcid)
 
-    def on_row_updated(self, callback) -> str:
+    def on_row_update(self, callback) -> str:
         """Bind to row update events. event.data = {'records': list}."""
-        return self.bind("<<RowUpdated>>", callback, add=True)
+        return self.bind("<<RowUpdate>>", callback, add=True)
 
-    def off_row_updated(self, funcid: str | None = None) -> None:
-        self.unbind("<<RowUpdated>>", funcid)
+    def off_row_update(self, funcid: str | None = None) -> None:
+        self.unbind("<<RowUpdate>>", funcid)
 
-    def on_row_moved(self, callback) -> str:
+    def on_row_move(self, callback) -> str:
         """Bind to row move events. event.data = {'records': list}."""
-        return self.bind("<<RowMoved>>", callback, add=True)
+        return self.bind("<<RowMove>>", callback, add=True)
 
-    def off_row_moved(self, funcid: str | None = None) -> None:
-        self.unbind("<<RowMoved>>", funcid)
+    def off_row_move(self, funcid: str | None = None) -> None:
+        self.unbind("<<RowMove>>", funcid)
 
     # ------------------------------------------------------------------ Public data/selection API
     @property
@@ -463,7 +318,7 @@ class TableView(Frame):
         if inserted:
             self._clear_cache()
             self._load_page(self._current_page)
-            self.event_generate("<<RowInserted>>", data={"records": inserted})
+            self.event_generate("<<RowInsert>>", data={"records": inserted})
 
     def update_rows(self, rows: list[dict]) -> None:
         """Update rows by id; each dict must include an 'id' key."""
@@ -481,7 +336,7 @@ class TableView(Frame):
         if updated:
             self._clear_cache()
             self._load_page(self._current_page)
-            self.event_generate("<<RowUpdated>>", data={"records": updated})
+            self.event_generate("<<RowUpdate>>", data={"records": updated})
 
     def delete_rows(self, rows_or_ids: list) -> None:
         """Delete rows by id or row dicts containing an id key."""
@@ -506,7 +361,7 @@ class TableView(Frame):
         if deleted:
             self._clear_cache()
             self._load_page(self._current_page)
-            self.event_generate("<<RowDeleted>>", data={"records": deleted})
+            self.event_generate("<<RowDelete>>", data={"records": deleted})
 
     def insert_columns(self, *_args, **_kwargs) -> None:
         """Not currently supported; columns are defined at construction time."""
@@ -528,7 +383,7 @@ class TableView(Frame):
         self._apply_row_alternation()
         moved_recs = [self._row_map.get(i) for i in iids if i in self._row_map]
         if moved_recs:
-            self.event_generate("<<RowMoved>>", data={"records": moved_recs})
+            self.event_generate("<<RowMove>>", data={"records": moved_recs})
 
     def move_columns(self, from_index: int, to_index: int) -> None:
         """Reorder a column from one index to another."""
@@ -1543,7 +1398,7 @@ class TableView(Frame):
         self._apply_row_alternation()
         rec = self._row_map.get(target_iid)
         if rec:
-            self.event_generate("<<RowMoved>>", data={"records": [rec]})
+            self.event_generate("<<RowMove>>", data={"records": [rec]})
 
     def _move_row_absolute(self, new_idx: int) -> None:
         sel = list(self._tree.selection())
@@ -1556,7 +1411,7 @@ class TableView(Frame):
         self._apply_row_alternation()
         rec = self._row_map.get(target_iid)
         if rec:
-            self.event_generate("<<RowMoved>>", data={"records": [rec]})
+            self.event_generate("<<RowMove>>", data={"records": [rec]})
 
     def _hide_selection(self) -> None:
         sel = list(self._tree.selection())
@@ -1586,7 +1441,7 @@ class TableView(Frame):
                 self._datasource.delete_record(rec_id)
                 self._clear_cache()
                 self._load_page(self._current_page)
-                self.event_generate("<<RowDeleted>>", data={"records": [rec]})
+                self.event_generate("<<RowDelete>>", data={"records": [rec]})
             except Exception:
                 logger.exception("Failed to delete record id=%s", rec_id)
 
@@ -1610,7 +1465,7 @@ class TableView(Frame):
             self._clear_cache()
             self._load_page(self._current_page)
             if deleted_records:
-                self.event_generate("<<RowDeleted>>", data={"records": deleted_records})
+                self.event_generate("<<RowDelete>>", data={"records": deleted_records})
 
     # ------------------------------------------------------------------ Cache helpers
     def _clear_cache(self) -> None:
@@ -1836,14 +1691,14 @@ class TableView(Frame):
     def _export_all(self) -> None:
         try:
             rows = self._datasource.get_page_from_index(0, self._datasource.total_count())
-            self._tree.event_generate("<<TableViewExportAll>>", data=rows)
+            self.event_generate("<<ExportAll>>", data={"records": rows})
         except Exception:
             pass
 
     def _export_selection(self) -> None:
         try:
             selected = [self._row_map[iid] for iid in self._tree.selection() if iid in self._row_map]
-            self._tree.event_generate("<<TableViewExportSelection>>", data=selected)
+            self.event_generate("<<ExportSelection>>", data={"records": selected})
         except Exception:
             pass
 
@@ -1851,7 +1706,7 @@ class TableView(Frame):
         try:
             start_index = self._current_page * self._paging['page_size']
             rows = self._datasource.get_page_from_index(start_index, self._paging['page_size'])
-            self._tree.event_generate("<<TableViewExportPage>>", data=rows)
+            self.event_generate("<<ExportPage>>", data={"records": rows})
         except Exception:
             pass
 
@@ -2007,7 +1862,7 @@ class TableView(Frame):
     def _on_selection_event(self, _event=None) -> None:
         """Forward selection changes to subscribers."""
         rows = self.selected_rows
-        self.event_generate("<<SelectionChanged>>", data={"records": rows, "iids": list(self._tree.selection())})
+        self.event_generate("<<SelectionChange>>", data={"records": rows, "iids": list(self._tree.selection())})
 
     def _on_row_click_event(self, event) -> None:
         region = self._tree.identify_region(event.x, event.y)
