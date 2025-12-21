@@ -47,9 +47,9 @@ class Toplevel(BaseWindow, tkinter.Toplevel):
                 The title that appears on the application titlebar.
 
             icon (tkinter.PhotoImage):
-                A PhotoImage used for the titlebar icon.
+                A PhotoImage or file path used for the titlebar icon.
+                If None, the default ttkbootstrap.png icon is used.
                 Internally this is passed to the `Toplevel.iconphoto` method.
-                No default icon is used for Toplevel windows.
 
             size (tuple[int, int]):
                 The width and height of the application window.
@@ -123,8 +123,8 @@ class Toplevel(BaseWindow, tkinter.Toplevel):
         # Setup window system info
         self.winsys: str = self.tk.call('tk', 'windowingsystem')
 
-        # Setup icon (no default for Toplevel)
-        self._setup_icon(icon, default_icon_enabled=False)
+        # Setup icon (use default ttkbootstrap.png if no icon provided)
+        self._setup_icon(icon, default_icon_enabled=True)
 
         # Setup window using BaseWindow
         self._setup_window(

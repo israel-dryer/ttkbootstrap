@@ -332,7 +332,8 @@ class App(BaseWindow, tkinter.Tk):
                 overrides the `app_name` in `settings` if provided.
             theme: The name of the theme to use. This overrides the `theme`
                 in `settings` if provided.
-            icon: An image to use as the window's icon.
+            icon: A PhotoImage or file path used for the window's icon.
+                If None, the default ttkbootstrap.png icon is used.
             settings: A dictionary or `AppSettings` object containing
                 application-wide settings. If not provided, default settings
                 are used.

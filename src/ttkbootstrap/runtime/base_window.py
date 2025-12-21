@@ -183,48 +183,55 @@ class BaseWindow:
         """Configure window icon from file path or use default.
 
         Sets up the window icon, with support for:
-        - Custom icon from file path
-        - Default ttkbootstrap icon
-        - No icon (None)
+        - Custom icon from file path or PhotoImage object
+        - Default ttkbootstrap.png from package assets (when iconphoto is None and default_icon_enabled=True)
+        - No icon (when iconphoto is None and default_icon_enabled=False)
 
         Args:
-            iconphoto: Path to icon image file, empty string for default, or None for no icon.
-            default_icon_enabled: Whether to use default icon when iconphoto is empty string.
+            iconphoto: Path to icon image file, PhotoImage object, or None for default/no icon.
+            default_icon_enabled: Whether to use default icon when iconphoto is None.
 
         Note:
-            The icon is stored in self._icon to prevent garbage collection.
+            The icon is stored in self._icon to prevent garbage collection (for PhotoImage icons).
             On failure to load custom icon, falls back to default icon if enabled.
         """
         if iconphoto is None:
-            # Explicitly no icon
+            # No custom icon provided - use default if enabled
+            if default_icon_enabled:
+                try:
+                    from pathlib import Path
+                    import ttkbootstrap
+                    icon_path = Path(ttkbootstrap.__file__).parent / 'assets' / 'ttkbootstrap.png'
+                    self._icon = tkinter.PhotoImage(file=str(icon_path), master=self)
+                    self.iconphoto(True, self._icon)
+                except (ImportError, FileNotFoundError, tkinter.TclError, Exception):
+                    # Icon file not available or failed to load - silently continue
+                    pass
             return
 
-        if iconphoto == '' and default_icon_enabled:
-            # Use default ttkbootstrap icon
-            try:
-                from ttkbootstrap_icons_bs import BootstrapIcon
-                self._icon = BootstrapIcon('feather', 24, 'black')
+        # User provided a custom icon
+        try:
+            # Check if it's already a PhotoImage object
+            if isinstance(iconphoto, tkinter.PhotoImage):
+                self._icon = iconphoto
                 self.iconphoto(True, self._icon)
-            except (ImportError, Exception):
-                # Icon module not available or icon creation failed
-                pass
-
-        elif iconphoto:
-            # Use user-provided icon
-            try:
+            else:
+                # Assume it's a file path
                 self._icon = tkinter.PhotoImage(file=iconphoto, master=self)
                 self.iconphoto(True, self._icon)
-            except tkinter.TclError:
-                # Failed to load user icon
-                print(f'iconphoto path is invalid or not found: {iconphoto}')
-                if default_icon_enabled:
-                    # Fall back to default icon
-                    try:
-                        from ttkbootstrap_icons_bs import BootstrapIcon
-                        self._icon = BootstrapIcon('feather', 24, 'black')
-                        self.iconphoto(True, self._icon)
-                    except (ImportError, Exception):
-                        pass
+        except (tkinter.TclError, Exception) as e:
+            # Failed to load user icon
+            print(f'Failed to load icon: {iconphoto} - {e}')
+            if default_icon_enabled:
+                # Fall back to default ttkbootstrap.png
+                try:
+                    from pathlib import Path
+                    import ttkbootstrap
+                    icon_path = Path(ttkbootstrap.__file__).parent / 'assets' / 'ttkbootstrap.png'
+                    self._icon = tkinter.PhotoImage(file=str(icon_path), master=self)
+                    self.iconphoto(True, self._icon)
+                except (ImportError, FileNotFoundError, tkinter.TclError, Exception):
+                    pass
 
     def title(self, value: str | None = None):
         """Set or query the window title"""
