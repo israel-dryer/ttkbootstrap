@@ -369,6 +369,7 @@ class ListView(Frame):
             enable_hover_state: bool = True,
             focus_color: str = None,
             selection_background: str = 'primary',
+            select_by_click: bool = None,
             **kwargs
     ):
         """Initialize a ListView widget.
@@ -390,6 +391,9 @@ class ListView(Frame):
             enable_hover_state: Show active state on hover.
             focus_color: Color for the focus indicator.
             selection_background: Background color for selected items.
+            select_by_click: Whether clicking an item selects it. Defaults to True when
+                selection_mode is 'single' or 'multi', False otherwise. Can be explicitly
+                set to override the default behavior.
             **kwargs: Additional keyword arguments forwarded to `Frame`.
         """
         super().__init__(master, bootstyle='list', **kwargs)
@@ -401,6 +405,7 @@ class ListView(Frame):
         self._enable_deleting = enable_deleting
         self._enable_dragging = enable_dragging
         self._show_separator = show_separator
+        self._select_by_click = select_by_click
         self._enable_focus_state = enable_focus_state
         self._enable_hover_state = enable_hover_state
         self._alternating_row_mode = alternating_row_mode
@@ -481,8 +486,8 @@ class ListView(Frame):
             needed: Desired number of row widgets.
         """
         while len(self._rows) < needed:
-            row = self._row_factory(
-                self._container,
+            # Build kwargs for row factory
+            row_kwargs = dict(
                 selection_mode=self._selection_mode,
                 show_selection_controls=self._show_selection_controls,
                 show_chevron=self._show_chevron,
@@ -494,6 +499,12 @@ class ListView(Frame):
                 focus_color=self._focus_color,
                 selection_background=self._selection_background
             )
+
+            # Only pass select_by_click if explicitly set
+            if self._select_by_click is not None:
+                row_kwargs['select_by_click'] = self._select_by_click
+
+            row = self._row_factory(self._container, **row_kwargs)
             row.pack(fill='x')
             self._rows.append(row)
 

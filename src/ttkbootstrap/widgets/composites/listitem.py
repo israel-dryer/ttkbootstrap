@@ -17,9 +17,49 @@ class ListItem(CompositeFrame):
 
     The widget automatically handles hover, pressed, and focus states across all
     registered child widgets using the Composite state coordinator.
+
+    Virtual events:
+        <<ItemClick>>: Fired when the item is clicked.
+        <<ItemSelecting>>: Fired when the item is being selected/deselected.
+        <<ItemDeleting>>: Fired when the delete button is clicked.
+        <<ItemFocused>>: Fired when the item receives keyboard focus.
+        <<ItemDragStart>>: Fired when a drag operation begins.
+        <<ItemDragging>>: Fired during a drag operation.
+        <<ItemDragEnd>>: Fired when a drag operation ends.
+
+    Data fields:
+        When update_data() is called, the following fields are recognized:
+        - id: Unique identifier for the item (required for selection/deletion).
+        - title: Main heading text displayed at the top.
+        - text: Body text displayed below the title.
+        - caption: Small caption text displayed at the bottom.
+        - icon: Icon name or configuration to display on the left.
+        - badge: Badge text displayed on the right.
+        - selected: Boolean indicating if the item is selected.
+        - focused: Boolean indicating if the item has keyboard focus.
+        - item_index: Zero-based index of the item in the list.
     """
 
     def __init__(self, master=None, **kwargs):
+        """Initialize a ListItem widget.
+
+        Args:
+            master: Parent widget.
+            **kwargs: Additional keyword arguments:
+                focus_color (str): Color for the focus indicator. Defaults to None.
+                show_separator (bool): Show separator line below the item. Defaults to False.
+                show_chevron (bool): Show chevron indicator on the right. Defaults to False.
+                enable_focus_state (bool): Allow item to receive keyboard focus. Defaults to True.
+                enable_hover_state (bool): Show hover state on mouse over. Defaults to False.
+                enable_dragging (bool): Show drag handle and allow dragging. Defaults to False.
+                enable_deleting (bool): Show delete button. Defaults to False.
+                selection_background (str): Background color when selected. Defaults to 'primary'.
+                selection_mode (str): Selection mode ('none', 'single', 'multi'). Defaults to 'none'.
+                show_selection_controls (bool): Show checkbox/radio button. Defaults to False.
+                select_by_click (bool): Whether clicking selects the item. Defaults to True
+                    when selection_mode is 'single' or 'multi', False otherwise.
+                **kwargs: Additional arguments forwarded to CompositeFrame.
+        """
         # state tracking
         self._data = {}
         self._state = {}
@@ -451,7 +491,15 @@ class ListItem(CompositeFrame):
                     self._drag_state = None
 
     def set_surface_color(self, surface: str) -> None:
-        """Set the surface color for the row and its container frames."""
+        """Set the surface color for the row and its container frames.
+
+        This method is used by ListView to apply alternating row colors efficiently.
+        The surface color is set once when the widget is created and remains stable
+        during scrolling.
+
+        Args:
+            surface: Surface color name or value (e.g., 'background', 'background[+1]').
+        """
         previous = getattr(self, "_surface_color", "background")
         self.configure_style_options(surface_color=surface)
         if previous != surface:
