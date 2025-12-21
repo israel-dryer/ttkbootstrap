@@ -416,6 +416,7 @@ class ListView(Frame):
 
         # Virtual scrolling state
         self._start_index = 0
+        self._prev_start_index = 0
         self._visible_rows = VISIBLE_ROWS
         self._row_height = ROW_HEIGHT
         self._page_size = VISIBLE_ROWS + OVERSCAN_ROWS
@@ -424,6 +425,7 @@ class ListView(Frame):
         self._drag_state: dict | None = None
         self._drag_indicator: Frame | None = None
         self._drag_scroll_counter = 0
+        self._mousewheel_bound_widgets: set = set()  # Track bound widgets to avoid cycles
 
         # Row factory
         self._row_factory = row_factory or self._default_row_factory
@@ -442,6 +444,7 @@ class ListView(Frame):
         # Bind events
         self.bind('<Configure>', self._on_resize, add='+')
         self.bind('<MouseWheel>', self._on_mousewheel, add='+')
+        self._container.bind('<MouseWheel>', self._on_mousewheel, add='+')
 
         # Bind ListItem events
         self._container.bind('<<ItemSelecting>>', self._on_item_selecting, add='+')
@@ -509,39 +512,125 @@ class ListView(Frame):
         self._start_index = max(0, min(self._start_index, max_start))
 
     def _update_rows(self):
-        """Update visible rows with current data."""
+        """Update visible rows with current data using row recycling for efficiency."""
         self._clamp_indices()
-        page_data = self._datasource.get_page_from_index(self._start_index, self._page_size)
 
-        for i, row in enumerate(self._rows):
-            if i < len(page_data):
-                record = page_data[i].copy()
-                record_id = record.get('id')
+        # Calculate scroll distance to determine if we can use recycling
+        scroll_distance = self._start_index - self._prev_start_index
+        can_recycle = abs(scroll_distance) <= 3 and scroll_distance != 0
 
-                # Add selection state
-                if record_id is not None:
-                    try:
-                        record['selected'] = self._datasource.is_selected(record_id)
-                    except Exception:
-                        record['selected'] = False
-                    record['focused'] = (record_id == self._focused_record_id)
-                else:
-                    record['selected'] = False
-                    record['focused'] = False
+        if can_recycle:
+            # Use row recycling for small scrolls
+            self._recycle_rows(scroll_distance)
+        else:
+            # Full update for large scrolls or initial render
+            self._full_update_rows()
 
-                # Add index
-                record['item_index'] = self._start_index + i
-
-                # No need to reapply surface color - it's set once on widget creation
-                row.update_data(record)
-            else:
-                row.update_data(EMPTY)
+        # Remember current position for next scroll
+        self._prev_start_index = self._start_index
 
         # Update scrollbar
         total = max(1, self._datasource.total_count())
         first = self._start_index / total
         last = min(1.0, (self._start_index + self._visible_rows) / total)
         self._scrollbar.set(first, last)
+
+    def _recycle_rows(self, scroll_distance: int):
+        """Recycle rows by moving them from one end to the other.
+
+        Args:
+            scroll_distance: Positive for scrolling down, negative for scrolling up.
+        """
+        if scroll_distance > 0:
+            # Scrolling down: move top rows to bottom
+            for _ in range(scroll_distance):
+                if not self._rows:
+                    break
+
+                # Remove top row
+                top_row = self._rows.pop(0)
+
+                # Move to bottom
+                top_row.pack_forget()
+                top_row.pack(side='top', fill='x')
+                self._rows.append(top_row)
+
+                # Update with new data at the bottom
+                data_index = self._start_index + len(self._rows) - 1
+                self._update_single_row(top_row, data_index)
+
+        elif scroll_distance < 0:
+            # Scrolling up: move bottom rows to top
+            for _ in range(abs(scroll_distance)):
+                if not self._rows:
+                    break
+
+                # Remove bottom row
+                bottom_row = self._rows.pop()
+
+                # Move to top
+                bottom_row.pack_forget()
+                if self._rows:
+                    bottom_row.pack(side='top', fill='x', before=self._rows[0])
+                else:
+                    bottom_row.pack(side='top', fill='x')
+                self._rows.insert(0, bottom_row)
+
+                # Update with new data at the top
+                data_index = self._start_index
+                self._update_single_row(bottom_row, data_index)
+
+    def _full_update_rows(self):
+        """Perform a full update of all visible rows."""
+        page_data = self._datasource.get_page_from_index(self._start_index, self._page_size)
+
+        for i, row in enumerate(self._rows):
+            data_index = self._start_index + i
+            if i < len(page_data):
+                self._update_single_row(row, data_index, page_data[i])
+            else:
+                row.update_data(EMPTY)
+
+    def _update_single_row(self, row: ListItem, data_index: int, record: dict = None):
+        """Update a single row widget with data at the given index.
+
+        Args:
+            row: The ListItem widget to update.
+            data_index: The data index to fetch and display.
+            record: Optional pre-fetched record data. If None, will fetch from datasource.
+        """
+        if record is None:
+            # Fetch the record from datasource
+            page_data = self._datasource.get_page_from_index(data_index, 1)
+            if not page_data:
+                row.update_data(EMPTY)
+                # Bind mousewheel after update to ensure all child widgets exist
+                self._bind_mousewheel_recursive(row)
+                return
+            record = page_data[0]
+
+        record = record.copy()
+        record_id = record.get('id')
+
+        # Add selection state
+        if record_id is not None:
+            try:
+                record['selected'] = self._datasource.is_selected(record_id)
+            except Exception:
+                record['selected'] = False
+            record['focused'] = (record_id == self._focused_record_id)
+        else:
+            record['selected'] = False
+            record['focused'] = False
+
+        # Add index
+        record['item_index'] = data_index
+
+        # Update the row
+        row.update_data(record)
+
+        # Bind mousewheel after update to ensure all child widgets exist
+        self._bind_mousewheel_recursive(row)
 
     def _on_scroll(self, *args):
         """Handle scrollbar movement.
@@ -557,11 +646,34 @@ class ListView(Frame):
         elif args[0] == 'scroll':
             amount = int(args[1])
             unit = args[2]
-            step = self._visible_rows if unit == 'pages' else 1
+            # Use smaller step size for smoother scrolling
+            step = max(1, self._visible_rows // 2) if unit == 'pages' else 1
             self._start_index += amount * step
 
         self._clamp_indices()
         self._update_rows()
+
+    def _bind_mousewheel_recursive(self, widget):
+        """Recursively bind mousewheel event to a widget and all its children.
+
+        Only binds if the widget hasn't been bound already to avoid duplicate bindings.
+
+        Args:
+            widget: The widget to bind mousewheel event to.
+        """
+        # Use widget string representation as identifier
+        widget_id = str(widget)
+
+        # Only bind if we haven't already bound this widget
+        if widget_id not in self._mousewheel_bound_widgets:
+            widget.bind('<MouseWheel>', self._on_mousewheel, add='+')
+            self._mousewheel_bound_widgets.add(widget_id)
+
+        try:
+            for child in widget.winfo_children():
+                self._bind_mousewheel_recursive(child)
+        except Exception:
+            pass
 
     def _on_mousewheel(self, event):
         """Handle mouse wheel scrolling.
