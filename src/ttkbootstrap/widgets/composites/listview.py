@@ -3,9 +3,9 @@
 from tkinter import TclError
 from typing import Protocol, Any, Callable, Literal, runtime_checkable
 
+from ttkbootstrap.widgets.composites.listitem import ListItem
 from ttkbootstrap.widgets.primitives.frame import Frame
 from ttkbootstrap.widgets.primitives.scrollbar import Scrollbar
-from ttkbootstrap.widgets.composites.listitem import ListItem
 
 # Constants
 VISIBLE_ROWS = 20
@@ -352,21 +352,23 @@ class ListView(Frame):
     """
 
     def __init__(
-        self,
-        master=None,
-        items: list = None,
-        datasource: DataSourceProtocol = None,
-        row_factory: Callable = None,
-        selection_mode: Literal['none', 'single', 'multi'] = 'none',
-        show_selection_controls: bool = False,
-        show_chevron: bool = False,
-        enable_deleting: bool = False,
-        enable_dragging: bool = False,
-        show_separator: bool = True,
-        enable_focus_state: bool = True,
-        focus_color: str = None,
-        selection_background: str = 'primary',
-        **kwargs
+            self,
+            master=None,
+            items: list = None,
+            datasource: DataSourceProtocol = None,
+            row_factory: Callable = None,
+            selection_mode: Literal['none', 'single', 'multi'] = 'none',
+            show_selection_controls: bool = False,
+            show_chevron: bool = False,
+            enable_deleting: bool = False,
+            enable_dragging: bool = False,
+            alternating_row_color: str = 'background[+1]',
+            alternating_row_mode: Literal['odd', 'even', 'none'] = 'even',
+            show_separator: bool = True,
+            enable_focus_state: bool = True,
+            focus_color: str = None,
+            selection_background: str = 'primary',
+            **kwargs
     ):
         """Initialize a ListView widget.
 
@@ -378,8 +380,10 @@ class ListView(Frame):
             selection_mode: Selection mode (`none`, `single`, `multi`).
             show_selection_controls: Show checkboxes/radio buttons for selection.
             show_chevron: Show chevron indicators on items.
-            enable_deleting: Show delete button on items.
-            enable_dragging: Show drag handle on items.
+            enable_deleting: Show delete button on items; and allow deleting items.
+            enable_dragging: Show drag handle on items; allow row dragging.
+            alternating_row_mode: Whether and when to show alternating row colors.
+            alternating_row_color: The alternating row color.
             show_separator: Show separator line between items.
             enable_focus_state: Allow items to receive focus.
             focus_color: Color for the focus indicator.
@@ -396,8 +400,11 @@ class ListView(Frame):
         self._enable_dragging = enable_dragging
         self._show_separator = show_separator
         self._enable_focus_state = enable_focus_state
+        self._alternating_row_mode = alternating_row_mode
+        self._alternating_row_color = alternating_row_color
         self._focus_color = focus_color
         self._selection_background = selection_background
+
 
         # Data source
         if datasource:
@@ -483,6 +490,10 @@ class ListView(Frame):
             row.pack(fill='x')
             self._rows.append(row)
 
+            # Apply surface color once based on widget position
+            widget_index = len(self._rows) - 1
+            self._apply_widget_surface(row, widget_index)
+
         while len(self._rows) > needed:
             row = self._rows.pop()
             row.pack_forget()
@@ -521,6 +532,7 @@ class ListView(Frame):
                 # Add index
                 record['item_index'] = self._start_index + i
 
+                # No need to reapply surface color - it's set once on widget creation
                 row.update_data(record)
             else:
                 row.update_data(EMPTY)
@@ -618,7 +630,7 @@ class ListView(Frame):
         self._clamp_indices()
         self._update_rows()
 
-    def _on_item_selecting(self, event):
+    def _on_item_selecting(self, event: Any):
         """Handle item selection event from `ListItem`.
 
         Args:
@@ -638,7 +650,7 @@ class ListView(Frame):
             self._update_rows()
             self.event_generate('<<SelectionChanged>>')
 
-    def _on_item_deleting(self, event):
+    def _on_item_deleting(self, event: Any):
         """Handle item delete event from `ListItem`.
 
         Args:
@@ -653,7 +665,7 @@ class ListView(Frame):
             except Exception as e:
                 self.event_generate('<<ItemDeleteFailed>>')
 
-    def _on_item_focused(self, event):
+    def _on_item_focused(self, event: Any):
         """Handle item focus event from `ListItem`.
 
         Args:
@@ -664,7 +676,7 @@ class ListView(Frame):
             self._focused_record_id = record_id
             self._update_rows()
 
-    def _on_item_click(self, event):
+    def _on_item_click(self, event: Any):
         """Handle item click event from `ListItem`.
 
         Args:
@@ -672,7 +684,56 @@ class ListView(Frame):
         """
         self.event_generate('<<ItemClick>>', data=event.data)
 
-    def _on_item_drag_start(self, event):
+    def _apply_widget_surface(self, row: ListItem, widget_index: int) -> None:
+        """Apply surface color to a row widget based on its position in the pool.
+
+        This is called once when a widget is created. The color is based on the
+        widget's position (not the data index), creating a stable alternating
+        pattern during scrolling without needing to recalculate colors.
+
+        Args:
+            row: The ListItem widget to color.
+            widget_index: The position of this widget in the row pool (0-based).
+        """
+        base_surface = getattr(self, "_surface_color", "background")
+        if self._alternating_row_mode == 'none':
+            surface = base_surface
+        else:
+            is_even = (widget_index % 2) == 0
+            match = is_even if self._alternating_row_mode == 'even' else not is_even
+            surface = self._alternating_row_color if match else base_surface
+
+        if hasattr(row, "set_surface_color"):
+            row.set_surface_color(surface)
+
+    def _apply_row_surface(self, row: ListItem, item_index: int) -> None:
+        """Apply surface color to a row based on alternation settings.
+
+        DEPRECATED: This method is kept for backwards compatibility but is no
+        longer used internally. Use _apply_widget_surface() instead for better
+        performance with virtual scrolling.
+        """
+        base_surface = getattr(self, "_surface_color", "background")
+        if self._alternating_row_mode == 'none':
+            surface = base_surface
+        else:
+            is_even = (item_index % 2) == 0
+            match = is_even if self._alternating_row_mode == 'even' else not is_even
+            surface = self._alternating_row_color if match else base_surface
+
+        if hasattr(row, "set_surface_color"):
+            row.set_surface_color(surface)
+            return
+
+        current_surface = getattr(row, "_surface_color", "background")
+        row.configure_style_options(surface_color=surface)
+        if current_surface != surface:
+            row.rebuild_style()
+            refresh = getattr(row, "_refresh_descendant_surfaces", None)
+            if callable(refresh):
+                refresh(current_surface, surface)
+
+    def _on_item_drag_start(self, event: Any):
         """Handle item drag start event from `ListItem`.
 
         Args:
@@ -694,7 +755,7 @@ class ListView(Frame):
         self._update_drag_indicator_position(source_index)
         self.event_generate('<<ItemDragStart>>', data=event.data)
 
-    def _on_item_dragging(self, event):
+    def _on_item_dragging(self, event: Any):
         """Handle item dragging event from `ListItem`.
 
         Args:
@@ -718,7 +779,7 @@ class ListView(Frame):
         )
         self.event_generate('<<ItemDragging>>', data=payload)
 
-    def _on_item_drag_end(self, event):
+    def _on_item_drag_end(self, event: Any):
         """Handle item drag end event from `ListItem`.
 
         Args:
@@ -1036,5 +1097,14 @@ class ListView(Frame):
             ...     print(f"Selected: {event.data}")
             >>> listview.on_item_selected(on_select)
         """
-        self._container.bind('<<ItemSelected>>', callback, add='+')
-        self._container.bind('<<ItemSelecting>>', callback, add='+')
+        return self._container.bind('<<ItemSelected>>', callback, add='+')
+
+    def off_item_selected(self, func_id):
+        return self._container.unbind('<<ItemSelected>>', func_id)
+
+    def on_item_selecting(self, callback):
+        """Bind a callback to item selecting event"""
+        return self._container.bind('<<ItemSelecting>>', callback, add='+')
+
+    def off_item_selecting(self, func_id):
+        self._container.unbind('<<ItemSelecting>>', func_id)

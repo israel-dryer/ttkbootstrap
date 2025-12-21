@@ -37,9 +37,6 @@ class ListItem(CompositeFrame):
         self._selection_background = kwargs.pop('selection_background', 'primary')
         self._selection_mode = kwargs.pop('selection_mode', 'none')
         self._show_selection_controls = kwargs.pop('show_selection_controls', False)
-        self._enable_alternating_rows = kwargs.pop('enable_alternating_rows', False)
-        self._alternating_row_color = kwargs.pop('alternating_row_color', 'background[+1]')
-        self._alternating_row_mode = kwargs.pop('alternating_row_mode', 'even')
 
         # Determine if clicking should trigger selection
         # If selection mode is active (single/multi), enable click selection
@@ -436,6 +433,20 @@ class ListItem(CompositeFrame):
                     self._drag_widget = None
                     self._drag_state = None
 
+    def set_surface_color(self, surface: str) -> None:
+        """Set the surface color for the row and its container frames."""
+        previous = getattr(self, "_surface_color", "background")
+        self.configure_style_options(surface_color=surface)
+        if previous != surface:
+            self.rebuild_style()
+
+        for frame in (self._left_frame, self._center_frame, self._right_frame):
+            try:
+                frame.configure_style_options(surface_color=surface)
+                frame.rebuild_style()
+            except Exception:
+                continue
+
     # ---- Event Handlers (Drag-related) ----
 
     def _on_drag_mouse_down(self, event):
@@ -493,7 +504,6 @@ class ListItem(CompositeFrame):
     def _delegate_selection_mode(self, value=None):
         self._selection_mode = value
         self._get_selection_icon()
-
 
     @configure_delegate('show_selection_controls')
     def _delegate_show_selection_controls(self, value=None):
@@ -559,12 +569,11 @@ class ListItem(CompositeFrame):
             self.pack_forget()
             return
 
+        if not self.winfo_manager():
+            self.pack(fill='x')
+
         self._data = record
         self._item_index = self._data.get('item_index', 0)
-
-        if self._enable_alternating_rows:
-            # TODO configure alternating rows
-            ...
 
         selected = bool(record.get('selected', False))
         if self._state.get('selected') != selected:

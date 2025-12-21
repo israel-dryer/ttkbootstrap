@@ -60,7 +60,9 @@ def main():
         col1,
         items=simple_data,
         enable_focus_state=True,
-        show_separator=True
+        alternating_row_mode='even',
+        show_separator=True,
+
     )
     simple_list.pack(fill='both', expand=True)
 
