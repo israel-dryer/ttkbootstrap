@@ -365,6 +365,7 @@ class ListView(Frame):
             alternating_row_color: str = 'background[+1]',
             alternating_row_mode: Literal['odd', 'even', 'none'] = 'even',
             show_separator: bool = True,
+            show_scrollbar: bool = True,
             enable_focus_state: bool = True,
             enable_hover_state: bool = True,
             focus_color: str = None,
@@ -387,6 +388,8 @@ class ListView(Frame):
             alternating_row_mode: Whether and when to show alternating row colors.
             alternating_row_color: The alternating row color.
             show_separator: Show separator line between items.
+            show_scrollbar: Show the vertical scrollbar. When False, scrolling relies
+                on mousewheel only. Defaults to True.
             enable_focus_state: Allow items to receive focus.
             enable_hover_state: Show active state on hover.
             focus_color: Color for the focus indicator.
@@ -405,6 +408,7 @@ class ListView(Frame):
         self._enable_deleting = enable_deleting
         self._enable_dragging = enable_dragging
         self._show_separator = show_separator
+        self._show_scrollbar = show_scrollbar
         self._select_by_click = select_by_click
         self._enable_focus_state = enable_focus_state
         self._enable_hover_state = enable_hover_state
@@ -444,7 +448,8 @@ class ListView(Frame):
 
         # Create scrollbar
         self._scrollbar = Scrollbar(self, orient='vertical', command=self._on_scroll)
-        self._scrollbar.pack(side='right', fill='y')
+        if self._show_scrollbar:
+            self._scrollbar.pack(side='right', fill='y')
 
         # Create row pool
         self._ensure_row_pool(self._page_size)
