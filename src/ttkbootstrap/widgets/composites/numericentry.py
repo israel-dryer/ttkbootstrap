@@ -33,7 +33,7 @@ class NumericEntry(Field):
     Events (forwarded from NumberEntryPart):
         <<Increment>>: Fired when increment is requested (before step occurs)
         <<Decrement>>: Fired when decrement is requested (before step occurs)
-        <<Changed>>: Fired when value changes after commit
+        <<Change>>: Fired when value changes after commit
         <<Input>>: Fired on each keystroke
         <<Valid>>: Fired when validation passes
         <<Invalid>>: Fired when validation fails

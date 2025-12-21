@@ -108,7 +108,7 @@ class Field(EntryMixin, Frame):
         <<Input>>: Triggered on each keystroke
             event.data = {"text": str}
 
-        <<Changed>>: Triggered when value changes after commit
+        <<Change>>: Triggered when value changes after commit
             event.data = {"value": Any, "prev_value": Any, "text": str}
 
         <<Valid>>: Triggered when validation passes
@@ -117,7 +117,7 @@ class Field(EntryMixin, Frame):
         <<Invalid>>: Triggered when validation fails
             event.data = {"value": Any, "is_valid": False, "message": str}
 
-        <<Validated>>: Triggered after any validation
+        <<Validate>>: Triggered after any validation
             event.data = {"value": Any, "is_valid": bool, "message": str}
 
     Example:
@@ -185,11 +185,11 @@ class Field(EntryMixin, Frame):
 
     Forwarded Methods:
         on_input(callback): Bind callback to <<Input>> event
-        on_changed(callback): Bind callback to <<Changed>> event
+        on_changed(callback): Bind callback to <<Change>> event
         on_enter(callback): Bind callback to <Return> event
         on_invalid(callback): Bind callback to <<Invalid>> event
         on_valid(callback): Bind callback to <<Valid>> event
-        on_validated(callback): Bind callback to <<Validated>> event
+        on_validated(callback): Bind callback to <<Validate>> event
         add_validation_rule(rule_type, **kwargs): Add a validation rule
         add_validation_rules(rules): Replace all validation rules
         validation(value, trigger): Run validation against a value
