@@ -479,7 +479,7 @@ class DatePicker(ttk.Frame):
                     btn = ttk.Checkbutton(
                         grid,
                         padding=2,
-                        bootstyle=f"{self._bootstyle}-toolbutton",
+                        bootstyle=f"{self._bootstyle}-calendar_day-toolbutton",
                         variable=var,
                         onvalue=True,
                         offvalue=False,
@@ -668,7 +668,7 @@ class DatePicker(ttk.Frame):
                     if start < d < end:
                         return f"{self._bootstyle}[subtle]-calendar_range-toolbutton"
                     return f"{self._bootstyle}-calendar_date-toolbutton"
-        return f"{self._bootstyle}-toolbutton"
+        return f"{self._bootstyle}-calendar_day-toolbutton"
 
     def _is_selected(self, d: date) -> bool:
         if self._selection_mode == "range":
