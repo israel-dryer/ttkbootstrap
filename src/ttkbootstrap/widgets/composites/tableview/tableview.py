@@ -666,7 +666,7 @@ class TableView(Frame):
                 bar,
                 icon="layout-three-columns",
                 icon_only=True,
-                bootstyle="ghost",
+                bootstyle="foreground-ghost",
                 command=self._show_column_chooser_dialog,
             )
             self._column_chooser_btn.pack(side="right", padx=(4, 0))
@@ -685,7 +685,7 @@ class TableView(Frame):
                 bar,
                 icon="download",
                 icon_only=True,
-                bootstyle="ghost",
+                bootstyle="foreground-ghost",
                 compound="image",
                 items=export_items,
                 show_dropdown_button=False,
@@ -696,7 +696,7 @@ class TableView(Frame):
                 bar,
                 icon="plus-lg",
                 text="table.add_record",
-                bootstyle="ghost",
+                bootstyle="foreground-ghost",
                 command=self._open_new_record,
             ).pack(side="right", padx=(0, 4))
 
@@ -793,13 +793,13 @@ class TableView(Frame):
 
         btn_frame = Frame(bar)
         btn_frame.pack(side="right")
-        Button(btn_frame, icon="chevron-double-left", bootstyle="ghost", icon_only=True, command=self._first_page).pack(
+        Button(btn_frame, icon="chevron-double-left", bootstyle="foreground-ghost", icon_only=True, command=self._first_page).pack(
             side="left")
-        Button(btn_frame, icon="chevron-left", icon_only=True, bootstyle="ghost", command=self._prev_page).pack(
+        Button(btn_frame, icon="chevron-left", icon_only=True, bootstyle="foreground-ghost", command=self._prev_page).pack(
             side="left")
-        Button(btn_frame, icon="chevron-right", icon_only=True, bootstyle="ghost", command=self._next_page).pack(
+        Button(btn_frame, icon="chevron-right", icon_only=True, bootstyle="foreground-ghost", command=self._next_page).pack(
             side="left")
-        Button(btn_frame, icon="chevron-double-right", icon_only=True, bootstyle="ghost", command=self._last_page).pack(
+        Button(btn_frame, icon="chevron-double-right", icon_only=True, bootstyle="foreground-ghost", command=self._last_page).pack(
             side="left")
 
     # ------------------------------------------------------------------ Helpers
