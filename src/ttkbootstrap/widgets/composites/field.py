@@ -154,26 +154,20 @@ class Field(EntryMixin, Frame):
             kind: Type of entry field to create. Either 'text' for text input
                 (uses TextEntryPart) or 'numeric' for numeric input (uses
                 NumberEntryPart). Default is 'text'.
-            **kwargs: Additional keyword arguments passed to the underlying entry
-                widget (TextEntryPart or NumberEntryPart). Common options include:
 
-                For text kind:
-                    - value_format (str): ICU format pattern for parsing/formatting
-                    - allow_blank (bool): Allow empty input
-                    - locale (str): Locale for formatting (e.g., 'en_US')
-                    - initial_focus (bool): Focus on creation
-                    - show (str): Character to mask input (e.g., '*' for passwords)
-                    - width (int): Width in characters
-                    - font (str): Font specification
-                    - justify (str): Text alignment ('left', 'center', 'right')
-
-                For numeric kind:
-                    - minvalue (int|float): Minimum allowed value
-                    - maxvalue (int|float): Maximum allowed value
-                    - increment (int|float): Step size for up/down arrows
-                    - wrap (bool): Wrap around at boundaries
-                    - value_format (str): Number format pattern
-                    - allow_blank (bool): Allow empty input
+        Other Parameters:
+            value_format (str): ICU format pattern for parsing/formatting.
+            allow_blank (bool): Allow empty input.
+            locale (str): Locale for formatting (e.g., 'en_US').
+            initial_focus (bool): Focus on creation.
+            show (str): Character to mask input (e.g., '*' for passwords).
+            width (int): Width in characters.
+            font (str): Font specification.
+            justify (str): Text alignment ('left', 'center', 'right').
+            minvalue (int | float): Minimum allowed value (numeric kind only).
+            maxvalue (int | float): Maximum allowed value (numeric kind only).
+            increment (int | float): Step size for up/down arrows (numeric kind only).
+            wrap (bool): Wrap around at boundaries (numeric kind only).
         """
         # Accept legacy parameter name and prevent it from reaching the Tk widget.
         if 'show_messages' in kwargs:
@@ -382,7 +376,7 @@ class Field(EntryMixin, Frame):
                 apply when placing the addon widget. Common options include
                 padx, pady, etc. The side and after/before options are set
                 automatically based on position.
-            **kwargs: Additional keyword arguments passed to the widget constructor.
+            **kwargs (Any): Additional keyword arguments passed to the widget constructor.
                 For Button: text, command, icon, bootstyle, etc.
                 For Label: text, icon, image, bootstyle, etc.
                 Note: bootstyle and takefocus are set automatically but can be
