@@ -34,7 +34,7 @@ class TextEntryPart(ValidationMixin, Entry):
         <Return>: Triggered on Enter key press
             event.data = {"value": Any, "text": str}
 
-    Example:
+    Examples:
         ```python
         import ttkbootstrap as ttk
         from ttkbootstrap.widgets.parts import TextEntryPart
@@ -92,7 +92,7 @@ class TextEntryPart(ValidationMixin, Entry):
             **kwargs: Additional keyword arguments passed to the Entry base class.
                 Common options include: width, textvariable, font, bootstyle, etc.
 
-        Example:
+        Examples:
             ```python
             # Simple text entry (no formatting)
             entry1 = TextEntryPart(root, value='Hello')

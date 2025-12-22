@@ -33,7 +33,7 @@ class ValidationMixin(Widget):
         <<Validate>>: Fired after any validation
             event.data = {"value": Any, "is_valid": bool, "message": str}
 
-    Example:
+    Examples:
         ```python
         import ttkbootstrap as ttk
         from ttkbootstrap.widgets.parts import TextEntryPart
@@ -99,7 +99,7 @@ class ValidationMixin(Widget):
             rule_type: Type of validation rule (e.g., 'required', 'min_length')
             **kwargs: Rule-specific options (e.g., min_length=5, message='...')
 
-        Example:
+        Examples:
             ```python
             entry.add_validation_rule('required', message='Field is required')
             entry.add_validation_rule('email', message='Invalid email')
@@ -113,7 +113,7 @@ class ValidationMixin(Widget):
         Args:
             rules: List of ValidationRule objects
 
-        Example:
+        Examples:
             ```python
             from ttkbootstrap.core.validation import ValidationRule
 
@@ -139,7 +139,7 @@ class ValidationMixin(Widget):
         Returns:
             True if validation was performed (regardless of result)
 
-        Example:
+        Examples:
             ```python
             is_valid = entry.validate(entry.value(), trigger='manual')
             ```

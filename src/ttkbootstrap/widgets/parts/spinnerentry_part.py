@@ -43,7 +43,7 @@ class SpinnerEntryPart(ValidationMixin, Spinbox):
         <Return>: Triggered on Enter key press
             event.data = {"value": Any, "text": str}
 
-    Example:
+    Examples:
         ```python
         import ttkbootstrap as ttk
         from ttkbootstrap.widgets.parts import SpinnerEntryPart

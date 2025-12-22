@@ -120,7 +120,7 @@ class Field(EntryMixin, Frame):
         <<Validate>>: Triggered after any validation
             event.data = {"value": Any, "is_valid": bool, "message": str}
 
-    Example:
+    Examples:
         ```python
         import ttkbootstrap as ttk
         from ttkbootstrap.widgets.parts.field import Field

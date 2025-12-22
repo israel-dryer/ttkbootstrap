@@ -26,7 +26,7 @@ class Composite:
         selected: Read-only property for current selection state.
         disabled: Read-only property for current disabled state.
 
-    Example:
+    Examples:
         >>> # Create a frame and use Composite as a hub
         >>> frame = ttk.Frame(parent)
         >>> composite = Composite(event_target=frame, select_on_click=True)
@@ -215,7 +215,7 @@ class Composite:
             The function identifier that can be used with off_invoke() to
             remove this binding.
 
-        Example:
+        Examples:
             >>> def on_click(event):
             ...     print("Composite was clicked!")
             >>> func_id = composite.on_invoke(on_click)
@@ -245,7 +245,7 @@ class CompositeFrame(Frame):
         selected: Read-only property for current selection state.
         disabled: Read-only property for current disabled state.
 
-    Example:
+    Examples:
         >>> # Create a selectable list item
         >>> item = CompositeFrame(parent, select_on_click=True, padding=8)
         >>> label = ttk.Label(item, text="Click me")

@@ -38,7 +38,7 @@ class NumericEntry(Field):
         <<Valid>>: Fired when validation passes
         <<Invalid>>: Fired when validation fails
 
-    Example:
+    Examples:
         ```python
         import ttkbootstrap as ttk
         from ttkbootstrap.widgets.composites.numericentry import NumericEntry

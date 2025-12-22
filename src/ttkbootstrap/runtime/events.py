@@ -11,7 +11,7 @@ Features:
     - All standard event attributes preserved (x, y, widget, etc.)
     - Backwards compatible with existing tkinter code
 
-Example:
+Examples:
     ```python
     import tkinter as tk
     import ttkbootstrap as ttk
@@ -66,7 +66,7 @@ def _patched_event_generate(
         data: Optional custom data to attach to the event. Can be any Python object.
         **kw: Additional keyword arguments passed to the original event_generate
 
-    Example:
+    Examples:
         ```python
         widget.event_generate('<<Save>>', data={'filename': 'doc.txt', 'author': 'John'})
         ```
@@ -113,7 +113,7 @@ def _patched_bind(
     Returns:
         Tkinter function name string if binding was created, None otherwise
 
-    Example:
+    Examples:
         ```python
         def handler(event):
             print(f"Event: {event}, Data: {event.data}")
@@ -264,7 +264,7 @@ def cleanup_event_cache() -> None:
         Normally cache cleanup is automatic via LRU eviction. Manual cleanup
         should rarely be needed in production code.
 
-    Example:
+    Examples:
         ```python
         from ttkbootstrap.events import cleanup_event_cache
 
@@ -291,7 +291,7 @@ def enable_periodic_cache_cleanup(
         interval: Cleanup check interval in milliseconds (default: 60000 = 1 minute)
         threshold: Only clean if cache has more than this many entries (default: 10)
 
-    Example:
+    Examples:
         ```python
         import ttkbootstrap as ttk
         from ttkbootstrap.events import enable_periodic_cache_cleanup
@@ -329,7 +329,7 @@ def get_cache_size() -> int:
     Returns:
         Number of cached event data objects
 
-    Example:
+    Examples:
         ```python
         from ttkbootstrap.events import get_cache_size
 
@@ -354,7 +354,7 @@ def install_enhanced_events() -> None:
         You should not need to call this manually unless you've explicitly
         uninstalled the patches and need to reinstall them.
 
-    Example:
+    Examples:
         ```python
         from ttkbootstrap.events import install_enhanced_events
 
@@ -377,7 +377,7 @@ def uninstall_enhanced_events() -> None:
         the 'data' parameter, and existing bindings may not work
         as expected.
 
-    Example:
+    Examples:
         ```python
         from ttkbootstrap.events import uninstall_enhanced_events
 

@@ -115,7 +115,7 @@ class ButtonGroup(Frame):
         Raises:
             ValueError: If a widget with the same key already exists.
 
-        Example:
+        Examples:
             # Add simple button
             btn = group.add("Click Me", command=on_click)
 
@@ -260,7 +260,7 @@ class ButtonGroup(Frame):
             key: The key of the widget to configure.
             **kwargs: Configuration options to apply to the widget.
 
-        Example:
+        Examples:
             group.configure_widget("save_btn", state='disabled')
         """
         widget = self.get_widget(key)

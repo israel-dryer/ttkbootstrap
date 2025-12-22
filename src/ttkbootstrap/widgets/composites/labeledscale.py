@@ -17,7 +17,7 @@ class LabeledScale(Frame):
 
     Only horizontal orientation is currently supported.
 
-    Example:
+    Examples:
         >>> import ttkbootstrap as ttk
         >>> root = ttk.Window()
         >>> scale = ttk.LabeledScale(root, minvalue=0, maxvalue=100)

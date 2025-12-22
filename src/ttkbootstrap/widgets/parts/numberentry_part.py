@@ -38,7 +38,7 @@ class NumberEntryPart(TextEntryPart):
         Plus all events from TextEntryPart:
             <<Input>>, <<Change>>, <Return>
 
-    Example:
+    Examples:
         ```python
         import ttkbootstrap as ttk
         from ttkbootstrap.widgets.parts import NumberEntryPart

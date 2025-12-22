@@ -41,7 +41,7 @@ class ContextMenu(CustomConfigMixin):
     radiobuttons, and separators. The menu automatically hides when clicking
     outside or when an item is selected.
 
-    Example:
+    Examples:
         ```python
         import ttkbootstrap as ttk
         from ttkbootstrap.widgets.composites.contextmenu import ContextMenu

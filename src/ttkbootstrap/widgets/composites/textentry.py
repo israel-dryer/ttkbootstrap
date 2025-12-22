@@ -43,7 +43,7 @@ class TextEntry(Field):
         <<Validate>>: Triggered after any validation
             event.data = {"value": Any, "is_valid": bool, "message": str}
 
-    Example:
+    Examples:
         ```python
         import ttkbootstrap as ttk
         from ttkbootstrap.widgets.composites.textentry import TextEntry

@@ -129,7 +129,7 @@ class FormDialog:
         alert: If True, plays system alert sound on show. Defaults to False.
         mode: Dialog interaction mode ("modal" or "popover"). Defaults to "modal".
 
-    Example:
+    Examples:
         Simple form dialog:
 
         >>> dialog = FormDialog(

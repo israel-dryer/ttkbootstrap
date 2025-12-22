@@ -34,7 +34,7 @@ class SpinnerEntry(Field):
         <<Valid>>: Fired when validation passes
         <<Invalid>>: Fired when validation fails
 
-    Example:
+    Examples:
         ```python
         import ttkbootstrap as ttk
         from ttkbootstrap.widgets.composites.spinnerentry import SpinnerEntry
@@ -172,7 +172,7 @@ class SpinnerEntry(Field):
             Use either 'values' (for text mode) OR 'minvalue/maxvalue' (for numeric mode),
             not both. If both are provided, 'values' takes precedence.
 
-        Example:
+        Examples:
             ```python
             # Text mode
             spinner1 = SpinnerEntry(

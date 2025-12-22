@@ -54,7 +54,7 @@ class PathEntry(Field):
         <<Valid>>: Fired when validation passes
         <<Invalid>>: Fired when validation fails
 
-    Example:
+    Examples:
         ```python
         import ttkbootstrap as ttk
         from ttkbootstrap.widgets.composites.pathentry import PathEntry
@@ -166,7 +166,7 @@ class PathEntry(Field):
                 - initialdir: Initial directory to show
                 - initialfile: Initial filename (for save dialogs)
                 - filetypes: List of (label, pattern) tuples for file filters
-                  Example: [('Text files', '*.txt'), ('All files', '*.*')]
+                  Examples: [('Text files', '*.txt'), ('All files', '*.*')]
                 - defaultextension: Default file extension (e.g., '.txt')
                 - multiple: Allow multiple selection (for compatible dialog types)
             **kwargs: Additional keyword arguments from FieldOptions:

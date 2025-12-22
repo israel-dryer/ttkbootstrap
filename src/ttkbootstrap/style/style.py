@@ -17,6 +17,7 @@ class Style(ttkStyle):
     """Enhanced TTK Style with builder registry and theme management.
 
     This class extends ttk.Style to provide:
+
     - Singleton pattern (one instance per Tkinter master)
     - Integration with BootstyleBuilder registry
     - Theme management via ThemeProvider
@@ -24,6 +25,7 @@ class Style(ttkStyle):
     - Custom style options support
 
     The Style class maintains registries to track:
+
     - All created styles (for theme change rebuilds)
     - Which styles exist in each theme (for caching)
     - Custom options per style (for recreating with same options)
@@ -100,7 +102,7 @@ class Style(ttkStyle):
         """Return available themes as [{'name', 'display_name'}, ...].
 
         This delegates to the underlying ThemeProvider. Themes are always
-        loaded from both the v2 and legacy theme packages; if
+        loaded from both the v2 and legacy theme packages.
         """
         return self._theme_provider.list_themes()
 
@@ -114,7 +116,7 @@ class Style(ttkStyle):
         return self._current_theme
 
     @property
-    def colors(self):
+    def colors(self) -> dict[str, str]:
         """Get colors for the current theme.
 
         Returns:
@@ -137,6 +139,7 @@ class Style(ttkStyle):
         """Register a style in the current theme.
 
         This adds the style to registries so it can be:
+
         - Cached (not recreated if already exists)
         - Rebuilt when theme changes
         - Recreated with same options
@@ -158,7 +161,7 @@ class Style(ttkStyle):
             variant: str,
             ttk_style: str,
             color: Optional[str] = None,
-            options: Optional[dict] = None):
+            options: Optional[dict] = None) -> None:
         """Create a new style if it doesn't exist in current theme.
 
         Args:
@@ -187,7 +190,7 @@ class Style(ttkStyle):
         # Register it
         self.register_style(ttk_style, options)
 
-    def theme_use(self, name: str = None):
+    def theme_use(self, name: str = None) -> str | None:
         """Switch to a different theme and rebuild all styles.
 
         Applies theme change to the global Style instance, rebuilds all
@@ -353,7 +356,7 @@ def get_style(master=None) -> Style:
     Returns:
         Global Style instance.
 
-    Example:
+    Examples:
         >>> style = get_style()
         >>> style.theme_use("darkly")
     """
@@ -369,7 +372,7 @@ def get_style_builder():
     Returns:
         BootstyleBuilder instance for the active theme.
 
-    Example:
+    Examples:
         >>> builder = get_style_builder()
         >>> primary_color = builder.color("primary")
     """
@@ -385,7 +388,7 @@ def set_theme(name: str) -> None:
     Args:
         name: Theme name to activate (e.g., "darkly", "cosmo", "superhero").
 
-    Example:
+    Examples:
         >>> set_theme("darkly")
     """
     style = get_style()
@@ -414,7 +417,7 @@ def get_theme() -> str:
     Returns:
         Name of the active theme.
 
-    Example:
+    Examples:
         >>> theme = get_theme()
         >>> print(theme)  # "darkly"
     """
@@ -428,7 +431,7 @@ def get_themes() -> list[dict[str, str]]:
     Returns:
         List of dictionaries containing ``name`` and ``display_name`` for each theme.
 
-    Example:
+    Examples:
         >>> themes = get_themes()
         >>> print([theme["name"] for theme in themes])
     """
@@ -442,7 +445,7 @@ def get_theme_provider() -> ThemeProvider:
     Returns:
         ThemeProvider instance.
 
-    Example:
+    Examples:
         >>> provider = get_theme_provider()
         >>> colors = provider.get_colors()
     """
@@ -462,7 +465,7 @@ def get_theme_color(token: str) -> str:
     Raises:
         ValueError: If the color token is invalid.
 
-    Example:
+    Examples:
         >>> primary = get_theme_color("primary")
         >>> print(primary)  # "#007bff"
     """

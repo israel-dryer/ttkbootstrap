@@ -45,7 +45,7 @@ class TimeEntry(SelectBox):
         <<Valid>>: Fired when validation passes
         <<Invalid>>: Fired when validation fails
 
-    Example:
+    Examples:
         ```python
         import ttkbootstrap as ttk
         from ttkbootstrap.widgets.composites.timeentry import TimeEntry

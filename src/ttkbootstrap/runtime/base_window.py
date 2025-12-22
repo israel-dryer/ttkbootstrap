@@ -262,7 +262,7 @@ class BaseWindow:
 
         The window geometry is updated immediately.
 
-        Example:
+        Examples:
             >>> app = App()
             >>> app.place_center()
             >>> app.mainloop()
@@ -280,7 +280,7 @@ class BaseWindow:
         Args:
             parent: The parent widget or window to center on.
 
-        Example:
+        Examples:
             >>> parent = App()
             >>> dialog = Toplevel()
             >>> dialog.place_center_on(parent)
@@ -301,7 +301,7 @@ class BaseWindow:
             y: Y coordinate on screen (in pixels from top edge).
             ensure_visible: If True, adjusts coordinates to keep window on screen.
 
-        Example:
+        Examples:
             >>> window = App()
             >>> window.place_at(100, 100)
         """
@@ -329,7 +329,7 @@ class BaseWindow:
             offset: Additional (x, y) offset in pixels.
             ensure_visible: If True, adjusts position to keep window on screen.
 
-        Example:
+        Examples:
             >>> # Show dialog below button
             >>> dialog = Toplevel()
             >>> dialog.place_anchor(
@@ -371,7 +371,7 @@ class BaseWindow:
             ensure_visible: If True, adjusts position to keep window on screen.
             auto_flip: If True, automatically flips above/below if no room.
 
-        Example:
+        Examples:
             >>> # Dropdown menu below button
             >>> menu = Toplevel()
             >>> menu.place_dropdown(
@@ -404,7 +404,7 @@ class BaseWindow:
             offset: Additional (x, y) offset from cursor in pixels.
             ensure_visible: If True, adjusts position to keep window on screen.
 
-        Example:
+        Examples:
             >>> # Show context menu at cursor
             >>> menu = Toplevel()
             >>> menu.place_cursor(offset=(2, 2))
@@ -457,7 +457,7 @@ class WindowMixin(BaseWindow):
             max_width: Optional maximum window width in pixels.
             max_height: Optional maximum window height in pixels.
 
-        Example:
+        Examples:
             >>> window = App()
             >>> window.set_default_size(width_ratio=0.8, height_ratio=0.8)
             >>> # Window will be 80% of screen size
@@ -483,7 +483,7 @@ class WindowMixin(BaseWindow):
             maxsize: Optional (width, height) maximum size.
             resizable: Optional (width, height) resizable flags.
 
-        Example:
+        Examples:
             >>> window = App()
             >>> window.apply_size_constraints(
             ...     minsize=(400, 300),

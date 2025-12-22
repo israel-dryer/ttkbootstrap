@@ -46,7 +46,7 @@ class FontDialog:
     The selected font is returned as a tkinter.font.Font object when OK is
     pressed, or None if canceled.
 
-    Example:
+    Examples:
         ```python
         import ttkbootstrap as ttk
         from ttkbootstrap.dialogs import FontDialog

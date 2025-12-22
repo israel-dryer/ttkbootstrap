@@ -1196,7 +1196,7 @@ class ListView(Frame):
             List of record IDs that are currently selected. Empty list if
             no items are selected.
 
-        Example:
+        Examples:
             >>> selected = listview.get_selected()
             >>> print(f"Selected {len(selected)} items")
         """
@@ -1257,7 +1257,7 @@ class ListView(Frame):
         Note:
             Generates a <<ItemInserted>> event after the item is added.
 
-        Example:
+        Examples:
             >>> listview.insert_item({
             ...     'title': 'New Item',
             ...     'text': 'Description'
@@ -1278,7 +1278,7 @@ class ListView(Frame):
         Note:
             Generates a <<ItemUpdated>> event if the update succeeds.
 
-        Example:
+        Examples:
             >>> listview.update_item(42, {'title': 'Updated Title'})
         """
         if self._datasource.update_record(record_id, data):
@@ -1294,7 +1294,7 @@ class ListView(Frame):
         Note:
             Generates a <<ItemDeleted>> event after deletion.
 
-        Example:
+        Examples:
             >>> listview.delete_item(42)
         """
         self._datasource.delete_record(record_id)
@@ -1307,7 +1307,7 @@ class ListView(Frame):
         Returns:
             The DataSource instance managing the list's data.
 
-        Example:
+        Examples:
             >>> ds = listview.get_datasource()
             >>> count = ds.total_count()
         """
@@ -1325,7 +1325,7 @@ class ListView(Frame):
         Returns:
             Binding identifier that can be passed to off_selection_change().
 
-        Example:
+        Examples:
             >>> def on_change(event):
             ...     selected = listview.get_selected()
             ...     print(f"Selection changed: {len(selected)} items")
@@ -1351,7 +1351,7 @@ class ListView(Frame):
         Returns:
             Binding identifier that can be passed to off_item_delete().
 
-        Example:
+        Examples:
             >>> def on_delete(event):
             ...     print("Item deleted")
             >>> listview.on_item_delete(on_delete)
@@ -1376,7 +1376,7 @@ class ListView(Frame):
         Returns:
             Binding identifier that can be passed to off_item_delete_fail().
 
-        Example:
+        Examples:
             >>> def on_fail(event):
             ...     print("Delete failed")
             >>> listview.on_item_delete_fail(on_fail)
@@ -1401,7 +1401,7 @@ class ListView(Frame):
         Returns:
             Binding identifier that can be passed to off_item_insert().
 
-        Example:
+        Examples:
             >>> def on_insert(event):
             ...     print("Item inserted")
             >>> listview.on_item_insert(on_insert)
@@ -1426,7 +1426,7 @@ class ListView(Frame):
         Returns:
             Binding identifier that can be passed to off_item_update().
 
-        Example:
+        Examples:
             >>> def on_update(event):
             ...     print("Item updated")
             >>> listview.on_item_update(on_update)
@@ -1452,7 +1452,7 @@ class ListView(Frame):
         Returns:
             Binding identifier that can be passed to off_item_click().
 
-        Example:
+        Examples:
             >>> def on_click(event):
             ...     print(f"Clicked: {event.data}")
             >>> listview.on_item_click(on_click)
@@ -1478,7 +1478,7 @@ class ListView(Frame):
         Returns:
             Binding identifier that can be passed to off_item_drag_start().
 
-        Example:
+        Examples:
             >>> def on_drag_start(event):
             ...     print(f"Drag started: {event.data}")
             >>> listview.on_item_drag_start(on_drag_start)
@@ -1505,7 +1505,7 @@ class ListView(Frame):
         Returns:
             Binding identifier that can be passed to off_item_drag().
 
-        Example:
+        Examples:
             >>> def on_drag(event):
             ...     data = event.data
             ...     print(f"Dragging from {data['source_index']} to {data['target_index']}")
@@ -1533,7 +1533,7 @@ class ListView(Frame):
         Returns:
             Binding identifier that can be passed to off_item_drag_end().
 
-        Example:
+        Examples:
             >>> def on_drag_end(event):
             ...     if event.data['moved']:
             ...         print(f"Item moved to index {event.data['target_index']}")

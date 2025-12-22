@@ -132,7 +132,7 @@ class DialogButton:
             Can be icon name string or dict with icon parameters.
             Defaults to None.
 
-    Example:
+    Examples:
         >>> # Simple button
         >>> btn = DialogButton(text="OK", role="primary", result="ok")
         >>>
@@ -252,7 +252,7 @@ class Dialog:
             a solid border frame around the dialog content. Useful for dropdown-style
             menus or popover UIs. Defaults to False.
 
-    Example:
+    Examples:
         Simple confirmation dialog:
 
         >>> def build_message(parent):

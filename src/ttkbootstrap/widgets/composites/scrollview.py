@@ -21,7 +21,7 @@ class ScrollView(Frame):
     all child widgets without interfering with normal widget behavior. Bindings
     are automatically refreshed when the container is reconfigured.
 
-    Example:
+    Examples:
         >>> scroll = ScrollView(parent, direction='vertical', show_scrollbar='on-scroll')
         >>> content = ttk.Frame(scroll.canvas)
         >>> scroll.add(content)

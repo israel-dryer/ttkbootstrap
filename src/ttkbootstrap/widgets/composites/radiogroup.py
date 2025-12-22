@@ -362,7 +362,7 @@ class RadioGroup(Frame):
         Returns:
             Subscription ID for later unsubscribing.
 
-        Example:
+        Examples:
             def on_select(value):
                 print(f"Selected: {value}")
 

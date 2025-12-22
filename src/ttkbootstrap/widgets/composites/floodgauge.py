@@ -76,7 +76,7 @@ class FloodGauge(ConfigureDelegationMixin, Canvas):
             mode: Progress mode - 'determinate' for known progress or 'indeterminate'
                 for unknown duration. Default is 'determinate'.
             mask: Format string for text overlay with '{}' placeholder for the value.
-                Example: '{}% Complete' or 'Progress: {}/100'. If None, no automatic
+                Examples: '{}% Complete' or 'Progress: {}/100'. If None, no automatic
                 text formatting is applied. Default is None.
             text: Static text label shown when no mask is specified. Default is empty string.
             font: Font specification as tuple (family, size) or string like 'Arial 12 bold'.

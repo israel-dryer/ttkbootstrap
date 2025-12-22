@@ -47,7 +47,7 @@ from collections.abc import Sequence
 from typing import Any, Dict, List, Optional, Union, Mapping, Iterable, Tuple
 
 from ttkbootstrap.datasource.base import BaseDataSource
-from ttkbootstrap.datasource.types import Primitive, Record
+from ttkbootstrap.datasource.types import Primitive
 
 
 class MemoryDataSource(BaseDataSource):
@@ -114,7 +114,6 @@ class MemoryDataSource(BaseDataSource):
         self._filter_predicate = None
         self._sort_keys: List[Tuple[str, bool]] = []
 
-
     def _rebuild_id_index(self) -> None:
         """Rebuild the ID-to-position index for fast lookups."""
         self._id_index.clear()
@@ -142,7 +141,6 @@ class MemoryDataSource(BaseDataSource):
                 r["id"] = max_id
                 used.add(max_id)
         self._rebuild_id_index()
-
 
     @staticmethod
     def _like_to_regex(pattern: str) -> re.Pattern:

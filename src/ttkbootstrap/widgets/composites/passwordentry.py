@@ -31,7 +31,7 @@ class PasswordEntry(Field):
         <<Invalid>>: Triggered when validation fails
         <<Validate>>: Triggered after any validation
 
-    Example:
+    Examples:
         ```python
         import ttkbootstrap as ttk
         from ttkbootstrap.widgets.composites.passwordentry import PasswordEntry

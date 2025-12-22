@@ -198,7 +198,7 @@ class FilterDialog(ttk.Frame):
     Attributes:
         result: List of selected values after dialog is closed, or None if cancelled.
 
-    Example:
+    Examples:
         Basic usage:
 
         >>> import ttkbootstrap as ttk

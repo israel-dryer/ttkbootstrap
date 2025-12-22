@@ -66,7 +66,7 @@ class WindowPositioning:
             method. Call window.update_idletasks() first to ensure accurate
             dimensions are available.
 
-        Example:
+        Examples:
             >>> window = tkinter.Tk()
             >>> window.update_idletasks()
             >>> x, y = WindowPositioning.center_on_screen(window)
@@ -103,7 +103,7 @@ class WindowPositioning:
             The returned coordinates are in screen coordinates, not relative
             to the parent.
 
-        Example:
+        Examples:
 import ttkbootstrap.runtime.toplevel            >>> parent = tkinter.Tk()
             >>> dialog = ttkbootstrap.runtime.toplevel.Toplevel(parent)
             >>> dialog.update_idletasks()
@@ -161,7 +161,7 @@ import ttkbootstrap.runtime.toplevel            >>> parent = tkinter.Tk()
             aren't included in winfo_height(). This prevents the titlebar from
             being positioned off-screen.
 
-        Example:
+        Examples:
             >>> window = tkinter.Tk()
             >>> window.update_idletasks()
             >>> # Try to position far off screen
@@ -223,7 +223,7 @@ import ttkbootstrap.runtime.toplevel            >>> parent = tkinter.Tk()
             This method calls window.update_idletasks() internally and applies
             the geometry immediately.
 
-        Example:
+        Examples:
             >>> # Position at specific coordinates
             >>> WindowPositioning.position_window(window, position=(100, 100))
             >>>
@@ -501,7 +501,7 @@ import ttkbootstrap.runtime.toplevel            >>> parent = tkinter.Tk()
                 - 'horizontal': Only flip left/right
             ensure_visible: Whether to adjust position to keep window on screen.
 
-        Example:
+        Examples:
             >>> # Center on screen
             >>> WindowPositioning.position_anchored(window, anchor_to="screen")
             >>>
@@ -685,7 +685,7 @@ import ttkbootstrap.runtime.toplevel            >>> parent = tkinter.Tk()
             offset: Additional (x, y) offset in pixels.
             ensure_visible: Whether to adjust position to keep window on screen.
 
-        Example:
+        Examples:
             >>> # Show dropdown below button (button's bottom-left -> window's top-left)
             >>> WindowPositioning.position_with_anchor(
             ...     window=dropdown,
@@ -764,7 +764,7 @@ import ttkbootstrap.runtime.toplevel            >>> parent = tkinter.Tk()
             offset: Additional (x, y) offset from cursor in pixels.
             ensure_visible: Whether to adjust position to keep window on screen.
 
-        Example:
+        Examples:
             >>> # Show context menu at cursor
             >>> WindowPositioning.position_at_cursor(menu, offset=(2, 2))
         """
@@ -805,7 +805,7 @@ import ttkbootstrap.runtime.toplevel            >>> parent = tkinter.Tk()
             ensure_visible: Whether to adjust position to keep window on screen.
             auto_flip: If True, automatically flips above/below if no room.
 
-        Example:
+        Examples:
             >>> # Dropdown below button, left-aligned
             >>> WindowPositioning.position_dropdown(
             ...     window=dropdown,
@@ -902,7 +902,7 @@ class WindowSizing:
         Returns:
             Tuple of (width, height) in pixels.
 
-        Example:
+        Examples:
             >>> window = tkinter.Tk()
             >>> width, height = WindowSizing.get_default_size(window)
             >>> window.geometry(f"{width}x{height}")
@@ -943,7 +943,7 @@ class WindowSizing:
             maxsize: Optional (width, height) maximum size.
             resizable: Optional (width, height) resizable flags.
 
-        Example:
+        Examples:
             >>> WindowSizing.apply_size_constraints(
             ...     window,
             ...     minsize=(400, 300),
