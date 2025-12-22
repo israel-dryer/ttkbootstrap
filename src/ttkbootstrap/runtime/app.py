@@ -29,7 +29,10 @@ def set_current_app(app: App) -> None:
 
 
 def get_app_settings() -> AppSettings:
-    """Return the settings for current App
+    """Return the settings for current App.
+
+    Returns:
+        The AppSettings instance for the current application.
 
     Raises:
         RuntimeError: If no active App instance is set.
@@ -47,6 +50,9 @@ def clear_current_app(app: App) -> None:
 def get_current_app() -> App:
     """Return the current App instance.
 
+    Returns:
+        The currently active App instance.
+
     Raises:
         RuntimeError: If no App has been registered yet.
     """
@@ -59,13 +65,31 @@ def get_current_app() -> App:
 
 
 def has_current_app() -> bool:
-    """Return True if a current App instance is registered."""
+    """Check if a current App instance is registered.
+
+    Returns:
+        True if an App instance exists, False otherwise.
+    """
     return _current_app is not None
 
 
 def get_default_root(what: Optional[str] = None) -> tkinter.Tk:
-    """Returns the default root if it has been created, otherwise
-    returns a new instance."""
+    """Get the default Tk root window.
+
+    Returns the default root if it has been created, otherwise
+    creates and returns a new instance.
+
+    Args:
+        what: Optional description of the operation requiring the root,
+            used in error messages if called too early.
+
+    Returns:
+        The default Tk root window instance.
+
+    Raises:
+        RuntimeError: If tkinter is configured to not support default root,
+            or if called too early with a 'what' description.
+    """
     if not tkinter._support_default_root:
         raise RuntimeError(
             "No master specified and tkinter is "
