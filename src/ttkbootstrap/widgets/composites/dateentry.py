@@ -25,18 +25,7 @@ class DateEntry(Field):
     supports various date format presets and custom ICU date format patterns,
     and can accept input as strings, date objects, or datetime objects.
 
-    Features:
-
-        - Locale-aware date formatting
-        - Multiple date format presets (longDate, shortDate, etc.)
-        - Custom ICU date format patterns
-        - Calendar picker button with icon
-        - Accepts date, datetime, or string input
-        - Automatic parsing and formatting on commit
-        - All Field features (label, validation, messages, etc.)
-
     Date Format Presets:
-
         - longDate: Full date (e.g., "January 15, 2025")
         - shortDate: Short date (e.g., "1/15/25")
         - monthAndDate: Month and day (e.g., "January 15")
@@ -121,14 +110,14 @@ class DateEntry(Field):
         root.mainloop()
         ```
 
-        Inherited Properties:
+    Inherited Properties:
 
-            - entry_widget: Access to the underlying TextEntryPart widget
-            - label_widget: Access to the label widget
-            - message_widget: Access to the message label widget
-            - addons: Dictionary of inserted addon widgets
-            - variable: Tkinter Variable linked to entry text
-            - signal: Signal object for reactive updates
+        - entry_widget: Access to the underlying TextEntryPart widget
+        - label_widget: Access to the label widget
+        - message_widget: Access to the message label widget
+        - addons: Dictionary of inserted addon widgets
+        - variable: Tkinter Variable linked to entry text
+        - signal: Signal object for reactive updates
 
     Note:
         The calendar picker button is currently a placeholder. The date picker
