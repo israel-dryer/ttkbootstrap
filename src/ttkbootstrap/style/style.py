@@ -399,7 +399,10 @@ def toggle_theme():
     """Toggle the active application theme between light and dark mode.
 
     Uses the light and dark themes specified in app settings, or defaults
-    to bootstrap-light and bootstrap-dark
+    to bootstrap-light and bootstrap-dark.
+
+    Examples:
+        >>> toggle_theme()
     ."""
     settings = get_app_settings()
     light = settings.light_theme
@@ -457,7 +460,7 @@ def get_theme_color(token: str) -> str:
     """Get a hex color value from a color token based on the active theme.
 
     Args:
-        token: Color token name (e.g., "primary", "bg", "fg").
+        token: Color token name (e.g., "primary", "background").
 
     Returns:
         Hex color string (e.g., "#007bff").
