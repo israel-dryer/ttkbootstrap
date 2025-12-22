@@ -1,11 +1,17 @@
 ---
 title: Notebook
-icon: fontawesome/solid/folder
 ---
 
 # Notebook
 
-`Notebook` is a themed tabbed container widget. It extends `ttk.Notebook` with ttkbootstrap styling, **key-based tab referencing**, optional **auto-generated tab keys**, and **enriched tab lifecycle events** that tell you *what changed* and *why*.
+`Notebook` is a **tabbed view container** that shows one page at a time and lets users switch views by clicking tabs.
+
+ttkbootstrap’s `Notebook` extends `ttk.Notebook` with:
+
+- **key-based tab references** (stable, human-friendly)
+- optional **auto-generated keys**
+- helpers for **hide/show/remove** while keeping the tab registry consistent
+- **enriched tab lifecycle events** that describe *what changed* and *why* fileciteturn17file0
 
 <!--
 IMAGE: Notebook overview
@@ -36,12 +42,7 @@ ttk.Label(settings, text="Settings content").pack(anchor="w")
 app.mainloop()
 ```
 
-<!--
-IMAGE: Basic Notebook example
-Suggested: Notebook with two tabs, each showing distinct content
--->
-
-You can also add existing widgets as tabs:
+You can also add an existing widget as a tab:
 
 ```python
 import ttkbootstrap as ttk
@@ -61,29 +62,15 @@ app.mainloop()
 
 ---
 
-## What problem it solves
-
-Tabbed layouts are a classic desktop pattern for switching between related views without opening new windows. ttkbootstrap’s `Notebook` improves the standard `ttk.Notebook` by adding:
-
-- **Stable tab keys** so you can reference tabs without relying on fragile indices
-- **Auto keys** (`tab1`, `tab2`, …) when you don’t provide one
-- **Hide/show and remove** helpers that keep the internal registry consistent
-- **Enriched events** that include `current`, `previous`, `reason`, and `via`
-- Built-in support for **bootstyle**, `surface_color`, and style options
-
----
-
 ## Core concepts
 
-### Tabs can be referenced by key, index, or widget
+### Tab references
 
 Most notebook APIs accept a “tab reference” that can be:
 
-- **key** (`str`) — recommended (stable, human-friendly)
-- **index** (`int`) — 0-based position in the tab bar
-- **widget** — the actual child widget used as the tab content
-
-Examples:
+- **key** (`str`) — recommended (stable)
+- **index** (`int`) — 0-based position
+- **widget** — the tab’s content widget
 
 ```python
 nb.select("settings")    # by key
@@ -92,79 +79,61 @@ nb.select(settings)      # by widget
 ```
 
 !!! tip "Prefer keys"
-    Indices change when tabs are inserted, removed, or reordered. Keys remain stable across those operations.
-
----
+    Indices change when tabs are inserted, removed, or reordered. Keys remain stable.
 
 ### Creating tabs with `add_frame` and `insert_frame`
 
-`add_frame(...)` is the fastest way to create a new tab page:
+`add_frame(...)` creates a new `Frame` tab and returns it:
 
 ```python
 page = nb.add_frame(label="Logs", key="logs", frame_options=dict(padding=10))
 ```
 
-To insert at a specific position:
+Use `insert_frame(...)` to insert at a specific position:
 
 ```python
 page = nb.insert_frame(0, label="Start", key="start", frame_options=dict(padding=10))
 ```
 
-Both methods create a `ttk.Frame` tab for you and return it.
+### Localized tab labels
 
----
-
-### Tab labels can be localized
-
-`Notebook` supports a translation-aware `text` token on tabs. If you pass a translation key, it is translated immediately and automatically refreshed when the locale changes.
-
-You can also provide formatting arguments via `fmtargs`.
+`Notebook` supports translation-aware tab text (tokens retranslate on locale changes). You can also provide formatting args:
 
 ```python
 nb.add(page, key="recent", text="tabs.recent", fmtargs=("Today",))
 ```
 
-!!! note "Tokens vs literal strings"
-    If your `text` value is a localization token, it will be retranslated on locale changes.
-    If it’s a literal string, it is used as-is.
-
 ---
 
-## Common options & patterns
+## Common patterns
 
-### Hide and show tabs
+### Hide vs remove
 
-Hide a tab without removing it:
+Hide a tab without forgetting it:
 
 ```python
 nb.hide("settings")
 ```
 
-To remove a tab and clean its registry entries, use `remove(...)`:
+Remove a tab and clean its registry entry:
 
 ```python
 nb.remove("settings")
 ```
 
 !!! tip "Hide vs remove"
-    Use `hide(...)` when you want to temporarily remove a tab from the bar.
-    Use `remove(...)` when the tab should be forgotten and its key should no longer be valid.
-
----
+    Use `hide(...)` for temporary visibility (feature flags, permissions).  
+    Use `remove(...)` when the tab should be forgotten entirely.
 
 ### Disable a tab
-
-Tabs can be disabled using `tab(...)` configuration:
 
 ```python
 nb.tab("settings", state="disabled")
 ```
 
----
-
 ### Reorder tabs
 
-Use `insert(...)` to reorder existing tabs by moving a widget to a new index (or insert a new one). Keys remain stable even if indices change.
+Use `insert(...)` to move a widget to a new index. Keys remain stable even if indices change.
 
 ---
 
@@ -176,7 +145,7 @@ Use `insert(...)` to reorder existing tabs by moving a widget to a new index (or
 - `<<NotebookTabActivated>>`
 - `<<NotebookTabDeactivated>>`
 
-Prefer the helper methods to subscribe/unsubscribe:
+Use the helper methods to subscribe/unsubscribe:
 
 ```python
 def on_changed(event):
@@ -186,14 +155,8 @@ def on_changed(event):
     print("reason:", data.get("reason"))
     print("via:", data.get("via"))
 
-nb.on_tab_changed(on_changed)
-```
-
-To unbind, keep the returned `funcid`:
-
-```python
 funcid = nb.on_tab_changed(on_changed)
-nb.off_tab_changed(funcid)
+# nb.off_tab_changed(funcid)
 ```
 
 ### Event payload
@@ -203,45 +166,49 @@ For `on_tab_changed(...)`, `event.data` includes:
 - `current`: `{index, key, label}` or `None`
 - `previous`: `{index, key, label}` or `None`
 - `reason`: `"user" | "api" | "hide" | "forget" | "reorder" | "unknown"`
-- `via`: `"click" | "key" | "programmatic" | "unknown"`
-
-<!--
-IMAGE: Notebook event payload
-Suggested: Diagram showing previous -> current transition and reason/via fields
--->
+- `via`: `"click" | "key" | "programmatic" | "unknown"` fileciteturn17file0
 
 !!! tip "Track navigation state"
-    Use `reason` and `via` to distinguish user clicks from programmatic navigation (e.g., wizard flow, validation redirects).
+    Use `reason` and `via` to distinguish user clicks from programmatic navigation (wizards, validation redirects).
 
 ---
 
 ## UX guidance
 
 - Keep tab labels short and scannable
-- Avoid putting too many tabs in one notebook (consider grouping or side navigation)
-- Use `hide(...)` for feature flags or permission-based tabs
+- Avoid too many tabs in one notebook (consider grouping or alternative navigation)
+- Use `hide(...)` for permission-based tabs
 - Use `on_tab_changed(...)` to persist the last selected tab between sessions
 
 ---
 
-## When to use / when not to
+## When should I use Notebook?
 
-**Use Notebook when:**
+Use `Notebook` when:
 
-- You have multiple related views that share the same window area
-- Switching views should be fast and non-destructive
-- You want a familiar desktop “tabs” experience
+- you have multiple related views sharing the same window area
+- switching views should be fast and non-destructive
+- you want a familiar desktop “tabs” model
 
-**Avoid Notebook when:**
+Prefer `PageStack` when:
 
-- The workflow is sequential (use `PageStack` / wizard flow)
-- You have many sections that don’t fit as tabs (consider sidebar navigation)
-- Tab contents are heavy and should load lazily (consider on-demand creation)
+- the workflow is sequential (wizard/flow)
+- back/forward history matters
+
+Avoid tabs when:
+
+- you have many sections that don’t fit well as tabs (consider a side navigation pattern)
 
 ---
 
 ## Related widgets
 
-- **PageStack** — view switching for step-by-step navigation or wizards
-- **Frame** — common page container inside tabs
-- **PanedWindow** — split layouts often paired with tabbed views
+- **PageStack** — stacked views with history (wizards/flows)
+- **Frame** — common tab page container
+- **PanedWindow** — split layouts often paired with view switching
+
+---
+
+## Reference
+
+- **API Reference:** `ttkbootstrap.Notebook`

@@ -1,3 +1,0 @@
----
-icon: fontawesome/solid/brush
----

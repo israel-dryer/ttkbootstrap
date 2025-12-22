@@ -1,12 +1,12 @@
 ---
 title: Progressbar
-icon: fontawesome/solid/bars-progress
 ---
 
 # Progressbar
 
-`Progressbar` displays progress toward completion of a task.
-It supports determinate and indeterminate modes.
+`Progressbar` displays **task progress over time**.
+
+It communicates how much work has completed (determinate) or that work is ongoing (indeterminate), without requiring user interaction.
 
 ---
 
@@ -25,25 +25,56 @@ app.mainloop()
 
 ---
 
-## What problem it solves
+## Value model
 
-Progress indicators communicate that work is happening and how much remains.
+- **Determinate**: shows progress between `0` and `maximum`
+- **Indeterminate**: animates continuously to indicate ongoing work
 
----
-
-## Core concepts
-
-### Determinate vs indeterminate
-
-- **Determinate**: known progress
-- **Indeterminate**: unknown duration
+```python
+pb.configure(mode="indeterminate")
+pb.start()
+```
 
 ---
 
-## UX guidance
+## Common options
 
-- Always show progress for tasks > ~300ms
-- Prefer determinate when possible
+- `value`
+- `maximum`
+- `mode="determinate" | "indeterminate"`
+- `length`
+- `orient="horizontal" | "vertical"`
+
+---
+
+## Behavior
+
+- Determinate mode updates visually as `value` changes
+- Indeterminate mode runs an animation until stopped
+
+---
+
+## Styling
+
+Use `bootstyle` to indicate intent or severity:
+
+```python
+ttk.Progressbar(app, bootstyle="success")
+ttk.Progressbar(app, bootstyle="warning")
+```
+
+---
+
+## When should I use Progressbar?
+
+Use Progressbar when:
+
+- progress is linear and measurable
+- users benefit from seeing completion percentage
+
+Prefer **Meter** when:
+
+- you want a more expressive, dashboard-style indicator
 
 ---
 
@@ -51,3 +82,10 @@ Progress indicators communicate that work is happening and how much remains.
 
 - **Meter**
 - **FloodGauge**
+- **Spinner / BusyIndicator** (if available)
+
+---
+
+## Reference
+
+- **API Reference:** `ttkbootstrap.Progressbar`

@@ -1,3 +1,1 @@
----
-icon: fontawesome/solid/gear
----
+

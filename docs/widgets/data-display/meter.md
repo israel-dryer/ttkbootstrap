@@ -1,12 +1,12 @@
 ---
 title: Meter
-icon: fontawesome/solid/gauge
 ---
 
 # Meter
 
-`Meter` displays progress or value using a circular gauge.
-It is ideal for dashboards and summaries.
+`Meter` displays a **single numeric value within a range**, often as a circular or arc-style gauge.
+
+It’s ideal for dashboards, summaries, and status panels where visual emphasis matters more than precision.
 
 ---
 
@@ -25,16 +25,46 @@ app.mainloop()
 
 ---
 
-## What problem it solves
+## Value model
 
-Meters communicate progress or utilization at a glance.
+Meters display:
+
+- `amountused` relative to `amounttotal`
+- optional text/label overlays
 
 ---
 
-## UX guidance
+## Common options
 
-- Use meters for summaries, not precise tracking
-- Pair with labels for clarity
+- `amountused`
+- `amounttotal`
+- `subtext`
+- `stripethickness`
+- `interactive=False` (if supported)
+
+---
+
+## Styling
+
+Meters are highly visual and often color-coded:
+
+```python
+ttk.Meter(app, bootstyle="success")
+ttk.Meter(app, bootstyle="danger")
+```
+
+---
+
+## When should I use Meter?
+
+Use Meter when:
+
+- showing a snapshot or status
+- visual emphasis is important
+
+Prefer **Progressbar** when:
+
+- tracking task progress over time
 
 ---
 
@@ -42,3 +72,9 @@ Meters communicate progress or utilization at a glance.
 
 - **Progressbar**
 - **FloodGauge**
+
+---
+
+## Reference
+
+- **API Reference:** `ttkbootstrap.Meter`

@@ -1,11 +1,10 @@
 ---
 title: Installation
-icon: fontawesome/solid/download
 ---
 
 # Installation
 
-ttkbootstrap v2 targets **modern Python environments** and builds directly on Tkinter, which is included with most
+ttkbootstrap targets **modern Python environments** and builds directly on Tkinter, which is included with most
 Python distributions.
 
 This page walks through the requirements, installation options, optional extras, and verification steps so you can

@@ -1,11 +1,13 @@
 ---
 title: LabelFrame
-icon: fontawesome/solid/square-pen
 ---
 
 # LabelFrame
 
-`LabelFrame` is a themed wrapper around `ttk.Labelframe` that provides a bordered container with an embedded caption. It’s ideal for visually grouping related controls (settings sections, form clusters) with a clear label that improves scanability.
+`LabelFrame` is a **layout container** that groups related widgets under a **visible label**.
+
+It wraps `ttk.Labelframe`, participates in ttkbootstrap styling, and is ideal for labeled sections (settings groups,
+form clusters, option panels) where the title improves scanability.
 
 <!--
 IMAGE: Labeled group box
@@ -15,157 +17,113 @@ Theme variants: light / dark
 
 ---
 
-## Basic usage
+## Overview
 
-Use `LabelFrame` to group a set of widgets under a caption:
+A `LabelFrame` is like a `Frame`, but with an integrated label:
+
+- the label provides context for the grouped controls
+- the border/outline visually separates the region
+- content is packed/gridded inside the container like any other frame
+
+---
+
+## Basic usage
 
 ```python
 import ttkbootstrap as ttk
 
 app = ttk.App()
 
-group = ttk.LabelFrame(app, text="Account", padding=10)
+group = ttk.LabelFrame(app, text="Network", padding=16)
 group.pack(fill="x", padx=20, pady=20)
 
-ttk.Label(group, text="Email").pack(anchor="w")
-ttk.Entry(group).pack(fill="x", pady=(6, 0))
+ttk.CheckButton(group, text="Use proxy").pack(anchor="w")
+ttk.Entry(group).pack(fill="x", pady=(8, 0))
 
 app.mainloop()
 ```
 
-<!--
-IMAGE: Basic LabelFrame example
-Suggested: A labeled frame containing a label + entry
--->
-
 ---
 
-## What problem it solves
+## Common options
 
-When a UI has many controls, users benefit from clear visual structure. `LabelFrame` solves this by:
+### `text`
 
-- Creating a visible “group box” boundary around related widgets
-- Providing a built-in caption so users can quickly understand what a section controls
-- Allowing consistent spacing via `padding`
-- Integrating with ttkbootstrap theming (`bootstyle`, surface tokens, and localization)
-
----
-
-## Core concepts
-
-### LabelFrame vs Frame
-
-Both are containers, but they serve different UX roles:
-
-- **Frame**
-  - Pure layout surface (no caption)
-  - Best for structural layout: panels, toolbars, pages
-
-- **LabelFrame**
-  - Adds a border + caption
-  - Best for semantic grouping: settings sections, option groups
-
-If you don’t need a visible group boundary, prefer `Frame` for a cleaner layout.
-
----
-
-### Caption positioning (labelanchor)
-
-The `labelanchor` option controls where the caption sits around the border.
+Sets the group label.
 
 ```python
-ttk.LabelFrame(app, text="Advanced", labelanchor="n")
+ttk.LabelFrame(app, text="Appearance")
 ```
 
-Typical anchors include top/left variants (exact support depends on Tk). Use this to match your layout style (e.g., left-aligned captions for dense forms).
+### `labelanchor`
 
-<!--
-IMAGE: labelanchor variations
-Suggested: Same LabelFrame rendered with different labelanchor values
--->
-
----
-
-## Common options & patterns
-
-### Padding
-
-`padding` adds space inside the group box:
+Controls where the label appears relative to the frame.
 
 ```python
-ttk.LabelFrame(app, text="Filters", padding=12)
+ttk.LabelFrame(app, text="Network", labelanchor="n")   # top (common)
+ttk.LabelFrame(app, text="Network", labelanchor="w")   # left
+ttk.LabelFrame(app, text="Network", labelanchor="s")   # bottom
 ```
 
-This is the most common option to set on LabelFrame because it ensures content does not crowd the border.
+### `padding`
 
----
-
-### Styling with bootstyle
-
-Use `bootstyle` to apply theme tokens:
+Inner spacing for the content region.
 
 ```python
-ttk.LabelFrame(app, text="Details", bootstyle="secondary")
+ttk.LabelFrame(app, text="Options", padding=(16, 12))
 ```
 
-If you provide an explicit `style=...`, it overrides `bootstyle`.
+### `bootstyle` / `style`
 
----
-
-### Localization
-
-`LabelFrame` supports `localize` so its caption can participate in your localization system:
+Apply semantic styling (or a specific style name).
 
 ```python
-ttk.LabelFrame(app, text="settings.network", localize="auto")
-```
-
-(Exact key conventions depend on your message catalog setup.)
-
----
-
-## Events
-
-Like `Frame`, `LabelFrame` is primarily a container. Typical bindings include:
-
-- `<Configure>` for resize-driven behavior
-- `<Enter>` / `<Leave>` for hover-driven visuals on a region
-
-```python
-group.bind("<Configure>", lambda e: print(e.width, e.height))
+ttk.LabelFrame(app, text="Group", bootstyle="secondary")
+ttk.LabelFrame(app, text="Group", style="Card.TLabelframe")
 ```
 
 ---
 
-## UX guidance
+## Behavior
 
-- Use LabelFrames sparingly — too many borders can make a UI feel busy
-- Prefer one LabelFrame per “meaningful section” rather than per field
-- Keep captions short and scannable (“Account”, “Network”, “Advanced”)
-
-!!! tip "Clean settings pages"
-    If you have many sections, combine LabelFrames with spacing and separators so the page still feels lightweight.
+- LabelFrames are **containers only** (no interactive behavior).
+- Use `text=` (or a label widget, if your implementation supports it) to describe the group.
+- Content layout works the same as `Frame` (pack/grid inside the container).
 
 ---
 
-## When to use / when not to
+## Styling
 
-**Use LabelFrame when:**
+Use `LabelFrame` when the label should be part of the visual grouping.
 
-- You want a visible group boundary around related controls
-- The caption meaningfully improves scanability
-- You’re building settings pages or grouped option UIs
+For more “modern card” layouts where the label is separate, you may prefer:
 
-**Avoid LabelFrame when:**
+- a `Frame` with a `Label` above it
+- a `Frame` styled as a card, with header content
 
-- Grouping is obvious from layout alone (use `Frame` + spacing)
-- You need a lightweight, modern “card” look (use a bordered `Frame` pattern)
-- Content must scroll as one surface (use scroll containers)
+---
+
+## When should I use LabelFrame?
+
+Use `LabelFrame` when:
+
+- the grouped controls benefit from a section title
+- the title should be visually attached to the region
+
+Prefer **Frame** when:
+
+- you want grouping without a label
+- the label belongs in surrounding layout (e.g., page header)
 
 ---
 
 ## Related widgets
 
-- **Frame** — basic layout container
-- **Separator** — subtle division between groups
-- **PanedWindow** — split layouts
+- **Frame** — general-purpose container
+- **Separator** — divider between labeled regions
+
+---
+
+## Reference
+
+- **API Reference:** `ttkbootstrap.LabelFrame`

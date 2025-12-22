@@ -1,12 +1,12 @@
 ---
 title: FloodGauge
-icon: fontawesome/solid/water
 ---
 
 # FloodGauge
 
-`FloodGauge` displays progress as a filling area.
-It is visually expressive and best for high-level status indicators.
+`FloodGauge` is a **filled-level indicator** that visualizes how full a value is within a range.
+
+It’s especially useful for capacity, utilization, or threshold-based indicators.
 
 ---
 
@@ -17,24 +17,46 @@ import ttkbootstrap as ttk
 
 app = ttk.App()
 
-gauge = ttk.FloodGauge(app, value=70)
-gauge.pack(padx=20, pady=20)
+fg = ttk.FloodGauge(app, value=75)
+fg.pack(fill="x", padx=20, pady=20)
 
 app.mainloop()
 ```
 
 ---
 
-## What problem it solves
+## Value model
 
-Flood gauges emphasize *direction* and *completion* rather than exact values.
+- `value` represents fill level (commonly 0–100)
+- optional thresholds can alter styling
 
 ---
 
-## UX guidance
+## Common options
 
-- Use sparingly for emphasis
-- Avoid for precise measurements
+- `value`
+- `maximum`
+- `text`
+- `orient`
+
+---
+
+## Styling
+
+Flood gauges often change color as thresholds are crossed:
+
+```python
+ttk.FloodGauge(app, bootstyle="warning")
+```
+
+---
+
+## When should I use FloodGauge?
+
+Use FloodGauge when:
+
+- capacity or fullness matters
+- thresholds are more important than exact numbers
 
 ---
 
@@ -42,3 +64,9 @@ Flood gauges emphasize *direction* and *completion* rather than exact values.
 
 - **Progressbar**
 - **Meter**
+
+---
+
+## Reference
+
+- **API Reference:** `ttkbootstrap.FloodGauge`

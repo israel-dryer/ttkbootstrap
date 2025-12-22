@@ -40,48 +40,99 @@ markdown_extends:
 
 nav:
   - Getting Started:
-      - What is ttkbootstrap?: getting-started/what-is-v2.md
-      - What's new in V2?: getting-started/why-v2.md
-      - Quickstart (5-min App): getting-started/quickstart.md
+      - Overview: index.md
       - Installation: getting-started/installation.md
-      - First Application: getting-started/first-application.md
-      - Project Templates: getting-started/project-templates.md
-      - Learning Resources: getting-started/learning-resources.md
-      - Community & Support: getting-started/community-and-support.md
+      - Quick Start: getting-started/quick-start.md
+
+  - Guides:
+      - Design System:
+          - Overview: guides/design-system/index.md
+          - Colors: guides/design-system/colors.md
+          - Variants: guides/design-system/variants.md
+          - Typography: guides/design-system/typography.md
+          - Icons: guides/design-system/icons.md
+      - Layout:
+          - Overview: guides/layout/index.md
+          - Containers: guides/layout/containers.md
+          - Spacing: guides/layout/spacing.md
+          - Scrolling: guides/layout/scrolling.md
+      - Events & Signals:
+          - Overview: guides/events/index.md
+          - Callbacks: guides/events/callbacks.md
+          - Signals: guides/events/signals.md
+          - Virtual Events: guides/events/virtual-events.md
+      - Datasource:
+          - Overview: guides/datasource/index.md
+          - Memory Source: guides/datasource/memorysource.md
+          - SQLite Source: guides/datasource/sqlitesource.md
+          - File Source: guides/datasource/filesource.md
+      - Patterns:
+          - Toolbars: guides/patterns/toolbars.md
+          - Forms: guides/patterns/forms.md
+          - Navigation: guides/patterns/navigation.md
+          - Data Views: guides/patterns/data-views.md
+      - Internationalization:
+          - Overview: guides/internationalization/index.md
+          - Localization: guides/internationalization/localization.md
+          - Formatting: guides/internationalization/formatting.md
+          - RTL Support: guides/internationalization/rtl.md
+          - Language Packs & Fallbacks: guides/internationalization/language-packs.md
+      - Advanced Widgets:
+          - Overview: guides/advanced-widgets/index.md
+          - Canvas: guides/advanced-widgets/advanced-canvas.md
+          - Text: guides/advanced-widgets/advanced-text.md
 
   - Widgets:
-      - Overview: widgets/overview.md
+      - Overview: widgets/index.md
 
-      - Controls:
-          - Button: widgets/controls/button.md
-          - CheckButton: widgets/controls/checkbutton.md
-          - RadioButton: widgets/controls/radiobutton.md
-          - TextEntry: widgets/controls/textentry.md
-          - NumericEntry: widgets/controls/numericentry.md
-          - SpinnerEntry: widgets/controls/spinnerentry.md
-          - DateEntry: widgets/controls/dateentry.md
-          - TimeEntry: widgets/controls/timeentry.md
-          - PasswordEntry: widgets/controls/passwordentry.md
-          - PathEntry: widgets/controls/pathentry.md
-          - Scale: widgets/controls/scale.md
-          - SelectBox: widgets/controls/selectbox.md
-          - OptionMenu: widgets/controls/optionmenu.md
-          - Form: widgets/controls/form.md
+      - Actions:
+          - Button: widgets/actions/button.md
+          - DropdownButton: widgets/actions/dropdownbutton.md
+          - MenuButton: widgets/actions/menubutton.md
+          - ContextMenu: widgets/actions/contextmenu.md
+          - ButtonGroup: widgets/actions/buttongroup.md
+
+      - Inputs:
+          - Text:
+              - TextEntry: widgets/inputs/textentry.md
+              - PasswordEntry: widgets/inputs/passwordentry.md
+              - PathEntry: widgets/inputs/pathentry.md
+              - ScrolledText: widgets/inputs/scrolledtext.md
+              - SpinnerEntry: widgets/inputs/spinnerentry.md
+          - Numeric:
+              - NumericEntry: widgets/inputs/numericentry.md
+              - Scale: widgets/inputs/scale.md
+              - LabeledScale: widgets/inputs/labeledscale.md
+          - Date & Time:
+              - DateEntry: widgets/inputs/dateentry.md
+              - TimeEntry: widgets/inputs/timeentry.md
+
+      - Selection:
+          - CheckButton: widgets/selection/checkbutton.md
+          - CheckToggle: widgets/selection/checktoggle.md
+          - RadioButton: widgets/selection/radiobutton.md
+          - RadioToggle: widgets/selection/radiotoggle.md
+          - RadioGroup: widgets/selection/radiogroup.md
+          - ToggleGroup: widgets/selection/togglegroup.md
+          - OptionMenu: widgets/selection/optionmenu.md
+          - SelectBox: widgets/selection/selectbox.md
 
       - Data Display:
-          - Label: widgets/data-display/label.md
-          - Progressbar: widgets/data-display/progressbar.md
-          - Meter: widgets/data-display/meter.md
-          - FloodGauge: widgets/data-display/floodgauge.md
-          - TreeView: widgets/data-display/treeview.md
-          - TableView: widgets/data-display/tableview.md
+            - Label: widgets/data-display/label.md
+            - ListView: widgets/data-display/listview.md
+            - TreeView: widgets/data-display/treeview.md
+            - TableView: widgets/data-display/tableview.md
+            - Indicators:
+              - Badge: widgets/data-display/badge.md
+              - Progressbar: widgets/data-display/progressbar.md
+              - Meter: widgets/data-display/meter.md
+              - FloodGauge: widgets/data-display/floodgauge.md
 
       - Layout:
           - Frame: widgets/layout/frame.md
           - LabelFrame: widgets/layout/labelframe.md
           - PanedWindow: widgets/layout/panedwindow.md
           - ScrollView: widgets/layout/scrollview.md
-          - ScrolledText: widgets/layout/scrolledtext.md
           - Scrollbar: widgets/layout/scrollbar.md
           - Separator: widgets/layout/separator.md
           - SizeGrip: widgets/layout/sizegrip.md
@@ -90,65 +141,163 @@ nav:
           - Notebook: widgets/views/notebook.md
           - PageStack: widgets/views/pagestack.md
 
-      - Menus:
-          - DropdownButton: widgets/menus/dropdownbutton.md
-          - MenuButton: widgets/menus/menubutton.md
-          - ContextMenu: widgets/menus/contextmenu.md
+      - Forms:
+          - Form: widgets/forms/form.md
 
-      - Feedback:
-          - Tooltip: widgets/feedback/tooltip.md
-          - Toast: widgets/feedback/toast.md
-          - Dialog: widgets/feedback/dialog.md
-          - DateDialog: widgets/feedback/datedialog.md
-          - FontDialog: widgets/feedback/fontdialog.md
-          - FilterDialog: widgets/feedback/filterdialog.md
-          - FormDialog: widgets/feedback/formdialog.md
-          - MessageBox: widgets/feedback/messagebox.md
-          - QueryBox: widgets/feedback/querybox.md
-          - ColorChooser: widgets/feedback/colorchooser.md
-          - ColorDropper: widgets/feedback/colordropper.md
+      - Dialogs:
+          - Overview: widgets/dialogs/index.md
+          - Messages:
+              - MessageDialog: widgets/dialogs/messagedialog.md
+              - MessageBox: widgets/dialogs/messagebox.md
+          - Pickers:
+              - ColorChooser: widgets/dialogs/colorchooser.md
+              - ColorDropper: widgets/dialogs/colordropper.md
+              - FontDialog: widgets/dialogs/fontdialog.md
+              - DateDialog: widgets/dialogs/datedialog.md
+          - Forms & Queries:
+              - FormDialog: widgets/dialogs/formdialog.md
+              - QueryDialog: widgets/dialogs/querydialog.md
+              - QueryBox: widgets/dialogs/querybox.md
+          - Advanced:
+              - FilterDialog: widgets/dialogs/filterdialog.md
+              - Dialog (Base): widgets/dialogs/dialog.md
 
-      - Tk Widgets:
-          - Combobox: widgets/other/combobox.md
-          - Entry: widgets/other/entry.md
-          - Spinbox: widgets/other/spinbox.md
+      - Overlays:
+          - Toast: widgets/overlays/toast.md
+          - ToolTip: widgets/overlays/tooltip.md
 
-  - Design:
-      - Design System: design/overview.md
-      - Variants & States: design/variants-and-states.md
-      - Color System: design/color-system.md
-      - Typography: design/typography.md
-      - Iconography: design/iconography.md
-      - Layout System: design/layout-system.md
-      - Theming: design/theming.md
-      - Localization: design/localization.md
+      - Primitives:
+          - Canvas: widgets/primitives/canvas.md
+          - Combobox: widgets/primitives/combobox.md
+          - Entry: widgets/primitives/entry.md
+          - Spinbox: widgets/primitives/spinbox.md
+          - Text: widgets/primitives/text.md
 
-  - Guides:
-      - Application Runtime: guides/application-runtime.md
-      - App Configuration: guides/app-configuration.md
-      - Theming & Appearance: guides/theming-and-appearance.md
-      - State & Signals: guides/state-and-signals.md
-      - Events & Virtual Events: guides/events-and-virtual-events.md
-      - Data & Validation: guides/data-and-validation.md
-      - Forms & Dialog Patterns: guides/forms-and-dialog-patterns.md
-      - Distribution & Packaging: guides/distribution-and-packaging.md
-      - Testing & Architecture: guides/testing-and-architecture.md
-
-  - Reference:
-      - API Reference: reference/api/index.md
-      - Utilities:
-          - Application Utilities: reference/utilities/application.md
-          - Theme Utilities: reference/utilities/theme.md
-          - Style Utilities: reference/utilities/style.md
-      - CLI Tools: reference/cli-tools.md
-      - Migration:
-          - Overview: reference/migration/overview.md
-          - v1 -> v2 Guide: reference/migration/v1-to-v2.md
-          - Breaking Changes: reference/migration/breaking-changes.md
-      - FAQ & Troubleshooting: reference/faq-and-troubleshooting.md
+  - API Reference:
+      - Overview: reference/index.md
+      - Core:
+          - App: reference/core/app.md
+          - Style: reference/core/style.md
+      - Widgets:
+          - Overview: reference/widgets/index.md
+      - Dialogs:
+          - Overview: reference/dialogs/index.md
 
   - Showcase:
+      - Overview: showcase/index.md
       - Gallery: showcase/gallery.md
-      - Templates in Action: showcase/templates-in-action.md
-      - Community Projects: showcase/community-projects.md
-      - Case Studies: showcase/case-studies.md
+
+#nav:
+#  - Getting Started:
+#      - What is ttkbootstrap?: getting-started/what-is-v2.md
+#      - What's new in V2?: getting-started/why-v2.md
+#      - Quickstart (5-min App): getting-started/quickstart.md
+#      - Installation: getting-started/installation.md
+#      - First Application: getting-started/first-application.md
+#      - Project Templates: getting-started/project-templates.md
+#      - Learning Resources: getting-started/learning-resources.md
+#      - Community & Support: getting-started/community-and-support.md
+#
+#  - Widgets:
+#      - Overview: widgets/overview.md
+#
+#      - Controls:
+#          - Button: widgets/controls/button.md
+#          - CheckButton: widgets/controls/checkbutton.md
+#          - RadioButton: widgets/controls/radiobutton.md
+#          - TextEntry: widgets/controls/textentry.md
+#          - NumericEntry: widgets/controls/numericentry.md
+#          - SpinnerEntry: widgets/controls/spinnerentry.md
+#          - DateEntry: widgets/controls/dateentry.md
+#          - TimeEntry: widgets/controls/timeentry.md
+#          - PasswordEntry: widgets/controls/passwordentry.md
+#          - PathEntry: widgets/controls/pathentry.md
+#          - Scale: widgets/controls/scale.md
+#          - SelectBox: widgets/controls/selectbox.md
+#          - OptionMenu: widgets/controls/optionmenu.md
+#          - Form: widgets/controls/form.md
+#
+#      - Data Display:
+#          - Label: widgets/data-display/label.md
+#          - Progressbar: widgets/data-display/progressbar.md
+#          - Meter: widgets/data-display/meter.md
+#          - FloodGauge: widgets/data-display/floodgauge.md
+#          - TreeView: widgets/data-display/treeview.md
+#          - TableView: widgets/data-display/tableview.md
+#
+#      - Layout:
+#          - Frame: widgets/layout/frame.md
+#          - LabelFrame: widgets/layout/labelframe.md
+#          - PanedWindow: widgets/layout/panedwindow.md
+#          - ScrollView: widgets/layout/scrollview.md
+#          - ScrolledText: widgets/layout/scrolledtext.md
+#          - Scrollbar: widgets/layout/scrollbar.md
+#          - Separator: widgets/layout/separator.md
+#          - SizeGrip: widgets/layout/sizegrip.md
+#
+#      - Views:
+#          - Notebook: widgets/views/notebook.md
+#          - PageStack: widgets/views/pagestack.md
+#
+#      - Menus:
+#          - DropdownButton: widgets/menus/dropdownbutton.md
+#          - MenuButton: widgets/menus/menubutton.md
+#          - ContextMenu: widgets/menus/contextmenu.md
+#
+#      - Feedback:
+#          - Tooltip: widgets/feedback/tooltip.md
+#          - Toast: widgets/feedback/toast.md
+#          - Dialog: widgets/feedback/dialog.md
+#          - DateDialog: widgets/feedback/datedialog.md
+#          - FontDialog: widgets/feedback/fontdialog.md
+#          - FilterDialog: widgets/feedback/filterdialog.md
+#          - FormDialog: widgets/feedback/formdialog.md
+#          - MessageBox: widgets/feedback/messagebox.md
+#          - QueryBox: widgets/feedback/querybox.md
+#          - ColorChooser: widgets/feedback/colorchooser.md
+#          - ColorDropper: widgets/feedback/colordropper.md
+#
+#      - Tk Widgets:
+#          - Combobox: widgets/other/combobox.md
+#          - Entry: widgets/other/entry.md
+#          - Spinbox: widgets/other/spinbox.md
+#
+#  - Design:
+#      - Design System: design/overview.md
+#      - Variants & States: design/variants-and-states.md
+#      - Color System: design/color-system.md
+#      - Typography: design/typography.md
+#      - Iconography: design/iconography.md
+#      - Layout System: design/layout-system.md
+#      - Theming: design/theming.md
+#      - Localization: design/localization.md
+#
+#  - Guides:
+#      - Application Runtime: guides/application-runtime.md
+#      - App Configuration: guides/app-configuration.md
+#      - Theming & Appearance: guides/theming-and-appearance.md
+#      - State & Signals: guides/state-and-signals.md
+#      - Events & Virtual Events: guides/events-and-virtual-events.md
+#      - Data & Validation: guides/data-and-validation.md
+#      - Forms & Dialog Patterns: guides/forms-and-dialog-patterns.md
+#      - Distribution & Packaging: guides/distribution-and-packaging.md
+#      - Testing & Architecture: guides/testing-and-architecture.md
+#
+#  - Reference:
+#      - API Reference: reference/api/index.md
+#      - Utilities:
+#          - Application Utilities: reference/utilities/application.md
+#          - Theme Utilities: reference/utilities/theme.md
+#          - Style Utilities: reference/utilities/style.md
+#      - CLI Tools: reference/cli-tools.md
+#      - Migration:
+#          - Overview: reference/migration/overview.md
+#          - v1 -> v2 Guide: reference/migration/v1-to-v2.md
+#          - Breaking Changes: reference/migration/breaking-changes.md
+#      - FAQ & Troubleshooting: reference/faq-and-troubleshooting.md
+#
+#  - Showcase:
+#      - Gallery: showcase/gallery.md
+#      - Templates in Action: showcase/templates-in-action.md
+#      - Community Projects: showcase/community-projects.md
+#      - Case Studies: showcase/case-studies.md
