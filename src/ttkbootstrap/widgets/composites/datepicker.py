@@ -75,14 +75,18 @@ class DatePicker(ttk.Frame):
         - Single or range selection via ``selection_mode``
         - Optional disabled dates plus min/max bounds
         - One month in single mode; two months in range mode
-        - Optional week numbers and outside-month days (default: show outside in single, hide in range)
+        - Optional week numbers and outside-month days
 
-    Virtual events:
-        - ``<<DateSelect>>`` fired on selection with ``event.data`` containing
-          ``{"date": last_click, "range": (start, end)}``.
-            * In single mode, ``date`` and ``range[0]`` are the same and ``range[1]`` is None.
-            * In range mode, ``date`` is the most recent click; the full selection is in ``range``
-              where ``range[1]`` may be None while selecting the end.
+    Events:
+        The widget fires ``<<DateSelect>>`` on selection. The ``event.data`` dict contains:
+
+        - ``date``: The last clicked date
+        - ``range``: A tuple of ``(start, end)`` dates
+
+        In **single mode**, ``date`` and ``range[0]`` are the same; ``range[1]`` is None.
+
+        In **range mode**, ``date`` is the most recent click. The full selection is in
+        ``range``, where ``range[1]`` may be None while selecting the end.
     """
 
     def __init__(
@@ -101,6 +105,29 @@ class DatePicker(ttk.Frame):
             bootstyle: str = PRIMARY,
             padding: int | tuple[int, int] | tuple[int, int, int, int] | str | None = None,
     ) -> None:
+        """Initialize a DatePicker widget.
+
+        Args:
+            master: Parent widget. If None, uses the default root window.
+            start_date (date | datetime | str): Initial selected date or range start.
+                Accepts date, datetime, or ISO format string.
+            end_date (date | datetime | str): End date for range selection. Only used
+                when ``selection_mode='range'``.
+            disabled_dates (Iterable): Collection of dates that cannot be selected.
+            selection_mode (str): Selection mode - ``'single'`` for single date or
+                ``'range'`` for date range selection.
+            max_date (date | datetime | str): Maximum selectable date. Dates after
+                this are disabled.
+            min_date (date | datetime | str): Minimum selectable date. Dates before
+                this are disabled.
+            show_outside_days (bool): Whether to show days from adjacent months.
+                Defaults to True for single mode, False for range mode.
+            show_week_numbers (bool): Whether to display ISO week numbers in the
+                leftmost column.
+            first_weekday (int): First day of the week. 0=Monday, 6=Sunday.
+            bootstyle (str): The accent color for selected dates and highlights.
+            padding (int | tuple | str): Padding around the widget.
+        """
         super().__init__(master, padding=padding)
 
         self._selection_mode = selection_mode
