@@ -213,7 +213,7 @@ class RadioGroup(Frame):
         for button in self._buttons.values():
             button.configure(variable=value.var)
 
-    def add(self, text=None, value=None, key=None, **kwargs) -> RadioButton:
+    def add(self, text: str = None, value: Any = None, key: str | None = None, **kwargs: Any) -> RadioButton:
         """Add a radio button to the group.
 
         Args:
@@ -329,7 +329,7 @@ class RadioGroup(Frame):
             raise KeyError(f"No button with key '{key}'")
         return self._buttons[key]
 
-    def configure_button(self, key: str, **kwargs):
+    def configure_button(self, key: str, **kwargs: Any):
         """Configure a specific button by its key.
 
         Args:

@@ -12,6 +12,7 @@ from typing_extensions import Unpack
 from ttkbootstrap.widgets.primitives.button import Button
 from ttkbootstrap.widgets.composites.field import Field, FieldOptions
 from ttkbootstrap.widgets.mixins import configure_delegate
+from ttkbootstrap.widgets.types import Master
 
 FileDialogType = Literal[
     'openfilename', 'openfile', 'directory', 'openfilenames', 'openfiles',
@@ -59,7 +60,7 @@ class PathEntry(Field):
 
     def __init__(
             self,
-            master=None,
+            master: Master = None,
             value: str = "No file chosen",
             label: str = "Choose File",
             dialog: FileDialogType = "openfilename",

@@ -17,6 +17,7 @@ from ttkbootstrap.widgets.mixins.entry_mixin import EntryMixin
 from ttkbootstrap.widgets.parts.numberentry_part import NumberEntryPart
 from ttkbootstrap.widgets.parts.textentry_part import TextEntryPart
 from ttkbootstrap.widgets.parts.spinnerentry_part import SpinnerEntryPart
+from ttkbootstrap.widgets.types import Master
 
 FieldKind = Literal['text', 'numeric', 'spinbox']
 """Type alias for field kind specification.
@@ -115,7 +116,7 @@ class Field(EntryMixin, Frame):
 
     def __init__(
             self,
-            master=None,
+            master: Master = None,
             *,
             value: str | int | float = None,
             label: str = None,
@@ -123,7 +124,7 @@ class Field(EntryMixin, Frame):
             show_message: bool = False,
             required: bool = False,
             kind: FieldKind = "text",
-            **kwargs
+            **kwargs: Any
     ):
         """Initialize a Field widget.
 
@@ -354,8 +355,9 @@ class Field(EntryMixin, Frame):
             self,
             widget: Type[Union[Button, Label, CheckButton]],
             position: Literal['before', 'after'],
-            name=None, pack_options: dict[str, Any] = None,
-            **kwargs
+            name: str | None = None,
+            pack_options: dict[str, Any] = None,
+            **kwargs: Any
     ):
         """Insert a widget addon before or after the entry input.
 

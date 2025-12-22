@@ -6,6 +6,7 @@ and an optional visibility toggle button.
 
 from ttkbootstrap.widgets.primitives.button import Button
 from ttkbootstrap.widgets.composites.field import Field, FieldOptions
+from ttkbootstrap.widgets.types import Master
 from typing_extensions import Unpack
 
 
@@ -36,7 +37,7 @@ class PasswordEntry(Field):
 
     def __init__(
             self,
-            master=None,
+            master: Master = None,
             value: str = None,
             label: str = None,
             message: str = None,

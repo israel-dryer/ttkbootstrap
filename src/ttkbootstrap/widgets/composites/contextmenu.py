@@ -8,6 +8,7 @@ from tkinter import BooleanVar, IntVar, StringVar, TclError, Toplevel, Widget
 from typing import Any, Callable, Union
 
 from ttkbootstrap.widgets.primitives.button import Button
+from ttkbootstrap.widgets.types import Master
 from ttkbootstrap.widgets.primitives.checkbutton import CheckButton
 from ttkbootstrap.widgets.primitives.frame import Frame
 from ttkbootstrap.widgets.mixins import CustomConfigMixin, configure_delegate
@@ -23,7 +24,7 @@ class ContextMenuItem:
         kwargs (dict): Additional keyword arguments for the item.
     """
 
-    def __init__(self, type: str, **kwargs: Any) -> None:
+    def __init__(self, type: str, **kwargs) -> None:
         """Initialize a context menu item.
 
         Args:
@@ -44,7 +45,7 @@ class ContextMenu(CustomConfigMixin):
 
     def __init__(
             self,
-            master=None,
+            master: Master = None,
             minwidth: int = 150,
             width: int = None,
             minheight: int = None,
@@ -223,7 +224,7 @@ class ContextMenu(CustomConfigMixin):
         self._items.append(sep)
         return sep
 
-    def add_item(self, type: str, **kwargs) -> Widget:
+    def add_item(self, type: str, **kwargs: Any) -> Widget:
         """Add a menu item based on type.
 
         Args:
@@ -265,7 +266,7 @@ class ContextMenu(CustomConfigMixin):
         self._delegate_items(value)
         return None
 
-    def insert_item(self, index: int, type: str, **kwargs) -> Widget:
+    def insert_item(self, index: int, type: str, **kwargs: Any) -> Widget:
         """Insert a new item at the given index.
 
         Args:

@@ -6,10 +6,11 @@ both standard and frameless (borderless) display modes.
 """
 
 from tkinter import Widget
-from typing import Any, Literal, Optional, Tuple, Union
+from typing import Any, Callable, Literal, Optional, Tuple, Union
 from types import SimpleNamespace
 
 from ttkbootstrap.widgets.primitives import CheckButton, Frame, Label, Separator
+from ttkbootstrap.widgets.types import Master
 from ttkbootstrap.widgets.composites.textentry import TextEntry
 from ttkbootstrap.runtime.app import Window
 from ttkbootstrap.dialogs import Dialog, DialogButton
@@ -35,7 +36,7 @@ class FilterDialogContent(ttk.Frame):
 
     def __init__(
             self,
-            master=None,
+            master: Master = None,
             allow_search: bool = False,
             allow_select_all: bool = False,
             items: list[str | dict[str, Any]] = None
@@ -188,7 +189,7 @@ class FilterDialog(ttk.Frame):
 
     def __init__(
             self,
-            master=None,
+            master: Master = None,
             title: str = "Filter",
             items: list[str | dict[str, Any]] = None,
             allow_search: bool = False,
@@ -243,11 +244,8 @@ class FilterDialog(ttk.Frame):
             if self.result is not None:
                 self.event_generate('<<SelectionChanged>>', data={"selected": self.result.copy()})
 
-    def on_selection_changed(self, callback):
-        """Bind callback to <<SelectionChanged>> event.
-
-        Args:
-            callback: Function receiving event with event.data = {"selected": list}
+    def on_selection_changed(self, callback: Callable) -> str:
+        """Bind to ``<<SelectionChanged>>``. Callback receives ``event.data = {"selected": list[Any]}``.
 
         Returns:
             Binding identifier for use with off_selection_changed().
@@ -299,7 +297,7 @@ class FilterDialog(ttk.Frame):
             window_point: AnchorPoint = 'center',
             offset: Tuple[int, int] = (0, 0),
             auto_flip: Union[bool, Literal['vertical', 'horizontal']] = False
-    ):
+    ) -> Optional[list[Any]]:
         """Show the dialog and return the selected items.
 
         Args:
@@ -327,7 +325,7 @@ class FilterDialog(ttk.Frame):
         Returns:
             List of selected item values, or None if cancelled.
         """
-        self._dialog = Dialog(
+        self._dialog: Dialog = Dialog(
             master=self._master,
             title=self._title,
             content_builder=self._build_content,

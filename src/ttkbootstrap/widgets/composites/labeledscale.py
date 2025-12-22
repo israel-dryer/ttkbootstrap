@@ -6,6 +6,7 @@ from ttkbootstrap.widgets.primitives.frame import Frame
 from ttkbootstrap.widgets.primitives.label import Label
 from ttkbootstrap.widgets.mixins import configure_delegate
 from ttkbootstrap.widgets.primitives.scale import Scale
+from ttkbootstrap.widgets.types import Master
 
 
 class LabeledScale(Frame):
@@ -21,7 +22,7 @@ class LabeledScale(Frame):
 
     def __init__(
             self,
-            master=None,
+            master: Master = None,
             value: int | float = 0,
             minvalue: int | float = 0,
             maxvalue: int | float = 100,
@@ -29,7 +30,7 @@ class LabeledScale(Frame):
             dtype: type[int] | type[float] = int,
             compound: Literal['before', 'after'] = 'before',
             bootstyle: str = None,
-            **kwargs
+            **kwargs: Any
 
     ):
         """Create a horizontal labeled scale widget.

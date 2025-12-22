@@ -9,6 +9,7 @@ from typing import Dict, Optional, Set
 from ttkbootstrap.runtime.app import get_app_settings
 from ttkbootstrap.style.bootstyle_builder_ttk import BootstyleBuilderTTk
 from ttkbootstrap.style.theme_provider import ThemeProvider, use_theme
+from ttkbootstrap.widgets.types import Master
 
 _style_instance: Style | None = None
 
@@ -41,7 +42,7 @@ class Style(ttkStyle):
             _style_instance = super().__new__(cls)
         return _style_instance
 
-    def __init__(self, master=None, theme: str = "light"):
+    def __init__(self, master: Master = None, theme: str = "light"):
         """Initialize the Style instance.
 
         Args:
@@ -350,7 +351,7 @@ class Style(ttkStyle):
         return f"<Style theme={self._current_theme} styles={len(self._style_registry)}>"
 
 
-def get_style(master=None) -> Style:
+def get_style(master: Master = None) -> Style:
     """Return the global Style singleton instance.
 
     Convenience helper function that ensures a single Style instance

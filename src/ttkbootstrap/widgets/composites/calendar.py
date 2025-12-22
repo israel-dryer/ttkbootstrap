@@ -10,6 +10,7 @@ from typing import Any, Callable, Iterable, Literal, Optional
 
 from babel import dates
 from ttkbootstrap.widgets.primitives import Button, CheckButton, Frame, Label, Separator
+from ttkbootstrap.widgets.types import Master
 from ttkbootstrap.constants import BOTH, CENTER, LEFT, NSEW, PRIMARY, X, Y, YES
 from ttkbootstrap.core.localization import MessageCatalog
 from ttkbootstrap.widgets.mixins import configure_delegate
@@ -81,7 +82,7 @@ class Calendar(ttk.Frame):
 
     def __init__(
             self,
-            master=None,
+            master: Master = None,
             *,
             start_date: date | datetime | str | None = None,
             end_date: date | datetime | str | None = None,

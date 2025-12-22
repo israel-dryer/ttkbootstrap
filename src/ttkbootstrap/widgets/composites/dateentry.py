@@ -12,6 +12,7 @@ from typing_extensions import Unpack
 from ttkbootstrap.widgets.primitives.button import Button
 from ttkbootstrap.widgets.composites.field import Field, FieldOptions
 from ttkbootstrap.widgets.mixins import configure_delegate
+from ttkbootstrap.widgets.types import Master
 
 if TYPE_CHECKING:
     from ttkbootstrap.dialogs.datedialog import DateDialog
@@ -54,7 +55,7 @@ class DateEntry(Field):
 
     def __init__(
             self,
-            master=None,
+            master: Master = None,
             value: str | date | datetime = None,
             value_format: str = "longDate",
             label: str = None,

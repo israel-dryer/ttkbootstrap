@@ -3,6 +3,7 @@ from typing import Any
 from typing_extensions import Unpack
 
 from ttkbootstrap.widgets.composites.field import Field, FieldOptions
+from ttkbootstrap.widgets.types import Master
 
 
 class TextEntry(Field):
@@ -42,7 +43,7 @@ class TextEntry(Field):
     """
 
     def __init__(
-            self, master=None, value: Any = None, label: str = None, message: str = None,
+            self, master: Master = None, value: Any = None, label: str = None, message: str = None,
             **kwargs: Unpack[FieldOptions]):
         """Initialize a TextEntry widget.
 

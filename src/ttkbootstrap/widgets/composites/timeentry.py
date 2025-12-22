@@ -13,6 +13,7 @@ from ttkbootstrap.runtime.app import get_app_settings
 from ttkbootstrap.core.localization import IntlFormatter
 from ttkbootstrap.widgets.composites.field import FieldOptions
 from ttkbootstrap.widgets.primitives.selectbox import SelectBox
+from ttkbootstrap.widgets.types import Master
 
 
 class TimeEntry(SelectBox):
@@ -40,7 +41,7 @@ class TimeEntry(SelectBox):
 
     def __init__(
             self,
-            master=None,
+            master: Master = None,
             value: Union[datetime.time, str] = None,
             value_format: str = 'shortTime',
             interval: int = 30,

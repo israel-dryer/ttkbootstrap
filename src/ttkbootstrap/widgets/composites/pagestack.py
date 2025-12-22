@@ -277,7 +277,7 @@ class PageStack(Frame):
             return None
         return self._current, (self._history[self._index][1] if self._index >= 0 else {})
 
-    def configure_page(self, key: str, option=None, **kwargs) -> Any:
+    def configure_page(self, key: str, option: Any = None, **kwargs: Any) -> Any:
         """Query or configure the page configuration.
 
         Args:
@@ -313,7 +313,7 @@ class PageStack(Frame):
         """
         return self._pages.values()
 
-    def on_page_changed(self, callback) -> str:
+    def on_page_changed(self, callback: Callable) -> str:
         """Bind a callback to the <<PageChange>> event.
 
         Args:
@@ -326,7 +326,7 @@ class PageStack(Frame):
         """
         return self.bind('<<PageChange>>', callback, add="+")
 
-    def off_page_changed(self, funcid) -> None:
+    def off_page_changed(self, funcid: str) -> None:
         """Remove a callback binding from the <<PageChange>> event.
 
         Args:

@@ -12,6 +12,7 @@ from tkinter import Widget
 from typing import Any, Callable, Iterable, Literal, Mapping, Optional, Tuple, TypedDict, Union
 
 import ttkbootstrap as ttk
+from ttkbootstrap.widgets.types import Master
 from ttkbootstrap.runtime.toplevel import Toplevel
 from ttkbootstrap.runtime.window_utilities import AnchorPoint, WindowPositioning
 
@@ -129,7 +130,7 @@ class Dialog:
 
     def __init__(
             self,
-            master=None,
+            master: Master = None,
             title: str = "ttkbootstrap",
             content_builder: Optional[ContentBuilder] = None,
             footer_builder: Optional[FooterBuilder] = None,

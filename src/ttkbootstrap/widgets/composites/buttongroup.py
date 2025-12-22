@@ -81,7 +81,7 @@ class ButtonGroup(Frame):
         key: str = None,
         widget_type: type = None,
         command: Callable[[], Any] = None,
-        **kwargs
+        **kwargs: Any
     ) -> 'tk.Widget':
         """Add a widget to the group.
 
@@ -225,7 +225,7 @@ class ButtonGroup(Frame):
             raise KeyError(f"No widget with key '{key}'")
         return self._widgets[key]
 
-    def configure_widget(self, key: str, **kwargs):
+    def configure_widget(self, key: str, **kwargs: Any):
         """Configure a specific widget by its key.
 
         Args:

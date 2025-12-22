@@ -11,6 +11,7 @@ from typing_extensions import Unpack
 from ttkbootstrap.widgets.primitives.button import Button
 from ttkbootstrap.widgets.composites.field import Field, FieldOptions
 from ttkbootstrap.widgets.mixins import configure_delegate
+from ttkbootstrap.widgets.types import Master
 
 
 class NumericEntry(Field):
@@ -41,7 +42,7 @@ class NumericEntry(Field):
 
     def __init__(
             self,
-            master=None,
+            master: Master = None,
             value: int | float = 0,
             label: str = None,
             message: str = None,

@@ -9,6 +9,7 @@ from PIL.Image import Resampling
 from ttkbootstrap.core.exceptions import ConfigurationWarning
 from ttkbootstrap.widgets.primitives.frame import Frame
 from ttkbootstrap.widgets.mixins.configure_mixin import configure_delegate
+from ttkbootstrap.widgets.types import Master
 
 DEFAULT_IMAGE_SCALE = 6
 
@@ -28,7 +29,7 @@ class Meter(Frame):
 
     def __init__(
             self,
-            master=None,
+            master: Master = None,
             bootstyle: str = 'primary',
 
             # value parameters
@@ -59,7 +60,7 @@ class Meter(Frame):
             show_text: bool = True,
             interactive: bool = False,
             step_size: int | float = 1,
-            **kwargs
+            **kwargs: Any
     ):
         """Initialize a Meter widget.
 

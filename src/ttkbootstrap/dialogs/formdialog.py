@@ -14,6 +14,7 @@ if TYPE_CHECKING:
 
 from ttkbootstrap.dialogs.dialog import Dialog, DialogButton, ButtonSpec
 from ttkbootstrap.widgets.primitives.frame import Frame
+from ttkbootstrap.widgets.types import Master
 from ttkbootstrap.constants import DEFAULT_MIN_COL_WIDTH as FORM_MIN_COL_WIDTH
 from ttkbootstrap.runtime.window_utilities import AnchorPoint
 
@@ -41,8 +42,8 @@ class FormDialog:
             Receives the updated data dict as parameter.
         width: Requested width for the form. Defaults to None (auto-size).
         height: Requested height for the form. Defaults to None (auto-size).
-          scrollable: Deprecated; FormDialog manages scrolling internally.
-          scrollview_options: Additional options passed to ScrollView when scrollable is True.
+        scrollable: Deprecated; FormDialog manages scrolling internally.
+        scrollview_options: Additional options passed to ScrollView when scrollable is True.
         buttons: Footer buttons. Can be DialogButton instances, dicts, or strings.
             If not provided, defaults to Cancel and OK buttons.
             First button appears rightmost (Bootstrap convention).
@@ -58,7 +59,7 @@ class FormDialog:
 
     def __init__(
         self,
-        master=None,
+        master: Master = None,
         *,
         title: str = "Form",
         data: dict[str, Any] | None = None,

@@ -123,7 +123,7 @@ class TableView(Frame):
             context_menus: "none" | "headers" | "rows" | "all" to enable region context menus.
             column_min_width: Global minimum width for columns (overridden by per-column minwidth; default 40).
             column_auto_width: Automatically size columns to widest visible text on each page.
-            **kwargs: Passed through to Frame.
+            **kwargs: Any: Passed through to Frame.
         """
         super().__init__(master, **kwargs)
 

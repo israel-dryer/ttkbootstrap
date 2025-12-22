@@ -476,7 +476,7 @@ class ScrollView(Frame):
 
             self._scrolling_enabled = False
 
-    def add(self, widget: Widget, **kwargs):
+    def add(self, widget: Widget, **kwargs: Any):
         """Add a widget to the scrollable area.
 
         Args:
@@ -573,7 +573,7 @@ class ScrollView(Frame):
         """Query or command horizontal view position."""
         return self.canvas.xview(*args)
 
-    def yview_moveto(self, fraction):
+    def yview_moveto(self, fraction: float):
         """Scroll to a specific vertical position.
 
         Args:
@@ -581,7 +581,7 @@ class ScrollView(Frame):
         """
         self.canvas.yview_moveto(fraction)
 
-    def xview_moveto(self, fraction):
+    def xview_moveto(self, fraction: float):
         """Scroll to a specific horizontal position.
 
         Args:

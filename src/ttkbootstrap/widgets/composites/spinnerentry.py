@@ -10,6 +10,7 @@ from typing_extensions import Unpack
 
 from ttkbootstrap.widgets.composites.field import Field, FieldOptions
 from ttkbootstrap.widgets.mixins import configure_delegate
+from ttkbootstrap.widgets.types import Master
 
 
 class SpinnerEntry(Field):
@@ -37,7 +38,7 @@ class SpinnerEntry(Field):
 
     def __init__(
             self,
-            master=None,
+            master: Master = None,
             value: Union[int, float, str] = '',
             label: str = None,
             message: str = None,

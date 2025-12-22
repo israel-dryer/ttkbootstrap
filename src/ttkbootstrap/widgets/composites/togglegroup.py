@@ -134,7 +134,7 @@ class ToggleGroup(Frame):
         self._signal = value
         self._variable = value.var
 
-    def add(self, text=None, value=None, key=None, **kwargs) -> RadioButton | CheckButton:
+    def add(self, text: str = None, value: Any = None, key: str | None = None, **kwargs: Any) -> RadioButton | CheckButton:
         """Add a toggle button to the group.
 
         Args:
