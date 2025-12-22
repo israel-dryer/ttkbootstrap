@@ -26,6 +26,7 @@ class DateEntry(Field):
     and can accept input as strings, date objects, or datetime objects.
 
     Features:
+
         - Locale-aware date formatting
         - Multiple date format presets (longDate, shortDate, etc.)
         - Custom ICU date format patterns
@@ -35,6 +36,7 @@ class DateEntry(Field):
         - All Field features (label, validation, messages, etc.)
 
     Date Format Presets:
+
         - longDate: Full date (e.g., "January 15, 2025")
         - shortDate: Short date (e.g., "1/15/25")
         - monthAndDate: Month and day (e.g., "January 15")
@@ -52,21 +54,21 @@ class DateEntry(Field):
         - Custom: Any ICU date format pattern (e.g., "yyyy-MM-dd")
 
     Events (inherited from Field):
-        <<Change>>: Fired when date value changes after commit
-        <<Input>>: Fired on each keystroke
-        <<Valid>>: Fired when validation passes
-        <<Invalid>>: Fired when validation fails
+
+        - `<<Change>>`: Fired when date value changes after commit
+        - `<<Input>>`: Fired on each keystroke
+        - `<<Valid>>`: Fired when validation passes
+        - `<<Invalid>>`: Fired when validation fails
 
     Examples:
         ```python
         import ttkbootstrap as ttk
-        from ttkbootstrap.widgets.composites.dateentry import DateEntry
         from datetime import date
 
-        root = ttk.Window()
+        root = ttk.App()
 
         # Basic date entry with short date format
-        date_entry = DateEntry(
+        date_entry = ttk.DateEntry(
             root,
             label="Birth Date",
             value=date(1990, 1, 15),
@@ -76,7 +78,7 @@ class DateEntry(Field):
         date_entry.pack(padx=20, pady=10, fill='x')
 
         # Long date format
-        date_entry2 = DateEntry(
+        date_entry2 = ttk.DateEntry(
             root,
             label="Event Date",
             value_format="longDate",
@@ -85,7 +87,7 @@ class DateEntry(Field):
         date_entry2.pack(padx=20, pady=10, fill='x')
 
         # Custom date format (ISO 8601)
-        date_entry3 = DateEntry(
+        date_entry3 = ttk.DateEntry(
             root,
             label="ISO Date",
             value="2025-01-15",
@@ -94,7 +96,7 @@ class DateEntry(Field):
         date_entry3.pack(padx=20, pady=10, fill='x')
 
         # Month and year only
-        date_entry4 = DateEntry(
+        date_entry4 = ttk.DateEntry(
             root,
             label="Expiry Date",
             value_format="monthAndYear"
@@ -102,7 +104,7 @@ class DateEntry(Field):
         date_entry4.pack(padx=20, pady=10, fill='x')
 
         # Without picker button
-        date_entry5 = DateEntry(
+        date_entry5 = ttk.DateEntry(
             root,
             label="Date",
             show_picker_button=False
@@ -120,12 +122,13 @@ class DateEntry(Field):
         ```
 
         Inherited Properties:
-        entry_widget: Access to the underlying TextEntryPart widget
-        label_widget: Access to the label widget
-        message_widget: Access to the message label widget
-        addons: Dictionary of inserted addon widgets
-        variable: Tkinter Variable linked to entry text
-        signal: Signal object for reactive updates
+
+            - entry_widget: Access to the underlying TextEntryPart widget
+            - label_widget: Access to the label widget
+            - message_widget: Access to the message label widget
+            - addons: Dictionary of inserted addon widgets
+            - variable: Tkinter Variable linked to entry text
+            - signal: Signal object for reactive updates
 
     Note:
         The calendar picker button is currently a placeholder. The date picker
@@ -154,46 +157,39 @@ class DateEntry(Field):
 
         Args:
             master: Parent widget. If None, uses the default root window.
-            value: Initial date value to display. Can be a date object, datetime
-                object, or string representation. Default is None (empty field).
-            value_format: Date format pattern to use for parsing and displaying
-                dates. Can be a preset format name or custom ICU date pattern.
-                Default is "shortDate". Common presets:
-                - "shortDate": Short numeric date (e.g., "1/15/25")
-                - "longDate": Full date (e.g., "January 15, 2025")
-                - "yyyy-MM-dd": ISO 8601 format
-                - "monthAndYear": Month and year only
-                See class documentation for complete list of format presets.
-            label: Optional label text to display above the entry field.
+            value (str | date | datetime): Initial date value to display. Can be a
+                date object, datetime object, or string representation.
+            value_format (str): Date format pattern to use for parsing and displaying
+                dates. See class docstring for complete list of presets.
+            label (str): Optional label text to display above the entry field.
                 If required=True, an asterisk (*) is automatically appended.
-            message: Optional message text to display below the entry field.
+            message (str): Optional message text to display below the entry field.
                 Used for hints or help text. Replaced by validation errors when
                 validation fails.
-        show_picker_button: If True, displays the calendar picker button
-            to the right of the entry. If False, hides the button. Default
-            is True.
-        picker_title: Title text for the calendar picker dialog (when
-            implemented). Default is "Select new date".
-        picker_first_weekday: First day of the week to display in the
-            calendar picker. 0=Monday, 6=Sunday. Default is 6 (Sunday).
-            **kwargs: Additional keyword arguments from FieldOptions:
-                locale: Locale identifier for date formatting (e.g., 'en_US')
-                required: If True, field cannot be empty
-                bootstyle: The accent color of the focus ring and active border
-                allow_blank: Allow empty input
-                cursor: Cursor style when hovering
-                exportselection: Export selection to clipboard
-                font: Font for text display
-                foreground: Text color
-                initial_focus: If True, widget receives focus on creation
-                justify: Text alignment
-                show_message: If True, displays message area
-                padding: Padding around entry widget
-                take_focus: If True, widget accepts Tab focus
-                textvariable: Tkinter Variable to link with text
-                textsignal: Signal object for reactive updates
-                width: Width in characters
-                xscrollcommand: Callback for horizontal scrolling
+            show_picker_button (bool): If True, displays the calendar picker button
+                to the right of the entry. If False, hides the button.
+            picker_title (str): Title text for the calendar picker dialog.
+            picker_first_weekday (int): First day of the week to display in the
+                calendar picker. 0=Monday, 6=Sunday.
+
+        Other Parameters:
+            locale (str): Locale identifier for date formatting (e.g., 'en_US').
+            required (bool): If True, field cannot be empty.
+            bootstyle (str): The accent color of the focus ring and active border.
+            allow_blank (bool): Allow empty input.
+            cursor (str): Cursor style when hovering.
+            exportselection (bool): Export selection to clipboard.
+            font (str): Font for text display.
+            foreground (str): Text color.
+            initial_focus (bool): If True, widget receives focus on creation.
+            justify (str): Text alignment ('left', 'center', 'right').
+            show_message (bool): If True, displays message area.
+            padding (int | tuple): Padding around entry widget.
+            takefocus (bool): If True, widget accepts Tab focus.
+            textvariable (Variable): Tkinter Variable to link with text.
+            textsignal (Signal): Signal object for reactive updates.
+            width (int): Width in characters.
+            xscrollcommand (Callable): Callback for horizontal scrolling.
 
         Note:
             The widget uses the IntlFormatter for locale-aware date formatting.
