@@ -36,11 +36,6 @@ class ButtonGroup(Frame):
     state tracking. Perfect for toolbars, action button groups, or any scenario
     where you want buttons visually connected but don't need to track which is
     selected.
-
-    Attributes:
-        bootstyle (str): The color/variant style applied to all buttons.
-        orient (str): Layout orientation ('horizontal' or 'vertical').
-        state (str): State for all buttons ('normal' or 'disabled').
     """
 
     def __init__(self, master: Any = None, **kwargs: Unpack[ButtonGroupKwargs]):
@@ -101,17 +96,6 @@ class ButtonGroup(Frame):
 
         Raises:
             ValueError: If a widget with the same key already exists.
-
-        Examples:
-            # Add simple button
-            btn = group.add("Click Me", command=on_click)
-
-            # Add with custom key
-            group.add("Save", key="save_btn", command=save)
-
-            # Add MenuButton
-            from ttkbootstrap import MenuButton
-            group.add("Options", widget_type=MenuButton, key="menu")
         """
         # Auto-generate key if not provided
         if key is None:
@@ -270,15 +254,29 @@ class ButtonGroup(Frame):
         return tuple(self._widgets.keys())
 
     def __len__(self) -> int:
-        """Return the number of widgets in the group."""
+        """Return the number of widgets in the group.
+
+        Examples:
+            >>> count = len(button_group)
+        """
         return len(self._widgets)
 
     def __contains__(self, key: str) -> bool:
-        """Check if a widget with the given key exists in the group."""
+        """Check if a widget with the given key exists in the group.
+
+        Examples:
+            >>> if 'save' in button_group:
+            ...     print('Save button exists')
+        """
         return key in self._widgets
 
     def __iter__(self):
-        """Iterate over the widgets in the group."""
+        """Iterate over the widgets in the group.
+
+        Examples:
+            >>> for widget in button_group:
+            ...     widget.configure(state='disabled')
+        """
         return iter(self._widgets.values())
 
     @configure_delegate('bootstyle')
