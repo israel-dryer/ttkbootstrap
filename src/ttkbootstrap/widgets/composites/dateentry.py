@@ -25,29 +25,28 @@ class DateEntry(Field):
     supports various date format presets and custom ICU date format patterns,
     and can accept input as strings, date objects, or datetime objects.
 
-    Date Format Presets:
-        - longDate: Full date (e.g., "January 15, 2025")
-        - shortDate: Short date (e.g., "1/15/25")
-        - monthAndDate: Month and day (e.g., "January 15")
-        - monthAndYear: Month and year (e.g., "January 2025")
-        - quarterAndYear: Quarter and year (e.g., "Q1 2025")
-        - day: Day of month (e.g., "15")
-        - dayOfWeek: Day name (e.g., "Wednesday")
-        - month: Month name (e.g., "January")
-        - quarter: Quarter (e.g., "Q1")
-        - year: Year (e.g., "2025")
-        - longTime: Long time format (e.g., "3:30:45 PM PST")
-        - shortTime: Short time format (e.g., "3:30 PM")
-        - longDateLongTime: Full date and time
-        - shortDateShortTime: Short date and time
-        - Custom: Any ICU date format pattern (e.g., "yyyy-MM-dd")
+    The available date format presets are: ``longDate`` (January 15, 2025),
+    ``shortDate`` (1/15/25), ``monthAndDate`` (January 15), ``monthAndYear``
+    (January 2025), ``quarterAndYear`` (Q1 2025), ``day`` (15), ``dayOfWeek``
+    (Wednesday), ``month`` (January), ``quarter`` (Q1), ``year`` (2025),
+    ``longTime`` (3:30:45 PM PST), ``shortTime`` (3:30 PM), ``longDateLongTime``,
+    ``shortDateShortTime``, or any custom ICU date format pattern (e.g., "yyyy-MM-dd").
 
-    Events (inherited from Field):
+    Events:
+        The widget inherits Field events:
 
-        - `<<Change>>`: Fired when date value changes after commit
-        - `<<Input>>`: Fired on each keystroke
-        - `<<Valid>>`: Fired when validation passes
-        - `<<Invalid>>`: Fired when validation fails
+        - ``<<Change>>``: Fired when date value changes after commit
+        - ``<<Input>>``: Fired on each keystroke
+        - ``<<Valid>>``: Fired when validation passes
+        - ``<<Invalid>>``: Fired when validation fails
+
+    Attributes:
+        entry_widget (TextEntryPart): Access to the underlying TextEntryPart widget.
+        label_widget (Label): Access to the label widget.
+        message_widget (Label): Access to the message label widget.
+        addons (dict): Dictionary of inserted addon widgets.
+        variable (Variable): Tkinter Variable linked to entry text.
+        signal (Signal): Signal object for reactive updates.
 
     Examples:
         ```python
@@ -66,63 +65,21 @@ class DateEntry(Field):
         )
         date_entry.pack(padx=20, pady=10, fill='x')
 
-        # Long date format
-        date_entry2 = ttk.DateEntry(
-            root,
-            label="Event Date",
-            value_format="longDate",
-            locale="en_US"
-        )
-        date_entry2.pack(padx=20, pady=10, fill='x')
-
         # Custom date format (ISO 8601)
-        date_entry3 = ttk.DateEntry(
+        date_entry2 = ttk.DateEntry(
             root,
             label="ISO Date",
             value="2025-01-15",
             value_format="yyyy-MM-dd"
         )
-        date_entry3.pack(padx=20, pady=10, fill='x')
-
-        # Month and year only
-        date_entry4 = ttk.DateEntry(
-            root,
-            label="Expiry Date",
-            value_format="monthAndYear"
-        )
-        date_entry4.pack(padx=20, pady=10, fill='x')
-
-        # Without picker button
-        date_entry5 = ttk.DateEntry(
-            root,
-            label="Date",
-            show_picker_button=False
-        )
-        date_entry5.pack(padx=20, pady=10, fill='x')
-
-        # Get date value
-        def on_submit():
-            value = date_entry.value()
-            print(f"Selected date: {value}")
-
-        ttk.Button(root, text="Submit", command=on_submit).pack(pady=10)
+        date_entry2.pack(padx=20, pady=10, fill='x')
 
         root.mainloop()
         ```
 
-    Inherited Properties:
-
-        - entry_widget: Access to the underlying TextEntryPart widget
-        - label_widget: Access to the label widget
-        - message_widget: Access to the message label widget
-        - addons: Dictionary of inserted addon widgets
-        - variable: Tkinter Variable linked to entry text
-        - signal: Signal object for reactive updates
-
     Note:
-        The calendar picker button is currently a placeholder. The date picker
-        dialog implementation is planned for a future release. The button can
-        be hidden using show_picker_button=False.
+        The calendar picker button uses a DateDialog. The button can be hidden
+        using ``show_picker_button=False``.
     """
 
     def __init__(
