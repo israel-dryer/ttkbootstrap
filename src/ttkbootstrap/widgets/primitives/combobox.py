@@ -46,24 +46,27 @@ class Combobox(TextSignalMixin, TTKWrapperBase, ttk.Combobox):
     def __init__(self, master=None, **kwargs: Unpack[ComboboxKwargs]) -> None:
         """Create a themed ttkbootstrap Combobox.
 
-        Keyword Args:
-            values: Sequence of values to display.
-            textvariable: Tk variable linked to the selected value.
-            textsignal: Reactive Signal linked to the text (auto-synced with textvariable).
-            state: Widget state; 'readonly' restricts to list items.
-            width: Width in characters.
-            height: Maximum rows shown in the drop-down list.
-            postcommand: Callback executed before showing the drop-down.
-            justify: Text justification within the entry field.
-            exportselection: Whether selection is exported to X clipboard.
-            xscrollcommand: Scroll callback for horizontal scrolling.
-            font: Font for the entry field.
-            foreground: Text color.
-            background: Background color for the entry field.
-            style: Explicit ttk style name (overrides bootstyle).
-            bootstyle: ttkbootstrap style tokens (e.g., 'primary').
-            surface_color: Optional surface token; otherwise inherited.
-            style_options: Optional dict forwarded to the style builder.
+        Args:
+            master: Parent widget. If None, uses the default root window.
+
+        Other Parameters:
+            values (list): Sequence of values to display.
+            textvariable (Variable): Tk variable linked to the selected value.
+            textsignal (Signal): Reactive Signal linked to the text (auto-synced with textvariable).
+            state (str): Widget state; 'readonly' restricts to list items.
+            width (int): Width in characters.
+            height (int): Maximum rows shown in the drop-down list.
+            postcommand (Callable): Callback executed before showing the drop-down.
+            justify (str): Text justification within the entry field.
+            exportselection (bool): Whether selection is exported to X clipboard.
+            xscrollcommand (Callable): Scroll callback for horizontal scrolling.
+            font (str | Font): Font for the entry field.
+            foreground (str): Text color.
+            background (str): Background color for the entry field.
+            style (str): Explicit ttk style name (overrides bootstyle).
+            bootstyle (str): ttkbootstrap style tokens (e.g., 'primary').
+            surface_color (str): Optional surface token; otherwise inherited.
+            style_options (dict): Optional dict forwarded to the style builder.
         """
         super().__init__(master, **kwargs)
 

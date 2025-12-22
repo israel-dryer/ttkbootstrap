@@ -40,21 +40,35 @@ class SelectBox(Field):
         """Create a SelectBox widget.
 
         Args:
-            master: Parent widget or window.
-            value: Initial selected value; should typically be present in ``items``.
-            items: Sequence of string options to present in the popup list.
-            label: Optional label text shown above the field.
-            message: Optional helper/error message shown below the field.
-            allow_custom_values: If True, the entry is editable so users can type
+            master: Parent widget. If None, uses the default root window.
+            value (str): Initial selected value; should typically be present in ``items``.
+            items (list): Sequence of string options to present in the popup list.
+            label (str): Optional label text shown above the field.
+            message (str): Optional helper/error message shown below the field.
+            allow_custom_values (bool): If True, the entry is editable so users can type
                 arbitrary values in addition to choosing from the list.
-            show_dropdown_button: If True (default), the dropdown button is shown. This option is
+            show_dropdown_button (bool): If True (default), the dropdown button is shown. This option is
                 ignored if custom values are allowed.
-            dropdown_button_icon: The icon to display on the dropdown button.
-            search_enabled: If True, allows typing in the entry to filter the popup list.
+            dropdown_button_icon (str): The icon to display on the dropdown button.
+            search_enabled (bool): If True, allows typing in the entry to filter the popup list.
                 When combined with allow_custom_values=False, the first filtered item is selected
                 when the popup closes. With allow_custom_values=True, any typed value is kept.
-            **kwargs: Additional :class:`FieldOptions` forwarded to ``Field`` and
-                the underlying entry (e.g., ``bootstyle``, ``width``, ``textvariable``).
+
+        Other Parameters:
+            allow_blank (bool): If True, empty input is allowed.
+            bootstyle (str): The accent color of the focus ring and active border.
+            value_format (str): ICU format pattern for parsing/formatting.
+            font (str): Font for text display.
+            foreground (str): Text color.
+            initial_focus (bool): If True, widget receives focus when created.
+            justify (str): Text justification ('left', 'center', 'right').
+            show_message (bool): If True, displays message text below the field.
+            padding (str | int | tuple): Padding around the entry widget.
+            state (str): The widget state ('normal', 'disabled', 'readonly').
+            textvariable (Variable): Tkinter Variable to link with the entry text.
+            textsignal (Signal): Signal object for reactive text updates.
+            width (int): Width of the entry in characters.
+            required (bool): If True, field cannot be empty.
         """
         super().__init__(master, value=value, label=label, message=message, **kwargs)
 

@@ -46,21 +46,27 @@ class ToggleGroup(Frame):
         """Initialize the ToggleGroup.
 
         Args:
-            master: The parent widget.
-            mode: Selection mode - 'single' for radio button behavior (default),
-                  or 'multi' for checkbox behavior allowing multiple selections.
-            orient: Layout orientation - 'horizontal' (default) or 'vertical'.
-            bootstyle: The color/variant style (e.g., 'primary', 'danger-outline').
-                       Defaults to 'primary'.
-            variable: Optional tk.Variable for controlling the value. For single mode,
-                      use StringVar; for multi mode, use SetVar.
-            signal: Optional Signal instance for reactive programming.
-            value: Initial value - string for single mode, set for multi mode.
-            style_options: Additional style options passed to child buttons.
-            padding: Frame padding. Defaults to 1.
-            **kwargs: Additional Frame configuration options.
+            master: Parent widget. If None, uses the default root window.
+
+        Other Parameters:
+            mode (str): Selection mode - 'single' for radio button behavior (default),
+                or 'multi' for checkbox behavior allowing multiple selections.
+            orient (str): Layout orientation - 'horizontal' (default) or 'vertical'.
+            bootstyle (str): The color/variant style (e.g., 'primary', 'danger-outline').
+                Defaults to 'primary'.
+            variable (Variable): Optional tk.Variable for controlling the value. For single mode,
+                use StringVar; for multi mode, use SetVar.
+            signal (Signal): Optional Signal instance for reactive programming.
+            value (str | set): Initial value - string for single mode, set for multi mode.
+            show_border (bool): If True, draws a border around the group.
+            surface_color (str): Optional surface token; otherwise inherited.
+            style_options (dict): Additional style options passed to child buttons.
+            padding (int | tuple): Frame padding. Defaults to 1.
+            width (int): Requested width in pixels.
+            height (int): Requested height in pixels.
 
         Examples:
+            ```python
             # Single selection group (radio behavior)
             group = ToggleGroup(mode='single', bootstyle='primary')
             group.add("Option A", "a")
@@ -75,6 +81,7 @@ class ToggleGroup(Frame):
             signal = Signal()
             group = ToggleGroup(signal=signal)
             signal.subscribe(lambda v: print(f"Selected: {v}"))
+            ```
         """
         # Extract ToggleGroup-specific options before super().__init__
         self._mode = kwargs.pop('mode', 'single')

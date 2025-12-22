@@ -43,23 +43,26 @@ class Spinbox(TextSignalMixin, TTKWrapperBase, ttk.Spinbox):
     def __init__(self, master=None, **kwargs: Unpack[SpinboxKwargs]) -> None:
         """Create a themed ttkbootstrap Spinbox.
 
-        Keyword Args:
-            from_: Minimum value.
-            to: Maximum value.
-            increment: Step size between values.
-            values: Sequence of values to cycle through.
-            wrap: Whether to wrap between min/max.
-            command: Callback when the value changes.
-            textvariable: Tk variable linked to the entry text.
-            textsignal: Reactive Signal linked to the text (auto-synced with textvariable).
-            format: Display format string.
-            width: Widget width in characters.
-            state: Widget state.
-            takefocus: Whether the widget participates in focus traversal.
-            style: Explicit ttk style name (overrides bootstyle).
-            bootstyle: ttkbootstrap style tokens.
-            surface_color: Optional surface token; otherwise inherited.
-            style_options: Optional dict forwarded to the style builder.
+        Args:
+            master: Parent widget. If None, uses the default root window.
+
+        Other Parameters:
+            from_ (float): Minimum value.
+            to (float): Maximum value.
+            increment (float): Step size between values.
+            values (list): Sequence of values to cycle through.
+            wrap (bool): Whether to wrap between min/max.
+            command (Callable): Callback when the value changes.
+            textvariable (Variable): Tk variable linked to the entry text.
+            textsignal (Signal): Reactive Signal linked to the text (auto-synced with textvariable).
+            format (str): Display format string.
+            width (int): Widget width in characters.
+            state (str): Widget state.
+            takefocus (bool): Whether the widget participates in focus traversal.
+            style (str): Explicit ttk style name (overrides bootstyle).
+            bootstyle (str): ttkbootstrap style tokens.
+            surface_color (str): Optional surface token; otherwise inherited.
+            style_options (dict): Optional dict forwarded to the style builder.
         """
         super().__init__(master, **kwargs)
 

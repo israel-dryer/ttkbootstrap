@@ -50,32 +50,29 @@ class OptionMenu(MenuButton):
         """Create an OptionMenu backed by a ContextMenu.
 
         Args:
-            master: Parent widget.
+            master: Parent widget. If None, uses the default root window.
             value: Initial selected value.
-            options: List of values to populate the menu.
-            **kwargs: Additional options forwarded to Menubutton and the style builder:
-                command: Callback invoked when the value changes via menu selection.
-                image: Tk image to display.
-                icon: Bootstyle icon spec for the label content.
-                icon_only: Whether to reserve label padding when showing only an icon.
-                compound: Placement of image relative to text.
-                padding: Extra padding around the menubutton content.
-                width: Width of the menubutton.
-                underline: Index of underlined character in text.
-                state: Widget state ('normal', 'active', 'disabled', 'readonly').
-                takefocus: Participation in focus traversal.
-                style: Explicit ttk style name.
-                class_: Tk class name.
-                cursor: Mouse cursor when hovering.
-                default: Default ttk state.
-                name: Tk widget name.
-                textvariable: Existing tk variable to bind; new StringVar created if omitted.
-                textsignal: Signal bound to the textvariable.
-                bootstyle: Bootstyle string (e.g., 'primary-outline').
-                surface_color: Surface token for style.
-                style_options: Dict forwarded to the style builder (e.g., icon_only, surface_color).
-                show_dropdown_button: Toggle visibility of the dropdown chevron.
-                dropdown_button_icon: Icon name for the chevron; defaults to 'caret-down-fill'.
+            options (list): List of values to populate the menu.
+
+        Other Parameters:
+            command (Callable): Callback invoked when the value changes via menu selection.
+            image (PhotoImage): Tk image to display.
+            icon (str | dict): Bootstyle icon spec for the label content.
+            icon_only (bool): Whether to reserve label padding when showing only an icon.
+            compound (str): Placement of image relative to text.
+            padding (int | tuple): Extra padding around the menubutton content.
+            width (int): Width of the menubutton.
+            underline (int): Index of underlined character in text.
+            state (str): Widget state ('normal', 'active', 'disabled', 'readonly').
+            takefocus (bool): Participation in focus traversal.
+            style (str): Explicit ttk style name.
+            textvariable (Variable): Existing Tk variable to bind; new StringVar created if omitted.
+            textsignal (Signal[str]): Signal bound to the textvariable.
+            bootstyle (str): Bootstyle string (e.g., 'primary-outline').
+            surface_color (str): Surface token for style.
+            style_options (dict): Dict forwarded to the style builder (e.g., icon_only, surface_color).
+            show_dropdown_button (bool): Toggle visibility of the dropdown chevron.
+            dropdown_button_icon (str | dict): Icon name for the chevron; defaults to 'caret-down-fill'.
         """
         style_options = kwargs.pop('style_options', {})
         style_options.update(

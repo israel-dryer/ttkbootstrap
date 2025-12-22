@@ -71,20 +71,25 @@ class RadioGroup(Frame):
         """Initialize the RadioGroup.
 
         Args:
-            master: The parent widget.
-            orient: Layout orientation - 'horizontal' (default) or 'vertical'.
-            bootstyle: The color/variant style (e.g., 'primary', 'success', 'danger').
-                       Defaults to 'primary'.
-            text: Optional label text to display.
-            labelanchor: Label position - 'n' (top, default), 's' (bottom),
-                        'e' (right), 'w' (left), or combinations like 'nw', 'ne', etc.
-            variable: Optional tk.StringVar for controlling the selected value.
-            signal: Optional Signal instance for reactive programming.
-            value: Initial selected value.
-            state: Initial state for all buttons - 'normal' (default) or 'disabled'.
-            style_options: Additional style options passed to child buttons.
-            padding: Frame padding. Defaults to 1.
-            **kwargs: Additional Frame configuration options.
+            master: Parent widget. If None, uses the default root window.
+
+        Other Parameters:
+            orient (str): Layout orientation - 'horizontal' (default) or 'vertical'.
+            bootstyle (str): The color/variant style (e.g., 'primary', 'success', 'danger').
+                Defaults to 'primary'.
+            text (str): Optional label text to display.
+            labelanchor (str): Label position - 'n' (top, default), 's' (bottom),
+                'e' (right), 'w' (left), or combinations like 'nw', 'ne', etc.
+            variable (Variable): Optional tk.StringVar for controlling the selected value.
+            signal (Signal): Optional Signal instance for reactive programming.
+            value (str): Initial selected value.
+            state (str): Initial state for all buttons - 'normal' (default) or 'disabled'.
+            show_border (bool): If True, draws a border around the group.
+            surface_color (str): Optional surface token; otherwise inherited.
+            style_options (dict): Additional style options passed to child buttons.
+            padding (int | tuple): Frame padding. Defaults to 1.
+            width (int): Requested width in pixels.
+            height (int): Requested height in pixels.
         """
         # Extract RadioGroup-specific options before super().__init__
         self._orientation = kwargs.pop('orient', 'horizontal')

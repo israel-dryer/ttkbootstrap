@@ -70,14 +70,14 @@ class PageStack(Frame):
         configuration options.
 
         Args:
-            master: The parent widget. If None, the PageStack will be a
-                   top-level window.
-            **kwargs: Optional keyword arguments for Frame configuration:
-                - takefocus: If True, the widget can receive keyboard focus
-                - width: Width of the PageStack in pixels
-                - height: Height of the PageStack in pixels
-                - padding: Padding around the PageStack (can be a single value
-                          or tuple of (left, top, right, bottom))
+            master: Parent widget. If None, uses the default root window.
+
+        Other Parameters:
+            takefocus (bool): If True, the widget can receive keyboard focus.
+            width (int): Width of the PageStack in pixels.
+            height (int): Height of the PageStack in pixels.
+            padding (int | tuple): Padding around the PageStack (can be a single value
+                or tuple of (left, top, right, bottom)).
 
         Note:
             Pages must be added using add() or add_page() before navigation

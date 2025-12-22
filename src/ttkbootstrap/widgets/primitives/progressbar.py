@@ -39,19 +39,22 @@ class Progressbar(SignalMixin, TTKWrapperBase, ttk.Progressbar):
     def __init__(self, master=None, **kwargs: Unpack[ProgressbarKwargs]) -> None:
         """Create a themed ttkbootstrap Progressbar.
 
-        Keyword Args:
-            mode: Progress mode ('determinate' or 'indeterminate').
-            orient: Orientation of the bar.
-            length: Requested length of the progress bar.
-            maximum: Maximum value.
-            value: Current value.
-            variable: Tk variable linked to the value.
-            signal: Reactive Signal linked to the value (auto-synced with variable).
-            phase: Animation phase for indeterminate mode.
-            style: Explicit ttk style name (overrides bootstyle).
-            bootstyle: ttkbootstrap style tokens (e.g., 'success', 'striped').
-            surface_color: Optional surface token; otherwise inherited.
-            style_options: Optional dict forwarded to the style builder.
+        Args:
+            master: Parent widget. If None, uses the default root window.
+
+        Other Parameters:
+            mode (str): Progress mode ('determinate' or 'indeterminate').
+            orient (str): Orientation of the bar ('horizontal' or 'vertical').
+            length (int): Requested length of the progress bar in pixels.
+            maximum (float): Maximum value.
+            value (float): Current value.
+            variable (Variable): Tk variable linked to the value.
+            signal (Signal): Reactive Signal linked to the value (auto-synced with variable).
+            phase (int): Animation phase for indeterminate mode.
+            style (str): Explicit ttk style name (overrides bootstyle).
+            bootstyle (str): ttkbootstrap style tokens (e.g., 'success', 'striped').
+            surface_color (str): Optional surface token; otherwise inherited.
+            style_options (dict): Optional dict forwarded to the style builder.
         """
         super().__init__(master, **kwargs)
 

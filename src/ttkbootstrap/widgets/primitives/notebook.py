@@ -96,17 +96,16 @@ class Notebook(TTKWrapperBase, ttk.Notebook):
         """Create a themed ttkbootstrap Notebook with optional bootstyle extensions.
 
         Args:
-            master: Parent widget for this notebook.
-            **kwargs: Keyword arguments passed to :class:`ttk.Notebook`.
+            master: Parent widget. If None, uses the default root window.
 
-        Keyword Args:
-            padding: Extra space around the tab header and pane area.
-            height: Requested widget height in pixels.
-            width: Requested widget width in pixels.
-            style: Explicit ttk style name that overrides any bootstyle token.
-            bootstyle: Bootstyle tokens (for example ``'primary'`` or ``'secondary'``).
-            surface_color: Optional surface color token; inherits from the current theme if omitted.
-            style_options: Additional options forwarded to the style builder controlling bootstyle rendering.
+        Other Parameters:
+            padding (int | tuple): Extra space around the tab header and pane area.
+            height (int): Requested widget height in pixels.
+            width (int): Requested widget width in pixels.
+            style (str): Explicit ttk style name that overrides any bootstyle token.
+            bootstyle (str): Bootstyle tokens (e.g., 'primary', 'secondary').
+            surface_color (str): Optional surface color token; inherits from the current theme if omitted.
+            style_options (dict): Additional options forwarded to the style builder.
         """
         super().__init__(master, **kwargs)
         self._key_registry: dict[str, tkinter.Misc] = {}  # key -> widget

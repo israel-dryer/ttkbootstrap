@@ -31,15 +31,18 @@ class PanedWindow(TTKWrapperBase, ttk.PanedWindow):
     def __init__(self, master=None, **kwargs: Unpack[PanedWindowKwargs]) -> None:
         """Create a themed ttkbootstrap Panedwindow.
 
-        Keyword Args:
-            orient: Orientation of panes ('horizontal' or 'vertical').
-            padding: Extra internal padding.
-            width: Requested width in pixels.
-            height: Requested height in pixels.
-            style: Explicit ttk style name (overrides bootstyle).
-            bootstyle: ttkbootstrap style tokens.
-            surface_color: Optional surface token; otherwise inherited.
-            style_options: Optional dict forwarded to the style builder.
+        Args:
+            master: Parent widget. If None, uses the default root window.
+
+        Other Parameters:
+            orient (str): Orientation of panes ('horizontal' or 'vertical').
+            padding (int | tuple): Extra internal padding.
+            width (int): Requested width in pixels.
+            height (int): Requested height in pixels.
+            style (str): Explicit ttk style name (overrides bootstyle).
+            bootstyle (str): ttkbootstrap style tokens.
+            surface_color (str): Optional surface token; otherwise inherited.
+            style_options (dict): Optional dict forwarded to the style builder.
         """
         super().__init__(master, **kwargs)
 

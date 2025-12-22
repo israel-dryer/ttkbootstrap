@@ -28,12 +28,15 @@ class Separator(TTKWrapperBase, ttk.Separator):
     def __init__(self, master=None, **kwargs: Unpack[SeparatorKwargs]) -> None:
         """Create a themed ttkbootstrap Separator.
 
-        Keyword Args:
-            orient: Orientation of the separator.
-            style: Explicit ttk style name (overrides bootstyle).
-            bootstyle: ttkbootstrap style tokens.
-            surface_color: Optional surface token; otherwise inherited.
-            style_options: Optional dict forwarded to the style builder.
+        Args:
+            master: Parent widget. If None, uses the default root window.
+
+        Other Parameters:
+            orient (str): Orientation of the separator ('horizontal' or 'vertical').
+            style (str): Explicit ttk style name (overrides bootstyle).
+            bootstyle (str): ttkbootstrap style tokens.
+            surface_color (str): Optional surface token; otherwise inherited.
+            style_options (dict): Optional dict forwarded to the style builder.
         """
         super().__init__(master, **kwargs)
 

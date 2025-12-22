@@ -54,31 +54,34 @@ class Label(LocalizationMixin, TextSignalMixin, IconMixin, TTKWrapperBase, ttk.L
     def __init__(self, master=None, **kwargs: Unpack[LabelKwargs]) -> None:
         """Create a themed ttkbootstrap Label.
 
-        Keyword Args:
-            text: Text to display in the label.
-            textvariable: Tk variable linked to the label text.
-            textsignal: Reactive Signal linked to the label text (auto-synced with textvariable).
-            image: Image to display.
-            icon: Theme-aware icon spec handled by the style system.
-            icon_only: If True, removes the additional padding reserved for label text.
-            compound: Placement of the image relative to text.
-            anchor: Alignment of the label's content within its area.
-            justify: How to justify multiple lines of text.
-            localize: Determines the widgets localization mode. 'auto', True, False.
-            value_format: Format specification for the label value.
-            padding: Extra space around the label content.
-            width: Width of the label in characters.
-            wraplength: Maximum width before wrapping text.
-            font: Font for text.
-            foreground: Text color.
-            background: Background color.
-            relief: Border style.
-            state: Widget state.
-            takefocus: Whether the widget participates in focus traversal.
-            style: Explicit ttk style name (overrides bootstyle).
-            bootstyle: ttkbootstrap style tokens (e.g., 'secondary', 'info').
-            surface_color: Optional surface token; otherwise inherited.
-            style_options: Optional dict forwarded to the style builder.
+        Args:
+            master: Parent widget. If None, uses the default root window.
+
+        Other Parameters:
+            text (str): Text to display in the label.
+            textvariable (Variable): Tk variable linked to the label text.
+            textsignal (Signal[str]): Reactive Signal linked to the label text (auto-synced with textvariable).
+            image (PhotoImage): Image to display.
+            icon (str | dict): Theme-aware icon spec handled by the style system.
+            icon_only (bool): If True, removes the additional padding reserved for label text.
+            compound (str): Placement of the image relative to text.
+            anchor (str): Alignment of the label's content within its area.
+            justify (str): How to justify multiple lines of text.
+            localize (bool | Literal['auto']): Determines the widget's localization mode.
+            value_format (str | dict): Format specification for the label value.
+            padding (int | tuple): Extra space around the label content.
+            width (int): Width of the label in characters.
+            wraplength (int): Maximum width before wrapping text.
+            font (str | Font): Font for text.
+            foreground (str): Text color.
+            background (str): Background color.
+            relief (str): Border style.
+            state (str): Widget state.
+            takefocus (bool): Whether the widget participates in focus traversal.
+            style (str): Explicit ttk style name (overrides bootstyle).
+            bootstyle (str): ttkbootstrap style tokens (e.g., 'secondary', 'info').
+            surface_color (str): Optional surface token; otherwise inherited.
+            style_options (dict): Optional dict forwarded to the style builder.
         """
         kwargs.update(style_options=self._capture_style_options(['icon_only', 'icon'], kwargs))
         super().__init__(master, **kwargs)

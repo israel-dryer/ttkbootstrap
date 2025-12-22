@@ -27,11 +27,14 @@ class SizeGrip(TTKWrapperBase, ttk.Sizegrip):
     def __init__(self, master=None, **kwargs: Unpack[SizeGripKwargs]) -> None:
         """Create a themed ttkbootstrap Sizegrip.
 
-        Keyword Args:
-            style: Explicit ttk style name (overrides bootstyle).
-            bootstyle: ttkbootstrap style tokens.
-            surface_color: Optional surface token; otherwise inherited.
-            style_options: Optional dict forwarded to the style builder.
+        Args:
+            master: Parent widget. If None, uses the default root window.
+
+        Other Parameters:
+            style (str): Explicit ttk style name (overrides bootstyle).
+            bootstyle (str): ttkbootstrap style tokens.
+            surface_color (str): Optional surface token; otherwise inherited.
+            style_options (dict): Optional dict forwarded to the style builder.
         """
         super().__init__(master, **kwargs)
 

@@ -65,14 +65,19 @@ class ButtonGroup(Frame):
         """Initialize the ButtonGroup.
 
         Args:
-            master: The parent widget.
-            orient: Layout orientation - 'horizontal' (default) or 'vertical'.
-            bootstyle: The color/variant style (e.g., 'primary', 'success', 'danger').
-                       Defaults to 'primary'.
-            state: Initial state for all buttons - 'normal' (default) or 'disabled'.
-            style_options: Additional style options passed to child widgets.
-            padding: Frame padding. Defaults to 1.
-            **kwargs: Additional Frame configuration options.
+            master: Parent widget. If None, uses the default root window.
+
+        Other Parameters:
+            orient (str): Layout orientation - 'horizontal' (default) or 'vertical'.
+            bootstyle (str): The color/variant style (e.g., 'primary', 'success', 'danger').
+                Defaults to 'primary'.
+            state (str): Initial state for all buttons - 'normal' (default) or 'disabled'.
+            show_border (bool): If True, draws a border around the group.
+            surface_color (str): Optional surface token; otherwise inherited.
+            style_options (dict): Additional style options passed to child widgets.
+            padding (int | tuple): Frame padding. Defaults to 1.
+            width (int): Requested width in pixels.
+            height (int): Requested height in pixels.
         """
         # Extract ButtonGroup-specific options
         self._orientation = kwargs.pop('orient', 'horizontal')

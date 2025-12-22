@@ -7,28 +7,34 @@ class CheckToggle(CheckButton):
     def __init__(self, master=None, **kwargs):
         """Create a themed ttkbootstrap CheckToggle.
 
-        Keyword Args:
-            text: Text to display on the toggle.
-            textvariable: Tk variable linked to the text.
-            textsignal: Reactive Signal linked to the text (auto-synced with textvariable).
-            command: Callable invoked when the toggle changes state.
-            image: Image to display.
-            icon: Theme-aware icon spec handled by the style system.
-            compound: Placement of the image relative to text.
-            variable: Linked variable controlling the on/off state.
-            signal: Reactive Signal controlling the on/off state (auto-synced with variable).
-            value: Initial state for the widget's associated variable (defaults to None when unset).
-            onvalue: Value set in `variable` when selected.
-            offvalue: Value set in `variable` when deselected.
-            padding: Extra space around the content.
-            width: Width of the control in characters.
-            underline: Index of character to underline in `text`.
-            state: Widget state.
-            takefocus: Whether the widget participates in focus traversal.
-            style: Explicit ttk style name (overrides bootstyle).
-            bootstyle: ttkbootstrap style tokens describing the toggle color (defaults to 'Toolbutton' and is coerced to include '-badge').
-            surface_color: Optional surface token; otherwise inherited.
-            style_options: Optional dict forwarded to the style builder.
+        Args:
+            master: Parent widget. If None, uses the default root window.
+
+        Other Parameters:
+            text (str): Text to display on the toggle.
+            textvariable (Variable): Tk variable linked to the text.
+            textsignal (Signal[str]): Reactive Signal linked to the text (auto-synced with textvariable).
+            command (Callable): Callable invoked when the toggle changes state.
+            image (PhotoImage): Image to display.
+            icon (str | dict): Theme-aware icon spec handled by the style system.
+            icon_only (bool): If True, removes the additional padding reserved for text.
+            compound (str): Placement of the image relative to text.
+            variable (Variable): Linked variable controlling the on/off state.
+            signal (Signal): Reactive Signal controlling the on/off state (auto-synced with variable).
+            value (Any): Initial state for the widget's associated variable (defaults to None when unset).
+            onvalue (Any): Value set in `variable` when selected.
+            offvalue (Any): Value set in `variable` when deselected.
+            padding (int | tuple): Extra space around the content.
+            width (int): Width of the control in characters.
+            underline (int): Index of character to underline in `text`.
+            state (str): Widget state ('normal', 'active', 'disabled', 'readonly').
+            takefocus (bool): Whether the widget participates in focus traversal.
+            style (str): Explicit ttk style name (overrides bootstyle).
+            bootstyle (str): ttkbootstrap style tokens describing the toggle color
+                (defaults to 'Toolbutton' and is coerced to include '-toolbutton').
+            surface_color (str): Optional surface token; otherwise inherited.
+            style_options (dict): Optional dict forwarded to the style builder.
+            localize (bool | Literal['auto']): Determines the widget's localization mode.
         """
         bootstyle = kwargs.pop('bootstyle', 'Toolbutton')
 
