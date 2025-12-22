@@ -19,19 +19,19 @@ class ContextMenuItem:
     """Data class for context menu items.
 
     Attributes:
-        type: Type of menu item ('command', 'checkbutton', 'radiobutton', 'separator')
-        kwargs: Additional keyword arguments for the item
+        type (str): Type of menu item ('command', 'checkbutton', 'radiobutton', 'separator').
+        kwargs (dict): Additional keyword arguments for the item.
     """
 
-    def __init__(self, type: str, **kwargs):
+    def __init__(self, type: str, **kwargs: Any) -> None:
         """Initialize a context menu item.
 
         Args:
-            type: Type of menu item
-            **kwargs: Additional arguments passed to the widget
+            type (str): Type of menu item ('command', 'checkbutton', 'radiobutton', 'separator').
+            **kwargs: Additional arguments passed to the widget.
         """
-        self.type = type
-        self.kwargs = kwargs
+        self.type: str = type
+        self.kwargs: dict[str, Any] = kwargs
 
 
 class ContextMenu(CustomConfigMixin):
