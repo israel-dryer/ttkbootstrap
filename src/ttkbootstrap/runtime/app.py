@@ -169,6 +169,55 @@ LocalizeMode = Union[bool, Literal['auto']]
 
 @dataclass
 class AppSettings:
+    """Application-wide settings for ttkbootstrap applications.
+
+    This dataclass holds configuration for theming, localization, and
+    application metadata. It is automatically populated with sensible
+    defaults based on the system locale.
+
+    Attributes:
+        app_name: The application name displayed in the title bar.
+        app_author: The application author (used for config paths).
+        app_version: The application version string.
+        theme: The current theme name ('light', 'dark', or a specific theme).
+        light_theme: The theme to use when `theme='light'`.
+        dark_theme: The theme to use when `theme='dark'`.
+        available_themes: Sequence of available theme names.
+        inherit_surface_color: If True, child widgets inherit the parent's
+            surface color for consistent backgrounds.
+        locale: The locale identifier (e.g., 'en_US', 'de_DE'). Auto-detected
+            from system if not specified.
+        language: The base language code (e.g., 'en', 'de'). Derived from
+            locale if not specified.
+        date_format: The date format pattern. Derived from locale if not
+            specified (e.g., 'M/d/yy' for en_US).
+        time_format: The time format pattern. Derived from locale if not
+            specified (e.g., 'h:mm a' for en_US).
+        number_decimal: The decimal separator character. Derived from locale
+            if not specified (e.g., '.' for en_US).
+        number_thousands: The thousands separator character. Derived from
+            locale if not specified (e.g., ',' for en_US).
+        localize_mode: Controls localization behavior. 'auto' enables
+            localization based on locale, True always enables, False disables.
+
+    Examples:
+        ```python
+        # Create app with default settings
+        app = App()
+
+        # Create app with custom settings
+        settings = AppSettings(
+            app_name="My App",
+            theme="dark",
+            locale="de_DE"
+        )
+        app = App(settings=settings)
+
+        # Access settings
+        print(app.settings.locale)  # 'de_DE'
+        print(app.settings.date_format)  # 'd.M.yy'
+        ```
+    """
     # information
     app_name: str | None = None
     app_author: str | None = None
@@ -182,10 +231,10 @@ class AppSettings:
     inherit_surface_color: bool = True
 
     # internationalization
-    locale: str | None = None  # e.g. "en_US"
-    language: str | None = None  # e.g. "en"
-    date_format: str | None = None  # override; otherwise use locale
-    time_format: str | None = None  # override
+    locale: str | None = None
+    language: str | None = None
+    date_format: str | None = None
+    time_format: str | None = None
     number_decimal: str | None = None
     number_thousands: str | None = None
 
