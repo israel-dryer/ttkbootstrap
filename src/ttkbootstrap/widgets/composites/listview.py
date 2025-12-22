@@ -332,45 +332,16 @@ class ListView(Frame):
     The widget works with either a simple list/dict data or a custom DataSource
     implementation for more complex scenarios (database, API, etc.).
 
-    Virtual events:
-        <<SelectionChange>>: Fired when selection state changes.
-        <<ItemDelete>>: Fired when an item is deleted.
-        <<ItemDeleteFail>>: Fired when item deletion fails.
-        <<ItemInsert>>: Fired when a new item is inserted.
-        <<ItemUpdate>>: Fired when an item is updated.
-        <<ItemClick>>: Fired when an item is clicked.
-        <<ItemDragStart>>: Fired when a drag begins.
-        <<ItemDrag>>: Fired when an item is being dragged.
-        <<ItemDragEnd>>: Fired when a drag ends.
-
-    Examples:
-        >>> # Simple usage with a list
-        >>> data = [
-        ...     {'id': 1, 'title': 'Item 1', 'text': 'Description 1'},
-        ...     {'id': 2, 'title': 'Item 2', 'text': 'Description 2'},
-        ... ]
-        >>> listview = ListView(
-        ...     parent,
-        ...     items=data,
-        ...     selection_mode='multi',
-        ...     show_selection_controls=True,
-        ...     enable_deleting=True
-        ... )
-        >>> listview.pack(fill='both', expand=True)
-        >>>
-        >>> # Get selected items
-        >>> selected_ids = listview.get_selected()
-        >>>
-        >>> # Listen for selection changes
-        >>> listview.bind('<<SelectionChanged>>', on_selection_changed)
-
-        >>> # Example with a custom data source
-        >>> class DatabaseSource:
-        ...     def total_count(self): return db.count()
-        ...     def get_page_from_index(self, start, count): return db.query(start, count)
-        ...     # ... implement other protocol methods
-        >>>
-        >>> listview = ListView(parent, datasource=DatabaseSource())
+    Events:
+        ``<<SelectionChange>>``: Fired when selection state changes.
+        ``<<ItemDelete>>``: Fired when an item is deleted.
+        ``<<ItemDeleteFail>>``: Fired when item deletion fails.
+        ``<<ItemInsert>>``: Fired when a new item is inserted.
+        ``<<ItemUpdate>>``: Fired when an item is updated.
+        ``<<ItemClick>>``: Fired when an item is clicked.
+        ``<<ItemDragStart>>``: Fired when a drag begins.
+        ``<<ItemDrag>>``: Fired when an item is being dragged.
+        ``<<ItemDragEnd>>``: Fired when a drag ends.
     """
 
     def __init__(

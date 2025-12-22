@@ -85,117 +85,31 @@ class Field(EntryMixin, Frame):
 
     The widget automatically handles layout, focus states, validation feedback, and
     provides a consistent API for all entry-based components. It supports both text
-    and numeric input types through the 'kind' parameter.
+    and numeric input types through the ``kind`` parameter.
 
-    Architecture:
-        - Label area (optional): Displays field label with required indicator (*)
-        - Field container: Styled frame that contains the entry and any addons
-        - Entry widget: Either TextEntryPart or NumberEntryPart based on 'kind'
-        - Message area (optional): Displays hints or validation error messages
-        - Addon support: Insert Button or Label widgets before/after the entry
+    Events:
+        ``<<Input>>``: Triggered on each keystroke.
+            ``event.data = {"text": str}``
 
-    Features:
-        - Automatic label and message layout
-        - Required field indicator (asterisk)
-        - Focus state styling on field container
-        - Validation feedback with automatic error message display
-        - Add-on widget support (prefix/suffix icons, buttons)
-        - Entry method forwarding (delegates to underlying entry widget)
-        - Consistent state management (disable, enable, readonly)
-        - Event forwarding from underlying entry widget
+        ``<<Change>>``: Triggered when value changes after commit.
+            ``event.data = {"value": Any, "prev_value": Any, "text": str}``
 
-    Events (forwarded from entry widget):
-        <<Input>>: Triggered on each keystroke
-            event.data = {"text": str}
+        ``<<Valid>>``: Triggered when validation passes.
+            ``event.data = {"value": Any, "is_valid": True, "message": str}``
 
-        <<Change>>: Triggered when value changes after commit
-            event.data = {"value": Any, "prev_value": Any, "text": str}
+        ``<<Invalid>>``: Triggered when validation fails.
+            ``event.data = {"value": Any, "is_valid": False, "message": str}``
 
-        <<Valid>>: Triggered when validation passes
-            event.data = {"value": Any, "is_valid": True, "message": str}
+        ``<<Validate>>``: Triggered after any validation.
+            ``event.data = {"value": Any, "is_valid": bool, "message": str}``
 
-        <<Invalid>>: Triggered when validation fails
-            event.data = {"value": Any, "is_valid": False, "message": str}
-
-        <<Validate>>: Triggered after any validation
-            event.data = {"value": Any, "is_valid": bool, "message": str}
-
-    Examples:
-        ```python
-        import ttkbootstrap as ttk
-        from ttkbootstrap.widgets.parts.field import Field
-
-        root = ttk.Window()
-
-        # Text field with label and message
-        field1 = Field(
-            root,
-            kind='text',
-            label='Username',
-            message='Enter your username',
-            required=True
-        )
-        field1.pack(padx=20, pady=10, fill='x')
-
-        # Numeric field with bounds
-        field2 = Field(
-            root,
-            kind='numeric',
-            label='Age',
-            value=25,
-            minvalue=0,
-            maxvalue=120,
-            required=True
-        )
-        field2.pack(padx=20, pady=10, fill='x')
-
-        # Field with addon button
-        field3 = Field(root, label='Search', kind='text')
-        field3.insert_addon(ttk.Button, 'after', text='Go')
-        field3.pack(padx=20, pady=10, fill='x')
-
-        # Custom validation
-        field4 = Field(root, label='Email', required=True)
-        field4.add_validation_rule('email', message='Invalid email')
-        field4.pack(padx=20, pady=10, fill='x')
-
-        root.mainloop()
-        ```
-
-    Subclassing:
-        ```python
-        from ttkbootstrap.widgets.parts.field import Field
-
-        class PasswordEntry(Field):
-            '''Password entry field with masked input.'''
-
-            def __init__(self, master=None, **kwargs):
-                # Force text kind and mask characters
-                kwargs.update(show='*')
-                super().__init__(master, kind='text', **kwargs)
-        ```
-
-    Properties:
-        entry_widget: The underlying TextEntryPart or NumberEntryPart widget
-        label_widget: The Label widget for the field label
-        message_widget: The Label widget for messages/errors
-        addons: Dictionary of inserted addon widgets (Button or Label)
-        variable: Tkinter Variable linked to entry text
-        signal: Signal object for reactive updates
-
-    Forwarded Methods:
-        on_input(callback): Bind callback to <<Input>> event
-        on_changed(callback): Bind callback to <<Change>> event
-        on_enter(callback): Bind callback to <Return> event
-        on_invalid(callback): Bind callback to <<Invalid>> event
-        on_valid(callback): Bind callback to <<Valid>> event
-        on_validated(callback): Bind callback to <<Validate>> event
-        add_validation_rule(rule_type, **kwargs): Add a validation rule
-        add_validation_rules(rules): Replace all validation rules
-        validation(value, trigger): Run validation against a value
-
-    Inherited from EntryMixin:
-        delete(first, last), insert(index, text), get(), selection_*(), etc.
+    Attributes:
+        entry_widget (TextEntryPart | NumberEntryPart): The underlying entry widget.
+        label_widget (Label): The label widget above the entry.
+        message_widget (Label): The message label widget below the entry.
+        addons (dict[str, Widget]): Dictionary of inserted addon widgets by name.
+        variable (Variable): Tkinter Variable linked to entry text.
+        signal (Signal): Signal object for reactive updates.
     """
 
     def __init__(

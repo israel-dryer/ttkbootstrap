@@ -18,58 +18,15 @@ class NumberEntryPart(TextEntryPart):
     stepping functionality. Supports min/max bounds, increment/decrement
     via keyboard and mouse wheel, and optional wrapping.
 
-    Features:
-        - Numeric constraints (min, max)
-        - Keyboard stepping (Up/Down arrows)
-        - Mouse wheel support
-        - Optional value wrapping at boundaries
-        - Locale-aware number formatting
-        - Virtual events for increment/decrement
-
     Events:
-        <<Increment>>: Fired when an increment is requested (before step occurs).
+        ``<<Increment>>``: Fired when an increment is requested (before step occurs).
             Emit this event to programmatically increment the value.
-            Can be intercepted to prevent or customize increment behavior.
 
-        <<Decrement>>: Fired when a decrement is requested (before step occurs).
+        ``<<Decrement>>``: Fired when a decrement is requested (before step occurs).
             Emit this event to programmatically decrement the value.
-            Can be intercepted to prevent or customize decrement behavior.
 
         Plus all events from TextEntryPart:
-            <<Input>>, <<Change>>, <Return>
-
-    Examples:
-        ```python
-        import ttkbootstrap as ttk
-        from ttkbootstrap.widgets.parts import NumberEntryPart
-
-        root = ttk.Window()
-
-        # Basic numeric entry with bounds
-        entry = NumberEntryPart(
-            root,
-            value=50,
-            min_value=0,
-            max_value=100,
-            increment=5,
-            value_format='#,##0.00'
-        )
-        entry.pack()
-
-        # Percentage entry with wrapping
-        pct_entry = NumberEntryPart(
-            root,
-            value=0.5,
-            min_value=0.0,
-            max_value=1.0,
-            increment=0.1,
-            wrap=True,
-            value_format='percent'
-        )
-        pct_entry.pack()
-
-        root.mainloop()
-        ```
+            ``<<Input>>``, ``<<Change>>``, ``<Return>``
     """
 
     def __init__(

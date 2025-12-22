@@ -39,93 +39,21 @@ class PathEntry(Field):
     widget supports various dialog types including single file selection, multiple
     file selection, directory selection, and save file dialogs.
 
-    Features:
-        - Native file/directory chooser dialog
-        - Multiple dialog types (open, save, directory, multiple files)
-        - Configurable dialog options (file types, initial directory, etc.)
-        - Button with customizable label
-        - Automatic path display in entry field
-        - Support for multiple file selection (displayed as comma-separated)
-        - All Field features (label, validation, messages, etc.)
+    Events:
+        ``<<Change>>``: Fired when a path is selected from the dialog.
+        ``<<Input>>``: Fired when user manually types in the entry.
+        ``<<Valid>>``: Fired when validation passes.
+        ``<<Invalid>>``: Fired when validation fails.
 
-    Events (inherited from Field):
-        <<Change>>: Fired when a path is selected from the dialog
-        <<Input>>: Fired when user manually types in the entry
-        <<Valid>>: Fired when validation passes
-        <<Invalid>>: Fired when validation fails
-
-    Examples:
-        ```python
-        import ttkbootstrap as ttk
-        from ttkbootstrap.widgets.composites.pathentry import PathEntry
-
-        root = ttk.Window()
-
-        # Single file selection
-        file_entry = PathEntry(
-            root,
-            label="Select File",
-            dialog="openfilename",
-            dialog_options={
-                'title': 'Choose a file',
-                'filetypes': [('Text files', '*.txt'), ('All files', '*.*')]
-            }
-        )
-        file_entry.pack(padx=20, pady=10, fill='x')
-
-        # Directory selection
-        dir_entry = PathEntry(
-            root,
-            label="Select Directory",
-            dialog="directory",
-            dialog_options={'title': 'Choose a folder'}
-        )
-        dir_entry.pack(padx=20, pady=10, fill='x')
-
-        # Multiple file selection
-        multi_entry = PathEntry(
-            root,
-            label="Select Files",
-            dialog="openfilenames",
-            dialog_options={
-                'title': 'Choose multiple files',
-                'filetypes': [('Images', '*.png *.jpg'), ('All files', '*.*')]
-            }
-        )
-        multi_entry.pack(padx=20, pady=10, fill='x')
-
-        # Save file dialog
-        save_entry = PathEntry(
-            root,
-            label="Save As",
-            value="untitled.txt",
-            dialog="saveasfilename",
-            dialog_options={
-                'defaultextension': '.txt',
-                'filetypes': [('Text files', '*.txt')]
-            }
-        )
-        save_entry.pack(padx=20, pady=10, fill='x')
-
-        # Get selected path
-        def on_select():
-            path = file_entry.value()
-            print(f"Selected: {path}")
-            # Access raw dialog result
-            print(f"Dialog result: {file_entry.dialog_result}")
-
-        ttk.Button(root, text="Get Path", command=on_select).pack(pady=10)
-
-        root.mainloop()
-        ```
-
-    Inherited Properties:
-        entry_widget: Access to the underlying TextEntryPart widget
-        label_widget: Access to the label widget
-        message_widget: Access to the message label widget
-        addons: Dictionary of inserted addon widgets
-        variable: Tkinter Variable linked to entry text
-        signal: Signal object for reactive updates
+    Attributes:
+        entry_widget (TextEntryPart): The underlying text entry widget.
+        label_widget (Label): The label widget above the entry.
+        message_widget (Label): The message label widget below the entry.
+        addons (dict[str, Widget]): Dictionary of inserted addon widgets by name.
+        variable (Variable): Tkinter Variable linked to entry text.
+        signal (Signal): Signal object for reactive updates.
+        dialog_result (Any): The raw result from the last file dialog operation.
+        dialog_button (Button): The button widget that opens the dialog.
     """
 
     def __init__(

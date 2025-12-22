@@ -12,49 +12,17 @@ class TextEntryPart(ValidationMixin, Entry):
 
     This widget separates user input (display text) from the committed/parsed value,
     providing a clean pattern for handling formatted data entry. Parsing and formatting
-    only occur when the user commits the value via <FocusOut> or <Return>.
-
-    Features:
-        - Deferred parsing: Parse only on commit, not during typing
-        - International formatting: Locale-aware number, date, and currency formatting
-        - Three-tier event system:
-            - <<Input>>: Fires on every keystroke with raw text
-            - <<Change>>: Fires when committed value changes (FocusOut/Return)
-            - <Return>: Fires on Enter key with current value and text
-        - Validation support via ValidationMixin
-        - Automatic text normalization after parsing
+    only occur when the user commits the value via ``<FocusOut>`` or ``<Return>``.
 
     Events:
-        <<Input>>: Triggered on each keystroke
-            event.data = {"text": str}
+        ``<<Input>>``: Triggered on each keystroke.
+            ``event.data = {"text": str}``
 
-        <<Change>>: Triggered when value changes after commit
-            event.data = {"value": Any, "prev_value": Any, "text": str}
+        ``<<Change>>``: Triggered when value changes after commit.
+            ``event.data = {"value": Any, "prev_value": Any, "text": str}``
 
-        <Return>: Triggered on Enter key press
-            event.data = {"value": Any, "text": str}
-
-    Examples:
-        ```python
-        import ttkbootstrap as ttk
-        from ttkbootstrap.widgets.parts import TextEntryPart
-
-        root = ttk.Window()
-
-        # Currency entry with formatting
-        entry = TextEntryPart(
-            root,
-            value='1234.56',
-            value_format='¤#,##0.00',
-        )
-        entry.pack()
-
-        def on_changed(event):
-            print(f"Value changed: {event.data['value']}")
-
-        entry.on_changed(on_changed)
-        root.mainloop()
-        ```
+        ``<Return>``: Triggered on Enter key press.
+            ``event.data = {"value": Any, "text": str}``
     """
 
     def __init__(
@@ -77,54 +45,18 @@ class TextEntryPart(ValidationMixin, Entry):
             master: Parent widget. If None, uses the default root window.
             value: Initial value to display and parse. Can be a string or any value
                 that can be formatted using value_format. Default is empty string.
-            value_format: ICU format pattern for parsing and formatting the value.
-                Common patterns:
-                    - Numbers: '#,##0.00' (decimal with thousands separator)
-                    - Currency: '¤#,##0.00' (currency symbol with amount)
-                    - Dates: 'yyyy-MM-dd' (ISO date format)
-                    - Percent: '#,##0.00%' (percentage)
+            value_format (str): ICU format pattern for parsing and formatting the value.
+                Common patterns: ``'#,##0.00'`` (decimal), ``'¤#,##0.00'`` (currency),
+                ``'yyyy-MM-dd'`` (date), ``'#,##0.00%'`` (percent).
                 If None, value is treated as plain text (no parsing/formatting).
-            initial_focus: If True, widget receives focus when created. Useful for
-                dialogs or forms where this field should be active immediately.
-                Default is False.
-            allow_blank: If True, empty input is parsed as None. If False, empty
-                input preserves the previous value (rejects blank). Default is True.
+            initial_focus (bool): If True, widget receives focus when created.
+            allow_blank (bool): If True, empty input is parsed as None. If False, empty
+                input preserves the previous value.
             **kwargs: Additional keyword arguments passed to the Entry base class.
-                Common options include: width, textvariable, font, bootstyle, etc.
-
-        Examples:
-            ```python
-            # Simple text entry (no formatting)
-            entry1 = TextEntryPart(root, value='Hello')
-
-            # Currency entry with US formatting
-            entry2 = TextEntryPart(
-                root,
-                value='1234.56',
-                value_format='¤#,##0.00',
-            )
-
-            # Percentage entry with auto-focus
-            entry3 = TextEntryPart(
-                root,
-                value='0.15',
-                value_format='#,##0.00%',
-                initial_focus=True
-            )
-
-            # Number entry that allows blank values
-            entry4 = TextEntryPart(
-                root,
-                value='100',
-                value_format='#,##0.00',
-                allow_blank=True
-            )
-            ```
 
         Note:
             The widget automatically subscribes to text changes and sets up
-            event handlers for <FocusIn>, <FocusOut>, and <Return>. These
-            handlers manage value commits and trigger <<Change>> events.
+            event handlers for ``<FocusIn>``, ``<FocusOut>``, and ``<Return>``.
         """
         kwargs.update(bootstyle='field-input')
         super().__init__(master, **kwargs)

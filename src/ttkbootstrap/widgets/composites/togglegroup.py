@@ -38,8 +38,11 @@ class ToggleGroup(Frame):
     buttons with automatic position tracking and styling. It supports both single
     selection (radio button behavior) and multi-selection (checkbox behavior).
 
-    Button positions are automatically tracked and styled with appropriate border
-    images based on their position in the group (first, middle, last).
+    Attributes:
+        variable (Variable): The underlying tk.Variable for the selected value(s).
+        signal (Signal): Signal for reactive programming and change subscriptions.
+        bootstyle (str): The color/variant style applied to all buttons.
+        orient (str): Layout orientation ('horizontal' or 'vertical').
     """
 
     def __init__(self, master: Any = None, **kwargs: Unpack[ToggleGroupKwargs]):
@@ -64,24 +67,6 @@ class ToggleGroup(Frame):
             padding (int | tuple): Frame padding. Defaults to 1.
             width (int): Requested width in pixels.
             height (int): Requested height in pixels.
-
-        Examples:
-            ```python
-            # Single selection group (radio behavior)
-            group = ToggleGroup(mode='single', bootstyle='primary')
-            group.add("Option A", "a")
-            group.add("Option B", "b")
-
-            # Multi-selection group (checkbox behavior)
-            group = ToggleGroup(mode='multi', orient='vertical')
-            group.add("Feature 1", "f1")
-            group.add("Feature 2", "f2")
-
-            # With signal for reactive updates
-            signal = Signal()
-            group = ToggleGroup(signal=signal)
-            signal.subscribe(lambda v: print(f"Selected: {v}"))
-            ```
         """
         # Extract ToggleGroup-specific options before super().__init__
         self._mode = kwargs.pop('mode', 'single')

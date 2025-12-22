@@ -17,72 +17,20 @@ class PasswordEntry(Field):
     The widget automatically inserts a visibility toggle button (eye icon) that shows
     the password while pressed and hides it when released.
 
-    Features:
-        - Automatic character masking (default: '•')
-        - Press-and-hold visibility toggle button
-        - Customizable mask character
-        - All Field features (label, validation, messages, etc.)
-        - Toggle button can be shown/hidden programmatically
+    Events:
+        ``<<Input>>``: Triggered on each keystroke.
+        ``<<Change>>``: Triggered when value changes after commit.
+        ``<<Valid>>``: Triggered when validation passes.
+        ``<<Invalid>>``: Triggered when validation fails.
+        ``<<Validate>>``: Triggered after any validation.
 
-    Events (inherited from Field):
-        <<Input>>: Triggered on each keystroke
-        <<Change>>: Triggered when value changes after commit
-        <<Valid>>: Triggered when validation passes
-        <<Invalid>>: Triggered when validation fails
-        <<Validate>>: Triggered after any validation
-
-    Examples:
-        ```python
-        import ttkbootstrap as ttk
-        from ttkbootstrap.widgets.composites.passwordentry import PasswordEntry
-
-        root = ttk.Window()
-
-        # Basic password entry
-        password = PasswordEntry(
-            root,
-            label="Password",
-            required=True,
-            message="Enter your password"
-        )
-        password.pack(padx=20, pady=10, fill='x')
-
-        # Custom mask character
-        password2 = PasswordEntry(
-            root,
-            label="PIN",
-            show='*',
-            message="4-digit PIN"
-        )
-        password2.pack(padx=20, pady=10, fill='x')
-
-        # Without visibility toggle
-        password3 = PasswordEntry(
-            root,
-            label="Secret",
-            show_visible_toggle=False
-        )
-        password3.pack(padx=20, pady=10, fill='x')
-
-        # With validation
-        password4 = PasswordEntry(root, label="Password", required=True)
-        password4.add_validation_rule(
-            'stringLength',
-            min=8,
-            message='Password must be at least 8 characters'
-        )
-        password4.pack(padx=20, pady=10, fill='x')
-
-        root.mainloop()
-        ```
-
-    Inherited Properties:
-        entry_widget: Access to the underlying TextEntryPart widget
-        label_widget: Access to the label widget
-        message_widget: Access to the message label widget
-        addons: Dictionary of inserted addon widgets
-        variable: Tkinter Variable linked to entry text
-        signal: Signal object for reactive updates
+    Attributes:
+        entry_widget (TextEntryPart): The underlying text entry widget.
+        label_widget (Label): The label widget above the entry.
+        message_widget (Label): The message label widget below the entry.
+        addons (dict[str, Widget]): Dictionary of inserted addon widgets by name.
+        variable (Variable): Tkinter Variable linked to entry text.
+        signal (Signal): Signal object for reactive updates.
     """
 
     def __init__(

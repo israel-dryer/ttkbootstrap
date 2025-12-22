@@ -13,105 +13,31 @@ class TextEntry(Field):
     text input with deferred parsing, validation support, and visual feedback.
 
     The widget separates user input (display text) from the committed/parsed value,
-    only parsing and formatting when the user commits via <FocusOut> or <Return>.
-
-    Features:
-        - Optional label with required field indicator (*)
-        - Deferred parsing and formatting on commit
-        - International formatting support (numbers, currency, dates, etc.)
-        - Built-in validation with visual error feedback
-        - Message area for hints or error messages
-        - Add-on widget support (prefix/suffix icons or buttons)
-        - Three-tier event system:
-            - <<Input>>: Fires on every keystroke with raw text
-            - <<Change>>: Fires when committed value changes
-            - <<Valid>>/<<Invalid>>: Fires on validation results
+    only parsing and formatting when the user commits via ``<FocusOut>`` or ``<Return>``.
 
     Events:
-        <<Input>>: Triggered on each keystroke
-            event.data = {"text": str}
+        ``<<Input>>``: Triggered on each keystroke.
+            ``event.data = {"text": str}``
 
-        <<Change>>: Triggered when value changes after commit (FocusOut/Return)
-            event.data = {"value": Any, "prev_value": Any, "text": str}
+        ``<<Change>>``: Triggered when value changes after commit.
+            ``event.data = {"value": Any, "prev_value": Any, "text": str}``
 
-        <<Valid>>: Triggered when validation passes
-            event.data = {"value": Any, "is_valid": True, "message": str}
+        ``<<Valid>>``: Triggered when validation passes.
+            ``event.data = {"value": Any, "is_valid": True, "message": str}``
 
-        <<Invalid>>: Triggered when validation fails
-            event.data = {"value": Any, "is_valid": False, "message": str}
+        ``<<Invalid>>``: Triggered when validation fails.
+            ``event.data = {"value": Any, "is_valid": False, "message": str}``
 
-        <<Validate>>: Triggered after any validation
-            event.data = {"value": Any, "is_valid": bool, "message": str}
+        ``<<Validate>>``: Triggered after any validation.
+            ``event.data = {"value": Any, "is_valid": bool, "message": str}``
 
-    Examples:
-        ```python
-        import ttkbootstrap as ttk
-        from ttkbootstrap.widgets.composites.textentry import TextEntry
-
-        root = ttk.Window()
-
-        # Simple text entry with label
-        entry1 = TextEntry(
-            root,
-            label="Name",
-            message="Enter your full name",
-            required=True
-        )
-        entry1.pack(padx=20, pady=10, fill='x')
-
-        # Currency entry with formatting
-        entry2 = TextEntry(
-            root,
-            label="Amount",
-            value="1234.56",
-            value_format='$#,##0.00',
-            locale='en_US'
-        )
-        entry2.pack(padx=20, pady=10, fill='x')
-
-        # Password entry
-        entry3 = TextEntry(
-            root,
-            label="Password",
-            show='*',
-            required=True
-        )
-        entry3.pack(padx=20, pady=10, fill='x')
-
-        # Entry with addon button
-        entry4 = TextEntry(root, label="Search")
-        entry4.insert_addon(ttk.Button, 'after', text='Go')
-        entry4.pack(padx=20, pady=10, fill='x')
-
-        # Bind to events
-        def on_changed(event):
-            print(f"Value changed to: {event.data['value']}")
-
-        entry1.on_changed(on_changed)
-
-        root.mainloop()
-        ```
-
-    Validation:
-        ```python
-        # Add validation rules
-        entry = TextEntry(root, label="Email", required=True)
-        entry.add_validation_rule('email', message='Invalid email address')
-
-        # Handle validation events
-        def handle_invalid(event):
-            print(f"Error: {event.data['message']}")
-
-        entry.bind('<<Invalid>>', handle_invalid)
-        ```
-
-    Inherited Properties:
-        entry_widget: Access to the underlying TextEntryPart widget
-        label_widget: Access to the label widget
-        message_widget: Access to the message label widget
-        addons: Dictionary of inserted addon widgets
-        variable: Tkinter Variable linked to entry text
-        signal: Signal object for reactive updates
+    Attributes:
+        entry_widget (TextEntryPart): The underlying text entry widget.
+        label_widget (Label): The label widget above the entry.
+        message_widget (Label): The message label widget below the entry.
+        addons (dict[str, Widget]): Dictionary of inserted addon widgets by name.
+        variable (Variable): Tkinter Variable linked to entry text.
+        signal (Signal): Signal object for reactive updates.
     """
 
     def __init__(

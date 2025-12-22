@@ -37,28 +37,10 @@ class ButtonGroup(Frame):
     where you want buttons visually connected but don't need to track which is
     selected.
 
-    Examples:
-        # Toolbar-style button group
-        toolbar = ButtonGroup(root, bootstyle='primary')
-        toolbar.add("Save", command=save_action)
-        toolbar.add("Load", command=load_action)
-        toolbar.add("Delete", command=delete_action)
-
-        # Vertical action buttons
-        actions = ButtonGroup(root, orient='vertical', bootstyle='success-outline')
-        actions.add("Apply", command=apply)
-        actions.add("Cancel", command=cancel)
-
-        # With custom keys
-        group = ButtonGroup(root)
-        group.add("New", key="new_btn", command=new_file)
-        group.configure_widget("new_btn", state='disabled')
-
-        # Mixed widget types
-        from ttkbootstrap import MenuButton
-        group = ButtonGroup(root)
-        group.add("Action 1", command=action1)
-        group.add("Options", widget_type=MenuButton, key="menu")
+    Attributes:
+        bootstyle (str): The color/variant style applied to all buttons.
+        orient (str): Layout orientation ('horizontal' or 'vertical').
+        state (str): State for all buttons ('normal' or 'disabled').
     """
 
     def __init__(self, master: Any = None, **kwargs: Unpack[ButtonGroupKwargs]):

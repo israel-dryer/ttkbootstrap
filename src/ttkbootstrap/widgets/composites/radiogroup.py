@@ -39,32 +39,12 @@ class RadioGroup(Frame):
     buttons with automatic state management. It supports both horizontal and
     vertical orientations, and can display an optional label in various positions.
 
-    Examples:
-        # Simple vertical radio group with label
-        group = RadioGroup(root, text="Choose an option:", orient='vertical')
-        group.add("Option 1", "opt1")
-        group.add("Option 2", "opt2")
-        group.add("Option 3", "opt3")
-        group.pack()
-
-        # Horizontal group with label on left
-        group = RadioGroup(root, text="Pick one:", labelanchor='w', orient='horizontal')
-        group.add("A", "a")
-        group.add("B", "b")
-        group.add("C", "c")
-
-        # With callback
-        def on_change(value):
-            print(f"Selected: {value}")
-
-        sub_id = group.on_changed(on_change)
-        # Later: group.off_changed(sub_id)
-
-        # With external variable
-        var = StringVar(value="opt2")
-        group = RadioGroup(root, variable=var, text="Select:")
-        group.add("First", "opt1")
-        group.add("Second", "opt2")
+    Attributes:
+        variable (Variable): The underlying tk.Variable for the selected value.
+        signal (Signal): Signal for reactive programming and change subscriptions.
+        bootstyle (str): The color/variant style applied to all buttons.
+        orient (str): Layout orientation ('horizontal' or 'vertical').
+        state (str): State for all buttons ('normal' or 'disabled').
     """
 
     def __init__(self, master: Any = None, **kwargs: Unpack[RadioGroupKwargs]):
