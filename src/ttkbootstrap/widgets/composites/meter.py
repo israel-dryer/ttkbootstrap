@@ -21,7 +21,7 @@ class Meter(Frame):
     segmented or solid indicators, and interactive mode for user input.
 
     Events:
-        <<Change>>: Fired whenever the meter value changes (event.data includes
+        ``<<Change>>``: Fired whenever the meter value changes (event.data includes
             {"value": new_value, "prev_value": previous_value}).
     """
 
@@ -94,7 +94,7 @@ class Meter(Frame):
             **kwargs: Additional keyword arguments passed to the Frame parent class.
 
         Events:
-            <<Change>>: Emitted when the value changes (see on_changed()).
+            ``<<Change>>``: Emitted when the value changes (see on_changed()).
         """
         legacy = Meter._coerce_legacy_params(kwargs)
         super().__init__(master, **kwargs)
