@@ -58,13 +58,14 @@ class Notebook(TTKWrapperBase, ttk.Notebook):
     is visible at a time. Tabs can be referenced by key (str), index (int), or
     widget instance.
 
-    Events:
-        ``<<NotebookTabChange>>``: Triggered when the selected tab changes.
-        ``<<NotebookTabActivate>>``: Triggered when a tab becomes active.
-        ``<<NotebookTabDeactivate>>``: Triggered when a tab becomes inactive.
+    !!! note "Events"
 
-        All events include ``event.data`` with: ``current`` (TabRef), ``previous``
-        (TabRef), ``reason`` ('user', 'api', 'hide', 'forget', 'reorder'), and
+        - ``<<NotebookTabChange>>``: Triggered when the selected tab changes.
+        - ``<<NotebookTabActivate>>``: Triggered when a tab becomes active.
+        - ``<<NotebookTabDeactivate>>``: Triggered when a tab becomes inactive.
+
+        All events provide ``event.data`` with keys: ``current`` (TabRef), ``previous``
+        (TabRef), ``reason`` ('user', 'api', 'hide', 'forget', 'reorder'),
         ``via`` ('click', 'key', 'programmatic').
     """
 

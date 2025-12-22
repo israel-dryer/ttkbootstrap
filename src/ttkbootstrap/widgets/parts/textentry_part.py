@@ -14,15 +14,16 @@ class TextEntryPart(ValidationMixin, Entry):
     providing a clean pattern for handling formatted data entry. Parsing and formatting
     only occur when the user commits the value via ``<FocusOut>`` or ``<Return>``.
 
-    Events:
-        ``<<Input>>``: Triggered on each keystroke.
-            ``event.data = {"text": str}``
+    !!! note "Events"
 
-        ``<<Change>>``: Triggered when value changes after commit.
-            ``event.data = {"value": Any, "prev_value": Any, "text": str}``
+        - ``<<Input>>``: Triggered on each keystroke.
+          Provides ``event.data`` with keys: ``text``.
 
-        ``<Return>``: Triggered on Enter key press.
-            ``event.data = {"value": Any, "text": str}``
+        - ``<<Change>>``: Triggered when value changes after commit.
+          Provides ``event.data`` with keys: ``value``, ``prev_value``, ``text``.
+
+        - **<Return>**: Triggered on Enter key press.
+          Provides ``event.data`` with keys: ``value``, ``text``.
     """
 
     def __init__(

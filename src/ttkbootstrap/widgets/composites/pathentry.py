@@ -39,11 +39,12 @@ class PathEntry(Field):
     widget supports various dialog types including single file selection, multiple
     file selection, directory selection, and save file dialogs.
 
-    Events:
-        ``<<Change>>``: Fired when a path is selected from the dialog.
-        ``<<Input>>``: Fired when user manually types in the entry.
-        ``<<Valid>>``: Fired when validation passes.
-        ``<<Invalid>>``: Fired when validation fails.
+    !!! note "Events"
+
+        - ``<<Change>>``: Fired when a path is selected from the dialog.
+        - ``<<Input>>``: Fired when user manually types in the entry.
+        - ``<<Valid>>``: Fired when validation passes.
+        - ``<<Invalid>>``: Fired when validation fails.
 
     Attributes:
         entry_widget (TextEntryPart): The underlying text entry widget.

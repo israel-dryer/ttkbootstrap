@@ -19,13 +19,14 @@ class NumericEntry(Field):
     Extends Field to provide numeric input with spin buttons, bounds validation,
     keyboard stepping (Up/Down arrows), mouse wheel support, and optional wrapping.
 
-    Events:
-        ``<<Increment>>``: Fired when increment is requested (before step occurs).
-        ``<<Decrement>>``: Fired when decrement is requested (before step occurs).
-        ``<<Change>>``: Fired when value changes after commit.
-        ``<<Input>>``: Fired on each keystroke.
-        ``<<Valid>>``: Fired when validation passes.
-        ``<<Invalid>>``: Fired when validation fails.
+    !!! note "Events"
+
+        - ``<<Increment>>``: Fired when increment is requested (before step occurs).
+        - ``<<Decrement>>``: Fired when decrement is requested (before step occurs).
+        - ``<<Change>>``: Fired when value changes after commit.
+        - ``<<Input>>``: Fired on each keystroke.
+        - ``<<Valid>>``: Fired when validation passes.
+        - ``<<Invalid>>``: Fired when validation fails.
 
     Attributes:
         entry_widget (NumberEntryPart): The underlying entry widget.

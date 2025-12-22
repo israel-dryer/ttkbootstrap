@@ -20,15 +20,16 @@ class ValidationMixin(Widget):
     Provides debounced auto-validation on key/blur with virtual event emission.
     Event data is accessible via ``event.data`` in handlers.
 
-    Events:
-        ``<<Valid>>``: Fired when validation passes.
-            ``event.data = {"value": Any, "is_valid": True, "message": str}``
+    !!! note "Events"
 
-        ``<<Invalid>>``: Fired when validation fails.
-            ``event.data = {"value": Any, "is_valid": False, "message": str}``
+        - ``<<Valid>>``: Fired when validation passes.
+          Provides ``event.data`` with keys: ``value``, ``is_valid`` (True), ``message``.
 
-        ``<<Validate>>``: Fired after any validation.
-            ``event.data = {"value": Any, "is_valid": bool, "message": str}``
+        - ``<<Invalid>>``: Fired when validation fails.
+          Provides ``event.data`` with keys: ``value``, ``is_valid`` (False), ``message``.
+
+        - ``<<Validate>>``: Fired after any validation.
+          Provides ``event.data`` with keys: ``value``, ``is_valid`` (bool), ``message``.
     """
 
     EVENT_VALID = '<<Valid>>'

@@ -5,6 +5,7 @@ values from a list or numeric range.
 """
 
 from typing import List, Union
+
 from typing_extensions import Unpack
 
 from ttkbootstrap.widgets.composites.field import Field, FieldOptions
@@ -18,11 +19,12 @@ class SpinnerEntry(Field):
     handle both predefined text values and numeric ranges. The widget includes
     built-in up/down arrow buttons and supports keyboard/mouse wheel interaction.
 
-    Events:
-        ``<<Change>>``: Fired when value changes after commit.
-        ``<<Input>>``: Fired on each keystroke.
-        ``<<Valid>>``: Fired when validation passes.
-        ``<<Invalid>>``: Fired when validation fails.
+    !!! note "Events"
+
+        - ``<<Change>>``  : Fired when value changes after commit.
+        - ``<<Input>>``   : Fired on each keystroke.
+        - ``<<Valid>>``   : Fired when validation passes.
+        - ``<<Invalid>>`` : Fired when validation fails.
 
     Attributes:
         entry_widget (SpinnerEntryPart): The underlying spinbox entry widget.

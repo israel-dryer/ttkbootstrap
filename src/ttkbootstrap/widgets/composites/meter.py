@@ -20,9 +20,10 @@ class Meter(Frame):
     prefix/suffix labels, and subtitle. Supports both full circle and semi-circle styles,
     segmented or solid indicators, and interactive mode for user input.
 
-    Events:
-        ``<<Change>>``: Fired whenever the meter value changes (event.data includes
-            {"value": new_value, "prev_value": previous_value}).
+    !!! note "Events"
+
+        ``<<Change>>``: Fired whenever the meter value changes.
+          Provides ``event.data`` with keys: ``value``, ``prev_value``.
     """
 
     def __init__(

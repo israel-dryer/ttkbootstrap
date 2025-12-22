@@ -22,11 +22,12 @@ class TimeEntry(SelectBox):
     locale-aware formatting and a searchable dropdown of time intervals.
     The widget supports various time format presets and custom time patterns.
 
-    Events:
-        ``<<Change>>``: Fired when time value changes after commit.
-        ``<<Input>>``: Fired on each keystroke.
-        ``<<Valid>>``: Fired when validation passes.
-        ``<<Invalid>>``: Fired when validation fails.
+    !!! note "Events"
+
+        - ``<<Change>>``: Fired when time value changes after commit.
+        - ``<<Input>>``: Fired on each keystroke.
+        - ``<<Valid>>``: Fired when validation passes.
+        - ``<<Invalid>>``: Fired when validation fails.
 
     Attributes:
         entry_widget (TextEntryPart): The underlying text entry widget.

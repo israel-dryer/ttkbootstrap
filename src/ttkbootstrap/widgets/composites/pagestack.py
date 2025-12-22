@@ -35,15 +35,16 @@ class PageStack(Frame):
     visible at a time. It maintains a navigation history, allowing users to move
     backward and forward through pages similar to a web browser.
 
-    Events:
-        ``<<PageUnmount>>``: Triggered when the current page is hidden.
-        ``<<PageWillMount>>``: Triggered before a new page is displayed.
-        ``<<PageMount>>``: Triggered after a new page is displayed.
-        ``<<PageChange>>``: Triggered after page navigation completes.
+    !!! note "Events"
 
-        All events include ``event.data`` with: ``page``, ``prev_page``, ``prev_data``,
+        - ``<<PageUnmount>>``: Triggered when the current page is hidden.
+        - ``<<PageWillMount>>``: Triggered before a new page is displayed.
+        - ``<<PageMount>>``: Triggered after a new page is displayed.
+        - ``<<PageChange>>``: Triggered after page navigation completes.
+
+        All events provide ``event.data`` with keys: ``page``, ``prev_page``, ``prev_data``,
         ``nav`` ('push', 'back', 'forward'), ``index``, ``length``, ``can_back``,
-        and ``can_forward``.
+        ``can_forward``.
     """
 
     def __init__(self, master=None, **kwargs: Unpack[PageStackKwargs]):

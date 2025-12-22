@@ -1,5 +1,4 @@
-"""
-TableView widget backed by an in-memory SQLite datasource.
+"""TableView widget backed by an in-memory SQLite datasource.
 
 The datasource performs filtering, sorting, and pagination while the widget
 renders the current page in a Treeview with optional grouping, striping, and
@@ -60,22 +59,33 @@ _TABLE_SEARCH_MODE_OPTIONS = [
 
 
 class TableView(Frame):
-    """
-    TableView backed by an in-memory SqliteDataSource with sortable headers,
-    filtering/search, pagination or virtual scrolling, optional grouping,
-    column striping, and configurable exporting/editing. Context menus are
-    opt-in, the searchbar can trigger on enter or input, and columns can
-    auto-size to their visible content.
+    """TableView backed by an in-memory SqliteDataSource.
 
-    Highlights:
-        - Paging: standard pagination or virtual scroll; optional x/y scrollbars.
-        - Search: standard/advanced searchbar with trigger on enter (default) or input.
-        - Columns: global min width, optional auto-width sizing per page, chooser/hide actions.
-        - Grouping: optional grouping via header context menu with fixed group column.
-        - Context menus: enable/disable per region (headers/rows) with sorting/filtering actions.
-        - Appearance: optional alternating row colors (disabled when grouped).
-        - Extensibility: optional exporting and editing capabilities via configuration.
-        - Events: virtual events for selection/row click/double/right-click and row insert/update/delete/move.
+    Provides sortable headers, filtering/search, pagination or virtual scrolling,
+    optional grouping, column striping, and configurable exporting/editing.
+
+    !!! note "Events"
+
+        - ``<<SelectionChange>>``: Fired when row selection changes.
+          Provides ``event.data`` with keys: ``records``, ``iids``.
+        - ``<<RowClick>>``: Fired on row click.
+          Provides ``event.data`` with keys: ``record``, ``iid``.
+        - ``<<RowDoubleClick>>``: Fired on row double-click.
+          Provides ``event.data`` with keys: ``record``, ``iid``.
+        - ``<<RowRightClick>>``: Fired on row right-click.
+          Provides ``event.data`` with keys: ``record``, ``iid``.
+        - ``<<RowInsert>>``: Fired when rows are inserted.
+          Provides ``event.data`` with key: ``records``.
+        - ``<<RowUpdate>>``: Fired when rows are updated.
+          Provides ``event.data`` with key: ``records``.
+        - ``<<RowDelete>>``: Fired when rows are deleted.
+          Provides ``event.data`` with key: ``records``.
+        - ``<<RowMove>>``: Fired when rows are moved.
+          Provides ``event.data`` with key: ``records``.
+
+    Attributes:
+        selected_rows (list[dict]): List of record dicts for current selection.
+        visible_rows (list[dict]): List of record dicts currently rendered.
     """
 
     def __init__(
@@ -122,17 +132,7 @@ class TableView(Frame):
             context_menus: "none" | "headers" | "rows" | "all" to enable region context menus.
             column_min_width: Global minimum width for columns (overridden by per-column minwidth; default 40).
             column_auto_width: Automatically size columns to widest visible text on each page.
-            kwargs: Passed through to Frame.
-
-        Virtual events:
-            <<SelectionChange>>: event.data = {"records": list[dict], "iids": list[str]}
-            <<RowClick>>: event.data = {"record": dict, "iid": str}
-            <<RowDoubleClick>>: event.data = {"record": dict, "iid": str}
-            <<RowRightClick>>: event.data = {"record": dict, "iid": str}
-            <<RowInsert>>: event.data = {"records": list[dict]}
-            <<RowUpdate>>: event.data = {"records": list[dict]}
-            <<RowDelete>>: event.data = {"records": list[dict]}
-            <<RowMove>>: event.data = {"records": list[dict]}
+            **kwargs: Passed through to Frame.
         """
         super().__init__(master, **kwargs)
 
@@ -228,6 +228,7 @@ class TableView(Frame):
         return self.bind("<<SelectionChange>>", callback, add=True)
 
     def off_selection_changed(self, funcid: str | None = None) -> None:
+        """Unbind a selection change callback."""
         self.unbind("<<SelectionChange>>", funcid)
 
     def on_row_click(self, callback) -> str:
@@ -235,6 +236,7 @@ class TableView(Frame):
         return self.bind("<<RowClick>>", callback, add=True)
 
     def off_row_click(self, funcid: str | None = None) -> None:
+        """Unbind a row click callback."""
         self.unbind("<<RowClick>>", funcid)
 
     def on_row_double_click(self, callback) -> str:
@@ -242,6 +244,7 @@ class TableView(Frame):
         return self.bind("<<RowDoubleClick>>", callback, add=True)
 
     def off_row_double_click(self, funcid: str | None = None) -> None:
+        """Unbind a row double-click callback."""
         self.unbind("<<RowDoubleClick>>", funcid)
 
     def on_row_right_click(self, callback) -> str:
@@ -249,6 +252,7 @@ class TableView(Frame):
         return self.bind("<<RowRightClick>>", callback, add=True)
 
     def off_row_right_click(self, funcid: str | None = None) -> None:
+        """Unbind a row right-click callback."""
         self.unbind("<<RowRightClick>>", funcid)
 
     def on_row_deleted(self, callback) -> str:
@@ -256,6 +260,7 @@ class TableView(Frame):
         return self.bind("<<RowDelete>>", callback, add=True)
 
     def off_row_deleted(self, funcid: str | None = None) -> None:
+        """Unbind a row delete callback."""
         self.unbind("<<RowDelete>>", funcid)
 
     def on_row_inserted(self, callback) -> str:
@@ -263,6 +268,7 @@ class TableView(Frame):
         return self.bind("<<RowInsert>>", callback, add=True)
 
     def off_row_inserted(self, funcid: str | None = None) -> None:
+        """Unbind a row insert callback."""
         self.unbind("<<RowInsert>>", funcid)
 
     def on_row_updated(self, callback) -> str:
@@ -270,6 +276,7 @@ class TableView(Frame):
         return self.bind("<<RowUpdate>>", callback, add=True)
 
     def off_row_updated(self, funcid: str | None = None) -> None:
+        """Unbind a row update callback."""
         self.unbind("<<RowUpdate>>", funcid)
 
     def on_row_moved(self, callback) -> str:
@@ -277,6 +284,7 @@ class TableView(Frame):
         return self.bind("<<RowMove>>", callback, add=True)
 
     def off_row_moved(self, funcid: str | None = None) -> None:
+        """Unbind a row move callback."""
         self.unbind("<<RowMove>>", funcid)
 
     # ------------------------------------------------------------------ Public data/selection API

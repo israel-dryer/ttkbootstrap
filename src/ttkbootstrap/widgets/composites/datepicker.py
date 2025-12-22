@@ -75,13 +75,13 @@ class DatePicker(ttk.Frame):
     and min/max bounds. Displays one month in single mode or two months
     in range mode.
 
-    Events:
-        ``<<DateSelect>>``: Fired on selection.
-            ``event.data = {"date": date, "range": (start, end)}``
+    !!! note "Events"
 
-            In single mode, ``date`` and ``range[0]`` are the same; ``range[1]`` is None.
-            In range mode, ``date`` is the most recent click and ``range[1]`` may be
-            None while selecting the end.
+        ``<<DateSelect>>``: Fired on selection.
+          Provides ``event.data`` with keys: ``date``, ``range`` (tuple of start, end).
+          In single mode, ``date`` and ``range[0]`` are the same; ``range[1]`` is None.
+          In range mode, ``date`` is the most recent click and ``range[1]`` may be
+          None while selecting the end.
     """
 
     def __init__(

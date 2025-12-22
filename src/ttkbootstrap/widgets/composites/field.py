@@ -87,21 +87,22 @@ class Field(EntryMixin, Frame):
     provides a consistent API for all entry-based components. It supports both text
     and numeric input types through the ``kind`` parameter.
 
-    Events:
-        ``<<Input>>``: Triggered on each keystroke.
-            ``event.data = {"text": str}``
+    !!! note "Events"
 
-        ``<<Change>>``: Triggered when value changes after commit.
-            ``event.data = {"value": Any, "prev_value": Any, "text": str}``
+        - ``<<Input>>``: Triggered on each keystroke.
+          Provides ``event.data`` with keys: ``text``.
 
-        ``<<Valid>>``: Triggered when validation passes.
-            ``event.data = {"value": Any, "is_valid": True, "message": str}``
+        - ``<<Change>>``: Triggered when value changes after commit.
+          Provides ``event.data`` with keys: ``value``, ``prev_value``, ``text``.
 
-        ``<<Invalid>>``: Triggered when validation fails.
-            ``event.data = {"value": Any, "is_valid": False, "message": str}``
+        - ``<<Valid>>``: Triggered when validation passes.
+          Provides ``event.data`` with keys: ``value``, ``is_valid`` (True), ``message``.
 
-        ``<<Validate>>``: Triggered after any validation.
-            ``event.data = {"value": Any, "is_valid": bool, "message": str}``
+        - ``<<Invalid>>``: Triggered when validation fails.
+          Provides ``event.data`` with keys: ``value``, ``is_valid`` (False), ``message``.
+
+        - ``<<Validate>>``: Triggered after any validation.
+          Provides ``event.data`` with keys: ``value``, ``is_valid`` (bool), ``message``.
 
     Attributes:
         entry_widget (TextEntryPart | NumberEntryPart): The underlying entry widget.

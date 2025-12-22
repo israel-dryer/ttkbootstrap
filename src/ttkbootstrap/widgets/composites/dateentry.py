@@ -32,13 +32,15 @@ class DateEntry(Field):
     ``longTime`` (3:30:45 PM PST), ``shortTime`` (3:30 PM), ``longDateLongTime``,
     ``shortDateShortTime``, or any custom ICU date format pattern (e.g., "yyyy-MM-dd").
 
-    Events:
-        The widget inherits Field events:
+    !!! note "Events"
 
-        - ``<<Change>>``: Fired when date value changes after commit
-        - ``<<Input>>``: Fired on each keystroke
-        - ``<<Valid>>``: Fired when validation passes
-        - ``<<Invalid>>``: Fired when validation fails
+        - ``<<Change>>``: Fired when date value changes after commit.
+        - ``<<Input>>``: Fired on each keystroke.
+        - ``<<Valid>>``: Fired when validation passes.
+        - ``<<Invalid>>``: Fired when validation fails.
+
+        The calendar picker button uses a DateDialog. The button can be hidden
+        using ``show_picker_button=False``.
 
     Attributes:
         entry_widget (TextEntryPart): Access to the underlying TextEntryPart widget.
@@ -48,10 +50,6 @@ class DateEntry(Field):
         variable (Variable): Tkinter Variable linked to entry text.
         signal (Signal): Signal object for reactive updates.
         date_picker_button (Button): The calendar picker button widget.
-
-    Note:
-        The calendar picker button uses a DateDialog. The button can be hidden
-        using ``show_picker_button=False``.
     """
 
     def __init__(

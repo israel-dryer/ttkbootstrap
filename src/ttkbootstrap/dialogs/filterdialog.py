@@ -176,13 +176,14 @@ class FilterDialog(ttk.Frame):
     functionality. When the user clicks OK, the selected values are stored in
     the result property.
 
-    Events:
+    !!! note "Events"
+
         ``<<SelectionChanged>>``: Triggered when OK is clicked and selections are confirmed.
-            ``event.data = {"selected": list[Any]}``
+          Provides ``event.data`` with key: ``selected`` (list[Any]).
 
     Attributes:
         result (list[Any] | None): List of selected values after dialog is closed,
-            or None if cancelled.
+            or None if canceled.
     """
 
     def __init__(

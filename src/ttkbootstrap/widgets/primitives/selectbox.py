@@ -14,9 +14,10 @@ class SelectBox(Field):
     Renders a field with a suffix button that opens a popup Treeview of available
     items. Selecting an item updates the field value and emits ``<<Change>>``.
 
-    Events:
-        ``<<Change>>``: Fired when the selection changes (user or code).
-            ``event.data = {"value": Any, "prev_value": Any, "text": str}``
+    !!! note "Events"
+
+          ``<<Change>>``: Fired when the selection changes (user or code).
+          Provides ``event.data`` with keys: ``value``, ``prev_value``, ``text``.
 
     Attributes:
         entry_widget (TextEntryPart): The underlying entry widget.

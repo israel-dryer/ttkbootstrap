@@ -538,8 +538,10 @@ class ColorChooserDialog:
         title: Dialog window title (localized).
         initial_color: Initial color shown in the chooser; defaults to theme background.
 
-    Events:
-        ``<<DialogResult>>`` with ``event.data = {"result": ColorChoice|None, "confirmed": bool}``.
+    !!! note "Events"
+
+        ``<<DialogResult>>``: Fired when the dialog is closed.
+          Provides ``event.data`` with keys: ``result`` (ColorChoice|None), ``confirmed`` (bool).
     """
 
     def __init__(
