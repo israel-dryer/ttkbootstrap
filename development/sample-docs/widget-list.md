@@ -24,7 +24,7 @@ TreeView
 ButtonGroup
 ContextMenu
 DateEntry
-DatePicker
+Calendar
 DropdownButton
 FloodGauge
 Form

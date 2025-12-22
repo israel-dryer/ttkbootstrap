@@ -10,7 +10,7 @@ title: DialogName
 - what task it supports (confirmation, picking, configuration, etc.)
 - whether it is modal, popover-like, or hybrid
 
-Mention what it is built on if relevant (e.g., `Dialog`, `FormDialog`, `DatePicker`).
+Mention what it is built on if relevant (e.g., `Dialog`, `FormDialog`, `Calendar`).
 
 ---
 

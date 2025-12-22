@@ -38,9 +38,9 @@ WIDGET_MODULES = {
     "TreeView": "ttkbootstrap.widgets.primitives.treeview.TreeView",
     # Composites
     "ButtonGroup": "ttkbootstrap.widgets.composites.buttongroup.ButtonGroup",
+    "Calendar": "ttkbootstrap.widgets.composites.calendar.Calendar",
     "ContextMenu": "ttkbootstrap.widgets.composites.contextmenu.ContextMenu",
     "DateEntry": "ttkbootstrap.widgets.composites.dateentry.DateEntry",
-    "DatePicker": "ttkbootstrap.widgets.composites.datepicker.DatePicker",
     "DropdownButton": "ttkbootstrap.widgets.composites.dropdownbutton.DropdownButton",
     "Field": "ttkbootstrap.widgets.composites.field.Field",
     "FloodGauge": "ttkbootstrap.widgets.composites.floodgauge.FloodGauge",

@@ -1,7 +1,7 @@
-"""Dialog wrapper around the DatePicker widget.
+"""Dialog wrapper around the Calendar widget.
 
 Exposes a chrome-less, popover-capable date picker dialog that can close on
-outside clicks and forwards DatePicker options (disabled dates, bounds, etc.).
+outside clicks and forwards Calendar options (disabled dates, bounds, etc.).
 """
 
 from __future__ import annotations
@@ -16,7 +16,7 @@ from ttkbootstrap.widgets.primitives import Frame
 from ttkbootstrap.constants import BOTH, PRIMARY, YES
 from ttkbootstrap.dialogs.dialog import Dialog
 from ttkbootstrap.runtime.window_utilities import AnchorPoint
-from ttkbootstrap.widgets.composites.datepicker import DatePicker
+from ttkbootstrap.widgets.composites.calendar import Calendar
 
 ttk = SimpleNamespace(Frame=Frame)
 
@@ -166,8 +166,8 @@ class _ChromeDialog(Dialog):
         self._outside_click_binding = None
 
 
-class _DialogDatePicker(DatePicker):
-    """DatePicker variant that records why a selection event fired."""
+class _DialogCalendar(Calendar):
+    """Calendar variant that records why a selection event fired."""
 
     def __init__(self, *args: Any, **kwargs: Any) -> None:
         super().__init__(*args, **kwargs)
@@ -183,7 +183,7 @@ class _DialogDatePicker(DatePicker):
 
 
 class DateDialog:
-    """Modal dialog that displays a :class:`~ttkbootstrap.widgets.DatePicker`."""
+    """Modal dialog that displays a :class:`~ttkbootstrap.widgets.Calendar`."""
 
     def __init__(
             self,
@@ -212,7 +212,7 @@ class DateDialog:
             min_date: Lower bound for selectable dates.
             max_date: Upper bound for selectable dates.
             show_outside_days: Whether to show outside-month days. Defaults to
-                the DatePicker behavior (True for single month).
+                the Calendar behavior (True for single month).
             show_week_numbers: Display ISO week numbers beside each row.
             hide_window_chrome: When True, displays the dialog with no window
                 decorations using override-redirect.
@@ -231,7 +231,7 @@ class DateDialog:
         self._hide_window_chrome = hide_window_chrome
         self._close_on_click_outside = close_on_click_outside
 
-        self._picker: Optional[_DialogDatePicker] = None
+        self._picker: Optional[_DialogCalendar] = None
 
         self._dialog = _ChromeDialog(
             master=master,
@@ -244,11 +244,11 @@ class DateDialog:
         )
 
     def _create_content(self, master: tkinter.Widget) -> None:
-        """Build the DatePicker content inside the dialog."""
+        """Build the Calendar content inside the dialog."""
         container = ttk.Frame(master, padding=2, show_border=True)
         container.pack(fill=BOTH, expand=YES)
 
-        self._picker = _DialogDatePicker(
+        self._picker = _DialogCalendar(
             master=container,
             start_date=self._initial_date,
             first_weekday=self._first_weekday,
@@ -264,7 +264,7 @@ class DateDialog:
         self._picker.on_date_selected(self._on_date_selected)
 
     def _on_date_selected(self, event: tkinter.Event) -> None:
-        """Handle <<DateSelect>> from the embedded DatePicker."""
+        """Handle <<DateSelect>> from the embedded Calendar."""
         if not self._picker:
             return
         trigger_reason = getattr(self._picker, "_last_trigger_reason", None)

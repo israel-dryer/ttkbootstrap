@@ -59,7 +59,7 @@ Badge, Button, CheckButton, CheckToggle, Combobox, Entry, Frame, Label, LabelFra
 
 ### Composites (31+)
 
-ButtonGroup, DateEntry, DatePicker, DropdownButton, Field, FloodGauge, Form, ListView, Meter, NumericEntry, PageStack, PasswordEntry, PathEntry, RadioGroup, ScrolledText, ScrollView, SpinnerEntry, TableView, TextEntry, TimeEntry, Toast, ToggleGroup, ToolTip
+ButtonGroup, Calendar, DateEntry, DropdownButton, Field, FloodGauge, Form, ListView, Meter, NumericEntry, PageStack, PasswordEntry, PathEntry, RadioGroup, ScrolledText, ScrollView, SpinnerEntry, TableView, TextEntry, TimeEntry, Toast, ToggleGroup, ToolTip
 
 ### Dialogs (9)
 

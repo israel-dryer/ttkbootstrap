@@ -50,7 +50,7 @@ if TYPE_CHECKING:
         ContextMenu,
         ContextMenuItem,
         DateEntry,
-        DatePicker,
+        Calendar,
         DropdownButton,
         Entry,
         Field,
@@ -101,7 +101,8 @@ _DEPRECATED_ALIASES = {
     "Labelframe": "LabelFrame",
     "Panedwindow": "PanedWindow",
     "Treeview": "TreeView",
-    "Tableview": "TableView"
+    "Tableview": "TableView",
+    "DatePicker": "Calendar",
 }
 
 _TK_EXPORTS = [
@@ -147,7 +148,7 @@ _MODULE_EXPORTS = {
         "ButtonGroup",
         "CheckToggle",
         "RadioToggle",
-        "ContextMenu", "ContextMenuItem", "DateEntry", "DatePicker",
+        "Calendar", "ContextMenu", "ContextMenuItem", "DateEntry",
         "DropdownButton", "Field", "FieldOptions", "FloodGauge", "Form",
         "LabeledScale", "Meter", "NumericEntry", "PageStack",
         "PasswordEntry", "PathEntry", "RadioGroup", "ScrolledText", "ScrollView", "SpinnerEntry",

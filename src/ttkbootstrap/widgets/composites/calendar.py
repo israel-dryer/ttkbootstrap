@@ -1,4 +1,4 @@
-"""Inline calendar date picker widget supporting single and range selection."""
+"""Inline calendar widget supporting single and range date selection."""
 from __future__ import annotations
 
 import calendar
@@ -68,7 +68,7 @@ def _format_month_year(month_date: date) -> str:
         return f"{month_name} {month_date.year}"
 
 
-class DatePicker(ttk.Frame):
+class Calendar(ttk.Frame):
     """Inline calendar widget for selecting dates.
 
     Supports single or range selection modes with optional disabled dates
@@ -95,7 +95,7 @@ class DatePicker(ttk.Frame):
             bootstyle: str = PRIMARY,
             padding: int | tuple[int, int] | tuple[int, int, int, int] | str | None = None,
     ) -> None:
-        """Initialize a DatePicker widget.
+        """Initialize a Calendar widget.
 
         Args:
             master: Parent widget. If None, uses the default root window.
@@ -733,4 +733,4 @@ class DatePicker(ttk.Frame):
         return None
 
 
-__all__ = ["DatePicker"]
+__all__ = ["Calendar"]

@@ -9,13 +9,13 @@ UI components
 | [Badge](Badge.md) | |
 | [Button](Button.md) | |
 | [ButtonGroup](ButtonGroup.md) | |
+| [Calendar](Calendar.md) | |
 | [CheckButton](CheckButton.md) | |
 | [CheckToggle](CheckToggle.md) | |
 | [Combobox](Combobox.md) | |
 | [ContextMenu](ContextMenu.md) | |
 | [ContextMenuItem](ContextMenuItem.md) | |
 | [DateEntry](DateEntry.md) | |
-| [DatePicker](DatePicker.md) | |
 | [DropdownButton](DropdownButton.md) | |
 | [Entry](Entry.md) | |
 | [Field](Field.md) | |
