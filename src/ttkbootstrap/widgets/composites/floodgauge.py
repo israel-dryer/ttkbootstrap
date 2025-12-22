@@ -1,7 +1,8 @@
-from tkinter import Canvas, Event, IntVar, Misc, StringVar
+from tkinter import Canvas, Event, IntVar, StringVar
 from typing import Any, Optional, Union
 
 from ttkbootstrap.widgets.mixins.configure_mixin import ConfigureDelegationMixin, configure_delegate
+from ttkbootstrap.widgets.types import Master
 
 
 class FloodGauge(ConfigureDelegationMixin, Canvas):
@@ -18,7 +19,7 @@ class FloodGauge(ConfigureDelegationMixin, Canvas):
 
     def __init__(
             self,
-            master: Optional[Misc] = None,
+            master: Master = None,
             value: int = 0,
             maximum: int = 100,
             mode: str = "determinate",
