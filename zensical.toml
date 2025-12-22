@@ -329,6 +329,6 @@ show_source = false
 # -----------------------------------------------------------------------------
 # Markdown extensions
 # -----------------------------------------------------------------------------
-[project.markdown_extensions]
-md_in_html = { }
-pymdownx.superfences = { }
+[project.markdown_extensions.md_in_html]
+[project.markdown_extensions.pymdownx.superfences]
+[project.markdown_extensions.admonition]
