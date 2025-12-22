@@ -112,22 +112,12 @@ class DropdownButton(MenuButton):
         self.configure_item = self._context_menu.configure_item
         self.items = self._context_menu.items
 
-    def on_item_click(self, callback: Callable[[Any], Any]):
-        """Set a callback for menu item clicks (callback-based, not an event).
-
-        Callback signature:
-            callback(item: ContextMenuItem) -> None
-
-        The callback receives the clicked ContextMenuItem directly.
-
-        Note:
-            Only one callback can be set at a time. Setting a new callback
-            replaces the previous one. Use off_item_click() to remove.
-        """
+    def on_item_click(self, callback: Callable) -> None:
+        """Set item click callback. Callback receives ``item_info = {'type': str, 'text': str, 'value': Any}``."""
         self._item_click_callback = callback
         self._context_menu.on_item_click(callback)
 
-    def off_item_click(self):
+    def off_item_click(self) -> None:
         """Remove the item click callback."""
         self._item_click_callback = None
         self._context_menu.on_item_click(None)

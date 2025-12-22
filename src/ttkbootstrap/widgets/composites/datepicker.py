@@ -75,13 +75,8 @@ class DatePicker(ttk.Frame):
     and min/max bounds. Displays one month in single mode or two months
     in range mode.
 
-    !!! note "Events"
-
-        ``<<DateSelect>>``: Fired on selection.
-          Provides ``event.data`` with keys: ``date``, ``range`` (tuple of start, end).
-          In single mode, ``date`` and ``range[0]`` are the same; ``range[1]`` is None.
-          In range mode, ``date`` is the most recent click and ``range[1]`` may be
-          None while selecting the end.
+    Events:
+        - ``<<DateSelect>>``: Fired on selection. ``event.data = {'date': date, 'range': tuple[date, date | None]}``
     """
 
     def __init__(
@@ -183,26 +178,11 @@ class DatePicker(ttk.Frame):
         return None
 
     def on_date_selected(self, callback: Callable) -> str:
-        """Bind to ``<<DateSelect>>``.
-
-        Callback signature:
-            callback(event) -> None
-
-        Event data:
-            event.data = {'date': date} (single mode)
-            event.data = {'start': date, 'end': date} (range mode)
-
-        Returns:
-            Binding ID for use with off_date_selected().
-        """
+        """Bind to ``<<DateSelect>>``. Callback receives ``event.data = {'date': date, 'range': tuple[date, date | None]}``."""
         return self.bind("<<DateSelect>>", callback, add=True)
 
-    def off_date_selected(self, bind_id: str):
-        """Unbind from ``<<DateSelect>>``.
-
-        Args:
-            bind_id: Binding ID from on_date_selected().
-        """
+    def off_date_selected(self, bind_id: str | None = None) -> None:
+        """Unbind from ``<<DateSelect>>``."""
         return self.unbind("<<DateSelect>>", bind_id)
 
     # --- UI construction --------------------------------------------

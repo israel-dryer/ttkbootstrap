@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from tkinter import StringVar
-from typing import Any, Literal, TYPE_CHECKING
+from typing import Any, Callable, Literal, TYPE_CHECKING
 
 from typing_extensions import TypedDict, Unpack
 
@@ -288,26 +288,12 @@ class ToggleGroup(Frame):
         button = self.get_button(key)
         button.configure(**kwargs)
 
-    def on_changed(self, callback):
-        """Subscribe to value changes (signal-based, not a virtual event).
-
-        Callback signature:
-            callback(new_value: str | set[str]) -> None
-
-        The callback receives the new value directly (str in 'single' mode,
-        set[str] in 'multi' mode).
-
-        Returns:
-            Subscription ID for use with off_changed().
-        """
+    def on_changed(self, callback: Callable) -> Any:
+        """Subscribe to value changes. Callback receives ``new_value: str | set[str]`` directly (str in 'single' mode, set in 'multi' mode)."""
         return self._signal.subscribe(callback)
 
-    def off_changed(self, subscription_id):
-        """Unsubscribe from value changes.
-
-        Args:
-            subscription_id: ID returned from on_changed().
-        """
+    def off_changed(self, subscription_id: Any) -> None:
+        """Unsubscribe from value changes."""
         self._signal.unsubscribe(subscription_id)
 
     @configure_delegate('bootstyle')

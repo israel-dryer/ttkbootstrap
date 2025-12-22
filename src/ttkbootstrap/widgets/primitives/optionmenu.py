@@ -50,8 +50,7 @@ class OptionMenu(MenuButton):
         """Create an OptionMenu backed by a ContextMenu.
 
         Events:
-            ``<<Change>>``: Fired when the selected value changes.
-                event.data = {'value': Any}
+            - ``<<Change>>``: Fired when the selected value changes. ``event.data = {'value': Any}``
 
         Args:
             master: Parent widget. If None, uses the default root window.
@@ -145,26 +144,12 @@ class OptionMenu(MenuButton):
         """Set the current value (coerced to string)."""
         self._textvariable.set(str(value))
 
-    def on_changed(self, callback: Callable[[Any], Any]):
-        """Bind to ``<<Change>>``.
-
-        Callback signature:
-            callback(event) -> None
-
-        Event data:
-            event.data = {'value': Any}
-
-        Returns:
-            Binding ID for use with off_changed().
-        """
+    def on_changed(self, callback: Callable) -> str:
+        """Bind to ``<<Change>>``. Callback receives ``event.data = {'value': Any}``."""
         return self.bind('<<Change>>', callback, add="+")
 
-    def off_changed(self, bind_id: str):
-        """Unbind from ``<<Change>>``.
-
-        Args:
-            bind_id: Binding ID from on_changed().
-        """
+    def off_changed(self, bind_id: str | None = None) -> None:
+        """Unbind from ``<<Change>>``."""
         self.unbind('<<Change>>', bind_id)
 
     @configure_delegate('options')

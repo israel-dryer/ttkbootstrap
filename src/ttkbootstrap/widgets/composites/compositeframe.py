@@ -188,28 +188,12 @@ class Composite:
         self._pressed = False
         self._update_states()
 
-    def on_invoke(self, callback):
-        """Bind to ``<<CompositeInvoke>>``.
-
-        This event is generated when clicking on non-button registered widgets.
-
-        Callback signature:
-            callback(event) -> None
-
-        Event data:
-            event.data = None
-
-        Returns:
-            Binding ID for use with off_invoke().
-        """
+    def on_invoke(self, callback) -> str:
+        """Bind to ``<<CompositeInvoke>>``. Callback receives ``event.data = None``. Fired when clicking on non-button registered widgets."""
         return self._event_target.bind('<<CompositeInvoke>>', callback, add='+')
 
-    def off_invoke(self, bind_id):
-        """Unbind from ``<<CompositeInvoke>>``.
-
-        Args:
-            bind_id: Binding ID from on_invoke().
-        """
+    def off_invoke(self, bind_id: str | None = None) -> None:
+        """Unbind from ``<<CompositeInvoke>>``."""
         return self._event_target.unbind('<<CompositeInvoke>>', bind_id)
 
 
@@ -285,30 +269,10 @@ class CompositeFrame(Frame):
         """bool: Current disabled state (read-only)."""
         return self._composite.disabled
 
-    def on_invoke(self, callback):
-        """Bind to ``<<CompositeInvoke>>``.
-
-        Callback signature:
-            callback(event) -> None
-
-        Event data:
-            event.data = None
-
-        Returns:
-            Binding ID for use with off_invoke().
-
-        See Also:
-            Composite.on_invoke for more details.
-        """
+    def on_invoke(self, callback) -> str:
+        """Bind to ``<<CompositeInvoke>>``. Callback receives ``event.data = None``. Fired when clicking on non-button registered widgets."""
         return self._composite.on_invoke(callback)
 
-    def off_invoke(self, bind_id):
-        """Unbind from ``<<CompositeInvoke>>``.
-
-        Args:
-            bind_id: Binding ID from on_invoke().
-
-        See Also:
-            Composite.off_invoke for more details.
-        """
+    def off_invoke(self, bind_id: str | None = None) -> None:
+        """Unbind from ``<<CompositeInvoke>>``."""
         return self._composite.off_invoke(bind_id)
