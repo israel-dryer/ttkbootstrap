@@ -1,0 +1,21 @@
+# Documentation
+mkdocs>=1.6
+mkdocs-material>=9.5
+mkdocstrings>=0.30
+mkdocstrings-python>=1.8
+mkdocs-gen-files>=0.5
+mkdocs-literate-nav>=0.6
+mkdocs-section-index>=0.3
+pymdown-extensions>=10.0
+
+# Localization
+Babel>=2.12
+
+# Build & Publishing
+build>=1.0
+twine>=5.0
+
+# Code Quality
+ruff>=0.8
+mypy>=1.0
+pytest>=8.0
