@@ -3,12 +3,6 @@
 This module provides utilities for creating menus with icon support and
 theme-aware color updates.
 
-Classes:
-    MenuManager: Manages menus with icon support and theme-aware color updates
-
-Functions:
-    create_menu: Convenience function to create a menu with icon and theme support
-
 Examples:
     ```python
     import ttkbootstrap as ttk
@@ -276,7 +270,7 @@ def create_menu(parent: Any, items: list[dict]) -> tk.Menu:
             ```python
             import ttkbootstrap as ttk
 
-            app = ttk.Window()
+            app = ttk.App()
 
             menu_items = [
                 {
@@ -365,4 +359,4 @@ def create_menu(parent: Any, items: list[dict]) -> tk.Menu:
     return root._menu_manager.create_menu(parent, items)
 
 
-__all__ = ['MenuManager', 'create_menu']
+__all__ = ['create_menu']
