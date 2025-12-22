@@ -82,6 +82,7 @@ nav = [
             { "TimeEntry" = "widgets/inputs/timeentry.md" },
         ] },
         { "Selection" = [
+            { "Calendar" = "widgets/selection/calendar.md" },
             { "CheckButton" = "widgets/selection/checkbutton.md" },
             { "CheckToggle" = "widgets/selection/checktoggle.md" },
             { "RadioButton" = "widgets/selection/radiobutton.md" },
