@@ -3,45 +3,6 @@
 This module provides a comprehensive color selection widget with multiple
 selection methods including RGB sliders, HSL controls, standard color palette,
 hex input, and screen color picker (color dropper).
-
-Classes:
-    ColorChooser: Main color chooser widget with tabbed interface
-    ColorValues: Named tuple for color value storage
-    ColorChoice: Named tuple for final color selection result
-
-Features:
-    - Multiple color selection methods via tabbed interface
-    - RGB color model with R, G, B sliders (0-255 range)
-    - HSL color model with H (0-360), S, L (0-100) sliders
-    - Standard color palette with common colors and shades
-    - Hex color input with validation
-    - Color dropper for selecting colors from screen
-    - Live color preview
-    - Integration with Querybox for dialog usage
-
-Color Models:
-    - RGB: Red, Green, Blue (0-255 each)
-    - HSL: Hue (0-360), Saturation (0-100), Luminance (0-100)
-    - HEX: Hexadecimal color string (#RRGGBB)
-
-Example:
-    Using ColorChooser in a dialog:
-
-    >>> from ttkbootstrap.dialogs import QueryBox
-    >>> color = QueryBox.get_color(title="Pick", value="#FF0000")
-    >>> if color:
-    ...     print(color.hex)
-    ...     print(color.rgb)
-    ...     print(color.hsl)
-
-    Using ColorChooser widget directly:
-
-    >>> import ttkbootstrap as ttk
-    >>> from ttkbootstrap.dialogs.colorchooser import ColorChooser
-    >>> root = ttk.Window()
-    >>> chooser = ColorChooser(root, initial_color="#00FF00")
-    >>> chooser.pack(padx=10, pady=10)
-    >>> root.mainloop()
 """
 import tkinter
 from collections import namedtuple

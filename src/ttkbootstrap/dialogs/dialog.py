@@ -1,89 +1,8 @@
 """Core dialog base class for ttkbootstrap dialogs.
 
-This module provides the base `Dialog` class using a builder pattern
-for creating flexible, customizable dialogs.
-
-The Dialog class uses a composition-based approach with callback builders
-for content and footer, making it easy to create custom dialogs without
-requiring inheritance.
-
-Basic Usage
------------
-Create a simple dialog with custom content:
-
-    >>> import ttkbootstrap as ttk
-    >>> from ttkbootstrap.dialogs import Dialog, DialogButton
-    >>>
-    >>> def build_content(parent):
-    ...     ttk.Label(parent, text="Hello, World!").pack(pady=20)
-    >>>
-    >>> dialog = Dialog(
-    ...     title="My Dialog",
-    ...     content_builder=build_content,
-    ...     buttons=[
-    ...         DialogButton(text="Cancel", role="cancel", result=None),
-    ...         DialogButton(text="OK", role="primary", result="ok", default=True)
-    ...     ]
-    ... )
-    >>> dialog.show()
-    >>> print(dialog.result)  # "ok" or None
-
-Custom Positioning
-------------------
-Control where the dialog appears on screen:
-
-    >>> # Show at specific coordinates
-    >>> dialog.show(position=(100, 100))
-    >>>
-    >>> # Show centered on parent (default)
-    >>> dialog.show()
-
-Custom Footer
--------------
-Replace standard buttons with custom footer widgets:
-
-    >>> def build_footer(parent):
-    ...     ttk.Button(parent, text="Help").pack(side="left")
-    ...     ttk.Button(parent, text="OK").pack(side="right")
-    >>>
-    >>> dialog = Dialog(
-    ...     title="Custom Footer",
-    ...     content_builder=build_content,
-    ...     footer_builder=build_footer  # Replaces standard buttons
-    ... )
-
-Dialog Modes
-------------
-- **modal**: Blocks interaction with parent window (default)
-- **popover**: Closes when focus leaves the dialog
-
-    >>> dialog = Dialog(mode="popover", ...)
-    >>> dialog.show()  # Closes automatically when clicking outside
-
-Button Roles
-------------
-Buttons are styled based on their role:
-- **primary**: Main action button (blue)
-- **secondary**: Standard button (gray)
-- **danger**: Destructive action (red)
-- **cancel**: Cancel button (outline gray)
-- **help**: Help/info button (link style)
-
-Types
------
-ContentBuilder : Callable[[Widget], None]
-    Callback function that builds dialog content.
-    Receives the content frame as parameter.
-
-FooterBuilder : Callable[[Widget], None]
-    Callback function that builds custom footer.
-    Receives the footer frame as parameter.
-
-ButtonRole : Literal["primary", "secondary", "danger", "cancel", "help"]
-    Role determining button appearance and behavior.
-
-DialogMode : Literal["modal", "popover"]
-    Dialog interaction mode.
+This module provides the base ``Dialog`` class using a builder pattern
+for creating flexible, customizable dialogs with composition-based content
+and footer builders.
 """
 
 from __future__ import annotations
@@ -110,49 +29,19 @@ class DialogButton:
     """Specification for a dialog button.
 
     Attributes:
-        text: Button label text displayed to the user.
-        role: Button role determining styling and behavior.
-            - "primary": Main action (blue, triggered by Enter)
-            - "secondary": Standard action (gray)
-            - "danger": Destructive action (red)
-            - "cancel": Cancel action (outline, triggered by Escape)
-            - "help": Help/info action (link style)
-        result: Value assigned to dialog.result when button is clicked.
-            If None, dialog.result is not set. Defaults to None.
-        closes: Whether button closes the dialog when clicked.
-            Defaults to True.
-        default: Whether this is the default button (focused and triggered by Enter).
-            Only one button should be marked as default. Defaults to False.
-        command: Optional callback function called when button is clicked.
-            Receives the Dialog instance as parameter. Called before setting result
-            and before closing the dialog. Defaults to None.
-        bootstyle: Optional ttkbootstrap style override.
-            If None, style is determined by role. Defaults to None.
-        icon: Optional icon specification passed to ttk.Button.
-            Can be icon name string or dict with icon parameters.
-            Defaults to None.
-
-    Examples:
-        >>> # Simple button
-        >>> btn = DialogButton(text="OK", role="primary", result="ok")
-        >>>
-        >>> # Button with custom command
-        >>> def on_save(dialog):
-        ...     print("Saving...")
-        >>> btn = DialogButton(
-        ...     text="Save",
-        ...     role="primary",
-        ...     result="saved",
-        ...     command=on_save
-        ... )
-        >>>
-        >>> # Button that doesn't close dialog
-        >>> btn = DialogButton(
-        ...     text="Apply",
-        ...     role="secondary",
-        ...     closes=False,  # Dialog stays open
-        ...     command=lambda dlg: print("Applied!")
-        ... )
+        text (str): Button label text displayed to the user.
+        role (ButtonRole): Button role determining styling and behavior.
+            - ``"primary"``: Main action (blue, triggered by Enter)
+            - ``"secondary"``: Standard action (gray)
+            - ``"danger"``: Destructive action (red)
+            - ``"cancel"``: Cancel action (outline, triggered by Escape)
+            - ``"help"``: Help/info action (link style)
+        result (Any | None): Value assigned to dialog.result when clicked.
+        closes (bool): Whether button closes the dialog when clicked.
+        default (bool): Whether this is the default button (focused, triggered by Enter).
+        command (Callable[[Dialog], None] | None): Callback called when clicked.
+        bootstyle (str | None): Optional ttkbootstrap style override.
+        icon (str | dict | None): Optional icon specification for the button.
     """
     text: str
     role: ButtonRole = "secondary"
@@ -168,31 +57,16 @@ ButtonSpec = Union[DialogButton, Mapping[str, Any]]
 
 
 class ShowOptions(TypedDict, total=False):
-    """Options for showing the window
+    """Options for showing the dialog window.
 
-        Parameters:
-            position: Optional (x, y) coordinates to position the dialog.
-                If provided, takes precedence over anchor-based positioning.
-            modal: Override the mode's default modality.
-                - If None, uses mode:
-                    - "modal": grab_set + wait_window
-                    - "popover": no grab, but wait_window
-            anchor_to: Positioning target. Can be:
-                - Widget: Anchor to a specific widget
-                - "screen": Anchor to screen edges/corners
-                - "cursor": Anchor to mouse cursor location
-                - "parent": Anchor to parent window (same as widget)
-                - None: Centers on parent (default)
-            anchor_point: Point on the anchor target (n, s, e, w, ne, nw, se, sw, center).
-                Default 'center'.
-            window_point: Point on the dialog window (n, s, e, w, ne, nw, se, sw, center).
-                Default 'center'.
-            offset: Additional (x, y) offset in pixels from the anchor position.
-            auto_flip: Smart positioning to keep window on screen.
-                - False: No flipping (default)
-                - True: Flip both vertically and horizontally as needed
-                - 'vertical': Only flip up/down
-                - 'horizontal': Only flip left/right
+    Attributes:
+        position (tuple[int, int] | None): Optional (x, y) coordinates.
+        modal (bool | None): Override the mode's default modality.
+        anchor_to (Widget | str | None): Positioning target widget or string.
+        anchor_point (AnchorPoint): Point on the anchor target.
+        window_point (AnchorPoint): Point on the dialog window.
+        offset (tuple[int, int]): Additional (x, y) offset in pixels.
+        auto_flip (bool | str): Smart positioning to keep window on screen.
     """
     position: Optional[Tuple[int, int]]
     modal: Optional[bool]
@@ -251,64 +125,6 @@ class Dialog:
         frameless: If True, removes window decorations (title bar, borders) and adds
             a solid border frame around the dialog content. Useful for dropdown-style
             menus or popover UIs. Defaults to False.
-
-    Examples:
-        Simple confirmation dialog:
-
-        >>> def build_message(parent):
-        ...     ttk.Label(parent, text="Are you sure?").pack(pady=20, padx=20)
-        >>>
-        >>> dialog = Dialog(
-        ...     title="Confirm Action",
-        ...     content_builder=build_message,
-        ...     buttons=[
-        ...         DialogButton(text="Cancel", role="cancel", result=False),
-        ...         DialogButton(text="Confirm", role="danger", result=True, default=True)
-        ...     ],
-        ...     alert=True
-        ... )
-        >>> dialog.show()
-        >>> if dialog.result:
-        ...     print("User confirmed!")
-
-        Dialog with form input:
-
-        >>> def build_form(parent):
-        ...     ttk.Label(parent, text="Name:").grid(row=0, column=0, padx=10, pady=5)
-        ...     entry = ttk.Entry(parent)
-        ...     entry.grid(row=0, column=1, padx=10, pady=5)
-        ...     parent.entry = entry  # Store reference
-        >>>
-        >>> def on_ok(dialog):
-        ...     dialog.result = dialog._content.entry.get()
-        >>>
-        >>> dialog = Dialog(
-        ...     title="Enter Name",
-        ...     content_builder=build_form,
-        ...     buttons=[
-        ...         DialogButton(text="Cancel", role="cancel"),
-        ...         DialogButton(text="OK", role="primary", command=on_ok, default=True)
-        ...     ]
-        ... )
-        >>> dialog.show(position=(200, 200))
-        >>> print(f"Name entered: {dialog.result}")
-
-        Popover tooltip dialog:
-
-        >>> def build_help(parent):
-        ...     ttk.Label(
-        ...         parent,
-        ...         text="Click outside to close",
-        ...         wraplength=200
-        ...     ).pack(padx=15, pady=15)
-        >>>
-        >>> dialog = Dialog(
-        ...     title="Help",
-        ...     content_builder=build_help,
-        ...     mode="popover",  # Closes when clicking outside
-        ...     minsize=(250, 100)
-        ... )
-        >>> dialog.show(position=(100, 100), modal=False)
     """
 
     def __init__(

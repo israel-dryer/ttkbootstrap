@@ -177,72 +177,12 @@ class FilterDialog(ttk.Frame):
     the result property.
 
     Events:
-        <<SelectionChanged>>: Triggered when OK is clicked and selections are confirmed.
-            event.data = {"selected": list[Any]}
-
-    Args:
-        master: Parent widget for the dialog. If None, uses the default root window.
-        title: Dialog window title. Defaults to "Filter".
-        items: List of items to display. Can be strings or dicts with keys:
-            - text (str): Display text (required for dict items)
-            - value (Any): Value to return when selected (defaults to text)
-            - selected (bool): Initial selection state (defaults to False)
-        allow_search: If True, adds a search box to filter items by text.
-            Defaults to False.
-        allow_select_all: If True, adds a "Select All" checkbox at the top.
-            Defaults to False.
-        frameless: If True, removes window decorations (title bar, borders) and
-            displays the dialog with a border frame. Useful for dropdown-style
-            menus. Enables dismiss-on-outside-click behavior. Defaults to False.
+        ``<<SelectionChanged>>``: Triggered when OK is clicked and selections are confirmed.
+            ``event.data = {"selected": list[Any]}``
 
     Attributes:
-        result: List of selected values after dialog is closed, or None if cancelled.
-
-    Examples:
-        Basic usage:
-
-        >>> import ttkbootstrap as ttk
-        >>> from ttkbootstrap.dialogs import FilterDialog
-        >>>
-        >>> root = ttk.Window()
-        >>> dialog = FilterDialog(
-        ...     master=root,
-        ...     title="Select Colors",
-        ...     items=["Red", "Green", "Blue", "Yellow"],
-        ...     allow_search=True,
-        ...     allow_select_all=True
-        ... )
-        >>> result = dialog.show()
-        >>> print(result)  # e.g., ['Red', 'Blue'] or None if cancelled
-
-        With pre-selected items:
-
-        >>> items = [
-        ...     {"text": "Red", "value": "red"},
-        ...     {"text": "Green", "value": "green", "selected": True},
-        ...     {"text": "Blue", "value": "blue", "selected": True}
-        ... ]
-        >>> dialog = FilterDialog(master=root, items=items)
-        >>> result = dialog.show()
-        >>> print(result)  # e.g., ['green', 'blue']
-
-        Frameless popover style:
-
-        >>> dialog = FilterDialog(
-        ...     master=root,
-        ...     items=["Option 1", "Option 2", "Option 3"],
-        ...     frameless=True
-        ... )
-        >>> result = dialog.show()
-
-        With selection change event:
-
-        >>> def on_selection(event):
-        ...     print(f"Selected: {event.data['selected']}")
-        >>>
-        >>> dialog = FilterDialog(master=root, items=["Red", "Green", "Blue"])
-        >>> dialog.on_selection_changed(on_selection)
-        >>> dialog.show()
+        result (list[Any] | None): List of selected values after dialog is closed,
+            or None if cancelled.
     """
 
     def __init__(

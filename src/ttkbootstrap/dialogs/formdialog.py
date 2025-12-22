@@ -2,80 +2,6 @@
 
 This module provides FormDialog, which combines the Dialog and Form widgets
 to create modal or non-modal dialogs for structured data entry.
-
-Basic Usage
------------
-Create a form dialog with auto-inferred fields:
-
-    >>> from ttkbootstrap.dialogs import FormDialog
-    >>>
-    >>> initial_data = {
-    ...     "first_name": "Jane",
-    ...     "last_name": "Doe",
-    ...     "age": 30,
-    ...     "active": True,
-    ... }
-    >>> dialog = FormDialog(
-    ...     title="Edit User",
-    ...     data=initial_data,
-    ...     col_count=2,
-    ... )
-    >>> dialog.show()
-    >>> if dialog.result:
-    ...     print("Updated data:", dialog.result)
-
-Explicit Form Layout
---------------------
-Use FieldItem, GroupItem, and TabsItem for complex layouts:
-
-    >>> from ttkbootstrap.dialogs import FormDialog
-    >>> from ttkbootstrap.widgets.form import FieldItem, GroupItem
-    >>>
-    >>> items = [
-    ...     GroupItem(
-    ...         label="Personal Info",
-    ...         col_count=2,
-    ...         items=[
-    ...             FieldItem(key="first_name", label="First Name"),
-    ...             FieldItem(key="last_name", label="Last Name"),
-    ...             FieldItem(key="email", label="Email"),
-    ...         ]
-    ...     ),
-    ...     FieldItem(key="bio", label="Bio", editor="text"),
-    ... ]
-    >>> dialog = FormDialog(
-    ...     title="User Profile",
-    ...     items=items,
-    ...     data={"first_name": "", "last_name": "", "email": "", "bio": ""},
-    ...     buttons=["Cancel", "Save"],
-    ... )
-    >>> dialog.show()
-
-Custom Validation
------------------
-Add validation before accepting the form data:
-
-    >>> def validate_form(form_dialog):
-    ...     data = form_dialog.form.data
-    ...     if not data.get("email"):
-    ...         messagebox.showwarning("Validation Error", "Email is required!")
-    ...         return False
-    ...     return True
-    >>>
-    >>> from ttkbootstrap.dialogs import DialogButton
-    >>> dialog = FormDialog(
-    ...     title="Registration",
-    ...     data={"email": "", "password": ""},
-    ...     buttons=[
-    ...         DialogButton(text="Cancel", role="cancel", result=None),
-    ...         DialogButton(
-    ...             text="Register",
-    ...             role="primary",
-    ...             result="submitted",
-    ...             command=lambda dlg: validate_form(dlg)
-    ...         )
-    ...     ]
-    ... )
 """
 
 from __future__ import annotations
@@ -128,41 +54,6 @@ class FormDialog:
         resizable: Allow window resizing as (width, height) bools. Defaults to (True, True).
         alert: If True, plays system alert sound on show. Defaults to False.
         mode: Dialog interaction mode ("modal" or "popover"). Defaults to "modal".
-
-    Examples:
-        Simple form dialog:
-
-        >>> dialog = FormDialog(
-        ...     title="Settings",
-        ...     data={"username": "admin", "port": 8080, "debug": False},
-        ...     col_count=1
-        ... )
-        >>> dialog.show()
-        >>> if dialog.result:
-        ...     print("Settings saved:", dialog.result)
-
-        With custom buttons and validation:
-
-        >>> def save_settings(dlg):
-        ...     if dlg.form.data["port"] < 1024:
-        ...         print("Port must be >= 1024")
-        ...         return  # Don't close dialog
-        ...     dlg.result = dlg.form.data
-        >>>
-        >>> dialog = FormDialog(
-        ...     title="Advanced Settings",
-        ...     data={"port": 8080},
-        ...     buttons=[
-        ...         DialogButton(text="Cancel", role="cancel"),
-        ...         DialogButton(
-        ...             text="Apply",
-        ...             role="primary",
-        ...             closes=False,  # Keep dialog open
-        ...             command=save_settings
-        ...         ),
-        ...         DialogButton(text="OK", role="primary", result="ok")
-        ...     ]
-        ... )
     """
 
     def __init__(
