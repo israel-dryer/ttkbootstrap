@@ -50,29 +50,32 @@ class Button(LocalizationMixin, TextSignalMixin, IconMixin, TTKWrapperBase, ttk.
     def __init__(self, master=None, **kwargs: Unpack[ButtonKwargs]) -> None:
         """Create a themed ttkbootstrap Button.
 
-        Keyword Args:
-            text: Text to display on the button.
-            textvariable: Tk variable linked to the button text.
-            textsignal: Reactive Signal linked to the button text (auto-synced with textvariable).
-            command: Callable invoked when the button is pressed.
-            image: Image to display on the button.
-            icon: Optional icon spec integrated via the style system. Preferred
+        Args:
+            master: Parent widget. If None, uses the default root window.
+
+        Other Parameters:
+            text (str): Text to display on the button.
+            textvariable (Variable): Tk variable linked to the button text.
+            textsignal (Signal[str]): Reactive Signal linked to the button text (auto-synced with textvariable).
+            command (Callable): Callable invoked when the button is pressed.
+            image (PhotoImage): Image to display on the button.
+            icon (str | dict): Optional icon spec integrated via the style system. Preferred
                 over `image` for theme-aware iconography when supported.
-            icon_only: If true, removes the extra padding reserved for the text labels.
-            compound: Placement of the image relative to text (e.g., 'left').
-            padding: Extra space around the button content.
-            localize: Determines the widgets localization mode. 'auto', True, False.
-            value_format: Format specification for the label value.
-            width: Width of the button in characters.
-            underline: Index of the character to underline in `text`.
-            state: Widget state (e.g., 'normal', 'disabled').
-            takefocus: Whether the widget accepts focus during traversal.
-            style: Explicit ttk style name to apply (overrides bootstyle).
-            bootstyle: ttkbootstrap style tokens, e.g. 'primary', 'danger-outline'.
+            icon_only (bool): If true, removes the extra padding reserved for the text labels.
+            compound (str): Placement of the image relative to text (e.g., 'left').
+            padding (int | tuple): Extra space around the button content.
+            localize (bool | Literal['auto']): Determines the widgets localization mode.
+            value_format (str | dict): Format specification for the label value.
+            width (int): Width of the button in characters.
+            underline (int): Index of the character to underline in `text`.
+            state (str): Widget state (e.g., 'normal', 'disabled').
+            takefocus (bool): Whether the widget accepts focus during traversal.
+            style (str): Explicit ttk style name to apply (overrides bootstyle).
+            bootstyle (str): ttkbootstrap style tokens, e.g. 'primary', 'danger-outline'.
                 Prefer this over `style` to participate in theme updates.
-            surface_color: Optional surface token to use for this button; if not
+            surface_color (str): Optional surface token to use for this button; if not
                 provided, the surface color is inherited from the parent.
-            style_options: Optional dict forwarded to the style builder. Useful
+            style_options (dict): Optional dict forwarded to the style builder. Useful
                 for widget-specific options (e.g., {'icon': ...}).
         """
         kwargs.update(style_options=self._capture_style_options(['icon_only', 'icon'], kwargs))
