@@ -18,92 +18,19 @@ class SpinnerEntry(Field):
     handle both predefined text values and numeric ranges. The widget includes
     built-in up/down arrow buttons and supports keyboard/mouse wheel interaction.
 
-    Features:
-        - Built-in spinner controls (up/down arrows)
-        - Text values mode: Cycle through predefined list
-        - Numeric range mode: Select from min to max with increment
-        - Keyboard support (Up/Down arrows)
-        - Mouse wheel support for adjusting values
-        - Optional value wrapping at boundaries
-        - Locale-aware number formatting
-        - All Field features (label, validation, messages, etc.)
+    Events:
+        ``<<Change>>``: Fired when value changes after commit.
+        ``<<Input>>``: Fired on each keystroke.
+        ``<<Valid>>``: Fired when validation passes.
+        ``<<Invalid>>``: Fired when validation fails.
 
-    Events (forwarded from SpinnerEntryPart):
-        <<Change>>: Fired when value changes after commit
-        <<Input>>: Fired on each keystroke
-        <<Valid>>: Fired when validation passes
-        <<Invalid>>: Fired when validation fails
-
-    Examples:
-        ```python
-        import ttkbootstrap as ttk
-        from ttkbootstrap.widgets.composites.spinnerentry import SpinnerEntry
-
-        root = ttk.Window()
-
-        # Text spinner with predefined values
-        size = SpinnerEntry(
-            root,
-            label="T-Shirt Size",
-            values=['XS', 'S', 'M', 'L', 'XL', 'XXL'],
-            value='M',
-            message="Select your size"
-        )
-        size.pack(padx=20, pady=10, fill='x')
-
-        # Numeric spinner with range
-        quantity = SpinnerEntry(
-            root,
-            label="Quantity",
-            value=1,
-            minvalue=1,
-            maxvalue=100,
-            increment=1,
-            message="Enter quantity"
-        )
-        quantity.pack(padx=20, pady=10, fill='x')
-
-        # Spinner with wrapping
-        priority = SpinnerEntry(
-            root,
-            label="Priority",
-            values=['Low', 'Medium', 'High'],
-            value='Medium',
-            wrap=True
-        )
-        priority.pack(padx=20, pady=10, fill='x')
-
-        # Currency spinner with formatting
-        price = SpinnerEntry(
-            root,
-            label="Price",
-            value=99.99,
-            minvalue=0,
-            maxvalue=1000,
-            increment=10,
-            value_format='¤#,##0.00'
-        )
-        price.pack(padx=20, pady=10, fill='x')
-
-        # Get the value
-        def on_submit():
-            print(f"Size: {size.value}")
-            print(f"Quantity: {quantity.value}")
-            print(f"Priority: {priority.value}")
-            print(f"Price: {price.value}")
-
-        ttk.Button(root, text="Submit", command=on_submit).pack(pady=10)
-
-        root.mainloop()
-        ```
-
-    Inherited Properties:
-        entry_widget: Access to the underlying SpinnerEntryPart widget
-        label_widget: Access to the label widget
-        message_widget: Access to the message label widget
-        addons: Dictionary of inserted addon widgets
-        variable: Tkinter Variable linked to entry text
-        signal: Signal object for reactive updates
+    Attributes:
+        entry_widget (SpinnerEntryPart): The underlying spinbox entry widget.
+        label_widget (Label): The label widget above the entry.
+        message_widget (Label): The message label widget below the entry.
+        addons (dict[str, Widget]): Dictionary of inserted addon widgets by name.
+        variable (Variable): Tkinter Variable linked to entry text.
+        signal (Signal): Signal object for reactive updates.
     """
 
     def __init__(
@@ -171,25 +98,6 @@ class SpinnerEntry(Field):
         Note:
             Use either 'values' (for text mode) OR 'minvalue/maxvalue' (for numeric mode),
             not both. If both are provided, 'values' takes precedence.
-
-        Examples:
-            ```python
-            # Text mode
-            spinner1 = SpinnerEntry(
-                root,
-                values=['Small', 'Medium', 'Large'],
-                value='Medium'
-            )
-
-            # Numeric mode
-            spinner2 = SpinnerEntry(
-                root,
-                minvalue=0,
-                maxvalue=100,
-                increment=5,
-                value=50
-            )
-            ```
         """
         # Build kwargs for Field initialization
         # Map minvalue/maxvalue to from_/to for the underlying Spinbox

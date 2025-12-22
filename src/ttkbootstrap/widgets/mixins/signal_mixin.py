@@ -4,96 +4,6 @@ Provides seamless integration between tkinter Variables and reactive Signals,
 exposing both as properties on widgets that support `textvariable` and `variable`
 options. The mixins maintain bidirectional synchronization between Variables and
 Signals automatically.
-
-Architecture
-------------
-Two mixins are provided:
-
-1. **TextSignalMixin**: For widgets with `textvariable` support
-   - Entry, Label, Button, Combobox, Spinbox, etc.
-   - Exposes: `.textvariable` and `.textsignal` properties
-
-2. **SignalMixin**: For widgets with `variable` support
-   - Checkbutton, Radiobutton, Scale, Progressbar, etc.
-   - Exposes: `.variable` and `.signal` properties
-
-Both mixins use the `@configure_delegate` pattern to intercept configuration at
-construction time and via `configure()` calls, ensuring Variables and Signals
-remain synchronized regardless of how they're set.
-
-Synchronization Behavior
-------------------------
-The mixins maintain a bidirectional sync:
-
-- Setting a `Signal` extracts its underlying `tk.Variable` and configures the widget
-- Setting a `tk.Variable` wraps it in a `Signal` using `Signal.from_variable()`
-- Changes to either the Signal or Variable are reflected in both
-- Accessing properties lazily creates the pair if not already present
-
-Usage
------
-Basic usage with Entry (TextSignalMixin)::
-
-    from ttkbootstrap import ttk
-    from ttkbootstrap.core.signals import Signal
-
-    # Create entry with signal at construction
-    sig = Signal("initial")
-    entry = ttk.Entry(root, textsignal=sig)
-
-    # Access synced variable
-    print(entry.textvariable.get())  # "initial"
-
-    # Subscribe to changes
-    entry.textsignal.subscribe(lambda v: print(f"Changed to: {v}"))
-
-    # Lazy creation via property
-    entry2 = ttk.Entry(root)
-    entry2.textsignal.set("hello")  # Creates signal on first access
-
-Basic usage with Checkbutton (SignalMixin)::
-
-    from ttkbootstrap import ttk
-    from ttkbootstrap.core.signals import Signal
-
-    # Create checkbutton with signal
-    checked = Signal(False)
-    cb = ttk.Checkbutton(root, text="Agree", signal=checked)
-
-    # Subscribe to state changes
-    checked.subscribe(lambda v: print(f"Checked: {v}"))
-
-    # Access underlying variable
-    print(cb.variable.get())  # False
-
-Setting variables after construction::
-
-    entry = ttk.Entry(root)
-
-    # Set via configure - creates synced signal
-    var = tk.StringVar(value="test")
-    entry.configure(textvariable=var)
-
-    # Signal is automatically created and synced
-    entry.textsignal.subscribe(lambda v: print(v))
-
-Integration with TTKWrapperBase
--------------------------------
-These mixins are designed to be mixed into TTKWrapperBase subclasses:
-
-    class Entry(TextSignalMixin, TTKWrapperBase, ttk.Entry):
-        ...
-
-The `@configure_delegate` decorator ensures the mixins intercept both constructor
-kwargs and runtime `configure()` calls, maintaining sync automatically.
-
-Notes
------
-- Signals are created lazily on first property access if not explicitly set
-- Setting a Signal or Variable via constructor, `configure()`, or properties all work
-- The underlying tk.Variable is always what's actually configured on the ttk widget
-- Changing the Signal updates the Variable (and vice versa) via Signal's trace mechanism
-- Type inference follows Signal's behavior: int→IntVar, str→StringVar, etc.
 """
 
 from __future__ import annotations
@@ -143,31 +53,9 @@ class TextSignalMixin:
     this mixin exposes both the underlying tk.Variable and a reactive Signal as properties,
     maintaining bidirectional synchronization between them.
 
-    Properties:
-        textvariable: The underlying tk.Variable (usually StringVar)
-        textsignal: The reactive Signal wrapper with subscribe/map capabilities
-
-    Configuration Options:
-        textvariable: Set the tk.Variable (creates synced Signal automatically)
-        textsignal: Set the Signal (extracts and configures underlying Variable)
-
-    Examples:
-        # Set Signal at construction
-        sig = Signal("hello")
-        entry = Entry(root, textsignal=sig)
-        entry.textvariable.get()  # "hello"
-
-        # Set Variable at construction
-        var = tk.StringVar(value="world")
-        label = Label(root, textvariable=var)
-        label.textsignal.subscribe(print)  # Synced Signal created
-
-        # Lazy creation via property
-        button = Button(root, text="Click")
-        button.textsignal.set("Updated")  # Signal/Variable created on access
-
-        # Runtime configuration
-        entry.configure(textsignal=Signal("new"))
+    Attributes:
+        textvariable (Variable): The underlying tk.Variable (usually StringVar).
+        textsignal (Signal): The reactive Signal wrapper with subscribe/map capabilities.
     """
 
     def __init__(self, *args, **kwargs):
@@ -310,31 +198,9 @@ class SignalMixin:
     this mixin exposes both the underlying tk.Variable and a reactive Signal as properties,
     maintaining bidirectional synchronization between them.
 
-    Properties:
-        variable: The underlying tk.Variable (IntVar, DoubleVar, BooleanVar, etc.)
-        signal: The reactive Signal wrapper with subscribe/map capabilities
-
-    Configuration Options:
-        variable: Set the tk.Variable (creates synced Signal automatically)
-        signal: Set the Signal (extracts and configures underlying Variable)
-
-    Examples:
-        # Set Signal at construction
-        checked = Signal(False)
-        cb = Checkbutton(root, text="Agree", signal=checked)
-        cb.variable.get()  # False
-
-        # Set Variable at construction
-        var = tk.IntVar(value=50)
-        scale = Scale(root, from_=0, to=100, variable=var)
-        scale.signal.subscribe(lambda v: print(f"Value: {v}"))
-
-        # Lazy creation via property
-        radio = Radiobutton(root, text="Option A", value=1)
-        radio.signal.set(1)  # Signal/Variable created on access
-
-        # Runtime configuration
-        cb.configure(signal=Signal(True))
+    Attributes:
+        variable (Variable): The underlying tk.Variable (IntVar, DoubleVar, BooleanVar, etc.).
+        signal (Signal): The reactive Signal wrapper with subscribe/map capabilities.
     """
 
     def __init__(self, *args, **kwargs):

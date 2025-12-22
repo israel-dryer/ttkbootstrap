@@ -11,18 +11,12 @@ from ttkbootstrap.widgets.primitives.scale import Scale
 class LabeledScale(Frame):
     """A horizontal scale widget with a label showing the current value.
 
-    The scale widget can be accessed via `instance.scale` and the label
-    widget via `instance.label`. The label automatically updates to display
-    the current value and follows the slider position.
+    The label automatically updates to display the current value and follows
+    the slider position. Only horizontal orientation is currently supported.
 
-    Only horizontal orientation is currently supported.
-
-    Examples:
-        >>> import ttkbootstrap as ttk
-        >>> root = ttk.Window()
-        >>> scale = ttk.LabeledScale(root, minvalue=0, maxvalue=100)
-        >>> scale.pack(padx=10, pady=10, fill='x')
-        >>> print(scale.value)
+    Attributes:
+        scale (Scale): The underlying Scale widget.
+        label (Label): The Label widget displaying the current value.
     """
 
     def __init__(

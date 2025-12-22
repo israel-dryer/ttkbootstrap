@@ -20,74 +20,21 @@ class TimeEntry(SelectBox):
 
     TimeEntry extends SelectBox to provide specialized time input with
     locale-aware formatting and a searchable dropdown of time intervals.
-    The widget supports various time format presets and custom time patterns,
-    and can accept input as time objects or strings.
+    The widget supports various time format presets and custom time patterns.
 
-    Features:
-        - Auto-populates dropdown with time intervals
-        - Searchable time selection (type to filter)
-        - Custom time format support (12-hour, 24-hour, etc.)
-        - Configurable time range (min/max)
-        - Clock icon button
-        - Allows custom time input
-        - Locale-aware time formatting
-        - All SelectBox features (search, validation, etc.)
+    Events:
+        ``<<Change>>``: Fired when time value changes after commit.
+        ``<<Input>>``: Fired on each keystroke.
+        ``<<Valid>>``: Fired when validation passes.
+        ``<<Invalid>>``: Fired when validation fails.
 
-    Time Format Presets:
-        - shortTime: Short time format (e.g., "3:30 PM")
-        - longTime: Long time with seconds (e.g., "3:30:45 PM PST")
-        - mediumTime: Medium time format (e.g., "3:30:45 PM")
-        - Custom: Any ICU date format pattern (e.g., "HH:mm", "h:mm a")
-
-    Events (inherited from Field):
-        <<Change>>: Fired when time value changes after commit
-        <<Input>>: Fired on each keystroke
-        <<Valid>>: Fired when validation passes
-        <<Invalid>>: Fired when validation fails
-
-    Examples:
-        ```python
-        import ttkbootstrap as ttk
-        from ttkbootstrap.widgets.composites.timeentry import TimeEntry
-        from datetime import time
-
-        root = ttk.Window()
-
-        # Basic time entry with 30-minute intervals
-        te = TimeEntry(
-            root,
-            label="Appointment Time",
-            interval=30
-        )
-        te.pack(padx=20, pady=10, fill='x')
-
-        # 24-hour format with custom range
-        te2 = TimeEntry(
-            root,
-            label="Business Hours",
-            value_format="HH:mm",
-            interval=15,
-            min_time=time(9, 0),
-            max_time=time(17, 0)
-        )
-        te2.pack(padx=20, pady=10, fill='x')
-
-        # Get the time value
-        def on_submit():
-            print(f"Selected time: {te.value}")
-
-        ttk.Button(root, text="Submit", command=on_submit).pack(pady=10)
-
-        root.mainloop()
-        ```
-
-    Inherited Properties:
-        entry_widget: Access to the underlying TextEntryPart widget
-        label_widget: Access to the label widget
-        message_widget: Access to the message label widget
-        addons: Dictionary of inserted addon widgets
-        variable: Tkinter Variable linked to entry text
-        signal: Signal object for reactive updates
+    Attributes:
+        entry_widget (TextEntryPart): The underlying text entry widget.
+        label_widget (Label): The label widget above the entry.
+        message_widget (Label): The message label widget below the entry.
+        addons (dict[str, Widget]): Dictionary of inserted addon widgets by name.
+        variable (Variable): Tkinter Variable linked to entry text.
+        signal (Signal): Signal object for reactive updates.
     """
 
     def __init__(

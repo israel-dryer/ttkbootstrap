@@ -5,56 +5,15 @@ from ttkbootstrap.widgets.mixins.configure_mixin import ConfigureDelegationMixin
 
 
 class FloodGauge(ConfigureDelegationMixin, Canvas):
-    """A canvas-based progress widget with support for determinate and indeterminate modes.
+    """A canvas-based progress widget with determinate and indeterminate modes.
 
-    This widget provides an enhanced alternative to ttk.Progressbar with full styling control
-    through ttkbootstrap's color system. It supports both horizontal and vertical orientations,
-    customizable text overlays with format masks, and smooth animations for indeterminate mode.
+    Provides an enhanced alternative to ttk.Progressbar with full styling control,
+    horizontal/vertical orientations, customizable text overlays with format masks,
+    and bounce-style animation for indeterminate mode.
 
-    Features:
-        - Canvas-based rendering for complete style customization
-        - Bounce-style animation for indeterminate progress
-        - Dynamic theme-aware color updates
-        - Variable and textvariable bindings for reactive updates
-        - Customizable text overlay with format masks
-        - Horizontal and vertical orientation support
-
-    Examples:
-        Basic usage with determinate mode:
-
-        ```python
-        gauge = FloodGauge(
-            master=root,
-            bootstyle='success',
-            value=75,
-            mask='{}% Complete'
-        )
-        gauge.pack()
-        ```
-
-        Indeterminate mode with animation:
-
-        ```python
-        gauge = FloodGauge(
-            master=root,
-            mode='indeterminate',
-            bootstyle='info'
-        )
-        gauge.start()
-        ```
-
-        Using variable bindings:
-
-        ```python
-        progress_var = tk.IntVar(value=0)
-        gauge = FloodGauge(
-            master=root,
-            variable=progress_var,
-            mask='Processing: {}%'
-        )
-        # Update progress
-        progress_var.set(50)
-        ```
+    Attributes:
+        variable (IntVar): Tkinter IntVar for value binding.
+        textvariable (StringVar): Tkinter StringVar for text binding.
     """
 
     def __init__(

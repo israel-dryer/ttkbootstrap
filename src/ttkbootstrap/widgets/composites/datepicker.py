@@ -71,22 +71,17 @@ def _format_month_year(month_date: date) -> str:
 class DatePicker(ttk.Frame):
     """Inline calendar widget for selecting dates.
 
-    Features:
-        - Single or range selection via ``selection_mode``
-        - Optional disabled dates plus min/max bounds
-        - One month in single mode; two months in range mode
-        - Optional week numbers and outside-month days
+    Supports single or range selection modes with optional disabled dates
+    and min/max bounds. Displays one month in single mode or two months
+    in range mode.
 
     Events:
-        The widget fires ``<<DateSelect>>`` on selection. The ``event.data`` dict contains:
+        ``<<DateSelect>>``: Fired on selection.
+            ``event.data = {"date": date, "range": (start, end)}``
 
-        - ``date``: The last clicked date
-        - ``range``: A tuple of ``(start, end)`` dates
-
-        In **single mode**, ``date`` and ``range[0]`` are the same; ``range[1]`` is None.
-
-        In **range mode**, ``date`` is the most recent click. The full selection is in
-        ``range``, where ``range[1]`` may be None while selecting the end.
+            In single mode, ``date`` and ``range[0]`` are the same; ``range[1]`` is None.
+            In range mode, ``date`` is the most recent click and ``range[1]`` may be
+            None while selecting the end.
     """
 
     def __init__(

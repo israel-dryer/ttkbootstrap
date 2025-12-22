@@ -47,35 +47,7 @@ class DateEntry(Field):
         addons (dict): Dictionary of inserted addon widgets.
         variable (Variable): Tkinter Variable linked to entry text.
         signal (Signal): Signal object for reactive updates.
-
-    Examples:
-        ```python
-        import ttkbootstrap as ttk
-        from datetime import date
-
-        root = ttk.App()
-
-        # Basic date entry with short date format
-        date_entry = ttk.DateEntry(
-            root,
-            label="Birth Date",
-            value=date(1990, 1, 15),
-            value_format="shortDate",
-            message="Enter your birth date"
-        )
-        date_entry.pack(padx=20, pady=10, fill='x')
-
-        # Custom date format (ISO 8601)
-        date_entry2 = ttk.DateEntry(
-            root,
-            label="ISO Date",
-            value="2025-01-15",
-            value_format="yyyy-MM-dd"
-        )
-        date_entry2.pack(padx=20, pady=10, fill='x')
-
-        root.mainloop()
-        ```
+        date_picker_button (Button): The calendar picker button widget.
 
     Note:
         The calendar picker button uses a DateDialog. The button can be hidden

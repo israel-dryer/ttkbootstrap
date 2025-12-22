@@ -40,40 +40,6 @@ class ContextMenu(CustomConfigMixin):
     Displays a popup menu with support for command buttons, checkbuttons,
     radiobuttons, and separators. The menu automatically hides when clicking
     outside or when an item is selected.
-
-    Examples:
-        ```python
-        import ttkbootstrap as ttk
-        from ttkbootstrap.widgets.composites.contextmenu import ContextMenu
-
-        root = ttk.Window()
-
-        # Create context menu
-        menu = ContextMenu(
-            master=root,
-            target=root,
-            anchor='nw',      # menu corner to align
-            attach='se',      # target corner to align to
-            offset=(0, 0),    # additional x/y offset
-            hide_on_outside_click=True
-        )
-
-        # Add items
-        menu.add_command(text="Open", icon="folder2-open", command=lambda: print("Open"))
-        menu.add_command(text="Save", icon="floppy", command=lambda: print("Save"))
-        menu.add_separator()
-        menu.add_checkbutton(text="Show Grid", value=True)
-        menu.add_separator()
-        menu.add_command(text="Exit", icon="x-lg", command=root.quit)
-
-        # Show on right-click
-        def show_menu(event):
-            menu.show(position=(event.x_root, event.y_root))
-
-        root.bind('<Button-3>', show_menu)
-
-        root.mainloop()
-        ```
     """
 
     def __init__(

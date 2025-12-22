@@ -12,28 +12,15 @@ class Composite:
     It does not inherit from any visual widget, making it suitable as a
     coordination hub for widgets anywhere in the widget tree.
 
-    The coordinator binds to registered widgets' events and propagates state
-    changes to all registered widgets. Hover detection uses the event_target's
-    bounds to ensure consistent behavior when moving between child widgets.
-
     Attributes:
-        HOVER: State name constant for hover state ('hover').
-        ACTIVE: State name constant for active state ('active').
-        PRESSED: State name constant for pressed state ('pressed').
-        SELECTED: State name constant for selected state ('selected').
-        FOCUS: State name constant for focus state ('focus').
-        DISABLED: State name constant for disabled state ('disabled').
-        selected: Read-only property for current selection state.
-        disabled: Read-only property for current disabled state.
-
-    Examples:
-        >>> # Create a frame and use Composite as a hub
-        >>> frame = ttk.Frame(parent)
-        >>> composite = Composite(event_target=frame, select_on_click=True)
-        >>> composite.register_composite(frame)
-        >>> composite.register_composite(label1)
-        >>> composite.register_composite(label2)
-        >>> # Now all widgets share hover, pressed, selected states
+        HOVER (str): State name constant for hover state ('hover').
+        ACTIVE (str): State name constant for active state ('active').
+        PRESSED (str): State name constant for pressed state ('pressed').
+        SELECTED (str): State name constant for selected state ('selected').
+        FOCUS (str): State name constant for focus state ('focus').
+        DISABLED (str): State name constant for disabled state ('disabled').
+        selected (bool): Read-only property for current selection state.
+        disabled (bool): Read-only property for current disabled state.
     """
 
     # state names
@@ -214,11 +201,6 @@ class Composite:
         Returns:
             The function identifier that can be used with off_invoke() to
             remove this binding.
-
-        Examples:
-            >>> def on_click(event):
-            ...     print("Composite was clicked!")
-            >>> func_id = composite.on_invoke(on_click)
         """
         return self._event_target.bind('<<CompositeInvoke>>', callback, add='+')
 
@@ -238,20 +220,9 @@ class CompositeFrame(Frame):
     Composite state coordinator. It provides a simple way to create containers
     with synchronized state management across child widgets.
 
-    All standard ttk.Frame arguments are supported, plus additional composite
-    functionality through the internal Composite coordinator.
-
     Attributes:
-        selected: Read-only property for current selection state.
-        disabled: Read-only property for current disabled state.
-
-    Examples:
-        >>> # Create a selectable list item
-        >>> item = CompositeFrame(parent, select_on_click=True, padding=8)
-        >>> label = ttk.Label(item, text="Click me")
-        >>> label.pack()
-        >>> item.register_composite(label)
-        >>> # Now clicking the label or frame toggles selection
+        selected (bool): Read-only property for current selection state.
+        disabled (bool): Read-only property for current disabled state.
     """
 
     def __init__(self, master=None, select_on_click=False, **kwargs):

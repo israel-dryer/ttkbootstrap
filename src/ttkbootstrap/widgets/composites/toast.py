@@ -78,39 +78,6 @@ class Toast:
             on_dismissed (Callable): Callback function invoked when the toast is dismissed. Receives the
                 button options dict if dismissed via a button, or None if dismissed via close
                 button or auto-dismiss.
-
-        Examples:
-            Simple toast with just a message::
-
-                toast = Toast(message="Hello, world!")
-                toast.show()
-
-            Toast with title, message, and auto-dismiss::
-
-                toast = Toast(
-                    title="Success",
-                    message="Your changes have been saved.",
-                    duration=3000,
-                    bootstyle="success"
-                )
-                toast.show()
-
-            Toast with buttons and callback::
-
-                def on_dismiss(data):
-                    if data and data.get('text') == 'Confirm':
-                        print("User confirmed!")
-
-                toast = Toast(
-                    title="Confirm Action",
-                    message="Are you sure you want to continue?",
-                    buttons=[
-                        {"text": "Confirm", "bootstyle": "primary"},
-                        {"text": "Cancel", "bootstyle": "secondary"}
-                    ],
-                    on_dismissed=on_dismiss
-                )
-                toast.show()
         """
         self._config_keys = {'title', 'icon', 'message', 'memo', 'duration', 'buttons', 'show_close_button',
                              'bootstyle', 'position', 'alert', 'on_dismissed'}

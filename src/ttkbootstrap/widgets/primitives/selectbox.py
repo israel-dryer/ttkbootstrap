@@ -9,19 +9,22 @@ from ttkbootstrap.widgets.primitives.treeview import TreeView
 
 
 class SelectBox(Field):
-    """Dropdown-like field widget built on top of :class:`Field`.
+    """Dropdown-like field widget built on top of Field.
 
-    A SelectBox renders a standard field with a suffix button that opens a small
-    popup window containing a ``Treeview`` of the available items. Selecting an
-    item updates the field value and emits ``<<Change>>`` so consumers can
-    react to both user-driven and programmatic value updates.
+    Renders a field with a suffix button that opens a popup Treeview of available
+    items. Selecting an item updates the field value and emits ``<<Change>>``.
 
-    Features:
-        - Inline dropdown button that opens a popup list of items
-        - Uses the underlying entry widget for value storage and events
-        - Emits ``<<Change>>`` when the selection changes (user or code)
-        - Items can be configured at runtime via ``configure(items=[...])``
-        - Optional search/filter functionality
+    Events:
+        ``<<Change>>``: Fired when the selection changes (user or code).
+            ``event.data = {"value": Any, "prev_value": Any, "text": str}``
+
+    Attributes:
+        entry_widget (TextEntryPart): The underlying entry widget.
+        label_widget (Label): The label widget.
+        message_widget (Label): The message label widget.
+        addons (dict[str, Widget]): Dictionary of inserted addon widgets by name.
+        variable (Variable): Tkinter Variable linked to entry text.
+        signal (Signal): Signal object for reactive updates.
     """
 
     def __init__(

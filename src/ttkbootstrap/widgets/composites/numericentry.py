@@ -16,71 +16,26 @@ from ttkbootstrap.widgets.mixins import configure_delegate
 class NumericEntry(Field):
     """A numeric entry field widget with increment/decrement spin buttons.
 
-    NumericEntry extends the Field widget to provide specialized numeric input
-    with built-in spin buttons for incrementing and decrementing values. The
-    widget includes bounds validation, keyboard stepping (Up/Down arrows), mouse
-    wheel support, and optional value wrapping.
-
-    Features:
-        - Increment/decrement spin buttons (plus/minus icons)
-        - Keyboard stepping with Up/Down arrow keys
-        - Mouse wheel support for adjusting values
-        - Min/max bounds validation
-        - Optional value wrapping at boundaries
-        - Locale-aware number formatting
-        - All Field features (label, validation, messages, etc.)
+    Extends Field to provide numeric input with spin buttons, bounds validation,
+    keyboard stepping (Up/Down arrows), mouse wheel support, and optional wrapping.
 
     Events:
-        Events forwarded from NumberEntryPart:
-
-        - ``<<Increment>>``: Fired when increment is requested (before step occurs)
-        - ``<<Decrement>>``: Fired when decrement is requested (before step occurs)
-        - ``<<Change>>``: Fired when value changes after commit
-        - ``<<Input>>``: Fired on each keystroke
-        - ``<<Valid>>``: Fired when validation passes
-        - ``<<Invalid>>``: Fired when validation fails
+        ``<<Increment>>``: Fired when increment is requested (before step occurs).
+        ``<<Decrement>>``: Fired when decrement is requested (before step occurs).
+        ``<<Change>>``: Fired when value changes after commit.
+        ``<<Input>>``: Fired on each keystroke.
+        ``<<Valid>>``: Fired when validation passes.
+        ``<<Invalid>>``: Fired when validation fails.
 
     Attributes:
-        entry_widget (NumberEntryPart): Access to the underlying entry widget.
-        label_widget (Label): Access to the label widget.
-        message_widget (Label): Access to the message label widget.
-        addons (dict): Dictionary of inserted addon widgets.
+        entry_widget (NumberEntryPart): The underlying entry widget.
+        label_widget (Label): The label widget.
+        message_widget (Label): The message label widget.
+        addons (dict[str, Widget]): Dictionary of inserted addon widgets by name.
         variable (Variable): Tkinter Variable linked to entry text.
         signal (Signal): Signal object for reactive updates.
         increment_widget (Button): The increment spin button widget.
         decrement_widget (Button): The decrement spin button widget.
-
-    Examples:
-        ```python
-        import ttkbootstrap as ttk
-
-        root = ttk.Window()
-
-        # Basic numeric entry with spin buttons
-        age = NumericEntry(
-            root,
-            label="Age",
-            value=25,
-            minvalue=0,
-            maxvalue=120,
-            message="Enter your age"
-        )
-        age.pack(padx=20, pady=10, fill='x')
-
-        # Currency entry with formatting
-        price = NumericEntry(
-            root,
-            label="Price",
-            value=99.99,
-            minvalue=0,
-            maxvalue=10000,
-            increment=0.01,
-            value_format='$#,##0.00'
-        )
-        price.pack(padx=20, pady=10, fill='x')
-
-        root.mainloop()
-        ```
     """
 
     def __init__(

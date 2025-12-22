@@ -12,21 +12,14 @@ class ScrollView(Frame):
     """A canvas-based scrollable container with configurable scrollbar behavior.
 
     The ScrollView widget provides a scrollable area for child widgets with
-    full mouse wheel support on all descendants, including deeply nested widgets.
-    Scrollbars can be configured to appear always, never, on hover, or when scrolling.
+    full mouse wheel support on all descendants. Scrollbars can be configured
+    to appear always, never, on hover, or when scrolling, and are only visible
+    when the content exceeds the available space.
 
-    The scrollbars will only be visible when the content exceeds the available space.
-
-    The widget uses a unique bind tag system to enable mouse wheel scrolling on
-    all child widgets without interfering with normal widget behavior. Bindings
-    are automatically refreshed when the container is reconfigured.
-
-    Examples:
-        >>> scroll = ScrollView(parent, direction='vertical', show_scrollbar='on-scroll')
-        >>> content = ttk.Frame(scroll.canvas)
-        >>> scroll.add(content)
-        >>> # Add widgets to content frame
-        >>> ttk.Label(content, text="Scrollable content").pack()
+    Attributes:
+        canvas (Canvas): The underlying tkinter Canvas widget.
+        vertical_scrollbar (Scrollbar): The vertical scrollbar widget.
+        horizontal_scrollbar (Scrollbar): The horizontal scrollbar widget.
     """
 
     def __init__(

@@ -35,31 +35,15 @@ class PageStack(Frame):
     visible at a time. It maintains a navigation history, allowing users to move
     backward and forward through pages similar to a web browser.
 
-    Features:
-        - Add pages as existing widgets or create new Frame pages
-        - Navigate between pages with automatic history management
-        - Back/forward navigation with browser-like behavior
-        - Page lifecycle events (PageUnmount, PageWillMount, PageMount, PageChange)
-        - Pass data between pages during navigation
-        - Replace current page in history without creating new entries
-        - Query navigation state (can_back, can_forward)
+    Events:
+        ``<<PageUnmount>>``: Triggered when the current page is hidden.
+        ``<<PageWillMount>>``: Triggered before a new page is displayed.
+        ``<<PageMount>>``: Triggered after a new page is displayed.
+        ``<<PageChange>>``: Triggered after page navigation completes.
 
-    Lifecycle Events:
-        - <<PageUnmount>>: Triggered when the current page is hidden
-        - <<PageWillMount>>: Triggered before a new page is displayed
-        - <<PageMount>>: Triggered after a new page is displayed
-        - <<PageChange>>: Triggered after page navigation completes
-
-    Event Data:
-        Navigation events include a data dictionary with:
-        - page: Current page key
-        - prev_page: Previous page key
-        - prev_data: Data from previous page
-        - nav: Navigation type ('push', 'back', 'forward')
-        - index: Current position in history
-        - length: Total history length
-        - can_back: Boolean indicating if back navigation is possible
-        - can_forward: Boolean indicating if forward navigation is possible
+        All events include ``event.data`` with: ``page``, ``prev_page``, ``prev_data``,
+        ``nav`` ('push', 'back', 'forward'), ``index``, ``length``, ``can_back``,
+        and ``can_forward``.
     """
 
     def __init__(self, master=None, **kwargs: Unpack[PageStackKwargs]):

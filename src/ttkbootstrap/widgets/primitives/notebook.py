@@ -55,35 +55,17 @@ class Notebook(TTKWrapperBase, ttk.Notebook):
     """A themed tabbed container widget with enhanced navigation and event tracking.
 
     The Notebook widget provides a tabbed interface where only one tab's content
-    is visible at a time. It extends ttk.Notebook with ttkbootstrap styling,
-    key-based tab referencing, and enriched lifecycle events for tracking tab changes.
-
-    Features:
-        - Add tabs as existing widgets or create new Frame tabs
-        - Reference tabs by key, index, or widget instance
-        - Automatic key generation for tabs without explicit keys
-        - Enriched lifecycle events tracking tab activation/deactivation
-        - Hide/show tabs dynamically without removing them
-        - Query navigation state and tab metadata
-        - Full support for ttkbootstrap styling (bootstyle, surface_color)
-
-    Tabs can be referenced by key (str) like ``'home'`` or ``'settings'``,
-    by index (int) as a 0-based position, or by the widget instance directly.
+    is visible at a time. Tabs can be referenced by key (str), index (int), or
+    widget instance.
 
     Events:
-        The widget fires lifecycle events when tab selection changes:
-
-        - ``<<NotebookTabChange>>``: Triggered when the selected tab changes
-        - ``<<NotebookTabActivate>>``: Triggered when a tab becomes active
-        - ``<<NotebookTabDeactivate>>``: Triggered when a tab becomes inactive
+        ``<<NotebookTabChange>>``: Triggered when the selected tab changes.
+        ``<<NotebookTabActivate>>``: Triggered when a tab becomes active.
+        ``<<NotebookTabDeactivate>>``: Triggered when a tab becomes inactive.
 
         All events include ``event.data`` with: ``current`` (TabRef), ``previous``
         (TabRef), ``reason`` ('user', 'api', 'hide', 'forget', 'reorder'), and
         ``via`` ('click', 'key', 'programmatic').
-
-    Note:
-        This widget wraps ttk.Notebook and adds ttkbootstrap-specific features.
-        All standard ttk.Notebook options and methods remain available.
     """
 
     _ttk_base = ttk.Notebook
