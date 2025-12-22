@@ -103,6 +103,9 @@ class Style(ttkStyle):
 
         This delegates to the underlying ThemeProvider. Themes are always
         loaded from both the v2 and legacy theme packages.
+
+        Returns:
+            List of theme dictionaries with 'name' and 'display_name' keys.
         """
         return self._theme_provider.list_themes()
 
@@ -198,7 +201,10 @@ class Style(ttkStyle):
         theme-change event for subscribers.
 
         Args:
-            name: Theme name to switch to
+            name: Theme name to switch to. If None, returns the current theme.
+
+        Returns:
+            The current theme name, or None if no theme is set.
         """
         if name is None:
             return super().theme_use()
@@ -366,11 +372,11 @@ def get_style(master=None) -> Style:
         return Style(master)
 
 
-def get_style_builder():
+def get_style_builder() -> BootstyleBuilderTTk:
     """Return the style builder for the currently active theme.
 
     Returns:
-        BootstyleBuilder instance for the active theme.
+        The BootstyleBuilderTTk instance for the active theme.
 
     Examples:
         >>> builder = get_style_builder()
@@ -395,7 +401,7 @@ def set_theme(name: str) -> None:
     style.theme_use(name)
 
 
-def toggle_theme():
+def toggle_theme() -> None:
     """Toggle the active application theme between light and dark mode.
 
     Uses the light and dark themes specified in app settings, or defaults
@@ -403,7 +409,7 @@ def toggle_theme():
 
     Examples:
         >>> toggle_theme()
-    ."""
+    """
     settings = get_app_settings()
     light = settings.light_theme
     dark = settings.dark_theme
