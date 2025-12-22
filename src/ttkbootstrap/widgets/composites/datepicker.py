@@ -183,12 +183,27 @@ class DatePicker(ttk.Frame):
         return None
 
     def on_date_selected(self, callback: Callable) -> str:
-        """Bind to the ``<<DateSelect>>`` virtual event."""
+        """Bind to ``<<DateSelect>>``.
+
+        Callback signature:
+            callback(event) -> None
+
+        Event data:
+            event.data = {'date': date} (single mode)
+            event.data = {'start': date, 'end': date} (range mode)
+
+        Returns:
+            Binding ID for use with off_date_selected().
+        """
         return self.bind("<<DateSelect>>", callback, add=True)
 
-    def off_date_selected(self, func_id: str):
-        """Remove the binding to <<DateSelect>>."""
-        return self.unbind("<<DateSelect>>", func_id)
+    def off_date_selected(self, bind_id: str):
+        """Unbind from ``<<DateSelect>>``.
+
+        Args:
+            bind_id: Binding ID from on_date_selected().
+        """
+        return self.unbind("<<DateSelect>>", bind_id)
 
     # --- UI construction --------------------------------------------
     def _build_ui(self) -> None:

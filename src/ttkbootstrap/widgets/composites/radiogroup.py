@@ -338,31 +338,26 @@ class RadioGroup(Frame):
         button = self.get_button(key)
         button.configure(**kwargs)
 
-    def on_changed(self, func):
-        """Subscribe to value change events.
+    def on_changed(self, callback):
+        """Subscribe to value changes (signal-based, not a virtual event).
 
-        Args:
-            func: Callback function that receives the new value.
+        Callback signature:
+            callback(new_value: str) -> None
+
+        The callback receives the new value directly as a string.
 
         Returns:
-            Subscription ID for later unsubscribing.
-
-        Examples:
-            def on_select(value):
-                print(f"Selected: {value}")
-
-            sub_id = group.on_changed(on_select)
-            # Later: group.off_changed(sub_id)
+            Subscription ID for use with off_changed().
         """
-        return self._signal.subscribe(func)
+        return self._signal.subscribe(callback)
 
-    def off_changed(self, bind_id):
-        """Unsubscribe from value change events.
+    def off_changed(self, subscription_id):
+        """Unsubscribe from value changes.
 
         Args:
-            bind_id: The subscription ID returned by on_changed().
+            subscription_id: ID returned from on_changed().
         """
-        self._signal.unsubscribe(bind_id)
+        self._signal.unsubscribe(subscription_id)
 
     @configure_delegate('bootstyle')
     def _delegate_bootstyle(self, value=None):

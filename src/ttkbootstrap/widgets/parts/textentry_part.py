@@ -14,16 +14,13 @@ class TextEntryPart(ValidationMixin, Entry):
     providing a clean pattern for handling formatted data entry. Parsing and formatting
     only occur when the user commits the value via ``<FocusOut>`` or ``<Return>``.
 
-    !!! note "Events"
-
-        - ``<<Input>>``: Triggered on each keystroke.
-          Provides ``event.data`` with keys: ``text``.
-
-        - ``<<Change>>``: Triggered when value changes after commit.
-          Provides ``event.data`` with keys: ``value``, ``prev_value``, ``text``.
-
-        - **<Return>**: Triggered on Enter key press.
-          Provides ``event.data`` with keys: ``value``, ``text``.
+    Events:
+        ``<<Input>>``: Triggered on each keystroke.
+            event.data = {'text': str}
+        ``<<Change>>``: Triggered when value changes after commit.
+            event.data = {'value': Any, 'prev_value': Any, 'text': str}
+        ``<Return>``: Triggered on Enter key press.
+            event.data = {'value': Any, 'text': str}
     """
 
     def __init__(
@@ -181,28 +178,38 @@ class TextEntryPart(ValidationMixin, Entry):
             return str(value)
 
     def on_input(self, callback: Callable[[Any], Any]) -> str:
-        """Bind callback to <<Input>> event (fires on every keystroke).
+        """Bind to ``<<Input>>`` (fires on every keystroke).
 
-        Args:
-            callback: Function receiving event.data = {"text": str}
+        Callback signature:
+            callback(event) -> None
+
+        Event data:
+            event.data = {'text': str}
 
         Returns:
-            Binding identifier for use with off_input()
+            Binding ID for use with off_input().
         """
         return self.bind('<<Input>>', callback, add=True)
 
-    def off_input(self, funcid: str = None):
-        """Remove callback from <<Input>> event."""
-        self.unbind('<<Input>>', funcid)
-
-    def on_enter(self, callback: Callable[[Any], Any]) -> str:
-        """Bind callback to <Return> event.
+    def off_input(self, bind_id: str = None):
+        """Unbind from ``<<Input>>``.
 
         Args:
-            callback: Function receiving event.data = {"value": Any, "text": str}
+            bind_id: Binding ID from on_input(). If None, unbinds all.
+        """
+        self.unbind('<<Input>>', bind_id)
+
+    def on_enter(self, callback: Callable[[Any], Any]) -> str:
+        """Bind to ``<Return>`` (fires on Enter key press).
+
+        Callback signature:
+            callback(event) -> None
+
+        Event data:
+            event.data = {'value': Any, 'text': str}
 
         Returns:
-            Binding identifier for use with off_enter()
+            Binding ID for use with off_enter().
 
         Note:
             Use on_changed() if you only care about Return when value changed.
@@ -215,24 +222,35 @@ class TextEntryPart(ValidationMixin, Entry):
 
         return self.bind('<Return>', enrich_callback, add=True)
 
-    def off_enter(self, funcid: str):
-        """Remove callback from <Return> event."""
-        self.unbind('<Return>', funcid)
-
-    def on_changed(self, callback: Callable[[Any], Any]) -> str:
-        """Bind callback to <<Change>> event (fires when value changes on commit).
+    def off_enter(self, bind_id: str):
+        """Unbind from ``<Return>``.
 
         Args:
-            callback: Function receiving event.data = {"value": Any, "prev_value": Any, "text": str}
+            bind_id: Binding ID from on_enter().
+        """
+        self.unbind('<Return>', bind_id)
+
+    def on_changed(self, callback: Callable[[Any], Any]) -> str:
+        """Bind to ``<<Change>>`` (fires when value changes on commit).
+
+        Callback signature:
+            callback(event) -> None
+
+        Event data:
+            event.data = {'value': Any, 'prev_value': Any, 'text': str}
 
         Returns:
-            Binding identifier for use with off_changed()
+            Binding ID for use with off_changed().
         """
         return self.bind("<<Change>>", callback)
 
-    def off_changed(self, funcid: str):
-        """Remove callback from <<Change>> event."""
-        self.unbind('<<Change>>', funcid)
+    def off_changed(self, bind_id: str):
+        """Unbind from ``<<Change>>``.
+
+        Args:
+            bind_id: Binding ID from on_changed().
+        """
+        self.unbind('<<Change>>', bind_id)
 
     def value(self, value=None):
         """Get or set the parsed/committed value.

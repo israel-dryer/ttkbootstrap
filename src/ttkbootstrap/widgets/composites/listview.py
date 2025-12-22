@@ -332,17 +332,25 @@ class ListView(Frame):
     The widget works with either a simple list/dict data or a custom DataSource
     implementation for more complex scenarios (database, API, etc.).
 
-    !!! note "Events"
-
-        - ``<<SelectionChange>>``: Fired when selection state changes.
-        - ``<<ItemDelete>>``: Fired when an item is deleted.
-        - ``<<ItemDeleteFail>>``: Fired when item deletion fails.
-        - ``<<ItemInsert>>``: Fired when a new item is inserted.
-        - ``<<ItemUpdate>>``: Fired when an item is updated.
-        - ``<<ItemClick>>``: Fired when an item is clicked.
-        - ``<<ItemDragStart>>``: Fired when a drag begins.
-        - ``<<ItemDrag>>``: Fired when an item is being dragged.
-        - ``<<ItemDragEnd>>``: Fired when a drag ends.
+    Events:
+        ``<<SelectionChange>>``: Fired when selection state changes.
+            event.data: None (use get_selected() to get current selection)
+        ``<<ItemDelete>>``: Fired when an item is deleted.
+            event.data: {'record': dict}
+        ``<<ItemDeleteFail>>``: Fired when item deletion fails.
+            event.data: {'record': dict, 'error': str}
+        ``<<ItemInsert>>``: Fired when a new item is inserted.
+            event.data: {'record': dict}
+        ``<<ItemUpdate>>``: Fired when an item is updated.
+            event.data: {'record': dict}
+        ``<<ItemClick>>``: Fired when an item is clicked.
+            event.data: {'record': dict}
+        ``<<ItemDragStart>>``: Fired when a drag begins.
+            event.data: {'record': dict, 'index': int}
+        ``<<ItemDrag>>``: Fired when an item is being dragged.
+            event.data: {'source_index': int, 'target_index': int, 'x': int, 'y': int}
+        ``<<ItemDragEnd>>``: Fired when a drag ends.
+            event.data: {'moved': bool, 'source_index': int, 'target_index': int}
     """
 
     def __init__(
@@ -1288,235 +1296,199 @@ class ListView(Frame):
     # Event handler API
 
     def on_selection_change(self, callback: Callable):
-        """Bind a callback to selection change events.
+        """Bind to ``<<SelectionChange>>``.
 
-        Args:
-            callback: Function to call when selection state changes.
-                The callback receives an event object.
+        Callback signature:
+            callback(event) -> None
+
+        Event data:
+            event.data = None (use get_selected() to get current selection)
 
         Returns:
-            Binding identifier that can be passed to off_selection_change().
-
-        Examples:
-            >>> def on_change(event):
-            ...     selected = listview.get_selected()
-            ...     print(f"Selection changed: {len(selected)} items")
-            >>> listview.on_selection_change(on_change)
+            Binding ID for use with off_selection_change().
         """
         return self.bind('<<SelectionChange>>', callback, add='+')
 
-    def off_selection_change(self, func_id: str):
-        """Unbind a selection change event handler.
+    def off_selection_change(self, bind_id: str):
+        """Unbind from ``<<SelectionChange>>``.
 
         Args:
-            func_id: Binding identifier returned from on_selection_change().
+            bind_id: Binding ID from on_selection_change().
         """
-        self.unbind('<<SelectionChange>>', func_id)
+        self.unbind('<<SelectionChange>>', bind_id)
 
     def on_item_delete(self, callback: Callable):
-        """Bind a callback to item deletion events.
+        """Bind to ``<<ItemDelete>>``.
 
-        Args:
-            callback: Function to call when an item is deleted.
-                The callback receives an event object.
+        Callback signature:
+            callback(event) -> None
+
+        Event data:
+            event.data = {'record': dict}
 
         Returns:
-            Binding identifier that can be passed to off_item_delete().
-
-        Examples:
-            >>> def on_delete(event):
-            ...     print("Item deleted")
-            >>> listview.on_item_delete(on_delete)
+            Binding ID for use with off_item_delete().
         """
         return self.bind('<<ItemDelete>>', callback, add='+')
 
-    def off_item_delete(self, func_id: str):
-        """Unbind an item deletion event handler.
+    def off_item_delete(self, bind_id: str):
+        """Unbind from ``<<ItemDelete>>``.
 
         Args:
-            func_id: Binding identifier returned from on_item_delete().
+            bind_id: Binding ID from on_item_delete().
         """
-        self.unbind('<<ItemDelete>>', func_id)
+        self.unbind('<<ItemDelete>>', bind_id)
 
     def on_item_delete_fail(self, callback: Callable):
-        """Bind a callback to failed item deletion events.
+        """Bind to ``<<ItemDeleteFail>>``.
 
-        Args:
-            callback: Function to call when item deletion fails.
-                The callback receives an event object.
+        Callback signature:
+            callback(event) -> None
+
+        Event data:
+            event.data = {'record': dict, 'error': str}
 
         Returns:
-            Binding identifier that can be passed to off_item_delete_fail().
-
-        Examples:
-            >>> def on_fail(event):
-            ...     print("Delete failed")
-            >>> listview.on_item_delete_fail(on_fail)
+            Binding ID for use with off_item_delete_fail().
         """
         return self.bind('<<ItemDeleteFail>>', callback, add='+')
 
-    def off_item_delete_fail(self, func_id: str):
-        """Unbind a failed item deletion event handler.
+    def off_item_delete_fail(self, bind_id: str):
+        """Unbind from ``<<ItemDeleteFail>>``.
 
         Args:
-            func_id: Binding identifier returned from on_item_delete_fail().
+            bind_id: Binding ID from on_item_delete_fail().
         """
-        self.unbind('<<ItemDeleteFail>>', func_id)
+        self.unbind('<<ItemDeleteFail>>', bind_id)
 
     def on_item_insert(self, callback: Callable):
-        """Bind a callback to item insertion events.
+        """Bind to ``<<ItemInsert>>``.
 
-        Args:
-            callback: Function to call when an item is inserted.
-                The callback receives an event object.
+        Callback signature:
+            callback(event) -> None
+
+        Event data:
+            event.data = {'record': dict}
 
         Returns:
-            Binding identifier that can be passed to off_item_insert().
-
-        Examples:
-            >>> def on_insert(event):
-            ...     print("Item inserted")
-            >>> listview.on_item_insert(on_insert)
+            Binding ID for use with off_item_insert().
         """
         return self.bind('<<ItemInsert>>', callback, add='+')
 
-    def off_item_insert(self, func_id: str):
-        """Unbind an item insertion event handler.
+    def off_item_insert(self, bind_id: str):
+        """Unbind from ``<<ItemInsert>>``.
 
         Args:
-            func_id: Binding identifier returned from on_item_insert().
+            bind_id: Binding ID from on_item_insert().
         """
-        self.unbind('<<ItemInsert>>', func_id)
+        self.unbind('<<ItemInsert>>', bind_id)
 
     def on_item_update(self, callback: Callable):
-        """Bind a callback to item update events.
+        """Bind to ``<<ItemUpdate>>``.
 
-        Args:
-            callback: Function to call when an item is updated.
-                The callback receives an event object.
+        Callback signature:
+            callback(event) -> None
+
+        Event data:
+            event.data = {'record': dict}
 
         Returns:
-            Binding identifier that can be passed to off_item_update().
-
-        Examples:
-            >>> def on_update(event):
-            ...     print("Item updated")
-            >>> listview.on_item_update(on_update)
+            Binding ID for use with off_item_update().
         """
         return self.bind('<<ItemUpdate>>', callback, add='+')
 
-    def off_item_update(self, func_id: str):
-        """Unbind an item update event handler.
+    def off_item_update(self, bind_id: str):
+        """Unbind from ``<<ItemUpdate>>``.
 
         Args:
-            func_id: Binding identifier returned from on_item_update().
+            bind_id: Binding ID from on_item_update().
         """
-        self.unbind('<<ItemUpdate>>', func_id)
+        self.unbind('<<ItemUpdate>>', bind_id)
 
     def on_item_click(self, callback: Callable):
-        """Bind a callback to item click events.
+        """Bind to ``<<ItemClick>>``.
 
-        Args:
-            callback: Function to call when an item is clicked.
-                The callback receives an event object with a 'data'
-                attribute containing the clicked item's record.
+        Callback signature:
+            callback(event) -> None
+
+        Event data:
+            event.data = {'record': dict}
 
         Returns:
-            Binding identifier that can be passed to off_item_click().
-
-        Examples:
-            >>> def on_click(event):
-            ...     print(f"Clicked: {event.data}")
-            >>> listview.on_item_click(on_click)
+            Binding ID for use with off_item_click().
         """
         return self.bind('<<ItemClick>>', callback, add='+')
 
-    def off_item_click(self, func_id: str):
-        """Unbind an item click event handler.
+    def off_item_click(self, bind_id: str):
+        """Unbind from ``<<ItemClick>>``.
 
         Args:
-            func_id: Binding identifier returned from on_item_click().
+            bind_id: Binding ID from on_item_click().
         """
-        self.unbind('<<ItemClick>>', func_id)
+        self.unbind('<<ItemClick>>', bind_id)
 
     def on_item_drag_start(self, callback: Callable):
-        """Bind a callback to drag start events.
+        """Bind to ``<<ItemDragStart>>``.
 
-        Args:
-            callback: Function to call when a drag operation begins.
-                The callback receives an event object with a 'data'
-                attribute containing the dragged item's record.
+        Callback signature:
+            callback(event) -> None
+
+        Event data:
+            event.data = {'record': dict, 'index': int}
 
         Returns:
-            Binding identifier that can be passed to off_item_drag_start().
-
-        Examples:
-            >>> def on_drag_start(event):
-            ...     print(f"Drag started: {event.data}")
-            >>> listview.on_item_drag_start(on_drag_start)
+            Binding ID for use with off_item_drag_start().
         """
         return self.bind('<<ItemDragStart>>', callback, add='+')
 
-    def off_item_drag_start(self, func_id: str):
-        """Unbind a drag start event handler.
+    def off_item_drag_start(self, bind_id: str):
+        """Unbind from ``<<ItemDragStart>>``.
 
         Args:
-            func_id: Binding identifier returned from on_item_drag_start().
+            bind_id: Binding ID from on_item_drag_start().
         """
-        self.unbind('<<ItemDragStart>>', func_id)
+        self.unbind('<<ItemDragStart>>', bind_id)
 
     def on_item_drag(self, callback: Callable):
-        """Bind a callback to item dragging events.
+        """Bind to ``<<ItemDrag>>``.
 
-        Args:
-            callback: Function to call during drag operations.
-                The callback receives an event object with a 'data'
-                attribute containing drag state including source_index,
-                target_index, and current position.
+        Callback signature:
+            callback(event) -> None
+
+        Event data:
+            event.data = {'source_index': int, 'target_index': int, 'x': int, 'y': int}
 
         Returns:
-            Binding identifier that can be passed to off_item_drag().
-
-        Examples:
-            >>> def on_drag(event):
-            ...     data = event.data
-            ...     print(f"Dragging from {data['source_index']} to {data['target_index']}")
-            >>> listview.on_item_drag(on_drag)
+            Binding ID for use with off_item_drag().
         """
         return self.bind('<<ItemDrag>>', callback, add='+')
 
-    def off_item_drag(self, func_id: str):
-        """Unbind an item dragging event handler.
+    def off_item_drag(self, bind_id: str):
+        """Unbind from ``<<ItemDrag>>``.
 
         Args:
-            func_id: Binding identifier returned from on_item_drag().
+            bind_id: Binding ID from on_item_drag().
         """
-        self.unbind('<<ItemDrag>>', func_id)
+        self.unbind('<<ItemDrag>>', bind_id)
 
     def on_item_drag_end(self, callback: Callable):
-        """Bind a callback to drag end events.
+        """Bind to ``<<ItemDragEnd>>``.
 
-        Args:
-            callback: Function to call when a drag operation ends.
-                The callback receives an event object with a 'data'
-                attribute containing the final drag state including
-                whether the item was moved.
+        Callback signature:
+            callback(event) -> None
+
+        Event data:
+            event.data = {'moved': bool, 'source_index': int, 'target_index': int}
 
         Returns:
-            Binding identifier that can be passed to off_item_drag_end().
-
-        Examples:
-            >>> def on_drag_end(event):
-            ...     if event.data['moved']:
-            ...         print(f"Item moved to index {event.data['target_index']}")
-            >>> listview.on_item_drag_end(on_drag_end)
+            Binding ID for use with off_item_drag_end().
         """
         return self.bind('<<ItemDragEnd>>', callback, add='+')
 
-    def off_item_drag_end(self, func_id: str):
-        """Unbind a drag end event handler.
+    def off_item_drag_end(self, bind_id: str):
+        """Unbind from ``<<ItemDragEnd>>``.
 
         Args:
-            func_id: Binding identifier returned from on_item_drag_end().
+            bind_id: Binding ID from on_item_drag_end().
         """
-        self.unbind('<<ItemDragEnd>>', func_id)
+        self.unbind('<<ItemDragEnd>>', bind_id)

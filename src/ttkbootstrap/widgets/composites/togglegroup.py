@@ -288,13 +288,27 @@ class ToggleGroup(Frame):
         button = self.get_button(key)
         button.configure(**kwargs)
 
-    def on_changed(self, func):
-        """Subscribe to value change events. Returns subscription ID for unsubscribing."""
-        return self._signal.subscribe(func)
+    def on_changed(self, callback):
+        """Subscribe to value changes (signal-based, not a virtual event).
 
-    def off_changed(self, bind_id):
-        """Unsubscribe from value change events using the subscription ID."""
-        self._signal.unsubscribe(bind_id)
+        Callback signature:
+            callback(new_value: str | set[str]) -> None
+
+        The callback receives the new value directly (str in 'single' mode,
+        set[str] in 'multi' mode).
+
+        Returns:
+            Subscription ID for use with off_changed().
+        """
+        return self._signal.subscribe(callback)
+
+    def off_changed(self, subscription_id):
+        """Unsubscribe from value changes.
+
+        Args:
+            subscription_id: ID returned from on_changed().
+        """
+        self._signal.unsubscribe(subscription_id)
 
     @configure_delegate('bootstyle')
     def _delegate_bootstyle(self, value=None):

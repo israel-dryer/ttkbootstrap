@@ -189,28 +189,28 @@ class Composite:
         self._update_states()
 
     def on_invoke(self, callback):
-        """Bind a callback to the <<CompositeInvoke>> virtual event.
+        """Bind to ``<<CompositeInvoke>>``.
 
         This event is generated when clicking on non-button registered widgets.
-        Multiple callbacks can be bound as they are added with add='+'.
 
-        Args:
-            callback: Function to call when <<CompositeInvoke>> fires. Should
-                accept a single event argument.
+        Callback signature:
+            callback(event) -> None
+
+        Event data:
+            event.data = None
 
         Returns:
-            The function identifier that can be used with off_invoke() to
-            remove this binding.
+            Binding ID for use with off_invoke().
         """
         return self._event_target.bind('<<CompositeInvoke>>', callback, add='+')
 
-    def off_invoke(self, func_id):
-        """Remove a previously bound <<CompositeInvoke>> callback.
+    def off_invoke(self, bind_id):
+        """Unbind from ``<<CompositeInvoke>>``.
 
         Args:
-            func_id: The function identifier returned by on_invoke().
+            bind_id: Binding ID from on_invoke().
         """
-        return self._event_target.unbind('<<CompositeInvoke>>', func_id)
+        return self._event_target.unbind('<<CompositeInvoke>>', bind_id)
 
 
 class CompositeFrame(Frame):
@@ -286,26 +286,29 @@ class CompositeFrame(Frame):
         return self._composite.disabled
 
     def on_invoke(self, callback):
-        """Bind a callback to the <<CompositeInvoke>> event.
+        """Bind to ``<<CompositeInvoke>>``.
 
-        Args:
-            callback: Function to call when the event fires.
+        Callback signature:
+            callback(event) -> None
+
+        Event data:
+            event.data = None
 
         Returns:
-            Function identifier for unbinding.
+            Binding ID for use with off_invoke().
 
         See Also:
             Composite.on_invoke for more details.
         """
         return self._composite.on_invoke(callback)
 
-    def off_invoke(self, func_id):
-        """Remove a <<CompositeInvoke>> callback.
+    def off_invoke(self, bind_id):
+        """Unbind from ``<<CompositeInvoke>>``.
 
         Args:
-            func_id: The function identifier from on_invoke().
+            bind_id: Binding ID from on_invoke().
 
         See Also:
             Composite.off_invoke for more details.
         """
-        return self._composite.off_invoke(func_id)
+        return self._composite.off_invoke(bind_id)

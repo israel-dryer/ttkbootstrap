@@ -120,20 +120,25 @@ class ContextMenu(CustomConfigMixin):
             self.add_items(items)
 
     def on_item_click(self, callback: Callable[[dict], Any]) -> None:
-        """Register callback for item clicks.
+        """Set a callback for menu item clicks (callback-based, not an event).
 
-        The callback receives a dictionary with:
+        Callback signature:
+            callback(item_info: dict) -> None
+
+        Callback data:
+            item_info = {'type': str, 'text': str, 'value': Any}
             - type: Item type ('command', 'checkbutton', 'radiobutton')
-            - text: Item text
+            - text: Item text label
             - value: Item value (for checkbuttons and radiobuttons)
 
-        Args:
-            callback: Function to call when an item is clicked
+        Note:
+            Only one callback can be set at a time. Setting a new callback
+            replaces the previous one. Use off_item_click() to remove.
         """
         self._on_item_click_callback = callback
 
     def off_item_click(self) -> None:
-        """Unregister callback for item clicks."""
+        """Remove the item click callback."""
         self._on_item_click_callback = None
 
     def add_command(self, text: str = None, icon: str = None, command: Callable = None) -> Button:

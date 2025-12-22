@@ -18,13 +18,11 @@ class NumberEntryPart(TextEntryPart):
     stepping functionality. Supports min/max bounds, increment/decrement
     via keyboard and mouse wheel, and optional wrapping.
 
-    !!! note "Events"
-
-        - ``<<Increment>>``: Fired when an increment is requested (before step occurs).
-          Emit this event to programmatically increment the value.
-
-        - ``<<Decrement>>``: Fired when a decrement is requested (before step occurs).
-          Emit this event to programmatically decrement the value.
+    Events:
+        ``<<Increment>>``: Fired when an increment is requested (before step occurs).
+            event.data: None
+        ``<<Decrement>>``: Fired when a decrement is requested (before step occurs).
+            event.data: None
 
         Plus all events from TextEntryPart: ``<<Input>>``, ``<<Change>>``, ``<Return>``
     """
@@ -296,20 +294,48 @@ class NumberEntryPart(TextEntryPart):
             self._normalize_display_from_value()
 
     def on_increment(self, callback):
-        """Bind callback to <<Increment>> event."""
+        """Bind to ``<<Increment>>``.
+
+        Callback signature:
+            callback(event) -> None
+
+        Event data:
+            event.data = None
+
+        Returns:
+            Binding ID for use with off_increment().
+        """
         return self.bind('<<Increment>>', callback, add=True)
 
-    def off_increment(self, funcid: str):
-        """Remove callback from <<Increment>> event."""
-        self.unbind('<<Increment>>', funcid)
+    def off_increment(self, bind_id: str):
+        """Unbind from ``<<Increment>>``.
+
+        Args:
+            bind_id: Binding ID from on_increment().
+        """
+        self.unbind('<<Increment>>', bind_id)
 
     def on_decrement(self, callback):
-        """Bind callback to <<Decrement>> event."""
+        """Bind to ``<<Decrement>>``.
+
+        Callback signature:
+            callback(event) -> None
+
+        Event data:
+            event.data = None
+
+        Returns:
+            Binding ID for use with off_decrement().
+        """
         return self.bind('<<Decrement>>', callback, add=True)
 
-    def off_decrement(self, funcid: str):
-        """Remove callback from <<Decrement>> event."""
-        self.unbind('<<Decrement>>', funcid)
+    def off_decrement(self, bind_id: str):
+        """Unbind from ``<<Decrement>>``.
+
+        Args:
+            bind_id: Binding ID from on_decrement().
+        """
+        self.unbind('<<Decrement>>', bind_id)
 
     @configure_delegate('minvalue')
     def _delegate_minvalue(self, value: Union[int, float]):
