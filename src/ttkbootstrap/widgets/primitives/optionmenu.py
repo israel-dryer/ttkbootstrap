@@ -8,6 +8,7 @@ from typing_extensions import Unpack
 from ttkbootstrap.widgets.composites.contextmenu import ContextMenu, ContextMenuItem
 from ttkbootstrap.widgets.primitives.menubutton import MenuButton
 from ttkbootstrap.widgets.mixins import configure_delegate
+from ttkbootstrap.widgets.types import Master
 
 if TYPE_CHECKING:
     from ttkbootstrap.core.signals import Signal
@@ -42,7 +43,7 @@ class OptionMenu(MenuButton):
 
     def __init__(
             self,
-            master=None,
+            master: Master = None,
             value: Any = None,
             options: list[Any] = None,
             **kwargs: Unpack[OptionMenuKwargs],

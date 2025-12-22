@@ -8,6 +8,7 @@ from typing_extensions import TypedDict, Unpack
 from ttkbootstrap import RadioButton, Label
 from ttkbootstrap.widgets.mixins.configure_mixin import configure_delegate
 from ttkbootstrap.widgets.primitives import Frame
+from ttkbootstrap.widgets.types import Master
 
 if TYPE_CHECKING:
     from ttkbootstrap.core.signals import Signal
@@ -47,7 +48,7 @@ class RadioGroup(Frame):
         state (str): State for all buttons ('normal' or 'disabled').
     """
 
-    def __init__(self, master: Any = None, **kwargs: Unpack[RadioGroupKwargs]):
+    def __init__(self, master: Master = None, **kwargs: Unpack[RadioGroupKwargs]):
         """Initialize the RadioGroup.
 
         Args:

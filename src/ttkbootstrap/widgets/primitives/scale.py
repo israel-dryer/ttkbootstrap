@@ -4,6 +4,7 @@ from tkinter import ttk
 from typing import Any, TypedDict, TYPE_CHECKING
 from typing_extensions import Unpack
 from ttkbootstrap.widgets._internal.wrapper_base import TTKWrapperBase
+from ttkbootstrap.widgets.types import Master
 from ..mixins import SignalMixin
 
 if TYPE_CHECKING:
@@ -37,7 +38,7 @@ class Scale(SignalMixin, TTKWrapperBase, ttk.Scale):
 
     _ttk_base = ttk.Scale
 
-    def __init__(self, master=None, **kwargs: Unpack[ScaleKwargs]) -> None:
+    def __init__(self, master: Master = None, **kwargs: Unpack[ScaleKwargs]) -> None:
         """Create a themed ttkbootstrap Scale.
 
         Args:

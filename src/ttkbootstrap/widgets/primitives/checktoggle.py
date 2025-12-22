@@ -1,10 +1,11 @@
 from ttkbootstrap.widgets.primitives.checkbutton import CheckButton
+from ttkbootstrap.widgets.types import Master
 
 
 class CheckToggle(CheckButton):
     """ttkbootstrap wrapper for `ttk.Checkbutton` that renders with a ToolButton style"""
 
-    def __init__(self, master=None, **kwargs):
+    def __init__(self, master: Master = None, **kwargs):
         """Create a themed ttkbootstrap CheckToggle.
 
         Args:

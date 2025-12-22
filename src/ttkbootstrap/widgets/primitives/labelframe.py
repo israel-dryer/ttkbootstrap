@@ -7,6 +7,7 @@ from typing_extensions import Unpack
 
 from ttkbootstrap.widgets._internal.wrapper_base import TTKWrapperBase
 from ttkbootstrap.widgets.mixins import LocalizationMixin
+from ttkbootstrap.widgets.types import Master
 
 
 class LabelFrameKwargs(TypedDict, total=False):
@@ -35,7 +36,7 @@ class LabelFrame(LocalizationMixin, TTKWrapperBase, ttk.LabelFrame):
 
     _ttk_base = ttk.Labelframe
 
-    def __init__(self, master=None, **kwargs: Unpack[LabelFrameKwargs]) -> None:
+    def __init__(self, master: Master = None, **kwargs: Unpack[LabelFrameKwargs]) -> None:
         """Create a themed ttkbootstrap Labelframe.
 
         Args:

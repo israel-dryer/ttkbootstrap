@@ -116,7 +116,7 @@ class SqliteDataSource(BaseDataSource):
         self,
         records: Union[Sequence[Primitive], Sequence[dict[str, Any]], Sequence[Sequence[Any]]],
         column_keys: Optional[Sequence[str]] = None,
-    ):
+    ) -> "SqliteDataSource":
         """Load records into database, creating table with inferred schema.
 
         Args:

@@ -6,6 +6,7 @@ from ttkbootstrap.widgets.primitives.button import Button
 from ttkbootstrap.widgets.primitives.frame import Frame
 from ttkbootstrap.widgets.primitives.label import Label
 from ttkbootstrap.widgets.primitives.separator import Separator
+from ttkbootstrap.widgets.types import Master
 
 
 class ListItem(CompositeFrame):
@@ -40,7 +41,7 @@ class ListItem(CompositeFrame):
         - item_index: Zero-based index of the item in the list.
     """
 
-    def __init__(self, master=None, **kwargs):
+    def __init__(self, master: Master = None, **kwargs):
         """Initialize a ListItem widget.
 
         Args:

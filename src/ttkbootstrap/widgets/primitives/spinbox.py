@@ -4,6 +4,7 @@ from tkinter import ttk
 from typing import Any, Literal, TypedDict, TYPE_CHECKING
 from typing_extensions import Unpack
 from ttkbootstrap.widgets._internal.wrapper_base import TTKWrapperBase
+from ttkbootstrap.widgets.types import Master
 from ..mixins import TextSignalMixin
 
 if TYPE_CHECKING:
@@ -40,7 +41,7 @@ class Spinbox(TextSignalMixin, TTKWrapperBase, ttk.Spinbox):
 
     _ttk_base = ttk.Spinbox
 
-    def __init__(self, master=None, **kwargs: Unpack[SpinboxKwargs]) -> None:
+    def __init__(self, master: Master = None, **kwargs: Unpack[SpinboxKwargs]) -> None:
         """Create a themed ttkbootstrap Spinbox.
 
         Args:

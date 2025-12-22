@@ -11,6 +11,7 @@ from ttkbootstrap.widgets.primitives.checkbutton import CheckButton
 from ttkbootstrap.widgets.primitives.checktoggle import CheckToggle
 from ttkbootstrap.widgets.primitives.radiobutton import RadioButton
 from ttkbootstrap.widgets.primitives.radiotoggle import RadioToggle
+from ttkbootstrap.widgets.types import Master
 
 if TYPE_CHECKING:
     import tkinter as tk
@@ -38,7 +39,7 @@ class ButtonGroup(Frame):
     selected.
     """
 
-    def __init__(self, master: Any = None, **kwargs: Unpack[ButtonGroupKwargs]):
+    def __init__(self, master: Master = None, **kwargs: Unpack[ButtonGroupKwargs]):
         """Initialize the ButtonGroup.
 
         Args:

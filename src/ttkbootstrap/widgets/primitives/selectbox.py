@@ -6,6 +6,7 @@ from ttkbootstrap.widgets.primitives.button import Button
 from ttkbootstrap.widgets.composites.field import Field, FieldOptions
 from ttkbootstrap.widgets.mixins import configure_delegate
 from ttkbootstrap.widgets.primitives.treeview import TreeView
+from ttkbootstrap.widgets.types import Master
 
 
 class SelectBox(Field):
@@ -30,7 +31,7 @@ class SelectBox(Field):
 
     def __init__(
             self,
-            master=None,
+            master: Master = None,
             value: str = None,
             items: list[str] = None,
             label: str = None,

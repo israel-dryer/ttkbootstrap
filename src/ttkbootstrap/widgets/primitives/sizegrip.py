@@ -4,6 +4,7 @@ from tkinter import ttk
 from typing import Any, TypedDict
 from typing_extensions import Unpack
 from ttkbootstrap.widgets._internal.wrapper_base import TTKWrapperBase
+from ttkbootstrap.widgets.types import Master
 
 
 class SizeGripKwargs(TypedDict, total=False):
@@ -24,7 +25,7 @@ class SizeGrip(TTKWrapperBase, ttk.Sizegrip):
 
     _ttk_base = ttk.Sizegrip
 
-    def __init__(self, master=None, **kwargs: Unpack[SizeGripKwargs]) -> None:
+    def __init__(self, master: Master = None, **kwargs: Unpack[SizeGripKwargs]) -> None:
         """Create a themed ttkbootstrap Sizegrip.
 
         Args:

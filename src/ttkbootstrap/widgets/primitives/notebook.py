@@ -10,6 +10,7 @@ from ttkbootstrap.core import NavigationError
 from ttkbootstrap.core.localization import MessageCatalog
 from ttkbootstrap.widgets._internal.wrapper_base import TTKWrapperBase
 from ttkbootstrap.widgets.primitives import Frame
+from ttkbootstrap.widgets.types import Master
 
 ChangeReason = Literal['user', 'api', 'hide', 'forget', 'reorder', 'unknown']
 ChangeMethod = Literal['click', 'key', 'programmatic', 'unknown']
@@ -71,7 +72,7 @@ class Notebook(TTKWrapperBase, ttk.Notebook):
 
     _ttk_base = ttk.Notebook
 
-    def __init__(self, master=None, **kwargs: Unpack[NotebookKwargs]) -> None:
+    def __init__(self, master: Master = None, **kwargs: Unpack[NotebookKwargs]) -> None:
         """Create a themed ttkbootstrap Notebook with optional bootstyle extensions.
 
         Args:

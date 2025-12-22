@@ -291,7 +291,7 @@ class MemoryDataSource(BaseDataSource):
 
         return rows
 
-    def set_data(self, records: Union[Sequence[Primitive], Sequence[Dict[str, Any]]]):
+    def set_data(self, records: Union[Sequence[Primitive], Sequence[Dict[str, Any]]]) -> "MemoryDataSource":
         """Load records into datasource.
 
         Args:

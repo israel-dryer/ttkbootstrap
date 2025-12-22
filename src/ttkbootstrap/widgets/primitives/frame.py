@@ -6,6 +6,7 @@ from typing import Any, TypedDict
 from typing_extensions import Unpack
 
 from ttkbootstrap.widgets._internal.wrapper_base import TTKWrapperBase
+from ttkbootstrap.widgets.types import Master
 from ttkbootstrap.style.style import get_style
 from ttkbootstrap.style.bootstyle_builder_tk import BootstyleBuilderBuilderTk
 from ..mixins import configure_delegate
@@ -36,7 +37,7 @@ class Frame(TTKWrapperBase, ttk.Frame):
 
     _ttk_base = ttk.Frame
 
-    def __init__(self, master=None, **kwargs: Unpack[FrameKwargs]) -> None:
+    def __init__(self, master: Master = None, **kwargs: Unpack[FrameKwargs]) -> None:
         """Create a themed ttkbootstrap Frame.
 
         Args:

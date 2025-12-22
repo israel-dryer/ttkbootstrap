@@ -4,6 +4,7 @@ from tkinter import ttk
 from typing import Any, TypedDict
 from typing_extensions import Unpack
 from ttkbootstrap.widgets._internal.wrapper_base import TTKWrapperBase
+from ttkbootstrap.widgets.types import Master
 
 
 class SeparatorKwargs(TypedDict, total=False):
@@ -25,7 +26,7 @@ class Separator(TTKWrapperBase, ttk.Separator):
 
     _ttk_base = ttk.Separator
 
-    def __init__(self, master=None, **kwargs: Unpack[SeparatorKwargs]) -> None:
+    def __init__(self, master: Master = None, **kwargs: Unpack[SeparatorKwargs]) -> None:
         """Create a themed ttkbootstrap Separator.
 
         Args:

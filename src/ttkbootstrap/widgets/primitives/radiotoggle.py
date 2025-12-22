@@ -1,10 +1,11 @@
 from ttkbootstrap.widgets.primitives.radiobutton import RadioButton
+from ttkbootstrap.widgets.types import Master
 
 
 class RadioToggle(RadioButton):
     """ttkbootstrap wrapper for `ttk.Radiobutton` that renders with a toggle badge style."""
 
-    def __init__(self, master=None, **kwargs):
+    def __init__(self, master: Master = None, **kwargs):
         """Create a themed ttkbootstrap RadioToggle.
 
         Args:

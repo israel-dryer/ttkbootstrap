@@ -6,6 +6,7 @@ from typing import Literal, Optional
 from ttkbootstrap.widgets.primitives.frame import Frame
 from ttkbootstrap.widgets.mixins.configure_mixin import configure_delegate
 from ttkbootstrap.widgets.primitives.scrollbar import Scrollbar
+from ttkbootstrap.widgets.types import Master
 
 
 class ScrollView(Frame):
@@ -24,7 +25,7 @@ class ScrollView(Frame):
 
     def __init__(
             self,
-            master,
+            master: Master = None,
             direction: Literal['horizontal', 'vertical', 'both'] = 'both',
             show_scrollbar: Literal['always', 'never', 'on-hover', 'on-scroll'] = 'always',
             autohide_delay: int = 1000,  # milliseconds for on-scroll mode

@@ -1,12 +1,13 @@
 from typing_extensions import Unpack
 
 from ttkbootstrap.widgets.primitives.label import Label, LabelKwargs
+from ttkbootstrap.widgets.types import Master
 
 
 class Badge(Label):
     """ttkbootstrap wrapper for `ttk.Label` that renders with a badge style."""
 
-    def __init__(self, master=None, **kwargs: Unpack[LabelKwargs]):
+    def __init__(self, master: Master = None, **kwargs: Unpack[LabelKwargs]):
         """Create a themed ttkbootstrap Badge.
 
         Args:

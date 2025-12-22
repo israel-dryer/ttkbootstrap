@@ -4,6 +4,7 @@ from tkinter import ttk
 from typing import Any, Literal, Optional, TypedDict, TYPE_CHECKING
 from typing_extensions import Unpack
 from ttkbootstrap.widgets._internal.wrapper_base import TTKWrapperBase
+from ttkbootstrap.widgets.types import Master
 from ..mixins import TextSignalMixin
 
 if TYPE_CHECKING:
@@ -43,7 +44,7 @@ class Entry(TextSignalMixin, TTKWrapperBase, ttk.Entry):
 
     _ttk_base = ttk.Entry
 
-    def __init__(self, master=None, **kwargs: Unpack[EntryKwargs]) -> None:
+    def __init__(self, master: Master = None, **kwargs: Unpack[EntryKwargs]) -> None:
         """Create a themed ttkbootstrap Entry.
 
         Args:

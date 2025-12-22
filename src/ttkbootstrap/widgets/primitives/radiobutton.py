@@ -7,6 +7,7 @@ from typing_extensions import Unpack
 
 from ttkbootstrap.widgets._internal.wrapper_base import TTKWrapperBase
 from ttkbootstrap.widgets.mixins import IconMixin, LocalizationMixin, SignalMixin, TextSignalMixin
+from ttkbootstrap.widgets.types import Master
 
 if TYPE_CHECKING:
     from ttkbootstrap.core.signals import Signal
@@ -47,7 +48,7 @@ class RadioButton(LocalizationMixin, SignalMixin, TextSignalMixin, IconMixin, TT
 
     _ttk_base = ttk.Radiobutton
 
-    def __init__(self, master=None, **kwargs: Unpack[RadioButtonKwargs]) -> None:
+    def __init__(self, master: Master = None, **kwargs: Unpack[RadioButtonKwargs]) -> None:
         """Create a themed ttkbootstrap Radiobutton.
 
         Args:

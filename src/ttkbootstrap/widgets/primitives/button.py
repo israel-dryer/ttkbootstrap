@@ -6,6 +6,7 @@ from typing_extensions import Unpack
 
 from ttkbootstrap.widgets._internal.wrapper_base import TTKWrapperBase
 from ttkbootstrap.widgets.mixins import IconMixin, TextSignalMixin, LocalizationMixin
+from ttkbootstrap.widgets.types import Master
 
 if TYPE_CHECKING:
     from ttkbootstrap.core.signals import Signal
@@ -47,7 +48,7 @@ class Button(LocalizationMixin, TextSignalMixin, IconMixin, TTKWrapperBase, ttk.
     """
     _ttk_base = ttk.Button
 
-    def __init__(self, master=None, **kwargs: Unpack[ButtonKwargs]) -> None:
+    def __init__(self, master: Master = None, **kwargs: Unpack[ButtonKwargs]) -> None:
         """Create a themed ttkbootstrap Button.
 
         Args:

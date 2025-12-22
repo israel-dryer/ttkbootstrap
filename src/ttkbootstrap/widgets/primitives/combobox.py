@@ -6,6 +6,7 @@ from typing import Any, Literal, TypedDict, TYPE_CHECKING
 from typing_extensions import Unpack
 
 from ttkbootstrap.widgets._internal.wrapper_base import TTKWrapperBase
+from ttkbootstrap.widgets.types import Master
 from ..mixins import TextSignalMixin
 
 if TYPE_CHECKING:
@@ -43,7 +44,7 @@ class Combobox(TextSignalMixin, TTKWrapperBase, ttk.Combobox):
 
     _ttk_base = ttk.Combobox
 
-    def __init__(self, master=None, **kwargs: Unpack[ComboboxKwargs]) -> None:
+    def __init__(self, master: Master = None, **kwargs: Unpack[ComboboxKwargs]) -> None:
         """Create a themed ttkbootstrap Combobox.
 
         Args:

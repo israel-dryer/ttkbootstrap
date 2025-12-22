@@ -1,10 +1,11 @@
 import tkinter
 from collections.abc import ValuesView
-from typing import Any
+from typing import Any, Callable
 
 from typing_extensions import TypedDict, Unpack
 
 from ttkbootstrap.widgets.primitives import Frame
+from ttkbootstrap.widgets.types import Master
 from ttkbootstrap.core import NavigationError
 
 
@@ -47,7 +48,7 @@ class PageStack(Frame):
         ``can_forward``.
     """
 
-    def __init__(self, master=None, **kwargs: Unpack[PageStackKwargs]):
+    def __init__(self, master: Master = None, **kwargs: Unpack[PageStackKwargs]):
         """Initialize a new PageStack instance.
 
         Creates an empty PageStack with no pages and no navigation history.
