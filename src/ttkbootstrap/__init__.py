@@ -128,18 +128,19 @@ _TTK_PRIMITIVES = [
 ]
 
 _MODULE_EXPORTS = {
+    # Application & Windows (includes menu)
     "ttkbootstrap.api.app": [
         "App", "Toplevel", "Window", "AppSettings", "get_app_settings", "get_current_app",
+        "MenuManager", "create_menu",
     ],
+    # Style & Theming
     "ttkbootstrap.api.style": [
         "BootstrapIcon", "Bootstyle", "Style",
         "get_style", "get_style_builder", "get_theme",
         "get_theme_provider", "set_theme", "get_theme_color",
         "toggle_theme", "get_themes"
     ],
-    "ttkbootstrap.api.menu": [
-        "MenuManager", "create_menu",
-    ],
+    # Widgets
     "ttkbootstrap.api.widgets": [
         *_TTK_PRIMITIVES,
         "Badge",
@@ -153,11 +154,28 @@ _MODULE_EXPORTS = {
         "SelectBox", "TableView", "TextEntry", "TimeEntry", "Toast", "ToggleGroup",
         "ToolTip", "TK_WIDGETS", "TTK_WIDGETS",
     ],
-    "ttkbootstrap.api.localization": [
+    # Dialogs
+    "ttkbootstrap.api.dialogs": [
+        "Dialog", "DialogButton", "FilterDialog", "FormDialog",
+        "MessageDialog", "MessageBox", "QueryDialog", "QueryBox",
+        "DateDialog", "FontDialog",
+        "ColorChooser", "ColorChooserDialog", "ColorDropperDialog",
+    ],
+    # Data Sources
+    "ttkbootstrap.api.data": [
+        "BaseDataSource", "MemoryDataSource", "SqliteDataSource",
+        "FileDataSource", "FileSourceConfig",
+        "DataSourceProtocol", "Record", "Primitive",
+    ],
+    # Internationalization
+    "ttkbootstrap.api.i18n": [
         "MessageCatalog", "L", "LV", "IntlFormatter"
     ],
-    "ttkbootstrap.core.signals": [
-        "Signal",
+    # Utilities
+    "ttkbootstrap.api.utils": [
+        "Signal", "TraceOperation",
+        "ValidationRule", "ValidationResult",
+        "SetVar",
     ],
 }
 
