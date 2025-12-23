@@ -183,7 +183,7 @@ class _DialogCalendar(Calendar):
 
 
 class DateDialog:
-    """Modal dialog that displays a :class:`~ttkbootstrap.widgets.Calendar`."""
+    """Modal dialog that displays a Calendar"""
 
     def __init__(
             self,

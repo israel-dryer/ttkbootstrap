@@ -160,8 +160,10 @@ def _locale_to_languages(loc: str) -> list[str]:
 
 
 class IntlFormatter:
-    """
-    DevExtreme-like number/date/datetime formatter.
+    """DevExtreme-like number/date/datetime formatter.
+
+    Provides locale-aware formatting and parsing capabilities:
+
     - FORMAT with Babel (locale-aware).
     - PARSE dates/times with dateparser -> dateutil fallback.
     - PARSE numbers with Babel's parse_decimal (+ compact K/M/B/T).
@@ -223,8 +225,7 @@ class IntlFormatter:
             spec: A number or temporal spec, same shape as for format().
 
         Returns:
-            Parsed Python object (float, date, time, or datetime). Returns
-            None for empty input.
+            Parsed Python object (float, date, time, datetime), or None if empty.
 
         Raises:
             ValueError: If parsing fails for temporal values.

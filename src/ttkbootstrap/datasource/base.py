@@ -32,27 +32,24 @@ class BaseDataSource(ABC):
     common functionality.
 
     Args:
-        page_size: Number of records per page (default: 10)
+        page_size(int): Number of records per page (default: 10)
 
     Attributes:
         page_size: Current page size setting
 
-    Examples:
-        # Create custom datasource
+    Example:
+        ```python
         class RedisDataSource(BaseDataSource):
             def __init__(self, redis_client, page_size=10):
                 super().__init__(page_size)
                 self.redis = redis_client
 
             def set_data(self, records):
-                # Redis-specific implementation
-                pass
+                pass  # Redis-specific implementation
 
             def get_page(self, page=None):
-                # Redis-specific implementation
-                pass
-
-            # ... implement other abstract methods
+                pass  # Redis-specific implementation
+        ```
     """
 
     def __init__(self, page_size: int = 10):
@@ -405,10 +402,6 @@ class BaseDataSource(ABC):
 
         Raises:
             ValueError: If record is not a dictionary
-
-        Examples:
-            >>> BaseDataSource._validate_record({'id': 1})  # OK
-            >>> BaseDataSource._validate_record([1, 2, 3])  # Raises ValueError
         """
         if not isinstance(record, dict):
             raise ValueError(f"Record must be a dictionary, got {type(record).__name__}")
@@ -426,13 +419,6 @@ class BaseDataSource(ABC):
 
         Returns:
             Modified record (or original if no changes)
-
-        Examples:
-            class TimestampedDataSource(BaseDataSource):
-                def _before_create(self, record):
-                    record = super()._before_create(record)
-                    record['created_at'] = datetime.now()
-                    return record
         """
         return record
 
@@ -445,12 +431,6 @@ class BaseDataSource(ABC):
         Args:
             record_id: ID of the created record
             record: The created record
-
-        Examples:
-            class LoggingDataSource(BaseDataSource):
-                def _after_create(self, record_id, record):
-                    super()._after_create(record_id, record)
-                    logger.info(f"Created record {record_id}")
         """
         pass
 

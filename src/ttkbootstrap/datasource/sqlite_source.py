@@ -16,21 +16,13 @@ The SqliteDataSource is ideal for:
 
 For in-memory, lightweight scenarios, consider MemoryDataSource instead.
 
-Examples:
-    # Persistent database file
+Example:
+    ```python
     ds = SqliteDataSource("mydata.db", page_size=50)
-    ds.set_data([{"name": "Alice", "age": 30}, ...])
-
-    # In-memory database (no persistence)
-    ds = SqliteDataSource(":memory:", page_size=25)
-
-    # SQL filtering and sorting
-    ds.set_filter("age >= 25 AND status = 'active'")
-    ds.set_sort("name ASC, age DESC")
-
-    # All CRUD operations work identically to MemoryDataSource
-    new_id = ds.create_record({"name": "Bob", "age": 28})
-    ds.update_record(new_id, {"age": 29})
+    ds.set_data([{"name": "Alice", "age": 30}])
+    ds.set_filter("age >= 25")
+    page = ds.get_page(0)
+    ```
 """
 
 from __future__ import annotations
@@ -57,33 +49,15 @@ class SqliteDataSource(BaseDataSource):
         conn: SQLite database connection
         page_size: Current page size setting
 
-    Examples:
-        # Create persistent database
+    Example:
+        ```python
         ds = SqliteDataSource("data.db", page_size=20)
-        ds.set_data([
-            {"name": "Alice", "age": 30, "dept": "Engineering"},
-            {"name": "Bob", "age": 25, "dept": "Sales"},
-        ])
-
-        # Use SQL for filtering and sorting
+        ds.set_data([{"name": "Alice", "age": 30}])
         ds.set_filter("age > 25")
-        ds.set_sort("name ASC")
+        page = ds.get_page(0)
+        ```
 
-        # Pagination
-        page1 = ds.get_page(0)
-        has_more = ds.has_next_page()
-
-        # CRUD operations
-        new_id = ds.create_record({"name": "Charlie", "age": 28, "dept": "Marketing"})
-        ds.update_record(new_id, {"dept": "Engineering"})
-        record = ds.read_record(new_id)
-        ds.delete_record(new_id)
-
-        # Selection and export
-        ds.select_all()
-        ds.export_to_csv("selected.csv", include_all=False)
-
-    Notes:
+    Note:
         - The database connection persists for the lifetime of the object
         - Close the connection explicitly with conn.close() if needed
         - Schema is inferred from first record's data types
