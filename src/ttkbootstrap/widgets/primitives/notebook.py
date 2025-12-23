@@ -7,8 +7,10 @@ from typing import Any, Callable, Literal, Optional, TypedDict
 from typing_extensions import Unpack
 
 from ttkbootstrap.core import NavigationError
+from ttkbootstrap.core.mixins.ttk_state import TtkStateMixin
+from ttkbootstrap.core.mixins.widget import WidgetCapabilitiesMixin
 from ttkbootstrap.core.localization import MessageCatalog
-from ttkbootstrap.widgets._internal.wrapper_base import TTKWrapperBase
+from ttkbootstrap.widgets.internal.wrapper_base import TTKWrapperBase
 from ttkbootstrap.widgets.primitives import Frame
 from ttkbootstrap.widgets.types import Master
 
@@ -52,7 +54,7 @@ class TabOptions(TypedDict, total=False):
     fmtargs: tuple[Any, ...] | list[Any]
 
 
-class Notebook(TTKWrapperBase, ttk.Notebook):
+class Notebook(TTKWrapperBase, WidgetCapabilitiesMixin, TtkStateMixin, ttk.Notebook):
     """A themed tabbed container widget with enhanced navigation and event tracking.
 
     The Notebook widget provides a tabbed interface where only one tab's content

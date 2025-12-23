@@ -3,7 +3,10 @@ from __future__ import annotations
 from tkinter import ttk
 from typing import Any, TypedDict
 from typing_extensions import Unpack
-from ttkbootstrap.widgets._internal.wrapper_base import TTKWrapperBase
+
+from ttkbootstrap.core.mixins.ttk_state import TtkStateMixin
+from ttkbootstrap.core.mixins.widget import WidgetCapabilitiesMixin
+from ttkbootstrap.widgets.internal.wrapper_base import TTKWrapperBase
 from ttkbootstrap.widgets.types import Master
 
 
@@ -20,7 +23,7 @@ class SizeGripKwargs(TypedDict, total=False):
     style_options: dict[str, Any]
 
 
-class SizeGrip(TTKWrapperBase, ttk.Sizegrip):
+class SizeGrip(TTKWrapperBase, WidgetCapabilitiesMixin, TtkStateMixin, ttk.Sizegrip):
     """ttkbootstrap wrapper for `ttk.Sizegrip` with bootstyle support."""
 
     _ttk_base = ttk.Sizegrip

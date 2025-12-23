@@ -5,7 +5,9 @@ from typing import Any, Literal, TYPE_CHECKING, TypedDict
 
 from typing_extensions import Unpack
 
-from ttkbootstrap.widgets._internal.wrapper_base import TTKWrapperBase
+from ttkbootstrap.core.mixins.ttk_state import TtkStateMixin
+from ttkbootstrap.core.mixins.widget import WidgetCapabilitiesMixin
+from ttkbootstrap.widgets.internal.wrapper_base import TTKWrapperBase
 from ttkbootstrap.widgets.mixins import IconMixin, LocalizationMixin, TextSignalMixin
 from ttkbootstrap.widgets.types import Master
 
@@ -39,7 +41,7 @@ class MenuButtonKwargs(TypedDict, total=False):
     localize: bool | Literal['auto']
 
 
-class MenuButton(LocalizationMixin, TextSignalMixin, IconMixin, TTKWrapperBase, ttk.Menubutton):
+class MenuButton(LocalizationMixin, TextSignalMixin, IconMixin, TTKWrapperBase, WidgetCapabilitiesMixin, TtkStateMixin, ttk.Menubutton):
     """ttkbootstrap wrapper for `ttk.Menubutton` with bootstyle and icon support."""
 
     _ttk_base = ttk.Menubutton

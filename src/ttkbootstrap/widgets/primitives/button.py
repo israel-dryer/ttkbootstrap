@@ -4,7 +4,9 @@ from tkinter import ttk
 from typing import Any, Callable, Literal, Optional, TypedDict, TYPE_CHECKING
 from typing_extensions import Unpack
 
-from ttkbootstrap.widgets._internal.wrapper_base import TTKWrapperBase
+from ttkbootstrap.core.mixins.ttk_state import TtkStateMixin
+from ttkbootstrap.core.mixins.widget import WidgetCapabilitiesMixin
+from ttkbootstrap.widgets.internal.wrapper_base import TTKWrapperBase
 from ttkbootstrap.widgets.mixins import IconMixin, TextSignalMixin, LocalizationMixin
 from ttkbootstrap.widgets.types import Master
 
@@ -41,7 +43,7 @@ class ButtonKwargs(TypedDict, total=False):
     style_options: dict[str, Any]
 
 
-class Button(LocalizationMixin, TextSignalMixin, IconMixin, TTKWrapperBase, ttk.Button):
+class Button(LocalizationMixin, TextSignalMixin, IconMixin, TTKWrapperBase, WidgetCapabilitiesMixin, TtkStateMixin, ttk.Button):
     """TTK Bootstrap Button
 
     ttkbootstrap wrapper for `ttk.Button` with bootstyle and icon support.

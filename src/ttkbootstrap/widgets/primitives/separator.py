@@ -3,7 +3,10 @@ from __future__ import annotations
 from tkinter import ttk
 from typing import Any, TypedDict
 from typing_extensions import Unpack
-from ttkbootstrap.widgets._internal.wrapper_base import TTKWrapperBase
+
+from ttkbootstrap.core.mixins.ttk_state import TtkStateMixin
+from ttkbootstrap.core.mixins.widget import WidgetCapabilitiesMixin
+from ttkbootstrap.widgets.internal.wrapper_base import TTKWrapperBase
 from ttkbootstrap.widgets.types import Master
 
 
@@ -21,7 +24,7 @@ class SeparatorKwargs(TypedDict, total=False):
     style_options: dict[str, Any]
 
 
-class Separator(TTKWrapperBase, ttk.Separator):
+class Separator(TTKWrapperBase, WidgetCapabilitiesMixin, TtkStateMixin, ttk.Separator):
     """ttkbootstrap wrapper for `ttk.Separator` with bootstyle support."""
 
     _ttk_base = ttk.Separator

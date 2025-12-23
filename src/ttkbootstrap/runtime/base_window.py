@@ -1,22 +1,25 @@
 """Base window functionality shared between App (Tk) and Toplevel.
 
 This module provides the BaseWindow mixin class that encapsulates common
-window management functionality used by both the main App (formerly Window)
-and Toplevel classes. This eliminates code duplication and ensures consistent
-behavior across all window types.
+window management functionality used by both the main App and Toplevel classes.
+This eliminates code duplication and ensures consistent behavior across all
+window types.
+
+Standard widget APIs (events, scheduling, clipboard, geometry managers, winfo) are documented under capabilities and are
+ available through normal Tk/Ttk inheritance.”
 
 The BaseWindow mixin provides:
+- Window manager (wm) pass-throughs with modern docstrings
 - Window configuration (size, position, constraints)
 - Alpha transparency handling (platform-aware)
 - Icon management
 - Positioning utilities
-- Common window attributes
 """
 
 from __future__ import annotations
 
 import tkinter
-from typing import Literal, Optional, Tuple
+from typing import Literal, Optional, Tuple, Callable, Any
 
 from ttkbootstrap.core.localization import MessageCatalog
 from ttkbootstrap.runtime.window_utilities import AnchorPoint, WindowPositioning, WindowSizing
@@ -39,31 +42,24 @@ def on_visibility_alpha(event: tkinter.Event) -> None:
 
 
 class BaseWindow:
-    """Mixin providing shared window management functionality.
+    """Base window behavior shared by ttkbootstrap windows.
 
-    This class is designed to be used as a mixin with tkinter.Tk or
-    tkinter.Toplevel. It provides common window setup and management
-    methods that are shared between the main App window and secondary
-    Toplevel windows.
+    This class is intended to be used as a mixin alongside `tkinter.Tk` or
+    `tkinter.Toplevel`, for example:
 
-    Important:
-        This is a MIXIN class, not a standalone widget class. It must be
-        used with multiple inheritance alongside tkinter.Tk or tkinter.Toplevel.
+        class App(BaseWindow, tkinter.Tk): ...
+        class Window(BaseWindow, tkinter.Toplevel): ...
 
-    Usage:
-        >>> class App(BaseWindow, tkinter.Tk):
-        ...     def __init__(self, **kwargs):
-        ...         tkinter.Tk.__init__(self)
-        ...         BaseWindow._setup_window(self, **kwargs)
-
-    Provides:
-        - Window geometry configuration (size, position)
-        - Size constraints (minsize, maxsize, resizable)
-        - Alpha transparency (platform-aware)
-        - Icon management
-        - Positioning helpers (center on screen/parent)
-        - Window attributes (title, transient, overrideredirect)
+    The methods below are thin pass-throughs to Tk's window manager ("wm")
+    functionality, primarily to provide modern, consistent docstrings and a
+    curated, documented API surface.
     """
+
+    _title_message_id: str | None = None
+
+    # -------------------------------------------------------------------------
+    # Setup methods (ttkbootstrap-specific)
+    # -------------------------------------------------------------------------
 
     def _setup_window(
             self,
@@ -233,26 +229,279 @@ class BaseWindow:
                 except (ImportError, FileNotFoundError, tkinter.TclError, Exception):
                     pass
 
-    def title(self, value: str | None = None):
-        """Set or query the window title"""
-        if value is None:
-            return super().title()
-        else:
-            self._title_message_id = value
-            return super().title(MessageCatalog.translate(self._title_message_id))
-
     def _handle_locale_changed(self, *_):
+        """Handle locale change events by updating the localized title."""
         if self._title_message_id:
             self.title(self._title_message_id)
 
-    # ----------------------------------------------------------------- Positioning
-    # Public positioning methods using WindowPositioning utilities
+    # -------------------------------------------------------------------------
+    # Window manager (wm) — pass-throughs with modern docstrings
+    # -------------------------------------------------------------------------
 
-    def show(self):
-        """Show the window after it has been fully initialized"""
+    def show(self) -> None:
+        """Show the window after it has been fully initialized.
+
+        This forces a geometry/layout pass before mapping the window, which is
+        useful if you have performed setup that affects sizing.
+        """
         self.update_idletasks()
         self.deiconify()
         self.update()
+
+    def title(self, value: str | None = None) -> str:
+        """Get or set the window title.
+
+        If you localize UI text (e.g., via a message catalog), the title is
+        automatically translated using the MessageCatalog.
+
+        Args:
+            value: The new title text. If None, return the current title.
+
+        Returns:
+            The current title string (getter) or the title string after setting.
+        """
+        if value is None:
+            return super().title()
+        self._title_message_id = value
+        return super().title(MessageCatalog.translate(self._title_message_id))
+
+    def geometry(self, new_geometry: str | None = None) -> str:
+        """Get or set the window geometry.
+
+        Geometry strings use the standard Tk format:
+
+        - "{width}x{height}" (size only)
+        - "+{x}+{y}" (position only)
+        - "{width}x{height}+{x}+{y}" (size + position)
+
+        Args:
+            new_geometry: The geometry string to apply. If None, return the
+                current geometry string.
+
+        Returns:
+            The current geometry string (getter) or the geometry after setting.
+        """
+        return super().geometry(new_geometry)
+
+    def state(self, newstate: str | None = None) -> str:
+        """Get or set the window manager state.
+
+        Common states include:
+
+        - "normal": displayed normally
+        - "iconic": minimized (iconified)
+        - "withdrawn": hidden (not shown)
+        - "zoomed": maximized (platform/window-manager dependent)
+
+        Args:
+            newstate: State to apply. If None, return the current state.
+
+        Returns:
+            The current state string.
+        """
+        return super().state(newstate)
+
+    def attributes(self, *args: Any) -> Any:
+        """Get or set platform-specific window attributes.
+
+        This method forwards to Tk's "wm attributes" command. Common attributes:
+
+        - "-alpha" (float 0.0-1.0): transparency
+        - "-fullscreen" (bool): fullscreen mode
+        - "-topmost" (bool): keep window above others
+
+        The exact supported attributes vary by platform/window manager.
+
+        Args:
+            *args: Arguments accepted by Tk's `wm attributes`. Common forms are:
+                - (name,) to query a single attribute
+                - (name, value) to set an attribute
+                - () to query all supported attributes (platform dependent)
+
+        Returns:
+            The queried attribute value(s), or an implementation-dependent
+            result when setting.
+        """
+        return super().attributes(*args)
+
+    def iconify(self) -> None:
+        """Minimize (iconify) the window."""
+        return super().iconify()
+
+    def deiconify(self) -> None:
+        """Show a minimized or withdrawn window.
+
+        This restores a window that has been hidden with `withdraw()` or
+        minimized with `iconify()`.
+        """
+        return super().deiconify()
+
+    def withdraw(self) -> None:
+        """Hide the window without destroying it.
+
+        A withdrawn window is unmapped and typically removed from
+        taskbar/window lists. Use `deiconify()` to show it again.
+        """
+        return super().withdraw()
+
+    def resizable(self, width: bool | None = None, height: bool | None = None) -> tuple[int, int] | None:
+        """Get or set whether the user can resize the window.
+
+        Args:
+            width: If provided, enable/disable horizontal resizing.
+            height: If provided, enable/disable vertical resizing.
+
+        Returns:
+            When called as a getter (both args None), returns `(width_flag, height_flag)`
+            where each flag is 0/1. When called as a setter, Tk returns None.
+        """
+        return super().resizable(width, height)
+
+    def minsize(self, width: int | None = None, height: int | None = None) -> tuple[int, int] | None:
+        """Get or set the minimum window size in pixels.
+
+        Args:
+            width: Minimum width in pixels. If None, act as a getter.
+            height: Minimum height in pixels. If None, act as a getter.
+
+        Returns:
+            When called as a getter (both args None), returns `(width, height)`.
+            When called as a setter, Tk returns None.
+        """
+        return super().minsize(width, height)
+
+    def maxsize(self, width: int | None = None, height: int | None = None) -> tuple[int, int] | None:
+        """Get or set the maximum window size in pixels.
+
+        Args:
+            width: Maximum width in pixels. If None, act as a getter.
+            height: Maximum height in pixels. If None, act as a getter.
+
+        Returns:
+            When called as a getter (both args None), returns `(width, height)`.
+            When called as a setter, Tk returns None.
+        """
+        return super().maxsize(width, height)
+
+    def transient(self, master: tkinter.Misc | None = None) -> tkinter.Misc | None:
+        """Get or set the transient parent (window relationship).
+
+        Transient windows typically stay on top of their parent and may be
+        omitted from the taskbar. This is commonly used for dialogs.
+
+        Args:
+            master: The parent window. If None, return the current transient parent.
+
+        Returns:
+            The current transient parent (getter) or the provided master (setter),
+            depending on Tk/platform behavior.
+        """
+        return super().transient(master)
+
+    def protocol(self, name: str, func: Callable[[], Any] | None = None) -> Any:
+        """Get or set a window manager protocol handler.
+
+        The most common protocol is "WM_DELETE_WINDOW" (close button).
+
+        Args:
+            name: Protocol name.
+            func: Handler to register. If None, return the current handler (if any).
+
+        Returns:
+            The current handler when queried, or an implementation-dependent result
+            when setting.
+        """
+        return super().protocol(name, func)
+
+    def overrideredirect(self, boolean: bool | None = None) -> bool | None:
+        """Get or set override-redirect mode.
+
+        When enabled, the window manager typically does not decorate or manage
+        the window (no title bar/borders). Useful for popups/menus; use with care.
+
+        Args:
+            boolean: True to enable override-redirect, False to disable. If None,
+                return the current value.
+
+        Returns:
+            The current override-redirect value when queried, or None when set.
+        """
+        return super().overrideredirect(boolean)
+
+    # -------------------------------------------------------------------------
+    # Convenience wrappers: intent-based names for common tasks
+    # -------------------------------------------------------------------------
+
+    def on_close(self, handler: Callable[[], Any]) -> None:
+        """Register a handler for the window close button.
+
+        This is a convenience wrapper for:
+
+            protocol("WM_DELETE_WINDOW", handler)
+
+        Args:
+            handler: A callable invoked when the user requests to close the window.
+        """
+        self.protocol("WM_DELETE_WINDOW", handler)
+
+    def hide(self) -> None:
+        """Hide the window (alias for `withdraw()`)."""
+        self.withdraw()
+
+    def minimize(self) -> None:
+        """Minimize the window (alias for `iconify()`)."""
+        self.iconify()
+
+    def maximize(self) -> None:
+        """Maximize the window where supported.
+
+        Tk uses `state("zoomed")` to request maximized windows on some platforms.
+        On unsupported window managers this may raise `tkinter.TclError`.
+        """
+        try:
+            self.state("zoomed")
+        except tkinter.TclError:
+            pass
+
+    def set_topmost(self, value: bool = True) -> None:
+        """Enable/disable always-on-top behavior where supported.
+
+        Args:
+            value: True to keep the window above others; False to disable.
+        """
+        try:
+            self.attributes("-topmost", bool(value))
+        except tkinter.TclError:
+            pass
+
+    # Backward compatibility alias
+    keep_on_top = set_topmost
+
+    def set_fullscreen(self, value: bool = True) -> None:
+        """Enable/disable fullscreen where supported.
+
+        Args:
+            value: True to enter fullscreen; False to exit.
+        """
+        try:
+            self.attributes("-fullscreen", bool(value))
+        except tkinter.TclError:
+            pass
+
+    def set_alpha(self, value: float) -> None:
+        """Set window opacity where supported.
+
+        Args:
+            value: Opacity from 0.0 (transparent) to 1.0 (opaque).
+        """
+        try:
+            self.attributes("-alpha", float(value))
+        except tkinter.TclError:
+            pass
+
+    # -------------------------------------------------------------------------
+    # Positioning utilities
+    # -------------------------------------------------------------------------
 
     def place_center(self) -> None:
         """Position the window in the center of the screen.
@@ -422,17 +671,9 @@ class BaseWindow:
 
     position_center = place_center  # Additional alias for compatibility
 
-
-class WindowMixin(BaseWindow):
-    """Extended mixin with additional window utilities.
-
-    Extends BaseWindow with additional convenience methods and utilities
-    that are commonly needed but not strictly required for basic window
-    functionality.
-
-    This class can be used when you want the full suite of window utilities
-    beyond the core BaseWindow functionality.
-    """
+    # -------------------------------------------------------------------------
+    # Sizing utilities
+    # -------------------------------------------------------------------------
 
     def set_default_size(
             self,
@@ -491,3 +732,4 @@ class WindowMixin(BaseWindow):
             ... )
         """
         WindowSizing.apply_size_constraints(self, minsize, maxsize, resizable)
+

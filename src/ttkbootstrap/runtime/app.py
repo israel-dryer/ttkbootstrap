@@ -13,6 +13,7 @@ from ttkbootstrap.constants import *
 from ttkbootstrap.core.localization.intl_format import detect_locale
 from ttkbootstrap.core.localization.msgcat import MessageCatalog
 from ttkbootstrap.core.publisher import Publisher
+from ttkbootstrap.core.mixins.widget import WidgetCapabilitiesMixin
 from ttkbootstrap.runtime.base_window import BaseWindow
 from ttkbootstrap.runtime.utility import enable_high_dpi_awareness
 
@@ -368,12 +369,14 @@ class TkKwargs(TypedDict, total=False):
     use: str
 
 
-class App(BaseWindow, tkinter.Tk):
+class App(BaseWindow, WidgetCapabilitiesMixin, tkinter.Tk):
     """The primary application window and entry point.
 
-    This class provides a pre-configured tkinter.Tk instance with ttkbootstrap
-    styling, high-DPI awareness, and localization support. It serves as the
-    root window for the application.
+    App adds theming, localization, and platform setup on top of `tkinter.Tk`.
+
+    The standard widget API (events, scheduling, clipboard, geometry managers,
+    winfo, etc.) is documented under ttkbootstrap capabilities and is available
+    on App via inheritance.
     """
 
     def __init__(
@@ -518,10 +521,18 @@ class App(BaseWindow, tkinter.Tk):
         apply_class_bindings(self)
         apply_all_bindings(self)
 
-    def mainloop(self, n=0):
-        """Starts the main Tkinter event loop."""
+    def run(self) -> None:
+        """Run the application
+
+        This is the recommended entry point for ttkbootstrap applications.
+        """
         self.show()
-        super().mainloop(n)
+        super().mainloop()
+
+    def close(self) -> None:
+        """Close the application window (destroys the Tk root)"""
+        clear_current_app(self)
+        self.quit()
 
     def destroy(self) -> None:
         """Destroys the window and all its children."""

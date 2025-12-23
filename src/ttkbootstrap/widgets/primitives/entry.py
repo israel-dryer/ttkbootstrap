@@ -3,7 +3,10 @@ from __future__ import annotations
 from tkinter import ttk
 from typing import Any, Literal, Optional, TypedDict, TYPE_CHECKING
 from typing_extensions import Unpack
-from ttkbootstrap.widgets._internal.wrapper_base import TTKWrapperBase
+
+from ttkbootstrap.core.mixins.ttk_state import TtkStateMixin
+from ttkbootstrap.core.mixins.widget import WidgetCapabilitiesMixin
+from ttkbootstrap.widgets.internal.wrapper_base import TTKWrapperBase
 from ttkbootstrap.widgets.types import Master
 from ..mixins import TextSignalMixin
 
@@ -39,7 +42,7 @@ class EntryKwargs(TypedDict, total=False):
     style_options: dict[str, Any]
 
 
-class Entry(TextSignalMixin, TTKWrapperBase, ttk.Entry):
+class Entry(TextSignalMixin, TTKWrapperBase, WidgetCapabilitiesMixin, TtkStateMixin, ttk.Entry):
     """ttkbootstrap wrapper for `ttk.Entry` with bootstyle support."""
 
     _ttk_base = ttk.Entry

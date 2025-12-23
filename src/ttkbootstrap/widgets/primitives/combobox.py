@@ -5,7 +5,9 @@ from typing import Any, Literal, TypedDict, TYPE_CHECKING
 
 from typing_extensions import Unpack
 
-from ttkbootstrap.widgets._internal.wrapper_base import TTKWrapperBase
+from ttkbootstrap.core.mixins.ttk_state import TtkStateMixin
+from ttkbootstrap.core.mixins.widget import WidgetCapabilitiesMixin
+from ttkbootstrap.widgets.internal.wrapper_base import TTKWrapperBase
 from ttkbootstrap.widgets.types import Master
 from ..mixins import TextSignalMixin
 
@@ -39,7 +41,7 @@ class ComboboxKwargs(TypedDict, total=False):
     style_options: dict[str, Any]
 
 
-class Combobox(TextSignalMixin, TTKWrapperBase, ttk.Combobox):
+class Combobox(TextSignalMixin, TTKWrapperBase, WidgetCapabilitiesMixin, TtkStateMixin, ttk.Combobox):
     """ttkbootstrap wrapper for `ttk.Combobox` with bootstyle support."""
 
     _ttk_base = ttk.Combobox

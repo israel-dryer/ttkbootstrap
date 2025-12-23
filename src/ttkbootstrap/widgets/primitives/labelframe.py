@@ -5,7 +5,9 @@ from typing import Any, Literal, TypedDict
 
 from typing_extensions import Unpack
 
-from ttkbootstrap.widgets._internal.wrapper_base import TTKWrapperBase
+from ttkbootstrap.core.mixins.ttk_state import TtkStateMixin
+from ttkbootstrap.core.mixins.widget import WidgetCapabilitiesMixin
+from ttkbootstrap.widgets.internal.wrapper_base import TTKWrapperBase
 from ttkbootstrap.widgets.mixins import LocalizationMixin
 from ttkbootstrap.widgets.types import Master
 
@@ -31,7 +33,7 @@ class LabelFrameKwargs(TypedDict, total=False):
     localize: bool | Literal['auto']
 
 
-class LabelFrame(LocalizationMixin, TTKWrapperBase, ttk.LabelFrame):
+class LabelFrame(LocalizationMixin, TTKWrapperBase, WidgetCapabilitiesMixin, TtkStateMixin, ttk.LabelFrame):
     """ttkbootstrap wrapper for `ttk.Labelframe` with bootstyle support."""
 
     _ttk_base = ttk.Labelframe

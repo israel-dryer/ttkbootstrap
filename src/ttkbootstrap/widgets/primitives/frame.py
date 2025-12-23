@@ -5,7 +5,9 @@ from typing import Any, TypedDict
 
 from typing_extensions import Unpack
 
-from ttkbootstrap.widgets._internal.wrapper_base import TTKWrapperBase
+from ttkbootstrap.core.mixins.ttk_state import TtkStateMixin
+from ttkbootstrap.core.mixins.widget import WidgetCapabilitiesMixin
+from ttkbootstrap.widgets.internal.wrapper_base import TTKWrapperBase
 from ttkbootstrap.widgets.types import Master
 from ttkbootstrap.style.style import get_style
 from ttkbootstrap.style.bootstyle_builder_tk import BootstyleBuilderBuilderTk
@@ -32,7 +34,7 @@ class FrameKwargs(TypedDict, total=False):
     style_options: dict[str, Any]
 
 
-class Frame(TTKWrapperBase, ttk.Frame):
+class Frame(TTKWrapperBase, WidgetCapabilitiesMixin, TtkStateMixin, ttk.Frame):
     """ttkbootstrap wrapper for `ttk.Frame` with bootstyle support."""
 
     _ttk_base = ttk.Frame

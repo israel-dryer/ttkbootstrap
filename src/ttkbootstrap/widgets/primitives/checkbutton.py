@@ -5,7 +5,9 @@ from typing import Any, Callable, Literal, Optional, TYPE_CHECKING, TypedDict
 
 from typing_extensions import Unpack
 
-from ttkbootstrap.widgets._internal.wrapper_base import TTKWrapperBase
+from ttkbootstrap.core.mixins.ttk_state import TtkStateMixin
+from ttkbootstrap.core.mixins.widget import WidgetCapabilitiesMixin
+from ttkbootstrap.widgets.internal.wrapper_base import TTKWrapperBase
 from ttkbootstrap.widgets.mixins import IconMixin, LocalizationMixin, SignalMixin, TextSignalMixin
 from ttkbootstrap.widgets.types import Master
 
@@ -45,7 +47,7 @@ class CheckButtonKwargs(TypedDict, total=False):
     localize: bool | Literal['auto']
 
 
-class CheckButton(LocalizationMixin, SignalMixin, TextSignalMixin, IconMixin, TTKWrapperBase, ttk.Checkbutton):
+class CheckButton(LocalizationMixin, SignalMixin, TextSignalMixin, IconMixin, TTKWrapperBase, WidgetCapabilitiesMixin, TtkStateMixin, ttk.Checkbutton):
     """ttkbootstrap wrapper for `ttk.Checkbutton` with bootstyle and icon support."""
 
     _ttk_base = ttk.Checkbutton
