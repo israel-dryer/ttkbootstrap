@@ -106,10 +106,6 @@ class Field(EntryMixin, Frame):
           Provides ``event.data`` with keys: ``value``, ``is_valid`` (bool), ``message``.
 
     Attributes:
-        entry_widget (TextEntryPart | NumberEntryPart): The underlying entry widget.
-        label_widget (Label): The label widget above the entry.
-        message_widget (Label): The message label widget below the entry.
-        addons (dict[str, Widget]): Dictionary of inserted addon widgets by name.
         variable (Variable): Tkinter Variable linked to entry text.
         signal (Signal): Signal object for reactive updates.
     """

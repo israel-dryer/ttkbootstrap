@@ -37,12 +37,6 @@ class ToggleGroup(Frame):
     The ToggleGroup widget provides a convenient way to create groups of toggle
     buttons with automatic position tracking and styling. It supports both single
     selection (radio button behavior) and multi-selection (checkbox behavior).
-
-    Attributes:
-        variable (Variable): The underlying tk.Variable for the selected value(s).
-        signal (Signal): Signal for reactive programming and change subscriptions.
-        bootstyle (str): The color/variant style applied to all buttons.
-        orient (str): Layout orientation ('horizontal' or 'vertical').
     """
 
     def __init__(self, master: Any = None, **kwargs: Unpack[ToggleGroupKwargs]):

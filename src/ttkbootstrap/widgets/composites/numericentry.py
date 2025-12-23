@@ -36,8 +36,6 @@ class NumericEntry(Field):
         addons (dict[str, Widget]): Dictionary of inserted addon widgets by name.
         variable (Variable): Tkinter Variable linked to entry text.
         signal (Signal): Signal object for reactive updates.
-        increment_widget (Button): The increment spin button widget.
-        decrement_widget (Button): The decrement spin button widget.
     """
 
     def __init__(
