@@ -19,7 +19,6 @@ class ScrolledText(Frame):
     functionality.
 
     Attributes:
-        text (Text): The underlying tkinter Text widget.
         vertical_scrollbar (Scrollbar): The vertical scrollbar widget.
         horizontal_scrollbar (Scrollbar): The horizontal scrollbar widget.
     """

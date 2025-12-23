@@ -9,9 +9,11 @@ from __future__ import annotations
 
 import logging
 from collections import OrderedDict
-from tkinter import Misc, font as tkfont
+from tkinter import font as tkfont
 
 from typing_extensions import Literal
+
+from ttkbootstrap.widgets.types import Master
 
 from ttkbootstrap_icons_bs import BootstrapIcon
 from ttkbootstrap import get_style
@@ -74,14 +76,11 @@ class TableView(Frame):
         - ``<<RowDelete>>``: Fired when rows are deleted. ``event.data = {'records': list[dict]}``
         - ``<<RowMove>>``: Fired when rows are moved/reordered. ``event.data = {'records': list[dict]}``
 
-    Attributes:
-        selected_rows (list[dict]): List of record dicts for current selection.
-        visible_rows (list[dict]): List of record dicts currently rendered.
     """
 
     def __init__(
             self,
-            master: Misc | None = None,
+            master: Master = None,
             columns: list[str | dict] | None = None,
             rows: list | None = None,
             datasource: SqliteDataSource | None = None,

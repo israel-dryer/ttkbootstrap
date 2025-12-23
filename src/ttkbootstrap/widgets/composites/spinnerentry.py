@@ -74,29 +74,25 @@ class SpinnerEntry(Field):
                 If provided along with 'minvalue', creates a numeric range spinner.
             increment: Step size for increment/decrement in numeric mode.
                 Default is 1. Only applies when using minvalue/maxvalue.
-            wrap: If True, values wrap around at boundaries (cycle back to start
-                after reaching end). If False, stops at min/max boundaries.
-                Default is False.
-            **kwargs: Additional keyword arguments from FieldOptions:
-                value_format: ICU format pattern for parsing/formatting
-                    (e.g., '¤#,##0.00' for currency, '#,##0.00' for decimal)
-                locale: Locale identifier for formatting (e.g., 'en_US')
-                required: If True, field cannot be empty
-                bootstyle: The accent color of the focus ring and active border
-                allow_blank: If True, empty input is allowed (sets value to None)
-                cursor: Cursor style when hovering
-                exportselection: Export selection to clipboard
-                font: Font for text display
-                foreground: Text color
-                initial_focus: If True, widget receives focus on creation
-                justify: Text alignment
-                show_message: If True, displays message area
-                padding: Padding around entry widget
-                take_focus: If True, widget accepts Tab focus
-                textvariable: Tkinter Variable to link with text
-                textsignal: Signal object for reactive updates
-                width: Width in characters
-                xscrollcommand: Callback for horizontal scrolling
+            wrap: If True, values wrap around at boundaries. Default is False.
+
+        Other Parameters:
+            value_format (str): ICU format pattern for parsing/formatting.
+            locale (str): Locale identifier for formatting (e.g., 'en_US').
+            required (bool): If True, field cannot be empty.
+            bootstyle (str): The accent color of the focus ring and active border.
+            allow_blank (bool): If True, empty input is allowed.
+            cursor (str): Cursor style when hovering.
+            font (str): Font for text display.
+            foreground (str): Text color.
+            initial_focus (bool): If True, widget receives focus on creation.
+            justify (str): Text alignment.
+            show_message (bool): If True, displays message area.
+            padding (str): Padding around entry widget.
+            take_focus (bool): If True, widget accepts Tab focus.
+            textvariable (Variable): Tkinter Variable to link with text.
+            textsignal (Signal): Signal object for reactive updates.
+            width (int): Width in characters.
 
         Note:
             Use either 'values' (for text mode) OR 'minvalue/maxvalue' (for numeric mode),

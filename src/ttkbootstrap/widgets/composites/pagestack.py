@@ -150,8 +150,8 @@ class PageStack(Frame):
         """Navigate to the page with the given key.
 
         This method handles page transitions, manages navigation history,
-        and triggers lifecycle events (<<PageUnmount>>, <<PageWillMount>>,
-        <<PageMount>>, <<PageChange>>).
+        and triggers lifecycle events (``<<PageUnmount>>``, ``<<PageWillMount>>``,
+        ``<<PageMount>>``, ``<<PageChange>>``).
 
         Args:
             key: The identifier of the page to navigate to
@@ -314,22 +314,13 @@ class PageStack(Frame):
         return self._pages.values()
 
     def on_page_changed(self, callback: Callable) -> str:
-        """Bind a callback to the <<PageChange>> event.
-
-        Args:
-            callback: Function to call when the page changes. The callback
-                     will receive an event object with navigation data.
+        """Bind to ``<<PageChange>>``. Callback receives ``event.data`` with navigation info.
 
         Returns:
-            The function ID that can be used with off_page_changed() to
-            remove this binding.
+            Binding identifier for use with off_page_changed().
         """
         return self.bind('<<PageChange>>', callback, add="+")
 
     def off_page_changed(self, funcid: str) -> None:
-        """Remove a callback binding from the <<PageChange>> event.
-
-        Args:
-            funcid: The function ID returned by on_page_changed()
-        """
+        """Unbind from ``<<PageChange>>``."""
         self.unbind("<<PageChange>>", funcid)

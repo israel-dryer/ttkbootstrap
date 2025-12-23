@@ -63,12 +63,8 @@ class TimeEntry(SelectBox):
                 Default is current time.
             value_format: Time format pattern for parsing and displaying times.
                 Default is "shortTime" (e.g., "3:30 PM"). Common formats:
-                - "shortTime": Short time (e.g., "3:30 PM")
-                - "longTime": Long time with seconds (e.g., "3:30:45 PM PST")
-                - "mediumTime": Medium time (e.g., "3:30:45 PM")
-                - "HH:mm": 24-hour format (e.g., "15:30")
-                - "h:mm a": 12-hour format (e.g., "3:30 PM")
-                See class documentation for complete list of format presets.
+                "shortTime" (3:30 PM), "longTime" (3:30:45 PM PST),
+                "mediumTime" (3:30:45 PM), "HH:mm" (15:30), "h:mm a" (3:30 PM).
             interval: Time interval in minutes for dropdown items (e.g., 15, 30, 60).
                 Default is 30 minutes.
             min_time: Minimum time value for the dropdown list. Can be a time object
@@ -80,14 +76,15 @@ class TimeEntry(SelectBox):
             message: Optional message text to display below the entry field.
                 Used for hints or help text. Replaced by validation errors when
                 validation fails.
-            **kwargs: Additional keyword arguments from FieldOptions:
-                locale: Locale identifier for time formatting (e.g., 'en_US')
-                required: If True, field cannot be empty
-                bootstyle: The accent color of the focus ring and active border
-                allow_blank: Allow empty input
-                width: Width in characters
-                textvariable: Tkinter Variable to link with text
-                textsignal: Signal object for reactive updates
+
+        Other Parameters:
+            locale (str): Locale identifier for time formatting (e.g., 'en_US').
+            required (bool): If True, field cannot be empty.
+            bootstyle (str): The accent color of the focus ring and active border.
+            allow_blank (bool): Allow empty input.
+            width (int): Width in characters.
+            textvariable (Variable): Tkinter Variable to link with text.
+            textsignal (Signal): Signal object for reactive updates.
 
         Note:
             The widget uses IntlFormatter for locale-aware time formatting.

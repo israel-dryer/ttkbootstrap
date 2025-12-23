@@ -283,7 +283,7 @@ class ToggleGroup(Frame):
             raise KeyError(f"No button with key '{key}'")
         return self._buttons[key]
 
-    def configure_button(self, key: str, **kwargs):
+    def configure_button(self, key: str, **kwargs: Any):
         """Configure a specific button by its key."""
         button = self.get_button(key)
         button.configure(**kwargs)

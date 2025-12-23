@@ -1,7 +1,7 @@
 """Canvas-based scrollable container widget with mouse wheel support."""
 from tkinter import Canvas
 from tkinter.ttk import Widget
-from typing import Literal, Optional
+from typing import Any, Literal, Optional
 
 from ttkbootstrap.widgets.primitives.frame import Frame
 from ttkbootstrap.widgets.mixins.configure_mixin import configure_delegate
@@ -30,7 +30,7 @@ class ScrollView(Frame):
             show_scrollbar: Literal['always', 'never', 'on-hover', 'on-scroll'] = 'always',
             autohide_delay: int = 1000,  # milliseconds for on-scroll mode
             scrollbar_style: str = 'default',
-            **kwargs
+            **kwargs: Any
     ):
         """Initialize a ScrollView widget.
 

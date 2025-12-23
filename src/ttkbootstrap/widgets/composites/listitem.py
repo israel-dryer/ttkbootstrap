@@ -1,4 +1,5 @@
 from tkinter import TclError
+from typing import Any
 
 from ttkbootstrap.widgets.composites.compositeframe import CompositeFrame
 from ttkbootstrap.widgets.mixins import configure_delegate
@@ -41,7 +42,7 @@ class ListItem(CompositeFrame):
         - item_index: Zero-based index of the item in the list.
     """
 
-    def __init__(self, master: Master = None, **kwargs):
+    def __init__(self, master: Master = None, **kwargs: Any):
         """Initialize a ListItem widget.
 
         Args:

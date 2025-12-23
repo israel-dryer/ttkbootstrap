@@ -43,9 +43,6 @@ class RadioGroup(Frame):
     Attributes:
         variable (Variable): The underlying tk.Variable for the selected value.
         signal (Signal): Signal for reactive programming and change subscriptions.
-        bootstyle (str): The color/variant style applied to all buttons.
-        orient (str): Layout orientation ('horizontal' or 'vertical').
-        state (str): State for all buttons ('normal' or 'disabled').
     """
 
     def __init__(self, master: Master = None, **kwargs: Unpack[RadioGroupKwargs]):

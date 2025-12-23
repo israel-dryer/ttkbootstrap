@@ -123,8 +123,7 @@ class Toast:
             **kwargs: Configuration options to set.
 
         Returns:
-            If option is provided, returns a tuple of (option, option, option.capitalize(), None, value).
-            Otherwise, returns None.
+            Configuration tuple if option provided, otherwise None.
         """
         if option is not None:
             if option in self._config_keys:

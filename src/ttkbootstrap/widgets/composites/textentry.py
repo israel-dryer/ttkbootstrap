@@ -58,28 +58,27 @@ class TextEntry(Field):
                 If required=True, an asterisk (*) is automatically appended.
             message: Optional message text to display below the entry field.
                 This is replaced by validation error messages when validation fails.
-            **kwargs: Additional keyword arguments from FieldOptions:
-                allow_blank: Allow empty input. Default is True.
-                bootstyle: The accent color of the focus ring and active border.
-                cursor: Cursor style when hovering.
-                value_format: ICU format pattern for parsing/formatting.
-                    Examples: '$#,##0.00' (currency), '#,##0.00' (decimal),
-                    'yyyy-MM-dd' (date), '#,##0.00%' (percent)
-                exportselection: Export selection to clipboard.
-                font: Font for text display.
-                foreground: Text color.
-                initial_focus: If True, widget receives focus on creation.
-                justify: Text alignment ('left', 'center', 'right').
-                show_message: If True, displays message area. Default is True.
-                padding: Padding around entry widget.
-                show: Character to mask input (e.g., '*' for passwords).
-                take_focus: If True, widget accepts Tab focus.
-                textvariable: Tkinter Variable to link with text.
-                textsignal: Signal object for reactive updates.
-                width: Width in characters.
-                required: If True, field cannot be empty. Adds 'required'
-                    validation rule and appends '*' to label.
-                xscrollcommand: Callback for horizontal scrolling.
+
+        Other Parameters:
+            allow_blank (bool): Allow empty input. Default is True.
+            bootstyle (str): The accent color of the focus ring and active border.
+            cursor (str): Cursor style when hovering.
+            value_format (str): ICU format pattern for parsing/formatting.
+            exportselection (bool): Export selection to clipboard.
+            font (str): Font for text display.
+            foreground (str): Text color.
+            initial_focus (bool): If True, widget receives focus on creation.
+            justify (str): Text alignment ('left', 'center', 'right').
+            show_message (bool): If True, displays message area. Default is True.
+            padding: Padding around entry widget.
+            show (str): Character to mask input (e.g., '*' for passwords).
+            take_focus (bool): If True, widget accepts Tab focus.
+            textvariable (Variable): Tkinter Variable to link with text.
+            textsignal (Signal): Signal object for reactive updates.
+            width (int): Width in characters.
+            required (bool): If True, field cannot be empty. Adds 'required'
+                validation rule and appends '*' to label.
+            xscrollcommand: Callback for horizontal scrolling.
 
         Note:
             The widget automatically sets up event handlers for focus, validation,

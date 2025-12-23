@@ -1,5 +1,6 @@
 import tkinter as tk
 from tkinter import ttk
+from typing import Any
 
 from ttkbootstrap.widgets.primitives.frame import Frame
 from ttkbootstrap.widgets.types import Master
@@ -210,7 +211,7 @@ class CompositeFrame(Frame):
         disabled (bool): Read-only property for current disabled state.
     """
 
-    def __init__(self, master: Master = None, select_on_click: bool = False, **kwargs):
+    def __init__(self, master: Master = None, select_on_click: bool = False, **kwargs: Any):
         """Initialize the CompositeFrame.
 
         Args:

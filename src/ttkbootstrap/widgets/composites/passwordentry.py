@@ -59,28 +59,24 @@ class PasswordEntry(Field):
                 Used for hints or help text. Replaced by validation errors when
                 validation fails.
             show_visible_toggle: If True, displays the visibility toggle button
-                (eye icon) that reveals the password while pressed. If False,
-                hides the toggle button. Default is True.
-            **kwargs: Additional keyword arguments from FieldOptions:
-                show: Character to mask password input. Default is '•'. Can be
-                    customized to any character (e.g., '*', '●', etc.)
-                required: If True, field cannot be empty
-                bootstyle: The accent color of the focus ring and active border
-                allow_blank: Allow empty input
-                cursor: Cursor style when hovering
-                value_format: ICU format pattern for parsing/formatting
-                exportselection: Export selection to clipboard
-                font: Font for text display
-                foreground: Text color
-                initial_focus: If True, widget receives focus on creation
-                justify: Text alignment
-                show_message: If True, displays message area
-                padding: Padding around entry widget
-                take_focus: If True, widget accepts Tab focus
-                textvariable: Tkinter Variable to link with text
-                textsignal: Signal object for reactive updates
-                width: Width in characters
-                xscrollcommand: Callback for horizontal scrolling
+                (eye icon) that reveals the password while pressed. Default is True.
+
+        Other Parameters:
+            show (str): Character to mask password input. Default is '•'.
+            required (bool): If True, field cannot be empty.
+            bootstyle (str): The accent color of the focus ring and active border.
+            allow_blank (bool): Allow empty input.
+            cursor (str): Cursor style when hovering.
+            font (str): Font for text display.
+            foreground (str): Text color.
+            initial_focus (bool): If True, widget receives focus on creation.
+            justify (str): Text alignment.
+            show_message (bool): If True, displays message area.
+            padding (str): Padding around entry widget.
+            take_focus (bool): If True, widget accepts Tab focus.
+            textvariable (Variable): Tkinter Variable to link with text.
+            textsignal (Signal): Signal object for reactive updates.
+            width (int): Width in characters.
 
         Note:
             The visibility toggle button uses a press-and-hold interaction.

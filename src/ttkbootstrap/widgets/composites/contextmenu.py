@@ -347,7 +347,7 @@ class ContextMenu(CustomConfigMixin):
         widget.pack(in_=self._frame, **pack_info)
         return widget
 
-    def configure_item(self, index: int, option: str | None = None, **kwargs) -> Any:
+    def configure_item(self, index: int, option: str | None = None, **kwargs: Any) -> Any:
         """Configure an individual menu item by index.
 
         Args:
