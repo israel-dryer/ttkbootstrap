@@ -1,6 +1,0 @@
-"""
-    - raise
-    - lower
-    - busy
-    - bell
-"""
