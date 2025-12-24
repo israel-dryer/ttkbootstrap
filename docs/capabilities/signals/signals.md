@@ -1,131 +1,214 @@
 # Signals
 
-Signals provide a structured way to observe and react to state changes in
-ttkbootstrap applications.
+Signals are ttkbootstrap’s **reactive state mechanism**.
 
-They complement Tk’s callback and event systems by offering a **declarative,
-observable model** for application state and widget interaction.
+They provide a high-level, framework-oriented way for widgets and application
+logic to communicate **state changes** without relying on low-level Tk events.
 
-This page explains what signals are, why they exist, and how they fit alongside
-traditional Tk events.
+Signals are central to ttkbootstrap’s philosophy: *build modern, reactive
+desktop applications with clear data flow and minimal wiring.*
+
+
+!!! note "Signals are built on Tk variables"
+    Signals are **not** “pure Python.” Internally, they are built on **Tk variables** (e.g., `StringVar`, `IntVar`, etc.),
+    but they expose a more modern and flexible API on top:
+
+    - `subscribe()` / `unsubscribe()` instead of Tk traces
+    - mapping and composition helpers (where supported)
+    - easier reuse across widgets and application state
 
 ---
 
 ## What is a signal?
 
-A signal represents a value that can change over time and notify listeners when
-it does.
+A **signal** represents a stream of values over time.
 
-Signals:
+Under the hood, a signal is implemented using **Tk variables + traces**, wrapped in a higher-level subscription API.
 
-- hold a current value
-- notify subscribers on change
-- decouple producers from consumers
+- Widgets **emit signals** when their state changes
+- Application code **subscribes** to signals to react to those changes
+- Signals are **decoupled** from widget implementation details
 
-Unlike callbacks, signals model *state*, not just events.
+Unlike Tk events, signals are about **state**, not raw user input.
 
----
+```python
+def on_value_changed(value):
+    print(value)
 
-## Signals vs callbacks
-
-Callbacks:
-
-- are invoked in response to a specific action
-- are often tightly coupled to widgets
-- typically represent a moment in time
-
-Signals:
-
-- represent ongoing state
-- can have multiple observers
-- allow changes to propagate naturally
-
-Both models are useful and coexist in ttkbootstrap.
+signal.subscribe(on_value_changed)
+```
 
 ---
 
-## Signals vs Tk variables
+## Signals vs Tk event bindings
 
-Tk variables (`StringVar`, `IntVar`, etc.):
+Signals are **not** Tk bindings.
 
-- are tied to the Tcl interpreter
-- are primarily widget-focused
-- propagate changes implicitly
+| Tk bindings | Signals |
+|------------|---------|
+| Listen to low-level UI events | Represent semantic state changes |
+| Triggered by user input | Triggered by value changes |
+| Use `bind()` / `bind_all()` | Use `subscribe()` |
+| Event-driven | Reactive / data-driven |
+| Tied to widgets | Can be shared across widgets |
 
-Signals:
+Tk bindings are still useful for:
 
-- are pure Python objects
-- can exist independently of widgets
-- integrate cleanly with application logic
+- raw keyboard and mouse handling
+- custom gestures
+- low-level widget behavior
 
-Signals may be used internally or bound to widgets as needed.
+Signals are preferred for:
 
----
-
-## Typical use cases
-
-Signals are well-suited for:
-
-- shared application state
-- selection and view modes
-- enabling/disabling UI sections
-- synchronizing multiple widgets
-
-They shine when multiple parts of the UI depend on the same value.
+- form values
+- selection state
+- application state
+- coordinated UI updates
 
 ---
 
-## Signal lifecycle
+## Subscribing to a signal
 
-A signal:
+To react to changes, **subscribe** to the signal.
 
-- is created with an initial value
-- notifies listeners when updated
-- persists as long as it is referenced
+```python
+def on_changed(value):
+    print("New value:", value)
 
-Signals do not depend on the widget lifecycle.
-Widgets may subscribe and unsubscribe freely.
+signal.subscribe(on_changed)
+```
 
----
+Subscriptions are:
 
-## Integration with widgets
+- explicit
+- easy to reason about
+- safe to add and remove dynamically
 
-Widgets may:
+To stop listening:
 
-- observe a signal to update their state
-- emit changes into a signal
-- synchronize bidirectionally
+```python
+signal.unsubscribe(on_changed)
+```
 
-This allows widgets to participate in larger application workflows without
-owning the underlying state.
+This makes signals well-suited for:
 
----
-
-## Threading considerations
-
-Signals do not make Tk thread-safe.
-
-If a signal is updated from a background thread:
-
-- UI updates must be marshaled back to the event loop
-- `after()` or equivalent mechanisms should be used
-
-This mirrors Tk’s threading model.
+- dynamic UIs
+- temporary views
+- dialogs and overlays
 
 ---
 
-## Common pitfalls
+## Emitting values
 
-- overusing signals for simple one-off callbacks
-- creating signals with unclear ownership
-- updating signals from background threads without synchronization
+Signals emit values internally when widget state changes.
 
-Signals are most effective when used intentionally.
+As a user, you typically do **not** emit signals manually.
+Instead, you:
+
+- connect widgets to signals
+- subscribe application logic to signals
+- let the framework manage propagation
+
+This keeps UI and logic cleanly separated.
 
 ---
 
-## Next steps
+## Signals and widgets
 
-- See **Callbacks** for imperative event handling
-- See **Virtual Events** for semantic event patterns
-- See **Platform → Event Loop** for execution model details
+Many ttkbootstrap widgets accept a `signal` argument:
+
+```python
+signal = Signal()
+
+entry = ttk.TextEntry(app, signal=signal)
+label = ttk.Label(app, textvariable=signal)
+```
+
+In this pattern:
+
+- the entry **updates** the signal
+- the label **reacts** to the signal
+- neither widget knows about the other
+
+This enables **reactive composition** without tight coupling.
+
+---
+
+## Signals and callbacks
+
+Signals do not replace callbacks — they **complement** them.
+
+Typical usage:
+
+- **Callbacks**: handle immediate user actions (clicks, submissions)
+- **Signals**: track ongoing state (values, selection, mode)
+
+Example:
+
+```python
+def on_submit():
+    print("Submitted:", signal.value)
+
+button = ttk.Button(app, text="Submit", command=on_submit)
+```
+
+Here:
+
+- the signal tracks state continuously
+- the callback reacts at a specific moment
+
+---
+
+## Signals and virtual events
+
+Some widgets also emit **virtual Tk events** (e.g. `<<Changed>>`).
+
+These exist for:
+
+- interoperability with existing Tk code
+- advanced event routing
+
+For most applications:
+
+> **Prefer signals for application logic.**  
+> Use virtual events only when you need event-level integration.
+
+See:
+
+- [Virtual Events](virtual-events.md)
+- [Callbacks](callbacks.md)
+
+---
+
+## Design philosophy
+
+Signals are intentionally:
+
+- explicit (you opt in)
+- predictable (no implicit side effects)
+- framework-level (not Tk-specific)
+
+They support ttkbootstrap’s goals:
+
+- modern UI patterns
+- reactive data flow
+- clean separation of concerns
+- scalable application architecture
+
+If you come from frameworks like React, Vue, or Angular,
+signals should feel immediately familiar.
+
+---
+
+## See also
+
+**Related capabilities**
+
+- [Callbacks](callbacks.md)
+- [Virtual Events](virtual-events.md)
+- [Configuration](configuration.md)
+- [State & Interaction](state-and-interaction.md)
+
+**API reference**
+
+- **Signal** — `ttkbootstrap.utils.Signal`

@@ -136,7 +136,7 @@ btn = ttk.Button(
     command=on_click,
 )
 
-enabled.bind(
+enabled.subscribe(
     lambda value: btn.configure(
         state="normal" if value else "disabled"
     )
