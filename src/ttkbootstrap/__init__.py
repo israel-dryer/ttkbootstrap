@@ -32,6 +32,7 @@ if TYPE_CHECKING:
     from ttkbootstrap.api.app import App, App as Window, Toplevel, AppSettings, get_app_settings, get_current_app
     from ttkbootstrap.api.style import (
         Bootstyle,
+        Font,
         Style,
         get_style,
         get_style_builder,
@@ -137,10 +138,10 @@ _MODULE_EXPORTS = {
     ],
     # Style & Theming
     "ttkbootstrap.api.style": [
-        "BootstrapIcon", "Bootstyle", "Style",
+        "BootstrapIcon", "Bootstyle", "Font", "Style",
         "get_style", "get_style_builder", "get_theme",
         "get_theme_provider", "set_theme", "get_theme_color",
-        "toggle_theme", "get_themes"
+        "toggle_theme", "get_themes",
     ],
     # Widgets
     "ttkbootstrap.api.widgets": [
