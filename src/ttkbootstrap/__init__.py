@@ -92,7 +92,8 @@ if TYPE_CHECKING:
         TK_WIDGETS,
         TTK_WIDGETS,
     )
-    from ttkbootstrap.api.localization import MessageCatalog, L, LV,IntlFormatter
+    from ttkbootstrap.api.localization import MessageCatalog, L, LV, IntlFormatter
+    from ttkbootstrap.api.utils import Image
     from ttkbootstrap_icons_bs import BootstrapIcon
 
 _DEPRECATED_ALIASES = {
@@ -174,6 +175,7 @@ _MODULE_EXPORTS = {
     ],
     # Utilities
     "ttkbootstrap.api.utils": [
+        "Image",
         "Signal", "TraceOperation",
         "ValidationRule", "ValidationResult",
         "SetVar",
