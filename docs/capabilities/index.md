@@ -1,91 +1,120 @@
 # Capabilities
 
-**Capabilities** are cross-cutting behaviors that ttkbootstrap applies consistently across
-widgets, dialogs, and application systems.
+Capabilities describe **shared behaviors** that widgets expose in ttkbootstrap.
 
-A capability is not a widget.
-It is a behavior that can be *used by many widgets* and *composed into applications*
-without duplicating logic.
+Rather than documenting behavior repeatedly on every widget, ttkbootstrap
+formalizes common Tk/ttk behaviors as *capabilities* that can be mixed into
+widgets consistently.
+
+This section explains what capabilities are, why they exist, and how they fit
+into the overall framework.
+
+---
+
+## What is a capability?
+
+A capability represents a focused aspect of widget behavior, such as:
+
+- event handling
+- layout participation
+- focus and grabs
+- clipboard access
+- validation
+- localization
+
+Capabilities:
+- mirror underlying Tk/ttk functionality
+- provide a consistent Python interface
+- integrate with ttkbootstrap conventions
+
+They are not standalone features — they describe **what widgets can do**.
 
 ---
 
 ## Why capabilities exist
 
-Traditional Tk applications tend to implement behaviors repeatedly:
+Tk exposes a very large widget API.
 
-- manual variable tracing
-- ad-hoc validation logic
-- per-widget icon handling
-- inconsistent layout conventions
-- one-off localization glue
+Without structure:
+- behavior is scattered across widget classes
+- documentation becomes repetitive
+- shared behavior diverges unintentionally
 
-ttkbootstrap addresses this by defining **capabilities**:
-well-scoped behaviors with clear contracts that widgets can opt into.
-
-This makes applications:
-- easier to reason about
-- easier to extend
-- more consistent in behavior
+Capabilities provide:
+- a single place to document behavior
+- consistent naming and semantics
+- clearer mental models for users
 
 ---
 
 ## Capabilities vs widgets
 
-Widgets answer the question:
-> *What UI component do I use?*
+Widgets describe *what* something is.
 
-Capabilities answer the question:
-> *What behaviors does this component support?*
+Capabilities describe *what it can do*.
 
 For example:
-- a widget may support **signals**
-- a widget may support **validation**
-- a widget may support **icons and images**
-- a widget may support **layout properties**
+- a Button *is* a widget
+- it *has* event handling, focus behavior, and layout participation
 
-Capabilities describe *what is possible* and *how it behaves*.
-Widgets describe *what it looks like* and *what role it plays in the UI*.
+Separating these concerns improves clarity.
+
+---
+
+## Mapping to Tk
+
+Most capabilities correspond directly to Tk commands or concepts.
+
+Examples:
+- `bind` → event binding
+- `after` → deferred execution
+- `grab` → modal input handling
+- `winfo` → widget introspection
+
+ttkbootstrap does not invent new behavior — it organizes existing behavior.
 
 ---
 
 ## How capabilities are implemented
 
-Each capability is implemented in two layers:
+Internally, capabilities are implemented as mixins.
 
-1. **Core capability**
-   - lives in `core/capabilities`
-   - contains behavior and logic
-   - does not depend on widgets
+Each mixin:
+- focuses on a narrow behavior
+- delegates to the underlying Tk widget
+- documents semantics and edge cases
 
-2. **Widget integration**
-   - implemented as widget mixins or adapters
-   - connects the capability to specific widget options
-
-This separation allows capabilities to be reused across widgets,
-dialogs, composite controls, and application systems.
-
-You do not need to understand this layering to *use* capabilities,
-but it explains how ttkbootstrap maintains consistency without rigidity.
+Widgets compose these mixins to expose a complete API.
 
 ---
 
-## Capabilities provided by ttkbootstrap
+## Reading capability docs
 
-The following capability groups are documented here:
+Capability pages:
+- describe behavior conceptually
+- explain common pitfalls
+- note ttkbootstrap-specific guidance
 
-- **Signals & Events**
-  - declarative state and change propagation
-- **Layout**
-  - spacing, scrolling, and container behavior
-- **Validation**
-  - input validation and feedback
-- **Icons & Images**
-  - icon sets, image caching, and DPI handling
+They are intentionally widget-agnostic.
 
-Each capability page explains:
-- what problem it solves
-- how users interact with it
-- where it applies
-- any important constraints or guarantees
+Use widget docs to see how capabilities are applied in practice.
 
-For exact APIs, see the API Reference.
+---
+
+## When to read this section
+
+You should read Capabilities when:
+
+- you want to understand widget behavior deeply
+- you need precise control over interaction
+- you are debugging complex UI issues
+- you are extending or contributing to ttkbootstrap
+
+---
+
+## Next steps
+
+Start with **Signals & Events** to understand how user interaction flows
+through ttkbootstrap.
+
+Then explore layout, validation, and image capabilities as needed.
