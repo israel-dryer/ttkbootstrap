@@ -286,103 +286,51 @@ def build_font_from_modifier(font_spec: str, base_font: Any = None) -> tuple | s
 
 
 class FontMixin:
-    """Mixin that adds font modifier syntax support to ttkbootstrap widgets.
+    """
+    Constructor + runtime font modifier support.
 
-    This mixin is automatically integrated into all ttkbootstrap widgets via TTKWrapperBase.
-    It intercepts font configuration and processes modifier syntax before applying the font
-    to the underlying ttk widget.
-
-    The modifier syntax enables inline font customization without creating Font objects,
-    using bracket notation similar to bootstyle modifiers: family[size][weight][style]
-
-    Font Modifier Behavior:
-        - At widget creation: Modifiers are applied to the widget's default style font
-        - At runtime (via configure): Modifiers are applied to the widget's current font
-        - Missing components: Inherited from widget's current font or 'body' token
-
-    Supported Syntax:
-        - Font families: 'helvetica', 'arial', etc.
-        - Font tokens: 'body', 'label', 'heading-lg', etc.
-        - Point sizes: '16' (positive integers)
-        - Pixel sizes: '16px' (converted to negative for Tk)
-        - Size tokens: 'xs', 'sm', 'md', 'lg', 'xl', 'xxl'
-        - Weight: 'bold', 'normal'
-        - Slant: 'italic', 'roman'
-        - Decorations: 'underline', 'overstrike'
-
-    Examples:
-        # Widget creation with font modifiers
-        Button(root, text="Click", font="helvetica[16][bold]")
-        Label(root, text="Title", font="body[bold,underline]")
-        Entry(root, font="[sm]")
-
-        # Runtime font modification
-        label.configure(font="[16]")  # Changes size only
-        label.configure(font="[bold,italic]")  # Changes style only
-        label.configure(font="heading-lg[italic]")  # Token with modifier
-
-    Notes:
-        - All components are optional and can be combined
-        - Multiple style modifiers are comma-separated: [bold,italic,underline]
-        - The mixin uses @configure_delegate to intercept font configuration
-        - Always returns Tk-compatible font specifications
+    Contract expected by WrapperBase:
+      - _init_font_mixin(kwargs) -> returns processed font value (or None)
+      - _delegate_font(value)    -> applies/handles delegated configure
     """
 
     def _init_font_mixin(self, kwargs: dict[str, Any]) -> Any:
-        """Pop and return any incoming font kwarg before widget init."""
-        return kwargs.pop('font', None)
+        if "font" not in kwargs:
+            return None
 
-    def __init__(self, *args, **kwargs):
-        """Initialize mixin and process font modifier syntax before tkinter sees it."""
-        # Extract font before passing kwargs to tkinter
-        font_value = self._init_font_mixin(kwargs)
+        value = kwargs.pop("font")
 
-        # Call parent __init__
-        super().__init__(*args, **kwargs)
+        if isinstance(value, str):
+            font_token_names = _get_font_token_names()
 
-        # Apply font after widget construction if it was provided
-        if font_value is not None:
-            # Process font modifier syntax and apply
-            self._delegate_font(font_value)
+            if value in font_token_names and "[" not in value:
+                return value
+
+            if "[" in value:
+                # Constructor-time: no widget yet, so use a stable base
+                return build_font_from_modifier(value, base_font="body")
+
+        return value
 
     @configure_delegate("font")
     def _delegate_font(self, value: Any = None):
-        """Process font modifier syntax or pass through standard font specifications.
-
-        Args:
-            value: Font spec (str with modifiers, tuple, Font, or None to query)
-
-        Returns:
-            Current font (query) or None (set)
-        """
-        # Query path - return current font
         if value is None:
-            # Get current font directly from ttk widget
-            return self._ttk_base.cget(self, 'font')  # type: ignore[misc]
+            return self._ttk_base.cget(self, "font")  # type: ignore[misc]
 
-        # Set path - process font modifier if string
         if isinstance(value, str):
             font_token_names = _get_font_token_names()
-            if '[' in value or value in font_token_names:
-                # Check if it's just a token name without modifiers
-                if value in font_token_names and '[' not in value:
-                    # Just use the token directly
-                    font_value = value
-                else:
-                    # Get current font to use as base for modifications
-                    try:
-                        current_font = self._ttk_base.cget(self, 'font')  # type: ignore[misc]
-                    except:
-                        current_font = None
 
-                    # Parse and build font from modifier syntax using current font as base
-                    font_value = build_font_from_modifier(value, base_font=current_font)
+            if value in font_token_names and "[" not in value:
+                font_value = value
+            elif "[" in value:
+                try:
+                    current_font = self._ttk_base.cget(self, "font")  # type: ignore[misc]
+                except Exception:
+                    current_font = "body"
+                font_value = build_font_from_modifier(value, base_font=current_font)
             else:
-                # Use as-is (simple font family string)
                 font_value = value
         else:
-            # Use as-is (tuple, Font object, etc.)
             font_value = value
 
-        # Apply directly via base ttk widget (bypass delegation to avoid recursion)
         return self._ttk_base.configure(self, font=font_value)  # type: ignore[misc]
