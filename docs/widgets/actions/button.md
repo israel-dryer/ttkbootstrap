@@ -1,209 +1,205 @@
----
-title: Button
----
-
 # Button
 
-Buttons allow users to take actions with a single click. They communicate available actions and are commonly used throughout an interface—such as in dialogs, forms, and toolbars.
+A `Button` initiates an action in response to user interaction.
 
-## Quick start
+In ttkbootstrap, `Button` is a **first-class framework component** that participates in the design
+system, reactive model, and application architecture—rather than a thin wrapper around
+`ttk.Button`.
 
-Create a button by providing `text` and a `command` callback.
+---
+
+## Framework integration
+
+`Button` integrates with multiple ttkbootstrap framework layers automatically.
+
+### Design System
+
+- Uses typography tokens defined by the active theme
+- Supports semantic colors (`primary`, `secondary`, `success`, etc.)
+- Supports visual variants (`solid`, `outline`, `ghost`, `link`)
+- Responds consistently to hover, focus, pressed, and disabled states
+
+### Signals & Events
+
+- Can trigger imperative callbacks (`command`)
+- Can participate in reactive workflows using
+  [signals](../../capabilities/signals/index.md)
+- Emits meaningful interaction events rather than requiring manual binding
+
+### Icons & Images
+
+- Supports themed, DPI-aware icons
+- Icons participate in image caching and recoloring
+- Icon-only and icon+text buttons are first-class patterns
+
+### Localization
+
+- Button text may be localized using message catalogs
+- Text updates automatically when the active language changes
+
+### Layout Properties
+
+- Respects declarative layout intent (padding, alignment, expansion)
+- Integrates cleanly with container-driven layout systems
+
+In most cases, you do not need to configure these integrations explicitly.
+
+---
+
+## Basic usage
 
 ```python
 import ttkbootstrap as ttk
 
+def on_submit():
+    print("Submitted")
+
 app = ttk.App()
 
-def on_save():
-    print("Saved!")
-
-ttk.Button(app, text="Save", command=on_save).pack(padx=20, pady=20)
+ttk.Button(
+    app,
+    text="Submit",
+    command=on_submit,
+).pack(padx=20, pady=20)
 
 app.mainloop()
 ```
 
 ---
 
-## When to use
+## Styling buttons
 
-Use a button when the user needs to **trigger an action immediately**, such as submitting a form, saving a change, or opening a dialog.
-
-### Consider a different control when…
-
-- Use **CheckButton / CheckToggle** for persistent on/off state.
-- Use **RadioButton / RadioGroup** for choosing one option from a set.
-- Use **ToggleGroup** for compact single or multi selection (segmented control).
-- Use **MenuButton / DropdownButton** when the action reveals a menu of choices.
-
----
-
-## Appearance
-
-Buttons are styled using **semantic colors** and **variant** tokens. Variants describe visual weight and interaction style, not meaning.
-
-### Colors
-
-The `bootstyle` accepts color tokens that are typically combined with the button variant:
-
-<figure markdown>
-![button colors](../../assets/dark/widgets-button-colors.png#only-dark)
-![button colors](../../assets/light/widgets-button-colors.png#only-light)
-</figure>
+Buttons are styled using **semantic color** and **variant** tokens rather than raw colors.
 
 ```python
-ttk.Button(app, text="Primary", bootstyle="primary").pack(pady=4)
-ttk.Button(app, text="Outline", bootstyle="primary-outline").pack(pady=4)
-ttk.Button(app, text="Ghost", bootstyle="primary-ghost").pack(pady=4)
-ttk.Button(app, text="Link", bootstyle="primary-link").pack(pady=4)
-ttk.Button(app, text="Text", bootstyle="secondary-text").pack(pady=4)
+ttk.Button(
+    app,
+    text="Save",
+    bootstyle="primary",
+)
 ```
 
-### Variants
-
-The supported variants for Button are: **solid** (default), **outline**, **ghost**, **link**, and **text**.
-
-**Solid (default)**  
-Use for the primary, highest-emphasis action on a view (e.g., “Save”, “Submit”, “Continue”).
-
-<figure markdown>
-![solid button](../../assets/dark/widgets-button-solid.png#only-dark)
-![solid button](../../assets/light/widgets-button-solid.png#only-light)
-</figure>
+Variants describe *visual weight*, not meaning:
 
 ```python
-ttk.Button(app, text="Solid")
-```
-
-**Outline**  
-Use for secondary actions that should stay visible but clearly defer to the primary button (e.g., “Cancel”, “Back”).
-
-<figure markdown>
-![outline button](../../assets/dark/widgets-button-outline.png#only-dark)
-![outline button](../../assets/light/widgets-button-outline.png#only-light)
-</figure>
-
-```python
-ttk.Button(app, text="Outline", bootstyle="outline")
-```
-
-**Ghost**  
-Use for low-emphasis, contextual actions embedded in panels, lists, or toolbars where the UI should stay visually quiet until hover/press.
-
-<figure markdown>
-![ghost button](../../assets/dark/widgets-button-ghost.png#only-dark)
-![ghost button](../../assets/light/widgets-button-ghost.png#only-light)
-</figure>
-
-```python
-ttk.Button(app, text="Ghost", bootstyle="ghost")
-```
-
-**Link**  
-Use for navigation or “take me somewhere” actions that should read like text (e.g., “View details”, “Open settings”).
-
-<figure markdown>
-![link button](../../assets/dark/widgets-button-link.png#only-dark)
-![link button](../../assets/light/widgets-button-link.png#only-light)
-</figure>
-
-```python
+ttk.Button(app, text="Primary", bootstyle="primary")
+ttk.Button(app, text="Outline", bootstyle="primary-outline")
+ttk.Button(app, text="Ghost", bootstyle="primary-ghost")
 ttk.Button(app, text="Link", bootstyle="link")
 ```
 
-**Text**  
-Use for the lowest-emphasis utility actions—especially in dense UIs—where you want minimal chrome but still want button semantics (e.g., “Edit”, “Clear”, “Dismiss”).
-
-<figure markdown>
-![text button](../../assets/dark/widgets-button-text.png#only-dark)
-![text button](../../assets/light/widgets-button-text.png#only-light)
-</figure>
-
-```python
-ttk.Button(app, text="Text", bootstyle="text")
-```
+These styles are theme-aware and consistent across the application.
 
 ---
 
-## Examples & patterns
+## Buttons with icons
 
-### Using icons
-
-Icons are integrated into the button widget and provide theme-aware and state-enabled icons.
-
-<figure markdown>
-![icon button](../../assets/dark/widgets-button-icons.png#only-dark)
-![icon button](../../assets/light/widgets-button-icons.png#only-light)
-</figure>
+Icons integrate directly with the framework’s image system.
 
 ```python
-ttk.Button(app, text="Settings", icon="gear").pack(pady=6)
+ttk.Button(
+    app,
+    text="Save",
+    icon="save",
+)
 ```
 
-!!! note "Default icon position"
-    When an icon is used, the default `compound` is set to `left`. The `compound` option controls where the icon is
-    positioned relative to the text. You can use other values: `left`, `right`, `top`, `bottom`, `center`.
-
-!!! tip "Icon-only buttons"
-    Use `icon_only=True` when you are only showing an icon. This removes extra padding reserved for text and uses a slightly larger default icon size.
-
-!!! tip "Customizing icons"
-    You can pass an icon spec instead of a string to customize the color, size, and state of the icon. See **Guides → Design System → Icons**.
-
-### Disable until ready (`state`)
-
-Disable a button until the user has completed a step.
+Icon-only buttons are also supported:
 
 ```python
-btn = ttk.Button(app, text="Continue", bootstyle="primary", state="disabled")
-btn.pack()
-
-# later…
-btn.configure(state="normal")
+ttk.Button(
+    app,
+    icon="trash",
+    icon_only=True,
+)
 ```
 
-### Size and emphasis (`padding`, `width`, `underline`)
-
-```python
-ttk.Button(app, text="Wide", width=18, padding=(12, 6)).pack(pady=6)
-ttk.Button(app, text="Exit", underline=1).pack(pady=6)
-```
+Icons automatically scale with DPI and respond to theme changes.
 
 ---
 
-## Behavior
+## Reactive patterns with signals
 
-Buttons support keyboard focus and activation. (For app-wide focus ring rules and accessibility guidance, see your Guides section.)
-
----
-
-## Localization & reactivity
-
-If your app uses signals, you can bind the label text to a signal so it updates automatically:
+Buttons can participate in reactive workflows by interacting with signals.
 
 ```python
-# Example only — use your real signal creation API
-label = ttk.Signal("Start")  # pseudo-code
-ttk.Button(app, bootstyle="primary", textsignal=label).pack(padx=20, pady=20)
+from ttkbootstrap import Signal
 
-# later…
-label.set("Stop")
+enabled = Signal(True)
+
+def on_click():
+    print("Clicked")
+
+btn = ttk.Button(
+    app,
+    text="Action",
+    command=on_click,
+)
+
+enabled.bind(
+    lambda value: btn.configure(
+        state="normal" if value else "disabled"
+    )
+)
 ```
 
-Localization behavior is controlled by the global application settings and the widget `localize` option. See **Guides → Internationalization → Localization** for the full model.
+This allows application state—not widget wiring—to drive behavior.
 
 ---
 
-## Related widgets
+## Accessibility and interaction
 
-- **CheckButton** — boolean toggle (on/off)
-- **RadioButton** — single selection in a group
-- **MenuButton** / **DropdownButton** — button that opens a menu
-- **Dialog** / **MessageDialog** — action buttons inside modal flows
+Buttons follow consistent accessibility expectations:
+
+- Keyboard activation via Enter/Space
+- Focus and hover state visibility
+- Disabled state propagation
+- Predictable interaction feedback
+
+These behaviors are handled by the framework.
 
 ---
 
-## Reference
+## When to use ButtonGroup instead
 
-- **API Reference:** `ttkbootstrap.Button`
-- **Related guides:** Design System → Variants, Design System → Icons, Events & Signals → Signals, Internationalization → Localization
+If you need:
+
+- Grouped actions
+- Mutually exclusive choices
+- Toggle-style behavior
+- Toolbar-style layouts
+
+Consider using **ButtonGroup** or **ToggleGroup** instead of managing multiple buttons manually.
+
+---
+
+## Relationship to ttk
+
+Internally, `Button` builds on ttk primitives—but those details are intentionally abstracted.
+
+You should not need to:
+
+- Manage ttk state flags directly
+- Adjust element layouts manually
+- Compensate for platform styling differences
+
+Those concerns are handled by ttkbootstrap.
+
+---
+
+## See also
+
+**Related widgets**
+
+- [ButtonGroup](buttongroup.md)
+- [ToggleGroup](../selection/togglegroup.md)
+
+**Framework concepts**
+
+- [Signals & Events](../../capabilities/signals/index.md)
+- [Icons & Images](../../capabilities/icons/index.md)
+- [Layout Properties](../../capabilities/layout-props.md)
+
+**API reference**
+
+- [`Button`](../../reference/widgets/Button.md)
