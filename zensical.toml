@@ -15,51 +15,58 @@ nav = [
         { "Installation" = "getting-started/installation.md" },
         { "Quick Start" = "getting-started/quick-start.md" },
     ] },
-    { "Guides" = [
-        { "Design System" = [
-            { "Overview" = "guides/design-system/index.md" },
-            { "Colors" = "guides/design-system/colors.md" },
-            { "Variants" = "guides/design-system/variants.md" },
-            { "Typography" = "guides/design-system/typography.md" },
-            { "Icons" = "guides/design-system/icons.md" },
+    # ---------------------------------------------------------------------
+    # PLATFORM
+    # ---------------------------------------------------------------------
+    { "Platform" = [
+        { "Overview" = "platform/index.md" },
+        { "Application" = [
+            { "App" = "platform/application/app.md" },
+            { "Windows" = "platform/application/windows.md" },
+            { "Menus" = "platform/application/menus.md" },
         ] },
-        { "Layout" = [
-            { "Overview" = "guides/layout/index.md" },
-            { "Containers" = "guides/layout/containers.md" },
-            { "Spacing" = "guides/layout/spacing.md" },
-            { "Scrolling" = "guides/layout/scrolling.md" },
+        { "Styling" = [
+            { "Overview" = "platform/styling/index.md" },
+            { "Themes" = "platform/styling/themes.md" },
+            { "Bootstyle" = "platform/styling/bootstyle.md" },
+            { "Assets" = "platform/styling/assets.md" },
         ] },
-        { "Events & Signals" = [
-            { "Overview" = "guides/events/index.md" },
-            { "Callbacks" = "guides/events/callbacks.md" },
-            { "Signals" = "guides/events/signals.md" },
-            { "Virtual Events" = "guides/events/virtual-events.md" },
-        ] },
-        { "Datasource" = [
-            { "Overview" = "guides/datasource/index.md" },
-            { "Memory Source" = "guides/datasource/memorysource.md" },
-            { "SQLite Source" = "guides/datasource/sqlitesource.md" },
-            { "File Source" = "guides/datasource/filesource.md" },
-        ] },
-        { "Patterns" = [
-            { "Toolbars" = "guides/patterns/toolbars.md" },
-            { "Forms" = "guides/patterns/forms.md" },
-            { "Navigation" = "guides/patterns/navigation.md" },
-            { "Data Views" = "guides/patterns/data-views.md" },
-        ] },
-        { "Internationalization" = [
-            { "Overview" = "guides/internationalization/index.md" },
-            { "Localization" = "guides/internationalization/localization.md" },
-            { "Formatting" = "guides/internationalization/formatting.md" },
-            { "RTL Support" = "guides/internationalization/rtl.md" },
-            { "Language Packs" = "guides/internationalization/language-packs.md" },
-        ] },
-        { "Advanced Widgets" = [
-            { "Overview" = "guides/advanced-widgets/index.md" },
-            { "Canvas" = "guides/advanced-widgets/advanced-canvas.md" },
-            { "Text" = "guides/advanced-widgets/advanced-text.md" },
+        { "Localization" = [
+            { "Overview" = "platform/localization/index.md" },
+            { "Message Catalog" = "platform/localization/message-catalog.md" },
+            { "Formatting" = "platform/localization/formatting.md" },
         ] },
     ] },
+    # ---------------------------------------------------------------------
+    # CAPABILITIES
+    # ---------------------------------------------------------------------
+    { "Capabilities" = [
+        { "Overview" = "capabilities/index.md" },
+        { "Signals & Events" = [
+            { "Signals" = "capabilities/signals/signals.md" },
+            { "Callbacks" = "capabilities/signals/callbacks.md" },
+            { "Virtual Events" = "capabilities/signals/virtual-events.md" },
+        ] },
+        { "Layout" = [
+            { "Overview" = "capabilities/layout/index.md" },
+            { "Containers" = "capabilities/layout/containers.md" },
+            { "Spacing" = "capabilities/layout/spacing.md" },
+            { "Scrolling" = "capabilities/layout/scrolling.md" },
+        ] },
+        { "Validation" = [
+            { "Overview" = "capabilities/validation/index.md" },
+            { "Rules" = "capabilities/validation/rules.md" },
+            { "Results" = "capabilities/validation/results.md" },
+        ] },
+        { "Icons & Images" = [
+            { "Overview" = "capabilities/icons/index.md" },
+            { "Icons" = "capabilities/icons/icons.md" },
+            { "Images" = "capabilities/icons/images.md" },
+        ] },
+    ] },
+    # ---------------------------------------------------------------------
+    # WIDGETS
+    # ---------------------------------------------------------------------
     { "Widgets" = [
         { "Overview" = "widgets/index.md" },
         { "Actions" = [
@@ -144,12 +151,14 @@ nav = [
             { "Text" = "widgets/primitives/text.md" },
         ] },
     ] },
+    # ---------------------------------------------------------------------
+    # API REFERENCE
+    # ---------------------------------------------------------------------
     { "API Reference" = [
         { "Overview" = "reference/index.md" },
         { "App" = [
             { "Overview" = "reference/app/index.md" },
             { "App" = "reference/app/App.md" },
-            { "Window" = "reference/app/Window.md" },
             { "Toplevel" = "reference/app/Toplevel.md" },
             { "AppSettings" = "reference/app/AppSettings.md" },
             { "get_current_app" = "reference/app/get_current_app.md" },
@@ -171,6 +180,24 @@ nav = [
             { "get_theme_color" = "reference/style/get_theme_color.md" },
             { "get_themes" = "reference/style/get_themes.md" },
         ] },
+        { "Capabilities" = [
+            { "Overview" = "reference/capabilities/index.md" },
+            { "after" = "reference/capabilities/after.md" },
+            { "bind" = "reference/capabilities/bind.md" },
+            { "bindtags" = "reference/capabilities/bindtags.md" },
+            { "busy" = "reference/capabilities/busy.md" },
+            { "clipboard" = "reference/capabilities/clipboard.md" },
+            { "focus" = "reference/capabilities/focus.md" },
+            { "grab" = "reference/capabilities/grab.md" },
+            { "grid" = "reference/capabilities/grid.md" },
+            { "localization" = "reference/capabilities/localization.md" },
+            { "pack" = "reference/capabilities/pack.md" },
+            { "place" = "reference/capabilities/place.md" },
+            { "selection" = "reference/capabilities/selection.md" },
+            { "signals" = "reference/capabilities/signals.md" },
+            { "winfo" = "reference/capabilities/winfo.md" },
+        ] },
+
         { "Widgets" = [
             { "Overview" = "reference/widgets/index.md" },
             { "Badge" = "reference/widgets/Badge.md" },
@@ -247,8 +274,6 @@ nav = [
             { "FileDataSource" = "reference/data/FileDataSource.md" },
             { "FileSourceConfig" = "reference/data/FileSourceConfig.md" },
             { "DataSourceProtocol" = "reference/data/DataSourceProtocol.md" },
-            { "Record" = "reference/data/Record.md" },
-            { "Primitive" = "reference/data/Primitive.md" },
         ] },
         { "i18n" = [
             { "Overview" = "reference/i18n/index.md" },
@@ -259,6 +284,7 @@ nav = [
         ] },
         { "Utils" = [
             { "Overview" = "reference/utils/index.md" },
+            { "Image" = "reference/utils/Image.md" },
             { "Signal" = "reference/utils/Signal.md" },
             { "TraceOperation" = "reference/utils/TraceOperation.md" },
             { "ValidationRule" = "reference/utils/ValidationRule.md" },
@@ -272,6 +298,7 @@ nav = [
     ] },
 ]
 
+
 # -----------------------------------------------------------------------------
 # Theme configuration
 # -----------------------------------------------------------------------------
@@ -281,7 +308,7 @@ language = "en"
 features = [
     "navigation.tabs",
     "navigation.path",
-#    "navigation.sections",
+    #    "navigation.sections",
     "navigation.footer",
     "navigation.indexes",
     "navigation.instant",
