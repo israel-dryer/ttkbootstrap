@@ -1,12 +1,17 @@
 # i18n
 
-Internationalization and localization
+Internationalization and localization helpers.
 
-## Exports
+This section covers translation catalogs and localized formatting.
+For broader “how-to” guidance, see **Platform → Localization** and **Capabilities → Localization**.
 
-| Name | Description |
-|------|-------------|
-| [IntlFormatter](IntlFormatter.md) | |
-| [L](L.md) | |
-| [LV](LV.md) | |
-| [MessageCatalog](MessageCatalog.md) | |
+## Core types
+
+- [MessageCatalog](MessageCatalog.md): translation lookup and catalog management
+- [IntlFormatter](IntlFormatter.md): locale-aware formatting
+
+## Convenience helpers
+
+- [L](L.md): translate a string
+- [LV](LV.md): localized value helper
+

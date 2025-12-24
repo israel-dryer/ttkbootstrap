@@ -1,21 +1,22 @@
 # Dialogs
 
-Dialog windows for common interactions
+Dialog windows and dialog helpers.
 
-## Exports
+Dialogs are higher-level windows used to show messages, request user input, or collect forms.
+They typically integrate with your `App` styling and localization.
 
-| Name | Description |
-|------|-------------|
-| [ColorChooser](ColorChooser.md) | |
-| [ColorChooserDialog](ColorChooserDialog.md) | |
-| [ColorDropperDialog](ColorDropperDialog.md) | |
-| [DateDialog](DateDialog.md) | |
-| [Dialog](Dialog.md) | |
-| [DialogButton](DialogButton.md) | |
-| [FilterDialog](FilterDialog.md) | |
-| [FontDialog](FontDialog.md) | |
-| [FormDialog](FormDialog.md) | |
-| [MessageBox](MessageBox.md) | |
-| [MessageDialog](MessageDialog.md) | |
-| [QueryBox](QueryBox.md) | |
-| [QueryDialog](QueryDialog.md) | |
+## Key types
+
+- [Dialog](Dialog.md): base dialog window
+- [MessageDialog](MessageDialog.md): message dialog
+- [MessageBox](MessageBox.md): message box helpers
+- [QueryDialog](QueryDialog.md): query/input dialog
+- [QueryBox](QueryBox.md): query box helpers
+
+## Pickers
+
+- [DateDialog](DateDialog.md)
+- [FontDialog](FontDialog.md)
+- [ColorChooser](ColorChooser.md)
+- [ColorDropperDialog](ColorDropperDialog.md)
+

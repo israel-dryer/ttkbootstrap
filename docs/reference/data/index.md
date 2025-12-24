@@ -1,16 +1,19 @@
 # Data
 
-Data sources for widgets
+Data source abstractions and implementations.
 
-## Exports
+This section documents the data-source API used by data-driven widgets and utilities.
+If you’re building a custom data source, start with the protocol/base types.
 
-| Name | Description |
-|------|-------------|
-| [BaseDataSource](BaseDataSource.md) | |
-| [DataSourceProtocol](DataSourceProtocol.md) | |
-| [FileDataSource](FileDataSource.md) | |
-| [FileSourceConfig](FileSourceConfig.md) | |
-| [MemoryDataSource](MemoryDataSource.md) | |
-| [Primitive](Primitive.md) | |
-| [Record](Record.md) | |
-| [SqliteDataSource](SqliteDataSource.md) | |
+## Core types
+
+- [DataSourceProtocol](DataSourceProtocol.md): expected interface
+- [BaseDataSource](BaseDataSource.md): base implementation
+
+## Implementations
+
+- [MemoryDataSource](MemoryDataSource.md)
+- [SqliteDataSource](SqliteDataSource.md)
+- [FileDataSource](FileDataSource.md)
+- [FileSourceConfig](FileSourceConfig.md): configuration for file-backed sources
+

@@ -1,16 +1,20 @@
 # App
 
-Application, window management, and menus
+Application runtime and window primitives.
 
-## Exports
+This section covers the objects you use to create and manage the main application window,
+additional toplevel windows, menus, and application-scoped settings.
 
-| Name | Description |
-|------|-------------|
-| [App](App.md) | |
-| [AppSettings](AppSettings.md) | |
-| [MenuManager](MenuManager.md) | |
-| [Toplevel](Toplevel.md) | |
-| [Window](Window.md) | |
-| [create_menu](create_menu.md) | |
-| [get_app_settings](get_app_settings.md) | |
-| [get_current_app](get_current_app.md) | |
+## Key types
+
+- [App](App.md): main application/root window
+- [Toplevel](Toplevel.md): additional windows
+- [AppSettings](AppSettings.md): application settings container
+- [MenuManager](MenuManager.md): menu creation and management
+
+## Functions
+
+- [get_current_app](get_current_app.md): access the active `App` instance (when available)
+- [get_app_settings](get_app_settings.md): access the active settings container
+- [create_menu](create_menu.md): convenience for building menus
+

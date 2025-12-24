@@ -1,38 +1,35 @@
 # API Reference
 
-Auto-generated API documentation for ttkbootstrap.
+This section documents the **public API surface** of ttkbootstrap v2.
 
-## Modules
+Use these pages when you need exact signatures, supported options, and return values.
+For conceptual explanations and patterns, see **Platform** and **Capabilities**.
 
-| Module | Description |
-|--------|-------------|
-| [App](app/index.md) | Application, window management, and menus |
-| [Style](style/index.md) | Theme and style management |
-| [Widgets](widgets/index.md) | UI components |
-| [Dialogs](dialogs/index.md) | Dialog windows for common interactions |
-| [Data](data/index.md) | Data sources for widgets |
-| [i18n](i18n/index.md) | Internationalization and localization |
-| [Utils](utils/index.md) | Core utilities for reactive programming and validation |
+## How this reference is organized
 
-## Usage
+- **App**: application runtime, windows, menus, and app-scoped settings
+- **Style**: themes, bootstyle tokens, builders, and theme utilities
+- **Capabilities (Widget Interface)**: capability slices that describe **facets of widget behavior**
+  (implemented via internal capability modules / mixins, exposed through widgets)
+- **Widgets**: widget classes and composites
+- **Dialogs**: dialog windows and message/query helpers
+- **Data**: data source abstractions and implementations
+- **i18n**: localization, translation, and formatting helpers
+- **Utils**: small reusable primitives (signals, validation, variables, images)
 
-All exports are available from the top-level package:
+## Sections
 
-```python
-import ttkbootstrap as ttk
+- [App](app/index.md)
+- [Style](style/index.md)
+- [Capabilities (Widget Interface)](capabilities/index.md)
+- [Widgets](widgets/index.md)
+- [Dialogs](dialogs/index.md)
+- [Data](data/index.md)
+- [i18n](i18n/index.md)
+- [Utils](utils/index.md)
 
-# App
-app = ttk.App(title="My App", theme="darkly")
+## Notes
 
-# Widgets
-button = ttk.Button(app, text="Click", bootstyle="success")
-
-# Style
-ttk.set_theme("cosmo")
-
-# Localization
-from ttkbootstrap import L
-label = ttk.Label(app, text=L("Hello"))
-
-app.mainloop()
-```
+- Reference pages target the **public import path** (for example `ttkbootstrap.Button`) even when
+  the implementation lives in internal modules.
+- Capability pages document behavior built into widgets; you typically won’t import capability mixins directly.
