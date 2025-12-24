@@ -6,10 +6,4 @@ extensions).
 > **Note**: You typically won’t use `ttkbootstrap.core.capabilities.bindtags` directly. This page describes the behavior
 > that widgets expose.
 
-::: ttkbootstrap.core.capabilities.bindtags
-    options:
-    show_root_heading: false
-    show_source: false
-    inherited_members: false
-    members:
-    - BindtagsMixin
+::: ttkbootstrap.core.capabilities.bindtags.BindtagsMixin
