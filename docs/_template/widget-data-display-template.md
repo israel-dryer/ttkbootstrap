@@ -8,9 +8,37 @@ title: DataDisplayWidgetName
 
 - what kind of data this widget displays (tabular, hierarchical, list, status)
 - whether it is **read-only display** or supports interaction (selection, editing)
-- what it is built on (if relevant) and what “extras” it provides over the base Tk widget
+- what “extras” it provides over the base Tk/ttk widget
 
 If useful, include a short “Use it for…” sentence (file browsers, admin grids, dashboards, etc.).
+
+---
+
+## Framework integration
+
+**Design System**
+
+- How styling is controlled (`bootstyle`, row/selection colors, headers)
+- Typography defaults and density conventions (row height, padding)
+- Icon usage (row icons, status icons) if supported
+
+**Signals & Events**
+
+- Selection change events
+- Row/column interaction hooks (click, double-click, context menu)
+- Reactive data refresh patterns (signal-driven reload) if applicable
+
+**Layout & Scrolling**
+
+- Built-in scroll behavior (integrated scrollbars, ScrollView patterns)
+- Recommended container/layout usage
+
+**Localization** (if applicable)
+
+- Header/label localization
+- Formatting of displayed values (dates/numbers)
+
+Keep this section practical and behavioral.
 
 ---
 
@@ -88,7 +116,7 @@ Describe interaction rules:
 - selection and focus
 - keyboard navigation
 - expand/collapse behavior (hierarchical views)
-- click / double-click / context menu behavior (if supported)
+- click / double-click / right-click behavior (if supported)
 - editing flows (if supported)
 
 ---
@@ -143,25 +171,21 @@ Prescriptive guidance:
 
 ---
 
-## When should I use DataDisplayWidgetName?
+## See also
 
-Use it when:
-- …
-
-Prefer OtherWidget when:
-- …
-
----
-
-## Related widgets
+**Related widgets**
 
 - **OtherDataWidget** — how it differs
 - **Selection widget** — when a picker is enough
 - **Form** — when input/validation is the goal
 
----
+**Framework concepts**
 
-## Reference
+- [Layout Properties](../../capabilities/layout-props.md)
+- [Signals & Events](../../capabilities/signals/index.md)
+- [Validation](../../capabilities/validation.md)
+
+**API reference**
 
 - **API Reference:** `ttkbootstrap.DataDisplayWidgetName`
 - **Related guides:** Data Display, Styling, Performance

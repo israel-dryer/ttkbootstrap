@@ -14,6 +14,25 @@ Mention common use cases (tabs, wizards, inspectors, dashboards).
 
 ---
 
+## Framework integration
+
+**Application structure**
+
+- How views/pages are created and managed
+- Whether navigation preserves state/history
+
+**Signals & Events**
+
+- How navigation changes are observed (events/callbacks/signals)
+- Recommended patterns for coordinating navigation with app state
+
+**Layout Properties**
+
+- Expected container usage
+- Sticky/expansion conventions for navigation + content regions
+
+---
+
 ## Basic usage
 
 Show the simplest runnable example that demonstrates navigation between views.
@@ -77,6 +96,7 @@ Describe how navigation works:
 Document navigation lifecycle events.
 
 Explain:
+
 - what events fire
 - when they fire
 - what data is included in the payload
@@ -123,15 +143,20 @@ Prescriptive advice:
 
 ---
 
-## Related widgets
+## See also
+
+**Related widgets**
 
 - **OtherNavigationWidget** — alternative navigation pattern
 - **Layout widget** — for arranging navigation + content
 - **Action widgets** — triggers for navigation
 
----
+**Framework concepts**
 
-## Reference
+- [Signals & Events](../../capabilities/signals/index.md)
+- [Layout Properties](../../capabilities/layout-props.md)
+
+**API reference**
 
 - **API Reference:** `ttkbootstrap.NavigationWidgetName`
 - **Related guides:** Navigation, Layout, UX Patterns

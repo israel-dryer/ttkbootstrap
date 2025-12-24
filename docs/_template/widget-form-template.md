@@ -14,11 +14,36 @@ Mention whether it is typically used standalone or embedded (dialogs, panels).
 
 ---
 
+## Framework integration
+
+**Layout Properties**
+
+- How the form organizes fields (grid/columns/sections)
+- Spacing conventions and density defaults
+
+**Validation**
+
+- How rules are applied and how results are surfaced
+- Submission blocking vs warning behavior
+
+**Signals & Events**
+
+- How values are exposed (signals/variables)
+- Change events vs submit/commit events
+
+**Localization**
+
+- How field labels and help text are localized
+- Formatting of values (dates/numbers) where applicable
+
+---
+
 ## Basic usage
 
 Show the simplest way to create and use the form.
 
 Common patterns include:
+
 - building from a data dictionary
 - retrieving submitted data
 
@@ -59,6 +84,7 @@ Typical subsections:
 Explain how fields are defined.
 
 Common approaches:
+
 - inferred from data
 - explicitly declared items (FieldItem)
 
@@ -71,6 +97,7 @@ Include a concise example.
 Describe supported editor types and how they are chosen.
 
 Include:
+
 - default inference rules
 - explicit editor selection
 - passing editor-specific options
@@ -154,25 +181,21 @@ Prescriptive advice:
 
 ---
 
-## When should I use FormWidgetName?
+## See also
 
-Use it when:
-- …
-
-Prefer individual inputs when:
-- …
-
----
-
-## Related widgets
+**Related widgets**
 
 - **Input widgets** — individual fields
 - **Dialog** — modal forms
 - **Layout widgets** — structural containers
 
----
+**Framework concepts**
 
-## Reference
+- [Validation](../../capabilities/validation.md)
+- [Layout Properties](../../capabilities/layout-props.md)
+- [Signals & Events](../../capabilities/signals/index.md)
+
+**API reference**
 
 - **API Reference:** `ttkbootstrap.FormWidgetName`
 - **Related guides:** Forms, Validation, Layout

@@ -13,6 +13,30 @@ If relevant, briefly contrast it with closely related selection controls.
 
 ---
 
+## Framework integration
+
+**Value model**
+
+- Whether choices are independent or mutually exclusive
+- What value type is produced (`bool`, `str`, `set`, etc.)
+- When the value is considered committed
+
+**Signals & Events**
+
+- Preferred binding (`signal=...`) when supported
+- Change events and virtual events
+
+**Design System**
+
+- Variant expectations (checkbox vs toggle, radio vs button-style radio)
+- How states are represented visually (selected, active, disabled)
+
+**Localization**
+
+- How labels and option text participate in localization
+
+---
+
 ## Overview
 
 Explain the selection model in plain terms:
@@ -42,6 +66,7 @@ Show a minimal, runnable example demonstrating:
 If the widget supports visual or behavioral variants, document them here.
 
 Examples:
+
 - checkbox vs toggle
 - radio vs button-style radio
 - dropdown vs inline list
@@ -145,21 +170,29 @@ Explain how labels and option text participate in localization:
 ## When should I use SelectionWidgetName?
 
 Use it when:
+
 - …
 
 Prefer OtherWidget when:
+
 - …
 
 ---
 
-## Related widgets
+## See also
+
+**Related widgets**
 
 - **OtherSelectionWidget** — how it differs
 - **AnotherWidget** — complementary behavior
 
----
+**Framework concepts**
 
-## Reference
+- [Signals & Events](../../capabilities/signals/index.md)
+- [Localization](../../capabilities/localization.md)
+- [Validation](../../capabilities/validation.md)
+
+**API reference**
 
 - **API Reference:** `ttkbootstrap.SelectionWidgetName`
 - **Related guides:** Selection, Forms, Localization

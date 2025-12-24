@@ -14,6 +14,25 @@ Keep this focused on *feedback and guidance*, not data entry.
 
 ---
 
+## Framework integration
+
+**Application behavior**
+
+- Trigger model (hover/click/programmatic)
+- Safety behavior (auto-dismiss, outside click, focus rules)
+
+**Design System**
+
+- How the overlay uses theme tokens (surface, borders, typography)
+- How emphasis/intent is communicated (colors, icons)
+
+**Signals & Events**
+
+- Lifecycle hooks (shown, dismissed, action selected)
+- Recommended patterns for integrating with app state
+
+---
+
 ## Basic usage
 
 Show the simplest, most common usage.
@@ -130,15 +149,20 @@ Prescriptive advice:
 
 ---
 
-## Related widgets
+## See also
+
+**Related widgets**
 
 - **Dialog** — blocking decisions
 - **Action widgets** — triggers for overlays
 - **OtherOverlayWidget** — alternative feedback patterns
 
----
+**Framework concepts**
 
-## Reference
+- [Windows](../../platform/windows.md)
+- [Signals & Events](../../capabilities/signals/index.md)
+
+**API reference**
 
 - **API Reference:** `ttkbootstrap.OverlayWidgetName`
 - **Related guides:** Feedback, UX Patterns, Accessibility

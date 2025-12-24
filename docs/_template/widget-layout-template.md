@@ -14,6 +14,25 @@ Mention whether it is a **container**, **divider**, or **layout primitive**.
 
 ---
 
+## Framework integration
+
+**Layout Properties**
+
+- How this widget expects to be used (container vs leaf)
+- How spacing/padding conventions apply
+- How it interacts with child widgets
+
+**Design System** (if applicable)
+
+- Whether borders/surfaces are theme-driven
+- Any `bootstyle` usage and what it affects
+
+**Events & lifecycle** (if applicable)
+
+- Whether users should expect `<Configure>` or other layout-related events
+
+---
+
 ## Basic usage
 
 Show the simplest, most common usage pattern.
@@ -85,6 +104,7 @@ If the widget has little or no behavior, state that explicitly.
 Explain whether this widget emits or participates in events.
 
 Common cases:
+
 - `<Configure>` for resize
 - no meaningful events for non-interactive widgets
 
@@ -120,14 +140,19 @@ Point to concrete alternatives.
 
 ---
 
-## Related widgets
+## See also
+
+**Related widgets**
 
 - **OtherLayoutWidget** — how it differs
 - **AnotherWidget** — complementary role
 
----
+**Framework concepts**
 
-## Reference
+- [Layout Properties](../../capabilities/layout-props.md)
+- [Layout](../../platform/geometry-and-layout.md)
+
+**API reference**
 
 - **API Reference:** `ttkbootstrap.LayoutWidgetName`
 - **Related guides:** Layout, Design System

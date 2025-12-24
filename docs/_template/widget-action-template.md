@@ -4,14 +4,47 @@ title: WidgetName
 
 # WidgetName
 
-1–2 paragraphs:
+1–2 paragraphs describing:
 
 - what action this triggers or represents
 - where it’s commonly used (dialogs, toolbars, menus, etc.)
 
 ---
 
-## Quick start
+## Framework integration
+
+Explain how this widget participates in ttkbootstrap’s framework capabilities.
+
+**Design System**
+
+- Which semantic colors / variants apply (`bootstyle`)
+- Typography defaults and any sizing/density conventions
+- How states look (hover, focus, pressed, disabled)
+
+**Signals & Events**
+
+- Whether it supports `command`, signal binding, or emits virtual events
+- Primary interaction events users can listen to
+
+**Icons & Images** (if applicable)
+
+- Icon support (icon-only, icon+text)
+- DPI behavior and caching/recoloring expectations
+
+**Localization** (if applicable)
+
+- How text/labels participate in localization
+- Whether text updates automatically when language changes
+
+**Layout Properties** (if applicable)
+
+- Any layout-oriented options (padding, alignment, expand/sticky intent)
+
+Keep this section concise and *behavioral*—not an API dump.
+
+---
+
+## Basic usage
 
 One minimal example that demonstrates the core interaction.
 
@@ -24,6 +57,7 @@ One minimal example that demonstrates the core interaction.
 ## When to use
 
 Use WidgetName when:
+
 - …
 
 ### Consider a different control when…
@@ -68,18 +102,28 @@ Explain interaction rules:
 ## Localization & reactivity
 
 Explain how the widget participates in localization and reactive text/value updates.
-Reference the appropriate guide if needed.
+
+Link to:
+
+- [Signals & Events](../../capabilities/signals/index.md)
+- [Localization](../../capabilities/localization.md)
 
 ---
 
-## Related widgets
+## See also
+
+**Related widgets**
 
 - **OtherWidget** — why it’s related
 - **AnotherWidget** — why it’s related
 
----
+**Framework concepts**
 
-## Reference
+- [Signals & Events](../../capabilities/signals/index.md)
+- [Icons & Images](../../capabilities/icons/index.md)
+- [Layout Properties](../../capabilities/layout-props.md)
+
+**API reference**
 
 - **API Reference:** `ttkbootstrap.WidgetName`
 - **Related guides:** …

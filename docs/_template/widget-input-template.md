@@ -4,7 +4,7 @@ title: WidgetName
 
 # WidgetName
 
-1–2 paragraphs:
+1–2 paragraphs describing:
 
 - what this input is
 - what value it produces (type + shape)
@@ -14,9 +14,34 @@ Optional: a single comparison sentence (“Unlike X…”, “Similar to Y…”
 
 ---
 
+## Framework integration
+
+**Value model**
+
+- Whether this widget is “live” (updates while typing) or “committed” (updates on confirm)
+- How empty / invalid values are represented
+
+**Signals & Events**
+
+- Preferred reactive binding (`signal=...`) if supported
+- Key events emitted (changed, input, committed)
+
+**Validation**
+
+- How constraints are enforced
+- How validation errors are displayed or surfaced
+
+**Localization** (if applicable)
+
+- How formatting is handled (dates/numbers)
+- How localized text/labels are applied
+
+---
+
 ## Basic usage
 
 One minimal example that shows:
+
 - creating the widget
 - setting an initial value (if applicable)
 - packing or gridding it
@@ -30,6 +55,7 @@ One minimal example that shows:
 ## Value model
 
 Explain:
+
 - what `value` means (and default)
 - live vs committed changes (if relevant)
 - how empty / none / invalid values are represented
@@ -80,6 +106,7 @@ w.on_changed(on_changed)
 ## Validation and constraints
 
 Explain:
+
 - inherent constraints
 - app-level validation
 - dynamic constraint changes
@@ -87,24 +114,20 @@ Explain:
 
 ---
 
-## When should I use WidgetName?
+## See also
 
-Use WidgetName when:
-- …
-
-Prefer OtherWidget when:
-- …
-
----
-
-## Related widgets
+**Related widgets**
 
 - **OtherWidget** — why it’s related
 - **AnotherWidget** — why it’s related
 
----
+**Framework concepts**
 
-## Reference
+- [Signals & Events](../../capabilities/signals/index.md)
+- [Validation](../../capabilities/validation.md)
+- [Localization](../../capabilities/localization.md)
+
+**API reference**
 
 - **API Reference:** `ttkbootstrap.WidgetName`
 - **Related guides:** …
