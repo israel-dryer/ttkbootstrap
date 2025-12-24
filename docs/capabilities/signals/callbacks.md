@@ -14,6 +14,7 @@ relate to signals and virtual events.
 A callback is a function that is executed when an event occurs.
 
 Examples include:
+
 - clicking a button
 - selecting a menu item
 - pressing a key
@@ -46,6 +47,7 @@ This is a convenience mechanism for the most common interaction patterns,
 such as button presses or selection changes.
 
 Command callbacks:
+
 - are simple to use
 - are limited in contextual information
 - map to a single widget action
@@ -59,6 +61,7 @@ They are ideal for straightforward interactions.
 More complex interactions use **event bindings**.
 
 Bindings:
+
 - are attached using `bind`
 - respond to specific event sequences
 - receive an event object with context
@@ -70,11 +73,13 @@ Bindings allow fine-grained control over input behavior.
 ## Callbacks vs signals
 
 Callbacks:
+
 - represent discrete actions
 - are tightly coupled to events
 - are typically widget-centric
 
 Signals:
+
 - represent evolving state
 - decouple producers and consumers
 - support multiple observers
@@ -86,11 +91,13 @@ Callbacks often update signals, which then propagate state changes.
 ## Error handling in callbacks
 
 Unhandled exceptions inside callbacks:
+
 - are printed to stderr
 - do not crash the application
 - may leave UI state inconsistent
 
 It is good practice to:
+
 - log exceptions
 - fail gracefully
 - keep callbacks small
@@ -100,6 +107,7 @@ It is good practice to:
 ## Performance considerations
 
 Callbacks should:
+
 - avoid long-running work
 - defer expensive operations
 - update UI incrementally
