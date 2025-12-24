@@ -2,8 +2,8 @@
 site_name = "ttkbootstrap"
 site_description = "A modern framework for building Tkinter applications with Bootstrap-inspired themes."
 site_author = "Israel Dryer"
-site_url = "https://ttkbootstrap.readthedocs.io/"
-copyright = "Copyright &copy; 2025 Israel Dryer"
+site_url = "https://www.ttkbootstrap.com"
+copyright = "Copyright &copy; 2021 - 2026 Israel Dryer"
 
 docs_dir = "docs"
 
@@ -16,55 +16,58 @@ nav = [
         { "Quick Start" = "getting-started/quick-start.md" },
         { "Project Structure" = "getting-started/project-structure.md" },
     ] },
-
-    # ---------------------------------------------------------------------
-    # PLATFORM
-    # ---------------------------------------------------------------------
     { "Platform" = [
         { "Overview" = "platform/index.md" },
-
         { "Fundamentals" = [
             { "Tk vs ttk" = "platform/tk-vs-ttk.md" },
             { "Event Loop" = "platform/event-loop.md" },
+            { "Events & Bindings" = "platform/events-and-bindings.md" },
             { "Geometry & Layout" = "platform/geometry-and-layout.md" },
             { "Widget Lifecycle" = "platform/widget-lifecycle.md" },
         ] },
-
         { "Styling Internals" = [
             { "ttk Styles & Elements" = "platform/ttk-styles-elements.md" },
         ] },
-
         { "Windows" = [
             { "Windows" = "platform/windows.md" },
         ] },
-
         { "Rendering" = [
             { "Images & DPI" = "platform/images-and-dpi.md" },
         ] },
-
         { "Operations" = [
             { "Performance" = "platform/performance.md" },
             { "Debugging" = "platform/debugging.md" },
         ] },
     ] },
-
-    # ---------------------------------------------------------------------
-    # CAPABILITIES
-    # ---------------------------------------------------------------------
     { "Capabilities" = [
         { "Overview" = "capabilities/index.md" },
-        { "Signals" = "capabilities/signals.md" },
-        { "Localization" = "capabilities/localization.md" },
-        { "Validation" = "capabilities/validation.md" },
-        { "Icons & Imagery" = "capabilities/icons-and-imagery.md" },
+        { "Signals & Events" = [
+            { "Overview" = "capabilities/signals/index.md" },
+            { "Signals" = "capabilities/signals/signals.md" },
+            { "Callbacks" = "capabilities/signals/callbacks.md" },
+            { "Virtual Events" = "capabilities/signals/virtual-events.md" },
+        ] },
+        { "Layout" = [
+            { "Overview" = "capabilities/layout/index.md" },
+            { "Containers" = "capabilities/layout/containers.md" },
+            { "Spacing" = "capabilities/layout/spacing.md" },
+            { "Scrolling" = "capabilities/layout/scrolling.md" },
+        ] },
+        { "Validation" = [
+            { "Overview" = "capabilities/validation/index.md" },
+            { "Rules" = "capabilities/validation/rules.md" },
+            { "Results" = "capabilities/validation/results.md" },
+        ] },
+        { "Icons & Images" = [
+            { "Overview" = "capabilities/icons/index.md" },
+            { "Icons" = "capabilities/icons/icons.md" },
+            { "Images" = "capabilities/icons/images.md" },
+        ] },
         { "Layout Properties" = "capabilities/layout-props.md" },
         { "State & Interaction" = "capabilities/state-and-interaction.md" },
         { "Configuration" = "capabilities/configuration.md" },
+        { "Localization" = "capabilities/localization.md" },
     ] },
-
-    # ---------------------------------------------------------------------
-    # DESIGN SYSTEM (optional, but these files exist in your docs.zip)
-    # ---------------------------------------------------------------------
     { "Design System" = [
         { "Overview" = "design-system/index.md" },
         { "Colors" = "design-system/colors.md" },
@@ -73,19 +76,11 @@ nav = [
         { "Icons" = "design-system/icons.md" },
         { "Custom Themes" = "design-system/custom-themes.md" },
     ] },
-
-    # ---------------------------------------------------------------------
-    # BUILD (optional, but these files exist in your docs.zip)
-    # ---------------------------------------------------------------------
     { "Build" = [
         { "Overview" = "build/index.md" },
         { "App Runtime" = "build/app-runtime.md" },
         { "App Configuration" = "build/app-configuration.md" },
     ] },
-
-    # ---------------------------------------------------------------------
-    # COOKBOOK (optional, but these files exist in your docs.zip)
-    # ---------------------------------------------------------------------
     { "Cookbook" = [
         { "Overview" = "cookbook/index.md" },
         { "Theming" = "cookbook/theming.md" },
@@ -94,9 +89,6 @@ nav = [
         { "Dialogs" = "cookbook/dialogs.md" },
         { "Tables & Lists" = "cookbook/tables-and-lists.md" },
     ] },
-    # ---------------------------------------------------------------------
-    # WIDGETS
-    # ---------------------------------------------------------------------
     { "Widgets" = [
         { "Overview" = "widgets/index.md" },
         { "Actions" = [
@@ -181,9 +173,6 @@ nav = [
             { "Text" = "widgets/primitives/text.md" },
         ] },
     ] },
-    # ---------------------------------------------------------------------
-    # API REFERENCE
-    # ---------------------------------------------------------------------
     { "API Reference" = [
         { "Overview" = "reference/index.md" },
         { "App" = [
@@ -227,7 +216,6 @@ nav = [
             { "signals" = "reference/capabilities/signals.md" },
             { "winfo" = "reference/capabilities/winfo.md" },
         ] },
-
         { "Widgets" = [
             { "Overview" = "reference/widgets/index.md" },
             { "Badge" = "reference/widgets/Badge.md" },
@@ -339,7 +327,6 @@ language = "en"
 features = [
     "navigation.tabs",
     "navigation.path",
-    #    "navigation.sections",
     "navigation.footer",
     "navigation.indexes",
     "navigation.instant",
