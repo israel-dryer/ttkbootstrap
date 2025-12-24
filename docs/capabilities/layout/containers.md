@@ -14,11 +14,13 @@ layouts around them.
 ## What is a container?
 
 A container is any widget that:
+
 - can contain child widgets
 - participates in a geometry manager
 - controls spacing and resizing behavior
 
 Common containers include:
+
 - frames
 - labeled frames
 - paned windows
@@ -31,6 +33,7 @@ Common containers include:
 Containers define layout context.
 
 Children:
+
 - inherit geometry constraints from their container
 - do not control overall spacing
 - request size but do not enforce it
@@ -44,6 +47,7 @@ This separation keeps layout predictable.
 Containers should have a clear purpose.
 
 Good container roles:
+
 - grouping related widgets
 - managing spacing and alignment
 - controlling scrolling
@@ -59,10 +63,12 @@ ttkbootstrap encourages composing layouts from simple containers rather than
 heavily configuring individual widgets.
 
 Instead of:
+
 - tuning padding on every widget
 - managing resizing individually
 
 Prefer:
+
 - containers with clear spacing rules
 - nested layout sections
 - reusable container patterns
@@ -76,6 +82,7 @@ This leads to clearer and more maintainable layouts.
 Nested containers are normal and expected.
 
 However:
+
 - deep nesting increases layout cost
 - complex hierarchies are harder to reason about
 
@@ -88,6 +95,7 @@ Balance clarity with simplicity.
 Scrolling is a container responsibility.
 
 Scrollable containers:
+
 - manage viewport and content size
 - coordinate scrollbars
 - adapt to dynamic content
@@ -99,6 +107,7 @@ Widgets inside scroll containers should not manage scrolling themselves.
 ## Container lifecycle
 
 Containers follow the normal widget lifecycle:
+
 - creation
 - layout
 - realization

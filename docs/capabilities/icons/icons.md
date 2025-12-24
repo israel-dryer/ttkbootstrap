@@ -11,6 +11,7 @@ per-widget feature, allowing consistent behavior across the framework.
 ## Purpose of icons
 
 Icons are used to:
+
 - reinforce meaning alongside text
 - save space in dense interfaces
 - provide quick visual recognition
@@ -37,6 +38,7 @@ Consistency in these patterns improves usability.
 Icons often respond to widget state.
 
 Examples:
+
 - disabled icons appear muted
 - active icons appear emphasized
 - selected icons reflect current state
@@ -51,6 +53,7 @@ matches interaction.
 Icons typically derive their color from the active theme.
 
 This allows:
+
 - automatic light/dark adaptation
 - consistent semantic coloring
 - reduced need for manual styling
@@ -76,6 +79,7 @@ All sources are treated uniformly by the icon capability.
 Icon size should be consistent within a context.
 
 Considerations include:
+
 - alignment with text baseline
 - touch target size
 - visual weight relative to surrounding elements
@@ -89,6 +93,7 @@ Avoid mixing icon sizes arbitrarily.
 Icons are reused frequently.
 
 Best practices include:
+
 - caching icon images
 - avoiding repeated recoloring
 - sharing icon instances where possible

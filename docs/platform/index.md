@@ -52,6 +52,7 @@ Many concepts described here originate in Tk itself:
 the event loop, geometry managers, widget lifecycles, and windowing behavior.
 
 Where appropriate, these pages reference external resources such as:
+
 - Python’s `tkinter` documentation
 - the TkDocs tutorial
 

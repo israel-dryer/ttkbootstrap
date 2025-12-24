@@ -28,6 +28,7 @@ Each model serves a different purpose.
 Callbacks are functions executed in direct response to an event.
 
 They are best used for:
+
 - immediate reactions
 - simple, localized logic
 - triggering state changes
@@ -41,6 +42,7 @@ Callbacks are synchronous and run on the Tk event loop.
 Virtual events represent *what happened*, not *how it happened*.
 
 They:
+
 - decouple behavior from input devices
 - allow multiple listeners
 - improve readability and intent
@@ -54,6 +56,7 @@ Virtual events are ideal for composite widgets and reusable components.
 Signals represent shared application state.
 
 They:
+
 - hold a current value
 - notify observers on change
 - decouple producers from consumers

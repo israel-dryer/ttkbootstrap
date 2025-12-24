@@ -15,6 +15,7 @@ Validation is the process of determining whether a value satisfies a set of
 rules.
 
 In UI applications, validation is commonly used for:
+
 - form input correctness
 - required fields
 - type and range constraints
@@ -30,6 +31,7 @@ intent and feedback**.
 Validation behavior is shared across many widgets and patterns.
 
 By treating validation as a capability:
+
 - rules can be reused
 - results are represented consistently
 - UI feedback can be standardized

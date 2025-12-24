@@ -13,11 +13,13 @@ primarily on top of ttk.
 Tk is the original widget toolkit underlying Tkinter.
 
 Tk widgets:
+
 - are highly flexible
 - expose many low-level configuration options
 - are styled largely through direct configuration
 
 Classic Tk widgets include:
+
 - `tk.Label`
 - `tk.Button`
 - `tk.Entry`
@@ -38,6 +40,7 @@ ttk widgets:
 - provide more consistent native-looking controls
 
 Common ttk widgets include:
+
 - `ttk.Label`
 - `ttk.Button`
 - `ttk.Entry`
@@ -65,6 +68,7 @@ Most ttkbootstrap widgets are ttk widgets or composites built from ttk primitive
 Some Tk widgets have no ttk equivalent or require direct Tk functionality.
 
 Examples include:
+
 - `tk.Canvas`
 - `tk.Text`
 - low-level drawing or custom rendering

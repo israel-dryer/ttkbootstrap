@@ -26,6 +26,7 @@ layout system.
 Tk does not explicitly distinguish between padding and margins.
 
 Instead:
+
 - padding is usually applied via container options
 - external spacing is controlled by geometry manager parameters
 
@@ -39,6 +40,7 @@ is the same.
 Inconsistent spacing is a common UI problem.
 
 ttkbootstrap encourages:
+
 - using container-level spacing
 - defining spacing once per layout region
 - avoiding per-widget spacing tweaks
@@ -52,10 +54,12 @@ Consistency improves both appearance and maintainability.
 Spacing affects how layouts resize.
 
 Excessive spacing:
+
 - wastes screen space
 - exaggerates resizing artifacts
 
 Insufficient spacing:
+
 - makes interfaces feel cramped
 - reduces readability
 
@@ -68,6 +72,7 @@ Balance is essential.
 Spacing needs differ by direction.
 
 Common patterns:
+
 - tighter vertical spacing in forms
 - looser spacing between sections
 - consistent horizontal alignment
@@ -79,6 +84,7 @@ Containers help enforce these patterns.
 ## Responsive considerations
 
 As window size changes:
+
 - spacing may appear larger or smaller
 - layout density changes
 

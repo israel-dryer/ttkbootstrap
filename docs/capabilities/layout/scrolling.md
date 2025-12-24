@@ -14,6 +14,7 @@ repeated, error-prone implementations.
 Scrolling is not an attribute of individual widgets.
 
 Instead:
+
 - containers define a viewport
 - content defines a scrollable region
 - scrollbars reflect and control viewport position
@@ -25,6 +26,7 @@ Treating scrolling as a layout capability leads to more predictable behavior.
 ## Scrollable containers
 
 A scrollable container:
+
 - owns the viewport
 - tracks content size
 - synchronizes scrollbars
@@ -39,6 +41,7 @@ Widgets inside scroll containers should not manage scrolling directly.
 Scrollable content may change size at runtime.
 
 Correct scrolling behavior requires:
+
 - recalculating scroll regions
 - responding to content changes
 - updating scrollbars accordingly
@@ -50,6 +53,7 @@ Failing to update the scroll region is a common bug.
 ## Vertical and horizontal scrolling
 
 Scrolling may be:
+
 - vertical
 - horizontal
 - both
@@ -63,6 +67,7 @@ Choose scrolling direction intentionally.
 ## Mouse wheel handling
 
 Mouse wheel behavior:
+
 - varies by platform
 - must be bound explicitly
 - interacts with focus and grabs
@@ -75,11 +80,13 @@ across platforms.
 ## Performance considerations
 
 Scrolling performance depends on:
+
 - number of visible widgets
 - redraw cost
 - layout complexity
 
 Efficient scrolling favors:
+
 - reusing widgets
 - minimizing redraws
 - avoiding deep hierarchies

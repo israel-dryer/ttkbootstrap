@@ -14,6 +14,7 @@ image usage as a capability to ensure correctness, performance, and consistency.
 In Tk, images are not owned by widgets.
 
 Instead:
+
 - images are created as named objects
 - widgets reference images by name
 - images persist independently of widgets
@@ -28,6 +29,7 @@ Treat images as shared, application-level resources.
 ## Image lifetime management
 
 Correct image usage requires:
+
 - keeping a Python reference to the image
 - controlling when images are created
 - avoiding premature destruction
@@ -42,6 +44,7 @@ explicit and predictable.
 Creating images repeatedly is expensive.
 
 Caching:
+
 - improves performance
 - reduces memory usage
 - avoids subtle rendering bugs
@@ -56,6 +59,7 @@ images across widgets.
 High-DPI displays introduce additional complexity.
 
 Images may:
+
 - appear blurry if not scaled correctly
 - render at incorrect sizes
 - require different assets for different scales
@@ -70,6 +74,7 @@ visual results across platforms.
 Tk natively supports a limited set of image formats.
 
 For broader format support:
+
 - Pillow-backed images may be used
 - images are still exposed to Tk as PhotoImage objects
 
@@ -92,11 +97,13 @@ Treating images as a capability ensures consistent behavior.
 ## Performance considerations
 
 Image performance depends on:
+
 - size and resolution
 - recoloring frequency
 - caching strategy
 
 Avoid:
+
 - loading images in tight loops
 - scaling images repeatedly
 - creating per-widget image instances

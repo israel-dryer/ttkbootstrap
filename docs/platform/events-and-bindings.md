@@ -99,6 +99,7 @@ Virtual events are user-defined events identified by names like:
 Virtual events allow you to decouple **what happened** from **how it was triggered**.
 
 They are especially useful when:
+
 - multiple inputs should trigger the same behavior
 - application-level state changes need to notify many components
 

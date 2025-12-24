@@ -24,6 +24,7 @@ Both are managed as shared resources rather than widget-owned objects.
 ## Icons as a capability
 
 Icons are used across many widgets:
+
 - buttons
 - menus
 - toggles
@@ -39,6 +40,7 @@ as a shared capability with consistent behavior.
 Images require careful lifecycle management.
 
 As a capability, image usage defines:
+
 - how images are loaded
 - how they are cached
 - how they scale
@@ -65,6 +67,7 @@ Treating them as capabilities ensures consistent behavior across widgets.
 Visual assets are expensive to recreate.
 
 Centralized management:
+
 - reduces memory usage
 - improves rendering performance
 - avoids subtle bugs

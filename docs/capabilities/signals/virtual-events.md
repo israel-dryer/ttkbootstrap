@@ -33,6 +33,7 @@ Virtual events describe *what happened*, not *how it happened*.
 Binding directly to physical events couples behavior tightly to input devices.
 
 Virtual events:
+
 - decouple behavior from input mechanics
 - allow multiple triggers for the same action
 - improve readability and intent
@@ -59,6 +60,7 @@ This allows other components to react without knowing internal details.
 Virtual events are handled like any other event binding.
 
 Listeners can:
+
 - bind at the widget level
 - bind at the container level
 - bind globally if appropriate
@@ -70,11 +72,13 @@ Because virtual events are semantic, bindings tend to be more stable over time.
 ## Virtual events vs callbacks
 
 Callbacks:
+
 - are typically attached directly to widgets
 - represent immediate actions
 - are often single-consumer
 
 Virtual events:
+
 - broadcast intent
 - may have multiple listeners
 - support loose coupling
@@ -90,6 +94,7 @@ Signals represent evolving state.
 Virtual events represent discrete transitions.
 
 Both are useful:
+
 - signals synchronize state
 - virtual events announce milestones
 
@@ -100,6 +105,7 @@ They are complementary, not competing mechanisms.
 ## Naming conventions
 
 Good virtual event names:
+
 - describe the semantic action
 - avoid referencing input devices
 - use past tense or completed intent

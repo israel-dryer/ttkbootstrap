@@ -23,6 +23,7 @@ A capability represents a focused aspect of widget behavior, such as:
 - localization
 
 Capabilities:
+
 - mirror underlying Tk/ttk functionality
 - provide a consistent Python interface
 - integrate with ttkbootstrap conventions
@@ -36,11 +37,13 @@ They are not standalone features — they describe **what widgets can do**.
 Tk exposes a very large widget API.
 
 Without structure:
+
 - behavior is scattered across widget classes
 - documentation becomes repetitive
 - shared behavior diverges unintentionally
 
 Capabilities provide:
+
 - a single place to document behavior
 - consistent naming and semantics
 - clearer mental models for users
@@ -54,6 +57,7 @@ Widgets describe *what* something is.
 Capabilities describe *what it can do*.
 
 For example:
+
 - a Button *is* a widget
 - it *has* event handling, focus behavior, and layout participation
 
@@ -66,6 +70,7 @@ Separating these concerns improves clarity.
 Most capabilities correspond directly to Tk commands or concepts.
 
 Examples:
+
 - `bind` → event binding
 - `after` → deferred execution
 - `grab` → modal input handling
@@ -80,6 +85,7 @@ ttkbootstrap does not invent new behavior — it organizes existing behavior.
 Internally, capabilities are implemented as mixins.
 
 Each mixin:
+
 - focuses on a narrow behavior
 - delegates to the underlying Tk widget
 - documents semantics and edge cases
@@ -91,6 +97,7 @@ Widgets compose these mixins to expose a complete API.
 ## Reading capability docs
 
 Capability pages:
+
 - describe behavior conceptually
 - explain common pitfalls
 - note ttkbootstrap-specific guidance

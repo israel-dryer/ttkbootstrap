@@ -16,6 +16,7 @@ A validation result answers the question:
 > *Is this value valid, and if not, why?*
 
 A result typically contains:
+
 - validity state (valid / invalid / warning)
 - one or more messages
 - optional contextual data
@@ -42,6 +43,7 @@ Distinguishing these states allows more nuanced UX.
 When multiple rules are applied, results must be combined.
 
 Aggregation may:
+
 - stop on first failure
 - collect all failures
 - prioritize certain rules
@@ -66,6 +68,7 @@ By modeling results explicitly, these effects can be applied consistently.
 ## Relationship to widgets
 
 Widgets typically:
+
 - trigger validation
 - receive validation results
 - update their appearance accordingly
@@ -79,6 +82,7 @@ Widgets should not interpret validation logic themselves — they react to resul
 Validation results integrate naturally with signals.
 
 A signal may:
+
 - represent the current validation state
 - propagate changes to dependent UI elements
 - coordinate form-level validity
@@ -92,6 +96,7 @@ This enables declarative, reactive validation flows.
 When results are presented matters.
 
 Consider:
+
 - delaying error messages until focus loss
 - showing warnings non-intrusively
 - avoiding constant error churn while typing

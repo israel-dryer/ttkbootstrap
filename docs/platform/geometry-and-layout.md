@@ -29,6 +29,7 @@ ttkbootstrap does not change this rule.
 Layout resolution is not immediate.
 
 When geometry is assigned:
+
 - widgets request a size
 - containers negotiate available space
 - final sizes and positions are computed by Tk
@@ -44,6 +45,7 @@ This is why size-dependent logic should not run in constructors.
 Layout responsibility belongs to the **container**, not the child widget.
 
 Containers:
+
 - control spacing and alignment
 - determine how children expand or contract
 - define scroll behavior

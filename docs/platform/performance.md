@@ -13,6 +13,7 @@ This page explains performance considerations at the platform level.
 Tk processes all UI work on a single event loop.
 
 This includes:
+
 - handling user input
 - redrawing widgets
 - running callbacks
@@ -32,6 +33,7 @@ Operations that should **not** run directly in callbacks include:
 - large file reads
 
 Instead, offload work to:
+
 - background threads
 - subprocesses
 - incremental callbacks using `after()`
@@ -45,11 +47,13 @@ The UI should remain responsive at all times.
 Layout resolution is not free.
 
 Costs increase with:
+
 - deeply nested widget hierarchies
 - frequent geometry changes
 - repeated calls to geometry managers
 
 ttkbootstrap encourages:
+
 - container-based layout
 - minimizing unnecessary relayouts
 - batching layout changes where possible
@@ -61,6 +65,7 @@ ttkbootstrap encourages:
 Images and fonts are relatively expensive resources.
 
 Performance tips:
+
 - cache images instead of recreating them
 - reuse named fonts
 - avoid repeated image scaling
@@ -72,6 +77,7 @@ ttkbootstrap’s Image and typography systems exist partly to address these conc
 ## Redraw frequency
 
 Widgets may redraw in response to:
+
 - state changes
 - size changes
 - style changes

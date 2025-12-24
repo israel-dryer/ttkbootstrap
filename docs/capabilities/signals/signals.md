@@ -17,6 +17,7 @@ A signal represents a value that can change over time and notify listeners when
 it does.
 
 Signals:
+
 - hold a current value
 - notify subscribers on change
 - decouple producers from consumers
@@ -28,11 +29,13 @@ Unlike callbacks, signals model *state*, not just events.
 ## Signals vs callbacks
 
 Callbacks:
+
 - are invoked in response to a specific action
 - are often tightly coupled to widgets
 - typically represent a moment in time
 
 Signals:
+
 - represent ongoing state
 - can have multiple observers
 - allow changes to propagate naturally
@@ -44,11 +47,13 @@ Both models are useful and coexist in ttkbootstrap.
 ## Signals vs Tk variables
 
 Tk variables (`StringVar`, `IntVar`, etc.):
+
 - are tied to the Tcl interpreter
 - are primarily widget-focused
 - propagate changes implicitly
 
 Signals:
+
 - are pure Python objects
 - can exist independently of widgets
 - integrate cleanly with application logic
@@ -73,6 +78,7 @@ They shine when multiple parts of the UI depend on the same value.
 ## Signal lifecycle
 
 A signal:
+
 - is created with an initial value
 - notifies listeners when updated
 - persists as long as it is referenced
@@ -85,6 +91,7 @@ Widgets may subscribe and unsubscribe freely.
 ## Integration with widgets
 
 Widgets may:
+
 - observe a signal to update their state
 - emit changes into a signal
 - synchronize bidirectionally
@@ -99,6 +106,7 @@ owning the underlying state.
 Signals do not make Tk thread-safe.
 
 If a signal is updated from a background thread:
+
 - UI updates must be marshaled back to the event loop
 - `after()` or equivalent mechanisms should be used
 

@@ -16,6 +16,7 @@ ttkbootstrap builds on top of it.
 In ttk, widgets do not directly control most aspects of their appearance.
 
 Instead:
+
 - widgets reference a **style name**
 - the style defines how the widget is drawn
 - styles are resolved dynamically at runtime
@@ -29,6 +30,7 @@ This allows the same widget to appear differently under different themes.
 A ttk style is a named collection of options.
 
 Styles define:
+
 - layout (which elements are drawn and in what order)
 - visual properties (colors, borders, padding)
 - state-specific behavior (hover, active, disabled)
@@ -49,11 +51,13 @@ Styles are resolved by name, not by widget instance.
 Elements are the lowest-level building blocks of ttk widgets.
 
 An element:
+
 - draws a specific visual component
 - may be image-based or primitive-based
 - reacts to widget state
 
 Common elements include:
+
 - borders
 - backgrounds
 - labels
@@ -99,6 +103,7 @@ ttkbootstrap uses this state model extensively to implement variants and interac
 ttkbootstrap builds on ttk’s styling system rather than replacing it.
 
 The framework:
+
 - generates style names programmatically
 - maps semantic concepts (color, variant) to styles
 - creates reusable element layouts
@@ -114,6 +119,7 @@ with ttk’s underlying engine.
 A **bootstyle** is a high-level description of a widget’s visual intent.
 
 Instead of working directly with style names, users specify:
+
 - semantic color
 - visual variant
 

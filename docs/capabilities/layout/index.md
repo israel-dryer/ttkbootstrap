@@ -18,6 +18,7 @@ Layout is not a property of a widget alone — it is a **relationship between a
 widget and its container**.
 
 Layout capabilities describe:
+
 - how widgets are placed inside containers
 - how space is allocated and resized
 - how scrolling regions are managed
@@ -46,11 +47,13 @@ conventions around their use.
 Containers own layout decisions.
 
 Widgets:
+
 - request size
 - expose layout options
 - respond to resizing
 
 Containers:
+
 - determine spacing
 - control expansion
 - define scrolling behavior
@@ -65,6 +68,7 @@ individual widgets.
 Layout bugs often come from implicit behavior.
 
 ttkbootstrap promotes:
+
 - explicit spacing
 - clear expansion rules
 - predictable container hierarchies
@@ -78,6 +82,7 @@ This makes layout behavior easier to reason about and debug.
 Scrolling is a layout concern, not a widget feature.
 
 Scrollable containers:
+
 - manage viewport and content size
 - synchronize scrollbars
 - adapt to dynamic content
@@ -91,6 +96,7 @@ ttkbootstrap provides standardized scrolling patterns to avoid ad-hoc solutions.
 Layout resolution depends on widget lifecycle.
 
 Size and position:
+
 - are not final during construction
 - are resolved after the event loop runs
 

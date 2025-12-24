@@ -13,6 +13,7 @@ and how they are intended to be used.
 A validation rule represents a single, focused constraint.
 
 Examples:
+
 - value must not be empty
 - value must be numeric
 - value must fall within a range
@@ -27,6 +28,7 @@ Rules answer the question: *Is this value acceptable?*
 Each rule should do one thing.
 
 Good rules:
+
 - check a single condition
 - return a clear outcome
 - avoid side effects
@@ -40,6 +42,7 @@ Combining multiple checks into one rule makes validation harder to reason about.
 Complex validation is achieved by combining simple rules.
 
 Composition allows:
+
 - reuse of common constraints
 - clearer intent
 - easier testing
@@ -53,6 +56,7 @@ Rules may be applied sequentially or as a group, depending on context.
 Validation rules should be stateless.
 
 They should:
+
 - depend only on the provided value
 - not modify application state
 - not rely on widget internals
@@ -66,6 +70,7 @@ This makes rules reusable across widgets and contexts.
 Some rules require additional context.
 
 Examples:
+
 - comparing values across fields
 - validating against application state
 - enforcing conditional requirements
@@ -79,6 +84,7 @@ Context should be passed explicitly rather than captured implicitly.
 Rules often provide descriptive messages when validation fails.
 
 Good messages:
+
 - explain what went wrong
 - suggest corrective action
 - avoid technical jargon
@@ -90,6 +96,7 @@ Clear messages improve user experience.
 ## Timing considerations
 
 Rules may be evaluated:
+
 - continuously
 - on focus change
 - on submission

@@ -14,6 +14,7 @@ provides structure around image usage.
 In Tk, images are not owned by widgets.
 
 Instead:
+
 - images are created as named objects in the Tk interpreter
 - widgets reference images by name
 - images persist until explicitly destroyed or garbage-collected
@@ -43,6 +44,7 @@ rather than widget-local objects.
 Modern systems often use high-DPI displays.
 
 Tk handles DPI scaling by:
+
 - scaling fonts automatically
 - scaling images only if explicitly configured
 
@@ -68,6 +70,7 @@ This avoids duplicating image-loading logic and reduces memory usage.
 Creating images repeatedly is expensive.
 
 Caching images:
+
 - improves performance
 - ensures consistent appearance
 - simplifies lifetime management
