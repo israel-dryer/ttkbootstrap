@@ -154,4 +154,4 @@ ttk.Button(app, text="Link", bootstyle="info-link")
 app.mainloop()
 ```
 
-See the [Design System](../guides/design-system/index.md) guide for more details on colors and variants.
+See the [Design System](../design-system/index.md) guide for more details on colors and variants.
