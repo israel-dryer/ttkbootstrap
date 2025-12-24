@@ -4,7 +4,7 @@ from typing import Any, Callable, Literal, TYPE_CHECKING
 
 from typing_extensions import TypedDict, Unpack
 
-from ttkbootstrap import Button
+from ttkbootstrap.widgets.primitives.button import Button
 from ttkbootstrap.widgets.mixins.configure_mixin import configure_delegate
 from ttkbootstrap.widgets.primitives import Frame
 from ttkbootstrap.widgets.primitives.checkbutton import CheckButton

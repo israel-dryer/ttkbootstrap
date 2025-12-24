@@ -16,7 +16,7 @@ from typing_extensions import Literal
 from ttkbootstrap.widgets.types import Master
 
 from ttkbootstrap_icons_bs import BootstrapIcon
-from ttkbootstrap import get_style
+from ttkbootstrap.style.style import get_style
 from ttkbootstrap.datasource.sqlite_source import SqliteDataSource
 from ttkbootstrap.widgets.primitives.button import Button
 from ttkbootstrap.widgets.composites.contextmenu import ContextMenu

@@ -59,8 +59,8 @@ class ClipboardMixin:
             The clipboard contents as a string.
 
         Raises:
-            tkinter.TclError: If the clipboard is empty or does not contain data
-            that can be converted to the requested type.
+            tkinter.TclError: If the clipboard is empty or does not contain
+                data that can be converted to the requested type.
         """
         return super().clipboard_get(**kw)  # type: ignore[misc]
 

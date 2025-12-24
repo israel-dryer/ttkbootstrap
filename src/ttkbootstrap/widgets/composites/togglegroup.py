@@ -5,7 +5,8 @@ from typing import Any, Callable, Literal, TYPE_CHECKING
 
 from typing_extensions import TypedDict, Unpack
 
-from ttkbootstrap import RadioButton, CheckButton
+from ttkbootstrap.widgets.primitives.radiobutton import RadioButton
+from ttkbootstrap.widgets.primitives.checkbutton import CheckButton
 from ttkbootstrap.core.variables import SetVar
 from ttkbootstrap.widgets.mixins.configure_mixin import configure_delegate
 from ttkbootstrap.widgets.primitives import Frame

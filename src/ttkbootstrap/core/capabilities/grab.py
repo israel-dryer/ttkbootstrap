@@ -49,8 +49,8 @@ class GrabMixin:
         """Return the widget in this application that currently holds the grab.
 
         Returns:
-            The widget instance that currently holds the grab, or None if no grab
-            is held by this application.
+            The widget instance that currently holds the grab, or None if
+                no grab is held by this application.
         """
         return super().grab_current()  # type: ignore[misc]
 
@@ -58,9 +58,8 @@ class GrabMixin:
         """Return the grab status for this widget.
 
         Returns:
-            One of:
-              - "local" if this widget holds a local grab,
-              - "global" if this widget holds a global grab,
-              - None if this widget does not hold the grab.
+            The grab status: "local" if this widget holds a local grab,
+                "global" if this widget holds a global grab, or None if
+                this widget does not hold the grab.
         """
         return super().grab_status()  # type: ignore[misc]
