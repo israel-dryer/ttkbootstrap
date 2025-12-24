@@ -111,6 +111,7 @@ Good virtual event names:
 - use past tense or completed intent
 
 Examples:
+
 - `<<ItemSelected>>`
 - `<<FormSubmitted>>`
 - `<<DialogClosed>>`
