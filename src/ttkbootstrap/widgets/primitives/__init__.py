@@ -7,10 +7,12 @@ from .checktoggle import CheckToggle
 from .combobox import Combobox
 from .entry import Entry
 from .frame import Frame
+from .gridframe import GridFrame
 from .label import Label
 from .labelframe import LabelFrame
 from .menubutton import MenuButton
 from .notebook import Notebook
+from .packframe import PackFrame
 from .panedwindow import PanedWindow
 from .progressbar import Progressbar
 from .radiobutton import RadioButton
@@ -30,10 +32,12 @@ __all__ = [
     "Combobox",
     "Entry",
     "Frame",
+    "GridFrame",
     "Label",
     "LabelFrame",
     "MenuButton",
     "Notebook",
+    "PackFrame",
     "PanedWindow",
     "Progressbar",
     "RadioButton",

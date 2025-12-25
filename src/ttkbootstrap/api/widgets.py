@@ -18,6 +18,7 @@ from ttkbootstrap.widgets.composites.field import Field, FieldOptions
 from ttkbootstrap.widgets.composites.floodgauge import FloodGauge
 from ttkbootstrap.widgets.composites.form import Form
 from ttkbootstrap.widgets.primitives.frame import Frame
+from ttkbootstrap.widgets.primitives.gridframe import GridFrame
 from ttkbootstrap.widgets.primitives.label import Label
 from ttkbootstrap.widgets.primitives.labelframe import LabelFrame
 from ttkbootstrap.widgets.composites.labeledscale import LabeledScale
@@ -26,6 +27,7 @@ from ttkbootstrap.widgets.composites.meter import Meter
 from ttkbootstrap.widgets.primitives.notebook import Notebook
 from ttkbootstrap.widgets.composites.numericentry import NumericEntry
 from ttkbootstrap.widgets.primitives.optionmenu import OptionMenu
+from ttkbootstrap.widgets.primitives.packframe import PackFrame
 from ttkbootstrap.widgets.primitives.panedwindow import PanedWindow
 from ttkbootstrap.widgets.composites.pagestack import PageStack
 from ttkbootstrap.widgets.composites.passwordentry import PasswordEntry
@@ -69,6 +71,7 @@ __all__ = [
     "FloodGauge",
     "Form",
     "Frame",
+    "GridFrame",
     "Label",
     "LabelFrame",
     "LabeledScale",
@@ -77,6 +80,7 @@ __all__ = [
     "Notebook",
     "NumericEntry",
     "OptionMenu",
+    "PackFrame",
     "PageStack",
     "PanedWindow",
     "PasswordEntry",
