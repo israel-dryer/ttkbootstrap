@@ -65,6 +65,97 @@ ttk.Entry(app, bootstyle="warning")
 
 ---
 
+## Color Modifiers
+
+Colors support **chained bracket modifiers** for dynamic adjustments:
+
+```python
+# Elevation adjustments
+"background[+1]"      # One level lighter/elevated
+"background[-1]"      # One level darker/recessed
+"primary[+2]"         # Two levels lighter
+
+# Shade selection
+"primary[100]"        # Lightest shade
+"primary[500]"        # Base shade
+"primary[900]"        # Darkest shade
+
+# Semantic modifiers
+"primary[subtle]"     # Subdued version for backgrounds
+"primary[muted]"      # Muted foreground with good contrast
+
+# Chained modifiers (applied left to right)
+"primary[100][muted]" # Light primary shade, then muted
+"background[+1][subtle]" # Elevated background, then subtle
+```
+
+### Elevation
+
+Elevation modifiers adjust lightness relative to the base color:
+
+```python
+# Common patterns
+"background[+1]"  # Raised surface (cards, dialogs)
+"background[+2]"  # Higher elevation (tooltips, menus)
+"background[-1]"  # Recessed area (wells, insets)
+```
+
+### Shades
+
+Shade modifiers select from the color's palette:
+
+```python
+# Primary color shades
+"primary[50]"   # Lightest
+"primary[100]"
+"primary[200]"
+"primary[300]"
+"primary[400]"
+"primary[500]"  # Base color
+"primary[600]"
+"primary[700]"
+"primary[800]"
+"primary[900]"  # Darkest
+```
+
+### Subtle and Muted
+
+Semantic modifiers for common UI patterns:
+
+| Modifier | Purpose |
+|----------|---------|
+| `subtle` | Subdued background tint—good for hover states, selection highlights |
+| `muted` | Low-contrast foreground—good for secondary text, disabled states |
+
+```python
+# Subtle backgrounds
+"primary[subtle]"   # Tinted background for primary context
+"success[subtle]"   # Light green background for success states
+"danger[subtle]"    # Light red background for error states
+
+# Muted text
+"foreground[muted]" # Secondary text color
+"primary[muted]"    # Subdued primary-colored text
+```
+
+### Modifier Pipeline
+
+Modifiers are applied left-to-right as a pipeline:
+
+```python
+# Step by step:
+"primary[100][muted]"
+# 1. Look up primary[100] (light primary shade)
+# 2. Apply muted (reduce contrast for text)
+
+"background[+1][subtle]"
+# 1. Look up background
+# 2. Elevate by +1
+# 3. Apply subtle treatment
+```
+
+---
+
 ## Variants
 
 Some widgets support **variant** modifiers:
