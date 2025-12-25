@@ -4,10 +4,12 @@ title: Frame
 
 # Frame
 
-`Frame` is a **layout container** for grouping widgets and creating structure.
+`Frame` is a **basic layout container** for grouping widgets and creating structure.
 
-It's a themed wrapper around `ttk.Frame`, so it participates in ttkbootstrap styling while behaving like a standard ttk
-container. Use `Frame` to build sections, padded regions, tool areas, and compositional "blocks" in your UI.
+It's a themed wrapper around `ttk.Frame`, so it participates in ttkbootstrap styling while behaving like a standard ttk container. Use `Frame` when you need a simple container without automatic layout management.
+
+!!! tip "Prefer PackFrame or GridFrame for most layouts"
+    For building layouts with automatic child management, use [PackFrame](packframe.md) (vertical/horizontal stacks with gap spacing) or [GridFrame](gridframe.md) (CSS Grid-like 2D layouts). These provide a more declarative, less error-prone layout experience.
 
 <!--
 IMAGE: Frame used for layout
@@ -39,15 +41,16 @@ app.mainloop()
 
 Use `Frame` when:
 
-- you need a container for grouping and layout
-
+- you need a basic container without automatic layout management
 - you want padding around a cluster of widgets
-
 - you want to apply a shared background/surface to a region
+- you're manually managing child widgets with `pack()` or `grid()`
 
 **Consider a different control when:**
 
-- the group needs a visible label (a titled section) -- use [LabelFrame](labelframe.md)
+- you want automatic vertical/horizontal stacking with gaps -> use [PackFrame](packframe.md)
+- you need a 2D grid layout with auto-placement -> use [GridFrame](gridframe.md)
+- the group needs a visible label (a titled section) -> use [LabelFrame](labelframe.md)
 
 ---
 
@@ -108,16 +111,15 @@ pane.pack_propagate(False)
 
 - Use the frame as the parent for widgets you want visually/structurally grouped.
 
-- Combine with `pack`, `grid`, or your v2 layout abstractions (e.g., `PackFrame`, `GridFrame`) to build structure.
+- With `Frame`, you manually call `pack()` or `grid()` on each child widget.
+
+- For automatic layout management, use [PackFrame](packframe.md) or [GridFrame](gridframe.md) instead.
 
 - A `Frame` is not interactive; it exists to:
 
     - group related widgets
-
     - apply padding/margins around a region
-
-    - host grid/pack layouts for a subsection of the UI
-
+    - host manual pack/grid layouts for a subsection of the UI
     - apply a shared visual surface (when styled)
 
 ---
@@ -126,10 +128,10 @@ pane.pack_propagate(False)
 
 ### Related widgets
 
+- [PackFrame](packframe.md) -- frame with automatic pack-based layout (vertical/horizontal stacks)
+- [GridFrame](gridframe.md) -- frame with automatic grid-based layout (2D grids with auto-placement)
 - [LabelFrame](labelframe.md) -- a framed container with a label
-
 - [Separator](separator.md) -- a visual divider between regions
-
 - [PanedWindow](panedwindow.md) -- resizable split regions
 
 ### Framework concepts
