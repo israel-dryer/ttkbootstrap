@@ -66,19 +66,19 @@ The Platform section explains **how ttkbootstrap expects you to work with Tk**.
 The Platform section covers:
 
 - **Fundamentals**
-  - Tk vs ttk
-  - the event loop
-  - event delivery and bindings
-  - widget lifecycle
-  - geometry and layout
+    - Tk vs ttk
+      - the event loop
+      - event delivery and bindings
+      - widget lifecycle
+      - geometry and layout
 - **Styling internals**
-  - ttk styles and elements
+    - ttk styles and elements
 - **Windows**
-  - top-level windows and modality
+    - top-level windows and modality
 - **Rendering**
-  - images, DPI, and scaling
+    - images, DPI, and scaling
 - **Operations**
-  - performance considerations
-  - debugging techniques
+    - performance considerations
+      - debugging techniques
 
 Together, these topics define the foundation on which all ttkbootstrap applications are built.

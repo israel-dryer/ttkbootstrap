@@ -35,6 +35,7 @@ Their appearance varies significantly across platforms and themes.
 ttk (Themed Tk) is a newer widget set layered on top of Tk.
 
 ttk widgets:
+
 - separate appearance from behavior
 - rely on a theme and style engine
 - provide more consistent native-looking controls
