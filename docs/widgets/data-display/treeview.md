@@ -174,7 +174,7 @@ for item in new_data:
 ```
 
 !!! link "Signals"
-    See [Signals](../../concepts/signals.md) for reactive programming patterns.
+    See [Signals](../../capabilities/signals/signals.md) for reactive programming patterns.
 
 ---
 
@@ -192,7 +192,7 @@ for item in new_data:
 
 - [Design System](../../design-system/index.md) — colors, typography, and theming
 
-- [Signals](../../concepts/signals.md) — reactive data binding
+- [Signals](../../capabilities/signals/signals.md) — reactive data binding
 
 ### API reference
 

@@ -112,7 +112,7 @@ ttk.Badge(app, text="status.new", localize=True)
 ```
 
 !!! link "Localization"
-    See [Localization](../../concepts/localization.md) for translation setup.
+    See [Localization](../../capabilities/localization.md) for translation setup.
 
 ---
 
@@ -127,7 +127,7 @@ count.set(10)  # Badge updates automatically
 ```
 
 !!! link "Signals"
-    See [Signals](../../concepts/signals.md) for reactive programming patterns.
+    See [Signals](../../capabilities/signals/signals.md) for reactive programming patterns.
 
 ---
 
@@ -149,9 +149,9 @@ count.set(10)  # Badge updates automatically
 
 - [Design System](../../design-system/index.md) — colors, typography, and theming
 
-- [Signals](../../concepts/signals.md) — reactive data binding
+- [Signals](../../capabilities/signals/signals.md) — reactive data binding
 
-- [Localization](../../concepts/localization.md) — translation support
+- [Localization](../../capabilities/localization.md) — translation support
 
 ### API reference
 

@@ -74,7 +74,7 @@ ttk.Combobox(app, values=["A", "B"], bootstyle="secondary")
 ```
 
 !!! link "Design System"
-    See the [Design System](/concepts/design-system.md) for available bootstyle tokens.
+    See the [Design System](../../design-system/index.md) for available bootstyle tokens.
 
 ### Colors and styling
 
@@ -222,7 +222,7 @@ If you need localization-aware field labels and messaging, prefer [SelectBox](/w
 
 ### Framework concepts
 
-- [Events and Signals](/concepts/events-signals.md)
+- [Events and Signals](../../capabilities/signals/signals.md)
 
 ### API reference
 

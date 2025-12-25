@@ -130,7 +130,7 @@ usage.set(75)  # Meter updates automatically
 ```
 
 !!! link "Signals"
-    See [Signals](../../concepts/signals.md) for reactive programming patterns.
+    See [Signals](../../capabilities/signals/signals.md) for reactive programming patterns.
 
 ---
 
@@ -148,7 +148,7 @@ usage.set(75)  # Meter updates automatically
 
 - [Design System](../../design-system/index.md) — colors, typography, and theming
 
-- [Signals](../../concepts/signals.md) — reactive data binding
+- [Signals](../../capabilities/signals/signals.md) — reactive data binding
 
 ### API reference
 

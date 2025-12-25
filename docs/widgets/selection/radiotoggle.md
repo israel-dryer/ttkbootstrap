@@ -79,7 +79,7 @@ ttk.RadioToggle(app, bootstyle="success")
 ```
 
 !!! link "Design System"
-    See [Design System](../../concepts/design-system.md) for color tokens, theming, and styling guidelines.
+    See [Design System](../../design-system/index.md) for color tokens, theming, and styling guidelines.
 
 ---
 
@@ -134,7 +134,7 @@ Same as `RadioButton`: selection is constrained to the values represented by the
 `RadioToggle` text follows the same localization behavior as other widgets that support `text` / `textvariable`.
 
 !!! link "Localization"
-    See [Localization](../../concepts/localization.md) for details on internationalizing widget text.
+    See [Localization](../../capabilities/localization.md) for details on internationalizing widget text.
 
 ---
 
@@ -143,7 +143,7 @@ Same as `RadioButton`: selection is constrained to the values represented by the
 Bind a shared `signal` (preferred) or `variable` to enable reactive updates across the toggle group.
 
 !!! link "Signals"
-    See [Signals](../../concepts/signals.md) for reactive programming patterns and state management.
+    See [Signals](../../capabilities/signals/signals.md) for reactive programming patterns and state management.
 
 ---
 
@@ -157,9 +157,9 @@ Bind a shared `signal` (preferred) or `variable` to enable reactive updates acro
 
 ### Framework concepts
 
-- [Design System](../../concepts/design-system.md) — color tokens and theming
-- [Signals](../../concepts/signals.md) — reactive state management
-- [Localization](../../concepts/localization.md) — internationalizing widget text
+- [Design System](../../design-system/index.md) — color tokens and theming
+- [Signals](../../capabilities/signals/signals.md) — reactive state management
+- [Localization](../../capabilities/localization.md) — internationalizing widget text
 
 ### API reference
 

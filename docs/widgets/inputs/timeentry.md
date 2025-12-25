@@ -147,7 +147,7 @@ If your implementation supports a picker-style interaction, it should be treated
 `TimeEntry` supports locale-aware time formatting. Times are displayed according to the current locale's conventions (12-hour vs 24-hour format, AM/PM indicators).
 
 !!! link "Localization"
-    For complete localization configuration and supported formats, see the [Localization](../../guides/localization.md) documentation.
+    For complete localization configuration and supported formats, see the [Localization](../../capabilities/localization.md) documentation.
 
 ---
 
@@ -156,7 +156,7 @@ If your implementation supports a picker-style interaction, it should be treated
 `TimeEntry` integrates with the signals system for reactive data binding. Changes to the field value can automatically propagate to other parts of your application.
 
 !!! link "Signals"
-    For details on reactive patterns and data binding, see the [Signals](../../guides/signals.md) documentation.
+    For details on reactive patterns and data binding, see the [Signals](../../capabilities/signals/signals.md) documentation.
 
 ---
 
@@ -172,9 +172,9 @@ If your implementation supports a picker-style interaction, it should be treated
 
 ### Framework concepts
 
-- [Forms](../../guides/forms.md) — working with form controls
-- [Localization](../../guides/localization.md) — internationalization and formatting
-- [Signals](../../guides/signals.md) — reactive data binding
+- [Forms](../../cookbook/forms.md) — working with form controls
+- [Localization](../../capabilities/localization.md) — internationalization and formatting
+- [Signals](../../capabilities/signals/signals.md) — reactive data binding
 
 ### API reference
 

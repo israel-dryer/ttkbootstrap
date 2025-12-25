@@ -58,7 +58,7 @@ ttk.Entry(app, bootstyle="secondary")
 ```
 
 !!! link "Design System"
-    See the [Design System](/concepts/design-system.md) for available bootstyle tokens.
+    See the [Design System](../../design-system/index.md) for available bootstyle tokens.
 
 ---
 
@@ -165,11 +165,11 @@ If you want user-friendly validation messages and commit-based validation, prefe
 
 ### Framework concepts
 
-- [Design System](/concepts/design-system.md)
+- [Design System](../../design-system/index.md)
 
-- [Events and Signals](/concepts/events-signals.md)
+- [Events and Signals](../../capabilities/signals/signals.md)
 
-- [Localization](/concepts/localization.md)
+- [Localization](../../capabilities/localization.md)
 
 ### API reference
 

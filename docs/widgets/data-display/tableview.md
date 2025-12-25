@@ -141,7 +141,7 @@ tv.build_table_data(coldata=new_columns, rowdata=new_rows)
 ```
 
 !!! link "Signals"
-    See [Signals](../../concepts/signals.md) for reactive programming patterns.
+    See [Signals](../../capabilities/signals/signals.md) for reactive programming patterns.
 
 ---
 
@@ -159,7 +159,7 @@ tv.build_table_data(coldata=new_columns, rowdata=new_rows)
 
 - [Design System](../../design-system/index.md) — colors, typography, and theming
 
-- [Signals](../../concepts/signals.md) — reactive data binding
+- [Signals](../../capabilities/signals/signals.md) — reactive data binding
 
 ### API reference
 

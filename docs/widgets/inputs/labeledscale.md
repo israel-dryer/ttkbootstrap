@@ -68,7 +68,7 @@ ttk.LabeledScale(app, bootstyle="success")
 ```
 
 !!! link "Design System"
-    LabeledScale styling follows the theme's color palette. See [Design System](../../concepts/design-system.md) for customization options.
+    LabeledScale styling follows the theme's color palette. See [Design System](../../design-system/index.md) for customization options.
 
 ---
 

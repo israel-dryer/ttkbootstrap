@@ -178,7 +178,7 @@ d.add_validation_rule("required", message="A date is required")
 `DateEntry` supports locale-aware date formatting through the `value_format` option. Dates are displayed according to the current locale's conventions (date order, separators, month names).
 
 !!! link "Localization"
-    For complete localization configuration and supported formats, see the [Localization](../../guides/localization.md) documentation.
+    For complete localization configuration and supported formats, see the [Localization](../../capabilities/localization.md) documentation.
 
 ---
 
@@ -187,7 +187,7 @@ d.add_validation_rule("required", message="A date is required")
 `DateEntry` integrates with the signals system for reactive data binding. Changes to the field value can automatically propagate to other parts of your application.
 
 !!! link "Signals"
-    For details on reactive patterns and data binding, see the [Signals](../../guides/signals.md) documentation.
+    For details on reactive patterns and data binding, see the [Signals](../../capabilities/signals/signals.md) documentation.
 
 ---
 
@@ -203,9 +203,9 @@ d.add_validation_rule("required", message="A date is required")
 
 ### Framework concepts
 
-- [Forms](../../guides/forms.md) — working with form controls
-- [Localization](../../guides/localization.md) — internationalization and formatting
-- [Signals](../../guides/signals.md) — reactive data binding
+- [Forms](../../cookbook/forms.md) — working with form controls
+- [Localization](../../capabilities/localization.md) — internationalization and formatting
+- [Signals](../../capabilities/signals/signals.md) — reactive data binding
 
 ### API reference
 

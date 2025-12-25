@@ -255,7 +255,7 @@ items.set([*items.get(), {"id": 2, "title": "Item 2"}])
 ```
 
 !!! link "Signals"
-    See [Signals](../../concepts/signals.md) for reactive programming patterns.
+    See [Signals](../../capabilities/signals/signals.md) for reactive programming patterns.
 
 ---
 
@@ -277,9 +277,9 @@ items.set([*items.get(), {"id": 2, "title": "Item 2"}])
 
 - [Design System](../../design-system/index.md) — colors, typography, and theming
 
-- [Signals](../../concepts/signals.md) — reactive data binding
+- [Signals](../../capabilities/signals/signals.md) — reactive data binding
 
-- [Data Sources](../../concepts/datasources.md) — custom data providers
+- [Data Sources](../../reference/data/index.md) — custom data providers
 
 ### API reference
 

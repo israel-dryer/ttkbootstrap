@@ -71,7 +71,7 @@ ttk.Spinbox(app, from_=0, to=10, bootstyle="primary")
 ```
 
 !!! link "Design System"
-    See the [Design System](/concepts/design-system.md) for available bootstyle tokens.
+    See the [Design System](../../design-system/index.md) for available bootstyle tokens.
 
 ---
 
@@ -177,7 +177,7 @@ For validated, commit-based workflows, prefer [SpinnerEntry](/widgets/inputs/spi
 
 ### Framework concepts
 
-- [Events and Signals](/concepts/events-signals.md)
+- [Events and Signals](../../capabilities/signals/signals.md)
 
 ### API reference
 

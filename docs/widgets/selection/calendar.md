@@ -111,7 +111,7 @@ Calendar also uses internal style names for day/range rendering (e.g. `*-calenda
 * in-range days
 
 !!! link "Design System"
-    For a complete overview of theming, colors, and style tokens, see the [Design System](../../concepts/design-system.md) documentation.
+    For a complete overview of theming, colors, and style tokens, see the [Design System](../../design-system/index.md) documentation.
 
 ---
 
@@ -249,7 +249,7 @@ Calendar localizes:
 It refreshes automatically when `<<LocaleChanged>>` is generated.
 
 !!! link "Localization"
-    For complete details on internationalization and locale configuration, see the [Localization](../../concepts/localization.md) documentation.
+    For complete details on internationalization and locale configuration, see the [Localization](../../capabilities/localization.md) documentation.
 
 ---
 
@@ -265,11 +265,11 @@ It refreshes automatically when `<<LocaleChanged>>` is generated.
 
 ### Framework concepts
 
-* [Selection](../../concepts/selection.md)
+* [Selection](../../capabilities/state-and-interaction.md)
 
-* [Forms](../../concepts/forms.md)
+* [Forms](../../cookbook/forms.md)
 
-* [Localization](../../concepts/localization.md)
+* [Localization](../../capabilities/localization.md)
 
 ### API reference
 

@@ -158,7 +158,7 @@ Common patterns include:
 `PasswordEntry` inherits the localization capabilities from `TextEntry`. Labels, messages, and validation feedback can be localized for different languages.
 
 !!! link "Localization"
-    For complete localization configuration and supported formats, see the [Localization](../../guides/localization.md) documentation.
+    For complete localization configuration and supported formats, see the [Localization](../../capabilities/localization.md) documentation.
 
 ---
 
@@ -167,7 +167,7 @@ Common patterns include:
 `PasswordEntry` integrates with the signals system for reactive data binding. Changes to the field value can automatically propagate to other parts of your application.
 
 !!! link "Signals"
-    For details on reactive patterns and data binding, see the [Signals](../../guides/signals.md) documentation.
+    For details on reactive patterns and data binding, see the [Signals](../../capabilities/signals/signals.md) documentation.
 
 ---
 
@@ -181,9 +181,9 @@ Common patterns include:
 
 ### Framework concepts
 
-- [Forms](../../guides/forms.md) — working with form controls
-- [Localization](../../guides/localization.md) — internationalization and formatting
-- [Signals](../../guides/signals.md) — reactive data binding
+- [Forms](../../cookbook/forms.md) — working with form controls
+- [Localization](../../capabilities/localization.md) — internationalization and formatting
+- [Signals](../../capabilities/signals/signals.md) — reactive data binding
 
 ### API reference
 

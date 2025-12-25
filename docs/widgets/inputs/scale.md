@@ -61,7 +61,7 @@ ttk.Scale(app, from_=0, to=100, orient="horizontal")  # or "vertical"
     Vertical scales work well for audio levels, side panels, or compact tool areas.
 
 !!! link "Design System"
-    Scale styling follows the theme's color palette. See [Design System](../../concepts/design-system.md) for customization options.
+    Scale styling follows the theme's color palette. See [Design System](../../design-system/index.md) for customization options.
 
 ---
 
