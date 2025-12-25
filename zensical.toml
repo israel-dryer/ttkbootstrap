@@ -107,8 +107,9 @@ nav = [
         { "App Structure" = "guides/app-structure.md" },
         { "Layout" = "guides/layout.md" },
         { "Reactivity" = "guides/reactivity.md" },
-        { "Localization" = "guides/localization.md" },
+        { "Typography" = "guides/typography.md" },
         { "Styling" = "guides/styling.md" },
+        { "Localization" = "guides/localization.md" },
     ] },
     { "Design System" = [
         { "Overview" = "design-system/index.md" },

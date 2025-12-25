@@ -54,13 +54,17 @@ Building layouts with Frame, PackFrame, and GridFrame. When to use each, and how
 
 Signals, callbacks, and events—what each is for, and how to combine them effectively.
 
-### [Localization](localization.md)
+### [Typography](typography.md)
 
-Making applications language-aware with message catalogs and locale-aware formatting.
+Using font tokens, modifiers, and the Font class for consistent text styling.
 
 ### [Styling](styling.md)
 
 Working with the design system—semantic colors, variants, and consistent styling across widgets.
+
+### [Localization](localization.md)
+
+Making applications language-aware with message catalogs and locale-aware formatting.
 
 ---
 
