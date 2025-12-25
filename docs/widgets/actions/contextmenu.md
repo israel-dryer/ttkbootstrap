@@ -1,57 +1,19 @@
 ---
-
-## Framework integration
-
-### Signals & events
-
-Widgets participate in ttkbootstrap’s reactive model.
-
-- **Signals** represent a widget’s **value/state** and are built on **Tk variables** with a modern subscription API.
-
-- **Events** (including virtual events) represent **interactions and moments** (click, commit, focus, selection changed).
-
-Signals and events are complementary: use signals for state flow and composition, and use events when you need
-interaction-level integration.
-
-!!! link "See also: [Signals](../../capabilities/signals.md), [Virtual Events](../../capabilities/virtual-events.md), [Callbacks](../../capabilities/callbacks.md)"
-
-### Design system
-
-Widgets are styled through ttkbootstrap’s design system using:
-
-- semantic colors via `bootstyle` (e.g., `primary`, `success`, `danger`)
-
-- variants (e.g., `outline`, `link`, `ghost` where supported)
-
-- consistent state visuals across themes
-
-!!! link "See also: [Colors](../../design-system/colors.md), [Variants](../../design-system/variants.md)"
-
-### Layout properties
-
-Widgets support ttkbootstrap layout conveniences (when available) so they compose cleanly in modern layouts.
-
-!!! link "See also: [Layout Properties](../../capabilities/layout-props.md)"
-
-### Localization
-
-Text labels can be localized in localized applications.
-
-!!! link "See also: [Localization](../../capabilities/localization.md)"
-
-
----
-
 title: ContextMenu
 ---
 
 # ContextMenu
 
-`ContextMenu` is a lightweight, widget-backed pop-up menu used to present contextual actions. It supports commands, checkbuttons, radiobuttons, icons, separators, and keyboard navigation, while remaining fully styleable and consistent across platforms.
+`ContextMenu` is a widget-backed pop-up menu for right-click and contextual actions.
+
+Unlike Tk’s native `Menu`, it is composed of ttkbootstrap widgets. This makes it fully
+themeable (light/dark), enables icons, and allows richer layout and interaction patterns.
+
+---
 
 ## Quick start
 
-A `ContextMenu` is typically shown in response to a right-click, but it can also be displayed programmatically.
+Create a menu, add items, and show it in response to a right-click.
 
 ```python
 import ttkbootstrap as ttk
@@ -59,16 +21,15 @@ import ttkbootstrap as ttk
 app = ttk.App()
 
 menu = ttk.ContextMenu(app)
-menu.add_command(text="Open", icon="folder2-open", command=lambda: print("Open"))
-menu.add_command(text="Rename", icon="pencil")
+menu.add_command(text="Open", icon="folder-open", command=lambda: print("Open"))
+menu.add_command(text="Rename", command=lambda: print("Rename"))
 menu.add_separator()
-menu.add_command(text="Delete", icon="trash", command=app.destroy)
+menu.add_command(text="Delete", icon="trash", command=lambda: print("Delete"))
 
-def show_menu(event):
-    menu.show(event.x_root, event.y_root)
+def on_right_click(event):
+    menu.show((event.x_root, event.y_root))
 
-app.bind("<Button-3>", show_menu)
-
+app.bind("<Button-3>", on_right_click)
 app.mainloop()
 ```
 
@@ -76,142 +37,138 @@ app.mainloop()
 
 ## When to use
 
-Use a ContextMenu when actions are **contextual**, secondary, or dependent on the current selection.
+Use `ContextMenu` when:
+
+- actions are contextual to a widget, list row, or region
+- you want theme-consistent menus across platforms
+- you want icons or richer item styling
 
 ### Consider a different control when…
 
-- Actions are primary or frequently used → use **Button** or **Toolbar**
-
-- You need a compact action launcher → use **DropdownButton**
-
-- You need native menubar integration → use **MenuButton**
-
-- Actions require multi-step input → use a dialog
+- you want a native OS menu → use Tk’s `Menu` via [MenuButton](menubutton.md)
+- you want a button-first action with a small menu → use [DropdownButton](dropdownbutton.md)
 
 ---
 
-## Appearance
+## Menu items
 
-ContextMenu items are fully styleable and integrate with ttkbootstrap’s theme system.
+### Command items
 
-- Supports icons per item
-
-- Supports checkbuttons and radiobuttons
-
-- Uses the active theme’s colors, spacing, and typography
-
-!!! note "Styling"
-    ContextMenu styling follows the same design tokens as other widgets. See **Guides → Design System** for details.
-
----
-
-## Examples & patterns
-
-### Key concepts: widget-backed menus
-
-Unlike Tk’s native `Menu`, `ContextMenu` is composed of real ttkbootstrap widgets. This enables:
-
-- Full theming and dark/light mode consistency
-
-- Icons and custom layouts per item
-
-- Predictable cross-platform behavior
-
-### Adding items
+Use command items for standard actions.
 
 ```python
-menu.add_command(text="Open", command=lambda: print("Open"))
-menu.add_checkbutton(text="Show grid", value=True)
-menu.add_radiobutton(text="Mode A", value="a", variable=mode_var)
-menu.add_separator()
+menu.add_command(text="Open", command=on_open)
 ```
 
-### Defining items up front
+### Check items
+
+Use check items for independent on/off options.
 
 ```python
-items = [
-    ttk.ContextMenuItem("command", text="Copy"),
-    ttk.ContextMenuItem("command", text="Paste"),
-    ttk.ContextMenuItem("separator"),
-    ttk.ContextMenuItem("command", text="Delete"),
-]
-
-menu = ttk.ContextMenu(app, items=items)
+menu.add_checkbutton(text="Show hidden files", value=True)
+menu.add_checkbutton(text="Pin to sidebar", value=False)
 ```
 
-### Managing items dynamically
+### Radio items
 
-`ContextMenu` exposes a full item-management API:
-
-- `add_item(...)`, `add_items(...)`
-
-- `insert_item(...)`, `remove_item(...)`, `move_item(...)`
-
-- `configure_item(...)`
-
-- `items(...)` (get or replace all items)
-
-This is especially useful when menu contents depend on selection state.
-
-### Centralized selection handling
+Use radio items for selecting one option from a set.
 
 ```python
-def on_item_click(data: dict):
-    # Example payload:
-    # {"type": "command", "text": "Delete", "value": None}
-    print(data)
-
-menu.on_item_click(on_item_click)
+sort_var = ttk.StringVar(value="name")
+menu.add_radiobutton(text="Sort by name", value="name", variable=sort_var)
+menu.add_radiobutton(text="Sort by date", value="date", variable=sort_var)
 ```
-
-To unbind:
-
-```python
-menu.off_item_click()
-```
-
-!!! tip "Single action router"
-    Centralize logic with `on_item_click(...)` when menu contents are dynamic or generated at runtime.
 
 ---
 
 ## Behavior
 
-When shown, ContextMenu:
+- `show(position)` displays the menu at a screen coordinate `(x, y)`.
+- `hide()` programmatically closes the menu.
+- The menu hides automatically when the user clicks outside.
+- Item commands fire on click and close the menu.
 
-- Grabs focus automatically
+!!! link "See [State & Interaction](../../capabilities/state-and-interaction.md) for focus, hover, and disabled behavior across widgets."
 
-- Supports arrow-key navigation
-
-- Activates items with **Enter**
-
-- Closes on **Escape** or outside click
-
-Keyboard and focus behavior are handled internally while the menu is visible.
+!!! link "See [Virtual Events](../../capabilities/virtual-events.md) for interaction events emitted by ttkbootstrap widgets."
 
 ---
 
-## Localization & reactivity
+## Icons
 
-Menu item labels can participate in localization the same way as other widgets. For the full localization model, see **Guides → Internationalization → Localization**.
+Menu items use the same icon system as other ttkbootstrap widgets.
 
----
+```python
+menu.add_command(text="Settings", icon="gear", command=on_settings)
+```
 
-## Related widgets
-
-- **DropdownButton** — button-triggered menus using ContextMenu internally
-
-- **MenuButton** — native `tk.Menu` based trigger
-
-- **Dialog / MessageDialog** — for confirmations and complex actions
+!!! link "See [Icons & Imagery](../../capabilities/icons.md) for icon sizing, DPI handling, and recoloring behavior."
 
 ---
 
-## Reference
+## Localization
 
-- **API Reference:** `ttkbootstrap.ContextMenu`
+If localization is enabled, menu item labels can be message tokens.
 
-- **Related guides:** Design System → Icons, Internationalization → Localization
+```python
+menu.add_command(text="menu.open", command=on_open)
+menu.add_command(text="menu.delete", command=on_delete)
+```
+
+!!! link "See [Localization](../../capabilities/localization.md) for how message tokens are resolved and language switching works."
+
+---
+
+## Positioning patterns
+
+### Attach to a target widget
+
+```python
+menu = ttk.ContextMenu(
+    app,
+    target=my_button,
+    anchor="nw",
+    attach="se",
+    offset=(5, 5)
+)
+menu.show()
+```
+
+### Show at pointer location
+
+```python
+menu.show((event.x_root, event.y_root))
+```
+
+---
+
+## Advanced patterns
+
+### Dynamic menus
+
+Rebuild menu items just before showing to reflect current context.
+
+```python
+def on_right_click(event):
+    menu.clear()
+    menu.add_command(text="Open", command=on_open)
+    if can_delete():
+        menu.add_command(text="Delete", command=on_delete)
+    menu.show((event.x_root, event.y_root))
+```
+
+### Centralized item handling
+
+Register a single callback to route menu actions.
+
+```python
+def on_item_click(info):
+    print(info["text"], info["value"])
+
+menu.on_item_click(on_item_click)
+```
+
+!!! link "See [API Reference → ContextMenu](../../reference/widgets/ContextMenu.md) for full item management and callback APIs."
 
 ---
 
@@ -219,18 +176,18 @@ Menu item labels can participate in localization the same way as other widgets. 
 
 ### Related widgets
 
-- [Button](button.md)
-
-- [ButtonGroup](buttongroup.md)
-
 - [DropdownButton](dropdownbutton.md)
+- [MenuButton](menubutton.md)
+- [Button](button.md)
 
 ### Framework concepts
 
+- [Icons & Imagery](../../capabilities/icons-and-imagery.md)
+- [Virtual Events](../../capabilities/virtual-events.md)
 - [State & Interaction](../../capabilities/state-and-interaction.md)
-
-- [Configuration](../../capabilities/configuration.md)
+- [Localization](../../capabilities/localization.md)
 
 ### API reference
 
 - [`ttkbootstrap.ContextMenu`](../../reference/widgets/ContextMenu.md)
+- [`ttkbootstrap.ContextMenuItem`](../../reference/widgets/ContextMenuItem.md)
