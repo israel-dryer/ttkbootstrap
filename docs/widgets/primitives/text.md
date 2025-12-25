@@ -1,55 +1,12 @@
 ---
-
-## Framework integration
-
-### Signals & events
-
-Widgets participate in ttkbootstrap’s reactive model.
-
-- **Signals** represent a widget’s **value/state** and are built on **Tk variables** with a modern subscription API.
-
-- **Events** (including virtual events) represent **interactions and moments** (click, commit, focus, selection changed).
-
-Signals and events are complementary: use signals for state flow and composition, and use events when you need
-interaction-level integration.
-
-!!! link "See also: [Signals](../../capabilities/signals.md), [Virtual Events](../../capabilities/virtual-events.md), [Callbacks](../../capabilities/callbacks.md)"
-
-### Design system
-
-Widgets are styled through ttkbootstrap’s design system using:
-
-- semantic colors via `bootstyle` (e.g., `primary`, `success`, `danger`)
-
-- variants (e.g., `outline`, `link`, `ghost` where supported)
-
-- consistent state visuals across themes
-
-!!! link "See also: [Colors](../../design-system/colors.md), [Variants](../../design-system/variants.md)"
-
-### Layout properties
-
-Widgets support ttkbootstrap layout conveniences (when available) so they compose cleanly in modern layouts.
-
-!!! link "See also: [Layout Properties](../../capabilities/layout-props.md)"
-
-### Localization
-
-Text labels can be localized in localized applications.
-
-!!! link "See also: [Localization](../../capabilities/localization.md)"
-
-
----
-
 title: Text
 ---
 
 # Text
 
-`Text` is Tkinter’s **multi-line text editor** widget (`tk.Text`).
+`Text` is Tkinter's **multi-line text editor** widget (`tk.Text`).
 
-It supports rich behavior that typical entry widgets don’t:
+It supports rich behavior that typical entry widgets don't:
 
 - multiple lines with wrapping and indentation
 
@@ -62,12 +19,12 @@ It supports rich behavior that typical entry widgets don’t:
 ttkbootstrap exposes `Text` as a first-class widget so you can build editors, logs, and rich text UIs with a consistent theme and a clear set of usage patterns.
 
 !!! tip "Prefer Field-based inputs when possible"
-    For most form input, prefer **TextEntry**, **PasswordEntry**, **NumericEntry**, etc.  
+    For most form input, prefer [TextEntry](/widgets/inputs/textentry.md), [PasswordEntry](/widgets/inputs/passwordentry.md), [NumericEntry](/widgets/inputs/numericentry.md), etc.
     Use `Text` when you need **multi-line editing** or **tag-based formatting**.
 
 ---
 
-## Basic usage
+## Quick start
 
 Create a text widget, insert content, and read it back:
 
@@ -89,35 +46,53 @@ app.mainloop()
 
 ---
 
-## Key options
+## When to use
 
-`Text` has a large option surface. These are the ones you’ll use most.
+Use `Text` when:
+
+- you need multi-line editing or display
+
+- you need tags (highlighting, link-like behavior, syntax coloring)
+
+- you need embedded images/widgets
+
+### Consider a different control when...
+
+- **you want the standard "Text + scrollbar" composite with less wiring** - prefer [ScrolledText](/widgets/inputs/scrolledtext.md)
+
+- **input is part of a form and you want label/message/validation and `on_input/on_changed`** - prefer [TextEntry](/widgets/inputs/textentry.md) (and other Field widgets)
+
+---
+
+## Appearance
+
+`Text` has a large option surface. These are the ones you'll use most.
 
 ### Size and wrapping
 
-- `width` — number of **characters** (int)
+- `width` - number of **characters** (int)
 
-- `height` — number of **lines** (int)
+- `height` - number of **lines** (int)
 
-- `wrap` — `"none"`, `"char"`, `"word"`
+- `wrap` - `"none"`, `"char"`, `"word"`
 
 ```python
 ttk.Text(app, width=80, height=24, wrap="word")
 ```
 
 !!! note "Width/height are character/line counts"
-    Some type stubs allow “screen units” for `height`, but Tk’s Text widget is documented in terms of
+    Some type stubs allow "screen units" for `height`, but Tk's Text widget is documented in terms of
     **characters (width)** and **lines (height)**. Prefer integers for portable behavior.
 
 ### Editing and undo
 
-- `state` — `"normal"` or `"disabled"`
+- `state` - `"normal"` or `"disabled"`
 
-- `undo` — enable undo/redo
+- `undo` - enable undo/redo
 
-- `maxundo` — undo stack limit
+- `maxundo` - undo stack limit
 
-- `autoseparators` — automatically insert undo separators
+- `autoseparators` - automatically insert undo separators
 
 ```python
 text = ttk.Text(app, undo=True, maxundo=200, autoseparators=True)
@@ -125,9 +100,9 @@ text = ttk.Text(app, undo=True, maxundo=200, autoseparators=True)
 
 ### Padding and paragraph spacing
 
-- `padx`, `pady` — internal padding
+- `padx`, `pady` - internal padding
 
-- `spacing1`, `spacing2`, `spacing3` — spacing above/between/below lines
+- `spacing1`, `spacing2`, `spacing3` - spacing above/between/below lines
 
 ```python
 ttk.Text(app, padx=10, pady=8, spacing1=2, spacing2=2, spacing3=2)
@@ -149,21 +124,23 @@ If ttkbootstrap applies defaults, you can usually rely on them. If you manually 
 
 ---
 
-## The Text index model
+## Examples and patterns
+
+### The Text index model
 
 Many `Text` methods use **indices** instead of numeric positions.
 
 Common indices:
 
-- `"1.0"` — line 1, character 0 (start of content)
+- `"1.0"` - line 1, character 0 (start of content)
 
-- `"end"` — end of content (includes the trailing newline)
+- `"end"` - end of content (includes the trailing newline)
 
-- `"end-1c"` — end minus 1 character (commonly “real end”)
+- `"end-1c"` - end minus 1 character (commonly "real end")
 
-- `"insert"` — current cursor position
+- `"insert"` - current cursor position
 
-- `"sel.first"` / `"sel.last"` — selection range (when selection exists)
+- `"sel.first"` / `"sel.last"` - selection range (when selection exists)
 
 Examples:
 
@@ -179,13 +156,9 @@ if text.tag_ranges("sel"):
 text.see("end")
 ```
 
----
-
-## Common patterns
-
 ### Read-only text (log viewer)
 
-`Text` doesn’t have a “readonly” state like ttk entries. Use `state="disabled"` and temporarily enable when updating:
+`Text` doesn't have a "readonly" state like ttk entries. Use `state="disabled"` and temporarily enable when updating:
 
 ```python
 def append_line(s: str):
@@ -221,13 +194,11 @@ def highlight(term: str):
     text.tag_configure("hit", background="#fff3cd")  # example highlight
 ```
 
----
-
-## Tags
+### Tags
 
 Tags are the most powerful feature of `Text`. They let you style and interact with *ranges* of text.
 
-### Style a range
+#### Style a range
 
 ```python
 text.insert("end", "Normal\n")
@@ -238,7 +209,7 @@ text.tag_add("bold", start, "end-1c")
 text.tag_configure("bold", font=("TkDefaultFont", 10, "bold"))
 ```
 
-### Link-like text
+#### Link-like text
 
 ```python
 def open_link(_):
@@ -258,9 +229,7 @@ text.tag_bind("link", "<Leave>", lambda e: text.configure(cursor="xterm"))
 !!! tip "Tag names are your API"
     Use stable tag names like `"error"`, `"warning"`, `"link"`, `"code"` so your app can update styling globally.
 
----
-
-## Scrolling
+### Scrolling
 
 Text uses `yscrollcommand` / `yview` to connect a scrollbar.
 
@@ -283,11 +252,9 @@ text.configure(yscrollcommand=sb.set)
 app.mainloop()
 ```
 
----
+### Events and change detection
 
-## Events and change detection
-
-A common “gotcha” is that `Text` does not emit a simple `<<Changed>>` event like your Field-based widgets.
+A common "gotcha" is that `Text` does not emit a simple `<<Changed>>` event like your Field-based widgets.
 
 Two common approaches:
 
@@ -309,7 +276,9 @@ text.edit_modified(False)
 
 ---
 
-## Performance tips
+## Behavior
+
+### Performance tips
 
 - Prefer **batch inserts** (insert a full chunk) over many tiny inserts.
 
@@ -330,62 +299,20 @@ def trim():
 
 ---
 
-## When should I use Text?
-
-Use `Text` when:
-
-- you need multi-line editing or display
-
-- you need tags (highlighting, link-like behavior, syntax coloring)
-
-- you need embedded images/widgets
-
-Prefer **ScrolledText** when:
-
-- you want the standard “Text + scrollbar” composite with less wiring
-
-Prefer **TextEntry** (and other Field widgets) when:
-
-- input is part of a form and you want label/message/validation and `on_input/on_changed`
-
----
-
-## Related widgets
-
-- **ScrolledText** — Text with built-in scrolling
-
-- **TextEntry** — Field-based single-line input
-
-- **Form** — spec-driven form builder (usually uses Field-based inputs)
-
-- **Scrollbar / ScrollView** — scrolling primitives
-
-- **Canvas** — drawing/virtualization primitive (often used for custom editors)
-
----
-
-## Reference
-
-- **API Reference:** `ttkbootstrap.Text` (Tkinter `tk.Text`)
-
----
-
 ## Additional resources
 
 ### Related widgets
 
-- [Canvas](canvas.md)
+- [ScrolledText](/widgets/inputs/scrolledtext.md) - Text with built-in scrolling
 
-- [Combobox](combobox.md)
+- [TextEntry](/widgets/inputs/textentry.md) - Field-based single-line input
 
-- [Entry](entry.md)
+- [Form](/widgets/forms/form.md) - spec-driven form builder (usually uses Field-based inputs)
 
-### Framework concepts
+- [Scrollbar](/widgets/layout/scrollbar.md) / [ScrollView](/widgets/layout/scrollview.md) - scrolling primitives
 
-- [State & Interaction](../../capabilities/state-and-interaction.md)
-
-- [Configuration](../../capabilities/configuration.md)
+- [Canvas](/widgets/primitives/canvas.md) - drawing/virtualization primitive (often used for custom editors)
 
 ### API reference
 
-- [`ttkbootstrap.Text`](../../reference/widgets/Text.md)
+- [ttkbootstrap.Text](/api/widgets/text.md) (Tkinter `tk.Text`)

@@ -1,47 +1,4 @@
 ---
-
-## Framework integration
-
-### Signals & events
-
-Widgets participate in ttkbootstrap’s reactive model.
-
-- **Signals** represent a widget’s **value/state** and are built on **Tk variables** with a modern subscription API.
-
-- **Events** (including virtual events) represent **interactions and moments** (click, commit, focus, selection changed).
-
-Signals and events are complementary: use signals for state flow and composition, and use events when you need
-interaction-level integration.
-
-!!! link "See also: [Signals](../../capabilities/signals.md), [Virtual Events](../../capabilities/virtual-events.md), [Callbacks](../../capabilities/callbacks.md)"
-
-### Design system
-
-Widgets are styled through ttkbootstrap’s design system using:
-
-- semantic colors via `bootstyle` (e.g., `primary`, `success`, `danger`)
-
-- variants (e.g., `outline`, `link`, `ghost` where supported)
-
-- consistent state visuals across themes
-
-!!! link "See also: [Colors](../../design-system/colors.md), [Variants](../../design-system/variants.md)"
-
-### Layout properties
-
-Widgets support ttkbootstrap layout conveniences (when available) so they compose cleanly in modern layouts.
-
-!!! link "See also: [Layout Properties](../../capabilities/layout-props.md)"
-
-### Localization
-
-Text labels can be localized in localized applications.
-
-!!! link "See also: [Localization](../../capabilities/localization.md)"
-
-
----
-
 title: Progressbar
 ---
 
@@ -53,7 +10,7 @@ It communicates how much work has completed (determinate) or that work is ongoin
 
 ---
 
-## Basic usage
+## Quick start
 
 ```python
 import ttkbootstrap as ttk
@@ -68,7 +25,46 @@ app.mainloop()
 
 ---
 
-## Value model
+## When to use
+
+Use Progressbar when:
+
+- progress is linear and measurable
+
+- users benefit from seeing completion percentage
+
+- tracking task progress over time
+
+### Consider a different control when...
+
+- **You want a more expressive, dashboard-style indicator** — use [Meter](meter.md) instead
+
+- **You need to show capacity or fullness** — use [FloodGauge](floodgauge.md) instead
+
+- **You need a compact status indicator** — use [Badge](badge.md) for text-based status
+
+---
+
+## Appearance
+
+### Styling with `bootstyle`
+
+Use `bootstyle` to indicate intent or severity:
+
+```python
+ttk.Progressbar(app, bootstyle="success")
+ttk.Progressbar(app, bootstyle="warning")
+ttk.Progressbar(app, bootstyle="danger")
+```
+
+!!! link "Design System"
+    See [Design System](../../design-system/index.md) for color tokens and theming guidelines.
+
+---
+
+## Examples & patterns
+
+### Value model
 
 - **Determinate**: shows progress between `0` and `maximum`
 
@@ -79,19 +75,30 @@ pb.configure(mode="indeterminate")
 pb.start()
 ```
 
----
+### Common options
 
-## Common options
+- `value` — current progress value
 
-- `value`
+- `maximum` — maximum value (default 100)
 
-- `maximum`
+- `mode="determinate" | "indeterminate"` — progress mode
 
-- `mode="determinate" | "indeterminate"`
+- `length` — length of the progressbar in pixels
 
-- `length`
+- `orient="horizontal" | "vertical"` — orientation
 
-- `orient="horizontal" | "vertical"`
+### Updating progress
+
+```python
+pb = ttk.Progressbar(app, maximum=100)
+pb.pack()
+
+# Update progress programmatically
+pb.configure(value=50)
+
+# Or step by a value
+pb.step(10)
+```
 
 ---
 
@@ -101,46 +108,35 @@ pb.start()
 
 - Indeterminate mode runs an animation until stopped
 
----
+- Use `start()` to begin indeterminate animation
 
-## Styling
-
-Use `bootstyle` to indicate intent or severity:
+- Use `stop()` to halt indeterminate animation
 
 ```python
-ttk.Progressbar(app, bootstyle="success")
-ttk.Progressbar(app, bootstyle="warning")
+# Start indeterminate animation
+pb.configure(mode="indeterminate")
+pb.start(interval=10)  # interval in milliseconds
+
+# Stop animation
+pb.stop()
 ```
 
 ---
 
-## When should I use Progressbar?
+## Reactivity
 
-Use Progressbar when:
+Progressbar can be updated dynamically by binding to signals:
 
-- progress is linear and measurable
+```python
+progress = ttk.Signal(0)
+pb = ttk.Progressbar(app, value=progress)
 
-- users benefit from seeing completion percentage
+# Update progress
+progress.set(50)  # Progressbar updates automatically
+```
 
-Prefer **Meter** when:
-
-- you want a more expressive, dashboard-style indicator
-
----
-
-## Related widgets
-
-- **Meter**
-
-- **FloodGauge**
-
-- **Spinner / BusyIndicator** (if available)
-
----
-
-## Reference
-
-- **API Reference:** `ttkbootstrap.Progressbar`
+!!! link "Signals"
+    See [Signals](../../concepts/signals.md) for reactive programming patterns.
 
 ---
 
@@ -148,18 +144,18 @@ Prefer **Meter** when:
 
 ### Related widgets
 
-- [Badge](badge.md)
+- [Meter](meter.md) — dashboard-style gauge indicators
 
-- [FloodGauge](floodgauge.md)
+- [FloodGauge](floodgauge.md) — capacity/level indicators
 
-- [Label](label.md)
+- [Badge](badge.md) — compact status indicators
 
 ### Framework concepts
 
-- [State & Interaction](../../capabilities/state-and-interaction.md)
+- [Design System](../../design-system/index.md) — colors, typography, and theming
 
-- [Configuration](../../capabilities/configuration.md)
+- [Signals](../../concepts/signals.md) — reactive data binding
 
 ### API reference
 
-- [`ttkbootstrap.Progressbar`](../../reference/widgets/Progressbar.md)
+- [ttkbootstrap.Progressbar](../../api/widgets/progressbar.md)

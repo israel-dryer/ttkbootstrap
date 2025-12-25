@@ -1,47 +1,4 @@
 ---
-
-## Framework integration
-
-### Signals & events
-
-Widgets participate in ttkbootstrap’s reactive model.
-
-- **Signals** represent a widget’s **value/state** and are built on **Tk variables** with a modern subscription API.
-
-- **Events** (including virtual events) represent **interactions and moments** (click, commit, focus, selection changed).
-
-Signals and events are complementary: use signals for state flow and composition, and use events when you need
-interaction-level integration.
-
-!!! link "See also: [Signals](../../capabilities/signals.md), [Virtual Events](../../capabilities/virtual-events.md), [Callbacks](../../capabilities/callbacks.md)"
-
-### Design system
-
-Widgets are styled through ttkbootstrap’s design system using:
-
-- semantic colors via `bootstyle` (e.g., `primary`, `success`, `danger`)
-
-- variants (e.g., `outline`, `link`, `ghost` where supported)
-
-- consistent state visuals across themes
-
-!!! link "See also: [Colors](../../design-system/colors.md), [Variants](../../design-system/variants.md)"
-
-### Layout properties
-
-Widgets support ttkbootstrap layout conveniences (when available) so they compose cleanly in modern layouts.
-
-!!! link "See also: [Layout Properties](../../capabilities/layout-props.md)"
-
-### Localization
-
-Text labels can be localized in localized applications.
-
-!!! link "See also: [Localization](../../capabilities/localization.md)"
-
-
----
-
 title: Badge
 ---
 
@@ -49,11 +6,11 @@ title: Badge
 
 `Badge` is a compact **status indicator** built on top of `Label`.
 
-It’s designed for short, scannable values like **counts**, **statuses**, and **tags** — for example: “New”, “Beta”, “3”, “Offline”.
+It's designed for short, scannable values like **counts**, **statuses**, and **tags** — for example: "New", "Beta", "3", "Offline".
 
 ---
 
-## Basic usage
+## Quick start
 
 ```python
 import ttkbootstrap as ttk
@@ -68,7 +25,29 @@ app.mainloop()
 
 ---
 
-## Styling with `bootstyle`
+## When to use
+
+Use `Badge` when:
+
+- you need a small, high-contrast label for status or counts
+
+- the value is short (typically 1-12 characters)
+
+- you want a consistent visual "pill" across the UI
+
+### Consider a different control when...
+
+- **Text is long or multi-line** — use [Label](label.md) instead
+
+- **Content should blend into the surrounding layout** — use [Label](label.md) for less visual emphasis
+
+- **You need transient feedback that disappears automatically** — use [Toast](../overlays/toast.md) instead
+
+---
+
+## Appearance
+
+### Styling with `bootstyle`
 
 `Badge` defaults to `bootstyle="badge"` and will **coerce** your bootstyle to include the `-badge` suffix.
 
@@ -84,9 +63,14 @@ ttk.Badge(app, text="Beta", bootstyle="primary-badge")  # explicit
 !!! note "Bootstyle coercion"
     If the provided `bootstyle` does not include `"badge"`, it is automatically rewritten as `"{bootstyle}-badge"`.
 
+!!! link "Design System"
+    See [Design System](../../design-system/index.md) for color tokens and theming guidelines.
+
 ---
 
-## Icon badges
+## Examples & patterns
+
+### Icon badges
 
 Because `Badge` subclasses `Label`, you can use icons the same way:
 
@@ -95,9 +79,7 @@ ttk.Badge(app, text="Verified", icon="check").pack(pady=6)
 ttk.Badge(app, icon="bell", icon_only=True, bootstyle="info").pack(pady=6)
 ```
 
----
-
-## Common options
+### Common options
 
 Badge accepts the standard `Label` options, including:
 
@@ -115,41 +97,37 @@ Badge accepts the standard `Label` options, including:
 
 ---
 
-## When should I use Badge?
+## Behavior
 
-Use `Badge` when:
-
-- you need a small, high-contrast label for status or counts
-
-- the value is short (typically 1–12 characters)
-
-- you want a consistent visual “pill” across the UI
-
-Prefer `Label` when:
-
-- text is long or multi-line
-
-- content should blend into the surrounding layout (not pop)
-
-Prefer `Toast` when:
-
-- you need transient feedback that should disappear automatically
+Badge is a static display widget that shows text or icons. It does not respond to user interaction by default.
 
 ---
 
-## Related widgets
+## Localization
 
-- **Label** — general-purpose read-only text
+Badge inherits localization support from `Label`:
 
-- **Toast** — non-blocking feedback
+```python
+ttk.Badge(app, text="status.new", localize=True)
+```
 
-- **Progressbar / Meter / FloodGauge** — continuous indicators
+!!! link "Localization"
+    See [Localization](../../concepts/localization.md) for translation setup.
 
 ---
 
-## Reference
+## Reactivity
 
-- **API Reference:** `ttkbootstrap.Badge`
+Badge can be updated dynamically by binding to signals:
+
+```python
+count = ttk.Signal(5)
+badge = ttk.Badge(app, text=count)
+count.set(10)  # Badge updates automatically
+```
+
+!!! link "Signals"
+    See [Signals](../../concepts/signals.md) for reactive programming patterns.
 
 ---
 
@@ -157,18 +135,24 @@ Prefer `Toast` when:
 
 ### Related widgets
 
-- [FloodGauge](floodgauge.md)
+- [Label](label.md) — general-purpose read-only text
 
-- [Label](label.md)
+- [Toast](../overlays/toast.md) — non-blocking feedback
 
-- [ListView](listview.md)
+- [Progressbar](progressbar.md) — continuous progress indicators
+
+- [Meter](meter.md) — dashboard-style gauges
+
+- [FloodGauge](floodgauge.md) — capacity indicators
 
 ### Framework concepts
 
-- [State & Interaction](../../capabilities/state-and-interaction.md)
+- [Design System](../../design-system/index.md) — colors, typography, and theming
 
-- [Configuration](../../capabilities/configuration.md)
+- [Signals](../../concepts/signals.md) — reactive data binding
+
+- [Localization](../../concepts/localization.md) — translation support
 
 ### API reference
 
-- [`ttkbootstrap.Badge`](../../reference/widgets/Badge.md)
+- [ttkbootstrap.Badge](../../api/widgets/badge.md)

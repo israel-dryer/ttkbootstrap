@@ -1,47 +1,4 @@
 ---
-
-## Framework integration
-
-### Signals & events
-
-Widgets participate in ttkbootstrap’s reactive model.
-
-- **Signals** represent a widget’s **value/state** and are built on **Tk variables** with a modern subscription API.
-
-- **Events** (including virtual events) represent **interactions and moments** (click, commit, focus, selection changed).
-
-Signals and events are complementary: use signals for state flow and composition, and use events when you need
-interaction-level integration.
-
-!!! link "See also: [Signals](../../capabilities/signals.md), [Virtual Events](../../capabilities/virtual-events.md), [Callbacks](../../capabilities/callbacks.md)"
-
-### Design system
-
-Widgets are styled through ttkbootstrap’s design system using:
-
-- semantic colors via `bootstyle` (e.g., `primary`, `success`, `danger`)
-
-- variants (e.g., `outline`, `link`, `ghost` where supported)
-
-- consistent state visuals across themes
-
-!!! link "See also: [Colors](../../design-system/colors.md), [Variants](../../design-system/variants.md)"
-
-### Layout properties
-
-Widgets support ttkbootstrap layout conveniences (when available) so they compose cleanly in modern layouts.
-
-!!! link "See also: [Layout Properties](../../capabilities/layout-props.md)"
-
-### Localization
-
-Text labels can be localized in localized applications.
-
-!!! link "See also: [Localization](../../capabilities/localization.md)"
-
-
----
-
 title: Spinbox
 ---
 
@@ -51,11 +8,11 @@ title: Spinbox
 
 It provides low-level spin behavior (range or list stepping) while still allowing direct typing. Use `Spinbox` when you want
 native ttk options like `format` and `command`. For a form-ready field with labels/messages/validation and standardized events,
-prefer **SpinnerEntry**. fileciteturn14file4
+prefer [SpinnerEntry](/widgets/inputs/spinnerentry.md).
 
 ---
 
-## Basic usage
+## Quick start
 
 ### Numeric range
 
@@ -85,7 +42,42 @@ app.mainloop()
 
 ---
 
-## Value model
+## When to use
+
+Use `Spinbox` when:
+
+- you want low-level ttk spinbox behavior and options
+
+- the range/list is small and predictable
+
+- you're building your own composite control
+
+### Consider a different control when...
+
+- **you want a form-ready field (labels/messages/validation/events)** - prefer [SpinnerEntry](/widgets/inputs/spinnerentry.md)
+
+- **the choices are better expressed as a dropdown list** - prefer [SelectBox](/widgets/selection/selectbox.md)
+
+---
+
+## Appearance
+
+### `bootstyle`
+
+Applies ttkbootstrap theme styling.
+
+```python
+ttk.Spinbox(app, from_=0, to=10, bootstyle="primary")
+```
+
+!!! link "Design System"
+    See the [Design System](/concepts/design-system.md) for available bootstyle tokens.
+
+---
+
+## Examples and patterns
+
+### Value model
 
 Spinbox stores and returns **text** (even in numeric mode).
 
@@ -99,17 +91,15 @@ Bind with:
 
 - `textsignal=` (reactive signal)
 
----
+### Common options
 
-## Common options
-
-### Range mode: `from_`, `to`, `increment`
+#### Range mode: `from_`, `to`, `increment`
 
 ```python
 ttk.Spinbox(app, from_=1, to=31, increment=1)
 ```
 
-### Values mode: `values`
+#### Values mode: `values`
 
 ```python
 ttk.Spinbox(app, values=("Low", "Medium", "High"))
@@ -117,14 +107,14 @@ ttk.Spinbox(app, values=("Low", "Medium", "High"))
 
 If `values` is provided, it takes precedence over the numeric range.
 
-### `wrap`
+#### `wrap`
 
 ```python
 ttk.Spinbox(app, from_=0, to=5, wrap=True)
 ttk.Spinbox(app, values=("A", "B", "C"), wrap=True)
 ```
 
-### `state="readonly"`
+#### `state="readonly"`
 
 Use readonly mode when you want pick-only interaction.
 
@@ -132,27 +122,15 @@ Use readonly mode when you want pick-only interaction.
 ttk.Spinbox(app, values=("A", "B", "C"), state="readonly")
 ```
 
-### `format` (range mode)
+#### `format` (range mode)
 
 ```python
 ttk.Spinbox(app, from_=0, to=1, increment=0.05, format="%.2f")
 ```
 
----
+### Events
 
-## Behavior
-
-- Users can type or use arrows to step.
-
-- In many Tk builds, `command` is primarily invoked by arrow interactions (not typing).
-
-- Wrapping cycles max→min (range) or last→first (values).
-
----
-
-## Events
-
-### `command`
+#### `command`
 
 ```python
 def on_change():
@@ -169,49 +147,19 @@ spin.bind("<KeyRelease>", lambda e: print(spin.get()))
 
 ---
 
-## Validation and constraints
+## Behavior
+
+- Users can type or use arrows to step.
+
+- In many Tk builds, `command` is primarily invoked by arrow interactions (not typing).
+
+- Wrapping cycles max->min (range) or last->first (values).
+
+### Validation and constraints
 
 Spinbox does not provide control-level parsing/validation by default. It is a primitive widget.
 
-For validated, commit-based workflows, prefer **SpinnerEntry** or **NumericEntry**.
-
----
-
-## When should I use Spinbox?
-
-Use `Spinbox` when:
-
-- you want low-level ttk spinbox behavior and options
-
-- the range/list is small and predictable
-
-- you’re building your own composite control
-
-Prefer **SpinnerEntry** when:
-
-- you want a form-ready field (labels/messages/validation/events)
-
-Prefer **SelectBox** when:
-
-- the choices are better expressed as a dropdown list
-
----
-
-## Related widgets
-
-- **SpinnerEntry** — form-ready stepper control
-
-- **NumericEntry** — validated numeric input
-
-- **Scale** — continuous adjustment
-
-- **Combobox** — selection + optional typing
-
----
-
-## Reference
-
-- **API Reference:** `ttkbootstrap.Spinbox`
+For validated, commit-based workflows, prefer [SpinnerEntry](/widgets/inputs/spinnerentry.md) or [NumericEntry](/widgets/inputs/numericentry.md).
 
 ---
 
@@ -219,18 +167,18 @@ Prefer **SelectBox** when:
 
 ### Related widgets
 
-- [Canvas](canvas.md)
+- [SpinnerEntry](/widgets/inputs/spinnerentry.md) - form-ready stepper control
 
-- [Combobox](combobox.md)
+- [NumericEntry](/widgets/inputs/numericentry.md) - validated numeric input
 
-- [Entry](entry.md)
+- [Scale](/widgets/inputs/scale.md) - continuous adjustment
+
+- [Combobox](/widgets/primitives/combobox.md) - selection + optional typing
 
 ### Framework concepts
 
-- [State & Interaction](../../capabilities/state-and-interaction.md)
-
-- [Configuration](../../capabilities/configuration.md)
+- [Events and Signals](/concepts/events-signals.md)
 
 ### API reference
 
-- [`ttkbootstrap.Spinbox`](../../reference/widgets/Spinbox.md)
+- [ttkbootstrap.Spinbox](/api/widgets/spinbox.md)

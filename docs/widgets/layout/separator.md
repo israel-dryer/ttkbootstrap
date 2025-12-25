@@ -1,47 +1,4 @@
 ---
-
-## Framework integration
-
-### Signals & events
-
-Widgets participate in ttkbootstrap’s reactive model.
-
-- **Signals** represent a widget’s **value/state** and are built on **Tk variables** with a modern subscription API.
-
-- **Events** (including virtual events) represent **interactions and moments** (click, commit, focus, selection changed).
-
-Signals and events are complementary: use signals for state flow and composition, and use events when you need
-interaction-level integration.
-
-!!! link "See also: [Signals](../../capabilities/signals.md), [Virtual Events](../../capabilities/virtual-events.md), [Callbacks](../../capabilities/callbacks.md)"
-
-### Design system
-
-Widgets are styled through ttkbootstrap’s design system using:
-
-- semantic colors via `bootstyle` (e.g., `primary`, `success`, `danger`)
-
-- variants (e.g., `outline`, `link`, `ghost` where supported)
-
-- consistent state visuals across themes
-
-!!! link "See also: [Colors](../../design-system/colors.md), [Variants](../../design-system/variants.md)"
-
-### Layout properties
-
-Widgets support ttkbootstrap layout conveniences (when available) so they compose cleanly in modern layouts.
-
-!!! link "See also: [Layout Properties](../../capabilities/layout-props.md)"
-
-### Localization
-
-Text labels can be localized in localized applications.
-
-!!! link "See also: [Localization](../../capabilities/localization.md)"
-
-
----
-
 title: Separator
 ---
 
@@ -49,7 +6,7 @@ title: Separator
 
 `Separator` is a **layout utility** for creating a subtle visual divider between regions.
 
-It wraps `ttk.Separator` and is used to separate content sections without adding heavy visual noise—common in
+It wraps `ttk.Separator` and is used to separate content sections without adding heavy visual noise -- common in
 forms, panels, tool areas, and menus.
 
 <!--
@@ -60,19 +17,7 @@ Theme variants: light / dark
 
 ---
 
-## Overview
-
-Separators are best used sparingly to:
-
-- separate groups of controls
-
-- distinguish header/content/footer regions
-
-- divide side-by-side panes (vertical separators)
-
----
-
-## Basic usage
+## Quick start
 
 ### Horizontal separator
 
@@ -97,7 +42,46 @@ sep.pack(side="left", fill="y", padx=8, pady=8)
 
 ---
 
-## Common options
+## When to use
+
+Use `Separator` when:
+
+- you need a light visual break between groups
+
+- whitespace alone doesn't provide enough structure
+
+**Consider a different control when:**
+
+- spacing and alignment already clearly indicate grouping
+
+- too many lines would add visual clutter
+
+---
+
+## Appearance
+
+Separators are best used sparingly to:
+
+- separate groups of controls
+
+- distinguish header/content/footer regions
+
+- divide side-by-side panes (vertical separators)
+
+!!! link "Design System"
+    For theming details and color tokens, see [Design System](../../design-system/index.md).
+
+### `bootstyle` / `style`
+
+If your theme exposes separator variants, apply them via `bootstyle` or `style`.
+
+```python
+ttk.Separator(app, bootstyle="secondary")
+```
+
+---
+
+## Examples & patterns
 
 ### `orient`
 
@@ -110,14 +94,6 @@ ttk.Separator(app, orient="horizontal")
 ttk.Separator(app, orient="vertical")
 ```
 
-### `bootstyle` / `style`
-
-If your theme exposes separator variants, apply them via `bootstyle` or `style`.
-
-```python
-ttk.Separator(app, bootstyle="secondary")
-```
-
 ---
 
 ## Behavior
@@ -128,54 +104,22 @@ ttk.Separator(app, bootstyle="secondary")
 
 ---
 
-## When should I use Separator?
-
-Use `Separator` when:
-
-- you need a light visual break between groups
-
-- whitespace alone doesn’t provide enough structure
-
-Avoid separators when:
-
-- spacing and alignment already clearly indicate grouping
-
-- too many lines would add visual clutter
-
----
-
-## Related widgets
-
-- **Frame** — group related controls into regions
-
-- **LabelFrame** — labeled container grouping
-
-- **PanedWindow** — resizable split regions (if applicable)
-
----
-
-## Reference
-
-- **API Reference:** `ttkbootstrap.Separator`
-
----
-
 ## Additional resources
 
 ### Related widgets
 
-- [Frame](frame.md)
+- [Frame](frame.md) -- group related controls into regions
 
-- [LabelFrame](labelframe.md)
+- [LabelFrame](labelframe.md) -- labeled container grouping
 
-- [PanedWindow](panedwindow.md)
+- [PanedWindow](panedwindow.md) -- resizable split regions
 
 ### Framework concepts
 
-- [State & Interaction](../../capabilities/state-and-interaction.md)
+- [Layout Properties](../../capabilities/layout-props.md)
 
-- [Configuration](../../capabilities/configuration.md)
+- [Layout](../../platform/geometry-and-layout.md)
 
 ### API reference
 
-- [`ttkbootstrap.Separator`](../../reference/widgets/Separator.md)
+- **API Reference:** `ttkbootstrap.Separator`

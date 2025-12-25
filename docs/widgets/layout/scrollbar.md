@@ -1,47 +1,4 @@
 ---
-
-## Framework integration
-
-### Signals & events
-
-Widgets participate in ttkbootstrap’s reactive model.
-
-- **Signals** represent a widget’s **value/state** and are built on **Tk variables** with a modern subscription API.
-
-- **Events** (including virtual events) represent **interactions and moments** (click, commit, focus, selection changed).
-
-Signals and events are complementary: use signals for state flow and composition, and use events when you need
-interaction-level integration.
-
-!!! link "See also: [Signals](../../capabilities/signals.md), [Virtual Events](../../capabilities/virtual-events.md), [Callbacks](../../capabilities/callbacks.md)"
-
-### Design system
-
-Widgets are styled through ttkbootstrap’s design system using:
-
-- semantic colors via `bootstyle` (e.g., `primary`, `success`, `danger`)
-
-- variants (e.g., `outline`, `link`, `ghost` where supported)
-
-- consistent state visuals across themes
-
-!!! link "See also: [Colors](../../design-system/colors.md), [Variants](../../design-system/variants.md)"
-
-### Layout properties
-
-Widgets support ttkbootstrap layout conveniences (when available) so they compose cleanly in modern layouts.
-
-!!! link "See also: [Layout Properties](../../capabilities/layout-props.md)"
-
-### Localization
-
-Text labels can be localized in localized applications.
-
-!!! link "See also: [Localization](../../capabilities/localization.md)"
-
-
----
-
 title: Scrollbar
 ---
 
@@ -59,19 +16,7 @@ Theme variants: light / dark
 
 ---
 
-## Overview
-
-Use `Scrollbar` when:
-
-- you need explicit scroll control for a widget that supports view commands
-
-- you are building your own scrollable composite
-
-If you want an out-of-the-box scrollable container, prefer **ScrollView** or **ScrolledText** (for text content).
-
----
-
-## Basic usage
+## Quick start
 
 ### With a Text widget
 
@@ -103,7 +48,38 @@ app.mainloop()
 
 ---
 
-## Common options
+## When to use
+
+Use `Scrollbar` when:
+
+- you need explicit scroll control for a widget that supports view commands
+
+- you're wiring scroll behavior manually (Text, Canvas, custom composites)
+
+**Consider a different control when:**
+
+- you want a scrollable container for arbitrary widgets -- use [ScrollView](scrollview.md)
+
+- you need multi-line text with built-in scrolling -- use [ScrolledText](../inputs/scrolledtext.md)
+
+---
+
+## Appearance
+
+### Styling
+
+Use `bootstyle` (or `style=`) to match your theme:
+
+```python
+ttk.Scrollbar(app, bootstyle="secondary")
+```
+
+!!! link "Design System"
+    For theming details and color tokens, see [Design System](../../design-system/index.md).
+
+---
+
+## Examples & patterns
 
 ### `orient`
 
@@ -114,59 +90,21 @@ ttk.Scrollbar(app, orient="horizontal")
 
 ### `command`
 
-Hook to the target widget’s view method (`xview` or `yview`).
+Hook to the target widget's view method (`xview` or `yview`).
 
 ```python
 ttk.Scrollbar(app, orient="vertical", command=widget.yview)
-```
-
-### Styling
-
-Use `bootstyle` (or `style=`) to match your theme:
-
-```python
-ttk.Scrollbar(app, bootstyle="secondary")
 ```
 
 ---
 
 ## Behavior
 
-- Scrollbars are driven by the target widget’s view commands.
+- Scrollbars are driven by the target widget's view commands.
 
 - The target widget must also set `xscrollcommand` / `yscrollcommand` to update the scrollbar thumb.
 
----
-
-## When should I use Scrollbar?
-
-Use `Scrollbar` when:
-
-- you’re wiring scroll behavior manually (Text, Canvas, custom composites)
-
-Prefer **ScrollView** when:
-
-- you want a scrollable container for arbitrary widgets
-
-Prefer **ScrolledText** when:
-
-- you need multi-line text with built-in scrolling
-
----
-
-## Related widgets
-
-- **ScrollView** — scroll container for arbitrary widgets
-
-- **ScrolledText** — scrollable text control
-
-- **Canvas** / **Text** — common scroll targets
-
----
-
-## Reference
-
-- **API Reference:** `ttkbootstrap.Scrollbar`
+- If you want an out-of-the-box scrollable container, prefer [ScrollView](scrollview.md) or [ScrolledText](../inputs/scrolledtext.md) (for text content).
 
 ---
 
@@ -174,18 +112,18 @@ Prefer **ScrolledText** when:
 
 ### Related widgets
 
-- [Frame](frame.md)
+- [ScrollView](scrollview.md) -- scroll container for arbitrary widgets
 
-- [LabelFrame](labelframe.md)
+- [ScrolledText](../inputs/scrolledtext.md) -- scrollable text control
 
-- [PanedWindow](panedwindow.md)
+- [Canvas](../primitives/canvas.md) / [Text](../primitives/text.md) -- common scroll targets
 
 ### Framework concepts
 
-- [State & Interaction](../../capabilities/state-and-interaction.md)
+- [Layout Properties](../../capabilities/layout-props.md)
 
-- [Configuration](../../capabilities/configuration.md)
+- [Layout](../../platform/geometry-and-layout.md)
 
 ### API reference
 
-- [`ttkbootstrap.Scrollbar`](../../reference/widgets/Scrollbar.md)
+- **API Reference:** `ttkbootstrap.Scrollbar`

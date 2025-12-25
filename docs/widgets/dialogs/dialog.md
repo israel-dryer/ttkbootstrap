@@ -1,47 +1,4 @@
 ---
-
-## Framework integration
-
-### Signals & events
-
-Widgets participate in ttkbootstrap’s reactive model.
-
-- **Signals** represent a widget’s **value/state** and are built on **Tk variables** with a modern subscription API.
-
-- **Events** (including virtual events) represent **interactions and moments** (click, commit, focus, selection changed).
-
-Signals and events are complementary: use signals for state flow and composition, and use events when you need
-interaction-level integration.
-
-!!! link "See also: [Signals](../../capabilities/signals.md), [Virtual Events](../../capabilities/virtual-events.md), [Callbacks](../../capabilities/callbacks.md)"
-
-### Design system
-
-Widgets are styled through ttkbootstrap’s design system using:
-
-- semantic colors via `bootstyle` (e.g., `primary`, `success`, `danger`)
-
-- variants (e.g., `outline`, `link`, `ghost` where supported)
-
-- consistent state visuals across themes
-
-!!! link "See also: [Colors](../../design-system/colors.md), [Variants](../../design-system/variants.md)"
-
-### Layout properties
-
-Widgets support ttkbootstrap layout conveniences (when available) so they compose cleanly in modern layouts.
-
-!!! link "See also: [Layout Properties](../../capabilities/layout-props.md)"
-
-### Localization
-
-Text labels can be localized in localized applications.
-
-!!! link "See also: [Localization](../../capabilities/localization.md)"
-
-
----
-
 title: Dialog
 ---
 
@@ -53,7 +10,7 @@ Use dialogs when you need users to **make a decision** or **provide input** befo
 
 ---
 
-## Basic usage
+## Quick start
 
 Most dialogs follow a pattern like this:
 
@@ -74,13 +31,19 @@ app.mainloop()
 
 ---
 
-## Value model
+## When to use
 
-Dialogs produce a **single committed outcome**:
+Use `Dialog` (or a specialized dialog) when:
 
-- a result value (string/bool/object), or
+- the user must confirm an action
 
-- `None` when cancelled/dismissed
+- the user must provide input before continuing
+
+- the flow benefits from an explicit OK/Cancel outcome
+
+### Consider a different control when...
+
+- feedback should not block workflow - use [Toast](../overlays/toast.md) or [Tooltip](../overlays/tooltip.md) instead
 
 ---
 
@@ -100,17 +63,27 @@ Use popover when the dialog is contextual and low-risk (quick filters, small pic
 
 ---
 
-## Common options
+## Examples & patterns
 
-- `title` — window title
+### Common options
 
-- `message` — primary content text (keep short)
+- `title` - window title
 
-- `parent` — parent window for stacking and focus
+- `message` - primary content text (keep short)
 
-- `buttons` — the actions shown (OK/Cancel, Yes/No, etc.)
+- `parent` - parent window for stacking and focus
 
-- `default` — default action activated by Enter (if supported)
+- `buttons` - the actions shown (OK/Cancel, Yes/No, etc.)
+
+- `default` - default action activated by Enter (if supported)
+
+### Value model
+
+Dialogs produce a **single committed outcome**:
+
+- a result value (string/bool/object), or
+
+- `None` when cancelled/dismissed
 
 ---
 
@@ -124,60 +97,23 @@ Use popover when the dialog is contextual and low-risk (quick filters, small pic
 
 ---
 
-## When should I use Dialog?
-
-Use `Dialog` (or a specialized dialog) when:
-
-- the user must confirm an action
-
-- the user must provide input before continuing
-
-- the flow benefits from an explicit OK/Cancel outcome
-
-Prefer overlays (Toast/Tooltip) when:
-
-- feedback should not block workflow
-
----
-
-## Related widgets
-
-- **MessageBox** — prebuilt confirmation / alert dialogs
-
-- **QueryBox** — prompt for a single value
-
-- **FormDialog** — prompt for structured multi-field input
-
-- **FilterDialog** — choose filters with confirm/cancel
-
-- **Toast** — non-blocking notification
-
-- **Tooltip** — contextual hover help
-
----
-
-## Reference
-
-- **API Reference:** `ttkbootstrap.Dialog`
-
----
-
 ## Additional resources
 
 ### Related widgets
 
-- [ColorChooser](colorchooser.md)
+- [MessageBox](messagebox.md) - prebuilt confirmation / alert dialogs
 
-- [ColorDropper](colordropper.md)
+- [QueryBox](querybox.md) - prompt for a single value
 
-- [DateDialog](datedialog.md)
+- [FormDialog](formdialog.md) - prompt for structured multi-field input
 
-### Framework concepts
+- [FilterDialog](filterdialog.md) - choose filters with confirm/cancel
 
-- [State & Interaction](../../capabilities/state-and-interaction.md)
+- [Toast](../overlays/toast.md) - non-blocking notification
 
-- [Configuration](../../capabilities/configuration.md)
+- [Tooltip](../overlays/tooltip.md) - contextual hover help
 
 ### API reference
 
-- [`ttkbootstrap.Dialog`](../../reference/widgets/Dialog.md)
+!!! link "API Reference"
+    `ttkbootstrap.Dialog`

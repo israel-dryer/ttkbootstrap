@@ -1,47 +1,4 @@
 ---
-
-## Framework integration
-
-### Signals & events
-
-Widgets participate in ttkbootstrap’s reactive model.
-
-- **Signals** represent a widget’s **value/state** and are built on **Tk variables** with a modern subscription API.
-
-- **Events** (including virtual events) represent **interactions and moments** (click, commit, focus, selection changed).
-
-Signals and events are complementary: use signals for state flow and composition, and use events when you need
-interaction-level integration.
-
-!!! link "See also: [Signals](../../capabilities/signals.md), [Virtual Events](../../capabilities/virtual-events.md), [Callbacks](../../capabilities/callbacks.md)"
-
-### Design system
-
-Widgets are styled through ttkbootstrap’s design system using:
-
-- semantic colors via `bootstyle` (e.g., `primary`, `success`, `danger`)
-
-- variants (e.g., `outline`, `link`, `ghost` where supported)
-
-- consistent state visuals across themes
-
-!!! link "See also: [Colors](../../design-system/colors.md), [Variants](../../design-system/variants.md)"
-
-### Layout properties
-
-Widgets support ttkbootstrap layout conveniences (when available) so they compose cleanly in modern layouts.
-
-!!! link "See also: [Layout Properties](../../capabilities/layout-props.md)"
-
-### Localization
-
-Text labels can be localized in localized applications.
-
-!!! link "See also: [Localization](../../capabilities/localization.md)"
-
-
----
-
 title: PanedWindow
 ---
 
@@ -64,21 +21,7 @@ Theme variants: light / dark
 
 ---
 
-## Overview
-
-Use `PanedWindow` when you want users to control how space is distributed between major regions of your UI.
-
-A paned layout works well when:
-
-- panes have different importance (content gets most space)
-
-- users may want to expand/collapse a region temporarily
-
-- window resizing should feel responsive
-
----
-
-## Basic usage
+## Quick start
 
 ```python
 import ttkbootstrap as ttk
@@ -102,19 +45,48 @@ app.mainloop()
 
 ---
 
-## Core concepts
+## When to use
 
-### Panes
+Use `PanedWindow` when:
 
-Each child added to a paned window is a *pane*. You can assign weights (if supported) to influence how extra space is distributed.
+- users benefit from adjustable regions
 
-### Sashes
+- your app has a "workbench" layout (nav/editor/inspector)
 
-The draggable separators between panes are called *sashes*. Users drag sashes to resize panes.
+**Consider a different control when:**
+
+- the layout should be fixed -- use [Frame](frame.md) containers
+
+- resizing regions would add complexity without benefit
 
 ---
 
-## Common options
+## Appearance
+
+A paned layout works well when:
+
+- panes have different importance (content gets most space)
+
+- users may want to expand/collapse a region temporarily
+
+- window resizing should feel responsive
+
+!!! link "Design System"
+    For theming details and color tokens, see [Design System](../../design-system/index.md).
+
+---
+
+## Examples & patterns
+
+### Core concepts
+
+#### Panes
+
+Each child added to a paned window is a *pane*. You can assign weights (if supported) to influence how extra space is distributed.
+
+#### Sashes
+
+The draggable separators between panes are called *sashes*. Users drag sashes to resize panes.
 
 ### `orient`
 
@@ -134,6 +106,14 @@ pw.add(frame, weight=1)
 
 Use the ttk panedwindow API (varies by implementation/version).
 
+### UX guidance
+
+- Don't overuse panes -- 2 (or 3) is usually enough.
+
+- Provide sensible default sizes.
+
+- Consider minimum sizes for panes that contain dense UI (lists, trees, inspectors).
+
 ---
 
 ## Behavior
@@ -146,64 +126,22 @@ Use the ttk panedwindow API (varies by implementation/version).
 
 ---
 
-## UX guidance
-
-- Don’t overuse panes—2 (or 3) is usually enough.
-
-- Provide sensible default sizes.
-
-- Consider minimum sizes for panes that contain dense UI (lists, trees, inspectors).
-
----
-
-## When should I use PanedWindow?
-
-Use `PanedWindow` when:
-
-- users benefit from adjustable regions
-
-- your app has a “workbench” layout (nav/editor/inspector)
-
-Prefer plain layout containers when:
-
-- the layout should be fixed
-
-- resizing regions would add complexity without benefit
-
----
-
-## Related widgets
-
-- **Frame** — typical pane content container
-
-- **Separator** — lightweight alternative when panes are fixed
-
-- **ScrollView** — scroll content within a pane
-
----
-
-## Reference
-
-- **API Reference:** `ttkbootstrap.PanedWindow`
-
----
-
 ## Additional resources
 
 ### Related widgets
 
-- [Frame](frame.md)
+- [Frame](frame.md) -- typical pane content container
 
-- [LabelFrame](labelframe.md)
+- [Separator](separator.md) -- lightweight alternative when panes are fixed
 
-- [Scrollbar](scrollbar.md)
+- [ScrollView](scrollview.md) -- scroll content within a pane
 
 ### Framework concepts
 
-- [State & Interaction](../../capabilities/state-and-interaction.md)
+- [Layout Properties](../../capabilities/layout-props.md)
 
-- [Configuration](../../capabilities/configuration.md)
+- [Layout](../../platform/geometry-and-layout.md)
 
 ### API reference
 
-- [`ttkbootstrap.PanedWindow`](../../reference/widgets/PanedWindow.md)
+- **API Reference:** `ttkbootstrap.PanedWindow`

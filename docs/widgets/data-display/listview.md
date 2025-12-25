@@ -1,47 +1,4 @@
 ---
-
-## Framework integration
-
-### Signals & events
-
-Widgets participate in ttkbootstrap’s reactive model.
-
-- **Signals** represent a widget’s **value/state** and are built on **Tk variables** with a modern subscription API.
-
-- **Events** (including virtual events) represent **interactions and moments** (click, commit, focus, selection changed).
-
-Signals and events are complementary: use signals for state flow and composition, and use events when you need
-interaction-level integration.
-
-!!! link "See also: [Signals](../../capabilities/signals.md), [Virtual Events](../../capabilities/virtual-events.md), [Callbacks](../../capabilities/callbacks.md)"
-
-### Design system
-
-Widgets are styled through ttkbootstrap’s design system using:
-
-- semantic colors via `bootstyle` (e.g., `primary`, `success`, `danger`)
-
-- variants (e.g., `outline`, `link`, `ghost` where supported)
-
-- consistent state visuals across themes
-
-!!! link "See also: [Colors](../../design-system/colors.md), [Variants](../../design-system/variants.md)"
-
-### Layout properties
-
-Widgets support ttkbootstrap layout conveniences (when available) so they compose cleanly in modern layouts.
-
-!!! link "See also: [Layout Properties](../../capabilities/layout-props.md)"
-
-### Localization
-
-Text labels can be localized in localized applications.
-
-!!! link "See also: [Localization](../../capabilities/localization.md)"
-
-
----
-
 title: ListView
 ---
 
@@ -53,9 +10,7 @@ It renders only the visible rows (plus a small overscan), making it suitable for
 
 ---
 
-## Basic usage
-
-### Simple list
+## Quick start
 
 ```python
 import ttkbootstrap as ttk
@@ -73,6 +28,59 @@ lv.pack(fill="both", expand=True, padx=20, pady=20)
 
 app.mainloop()
 ```
+
+---
+
+## When to use
+
+Use `ListView` when:
+
+- you need to display a long list efficiently (virtual scrolling)
+
+- rows can include rich content (icon/title/text/badge)
+
+- you need selection, deletion, or drag reordering
+
+### Consider a different control when...
+
+- **Data is strongly column-based and users compare fields across rows** — use [TableView](tableview.md) instead
+
+- **Your data is hierarchical** — use [TreeView](treeview.md) instead
+
+- **You have a small, static list** — a simple frame with labels may suffice
+
+---
+
+## Appearance
+
+### Alternating rows, separators, and scrollbars
+
+Common presentation options:
+
+- `alternating_row_mode="even" | "odd" | "none"`
+
+- `alternating_row_color="background[+1]"`
+
+- `show_separator=True`
+
+- `show_scrollbar=True`
+
+```python
+lv = ListView(
+    app,
+    items=data,
+    alternating_row_mode="even",
+    show_separator=True,
+    show_scrollbar=False,  # mousewheel only
+)
+```
+
+!!! link "Design System"
+    See [Design System](../../design-system/index.md) for color tokens and theming guidelines.
+
+---
+
+## Examples & patterns
 
 ### Selection + events
 
@@ -98,9 +106,7 @@ lv.on_selection_change(on_sel)
 app.mainloop()
 ```
 
----
-
-## Data model
+### Data model
 
 `ListView` works with either:
 
@@ -108,7 +114,7 @@ app.mainloop()
 
 - `datasource=...` — a custom data source implementing the `DataSourceProtocol`
 
-### Required fields
+#### Required fields
 
 Records are expected to have a stable identifier:
 
@@ -126,9 +132,7 @@ The default `ListItem` also recognizes:
 
 - `badge` — small text on the right
 
----
-
-## Selection
+### Selection
 
 Set `selection_mode` to control selection behavior:
 
@@ -148,9 +152,7 @@ Optional selection UI:
 lv = ListView(app, items=data, selection_mode="single", select_by_click=True)
 ```
 
----
-
-## Deleting and dragging
+### Deleting and dragging
 
 Enable item actions:
 
@@ -163,39 +165,39 @@ lv = ListView(
 )
 ```
 
-When enabled, rows expose UI affordances and `ListView` emits events:
+### Custom row layouts
 
-- `<<ItemDelete>>`, `<<ItemDeleteFail>>`
-
-- `<<ItemDragStart>>`, `<<ItemDrag>>`, `<<ItemDragEnd>>`
-
----
-
-## Alternating rows, separators, and scrollbars
-
-Common presentation options:
-
-- `alternating_row_mode="even" | "odd" | "none"`
-
-- `alternating_row_color="background[+1]"`
-
-- `show_separator=True`
-
-- `show_scrollbar=True`
+Use `row_factory` to supply your own `ListItem`-compatible row widget.
 
 ```python
-lv = ListView(
-    app,
-    items=data,
-    alternating_row_mode="even",
-    show_separator=True,
-    show_scrollbar=False,  # mousewheel only
-)
+def make_row(master, **kwargs):
+    return ttk.ListItem(master, **kwargs)  # or your custom widget
+
+lv = ListView(app, datasource=my_source, row_factory=make_row)
 ```
+
+!!! tip "Row factory"
+    If you need a fully custom row template, implement a widget that provides an `update_data(record)` method and honors the selection/focus conventions you want.
+
+### Common options
+
+- `items` — list of data records
+
+- `datasource` — custom data source
+
+- `selection_mode` — `"none"`, `"single"`, or `"multi"`
+
+- `show_selection_controls` — show checkbox/radio controls
+
+- `enable_deleting` — allow item deletion
+
+- `enable_dragging` — allow drag reordering
 
 ---
 
-## Events
+## Behavior
+
+### Events
 
 ListView generates virtual events for higher-level behaviors:
 
@@ -216,9 +218,7 @@ lv.on_selection_change(lambda e: print(lv.get_selected()))
 lv.on_item_click(lambda e: print("clicked:", e.data))
 ```
 
----
-
-## Public API
+### Public API
 
 Common methods:
 
@@ -242,57 +242,20 @@ Common methods:
 
 ---
 
-## Custom row layouts
+## Reactivity
 
-Use `row_factory` to supply your own `ListItem`-compatible row widget.
+ListView can work with reactive data sources:
 
 ```python
-def make_row(master, **kwargs):
-    return ttk.ListItem(master, **kwargs)  # or your custom widget
+items = ttk.Signal([{"id": 1, "title": "Item 1"}])
+lv = ListView(app, items=items)
 
-lv = ListView(app, datasource=my_source, row_factory=make_row)
+# Add new item
+items.set([*items.get(), {"id": 2, "title": "Item 2"}])
 ```
 
-!!! tip "Row factory"
-    If you need a fully custom row template, implement a widget that provides an `update_data(record)` method and honors the selection/focus conventions you want.
-
----
-
-## When should I use ListView?
-
-Use `ListView` when:
-
-- you need to display a long list efficiently (virtual scrolling)
-
-- rows can include rich content (icon/title/text/badge)
-
-- you need selection, deletion, or drag reordering
-
-Prefer `TableView` when:
-
-- data is strongly column-based and users compare fields across rows
-
-Prefer `TreeView` when:
-
-- your data is hierarchical
-
----
-
-## Related widgets
-
-- **ListItem** — the default row widget used by ListView
-
-- **TableView** — tabular record display
-
-- **TreeView** — hierarchical record display
-
-- **Scrollbar / ScrollView** — scrolling containers
-
----
-
-## Reference
-
-- **API Reference:** `ttkbootstrap.ListView`
+!!! link "Signals"
+    See [Signals](../../concepts/signals.md) for reactive programming patterns.
 
 ---
 
@@ -300,18 +263,24 @@ Prefer `TreeView` when:
 
 ### Related widgets
 
-- [Badge](badge.md)
+- [ListItem](../primitives/listitem.md) — the default row widget used by ListView
 
-- [FloodGauge](floodgauge.md)
+- [TableView](tableview.md) — tabular record display
 
-- [Label](label.md)
+- [TreeView](treeview.md) — hierarchical record display
+
+- [Scrollbar](../layout/scrollbar.md) — scrolling controls
+
+- [ScrollView](../layout/scrollview.md) — scrolling containers
 
 ### Framework concepts
 
-- [State & Interaction](../../capabilities/state-and-interaction.md)
+- [Design System](../../design-system/index.md) — colors, typography, and theming
 
-- [Configuration](../../capabilities/configuration.md)
+- [Signals](../../concepts/signals.md) — reactive data binding
+
+- [Data Sources](../../concepts/datasources.md) — custom data providers
 
 ### API reference
 
-- [`ttkbootstrap.ListView`](../../reference/widgets/ListView.md)
+- [ttkbootstrap.ListView](../../api/widgets/listview.md)

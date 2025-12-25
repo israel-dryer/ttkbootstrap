@@ -1,47 +1,4 @@
 ---
-
-## Framework integration
-
-### Signals & events
-
-Widgets participate in ttkbootstrap’s reactive model.
-
-- **Signals** represent a widget’s **value/state** and are built on **Tk variables** with a modern subscription API.
-
-- **Events** (including virtual events) represent **interactions and moments** (click, commit, focus, selection changed).
-
-Signals and events are complementary: use signals for state flow and composition, and use events when you need
-interaction-level integration.
-
-!!! link "See also: [Signals](../../capabilities/signals.md), [Virtual Events](../../capabilities/virtual-events.md), [Callbacks](../../capabilities/callbacks.md)"
-
-### Design system
-
-Widgets are styled through ttkbootstrap’s design system using:
-
-- semantic colors via `bootstyle` (e.g., `primary`, `success`, `danger`)
-
-- variants (e.g., `outline`, `link`, `ghost` where supported)
-
-- consistent state visuals across themes
-
-!!! link "See also: [Colors](../../design-system/colors.md), [Variants](../../design-system/variants.md)"
-
-### Layout properties
-
-Widgets support ttkbootstrap layout conveniences (when available) so they compose cleanly in modern layouts.
-
-!!! link "See also: [Layout Properties](../../capabilities/layout-props.md)"
-
-### Localization
-
-Text labels can be localized in localized applications.
-
-!!! link "See also: [Localization](../../capabilities/localization.md)"
-
-
----
-
 title: Calendar
 ---
 
@@ -55,19 +12,7 @@ If you want a compact, form-friendly input (typed + popup), prefer **DateEntry**
 
 ---
 
-## Overview
-
-Calendar supports two selection models:
-
-* **Single** (`selection_mode="single"`): selects exactly one `date`
-
-* **Range** (`selection_mode="range"`): selects a start date, then an end date; dates between are highlighted
-
-Range mode displays **two months side-by-side** to make cross-month selection easier.
-
----
-
-## Basic usage
+## Quick start
 
 ```python
 from datetime import date
@@ -90,9 +35,39 @@ app.mainloop()
 
 ---
 
-## Variants
+## When to use
 
-### Single date
+Use Calendar when:
+
+* you want an always-visible date picker embedded in a panel
+
+* users benefit from seeing the whole month(s) while selecting
+
+* you want a natural range-selection interaction
+
+### Consider a different control when
+
+* you need a compact form control — use [DateEntry](../inputs/dateentry.md)
+
+* typing or pasted dates are a primary workflow — use [DateEntry](../inputs/dateentry.md)
+
+* screen space is limited — use [DateEntry](../inputs/dateentry.md)
+
+---
+
+## Appearance
+
+### Variants
+
+Calendar supports two selection models:
+
+* **Single** (`selection_mode="single"`): selects exactly one `date`
+
+* **Range** (`selection_mode="range"`): selects a start date, then an end date; dates between are highlighted
+
+Range mode displays **two months side-by-side** to make cross-month selection easier.
+
+#### Single date
 
 ```python
 import ttkbootstrap as ttk
@@ -103,7 +78,7 @@ Calendar(app, selection_mode="single", start_date="2025-12-25").pack(padx=12, pa
 app.mainloop()
 ```
 
-### Date range
+#### Date range
 
 ```python
 import ttkbootstrap as ttk
@@ -114,9 +89,35 @@ Calendar(app, selection_mode="range", start_date="2025-12-01", end_date="2025-12
 app.mainloop()
 ```
 
+### Colors and styling
+
+Use `bootstyle` to set the accent color used for:
+
+* the selected day (single mode)
+
+* the range endpoints and in-range highlight (range mode)
+
+```python
+Calendar(app, bootstyle="success")
+Calendar(app, selection_mode="range", bootstyle="warning")
+```
+
+Calendar also uses internal style names for day/range rendering (e.g. `*-calendar_day-toolbutton`, `*-calendar_date-toolbutton`, `*[subtle]-calendar_range-toolbutton`) so it can visually distinguish:
+
+* normal selectable days
+
+* selected endpoints
+
+* in-range days
+
+!!! link "Design System"
+    For a complete overview of theming, colors, and style tokens, see the [Design System](../../concepts/design-system.md) documentation.
+
 ---
 
-## How the value works
+## Examples and patterns
+
+### How the value works
 
 Calendar maintains:
 
@@ -142,25 +143,7 @@ Selection semantics:
 
 The value is considered **committed immediately** when a day is clicked (it generates `<<DateSelect>>`).
 
----
-
-## Binding to signals or variables
-
-Calendar does not expose a `variable=`/`textvariable=` binding for selection.
-
-Use the selection event and query the value:
-
-```python
-def on_select(e):
-    selected = e.data["date"]
-    start, end = e.data["range"]
-```
-
-If you need an app-level reactive value, update your own `StringVar`/signal inside the handler.
-
----
-
-## Common options
+### Common options
 
 Selection:
 
@@ -195,6 +178,48 @@ Layout:
 
 * `padding`: padding around the widget (standard ttk padding values)
 
+### Binding to signals or variables
+
+Calendar does not expose a `variable=`/`textvariable=` binding for selection.
+
+Use the selection event and query the value:
+
+```python
+def on_select(e):
+    selected = e.data["date"]
+    start, end = e.data["range"]
+```
+
+If you need an app-level reactive value, update your own `StringVar`/signal inside the handler.
+
+### Events
+
+Calendar emits:
+
+* `<<DateSelect>>` when the selection changes (including reset)
+
+Use the convenience helpers:
+
+```python
+def on_select(e):
+    print(e.data)
+
+bind_id = cal.on_date_selected(on_select)
+
+# later:
+cal.off_date_selected(bind_id)
+```
+
+### Validation and constraints
+
+Calendar enforces constraints at interaction time:
+
+* dates in `disabled_dates` are not selectable
+
+* dates before `min_date` or after `max_date` are not selectable
+
+* month navigation is clamped so you can't navigate entirely outside the allowed min/max month window
+
 ---
 
 ## Behavior
@@ -213,61 +238,6 @@ Keyboard focus:
 
 ---
 
-## Events
-
-Calendar emits:
-
-* `<<DateSelect>>` when the selection changes (including reset)
-
-Use the convenience helpers:
-
-```python
-def on_select(e):
-    print(e.data)
-
-bind_id = cal.on_date_selected(on_select)
-
-# later:
-cal.off_date_selected(bind_id)
-```
-
----
-
-## Validation and constraints
-
-Calendar enforces constraints at interaction time:
-
-* dates in `disabled_dates` are not selectable
-
-* dates before `min_date` or after `max_date` are not selectable
-
-* month navigation is clamped so you can’t navigate entirely outside the allowed min/max month window
-
----
-
-## Colors and styling
-
-Use `bootstyle` to set the accent color used for:
-
-* the selected day (single mode)
-
-* the range endpoints and in-range highlight (range mode)
-
-```python
-Calendar(app, bootstyle="success")
-Calendar(app, selection_mode="range", bootstyle="warning")
-```
-
-Calendar also uses internal style names for day/range rendering (e.g. `*-calendar_day-toolbutton`, `*-calendar_date-toolbutton`, `*[subtle]-calendar_range-toolbutton`) so it can visually distinguish:
-
-* normal selectable days
-
-* selected endpoints
-
-* in-range days
-
----
-
 ## Localization
 
 Calendar localizes:
@@ -278,43 +248,8 @@ Calendar localizes:
 
 It refreshes automatically when `<<LocaleChanged>>` is generated.
 
----
-
-## When should I use Calendar?
-
-Use it when:
-
-* you want an always-visible date picker embedded in a panel
-
-* users benefit from seeing the whole month(s) while selecting
-
-* you want a natural range-selection interaction
-
-Prefer **DateEntry** when:
-
-* you need a compact form control
-
-* typing or pasted dates are a primary workflow
-
-* screen space is limited
-
----
-
-## Related widgets
-
-* **DateEntry** — compact typed date input
-
-* **DateRangeEntry** — compact start/end inputs (if present)
-
-* **Popover / Dialog date picker** — calendar shown in an overlay (if present)
-
----
-
-## Reference
-
-* **API Reference:** `ttkbootstrap.Calendar`
-
-* **Related guides:** Selection, Forms, Localization
+!!! link "Localization"
+    For complete details on internationalization and locale configuration, see the [Localization](../../concepts/localization.md) documentation.
 
 ---
 
@@ -322,18 +257,20 @@ Prefer **DateEntry** when:
 
 ### Related widgets
 
-- [CheckButton](checkbutton.md)
+* [DateEntry](../inputs/dateentry.md) — compact typed date input
 
-- [CheckToggle](checktoggle.md)
+* DateRangeEntry — compact start/end inputs (if present)
 
-- [OptionMenu](optionmenu.md)
+* Popover / Dialog date picker — calendar shown in an overlay (if present)
 
 ### Framework concepts
 
-- [State & Interaction](../../capabilities/state-and-interaction.md)
+* [Selection](../../concepts/selection.md)
 
-- [Configuration](../../capabilities/configuration.md)
+* [Forms](../../concepts/forms.md)
+
+* [Localization](../../concepts/localization.md)
 
 ### API reference
 
-- [`ttkbootstrap.Calendar`](../../reference/widgets/Calendar.md)
+* [ttkbootstrap.Calendar](../../api/calendar.md)

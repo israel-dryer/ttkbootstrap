@@ -1,47 +1,4 @@
 ---
-
-## Framework integration
-
-### Signals & events
-
-Widgets participate in ttkbootstrap’s reactive model.
-
-- **Signals** represent a widget’s **value/state** and are built on **Tk variables** with a modern subscription API.
-
-- **Events** (including virtual events) represent **interactions and moments** (click, commit, focus, selection changed).
-
-Signals and events are complementary: use signals for state flow and composition, and use events when you need
-interaction-level integration.
-
-!!! link "See also: [Signals](../../capabilities/signals.md), [Virtual Events](../../capabilities/virtual-events.md), [Callbacks](../../capabilities/callbacks.md)"
-
-### Design system
-
-Widgets are styled through ttkbootstrap’s design system using:
-
-- semantic colors via `bootstyle` (e.g., `primary`, `success`, `danger`)
-
-- variants (e.g., `outline`, `link`, `ghost` where supported)
-
-- consistent state visuals across themes
-
-!!! link "See also: [Colors](../../design-system/colors.md), [Variants](../../design-system/variants.md)"
-
-### Layout properties
-
-Widgets support ttkbootstrap layout conveniences (when available) so they compose cleanly in modern layouts.
-
-!!! link "See also: [Layout Properties](../../capabilities/layout-props.md)"
-
-### Localization
-
-Text labels can be localized in localized applications.
-
-!!! link "See also: [Localization](../../capabilities/localization.md)"
-
-
----
-
 title: Notebook
 ---
 
@@ -49,7 +6,7 @@ title: Notebook
 
 `Notebook` is a **tabbed view container** that shows one page at a time and lets users switch views by clicking tabs.
 
-ttkbootstrap’s `Notebook` extends `ttk.Notebook` with:
+ttkbootstrap's `Notebook` extends `ttk.Notebook` with:
 
 - **key-based tab references** (stable, human-friendly)
 
@@ -57,7 +14,7 @@ ttkbootstrap’s `Notebook` extends `ttk.Notebook` with:
 
 - helpers for **hide/show/remove** while keeping the tab registry consistent
 
-- **enriched tab lifecycle events** that describe *what changed* and *why* fileciteturn17file0
+- **enriched tab lifecycle events** that describe *what changed* and *why*
 
 <!--
 IMAGE: Notebook overview
@@ -67,7 +24,7 @@ Theme variants: light / dark
 
 ---
 
-## Basic usage
+## Quick start
 
 Create a notebook and add tab frames:
 
@@ -108,17 +65,52 @@ app.mainloop()
 
 ---
 
-## Core concepts
+## When to use
+
+Use `Notebook` when:
+
+- you have multiple related views sharing the same window area
+
+- switching views should be fast and non-destructive
+
+- you want a familiar desktop "tabs" model
+
+Consider a different control when:
+
+- the workflow is sequential (wizard/flow) - use [PageStack](pagestack.md) instead
+
+- back/forward history matters - use [PageStack](pagestack.md) instead
+
+- you have many sections that don't fit well as tabs - consider a side navigation pattern
+
+---
+
+## Appearance
+
+### Styling
+
+Apply a bootstyle to change the tab accent color:
+
+```python
+nb = ttk.Notebook(app, bootstyle="primary")
+```
+
+!!! link "Design System"
+    See [Colors & Themes](../../design-system/colors.md) for available bootstyle values.
+
+---
+
+## Examples and patterns
 
 ### Tab references
 
-Most notebook APIs accept a “tab reference” that can be:
+Most notebook APIs accept a "tab reference" that can be:
 
-- **key** (`str`) — recommended (stable)
+- **key** (`str`) - recommended (stable)
 
-- **index** (`int`) — 0-based position
+- **index** (`int`) - 0-based position
 
-- **widget** — the tab’s content widget
+- **widget** - the tab's content widget
 
 ```python
 nb.select("settings")    # by key
@@ -151,10 +143,6 @@ page = nb.insert_frame(0, label="Start", key="start", frame_options=dict(padding
 nb.add(page, key="recent", text="tabs.recent", fmtargs=("Today",))
 ```
 
----
-
-## Common patterns
-
 ### Hide vs remove
 
 Hide a tab without forgetting it:
@@ -170,7 +158,7 @@ nb.remove("settings")
 ```
 
 !!! tip "Hide vs remove"
-    Use `hide(...)` for temporary visibility (feature flags, permissions).  
+    Use `hide(...)` for temporary visibility (feature flags, permissions).
     Use `remove(...)` when the tab should be forgotten entirely.
 
 ### Disable a tab
@@ -183,9 +171,7 @@ nb.tab("settings", state="disabled")
 
 Use `insert(...)` to move a widget to a new index. Keys remain stable even if indices change.
 
----
-
-## Events
+### Events
 
 `Notebook` emits enriched lifecycle events:
 
@@ -219,14 +205,16 @@ For `on_tab_changed(...)`, `event.data` includes:
 
 - `reason`: `"user" | "api" | "hide" | "forget" | "reorder" | "unknown"`
 
-- `via`: `"click" | "key" | "programmatic" | "unknown"` fileciteturn17file0
+- `via`: `"click" | "key" | "programmatic" | "unknown"`
 
 !!! tip "Track navigation state"
     Use `reason` and `via` to distinguish user clicks from programmatic navigation (wizards, validation redirects).
 
 ---
 
-## UX guidance
+## Behavior
+
+### UX guidance
 
 - Keep tab labels short and scannable
 
@@ -238,56 +226,16 @@ For `on_tab_changed(...)`, `event.data` includes:
 
 ---
 
-## When should I use Notebook?
-
-Use `Notebook` when:
-
-- you have multiple related views sharing the same window area
-
-- switching views should be fast and non-destructive
-
-- you want a familiar desktop “tabs” model
-
-Prefer `PageStack` when:
-
-- the workflow is sequential (wizard/flow)
-
-- back/forward history matters
-
-Avoid tabs when:
-
-- you have many sections that don’t fit well as tabs (consider a side navigation pattern)
-
----
-
-## Related widgets
-
-- **PageStack** — stacked views with history (wizards/flows)
-
-- **Frame** — common tab page container
-
-- **PanedWindow** — split layouts often paired with view switching
-
----
-
-## Reference
-
-- **API Reference:** `ttkbootstrap.Notebook`
-
----
-
 ## Additional resources
 
 ### Related widgets
 
-- [PageStack](pagestack.md)
+- [PageStack](pagestack.md) - stacked views with history (wizards/flows)
 
-### Framework concepts
+- [Frame](../layout/frame.md) - common tab page container
 
-- [State & Interaction](../../capabilities/state-and-interaction.md)
-
-- [Configuration](../../capabilities/configuration.md)
+- [PanedWindow](../layout/panedwindow.md) - split layouts often paired with view switching
 
 ### API reference
 
-- [`ttkbootstrap.Notebook`](../../reference/widgets/Notebook.md)
+- [ttkbootstrap.Notebook](../../api/widgets/notebook.md)

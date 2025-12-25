@@ -1,47 +1,4 @@
 ---
-
-## Framework integration
-
-### Signals & events
-
-Widgets participate in ttkbootstrap’s reactive model.
-
-- **Signals** represent a widget’s **value/state** and are built on **Tk variables** with a modern subscription API.
-
-- **Events** (including virtual events) represent **interactions and moments** (click, commit, focus, selection changed).
-
-Signals and events are complementary: use signals for state flow and composition, and use events when you need
-interaction-level integration.
-
-!!! link "See also: [Signals](../../capabilities/signals.md), [Virtual Events](../../capabilities/virtual-events.md), [Callbacks](../../capabilities/callbacks.md)"
-
-### Design system
-
-Widgets are styled through ttkbootstrap’s design system using:
-
-- semantic colors via `bootstyle` (e.g., `primary`, `success`, `danger`)
-
-- variants (e.g., `outline`, `link`, `ghost` where supported)
-
-- consistent state visuals across themes
-
-!!! link "See also: [Colors](../../design-system/colors.md), [Variants](../../design-system/variants.md)"
-
-### Layout properties
-
-Widgets support ttkbootstrap layout conveniences (when available) so they compose cleanly in modern layouts.
-
-!!! link "See also: [Layout Properties](../../capabilities/layout-props.md)"
-
-### Localization
-
-Text labels can be localized in localized applications.
-
-!!! link "See also: [Localization](../../capabilities/localization.md)"
-
-
----
-
 title: NumericEntry
 ---
 
@@ -50,7 +7,7 @@ title: NumericEntry
 `NumericEntry` is a form-ready numeric input control that combines a **label**, **numeric field**, and **message region**.
 
 It adds the behavior you almost always need for numeric data: bounds, stepping, formatting, validation, localization, and
-consistent field events. If you are building forms or dialogs, `NumericEntry` is usually your **default numeric input**. fileciteturn14file0
+consistent field events. If you are building forms or dialogs, `NumericEntry` is usually your **default numeric input**.
 
 <figure markdown>
 ![NumericEntry states](../../assets/dark/widgets-numericentry-states.png#only-dark)
@@ -59,7 +16,7 @@ consistent field events. If you are building forms or dialogs, `NumericEntry` is
 
 ---
 
-## Basic usage
+## Quick start
 
 ```python
 import ttkbootstrap as ttk
@@ -82,7 +39,45 @@ app.mainloop()
 
 ---
 
-## Value model
+## When to use
+
+Use `NumericEntry` when:
+
+- users type numbers and you want reliable parsing + validation
+
+- bounds and stepping help prevent errors
+
+- you want locale-aware display formatting on commit
+
+Consider a different control when:
+
+- stepping is the primary interaction (visible step buttons matter) — use [SpinnerEntry](spinnerentry.md)
+
+- users adjust by feel and live feedback matters — use [Scale](scale.md)
+
+- you need the lowest-level ttk spinbox behavior and options — use [Spinbox](../primitives/spinbox.md)
+
+---
+
+## Appearance
+
+### `bootstyle`
+
+```python
+ttk.NumericEntry(app, label="Quantity")  # primary (default)
+ttk.NumericEntry(app, label="Quantity", bootstyle="secondary")
+ttk.NumericEntry(app, label="Quantity", bootstyle="success")
+ttk.NumericEntry(app, label="Quantity", bootstyle="warning")
+```
+
+!!! link "Design System"
+    For a complete list of available colors and styling options, see the [Design System](../../design-system/index.md) documentation.
+
+---
+
+## Examples and patterns
+
+### Value model
 
 All Entry-based field controls separate **what the user is typing** from the **committed value**.
 
@@ -102,17 +97,15 @@ qty.value = 42
     Parsing, validation, and `value_format` are applied **only when the value is committed**
     (blur/Enter), never on every keystroke.
 
----
+### Common options
 
-## Common options
-
-### Bounds: `minvalue` / `maxvalue`
+#### Bounds: `minvalue` / `maxvalue`
 
 ```python
 age = ttk.NumericEntry(app, label="Age", value=25, minvalue=0, maxvalue=120)
 ```
 
-### Stepping: `increment`
+#### Stepping: `increment`
 
 Stepping is supported via:
 
@@ -133,7 +126,7 @@ price = ttk.NumericEntry(
 )
 ```
 
-### `wrap`
+#### `wrap`
 
 - default behavior clamps at the min/max
 
@@ -151,13 +144,13 @@ percent = ttk.NumericEntry(
 )
 ```
 
-### Spin buttons: `show_spin_buttons`
+#### Spin buttons: `show_spin_buttons`
 
 ```python
 field = ttk.NumericEntry(app, label="Quantity", value=1, show_spin_buttons=False)
 ```
 
-### Formatting: `value_format`
+#### Formatting: `value_format`
 
 Commit-time, locale-aware formatting:
 
@@ -172,30 +165,7 @@ ttk.NumericEntry(app, label="Percent", value=0.35, value_format="percent").pack(
 ![numeric formats](../../assets/light/widgets-numericentry-formats.png#only-light)
 </figure>
 
----
-
-## Behavior
-
-### Add-ons
-
-Like other field controls, `NumericEntry` supports prefix and suffix add-ons.
-
-```python
-salary = ttk.NumericEntry(app, label="Salary")
-salary.insert_addon(ttk.Label, position="before", icon="currency-euro")
-
-size = ttk.NumericEntry(app, label="Size", show_spin_buttons=False)
-size.insert_addon(ttk.Label, position="after", text="cm", font="label[9]")
-```
-
-<figure markdown>
-![addons](../../assets/dark/widgets-numericentry-addons.png#only-dark)
-![addons](../../assets/light/widgets-numericentry-addons.png#only-light)
-</figure>
-
----
-
-## Events
+### Events
 
 `NumericEntry` emits standard field events:
 
@@ -226,9 +196,7 @@ qty.on_increment(handle_increment)
 !!! tip "Live typing"
     Use `on_input(...)` for live UX (previews), and `on_changed(...)` for committed values.
 
----
-
-## Validation and constraints
+### Validation
 
 Use numeric options for guardrails:
 
@@ -245,47 +213,42 @@ qty.add_validation_rule("required", message="Quantity is required")
 
 ---
 
-## When should I use NumericEntry?
+## Behavior
 
-Use `NumericEntry` when:
+### Add-ons
 
-- users type numbers and you want reliable parsing + validation
+Like other field controls, `NumericEntry` supports prefix and suffix add-ons.
 
-- bounds and stepping help prevent errors
+```python
+salary = ttk.NumericEntry(app, label="Salary")
+salary.insert_addon(ttk.Label, position="before", icon="currency-euro")
 
-- you want locale-aware display formatting on commit
+size = ttk.NumericEntry(app, label="Size", show_spin_buttons=False)
+size.insert_addon(ttk.Label, position="after", text="cm", font="label[9]")
+```
 
-Prefer **SpinnerEntry** when:
-
-- stepping is the primary interaction (visible step buttons matter)
-
-Prefer **Scale** when:
-
-- users adjust by feel and live feedback matters
-
-Prefer **Spinbox** when:
-
-- you need the lowest-level ttk spinbox behavior and options
+<figure markdown>
+![addons](../../assets/dark/widgets-numericentry-addons.png#only-dark)
+![addons](../../assets/light/widgets-numericentry-addons.png#only-light)
+</figure>
 
 ---
 
-## Related widgets
+## Localization
 
-- **TextEntry** — general field control with validation and formatting
+`NumericEntry` supports locale-aware number formatting through the `value_format` option. Formatting is applied at commit time, displaying numbers according to the current locale's conventions (decimal separators, grouping, currency symbols).
 
-- **SpinnerEntry** — stepped field control
-
-- **Spinbox** — low-level stepper primitive
-
-- **Scale** — slider-based numeric adjustment
-
-- **Form** — build forms from field definitions
+!!! link "Localization"
+    For complete localization configuration and supported formats, see the [Localization](../../guides/localization.md) documentation.
 
 ---
 
-## Reference
+## Reactivity
 
-- **API Reference:** `ttkbootstrap.NumericEntry`
+`NumericEntry` integrates with the signals system for reactive data binding. Changes to the field value can automatically propagate to other parts of your application.
+
+!!! link "Signals"
+    For details on reactive patterns and data binding, see the [Signals](../../guides/signals.md) documentation.
 
 ---
 
@@ -293,18 +256,18 @@ Prefer **Spinbox** when:
 
 ### Related widgets
 
-- [DateEntry](dateentry.md)
-
-- [LabeledScale](labeledscale.md)
-
-- [PasswordEntry](passwordentry.md)
+- [TextEntry](textentry.md) — general field control with validation and formatting
+- [SpinnerEntry](spinnerentry.md) — stepped field control
+- [Spinbox](../primitives/spinbox.md) — low-level stepper primitive
+- [Scale](scale.md) — slider-based numeric adjustment
+- [Form](../forms/form.md) — build forms from field definitions
 
 ### Framework concepts
 
-- [State & Interaction](../../capabilities/state-and-interaction.md)
-
-- [Configuration](../../capabilities/configuration.md)
+- [Forms](../../guides/forms.md) — working with form controls
+- [Localization](../../guides/localization.md) — internationalization and formatting
+- [Signals](../../guides/signals.md) — reactive data binding
 
 ### API reference
 
-- [`ttkbootstrap.NumericEntry`](../../reference/widgets/NumericEntry.md)
+- [ttkbootstrap.NumericEntry](../../api/numericentry.md)

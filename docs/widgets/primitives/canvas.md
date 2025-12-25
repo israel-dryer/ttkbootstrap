@@ -1,55 +1,12 @@
 ---
-
-## Framework integration
-
-### Signals & events
-
-Widgets participate in ttkbootstrap’s reactive model.
-
-- **Signals** represent a widget’s **value/state** and are built on **Tk variables** with a modern subscription API.
-
-- **Events** (including virtual events) represent **interactions and moments** (click, commit, focus, selection changed).
-
-Signals and events are complementary: use signals for state flow and composition, and use events when you need
-interaction-level integration.
-
-!!! link "See also: [Signals](../../capabilities/signals.md), [Virtual Events](../../capabilities/virtual-events.md), [Callbacks](../../capabilities/callbacks.md)"
-
-### Design system
-
-Widgets are styled through ttkbootstrap’s design system using:
-
-- semantic colors via `bootstyle` (e.g., `primary`, `success`, `danger`)
-
-- variants (e.g., `outline`, `link`, `ghost` where supported)
-
-- consistent state visuals across themes
-
-!!! link "See also: [Colors](../../design-system/colors.md), [Variants](../../design-system/variants.md)"
-
-### Layout properties
-
-Widgets support ttkbootstrap layout conveniences (when available) so they compose cleanly in modern layouts.
-
-!!! link "See also: [Layout Properties](../../capabilities/layout-props.md)"
-
-### Localization
-
-Text labels can be localized in localized applications.
-
-!!! link "See also: [Localization](../../capabilities/localization.md)"
-
-
----
-
 title: Canvas
 ---
 
 # Canvas
 
-`Canvas` is Tkinter’s **2D drawing and interaction surface** (`tk.Canvas`).
+`Canvas` is Tkinter's **2D drawing and interaction surface** (`tk.Canvas`).
 
-It’s the foundation for many custom UI patterns:
+It's the foundation for many custom UI patterns:
 
 - diagrams and node editors
 
@@ -64,12 +21,12 @@ It’s the foundation for many custom UI patterns:
 ttkbootstrap exposes `Canvas` as a first-class widget so you can build high-performance, interactive views with consistent theming and practical patterns.
 
 !!! tip "Prefer higher-level widgets when they fit"
-    If your UI is primarily structured data, prefer **ListView**, **TableView**, or **TreeView**.  
-    Use `Canvas` when you need **custom drawing**, **freeform layout**, or **interaction** that standard widgets can’t express.
+    If your UI is primarily structured data, prefer **ListView**, **TableView**, or **TreeView**.
+    Use `Canvas` when you need **custom drawing**, **freeform layout**, or **interaction** that standard widgets can't express.
 
 ---
 
-## Basic usage
+## Quick start
 
 Draw a few shapes:
 
@@ -90,31 +47,49 @@ app.mainloop()
 
 ---
 
-## Key options
+## When to use
 
-Canvas has a large option surface. These are the ones you’ll use most.
+Use `Canvas` when:
+
+- you need custom drawing or freeform layout
+
+- interaction is item-based (hit testing, dragging, linking)
+
+- you need zooming/panning or custom virtualization
+
+### Consider a different control when...
+
+- **you're laying out regular widgets in a scrolling container** - prefer [ScrollView](/widgets/layout/scrollview.md) + [Frame](/widgets/layout/frame.md)
+
+- **the content is primarily structured records** - prefer [ListView](/widgets/data-display/listview.md), [TableView](/widgets/data-display/tableview.md), or [TreeView](/widgets/data-display/treeview.md)
+
+---
+
+## Appearance
+
+Canvas has a large option surface. These are the ones you'll use most.
 
 ### Size and coordinates
 
-- `width`, `height` — canvas size (screen units)
+- `width`, `height` - canvas size (screen units)
 
-- `scrollregion` — the “virtual space” you can scroll around
+- `scrollregion` - the "virtual space" you can scroll around
 
-- `confine` — constrain view to `scrollregion` when scrolling
+- `confine` - constrain view to `scrollregion` when scrolling
 
 ```python
 c = ttk.Canvas(app, width=600, height=400, scrollregion=(0, 0, 2000, 1200))
 ```
 
 !!! note "Resetting scrollregion"
-    Setting `scrollregion=()` resets it to empty.  
+    Setting `scrollregion=()` resets it to empty.
     Setting it to `None` may not clear it on all Tk builds.
 
 ### Interaction
 
-- `closeenough` — hit test tolerance (pixels)
+- `closeenough` - hit test tolerance (pixels)
 
-- `cursor` — cursor over the canvas
+- `cursor` - cursor over the canvas
 
 - `state="normal" | "disabled"`
 
@@ -128,7 +103,9 @@ If your canvas items depend on theme colors, set item colors explicitly (e.g., `
 
 ---
 
-## Canvas items
+## Examples and patterns
+
+### Canvas items
 
 Canvas content is made of **items**, each with an integer id:
 
@@ -155,9 +132,7 @@ Item ids are stable until deleted. You can also assign **tags** to items.
 
 - `create_window` (embed a widget)
 
----
-
-## Tags
+### Tags
 
 Tags are the best way to manage groups of items.
 
@@ -184,25 +159,23 @@ def on_click(_):
 c.tag_bind("node", "<Button-1>", on_click)
 ```
 
----
+### Coordinates and transforms
 
-## Coordinates and transforms
-
-### Reading and updating item coordinates
+#### Reading and updating item coordinates
 
 ```python
 xy = c.coords(rect)            # list[float]
 c.coords(rect, 20, 20, 180, 90)  # set new coords
 ```
 
-### Move items
+#### Move items
 
 ```python
 c.move(rect, 10, 0)
 c.move("node", 0, 20)  # move all items with tag
 ```
 
-### Scale for zoom
+#### Scale for zoom
 
 `scale(tagOrId, xOrigin, yOrigin, xScale, yScale)` scales coordinates around an origin.
 
@@ -215,9 +188,7 @@ def zoom(factor: float, origin=(0, 0)):
 !!! note "Canvas scaling"
     `scale()` scales item coordinates. Text and line widths may need extra handling depending on the effect you want.
 
----
-
-## Scrolling
+### Scrolling
 
 Canvas uses `xscrollcommand`/`yscrollcommand` and `xview`/`yview` like Text.
 
@@ -246,7 +217,7 @@ frame.columnconfigure(0, weight=1)
 app.mainloop()
 ```
 
-### Convert screen coordinates to canvas coordinates
+#### Convert screen coordinates to canvas coordinates
 
 When the canvas is scrolled, event `x/y` are screen coordinates relative to the widget.
 Use `canvasx` and `canvasy` to convert:
@@ -260,11 +231,9 @@ def on_click(e):
 c.bind("<Button-1>", on_click)
 ```
 
----
+### Hit testing
 
-## Hit testing
-
-Canvas provides “find” helpers:
+Canvas provides "find" helpers:
 
 - `find_closest(x, y)`
 
@@ -282,9 +251,7 @@ def on_click(e):
 c.bind("<Button-1>", on_click)
 ```
 
----
-
-## Dragging (common pattern)
+### Dragging (common pattern)
 
 A minimal drag pattern:
 
@@ -317,7 +284,9 @@ c.bind("<ButtonRelease-1>", on_up)
 
 ---
 
-## Performance tips
+## Behavior
+
+### Performance tips
 
 - Prefer **tags** for bulk operations instead of iterating every item id.
 
@@ -325,45 +294,7 @@ c.bind("<ButtonRelease-1>", on_up)
 
 - Limit the number of canvas items when possible; thousands are fine, tens of thousands may require careful design.
 
-- For “virtualized” surfaces, render only what’s visible (use `canvasx/canvasy` + view bounds).
-
----
-
-## When should I use Canvas?
-
-Use `Canvas` when:
-
-- you need custom drawing or freeform layout
-
-- interaction is item-based (hit testing, dragging, linking)
-
-- you need zooming/panning or custom virtualization
-
-Prefer **ScrollView + Frame** when:
-
-- you’re laying out regular widgets in a scrolling container
-
-Prefer **ListView / TableView / TreeView** when:
-
-- the content is primarily structured records
-
----
-
-## Related widgets
-
-- **ScrollView / Scrollbar** — scrolling primitives
-
-- **Text** — tag-based content editing
-
-- **ListView** — virtual scrolling for record lists
-
-- **PageStack** — complex view composition
-
----
-
-## Reference
-
-- **API Reference:** `ttkbootstrap.Canvas` (Tkinter `tk.Canvas`)
+- For "virtualized" surfaces, render only what's visible (use `canvasx/canvasy` + view bounds).
 
 ---
 
@@ -371,18 +302,14 @@ Prefer **ListView / TableView / TreeView** when:
 
 ### Related widgets
 
-- [Combobox](combobox.md)
+- [ScrollView](/widgets/layout/scrollview.md) / [Scrollbar](/widgets/layout/scrollbar.md) - scrolling primitives
 
-- [Entry](entry.md)
+- [Text](/widgets/primitives/text.md) - tag-based content editing
 
-- [Spinbox](spinbox.md)
+- [ListView](/widgets/data-display/listview.md) - virtual scrolling for record lists
 
-### Framework concepts
-
-- [State & Interaction](../../capabilities/state-and-interaction.md)
-
-- [Configuration](../../capabilities/configuration.md)
+- [PageStack](/widgets/views/pagestack.md) - complex view composition
 
 ### API reference
 
-- [`ttkbootstrap.Canvas`](../../reference/widgets/Canvas.md)
+- [ttkbootstrap.Canvas](/api/widgets/canvas.md) (Tkinter `tk.Canvas`)

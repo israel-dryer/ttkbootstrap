@@ -1,47 +1,4 @@
 ---
-
-## Framework integration
-
-### Signals & events
-
-Widgets participate in ttkbootstrap’s reactive model.
-
-- **Signals** represent a widget’s **value/state** and are built on **Tk variables** with a modern subscription API.
-
-- **Events** (including virtual events) represent **interactions and moments** (click, commit, focus, selection changed).
-
-Signals and events are complementary: use signals for state flow and composition, and use events when you need
-interaction-level integration.
-
-!!! link "See also: [Signals](../../capabilities/signals.md), [Virtual Events](../../capabilities/virtual-events.md), [Callbacks](../../capabilities/callbacks.md)"
-
-### Design system
-
-Widgets are styled through ttkbootstrap’s design system using:
-
-- semantic colors via `bootstyle` (e.g., `primary`, `success`, `danger`)
-
-- variants (e.g., `outline`, `link`, `ghost` where supported)
-
-- consistent state visuals across themes
-
-!!! link "See also: [Colors](../../design-system/colors.md), [Variants](../../design-system/variants.md)"
-
-### Layout properties
-
-Widgets support ttkbootstrap layout conveniences (when available) so they compose cleanly in modern layouts.
-
-!!! link "See also: [Layout Properties](../../capabilities/layout-props.md)"
-
-### Localization
-
-Text labels can be localized in localized applications.
-
-!!! link "See also: [Localization](../../capabilities/localization.md)"
-
-
----
-
 title: DateDialog
 ---
 
@@ -49,10 +6,10 @@ title: DateDialog
 
 `DateDialog` is a **modal dialog** for selecting a calendar date.
 
-It’s useful when date selection is a discrete task (pick once, then continue), and you want the familiar dialog flow:
-open → pick → confirm/cancel.
+It's useful when date selection is a discrete task (pick once, then continue), and you want the familiar dialog flow:
+open -> pick -> confirm/cancel.
 
-If you need an inline field that also supports typing, prefer **DateEntry**.
+If you need an inline field that also supports typing, prefer [DateEntry](../inputs/dateentry.md).
 
 <!--
 IMAGE: DateDialog open state
@@ -62,7 +19,7 @@ Theme variants: light / dark
 
 ---
 
-## Basic usage
+## Quick start
 
 ```python
 import ttkbootstrap as ttk
@@ -86,25 +43,37 @@ app.mainloop()
 
 ---
 
-## Value model
+## When to use
 
-A date dialog produces a single **committed date** (or no value if cancelled).
+Use `DateDialog` when:
 
-- **No live typing** is required (though some implementations may allow it)
+- date selection is a one-time action (pick then proceed)
 
-- The chosen date is committed when the user confirms (OK / Apply)
+- you want an explicit confirm/cancel flow
+
+- the date picker needs more space than an inline popup
+
+### Consider a different control when...
+
+- date is part of a form - use [DateEntry](../inputs/dateentry.md) instead
+
+- users may want to type/paste a date - use [DateEntry](../inputs/dateentry.md) instead
+
+- you want inline validation and messaging - use [DateEntry](../inputs/dateentry.md) instead
 
 ---
 
-## Common options
+## Examples & patterns
 
-### `title`
+### Common options
+
+#### `title`
 
 ```python
 ttk.DateDialog(title="Due date")
 ```
 
-### `initial_date`
+#### `initial_date`
 
 Sets the date shown/selected when the dialog opens.
 
@@ -112,7 +81,7 @@ Sets the date shown/selected when the dialog opens.
 ttk.DateDialog(initial_date="2025-01-01")
 ```
 
-### `min_date` / `max_date` (if supported)
+#### `min_date` / `max_date` (if supported)
 
 Constrain selectable dates.
 
@@ -120,9 +89,39 @@ Constrain selectable dates.
 ttk.DateDialog(min_date="2025-01-01", max_date="2025-12-31")
 ```
 
-### Locale / formatting (if supported)
+#### Locale / formatting (if supported)
 
-Dialog date display should follow your app’s localization settings.
+Dialog date display should follow your app's localization settings.
+
+### Value model
+
+A date dialog produces a single **committed date** (or no value if cancelled).
+
+- **No live typing** is required (though some implementations may allow it)
+
+- The chosen date is committed when the user confirms (OK / Apply)
+
+### Events
+
+Dialogs are usually handled via return value, but some implementations emit events such as:
+
+- `<<Changed>>` (when selection changes inside the dialog)
+
+- `<<Accepted>>` / `<<Cancelled>>`
+
+If your dialog supports events, treat them as secondary to the `.show()` result.
+
+### Validation and constraints
+
+Use constraints when:
+
+- the date must be within an allowed window
+
+- you want to disable past/future dates
+
+Use validation when:
+
+- selection must satisfy business rules beyond bounds (e.g., working days only)
 
 ---
 
@@ -140,84 +139,19 @@ Dialog date display should follow your app’s localization settings.
 
 ---
 
-## Events
-
-Dialogs are usually handled via return value, but some implementations emit events such as:
-
-- `<<Changed>>` (when selection changes inside the dialog)
-
-- `<<Accepted>>` / `<<Cancelled>>`
-
-If your dialog supports events, treat them as secondary to the `.show()` result.
-
----
-
-## Validation and constraints
-
-Use constraints when:
-
-- the date must be within an allowed window
-
-- you want to disable past/future dates
-
-Use validation when:
-
-- selection must satisfy business rules beyond bounds (e.g., working days only)
-
----
-
-## When should I use DateDialog?
-
-Use `DateDialog` when:
-
-- date selection is a one-time action (pick then proceed)
-
-- you want an explicit confirm/cancel flow
-
-- the date picker needs more space than an inline popup
-
-Prefer **DateEntry** when:
-
-- date is part of a form
-
-- users may want to type/paste a date
-
-- you want inline validation and messaging
-
----
-
-## Related widgets
-
-- **DateEntry** — inline date field with popup picker
-
-- **TimeEntry** — time-of-day input
-
-- **MessageBox** — simple modal feedback dialogs
-
----
-
-## Reference
-
-- **API Reference:** `ttkbootstrap.DateDialog`
-
----
-
 ## Additional resources
 
 ### Related widgets
 
-- [ColorChooser](colorchooser.md)
+- [DateEntry](../inputs/dateentry.md) - inline date field with popup picker
 
-- [ColorDropper](colordropper.md)
+- [TimeEntry](../inputs/timeentry.md) - time-of-day input
 
-- [Dialog](dialog.md)
+- [Calendar](../selection/calendar.md) - standalone calendar widget
 
-### Framework concepts
-
-- [State & Interaction](../../capabilities/state-and-interaction.md)
-
-- [Configuration](../../capabilities/configuration.md)
+- [MessageBox](messagebox.md) - simple modal feedback dialogs
 
 ### API reference
 
-- [`ttkbootstrap.DateDialog`](../../reference/widgets/DateDialog.md)
+!!! link "API Reference"
+    `ttkbootstrap.DateDialog`

@@ -1,43 +1,122 @@
+---
+title: LabeledScale
+---
 
+# LabeledScale
 
-## Framework integration
+`LabeledScale` is a **horizontal scale widget** with a label that displays and follows the current value.
 
-### Signals & events
+Use `LabeledScale` when users need visual feedback of the exact value as they drag the slider - common for volume controls, opacity settings, or any numeric range where precision matters.
 
-Widgets participate in ttkbootstrap’s reactive model.
+---
 
-- **Signals** represent a widget’s **value/state** and are built on **Tk variables** with a modern subscription API.
+## Quick start
 
-- **Events** (including virtual events) represent **interactions and moments** (click, commit, focus, selection changed).
+```python
+import ttkbootstrap as ttk
 
-Signals and events are complementary: use signals for state flow and composition, and use events when you need
-interaction-level integration.
+app = ttk.App()
 
-!!! link "See also: [Signals](../../capabilities/signals.md), [Virtual Events](../../capabilities/virtual-events.md), [Callbacks](../../capabilities/callbacks.md)"
+scale = ttk.LabeledScale(
+    app,
+    value=50,
+    minvalue=0,
+    maxvalue=100,
+)
+scale.pack(padx=20, pady=20, fill="x")
 
-### Design system
+app.mainloop()
+```
 
-Widgets are styled through ttkbootstrap’s design system using:
+---
 
-- semantic colors via `bootstyle` (e.g., `primary`, `success`, `danger`)
+## When to use
 
-- variants (e.g., `outline`, `link`, `ghost` where supported)
+Use `LabeledScale` when:
 
-- consistent state visuals across themes
+- users need to see the exact value while dragging
+- you want a compact slider with built-in value display
+- the value label should track the slider position
 
-!!! link "See also: [Colors](../../design-system/colors.md), [Variants](../../design-system/variants.md)"
+### Consider a different control when...
 
-### Layout properties
+- you don't need a tracking label -> use [Scale](scale.md)
+- you need a numeric entry with increment buttons -> use [SpinnerEntry](spinnerentry.md)
+- you need fine-grained numeric input -> use [NumericEntry](numericentry.md)
 
-Widgets support ttkbootstrap layout conveniences (when available) so they compose cleanly in modern layouts.
+---
 
-!!! link "See also: [Layout Properties](../../capabilities/layout-props.md)"
+## Appearance
 
-### Localization
+### `compound`
 
-Text labels can be localized in localized applications.
+Label position relative to the scale:
 
-!!! link "See also: [Localization](../../capabilities/localization.md)"
+- `"before"` (default) - label above the scale
+- `"after"` - label below the scale
+
+```python
+ttk.LabeledScale(app, compound="after")
+```
+
+### `bootstyle`
+
+Style applied to both the scale and label.
+
+```python
+ttk.LabeledScale(app, bootstyle="success")
+```
+
+!!! link "Design System"
+    LabeledScale styling follows the theme's color palette. See [Design System](../../concepts/design-system.md) for customization options.
+
+---
+
+## Examples and patterns
+
+### `value`
+
+Initial value for the scale. Defaults to 0.
+
+### `minvalue` / `maxvalue`
+
+Range of the scale. Defaults to 0-100.
+
+```python
+ttk.LabeledScale(app, minvalue=0, maxvalue=255)  # RGB range
+ttk.LabeledScale(app, minvalue=-50, maxvalue=50)  # Centered range
+```
+
+### `dtype`
+
+Data type for the value: `int` (default) or `float`.
+
+```python
+ttk.LabeledScale(app, dtype=float, minvalue=0.0, maxvalue=1.0)
+```
+
+### `variable`
+
+A tkinter variable to associate with the scale. If None, creates an IntVar or DoubleVar based on dtype.
+
+### Value access
+
+```python
+# Get current value
+current = scale.value
+
+# Set value programmatically
+scale.value = 75
+```
+
+---
+
+## Behavior
+
+- The label automatically updates to display the current value.
+- The label position follows the slider handle as it moves.
+- Only horizontal orientation is supported.
+- Values outside the range are clamped to the last valid value.
 
 ---
 
@@ -45,17 +124,9 @@ Text labels can be localized in localized applications.
 
 ### Related widgets
 
-- [DateEntry](dateentry.md)
-
-- [NumericEntry](numericentry.md)
-
-- [PasswordEntry](passwordentry.md)
-
-### Framework concepts
-
-- [State & Interaction](../../capabilities/state-and-interaction.md)
-
-- [Configuration](../../capabilities/configuration.md)
+- [Scale](scale.md) - basic scale without tracking label
+- [SpinnerEntry](spinnerentry.md) - numeric input with increment/decrement buttons
+- [NumericEntry](numericentry.md) - numeric input field with validation
 
 ### API reference
 

@@ -1,47 +1,4 @@
 ---
-
-## Framework integration
-
-### Signals & events
-
-Widgets participate in ttkbootstrap’s reactive model.
-
-- **Signals** represent a widget’s **value/state** and are built on **Tk variables** with a modern subscription API.
-
-- **Events** (including virtual events) represent **interactions and moments** (click, commit, focus, selection changed).
-
-Signals and events are complementary: use signals for state flow and composition, and use events when you need
-interaction-level integration.
-
-!!! link "See also: [Signals](../../capabilities/signals.md), [Virtual Events](../../capabilities/virtual-events.md), [Callbacks](../../capabilities/callbacks.md)"
-
-### Design system
-
-Widgets are styled through ttkbootstrap’s design system using:
-
-- semantic colors via `bootstyle` (e.g., `primary`, `success`, `danger`)
-
-- variants (e.g., `outline`, `link`, `ghost` where supported)
-
-- consistent state visuals across themes
-
-!!! link "See also: [Colors](../../design-system/colors.md), [Variants](../../design-system/variants.md)"
-
-### Layout properties
-
-Widgets support ttkbootstrap layout conveniences (when available) so they compose cleanly in modern layouts.
-
-!!! link "See also: [Layout Properties](../../capabilities/layout-props.md)"
-
-### Localization
-
-Text labels can be localized in localized applications.
-
-!!! link "See also: [Localization](../../capabilities/localization.md)"
-
-
----
-
 title: Meter
 ---
 
@@ -49,11 +6,11 @@ title: Meter
 
 `Meter` displays a **single numeric value within a range**, often as a circular or arc-style gauge.
 
-It’s ideal for dashboards, summaries, and status panels where visual emphasis matters more than precision.
+It's ideal for dashboards, summaries, and status panels where visual emphasis matters more than precision.
 
 ---
 
-## Basic usage
+## Quick start
 
 ```python
 import ttkbootstrap as ttk
@@ -68,7 +25,46 @@ app.mainloop()
 
 ---
 
-## Value model
+## When to use
+
+Use Meter when:
+
+- showing a snapshot or status value
+
+- visual emphasis is important
+
+- you need a dashboard-style indicator
+
+### Consider a different control when...
+
+- **Tracking task progress over time** — use [Progressbar](progressbar.md) instead
+
+- **Showing capacity or fullness levels** — use [FloodGauge](floodgauge.md) instead
+
+- **You need a compact text-based indicator** — use [Badge](badge.md) instead
+
+---
+
+## Appearance
+
+### Styling with `bootstyle`
+
+Meters are highly visual and often color-coded:
+
+```python
+ttk.Meter(app, bootstyle="success")
+ttk.Meter(app, bootstyle="danger")
+ttk.Meter(app, bootstyle="info")
+```
+
+!!! link "Design System"
+    See [Design System](../../design-system/index.md) for color tokens and theming guidelines.
+
+---
+
+## Examples & patterns
+
+### Value model
 
 Meters display:
 
@@ -76,58 +72,65 @@ Meters display:
 
 - optional text/label overlays
 
----
+```python
+meter = ttk.Meter(
+    app,
+    amountused=75,
+    amounttotal=100,
+    subtext="CPU Usage"
+)
+meter.pack()
+```
 
-## Common options
+### Common options
 
-- `amountused`
+- `amountused` — current value
 
-- `amounttotal`
+- `amounttotal` — maximum value
 
-- `subtext`
+- `subtext` — label displayed below the value
 
-- `stripethickness`
+- `stripethickness` — thickness of the gauge stripe
 
-- `interactive=False` (if supported)
+- `interactive=False` — whether the meter can be adjusted by the user (if supported)
 
----
-
-## Styling
-
-Meters are highly visual and often color-coded:
+### With subtext
 
 ```python
-ttk.Meter(app, bootstyle="success")
-ttk.Meter(app, bootstyle="danger")
+ttk.Meter(
+    app,
+    amountused=42,
+    amounttotal=100,
+    subtext="Progress"
+).pack()
 ```
 
 ---
 
-## When should I use Meter?
+## Behavior
 
-Use Meter when:
+- The meter arc fills proportionally based on `amountused / amounttotal`
 
-- showing a snapshot or status
+- Visual updates occur when values are changed programmatically
 
-- visual emphasis is important
-
-Prefer **Progressbar** when:
-
-- tracking task progress over time
+- Some implementations support interactive mode where users can drag to adjust
 
 ---
 
-## Related widgets
+## Reactivity
 
-- **Progressbar**
+Meter can be updated dynamically by binding to signals:
 
-- **FloodGauge**
+```python
+usage = ttk.Signal(50)
+meter = ttk.Meter(app, amountused=usage, amounttotal=100)
 
----
+# Update value
+usage.set(75)  # Meter updates automatically
+```
 
-## Reference
-
-- **API Reference:** `ttkbootstrap.Meter`
+!!! link "Signals"
+    See [Signals](../../concepts/signals.md) for reactive programming patterns.
 
 ---
 
@@ -135,18 +138,18 @@ Prefer **Progressbar** when:
 
 ### Related widgets
 
-- [Badge](badge.md)
+- [Progressbar](progressbar.md) — linear progress indicators
 
-- [FloodGauge](floodgauge.md)
+- [FloodGauge](floodgauge.md) — capacity/level indicators
 
-- [Label](label.md)
+- [Badge](badge.md) — compact status indicators
 
 ### Framework concepts
 
-- [State & Interaction](../../capabilities/state-and-interaction.md)
+- [Design System](../../design-system/index.md) — colors, typography, and theming
 
-- [Configuration](../../capabilities/configuration.md)
+- [Signals](../../concepts/signals.md) — reactive data binding
 
 ### API reference
 
-- [`ttkbootstrap.Meter`](../../reference/widgets/Meter.md)
+- [ttkbootstrap.Meter](../../api/widgets/meter.md)

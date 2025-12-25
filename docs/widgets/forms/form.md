@@ -1,47 +1,4 @@
 ---
-
-## Framework integration
-
-### Signals & events
-
-Widgets participate in ttkbootstrap’s reactive model.
-
-- **Signals** represent a widget’s **value/state** and are built on **Tk variables** with a modern subscription API.
-
-- **Events** (including virtual events) represent **interactions and moments** (click, commit, focus, selection changed).
-
-Signals and events are complementary: use signals for state flow and composition, and use events when you need
-interaction-level integration.
-
-!!! link "See also: [Signals](../../capabilities/signals.md), [Virtual Events](../../capabilities/virtual-events.md), [Callbacks](../../capabilities/callbacks.md)"
-
-### Design system
-
-Widgets are styled through ttkbootstrap’s design system using:
-
-- semantic colors via `bootstyle` (e.g., `primary`, `success`, `danger`)
-
-- variants (e.g., `outline`, `link`, `ghost` where supported)
-
-- consistent state visuals across themes
-
-!!! link "See also: [Colors](../../design-system/colors.md), [Variants](../../design-system/variants.md)"
-
-### Layout properties
-
-Widgets support ttkbootstrap layout conveniences (when available) so they compose cleanly in modern layouts.
-
-!!! link "See also: [Layout Properties](../../capabilities/layout-props.md)"
-
-### Localization
-
-Text labels can be localized in localized applications.
-
-!!! link "See also: [Localization](../../capabilities/localization.md)"
-
-
----
-
 title: Form
 ---
 
@@ -51,33 +8,9 @@ title: Form
 
 It makes it easy to build consistent data-entry UIs by composing the standard v2 input widgets (TextEntry, NumericEntry, SelectBox, DateEntry, etc.) from a single definition.
 
-Use `Form` when you want:
-
-- a form layout generated from a spec (instead of manually wiring every widget)
-
-- consistent label/message/validation behavior across fields
-
-- a single place to read/write form data and run validation
-
 ---
 
-## Overview
-
-A `Form` takes a list of field definitions (and optional layout/grouping instructions) and produces:
-
-- labeled field widgets (using your v2 field controls)
-
-- an internal data model (readable as a dict)
-
-- validation helpers and a consistent “submit” flow
-
-- optional grouping and tabs for larger forms
-
-This is a **builder/composite**: it does not replace your input widgets—it standardizes how they’re assembled and managed.
-
----
-
-## Basic usage
+## Quick start
 
 Define fields and read the committed data:
 
@@ -109,11 +42,58 @@ app.mainloop()
 
 ---
 
-## Form spec
+## When to use
+
+Use `Form` when:
+
+- you want to build forms from a spec (instead of manually wiring every widget)
+
+- you need consistent label/message/validation behavior across fields
+
+- you need consistent layout + validation across many fields
+
+- the form structure changes dynamically (feature flags, permissions, metadata-driven UI)
+
+- you want a single place to read/write form data and run validation
+
+### Consider a different control when...
+
+- the form is small (1–3 fields) — hand-built layouts may be simpler
+
+- the layout is highly custom or artistic — manual composition gives more control
+
+- you need extremely bespoke widget composition per row
+
+- the entire task is "fill this form and confirm/cancel" in a modal flow — prefer [FormDialog](../dialogs/formdialog.md)
+
+---
+
+## Appearance
+
+A `Form` takes a list of field definitions (and optional layout/grouping instructions) and produces:
+
+- labeled field widgets (using your v2 field controls)
+
+- an internal data model (readable as a dict)
+
+- validation helpers and a consistent "submit" flow
+
+- optional grouping and tabs for larger forms
+
+This is a **builder/composite**: it does not replace your input widgets—it standardizes how they're assembled and managed.
+
+!!! link "Design System"
+    See the [Design System](../../design-system/index.md) for form layout guidelines and spacing recommendations.
+
+---
+
+## Examples and patterns
+
+### Form spec
 
 `Form` is configured with a list of item definitions.
 
-### Field items
+#### Field items
 
 A field item describes one value:
 
@@ -135,7 +115,7 @@ Example:
 {"key": "email", "label": "Email", "editor": "text", "required": True}
 ```
 
-### Editor-specific options
+#### Editor-specific options
 
 Some editors accept additional options:
 
@@ -145,11 +125,9 @@ Some editors accept additional options:
 
 - date editors: `min_date`, `max_date`, formatting options
 
----
+### Layout
 
-## Layout
-
-### Columns
+#### Columns
 
 For wide forms, you can specify a column count:
 
@@ -157,7 +135,7 @@ For wide forms, you can specify a column count:
 form = ttk.Form(app, columns=2, items=[...])
 ```
 
-### Explicit placement (advanced)
+#### Explicit placement (advanced)
 
 If your implementation supports explicit row/column placement, use it for custom layouts:
 
@@ -166,13 +144,11 @@ If your implementation supports explicit row/column placement, use it for custom
 {"key": "last", "label": "Last name", "editor": "text", "row": 0, "column": 1}
 ```
 
----
-
-## Grouping and tabs
+### Grouping and tabs
 
 For larger forms, organize fields into groups and tabs.
 
-### Groups
+#### Groups
 
 Groups visually separate related fields (like a section):
 
@@ -187,7 +163,7 @@ Groups visually separate related fields (like a section):
 }
 ```
 
-### Tabs
+#### Tabs
 
 Tabs separate major sections (profile/settings/permissions):
 
@@ -201,11 +177,9 @@ Tabs separate major sections (profile/settings/permissions):
 }
 ```
 
----
+### Data model
 
-## Data model
-
-### Reading data
+#### Reading data
 
 `form.data` (or an equivalent accessor) returns a dict-like mapping:
 
@@ -214,7 +188,7 @@ data = form.data
 print(data["name"])
 ```
 
-### Setting data
+#### Setting data
 
 Set values in bulk (if supported):
 
@@ -228,23 +202,21 @@ Or per field:
 form.set_value("status", "Done")
 ```
 
----
+### Validation
 
-## Validation
-
-### Validate the full form
+#### Validate the full form
 
 ```python
 ok = form.validate()
 ```
 
-### Required fields
+#### Required fields
 
 ```python
 {"key": "name", "label": "Name", "editor": "text", "required": True}
 ```
 
-### Custom validation (if supported)
+#### Custom validation (if supported)
 
 If your spec supports validators:
 
@@ -261,9 +233,21 @@ Or a callable:
 !!! tip "Validation UX"
     Prefer showing validation messages inline at the field level, and only use modal dialogs for form-level failures.
 
+### Footer actions and "submit" flows
+
+A common pattern is to:
+
+1. validate the form
+2. read `form.data`
+3. commit changes / close dialog / navigate
+
+If your `Form` supports built-in footer buttons, use them for consistent layouts. Otherwise, pair with `ButtonGroup` or a simple button row.
+
 ---
 
-## Accessing fields and widgets
+## Behavior
+
+### Accessing fields and widgets
 
 Most form builders provide a way to access the generated field widgets:
 
@@ -288,57 +272,21 @@ Use this to:
 
 ---
 
-## Footer actions and “submit” flows
+## Localization
 
-A common pattern is to:
+Form labels and validation messages should be localized for international users.
 
-1. validate the form
-2. read `form.data`
-3. commit changes / close dialog / navigate
-
-If your `Form` supports built-in footer buttons, use them for consistent layouts. Otherwise, pair with `ButtonGroup` or a simple button row.
+!!! link "Localization"
+    See the [Localization guide](../../localization/index.md) for details on translating form content.
 
 ---
 
-## When should I use Form?
+## Reactivity
 
-Use `Form` when:
+Form data can be bound to reactive signals for automatic UI updates when values change.
 
-- you want to build forms from a spec
-
-- you need consistent layout + validation across many fields
-
-- the form structure changes dynamically (feature flags, permissions, metadata-driven UI)
-
-Prefer hand-built layouts when:
-
-- the form is small (1–3 fields)
-
-- the layout is highly custom or artistic
-
-- you need extremely bespoke widget composition per row
-
-Prefer `FormDialog` when:
-
-- the entire task is “fill this form and confirm/cancel” in a modal flow
-
----
-
-## Related widgets
-
-- **TextEntry / NumericEntry / DateEntry / SelectBox** — the underlying field widgets
-
-- **FormDialog** — modal form flow
-
-- **PageStack** — multi-step (wizard) forms
-
-- **FilterDialog** — specialized form for filters
-
----
-
-## Reference
-
-- **API Reference:** `ttkbootstrap.Form`
+!!! link "Signals"
+    See the [Signals documentation](../../signals/index.md) for reactive data binding patterns.
 
 ---
 
@@ -346,14 +294,22 @@ Prefer `FormDialog` when:
 
 ### Related widgets
 
-- _(None)_
+- [TextEntry](../inputs/textentry.md) / [NumericEntry](../inputs/numericentry.md) / [DateEntry](../inputs/dateentry.md) / [SelectBox](../selection/selectbox.md) — the underlying field widgets
+
+- [FormDialog](../dialogs/formdialog.md) — modal form flow
+
+- [PageStack](../views/pagestack.md) — multi-step (wizard) forms
+
+- [FilterDialog](../dialogs/filterdialog.md) — specialized form for filters
 
 ### Framework concepts
 
-- [State & Interaction](../../capabilities/state-and-interaction.md)
+- [Design System](../../design-system/index.md) — layout and spacing guidelines
 
-- [Configuration](../../capabilities/configuration.md)
+- [Validation](../../validation/index.md) — form validation patterns
+
+- [Localization](../../localization/index.md) — internationalization support
 
 ### API reference
 
-- [`ttkbootstrap.Form`](../../reference/widgets/Form.md)
+- [ttkbootstrap.Form](../../api/form.md)

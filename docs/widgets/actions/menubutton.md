@@ -1,57 +1,17 @@
 ---
-
-## Framework integration
-
-### Signals & events
-
-Widgets participate in ttkbootstrap’s reactive model.
-
-- **Signals** represent a widget’s **value/state** and are built on **Tk variables** with a modern subscription API.
-
-- **Events** (including virtual events) represent **interactions and moments** (click, commit, focus, selection changed).
-
-Signals and events are complementary: use signals for state flow and composition, and use events when you need
-interaction-level integration.
-
-!!! link "See also: [Signals](../../capabilities/signals.md), [Virtual Events](../../capabilities/virtual-events.md), [Callbacks](../../capabilities/callbacks.md)"
-
-### Design system
-
-Widgets are styled through ttkbootstrap’s design system using:
-
-- semantic colors via `bootstyle` (e.g., `primary`, `success`, `danger`)
-
-- variants (e.g., `outline`, `link`, `ghost` where supported)
-
-- consistent state visuals across themes
-
-!!! link "See also: [Colors](../../design-system/colors.md), [Variants](../../design-system/variants.md)"
-
-### Layout properties
-
-Widgets support ttkbootstrap layout conveniences (when available) so they compose cleanly in modern layouts.
-
-!!! link "See also: [Layout Properties](../../capabilities/layout-props.md)"
-
-### Localization
-
-Text labels can be localized in localized applications.
-
-!!! link "See also: [Localization](../../capabilities/localization.md)"
-
-
----
-
 title: MenuButton
 ---
 
 # MenuButton
 
-`MenuButton` is a styled wrapper around `ttk.Menubutton` that integrates ttkbootstrap’s theming, icon system, and localization features. It represents the **primitive menu-triggering button** upon which higher-level widgets like `DropdownButton` are built.
+`MenuButton` is a **menu-first** control: it displays like a button, but its primary purpose is to **open a Tk menu**.
+Use it for classic menu patterns (File/Edit/View), or when the options list is the main interaction.
+
+---
 
 ## Quick start
 
-Use `MenuButton` when you already have (or want to manage) a native `tk.Menu` instance directly.
+`MenuButton` uses a standard Tk `Menu`.
 
 ```python
 import ttkbootstrap as ttk
@@ -59,14 +19,13 @@ from tkinter import Menu
 
 app = ttk.App()
 
-menu = Menu(app, tearoff=False)
-menu.add_command(label="Open", command=lambda: print("Open"))
-menu.add_command(label="Save", command=lambda: print("Save"))
-menu.add_separator()
-menu.add_command(label="Exit", command=app.destroy)
+m = Menu(app, tearoff=0)
+m.add_command(label="Open", command=lambda: print("Open"))
+m.add_command(label="Save", command=lambda: print("Save"))
+m.add_separator()
+m.add_command(label="Exit", command=app.destroy)
 
-btn = ttk.MenuButton(app, text="File", menu=menu, bootstyle="secondary")
-btn.pack(padx=20, pady=20)
+ttk.MenuButton(app, text="File", menu=m).pack(padx=20, pady=20)
 
 app.mainloop()
 ```
@@ -75,115 +34,53 @@ app.mainloop()
 
 ## When to use
 
-Use a MenuButton when you need a **traditional, native menu trigger** backed by `tk.Menu` (or when you’re integrating with existing Tk menu code).
+Use `MenuButton` when:
+
+- the control is primarily a **menu entry point**
+- you need native-style menu behavior (keyboard navigation, platform conventions)
+- your menu items map well to Tk’s `Menu` model
 
 ### Consider a different control when…
 
-- You want a modern, widget-backed menu with icons/toggles and unified events → use **DropdownButton**
-
-- You need a context (right-click) menu → use **ContextMenu**
-
-- You need a value-selection dropdown → use **OptionMenu** or **SelectBox**
+- you want a primary action plus a small menu → use [DropdownButton](dropdownbutton.md)
+- you want a fully themed, widget-backed menu with icons/layout → use [ContextMenu](contextmenu.md)
+- you want a single action → use [Button](button.md)
 
 ---
 
 ## Appearance
 
-MenuButton supports ttkbootstrap’s semantic colors and variants via `bootstyle`, plus the integrated icon system.
+`MenuButton` supports semantic colors and variants through `bootstyle`.
+
+!!! link "See [Design System → Variants](../../design-system/variants.md) for how variants map consistently across widgets."
 
 ```python
-btn = ttk.MenuButton(
-    app,
-    text="Options",
-    icon="gear",
-    compound="left",
-    bootstyle="ghost",
-)
-```
-
-- `icon` is resolved through the ttkbootstrap icon system
-
-- `icon_only=True` removes extra padding reserved for text
-
-- `compound` controls icon/text placement
-
-!!! note "Icons"
-    See **Guides → Design System → Icons** for icon sizing, coloring, and state behavior.
-
----
-
-## Examples & patterns
-
-### Key concepts: MenuButton vs DropdownButton
-
-**MenuButton**
-
-- Uses a native `tk.Menu`
-
-- Lower-level primitive
-
-- Best for menubar-style UI or existing Tk menu code
-
-**DropdownButton**
-
-- Uses a widget-backed `ContextMenu`
-
-- Higher-level control
-
-- Supports icons, checks, radios, and unified item events
-
-In most application UI, prefer **DropdownButton** unless you specifically need a native `tk.Menu`.
-
-### Localization and reactive text
-
-`MenuButton` supports both `textvariable` and `textsignal`:
-
-```python
-btn = ttk.MenuButton(app, textsignal=my_signal, localize="auto")
+ttk.MenuButton(app, text="Menu", bootstyle="primary").pack(pady=4)
+ttk.MenuButton(app, text="Menu", bootstyle="primary-outline").pack(pady=4)
 ```
 
 ---
 
 ## Behavior
 
-- Activates via mouse click
+- `MenuButton` opens the associated Tk `Menu`.
+- Menu keyboard navigation and platform conventions are handled by Tk.
 
-- Participates in focus traversal when `takefocus=True`
+!!! link "See [State & Interaction](../../capabilities/state-and-interaction.md) for focus, hover, and disabled behavior across widgets."
 
-- Menu navigation is handled by the attached `tk.Menu`
+---
 
-When clicked, MenuButton explicitly receives focus so that focus styling is visible:
+## Localization
 
-```text
-<Button-1> → focus_set()
+Tk `Menu` labels can be localized by passing message tokens (or resolved strings) when you build the menu.
+
+```python
+m = Menu(app, tearoff=0)
+m.add_command(label="menu.open", command=lambda: ...)
+ttk.MenuButton(app, text="button.file", menu=m).pack()
 ```
 
-!!! note "Native menu behavior"
-    Keyboard navigation and accessibility depend on the underlying `tk.Menu` implementation and platform conventions.
-
----
-
-## Localization & reactivity
-
-Localization behavior is controlled by global application settings and the widget `localize` option. See **Guides → Internationalization → Localization** for the full model.
-
----
-
-## Related widgets
-
-- **DropdownButton** — higher-level, widget-backed alternative
-
-- **ContextMenu** — widget-backed pop-up menu
-
-- **OptionMenu** — value-selection dropdown
-
----
-
-## Reference
-
-- **API Reference:** `ttkbootstrap.MenuButton`
-
-- **Related guides:** Design System → Variants, Design System → Icons, Internationalization → Localization
+!!! link "See [Localization](../../capabilities/localization.md) for how message tokens are resolved and how language switching works."
 
 ---
 
@@ -191,17 +88,15 @@ Localization behavior is controlled by global application settings and the widge
 
 ### Related widgets
 
-- [Button](button.md)
-
-- [ButtonGroup](buttongroup.md)
-
+- [DropdownButton](dropdownbutton.md)
 - [ContextMenu](contextmenu.md)
+- [Button](button.md)
 
 ### Framework concepts
 
+- [Design System → Variants](../../design-system/variants.md)
 - [State & Interaction](../../capabilities/state-and-interaction.md)
-
-- [Configuration](../../capabilities/configuration.md)
+- [Localization](../../capabilities/localization.md)
 
 ### API reference
 

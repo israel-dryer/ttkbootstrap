@@ -1,47 +1,4 @@
 ---
-
-## Framework integration
-
-### Signals & events
-
-Widgets participate in ttkbootstrap’s reactive model.
-
-- **Signals** represent a widget’s **value/state** and are built on **Tk variables** with a modern subscription API.
-
-- **Events** (including virtual events) represent **interactions and moments** (click, commit, focus, selection changed).
-
-Signals and events are complementary: use signals for state flow and composition, and use events when you need
-interaction-level integration.
-
-!!! link "See also: [Signals](../../capabilities/signals.md), [Virtual Events](../../capabilities/virtual-events.md), [Callbacks](../../capabilities/callbacks.md)"
-
-### Design system
-
-Widgets are styled through ttkbootstrap’s design system using:
-
-- semantic colors via `bootstyle` (e.g., `primary`, `success`, `danger`)
-
-- variants (e.g., `outline`, `link`, `ghost` where supported)
-
-- consistent state visuals across themes
-
-!!! link "See also: [Colors](../../design-system/colors.md), [Variants](../../design-system/variants.md)"
-
-### Layout properties
-
-Widgets support ttkbootstrap layout conveniences (when available) so they compose cleanly in modern layouts.
-
-!!! link "See also: [Layout Properties](../../capabilities/layout-props.md)"
-
-### Localization
-
-Text labels can be localized in localized applications.
-
-!!! link "See also: [Localization](../../capabilities/localization.md)"
-
-
----
-
 title: CheckButton
 ---
 
@@ -59,21 +16,7 @@ toggle variant when the control represents a single on/off feature.
 
 ---
 
-## Overview
-
-A `CheckButton` supports three logical states:
-
-- **checked** (`True`)
-
-- **unchecked** (`False`)
-
-- **indeterminate** (`None`)
-
-This makes it useful both for simple booleans and for “mixed” parent selections (partially selected groups).
-
----
-
-## Basic usage
+## Quick start
 
 Use `value` to set the initial state.
 
@@ -93,9 +36,27 @@ By default, `value=None`, which places the checkbutton in an **indeterminate** s
 
 ---
 
-## Variants
+## When to use
 
-### CheckButton (default)
+Use `CheckButton` when:
+
+- multiple selections may be enabled at once
+- the value is on/off or mixed
+- you need independent option toggles
+
+### Consider a different control when...
+
+- only one choice is allowed in a group -> use [RadioButton](radiobutton.md)
+- you want a dropdown list -> use [SelectBox](selectbox.md) or [OptionMenu](optionmenu.md)
+- you want a button-like toggle -> use [CheckToggle](checktoggle.md)
+
+---
+
+## Appearance
+
+### Variants
+
+#### CheckButton (default)
 
 Use when multiple independent selections are allowed.
 
@@ -108,7 +69,7 @@ ttk.CheckButton(app)
 ![checkbutton](../../assets/light/widgets-checkbutton-states.png#only-light)
 </figure>
 
-### Toggle (switch)
+#### Toggle (switch)
 
 Use when the control represents a single on/off feature.
 
@@ -121,140 +82,7 @@ ttk.CheckButton(app, bootstyle="toggle")
 ![toggle](../../assets/light/widgets-checkbutton-toggle.png#only-light)
 </figure>
 
----
-
-## How the value works
-
-`CheckButton` uses a single logical value.
-
-The `value` option sets the **initial state**:
-
-- `True` → checked
-
-- `False` → unchecked
-
-- `None` → indeterminate
-
-Once bound, the signal or variable becomes the source of truth.
-
-!!! note "Value precedence"
-    The `value` option is only used during initialization.
-    After creation, the bound signal or variable controls the widget state.
-
----
-
-## Binding to signals or variables
-
-Prefer a reactive `signal=...` in v2 apps:
-
-```python
-import ttkbootstrap as ttk
-
-app = ttk.App()
-
-v = ttk.Signal("no")
-
-cb = ttk.CheckButton(
-    app,
-    text="Enable feature",
-    signal=v,
-    onvalue="yes",
-    offvalue="no",
-)
-cb.pack(padx=20, pady=20)
-
-app.mainloop()
-```
-
-You can also bind a Tk variable with `variable=...`.
-
----
-
-## Common options
-
-### `text`
-
-Label shown next to the indicator.
-
-```python
-ttk.CheckButton(app, text="Auto-sync")
-```
-
-### `command`
-
-Run a callback when the value toggles.
-
-```python
-flag = ttk.BooleanVar(value=True)
-
-def on_toggle():
-    print("now:", flag.get())
-
-ttk.CheckButton(app, text="Send notifications", variable=flag, command=on_toggle).pack(padx=20, pady=20)
-```
-
-### `state`
-
-Disable or enable the widget.
-
-```python
-cb = ttk.CheckButton(app, text="Locked", state="disabled")
-cb.pack()
-
-cb.configure(state="normal")
-```
-
-### `padding`, `width`, `underline`
-
-```python
-ttk.CheckButton(app, text="Wider", padding=(10, 6), width=18).pack(pady=6)
-ttk.CheckButton(app, text="E_xport", underline=1).pack(pady=6)
-```
-
----
-
-## Behavior
-
-- Click toggles between checked/unchecked.
-
-- Indeterminate behavior depends on your app logic (commonly used for “mixed” parent selections).
-
-- Use the toggle variant for settings that map to a single feature switch.
-
----
-
-## Events
-
-`CheckButton` emits selection change events consistent with other selection widgets.
-
-```python
-def on_changed(e):
-    print("value:", cb.value)
-
-cb.on_changed(on_changed)
-```
-
-Most commonly used:
-
-- `<<Changed>>` — fired when the committed value changes
-
----
-
-## Validation and constraints
-
-Validation is usually minimal for `CheckButton`.
-
-Use validation when:
-
-- the option is required to proceed
-
-- the indeterminate state must be resolved before submission
-
-- the selection participates in cross-field rules
-
----
-
-## Colors and styling
+### Colors and styling
 
 Use semantic color tokens with `bootstyle`, optionally combined with the toggle variant.
 
@@ -279,6 +107,103 @@ ttk.CheckButton(app, bootstyle="danger-toggle")
 ![colors](../../assets/light/widgets-checkbutton-colors.png#only-light)
 </figure>
 
+!!! link "See [Design System → Variants](../../design-system/variants.md) for how color tokens apply consistently across widgets."
+
+---
+
+## Examples & patterns
+
+### How the value works
+
+`CheckButton` uses a single logical value.
+
+The `value` option sets the **initial state**:
+
+- `True` -> checked
+- `False` -> unchecked
+- `None` -> indeterminate
+
+Once bound, the signal or variable becomes the source of truth.
+
+!!! note "Value precedence"
+    The `value` option is only used during initialization.
+    After creation, the bound signal or variable controls the widget state.
+
+### Common options
+
+#### `text`
+
+Label shown next to the indicator.
+
+```python
+ttk.CheckButton(app, text="Auto-sync")
+```
+
+#### `command`
+
+Run a callback when the value toggles.
+
+```python
+flag = ttk.BooleanVar(value=True)
+
+def on_toggle():
+    print("now:", flag.get())
+
+ttk.CheckButton(app, text="Send notifications", variable=flag, command=on_toggle).pack(padx=20, pady=20)
+```
+
+#### `state`
+
+Disable or enable the widget.
+
+```python
+cb = ttk.CheckButton(app, text="Locked", state="disabled")
+cb.pack()
+
+cb.configure(state="normal")
+```
+
+#### `padding`, `width`, `underline`
+
+```python
+ttk.CheckButton(app, text="Wider", padding=(10, 6), width=18).pack(pady=6)
+ttk.CheckButton(app, text="E_xport", underline=1).pack(pady=6)
+```
+
+### Events
+
+`CheckButton` emits selection change events consistent with other selection widgets.
+
+```python
+def on_changed(e):
+    print("value:", cb.value)
+
+cb.on_changed(on_changed)
+```
+
+Most commonly used:
+
+- `<<Changed>>` - fired when the committed value changes
+
+### Validation and constraints
+
+Validation is usually minimal for `CheckButton`.
+
+Use validation when:
+
+- the option is required to proceed
+- the indeterminate state must be resolved before submission
+- the selection participates in cross-field rules
+
+---
+
+## Behavior
+
+- Click toggles between checked/unchecked.
+- Indeterminate behavior depends on your app logic (commonly used for "mixed" parent selections).
+- Use the toggle variant for settings that map to a single feature switch.
+- Keyboard navigation follows standard ttk checkbutton behavior (focus + Space to toggle).
+
 ---
 
 ## Localization
@@ -286,7 +211,6 @@ ttk.CheckButton(app, bootstyle="danger-toggle")
 By default, widgets use `localize="auto"`:
 
 - if a translation key exists, it is used
-
 - otherwise, the label is treated as a literal string
 
 ```python
@@ -298,37 +222,36 @@ ttk.CheckButton(app, text="Notifications", localize=False)
 !!! tip "Safe to pass literal text"
     With `localize="auto"`, passing literal text is safe when no translation exists.
 
----
-
-## When should I use CheckButton?
-
-Use `CheckButton` when:
-
-- multiple selections may be enabled at once
-
-- the value is on/off or mixed
-
-Use **RadioButton** when:
-
-- only one choice is allowed in a group
+!!! link "See [Localization](../../capabilities/localization.md) for configuring translations and message catalogs."
 
 ---
 
-## Related widgets
+## Reactivity
 
-- **RadioButton** — choose one option from a group
+Prefer a reactive `signal=...` in v2 apps:
 
-- **RadioGroup** — manage a group of radio options as one control
+```python
+import ttkbootstrap as ttk
 
-- **SelectBox** — select one item from a list
+app = ttk.App()
 
-- **Form** — build grouped selection controls declaratively
+v = ttk.Signal("no")
 
----
+cb = ttk.CheckButton(
+    app,
+    text="Enable feature",
+    signal=v,
+    onvalue="yes",
+    offvalue="no",
+)
+cb.pack(padx=20, pady=20)
 
-## Reference
+app.mainloop()
+```
 
-- **API Reference:** `ttkbootstrap.CheckButton`
+You can also bind a Tk variable with `variable=...`.
+
+!!! link "See [Signals](../../capabilities/signals.md) for reactive programming patterns."
 
 ---
 
@@ -336,17 +259,17 @@ Use **RadioButton** when:
 
 ### Related widgets
 
-- [Calendar](calendar.md)
-
-- [CheckToggle](checktoggle.md)
-
-- [OptionMenu](optionmenu.md)
+- [RadioButton](radiobutton.md) - choose one option from a group
+- [RadioGroup](radiogroup.md) - manage a group of radio options as one control
+- [CheckToggle](checktoggle.md) - button-like toggle presentation
+- [SelectBox](selectbox.md) - select one item from a list
+- [Form](../forms/form.md) - build grouped selection controls declaratively
 
 ### Framework concepts
 
-- [State & Interaction](../../capabilities/state-and-interaction.md)
-
-- [Configuration](../../capabilities/configuration.md)
+- [Signals](../../capabilities/signals.md) - reactive state management
+- [Localization](../../capabilities/localization.md) - text translation
+- [Design System](../../design-system/variants.md) - color tokens and variants
 
 ### API reference
 

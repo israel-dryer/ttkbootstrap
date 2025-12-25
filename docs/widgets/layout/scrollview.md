@@ -1,47 +1,4 @@
 ---
-
-## Framework integration
-
-### Signals & events
-
-Widgets participate in ttkbootstrap’s reactive model.
-
-- **Signals** represent a widget’s **value/state** and are built on **Tk variables** with a modern subscription API.
-
-- **Events** (including virtual events) represent **interactions and moments** (click, commit, focus, selection changed).
-
-Signals and events are complementary: use signals for state flow and composition, and use events when you need
-interaction-level integration.
-
-!!! link "See also: [Signals](../../capabilities/signals.md), [Virtual Events](../../capabilities/virtual-events.md), [Callbacks](../../capabilities/callbacks.md)"
-
-### Design system
-
-Widgets are styled through ttkbootstrap’s design system using:
-
-- semantic colors via `bootstyle` (e.g., `primary`, `success`, `danger`)
-
-- variants (e.g., `outline`, `link`, `ghost` where supported)
-
-- consistent state visuals across themes
-
-!!! link "See also: [Colors](../../design-system/colors.md), [Variants](../../design-system/variants.md)"
-
-### Layout properties
-
-Widgets support ttkbootstrap layout conveniences (when available) so they compose cleanly in modern layouts.
-
-!!! link "See also: [Layout Properties](../../capabilities/layout-props.md)"
-
-### Localization
-
-Text labels can be localized in localized applications.
-
-!!! link "See also: [Localization](../../capabilities/localization.md)"
-
-
----
-
 title: ScrollView
 ---
 
@@ -59,25 +16,7 @@ Theme variants: light / dark
 
 ---
 
-## Overview
-
-Use `ScrollView` to:
-
-- scroll long forms, settings panels, or stacked content
-
-- build resizable layouts where only part of the UI scrolls
-
-- avoid manual Canvas/Scrollbar plumbing
-
-`ScrollView` is different from `ScrolledText`:
-
-- `ScrollView` scrolls **widgets**
-
-- `ScrolledText` scrolls **text content** (tk.Text)
-
----
-
-## Basic usage
+## Quick start
 
 ```python
 import ttkbootstrap as ttk
@@ -96,14 +35,45 @@ app.mainloop()
 
 ---
 
-## Core concept
+## When to use
 
-A `ScrollView` exposes an interior “content” region (the widget itself acts as the content parent in most APIs).
-You pack/grid your widgets into that region; `ScrollView` manages the viewport and scrollbars around it.
+Use `ScrollView` when:
+
+- you need to scroll a region that contains normal widgets (forms/panels/cards)
+
+- you want to scroll long forms, settings panels, or stacked content
+
+- you want to build resizable layouts where only part of the UI scrolls
+
+- you want to avoid manual Canvas/Scrollbar plumbing
+
+**Consider a different control when:**
+
+- you need a multi-line text editor/log output -- use [ScrolledText](../inputs/scrolledtext.md)
+
+- you need highly customized scrolling or virtualized rendering -- use manual [Canvas](../primitives/canvas.md) + [Scrollbar](scrollbar.md)
 
 ---
 
-## Common options & patterns
+## Appearance
+
+`ScrollView` is different from `ScrolledText`:
+
+- `ScrollView` scrolls **widgets**
+
+- `ScrolledText` scrolls **text content** (tk.Text)
+
+!!! link "Design System"
+    For theming details and color tokens, see [Design System](../../design-system/index.md).
+
+---
+
+## Examples & patterns
+
+### Core concept
+
+A `ScrollView` exposes an interior "content" region (the widget itself acts as the content parent in most APIs).
+You pack/grid your widgets into that region; `ScrollView` manages the viewport and scrollbars around it.
 
 ### Scroll direction
 
@@ -138,54 +108,22 @@ for i in range(20):
 
 ---
 
-## When should I use ScrollView?
-
-Use `ScrollView` when:
-
-- you need to scroll a region that contains normal widgets (forms/panels/cards)
-
-Prefer **ScrolledText** when:
-
-- you need a multi-line text editor/log output
-
-Prefer manual `Canvas` + `Scrollbar` when:
-
-- you need highly customized scrolling or virtualized rendering
-
----
-
-## Related widgets
-
-- **Scrollbar** — low-level scrollbar primitive
-
-- **ScrolledText** — scrollable text widget
-
-- **Frame** — common content container inside a scroll view
-
----
-
-## Reference
-
-- **API Reference:** `ttkbootstrap.ScrollView`
-
----
-
 ## Additional resources
 
 ### Related widgets
 
-- [Frame](frame.md)
+- [Scrollbar](scrollbar.md) -- low-level scrollbar primitive
 
-- [LabelFrame](labelframe.md)
+- [ScrolledText](../inputs/scrolledtext.md) -- scrollable text widget
 
-- [PanedWindow](panedwindow.md)
+- [Frame](frame.md) -- common content container inside a scroll view
 
 ### Framework concepts
 
-- [State & Interaction](../../capabilities/state-and-interaction.md)
+- [Layout Properties](../../capabilities/layout-props.md)
 
-- [Configuration](../../capabilities/configuration.md)
+- [Layout](../../platform/geometry-and-layout.md)
 
 ### API reference
 
-- [`ttkbootstrap.ScrollView`](../../reference/widgets/ScrollView.md)
+- **API Reference:** `ttkbootstrap.ScrollView`

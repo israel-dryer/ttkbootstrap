@@ -1,43 +1,114 @@
+---
+title: MessageDialog
+---
 
+# MessageDialog
 
-## Framework integration
+`MessageDialog` is a **modal dialog class** for displaying messages with customizable buttons.
 
-### Signals & events
+Use `MessageDialog` when you need a simple message popup with custom button labels, icons, and styling. For common patterns (info, warning, error, yes/no), prefer the convenience methods in [MessageBox](messagebox.md).
 
-Widgets participate in ttkbootstrap’s reactive model.
+---
 
-- **Signals** represent a widget’s **value/state** and are built on **Tk variables** with a modern subscription API.
+## Quick start
 
-- **Events** (including virtual events) represent **interactions and moments** (click, commit, focus, selection changed).
+```python
+import ttkbootstrap as ttk
+from ttkbootstrap.dialogs import MessageDialog
 
-Signals and events are complementary: use signals for state flow and composition, and use events when you need
-interaction-level integration.
+app = ttk.App()
 
-!!! link "See also: [Signals](../../capabilities/signals.md), [Virtual Events](../../capabilities/virtual-events.md), [Callbacks](../../capabilities/callbacks.md)"
+dialog = MessageDialog(
+    message="Are you sure you want to proceed?",
+    title="Confirm Action",
+    buttons=["Cancel", "Proceed"],
+    icon="question-circle-fill",
+)
+dialog.show()
 
-### Design system
+print("User clicked:", dialog.result)
 
-Widgets are styled through ttkbootstrap’s design system using:
+app.mainloop()
+```
 
-- semantic colors via `bootstyle` (e.g., `primary`, `success`, `danger`)
+---
 
-- variants (e.g., `outline`, `link`, `ghost` where supported)
+## When to use
 
-- consistent state visuals across themes
+Use `MessageDialog` when:
 
-!!! link "See also: [Colors](../../design-system/colors.md), [Variants](../../design-system/variants.md)"
+- you need custom button labels or styling
+- you want to display an icon with your message
+- you need programmatic control over the dialog
 
-### Layout properties
+### Consider a different control when...
 
-Widgets support ttkbootstrap layout conveniences (when available) so they compose cleanly in modern layouts.
+- you want a standard info/warning/error dialog -> use [MessageBox](messagebox.md) static methods
+- you need user input -> use [QueryDialog](querydialog.md)
+- you need a complex form -> use [FormDialog](formdialog.md)
 
-!!! link "See also: [Layout Properties](../../capabilities/layout-props.md)"
+---
 
-### Localization
+## Common options
 
-Text labels can be localized in localized applications.
+### `message`
 
-!!! link "See also: [Localization](../../capabilities/localization.md)"
+The message text to display. Supports multiline strings.
+
+### `title`
+
+The dialog window title.
+
+### `buttons`
+
+List of button labels. Can specify bootstyle as `"label:bootstyle"`.
+
+```python
+dialog = MessageDialog(
+    message="Choose an action",
+    buttons=["Cancel", "Save:primary", "Delete:danger"],
+)
+```
+
+### `icon`
+
+Optional icon to display. Can be a string (icon name) or dict with `name`, `size`, `color`.
+
+```python
+MessageDialog(message="Success!", icon="check-circle-fill")
+MessageDialog(message="Error!", icon={"name": "x-circle-fill", "size": 48, "color": "danger"})
+```
+
+### `default`
+
+The button label to use as default (receives primary bootstyle and focus).
+
+### `alert`
+
+If True, rings the system bell when shown.
+
+---
+
+## Behavior
+
+- The dialog is modal - blocks interaction with the parent until closed.
+- Clicking any button closes the dialog and sets `result` to the button text.
+- The `result` property returns None if the dialog was closed without clicking a button.
+
+---
+
+## Events
+
+`MessageDialog` emits `<<DialogResult>>` when closed.
+
+```python
+def on_result(payload):
+    print("Result:", payload["result"])
+    print("Confirmed:", payload["confirmed"])
+
+dialog.on_dialog_result(on_result)
+dialog.show()
+```
 
 ---
 
@@ -45,18 +116,10 @@ Text labels can be localized in localized applications.
 
 ### Related widgets
 
-- [ColorChooser](colorchooser.md)
-
-- [ColorDropper](colordropper.md)
-
-- [DateDialog](datedialog.md)
-
-### Framework concepts
-
-- [State & Interaction](../../capabilities/state-and-interaction.md)
-
-- [Configuration](../../capabilities/configuration.md)
+- [MessageBox](messagebox.md) - static convenience methods for common message patterns
+- [QueryDialog](querydialog.md) - dialogs with user input
+- [Dialog](dialog.md) - base dialog class for custom dialogs
 
 ### API reference
 
-- [`ttkbootstrap.MessageDialog`](../../reference/widgets/MessageDialog.md)
+- [`ttkbootstrap.dialogs.MessageDialog`](../../reference/dialogs/MessageDialog.md)

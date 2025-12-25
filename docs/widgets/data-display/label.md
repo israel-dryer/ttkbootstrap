@@ -1,47 +1,4 @@
 ---
-
-## Framework integration
-
-### Signals & events
-
-Widgets participate in ttkbootstrap’s reactive model.
-
-- **Signals** represent a widget’s **value/state** and are built on **Tk variables** with a modern subscription API.
-
-- **Events** (including virtual events) represent **interactions and moments** (click, commit, focus, selection changed).
-
-Signals and events are complementary: use signals for state flow and composition, and use events when you need
-interaction-level integration.
-
-!!! link "See also: [Signals](../../capabilities/signals.md), [Virtual Events](../../capabilities/virtual-events.md), [Callbacks](../../capabilities/callbacks.md)"
-
-### Design system
-
-Widgets are styled through ttkbootstrap’s design system using:
-
-- semantic colors via `bootstyle` (e.g., `primary`, `success`, `danger`)
-
-- variants (e.g., `outline`, `link`, `ghost` where supported)
-
-- consistent state visuals across themes
-
-!!! link "See also: [Colors](../../design-system/colors.md), [Variants](../../design-system/variants.md)"
-
-### Layout properties
-
-Widgets support ttkbootstrap layout conveniences (when available) so they compose cleanly in modern layouts.
-
-!!! link "See also: [Layout Properties](../../capabilities/layout-props.md)"
-
-### Localization
-
-Text labels can be localized in localized applications.
-
-!!! link "See also: [Localization](../../capabilities/localization.md)"
-
-
----
-
 title: Label
 ---
 
@@ -49,11 +6,11 @@ title: Label
 
 `Label` displays **read-only text or images**.
 
-It’s a fundamental building block used for headings, captions, instructions, and status text throughout an interface.
+It's a fundamental building block used for headings, captions, instructions, and status text throughout an interface.
 
 ---
 
-## Basic usage
+## Quick start
 
 ```python
 import ttkbootstrap as ttk
@@ -67,34 +24,7 @@ app.mainloop()
 
 ---
 
-## Common options
-
-- `text`
-
-- `image`
-
-- `compound`
-
-- `anchor`
-
-- `justify`
-
-- `wraplength`
-
----
-
-## Styling
-
-Labels participate fully in ttkbootstrap theming:
-
-```python
-ttk.Label(app, text="Info", bootstyle="info")
-ttk.Label(app, text="Muted", bootstyle="secondary")
-```
-
----
-
-## When should I use Label?
+## When to use
 
 Use Label when:
 
@@ -102,25 +32,98 @@ Use Label when:
 
 - providing context or instructions
 
-Prefer **Entry / TextEntry** when:
+- showing status information that doesn't require user interaction
 
-- user input is required
+### Consider a different control when...
 
----
+- **User input is required** — use [Entry](../primitives/entry.md) or [TextEntry](../inputs/textentry.md) instead
 
-## Related widgets
+- **You need a compact status indicator** — use [Badge](badge.md) for high-contrast pill-style labels
 
-- **Button**
-
-- **Badge**
-
-- **Tooltip**
+- **You need interactive text** — use [Button](../actions/button.md) for clickable elements
 
 ---
 
-## Reference
+## Appearance
 
-- **API Reference:** `ttkbootstrap.Label`
+### Styling with `bootstyle`
+
+Labels participate fully in ttkbootstrap theming:
+
+```python
+ttk.Label(app, text="Info", bootstyle="info")
+ttk.Label(app, text="Muted", bootstyle="secondary")
+ttk.Label(app, text="Warning", bootstyle="warning")
+```
+
+!!! link "Design System"
+    See [Design System](../../design-system/index.md) for color tokens and theming guidelines.
+
+---
+
+## Examples & patterns
+
+### Common options
+
+- `text` — the text content to display
+
+- `image` — an image to display
+
+- `compound` — how to combine text and image (`"top"`, `"bottom"`, `"left"`, `"right"`, `"center"`)
+
+- `anchor` — where to position content within the label
+
+- `justify` — text alignment (`"left"`, `"center"`, `"right"`)
+
+- `wraplength` — maximum line width before wrapping
+
+### Text alignment
+
+```python
+ttk.Label(app, text="Left aligned", anchor="w").pack(fill="x")
+ttk.Label(app, text="Centered", anchor="center").pack(fill="x")
+ttk.Label(app, text="Right aligned", anchor="e").pack(fill="x")
+```
+
+### Image with text
+
+```python
+ttk.Label(app, text="Status", image=icon, compound="left").pack()
+```
+
+---
+
+## Behavior
+
+Label is a static display widget. It does not respond to user interaction by default, but can be updated programmatically.
+
+---
+
+## Localization
+
+Label supports localization through the `localize` parameter:
+
+```python
+ttk.Label(app, text="greeting.hello", localize=True)
+```
+
+!!! link "Localization"
+    See [Localization](../../concepts/localization.md) for translation setup.
+
+---
+
+## Reactivity
+
+Label can be updated dynamically by binding to signals:
+
+```python
+message = ttk.Signal("Initial text")
+label = ttk.Label(app, text=message)
+message.set("Updated text")  # Label updates automatically
+```
+
+!!! link "Signals"
+    See [Signals](../../concepts/signals.md) for reactive programming patterns.
 
 ---
 
@@ -128,18 +131,20 @@ Prefer **Entry / TextEntry** when:
 
 ### Related widgets
 
-- [Badge](badge.md)
+- [Button](../actions/button.md) — interactive clickable element
 
-- [FloodGauge](floodgauge.md)
+- [Badge](badge.md) — compact status indicator
 
-- [ListView](listview.md)
+- [Tooltip](../overlays/tooltip.md) — contextual hover information
 
 ### Framework concepts
 
-- [State & Interaction](../../capabilities/state-and-interaction.md)
+- [Design System](../../design-system/index.md) — colors, typography, and theming
 
-- [Configuration](../../capabilities/configuration.md)
+- [Signals](../../concepts/signals.md) — reactive data binding
+
+- [Localization](../../concepts/localization.md) — translation support
 
 ### API reference
 
-- [`ttkbootstrap.Label`](../../reference/widgets/Label.md)
+- [ttkbootstrap.Label](../../api/widgets/label.md)

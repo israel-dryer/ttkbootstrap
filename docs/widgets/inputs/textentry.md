@@ -1,47 +1,4 @@
 ---
-
-## Framework integration
-
-### Signals & events
-
-Widgets participate in ttkbootstrap’s reactive model.
-
-- **Signals** represent a widget’s **value/state** and are built on **Tk variables** with a modern subscription API.
-
-- **Events** (including virtual events) represent **interactions and moments** (click, commit, focus, selection changed).
-
-Signals and events are complementary: use signals for state flow and composition, and use events when you need
-interaction-level integration.
-
-!!! link "See also: [Signals](../../capabilities/signals.md), [Virtual Events](../../capabilities/virtual-events.md), [Callbacks](../../capabilities/callbacks.md)"
-
-### Design system
-
-Widgets are styled through ttkbootstrap’s design system using:
-
-- semantic colors via `bootstyle` (e.g., `primary`, `success`, `danger`)
-
-- variants (e.g., `outline`, `link`, `ghost` where supported)
-
-- consistent state visuals across themes
-
-!!! link "See also: [Colors](../../design-system/colors.md), [Variants](../../design-system/variants.md)"
-
-### Layout properties
-
-Widgets support ttkbootstrap layout conveniences (when available) so they compose cleanly in modern layouts.
-
-!!! link "See also: [Layout Properties](../../capabilities/layout-props.md)"
-
-### Localization
-
-Text labels can be localized in localized applications.
-
-!!! link "See also: [Localization](../../capabilities/localization.md)"
-
-
----
-
 title: TextEntry
 ---
 
@@ -50,7 +7,7 @@ title: TextEntry
 `TextEntry` is a form-ready text input control that combines a **label**, **input field**, and **message region**.
 
 It builds on `ttk.Entry`, but adds the features you typically need in real applications: validation, messages, formatting,
-localization, and consistent field events. If you’re building forms or dialogs, `TextEntry` is usually your default text input. fileciteturn13file1
+localization, and consistent field events. If you're building forms or dialogs, `TextEntry` is usually your default text input.
 
 <figure markdown>
 ![textentry states](../../assets/dark/widgets-textentry-states.png#only-dark)
@@ -59,7 +16,7 @@ localization, and consistent field events. If you’re building forms or dialogs
 
 ---
 
-## Basic usage
+## Quick start
 
 ```python
 import ttkbootstrap as ttk
@@ -79,7 +36,43 @@ app.mainloop()
 
 ---
 
-## Value model
+## When to use
+
+Use `TextEntry` when:
+
+- you want a form-ready text field (label + message + validation)
+
+- you want consistent events and commit semantics
+
+- you want optional localization and formatting
+
+Consider a different control when:
+
+- you need the lowest-level `ttk.Entry` behavior and options — use [Entry](../primitives/entry.md)
+
+- you are building your own composite control — use [Entry](../primitives/entry.md)
+
+---
+
+## Appearance
+
+### `bootstyle`
+
+```python
+ttk.TextEntry(app)  # primary (default)
+ttk.TextEntry(app, bootstyle="secondary")
+ttk.TextEntry(app, bootstyle="success")
+ttk.TextEntry(app, bootstyle="warning")
+```
+
+!!! link "Design System"
+    For a complete list of available colors and styling options, see the [Design System](../../design-system/index.md) documentation.
+
+---
+
+## Examples and patterns
+
+### Value model
 
 Entry-based field controls separate **what the user is typing** from the **committed value**.
 
@@ -99,26 +92,15 @@ name.value = "Ada Lovelace"
     Parsing, validation, and `value_format` are applied only when the value is committed (blur or Enter),
     never on every keystroke.
 
----
+### Common options
 
-## Common options
-
-### `label`, `message`, `required`
+#### `label`, `message`, `required`
 
 ```python
 ttk.TextEntry(app, label="Email", message="We'll never share it.", required=True)
 ```
 
-### `bootstyle`
-
-```python
-ttk.TextEntry(app)  # primary (default)
-ttk.TextEntry(app, bootstyle="secondary")
-ttk.TextEntry(app, bootstyle="success")
-ttk.TextEntry(app, bootstyle="warning")
-```
-
-### `value_format`
+#### `value_format`
 
 Commit-time formatting using semantic format names.
 
@@ -131,6 +113,51 @@ ttk.TextEntry(app, label="Short Date", value="March 14, 1981", value_format="sho
 ![localized](../../assets/dark/widgets-textentry-localization.png#only-dark)
 ![localized](../../assets/light/widgets-textentry-localization.png#only-light)
 </figure>
+
+### Events
+
+`TextEntry` emits structured virtual events with matching convenience methods:
+
+- `<<Input>>` — live typing
+
+- `<<Changed>>` — committed value changed
+
+- `<<Valid>>`, `<<Invalid>>`, `<<Validated>>`
+
+```python
+def on_event(event):
+    print("new value:", event.data["value"])
+
+name.on_input(on_event)
+name.on_changed(on_event)
+name.on_valid(on_event)
+```
+
+!!! tip "Live typing"
+    Use `on_input(...)` when you want live typing behavior, and `on_changed(...)` when you care about committed values.
+
+### Validation
+
+Use validation rules when:
+
+- the field is required
+
+- values must match a pattern (email, phone, etc.)
+
+- multiple fields must be consistent (cross-field rules)
+
+```python
+email = ttk.TextEntry(app, label="Email", required=True)
+
+email.add_validation_rule(
+    "email",
+    message="Enter a valid email address"
+)
+```
+
+Validation results are reflected visually and via events.
+
+If you need immediate, per-keystroke constraints, use low-level Tk validation on **Entry** instead.
 
 ---
 
@@ -159,96 +186,23 @@ search.insert_addon(ttk.Button, position="after", icon="search", command=handle_
 !!! note "Power feature"
     Many specialized Entry widgets in v2 are built using this add-on mechanism.
 
-### Validation rules
+---
 
-```python
-email = ttk.TextEntry(app, label="Email", required=True)
+## Localization
 
-email.add_validation_rule(
-    "email",
-    message="Enter a valid email address"
-)
-```
+`TextEntry` supports locale-aware formatting through the `value_format` option. Formatting is applied at commit time (blur or Enter), ensuring consistent display across different locales.
 
-Validation results are reflected visually and via events.
+!!! link "Localization"
+    For complete localization configuration and supported formats, see the [Localization](../../guides/localization.md) documentation.
 
 ---
 
-## Events
+## Reactivity
 
-`TextEntry` emits structured virtual events with matching convenience methods:
+`TextEntry` integrates with the signals system for reactive data binding. Changes to the field value can automatically propagate to other parts of your application.
 
-- `<<Input>>` — live typing
-
-- `<<Changed>>` — committed value changed
-
-- `<<Valid>>`, `<<Invalid>>`, `<<Validated>>`
-
-```python
-def on_event(event):
-    print("new value:", event.data["value"])
-
-name.on_input(on_event)
-name.on_changed(on_event)
-name.on_valid(on_event)
-```
-
-!!! tip "Live typing"
-    Use `on_input(...)` when you want live typing behavior, and `on_changed(...)` when you care about committed values.
-
----
-
-## Validation and constraints
-
-Use validation rules when:
-
-- the field is required
-
-- values must match a pattern (email, phone, etc.)
-
-- multiple fields must be consistent (cross-field rules)
-
-If you need immediate, per-keystroke constraints, use low-level Tk validation on **Entry** instead.
-
----
-
-## When should I use TextEntry?
-
-Use `TextEntry` when:
-
-- you want a form-ready text field (label + message + validation)
-
-- you want consistent events and commit semantics
-
-- you want optional localization and formatting
-
-Prefer **Entry** when:
-
-- you need the lowest-level `ttk.Entry` behavior and options
-
-- you are building your own composite control
-
----
-
-## Related widgets
-
-- **Entry** — low-level primitive text input
-
-- **NumericEntry** — numeric input with bounds and stepping
-
-- **PasswordEntry** — obscured text input
-
-- **DateEntry** / **TimeEntry** — structured date/time input
-
-- **Form** — build complete forms from field definitions
-
----
-
-## Reference
-
-- **API Reference:** `ttkbootstrap.TextEntry`
-
-- **Related guides:** Forms, Internationalization → Localization, Events & Signals → Signals
+!!! link "Signals"
+    For details on reactive patterns and data binding, see the [Signals](../../guides/signals.md) documentation.
 
 ---
 
@@ -256,18 +210,19 @@ Prefer **Entry** when:
 
 ### Related widgets
 
-- [DateEntry](dateentry.md)
-
-- [LabeledScale](labeledscale.md)
-
-- [NumericEntry](numericentry.md)
+- [Entry](../primitives/entry.md) — low-level primitive text input
+- [NumericEntry](numericentry.md) — numeric input with bounds and stepping
+- [PasswordEntry](passwordentry.md) — obscured text input
+- [DateEntry](dateentry.md) — structured date input
+- [TimeEntry](timeentry.md) — structured time input
+- [Form](../forms/form.md) — build complete forms from field definitions
 
 ### Framework concepts
 
-- [State & Interaction](../../capabilities/state-and-interaction.md)
-
-- [Configuration](../../capabilities/configuration.md)
+- [Forms](../../guides/forms.md) — working with form controls
+- [Localization](../../guides/localization.md) — internationalization and formatting
+- [Signals](../../guides/signals.md) — reactive data binding
 
 ### API reference
 
-- [`ttkbootstrap.TextEntry`](../../reference/widgets/TextEntry.md)
+- [ttkbootstrap.TextEntry](../../api/textentry.md)

@@ -1,47 +1,4 @@
 ---
-
-## Framework integration
-
-### Signals & events
-
-Widgets participate in ttkbootstrap’s reactive model.
-
-- **Signals** represent a widget’s **value/state** and are built on **Tk variables** with a modern subscription API.
-
-- **Events** (including virtual events) represent **interactions and moments** (click, commit, focus, selection changed).
-
-Signals and events are complementary: use signals for state flow and composition, and use events when you need
-interaction-level integration.
-
-!!! link "See also: [Signals](../../capabilities/signals.md), [Virtual Events](../../capabilities/virtual-events.md), [Callbacks](../../capabilities/callbacks.md)"
-
-### Design system
-
-Widgets are styled through ttkbootstrap’s design system using:
-
-- semantic colors via `bootstyle` (e.g., `primary`, `success`, `danger`)
-
-- variants (e.g., `outline`, `link`, `ghost` where supported)
-
-- consistent state visuals across themes
-
-!!! link "See also: [Colors](../../design-system/colors.md), [Variants](../../design-system/variants.md)"
-
-### Layout properties
-
-Widgets support ttkbootstrap layout conveniences (when available) so they compose cleanly in modern layouts.
-
-!!! link "See also: [Layout Properties](../../capabilities/layout-props.md)"
-
-### Localization
-
-Text labels can be localized in localized applications.
-
-!!! link "See also: [Localization](../../capabilities/localization.md)"
-
-
----
-
 title: TableView
 ---
 
@@ -53,7 +10,7 @@ It is suitable for datasets where users need to scan, sort, and select structure
 
 ---
 
-## Basic usage
+## Quick start
 
 ```python
 import ttkbootstrap as ttk
@@ -72,35 +29,7 @@ app.mainloop()
 
 ---
 
-## Core concepts
-
-- Column definitions
-
-- Row data
-
-- Selection model
-
----
-
-## Features
-
-- Sorting
-
-- Row selection
-
-- Scrollbars
-
-- Optional headers and footers
-
----
-
-## Events
-
-TableView emits events for selection, activation, and edits (if enabled).
-
----
-
-## When should I use TableView?
+## When to use
 
 Use TableView when:
 
@@ -108,25 +37,111 @@ Use TableView when:
 
 - rows are uniform and comparable
 
-Prefer **ListView** when:
+- users need to scan, sort, or filter structured records
 
-- data is simple or visually rich per row
+### Consider a different control when...
 
----
+- **Data is simple or visually rich per row** — use [ListView](listview.md) instead
 
-## Related widgets
+- **Your data is hierarchical** — use [TreeView](treeview.md) instead
 
-- **TreeView**
-
-- **ListView**
-
-- **ContextMenu**
+- **You only need to display a single value** — use [Label](label.md) or [Badge](badge.md)
 
 ---
 
-## Reference
+## Appearance
 
-- **API Reference:** `ttkbootstrap.TableView`
+### Styling
+
+TableView supports theming through ttkbootstrap:
+
+```python
+ttk.TableView(app, bootstyle="primary")
+```
+
+!!! link "Design System"
+    See [Design System](../../design-system/index.md) for color tokens and theming guidelines.
+
+---
+
+## Examples & patterns
+
+### Core concepts
+
+- **Column definitions** — define the structure and headers of the table
+
+- **Row data** — the actual data records displayed
+
+- **Selection model** — how rows are selected
+
+### Column definitions
+
+```python
+tv = ttk.TableView(
+    app,
+    coldata=[
+        {"text": "Name", "width": 150},
+        {"text": "Status", "width": 100},
+        {"text": "Date", "width": 120},
+    ],
+    rowdata=data,
+)
+```
+
+### Features
+
+- Sorting — click column headers to sort
+
+- Row selection — single or multi-select
+
+- Scrollbars — automatic scrolling for large datasets
+
+- Optional headers and footers
+
+### Common options
+
+- `coldata` — column definitions (list of strings or dicts)
+
+- `rowdata` — list of row tuples or lists
+
+- `height` — number of visible rows
+
+- `bootstyle` — color theme
+
+---
+
+## Behavior
+
+### Events
+
+TableView emits events for selection, activation, and edits (if enabled):
+
+- `<<TreeviewSelect>>` — selection changed
+
+- `<<TreeviewOpen>>` — row expanded (if hierarchical)
+
+- `<<TreeviewClose>>` — row collapsed
+
+### Selection
+
+```python
+tv.view.selection()  # Get selected items
+tv.view.selection_set(item_id)  # Select an item
+```
+
+---
+
+## Reactivity
+
+TableView can be updated dynamically:
+
+```python
+# Refresh data
+tv.build_table_data(coldata=new_columns, rowdata=new_rows)
+```
+
+!!! link "Signals"
+    See [Signals](../../concepts/signals.md) for reactive programming patterns.
 
 ---
 
@@ -134,18 +149,18 @@ Prefer **ListView** when:
 
 ### Related widgets
 
-- [Badge](badge.md)
+- [TreeView](treeview.md) — hierarchical record display
 
-- [FloodGauge](floodgauge.md)
+- [ListView](listview.md) — virtual scrolling list
 
-- [Label](label.md)
+- [ContextMenu](../navigation/contextmenu.md) — right-click menus
 
 ### Framework concepts
 
-- [State & Interaction](../../capabilities/state-and-interaction.md)
+- [Design System](../../design-system/index.md) — colors, typography, and theming
 
-- [Configuration](../../capabilities/configuration.md)
+- [Signals](../../concepts/signals.md) — reactive data binding
 
 ### API reference
 
-- [`ttkbootstrap.TableView`](../../reference/widgets/TableView.md)
+- [ttkbootstrap.TableView](../../api/widgets/tableview.md)

@@ -1,157 +1,167 @@
 # Widgets
 
-ttkbootstrap provides a comprehensive set of themed widgets for building modern desktop applications. All widgets support the bootstyle system for easy styling with Bootstrap-inspired color schemes and variants.
+Widgets in **ttkbootstrap** are **framework components**, not raw Tk or ttk primitives.
 
-## Widget Categories
+They are designed to work together under a shared design system, consistent interaction patterns,
+and built-in framework capabilities—so you can compose applications quickly without reinventing
+UI behavior or visual structure.
 
-### Actions
+---
 
-Interactive elements for triggering commands and actions.
+## What makes ttkbootstrap widgets different
 
-| Widget | Description |
-|--------|-------------|
-| [Button](actions/button.md) | Standard themed button |
-| [DropdownButton](actions/dropdownbutton.md) | Button with dropdown menu |
-| [MenuButton](actions/menubutton.md) | Button that displays a menu |
-| [ContextMenu](actions/contextmenu.md) | Right-click context menu |
-| [ButtonGroup](actions/buttongroup.md) | Group of related buttons |
+Every ttkbootstrap widget is built with the assumption that:
 
-### Inputs
+- visual consistency matters
 
-Widgets for text and data entry.
+- behavior should be predictable
 
-| Widget | Description |
-|--------|-------------|
-| [TextEntry](inputs/textentry.md) | Single-line text input |
-| [PasswordEntry](inputs/passwordentry.md) | Masked password input |
-| [PathEntry](inputs/pathentry.md) | File/folder path selector |
-| [ScrolledText](inputs/scrolledtext.md) | Multi-line text with scrollbars |
-| [SpinnerEntry](inputs/spinnerentry.md) | Text entry with loading spinner |
-| [NumericEntry](inputs/numericentry.md) | Numeric input with validation |
-| [Scale](inputs/scale.md) | Slider for numeric values |
-| [LabeledScale](inputs/labeledscale.md) | Scale with value label |
-| [DateEntry](inputs/dateentry.md) | Date picker input |
-| [TimeEntry](inputs/timeentry.md) | Time picker input |
+- integration should be automatic
 
-### Selection
+- common patterns should not require custom glue code
 
-Widgets for choosing options and making selections.
+As a result, widgets are **opinionated by default**.
 
-| Widget | Description |
-|--------|-------------|
-| [CheckButton](selection/checkbutton.md) | Checkbox for boolean values |
-| [CheckToggle](selection/checktoggle.md) | Toggle switch style checkbox |
-| [RadioButton](selection/radiobutton.md) | Radio button for single selection |
-| [RadioToggle](selection/radiotoggle.md) | Toggle switch style radio button |
-| [RadioGroup](selection/radiogroup.md) | Group of radio buttons |
-| [ToggleGroup](selection/togglegroup.md) | Group of toggle buttons |
-| [OptionMenu](selection/optionmenu.md) | Dropdown option selector |
-| [SelectBox](selection/selectbox.md) | Searchable selection box |
+You get modern behavior and appearance without needing to configure everything manually.
 
-### Data Display
+---
 
-Widgets for presenting information and data.
+## Framework integration
 
-| Widget | Description |
-|--------|-------------|
-| [Label](data-display/label.md) | Text or image display |
-| [ListView](data-display/listview.md) | Scrollable list of items |
-| [TreeView](data-display/treeview.md) | Hierarchical tree display |
-| [TableView](data-display/tableview.md) | Data table with sorting and filtering |
-| [Badge](data-display/badge.md) | Small status indicator |
-| [Progressbar](data-display/progressbar.md) | Progress indicator |
-| [Meter](data-display/meter.md) | Circular progress/gauge |
-| [FloodGauge](data-display/floodgauge.md) | Animated fill gauge |
+Most widgets integrate with one or more **framework capabilities** automatically:
 
-### Layout
+- **Design System**  
+  Colors, typography, variants, spacing, and visual states are theme-driven.
 
-Container widgets for organizing UI elements.
+- **Signals & Events**  
+  Widgets can react to shared state and emit meaningful events.
 
-| Widget | Description |
-|--------|-------------|
-| [Frame](layout/frame.md) | Basic container |
-| [LabelFrame](layout/labelframe.md) | Container with title |
-| [PanedWindow](layout/panedwindow.md) | Resizable paned container |
-| [ScrollView](layout/scrollview.md) | Scrollable container |
-| [Scrollbar](layout/scrollbar.md) | Scroll control |
-| [Separator](layout/separator.md) | Visual divider |
-| [SizeGrip](layout/sizegrip.md) | Window resize handle |
+- **Icons & Images**  
+  Icons and images participate in theming, scaling, and caching.
 
-### Views
+- **Validation**  
+  Input widgets integrate with validation rules and results.
 
-Widgets for organizing content into views.
+- **Localization**  
+  Text can be localized and formatted consistently.
 
-| Widget | Description |
-|--------|-------------|
-| [Notebook](views/notebook.md) | Tabbed container |
-| [PageStack](views/pagestack.md) | Stacked page container |
+- **Layout Properties**  
+  Widgets expose declarative layout intent rather than manual geometry hacks.
 
-### Forms
+You typically opt *into* capabilities by usage—not by wiring.
 
-Widgets for building data entry forms.
+---
 
-| Widget | Description |
-|--------|-------------|
-| [Form](forms/form.md) | Form layout and validation |
+## Opinionated defaults
 
-### Dialogs
+Widgets ship with defaults chosen to match modern UI expectations:
 
-Pre-built dialog windows for common tasks.
+- sensible padding and alignment
 
-| Widget | Description |
-|--------|-------------|
-| [MessageDialog](dialogs/messagedialog.md) | Information/alert messages |
-| [MessageBox](dialogs/messagebox.md) | Simple message popup |
-| [ColorChooser](dialogs/colorchooser.md) | Color selection |
-| [ColorDropper](dialogs/colordropper.md) | Screen color picker |
-| [FontDialog](dialogs/fontdialog.md) | Font selection |
-| [DateDialog](dialogs/datedialog.md) | Date selection |
-| [FormDialog](dialogs/formdialog.md) | Multi-field form dialog |
-| [QueryDialog](dialogs/querydialog.md) | Single input query |
-| [QueryBox](dialogs/querybox.md) | Quick input popup |
-| [FilterDialog](dialogs/filterdialog.md) | Data filtering interface |
-| [Dialog](dialogs/dialog.md) | Base dialog class |
+- readable typography tokens
 
-### Overlays
+- accessible color contrast
 
-Widgets that appear on top of other content.
+- consistent hover, focus, and disabled states
 
-| Widget | Description |
-|--------|-------------|
-| [Toast](overlays/toast.md) | Temporary notification |
-| [ToolTip](overlays/tooltip.md) | Hover tooltip |
+- predictable keyboard and mouse behavior
 
-### Primitives
+You can override defaults when needed, but you don’t have to start from zero.
 
-Low-level widgets for advanced use cases.
+---
 
-| Widget | Description |
-|--------|-------------|
-| [Canvas](primitives/canvas.md) | Drawing surface |
-| [Combobox](primitives/combobox.md) | Dropdown with text entry |
-| [Entry](primitives/entry.md) | Basic text entry |
-| [Spinbox](primitives/spinbox.md) | Numeric spinner |
-| [Text](primitives/text.md) | Multi-line text widget |
+## Declarative usage
 
-## Bootstyle System
+ttkbootstrap encourages **declarative composition**.
 
-All widgets support the `bootstyle` parameter for easy theming:
+Instead of:
 
-```python
-import ttkbootstrap as ttk
+- mutating widget state imperatively
 
-app = ttk.App()
+- manually syncing related widgets
 
-# Color variants
-ttk.Button(app, text="Primary", bootstyle="primary")
-ttk.Button(app, text="Success", bootstyle="success")
-ttk.Button(app, text="Danger", bootstyle="danger")
+- scattering callbacks across the codebase
 
-# Style modifiers
-ttk.Button(app, text="Outline", bootstyle="primary-outline")
-ttk.Button(app, text="Link", bootstyle="info-link")
+Prefer:
 
-app.mainloop()
-```
+- expressing intent in constructors
 
-See the [Design System](../design-system/index.md) guide for more details on colors and variants.
+- connecting widgets through signals
+
+- relying on shared capabilities
+
+This keeps applications readable and scalable.
+
+---
+
+## Widget categories
+
+Widgets are organized by **intent**, not by underlying Tk class:
+
+- **Actions** — buttons and controls that initiate behavior
+
+- **Inputs** — text, numeric, date, and value entry
+
+- **Selection** — toggles, radio groups, calendars, selectors
+
+- **Data Display** — lists, tables, meters, badges
+
+- **Layout** — structural containers and layout helpers
+
+- **Views** — navigational and content-switching components
+
+- **Dialogs** — modal and transient interaction flows
+
+- **Overlays** — tooltips, toasts, and ephemeral UI
+
+- **Primitives** — low-level building blocks when you need them
+
+This categorization reflects how widgets are *used*, not how they are implemented.
+
+---
+
+## When to use primitives
+
+Primitive widgets exist for advanced or custom scenarios.
+
+If you find yourself reaching for primitives often, consider whether:
+
+- a higher-level widget already exists
+
+- a pattern in the Cookbook applies
+
+- a new composite widget would better serve your use case
+
+ttkbootstrap favors composition over customization.
+
+---
+
+## Relationship to ttk
+
+Under the hood, widgets build on ttk where appropriate—but that detail is intentionally abstracted.
+
+You should not need to:
+
+- understand ttk element layouts
+
+- manage widget state flags directly
+
+- manually propagate styling
+
+- compensate for platform inconsistencies
+
+Those concerns are handled by the framework.
+
+---
+
+## Next steps
+
+- Browse widgets by category to explore what’s available
+
+- Read individual widget docs for usage and behavior
+
+- Learn **Capabilities** to understand how widgets interact
+
+- Use **Build** and **Cookbook** pages for real application patterns
+
+Widgets are the visible surface of the framework—designed to let you move fast without sacrificing quality.

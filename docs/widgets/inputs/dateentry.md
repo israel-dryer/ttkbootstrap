@@ -1,47 +1,4 @@
 ---
-
-## Framework integration
-
-### Signals & events
-
-Widgets participate in ttkbootstrap’s reactive model.
-
-- **Signals** represent a widget’s **value/state** and are built on **Tk variables** with a modern subscription API.
-
-- **Events** (including virtual events) represent **interactions and moments** (click, commit, focus, selection changed).
-
-Signals and events are complementary: use signals for state flow and composition, and use events when you need
-interaction-level integration.
-
-!!! link "See also: [Signals](../../capabilities/signals.md), [Virtual Events](../../capabilities/virtual-events.md), [Callbacks](../../capabilities/callbacks.md)"
-
-### Design system
-
-Widgets are styled through ttkbootstrap’s design system using:
-
-- semantic colors via `bootstyle` (e.g., `primary`, `success`, `danger`)
-
-- variants (e.g., `outline`, `link`, `ghost` where supported)
-
-- consistent state visuals across themes
-
-!!! link "See also: [Colors](../../design-system/colors.md), [Variants](../../design-system/variants.md)"
-
-### Layout properties
-
-Widgets support ttkbootstrap layout conveniences (when available) so they compose cleanly in modern layouts.
-
-!!! link "See also: [Layout Properties](../../capabilities/layout-props.md)"
-
-### Localization
-
-Text labels can be localized in localized applications.
-
-!!! link "See also: [Localization](../../capabilities/localization.md)"
-
-
----
-
 title: DateEntry
 ---
 
@@ -50,7 +7,7 @@ title: DateEntry
 `DateEntry` is a form-ready calendar date input that combines a text field with a picker popup.
 
 It behaves like other v2 entry controls (message, validation, localization, events), while making date entry fast and consistent
-using a calendar picker when needed. If you are building forms or dialogs, `DateEntry` is usually your **default date input**. fileciteturn14file6
+using a calendar picker when needed. If you are building forms or dialogs, `DateEntry` is usually your **default date input**.
 
 <figure markdown>
 ![dateentry states](../../assets/dark/widgets-dateentry-states.png#only-dark)
@@ -59,7 +16,7 @@ using a calendar picker when needed. If you are building forms or dialogs, `Date
 
 ---
 
-## Basic usage
+## Quick start
 
 ```python
 import ttkbootstrap as ttk
@@ -79,7 +36,45 @@ app.mainloop()
 
 ---
 
-## Value model
+## When to use
+
+Use `DateEntry` when:
+
+- users need to enter calendar dates reliably
+
+- you want both typing and a picker UI
+
+- validation and formatting should be consistent with other field controls
+
+Consider a different control when:
+
+- you need time-of-day input — use [TimeEntry](timeentry.md)
+
+- the value is "date-like" but not an actual calendar date — use [TextEntry](textentry.md)
+
+- date selection should be modal (dialog-based) — use [DateDialog](../dialogs/datedialog.md)
+
+---
+
+## Appearance
+
+### `bootstyle`
+
+```python
+ttk.DateEntry(app, label="Due date")  # primary (default)
+ttk.DateEntry(app, label="Due date", bootstyle="secondary")
+ttk.DateEntry(app, label="Due date", bootstyle="success")
+ttk.DateEntry(app, label="Due date", bootstyle="warning")
+```
+
+!!! link "Design System"
+    For a complete list of available colors and styling options, see the [Design System](../../design-system/index.md) documentation.
+
+---
+
+## Examples and patterns
+
+### Value model
 
 DateEntry uses the standard **text vs committed value** model.
 
@@ -97,11 +92,9 @@ raw = due.get()
     Parsing, validation, and `value_format` are applied when the value is committed
     (blur/Enter or picker selection), not while typing.
 
----
+### Common options
 
-## Common options
-
-### Formatting: `value_format`
+#### Formatting: `value_format`
 
 Commit-time formatting shared with other field controls:
 
@@ -114,7 +107,7 @@ ttk.DateEntry(app, label="Short Date", value="March 14, 1981", value_format="sho
 ![dateentry formats](../../assets/light/widgets-dateentry-formats.png#only-light)
 </figure>
 
-### Add-ons
+#### Add-ons
 
 ```python
 d = ttk.DateEntry(app, label="Birthday")
@@ -126,26 +119,7 @@ d.insert_addon(ttk.Label, position="before", icon="cake-fill")
 ![dateentry addons](../../assets/light/widgets-dateentry-addons.png#only-light)
 </figure>
 
----
-
-## Behavior
-
-### Picker behavior
-
-- Click the calendar button → opens the picker
-
-- Click a day → commits the date and closes the popup
-
-- Escape → closes the popup without committing
-
-<figure markdown>
-![dateentry picker](../../assets/dark/widgets-dateentry-popup.png#only-dark)
-![dateentry picker](../../assets/light/widgets-dateentry-popup.png#only-light)
-</figure>
-
----
-
-## Events
+### Events
 
 DateEntry emits the standard field events:
 
@@ -165,9 +139,7 @@ due.on_changed(handle_changed)
 !!! tip "Live typing vs commit"
     Use `on_input(...)` for live typing, and `on_changed(...)` for committed values.
 
----
-
-## Validation and constraints
+### Validation
 
 Common validation patterns:
 
@@ -184,45 +156,38 @@ d.add_validation_rule("required", message="A date is required")
 
 ---
 
-## When should I use DateEntry?
+## Behavior
 
-Use `DateEntry` when:
+### Picker behavior
 
-- users need to enter calendar dates reliably
+- Click the calendar button — opens the picker
 
-- you want both typing and a picker UI
+- Click a day — commits the date and closes the popup
 
-- validation and formatting should be consistent with other field controls
+- Escape — closes the popup without committing
 
-Prefer **TimeEntry** when:
-
-- you need time-of-day input
-
-Prefer **TextEntry** when:
-
-- the value is “date-like” but not an actual calendar date
-
-Prefer **DateDialog** when:
-
-- date selection should be modal (dialog-based)
+<figure markdown>
+![dateentry picker](../../assets/dark/widgets-dateentry-popup.png#only-dark)
+![dateentry picker](../../assets/light/widgets-dateentry-popup.png#only-light)
+</figure>
 
 ---
 
-## Related widgets
+## Localization
 
-- **TimeEntry** — time input control
+`DateEntry` supports locale-aware date formatting through the `value_format` option. Dates are displayed according to the current locale's conventions (date order, separators, month names).
 
-- **TextEntry** — general field control with validation and formatting
-
-- **DateDialog** — modal date selection
-
-- **Form** — build forms from field definitions
+!!! link "Localization"
+    For complete localization configuration and supported formats, see the [Localization](../../guides/localization.md) documentation.
 
 ---
 
-## Reference
+## Reactivity
 
-- **API Reference:** `ttkbootstrap.DateEntry`
+`DateEntry` integrates with the signals system for reactive data binding. Changes to the field value can automatically propagate to other parts of your application.
+
+!!! link "Signals"
+    For details on reactive patterns and data binding, see the [Signals](../../guides/signals.md) documentation.
 
 ---
 
@@ -230,18 +195,18 @@ Prefer **DateDialog** when:
 
 ### Related widgets
 
-- [LabeledScale](labeledscale.md)
-
-- [NumericEntry](numericentry.md)
-
-- [PasswordEntry](passwordentry.md)
+- [TimeEntry](timeentry.md) — time input control
+- [TextEntry](textentry.md) — general field control with validation and formatting
+- [DateDialog](../dialogs/datedialog.md) — modal date selection
+- [Calendar](../selection/calendar.md) — standalone calendar widget
+- [Form](../forms/form.md) — build forms from field definitions
 
 ### Framework concepts
 
-- [State & Interaction](../../capabilities/state-and-interaction.md)
-
-- [Configuration](../../capabilities/configuration.md)
+- [Forms](../../guides/forms.md) — working with form controls
+- [Localization](../../guides/localization.md) — internationalization and formatting
+- [Signals](../../guides/signals.md) — reactive data binding
 
 ### API reference
 
-- [`ttkbootstrap.DateEntry`](../../reference/widgets/DateEntry.md)
+- [ttkbootstrap.DateEntry](../../api/dateentry.md)

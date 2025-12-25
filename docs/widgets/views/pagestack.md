@@ -1,56 +1,13 @@
 ---
-
-## Framework integration
-
-### Signals & events
-
-Widgets participate in ttkbootstrap’s reactive model.
-
-- **Signals** represent a widget’s **value/state** and are built on **Tk variables** with a modern subscription API.
-
-- **Events** (including virtual events) represent **interactions and moments** (click, commit, focus, selection changed).
-
-Signals and events are complementary: use signals for state flow and composition, and use events when you need
-interaction-level integration.
-
-!!! link "See also: [Signals](../../capabilities/signals.md), [Virtual Events](../../capabilities/virtual-events.md), [Callbacks](../../capabilities/callbacks.md)"
-
-### Design system
-
-Widgets are styled through ttkbootstrap’s design system using:
-
-- semantic colors via `bootstyle` (e.g., `primary`, `success`, `danger`)
-
-- variants (e.g., `outline`, `link`, `ghost` where supported)
-
-- consistent state visuals across themes
-
-!!! link "See also: [Colors](../../design-system/colors.md), [Variants](../../design-system/variants.md)"
-
-### Layout properties
-
-Widgets support ttkbootstrap layout conveniences (when available) so they compose cleanly in modern layouts.
-
-!!! link "See also: [Layout Properties](../../capabilities/layout-props.md)"
-
-### Localization
-
-Text labels can be localized in localized applications.
-
-!!! link "See also: [Localization](../../capabilities/localization.md)"
-
-
----
-
 title: PageStack
 ---
 
 # PageStack
 
-`PageStack` is a **stacked view container** that manages multiple “pages” where only one page is visible at a time.
+`PageStack` is a **stacked view container** that manages multiple "pages" where only one page is visible at a time.
 
 It provides **history-based navigation** (push, back, forward), similar to a web browser, making it ideal for wizards,
-multi-step workflows, and task-based navigation inside a single window. fileciteturn17file1
+multi-step workflows, and task-based navigation inside a single window.
 
 <!--
 IMAGE: PageStack navigation flow
@@ -60,7 +17,7 @@ Theme variants: light / dark
 
 ---
 
-## Basic usage
+## Quick start
 
 Create a PageStack, add pages, and navigate between them:
 
@@ -91,7 +48,38 @@ app.mainloop()
 
 ---
 
-## Core concepts
+## When to use
+
+Use `PageStack` when:
+
+- navigation is sequential or flow-based
+
+- back/forward behavior improves usability
+
+- only one view should be visible at a time
+
+Consider a different control when:
+
+- users need random access to views - use [Notebook](notebook.md) instead
+
+- the interaction model is "switch categories" - use [Notebook](notebook.md) instead
+
+- multiple views must be visible simultaneously - use [PanedWindow](../layout/panedwindow.md) instead
+
+---
+
+## Appearance
+
+### Styling
+
+PageStack itself is a container without visual styling. Style the individual pages and navigation controls as needed.
+
+!!! link "Design System"
+    See [Colors & Themes](../../design-system/colors.md) for styling page content and navigation buttons.
+
+---
+
+## Examples and patterns
 
 ### Pages are keyed
 
@@ -155,11 +143,7 @@ Pass a dict when navigating:
 stack.navigate("confirm", data={"user": user_id})
 ```
 
-That data is included in lifecycle event payloads so pages can react to it. fileciteturn17file1
-
----
-
-## Common patterns
+That data is included in lifecycle event payloads so pages can react to it.
 
 ### Full-bleed pages
 
@@ -179,19 +163,17 @@ stack.remove("details")
 
 If the removed page is active, the stack becomes empty until you navigate elsewhere.
 
----
-
-## Events
+### Events
 
 `PageStack` emits a navigation lifecycle you can hook into:
 
-- `<<PageUnmounted>>` — current page is being hidden
+- `<<PageUnmounted>>` - current page is being hidden
 
-- `<<PageWillMount>>` — new page will be shown
+- `<<PageWillMount>>` - new page will be shown
 
-- `<<PageMounted>>` — new page is now visible
+- `<<PageMounted>>` - new page is now visible
 
-- `<<PageChanged>>` — navigation completed fileciteturn17file1
+- `<<PageChanged>>` - navigation completed
 
 ```python
 def on_page_changed(event):
@@ -206,25 +188,27 @@ funcid = stack.on_page_changed(on_page_changed)
 
 Navigation events include:
 
-- `page` — current page key
+- `page` - current page key
 
-- `prev_page` — previous page key
+- `prev_page` - previous page key
 
-- `prev_data` — data passed to the previous page
+- `prev_data` - data passed to the previous page
 
-- `nav` — `"push"`, `"back"`, or `"forward"`
+- `nav` - `"push"`, `"back"`, or `"forward"`
 
-- `index` — current history index
+- `index` - current history index
 
-- `length` — total history length
+- `length` - total history length
 
-- `can_back` — whether back navigation is possible
+- `can_back` - whether back navigation is possible
 
-- `can_forward` — whether forward navigation is possible fileciteturn17file1
+- `can_forward` - whether forward navigation is possible
 
 ---
 
-## UX guidance
+## Behavior
+
+### UX guidance
 
 - Use PageStack for **linear or stateful navigation**
 
@@ -237,56 +221,16 @@ Navigation events include:
 
 ---
 
-## When should I use PageStack?
-
-Use `PageStack` when:
-
-- navigation is sequential or flow-based
-
-- back/forward behavior improves usability
-
-- only one view should be visible at a time
-
-Prefer `Notebook` when:
-
-- users need random access to views
-
-- the interaction model is “switch categories”
-
-Avoid PageStack when:
-
-- multiple views must be visible simultaneously (use `PanedWindow`)
-
----
-
-## Related widgets
-
-- **Notebook** — tabbed views without history
-
-- **Frame** — typical page container
-
-- **PanedWindow** — resizable multi-view layouts
-
----
-
-## Reference
-
-- **API Reference:** `ttkbootstrap.PageStack`
-
----
-
 ## Additional resources
 
 ### Related widgets
 
-- [Notebook](notebook.md)
+- [Notebook](notebook.md) - tabbed views without history
 
-### Framework concepts
+- [Frame](../layout/frame.md) - typical page container
 
-- [State & Interaction](../../capabilities/state-and-interaction.md)
-
-- [Configuration](../../capabilities/configuration.md)
+- [PanedWindow](../layout/panedwindow.md) - resizable multi-view layouts
 
 ### API reference
 
-- [`ttkbootstrap.PageStack`](../../reference/widgets/PageStack.md)
+- [ttkbootstrap.PageStack](../../api/widgets/pagestack.md)

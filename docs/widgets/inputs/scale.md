@@ -1,47 +1,4 @@
 ---
-
-## Framework integration
-
-### Signals & events
-
-Widgets participate in ttkbootstrap’s reactive model.
-
-- **Signals** represent a widget’s **value/state** and are built on **Tk variables** with a modern subscription API.
-
-- **Events** (including virtual events) represent **interactions and moments** (click, commit, focus, selection changed).
-
-Signals and events are complementary: use signals for state flow and composition, and use events when you need
-interaction-level integration.
-
-!!! link "See also: [Signals](../../capabilities/signals.md), [Virtual Events](../../capabilities/virtual-events.md), [Callbacks](../../capabilities/callbacks.md)"
-
-### Design system
-
-Widgets are styled through ttkbootstrap’s design system using:
-
-- semantic colors via `bootstyle` (e.g., `primary`, `success`, `danger`)
-
-- variants (e.g., `outline`, `link`, `ghost` where supported)
-
-- consistent state visuals across themes
-
-!!! link "See also: [Colors](../../design-system/colors.md), [Variants](../../design-system/variants.md)"
-
-### Layout properties
-
-Widgets support ttkbootstrap layout conveniences (when available) so they compose cleanly in modern layouts.
-
-!!! link "See also: [Layout Properties](../../capabilities/layout-props.md)"
-
-### Localization
-
-Text labels can be localized in localized applications.
-
-!!! link "See also: [Localization](../../capabilities/localization.md)"
-
-
----
-
 title: Scale
 ---
 
@@ -52,13 +9,13 @@ title: Scale
 Unlike `NumericEntry`, which is optimized for precise typing, `Scale` is designed for **gesture-based adjustment** —
 ideal for volume, zoom, thresholds, and any setting where users benefit from immediate visual feedback.
 
-> _Image placeholder:_  
-> `![Scale overview](../_img/widgets/scale/overview.png)`  
+> _Image placeholder:_
+> `![Scale overview](../_img/widgets/scale/overview.png)`
 > Suggested shot: horizontal scale + value label + live update.
 
 ---
 
-## Basic usage
+## Quick start
 
 ```python
 import ttkbootstrap as ttk
@@ -73,28 +30,23 @@ app.mainloop()
 
 ---
 
-## Value model
+## When to use
 
-A `Scale` always produces a numeric value within its configured range.
+Use `Scale` when:
 
-- The displayed value updates while the user drags the thumb.
+- users benefit from visual, continuous adjustment
+- relative changes matter more than precision
+- live feedback improves usability
 
-- A **committed** value is produced when the user releases the thumb.
+### Consider a different control when...
 
-If your app treats “live preview” differently from “final commit”, use the appropriate event hook
-(see **Events**).
+- users must type exact values -> use [NumericEntry](numericentry.md)
+- values require strict validation -> use [NumericEntry](numericentry.md)
+- keyboard-first accessibility is primary -> use [NumericEntry](numericentry.md)
 
 ---
 
-## Common options
-
-### `from_` and `to`
-
-Defines the numeric range.
-
-```python
-ttk.Scale(app, from_=10, to=200)
-```
+## Appearance
 
 ### `orient`
 
@@ -105,8 +57,33 @@ ttk.Scale(app, from_=0, to=100, orient="horizontal")  # or "vertical"
 ```
 
 !!! note "Orientation"
-    Horizontal scales are preferred for most desktop layouts.  
+    Horizontal scales are preferred for most desktop layouts.
     Vertical scales work well for audio levels, side panels, or compact tool areas.
+
+!!! link "Design System"
+    Scale styling follows the theme's color palette. See [Design System](../../concepts/design-system.md) for customization options.
+
+---
+
+## Examples and patterns
+
+### Value model
+
+A `Scale` always produces a numeric value within its configured range.
+
+- The displayed value updates while the user drags the thumb.
+- A **committed** value is produced when the user releases the thumb.
+
+If your app treats "live preview" differently from "final commit", use the appropriate event hook
+(see **Events**).
+
+### `from_` and `to`
+
+Defines the numeric range.
+
+```python
+ttk.Scale(app, from_=10, to=200)
+```
 
 ### `value`
 
@@ -126,9 +103,39 @@ ttk.Scale(app, from_=0, to=10, step=1)
 
 !!! note "Continuous vs stepped"
 
-    - **Continuous scales** are best for perception-based adjustment  
+    - **Continuous scales** are best for perception-based adjustment
 
     - **Stepped scales** are best when values must align to discrete states
+
+### Events
+
+`Scale` distinguishes between **live input** and **committed change**.
+
+| Event | When it fires |
+|------|---------------|
+| `on_input` | while the thumb is moving |
+| `on_changed` | when the user releases the thumb |
+
+```python
+def handle_changed(event):
+    print("final value:", event.data)
+
+scale.on_changed(handle_changed)
+```
+
+!!! tip "Live feedback"
+    Use `on_input(...)` to update previews or labels while dragging.
+    Use `on_changed(...)` when the value is committed.
+
+### Validation and constraints
+
+Because a `Scale` inherently constrains values to a known range, explicit validation is usually minimal.
+
+Validation is most useful when:
+
+- the scale is conditionally enabled/required
+- the valid range changes dynamically
+- the value must satisfy cross-field rules
 
 ---
 
@@ -147,95 +154,15 @@ scale.on_input(update_value)
 
 ---
 
-## Events
-
-`Scale` distinguishes between **live input** and **committed change**.
-
-| Event | When it fires |
-|------|---------------|
-| `on_input` | while the thumb is moving |
-| `on_changed` | when the user releases the thumb |
-
-```python
-def handle_changed(event):
-    print("final value:", event.data)
-
-scale.on_changed(handle_changed)
-```
-
-!!! tip "Live feedback"
-    Use `on_input(...)` to update previews or labels while dragging.  
-    Use `on_changed(...)` when the value is committed.
-
----
-
-## Validation and constraints
-
-Because a `Scale` inherently constrains values to a known range, explicit validation is usually minimal.
-
-Validation is most useful when:
-
-- the scale is conditionally enabled/required
-
-- the valid range changes dynamically
-
-- the value must satisfy cross-field rules
-
----
-
-## When should I use Scale?
-
-Use `Scale` when:
-
-- users benefit from visual, continuous adjustment
-
-- relative changes matter more than precision
-
-- live feedback improves usability
-
-Prefer `NumericEntry` when:
-
-- users must type exact values
-
-- values require strict validation
-
-- keyboard-first accessibility is primary
-
----
-
-## Related widgets
-
-- **NumericEntry** — precise numeric input
-
-- **Spinbox / SpinnerEntry** — numeric stepping with typing
-
-- **Progressbar** — displays progress, not user input
-
-- **Meter** — displays proportional values
-
----
-
-## Reference
-
-- **API Reference:** `ttkbootstrap.Scale`
-
----
-
 ## Additional resources
 
 ### Related widgets
 
-- [DateEntry](dateentry.md)
-
-- [LabeledScale](labeledscale.md)
-
-- [NumericEntry](numericentry.md)
-
-### Framework concepts
-
-- [State & Interaction](../../capabilities/state-and-interaction.md)
-
-- [Configuration](../../capabilities/configuration.md)
+- [NumericEntry](numericentry.md) - precise numeric input
+- [SpinnerEntry](spinnerentry.md) - numeric stepping with typing
+- [LabeledScale](labeledscale.md) - scale with integrated value label
+- [Progressbar](../data-display/progressbar.md) - displays progress, not user input
+- [Meter](../data-display/meter.md) - displays proportional values
 
 ### API reference
 

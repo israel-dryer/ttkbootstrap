@@ -1,47 +1,4 @@
 ---
-
-## Framework integration
-
-### Signals & events
-
-Widgets participate in ttkbootstrap’s reactive model.
-
-- **Signals** represent a widget’s **value/state** and are built on **Tk variables** with a modern subscription API.
-
-- **Events** (including virtual events) represent **interactions and moments** (click, commit, focus, selection changed).
-
-Signals and events are complementary: use signals for state flow and composition, and use events when you need
-interaction-level integration.
-
-!!! link "See also: [Signals](../../capabilities/signals.md), [Virtual Events](../../capabilities/virtual-events.md), [Callbacks](../../capabilities/callbacks.md)"
-
-### Design system
-
-Widgets are styled through ttkbootstrap’s design system using:
-
-- semantic colors via `bootstyle` (e.g., `primary`, `success`, `danger`)
-
-- variants (e.g., `outline`, `link`, `ghost` where supported)
-
-- consistent state visuals across themes
-
-!!! link "See also: [Colors](../../design-system/colors.md), [Variants](../../design-system/variants.md)"
-
-### Layout properties
-
-Widgets support ttkbootstrap layout conveniences (when available) so they compose cleanly in modern layouts.
-
-!!! link "See also: [Layout Properties](../../capabilities/layout-props.md)"
-
-### Localization
-
-Text labels can be localized in localized applications.
-
-!!! link "See also: [Localization](../../capabilities/localization.md)"
-
-
----
-
 title: Entry
 ---
 
@@ -50,11 +7,11 @@ title: Entry
 `Entry` is the low-level, single-line text input primitive in ttkbootstrap.
 
 It wraps `ttk.Entry` and integrates ttkbootstrap styling plus reactive text support. `Entry` is also the building block
-used by higher-level controls like `TextEntry`, `NumericEntry`, `DateEntry`, and `PasswordEntry`. fileciteturn13file0
+used by higher-level controls like `TextEntry`, `NumericEntry`, `DateEntry`, and `PasswordEntry`.
 
 ---
 
-## Basic usage
+## Quick start
 
 ```python
 import ttkbootstrap as ttk
@@ -69,19 +26,27 @@ app.mainloop()
 
 ---
 
-## Value model
+## When to use
 
-`Entry` works with **raw text**:
+Use `Entry` when:
 
-- `entry.get()` returns the current string
+- you need direct, low-level access to `ttk.Entry` options
 
-- `textvariable=` or `textsignal=` keeps the text synchronized with your state
+- you are building your own composite control
 
-Unlike field controls such as `TextEntry`, `Entry` does not define “text vs committed value” semantics on its own.
+- you want Tk's `validate` / `validatecommand` behavior
+
+### Consider a different control when...
+
+- **you want labels, helper text, and standardized events** - prefer [TextEntry](/widgets/inputs/textentry.md)
+
+- **you want commit-based validation with messages** - prefer [TextEntry](/widgets/inputs/textentry.md)
+
+- **you are building application forms** - prefer [TextEntry](/widgets/inputs/textentry.md) or specialized input controls
 
 ---
 
-## Common options
+## Appearance
 
 ### `bootstyle` / `style`
 
@@ -91,6 +56,23 @@ Use semantic tokens via `bootstyle`, or provide a concrete ttk style via `style=
 ttk.Entry(app, bootstyle="primary")
 ttk.Entry(app, bootstyle="secondary")
 ```
+
+!!! link "Design System"
+    See the [Design System](/concepts/design-system.md) for available bootstyle tokens.
+
+---
+
+## Examples and patterns
+
+### Value model
+
+`Entry` works with **raw text**:
+
+- `entry.get()` returns the current string
+
+- `textvariable=` or `textsignal=` keeps the text synchronized with your state
+
+Unlike field controls such as `TextEntry`, `Entry` does not define "text vs committed value" semantics on its own.
 
 ### `textvariable`
 
@@ -114,15 +96,15 @@ entry = ttk.Entry(app, textsignal=my_signal)
 Mask input characters (useful for basic password-style entry).
 
 ```python
-ttk.Entry(app, show="•")
+ttk.Entry(app, show="*")
 ```
 
 !!! note "Password input"
-    For a full-featured password field (reveal toggle, validation, messages), prefer **PasswordEntry**.
+    For a full-featured password field (reveal toggle, validation, messages), prefer [PasswordEntry](/widgets/inputs/passwordentry.md).
 
 ### Tk validation (`validate` / `validatecommand`)
 
-Use Tk’s validation when you need per-keystroke constraints.
+Use Tk's validation when you need per-keystroke constraints.
 
 ```python
 def validate_text(new_value: str) -> bool:
@@ -135,7 +117,7 @@ entry.pack(padx=20, pady=20)
 ```
 
 !!! tip "Prefer field controls for forms"
-    For most form UX, prefer **TextEntry** (commit-time parsing + validation messages + consistent events).
+    For most form UX, prefer [TextEntry](/widgets/inputs/textentry.md) (commit-time parsing + validation messages + consistent events).
 
 ---
 
@@ -153,63 +135,17 @@ entry.pack(padx=20, pady=20)
 entry.bind("<KeyRelease>", lambda e: print(entry.get()))
 ```
 
----
-
-## Events
+### Events
 
 `Entry` emits standard Tk events, not structured v2 field events.
 
-If you want standardized field events like `on_input` / `on_changed`, use **TextEntry**.
+If you want standardized field events like `on_input` / `on_changed`, use [TextEntry](/widgets/inputs/textentry.md).
 
----
-
-## Validation and constraints
+### Validation and constraints
 
 Use `Entry` validation when you need low-level, immediate constraints while typing.
 
-If you want user-friendly validation messages and commit-based validation, prefer **TextEntry** (or a specialized `*Entry` control).
-
----
-
-## When should I use Entry?
-
-Use `Entry` when:
-
-- you need direct, low-level access to `ttk.Entry` options
-
-- you are building your own composite control
-
-- you want Tk’s `validate` / `validatecommand` behavior
-
-Prefer **TextEntry** when:
-
-- you want labels, helper text, and standardized events
-
-- you want commit-based validation with messages
-
-- you are building application forms
-
----
-
-## Related widgets
-
-- **TextEntry** — form-ready text control with labels, messages, and events
-
-- **PasswordEntry** — specialized masked input control
-
-- **NumericEntry** — numeric input with bounds and stepping
-
-- **DateEntry** / **TimeEntry** — structured date/time inputs
-
-- **Combobox** — selection with optional text entry
-
----
-
-## Reference
-
-- **API Reference:** `ttkbootstrap.Entry`
-
-- **Related guides:** Design System, Events & Signals → Signals, Internationalization → Localization
+If you want user-friendly validation messages and commit-based validation, prefer [TextEntry](/widgets/inputs/textentry.md) (or a specialized `*Entry` control).
 
 ---
 
@@ -217,18 +153,24 @@ Prefer **TextEntry** when:
 
 ### Related widgets
 
-- [Canvas](canvas.md)
+- [TextEntry](/widgets/inputs/textentry.md) - form-ready text control with labels, messages, and events
 
-- [Combobox](combobox.md)
+- [PasswordEntry](/widgets/inputs/passwordentry.md) - specialized masked input control
 
-- [Spinbox](spinbox.md)
+- [NumericEntry](/widgets/inputs/numericentry.md) - numeric input with bounds and stepping
+
+- [DateEntry](/widgets/inputs/dateentry.md) / [TimeEntry](/widgets/inputs/timeentry.md) - structured date/time inputs
+
+- [Combobox](/widgets/primitives/combobox.md) - selection with optional text entry
 
 ### Framework concepts
 
-- [State & Interaction](../../capabilities/state-and-interaction.md)
+- [Design System](/concepts/design-system.md)
 
-- [Configuration](../../capabilities/configuration.md)
+- [Events and Signals](/concepts/events-signals.md)
+
+- [Localization](/concepts/localization.md)
 
 ### API reference
 
-- [`ttkbootstrap.Entry`](../../reference/widgets/Entry.md)
+- [ttkbootstrap.Entry](/api/widgets/entry.md)
