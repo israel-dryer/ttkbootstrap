@@ -181,7 +181,7 @@ Common patterns include:
 
 ### Framework concepts
 
-- [Forms](../../cookbook/forms.md) — working with form controls
+- [Forms](../../guides/forms.md) — working with form controls
 - [Localization](../../capabilities/localization.md) — internationalization and formatting
 - [Signals](../../capabilities/signals/signals.md) — reactive data binding
 

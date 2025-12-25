@@ -219,7 +219,7 @@ search.insert_addon(ttk.Button, position="after", icon="search", command=handle_
 
 ### Framework concepts
 
-- [Forms](../../cookbook/forms.md) — working with form controls
+- [Forms](../../guides/forms.md) — working with form controls
 - [Localization](../../capabilities/localization.md) — internationalization and formatting
 - [Signals](../../capabilities/signals/signals.md) — reactive data binding
 

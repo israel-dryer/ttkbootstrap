@@ -264,7 +264,7 @@ size.insert_addon(ttk.Label, position="after", text="cm", font="label[9]")
 
 ### Framework concepts
 
-- [Forms](../../cookbook/forms.md) — working with form controls
+- [Forms](../../guides/forms.md) — working with form controls
 - [Localization](../../capabilities/localization.md) — internationalization and formatting
 - [Signals](../../capabilities/signals/signals.md) — reactive data binding
 

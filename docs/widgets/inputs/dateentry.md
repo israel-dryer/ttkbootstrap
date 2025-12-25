@@ -203,7 +203,7 @@ d.add_validation_rule("required", message="A date is required")
 
 ### Framework concepts
 
-- [Forms](../../cookbook/forms.md) — working with form controls
+- [Forms](../../guides/forms.md) — working with form controls
 - [Localization](../../capabilities/localization.md) — internationalization and formatting
 - [Signals](../../capabilities/signals/signals.md) — reactive data binding
 

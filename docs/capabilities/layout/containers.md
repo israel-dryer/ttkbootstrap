@@ -1,14 +1,16 @@
+---
+title: Containers
+---
+
 # Containers
 
-Containers are widgets whose primary role is to **organize, constrain, and express layout**
-for their child widgets.
+Containers are widgets whose primary role is to **organize layout** for child widgets.
 
-In ttkbootstrap, containers are a **core layout capability**, not just passive widget holders.
-They are used to **encode layout intent**, centralize spacing rules, and reduce repetitive
-geometry configuration.
+In ttkbootstrap, containers are more than “a place to put widgets” — they are where you express **layout intent**:
+spacing rules, scrolling behavior, and consistent resizing patterns. That keeps individual widgets simpler and makes
+UIs easier to evolve.
 
-This page explains how containers are used, why they matter, and how to design layouts around
-them.
+!!! link "See [Platform → Geometry & Layout](../platform/geometry-and-layout.md) for how Tk geometry managers actually compute size and placement."
 
 ---
 
@@ -18,118 +20,103 @@ A container is any widget that:
 
 - can contain child widgets
 - participates in a geometry manager (`pack`, `grid`, or `place`)
-- defines spacing, alignment, and resize behavior for its children
+- controls spacing and resizing behavior for its children
 
-Common containers include:
+Common examples:
 
-- `Frame`
-- `LabelFrame`
-- `PanedWindow`
-- scroll containers
-- layout-focused containers like **PackFrame** and **GridFrame**
+- [Frame](../widgets/layout/frame.md) / [LabelFrame](../widgets/layout/labelframe.md)
+- [PanedWindow](../widgets/layout/panedwindow.md) (resizable regions)
+- [ScrollView](../widgets/layout/scrollview.md) (scrollable region)
 
 ---
 
-## Container ownership
+## Container ownership and layout context
 
-Containers define **layout context**.
+Containers define the “layout context” that children live in.
 
 Children:
 
-- inherit geometry constraints from their container
-- request size but do not enforce it
-- should not control overall spacing or alignment
+- request size, but do not enforce it
+- inherit geometry constraints from the container
+- should not carry layout policy that affects siblings
 
-This separation keeps layouts predictable and prevents widgets from leaking layout concerns
-into unrelated parts of the UI.
-
----
-
-## Containers as layout intent
-
-In ttkbootstrap, containers are often used to express **layout intent**, not just grouping.
-
-Examples:
-
-- “This section is a vertical stack with consistent spacing”
-- “This area is a form with aligned labels and fields”
-- “This panel scrolls, but its children do not”
-
-Encoding these ideas at the container level leads to clearer, more maintainable layouts.
+This separation is what keeps complex layouts predictable.
 
 ---
 
-## Frame vs PackFrame vs GridFrame
+## Single responsibility
 
-ttkbootstrap provides container variants that **build on Tk’s geometry managers** while
-reducing repetitive configuration.
+Containers work best when they have a clear job.
 
-### Frame
+Good container roles:
 
-`Frame` is the most flexible and lowest-level container.
+- grouping related widgets into a section
+- managing spacing for a region
+- controlling scrolling / viewport behavior
+- defining resize rules (which parts expand vs stay fixed)
 
-Use it when:
-
-- you want full control over `pack` / `grid`
-- you are building custom layout behavior
-- layout rules vary significantly between children
-
-### PackFrame
-
-`PackFrame` is a **pack-based layout container** optimized for one-direction layouts.
-
-It adds:
-
-- consistent `gap` handling between children
-- explicit layout direction (vertical or horizontal)
-- centralized container-level spacing rules
-
-Use `PackFrame` for:
-
-- vertical stacks (forms, settings panels)
-- horizontal groups (toolbars, button rows)
-- layouts where `pack` would otherwise be repeated on every child
-
-`PackFrame` does **not** replace `pack`; it **encapsulates common pack patterns**.
-
-### GridFrame
-
-`GridFrame` is a **grid-based layout container** optimized for aligned, multi-dimensional layouts.
-
-It adds:
-
-- consistent row/column `gap`
-- structured row and column definitions
-- clearer intent for form-style and alignment-heavy layouts
-
-Use `GridFrame` for:
-
-- forms and property editors
-- label/value alignment
-- layouts where grid structure matters more than absolute placement
-
-`GridFrame` does **not** replace `grid`; it **standardizes common grid usage**.
+Avoid containers that mix unrelated responsibilities (for example: a container that also implements domain logic,
+data access, and presentation state).
 
 ---
 
-## Composition over configuration
+## Composition over per-widget tuning
 
-ttkbootstrap encourages composing layouts from **purposeful containers**
-instead of heavily configuring individual widgets.
+ttkbootstrap encourages composing layouts from **simple containers** rather than “micro-tuning” each widget.
 
 Instead of:
 
-- tuning padding on every widget
-- repeating `padx` / `pady` everywhere
-- manually coordinating alignment rules
+- adding `padx/pady` everywhere
+- manually negotiating which widgets expand
+- mixing `pack` and `grid` in the same parent
 
 Prefer:
 
 - containers with clear spacing rules
-- nested layout sections
+- nested regions for sections (header/content/footer)
 - reusable container patterns
 
-This leads to layouts that are easier to reason about and modify.
+This reduces layout bugs and makes UIs easier to refactor.
+
+!!! link "See [Layout Properties](layout-props.md) for the ttkbootstrap layout convenience options used across widgets."
+
+---
+
+## Opinionated layout containers: PackFrame and GridFrame
+
+Tk’s geometry managers are powerful, but verbose:
+
+- you repeat the same spacing and sizing rules across many widgets
+- `pack` and `grid` require different mental models and options
+- small inconsistencies (padding, sticky/anchor, expand/fill) accumulate
+
+ttkbootstrap provides two *opinionated* containers that make layout intent explicit and consistent:
+
+- **PackFrame** — an opinionated “row/column” pack container with a `direction` and a `gap`
+- **GridFrame** — an opinionated grid container with `rows`, `columns`, and `gap` rules
+
+The goal is not to replace Tk’s geometry managers — it’s to make **common layouts faster** and more consistent.
+
+!!! link "See [PackFrame](../widgets/layout/packframe.md) and [GridFrame](../widgets/layout/gridframe.md) for the full usage and examples."
+
+### When should you use them?
+
+- **Use PackFrame** for app-level structure and simple stacking:
+  toolbars, sidebars, form sections, button rows, “card” content.
+- **Use GridFrame** for structured alignment:
+  forms, settings panels, label/value rows, responsive column layouts.
+
+### When should you stick to `pack` / `grid` directly?
+
+- when you’re porting an existing Tk layout and don’t want to refactor yet
+- when you need geometry-manager features that are intentionally not surfaced by the opinionated container
+- when you’re doing something highly custom and explicit control is clearer than convenience
+
+A good adoption path is:
+
+1. Start with `Frame` + `pack/grid` (familiar and explicit).
+2. Introduce `PackFrame` / `GridFrame` where repetition appears.
+3. Make them your default for new screens once the team is comfortable.
 
 ---
 
@@ -139,10 +126,11 @@ Nested containers are normal and expected.
 
 However:
 
-- deep nesting increases layout complexity
-- excessive hierarchy can obscure intent
+- deep nesting increases layout cost
+- complex hierarchies are harder to reason about
 
-Aim for **logical sections**, not minimal widget count.
+Balance clarity with simplicity. A useful rule of thumb is to nest to express a meaningful region boundary:
+header/content/footer, left/nav/content/right, form section, etc.
 
 ---
 
@@ -150,58 +138,45 @@ Aim for **logical sections**, not minimal widget count.
 
 Scrolling is a **container responsibility**.
 
-Scrollable containers:
+A scroll container should:
 
-- manage viewport and content size
+- manage viewport vs content size
 - coordinate scrollbars
-- adapt to dynamic content
+- provide consistent mouse wheel behavior
+- keep scroll behavior out of child widgets
 
-Widgets inside scroll containers should **not** manage scrolling themselves.
+### ScrollView
 
----
+`ScrollView` is a canvas-based scrollable container intended for **widget content** (not a text editor or tree).
+It hosts **one child widget** (typically a `Frame` that contains your content), and it extends scrolling to all
+descendants by injecting a custom bindtag.
 
-## Container lifecycle
+Key behaviors:
 
-Containers follow the normal widget lifecycle:
+- Scroll direction: `vertical`, `horizontal`, or `both`
+- Scrollbar visibility: `always`, `never`, `on-hover`, or `on-scroll`
+- Scrollbars only show when content overflows the viewport
+- Mouse wheel works on all descendants (including dynamically added widgets)
+- Shift+MouseWheel scrolls horizontally on platforms that support it
 
-- creation
-- layout
-- realization
-- destruction
-
-Layout effects are not final until the event loop runs.
-
-Avoid querying size or position too early.
-
----
-
-## ttkbootstrap guidance
-
-ttkbootstrap promotes:
-
-- expressing layout intent at the container level
-- centralizing spacing and alignment
-- isolating scrolling behavior
-- avoiding layout logic inside leaf widgets
-
-These patterns reduce layout bugs and improve consistency.
+!!! link "See [ScrollView](../widgets/layout/scrollview.md) for recommended patterns and examples."
 
 ---
 
 ## Common pitfalls
 
-- using widgets as containers without intent
-- over-nesting layout hierarchies
-- mixing geometry managers in the same container
-- managing scrolling at the widget level
+- **Mixing geometry managers** inside the same parent container (`pack` and `grid` together)
+- **Over-nesting** without a clear region boundary
+- **Spacing by accident** (random padding values sprinkled everywhere)
+- **Scrolling inside children** instead of treating it as a container/viewport concern
+- **Querying sizes too early** (before the event loop has realized the layout)
 
-Understanding container responsibility helps avoid these issues.
+!!! link "See [Platform → Widget Lifecycle](../platform/widget-lifecycle.md) for why widget sizes are not reliable until realization."
 
 ---
 
 ## Next steps
 
-- See **Spacing** for padding, margins, and gaps
-- See **Scrolling** for scroll container behavior
-- See **Widgets → Layout** for container widgets
-- See **Platform → Geometry & Layout** for underlying mechanics
+- Read **Spacing** for how padding/margins should be applied consistently.
+- Read **Scrolling** for scroll patterns and recommendations.
+- Read **Platform → Geometry & Layout** for the underlying Tk mechanics.

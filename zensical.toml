@@ -16,79 +16,6 @@ nav = [
         { "Quick Start" = "getting-started/quick-start.md" },
         { "Project Structure" = "getting-started/project-structure.md" },
     ] },
-    { "Platform" = [
-        { "Overview" = "platform/index.md" },
-        { "Fundamentals" = [
-            { "Tk vs ttk" = "platform/tk-vs-ttk.md" },
-            { "Event Loop" = "platform/event-loop.md" },
-            { "Events & Bindings" = "platform/events-and-bindings.md" },
-            { "Geometry & Layout" = "platform/geometry-and-layout.md" },
-            { "Widget Lifecycle" = "platform/widget-lifecycle.md" },
-        ] },
-        { "Styling Internals" = [
-            { "ttk Styles & Elements" = "platform/ttk-styles-elements.md" },
-        ] },
-        { "Windows" = [
-            { "Windows" = "platform/windows.md" },
-        ] },
-        { "Rendering" = [
-            { "Images & DPI" = "platform/images-and-dpi.md" },
-        ] },
-        { "Operations" = [
-            { "Performance" = "platform/performance.md" },
-            { "Debugging" = "platform/debugging.md" },
-        ] },
-    ] },
-    { "Capabilities" = [
-        { "Overview" = "capabilities/index.md" },
-        { "Signals & Events" = [
-            { "Overview" = "capabilities/signals/index.md" },
-            { "Signals" = "capabilities/signals/signals.md" },
-            { "Callbacks" = "capabilities/signals/callbacks.md" },
-            { "Virtual Events" = "capabilities/signals/virtual-events.md" },
-        ] },
-        { "Layout" = [
-            { "Overview" = "capabilities/layout/index.md" },
-            { "Containers" = "capabilities/layout/containers.md" },
-            { "Spacing" = "capabilities/layout/spacing.md" },
-            { "Scrolling" = "capabilities/layout/scrolling.md" },
-        ] },
-        { "Validation" = [
-            { "Overview" = "capabilities/validation/index.md" },
-            { "Rules" = "capabilities/validation/rules.md" },
-            { "Results" = "capabilities/validation/results.md" },
-        ] },
-        { "Icons & Images" = [
-            { "Overview" = "capabilities/icons/index.md" },
-            { "Icons" = "capabilities/icons/icons.md" },
-            { "Images" = "capabilities/icons/images.md" },
-        ] },
-        { "Layout Properties" = "capabilities/layout-props.md" },
-        { "State & Interaction" = "capabilities/state-and-interaction.md" },
-        { "Configuration" = "capabilities/configuration.md" },
-        { "Localization" = "capabilities/localization.md" },
-    ] },
-    { "Design System" = [
-        { "Overview" = "design-system/index.md" },
-        { "Colors" = "design-system/colors.md" },
-        { "Variants" = "design-system/variants.md" },
-        { "Typography" = "design-system/typography.md" },
-        { "Icons" = "design-system/icons.md" },
-        { "Custom Themes" = "design-system/custom-themes.md" },
-    ] },
-    { "Build" = [
-        { "Overview" = "build/index.md" },
-        { "App Runtime" = "build/app-runtime.md" },
-        { "App Configuration" = "build/app-configuration.md" },
-    ] },
-    { "Cookbook" = [
-        { "Overview" = "cookbook/index.md" },
-        { "Theming" = "cookbook/theming.md" },
-        { "Toolbars" = "cookbook/toolbars.md" },
-        { "Forms" = "cookbook/forms.md" },
-        { "Dialogs" = "cookbook/dialogs.md" },
-        { "Tables & Lists" = "cookbook/tables-and-lists.md" },
-    ] },
     { "Widgets" = [
         { "Overview" = "widgets/index.md" },
         { "Actions" = [
@@ -174,6 +101,79 @@ nav = [
             { "Spinbox" = "widgets/primitives/spinbox.md" },
             { "Text" = "widgets/primitives/text.md" },
         ] },
+    ] },
+    { "Guides" = [
+        { "Overview" = "guides/index.md" },
+        { "App Structure" = "guides/app-structure.md" },
+        { "Layout" = "guides/layout.md" },
+        { "Reactivity" = "guides/reactivity.md" },
+        { "Localization" = "guides/localization.md" },
+        { "Styling" = "guides/styling.md" },
+    ] },
+    { "Design System" = [
+        { "Overview" = "design-system/index.md" },
+        { "Colors" = "design-system/colors.md" },
+        { "Variants" = "design-system/variants.md" },
+        { "Typography" = "design-system/typography.md" },
+        { "Icons" = "design-system/icons.md" },
+        { "Custom Themes" = "design-system/custom-themes.md" },
+    ] },
+    { "Platform" = [
+        { "Overview" = "platform/index.md" },
+        { "Fundamentals" = [
+            { "Tk vs ttk" = "platform/tk-vs-ttk.md" },
+            { "Event Loop" = "platform/event-loop.md" },
+            { "Events & Bindings" = "platform/events-and-bindings.md" },
+            { "Geometry & Layout" = "platform/geometry-and-layout.md" },
+            { "Widget Lifecycle" = "platform/widget-lifecycle.md" },
+        ] },
+        { "Styling Internals" = [
+            { "ttk Styles & Elements" = "platform/ttk-styles-elements.md" },
+        ] },
+        { "Windows" = [
+            { "Windows" = "platform/windows.md" },
+        ] },
+        { "Rendering" = [
+            { "Images & DPI" = "platform/images-and-dpi.md" },
+        ] },
+        { "Operations" = [
+            { "Performance" = "platform/performance.md" },
+            { "Debugging" = "platform/debugging.md" },
+        ] },
+    ] },
+    { "Capabilities" = [
+        { "Overview" = "capabilities/index.md" },
+        { "Signals & Events" = [
+            { "Overview" = "capabilities/signals/index.md" },
+            { "Signals" = "capabilities/signals/signals.md" },
+            { "Callbacks" = "capabilities/signals/callbacks.md" },
+            { "Virtual Events" = "capabilities/signals/virtual-events.md" },
+        ] },
+        { "Layout" = [
+            { "Overview" = "capabilities/layout/index.md" },
+            { "Containers" = "capabilities/layout/containers.md" },
+            { "Spacing" = "capabilities/layout/spacing.md" },
+            { "Scrolling" = "capabilities/layout/scrolling.md" },
+        ] },
+        { "Validation" = [
+            { "Overview" = "capabilities/validation/index.md" },
+            { "Rules" = "capabilities/validation/rules.md" },
+            { "Results" = "capabilities/validation/results.md" },
+        ] },
+        { "Icons & Images" = [
+            { "Overview" = "capabilities/icons/index.md" },
+            { "Icons" = "capabilities/icons/icons.md" },
+            { "Images" = "capabilities/icons/images.md" },
+        ] },
+        { "Layout Properties" = "capabilities/layout-props.md" },
+        { "State & Interaction" = "capabilities/state-and-interaction.md" },
+        { "Configuration" = "capabilities/configuration.md" },
+        { "Localization" = "capabilities/localization.md" },
+    ] },
+    { "Build" = [
+        { "Overview" = "build/index.md" },
+        { "App Runtime" = "build/app-runtime.md" },
+        { "App Configuration" = "build/app-configuration.md" },
     ] },
     { "API Reference" = [
         { "Overview" = "reference/index.md" },
