@@ -1,47 +1,4 @@
 ---
-
-## Framework integration
-
-### Signals & events
-
-Widgets participate in ttkbootstrap’s reactive model.
-
-- **Signals** represent a widget’s **value/state** and are built on **Tk variables** with a modern subscription API.
-
-- **Events** (including virtual events) represent **interactions and moments** (click, commit, focus, selection changed).
-
-Signals and events are complementary: use signals for state flow and composition, and use events when you need
-interaction-level integration.
-
-!!! link "See also: [Signals](../../capabilities/signals.md), [Virtual Events](../../capabilities/virtual-events.md), [Callbacks](../../capabilities/callbacks.md)"
-
-### Design system
-
-Widgets are styled through ttkbootstrap’s design system using:
-
-- semantic colors via `bootstyle` (e.g., `primary`, `success`, `danger`)
-
-- variants (e.g., `outline`, `link`, `ghost` where supported)
-
-- consistent state visuals across themes
-
-!!! link "See also: [Colors](../../design-system/colors.md), [Variants](../../design-system/variants.md)"
-
-### Layout properties
-
-Widgets support ttkbootstrap layout conveniences (when available) so they compose cleanly in modern layouts.
-
-!!! link "See also: [Layout Properties](../../capabilities/layout-props.md)"
-
-### Localization
-
-Text labels can be localized in localized applications.
-
-!!! link "See also: [Localization](../../capabilities/localization.md)"
-
-
----
-
 title: Button
 ---
 
@@ -75,11 +32,8 @@ Use a button when the user needs to **trigger an action immediately**, such as s
 ### Consider a different control when…
 
 - Use **CheckButton / CheckToggle** for persistent on/off state.
-
 - Use **RadioButton / RadioGroup** for choosing one option from a set.
-
 - Use **ToggleGroup** for compact single or multi selection (segmented control).
-
 - Use **MenuButton / DropdownButton** when the action reveals a menu of choices.
 
 ---
@@ -87,6 +41,8 @@ Use a button when the user needs to **trigger an action immediately**, such as s
 ## Appearance
 
 Buttons are styled using **semantic colors** and **variant** tokens. Variants describe visual weight and interaction style, not meaning.
+
+!!! link "See [Design System → Variants](../../design-system/variants.md) for how variants map consistently across widgets."
 
 ### Colors
 
@@ -134,7 +90,7 @@ ttk.Button(app, text="Outline", bootstyle="outline")
 ```
 
 **Ghost**  
-Use for low-emphasis, contextual actions embedded in panels, lists, or toolbars where the UI should stay visually quiet until hover/press.
+Use for low-emphasis, contextual actions embedded in panels, lists, or toolbars where the UI should stay visually quiet until hover or press.
 
 <figure markdown>
 ![ghost button](../../assets/dark/widgets-button-ghost.png#only-dark)
@@ -175,7 +131,8 @@ ttk.Button(app, text="Text", bootstyle="text")
 
 ### Using icons
 
-Icons are integrated into the button widget and provide theme-aware and state-enabled icons.
+Icons are integrated into the button widget and provide theme-aware and state-enabled icons. The `compound` controls
+where the icon/image is positioned relative to the label, and this is `"left"` by default.
 
 <figure markdown>
 ![icon button](../../assets/dark/widgets-button-icons.png#only-dark)
@@ -183,18 +140,19 @@ Icons are integrated into the button widget and provide theme-aware and state-en
 </figure>
 
 ```python
+# button with label & icon
 ttk.Button(app, text="Settings", icon="gear").pack(pady=6)
+
+# icon-only button
+ttk.Button(app, icon="gear", icon_only=True).pack(pady=6)
 ```
 
-!!! note "Default icon position"
-    When an icon is used, the default `compound` is set to `left`. The `compound` option controls where the icon is
-    positioned relative to the text. You can use other values: `left`, `right`, `top`, `bottom`, `center`.
+!!! link "See [Icons & Images](../../capabilities/icons.md) for icon sizing, DPI handling, and recoloring behavior."
 
-!!! tip "Icon-only buttons"
-    Use `icon_only=True` when you are only showing an icon. This removes extra padding reserved for text and uses a slightly larger default icon size.
 
-!!! tip "Customizing icons"
-    You can pass an icon spec instead of a string to customize the color, size, and state of the icon. See **Guides → Design System → Icons**.
+!!! tip "Custom Icons"
+    You can pass an icon spec instead of a string to customize the color, size, and state of the icon.
+    See [Design System → Icons](../../design-system/icons.md).
 
 ### Disable until ready (`state`)
 
@@ -219,44 +177,41 @@ ttk.Button(app, text="Exit", underline=1).pack(pady=6)
 
 ## Behavior
 
-Buttons support keyboard focus and activation. (For app-wide focus ring rules and accessibility guidance, see your Guides section.)
+Buttons support keyboard focus and activation.
+
+- **Tab / Shift+Tab** moves focus.
+- **Space / Enter** activates the button.
+- Disabled buttons do not receive focus or emit events.
+
+!!! link "See [State & Interaction](../../capabilities/state-and-interaction.md) for focus, hover, and disabled behavior across widgets."
 
 ---
 
-## Localization & reactivity
+## Localization
 
-If your app uses signals, you can bind the label text to a signal so it updates automatically:
+If your application localization is enabled, you can pass a **message token** as `text`. The displayed label is resolved
+through the active message catalog.
 
 ```python
-# Example only — use your real signal creation API
-label = ttk.Signal("Start")  # pseudo-code
-ttk.Button(app, bootstyle="primary", textsignal=label).pack(padx=20, pady=20)
+ttk.Button(app, text="button.save").pack()
+```
 
-# later…
+!!! link "See [Localization](../../capabilities/localization.md) for how message tokens are resolved and how language switching works."
+
+---
+
+## Reactivity
+
+Use a signal when the label should update dynamically at runtime (for example, Start/Stop, Connect/Disconnect).
+
+```python
+label = ttk.Signal("Start")
+ttk.Button(app, textsignal=label).pack()
+
 label.set("Stop")
 ```
 
-Localization behavior is controlled by the global application settings and the widget `localize` option. See **Guides → Internationalization → Localization** for the full model.
-
----
-
-## Related widgets
-
-- **CheckButton** — boolean toggle (on/off)
-
-- **RadioButton** — single selection in a group
-
-- **MenuButton** / **DropdownButton** — button that opens a menu
-
-- **Dialog** / **MessageDialog** — action buttons inside modal flows
-
----
-
-## Reference
-
-- **API Reference:** `ttkbootstrap.Button`
-
-- **Related guides:** Design System → Variants, Design System → Icons, Events & Signals → Signals, Internationalization → Localization
+!!! link "See [Signals](../../capabilities/signals.md) for how signal-backed widget values and text updates work."
 
 ---
 
@@ -264,17 +219,22 @@ Localization behavior is controlled by the global application settings and the w
 
 ### Related widgets
 
-- [ButtonGroup](buttongroup.md)
-
-- [ContextMenu](contextmenu.md)
-
+- [CheckButton](../selection/checkbutton.md)
+- [RadioButton](../selection/radiobutton.md)
+- [ToggleGroup](../selection/togglegroup.md)
+- [MenuButton](menubutton.md)
 - [DropdownButton](dropdownbutton.md)
+- [Dialog](../dialogs/dialog.md)
+- [MessageDialog](../dialogs/messagedialog.md)
 
 ### Framework concepts
 
+- [Design System → Variants](../../design-system/variants.md)
+- [Design System → Icons](../../design-system/icons.md)
+- [Icons & Imagery](../../capabilities/icons-and-imagery.md)
+- [Signals](../../capabilities/signals.md)
+- [Localization](../../capabilities/localization.md)
 - [State & Interaction](../../capabilities/state-and-interaction.md)
-
-- [Configuration](../../capabilities/configuration.md)
 
 ### API reference
 
