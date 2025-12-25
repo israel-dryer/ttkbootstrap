@@ -142,4 +142,4 @@ pane.pack_propagate(False)
 
 ### API reference
 
-- **API Reference:** `ttkbootstrap.Frame`
+- [`ttkbootstrap.Frame`](../../reference/widgets/Frame.md)

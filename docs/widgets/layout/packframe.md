@@ -221,4 +221,4 @@ widgets = stack.children
 
 ### API reference
 
-- **API Reference:** `ttkbootstrap.PackFrame`
+- [`ttkbootstrap.PackFrame`](../../reference/widgets/PackFrame.md)

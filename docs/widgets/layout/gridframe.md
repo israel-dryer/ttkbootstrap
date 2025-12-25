@@ -264,4 +264,4 @@ widgets = grid.children
 
 ### API reference
 
-- **API Reference:** `ttkbootstrap.GridFrame`
+- [`ttkbootstrap.GridFrame`](../../reference/widgets/GridFrame.md)
