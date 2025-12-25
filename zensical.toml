@@ -109,6 +109,7 @@ nav = [
         { "Reactivity" = "guides/reactivity.md" },
         { "Typography" = "guides/typography.md" },
         { "Styling" = "guides/styling.md" },
+        { "Theming" = "guides/theming.md" },
         { "Localization" = "guides/localization.md" },
     ] },
     { "Design System" = [

@@ -62,6 +62,10 @@ Using font tokens, modifiers, and the Font class for consistent text styling.
 
 Working with the design system—semantic colors, variants, and consistent styling across widgets.
 
+### [Theming](theming.md)
+
+How theme palettes work, switching themes at runtime, and creating custom themes.
+
 ### [Localization](localization.md)
 
 Making applications language-aware with message catalogs and locale-aware formatting.
