@@ -7,6 +7,7 @@ title: SelectionWidgetName
 1–2 paragraphs describing:
 
 - what kind of selection this control represents (single, multiple, tri-state, from-a-list)
+
 - what value it produces and how it is typically used (settings, filters, preferences)
 
 If relevant, briefly contrast it with closely related selection controls.
@@ -18,17 +19,21 @@ If relevant, briefly contrast it with closely related selection controls.
 **Value model**
 
 - Whether choices are independent or mutually exclusive
+
 - What value type is produced (`bool`, `str`, `set`, etc.)
+
 - When the value is considered committed
 
 **Signals & Events**
 
 - Preferred binding (`signal=...`) when supported
+
 - Change events and virtual events
 
 **Design System**
 
 - Variant expectations (checkbox vs toggle, radio vs button-style radio)
+
 - How states are represented visually (selected, active, disabled)
 
 **Localization**
@@ -42,7 +47,9 @@ If relevant, briefly contrast it with closely related selection controls.
 Explain the selection model in plain terms:
 
 - whether choices are **independent** or **mutually exclusive**
+
 - how many values can be selected
+
 - whether the control represents a boolean, enum, set, or list-based choice
 
 ---
@@ -52,7 +59,9 @@ Explain the selection model in plain terms:
 Show a minimal, runnable example demonstrating:
 
 - creating the widget
+
 - setting an initial selection (`value`, `default`, etc.)
+
 - packing or gridding it
 
 ```python
@@ -68,7 +77,9 @@ If the widget supports visual or behavioral variants, document them here.
 Examples:
 
 - checkbox vs toggle
+
 - radio vs button-style radio
+
 - dropdown vs inline list
 
 Use a short example per variant.
@@ -80,8 +91,11 @@ Use a short example per variant.
 Describe the value model clearly:
 
 - what the value represents
+
 - its type (`bool`, `str`, `set`, etc.)
+
 - default value semantics
+
 - special values (e.g., `None` for indeterminate)
 
 Explain when the value is considered committed.
@@ -93,6 +107,7 @@ Explain when the value is considered committed.
 Explain state binding options:
 
 - preferred reactive binding (`signal=...`)
+
 - Tk variables (`variable=...`, `textvariable=...`) as alternatives
 
 Show a concise two-way binding example.
@@ -104,9 +119,13 @@ Show a concise two-way binding example.
 Curated options only, such as:
 
 - `items` (for list-based selection)
+
 - `value` / `default`
+
 - `state` / `readonly`
+
 - `command`
+
 - widget-specific options (search, allow_custom_values, onvalue/offvalue)
 
 ---
@@ -116,8 +135,11 @@ Curated options only, such as:
 Describe interaction behavior:
 
 - mouse and keyboard interaction
+
 - how selection changes are triggered
+
 - popup open/close behavior for dropdown-style controls
+
 - group behavior (for radio groups)
 
 ---
@@ -127,6 +149,7 @@ Describe interaction behavior:
 Document selection-related events:
 
 - committed change (`on_changed`, `<<Changed>>`)
+
 - live input (`on_input`, `<<Input>>`) when applicable
 
 ```python
@@ -143,8 +166,11 @@ w.on_changed(on_changed)
 Describe common constraints:
 
 - enforcing valid options
+
 - tri-state or mixed-selection semantics
+
 - dynamic option lists
+
 - cross-field selection rules
 
 ---
@@ -162,7 +188,9 @@ Show a few representative examples rather than an exhaustive list.
 Explain how labels and option text participate in localization:
 
 - default behavior
+
 - explicitly enabling/disabling localization
+
 - recommended key conventions
 
 ---
@@ -179,20 +207,24 @@ Prefer OtherWidget when:
 
 ---
 
-## See also
+## Additional resources
 
 **Related widgets**
 
 - **OtherSelectionWidget** — how it differs
+
 - **AnotherWidget** — complementary behavior
 
 **Framework concepts**
 
 - [Signals & Events](../../capabilities/signals/index.md)
+
 - [Localization](../../capabilities/localization.md)
+
 - [Validation](../../capabilities/validation.md)
 
 **API reference**
 
 - **API Reference:** `ttkbootstrap.SelectionWidgetName`
+
 - **Related guides:** Selection, Forms, Localization
