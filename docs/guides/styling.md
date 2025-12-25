@@ -203,49 +203,20 @@ ttk.CheckButton(app, text="Notifications", bootstyle="success-toggle")
 
 ## Themes
 
-Themes define **how tokens become colors**.
-
-### Built-in Themes
-
-ttkbootstrap includes many themes:
-
-**Light themes:** `cosmo`, `flatly`, `journal`, `litera`, `lumen`, `minty`, `pulse`, `sandstone`, `united`, `yeti`
-
-**Dark themes:** `cyborg`, `darkly`, `solar`, `superhero`, `vapor`
-
-### Setting a Theme
+Themes define **how tokens become colors**. The same `bootstyle="primary"` resolves to different colors depending on the active theme.
 
 ```python
-app = ttk.App(theme="darkly")
-```
+# Set theme at startup
+app = ttk.App(theme="ocean-dark")
 
-### Changing at Runtime
-
-```python
+# Switch themes at runtime
 from ttkbootstrap import set_theme, toggle_theme
-
-# Set specific theme
-set_theme("superhero")
-
-# Toggle between light and dark variants
-toggle_theme()
+set_theme("forest-light")
+toggle_theme()  # Toggle between light and dark
 ```
 
-All widgets update automatically.
-
-### Theme-Aware Styling
-
-Semantic tokens adapt to the theme:
-
-```python
-# "primary" is blue in cosmo, teal in minty
-ttk.Button(app, text="Go", bootstyle="primary")
-```
-
-Same code, different appearance per theme.
-
-!!! link "Custom Themes"
-    See [Design System → Custom Themes](../design-system/custom-themes.md) for creating themes.
+!!! link "Theming Guide"
+    See [Theming](theming.md) for theme structure, built-in themes, and creating custom themes.
 
 ---
 
