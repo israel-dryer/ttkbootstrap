@@ -1,4 +1,47 @@
 ---
+
+## Framework integration
+
+### Signals & events
+
+Widgets participate in ttkbootstrap’s reactive model.
+
+- **Signals** represent a widget’s **value/state** and are built on **Tk variables** with a modern subscription API.
+
+- **Events** (including virtual events) represent **interactions and moments** (click, commit, focus, selection changed).
+
+Signals and events are complementary: use signals for state flow and composition, and use events when you need
+interaction-level integration.
+
+!!! link "See also: [Signals](../../capabilities/signals.md), [Virtual Events](../../capabilities/virtual-events.md), [Callbacks](../../capabilities/callbacks.md)"
+
+### Design system
+
+Widgets are styled through ttkbootstrap’s design system using:
+
+- semantic colors via `bootstyle` (e.g., `primary`, `success`, `danger`)
+
+- variants (e.g., `outline`, `link`, `ghost` where supported)
+
+- consistent state visuals across themes
+
+!!! link "See also: [Colors](../../design-system/colors.md), [Variants](../../design-system/variants.md)"
+
+### Layout properties
+
+Widgets support ttkbootstrap layout conveniences (when available) so they compose cleanly in modern layouts.
+
+!!! link "See also: [Layout Properties](../../capabilities/layout-props.md)"
+
+### Localization
+
+Text labels can be localized in localized applications.
+
+!!! link "See also: [Localization](../../capabilities/localization.md)"
+
+
+---
+
 title: Toast
 ---
 
@@ -31,8 +74,11 @@ app.mainloop()
 ## Behavior
 
 - Non-modal (does not block)
+
 - Auto-dismiss after a short duration (typically configurable)
+
 - Usually stacks if multiple toasts are shown
+
 - Click-to-dismiss is common (if supported)
 
 ---
@@ -40,8 +86,11 @@ app.mainloop()
 ## Common options
 
 - `title`
+
 - `message`
+
 - `duration` (auto-hide delay)
+
 - `bootstyle` / intent (info/success/warning/error)
 
 ---
@@ -51,6 +100,7 @@ app.mainloop()
 Use Toast when:
 
 - feedback is helpful but not critical
+
 - the user should not be interrupted
 
 Prefer **MessageBox** when:
@@ -66,6 +116,7 @@ Prefer inline messaging when:
 ## Related widgets
 
 - **Tooltip** — contextual hover help
+
 - **MessageBox** — modal alerts and confirmations
 
 ---
@@ -73,3 +124,21 @@ Prefer inline messaging when:
 ## Reference
 
 - **API Reference:** `ttkbootstrap.Toast`
+
+---
+
+## Additional resources
+
+### Related widgets
+
+- [ToolTip](tooltip.md)
+
+### Framework concepts
+
+- [State & Interaction](../../capabilities/state-and-interaction.md)
+
+- [Configuration](../../capabilities/configuration.md)
+
+### API reference
+
+- [`ttkbootstrap.Toast`](../../reference/widgets/Toast.md)

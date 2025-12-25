@@ -1,4 +1,47 @@
 ---
+
+## Framework integration
+
+### Signals & events
+
+Widgets participate in ttkbootstrap’s reactive model.
+
+- **Signals** represent a widget’s **value/state** and are built on **Tk variables** with a modern subscription API.
+
+- **Events** (including virtual events) represent **interactions and moments** (click, commit, focus, selection changed).
+
+Signals and events are complementary: use signals for state flow and composition, and use events when you need
+interaction-level integration.
+
+!!! link "See also: [Signals](../../capabilities/signals.md), [Virtual Events](../../capabilities/virtual-events.md), [Callbacks](../../capabilities/callbacks.md)"
+
+### Design system
+
+Widgets are styled through ttkbootstrap’s design system using:
+
+- semantic colors via `bootstyle` (e.g., `primary`, `success`, `danger`)
+
+- variants (e.g., `outline`, `link`, `ghost` where supported)
+
+- consistent state visuals across themes
+
+!!! link "See also: [Colors](../../design-system/colors.md), [Variants](../../design-system/variants.md)"
+
+### Layout properties
+
+Widgets support ttkbootstrap layout conveniences (when available) so they compose cleanly in modern layouts.
+
+!!! link "See also: [Layout Properties](../../capabilities/layout-props.md)"
+
+### Localization
+
+Text labels can be localized in localized applications.
+
+!!! link "See also: [Localization](../../capabilities/localization.md)"
+
+
+---
+
 title: DateDialog
 ---
 
@@ -48,6 +91,7 @@ app.mainloop()
 A date dialog produces a single **committed date** (or no value if cancelled).
 
 - **No live typing** is required (though some implementations may allow it)
+
 - The chosen date is committed when the user confirms (OK / Apply)
 
 ---
@@ -85,9 +129,13 @@ Dialog date display should follow your app’s localization settings.
 ## Behavior
 
 - Opens as a **modal** window (blocks interaction with the parent until closed)
+
 - OK commits the current selection
+
 - Cancel closes without committing
+
 - Escape typically cancels
+
 - Enter typically confirms (depends on focus and implementation)
 
 ---
@@ -97,6 +145,7 @@ Dialog date display should follow your app’s localization settings.
 Dialogs are usually handled via return value, but some implementations emit events such as:
 
 - `<<Changed>>` (when selection changes inside the dialog)
+
 - `<<Accepted>>` / `<<Cancelled>>`
 
 If your dialog supports events, treat them as secondary to the `.show()` result.
@@ -108,6 +157,7 @@ If your dialog supports events, treat them as secondary to the `.show()` result.
 Use constraints when:
 
 - the date must be within an allowed window
+
 - you want to disable past/future dates
 
 Use validation when:
@@ -121,13 +171,17 @@ Use validation when:
 Use `DateDialog` when:
 
 - date selection is a one-time action (pick then proceed)
+
 - you want an explicit confirm/cancel flow
+
 - the date picker needs more space than an inline popup
 
 Prefer **DateEntry** when:
 
 - date is part of a form
+
 - users may want to type/paste a date
+
 - you want inline validation and messaging
 
 ---
@@ -135,7 +189,9 @@ Prefer **DateEntry** when:
 ## Related widgets
 
 - **DateEntry** — inline date field with popup picker
+
 - **TimeEntry** — time-of-day input
+
 - **MessageBox** — simple modal feedback dialogs
 
 ---
@@ -143,3 +199,25 @@ Prefer **DateEntry** when:
 ## Reference
 
 - **API Reference:** `ttkbootstrap.DateDialog`
+
+---
+
+## Additional resources
+
+### Related widgets
+
+- [ColorChooser](colorchooser.md)
+
+- [ColorDropper](colordropper.md)
+
+- [Dialog](dialog.md)
+
+### Framework concepts
+
+- [State & Interaction](../../capabilities/state-and-interaction.md)
+
+- [Configuration](../../capabilities/configuration.md)
+
+### API reference
+
+- [`ttkbootstrap.DateDialog`](../../reference/widgets/DateDialog.md)

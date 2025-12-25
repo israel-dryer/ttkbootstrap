@@ -1,4 +1,47 @@
 ---
+
+## Framework integration
+
+### Signals & events
+
+Widgets participate in ttkbootstrap’s reactive model.
+
+- **Signals** represent a widget’s **value/state** and are built on **Tk variables** with a modern subscription API.
+
+- **Events** (including virtual events) represent **interactions and moments** (click, commit, focus, selection changed).
+
+Signals and events are complementary: use signals for state flow and composition, and use events when you need
+interaction-level integration.
+
+!!! link "See also: [Signals](../../capabilities/signals.md), [Virtual Events](../../capabilities/virtual-events.md), [Callbacks](../../capabilities/callbacks.md)"
+
+### Design system
+
+Widgets are styled through ttkbootstrap’s design system using:
+
+- semantic colors via `bootstyle` (e.g., `primary`, `success`, `danger`)
+
+- variants (e.g., `outline`, `link`, `ghost` where supported)
+
+- consistent state visuals across themes
+
+!!! link "See also: [Colors](../../design-system/colors.md), [Variants](../../design-system/variants.md)"
+
+### Layout properties
+
+Widgets support ttkbootstrap layout conveniences (when available) so they compose cleanly in modern layouts.
+
+!!! link "See also: [Layout Properties](../../capabilities/layout-props.md)"
+
+### Localization
+
+Text labels can be localized in localized applications.
+
+!!! link "See also: [Localization](../../capabilities/localization.md)"
+
+
+---
+
 title: ColorDropper
 ---
 
@@ -30,6 +73,7 @@ app.mainloop()
 A color dropper produces:
 
 - the sampled color value (hex/rgb), or
+
 - `None` if cancelled
 
 ---
@@ -39,8 +83,11 @@ A color dropper produces:
 Common interaction pattern:
 
 - activating the dropper enters “pick mode”
+
 - moving the cursor previews the sampled color (implementation-dependent)
+
 - clicking commits the sample
+
 - Escape cancels
 
 ---
@@ -50,6 +97,7 @@ Common interaction pattern:
 Use `ColorDropper` when:
 
 - users need to match a color already on screen
+
 - sampling is faster than choosing from palettes
 
 Prefer **ColorChooser** when:
@@ -61,6 +109,7 @@ Prefer **ColorChooser** when:
 ## Related widgets
 
 - **ColorChooser** — palette-based color dialog
+
 - **Dialog** — base dialog API
 
 ---
@@ -68,3 +117,25 @@ Prefer **ColorChooser** when:
 ## Reference
 
 - **API Reference:** `ttkbootstrap.ColorDropper`
+
+---
+
+## Additional resources
+
+### Related widgets
+
+- [ColorChooser](colorchooser.md)
+
+- [DateDialog](datedialog.md)
+
+- [Dialog](dialog.md)
+
+### Framework concepts
+
+- [State & Interaction](../../capabilities/state-and-interaction.md)
+
+- [Configuration](../../capabilities/configuration.md)
+
+### API reference
+
+- [`ttkbootstrap.ColorDropper`](../../reference/widgets/ColorDropper.md)

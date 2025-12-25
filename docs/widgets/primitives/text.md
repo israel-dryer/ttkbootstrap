@@ -1,4 +1,47 @@
 ---
+
+## Framework integration
+
+### Signals & events
+
+Widgets participate in ttkbootstrap’s reactive model.
+
+- **Signals** represent a widget’s **value/state** and are built on **Tk variables** with a modern subscription API.
+
+- **Events** (including virtual events) represent **interactions and moments** (click, commit, focus, selection changed).
+
+Signals and events are complementary: use signals for state flow and composition, and use events when you need
+interaction-level integration.
+
+!!! link "See also: [Signals](../../capabilities/signals.md), [Virtual Events](../../capabilities/virtual-events.md), [Callbacks](../../capabilities/callbacks.md)"
+
+### Design system
+
+Widgets are styled through ttkbootstrap’s design system using:
+
+- semantic colors via `bootstyle` (e.g., `primary`, `success`, `danger`)
+
+- variants (e.g., `outline`, `link`, `ghost` where supported)
+
+- consistent state visuals across themes
+
+!!! link "See also: [Colors](../../design-system/colors.md), [Variants](../../design-system/variants.md)"
+
+### Layout properties
+
+Widgets support ttkbootstrap layout conveniences (when available) so they compose cleanly in modern layouts.
+
+!!! link "See also: [Layout Properties](../../capabilities/layout-props.md)"
+
+### Localization
+
+Text labels can be localized in localized applications.
+
+!!! link "See also: [Localization](../../capabilities/localization.md)"
+
+
+---
+
 title: Text
 ---
 
@@ -9,8 +52,11 @@ title: Text
 It supports rich behavior that typical entry widgets don’t:
 
 - multiple lines with wrapping and indentation
+
 - **tags** for styling and interaction (links, highlights, code blocks)
+
 - embedded **images** and **widgets**
+
 - undo/redo, search, marks, and selections
 
 ttkbootstrap exposes `Text` as a first-class widget so you can build editors, logs, and rich text UIs with a consistent theme and a clear set of usage patterns.
@@ -50,7 +96,9 @@ app.mainloop()
 ### Size and wrapping
 
 - `width` — number of **characters** (int)
+
 - `height` — number of **lines** (int)
+
 - `wrap` — `"none"`, `"char"`, `"word"`
 
 ```python
@@ -64,8 +112,11 @@ ttk.Text(app, width=80, height=24, wrap="word")
 ### Editing and undo
 
 - `state` — `"normal"` or `"disabled"`
+
 - `undo` — enable undo/redo
+
 - `maxundo` — undo stack limit
+
 - `autoseparators` — automatically insert undo separators
 
 ```python
@@ -75,6 +126,7 @@ text = ttk.Text(app, undo=True, maxundo=200, autoseparators=True)
 ### Padding and paragraph spacing
 
 - `padx`, `pady` — internal padding
+
 - `spacing1`, `spacing2`, `spacing3` — spacing above/between/below lines
 
 ```python
@@ -86,8 +138,11 @@ ttk.Text(app, padx=10, pady=8, spacing1=2, spacing2=2, spacing3=2)
 These options matter most for light/dark theme consistency:
 
 - `background`, `foreground`
+
 - `insertbackground` (caret)
+
 - `selectbackground`, `selectforeground`
+
 - `inactiveselectbackground`
 
 If ttkbootstrap applies defaults, you can usually rely on them. If you manually override, set the full set so the control stays readable in both themes.
@@ -101,9 +156,13 @@ Many `Text` methods use **indices** instead of numeric positions.
 Common indices:
 
 - `"1.0"` — line 1, character 0 (start of content)
+
 - `"end"` — end of content (includes the trailing newline)
+
 - `"end-1c"` — end minus 1 character (commonly “real end”)
+
 - `"insert"` — current cursor position
+
 - `"sel.first"` / `"sel.last"` — selection range (when selection exists)
 
 Examples:
@@ -233,6 +292,7 @@ A common “gotcha” is that `Text` does not emit a simple `<<Changed>>` event 
 Two common approaches:
 
 - Bind key/mouse events (simple, but noisy)
+
 - Use the modified flag (`edit_modified`) and `<<Modified>>` pattern (more controlled)
 
 Example pattern:
@@ -252,7 +312,9 @@ text.edit_modified(False)
 ## Performance tips
 
 - Prefer **batch inserts** (insert a full chunk) over many tiny inserts.
+
 - Use tags to style ranges rather than rebuilding the widget contents.
+
 - For very large logs, consider truncating older content:
 
 ```python
@@ -273,7 +335,9 @@ def trim():
 Use `Text` when:
 
 - you need multi-line editing or display
+
 - you need tags (highlighting, link-like behavior, syntax coloring)
+
 - you need embedded images/widgets
 
 Prefer **ScrolledText** when:
@@ -289,9 +353,13 @@ Prefer **TextEntry** (and other Field widgets) when:
 ## Related widgets
 
 - **ScrolledText** — Text with built-in scrolling
+
 - **TextEntry** — Field-based single-line input
+
 - **Form** — spec-driven form builder (usually uses Field-based inputs)
+
 - **Scrollbar / ScrollView** — scrolling primitives
+
 - **Canvas** — drawing/virtualization primitive (often used for custom editors)
 
 ---
@@ -299,3 +367,25 @@ Prefer **TextEntry** (and other Field widgets) when:
 ## Reference
 
 - **API Reference:** `ttkbootstrap.Text` (Tkinter `tk.Text`)
+
+---
+
+## Additional resources
+
+### Related widgets
+
+- [Canvas](canvas.md)
+
+- [Combobox](combobox.md)
+
+- [Entry](entry.md)
+
+### Framework concepts
+
+- [State & Interaction](../../capabilities/state-and-interaction.md)
+
+- [Configuration](../../capabilities/configuration.md)
+
+### API reference
+
+- [`ttkbootstrap.Text`](../../reference/widgets/Text.md)

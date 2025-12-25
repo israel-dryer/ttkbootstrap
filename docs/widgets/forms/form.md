@@ -1,4 +1,47 @@
 ---
+
+## Framework integration
+
+### Signals & events
+
+Widgets participate in ttkbootstrap’s reactive model.
+
+- **Signals** represent a widget’s **value/state** and are built on **Tk variables** with a modern subscription API.
+
+- **Events** (including virtual events) represent **interactions and moments** (click, commit, focus, selection changed).
+
+Signals and events are complementary: use signals for state flow and composition, and use events when you need
+interaction-level integration.
+
+!!! link "See also: [Signals](../../capabilities/signals.md), [Virtual Events](../../capabilities/virtual-events.md), [Callbacks](../../capabilities/callbacks.md)"
+
+### Design system
+
+Widgets are styled through ttkbootstrap’s design system using:
+
+- semantic colors via `bootstyle` (e.g., `primary`, `success`, `danger`)
+
+- variants (e.g., `outline`, `link`, `ghost` where supported)
+
+- consistent state visuals across themes
+
+!!! link "See also: [Colors](../../design-system/colors.md), [Variants](../../design-system/variants.md)"
+
+### Layout properties
+
+Widgets support ttkbootstrap layout conveniences (when available) so they compose cleanly in modern layouts.
+
+!!! link "See also: [Layout Properties](../../capabilities/layout-props.md)"
+
+### Localization
+
+Text labels can be localized in localized applications.
+
+!!! link "See also: [Localization](../../capabilities/localization.md)"
+
+
+---
+
 title: Form
 ---
 
@@ -11,7 +54,9 @@ It makes it easy to build consistent data-entry UIs by composing the standard v2
 Use `Form` when you want:
 
 - a form layout generated from a spec (instead of manually wiring every widget)
+
 - consistent label/message/validation behavior across fields
+
 - a single place to read/write form data and run validation
 
 ---
@@ -21,8 +66,11 @@ Use `Form` when you want:
 A `Form` takes a list of field definitions (and optional layout/grouping instructions) and produces:
 
 - labeled field widgets (using your v2 field controls)
+
 - an internal data model (readable as a dict)
+
 - validation helpers and a consistent “submit” flow
+
 - optional grouping and tabs for larger forms
 
 This is a **builder/composite**: it does not replace your input widgets—it standardizes how they’re assembled and managed.
@@ -70,10 +118,15 @@ app.mainloop()
 A field item describes one value:
 
 - `key` — unique field key (used in `form.data`)
+
 - `label` — label text for the field
+
 - `editor` — what widget/editor to use
+
 - `value` — optional initial value
+
 - `required` / `validate` — validation options
+
 - `help` / `message` — optional helper text
 
 Example:
@@ -87,7 +140,9 @@ Example:
 Some editors accept additional options:
 
 - select-like editors: `items=[...]`
+
 - numeric editors: `min`, `max`, `step`, formatting options
+
 - date editors: `min_date`, `max_date`, formatting options
 
 ---
@@ -226,7 +281,9 @@ editor = form.editor("email")
 Use this to:
 
 - focus the first invalid field
+
 - dynamically enable/disable fields
+
 - update items for select fields
 
 ---
@@ -248,13 +305,17 @@ If your `Form` supports built-in footer buttons, use them for consistent layouts
 Use `Form` when:
 
 - you want to build forms from a spec
+
 - you need consistent layout + validation across many fields
+
 - the form structure changes dynamically (feature flags, permissions, metadata-driven UI)
 
 Prefer hand-built layouts when:
 
 - the form is small (1–3 fields)
+
 - the layout is highly custom or artistic
+
 - you need extremely bespoke widget composition per row
 
 Prefer `FormDialog` when:
@@ -266,8 +327,11 @@ Prefer `FormDialog` when:
 ## Related widgets
 
 - **TextEntry / NumericEntry / DateEntry / SelectBox** — the underlying field widgets
+
 - **FormDialog** — modal form flow
+
 - **PageStack** — multi-step (wizard) forms
+
 - **FilterDialog** — specialized form for filters
 
 ---
@@ -275,3 +339,21 @@ Prefer `FormDialog` when:
 ## Reference
 
 - **API Reference:** `ttkbootstrap.Form`
+
+---
+
+## Additional resources
+
+### Related widgets
+
+- _(None)_
+
+### Framework concepts
+
+- [State & Interaction](../../capabilities/state-and-interaction.md)
+
+- [Configuration](../../capabilities/configuration.md)
+
+### API reference
+
+- [`ttkbootstrap.Form`](../../reference/widgets/Form.md)

@@ -1,4 +1,47 @@
 ---
+
+## Framework integration
+
+### Signals & events
+
+Widgets participate in ttkbootstrap’s reactive model.
+
+- **Signals** represent a widget’s **value/state** and are built on **Tk variables** with a modern subscription API.
+
+- **Events** (including virtual events) represent **interactions and moments** (click, commit, focus, selection changed).
+
+Signals and events are complementary: use signals for state flow and composition, and use events when you need
+interaction-level integration.
+
+!!! link "See also: [Signals](../../capabilities/signals.md), [Virtual Events](../../capabilities/virtual-events.md), [Callbacks](../../capabilities/callbacks.md)"
+
+### Design system
+
+Widgets are styled through ttkbootstrap’s design system using:
+
+- semantic colors via `bootstyle` (e.g., `primary`, `success`, `danger`)
+
+- variants (e.g., `outline`, `link`, `ghost` where supported)
+
+- consistent state visuals across themes
+
+!!! link "See also: [Colors](../../design-system/colors.md), [Variants](../../design-system/variants.md)"
+
+### Layout properties
+
+Widgets support ttkbootstrap layout conveniences (when available) so they compose cleanly in modern layouts.
+
+!!! link "See also: [Layout Properties](../../capabilities/layout-props.md)"
+
+### Localization
+
+Text labels can be localized in localized applications.
+
+!!! link "See also: [Localization](../../capabilities/localization.md)"
+
+
+---
+
 title: RadioButton
 ---
 
@@ -20,7 +63,9 @@ Use `RadioButton` when all options are short and should be visible at once (sett
 A radio selection is defined by a **shared value** plus a distinct `value=` for each option:
 
 - each `RadioButton` represents one possible value
+
 - the selected option is the one whose `value` matches the shared **signal** or **variable**
+
 - only one option can be selected at a time
 
 ---
@@ -71,6 +116,7 @@ ttk.RadioToggle(app, text="List", signal=view, value="list")
 `RadioButton` uses a **single shared value** to represent the selected option.
 
 - each `RadioButton` defines its own `value`
+
 - selection is the option whose `value` matches the shared signal or variable
 
 ```python
@@ -146,7 +192,9 @@ ttk.RadioButton(app, text="Pro (unavailable)", signal=choice, value="pro", state
 ## Behavior
 
 - Selecting an option sets the shared signal/variable to that option’s `value`.
+
 - Only one option may be selected at a time.
+
 - Keyboard navigation follows standard ttk radiobutton behavior (focus + Space to select).
 
 ---
@@ -174,6 +222,7 @@ Radio selections are inherently constrained to the set of options you provide.
 Validation is most useful when:
 
 - a selection is required before submitting a form
+
 - certain options become unavailable based on other inputs
 
 ---
@@ -221,6 +270,7 @@ ttk.RadioButton(app, text="Basic", localize=False)
 Use `RadioButton` when:
 
 - exactly **one option must be selected**
+
 - all options are short and visible
 
 Prefer **CheckButton** when:
@@ -230,7 +280,9 @@ Prefer **CheckButton** when:
 Prefer **SelectBox / OptionMenu** when:
 
 - the list is long
+
 - screen space is limited
+
 - search or filtering is needed
 
 ---
@@ -238,9 +290,13 @@ Prefer **SelectBox / OptionMenu** when:
 ## Related widgets
 
 - **CheckButton** — multiple independent selections
+
 - **SelectBox** — dropdown selection, optional search
+
 - **OptionMenu** — simple menu-based selection
+
 - **RadioGroup** — composite control for managing radio options as one widget
+
 - **RadioToggle** — button-like radio styling
 
 ---
@@ -248,3 +304,25 @@ Prefer **SelectBox / OptionMenu** when:
 ## Reference
 
 - **API Reference:** `ttkbootstrap.RadioButton`
+
+---
+
+## Additional resources
+
+### Related widgets
+
+- [Calendar](calendar.md)
+
+- [CheckButton](checkbutton.md)
+
+- [CheckToggle](checktoggle.md)
+
+### Framework concepts
+
+- [State & Interaction](../../capabilities/state-and-interaction.md)
+
+- [Configuration](../../capabilities/configuration.md)
+
+### API reference
+
+- [`ttkbootstrap.RadioButton`](../../reference/widgets/RadioButton.md)

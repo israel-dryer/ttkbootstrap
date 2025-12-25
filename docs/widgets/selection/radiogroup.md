@@ -1,4 +1,47 @@
 ---
+
+## Framework integration
+
+### Signals & events
+
+Widgets participate in ttkbootstrap’s reactive model.
+
+- **Signals** represent a widget’s **value/state** and are built on **Tk variables** with a modern subscription API.
+
+- **Events** (including virtual events) represent **interactions and moments** (click, commit, focus, selection changed).
+
+Signals and events are complementary: use signals for state flow and composition, and use events when you need
+interaction-level integration.
+
+!!! link "See also: [Signals](../../capabilities/signals.md), [Virtual Events](../../capabilities/virtual-events.md), [Callbacks](../../capabilities/callbacks.md)"
+
+### Design system
+
+Widgets are styled through ttkbootstrap’s design system using:
+
+- semantic colors via `bootstyle` (e.g., `primary`, `success`, `danger`)
+
+- variants (e.g., `outline`, `link`, `ghost` where supported)
+
+- consistent state visuals across themes
+
+!!! link "See also: [Colors](../../design-system/colors.md), [Variants](../../design-system/variants.md)"
+
+### Layout properties
+
+Widgets support ttkbootstrap layout conveniences (when available) so they compose cleanly in modern layouts.
+
+!!! link "See also: [Layout Properties](../../capabilities/layout-props.md)"
+
+### Localization
+
+Text labels can be localized in localized applications.
+
+!!! link "See also: [Localization](../../capabilities/localization.md)"
+
+
+---
+
 title: RadioGroup
 ---
 
@@ -16,8 +59,11 @@ multiple `RadioButton` instances to the same signal or variable.
 A `RadioGroup`:
 
 - manages a shared selection value (via `signal` or `variable`)
+
 - provides `add()` to create options
+
 - supports **horizontal** or **vertical** layout
+
 - can display an optional **group label** positioned with `labelanchor`
 
 ---
@@ -56,6 +102,7 @@ ttk.RadioGroup(app, orient="vertical")
 `labelanchor` controls where the label appears relative to the buttons:
 
 - `'n'` (top, default), `'s'` (bottom), `'w'` (left), `'e'` (right)
+
 - compound anchors like `'nw'`, `'se'` are accepted and normalized
 
 ```python
@@ -69,7 +116,9 @@ ttk.RadioGroup(app, text="Pick one", labelanchor="w", orient="horizontal")
 `RadioGroup` exposes a single selected value.
 
 - `value=` sets the initial selection (stored in the underlying variable)
+
 - `get()` returns the current selection
+
 - `set(value)` selects an option by value (or `""` to deselect)
 
 ```python
@@ -84,6 +133,7 @@ print(group.get())
 You can control the group selection with either:
 
 - `signal=...` (preferred)
+
 - `variable=...` (Tk `StringVar`)
 
 If neither is provided, `RadioGroup` creates an internal variable.
@@ -137,7 +187,9 @@ group.add("High", "high", key="hi")
 ## Behavior
 
 - In horizontal orientation, buttons are packed left-to-right.
+
 - In vertical orientation, buttons are stacked top-to-bottom.
+
 - Changing `orient`, `bootstyle`, `state`, `text`, `labelanchor`, or `value` via `configure(...)`
   updates the group and its children.
 
@@ -189,12 +241,15 @@ for `Label` and `RadioButton` text.
 Use `RadioGroup` when:
 
 - you want a single widget that manages a set of radio options
+
 - you want consistent layout and labeling for the group
+
 - you want a simple subscribe/unsubscribe change API
 
 Prefer individual **RadioButton** widgets when:
 
 - you need custom per-option layout (different rows/columns, mixed widgets)
+
 - you want complete control over spacing and structure
 
 ---
@@ -202,8 +257,11 @@ Prefer individual **RadioButton** widgets when:
 ## Related widgets
 
 - **RadioButton** — individual radio option
+
 - **RadioToggle** — button-like radio option
+
 - **SelectBox** — single selection from a list (dropdown)
+
 - **CheckButton** — independent multi-selection
 
 ---
@@ -211,3 +269,25 @@ Prefer individual **RadioButton** widgets when:
 ## Reference
 
 - **API Reference:** `ttkbootstrap.RadioGroup`
+
+---
+
+## Additional resources
+
+### Related widgets
+
+- [Calendar](calendar.md)
+
+- [CheckButton](checkbutton.md)
+
+- [CheckToggle](checktoggle.md)
+
+### Framework concepts
+
+- [State & Interaction](../../capabilities/state-and-interaction.md)
+
+- [Configuration](../../capabilities/configuration.md)
+
+### API reference
+
+- [`ttkbootstrap.RadioGroup`](../../reference/widgets/RadioGroup.md)

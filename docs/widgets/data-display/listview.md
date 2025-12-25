@@ -1,4 +1,47 @@
 ---
+
+## Framework integration
+
+### Signals & events
+
+Widgets participate in ttkbootstrap’s reactive model.
+
+- **Signals** represent a widget’s **value/state** and are built on **Tk variables** with a modern subscription API.
+
+- **Events** (including virtual events) represent **interactions and moments** (click, commit, focus, selection changed).
+
+Signals and events are complementary: use signals for state flow and composition, and use events when you need
+interaction-level integration.
+
+!!! link "See also: [Signals](../../capabilities/signals.md), [Virtual Events](../../capabilities/virtual-events.md), [Callbacks](../../capabilities/callbacks.md)"
+
+### Design system
+
+Widgets are styled through ttkbootstrap’s design system using:
+
+- semantic colors via `bootstyle` (e.g., `primary`, `success`, `danger`)
+
+- variants (e.g., `outline`, `link`, `ghost` where supported)
+
+- consistent state visuals across themes
+
+!!! link "See also: [Colors](../../design-system/colors.md), [Variants](../../design-system/variants.md)"
+
+### Layout properties
+
+Widgets support ttkbootstrap layout conveniences (when available) so they compose cleanly in modern layouts.
+
+!!! link "See also: [Layout Properties](../../capabilities/layout-props.md)"
+
+### Localization
+
+Text labels can be localized in localized applications.
+
+!!! link "See also: [Localization](../../capabilities/localization.md)"
+
+
+---
+
 title: ListView
 ---
 
@@ -62,6 +105,7 @@ app.mainloop()
 `ListView` works with either:
 
 - `items=[...]` — a simple list of dicts (or primitives), or
+
 - `datasource=...` — a custom data source implementing the `DataSourceProtocol`
 
 ### Required fields
@@ -73,9 +117,13 @@ Records are expected to have a stable identifier:
 The default `ListItem` also recognizes:
 
 - `title` — main heading
+
 - `text` — body text
+
 - `caption` — small caption text
+
 - `icon` — icon spec shown on the left
+
 - `badge` — small text on the right
 
 ---
@@ -85,12 +133,15 @@ The default `ListItem` also recognizes:
 Set `selection_mode` to control selection behavior:
 
 - `"none"` — no selection
+
 - `"single"` — one selected item
+
 - `"multi"` — multiple selected items
 
 Optional selection UI:
 
 - `show_selection_controls=True` shows checkbox/radio affordances
+
 - `select_by_click` controls whether clicking the row selects it
 
 ```python
@@ -115,6 +166,7 @@ lv = ListView(
 When enabled, rows expose UI affordances and `ListView` emits events:
 
 - `<<ItemDelete>>`, `<<ItemDeleteFail>>`
+
 - `<<ItemDragStart>>`, `<<ItemDrag>>`, `<<ItemDragEnd>>`
 
 ---
@@ -124,8 +176,11 @@ When enabled, rows expose UI affordances and `ListView` emits events:
 Common presentation options:
 
 - `alternating_row_mode="even" | "odd" | "none"`
+
 - `alternating_row_color="background[+1]"`
+
 - `show_separator=True`
+
 - `show_scrollbar=True`
 
 ```python
@@ -145,9 +200,13 @@ lv = ListView(
 ListView generates virtual events for higher-level behaviors:
 
 - `<<SelectionChange>>` — selection state changed
+
 - `<<ItemClick>>` — row clicked/activated (payload includes record data)
+
 - `<<ItemDelete>>` / `<<ItemDeleteFail>>`
+
 - `<<ItemInsert>>` / `<<ItemUpdate>>`
+
 - `<<ItemDragStart>>` / `<<ItemDrag>>` / `<<ItemDragEnd>>`
 
 Preferred handlers:
@@ -164,13 +223,21 @@ lv.on_item_click(lambda e: print("clicked:", e.data))
 Common methods:
 
 - `get_selected()`
+
 - `clear_selection()`
+
 - `select_all()` (multi only)
+
 - `reload()`
+
 - `insert_item(data)`
+
 - `update_item(record_id, data)`
+
 - `delete_item(record_id)`
+
 - `scroll_to_top()`, `scroll_to_bottom()`
+
 - `get_datasource()`
 
 ---
@@ -196,7 +263,9 @@ lv = ListView(app, datasource=my_source, row_factory=make_row)
 Use `ListView` when:
 
 - you need to display a long list efficiently (virtual scrolling)
+
 - rows can include rich content (icon/title/text/badge)
+
 - you need selection, deletion, or drag reordering
 
 Prefer `TableView` when:
@@ -212,8 +281,11 @@ Prefer `TreeView` when:
 ## Related widgets
 
 - **ListItem** — the default row widget used by ListView
+
 - **TableView** — tabular record display
+
 - **TreeView** — hierarchical record display
+
 - **Scrollbar / ScrollView** — scrolling containers
 
 ---
@@ -221,3 +293,25 @@ Prefer `TreeView` when:
 ## Reference
 
 - **API Reference:** `ttkbootstrap.ListView`
+
+---
+
+## Additional resources
+
+### Related widgets
+
+- [Badge](badge.md)
+
+- [FloodGauge](floodgauge.md)
+
+- [Label](label.md)
+
+### Framework concepts
+
+- [State & Interaction](../../capabilities/state-and-interaction.md)
+
+- [Configuration](../../capabilities/configuration.md)
+
+### API reference
+
+- [`ttkbootstrap.ListView`](../../reference/widgets/ListView.md)

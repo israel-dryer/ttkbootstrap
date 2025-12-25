@@ -1,4 +1,47 @@
 ---
+
+## Framework integration
+
+### Signals & events
+
+Widgets participate in ttkbootstrap’s reactive model.
+
+- **Signals** represent a widget’s **value/state** and are built on **Tk variables** with a modern subscription API.
+
+- **Events** (including virtual events) represent **interactions and moments** (click, commit, focus, selection changed).
+
+Signals and events are complementary: use signals for state flow and composition, and use events when you need
+interaction-level integration.
+
+!!! link "See also: [Signals](../../capabilities/signals.md), [Virtual Events](../../capabilities/virtual-events.md), [Callbacks](../../capabilities/callbacks.md)"
+
+### Design system
+
+Widgets are styled through ttkbootstrap’s design system using:
+
+- semantic colors via `bootstyle` (e.g., `primary`, `success`, `danger`)
+
+- variants (e.g., `outline`, `link`, `ghost` where supported)
+
+- consistent state visuals across themes
+
+!!! link "See also: [Colors](../../design-system/colors.md), [Variants](../../design-system/variants.md)"
+
+### Layout properties
+
+Widgets support ttkbootstrap layout conveniences (when available) so they compose cleanly in modern layouts.
+
+!!! link "See also: [Layout Properties](../../capabilities/layout-props.md)"
+
+### Localization
+
+Text labels can be localized in localized applications.
+
+!!! link "See also: [Localization](../../capabilities/localization.md)"
+
+
+---
+
 title: Tooltip
 ---
 
@@ -9,7 +52,9 @@ title: Tooltip
 Use tooltips for:
 
 - icon-only buttons
+
 - dense toolbars
+
 - exposing extra detail without cluttering the UI
 
 Tooltips should be short, readable, and optional.
@@ -35,7 +80,9 @@ app.mainloop()
 ## Behavior
 
 - Appears on hover (and optionally focus)
+
 - Disappears on leave or after a delay
+
 - Should not steal focus or block interaction
 
 ---
@@ -43,8 +90,11 @@ app.mainloop()
 ## Common options
 
 - `text`
+
 - `delay` (time before showing)
+
 - `wraplength` (max line width)
+
 - `bootstyle` (if supported)
 
 ---
@@ -54,6 +104,7 @@ app.mainloop()
 Use Tooltip when:
 
 - the control meaning isn’t obvious (especially icon-only UI)
+
 - you want “learnable” UI without permanent labels
 
 Avoid tooltips when:
@@ -65,6 +116,7 @@ Avoid tooltips when:
 ## Related widgets
 
 - **Toast** — non-blocking notifications
+
 - **MessageBox** — blocking alerts and confirmations
 
 ---
@@ -72,3 +124,21 @@ Avoid tooltips when:
 ## Reference
 
 - **API Reference:** `ttkbootstrap.Tooltip`
+
+---
+
+## Additional resources
+
+### Related widgets
+
+- [Toast](toast.md)
+
+### Framework concepts
+
+- [State & Interaction](../../capabilities/state-and-interaction.md)
+
+- [Configuration](../../capabilities/configuration.md)
+
+### API reference
+
+- [`ttkbootstrap.ToolTip`](../../reference/widgets/ToolTip.md)

@@ -1,4 +1,47 @@
 ---
+
+## Framework integration
+
+### Signals & events
+
+Widgets participate in ttkbootstrap’s reactive model.
+
+- **Signals** represent a widget’s **value/state** and are built on **Tk variables** with a modern subscription API.
+
+- **Events** (including virtual events) represent **interactions and moments** (click, commit, focus, selection changed).
+
+Signals and events are complementary: use signals for state flow and composition, and use events when you need
+interaction-level integration.
+
+!!! link "See also: [Signals](../../capabilities/signals.md), [Virtual Events](../../capabilities/virtual-events.md), [Callbacks](../../capabilities/callbacks.md)"
+
+### Design system
+
+Widgets are styled through ttkbootstrap’s design system using:
+
+- semantic colors via `bootstyle` (e.g., `primary`, `success`, `danger`)
+
+- variants (e.g., `outline`, `link`, `ghost` where supported)
+
+- consistent state visuals across themes
+
+!!! link "See also: [Colors](../../design-system/colors.md), [Variants](../../design-system/variants.md)"
+
+### Layout properties
+
+Widgets support ttkbootstrap layout conveniences (when available) so they compose cleanly in modern layouts.
+
+!!! link "See also: [Layout Properties](../../capabilities/layout-props.md)"
+
+### Localization
+
+Text labels can be localized in localized applications.
+
+!!! link "See also: [Localization](../../capabilities/localization.md)"
+
+
+---
+
 title: MenuButton
 ---
 
@@ -37,7 +80,9 @@ Use a MenuButton when you need a **traditional, native menu trigger** backed by 
 ### Consider a different control when…
 
 - You want a modern, widget-backed menu with icons/toggles and unified events → use **DropdownButton**
+
 - You need a context (right-click) menu → use **ContextMenu**
+
 - You need a value-selection dropdown → use **OptionMenu** or **SelectBox**
 
 ---
@@ -57,7 +102,9 @@ btn = ttk.MenuButton(
 ```
 
 - `icon` is resolved through the ttkbootstrap icon system
+
 - `icon_only=True` removes extra padding reserved for text
+
 - `compound` controls icon/text placement
 
 !!! note "Icons"
@@ -70,13 +117,19 @@ btn = ttk.MenuButton(
 ### Key concepts: MenuButton vs DropdownButton
 
 **MenuButton**
+
 - Uses a native `tk.Menu`
+
 - Lower-level primitive
+
 - Best for menubar-style UI or existing Tk menu code
 
 **DropdownButton**
+
 - Uses a widget-backed `ContextMenu`
+
 - Higher-level control
+
 - Supports icons, checks, radios, and unified item events
 
 In most application UI, prefer **DropdownButton** unless you specifically need a native `tk.Menu`.
@@ -94,7 +147,9 @@ btn = ttk.MenuButton(app, textsignal=my_signal, localize="auto")
 ## Behavior
 
 - Activates via mouse click
+
 - Participates in focus traversal when `takefocus=True`
+
 - Menu navigation is handled by the attached `tk.Menu`
 
 When clicked, MenuButton explicitly receives focus so that focus styling is visible:
@@ -117,7 +172,9 @@ Localization behavior is controlled by global application settings and the widge
 ## Related widgets
 
 - **DropdownButton** — higher-level, widget-backed alternative
+
 - **ContextMenu** — widget-backed pop-up menu
+
 - **OptionMenu** — value-selection dropdown
 
 ---
@@ -125,4 +182,27 @@ Localization behavior is controlled by global application settings and the widge
 ## Reference
 
 - **API Reference:** `ttkbootstrap.MenuButton`
+
 - **Related guides:** Design System → Variants, Design System → Icons, Internationalization → Localization
+
+---
+
+## Additional resources
+
+### Related widgets
+
+- [Button](button.md)
+
+- [ButtonGroup](buttongroup.md)
+
+- [ContextMenu](contextmenu.md)
+
+### Framework concepts
+
+- [State & Interaction](../../capabilities/state-and-interaction.md)
+
+- [Configuration](../../capabilities/configuration.md)
+
+### API reference
+
+- [`ttkbootstrap.MenuButton`](../../reference/widgets/MenuButton.md)

@@ -1,4 +1,47 @@
 ---
+
+## Framework integration
+
+### Signals & events
+
+Widgets participate in ttkbootstrap’s reactive model.
+
+- **Signals** represent a widget’s **value/state** and are built on **Tk variables** with a modern subscription API.
+
+- **Events** (including virtual events) represent **interactions and moments** (click, commit, focus, selection changed).
+
+Signals and events are complementary: use signals for state flow and composition, and use events when you need
+interaction-level integration.
+
+!!! link "See also: [Signals](../../capabilities/signals.md), [Virtual Events](../../capabilities/virtual-events.md), [Callbacks](../../capabilities/callbacks.md)"
+
+### Design system
+
+Widgets are styled through ttkbootstrap’s design system using:
+
+- semantic colors via `bootstyle` (e.g., `primary`, `success`, `danger`)
+
+- variants (e.g., `outline`, `link`, `ghost` where supported)
+
+- consistent state visuals across themes
+
+!!! link "See also: [Colors](../../design-system/colors.md), [Variants](../../design-system/variants.md)"
+
+### Layout properties
+
+Widgets support ttkbootstrap layout conveniences (when available) so they compose cleanly in modern layouts.
+
+!!! link "See also: [Layout Properties](../../capabilities/layout-props.md)"
+
+### Localization
+
+Text labels can be localized in localized applications.
+
+!!! link "See also: [Localization](../../capabilities/localization.md)"
+
+
+---
+
 title: TextEntry
 ---
 
@@ -136,7 +179,9 @@ Validation results are reflected visually and via events.
 `TextEntry` emits structured virtual events with matching convenience methods:
 
 - `<<Input>>` — live typing
+
 - `<<Changed>>` — committed value changed
+
 - `<<Valid>>`, `<<Invalid>>`, `<<Validated>>`
 
 ```python
@@ -158,7 +203,9 @@ name.on_valid(on_event)
 Use validation rules when:
 
 - the field is required
+
 - values must match a pattern (email, phone, etc.)
+
 - multiple fields must be consistent (cross-field rules)
 
 If you need immediate, per-keystroke constraints, use low-level Tk validation on **Entry** instead.
@@ -170,12 +217,15 @@ If you need immediate, per-keystroke constraints, use low-level Tk validation on
 Use `TextEntry` when:
 
 - you want a form-ready text field (label + message + validation)
+
 - you want consistent events and commit semantics
+
 - you want optional localization and formatting
 
 Prefer **Entry** when:
 
 - you need the lowest-level `ttk.Entry` behavior and options
+
 - you are building your own composite control
 
 ---
@@ -183,9 +233,13 @@ Prefer **Entry** when:
 ## Related widgets
 
 - **Entry** — low-level primitive text input
+
 - **NumericEntry** — numeric input with bounds and stepping
+
 - **PasswordEntry** — obscured text input
+
 - **DateEntry** / **TimeEntry** — structured date/time input
+
 - **Form** — build complete forms from field definitions
 
 ---
@@ -193,4 +247,27 @@ Prefer **Entry** when:
 ## Reference
 
 - **API Reference:** `ttkbootstrap.TextEntry`
+
 - **Related guides:** Forms, Internationalization → Localization, Events & Signals → Signals
+
+---
+
+## Additional resources
+
+### Related widgets
+
+- [DateEntry](dateentry.md)
+
+- [LabeledScale](labeledscale.md)
+
+- [NumericEntry](numericentry.md)
+
+### Framework concepts
+
+- [State & Interaction](../../capabilities/state-and-interaction.md)
+
+- [Configuration](../../capabilities/configuration.md)
+
+### API reference
+
+- [`ttkbootstrap.TextEntry`](../../reference/widgets/TextEntry.md)

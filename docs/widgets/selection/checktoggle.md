@@ -1,4 +1,47 @@
 ---
+
+## Framework integration
+
+### Signals & events
+
+Widgets participate in ttkbootstrap’s reactive model.
+
+- **Signals** represent a widget’s **value/state** and are built on **Tk variables** with a modern subscription API.
+
+- **Events** (including virtual events) represent **interactions and moments** (click, commit, focus, selection changed).
+
+Signals and events are complementary: use signals for state flow and composition, and use events when you need
+interaction-level integration.
+
+!!! link "See also: [Signals](../../capabilities/signals.md), [Virtual Events](../../capabilities/virtual-events.md), [Callbacks](../../capabilities/callbacks.md)"
+
+### Design system
+
+Widgets are styled through ttkbootstrap’s design system using:
+
+- semantic colors via `bootstyle` (e.g., `primary`, `success`, `danger`)
+
+- variants (e.g., `outline`, `link`, `ghost` where supported)
+
+- consistent state visuals across themes
+
+!!! link "See also: [Colors](../../design-system/colors.md), [Variants](../../design-system/variants.md)"
+
+### Layout properties
+
+Widgets support ttkbootstrap layout conveniences (when available) so they compose cleanly in modern layouts.
+
+!!! link "See also: [Layout Properties](../../capabilities/layout-props.md)"
+
+### Localization
+
+Text labels can be localized in localized applications.
+
+!!! link "See also: [Localization](../../capabilities/localization.md)"
+
+
+---
+
 title: CheckToggle
 ---
 
@@ -19,7 +62,9 @@ Use `CheckToggle` when you want checkbox semantics in compact UI areas like tool
 `CheckToggle` supports the same logical states as `CheckButton`:
 
 - **checked** (`True`)
+
 - **unchecked** (`False`)
+
 - **indeterminate** (`None`)
 
 It differs from `CheckButton` primarily in presentation: it uses the toolbutton variant style so it reads more like
@@ -55,7 +100,9 @@ If you want the classic indicator, use `CheckButton` instead.
 The `value` option sets the initial state (defaults to `None` when unset). fileciteturn10file0
 
 - `True` → checked
+
 - `False` → unchecked
+
 - `None` → indeterminate
 
 Once bound, the signal or variable becomes the source of truth.
@@ -71,6 +118,7 @@ Once bound, the signal or variable becomes the source of truth.
 `CheckToggle` supports the same bindings as `CheckButton`:
 
 - `signal=...` (reactive, preferred in v2)
+
 - `variable=...` (Tk variable)
 
 ```python
@@ -93,11 +141,17 @@ app.mainloop()
 `CheckToggle` accepts the same constructor options as `CheckButton`, including:
 
 - `text`, `textvariable`, `textsignal`
+
 - `command`
+
 - `variable`, `signal`, `value`
+
 - `onvalue`, `offvalue`
+
 - `padding`, `width`, `underline`
+
 - `state`, `takefocus`
+
 - `style`, `bootstyle`, `surface_color`, `style_options` fileciteturn10file0
 
 ### `bootstyle` coercion
@@ -115,7 +169,9 @@ ttk.CheckToggle(app, bootstyle="success-toolbutton") # already toolbutton
 ## Behavior
 
 - Click toggles between checked/unchecked.
+
 - Indeterminate behavior is driven by your app logic (commonly used for mixed/partial states).
+
 - Visual emphasis matches toolbutton styling, making it suitable for dense UI regions.
 
 ---
@@ -140,7 +196,9 @@ Validation is usually minimal.
 Use validation when:
 
 - the toggle must be set to proceed
+
 - indeterminate must be resolved
+
 - the selection participates in cross-field rules
 
 ---
@@ -170,6 +228,7 @@ Text localization follows your standard widget localization behavior (`localize=
 Use `CheckToggle` when:
 
 - you want on/off selection with a **button-like** presentation
+
 - the control lives in a toolbar or compact header area
 
 Prefer **CheckButton** when:
@@ -181,7 +240,9 @@ Prefer **CheckButton** when:
 ## Related widgets
 
 - **CheckButton** — classic checkbox indicator (multi-selection / tri-state)
+
 - **RadioToggle** — mutually exclusive button-like radios
+
 - **ButtonGroup** — visually grouped controls for toolbars and headers
 
 ---
@@ -189,3 +250,25 @@ Prefer **CheckButton** when:
 ## Reference
 
 - **API Reference:** `ttkbootstrap.CheckToggle`
+
+---
+
+## Additional resources
+
+### Related widgets
+
+- [Calendar](calendar.md)
+
+- [CheckButton](checkbutton.md)
+
+- [OptionMenu](optionmenu.md)
+
+### Framework concepts
+
+- [State & Interaction](../../capabilities/state-and-interaction.md)
+
+- [Configuration](../../capabilities/configuration.md)
+
+### API reference
+
+- [`ttkbootstrap.CheckToggle`](../../reference/widgets/CheckToggle.md)

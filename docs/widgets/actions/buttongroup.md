@@ -1,4 +1,47 @@
 ---
+
+## Framework integration
+
+### Signals & events
+
+Widgets participate in ttkbootstrap’s reactive model.
+
+- **Signals** represent a widget’s **value/state** and are built on **Tk variables** with a modern subscription API.
+
+- **Events** (including virtual events) represent **interactions and moments** (click, commit, focus, selection changed).
+
+Signals and events are complementary: use signals for state flow and composition, and use events when you need
+interaction-level integration.
+
+!!! link "See also: [Signals](../../capabilities/signals.md), [Virtual Events](../../capabilities/virtual-events.md), [Callbacks](../../capabilities/callbacks.md)"
+
+### Design system
+
+Widgets are styled through ttkbootstrap’s design system using:
+
+- semantic colors via `bootstyle` (e.g., `primary`, `success`, `danger`)
+
+- variants (e.g., `outline`, `link`, `ghost` where supported)
+
+- consistent state visuals across themes
+
+!!! link "See also: [Colors](../../design-system/colors.md), [Variants](../../design-system/variants.md)"
+
+### Layout properties
+
+Widgets support ttkbootstrap layout conveniences (when available) so they compose cleanly in modern layouts.
+
+!!! link "See also: [Layout Properties](../../capabilities/layout-props.md)"
+
+### Localization
+
+Text labels can be localized in localized applications.
+
+!!! link "See also: [Localization](../../capabilities/localization.md)"
+
+
+---
+
 title: ButtonGroup
 ---
 
@@ -33,8 +76,11 @@ Use ButtonGroup when you want **visual grouping** of actions, but you *don’t* 
 ### Consider a different control when…
 
 - You need single or multi selection state → use **ToggleGroup**
+
 - You need classic radio semantics → use **RadioGroup**
+
 - You need an overflow / menu of actions → use **DropdownButton**
+
 - You need a structured navigation pattern → use **Notebook** or **PageStack**
 
 ---
@@ -44,7 +90,9 @@ Use ButtonGroup when you want **visual grouping** of actions, but you *don’t* 
 ButtonGroup applies a `-buttongroup` style suffix to its children and automatically updates each child’s **position**:
 
 - `before` (first)
+
 - `center` (middle)
+
 - `after` (last)
 
 This enables connected borders and shared separators without manually styling each widget.
@@ -136,8 +184,11 @@ group.clear()
 ## Behavior
 
 - ButtonGroup **does not track selection**. It only manages layout and visual grouping.
+
 - Child order is the order widgets were added (insertion order).
+
 - When widgets are added/removed, ButtonGroup recomputes each widget’s position (`before/center/after`).
+
 - Changing `orient` repacks children (`left` for horizontal, `top` for vertical) and updates grouping styles.
 
 ---
@@ -153,8 +204,11 @@ See **Guides → Internationalization → Localization** and **Guides → Events
 ## Related widgets
 
 - **ToggleGroup** — grouped controls that also manage a selected value (single or multi)
+
 - **RadioGroup** — single selection, radio semantics
+
 - **DropdownButton** — compact action launcher with a menu
+
 - **ContextMenu** — widget-backed popup menu (often used with toolbars)
 
 ---
@@ -162,4 +216,27 @@ See **Guides → Internationalization → Localization** and **Guides → Events
 ## Reference
 
 - **API Reference:** `ttkbootstrap.ButtonGroup`
+
 - **Related guides:** Design System → Variants, Patterns → Toolbars
+
+---
+
+## Additional resources
+
+### Related widgets
+
+- [Button](button.md)
+
+- [ContextMenu](contextmenu.md)
+
+- [DropdownButton](dropdownbutton.md)
+
+### Framework concepts
+
+- [State & Interaction](../../capabilities/state-and-interaction.md)
+
+- [Configuration](../../capabilities/configuration.md)
+
+### API reference
+
+- [`ttkbootstrap.ButtonGroup`](../../reference/widgets/ButtonGroup.md)

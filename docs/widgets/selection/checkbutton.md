@@ -1,4 +1,47 @@
 ---
+
+## Framework integration
+
+### Signals & events
+
+Widgets participate in ttkbootstrap’s reactive model.
+
+- **Signals** represent a widget’s **value/state** and are built on **Tk variables** with a modern subscription API.
+
+- **Events** (including virtual events) represent **interactions and moments** (click, commit, focus, selection changed).
+
+Signals and events are complementary: use signals for state flow and composition, and use events when you need
+interaction-level integration.
+
+!!! link "See also: [Signals](../../capabilities/signals.md), [Virtual Events](../../capabilities/virtual-events.md), [Callbacks](../../capabilities/callbacks.md)"
+
+### Design system
+
+Widgets are styled through ttkbootstrap’s design system using:
+
+- semantic colors via `bootstyle` (e.g., `primary`, `success`, `danger`)
+
+- variants (e.g., `outline`, `link`, `ghost` where supported)
+
+- consistent state visuals across themes
+
+!!! link "See also: [Colors](../../design-system/colors.md), [Variants](../../design-system/variants.md)"
+
+### Layout properties
+
+Widgets support ttkbootstrap layout conveniences (when available) so they compose cleanly in modern layouts.
+
+!!! link "See also: [Layout Properties](../../capabilities/layout-props.md)"
+
+### Localization
+
+Text labels can be localized in localized applications.
+
+!!! link "See also: [Localization](../../capabilities/localization.md)"
+
+
+---
+
 title: CheckButton
 ---
 
@@ -21,7 +64,9 @@ toggle variant when the control represents a single on/off feature.
 A `CheckButton` supports three logical states:
 
 - **checked** (`True`)
+
 - **unchecked** (`False`)
+
 - **indeterminate** (`None`)
 
 This makes it useful both for simple booleans and for “mixed” parent selections (partially selected groups).
@@ -85,7 +130,9 @@ ttk.CheckButton(app, bootstyle="toggle")
 The `value` option sets the **initial state**:
 
 - `True` → checked
+
 - `False` → unchecked
+
 - `None` → indeterminate
 
 Once bound, the signal or variable becomes the source of truth.
@@ -169,7 +216,9 @@ ttk.CheckButton(app, text="E_xport", underline=1).pack(pady=6)
 ## Behavior
 
 - Click toggles between checked/unchecked.
+
 - Indeterminate behavior depends on your app logic (commonly used for “mixed” parent selections).
+
 - Use the toggle variant for settings that map to a single feature switch.
 
 ---
@@ -198,7 +247,9 @@ Validation is usually minimal for `CheckButton`.
 Use validation when:
 
 - the option is required to proceed
+
 - the indeterminate state must be resolved before submission
+
 - the selection participates in cross-field rules
 
 ---
@@ -235,6 +286,7 @@ ttk.CheckButton(app, bootstyle="danger-toggle")
 By default, widgets use `localize="auto"`:
 
 - if a translation key exists, it is used
+
 - otherwise, the label is treated as a literal string
 
 ```python
@@ -253,6 +305,7 @@ ttk.CheckButton(app, text="Notifications", localize=False)
 Use `CheckButton` when:
 
 - multiple selections may be enabled at once
+
 - the value is on/off or mixed
 
 Use **RadioButton** when:
@@ -264,8 +317,11 @@ Use **RadioButton** when:
 ## Related widgets
 
 - **RadioButton** — choose one option from a group
+
 - **RadioGroup** — manage a group of radio options as one control
+
 - **SelectBox** — select one item from a list
+
 - **Form** — build grouped selection controls declaratively
 
 ---
@@ -273,3 +329,25 @@ Use **RadioButton** when:
 ## Reference
 
 - **API Reference:** `ttkbootstrap.CheckButton`
+
+---
+
+## Additional resources
+
+### Related widgets
+
+- [Calendar](calendar.md)
+
+- [CheckToggle](checktoggle.md)
+
+- [OptionMenu](optionmenu.md)
+
+### Framework concepts
+
+- [State & Interaction](../../capabilities/state-and-interaction.md)
+
+- [Configuration](../../capabilities/configuration.md)
+
+### API reference
+
+- [`ttkbootstrap.CheckButton`](../../reference/widgets/CheckButton.md)

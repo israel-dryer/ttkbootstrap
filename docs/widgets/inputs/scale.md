@@ -1,4 +1,47 @@
 ---
+
+## Framework integration
+
+### Signals & events
+
+Widgets participate in ttkbootstrap’s reactive model.
+
+- **Signals** represent a widget’s **value/state** and are built on **Tk variables** with a modern subscription API.
+
+- **Events** (including virtual events) represent **interactions and moments** (click, commit, focus, selection changed).
+
+Signals and events are complementary: use signals for state flow and composition, and use events when you need
+interaction-level integration.
+
+!!! link "See also: [Signals](../../capabilities/signals.md), [Virtual Events](../../capabilities/virtual-events.md), [Callbacks](../../capabilities/callbacks.md)"
+
+### Design system
+
+Widgets are styled through ttkbootstrap’s design system using:
+
+- semantic colors via `bootstyle` (e.g., `primary`, `success`, `danger`)
+
+- variants (e.g., `outline`, `link`, `ghost` where supported)
+
+- consistent state visuals across themes
+
+!!! link "See also: [Colors](../../design-system/colors.md), [Variants](../../design-system/variants.md)"
+
+### Layout properties
+
+Widgets support ttkbootstrap layout conveniences (when available) so they compose cleanly in modern layouts.
+
+!!! link "See also: [Layout Properties](../../capabilities/layout-props.md)"
+
+### Localization
+
+Text labels can be localized in localized applications.
+
+!!! link "See also: [Localization](../../capabilities/localization.md)"
+
+
+---
+
 title: Scale
 ---
 
@@ -35,6 +78,7 @@ app.mainloop()
 A `Scale` always produces a numeric value within its configured range.
 
 - The displayed value updates while the user drags the thumb.
+
 - A **committed** value is produced when the user releases the thumb.
 
 If your app treats “live preview” differently from “final commit”, use the appropriate event hook
@@ -81,7 +125,9 @@ ttk.Scale(app, from_=0, to=10, step=1)
 ```
 
 !!! note "Continuous vs stepped"
+
     - **Continuous scales** are best for perception-based adjustment  
+
     - **Stepped scales** are best when values must align to discrete states
 
 ---
@@ -130,7 +176,9 @@ Because a `Scale` inherently constrains values to a known range, explicit valida
 Validation is most useful when:
 
 - the scale is conditionally enabled/required
+
 - the valid range changes dynamically
+
 - the value must satisfy cross-field rules
 
 ---
@@ -140,13 +188,17 @@ Validation is most useful when:
 Use `Scale` when:
 
 - users benefit from visual, continuous adjustment
+
 - relative changes matter more than precision
+
 - live feedback improves usability
 
 Prefer `NumericEntry` when:
 
 - users must type exact values
+
 - values require strict validation
+
 - keyboard-first accessibility is primary
 
 ---
@@ -154,8 +206,11 @@ Prefer `NumericEntry` when:
 ## Related widgets
 
 - **NumericEntry** — precise numeric input
+
 - **Spinbox / SpinnerEntry** — numeric stepping with typing
+
 - **Progressbar** — displays progress, not user input
+
 - **Meter** — displays proportional values
 
 ---
@@ -163,3 +218,25 @@ Prefer `NumericEntry` when:
 ## Reference
 
 - **API Reference:** `ttkbootstrap.Scale`
+
+---
+
+## Additional resources
+
+### Related widgets
+
+- [DateEntry](dateentry.md)
+
+- [LabeledScale](labeledscale.md)
+
+- [NumericEntry](numericentry.md)
+
+### Framework concepts
+
+- [State & Interaction](../../capabilities/state-and-interaction.md)
+
+- [Configuration](../../capabilities/configuration.md)
+
+### API reference
+
+- [`ttkbootstrap.Scale`](../../reference/widgets/Scale.md)

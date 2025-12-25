@@ -1,4 +1,47 @@
 ---
+
+## Framework integration
+
+### Signals & events
+
+Widgets participate in ttkbootstrap’s reactive model.
+
+- **Signals** represent a widget’s **value/state** and are built on **Tk variables** with a modern subscription API.
+
+- **Events** (including virtual events) represent **interactions and moments** (click, commit, focus, selection changed).
+
+Signals and events are complementary: use signals for state flow and composition, and use events when you need
+interaction-level integration.
+
+!!! link "See also: [Signals](../../capabilities/signals.md), [Virtual Events](../../capabilities/virtual-events.md), [Callbacks](../../capabilities/callbacks.md)"
+
+### Design system
+
+Widgets are styled through ttkbootstrap’s design system using:
+
+- semantic colors via `bootstyle` (e.g., `primary`, `success`, `danger`)
+
+- variants (e.g., `outline`, `link`, `ghost` where supported)
+
+- consistent state visuals across themes
+
+!!! link "See also: [Colors](../../design-system/colors.md), [Variants](../../design-system/variants.md)"
+
+### Layout properties
+
+Widgets support ttkbootstrap layout conveniences (when available) so they compose cleanly in modern layouts.
+
+!!! link "See also: [Layout Properties](../../capabilities/layout-props.md)"
+
+### Localization
+
+Text labels can be localized in localized applications.
+
+!!! link "See also: [Localization](../../capabilities/localization.md)"
+
+
+---
+
 title: OptionMenu
 ---
 
@@ -20,8 +63,11 @@ For longer lists or search/filtering, prefer **SelectBox**. fileciteturn11
 `OptionMenu` provides:
 
 - **single selection** (one committed value)
+
 - **menu-based** dropdown behavior
+
 - compact desktop-friendly appearance
+
 - optional **signals** and `<<Changed>>` events
 
 It is intentionally simpler than `SelectBox` and does not support search or custom values.
@@ -57,6 +103,7 @@ app.mainloop()
 ## How the value works
 
 - `options` defines the list of valid values
+
 - `value` is the currently selected option
 
 When the user selects a menu item, `OptionMenu` updates `value` and emits `<<Changed>>`.
@@ -144,8 +191,11 @@ ttk.OptionMenu(
 ## Behavior
 
 - Clicking the button opens a menu of options.
+
 - Selecting an item immediately commits the value.
+
 - The menu closes automatically after selection.
+
 - Keyboard navigation follows standard ttk menubutton behavior.
 
 ---
@@ -177,6 +227,7 @@ Selection is constrained to `options`.
 Validation is typically unnecessary, but may be useful when:
 
 - a selection is required before submission
+
 - options are updated dynamically
 
 ---
@@ -224,13 +275,17 @@ When `localize="auto"`, untranslated keys fall back to literal text.
 Use `OptionMenu` when:
 
 - the option list is short (≈3–15 items)
+
 - the control should remain compact
+
 - search or rich presentation is unnecessary
 
 Prefer **SelectBox** when:
 
 - the list is long
+
 - search or filtering is needed
+
 - users may enter custom values
 
 Prefer **RadioButton / RadioGroup** when:
@@ -242,8 +297,11 @@ Prefer **RadioButton / RadioGroup** when:
 ## Related widgets
 
 - **SelectBox** — dropdown selection with search and filtering
+
 - **RadioButton** — inline mutually exclusive options
+
 - **RadioGroup** — grouped radio options
+
 - **MenuButton** — base widget for menu-triggered buttons
 
 ---
@@ -251,3 +309,25 @@ Prefer **RadioButton / RadioGroup** when:
 ## Reference
 
 - **API Reference:** `ttkbootstrap.OptionMenu`
+
+---
+
+## Additional resources
+
+### Related widgets
+
+- [Calendar](calendar.md)
+
+- [CheckButton](checkbutton.md)
+
+- [CheckToggle](checktoggle.md)
+
+### Framework concepts
+
+- [State & Interaction](../../capabilities/state-and-interaction.md)
+
+- [Configuration](../../capabilities/configuration.md)
+
+### API reference
+
+- [`ttkbootstrap.OptionMenu`](../../reference/widgets/OptionMenu.md)

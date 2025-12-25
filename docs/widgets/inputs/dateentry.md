@@ -1,4 +1,47 @@
 ---
+
+## Framework integration
+
+### Signals & events
+
+Widgets participate in ttkbootstrap’s reactive model.
+
+- **Signals** represent a widget’s **value/state** and are built on **Tk variables** with a modern subscription API.
+
+- **Events** (including virtual events) represent **interactions and moments** (click, commit, focus, selection changed).
+
+Signals and events are complementary: use signals for state flow and composition, and use events when you need
+interaction-level integration.
+
+!!! link "See also: [Signals](../../capabilities/signals.md), [Virtual Events](../../capabilities/virtual-events.md), [Callbacks](../../capabilities/callbacks.md)"
+
+### Design system
+
+Widgets are styled through ttkbootstrap’s design system using:
+
+- semantic colors via `bootstyle` (e.g., `primary`, `success`, `danger`)
+
+- variants (e.g., `outline`, `link`, `ghost` where supported)
+
+- consistent state visuals across themes
+
+!!! link "See also: [Colors](../../design-system/colors.md), [Variants](../../design-system/variants.md)"
+
+### Layout properties
+
+Widgets support ttkbootstrap layout conveniences (when available) so they compose cleanly in modern layouts.
+
+!!! link "See also: [Layout Properties](../../capabilities/layout-props.md)"
+
+### Localization
+
+Text labels can be localized in localized applications.
+
+!!! link "See also: [Localization](../../capabilities/localization.md)"
+
+
+---
+
 title: DateEntry
 ---
 
@@ -90,7 +133,9 @@ d.insert_addon(ttk.Label, position="before", icon="cake-fill")
 ### Picker behavior
 
 - Click the calendar button → opens the picker
+
 - Click a day → commits the date and closes the popup
+
 - Escape → closes the popup without committing
 
 <figure markdown>
@@ -105,7 +150,9 @@ d.insert_addon(ttk.Label, position="before", icon="cake-fill")
 DateEntry emits the standard field events:
 
 - `<<Input>>` / `on_input`
+
 - `<<Changed>>` / `on_changed`
+
 - `<<Valid>>`, `<<Invalid>>`, `<<Validated>>`
 
 ```python
@@ -125,7 +172,9 @@ due.on_changed(handle_changed)
 Common validation patterns:
 
 - required date
+
 - not in the past
+
 - within a window (e.g., next 90 days)
 
 ```python
@@ -140,7 +189,9 @@ d.add_validation_rule("required", message="A date is required")
 Use `DateEntry` when:
 
 - users need to enter calendar dates reliably
+
 - you want both typing and a picker UI
+
 - validation and formatting should be consistent with other field controls
 
 Prefer **TimeEntry** when:
@@ -160,8 +211,11 @@ Prefer **DateDialog** when:
 ## Related widgets
 
 - **TimeEntry** — time input control
+
 - **TextEntry** — general field control with validation and formatting
+
 - **DateDialog** — modal date selection
+
 - **Form** — build forms from field definitions
 
 ---
@@ -169,3 +223,25 @@ Prefer **DateDialog** when:
 ## Reference
 
 - **API Reference:** `ttkbootstrap.DateEntry`
+
+---
+
+## Additional resources
+
+### Related widgets
+
+- [LabeledScale](labeledscale.md)
+
+- [NumericEntry](numericentry.md)
+
+- [PasswordEntry](passwordentry.md)
+
+### Framework concepts
+
+- [State & Interaction](../../capabilities/state-and-interaction.md)
+
+- [Configuration](../../capabilities/configuration.md)
+
+### API reference
+
+- [`ttkbootstrap.DateEntry`](../../reference/widgets/DateEntry.md)

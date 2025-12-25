@@ -1,4 +1,47 @@
 ---
+
+## Framework integration
+
+### Signals & events
+
+Widgets participate in ttkbootstrap’s reactive model.
+
+- **Signals** represent a widget’s **value/state** and are built on **Tk variables** with a modern subscription API.
+
+- **Events** (including virtual events) represent **interactions and moments** (click, commit, focus, selection changed).
+
+Signals and events are complementary: use signals for state flow and composition, and use events when you need
+interaction-level integration.
+
+!!! link "See also: [Signals](../../capabilities/signals.md), [Virtual Events](../../capabilities/virtual-events.md), [Callbacks](../../capabilities/callbacks.md)"
+
+### Design system
+
+Widgets are styled through ttkbootstrap’s design system using:
+
+- semantic colors via `bootstyle` (e.g., `primary`, `success`, `danger`)
+
+- variants (e.g., `outline`, `link`, `ghost` where supported)
+
+- consistent state visuals across themes
+
+!!! link "See also: [Colors](../../design-system/colors.md), [Variants](../../design-system/variants.md)"
+
+### Layout properties
+
+Widgets support ttkbootstrap layout conveniences (when available) so they compose cleanly in modern layouts.
+
+!!! link "See also: [Layout Properties](../../capabilities/layout-props.md)"
+
+### Localization
+
+Text labels can be localized in localized applications.
+
+!!! link "See also: [Localization](../../capabilities/localization.md)"
+
+
+---
+
 title: PageStack
 ---
 
@@ -143,8 +186,11 @@ If the removed page is active, the stack becomes empty until you navigate elsewh
 `PageStack` emits a navigation lifecycle you can hook into:
 
 - `<<PageUnmounted>>` — current page is being hidden
+
 - `<<PageWillMount>>` — new page will be shown
+
 - `<<PageMounted>>` — new page is now visible
+
 - `<<PageChanged>>` — navigation completed fileciteturn17file1
 
 ```python
@@ -161,12 +207,19 @@ funcid = stack.on_page_changed(on_page_changed)
 Navigation events include:
 
 - `page` — current page key
+
 - `prev_page` — previous page key
+
 - `prev_data` — data passed to the previous page
+
 - `nav` — `"push"`, `"back"`, or `"forward"`
+
 - `index` — current history index
+
 - `length` — total history length
+
 - `can_back` — whether back navigation is possible
+
 - `can_forward` — whether forward navigation is possible fileciteturn17file1
 
 ---
@@ -174,7 +227,9 @@ Navigation events include:
 ## UX guidance
 
 - Use PageStack for **linear or stateful navigation**
+
 - Provide clear Back/Next controls when history is involved
+
 - Avoid mixing PageStack flow navigation with tabs (`Notebook`) in the same region
 
 !!! tip "Think like a flow"
@@ -187,12 +242,15 @@ Navigation events include:
 Use `PageStack` when:
 
 - navigation is sequential or flow-based
+
 - back/forward behavior improves usability
+
 - only one view should be visible at a time
 
 Prefer `Notebook` when:
 
 - users need random access to views
+
 - the interaction model is “switch categories”
 
 Avoid PageStack when:
@@ -204,7 +262,9 @@ Avoid PageStack when:
 ## Related widgets
 
 - **Notebook** — tabbed views without history
+
 - **Frame** — typical page container
+
 - **PanedWindow** — resizable multi-view layouts
 
 ---
@@ -212,3 +272,21 @@ Avoid PageStack when:
 ## Reference
 
 - **API Reference:** `ttkbootstrap.PageStack`
+
+---
+
+## Additional resources
+
+### Related widgets
+
+- [Notebook](notebook.md)
+
+### Framework concepts
+
+- [State & Interaction](../../capabilities/state-and-interaction.md)
+
+- [Configuration](../../capabilities/configuration.md)
+
+### API reference
+
+- [`ttkbootstrap.PageStack`](../../reference/widgets/PageStack.md)

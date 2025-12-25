@@ -1,4 +1,47 @@
 ---
+
+## Framework integration
+
+### Signals & events
+
+Widgets participate in ttkbootstrap’s reactive model.
+
+- **Signals** represent a widget’s **value/state** and are built on **Tk variables** with a modern subscription API.
+
+- **Events** (including virtual events) represent **interactions and moments** (click, commit, focus, selection changed).
+
+Signals and events are complementary: use signals for state flow and composition, and use events when you need
+interaction-level integration.
+
+!!! link "See also: [Signals](../../capabilities/signals.md), [Virtual Events](../../capabilities/virtual-events.md), [Callbacks](../../capabilities/callbacks.md)"
+
+### Design system
+
+Widgets are styled through ttkbootstrap’s design system using:
+
+- semantic colors via `bootstyle` (e.g., `primary`, `success`, `danger`)
+
+- variants (e.g., `outline`, `link`, `ghost` where supported)
+
+- consistent state visuals across themes
+
+!!! link "See also: [Colors](../../design-system/colors.md), [Variants](../../design-system/variants.md)"
+
+### Layout properties
+
+Widgets support ttkbootstrap layout conveniences (when available) so they compose cleanly in modern layouts.
+
+!!! link "See also: [Layout Properties](../../capabilities/layout-props.md)"
+
+### Localization
+
+Text labels can be localized in localized applications.
+
+!!! link "See also: [Localization](../../capabilities/localization.md)"
+
+
+---
+
 title: ScrolledText
 ---
 
@@ -40,6 +83,7 @@ app.mainloop()
 `ScrolledText` is a direct wrapper around `tkinter.Text`:
 
 - content is addressed by Text indices (`"1.0"`, `"end-1c"`, etc.)
+
 - there is no commit-time value model (it’s free-form text)
 
 ```python
@@ -54,7 +98,9 @@ text = st.get("1.0", "end-1c")
 ### Scroll direction: `direction`
 
 - `"vertical"` (default)
+
 - `"horizontal"`
+
 - `"both"`
 
 ```python
@@ -74,8 +120,11 @@ Horizontal scrolling uses **Shift + Mouse Wheel**.
 ### Scrollbar visibility: `show_scrollbar`
 
 - `"always"`
+
 - `"never"`
+
 - `"on-hover"`
+
 - `"on-scroll"` (auto-hide after `autohide_delay`)
 
 ```python
@@ -98,6 +147,7 @@ text_widget = st.text
 `ScrolledText` is designed specifically for text content (not arbitrary widgets).
 
 - scrolling and mouse wheel behavior are handled internally for cross-platform consistency
+
 - the container and scrollbars participate in ttkbootstrap theming via `bootstyle`
 
 For scrolling arbitrary widgets, use **ScrollView** instead.
@@ -128,6 +178,7 @@ If you need validation/messages, use field-based controls like **TextEntry** (si
 Use `ScrolledText` when:
 
 - you need multi-line, scrollable text content (logs, notes, simple editors)
+
 - you want integrated scrollbars and consistent wheel behavior
 
 Prefer **TextEntry** when:
@@ -143,8 +194,11 @@ Prefer **ScrollView** when:
 ## Related widgets
 
 - **TextEntry** — single-line, form-ready text control
+
 - **Entry** — low-level single-line text input
+
 - **ScrollView** — scroll container for arbitrary widgets
+
 - **Scrollbar** — scrollbar primitive used internally
 
 ---
@@ -152,3 +206,25 @@ Prefer **ScrollView** when:
 ## Reference
 
 - **API Reference:** `ttkbootstrap.ScrolledText`
+
+---
+
+## Additional resources
+
+### Related widgets
+
+- [DateEntry](dateentry.md)
+
+- [LabeledScale](labeledscale.md)
+
+- [NumericEntry](numericentry.md)
+
+### Framework concepts
+
+- [State & Interaction](../../capabilities/state-and-interaction.md)
+
+- [Configuration](../../capabilities/configuration.md)
+
+### API reference
+
+- [`ttkbootstrap.ScrolledText`](../../reference/widgets/ScrolledText.md)

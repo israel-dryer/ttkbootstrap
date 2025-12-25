@@ -1,4 +1,47 @@
 ---
+
+## Framework integration
+
+### Signals & events
+
+Widgets participate in ttkbootstrap’s reactive model.
+
+- **Signals** represent a widget’s **value/state** and are built on **Tk variables** with a modern subscription API.
+
+- **Events** (including virtual events) represent **interactions and moments** (click, commit, focus, selection changed).
+
+Signals and events are complementary: use signals for state flow and composition, and use events when you need
+interaction-level integration.
+
+!!! link "See also: [Signals](../../capabilities/signals.md), [Virtual Events](../../capabilities/virtual-events.md), [Callbacks](../../capabilities/callbacks.md)"
+
+### Design system
+
+Widgets are styled through ttkbootstrap’s design system using:
+
+- semantic colors via `bootstyle` (e.g., `primary`, `success`, `danger`)
+
+- variants (e.g., `outline`, `link`, `ghost` where supported)
+
+- consistent state visuals across themes
+
+!!! link "See also: [Colors](../../design-system/colors.md), [Variants](../../design-system/variants.md)"
+
+### Layout properties
+
+Widgets support ttkbootstrap layout conveniences (when available) so they compose cleanly in modern layouts.
+
+!!! link "See also: [Layout Properties](../../capabilities/layout-props.md)"
+
+### Localization
+
+Text labels can be localized in localized applications.
+
+!!! link "See also: [Localization](../../capabilities/localization.md)"
+
+
+---
+
 title: RadioToggle
 ---
 
@@ -16,6 +59,7 @@ than the classic radio indicator (common in toolbars, view switches, or mode pic
 `RadioToggle` behaves like `RadioButton`:
 
 - it participates in a mutually exclusive group via a shared `signal` or `variable`
+
 - selecting it sets the shared value to its `value`
 
 The difference is purely presentational: `RadioToggle` coerces `bootstyle` to a toolbutton-style badge
@@ -58,7 +102,9 @@ ttk.RadioToggle(app, bootstyle="success)
 Same as `RadioButton`:
 
 - `value` is the option represented by this toggle
+
 - the shared signal/variable holds the selected value
+
 - selection is committed on click (or keyboard select)
 
 ---
@@ -84,7 +130,9 @@ ttk.RadioToggle(app, text="Pro", signal=mode, value="pro")
 ## Behavior
 
 - Mutually exclusive selection through shared state
+
 - Visual emphasis matches toolbutton/badge styling
+
 - Typically used in compact areas like toolbars
 
 ---
@@ -124,12 +172,15 @@ ttk.RadioToggle(app, bootstyle="success")
 Use `RadioToggle` when:
 
 - you want single selection
+
 - the control is part of a compact UI (toolbar, header controls)
+
 - a button-like appearance is more discoverable than a radio indicator
 
 Prefer **RadioButton** when:
 
 - classic form-style radio indicators are expected
+
 - the control appears in a traditional settings form
 
 ---
@@ -137,7 +188,9 @@ Prefer **RadioButton** when:
 ## Related widgets
 
 - **RadioButton** — classic radio indicator
+
 - **RadioGroup** — composite group builder
+
 - **ButtonGroup / ToggleGroup** — grouped button-style selection patterns
 
 ---
@@ -145,3 +198,25 @@ Prefer **RadioButton** when:
 ## Reference
 
 - **API Reference:** `ttkbootstrap.RadioToggle`
+
+---
+
+## Additional resources
+
+### Related widgets
+
+- [Calendar](calendar.md)
+
+- [CheckButton](checkbutton.md)
+
+- [CheckToggle](checktoggle.md)
+
+### Framework concepts
+
+- [State & Interaction](../../capabilities/state-and-interaction.md)
+
+- [Configuration](../../capabilities/configuration.md)
+
+### API reference
+
+- [`ttkbootstrap.RadioToggle`](../../reference/widgets/RadioToggle.md)

@@ -1,4 +1,47 @@
 ---
+
+## Framework integration
+
+### Signals & events
+
+Widgets participate in ttkbootstrap’s reactive model.
+
+- **Signals** represent a widget’s **value/state** and are built on **Tk variables** with a modern subscription API.
+
+- **Events** (including virtual events) represent **interactions and moments** (click, commit, focus, selection changed).
+
+Signals and events are complementary: use signals for state flow and composition, and use events when you need
+interaction-level integration.
+
+!!! link "See also: [Signals](../../capabilities/signals.md), [Virtual Events](../../capabilities/virtual-events.md), [Callbacks](../../capabilities/callbacks.md)"
+
+### Design system
+
+Widgets are styled through ttkbootstrap’s design system using:
+
+- semantic colors via `bootstyle` (e.g., `primary`, `success`, `danger`)
+
+- variants (e.g., `outline`, `link`, `ghost` where supported)
+
+- consistent state visuals across themes
+
+!!! link "See also: [Colors](../../design-system/colors.md), [Variants](../../design-system/variants.md)"
+
+### Layout properties
+
+Widgets support ttkbootstrap layout conveniences (when available) so they compose cleanly in modern layouts.
+
+!!! link "See also: [Layout Properties](../../capabilities/layout-props.md)"
+
+### Localization
+
+Text labels can be localized in localized applications.
+
+!!! link "See also: [Localization](../../capabilities/localization.md)"
+
+
+---
+
 title: Notebook
 ---
 
@@ -9,8 +52,11 @@ title: Notebook
 ttkbootstrap’s `Notebook` extends `ttk.Notebook` with:
 
 - **key-based tab references** (stable, human-friendly)
+
 - optional **auto-generated keys**
+
 - helpers for **hide/show/remove** while keeping the tab registry consistent
+
 - **enriched tab lifecycle events** that describe *what changed* and *why* fileciteturn17file0
 
 <!--
@@ -69,7 +115,9 @@ app.mainloop()
 Most notebook APIs accept a “tab reference” that can be:
 
 - **key** (`str`) — recommended (stable)
+
 - **index** (`int`) — 0-based position
+
 - **widget** — the tab’s content widget
 
 ```python
@@ -142,7 +190,9 @@ Use `insert(...)` to move a widget to a new index. Keys remain stable even if in
 `Notebook` emits enriched lifecycle events:
 
 - `<<NotebookTabChanged>>`
+
 - `<<NotebookTabActivated>>`
+
 - `<<NotebookTabDeactivated>>`
 
 Use the helper methods to subscribe/unsubscribe:
@@ -164,8 +214,11 @@ funcid = nb.on_tab_changed(on_changed)
 For `on_tab_changed(...)`, `event.data` includes:
 
 - `current`: `{index, key, label}` or `None`
+
 - `previous`: `{index, key, label}` or `None`
+
 - `reason`: `"user" | "api" | "hide" | "forget" | "reorder" | "unknown"`
+
 - `via`: `"click" | "key" | "programmatic" | "unknown"` fileciteturn17file0
 
 !!! tip "Track navigation state"
@@ -176,8 +229,11 @@ For `on_tab_changed(...)`, `event.data` includes:
 ## UX guidance
 
 - Keep tab labels short and scannable
+
 - Avoid too many tabs in one notebook (consider grouping or alternative navigation)
+
 - Use `hide(...)` for permission-based tabs
+
 - Use `on_tab_changed(...)` to persist the last selected tab between sessions
 
 ---
@@ -187,12 +243,15 @@ For `on_tab_changed(...)`, `event.data` includes:
 Use `Notebook` when:
 
 - you have multiple related views sharing the same window area
+
 - switching views should be fast and non-destructive
+
 - you want a familiar desktop “tabs” model
 
 Prefer `PageStack` when:
 
 - the workflow is sequential (wizard/flow)
+
 - back/forward history matters
 
 Avoid tabs when:
@@ -204,7 +263,9 @@ Avoid tabs when:
 ## Related widgets
 
 - **PageStack** — stacked views with history (wizards/flows)
+
 - **Frame** — common tab page container
+
 - **PanedWindow** — split layouts often paired with view switching
 
 ---
@@ -212,3 +273,21 @@ Avoid tabs when:
 ## Reference
 
 - **API Reference:** `ttkbootstrap.Notebook`
+
+---
+
+## Additional resources
+
+### Related widgets
+
+- [PageStack](pagestack.md)
+
+### Framework concepts
+
+- [State & Interaction](../../capabilities/state-and-interaction.md)
+
+- [Configuration](../../capabilities/configuration.md)
+
+### API reference
+
+- [`ttkbootstrap.Notebook`](../../reference/widgets/Notebook.md)

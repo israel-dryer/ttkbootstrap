@@ -1,4 +1,47 @@
 ---
+
+## Framework integration
+
+### Signals & events
+
+Widgets participate in ttkbootstrap’s reactive model.
+
+- **Signals** represent a widget’s **value/state** and are built on **Tk variables** with a modern subscription API.
+
+- **Events** (including virtual events) represent **interactions and moments** (click, commit, focus, selection changed).
+
+Signals and events are complementary: use signals for state flow and composition, and use events when you need
+interaction-level integration.
+
+!!! link "See also: [Signals](../../capabilities/signals.md), [Virtual Events](../../capabilities/virtual-events.md), [Callbacks](../../capabilities/callbacks.md)"
+
+### Design system
+
+Widgets are styled through ttkbootstrap’s design system using:
+
+- semantic colors via `bootstyle` (e.g., `primary`, `success`, `danger`)
+
+- variants (e.g., `outline`, `link`, `ghost` where supported)
+
+- consistent state visuals across themes
+
+!!! link "See also: [Colors](../../design-system/colors.md), [Variants](../../design-system/variants.md)"
+
+### Layout properties
+
+Widgets support ttkbootstrap layout conveniences (when available) so they compose cleanly in modern layouts.
+
+!!! link "See also: [Layout Properties](../../capabilities/layout-props.md)"
+
+### Localization
+
+Text labels can be localized in localized applications.
+
+!!! link "See also: [Localization](../../capabilities/localization.md)"
+
+
+---
+
 title: Entry
 ---
 
@@ -31,6 +74,7 @@ app.mainloop()
 `Entry` works with **raw text**:
 
 - `entry.get()` returns the current string
+
 - `textvariable=` or `textsignal=` keeps the text synchronized with your state
 
 Unlike field controls such as `TextEntry`, `Entry` does not define “text vs committed value” semantics on its own.
@@ -100,7 +144,9 @@ entry.pack(padx=20, pady=20)
 `Entry` follows standard Tk/ttk behavior:
 
 - keyboard focus and caret navigation
+
 - standard widget states (`normal`, `readonly`, `disabled`)
+
 - standard Tk events like `<KeyRelease>` and `<FocusOut>`
 
 ```python
@@ -130,13 +176,17 @@ If you want user-friendly validation messages and commit-based validation, prefe
 Use `Entry` when:
 
 - you need direct, low-level access to `ttk.Entry` options
+
 - you are building your own composite control
+
 - you want Tk’s `validate` / `validatecommand` behavior
 
 Prefer **TextEntry** when:
 
 - you want labels, helper text, and standardized events
+
 - you want commit-based validation with messages
+
 - you are building application forms
 
 ---
@@ -144,9 +194,13 @@ Prefer **TextEntry** when:
 ## Related widgets
 
 - **TextEntry** — form-ready text control with labels, messages, and events
+
 - **PasswordEntry** — specialized masked input control
+
 - **NumericEntry** — numeric input with bounds and stepping
+
 - **DateEntry** / **TimeEntry** — structured date/time inputs
+
 - **Combobox** — selection with optional text entry
 
 ---
@@ -154,4 +208,27 @@ Prefer **TextEntry** when:
 ## Reference
 
 - **API Reference:** `ttkbootstrap.Entry`
+
 - **Related guides:** Design System, Events & Signals → Signals, Internationalization → Localization
+
+---
+
+## Additional resources
+
+### Related widgets
+
+- [Canvas](canvas.md)
+
+- [Combobox](combobox.md)
+
+- [Spinbox](spinbox.md)
+
+### Framework concepts
+
+- [State & Interaction](../../capabilities/state-and-interaction.md)
+
+- [Configuration](../../capabilities/configuration.md)
+
+### API reference
+
+- [`ttkbootstrap.Entry`](../../reference/widgets/Entry.md)

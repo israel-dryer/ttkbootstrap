@@ -1,4 +1,47 @@
 ---
+
+## Framework integration
+
+### Signals & events
+
+Widgets participate in ttkbootstrap’s reactive model.
+
+- **Signals** represent a widget’s **value/state** and are built on **Tk variables** with a modern subscription API.
+
+- **Events** (including virtual events) represent **interactions and moments** (click, commit, focus, selection changed).
+
+Signals and events are complementary: use signals for state flow and composition, and use events when you need
+interaction-level integration.
+
+!!! link "See also: [Signals](../../capabilities/signals.md), [Virtual Events](../../capabilities/virtual-events.md), [Callbacks](../../capabilities/callbacks.md)"
+
+### Design system
+
+Widgets are styled through ttkbootstrap’s design system using:
+
+- semantic colors via `bootstyle` (e.g., `primary`, `success`, `danger`)
+
+- variants (e.g., `outline`, `link`, `ghost` where supported)
+
+- consistent state visuals across themes
+
+!!! link "See also: [Colors](../../design-system/colors.md), [Variants](../../design-system/variants.md)"
+
+### Layout properties
+
+Widgets support ttkbootstrap layout conveniences (when available) so they compose cleanly in modern layouts.
+
+!!! link "See also: [Layout Properties](../../capabilities/layout-props.md)"
+
+### Localization
+
+Text labels can be localized in localized applications.
+
+!!! link "See also: [Localization](../../capabilities/localization.md)"
+
+
+---
+
 title: ContextMenu
 ---
 
@@ -38,8 +81,11 @@ Use a ContextMenu when actions are **contextual**, secondary, or dependent on th
 ### Consider a different control when…
 
 - Actions are primary or frequently used → use **Button** or **Toolbar**
+
 - You need a compact action launcher → use **DropdownButton**
+
 - You need native menubar integration → use **MenuButton**
+
 - Actions require multi-step input → use a dialog
 
 ---
@@ -49,7 +95,9 @@ Use a ContextMenu when actions are **contextual**, secondary, or dependent on th
 ContextMenu items are fully styleable and integrate with ttkbootstrap’s theme system.
 
 - Supports icons per item
+
 - Supports checkbuttons and radiobuttons
+
 - Uses the active theme’s colors, spacing, and typography
 
 !!! note "Styling"
@@ -64,7 +112,9 @@ ContextMenu items are fully styleable and integrate with ttkbootstrap’s theme 
 Unlike Tk’s native `Menu`, `ContextMenu` is composed of real ttkbootstrap widgets. This enables:
 
 - Full theming and dark/light mode consistency
+
 - Icons and custom layouts per item
+
 - Predictable cross-platform behavior
 
 ### Adding items
@@ -94,8 +144,11 @@ menu = ttk.ContextMenu(app, items=items)
 `ContextMenu` exposes a full item-management API:
 
 - `add_item(...)`, `add_items(...)`
+
 - `insert_item(...)`, `remove_item(...)`, `move_item(...)`
+
 - `configure_item(...)`
+
 - `items(...)` (get or replace all items)
 
 This is especially useful when menu contents depend on selection state.
@@ -127,8 +180,11 @@ menu.off_item_click()
 When shown, ContextMenu:
 
 - Grabs focus automatically
+
 - Supports arrow-key navigation
+
 - Activates items with **Enter**
+
 - Closes on **Escape** or outside click
 
 Keyboard and focus behavior are handled internally while the menu is visible.
@@ -144,7 +200,9 @@ Menu item labels can participate in localization the same way as other widgets. 
 ## Related widgets
 
 - **DropdownButton** — button-triggered menus using ContextMenu internally
+
 - **MenuButton** — native `tk.Menu` based trigger
+
 - **Dialog / MessageDialog** — for confirmations and complex actions
 
 ---
@@ -152,4 +210,27 @@ Menu item labels can participate in localization the same way as other widgets. 
 ## Reference
 
 - **API Reference:** `ttkbootstrap.ContextMenu`
+
 - **Related guides:** Design System → Icons, Internationalization → Localization
+
+---
+
+## Additional resources
+
+### Related widgets
+
+- [Button](button.md)
+
+- [ButtonGroup](buttongroup.md)
+
+- [DropdownButton](dropdownbutton.md)
+
+### Framework concepts
+
+- [State & Interaction](../../capabilities/state-and-interaction.md)
+
+- [Configuration](../../capabilities/configuration.md)
+
+### API reference
+
+- [`ttkbootstrap.ContextMenu`](../../reference/widgets/ContextMenu.md)

@@ -1,4 +1,47 @@
 ---
+
+## Framework integration
+
+### Signals & events
+
+Widgets participate in ttkbootstrap’s reactive model.
+
+- **Signals** represent a widget’s **value/state** and are built on **Tk variables** with a modern subscription API.
+
+- **Events** (including virtual events) represent **interactions and moments** (click, commit, focus, selection changed).
+
+Signals and events are complementary: use signals for state flow and composition, and use events when you need
+interaction-level integration.
+
+!!! link "See also: [Signals](../../capabilities/signals.md), [Virtual Events](../../capabilities/virtual-events.md), [Callbacks](../../capabilities/callbacks.md)"
+
+### Design system
+
+Widgets are styled through ttkbootstrap’s design system using:
+
+- semantic colors via `bootstyle` (e.g., `primary`, `success`, `danger`)
+
+- variants (e.g., `outline`, `link`, `ghost` where supported)
+
+- consistent state visuals across themes
+
+!!! link "See also: [Colors](../../design-system/colors.md), [Variants](../../design-system/variants.md)"
+
+### Layout properties
+
+Widgets support ttkbootstrap layout conveniences (when available) so they compose cleanly in modern layouts.
+
+!!! link "See also: [Layout Properties](../../capabilities/layout-props.md)"
+
+### Localization
+
+Text labels can be localized in localized applications.
+
+!!! link "See also: [Localization](../../capabilities/localization.md)"
+
+
+---
+
 title: SpinnerEntry
 ---
 
@@ -92,7 +135,9 @@ amount.insert_addon(ttk.Label, position="before", text="$")
 SpinnerEntry supports stepping via:
 
 - spin buttons
+
 - Up / Down arrow keys
+
 - mouse wheel (platform-dependent)
 
 Typing is always allowed unless you set the underlying entry to readonly.
@@ -104,12 +149,15 @@ Typing is always allowed unless you set the underlying entry to readonly.
 SpinnerEntry emits standard field events:
 
 - `<<Input>>` / `on_input`
+
 - `<<Changed>>` / `on_changed`
+
 - validation lifecycle events
 
 It also emits step intent events:
 
 - `<<Increment>>` / `on_increment`
+
 - `<<Decrement>>` / `on_decrement`
 
 ```python
@@ -144,12 +192,15 @@ If you need numeric bounds, prefer **NumericEntry** (min/max) unless SpinnerEntr
 Use `SpinnerEntry` when:
 
 - stepping is the primary interaction
+
 - users frequently increment/decrement values
+
 - visible step buttons improve UX
 
 Prefer **NumericEntry** when:
 
 - users primarily type numbers and stepping is secondary
+
 - you need bounds (`minvalue`/`maxvalue`) and clamping/wrapping behavior
 
 Prefer **Scale** when:
@@ -161,9 +212,13 @@ Prefer **Scale** when:
 ## Related widgets
 
 - **NumericEntry** — validated numeric input with bounds
+
 - **Spinbox** — low-level stepper primitive
+
 - **TextEntry** — general field control
+
 - **Scale** — slider-based numeric adjustment
+
 - **Form** — build forms from field definitions
 
 ---
@@ -171,3 +226,25 @@ Prefer **Scale** when:
 ## Reference
 
 - **API Reference:** `ttkbootstrap.SpinnerEntry`
+
+---
+
+## Additional resources
+
+### Related widgets
+
+- [DateEntry](dateentry.md)
+
+- [LabeledScale](labeledscale.md)
+
+- [NumericEntry](numericentry.md)
+
+### Framework concepts
+
+- [State & Interaction](../../capabilities/state-and-interaction.md)
+
+- [Configuration](../../capabilities/configuration.md)
+
+### API reference
+
+- [`ttkbootstrap.Spinnerentry`](../../reference/widgets/Spinnerentry.md)
