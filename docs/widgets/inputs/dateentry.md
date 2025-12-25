@@ -209,4 +209,4 @@ d.add_validation_rule("required", message="A date is required")
 
 ### API reference
 
-- [ttkbootstrap.DateEntry](../../api/dateentry.md)
+- [`ttkbootstrap.DateEntry`](../../reference/widgets/DateEntry.md)

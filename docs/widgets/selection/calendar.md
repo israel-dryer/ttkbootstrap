@@ -273,4 +273,4 @@ It refreshes automatically when `<<LocaleChanged>>` is generated.
 
 ### API reference
 
-* [ttkbootstrap.Calendar](../../api/calendar.md)
+- [`ttkbootstrap.Calendar`](../../reference/widgets/Calendar.md)

@@ -82,5 +82,4 @@ Font dialogs typically return:
 
 ### API reference
 
-!!! link "API Reference"
-    `ttkbootstrap.FontDialog`
+- [`ttkbootstrap.FontDialog`](../../reference/dialogs/FontDialog.md)

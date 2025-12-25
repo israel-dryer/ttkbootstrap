@@ -147,4 +147,4 @@ message.set("Updated text")  # Label updates automatically
 
 ### API reference
 
-- [ttkbootstrap.Label](../../api/widgets/label.md)
+- [`ttkbootstrap.Label`](../../reference/widgets/Label.md)

@@ -312,4 +312,4 @@ c.bind("<ButtonRelease-1>", on_up)
 
 ### API reference
 
-- [ttkbootstrap.Canvas](/api/widgets/canvas.md) (Tkinter `tk.Canvas`)
+- [`ttkbootstrap.Canvas`](../../reference/widgets/Canvas.md)

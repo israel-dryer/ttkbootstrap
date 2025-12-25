@@ -86,5 +86,4 @@ Color chooser dialogs typically return:
 
 ### API reference
 
-!!! link "API Reference"
-    `ttkbootstrap.ColorChooser`
+- [`ttkbootstrap.ColorChooser`](../../reference/dialogs/ColorChooser.md)

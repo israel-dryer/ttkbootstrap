@@ -126,4 +126,4 @@ for i in range(20):
 
 ### API reference
 
-- **API Reference:** `ttkbootstrap.ScrollView`
+- [`ttkbootstrap.ScrollView`](../../reference/widgets/ScrollView.md)

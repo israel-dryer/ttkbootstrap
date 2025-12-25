@@ -122,4 +122,4 @@ ttk.Separator(app, orient="vertical")
 
 ### API reference
 
-- **API Reference:** `ttkbootstrap.Separator`
+- [`ttkbootstrap.Separator`](../../reference/widgets/Separator.md)

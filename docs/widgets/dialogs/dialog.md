@@ -115,5 +115,4 @@ Dialogs produce a **single committed outcome**:
 
 ### API reference
 
-!!! link "API Reference"
-    `ttkbootstrap.Dialog`
+- [`ttkbootstrap.Dialog`](../../reference/dialogs/Dialog.md)

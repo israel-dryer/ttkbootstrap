@@ -265,4 +265,4 @@ If the field label participates in localization, it follows your global field/wi
 
 ### API reference
 
-- [ttkbootstrap.SelectBox](../../api/widgets/selectbox.md)
+- [`ttkbootstrap.SelectBox`](../../reference/widgets/SelectBox.md)

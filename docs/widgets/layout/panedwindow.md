@@ -144,4 +144,4 @@ Use the ttk panedwindow API (varies by implementation/version).
 
 ### API reference
 
-- **API Reference:** `ttkbootstrap.PanedWindow`
+- [`ttkbootstrap.PanedWindow`](../../reference/widgets/PanedWindow.md)

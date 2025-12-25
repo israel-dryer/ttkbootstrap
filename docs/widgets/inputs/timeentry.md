@@ -178,4 +178,4 @@ If your implementation supports a picker-style interaction, it should be treated
 
 ### API reference
 
-- [ttkbootstrap.TimeEntry](../../api/timeentry.md)
+- [`ttkbootstrap.TimeEntry`](../../reference/widgets/TimeEntry.md)

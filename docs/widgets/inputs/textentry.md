@@ -225,4 +225,4 @@ search.insert_addon(ttk.Button, position="after", icon="search", command=handle_
 
 ### API reference
 
-- [ttkbootstrap.TextEntry](../../api/textentry.md)
+- [`ttkbootstrap.TextEntry`](../../reference/widgets/TextEntry.md)

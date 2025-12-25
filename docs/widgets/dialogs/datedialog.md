@@ -153,5 +153,4 @@ Use validation when:
 
 ### API reference
 
-!!! link "API Reference"
-    `ttkbootstrap.DateDialog`
+- [`ttkbootstrap.DateDialog`](../../reference/dialogs/DateDialog.md)

@@ -238,4 +238,4 @@ For `on_tab_changed(...)`, `event.data` includes:
 
 ### API reference
 
-- [ttkbootstrap.Notebook](../../api/widgets/notebook.md)
+- [`ttkbootstrap.Notebook`](../../reference/widgets/Notebook.md)

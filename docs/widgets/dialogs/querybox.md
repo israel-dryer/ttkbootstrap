@@ -107,5 +107,4 @@ For more complex validation or multiple fields, use [FormDialog](formdialog.md).
 
 ### API reference
 
-!!! link "API Reference"
-    `ttkbootstrap.QueryBox`
+- [`ttkbootstrap.QueryBox`](../../reference/dialogs/QueryBox.md)

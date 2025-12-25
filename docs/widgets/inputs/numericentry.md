@@ -270,4 +270,4 @@ size.insert_addon(ttk.Label, position="after", text="cm", font="label[9]")
 
 ### API reference
 
-- [ttkbootstrap.NumericEntry](../../api/numericentry.md)
+- [`ttkbootstrap.NumericEntry`](../../reference/widgets/NumericEntry.md)

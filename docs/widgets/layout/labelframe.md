@@ -141,4 +141,4 @@ ttk.LabelFrame(app, text="Options", padding=(16, 12))
 
 ### API reference
 
-- **API Reference:** `ttkbootstrap.LabelFrame`
+- [`ttkbootstrap.LabelFrame`](../../reference/widgets/LabelFrame.md)

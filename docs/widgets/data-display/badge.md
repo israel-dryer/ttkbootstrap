@@ -155,4 +155,4 @@ count.set(10)  # Badge updates automatically
 
 ### API reference
 
-- [ttkbootstrap.Badge](../../api/widgets/badge.md)
+- [`ttkbootstrap.Badge`](../../reference/widgets/Badge.md)

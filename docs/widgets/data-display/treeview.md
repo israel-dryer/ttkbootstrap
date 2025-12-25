@@ -196,4 +196,4 @@ for item in new_data:
 
 ### API reference
 
-- [ttkbootstrap.TreeView](../../api/widgets/treeview.md)
+- [`ttkbootstrap.TreeView`](../../reference/widgets/TreeView.md)

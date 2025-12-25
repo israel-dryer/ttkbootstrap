@@ -187,4 +187,4 @@ Common patterns include:
 
 ### API reference
 
-- [ttkbootstrap.PasswordEntry](../../api/passwordentry.md)
+- [`ttkbootstrap.PasswordEntry`](../../reference/widgets/PasswordEntry.md)

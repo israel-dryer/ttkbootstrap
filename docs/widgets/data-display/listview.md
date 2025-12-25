@@ -283,4 +283,4 @@ items.set([*items.get(), {"id": 2, "title": "Item 2"}])
 
 ### API reference
 
-- [ttkbootstrap.ListView](../../api/widgets/listview.md)
+- [`ttkbootstrap.ListView`](../../reference/widgets/ListView.md)

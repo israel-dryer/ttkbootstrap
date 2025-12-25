@@ -118,5 +118,4 @@ For complex "live" forms, prefer an inline [Form](../forms/form.md) in a normal 
 
 ### API reference
 
-!!! link "API Reference"
-    `ttkbootstrap.FormDialog`
+- [`ttkbootstrap.FormDialog`](../../reference/dialogs/FormDialog.md)

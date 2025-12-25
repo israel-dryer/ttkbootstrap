@@ -224,4 +224,4 @@ app.mainloop()
 
 ### API reference
 
-- [ttkbootstrap.RadioGroup](/api/radiogroup/)
+- [`ttkbootstrap.RadioGroup`](../../reference/widgets/RadioGroup.md)

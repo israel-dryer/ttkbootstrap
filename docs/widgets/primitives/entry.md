@@ -173,4 +173,4 @@ If you want user-friendly validation messages and commit-based validation, prefe
 
 ### API reference
 
-- [ttkbootstrap.Entry](/api/widgets/entry.md)
+- [`ttkbootstrap.Entry`](../../reference/widgets/Entry.md)

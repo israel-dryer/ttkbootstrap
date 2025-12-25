@@ -152,4 +152,4 @@ level.set(90)  # FloodGauge updates automatically
 
 ### API reference
 
-- [ttkbootstrap.FloodGauge](../../api/widgets/floodgauge.md)
+- [`ttkbootstrap.FloodGauge`](../../reference/widgets/FloodGauge.md)

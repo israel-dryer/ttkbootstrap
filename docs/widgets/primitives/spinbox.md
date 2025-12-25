@@ -181,4 +181,4 @@ For validated, commit-based workflows, prefer [SpinnerEntry](/widgets/inputs/spi
 
 ### API reference
 
-- [ttkbootstrap.Spinbox](/api/widgets/spinbox.md)
+- [`ttkbootstrap.Spinbox`](../../reference/widgets/Spinbox.md)

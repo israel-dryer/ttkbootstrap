@@ -163,4 +163,4 @@ tv.build_table_data(coldata=new_columns, rowdata=new_rows)
 
 ### API reference
 
-- [ttkbootstrap.TableView](../../api/widgets/tableview.md)
+- [`ttkbootstrap.TableView`](../../reference/widgets/TableView.md)

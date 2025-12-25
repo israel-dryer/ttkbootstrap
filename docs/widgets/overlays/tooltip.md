@@ -99,4 +99,4 @@ Tooltips can be styled using the `bootstyle` parameter (if supported).
 
 ### API reference
 
-- [ttkbootstrap.Tooltip](../../api/tooltip.md)
+- [`ttkbootstrap.Tooltip`](../../reference/widgets/Tooltip.md)

@@ -75,5 +75,4 @@ Common interaction pattern:
 
 ### API reference
 
-!!! link "API Reference"
-    `ttkbootstrap.ColorDropper`
+- [`ttkbootstrap.ColorDropper`](../../reference/dialogs/ColorDropper.md)

@@ -233,4 +233,4 @@ Navigation events include:
 
 ### API reference
 
-- [ttkbootstrap.PageStack](../../api/widgets/pagestack.md)
+- [`ttkbootstrap.PageStack`](../../reference/widgets/PageStack.md)

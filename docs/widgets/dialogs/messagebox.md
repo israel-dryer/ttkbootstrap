@@ -156,5 +156,4 @@ Keep messages short, actionable, and avoid putting long text in the main message
 
 ### API reference
 
-!!! link "API Reference"
-    `ttkbootstrap.MessageBox`
+- [`ttkbootstrap.MessageBox`](../../reference/dialogs/MessageBox.md)

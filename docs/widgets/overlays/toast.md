@@ -100,4 +100,4 @@ Toast supports different visual intents through the `bootstyle` parameter:
 
 ### API reference
 
-- [ttkbootstrap.Toast](../../api/toast.md)
+- [`ttkbootstrap.Toast`](../../reference/widgets/Toast.md)

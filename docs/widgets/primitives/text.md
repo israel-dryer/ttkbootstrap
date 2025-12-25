@@ -315,4 +315,4 @@ def trim():
 
 ### API reference
 
-- [ttkbootstrap.Text](/api/widgets/text.md) (Tkinter `tk.Text`)
+- [`ttkbootstrap.Text`](../../reference/widgets/Text.md)

@@ -226,4 +226,4 @@ If you need localization-aware field labels and messaging, prefer [SelectBox](/w
 
 ### API reference
 
-- [ttkbootstrap.Combobox](/api/widgets/combobox.md)
+- [`ttkbootstrap.Combobox`](../../reference/widgets/Combobox.md)

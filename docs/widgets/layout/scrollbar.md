@@ -126,4 +126,4 @@ ttk.Scrollbar(app, orient="vertical", command=widget.yview)
 
 ### API reference
 
-- **API Reference:** `ttkbootstrap.Scrollbar`
+- [`ttkbootstrap.Scrollbar`](../../reference/widgets/Scrollbar.md)

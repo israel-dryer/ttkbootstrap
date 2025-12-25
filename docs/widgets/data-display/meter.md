@@ -152,4 +152,4 @@ usage.set(75)  # Meter updates automatically
 
 ### API reference
 
-- [ttkbootstrap.Meter](../../api/widgets/meter.md)
+- [`ttkbootstrap.Meter`](../../reference/widgets/Meter.md)

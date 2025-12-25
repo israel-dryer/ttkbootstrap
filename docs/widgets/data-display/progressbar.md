@@ -158,4 +158,4 @@ progress.set(50)  # Progressbar updates automatically
 
 ### API reference
 
-- [ttkbootstrap.Progressbar](../../api/widgets/progressbar.md)
+- [`ttkbootstrap.Progressbar`](../../reference/widgets/Progressbar.md)

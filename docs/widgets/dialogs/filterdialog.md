@@ -94,5 +94,4 @@ Popover mode (if supported) works well for quick filter panels.
 
 ### API reference
 
-!!! link "API Reference"
-    `ttkbootstrap.FilterDialog`
+- [`ttkbootstrap.FilterDialog`](../../reference/dialogs/FilterDialog.md)

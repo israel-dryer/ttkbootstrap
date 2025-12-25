@@ -95,4 +95,4 @@ a UX hint.
 
 ### API reference
 
-- **API Reference:** `ttkbootstrap.Sizegrip`
+- [`ttkbootstrap.SizeGrip`](../../reference/widgets/SizeGrip.md)

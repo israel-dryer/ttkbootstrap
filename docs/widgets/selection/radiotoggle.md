@@ -163,4 +163,4 @@ Bind a shared `signal` (preferred) or `variable` to enable reactive updates acro
 
 ### API reference
 
-- [ttkbootstrap.RadioToggle](../../api/radiotoggle.md)
+- [`ttkbootstrap.RadioToggle`](../../reference/widgets/RadioToggle.md)
