@@ -69,6 +69,10 @@ Using font tokens, modifiers, and the Font class for consistent text styling.
 
 Working with the design system—semantic colors, variants, and consistent styling across widgets.
 
+### [Icons](icons.md)
+
+Using icons effectively—named resources, theme integration, and common UI patterns.
+
 ### [Theming](theming.md)
 
 How theme palettes work, switching themes at runtime, and creating custom themes.
