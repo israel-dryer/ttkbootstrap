@@ -3,6 +3,8 @@
 The **Platform** section explains how ttkbootstrap builds on top of Tk and ttk to provide
 a consistent, modern application foundation.
 
+If you're trying to build an interface, start with [Guides](../guides/index.md). Platform pages explain *why* things behave the way they do.
+
 This section is not widget documentation.
 Instead, it describes the **runtime model**, **event system**, **styling architecture**,
 and **system-level behaviors** that apply across all widgets and applications built with
@@ -41,8 +43,8 @@ Start here if you want to understand:
 - how layout and geometry behave at runtime
 - how styles, assets, and localization are applied
 
-For **how to use a specific widget**, see the Widgets section.
-For **exact APIs and signatures**, see the API Reference.
+- See [Widgets](../widgets/index.md) for how to use specific widgets.
+- See [API Reference](../reference/index.md) for exact APIs and signatures.
 
 ---
 

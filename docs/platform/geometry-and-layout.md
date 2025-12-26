@@ -52,6 +52,7 @@ Containers:
 
 ttkbootstrap encourages designing layouts by composing containers,
 rather than fine-tuning individual widgets.
+See [Guides → Layout](../guides/layout.md) for the recommended layout approach using PackFrame and GridFrame.
 
 ---
 
@@ -91,7 +92,10 @@ While Tk allows many layout styles, ttkbootstrap promotes a few conventions:
 - avoid deep nesting where possible
 - centralize scrolling behavior in dedicated containers
 
-These conventions reduce layout complexity and improve maintainability.
+These conventions reduce layout complexity and improve maintainability:
+
+- See [Widgets → PackFrame](../widgets/layout/packframe.md) for linear layouts.
+- See [Widgets → GridFrame](../widgets/layout/gridframe.md) for structured, row/column layouts.
 
 ---
 
@@ -108,6 +112,6 @@ Understanding layout mechanics helps avoid these problems.
 
 ## Next steps
 
-- See **Layout Capabilities** for spacing and container helpers
-- See **Widget Lifecycle** for layout timing considerations
-- See **Platform → Styling** for how layout interacts with styling
+- See [Guides → Spacing & Alignment](../guides/spacing-and-alignment.md) for spacing and container helpers.
+- See [Widget Lifecycle](widget-lifecycle.md) for layout timing considerations.
+- See [Capabilities → Layout](../capabilities/layout/index.md) for layout-related capabilities.

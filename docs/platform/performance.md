@@ -58,6 +58,8 @@ ttkbootstrap encourages:
 - minimizing unnecessary relayouts
 - batching layout changes where possible
 
+See [Guides → Layout](../guides/layout.md) for layout patterns that minimize overhead.
+
 ---
 
 ## Image and font performance
@@ -110,6 +112,7 @@ ttkbootstrap promotes the following performance practices:
 - avoid deep widget trees
 
 Following these patterns helps maintain responsiveness.
+See [Guides → App Structure](../guides/app-structure.md) for application organization.
 
 ---
 
@@ -126,6 +129,6 @@ Understanding the event loop model is key to avoiding these issues.
 
 ## Next steps
 
-- See **Debugging** for diagnosing performance problems
-- See **Capabilities → Signals** for coordinating background work
-- See **Images & DPI** for image performance considerations
+- See [Debugging](debugging.md) for diagnosing performance problems.
+- See [Capabilities → Signals](../capabilities/signals/index.md) for coordinating background work.
+- See [Images & DPI](images-and-dpi.md) for image performance considerations.

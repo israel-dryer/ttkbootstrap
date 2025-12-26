@@ -125,7 +125,10 @@ ttkbootstrap provides structure to reduce debugging effort:
 - explicit capabilities
 - predictable widget lifecycles
 
-Leaning into these abstractions simplifies diagnosis.
+Leaning into these abstractions simplifies diagnosis:
+
+- See [Guides → App Structure](../guides/app-structure.md) for application organization patterns.
+- See [Capabilities → Signals](../capabilities/signals/index.md) for reactive state debugging.
 
 ---
 
@@ -142,6 +145,6 @@ Most bugs fall into a small set of patterns.
 
 ## Next steps
 
-- See **Performance** for responsiveness issues
-- See **Images & DPI** for rendering bugs
-- See **Capabilities** for behavior-specific debugging
+- See [Performance](performance.md) for responsiveness issues.
+- See [Images & DPI](images-and-dpi.md) for rendering bugs.
+- See [Capabilities → State & Interaction](../capabilities/state-and-interaction.md) for behavior-specific debugging.

@@ -5,7 +5,7 @@ Understanding how events are generated, propagated, and handled is essential for
 predictable interfaces with ttkbootstrap.
 
 This page focuses on **how Tk events work** and how ttkbootstrap expects you to use them.
-Higher-level reactive patterns are covered in **Capabilities → Signals**.
+See [Guides → Reactivity](../guides/reactivity.md) for higher-level reactive patterns.
 
 ---
 
@@ -104,10 +104,11 @@ They are especially useful when:
 - application-level state changes need to notify many components
 
 ttkbootstrap strongly encourages virtual events for semantic communication.
+See [Capabilities → Virtual Events](../capabilities/signals/virtual-events.md) for the framework's virtual event patterns.
 
 ---
 
-## ttkbootstrap’s guidance on events
+## ttkbootstrap's guidance on events
 
 ttkbootstrap treats events as a **low-level mechanism**:
 
@@ -132,6 +133,6 @@ Clear event boundaries lead to more maintainable applications.
 
 ## Next steps
 
-- See **Capabilities → Signals** for declarative state propagation
-- See **Widget Lifecycle** to understand when bindings should be created or removed
-- See **Event Loop** for how events are scheduled and dispatched
+- See [Capabilities → Signals](../capabilities/signals/index.md) for declarative state propagation.
+- See [Widget Lifecycle](widget-lifecycle.md) to understand when bindings should be created or removed.
+- See [Event Loop](event-loop.md) for how events are scheduled and dispatched.

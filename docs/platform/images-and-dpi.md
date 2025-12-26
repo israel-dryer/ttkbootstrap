@@ -76,6 +76,7 @@ Caching images:
 - simplifies lifetime management
 
 ttkbootstrap provides an `Image` abstraction to manage caching and reuse.
+See [Guides → Icons](../guides/icons.md) for using framework-managed icons.
 
 ---
 
@@ -104,6 +105,6 @@ Understanding image behavior helps avoid these problems.
 
 ## Next steps
 
-- See **Capabilities → Icons & Images** for user-facing image behavior
-- See **Design System → Icons** for icon usage
-- See **Widgets** for examples of image-backed controls
+- See [Capabilities → Icons & Images](../capabilities/icons/index.md) for user-facing image behavior.
+- See [Design System → Icons](../design-system/icons.md) for icon design principles.
+- See [Widgets](../widgets/index.md) for examples of image-backed controls.

@@ -23,6 +23,7 @@ The root window:
 - serves as the parent for all other windows
 
 ttkbootstrap formalizes this role through the `App` object.
+See [Guides → App Structure](../guides/app-structure.md) for application organization patterns.
 
 ---
 
@@ -107,6 +108,7 @@ ttkbootstrap promotes the following patterns:
 - destroy windows explicitly when done
 
 These patterns improve predictability and usability across platforms.
+See [Widgets → Dialogs](../widgets/dialogs/index.md) for pre-built dialog patterns.
 
 ---
 
@@ -123,6 +125,6 @@ Understanding window behavior helps avoid these issues.
 
 ## Next steps
 
-- See **Event Loop** for how window events are dispatched
-- See **Widget Lifecycle** for creation and destruction timing
-- See **Capabilities → Signals** for coordinating window state
+- See [Event Loop](event-loop.md) for how window events are dispatched.
+- See [Widget Lifecycle](widget-lifecycle.md) for creation and destruction timing.
+- See [Capabilities → Signals](../capabilities/signals/index.md) for coordinating window state.

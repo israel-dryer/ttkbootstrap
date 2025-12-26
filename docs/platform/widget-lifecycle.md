@@ -136,6 +136,7 @@ ttkbootstrap encourages a clear lifecycle pattern:
 5. destroy widgets explicitly when done
 
 Following this pattern helps avoid subtle bugs and resource leaks.
+See [Guides → App Structure](../guides/app-structure.md) for application organization and lifecycle patterns.
 
 ---
 
@@ -152,6 +153,6 @@ Understanding the widget lifecycle helps prevent these issues.
 
 ## Next steps
 
-- See **Geometry & Layout** to understand layout timing
-- See **Events & Bindings** for event delivery
-- See **Capabilities** for lifecycle-aware behaviors such as signals and validation
+- See [Geometry & Layout](geometry-and-layout.md) to understand layout timing.
+- See [Events & Bindings](events-and-bindings.md) for event delivery.
+- See [Capabilities → State & Interaction](../capabilities/state-and-interaction.md) for lifecycle-aware behaviors.

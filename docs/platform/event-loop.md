@@ -112,7 +112,10 @@ While ttkbootstrap does not replace the event loop, it layers structure on top o
 - **Capabilities** standardize event-related behaviors across widgets
 - **Dialogs and forms** use consistent modal interaction patterns
 
-All of these features are designed to work *with* the event loop, not around it.
+All of these features are designed to work *with* the event loop, not around it:
+
+- See [Guides → Reactivity](../guides/reactivity.md) for how signals, callbacks, and events work together in applications.
+- See [Capabilities → Signals](../capabilities/signals/index.md) for the reactive abstraction built on Tk variables.
 
 ---
 
@@ -129,6 +132,5 @@ A solid understanding of the event loop helps avoid these issues.
 
 ## Next steps
 
-- See **Events & Bindings** to learn how events are delivered to widgets
-- See **Capabilities → Signals** for reactive state handling
-- See **Widget Lifecycle** to understand how widgets enter and leave the UI
+- See [Events & Bindings](events-and-bindings.md) to learn how events are delivered to widgets.
+- See [Widget Lifecycle](widget-lifecycle.md) to understand how widgets enter and leave the UI.

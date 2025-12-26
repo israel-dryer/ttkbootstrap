@@ -125,7 +125,10 @@ Instead of working directly with style names, users specify:
 
 ttkbootstrap resolves these into concrete ttk style names and layouts.
 
-This keeps styling declarative and consistent.
+This keeps styling declarative and consistent:
+
+- See [Design System → Variants](../design-system/variants.md) for semantic styling options.
+- See [Guides → Styling](../guides/styling.md) for how to apply styles in practice.
 
 ---
 
@@ -142,6 +145,6 @@ Understanding the style and element system helps avoid these issues.
 
 ## Next steps
 
-- See **Platform → Styling → Bootstyle** for the user-facing styling model
-- See **Design System** for tokens and visual semantics
-- See **Widgets** to see how styles are applied in practice
+- See [Design System](../design-system/index.md) for tokens and visual semantics.
+- See [Design System → Typography](../design-system/typography.md) for font styling.
+- See [Widgets](../widgets/index.md) to see how styles are applied in practice.
