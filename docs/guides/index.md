@@ -53,9 +53,13 @@ Guides for building predictable, maintainable layouts.
 - **[Layout overview](layout.md)**  
   Building layouts with Frame, PackFrame, and GridFrame. When to use each, and how they reduce boilerplate.
 
-- **[Spacing & Alignment](spacing-and-alignment.md)**  
-  How padding, margins, alignment, and resizing work in Tk—and how ttkbootstrap simplifies them.  
+- **[Spacing & Alignment](spacing-and-alignment.md)**
+  How padding, margins, alignment, and resizing work in Tk—and how ttkbootstrap simplifies them.
   Useful when working with legacy layouts or debugging complex geometry.
+
+### [Navigation](navigation.md)
+
+Patterns for moving between views—tabs, stacked pages, and sidebar navigation.
 
 ### [Reactivity](reactivity.md)
 

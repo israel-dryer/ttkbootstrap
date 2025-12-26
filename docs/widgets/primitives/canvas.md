@@ -40,7 +40,7 @@ c.pack(fill="both", expand=True, padx=20, pady=20)
 
 c.create_rectangle(20, 20, 220, 120, fill="#0d6efd", outline="")
 c.create_oval(260, 30, 480, 140, outline="#212529", width=2)
-c.create_text(260, 190, text="Canvas", font=("TkDefaultFont", 14, "bold"))
+c.create_text(260, 190, text="Canvas", font="heading-lg")
 
 app.mainloop()
 ```
