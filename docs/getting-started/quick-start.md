@@ -1,131 +1,108 @@
 ---
-title: Quickstart
+title: Quick Start
 ---
 
-# Quickstart (5-Minute App)
+# Quick Start
 
-This quickstart gets a themed ttkbootstrap window on screen in just a few minutes.
+This guide gets you from **zero to a running ttkbootstrap app** in just a few minutes.
 
-You will:
-
-- install the package,
-- create a minimal application,
-- run it,
-- and learn how to change themes at runtime.
-
-The goal is to give you a **working mental model**, not to introduce every feature.
+The goal is not to explain everything — it’s to help you see how ttkbootstrap
+applications are *structured* and *feel* different from raw tkinter.
 
 ---
 
-## 1. Verify Prerequisites
+## Create your first app
 
-Make sure your environment meets these requirements:
-
-- **Python 3.10 or newer**, with Tk support  
-  (Tk 8.6 ships with most official Python installers)
-
-- Verify your interpreter:
-  ```bash
-  python --version
-  python -m pip --version
-  ```
-
-- Upgrade pip to ensure the latest wheels are used:
-  ```bash
-  python -m pip install --upgrade pip
-  ```
-
----
-
-## 2. Install ttkbootstrap
-
-Install the package using pip:
-
-```bash
-python -m pip install ttkbootstrap
-```
-
-Optional:
-
-- Use a virtual environment for isolation
-- Pin a specific version if needed:
-  ```bash
-  python -m pip install ttkbootstrap==2.0.0
-  ```
-
----
-
-## 3. Create a Minimal Application
-
-Create a file named `main.py` with the following contents:
+A ttkbootstrap application starts with an `App`, not a bare `Tk` instance.
 
 ```python
 import ttkbootstrap as ttk
 
-app = ttk.App(theme="solar")
-
-frame = ttk.Frame(app.window, padding=20)
-frame.pack(fill="both", expand=True)
-
-ttk.Label(frame, text="Welcome to ttkbootstrap v2").pack(pady=(0, 10))
-ttk.Button(frame, text="Launch", bootstyle="success").pack()
+app = ttk.App(title="Quick Start")
 
 app.mainloop()
 ```
 
-This example demonstrates:
+If you run this, you already have:
 
-- the application shell,
-- a container-driven layout,
-- semantic styling via bootstyle tokens,
-- and theme-aware widgets.
+- a themed application window
+- automatic light/dark awareness (depending on theme)
+- a framework-managed lifecycle
 
 ---
 
-## 4. Run the Application
+## Add content with intent
 
-Run the script from your terminal:
+Instead of placing widgets directly on the root window, you typically use
+**containers** to express layout intent.
 
-```bash
-python main.py
+Here’s a simple example using a `Frame`:
+
+```python
+import ttkbootstrap as ttk
+
+app = ttk.App(title="Quick Start")
+
+container = ttk.Frame(app, padding=20)
+container.pack(fill="both", expand=True)
+
+ttk.Label(container, text="Welcome to ttkbootstrap").pack(pady=(0, 10))
+ttk.Button(container, text="Continue", bootstyle="primary").pack()
+
+app.mainloop()
 ```
 
-You should see a themed window appear immediately.
+You now have:
+
+- spacing controlled by the container
+- consistent typography and colors
+- a semantic action button (`primary`)
 
 ---
 
-## 5. Change Themes at Runtime
+## What just happened?
 
-Themes can be changed without restarting the application.
+Even in this small example, ttkbootstrap is doing more than tkinter:
 
-Common helpers include:
+- **Design system**
+  - semantic colors (`primary`)
+  - consistent spacing and typography
+- **Layout responsibility**
+  - containers manage spacing and resizing
+- **Framework defaults**
+  - sensible padding, focus behavior, and state visuals
 
-- Apply a specific theme:
-  ```python
-  ttk.set_theme("cosmo")
-  ```
-
-- Toggle between light and dark variants:
-  ```python
-  ttk.toggle_theme()
-  ```
-
-- List available themes:
-  ```python
-  ttk.get_themes()
-  ```
-
-All widgets update automatically when the theme changes.
+You didn’t have to configure any of that manually.
 
 ---
 
-## 6. Next Steps
+## Recommended next steps
 
-Once you have this running, you can:
+This Quick Start shows *what* to do — not *why*.
 
-- explore additional **Widgets** such as inputs, dialogs, and data views,
-- read **First Application** to understand layout and structure more deeply,
-- review **Installation** for advanced setup and extras,
-- explore the **Design System** to understand color, typography, layout, and interaction patterns.
+To keep building with confidence, continue here:
 
-This quickstart is intentionally simple—everything else builds on this foundation.
+- **[Guides → App Structure](../guides/app-structure.md)**  
+  How applications are organized (windows, layout, state)
+
+- **[Guides → Layout](../guides/layout.md)**  
+  When to use `Frame`, `PackFrame`, and `GridFrame`
+
+- **[Widgets](../widgets/index.md)**  
+  Explore available widgets and controls
+
+If you prefer learning by examples, head straight to the **Guides**.
+
+---
+
+## A note for tkinter users
+
+If you’re coming from tkinter:
+
+- You can still use familiar widgets and geometry managers
+- But ttkbootstrap works best when you:
+  - let containers manage layout
+  - rely on semantic styling instead of manual colors
+  - treat the app as a cohesive system, not a script
+
+You don’t have to relearn everything — but you *do* get better defaults.
