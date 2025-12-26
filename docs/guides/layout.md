@@ -82,7 +82,9 @@ GridFrame allows you to declare:
 
 - row and column structure
 - gaps between rows and columns
+- default sticky alignment
 - spanning behavior
+- **auto-placement** — row/column positions are inferred from the column count
 
 without manually configuring every cell.
 
@@ -91,16 +93,15 @@ import ttkbootstrap as ttk
 
 app = ttk.App()
 
-grid = ttk.GridFrame(app, columns=["auto", 1], gap=(12, 6), padding=12, sticky_items="ew")
+grid = ttk.GridFrame(app, columns=["auto", 1], gap=(12, 6), padding=12, sticky_items="e")
 grid.pack(fill="both", expand=True)
 
-grid.add(ttk.Label(grid, text="Name"), row=0, column=0, sticky="e")
-grid.add(ttk.Entry(grid), row=0, column=1)
-
-grid.add(ttk.Label(grid, text="Email"), row=1, column=0, sticky="e")
-grid.add(ttk.Entry(grid), row=1, column=1)
-
-grid.add(ttk.Button(grid, text="Save", bootstyle="primary"), row=2, column=0, columnspan=2, sticky="e")
+# Auto-placement: wraps to next row after filling columns
+grid.add(ttk.Label(grid, text="Name"))
+grid.add(ttk.Entry(grid))
+grid.add(ttk.Label(grid, text="Email"))
+grid.add(ttk.Entry(grid))
+grid.add(ttk.Button(grid, text="Save", bootstyle="primary"), columnspan=2)
 
 app.mainloop()
 ```
@@ -156,14 +157,14 @@ grid.pack(fill="both", expand=True)
 
 # Left column
 left = ttk.PackFrame(grid, direction="vertical", gap=6)
-grid.add(left, row=0, column=0)
-left.add(ttk.Label(left, text="General", font=("", 10, "bold")))
+grid.add(left)
+left.add(ttk.Label(left, text="General", font="label"))
 left.add(ttk.CheckButton(left, text="Enable feature"))
 
 # Right column
 right = ttk.PackFrame(grid, direction="vertical", gap=6)
-grid.add(right, row=0, column=1)
-right.add(ttk.Label(right, text="Advanced", font=("", 10, "bold")))
+grid.add(right)
+right.add(ttk.Label(right, text="Advanced", font="label"))
 right.add(ttk.CheckButton(right, text="Verbose logging"))
 ```
 
