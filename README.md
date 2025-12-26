@@ -11,23 +11,12 @@
 ![](assets/ttkbootstrap-logo-horizontal-dark.png#only-dark)
 ![](assets/ttkbootstrap-logo-horizontal-light.png#only-light)
 
-**ttkbootstrap** is an opinionated UI framework for building modern desktop applications with Python and Tkinter.
+**ttkbootstrap** is a modern, opinionated UI framework for building desktop applications with Python and Tkinter.
 
-It goes beyond theming—providing a cohesive **design system**, a complete **widget ecosystem**, and **framework-level capabilities** so you can focus on building applications instead of wrestling with low-level UI mechanics.
+It's a **framework**, not just themed widgets. ttkbootstrap provides conventions for layout, styling, state, and reactivity that work together—so you can focus on building applications instead of wrestling with low-level UI mechanics.
 
 > **v2 is under active development.**
-> Documentation, examples, and migration guides are being added as the API stabilizes.
-
-## Features
-
-- **Modern UI Defaults** — Consistent colors, typography, spacing, and Bootstrap-inspired variants out of the box
-- **Complete Widget Ecosystem** — 60+ widgets including buttons, dialogs, forms, tables, and navigation components
-- **Reactive State with Signals** — Observable state management for declarative, composable applications
-- **Design Token System** — Semantic colors and styles that adapt across themes
-- **Built-in Validation** — Form validation without reinventing the wheel
-- **Icon & Image Support** — First-class icon handling and image utilities
-- **Localization Ready** — i18n support for global applications
-- **CLI & Packaging Support** — Tools for building and distributing your apps
+> See the [documentation](https://ttkbootstrap.com) for guides, API reference, and migration info.
 
 ## Installation
 
@@ -42,13 +31,77 @@ import ttkbootstrap as ttk
 
 app = ttk.App(theme="dark")
 
-# Create styled widgets with bootstyle
 ttk.Label(app, text="Hello from ttkbootstrap!").pack(pady=10)
 ttk.Button(app, text="Primary", bootstyle="primary").pack(pady=5)
 ttk.Button(app, text="Success", bootstyle="success").pack(pady=5)
 ttk.Button(app, text="Danger Outline", bootstyle="danger-outline").pack(pady=5)
 
 app.mainloop()
+```
+
+## Core Ideas
+
+### Containers express layout intent
+
+Build layouts with purpose-built containers, not scattered geometry calls:
+
+```python
+form = ttk.GridFrame(app, columns=["auto", 1], gap=(12, 6), padding=12)
+form.pack(fill="both", expand=True)
+
+form.add(ttk.Label(form, text="Name"))
+form.add(ttk.Entry(form))
+form.add(ttk.Label(form, text="Email"))
+form.add(ttk.Entry(form))
+form.add(ttk.Button(form, text="Submit", bootstyle="primary"), columnspan=2)
+```
+
+### Styling is semantic
+
+Widgets use semantic tokens—not hardcoded colors. Applications stay consistent across themes.
+
+```python
+ttk.Button(app, text="Primary", bootstyle="primary")
+ttk.Button(app, text="Outline", bootstyle="success-outline")
+ttk.Label(app, text="Heading", font="heading-lg")
+```
+
+### Reactivity is optional and explicit
+
+Use simple callbacks when that's enough. Introduce signals when state needs to flow.
+
+```python
+counter = ttk.Signal(0)
+
+def increment():
+    counter.set(counter.get() + 1)
+
+label = ttk.Label(app)
+counter.subscribe(lambda v: label.configure(text=f"Count: {v}"))
+```
+
+## Features
+
+- **Modern UI Defaults** — Consistent colors, typography, spacing, and Bootstrap-inspired variants
+- **60+ Widgets** — Buttons, dialogs, forms, tables, navigation, and more
+- **Layout Containers** — PackFrame and GridFrame for declarative, maintainable layouts
+- **Reactive Signals** — Observable state management for declarative applications
+- **Design Tokens** — Semantic colors and typography that adapt across themes
+- **DataSource System** — Pagination, filtering, sorting, and CRUD for data-driven widgets
+- **Built-in Validation** — Form validation without reinventing the wheel
+- **Icons & Images** — First-class icon handling and image utilities
+- **Localization** — i18n support for global applications
+- **CLI Tools** — Project scaffolding, building, and packaging
+
+## CLI
+
+Scaffold new projects and add components quickly:
+
+```bash
+ttkb start MyApp          # Create new project
+ttkb add view dashboard   # Add a view
+ttkb add dialog settings  # Add a dialog
+ttkb build                # Package for distribution
 ```
 
 ## Widget Categories
@@ -59,31 +112,15 @@ app.mainloop()
 | **Inputs** | TextEntry, PasswordEntry, PathEntry, NumericEntry, Scale, DateEntry, TimeEntry |
 | **Selection** | CheckButton, RadioButton, ToggleGroup, OptionMenu, SelectBox, Calendar |
 | **Data Display** | Label, ListView, TreeView, TableView, Badge, Progressbar, Meter, FloodGauge |
-| **Layout** | Frame, LabelFrame, PanedWindow, ScrollView, Separator |
-| **Views** | Notebook, PageStack |
+| **Layout** | Frame, PackFrame, GridFrame, LabelFrame, PanedWindow, ScrollView |
+| **Navigation** | Notebook, PageStack |
 | **Dialogs** | MessageDialog, ColorChooser, FontDialog, DateDialog, FormDialog, QueryDialog |
 | **Overlays** | Toast, Tooltip |
-| **Forms** | Form with validation support |
-
-## Bootstyle System
-
-All widgets support the `bootstyle` parameter for easy theming:
-
-```python
-# Color variants
-ttk.Button(app, text="Primary", bootstyle="primary")
-ttk.Button(app, text="Success", bootstyle="success")
-ttk.Button(app, text="Warning", bootstyle="warning")
-ttk.Button(app, text="Danger", bootstyle="danger")
-
-# Style modifiers
-ttk.Button(app, text="Outline", bootstyle="primary-outline")
-ttk.Button(app, text="Link", bootstyle="info-link")
-```
+| **Forms** | Form, Field with validation support |
 
 ## Why ttkbootstrap?
 
-ttkbootstrap is designed for developers who want to:
+ttkbootstrap is for developers who want to:
 
 - Build desktop apps that feel modern and intentional
 - Move fast without reinventing UI patterns
@@ -95,6 +132,7 @@ You don't need to deeply understand Tk or ttk internals to be productive with tt
 
 ## Links
 
+- **Documentation**: https://ttkbootstrap.com
 - **GitHub**: https://github.com/israel-dryer/ttkbootstrap
 - **Icons**: https://github.com/israel-dryer/ttkbootstrap-icons
 
