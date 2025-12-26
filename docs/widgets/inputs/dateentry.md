@@ -100,12 +100,15 @@ Commit-time formatting shared with other field controls:
 
 ```python
 ttk.DateEntry(app, label="Short Date", value="March 14, 1981", value_format="shortDate").pack()
+ttk.DateEntry(app, label="ISO Format", value="2025-01-15", value_format="yyyy-MM-dd").pack()
 ```
 
 <figure markdown>
 ![dateentry formats](../../assets/dark/widgets-dateentry-formats.png#only-dark)
 ![dateentry formats](../../assets/light/widgets-dateentry-formats.png#only-light)
 </figure>
+
+See [Guides → Formatting](../../guides/formatting.md) for all date presets and custom ICU patterns.
 
 #### Add-ons
 
@@ -203,6 +206,7 @@ d.add_validation_rule("required", message="A date is required")
 
 ### Framework concepts
 
+- [Formatting](../../guides/formatting.md) — date presets and custom patterns
 - [Forms](../../guides/forms.md) — working with form controls
 - [Localization](../../capabilities/localization.md) — internationalization and formatting
 - [Signals](../../capabilities/signals/signals.md) — reactive data binding

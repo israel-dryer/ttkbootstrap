@@ -142,12 +142,17 @@ If your implementation supports a picker-style interaction, it should be treated
 
 ---
 
-## Localization
+## Formatting and localization
 
-`TimeEntry` supports locale-aware time formatting. Times are displayed according to the current locale's conventions (12-hour vs 24-hour format, AM/PM indicators).
+`TimeEntry` supports locale-aware time formatting through the `value_format` option. Times are displayed according to the current locale's conventions (12-hour vs 24-hour format, AM/PM indicators).
 
-!!! link "Localization"
-    For complete localization configuration and supported formats, see the [Localization](../../capabilities/localization.md) documentation.
+```python
+ttk.TimeEntry(app, label="Short Time", value_format="shortTime")  # "3:30 PM"
+ttk.TimeEntry(app, label="Long Time", value_format="longTime")    # "3:30:45 PM PST"
+ttk.TimeEntry(app, label="24-Hour", value_format="HH:mm")         # "15:30"
+```
+
+See [Guides → Formatting](../../guides/formatting.md) for all time presets and custom patterns.
 
 ---
 
@@ -172,6 +177,7 @@ If your implementation supports a picker-style interaction, it should be treated
 
 ### Framework concepts
 
+- [Formatting](../../guides/formatting.md) — time presets and custom patterns
 - [Forms](../../guides/forms.md) — working with form controls
 - [Localization](../../capabilities/localization.md) — internationalization and formatting
 - [Signals](../../capabilities/signals/signals.md) — reactive data binding

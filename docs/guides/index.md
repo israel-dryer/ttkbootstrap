@@ -77,6 +77,10 @@ Using icons effectively—named resources, theme integration, and common UI patt
 
 How theme palettes work, switching themes at runtime, and creating custom themes.
 
+### [Formatting](formatting.md)
+
+Locale-aware number, date, and time formatting—presets, custom patterns, and widget integration.
+
 ### [Localization](localization.md)
 
 Making applications language-aware with message catalogs and locale-aware formatting.

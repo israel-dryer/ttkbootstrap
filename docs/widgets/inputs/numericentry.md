@@ -165,6 +165,8 @@ ttk.NumericEntry(app, label="Percent", value=0.35, value_format="percent").pack(
 ![numeric formats](../../assets/light/widgets-numericentry-formats.png#only-light)
 </figure>
 
+See [Guides → Formatting](../../guides/formatting.md) for all number presets, precision control, and custom patterns.
+
 ### Events
 
 `NumericEntry` emits standard field events:
@@ -264,6 +266,7 @@ size.insert_addon(ttk.Label, position="after", text="cm", font="label[9]")
 
 ### Framework concepts
 
+- [Formatting](../../guides/formatting.md) — number presets, precision, and custom patterns
 - [Forms](../../guides/forms.md) — working with form controls
 - [Localization](../../capabilities/localization.md) — internationalization and formatting
 - [Signals](../../capabilities/signals/signals.md) — reactive data binding

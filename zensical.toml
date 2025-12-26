@@ -27,6 +27,7 @@ nav = [
         { "Styling" = "guides/styling.md" },
         { "Icons" = "guides/icons.md" },
         { "Theming" = "guides/theming.md" },
+        { "Formatting" = "guides/formatting.md" },
         { "Localization" = "guides/localization.md" },
     ] },
     { "Widgets" = [
