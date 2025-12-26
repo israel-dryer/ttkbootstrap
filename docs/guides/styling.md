@@ -282,7 +282,7 @@ ttk.Label(app, text="Last updated: Today", font=("Helvetica", 10))
 Font choices should come from the design system, not hardcoded values.
 
 !!! link "Typography"
-    See [Design System → Typography](../design-system/typography.md) for guidelines.
+    See [Typography](typography.md) to learn how to use ttkbootstrap typography.
 
 ---
 

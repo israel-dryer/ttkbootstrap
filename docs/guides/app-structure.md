@@ -124,6 +124,25 @@ Key principles:
 
 ---
 
+## Application Settings
+
+ttkbootstrap applications are configured through a centralized settings object
+that defines application-wide behavior, rather than scattered flags and globals.
+
+Configuration typically includes:
+
+- theme and appearance
+- localization settings
+- default behaviors
+- framework-level options
+
+This configuration is applied at application startup and remains accessible
+throughout the app lifecycle.
+
+!!! link "See [App Settings](app-settings.md) for how settings are declared and applied using `AppSettings`."
+
+---
+
 ## State Management
 
 ttkbootstrap encourages **signals** for state that multiple widgets share:

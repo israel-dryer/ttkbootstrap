@@ -2,13 +2,11 @@
 title: Spacing & Alignment
 ---
 
-# Spacing & alignment
+# Spacing & Alignment
 
-Spacing and alignment control **how widgets occupy space** inside a container and **how they respond when that space changes**.
+This guide explains the underlying layout model for spacing and alignment—how widgets occupy space inside a container and how they respond when that space changes.
 
-In ttkbootstrap, most layouts should be expressed using higher-level containers like `PackFrame` and `GridFrame`, which centralize spacing rules and reduce per-widget configuration.
-
-This guide exists to explain the **underlying layout model**, so you can reason about layout behavior when needed—especially when working directly with `Frame`, debugging complex layouts, or integrating legacy Tk code.
+In ttkbootstrap, most layouts should be expressed using higher-level containers like `PackFrame` and `GridFrame`, which centralize spacing rules and reduce per-widget configuration. This guide is for when you need to reason about layout behavior directly—especially when working with `Frame`, debugging complex layouts, or integrating legacy Tk code.
 
 ---
 
@@ -208,6 +206,19 @@ In these cases, understanding the underlying model is essential.
 
 ## Next steps
 
-- See **Containers** for recommended layout primitives
-- See **Scrolling** for scroll container behavior
-- See **Platform → Geometry & Layout** for underlying mechanics
+- [Layout](layout.md) - how spacing and alignment concepts are applied using
+  **PackFrame** and **GridFrame**.
+
+- [PackFrame](../widgets/layout/packframe.md) - how `gap`, padding, and expansion
+  replace most `padx`, `pady`, and `fill` usage.
+
+- [GridFrame](../widgets/layout/gridframe.md) - how row/column gaps,
+  spanning, and alignment simplify `sticky`, `rowconfigure`, and `columnconfigure`.
+
+- [ScrollView](../widgets/layout/scrollview.md) - how spacing interacts with
+  scrolling containers and dynamic content.
+
+If you are working directly with `Frame` and raw `pack()` / `grid()`, keep this page bookmarked —
+it explains the underlying mechanics that PackFrame and GridFrame build upon.
+
+
