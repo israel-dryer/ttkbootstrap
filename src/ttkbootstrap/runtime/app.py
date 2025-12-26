@@ -521,13 +521,15 @@ class App(BaseWindow, WidgetCapabilitiesMixin, tkinter.Tk):
         apply_class_bindings(self)
         apply_all_bindings(self)
 
-    def run(self) -> None:
-        """Run the application
+    def mainloop(self, n=0) -> None:
+        """Start the application event loop
 
-        This is the recommended entry point for ttkbootstrap applications.
+        Args:
+            n (int): A threshold that keeps the window open if at least n windows is open. This is an archaic c-level
+                detail that should not be adjusted unless you have a specific reason.
         """
         self.show()
-        super().mainloop()
+        super().mainloop(n=n)
 
     def close(self) -> None:
         """Close the application window (destroys the Tk root)"""
