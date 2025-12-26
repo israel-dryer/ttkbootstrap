@@ -23,6 +23,7 @@ nav = [
         { "Navigation" = "guides/navigation.md" },
         { "Spacing & Alignment" = "guides/spacing-and-alignment.md" },
         { "Reactivity" = "guides/reactivity.md" },
+        { "DataSource" = "guides/datasource.md" },
         { "Typography" = "guides/typography.md" },
         { "Styling" = "guides/styling.md" },
         { "Icons" = "guides/icons.md" },

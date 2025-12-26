@@ -161,6 +161,8 @@ tv.build_table_data(coldata=new_columns, rowdata=new_rows)
 
 - [Signals](../../capabilities/signals/signals.md) — reactive data binding
 
+- [DataSource](../../guides/datasource.md) — data management with filtering, sorting, pagination
+
 ### API reference
 
 - [`ttkbootstrap.TableView`](../../reference/widgets/TableView.md)
