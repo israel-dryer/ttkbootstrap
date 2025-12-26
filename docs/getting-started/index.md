@@ -59,28 +59,27 @@ Each step is supported explicitly by the framework.
 
 ## How this section is organized
 
-- **Installation** — installing ttkbootstrap
-- **Quick Start** — building a minimal application
-- **Project Structure** — organizing real-world apps
+- [Installation](installation.md) — installing ttkbootstrap
+- [Quick Start](quick-start.md) — building a minimal application
 
 After that, explore:
 
-- **Platform** — understanding the foundations (optional but useful)
-- **Capabilities** — learning the framework’s core features
-- **Widgets** — discovering available components
-- **Build** — assembling and shipping applications
-- **Cookbook** — common patterns and recipes
+- [Guides](../guides/index.md) — practical how-to guides for common tasks
+- [Widgets](../widgets/index.md) — discovering available components
+- [Platform](../platform/index.md) — understanding the foundations (optional but useful)
+- [Capabilities](../capabilities/index.md) — learning the framework's core features
+
+When you're ready to ship:
+
+- [Project Structure](../platform/project-structure.md) — organizing real-world apps
+- [Build & Distribute](../platform/build-and-ship.md) — packaging applications
 
 ---
 
 ## Next steps
 
-- Follow the **Quick Start** to build your first app
-- Browse **Widgets** to understand what’s available
-- Learn **Capabilities** to unlock the framework’s power
+- Follow the [Quick Start](quick-start.md) to build your first app
+- Browse [Widgets](../widgets/index.md) to understand what's available
+- Explore [Guides](../guides/index.md) for practical patterns
 
 You can go far with ttkbootstrap without ever touching raw tkinter APIs.
-
----
-
-Let’s build something.

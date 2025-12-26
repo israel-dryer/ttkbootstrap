@@ -262,7 +262,7 @@ Start simple. Add structure when you feel friction.
 
 ## Next steps
 
-- [Quick Start](quick-start.md)
+- [Quick Start](../getting-started/quick-start.md)
 
 - [Guides → App Structure](../guides/app-structure.md)
 
