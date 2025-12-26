@@ -121,7 +121,10 @@ You should read Capabilities when:
 
 ## Next steps
 
-Start with **Signals & Events** to understand how user interaction flows
-through ttkbootstrap.
+Start with [Signals & Events](signals/index.md) to understand how user interaction flows through ttkbootstrap.
 
-Then explore layout, validation, and image capabilities as needed.
+Then explore:
+
+- [Layout Capabilities](layout/index.md) for containers, spacing, and scrolling.
+- [Validation](validation/index.md) for input constraints and feedback.
+- [Icons & Images](icons/index.md) for visual assets.

@@ -119,6 +119,6 @@ Understanding scrolling mechanics helps avoid these issues.
 
 ## Next steps
 
-- See **Containers** for layout composition
-- See **Spacing** for layout density considerations
-- See **Platform → Geometry & Layout** for underlying mechanics
+- See [Containers](containers.md) for layout composition.
+- See [Spacing](spacing.md) for layout density considerations.
+- See [Platform → Geometry & Layout](../../platform/geometry-and-layout.md) for underlying mechanics.

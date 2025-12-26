@@ -102,6 +102,6 @@ Understanding icons and images as capabilities helps avoid these issues.
 
 ## Next steps
 
-- See **Icons** for symbolic asset usage
-- See **Images** for image lifecycle and caching
-- See **Platform → Images & DPI** for underlying behavior
+- See [Icons](icons.md) for symbolic asset usage.
+- See [Images](images.md) for image lifecycle and caching.
+- See [Platform → Images & DPI](../../platform/images-and-dpi.md) for underlying behavior.

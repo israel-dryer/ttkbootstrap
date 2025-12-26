@@ -102,6 +102,6 @@ Understanding configuration as a capability avoids these issues.
 
 ## Next steps
 
-- See **State & Interaction** for runtime behavior
-- See **Layout Capabilities** for configuration-driven layout
-- See **Widgets** for concrete configuration examples
+- See [State & Interaction](state-and-interaction.md) for runtime behavior.
+- See [Layout Capabilities](layout/index.md) for configuration-driven layout.
+- See [Widgets](../widgets/index.md) for concrete configuration examples.

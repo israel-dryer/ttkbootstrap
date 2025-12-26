@@ -117,6 +117,6 @@ Understanding layout as a capability helps avoid these issues.
 
 ## Next steps
 
-- See **Containers** for layout composition patterns
-- See **Spacing** for padding and margins
-- See **Scrolling** for scrollable layout behavior
+- See [Containers](containers.md) for layout composition patterns.
+- See [Spacing](spacing.md) for padding and margins.
+- See [Scrolling](scrolling.md) for scrollable layout behavior.

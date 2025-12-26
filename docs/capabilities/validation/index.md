@@ -115,6 +115,6 @@ Understanding validation as a capability helps avoid these issues.
 
 ## Next steps
 
-- See **Rules** for defining validation constraints
-- See **Results** for interpreting validation outcomes
-- See **Widgets → Forms** for validation in practice
+- See [Rules](rules.md) for defining validation constraints.
+- See [Results](results.md) for interpreting validation outcomes.
+- See [Widgets](../../widgets/index.md) for validation in practice.

@@ -131,6 +131,6 @@ Understanding rule design avoids these problems.
 
 ## Next steps
 
-- See **Results** for interpreting validation outcomes
-- See **Validation Overview** for lifecycle context
-- See **Widgets → Forms** for practical examples
+- See [Results](results.md) for interpreting validation outcomes.
+- See [Validation Overview](index.md) for lifecycle context.
+- See [Widgets](../../widgets/index.md) for practical examples.

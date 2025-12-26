@@ -119,6 +119,6 @@ Understanding layout properties helps avoid these issues.
 
 ## Next steps
 
-- See **Layout Capabilities** for container behavior
-- See **Spacing** for padding and margins
-- See **Scrolling** for scroll-aware layout
+- See [Layout Capabilities](layout/index.md) for container behavior.
+- See [Spacing](layout/spacing.md) for padding and margins.
+- See [Scrolling](layout/scrolling.md) for scroll-aware layout.

@@ -144,6 +144,6 @@ Virtual events are most effective when used intentionally.
 
 ## Next steps
 
-- See **Signals** for state propagation
-- See **Callbacks** for imperative handling
-- See **Widgets** for virtual events exposed by specific components
+- See [Signals](signals.md) for state propagation.
+- See [Callbacks](callbacks.md) for imperative handling.
+- See [Widgets](../../widgets/index.md) for virtual events exposed by specific components.

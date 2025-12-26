@@ -128,6 +128,6 @@ Treating icons as a capability avoids these issues.
 
 ## Next steps
 
-- See **Images** for image lifecycle and caching
-- See **Platform → Images & DPI** for rendering behavior
-- See **Widgets** for icon usage examples
+- See [Images](images.md) for image lifecycle and caching.
+- See [Platform → Images & DPI](../../platform/images-and-dpi.md) for rendering behavior.
+- See [Guides → Icons](../../guides/icons.md) for practical icon usage.

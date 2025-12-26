@@ -105,7 +105,7 @@ These practices lead to maintainable applications.
 
 ## Next steps
 
-- See **Signals** for state-based communication
-- See **Callbacks** for imperative handling
-- See **Virtual Events** for semantic patterns
-- See **Platform → Event Loop** for execution details
+- See [Signals](signals.md) for state-based communication.
+- See [Callbacks](callbacks.md) for imperative handling.
+- See [Virtual Events](virtual-events.md) for semantic patterns.
+- See [Platform → Event Loop](../../platform/event-loop.md) for execution details.

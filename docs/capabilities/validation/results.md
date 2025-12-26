@@ -131,6 +131,6 @@ Explicit results help avoid these issues.
 
 ## Next steps
 
-- See **Validation Rules** for defining constraints
-- See **Forms** for validation in practice
-- See **Signals** for propagating validation state
+- See [Validation Rules](rules.md) for defining constraints.
+- See [Widgets](../../widgets/index.md) for validation in practice.
+- See [Signals](../signals/signals.md) for propagating validation state.

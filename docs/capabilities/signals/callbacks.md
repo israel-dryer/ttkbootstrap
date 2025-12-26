@@ -142,6 +142,6 @@ Understanding callback scope helps avoid these issues.
 
 ## Next steps
 
-- See **Virtual Events** for higher-level event patterns
-- See **Signals** for state-based communication
-- See **Platform → Event Loop** for execution details
+- See [Virtual Events](virtual-events.md) for higher-level event patterns.
+- See [Signals](signals.md) for state-based communication.
+- See [Platform → Event Loop](../../platform/event-loop.md) for execution details.

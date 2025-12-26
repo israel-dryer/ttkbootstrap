@@ -117,6 +117,6 @@ Most spacing issues stem from unclear layout intent.
 
 ## Next steps
 
-- See **Scrolling** for how spacing interacts with scroll regions
-- See **Containers** for layout composition
-- See **Platform → Geometry & Layout** for layout mechanics
+- See [Scrolling](scrolling.md) for how spacing interacts with scroll regions.
+- See [Containers](containers.md) for layout composition.
+- See [Platform → Geometry & Layout](../../platform/geometry-and-layout.md) for layout mechanics.

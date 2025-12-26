@@ -117,6 +117,6 @@ Understanding state and interaction avoids these issues.
 
 ## Next steps
 
-- See **Signals & Events** for interaction mechanisms
-- See **Configuration** for initial state definition
-- See **Widgets** for state-driven behavior examples
+- See [Signals & Events](signals/index.md) for interaction mechanisms.
+- See [Configuration](configuration.md) for initial state definition.
+- See [Widgets](../widgets/index.md) for state-driven behavior examples.

@@ -168,9 +168,8 @@ This page does not include:
 
 Those topics are covered in:
 
-- **Guides → Localization**
-- **Reference → Localization APIs**
-- **Widgets → Localized Widgets**
+- [Guides → Localization](../guides/localization.md)
+- [Widgets](../widgets/index.md)
 
 ---
 

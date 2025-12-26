@@ -138,6 +138,6 @@ Understanding image behavior avoids these issues.
 
 ## Next steps
 
-- See **Icons** for symbolic assets
-- See **Platform → Images & DPI** for low-level behavior
-- See **Widgets** for image usage in components
+- See [Icons](icons.md) for symbolic assets.
+- See [Platform → Images & DPI](../../platform/images-and-dpi.md) for low-level behavior.
+- See [Widgets](../../widgets/index.md) for image usage in components.

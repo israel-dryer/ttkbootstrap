@@ -10,7 +10,7 @@ In ttkbootstrap, containers are more than “a place to put widgets” — they 
 spacing rules, scrolling behavior, and consistent resizing patterns. That keeps individual widgets simpler and makes
 UIs easier to evolve.
 
-!!! link "See [Platform → Geometry & Layout](../platform/geometry-and-layout.md) for how Tk geometry managers actually compute size and placement."
+See [Platform → Geometry & Layout](../../platform/geometry-and-layout.md) for how Tk geometry managers actually compute size and placement.
 
 ---
 
@@ -78,7 +78,7 @@ Prefer:
 
 This reduces layout bugs and makes UIs easier to refactor.
 
-!!! link "See [Layout Properties](layout-props.md) for the ttkbootstrap layout convenience options used across widgets."
+See [Layout Properties](../layout-props.md) for the ttkbootstrap layout convenience options used across widgets.
 
 ---
 
@@ -97,7 +97,7 @@ ttkbootstrap provides two *opinionated* containers that make layout intent expli
 
 The goal is not to replace Tk’s geometry managers — it’s to make **common layouts faster** and more consistent.
 
-!!! link "See [PackFrame](../widgets/layout/packframe.md) and [GridFrame](../widgets/layout/gridframe.md) for the full usage and examples."
+See [PackFrame](../../widgets/layout/packframe.md) and [GridFrame](../../widgets/layout/gridframe.md) for the full usage and examples.
 
 ### When should you use them?
 
@@ -159,7 +159,7 @@ Key behaviors:
 - Mouse wheel works on all descendants (including dynamically added widgets)
 - Shift+MouseWheel scrolls horizontally on platforms that support it
 
-!!! link "See [ScrollView](../widgets/layout/scrollview.md) for recommended patterns and examples."
+See [ScrollView](../../widgets/layout/scrollview.md) for recommended patterns and examples.
 
 ---
 
@@ -171,12 +171,12 @@ Key behaviors:
 - **Scrolling inside children** instead of treating it as a container/viewport concern
 - **Querying sizes too early** (before the event loop has realized the layout)
 
-!!! link "See [Platform → Widget Lifecycle](../platform/widget-lifecycle.md) for why widget sizes are not reliable until realization."
+See [Platform → Widget Lifecycle](../../platform/widget-lifecycle.md) for why widget sizes are not reliable until realization.
 
 ---
 
 ## Next steps
 
-- Read **Spacing** for how padding/margins should be applied consistently.
-- Read **Scrolling** for scroll patterns and recommendations.
-- Read **Platform → Geometry & Layout** for the underlying Tk mechanics.
+- See [Spacing](spacing.md) for how padding/margins should be applied consistently.
+- See [Scrolling](scrolling.md) for scroll patterns and recommendations.
+- See [Platform → Geometry & Layout](../../platform/geometry-and-layout.md) for the underlying Tk mechanics.
