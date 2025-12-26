@@ -174,11 +174,6 @@ nav = [
         { "Configuration" = "capabilities/configuration.md" },
         { "Localization" = "capabilities/localization.md" },
     ] },
-    { "Build" = [
-        { "Overview" = "build/index.md" },
-        { "App Runtime" = "build/app-runtime.md" },
-        { "App Configuration" = "build/app-configuration.md" },
-    ] },
     { "API Reference" = [
         { "Overview" = "reference/index.md" },
         { "App" = [
