@@ -24,9 +24,9 @@ class PackFrame(Frame):
         direction: Layout direction. Options: "vertical", "horizontal",
             "row", "column", "row-reverse", "column-reverse". Defaults to "vertical".
         gap: Spacing between children in pixels. Defaults to 0.
-        fill: Default fill behavior for children ("none", "x", "y", "both").
-        expand: Default expand behavior for children.
-        anchor: Default anchor for children.
+        fill_items: Default fill behavior for children ("none", "x", "y", "both").
+        expand_items: Default expand behavior for children.
+        anchor_items: Default anchor for children.
         propagate: Whether the frame should resize to fit its contents.
         **kwargs: Additional Frame options (bootstyle, padding, etc.).
     """
@@ -46,9 +46,9 @@ class PackFrame(Frame):
         *,
         direction: Direction = "vertical",
         gap: int = 0,
-        fill: Optional[Fill] = None,
-        expand: Optional[bool] = None,
-        anchor: Optional[Anchor] = None,
+        fill_items: Optional[Fill] = None,
+        expand_items: Optional[bool] = None,
+        anchor_items: Optional[Anchor] = None,
         propagate: Optional[bool] = None,
         **kwargs: Any,
     ) -> None:
@@ -56,9 +56,9 @@ class PackFrame(Frame):
 
         self._direction = direction
         self._gap = gap
-        self._default_fill = fill
-        self._default_expand = expand
-        self._default_anchor = anchor
+        self._default_fill = fill_items
+        self._default_expand = expand_items
+        self._default_anchor = anchor_items
 
         # Ordered list of (widget, user_options) tuples
         self._managed: list[tuple[tk.Widget, dict[str, Any]]] = []
@@ -72,7 +72,7 @@ class PackFrame(Frame):
         return self.SIDE_MAP.get(self._direction, "top")
 
     @property
-    def children(self) -> list[tk.Widget]:
+    def managed_widgets(self) -> list[tk.Widget]:
         """Return list of managed widgets in order."""
         return [w for w, _ in self._managed]
 
@@ -219,4 +219,4 @@ class PackFrame(Frame):
         return len(self._managed)
 
     def __iter__(self):
-        return iter(self.children)
+        return iter(self.managed_widgets)

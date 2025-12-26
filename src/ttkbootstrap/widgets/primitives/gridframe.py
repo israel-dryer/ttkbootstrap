@@ -43,7 +43,7 @@ class GridFrame(Frame):
             Size specs can be int (weight) or str ("auto", "100px").
         columns: Number of columns (int) or list of column size specs.
         gap: Spacing between cells. Int for uniform, tuple for (column, row).
-        sticky: Default sticky value for children.
+        sticky_items: Default sticky value for children.
         propagate: Whether the frame should resize to fit its contents.
         auto_flow: Auto-placement mode ("row", "column", "row-dense", "column-dense", "none").
         **kwargs: Additional Frame options (bootstyle, padding, etc.).
@@ -56,7 +56,7 @@ class GridFrame(Frame):
         rows: Optional[Union[int, list[Union[int, str]]]] = None,
         columns: Optional[Union[int, list[Union[int, str]]]] = None,
         gap: Gap = 0,
-        sticky: Optional[Sticky] = None,
+        sticky_items: Optional[Sticky] = None,
         propagate: Optional[bool] = None,
         auto_flow: AutoFlow = "row",
         **kwargs: Any,
@@ -64,7 +64,7 @@ class GridFrame(Frame):
         super().__init__(master, **kwargs)
 
         self._gap = self._normalize_gap(gap)
-        self._default_sticky = sticky
+        self._default_sticky = sticky_items
         self._auto_flow = auto_flow
 
         # Track managed widgets: list of (widget, user_options, computed_position)
@@ -127,7 +127,7 @@ class GridFrame(Frame):
         return len(self._row_defs) if self._row_defs else 100
 
     @property
-    def children(self) -> list[tk.Widget]:
+    def managed_widgets(self) -> list[tk.Widget]:
         """Return list of managed widgets in order."""
         return [w for w, _, _ in self._managed]
 
@@ -522,4 +522,4 @@ class GridFrame(Frame):
         return len(self._managed)
 
     def __iter__(self):
-        return iter(self.children)
+        return iter(self.managed_widgets)

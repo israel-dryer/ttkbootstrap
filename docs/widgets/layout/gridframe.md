@@ -99,13 +99,13 @@ ttk.GridFrame(app, gap=10)
 ttk.GridFrame(app, gap=(8, 12))  # (column_gap, row_gap)
 ```
 
-### `sticky`
+### `sticky_items`
 
 Default sticky value for all children.
 
 ```python
 # All widgets stretch to fill their cell
-ttk.GridFrame(app, columns=2, sticky="nsew")
+ttk.GridFrame(app, columns=2, sticky_items="nsew")
 ```
 
 ### `auto_flow`
@@ -227,7 +227,7 @@ row, col, rowspan, colspan = grid.get_position(btn)
 index = grid.index_of(btn)
 
 # Access managed widgets list
-widgets = grid.children
+widgets = grid.managed_widgets
 ```
 
 ---

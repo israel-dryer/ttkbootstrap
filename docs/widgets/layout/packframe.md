@@ -88,24 +88,24 @@ Spacing between children in pixels.
 ttk.PackFrame(app, direction="vertical", gap=12)
 ```
 
-### `fill` / `expand`
+### `fill_items` / `expand_items`
 
 Default fill and expand behavior for all children.
 
 ```python
 # All children fill horizontally
-stack = ttk.PackFrame(app, direction="vertical", fill="x")
+stack = ttk.PackFrame(app, direction="vertical", fill_items="x")
 
 # All children expand to fill available space
-stack = ttk.PackFrame(app, direction="vertical", expand=True)
+stack = ttk.PackFrame(app, direction="vertical", expand_items=True)
 ```
 
-### `anchor`
+### `anchor_items`
 
 Default anchor for children.
 
 ```python
-ttk.PackFrame(app, direction="vertical", anchor="w")
+ttk.PackFrame(app, direction="vertical", anchor_items="w")
 ```
 
 ### `propagate`
@@ -187,7 +187,7 @@ for widget in stack:
 index = stack.index_of(btn)
 
 # Access managed widgets list
-widgets = stack.children
+widgets = stack.managed_widgets
 ```
 
 ---
