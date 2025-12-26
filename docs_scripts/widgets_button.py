@@ -2,7 +2,7 @@ import ttkbootstrap as ttk
 
 
 
-app = ttk.App(theme="docs-dark")
+app = ttk.App(theme="docs-light")
 
 # solid buttons
 solid = ttk.Frame(app, padding=(16, 8))
