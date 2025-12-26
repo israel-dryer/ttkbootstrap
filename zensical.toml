@@ -20,6 +20,7 @@ nav = [
         { "App Structure" = "guides/app-structure.md" },
         { "App Settings" = "guides/app-settings.md" },
         { "Layout" = "guides/layout.md" },
+        { "Navigation" = "guides/navigation.md" },
         { "Spacing & Alignment" = "guides/spacing-and-alignment.md" },
         { "Reactivity" = "guides/reactivity.md" },
         { "Typography" = "guides/typography.md" },
