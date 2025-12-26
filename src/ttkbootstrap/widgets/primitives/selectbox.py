@@ -133,6 +133,7 @@ class SelectBox(Field):
             'first_filtered_item': None,
             'entry_focus_handler': None,
             'key_bindings': [],
+            'highlighted_index': max(0, self.selected_index),
         }
 
         # Setup close handler
@@ -232,22 +233,90 @@ class SelectBox(Field):
         popup_state['item_was_selected'] = True
         self._set_selected_value(value, toplevel, popup_state)
 
+    def _update_highlight(self, popup_state, new_index):
+        """Update the highlighted item in the popup."""
+        visible_buttons = [btn for btn in self._item_labels if btn.winfo_manager()]
+        if not visible_buttons:
+            return
+
+        # Clamp index to valid range
+        new_index = max(0, min(new_index, len(visible_buttons) - 1))
+        old_index = popup_state['highlighted_index']
+
+        # Remove highlight from old button
+        if 0 <= old_index < len(visible_buttons):
+            visible_buttons[old_index].state(['!selected'])
+
+        # Add highlight to new button
+        visible_buttons[new_index].state(['selected'])
+        popup_state['highlighted_index'] = new_index
+
+        # Scroll to make highlighted item visible
+        btn = visible_buttons[new_index]
+        if self._popup_frame and self._popup_frame.winfo_exists():
+            self._popup_frame.canvas.update_idletasks()
+            # Get button position relative to canvas
+            btn_y = btn.winfo_y()
+            btn_height = btn.winfo_height()
+            canvas_height = self._popup_frame.canvas.winfo_height()
+
+            # Scroll if needed
+            scroll_top = self._popup_frame.canvas.canvasy(0)
+            scroll_bottom = scroll_top + canvas_height
+
+            if btn_y < scroll_top:
+                self._popup_frame.canvas.yview_moveto(btn_y / self._popup_frame.canvas.bbox('all')[3])
+            elif btn_y + btn_height > scroll_bottom:
+                target = (btn_y + btn_height - canvas_height) / self._popup_frame.canvas.bbox('all')[3]
+                self._popup_frame.canvas.yview_moveto(target)
+
     def _setup_popup_bindings(self, toplevel, popup_state, close_popup):
         """Setup all event bindings for the popup."""
         # Escape always closes
         toplevel.bind("<Escape>", close_popup)
 
-        # Setup mode-specific bindings
+        # Arrow key navigation
+        def on_arrow_down(event):
+            self._update_highlight(popup_state, popup_state['highlighted_index'] + 1)
+            return 'break'
+
+        def on_arrow_up(event):
+            self._update_highlight(popup_state, popup_state['highlighted_index'] - 1)
+            return 'break'
+
+        def on_enter(event):
+            visible_buttons = [btn for btn in self._item_labels if btn.winfo_manager()]
+            idx = popup_state['highlighted_index']
+            if 0 <= idx < len(visible_buttons):
+                popup_state['item_was_selected'] = True
+                self._set_selected_value(visible_buttons[idx]._item_value, toplevel, popup_state)
+            return 'break'
+
+        toplevel.bind("<Down>", on_arrow_down)
+        toplevel.bind("<Up>", on_arrow_up)
+        toplevel.bind("<Return>", on_enter)
+
+        # Also bind to entry widget for search mode
         if self._search_enabled:
             self._setup_search_bindings(toplevel, popup_state, close_popup)
+            entry_down = self.entry_widget.bind('<Down>', on_arrow_down, add='+')
+            entry_up = self.entry_widget.bind('<Up>', on_arrow_up, add='+')
+            entry_enter = self.entry_widget.bind('<Return>', on_enter, add='+')
+            popup_state['key_bindings'].append(('<Down>', entry_down))
+            popup_state['key_bindings'].append(('<Up>', entry_up))
+            popup_state['key_bindings'].append(('<Return>', entry_enter))
         else:
             toplevel.bind("<FocusOut>", close_popup)
+
+        # Apply initial highlight
+        self._update_highlight(popup_state, popup_state['highlighted_index'])
 
     def _setup_search_bindings(self, toplevel, popup_state, close_popup):
         """Setup search-specific event bindings."""
         # Initialize first filtered item
         if self._items:
             popup_state['first_filtered_item'] = self._items[0]
+        popup_state['last_search_text'] = self.entry_widget.get().lower()
 
         # Filter function
         def filter_items(*args):
@@ -255,6 +324,11 @@ class SelectBox(Field):
                 return
 
             search_text = self.entry_widget.get().lower()
+
+            # Skip if search text hasn't changed (e.g., arrow key release)
+            if search_text == popup_state['last_search_text']:
+                return
+            popup_state['last_search_text'] = search_text
 
             # Show/hide buttons based on filter
             first_visible = None
@@ -269,26 +343,26 @@ class SelectBox(Field):
             # Track first filtered item for auto-select
             popup_state['first_filtered_item'] = first_visible._item_value if first_visible else None
 
+            # Reset highlight to first visible item
+            self._update_highlight(popup_state, 0)
+
         # Bind KeyRelease for filtering
         keyrelease_binding = self.entry_widget.bind('<KeyRelease>', lambda e: filter_items(), add='+')
         popup_state['key_bindings'].append(('<KeyRelease>', keyrelease_binding))
 
-        # Bind Tab/Enter to select when custom values not allowed
-        if not self._allow_custom_values:
-            def on_tab_or_enter(event):
-                if popup_state['popup_closed']:
-                    return  # Allow default behavior
+        # Bind Tab to select highlighted item
+        def on_tab(event):
+            if popup_state['popup_closed']:
+                return
+            visible_buttons = [btn for btn in self._item_labels if btn.winfo_manager()]
+            idx = popup_state['highlighted_index']
+            if 0 <= idx < len(visible_buttons):
+                popup_state['item_was_selected'] = True
+                self._set_selected_value(visible_buttons[idx]._item_value, toplevel, popup_state)
+            return 'break'
 
-                # Find first visible item
-                if popup_state['first_filtered_item']:
-                    popup_state['item_was_selected'] = True
-                    self._set_selected_value(popup_state['first_filtered_item'], toplevel, popup_state)
-                return 'break'
-
-            tab_binding = self.entry_widget.bind('<Tab>', on_tab_or_enter)
-            enter_binding = self.entry_widget.bind('<Return>', on_tab_or_enter)
-            popup_state['key_bindings'].append(('<Tab>', tab_binding))
-            popup_state['key_bindings'].append(('<Return>', enter_binding))
+        tab_binding = self.entry_widget.bind('<Tab>', on_tab)
+        popup_state['key_bindings'].append(('<Tab>', tab_binding))
 
         # Setup click-outside detection
         def on_root_click(event):
@@ -401,6 +475,27 @@ class SelectBox(Field):
         else:
             self.value = value
             return None
+
+    @property
+    def selected_index(self):
+        """Get or set the selected index.
+
+        Returns -1 if the current value is not in the items list.
+        Setting to -1 or None clears the selection.
+        """
+        try:
+            return self._items.index(self.value)
+        except (ValueError, TypeError):
+            return -1
+
+    @selected_index.setter
+    def selected_index(self, index):
+        if index is None or index == -1:
+            self.value = ""
+        elif 0 <= index < len(self._items):
+            self.value = self._items[index]
+        else:
+            raise IndexError(f"index {index} out of range for {len(self._items)} items")
 
     @property
     def value(self):

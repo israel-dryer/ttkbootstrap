@@ -11,8 +11,14 @@ languages = [
     'F#', 'Erlang', 'Julia', 'Groovy', 'COBOL', 'Fortran', 'Assembly'
 ]
 
-sb = SelectBox(app, "Python", label="Choose your language", allow_custom_values=True, items=languages)
-sb.pack(padx=10, pady=10)
-sb.on_changed(lambda x: print(x))
+# Standard readonly selectbox with keyboard navigation
+sb1 = SelectBox(app, "Python", label="Standard (readonly)", items=languages)
+sb1.pack(padx=10, pady=10)
+sb1.on_changed(lambda x: print("Standard:", x))
+
+# Searchable selectbox
+sb2 = SelectBox(app, "JavaScript", label="With search", items=languages, search_enabled=True)
+sb2.pack(padx=10, pady=10)
+sb2.on_changed(lambda x: print("Search:", x))
 
 app.mainloop()

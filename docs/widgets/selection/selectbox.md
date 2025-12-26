@@ -50,9 +50,9 @@ Use `SelectBox` when:
 
 - You want a simpler, menu-based selector — use [OptionMenu](optionmenu.md)
 
-- You need classic ttk combobox behavior — use [Combobox](../primitives/combobox.md)
-
 - You need single selection among visible options — use [RadioGroup](radiogroup.md)
+
+- You need direct access to `ttk.Combobox` API — use [Combobox](../primitives/combobox.md)
 
 ---
 
@@ -110,6 +110,15 @@ sb.configure(items=["Low", "Medium", "High"])
 
 ```python
 sb.value = "Medium"
+```
+
+#### `selected_index`
+
+Get or set selection by index.
+
+```python
+sb.selected_index = 2       # select third item
+print(sb.selected_index)    # returns -1 if value not in items
 ```
 
 #### `search_enabled`
@@ -224,13 +233,23 @@ When `allow_custom_values=True`:
 
 - typed text can be kept even if it doesn't match an item
 
-### Keyboard and closing behavior
+### Keyboard navigation
 
-- **Escape** closes the popup
+When the popup is open:
 
-- In search mode (and when `allow_custom_values=False`), **Tab** or **Enter** selects the highlighted item
+- **Arrow Up/Down** navigates through items (highlighted item scrolls into view)
+
+- **Enter** selects the highlighted item
+
+- **Tab** selects the highlighted item (search mode)
+
+- **Escape** closes the popup without selecting
 
 - Clicking outside the popup closes it
+
+### Hover states
+
+Items in the popup display hover states for visual feedback as the user moves the mouse or navigates with arrow keys.
 
 ---
 
