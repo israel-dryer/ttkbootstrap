@@ -6,6 +6,8 @@ title: App Structure
 
 This guide explains how a ttkbootstrap application is organized—the `App` class, windows, layout, state, and lifecycle.
 
+Use `ttkb start MyApp` to scaffold a new project with the recommended structure.
+
 ---
 
 ## The App Class
@@ -77,24 +79,42 @@ app = ttk.App(
 
 ## Project Structure
 
-A typical ttkbootstrap project:
+A CLI-generated ttkbootstrap project:
 
 ```
-my_app/
-├── main.py              # App entry point
-├── views/               # UI components
-│   ├── main_view.py
-│   └── settings_view.py
-├── state/               # Application state
-│   └── app_state.py
+myapp/
+├── src/myapp/
+│   ├── __init__.py
+│   ├── main.py          # App entry point
+│   └── views/
+│       └── main_view.py
 ├── assets/              # Images, icons
-│   └── logo.png
-└── locales/             # Translation files
-    ├── en.json
-    └── es.json
+├── ttkb.toml            # Project configuration
+└── README.md
 ```
 
-This structure is a recommendation, not a requirement. Organize however suits your project.
+As your project grows:
+
+```
+myapp/
+├── src/myapp/
+│   ├── __init__.py
+│   ├── main.py
+│   ├── settings.py      # AppSettings / defaults
+│   ├── state.py         # Signals and shared state
+│   ├── views/
+│   │   ├── main_view.py
+│   │   └── settings_view.py
+│   └── services/        # IO, data, persistence
+├── assets/
+├── locales/             # Translation files
+└── ttkb.toml
+```
+
+Use `ttkb start MyApp` to scaffold a new project with this structure.
+
+!!! link "Project Structure"
+    See [Platform → Project Structure](../platform/project-structure.md) for detailed guidance on file organization, packaging, and PyInstaller.
 
 ---
 
@@ -168,10 +188,10 @@ app.mainloop()
 
 When the entry changes, the label updates automatically. Neither widget knows about the other—they both connect to the signal.
 
-For larger applications, group related signals in a state module:
+For larger applications, group related signals in a `state.py` module:
 
 ```python
-# state/app_state.py
+# src/myapp/state.py
 import ttkbootstrap as ttk
 
 current_user = ttk.Signal("")
@@ -303,5 +323,7 @@ This demonstrates:
 ## Next Steps
 
 - [Layout](layout.md) — building layouts with containers
+- [Navigation](navigation.md) — tabs, stacks, and sidebar patterns
 - [Reactivity](reactivity.md) — signals, callbacks, and events
-- [Styling](styling.md) — working with the design system
+- [Project Structure](../platform/project-structure.md) — file organization and packaging
+- [CLI](../platform/cli.md) — scaffolding and build tools
