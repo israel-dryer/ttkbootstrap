@@ -3,18 +3,6 @@
 This module provides a color dropper tool that allows users to select colors
 directly from anywhere on the screen. It captures a screenshot and displays
 a magnified view to help with precise color selection.
-
-Example:
-    Using the dropper directly:
-
-    >>> from ttkbootstrap.dialogs.colordropper import ColorDropperDialog
-    >>> dropper = ColorDropperDialog()
-    >>> dropper.show()
-    >>> color = dropper.result.get()
-    >>> if color:
-    ...     print(color.hex)
-    ...     print(color.rgb)
-    ...     print(color.hsl)
 """
 import tkinter as tk
 from collections import namedtuple
@@ -38,15 +26,12 @@ ColorChoice = namedtuple('ColorChoice', 'rgb hsl hex')
 class ColorDropperDialog:
     """Screen color picker with zoom preview.
 
-    Usage:
-        Left-click anywhere on screen to pick a color; mouse wheel zooms the preview.
-        Selected color is stored in ``result`` as a ColorChoice (rgb, hsl, hex).
+    Click anywhere on screen to select a color. The selected color is stored in
+    ``result`` as a ColorChoice named tuple with rgb, hsl, and hex values.
 
-    Platforms:
-        Windows and Linux supported; macOS not supported (ImageGrab limitation).
-
-    Notes:
-        On high-DPI displays, ensure the app runs in high-DPI mode (automatic on Windows).
+    Note:
+        Supported on Windows and Linux. macOS is not supported due to ImageGrab
+        limitations. On high-DPI displays, ensure the app runs in high-DPI mode.
     """
 
     def __init__(self) -> None:

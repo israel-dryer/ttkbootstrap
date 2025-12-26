@@ -29,6 +29,7 @@ from __future__ import annotations
 import gettext
 from os import PathLike
 from pathlib import Path
+from tkinter import Tk
 from typing import Any, Optional, Union
 
 
@@ -57,7 +58,7 @@ class MessageCatalog:
 
     @staticmethod
     def init(
-            root=None,
+            root: Tk | None = None,
             locales_dir: Union[str, Path, None] = None,
             domain: str = "messages",
             default_locale: str = "en",

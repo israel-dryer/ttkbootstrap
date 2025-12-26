@@ -287,4 +287,4 @@ def run_demo():
     app = ttk.Window("ttkbootstrap widget demo")
     bagel = setup_demo(app)
     bagel.pack(fill=BOTH, expand=YES)
-    app.mainloop()
+    app.run()

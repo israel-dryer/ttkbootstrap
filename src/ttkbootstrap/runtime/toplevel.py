@@ -3,24 +3,27 @@ from __future__ import annotations
 import tkinter
 from typing import Any, Optional, Tuple
 
+from ttkbootstrap.core.mixins.widget import WidgetCapabilitiesMixin
 from ttkbootstrap.runtime.base_window import BaseWindow
 
 
-class Toplevel(BaseWindow, tkinter.Toplevel):
-    """A class that wraps the tkinter.Toplevel class in order to
-    provide a more convenient api with additional bells and whistles.
-    For more information on how to use the inherited `Toplevel`
-    methods, see the [tcl/tk documentation](https://tcl.tk/man/tcl8.6/TkCmd/toplevel.htm)
-    and the [Python documentation](https://docs.python.org/3/library/tkinter.html#tkinter.Toplevel).
+class Toplevel(BaseWindow, WidgetCapabilitiesMixin, tkinter.Toplevel):
+    """A themed top-level window.
 
-    ![](../../assets/window/window-toplevel.png)
+    This class wraps `tkinter.Toplevel` and adds ttkbootstrap window conveniences
+    (title/geometry helpers, centering, alpha/topmost/toolwindow helpers, etc.).
+
+    The standard widget API (events, scheduling, clipboard, geometry managers,
+    winfo, etc.) is available through inheritance and is documented under
+    ttkbootstrap capabilities.
+
+    For additional information on the underlying Tk/Tkinter behavior, see:
+        - Tcl/Tk `toplevel` command documentation
+        - Python `tkinter.Toplevel` documentation
 
     Examples:
-
-        ```python
-        app = Toplevel(title="My Toplevel")
-        app.mainloop()
-        ```
+        >>> win = Toplevel(title="My Toplevel")
+        >>> win.mainloop()
     """
 
     def __init__(
@@ -40,90 +43,34 @@ class Toplevel(BaseWindow, tkinter.Toplevel):
             alpha: float = 1.0,
             **kwargs: Any,
     ) -> None:
-        """
-        Parameters:
+        """Initialize a top-level window.
 
-            title (str):
-                The title that appears on the application titlebar.
-
-            icon (tkinter.PhotoImage):
-                A PhotoImage or file path used for the titlebar icon.
-                If None, the default ttkbootstrap.png icon is used.
-                Internally this is passed to the `Toplevel.iconphoto` method.
-
-            size (tuple[int, int]):
-                The width and height of the application window.
-                Internally, this argument is passed to the
-                `Toplevel.geometry` method.
-
-            position (tuple[int, int]):
-                The horizontal and vertical position of the window on
-                the screen relative to the top-left coordinate.
-                Internally this is passed to the `Toplevel.geometry`
-                method.
-
-            minsize (tuple[int, int]):
-                Specifies the minimum permissible dimensions for the
-                window. Internally, this argument is passed to the
-                `Toplevel.minsize` method.
-
-            maxsize (tuple[int, int]):
-                Specifies the maximum permissible dimensions for the
-                window. Internally, this argument is passed to the
-                `Toplevel.maxsize` method.
-
-            resizable (tuple[bool, bool]):
-                Specifies whether the user may interactively resize the
-                toplevel window. Must pass in two arguments that specify
-                this flag for _horizontal_ and _vertical_ dimensions.
-                This can be adjusted after the window is created by using
-                the `Toplevel.resizable` method.
-
-            transient (Union[Tk, Widget]):
-                Instructs the window manager that this widget is
-                transient with regard to the widget master. Internally
-                this is passed to the `Toplevel.transient` method.
-
-            overrideredirect (bool):
-                Instructs the window manager to ignore this widget if
-                True. Internally, this argument is processed as
-                `Toplevel.overrideredirect(1)`.
-
-            windowtype (str):
-                On X11, requests that the window should be interpreted by
-                the window manager as being of the specified type. Internally,
-                this is passed to the `Toplevel.attributes('-type', windowtype)`.
-
-                See the [-type option](https://tcl.tk/man/tcl8.6/TkCmd/wm.htm#M64)
-                for a list of available options.
-
-            topmost (bool):
-                Specifies whether this is a topmost window (displays above all
-                other windows). Internally, this processed by the window as
-                `Toplevel.attributes('-topmost', 1)`.
-
-            toolwindow (bool):
-                On Windows, specifies a toolwindow style. Internally, this is
-                processed as `Toplevel.attributes('-toolwindow', 1)`.
-
-            alpha (float):
-                On Windows, specifies the alpha transparency level of the
-                toplevel. Where not supported, alpha remains at 1.0. Internally,
-                this is processed as `Toplevel.attributes('-alpha', alpha)`.
-
-            **kwargs (Dict):
-                Other optional keyword arguments.
+        Args:
+            title: The title that appears on the window titlebar.
+            icon: A PhotoImage used for the titlebar icon. If None, the default ttkbootstrap icon is used.
+            size: Window size as (width, height). Applied via `geometry`.
+            position: Window position as (x, y). Applied via `geometry`.
+            minsize: Minimum permissible window size as (width, height).
+            maxsize: Maximum permissible window size as (width, height).
+            resizable: Whether the user may resize the window as (x, y).
+            transient: Mark this window as transient for the given master.
+            overrideredirect: If True, instruct the window manager to ignore this window.
+            windowtype: On X11, request a specific window manager type via `-type`.
+            topmost: If True, keep this window above others (`-topmost`).
+            toolwindow: On Windows, request a toolwindow style (`-toolwindow`).
+            alpha: On Windows, the window alpha transparency (0.0–1.0) via `-alpha`.
+            **kwargs: Other keyword arguments passed to `tkinter.Toplevel`.
         """
         # Extract iconify kwarg if present
-        iconify = kwargs.pop('iconify', None)
+        iconify = kwargs.pop("iconify", None)
 
         # Initialize Toplevel
         tkinter.Toplevel.__init__(self, **kwargs)
 
         # Setup window system info
-        self.winsys: str = self.tk.call('tk', 'windowingsystem')
+        self.winsys: str = self.tk.call("tk", "windowingsystem")
 
-        # Setup icon (use default ttkbootstrap.png if no icon provided)
+        # Setup icon (use default ttkbootstrap icon if no icon provided)
         self._setup_icon(icon, default_icon_enabled=True)
 
         # Setup window using BaseWindow
@@ -136,7 +83,7 @@ class Toplevel(BaseWindow, tkinter.Toplevel):
             resizable=resizable,
             transient=transient,
             overrideredirect=overrideredirect,
-            alpha=alpha
+            alpha=alpha,
         )
 
         # Handle iconify
@@ -144,11 +91,11 @@ class Toplevel(BaseWindow, tkinter.Toplevel):
             self.iconify()
 
         # Toplevel-specific window attributes
-        if windowtype is not None and self.winsys == 'x11':
+        if windowtype is not None and self.winsys == "x11":
             self.attributes("-type", windowtype)
 
         if topmost:
             self.attributes("-topmost", 1)
 
-        if toolwindow and self.winsys == 'win32':
+        if toolwindow and self.winsys == "win32":
             self.attributes("-toolwindow", 1)

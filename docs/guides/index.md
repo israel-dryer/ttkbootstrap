@@ -1,0 +1,111 @@
+---
+title: Guides
+---
+
+# Guides
+
+Guides teach you **how to build applications** with ttkbootstrap.
+
+While other documentation sections explain *what things are*, Guides show you *how to use them together* to solve real problems.
+
+---
+
+## What Guides Are
+
+Guides are **workflow-oriented** documentation.
+
+They demonstrate:
+
+- patterns and decisions
+- how widgets and capabilities work together
+- practical examples you can adapt
+- the "why" behind common approaches
+
+Guides assume you understand the basics. They focus on **showing**, not explaining from scratch.
+
+---
+
+## What Guides Are Not
+
+Guides do not replace:
+
+- **Widget docs** — detailed per-widget reference and options
+- **Capabilities docs** — how framework features work internally
+- **API Reference** — method signatures and parameters
+- **Platform docs** — Tk/ttk fundamentals and behavior
+
+If you need to understand *what* a widget does, see [Widgets](../widgets/index.md).
+If you need to understand *how* a capability works, see [Capabilities](../capabilities/index.md).
+Guides show you *how to apply* that knowledge.
+
+---
+
+## Available Guides
+
+### [App Structure](app-structure.md)
+
+How a ttkbootstrap application is organized—windows, layout, state, and lifecycle.
+
+### Layout
+
+Guides for building predictable, maintainable layouts.
+
+- **[Layout overview](layout.md)**  
+  Building layouts with Frame, PackFrame, and GridFrame. When to use each, and how they reduce boilerplate.
+
+- **[Spacing & Alignment](spacing-and-alignment.md)**  
+  How padding, margins, alignment, and resizing work in Tk—and how ttkbootstrap simplifies them.  
+  Useful when working with legacy layouts or debugging complex geometry.
+
+### [Reactivity](reactivity.md)
+
+Signals, callbacks, and events—what each is for, and how to combine them effectively.
+
+### [Typography](typography.md)
+
+Using font tokens, modifiers, and the Font class for consistent text styling.
+
+### [Styling](styling.md)
+
+Working with the design system—semantic colors, variants, and consistent styling across widgets.
+
+### [Icons](icons.md)
+
+Using icons effectively—named resources, theme integration, and common UI patterns.
+
+### [Theming](theming.md)
+
+How theme palettes work, switching themes at runtime, and creating custom themes.
+
+### [Formatting](formatting.md)
+
+Locale-aware number, date, and time formatting—presets, custom patterns, and widget integration.
+
+### [Localization](localization.md)
+
+Making applications language-aware with message catalogs and locale-aware formatting.
+
+---
+
+## How to Use Guides
+
+Guides are meant to be read **after** you've explored the basics.
+
+1. Start with a Guide that matches your current task
+2. Follow the examples and adapt them
+3. Use the linked Widget and Capability docs for details
+4. Return to Guides when you encounter new patterns
+
+Guides are not tutorials—they assume you can read code and explore on your own.
+
+---
+
+## Next Steps
+
+If you're new to ttkbootstrap:
+
+1. Read [App Structure](app-structure.md) to understand how applications are organized
+2. Read [Layout](layout.md) to learn the recommended approach to building UIs
+3. Explore other Guides as needed
+
+If you're looking for something specific, use the navigation or search to find the relevant Guide.

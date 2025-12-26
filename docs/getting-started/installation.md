@@ -1,141 +1,110 @@
 ---
 title: Installation
-icon: fontawesome/solid/download
 ---
 
 # Installation
 
-ttkbootstrap v2 targets **modern Python environments** and builds directly on Tkinter, which is included with most
-Python distributions.
+ttkbootstrap is a **framework** for building Tkinter applications with a modern design system and convenience APIs
+(reactive state, icons, layout containers, localization, and more).
 
-This page walks through the requirements, installation options, optional extras, and verification steps so you can
-install ttkbootstrap confidently and consistently.
+It runs anywhere Tk runs — Windows, macOS, and Linux — and installs like any other Python package.
 
 ---
 
 ## Requirements
 
-Before installing, make sure your environment meets the following requirements:
+- **Python 3.10 or newer**
 
-- **Python 3.10 or newer**  
-  Run `python --version` to confirm your interpreter version.
+- **Tk / Tcl**
 
-- **Tk support (8.6+)**  
-  Most official Python installers already include Tk.  
-  On Linux, you may need to install it separately (for example `python3-tk` or `tk-dev`).
+  Tkinter ships with most Python distributions, but some minimal Linux installs omit Tk.
 
-- **Updated pip**  
-  Keeping pip current helps ensure prebuilt wheels are used when available:
-
-  ```bash
-  python -m pip install --upgrade pip
-  ```
+!!! tip "On Linux, install Tk if Tkinter is missing"
+    - Debian/Ubuntu: `sudo apt-get install python3-tk`
+    - Fedora: `sudo dnf install python3-tkinter`
+    - Arch: `sudo pacman -S tk`
 
 ---
 
-## Installing with pip
-
-The recommended way to install ttkbootstrap is via pip:
+## Install with pip
 
 ```bash
 python -m pip install ttkbootstrap
 ```
 
-You may optionally pin a specific release:
+If you’re upgrading:
 
 ```bash
-python -m pip install ttkbootstrap==2.0.0
+python -m pip install --upgrade ttkbootstrap
 ```
-
-For isolated installs, tools such as `pipx` or virtual environments work well and are fully supported.
 
 ---
 
-## Optional Extras
+## Verify your installation
 
-ttkbootstrap provides optional extras that enable additional tooling:
-
-- **CLI tools**  
-  Includes project generators and developer utilities:
-  ```bash
-  python -m pip install ttkbootstrap[cli]
-  ```
-
-- **Full feature set**  
-  Adds extended theming utilities, palette assets, and typography support:
-  ```bash
-  python -m pip install ttkbootstrap[full]
-  ```
-
-Extras can be combined:
-
-```bash
-python -m pip install "ttkbootstrap[cli,full]"
-```
-
-These extras are optional and not required for most applications.
-
----
-
-## Verifying the Installation
-
-After installation, you can verify that ttkbootstrap is available:
+Create a quick smoke test:
 
 ```python
->> > import ttkbootstrap
->> > ttkbootstrap.__version__
+import ttkbootstrap as ttk
+
+app = ttk.App()
+ttk.Label(app, text="Hello ttkbootstrap").pack(padx=20, pady=20)
+app.mainloop()
 ```
 
-If CLI tools are installed, you can also run:
+If a window appears, you’re ready.
+
+!!! link "Next: follow the [Quick Start](quick-start.md) to build your first small app."
+
+---
+
+## Optional: Pillow for broader image support
+
+ttkbootstrap can use Pillow-backed images for better format coverage and some workflows.
 
 ```bash
-python -m ttkbootstrap --version
+python -m pip install pillow
 ```
 
-If these commands succeed, your installation is complete.
+!!! link "See [Icons & Imagery](../capabilities/icons-and-imagery.md) for theme-aware icons, DPI, and caching behavior."
 
 ---
 
-## Platform Notes & Troubleshooting
+## Troubleshooting
 
-### Missing `_tkinter`
+### `_tkinter` / Tk not found
 
-If you see errors related to `_tkinter`, Tk is not installed or not visible to your Python interpreter.
+If you see errors like:
 
-Common fixes include:
+- `ModuleNotFoundError: No module named '_tkinter'`
+- `TclError: ...`
 
-- **Debian / Ubuntu**: `sudo apt install python3-tk`
-- **macOS (Homebrew)**: `brew install tcl-tk`
-- **Windows**: Reinstall Python using the official installer and ensure Tcl/Tk is selected
+then Tk is not installed or not visible to your Python interpreter.
 
-After installing Tk, reinstall ttkbootstrap.
+Common fixes:
 
----
+- **Windows**: reinstall Python using the official installer and ensure Tcl/Tk is selected.
 
-### Virtual Environments
+- **macOS**: use the official Python installer (python.org) or a distribution that bundles Tk support.
 
-If you are using a virtual environment:
+- **Linux**: install the Tk package for your distro (see the Linux tip above).
 
-- activate it before installing,
-- ensure it was created using a Python interpreter with Tk support.
+### Virtual environments
 
----
+If Tk works in system Python but not in a venv, ensure:
 
-### Permission Errors
-
-If you encounter permission errors:
-
-- avoid system-wide installs,
-- use a virtual environment or the `--user` flag.
+- the venv was created from an interpreter that has Tk support.
 
 ---
 
-## Where to Go Next
+## Next steps
 
-Once installed, you can:
+- [Quick Start](quick-start.md)
 
-- Build your **first application** to see ttkbootstrap in action
-- Explore available **widgets**
-- Learn how themes and styling work in the **Design System**
+- [Guides](../guides/index.md)
 
-Installation is intentionally simple so you can focus on building interfaces, not fighting setup.
+- [Widgets](../widgets/index.md)
+
+- [Platform](../platform/index.md) (Tk/ttk fundamentals and mechanics)
+
+- [Capabilities](../capabilities/index.md) (signals, localization, validation, imagery, etc.)

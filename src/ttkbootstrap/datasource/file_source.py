@@ -31,27 +31,12 @@ Large File Optimization:
     - Progress callbacks for UI updates
     - Automatic strategy selection based on file size
 
-Examples:
-    # Simple CSV loading
+Example:
+    ```python
     ds = FileDataSource("data.csv")
     ds.load()
-
-    # Large file with progress
-    config = FileSourceConfig(
-        loading_strategy='lazy',
-        use_threading=True,
-        progress_callback=lambda curr, total: print(f"{curr}/{total}")
-    )
-    ds = FileDataSource("large.csv", config=config)
-    ds.load(on_complete=lambda: print("Done!"))
-
-    # JSON with transformations
-    config = FileSourceConfig(
-        column_renames={'old_name': 'new_name'},
-        column_types={'age': int, 'salary': float},
-        row_filter=lambda r: r['status'] == 'active'
-    )
-    ds = FileDataSource("data.json", config=config)
+    page = ds.get_page(0)
+    ```
 """
 
 from __future__ import annotations
@@ -114,21 +99,13 @@ class FileSourceConfig:
         on_complete: Function() called when loading completes
         on_error: Function(exception) called if loading fails
 
-    Examples:
-        # Basic config with transformations
+    Example:
+        ```python
         config = FileSourceConfig(
-            column_renames={'emp_id': 'id', 'emp_name': 'name'},
-            column_types={'age': int, 'salary': float},
-            row_filter=lambda r: r['status'] == 'active'
+            column_renames={'emp_id': 'id'},
+            column_types={'age': int},
         )
-
-        # Large file optimization
-        config = FileSourceConfig(
-            loading_strategy='lazy',
-            chunk_size=5000,
-            use_threading=True,
-            progress_callback=show_progress
-        )
+        ```
     """
 
     # File format and encoding
@@ -216,47 +193,15 @@ class FileDataSource(MemoryDataSource):
             - 100k-500k: Chunked
             - > 500k: Hybrid
 
-    Examples:
-        # Simple eager loading
-        ds = FileDataSource("small.csv")
+    Example:
+        ```python
+        ds = FileDataSource("data.csv")
         ds.load()
         ds.set_filter("age > 25")
         page = ds.get_page(0)
+        ```
 
-        # Large file with progress
-        def show_progress(current, total):
-            print(f"Loading: {current}/{total} ({current/total*100:.1f}%)")
-
-        config = FileSourceConfig(
-            loading_strategy='lazy',
-            use_threading=True,
-            progress_callback=show_progress,
-            on_complete=lambda: print("Complete!")
-        )
-
-        ds = FileDataSource("large.csv", config=config, page_size=100)
-        ds.load()  # Returns immediately, loads in background
-
-        # Transformations
-        config = FileSourceConfig(
-            column_renames={'employee_id': 'id', 'full_name': 'name'},
-            column_types={'age': int, 'salary': float, 'active': bool},
-            column_transforms={
-                'name': lambda x: x.strip().title(),
-                'email': str.lower
-            },
-            row_filter=lambda r: r.get('active', True),
-            default_values={'department': 'Unassigned'}
-        )
-
-        ds = FileDataSource("employees.json", config=config)
-        ds.load()
-
-        # JSONL (line-delimited JSON)
-        config = FileSourceConfig(json_lines=True)
-        ds = FileDataSource("logs.jsonl", config=config)
-
-    Notes:
+    Note:
         - File is re-parsed on reload()
         - Threading uses daemon threads (auto-cleanup)
         - All MemoryDataSource methods available after load

@@ -5,10 +5,12 @@ values from a list or numeric range.
 """
 
 from typing import List, Union
+
 from typing_extensions import Unpack
 
 from ttkbootstrap.widgets.composites.field import Field, FieldOptions
 from ttkbootstrap.widgets.mixins import configure_delegate
+from ttkbootstrap.widgets.types import Master
 
 
 class SpinnerEntry(Field):
@@ -18,97 +20,25 @@ class SpinnerEntry(Field):
     handle both predefined text values and numeric ranges. The widget includes
     built-in up/down arrow buttons and supports keyboard/mouse wheel interaction.
 
-    Features:
-        - Built-in spinner controls (up/down arrows)
-        - Text values mode: Cycle through predefined list
-        - Numeric range mode: Select from min to max with increment
-        - Keyboard support (Up/Down arrows)
-        - Mouse wheel support for adjusting values
-        - Optional value wrapping at boundaries
-        - Locale-aware number formatting
-        - All Field features (label, validation, messages, etc.)
+    !!! note "Events"
 
-    Events (forwarded from SpinnerEntryPart):
-        <<Change>>: Fired when value changes after commit
-        <<Input>>: Fired on each keystroke
-        <<Valid>>: Fired when validation passes
-        <<Invalid>>: Fired when validation fails
+        - ``<<Change>>``  : Fired when value changes after commit.
+        - ``<<Input>>``   : Fired on each keystroke.
+        - ``<<Valid>>``   : Fired when validation passes.
+        - ``<<Invalid>>`` : Fired when validation fails.
 
-    Example:
-        ```python
-        import ttkbootstrap as ttk
-        from ttkbootstrap.widgets.composites.spinnerentry import SpinnerEntry
-
-        root = ttk.Window()
-
-        # Text spinner with predefined values
-        size = SpinnerEntry(
-            root,
-            label="T-Shirt Size",
-            values=['XS', 'S', 'M', 'L', 'XL', 'XXL'],
-            value='M',
-            message="Select your size"
-        )
-        size.pack(padx=20, pady=10, fill='x')
-
-        # Numeric spinner with range
-        quantity = SpinnerEntry(
-            root,
-            label="Quantity",
-            value=1,
-            minvalue=1,
-            maxvalue=100,
-            increment=1,
-            message="Enter quantity"
-        )
-        quantity.pack(padx=20, pady=10, fill='x')
-
-        # Spinner with wrapping
-        priority = SpinnerEntry(
-            root,
-            label="Priority",
-            values=['Low', 'Medium', 'High'],
-            value='Medium',
-            wrap=True
-        )
-        priority.pack(padx=20, pady=10, fill='x')
-
-        # Currency spinner with formatting
-        price = SpinnerEntry(
-            root,
-            label="Price",
-            value=99.99,
-            minvalue=0,
-            maxvalue=1000,
-            increment=10,
-            value_format='¤#,##0.00'
-        )
-        price.pack(padx=20, pady=10, fill='x')
-
-        # Get the value
-        def on_submit():
-            print(f"Size: {size.value}")
-            print(f"Quantity: {quantity.value}")
-            print(f"Priority: {priority.value}")
-            print(f"Price: {price.value}")
-
-        ttk.Button(root, text="Submit", command=on_submit).pack(pady=10)
-
-        root.mainloop()
-        ```
-
-    Inherited Properties:
-        entry_widget: Access to the underlying SpinnerEntryPart widget
-        label_widget: Access to the label widget
-        message_widget: Access to the message label widget
-        addons: Dictionary of inserted addon widgets
-        variable: Tkinter Variable linked to entry text
-        signal: Signal object for reactive updates
+    Attributes:
+        entry_widget (SpinnerEntryPart): The underlying spinbox entry widget.
+        label_widget (Label): The label widget above the entry.
+        message_widget (Label): The message label widget below the entry.
+        addons (dict[str, Widget]): Dictionary of inserted addon widgets by name.
+        variable (Variable): Tkinter Variable linked to entry text.
+        signal (Signal): Signal object for reactive updates.
     """
 
     def __init__(
             self,
-            master=None,
+            master: Master = None,
             value: Union[int, float, str] = '',
             label: str = None,
             message: str = None,
@@ -144,52 +74,29 @@ class SpinnerEntry(Field):
                 If provided along with 'minvalue', creates a numeric range spinner.
             increment: Step size for increment/decrement in numeric mode.
                 Default is 1. Only applies when using minvalue/maxvalue.
-            wrap: If True, values wrap around at boundaries (cycle back to start
-                after reaching end). If False, stops at min/max boundaries.
-                Default is False.
-            **kwargs: Additional keyword arguments from FieldOptions:
-                value_format: ICU format pattern for parsing/formatting
-                    (e.g., '¤#,##0.00' for currency, '#,##0.00' for decimal)
-                locale: Locale identifier for formatting (e.g., 'en_US')
-                required: If True, field cannot be empty
-                bootstyle: The accent color of the focus ring and active border
-                allow_blank: If True, empty input is allowed (sets value to None)
-                cursor: Cursor style when hovering
-                exportselection: Export selection to clipboard
-                font: Font for text display
-                foreground: Text color
-                initial_focus: If True, widget receives focus on creation
-                justify: Text alignment
-                show_message: If True, displays message area
-                padding: Padding around entry widget
-                take_focus: If True, widget accepts Tab focus
-                textvariable: Tkinter Variable to link with text
-                textsignal: Signal object for reactive updates
-                width: Width in characters
-                xscrollcommand: Callback for horizontal scrolling
+            wrap: If True, values wrap around at boundaries. Default is False.
+
+        Other Parameters:
+            value_format (str): ICU format pattern for parsing/formatting.
+            locale (str): Locale identifier for formatting (e.g., 'en_US').
+            required (bool): If True, field cannot be empty.
+            bootstyle (str): The accent color of the focus ring and active border.
+            allow_blank (bool): If True, empty input is allowed.
+            cursor (str): Cursor style when hovering.
+            font (str): Font for text display.
+            foreground (str): Text color.
+            initial_focus (bool): If True, widget receives focus on creation.
+            justify (str): Text alignment.
+            show_message (bool): If True, displays message area.
+            padding (str): Padding around entry widget.
+            take_focus (bool): If True, widget accepts Tab focus.
+            textvariable (Variable): Tkinter Variable to link with text.
+            textsignal (Signal): Signal object for reactive updates.
+            width (int): Width in characters.
 
         Note:
             Use either 'values' (for text mode) OR 'minvalue/maxvalue' (for numeric mode),
             not both. If both are provided, 'values' takes precedence.
-
-        Example:
-            ```python
-            # Text mode
-            spinner1 = SpinnerEntry(
-                root,
-                values=['Small', 'Medium', 'Large'],
-                value='Medium'
-            )
-
-            # Numeric mode
-            spinner2 = SpinnerEntry(
-                root,
-                minvalue=0,
-                maxvalue=100,
-                increment=5,
-                value=50
-            )
-            ```
         """
         # Build kwargs for Field initialization
         # Map minvalue/maxvalue to from_/to for the underlying Spinbox

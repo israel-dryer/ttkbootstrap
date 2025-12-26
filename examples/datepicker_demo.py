@@ -1,16 +1,16 @@
-"""Demo for the inline DatePicker widget."""
+"""Demo for the inline Calendar widget."""
 
 from datetime import date
 
 import ttkbootstrap as ttk
 from ttkbootstrap.constants import BOTH, W, X
-from ttkbootstrap import DatePicker
+from ttkbootstrap import Calendar
 
 
 def main():
-    app = ttk.Window(title="DatePicker Demo", theme="dark")
+    app = ttk.Window(title="Calendar Demo", theme="dark")
 
-    picker = DatePicker(app, start_date=date.today(), bootstyle="success", selection_mode="range")
+    picker = Calendar(app, start_date=date.today(), bootstyle="success", selection_mode="range")
     picker.pack(fill=BOTH, expand=True)
 
     picker.on_date_selected(print)

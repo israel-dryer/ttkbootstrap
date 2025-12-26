@@ -6,10 +6,11 @@ both standard and frameless (borderless) display modes.
 """
 
 from tkinter import Widget
-from typing import Any, Literal, Optional, Tuple, Union
+from typing import Any, Callable, Literal, Optional, Tuple, Union
 from types import SimpleNamespace
 
 from ttkbootstrap.widgets.primitives import CheckButton, Frame, Label, Separator
+from ttkbootstrap.widgets.types import Master
 from ttkbootstrap.widgets.composites.textentry import TextEntry
 from ttkbootstrap.runtime.app import Window
 from ttkbootstrap.dialogs import Dialog, DialogButton
@@ -35,7 +36,7 @@ class FilterDialogContent(ttk.Frame):
 
     def __init__(
             self,
-            master=None,
+            master: Master = None,
             allow_search: bool = False,
             allow_select_all: bool = False,
             items: list[str | dict[str, Any]] = None
@@ -176,78 +177,19 @@ class FilterDialog(ttk.Frame):
     functionality. When the user clicks OK, the selected values are stored in
     the result property.
 
-    Events:
-        <<SelectionChanged>>: Triggered when OK is clicked and selections are confirmed.
-            event.data = {"selected": list[Any]}
+    !!! note "Events"
 
-    Args:
-        master: Parent widget for the dialog. If None, uses the default root window.
-        title: Dialog window title. Defaults to "Filter".
-        items: List of items to display. Can be strings or dicts with keys:
-            - text (str): Display text (required for dict items)
-            - value (Any): Value to return when selected (defaults to text)
-            - selected (bool): Initial selection state (defaults to False)
-        allow_search: If True, adds a search box to filter items by text.
-            Defaults to False.
-        allow_select_all: If True, adds a "Select All" checkbox at the top.
-            Defaults to False.
-        frameless: If True, removes window decorations (title bar, borders) and
-            displays the dialog with a border frame. Useful for dropdown-style
-            menus. Enables dismiss-on-outside-click behavior. Defaults to False.
+        ``<<SelectionChanged>>``: Triggered when OK is clicked and selections are confirmed.
+          Provides ``event.data`` with key: ``selected`` (list[Any]).
 
     Attributes:
-        result: List of selected values after dialog is closed, or None if cancelled.
-
-    Example:
-        Basic usage:
-
-        >>> import ttkbootstrap as ttk
-        >>> from ttkbootstrap.dialogs import FilterDialog
-        >>>
-        >>> root = ttk.Window()
-        >>> dialog = FilterDialog(
-        ...     master=root,
-        ...     title="Select Colors",
-        ...     items=["Red", "Green", "Blue", "Yellow"],
-        ...     allow_search=True,
-        ...     allow_select_all=True
-        ... )
-        >>> result = dialog.show()
-        >>> print(result)  # e.g., ['Red', 'Blue'] or None if cancelled
-
-        With pre-selected items:
-
-        >>> items = [
-        ...     {"text": "Red", "value": "red"},
-        ...     {"text": "Green", "value": "green", "selected": True},
-        ...     {"text": "Blue", "value": "blue", "selected": True}
-        ... ]
-        >>> dialog = FilterDialog(master=root, items=items)
-        >>> result = dialog.show()
-        >>> print(result)  # e.g., ['green', 'blue']
-
-        Frameless popover style:
-
-        >>> dialog = FilterDialog(
-        ...     master=root,
-        ...     items=["Option 1", "Option 2", "Option 3"],
-        ...     frameless=True
-        ... )
-        >>> result = dialog.show()
-
-        With selection change event:
-
-        >>> def on_selection(event):
-        ...     print(f"Selected: {event.data['selected']}")
-        >>>
-        >>> dialog = FilterDialog(master=root, items=["Red", "Green", "Blue"])
-        >>> dialog.on_selection_changed(on_selection)
-        >>> dialog.show()
+        result (list[Any] | None): List of selected values after dialog is closed,
+            or None if canceled.
     """
 
     def __init__(
             self,
-            master=None,
+            master: Master = None,
             title: str = "Filter",
             items: list[str | dict[str, Any]] = None,
             allow_search: bool = False,
@@ -302,11 +244,8 @@ class FilterDialog(ttk.Frame):
             if self.result is not None:
                 self.event_generate('<<SelectionChanged>>', data={"selected": self.result.copy()})
 
-    def on_selection_changed(self, callback):
-        """Bind callback to <<SelectionChanged>> event.
-
-        Args:
-            callback: Function receiving event with event.data = {"selected": list}
+    def on_selection_changed(self, callback: Callable) -> str:
+        """Bind to ``<<SelectionChanged>>``. Callback receives ``event.data = {"selected": list[Any]}``.
 
         Returns:
             Binding identifier for use with off_selection_changed().
@@ -358,7 +297,7 @@ class FilterDialog(ttk.Frame):
             window_point: AnchorPoint = 'center',
             offset: Tuple[int, int] = (0, 0),
             auto_flip: Union[bool, Literal['vertical', 'horizontal']] = False
-    ):
+    ) -> Optional[list[Any]]:
         """Show the dialog and return the selected items.
 
         Args:
@@ -386,7 +325,7 @@ class FilterDialog(ttk.Frame):
         Returns:
             List of selected item values, or None if cancelled.
         """
-        self._dialog = Dialog(
+        self._dialog: Dialog = Dialog(
             master=self._master,
             title=self._title,
             content_builder=self._build_content,

@@ -13,6 +13,7 @@ from ttkbootstrap.constants import *
 from ttkbootstrap.core.localization.intl_format import detect_locale
 from ttkbootstrap.core.localization.msgcat import MessageCatalog
 from ttkbootstrap.core.publisher import Publisher
+from ttkbootstrap.core.mixins.widget import WidgetCapabilitiesMixin
 from ttkbootstrap.runtime.base_window import BaseWindow
 from ttkbootstrap.runtime.utility import enable_high_dpi_awareness
 
@@ -29,7 +30,10 @@ def set_current_app(app: App) -> None:
 
 
 def get_app_settings() -> AppSettings:
-    """Return the settings for current App
+    """Return the settings for current App.
+
+    Returns:
+        The AppSettings instance for the current application.
 
     Raises:
         RuntimeError: If no active App instance is set.
@@ -47,6 +51,9 @@ def clear_current_app(app: App) -> None:
 def get_current_app() -> App:
     """Return the current App instance.
 
+    Returns:
+        The currently active App instance.
+
     Raises:
         RuntimeError: If no App has been registered yet.
     """
@@ -59,13 +66,31 @@ def get_current_app() -> App:
 
 
 def has_current_app() -> bool:
-    """Return True if a current App instance is registered."""
+    """Check if a current App instance is registered.
+
+    Returns:
+        True if an App instance exists, False otherwise.
+    """
     return _current_app is not None
 
 
 def get_default_root(what: Optional[str] = None) -> tkinter.Tk:
-    """Returns the default root if it has been created, otherwise
-    returns a new instance."""
+    """Get the default Tk root window.
+
+    Returns the default root if it has been created, otherwise
+    creates and returns a new instance.
+
+    Args:
+        what: Optional description of the operation requiring the root,
+            used in error messages if called too early.
+
+    Returns:
+        The default Tk root window instance.
+
+    Raises:
+        RuntimeError: If tkinter is configured to not support default root,
+            or if called too early with a 'what' description.
+    """
     if not tkinter._support_default_root:
         raise RuntimeError(
             "No master specified and tkinter is "
@@ -169,6 +194,55 @@ LocalizeMode = Union[bool, Literal['auto']]
 
 @dataclass
 class AppSettings:
+    """Application-wide settings for ttkbootstrap applications.
+
+    This dataclass holds configuration for theming, localization, and
+    application metadata. It is automatically populated with sensible
+    defaults based on the system locale.
+
+    Attributes:
+        app_name: The application name displayed in the title bar.
+        app_author: The application author (used for config paths).
+        app_version: The application version string.
+        theme: The current theme name ('light', 'dark', or a specific theme).
+        light_theme: The theme to use when `theme='light'`.
+        dark_theme: The theme to use when `theme='dark'`.
+        available_themes: Sequence of available theme names.
+        inherit_surface_color: If True, child widgets inherit the parent's
+            surface color for consistent backgrounds.
+        locale: The locale identifier (e.g., 'en_US', 'de_DE'). Auto-detected
+            from system if not specified.
+        language: The base language code (e.g., 'en', 'de'). Derived from
+            locale if not specified.
+        date_format: The date format pattern. Derived from locale if not
+            specified (e.g., 'M/d/yy' for en_US).
+        time_format: The time format pattern. Derived from locale if not
+            specified (e.g., 'h:mm a' for en_US).
+        number_decimal: The decimal separator character. Derived from locale
+            if not specified (e.g., '.' for en_US).
+        number_thousands: The thousands separator character. Derived from
+            locale if not specified (e.g., ',' for en_US).
+        localize_mode: Controls localization behavior. 'auto' enables
+            localization based on locale, True always enables, False disables.
+
+    Examples:
+        ```python
+        # Create app with default settings
+        app = App()
+
+        # Create app with custom settings
+        settings = AppSettings(
+            app_name="My App",
+            theme="dark",
+            locale="de_DE"
+        )
+        app = App(settings=settings)
+
+        # Access settings
+        print(app.settings.locale)  # 'de_DE'
+        print(app.settings.date_format)  # 'd.M.yy'
+        ```
+    """
     # information
     app_name: str | None = None
     app_author: str | None = None
@@ -182,10 +256,10 @@ class AppSettings:
     inherit_surface_color: bool = True
 
     # internationalization
-    locale: str | None = None  # e.g. "en_US"
-    language: str | None = None  # e.g. "en"
-    date_format: str | None = None  # override; otherwise use locale
-    time_format: str | None = None  # override
+    locale: str | None = None
+    language: str | None = None
+    date_format: str | None = None
+    time_format: str | None = None
     number_decimal: str | None = None
     number_thousands: str | None = None
 
@@ -295,12 +369,14 @@ class TkKwargs(TypedDict, total=False):
     use: str
 
 
-class App(BaseWindow, tkinter.Tk):
+class App(BaseWindow, WidgetCapabilitiesMixin, tkinter.Tk):
     """The primary application window and entry point.
 
-    This class provides a pre-configured tkinter.Tk instance with ttkbootstrap
-    styling, high-DPI awareness, and localization support. It serves as the
-    root window for the application.
+    App adds theming, localization, and platform setup on top of `tkinter.Tk`.
+
+    The standard widget API (events, scheduling, clipboard, geometry managers,
+    winfo, etc.) is documented under ttkbootstrap capabilities and is available
+    on App via inheritance.
     """
 
     def __init__(
@@ -445,10 +521,20 @@ class App(BaseWindow, tkinter.Tk):
         apply_class_bindings(self)
         apply_all_bindings(self)
 
-    def mainloop(self, n=0):
-        """Starts the main Tkinter event loop."""
+    def mainloop(self, n=0) -> None:
+        """Start the application event loop
+
+        Args:
+            n (int): A threshold that keeps the window open if at least n windows is open. This is an archaic c-level
+                detail that should not be adjusted unless you have a specific reason.
+        """
         self.show()
-        super().mainloop(n)
+        super().mainloop(n=n)
+
+    def close(self) -> None:
+        """Close the application window (destroys the Tk root)"""
+        clear_current_app(self)
+        self.quit()
 
     def destroy(self) -> None:
         """Destroys the window and all its children."""

@@ -54,63 +54,30 @@ class Toast:
         """Initialize a Toast notification.
 
         Args:
-            title: The toast title text. If provided without a message, it will be displayed
+            title (str): The toast title text. If provided without a message, it will be displayed
                 with a larger "label" font. If both title and message are provided, the title
                 appears in the header and the message appears in a separate section below.
-            icon: Icon to display in the header. Can be a string icon name (e.g., "bootstrap-fill")
+            icon (str | dict): Icon to display in the header. Can be a string icon name (e.g., "bootstrap-fill")
                 or an IconSpec dict with name, size, and color properties.
-            message: The main message text. If no title is provided, this message is displayed
+            message (str): The main message text. If no title is provided, this message is displayed
                 in the header with a "body" font. If a title is provided, this appears in a
                 separate section below the header.
-            memo: Small metadata text displayed in the header (e.g., "5 mins ago"). Appears
+            memo (str): Small metadata text displayed in the header (e.g., "5 mins ago"). Appears
                 with muted styling.
-            duration: Auto-dismiss duration in milliseconds. If None, the toast remains visible
+            duration (int): Auto-dismiss duration in milliseconds. If None, the toast remains visible
                 until manually closed.
-            buttons: Sequence of button configurations. Each dict can contain any ttkbootstrap
+            buttons (list): Sequence of button configurations. Each dict can contain any ttkbootstrap
                 button options (text, bootstyle, command, etc.). Button commands will trigger
                 the on_dismissed callback before closing the toast.
-            show_close_button: Whether to show the close button in the header. Default is True.
-            bootstyle: The color theme for the toast container (e.g., "primary", "success",
+            show_close_button (bool): Whether to show the close button in the header. Default is True.
+            bootstyle (str): The color theme for the toast container (e.g., "primary", "success",
                 "danger"). If None, uses the default background color.
-            position: Tkinter geometry string for toast position (e.g., "-25-75" for bottom-right).
+            position (str): Tkinter geometry string for toast position (e.g., "-25-75" for bottom-right).
                 If None, uses platform-specific defaults.
-            alert: If True, plays a system bell sound when the toast is shown.
-            on_dismissed: Callback function invoked when the toast is dismissed. Receives the
+            alert (bool): If True, plays a system bell sound when the toast is shown.
+            on_dismissed (Callable): Callback function invoked when the toast is dismissed. Receives the
                 button options dict if dismissed via a button, or None if dismissed via close
                 button or auto-dismiss.
-
-        Examples:
-            Simple toast with just a message::
-
-                toast = Toast(message="Hello, world!")
-                toast.show()
-
-            Toast with title, message, and auto-dismiss::
-
-                toast = Toast(
-                    title="Success",
-                    message="Your changes have been saved.",
-                    duration=3000,
-                    bootstyle="success"
-                )
-                toast.show()
-
-            Toast with buttons and callback::
-
-                def on_dismiss(data):
-                    if data and data.get('text') == 'Confirm':
-                        print("User confirmed!")
-
-                toast = Toast(
-                    title="Confirm Action",
-                    message="Are you sure you want to continue?",
-                    buttons=[
-                        {"text": "Confirm", "bootstyle": "primary"},
-                        {"text": "Cancel", "bootstyle": "secondary"}
-                    ],
-                    on_dismissed=on_dismiss
-                )
-                toast.show()
         """
         self._config_keys = {'title', 'icon', 'message', 'memo', 'duration', 'buttons', 'show_close_button',
                              'bootstyle', 'position', 'alert', 'on_dismissed'}
@@ -156,8 +123,7 @@ class Toast:
             **kwargs: Configuration options to set.
 
         Returns:
-            If option is provided, returns a tuple of (option, option, option.capitalize(), None, value).
-            Otherwise, returns None.
+            Configuration tuple if option provided, otherwise None.
         """
         if option is not None:
             if option in self._config_keys:

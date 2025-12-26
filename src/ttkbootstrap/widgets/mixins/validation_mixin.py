@@ -17,42 +17,19 @@ from ttkbootstrap.core.validation.types import RuleTriggerType, RuleType, Valida
 class ValidationMixin(Widget):
     """Pure-Tkinter validation mixin for bound widgets.
 
-    Features:
-        - Debounced auto-validate on key/blur
-        - Emits virtual events with data payload:
-            <<Valid>>, <<Invalid>>, <<Validate>>
-        - Event data accessible via event.data in handlers
+    Provides debounced auto-validation on key/blur with virtual event emission.
+    Event data is accessible via ``event.data`` in handlers.
 
-    Events:
-        <<Valid>>: Fired when validation passes
-            event.data = {"value": Any, "is_valid": True, "message": str}
+    !!! note "Events"
 
-        <<Invalid>>: Fired when validation fails
-            event.data = {"value": Any, "is_valid": False, "message": str}
+        - ``<<Valid>>``: Fired when validation passes.
+          Provides ``event.data`` with keys: ``value``, ``is_valid`` (True), ``message``.
 
-        <<Validate>>: Fired after any validation
-            event.data = {"value": Any, "is_valid": bool, "message": str}
+        - ``<<Invalid>>``: Fired when validation fails.
+          Provides ``event.data`` with keys: ``value``, ``is_valid`` (False), ``message``.
 
-    Example:
-        ```python
-        import ttkbootstrap as ttk
-        from ttkbootstrap.widgets.parts import TextEntryPart
-
-        root = ttk.Window()
-        entry = TextEntryPart(root)
-        entry.pack()
-
-        # Add validation rules
-        entry.add_validation_rule('required', message='Field is required')
-        entry.add_validation_rule('min_length', min_length=5, message='Min 5 chars')
-
-        # Bind to validation events
-        def on_invalid(event):
-            print(f"Invalid: {event.data['message']}")
-
-        entry.bind('<<Invalid>>', on_invalid)
-        root.mainloop()
-        ```
+        - ``<<Validate>>``: Fired after any validation.
+          Provides ``event.data`` with keys: ``value``, ``is_valid`` (bool), ``message``.
     """
 
     EVENT_VALID = '<<Valid>>'
@@ -98,12 +75,6 @@ class ValidationMixin(Widget):
         Args:
             rule_type: Type of validation rule (e.g., 'required', 'min_length')
             **kwargs: Rule-specific options (e.g., min_length=5, message='...')
-
-        Example:
-            ```python
-            entry.add_validation_rule('required', message='Field is required')
-            entry.add_validation_rule('email', message='Invalid email')
-            ```
         """
         self._rules.append(ValidationRule(rule_type, **kwargs))
 
@@ -112,24 +83,13 @@ class ValidationMixin(Widget):
 
         Args:
             rules: List of ValidationRule objects
-
-        Example:
-            ```python
-            from ttkbootstrap.core.validation import ValidationRule
-
-            rules = [
-                ValidationRule('required'),
-                ValidationRule('min_length', min_length=5)
-            ]
-            entry.add_validation_rules(rules)
-            ```
         """
         self._rules = list(rules)
 
     def validate(self, value: Any, trigger: RuleTriggerType = "manual") -> bool:
         """Run validation rules against a value.
 
-        Emits <<Valid>>, <<Invalid>>, and <<Validate>> events
+        Emits ``<<Valid>>``, ``<<Invalid>>``, and ``<<Validate>>`` events
         with data payload containing validation results.
 
         Args:
@@ -138,11 +98,6 @@ class ValidationMixin(Widget):
 
         Returns:
             True if validation was performed (regardless of result)
-
-        Example:
-            ```python
-            is_valid = entry.validate(entry.value(), trigger='manual')
-            ```
         """
         ran_rule = False
         payload: dict[str, Any] = {"value": value, "is_valid": True, "message": ""}

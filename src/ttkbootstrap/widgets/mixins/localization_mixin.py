@@ -1,9 +1,25 @@
+"""Localization mixin for ttkbootstrap widgets.
+
+Provides automatic text translation and value formatting based on the current
+locale. Widgets using this mixin will automatically update when the locale
+changes.
+
+This mixin is a thin glue layer that delegates resolution logic to the core
+localization capability module.
+"""
+
 from __future__ import annotations
 
 from typing import Any, Dict
 from tkinter import StringVar, Misc
 
-from ttkbootstrap.core.localization.msgcat import MessageCatalog
+from ttkbootstrap.core.capabilities.localization import (
+    resolve_text,
+    resolve_variable_text,
+    apply_spec,
+    get_current_locale,
+    create_formatted_signal,
+)
 from ttkbootstrap.core.localization.specs import (
     LocalizedSpec,
     LocalizedTextSpec,
@@ -18,6 +34,8 @@ class LocalizationMixin(Misc):
     This mixin enables widgets to automatically localize text and format values
     according to the current locale. It listens for locale change events and
     updates all registered fields accordingly.
+
+    This mixin delegates resolution logic to the core localization capability.
 
     Attributes:
         localize: Controls whether literals are auto-wrapped into localization specs.
@@ -55,24 +73,33 @@ class LocalizationMixin(Misc):
         root.bind("<<LocaleChanged>>", self._on_locale_changed, add="+")
 
         # Check if widget has a textsignal or textvariable with value_format
-        if value_format and (hasattr(self, '_textsignal') or hasattr(self, '_textvariable') or self._has_textvariable_configured()):
-            # Ensure textsignal exists (triggers lazy creation if needed)
-            if not hasattr(self, '_textsignal'):
-                # Access the property to trigger lazy creation
-                _ = self.textsignal
-            # Subscribe to signal and format its values
+        if value_format and self._has_signal_or_variable():
             self._setup_signal_formatting(value_format)
         else:
             # Register the text field for static localization
             self.register_localized_field('text', text_to_localize, value_format=value_format)
+
+    def _has_signal_or_variable(self) -> bool:
+        """Check if the widget has a textsignal, textvariable, or configured textvariable.
+
+        Returns:
+            True if any signal/variable binding exists.
+        """
+        if hasattr(self, '_textsignal') or hasattr(self, '_textvariable'):
+            return True
+        try:
+            textvariable_name = self.cget('textvariable')
+            return bool(textvariable_name)
+        except Exception:
+            return False
 
     def register_localized_field(
         self,
         field_name: str,
         value: Any,
         *,
-        value_format=None,
-        localize=None,
+        value_format: str | None = None,
+        localize: bool | str | None = None,
     ) -> None:
         """Register a widget field for automatic localization.
 
@@ -90,6 +117,7 @@ class LocalizationMixin(Misc):
 
         localize_mode = self._localize_mode if localize is None else localize
 
+        # If already a spec, use it directly
         if isinstance(value, LocalizedSpec):
             self._localized_fields[field_name] = value
             self._apply_spec_now(field_name, value)
@@ -98,14 +126,19 @@ class LocalizationMixin(Misc):
         if localize_mode is False:
             return
 
+        # Resolve the value to a spec using core capability
         if isinstance(value, str):
-            spec = LocalizedTextSpec(key=value, original=value)
+            spec = resolve_text(value, localize_mode=localize_mode)
         else:
-            fmt = value_format or self._default_value_format or "decimal"
-            spec = LocalizedValueSpec(value=value, format_spec=fmt)
+            spec = resolve_variable_text(
+                value,
+                value_format=value_format,
+                default_format=self._default_value_format or "decimal",
+            )
 
-        self._localized_fields[field_name] = spec
-        self._apply_spec_now(field_name, spec)
+        if spec is not None:
+            self._localized_fields[field_name] = spec
+            self._apply_spec_now(field_name, spec)
 
     def _apply_spec_now(self, field_name: str, spec: LocalizedSpec) -> None:
         """Resolve a localization spec using the current locale and apply immediately.
@@ -116,8 +149,7 @@ class LocalizationMixin(Misc):
         """
         if not spec.enabled:
             return
-        locale = MessageCatalog.locale()
-        value = spec.resolve(locale)
+        value = apply_spec(spec)
         self._apply_localized_value(field_name, value)
 
     def _on_locale_changed(self, event=None):
@@ -136,24 +168,11 @@ class LocalizationMixin(Misc):
 
     def _refresh_localized_fields(self) -> None:
         """Refresh all registered localized fields with the current locale."""
-        locale = MessageCatalog.locale()
         for field_name, spec in self._localized_fields.items():
             if not spec.enabled:
                 continue
-            value = spec.resolve(locale)
+            value = apply_spec(spec)
             self._apply_localized_value(field_name, value)
-
-    def _has_textvariable_configured(self) -> bool:
-        """Check if the widget has a textvariable configured.
-
-        Returns:
-            True if a textvariable is configured on the widget.
-        """
-        try:
-            textvariable_name = self.cget('textvariable')
-            return bool(textvariable_name)
-        except Exception:
-            return False
 
     def _setup_signal_formatting(self, value_format: str) -> None:
         """Subscribe to textsignal and format its values.
@@ -162,15 +181,17 @@ class LocalizationMixin(Misc):
         and subscribes to the source signal to format and display values independently.
 
         Args:
-            value_format: The format spec (e.g., 'currency', 'decimal')
+            value_format: The format spec (e.g., 'currency', 'decimal').
         """
+        # Ensure textsignal exists (triggers lazy creation if needed)
+        if not hasattr(self, '_textsignal'):
+            _ = self.textsignal
+
         # Save reference to the source signal (the one we're subscribing to)
         source_signal = self._textsignal
 
-        # Create a NEW private textvariable for formatted display
-        # This ensures multiple widgets can share the same source without conflict
-        from ttkbootstrap.core.signals import Signal
-        formatted_signal = Signal("")
+        # Create formatted signal using core capability
+        formatted_signal, formatter = create_formatted_signal(source_signal, value_format)
 
         # Update our internal references to use the new private signal/variable
         self._textsignal = formatted_signal
@@ -179,24 +200,11 @@ class LocalizationMixin(Misc):
         # Configure widget to use the new private variable
         try:
             self._ttk_base.configure(self, textvariable=self._textvariable)  # type: ignore[misc]
-        except:
+        except Exception:
             pass
 
-        def format_signal_value(value):
-            """Format the signal value using current locale."""
-            # Create a spec for this value
-            spec = LocalizedValueSpec(value=value, format_spec=value_format)
-            locale = MessageCatalog.locale()
-            formatted = spec.resolve(locale)
-
-            # Update the private textvariable for this widget
-            formatted_signal.set(formatted)
-
-        # Subscribe to the SOURCE signal (not our new private one!)
-        source_signal.subscribe(format_signal_value, immediate=True)
-
         # Store references for locale changes
-        self._signal_formatter = (value_format, format_signal_value, source_signal)
+        self._signal_formatter = (value_format, formatter, source_signal)
 
     def _apply_localized_value(self, field_name: str, value: str) -> None:
         """Apply a localized value to the widget field.
@@ -242,3 +250,6 @@ class LocalizationMixin(Misc):
             self.configure({field_name: value})
         except Exception:
             pass
+
+
+__all__ = ["LocalizationMixin"]

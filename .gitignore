@@ -24,3 +24,4 @@ tests/themes.json
 /.pypirc
 publish.bat
 /issues/
+/nul

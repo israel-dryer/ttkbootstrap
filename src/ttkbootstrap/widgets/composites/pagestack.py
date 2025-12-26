@@ -1,10 +1,11 @@
 import tkinter
 from collections.abc import ValuesView
-from typing import Any
+from typing import Any, Callable
 
 from typing_extensions import TypedDict, Unpack
 
 from ttkbootstrap.widgets.primitives import Frame
+from ttkbootstrap.widgets.types import Master
 from ttkbootstrap.core import NavigationError
 
 
@@ -35,34 +36,19 @@ class PageStack(Frame):
     visible at a time. It maintains a navigation history, allowing users to move
     backward and forward through pages similar to a web browser.
 
-    Features:
-        - Add pages as existing widgets or create new Frame pages
-        - Navigate between pages with automatic history management
-        - Back/forward navigation with browser-like behavior
-        - Page lifecycle events (PageUnmount, PageWillMount, PageMount, PageChange)
-        - Pass data between pages during navigation
-        - Replace current page in history without creating new entries
-        - Query navigation state (can_back, can_forward)
+    !!! note "Events"
 
-    Lifecycle Events:
-        - <<PageUnmount>>: Triggered when the current page is hidden
-        - <<PageWillMount>>: Triggered before a new page is displayed
-        - <<PageMount>>: Triggered after a new page is displayed
-        - <<PageChange>>: Triggered after page navigation completes
+        - ``<<PageUnmount>>``: Triggered when the current page is hidden.
+        - ``<<PageWillMount>>``: Triggered before a new page is displayed.
+        - ``<<PageMount>>``: Triggered after a new page is displayed.
+        - ``<<PageChange>>``: Triggered after page navigation completes.
 
-    Event Data:
-        Navigation events include a data dictionary with:
-        - page: Current page key
-        - prev_page: Previous page key
-        - prev_data: Data from previous page
-        - nav: Navigation type ('push', 'back', 'forward')
-        - index: Current position in history
-        - length: Total history length
-        - can_back: Boolean indicating if back navigation is possible
-        - can_forward: Boolean indicating if forward navigation is possible
+        All events provide ``event.data`` with keys: ``page``, ``prev_page``, ``prev_data``,
+        ``nav`` ('push', 'back', 'forward'), ``index``, ``length``, ``can_back``,
+        ``can_forward``.
     """
 
-    def __init__(self, master=None, **kwargs: Unpack[PageStackKwargs]):
+    def __init__(self, master: Master = None, **kwargs: Unpack[PageStackKwargs]):
         """Initialize a new PageStack instance.
 
         Creates an empty PageStack with no pages and no navigation history.
@@ -70,14 +56,14 @@ class PageStack(Frame):
         configuration options.
 
         Args:
-            master: The parent widget. If None, the PageStack will be a
-                   top-level window.
-            **kwargs: Optional keyword arguments for Frame configuration:
-                - takefocus: If True, the widget can receive keyboard focus
-                - width: Width of the PageStack in pixels
-                - height: Height of the PageStack in pixels
-                - padding: Padding around the PageStack (can be a single value
-                          or tuple of (left, top, right, bottom))
+            master: Parent widget. If None, uses the default root window.
+
+        Other Parameters:
+            takefocus (bool): If True, the widget can receive keyboard focus.
+            width (int): Width of the PageStack in pixels.
+            height (int): Height of the PageStack in pixels.
+            padding (int | tuple): Padding around the PageStack (can be a single value
+                or tuple of (left, top, right, bottom)).
 
         Note:
             Pages must be added using add() or add_page() before navigation
@@ -164,8 +150,8 @@ class PageStack(Frame):
         """Navigate to the page with the given key.
 
         This method handles page transitions, manages navigation history,
-        and triggers lifecycle events (<<PageUnmount>>, <<PageWillMount>>,
-        <<PageMount>>, <<PageChange>>).
+        and triggers lifecycle events (``<<PageUnmount>>``, ``<<PageWillMount>>``,
+        ``<<PageMount>>``, ``<<PageChange>>``).
 
         Args:
             key: The identifier of the page to navigate to
@@ -291,7 +277,7 @@ class PageStack(Frame):
             return None
         return self._current, (self._history[self._index][1] if self._index >= 0 else {})
 
-    def configure_page(self, key: str, option=None, **kwargs) -> Any:
+    def configure_page(self, key: str, option: Any = None, **kwargs: Any) -> Any:
         """Query or configure the page configuration.
 
         Args:
@@ -327,23 +313,14 @@ class PageStack(Frame):
         """
         return self._pages.values()
 
-    def on_page_changed(self, callback) -> str:
-        """Bind a callback to the <<PageChange>> event.
-
-        Args:
-            callback: Function to call when the page changes. The callback
-                     will receive an event object with navigation data.
+    def on_page_changed(self, callback: Callable) -> str:
+        """Bind to ``<<PageChange>>``. Callback receives ``event.data`` with navigation info.
 
         Returns:
-            The function ID that can be used with off_page_changed() to
-            remove this binding.
+            Binding identifier for use with off_page_changed().
         """
         return self.bind('<<PageChange>>', callback, add="+")
 
-    def off_page_changed(self, funcid) -> None:
-        """Remove a callback binding from the <<PageChange>> event.
-
-        Args:
-            funcid: The function ID returned by on_page_changed()
-        """
+    def off_page_changed(self, funcid: str) -> None:
+        """Unbind from ``<<PageChange>>``."""
         self.unbind("<<PageChange>>", funcid)

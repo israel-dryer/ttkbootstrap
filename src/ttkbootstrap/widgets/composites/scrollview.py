@@ -1,42 +1,36 @@
 """Canvas-based scrollable container widget with mouse wheel support."""
 from tkinter import Canvas
 from tkinter.ttk import Widget
-from typing import Literal, Optional
+from typing import Any, Literal, Optional
 
 from ttkbootstrap.widgets.primitives.frame import Frame
 from ttkbootstrap.widgets.mixins.configure_mixin import configure_delegate
 from ttkbootstrap.widgets.primitives.scrollbar import Scrollbar
+from ttkbootstrap.widgets.types import Master
 
 
 class ScrollView(Frame):
     """A canvas-based scrollable container with configurable scrollbar behavior.
 
     The ScrollView widget provides a scrollable area for child widgets with
-    full mouse wheel support on all descendants, including deeply nested widgets.
-    Scrollbars can be configured to appear always, never, on hover, or when scrolling.
+    full mouse wheel support on all descendants. Scrollbars can be configured
+    to appear always, never, on hover, or when scrolling, and are only visible
+    when the content exceeds the available space.
 
-    The scrollbars will only be visible when the content exceeds the available space.
-
-    The widget uses a unique bind tag system to enable mouse wheel scrolling on
-    all child widgets without interfering with normal widget behavior. Bindings
-    are automatically refreshed when the container is reconfigured.
-
-    Example:
-        >>> scroll = ScrollView(parent, direction='vertical', show_scrollbar='on-scroll')
-        >>> content = ttk.Frame(scroll.canvas)
-        >>> scroll.add(content)
-        >>> # Add widgets to content frame
-        >>> ttk.Label(content, text="Scrollable content").pack()
+    Attributes:
+        canvas (Canvas): The underlying tkinter Canvas widget.
+        vertical_scrollbar (Scrollbar): The vertical scrollbar widget.
+        horizontal_scrollbar (Scrollbar): The horizontal scrollbar widget.
     """
 
     def __init__(
             self,
-            master,
+            master: Master = None,
             direction: Literal['horizontal', 'vertical', 'both'] = 'both',
             show_scrollbar: Literal['always', 'never', 'on-hover', 'on-scroll'] = 'always',
             autohide_delay: int = 1000,  # milliseconds for on-scroll mode
             scrollbar_style: str = 'default',
-            **kwargs
+            **kwargs: Any
     ):
         """Initialize a ScrollView widget.
 
@@ -482,7 +476,7 @@ class ScrollView(Frame):
 
             self._scrolling_enabled = False
 
-    def add(self, widget: Widget, **kwargs):
+    def add(self, widget: Widget, **kwargs: Any):
         """Add a widget to the scrollable area.
 
         Args:
@@ -579,7 +573,7 @@ class ScrollView(Frame):
         """Query or command horizontal view position."""
         return self.canvas.xview(*args)
 
-    def yview_moveto(self, fraction):
+    def yview_moveto(self, fraction: float):
         """Scroll to a specific vertical position.
 
         Args:
@@ -587,7 +581,7 @@ class ScrollView(Frame):
         """
         self.canvas.yview_moveto(fraction)
 
-    def xview_moveto(self, fraction):
+    def xview_moveto(self, fraction: float):
         """Scroll to a specific horizontal position.
 
         Args:

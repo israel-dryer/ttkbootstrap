@@ -17,6 +17,7 @@ from ttkbootstrap.widgets.mixins.entry_mixin import EntryMixin
 from ttkbootstrap.widgets.parts.numberentry_part import NumberEntryPart
 from ttkbootstrap.widgets.parts.textentry_part import TextEntryPart
 from ttkbootstrap.widgets.parts.spinnerentry_part import SpinnerEntryPart
+from ttkbootstrap.widgets.types import Master
 
 FieldKind = Literal['text', 'numeric', 'spinbox']
 """Type alias for field kind specification.
@@ -85,122 +86,33 @@ class Field(EntryMixin, Frame):
 
     The widget automatically handles layout, focus states, validation feedback, and
     provides a consistent API for all entry-based components. It supports both text
-    and numeric input types through the 'kind' parameter.
+    and numeric input types through the ``kind`` parameter.
 
-    Architecture:
-        - Label area (optional): Displays field label with required indicator (*)
-        - Field container: Styled frame that contains the entry and any addons
-        - Entry widget: Either TextEntryPart or NumberEntryPart based on 'kind'
-        - Message area (optional): Displays hints or validation error messages
-        - Addon support: Insert Button or Label widgets before/after the entry
+    !!! note "Events"
 
-    Features:
-        - Automatic label and message layout
-        - Required field indicator (asterisk)
-        - Focus state styling on field container
-        - Validation feedback with automatic error message display
-        - Add-on widget support (prefix/suffix icons, buttons)
-        - Entry method forwarding (delegates to underlying entry widget)
-        - Consistent state management (disable, enable, readonly)
-        - Event forwarding from underlying entry widget
+        - ``<<Input>>``: Triggered on each keystroke.
+          Provides ``event.data`` with keys: ``text``.
 
-    Events (forwarded from entry widget):
-        <<Input>>: Triggered on each keystroke
-            event.data = {"text": str}
+        - ``<<Change>>``: Triggered when value changes after commit.
+          Provides ``event.data`` with keys: ``value``, ``prev_value``, ``text``.
 
-        <<Change>>: Triggered when value changes after commit
-            event.data = {"value": Any, "prev_value": Any, "text": str}
+        - ``<<Valid>>``: Triggered when validation passes.
+          Provides ``event.data`` with keys: ``value``, ``is_valid`` (True), ``message``.
 
-        <<Valid>>: Triggered when validation passes
-            event.data = {"value": Any, "is_valid": True, "message": str}
+        - ``<<Invalid>>``: Triggered when validation fails.
+          Provides ``event.data`` with keys: ``value``, ``is_valid`` (False), ``message``.
 
-        <<Invalid>>: Triggered when validation fails
-            event.data = {"value": Any, "is_valid": False, "message": str}
+        - ``<<Validate>>``: Triggered after any validation.
+          Provides ``event.data`` with keys: ``value``, ``is_valid`` (bool), ``message``.
 
-        <<Validate>>: Triggered after any validation
-            event.data = {"value": Any, "is_valid": bool, "message": str}
-
-    Example:
-        ```python
-        import ttkbootstrap as ttk
-        from ttkbootstrap.widgets.parts.field import Field
-
-        root = ttk.Window()
-
-        # Text field with label and message
-        field1 = Field(
-            root,
-            kind='text',
-            label='Username',
-            message='Enter your username',
-            required=True
-        )
-        field1.pack(padx=20, pady=10, fill='x')
-
-        # Numeric field with bounds
-        field2 = Field(
-            root,
-            kind='numeric',
-            label='Age',
-            value=25,
-            minvalue=0,
-            maxvalue=120,
-            required=True
-        )
-        field2.pack(padx=20, pady=10, fill='x')
-
-        # Field with addon button
-        field3 = Field(root, label='Search', kind='text')
-        field3.insert_addon(ttk.Button, 'after', text='Go')
-        field3.pack(padx=20, pady=10, fill='x')
-
-        # Custom validation
-        field4 = Field(root, label='Email', required=True)
-        field4.add_validation_rule('email', message='Invalid email')
-        field4.pack(padx=20, pady=10, fill='x')
-
-        root.mainloop()
-        ```
-
-    Subclassing:
-        ```python
-        from ttkbootstrap.widgets.parts.field import Field
-
-        class PasswordEntry(Field):
-            '''Password entry field with masked input.'''
-
-            def __init__(self, master=None, **kwargs):
-                # Force text kind and mask characters
-                kwargs.update(show='*')
-                super().__init__(master, kind='text', **kwargs)
-        ```
-
-    Properties:
-        entry_widget: The underlying TextEntryPart or NumberEntryPart widget
-        label_widget: The Label widget for the field label
-        message_widget: The Label widget for messages/errors
-        addons: Dictionary of inserted addon widgets (Button or Label)
-        variable: Tkinter Variable linked to entry text
-        signal: Signal object for reactive updates
-
-    Forwarded Methods:
-        on_input(callback): Bind callback to <<Input>> event
-        on_changed(callback): Bind callback to <<Change>> event
-        on_enter(callback): Bind callback to <Return> event
-        on_invalid(callback): Bind callback to <<Invalid>> event
-        on_valid(callback): Bind callback to <<Valid>> event
-        on_validated(callback): Bind callback to <<Validate>> event
-        add_validation_rule(rule_type, **kwargs): Add a validation rule
-        add_validation_rules(rules): Replace all validation rules
-        validation(value, trigger): Run validation against a value
-
-    Inherited from EntryMixin:
-        delete(first, last), insert(index, text), get(), selection_*(), etc.
+    Attributes:
+        variable (Variable): Tkinter Variable linked to entry text.
+        signal (Signal): Signal object for reactive updates.
     """
 
     def __init__(
             self,
-            master=None,
+            master: Master = None,
             *,
             value: str | int | float = None,
             label: str = None,
@@ -208,7 +120,7 @@ class Field(EntryMixin, Frame):
             show_message: bool = False,
             required: bool = False,
             kind: FieldKind = "text",
-            **kwargs
+            **kwargs: Any
     ):
         """Initialize a Field widget.
 
@@ -238,26 +150,20 @@ class Field(EntryMixin, Frame):
             kind: Type of entry field to create. Either 'text' for text input
                 (uses TextEntryPart) or 'numeric' for numeric input (uses
                 NumberEntryPart). Default is 'text'.
-            **kwargs: Additional keyword arguments passed to the underlying entry
-                widget (TextEntryPart or NumberEntryPart). Common options include:
 
-                For text kind:
-                    - value_format (str): ICU format pattern for parsing/formatting
-                    - allow_blank (bool): Allow empty input
-                    - locale (str): Locale for formatting (e.g., 'en_US')
-                    - initial_focus (bool): Focus on creation
-                    - show (str): Character to mask input (e.g., '*' for passwords)
-                    - width (int): Width in characters
-                    - font (str): Font specification
-                    - justify (str): Text alignment ('left', 'center', 'right')
-
-                For numeric kind:
-                    - minvalue (int|float): Minimum allowed value
-                    - maxvalue (int|float): Maximum allowed value
-                    - increment (int|float): Step size for up/down arrows
-                    - wrap (bool): Wrap around at boundaries
-                    - value_format (str): Number format pattern
-                    - allow_blank (bool): Allow empty input
+        Other Parameters:
+            value_format (str): ICU format pattern for parsing/formatting.
+            allow_blank (bool): Allow empty input.
+            locale (str): Locale for formatting (e.g., 'en_US').
+            initial_focus (bool): Focus on creation.
+            show (str): Character to mask input (e.g., '*' for passwords).
+            width (int): Width in characters.
+            font (str): Font specification.
+            justify (str): Text alignment ('left', 'center', 'right').
+            minvalue (int | float): Minimum allowed value (numeric kind only).
+            maxvalue (int | float): Maximum allowed value (numeric kind only).
+            increment (int | float): Step size for up/down arrows (numeric kind only).
+            wrap (bool): Wrap around at boundaries (numeric kind only).
         """
         # Accept legacy parameter name and prevent it from reaching the Tk widget.
         if 'show_messages' in kwargs:
@@ -439,8 +345,9 @@ class Field(EntryMixin, Frame):
             self,
             widget: Type[Union[Button, Label, CheckButton]],
             position: Literal['before', 'after'],
-            name=None, pack_options: dict[str, Any] = None,
-            **kwargs
+            name: str | None = None,
+            pack_options: dict[str, Any] = None,
+            **kwargs: Any
     ):
         """Insert a widget addon before or after the entry input.
 
@@ -465,7 +372,7 @@ class Field(EntryMixin, Frame):
                 apply when placing the addon widget. Common options include
                 padx, pady, etc. The side and after/before options are set
                 automatically based on position.
-            **kwargs: Additional keyword arguments passed to the widget constructor.
+            **kwargs (Any): Additional keyword arguments passed to the widget constructor.
                 For Button: text, command, icon, bootstyle, etc.
                 For Label: text, icon, image, bootstyle, etc.
                 Note: bootstyle and takefocus are set automatically but can be

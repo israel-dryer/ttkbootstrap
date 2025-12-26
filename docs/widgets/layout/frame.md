@@ -1,180 +1,145 @@
 ---
 title: Frame
-icon: fontawesome/regular/square
 ---
 
 # Frame
 
-`Frame` is a themed wrapper around `ttk.Frame` that integrates ttkbootstrap’s styling system. It’s the core **layout and grouping container** used to organize widgets, apply padding, and create visual structure in your UI.
+`Frame` is a **basic layout container** for grouping widgets and creating structure.
+
+It's a themed wrapper around `ttk.Frame`, so it participates in ttkbootstrap styling while behaving like a standard ttk container. Use `Frame` when you need a simple container without automatic layout management.
+
+!!! tip "Prefer PackFrame or GridFrame for most layouts"
+    For building layouts with automatic child management, use [PackFrame](packframe.md) (vertical/horizontal stacks with gap spacing) or [GridFrame](gridframe.md) (CSS Grid-like 2D layouts). These provide a more declarative, less error-prone layout experience.
 
 <!--
 IMAGE: Frame used for layout
-Suggested: A simple form section inside a padded Frame (label + entry + buttons)
+Suggested: A simple form section inside a padded Frame (label + entry + button)
 Theme variants: light / dark
 -->
 
 ---
 
-## Basic usage
-
-Use `Frame` as a container and place child widgets inside it:
+## Quick start
 
 ```python
 import ttkbootstrap as ttk
 
 app = ttk.App()
 
-frame = ttk.Frame(app, padding=10)
-frame.pack(fill="both", expand=True, padx=20, pady=20)
+section = ttk.Frame(app, padding=20)
+section.pack(fill="both", expand=True)
 
-ttk.Label(frame, text="Settings").pack(anchor="w")
-ttk.Entry(frame).pack(fill="x", pady=(6, 0))
+ttk.Label(section, text="Account").pack(anchor="w")
+ttk.Entry(section).pack(fill="x", pady=(8, 0))
 
 app.mainloop()
 ```
 
-<!--
-IMAGE: Basic Frame example
-Suggested: A padded container with a visible header label and input
--->
+---
+
+## When to use
+
+Use `Frame` when:
+
+- you need a basic container without automatic layout management
+- you want padding around a cluster of widgets
+- you want to apply a shared background/surface to a region
+- you're manually managing child widgets with `pack()` or `grid()`
+
+**Consider a different control when:**
+
+- you want automatic vertical/horizontal stacking with gaps -> use [PackFrame](packframe.md)
+- you need a 2D grid layout with auto-placement -> use [GridFrame](gridframe.md)
+- the group needs a visible label (a titled section) -> use [LabelFrame](labelframe.md)
 
 ---
 
-## What problem it solves
+## Appearance
 
-Frames solve the most common UI problem: **structure**.
+### Styling
 
-They let you:
+`Frame` is commonly used to create "surface" regions:
 
-- Group related widgets (sections, panels, toolbars, footers)
-- Apply consistent padding and spacing
-- Control layout with `pack` / `grid`
-- Provide visual separation (optionally with borders)
+- card-like blocks
 
-ttkbootstrap’s `Frame` adds `bootstyle` and optional border styling so containers look consistent with the active theme.
+- sidebar backgrounds
 
----
+- header/footer regions
 
-## Core concepts
+If your theme supports bordered/card styles, prefer named styles like `Card.TFrame` for consistency.
 
-### Frame is a layout primitive
+!!! link "Design System"
+    For theming details and color tokens, see [Design System](../../design-system/index.md).
 
-`Frame` itself is not interactive — it is a **layout surface**. It becomes useful when combined with:
+### `bootstyle` / `style`
 
-- geometry managers (`pack`, `grid`)
-- padding/margins
-- themed styling (backgrounds, borders)
-
-If you need a labeled boundary, use `LabelFrame` instead.
-
----
-
-### Padding and size
-
-The `padding` option adds space *inside* the frame:
-
-```python
-ttk.Frame(app, padding=12)
-```
-
-You can also request a specific size:
-
-```python
-ttk.Frame(app, width=320, height=200)
-```
-
-Note: requested sizes are honored only when geometry propagation is disabled or constrained by the parent layout.
-
----
-
-### Borders with show_border
-
-`Frame` supports a `show_border` style option to draw a border around the container.
-
-```python
-panel = ttk.Frame(app, padding=10, show_border=True)
-panel.pack(fill="x", padx=20, pady=20)
-```
-
-This is implemented as a style option so it remains theme-consistent and does not require manual relief/border juggling.
-
-<!--
-IMAGE: Framed panel border
-Suggested: Two frames: one plain and one with show_border=True
--->
-
----
-
-## Common options & patterns
-
-### Using bootstyle
-
-Use `bootstyle` to match the frame with a semantic style token:
+Use `bootstyle` for semantic tokens, or `style=` for a concrete ttk style name.
 
 ```python
 ttk.Frame(app, bootstyle="secondary")
+ttk.Frame(app, style="Card.TFrame")
 ```
-
-If you need an explicit ttk style name, you can provide `style=...` which overrides bootstyle.
 
 ---
 
-### Building a “panel” layout
+## Examples & patterns
 
-A common pattern is a bordered panel with internal padding:
+### `padding`
+
+Apply inner spacing to the container.
 
 ```python
-panel = ttk.Frame(app, padding=12, show_border=True)
-panel.pack(fill="both", expand=True, padx=20, pady=20)
+ttk.Frame(app, padding=20)
+ttk.Frame(app, padding=(16, 12))
 ```
 
-Inside the panel, place content using `grid` for forms or `pack` for stacked layouts.
+### `width` / `height`
 
----
-
-## Events
-
-`Frame` is a container, so you typically don’t bind “business events” to it. Common uses include:
-
-- `<Configure>` when responding to resize
-- `<Enter>` / `<Leave>` for hover-driven UI effects on a region
+Useful for fixed regions (tool palettes, sidebars). Note: geometry managers may still size the frame
+based on content unless propagation is disabled.
 
 ```python
-frame.bind("<Configure>", lambda e: print(e.width, e.height))
+pane = ttk.Frame(app, width=240, height=400)
+pane.pack_propagate(False)
 ```
 
 ---
 
-## UX guidance
+## Behavior
 
-- Use frames to create clear visual sections and reduce cognitive load
-- Prefer consistent padding at section boundaries
-- Use `show_border=True` sparingly — too many borders can create visual noise
+- Frames are **containers only** (no click/selection behavior).
 
-!!! tip "Readable layouts"
-    Use a small set of container patterns (page, section, panel, footer) so your UI feels consistent across screens.
+- Use the frame as the parent for widgets you want visually/structurally grouped.
 
----
+- With `Frame`, you manually call `pack()` or `grid()` on each child widget.
 
-## When to use / when not to
+- For automatic layout management, use [PackFrame](packframe.md) or [GridFrame](gridframe.md) instead.
 
-**Use Frame when:**
+- A `Frame` is not interactive; it exists to:
 
-- You need a generic container for layout and grouping
-- You want to apply padding to a region
-- You’re building panels, sections, toolbars, or page layouts
-
-**Avoid Frame when:**
-
-- You need a labeled container (use `LabelFrame`)
-- You need scrollable content (use `ScrollView` / `ScrolledFrame` patterns)
-- You need interactive selection or navigation (use appropriate controls)
+    - group related widgets
+    - apply padding/margins around a region
+    - host manual pack/grid layouts for a subsection of the UI
+    - apply a shared visual surface (when styled)
 
 ---
 
-## Related widgets
+## Additional resources
 
-- **LabelFrame** — container with a caption/label
-- **PanedWindow** — resizable split layout container
-- **ScrollView / ScrolledText** — scrollable containers
-- **Separator** — subtle visual division between sections
+### Related widgets
+
+- [PackFrame](packframe.md) -- frame with automatic pack-based layout (vertical/horizontal stacks)
+- [GridFrame](gridframe.md) -- frame with automatic grid-based layout (2D grids with auto-placement)
+- [LabelFrame](labelframe.md) -- a framed container with a label
+- [Separator](separator.md) -- a visual divider between regions
+- [PanedWindow](panedwindow.md) -- resizable split regions
+
+### Framework concepts
+
+- [Layout Properties](../../capabilities/layout-props.md)
+
+- [Layout](../../platform/geometry-and-layout.md)
+
+### API reference
+
+- [`ttkbootstrap.Frame`](../../reference/widgets/Frame.md)

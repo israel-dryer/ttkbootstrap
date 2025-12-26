@@ -15,9 +15,12 @@ print('font-height', font.nametofont('body').metrics()['linespace'])
 ttk.Button(app, text="Dark", icon="moon", command=lambda: ttk.set_theme("dark")).pack()
 ttk.Button(app, text="Light", icon="sun", command=lambda: ttk.set_theme("light")).pack()
 
+btn = ttk.Button()
+
+
 print(ttk.get_themes())
 
 app.update_idletasks()
 app.place_center()
 
-app.mainloop()
+app.run()

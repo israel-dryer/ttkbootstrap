@@ -115,7 +115,7 @@ def L(key: str, *fmtargs: Any) -> LocalizedTextSpec:
     Returns:
         A LocalizedTextSpec instance.
 
-    Example:
+    Examples:
         >>> spec = L("greeting", "World")
         >>> # Will translate "greeting" with "World" as format argument
     """
@@ -136,7 +136,7 @@ def LV(value: Any, format_spec: FormatSpec) -> LocalizedValueSpec:
     Returns:
         A LocalizedValueSpec instance.
 
-    Example:
+    Examples:
         >>> spec = LV(1234.56, "currency")
         >>> # Will format as currency in the current locale
     """

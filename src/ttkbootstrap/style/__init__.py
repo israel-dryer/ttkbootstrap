@@ -4062,7 +4062,7 @@
 #
 #     def create_calendar_style(self, colorname=DEFAULT):
 #         """Create a style for the
-#         ttkbootstrap.dialogs.DatePickerPopup widget.
+#         ttkbootstrap.widgets.composites.calendar.Calendar widget.
 #
 #         Parameters:
 #

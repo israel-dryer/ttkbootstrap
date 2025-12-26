@@ -23,7 +23,9 @@ class ScrolledText(Frame):
             autohide_delay: int = 1000,
             scrollbar_style: str = 'default',
             **kwargs: Any,
-    ) -> None: ...
+    ) -> None:
+        self._text: tkinter.Text = None
+        ...
 
     @property
     def text(self) -> tkinter.Text: ...

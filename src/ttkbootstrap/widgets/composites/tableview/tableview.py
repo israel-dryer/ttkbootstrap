@@ -1,5 +1,4 @@
-"""
-TableView widget backed by an in-memory SQLite datasource.
+"""TableView widget backed by an in-memory SQLite datasource.
 
 The datasource performs filtering, sorting, and pagination while the widget
 renders the current page in a Treeview with optional grouping, striping, and
@@ -10,12 +9,14 @@ from __future__ import annotations
 
 import logging
 from collections import OrderedDict
-from tkinter import Misc, font as tkfont
+from tkinter import font as tkfont
 
 from typing_extensions import Literal
 
+from ttkbootstrap.widgets.types import Master
+
 from ttkbootstrap_icons_bs import BootstrapIcon
-from ttkbootstrap import get_style
+from ttkbootstrap.style.style import get_style
 from ttkbootstrap.datasource.sqlite_source import SqliteDataSource
 from ttkbootstrap.widgets.primitives.button import Button
 from ttkbootstrap.widgets.composites.contextmenu import ContextMenu
@@ -60,27 +61,26 @@ _TABLE_SEARCH_MODE_OPTIONS = [
 
 
 class TableView(Frame):
-    """
-    TableView backed by an in-memory SqliteDataSource with sortable headers,
-    filtering/search, pagination or virtual scrolling, optional grouping,
-    column striping, and configurable exporting/editing. Context menus are
-    opt-in, the searchbar can trigger on enter or input, and columns can
-    auto-size to their visible content.
+    """TableView backed by an in-memory SqliteDataSource.
 
-    Highlights:
-        - Paging: standard pagination or virtual scroll; optional x/y scrollbars.
-        - Search: standard/advanced searchbar with trigger on enter (default) or input.
-        - Columns: global min width, optional auto-width sizing per page, chooser/hide actions.
-        - Grouping: optional grouping via header context menu with fixed group column.
-        - Context menus: enable/disable per region (headers/rows) with sorting/filtering actions.
-        - Appearance: optional alternating row colors (disabled when grouped).
-        - Extensibility: optional exporting and editing capabilities via configuration.
-        - Events: virtual events for selection/row click/double/right-click and row insert/update/delete/move.
+    Provides sortable headers, filtering/search, pagination or virtual scrolling,
+    optional grouping, column striping, and configurable exporting/editing.
+
+    Events:
+        - ``<<SelectionChange>>``: Fired when row selection changes. ``event.data = {'records': list[dict], 'iids': list[str]}``
+        - ``<<RowClick>>``: Fired on single row click. ``event.data = {'record': dict, 'iid': str}``
+        - ``<<RowDoubleClick>>``: Fired on row double-click. ``event.data = {'record': dict, 'iid': str}``
+        - ``<<RowRightClick>>``: Fired on row right-click. ``event.data = {'record': dict, 'iid': str}``
+        - ``<<RowInsert>>``: Fired when rows are inserted. ``event.data = {'records': list[dict]}``
+        - ``<<RowUpdate>>``: Fired when rows are updated. ``event.data = {'records': list[dict]}``
+        - ``<<RowDelete>>``: Fired when rows are deleted. ``event.data = {'records': list[dict]}``
+        - ``<<RowMove>>``: Fired when rows are moved/reordered. ``event.data = {'records': list[dict]}``
+
     """
 
     def __init__(
             self,
-            master: Misc | None = None,
+            master: Master = None,
             columns: list[str | dict] | None = None,
             rows: list | None = None,
             datasource: SqliteDataSource | None = None,
@@ -122,17 +122,7 @@ class TableView(Frame):
             context_menus: "none" | "headers" | "rows" | "all" to enable region context menus.
             column_min_width: Global minimum width for columns (overridden by per-column minwidth; default 40).
             column_auto_width: Automatically size columns to widest visible text on each page.
-            kwargs: Passed through to Frame.
-
-        Virtual events:
-            <<SelectionChange>>: event.data = {"records": list[dict], "iids": list[str]}
-            <<RowClick>>: event.data = {"record": dict, "iid": str}
-            <<RowDoubleClick>>: event.data = {"record": dict, "iid": str}
-            <<RowRightClick>>: event.data = {"record": dict, "iid": str}
-            <<RowInsert>>: event.data = {"records": list[dict]}
-            <<RowUpdate>>: event.data = {"records": list[dict]}
-            <<RowDelete>>: event.data = {"records": list[dict]}
-            <<RowMove>>: event.data = {"records": list[dict]}
+            **kwargs: Any: Passed through to Frame.
         """
         super().__init__(master, **kwargs)
 
@@ -224,60 +214,68 @@ class TableView(Frame):
 
     # ------------------------------------------------------------------ Public event API
     def on_selection_changed(self, callback) -> str:
-        """Bind to selection changes. event.data = {'records': list, 'iids': list}."""
+        """Bind to ``<<SelectionChange>>``. Callback receives ``event.data = {'records': list[dict], 'iids': list[str]}``."""
         return self.bind("<<SelectionChange>>", callback, add=True)
 
-    def off_selection_changed(self, funcid: str | None = None) -> None:
-        self.unbind("<<SelectionChange>>", funcid)
+    def off_selection_changed(self, bind_id: str | None = None) -> None:
+        """Unbind from ``<<SelectionChange>>``."""
+        self.unbind("<<SelectionChange>>", bind_id)
 
     def on_row_click(self, callback) -> str:
-        """Bind to row click. event.data = {'record': dict, 'iid': str}."""
+        """Bind to ``<<RowClick>>``. Callback receives ``event.data = {'record': dict, 'iid': str}``."""
         return self.bind("<<RowClick>>", callback, add=True)
 
-    def off_row_click(self, funcid: str | None = None) -> None:
-        self.unbind("<<RowClick>>", funcid)
+    def off_row_click(self, bind_id: str | None = None) -> None:
+        """Unbind from ``<<RowClick>>``."""
+        self.unbind("<<RowClick>>", bind_id)
 
     def on_row_double_click(self, callback) -> str:
-        """Bind to row double-click. event.data = {'record': dict, 'iid': str}."""
+        """Bind to ``<<RowDoubleClick>>``. Callback receives ``event.data = {'record': dict, 'iid': str}``."""
         return self.bind("<<RowDoubleClick>>", callback, add=True)
 
-    def off_row_double_click(self, funcid: str | None = None) -> None:
-        self.unbind("<<RowDoubleClick>>", funcid)
+    def off_row_double_click(self, bind_id: str | None = None) -> None:
+        """Unbind from ``<<RowDoubleClick>>``."""
+        self.unbind("<<RowDoubleClick>>", bind_id)
 
     def on_row_right_click(self, callback) -> str:
-        """Bind to row right-click/context. event.data = {'record': dict, 'iid': str}."""
+        """Bind to ``<<RowRightClick>>``. Callback receives ``event.data = {'record': dict, 'iid': str}``."""
         return self.bind("<<RowRightClick>>", callback, add=True)
 
-    def off_row_right_click(self, funcid: str | None = None) -> None:
-        self.unbind("<<RowRightClick>>", funcid)
+    def off_row_right_click(self, bind_id: str | None = None) -> None:
+        """Unbind from ``<<RowRightClick>>``."""
+        self.unbind("<<RowRightClick>>", bind_id)
 
     def on_row_deleted(self, callback) -> str:
-        """Bind to row delete events. event.data = {'records': list}."""
+        """Bind to ``<<RowDelete>>``. Callback receives ``event.data = {'records': list[dict]}``."""
         return self.bind("<<RowDelete>>", callback, add=True)
 
-    def off_row_deleted(self, funcid: str | None = None) -> None:
-        self.unbind("<<RowDelete>>", funcid)
+    def off_row_deleted(self, bind_id: str | None = None) -> None:
+        """Unbind from ``<<RowDelete>>``."""
+        self.unbind("<<RowDelete>>", bind_id)
 
     def on_row_inserted(self, callback) -> str:
-        """Bind to row insert events. event.data = {'records': list}."""
+        """Bind to ``<<RowInsert>>``. Callback receives ``event.data = {'records': list[dict]}``."""
         return self.bind("<<RowInsert>>", callback, add=True)
 
-    def off_row_inserted(self, funcid: str | None = None) -> None:
-        self.unbind("<<RowInsert>>", funcid)
+    def off_row_inserted(self, bind_id: str | None = None) -> None:
+        """Unbind from ``<<RowInsert>>``."""
+        self.unbind("<<RowInsert>>", bind_id)
 
     def on_row_updated(self, callback) -> str:
-        """Bind to row update events. event.data = {'records': list}."""
+        """Bind to ``<<RowUpdate>>``. Callback receives ``event.data = {'records': list[dict]}``."""
         return self.bind("<<RowUpdate>>", callback, add=True)
 
-    def off_row_updated(self, funcid: str | None = None) -> None:
-        self.unbind("<<RowUpdate>>", funcid)
+    def off_row_updated(self, bind_id: str | None = None) -> None:
+        """Unbind from ``<<RowUpdate>>``."""
+        self.unbind("<<RowUpdate>>", bind_id)
 
     def on_row_moved(self, callback) -> str:
-        """Bind to row move events. event.data = {'records': list}."""
+        """Bind to ``<<RowMove>>``. Callback receives ``event.data = {'records': list[dict]}``."""
         return self.bind("<<RowMove>>", callback, add=True)
 
-    def off_row_moved(self, funcid: str | None = None) -> None:
-        self.unbind("<<RowMove>>", funcid)
+    def off_row_moved(self, bind_id: str | None = None) -> None:
+        """Unbind from ``<<RowMove>>``."""
+        self.unbind("<<RowMove>>", bind_id)
 
     # ------------------------------------------------------------------ Public data/selection API
     @property

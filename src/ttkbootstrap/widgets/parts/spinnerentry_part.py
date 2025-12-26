@@ -17,60 +17,20 @@ from ttkbootstrap.widgets.mixins.configure_mixin import configure_delegate
 class SpinnerEntryPart(ValidationMixin, Spinbox):
     """Spinner widget with internationalization and value management.
 
-    This widget extends SpinnerPart to provide the same value/text management
-    pattern as TextEntryPart and NumberEntryPart, but using a Spinbox widget.
-    It can safely handle both text and numeric values with optional formatting.
+    This widget extends Spinbox to provide the same value/text management
+    pattern as TextEntryPart and NumberEntryPart. It can safely handle both
+    text and numeric values with optional formatting.
 
-    Features:
-        - Deferred parsing: Parse only on commit, not during typing
-        - International formatting: Locale-aware number, date, and currency formatting
-        - Spinbox integration: Works with values list or from/to/increment
-        - Three-tier event system:
-            - <<Input>>: Fires on every keystroke with raw text
-            - <<Change>>: Fires when committed value changes (FocusOut/Return)
-            - <Return>: Fires on Enter key with current value and text
-        - Validation support via ValidationMixin
-        - Automatic text normalization after parsing
-        - Safe handling of both text and numeric values
+    !!! note "Events"
 
-    Events:
-        <<Input>>: Triggered on each keystroke
-            event.data = {"text": str}
+        - ``<<Input>>``: Triggered on each keystroke.
+          Provides ``event.data`` with keys: ``text``.
 
-        <<Change>>: Triggered when value changes after commit
-            event.data = {"value": Any, "prev_value": Any, "text": str}
+        - ``<<Change>>``: Triggered when value changes after commit.
+          Provides ``event.data`` with keys: ``value``, ``prev_value``, ``text``.
 
-        <Return>: Triggered on Enter key press
-            event.data = {"value": Any, "text": str}
-
-    Example:
-        ```python
-        import ttkbootstrap as ttk
-        from ttkbootstrap.widgets.parts import SpinnerEntryPart
-
-        root = ttk.Window()
-
-        # Numeric spinner with formatting
-        spinner1 = SpinnerEntryPart(
-            root,
-            value=50,
-            from_=0,
-            to=100,
-            increment=5,
-            value_format='#,##0.00'
-        )
-        spinner1.pack()
-
-        # Text spinner with predefined values
-        spinner2 = SpinnerEntryPart(
-            root,
-            values=['Small', 'Medium', 'Large'],
-            value='Medium'
-        )
-        spinner2.pack()
-
-        root.mainloop()
-        ```
+        - **<Return>**: Triggered on Enter key press.
+          Provides ``event.data`` with keys: ``value``, ``text``.
     """
 
     def __init__(

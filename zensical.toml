@@ -1,0 +1,394 @@
+[project]
+site_name = "ttkbootstrap"
+site_description = "A modern framework for building Tkinter applications with Bootstrap-inspired themes."
+site_author = "Israel Dryer"
+site_url = "https://www.ttkbootstrap.com"
+copyright = "Copyright &copy; 2021 - 2026 Israel Dryer"
+
+docs_dir = "docs"
+
+extra_css = ["stylesheets/extra.css"]
+
+nav = [
+    { "Getting Started" = [
+        { "Overview" = "index.md" },
+        { "Installation" = "getting-started/installation.md" },
+        { "Quick Start" = "getting-started/quick-start.md" },
+        { "Project Structure" = "getting-started/project-structure.md" },
+    ] },
+    { "Guides" = [
+        { "Overview" = "guides/index.md" },
+        { "App Structure" = "guides/app-structure.md" },
+        { "App Settings" = "guides/app-settings.md" },
+        { "Layout" = "guides/layout.md" },
+        { "Spacing & Alignment" = "guides/spacing-and-alignment.md"},
+        { "Reactivity" = "guides/reactivity.md" },
+        { "Typography" = "guides/typography.md" },
+        { "Styling" = "guides/styling.md" },
+        { "Icons" = "guides/icons.md" },
+        { "Theming" = "guides/theming.md" },
+        { "Formatting" = "guides/formatting.md" },
+        { "Localization" = "guides/localization.md" },
+    ] },
+    { "Widgets" = [
+        { "Overview" = "widgets/index.md" },
+        { "Actions" = [
+            { "Button" = "widgets/actions/button.md" },
+            { "DropdownButton" = "widgets/actions/dropdownbutton.md" },
+            { "MenuButton" = "widgets/actions/menubutton.md" },
+            { "ContextMenu" = "widgets/actions/contextmenu.md" },
+            { "ButtonGroup" = "widgets/actions/buttongroup.md" },
+        ] },
+        { "Inputs" = [
+            { "TextEntry" = "widgets/inputs/textentry.md" },
+            { "PasswordEntry" = "widgets/inputs/passwordentry.md" },
+            { "PathEntry" = "widgets/inputs/pathentry.md" },
+            { "ScrolledText" = "widgets/inputs/scrolledtext.md" },
+            { "SpinnerEntry" = "widgets/inputs/spinnerentry.md" },
+            { "NumericEntry" = "widgets/inputs/numericentry.md" },
+            { "Scale" = "widgets/inputs/scale.md" },
+            { "LabeledScale" = "widgets/inputs/labeledscale.md" },
+            { "DateEntry" = "widgets/inputs/dateentry.md" },
+            { "TimeEntry" = "widgets/inputs/timeentry.md" },
+        ] },
+        { "Selection" = [
+            { "Calendar" = "widgets/selection/calendar.md" },
+            { "CheckButton" = "widgets/selection/checkbutton.md" },
+            { "CheckToggle" = "widgets/selection/checktoggle.md" },
+            { "RadioButton" = "widgets/selection/radiobutton.md" },
+            { "RadioToggle" = "widgets/selection/radiotoggle.md" },
+            { "RadioGroup" = "widgets/selection/radiogroup.md" },
+            { "ToggleGroup" = "widgets/selection/togglegroup.md" },
+            { "OptionMenu" = "widgets/selection/optionmenu.md" },
+            { "SelectBox" = "widgets/selection/selectbox.md" },
+        ] },
+        { "Data Display" = [
+            { "Label" = "widgets/data-display/label.md" },
+            { "ListView" = "widgets/data-display/listview.md" },
+            { "TreeView" = "widgets/data-display/treeview.md" },
+            { "TableView" = "widgets/data-display/tableview.md" },
+            { "Badge" = "widgets/data-display/badge.md" },
+            { "Progressbar" = "widgets/data-display/progressbar.md" },
+            { "Meter" = "widgets/data-display/meter.md" },
+            { "FloodGauge" = "widgets/data-display/floodgauge.md" },
+        ] },
+        { "Layout" = [
+            { "Frame" = "widgets/layout/frame.md" },
+            { "GridFrame" = "widgets/layout/gridframe.md" },
+            { "PackFrame" = "widgets/layout/packframe.md" },
+            { "LabelFrame" = "widgets/layout/labelframe.md" },
+            { "PanedWindow" = "widgets/layout/panedwindow.md" },
+            { "ScrollView" = "widgets/layout/scrollview.md" },
+            { "Scrollbar" = "widgets/layout/scrollbar.md" },
+            { "Separator" = "widgets/layout/separator.md" },
+            { "SizeGrip" = "widgets/layout/sizegrip.md" },
+        ] },
+        { "Views" = [
+            { "Notebook" = "widgets/views/notebook.md" },
+            { "PageStack" = "widgets/views/pagestack.md" },
+        ] },
+        { "Forms" = [
+            { "Form" = "widgets/forms/form.md" },
+        ] },
+        { "Dialogs" = [
+            { "Overview" = "widgets/dialogs/index.md" },
+            { "MessageDialog" = "widgets/dialogs/messagedialog.md" },
+            { "MessageBox" = "widgets/dialogs/messagebox.md" },
+            { "ColorChooser" = "widgets/dialogs/colorchooser.md" },
+            { "ColorDropper" = "widgets/dialogs/colordropper.md" },
+            { "FontDialog" = "widgets/dialogs/fontdialog.md" },
+            { "DateDialog" = "widgets/dialogs/datedialog.md" },
+            { "FormDialog" = "widgets/dialogs/formdialog.md" },
+            { "QueryDialog" = "widgets/dialogs/querydialog.md" },
+            { "QueryBox" = "widgets/dialogs/querybox.md" },
+            { "FilterDialog" = "widgets/dialogs/filterdialog.md" },
+            { "Dialog" = "widgets/dialogs/dialog.md" },
+        ] },
+        { "Overlays" = [
+            { "Toast" = "widgets/overlays/toast.md" },
+            { "ToolTip" = "widgets/overlays/tooltip.md" },
+        ] },
+        { "Primitives" = [
+            { "Canvas" = "widgets/primitives/canvas.md" },
+            { "Combobox" = "widgets/primitives/combobox.md" },
+            { "Entry" = "widgets/primitives/entry.md" },
+            { "Spinbox" = "widgets/primitives/spinbox.md" },
+            { "Text" = "widgets/primitives/text.md" },
+        ] },
+    ] },
+    { "Design System" = [
+        { "Overview" = "design-system/index.md" },
+        { "Colors" = "design-system/colors.md" },
+        { "Variants" = "design-system/variants.md" },
+        { "Typography" = "design-system/typography.md" },
+        { "Icons" = "design-system/icons.md" },
+        { "Custom Themes" = "design-system/custom-themes.md" },
+    ] },
+    { "Platform" = [
+        { "Overview" = "platform/index.md" },
+        { "Fundamentals" = [
+            { "Tk vs ttk" = "platform/tk-vs-ttk.md" },
+            { "Event Loop" = "platform/event-loop.md" },
+            { "Events & Bindings" = "platform/events-and-bindings.md" },
+            { "Geometry & Layout" = "platform/geometry-and-layout.md" },
+            { "Widget Lifecycle" = "platform/widget-lifecycle.md" },
+        ] },
+        { "Styling Internals" = [
+            { "ttk Styles & Elements" = "platform/ttk-styles-elements.md" },
+        ] },
+        { "Windows" = [
+            { "Windows" = "platform/windows.md" },
+        ] },
+        { "Rendering" = [
+            { "Images & DPI" = "platform/images-and-dpi.md" },
+        ] },
+        { "Operations" = [
+            { "Performance" = "platform/performance.md" },
+            { "Debugging" = "platform/debugging.md" },
+        ] },
+    ] },
+    { "Capabilities" = [
+        { "Overview" = "capabilities/index.md" },
+        { "Signals & Events" = [
+            { "Overview" = "capabilities/signals/index.md" },
+            { "Signals" = "capabilities/signals/signals.md" },
+            { "Callbacks" = "capabilities/signals/callbacks.md" },
+            { "Virtual Events" = "capabilities/signals/virtual-events.md" },
+        ] },
+        { "Layout" = [
+            { "Overview" = "capabilities/layout/index.md" },
+            { "Containers" = "capabilities/layout/containers.md" },
+            { "Spacing" = "capabilities/layout/spacing.md" },
+            { "Scrolling" = "capabilities/layout/scrolling.md" },
+        ] },
+        { "Validation" = [
+            { "Overview" = "capabilities/validation/index.md" },
+            { "Rules" = "capabilities/validation/rules.md" },
+            { "Results" = "capabilities/validation/results.md" },
+        ] },
+        { "Icons & Images" = [
+            { "Overview" = "capabilities/icons/index.md" },
+            { "Icons" = "capabilities/icons/icons.md" },
+            { "Images" = "capabilities/icons/images.md" },
+        ] },
+        { "Layout Properties" = "capabilities/layout-props.md" },
+        { "State & Interaction" = "capabilities/state-and-interaction.md" },
+        { "Configuration" = "capabilities/configuration.md" },
+        { "Localization" = "capabilities/localization.md" },
+    ] },
+    { "Build" = [
+        { "Overview" = "build/index.md" },
+        { "App Runtime" = "build/app-runtime.md" },
+        { "App Configuration" = "build/app-configuration.md" },
+    ] },
+    { "API Reference" = [
+        { "Overview" = "reference/index.md" },
+        { "App" = [
+            { "Overview" = "reference/app/index.md" },
+            { "App" = "reference/app/App.md" },
+            { "Toplevel" = "reference/app/Toplevel.md" },
+            { "AppSettings" = "reference/app/AppSettings.md" },
+            { "get_current_app" = "reference/app/get_current_app.md" },
+            { "get_app_settings" = "reference/app/get_app_settings.md" },
+            { "MenuManager" = "reference/app/MenuManager.md" },
+            { "create_menu" = "reference/app/create_menu.md" },
+        ] },
+        { "Style" = [
+            { "Overview" = "reference/style/index.md" },
+            { "Style" = "reference/style/Style.md" },
+            { "Bootstyle" = "reference/style/Bootstyle.md" },
+            { "BootstrapIcon" = "reference/style/BootstrapIcon.md" },
+            { "get_style" = "reference/style/get_style.md" },
+            { "get_style_builder" = "reference/style/get_style_builder.md" },
+            { "get_theme" = "reference/style/get_theme.md" },
+            { "get_theme_provider" = "reference/style/get_theme_provider.md" },
+            { "set_theme" = "reference/style/set_theme.md" },
+            { "toggle_theme" = "reference/style/toggle_theme.md" },
+            { "get_theme_color" = "reference/style/get_theme_color.md" },
+            { "get_themes" = "reference/style/get_themes.md" },
+        ] },
+        { "Capabilities" = [
+            { "Overview" = "reference/capabilities/index.md" },
+            { "after" = "reference/capabilities/after.md" },
+            { "bind" = "reference/capabilities/bind.md" },
+            { "bindtags" = "reference/capabilities/bindtags.md" },
+            { "busy" = "reference/capabilities/busy.md" },
+            { "clipboard" = "reference/capabilities/clipboard.md" },
+            { "focus" = "reference/capabilities/focus.md" },
+            { "grab" = "reference/capabilities/grab.md" },
+            { "grid" = "reference/capabilities/grid.md" },
+            { "localization" = "reference/capabilities/localization.md" },
+            { "pack" = "reference/capabilities/pack.md" },
+            { "place" = "reference/capabilities/place.md" },
+            { "selection" = "reference/capabilities/selection.md" },
+            { "signals" = "reference/capabilities/signals.md" },
+            { "winfo" = "reference/capabilities/winfo.md" },
+        ] },
+        { "Widgets" = [
+            { "Overview" = "reference/widgets/index.md" },
+            { "Badge" = "reference/widgets/Badge.md" },
+            { "Button" = "reference/widgets/Button.md" },
+            { "ButtonGroup" = "reference/widgets/ButtonGroup.md" },
+            { "Calendar" = "reference/widgets/Calendar.md" },
+            { "CheckButton" = "reference/widgets/CheckButton.md" },
+            { "CheckToggle" = "reference/widgets/CheckToggle.md" },
+            { "Combobox" = "reference/widgets/Combobox.md" },
+            { "ContextMenu" = "reference/widgets/ContextMenu.md" },
+            { "ContextMenuItem" = "reference/widgets/ContextMenuItem.md" },
+            { "DateEntry" = "reference/widgets/DateEntry.md" },
+            { "DropdownButton" = "reference/widgets/DropdownButton.md" },
+            { "Entry" = "reference/widgets/Entry.md" },
+            { "Field" = "reference/widgets/Field.md" },
+            { "FieldOptions" = "reference/widgets/FieldOptions.md" },
+            { "FloodGauge" = "reference/widgets/FloodGauge.md" },
+            { "Form" = "reference/widgets/Form.md" },
+            { "Frame" = "reference/widgets/Frame.md" },
+            { "GridFrame" = "reference/widgets/GridFrame.md" },
+            { "Label" = "reference/widgets/Label.md" },
+            { "LabeledScale" = "reference/widgets/LabeledScale.md" },
+            { "LabelFrame" = "reference/widgets/LabelFrame.md" },
+            { "MenuButton" = "reference/widgets/MenuButton.md" },
+            { "Meter" = "reference/widgets/Meter.md" },
+            { "Notebook" = "reference/widgets/Notebook.md" },
+            { "NumericEntry" = "reference/widgets/NumericEntry.md" },
+            { "OptionMenu" = "reference/widgets/OptionMenu.md" },
+            { "PackFrame" = "reference/widgets/PackFrame.md" },
+            { "PageStack" = "reference/widgets/PageStack.md" },
+            { "PanedWindow" = "reference/widgets/PanedWindow.md" },
+            { "PasswordEntry" = "reference/widgets/PasswordEntry.md" },
+            { "PathEntry" = "reference/widgets/PathEntry.md" },
+            { "Progressbar" = "reference/widgets/Progressbar.md" },
+            { "RadioButton" = "reference/widgets/RadioButton.md" },
+            { "RadioGroup" = "reference/widgets/RadioGroup.md" },
+            { "RadioToggle" = "reference/widgets/RadioToggle.md" },
+            { "Scale" = "reference/widgets/Scale.md" },
+            { "Scrollbar" = "reference/widgets/Scrollbar.md" },
+            { "ScrolledText" = "reference/widgets/ScrolledText.md" },
+            { "ScrollView" = "reference/widgets/ScrollView.md" },
+            { "SelectBox" = "reference/widgets/SelectBox.md" },
+            { "Separator" = "reference/widgets/Separator.md" },
+            { "SizeGrip" = "reference/widgets/SizeGrip.md" },
+            { "Spinbox" = "reference/widgets/Spinbox.md" },
+            { "SpinnerEntry" = "reference/widgets/SpinnerEntry.md" },
+            { "TableView" = "reference/widgets/TableView.md" },
+            { "TextEntry" = "reference/widgets/TextEntry.md" },
+            { "TimeEntry" = "reference/widgets/TimeEntry.md" },
+            { "Toast" = "reference/widgets/Toast.md" },
+            { "ToggleGroup" = "reference/widgets/ToggleGroup.md" },
+            { "ToolTip" = "reference/widgets/ToolTip.md" },
+            { "TreeView" = "reference/widgets/TreeView.md" },
+        ] },
+        { "Dialogs" = [
+            { "Overview" = "reference/dialogs/index.md" },
+            { "Dialog" = "reference/dialogs/Dialog.md" },
+            { "DialogButton" = "reference/dialogs/DialogButton.md" },
+            { "FilterDialog" = "reference/dialogs/FilterDialog.md" },
+            { "FormDialog" = "reference/dialogs/FormDialog.md" },
+            { "MessageDialog" = "reference/dialogs/MessageDialog.md" },
+            { "MessageBox" = "reference/dialogs/MessageBox.md" },
+            { "QueryDialog" = "reference/dialogs/QueryDialog.md" },
+            { "QueryBox" = "reference/dialogs/QueryBox.md" },
+            { "DateDialog" = "reference/dialogs/DateDialog.md" },
+            { "FontDialog" = "reference/dialogs/FontDialog.md" },
+            { "ColorChooser" = "reference/dialogs/ColorChooser.md" },
+            { "ColorChooserDialog" = "reference/dialogs/ColorChooserDialog.md" },
+            { "ColorDropperDialog" = "reference/dialogs/ColorDropperDialog.md" },
+        ] },
+        { "Data" = [
+            { "Overview" = "reference/data/index.md" },
+            { "BaseDataSource" = "reference/data/BaseDataSource.md" },
+            { "MemoryDataSource" = "reference/data/MemoryDataSource.md" },
+            { "SqliteDataSource" = "reference/data/SqliteDataSource.md" },
+            { "FileDataSource" = "reference/data/FileDataSource.md" },
+            { "FileSourceConfig" = "reference/data/FileSourceConfig.md" },
+            { "DataSourceProtocol" = "reference/data/DataSourceProtocol.md" },
+        ] },
+        { "i18n" = [
+            { "Overview" = "reference/i18n/index.md" },
+            { "MessageCatalog" = "reference/i18n/MessageCatalog.md" },
+            { "L" = "reference/i18n/L.md" },
+            { "LV" = "reference/i18n/LV.md" },
+            { "IntlFormatter" = "reference/i18n/IntlFormatter.md" },
+        ] },
+        { "Utils" = [
+            { "Overview" = "reference/utils/index.md" },
+            { "Font" = "reference/utils/Font.md" },
+            { "Image" = "reference/utils/Image.md" },
+            { "Signal" = "reference/utils/Signal.md" },
+            { "TraceOperation" = "reference/utils/TraceOperation.md" },
+            { "ValidationRule" = "reference/utils/ValidationRule.md" },
+            { "ValidationResult" = "reference/utils/ValidationResult.md" },
+            { "SetVar" = "reference/utils/SetVar.md" },
+        ] },
+    ] },
+    { "Showcase" = [
+        { "Overview" = "showcase/index.md" },
+        { "Gallery" = "showcase/gallery.md" },
+    ] },
+]
+
+
+# -----------------------------------------------------------------------------
+# Theme configuration
+# -----------------------------------------------------------------------------
+[project.theme]
+language = "en"
+favicon = "assets/favicon.ico"
+
+features = [
+    "navigation.tabs",
+    "navigation.path",
+    "navigation.footer",
+    "navigation.indexes",
+    "navigation.instant",
+    "navigation.top",
+    "content.code.copy",
+    "search.highlight",
+]
+
+[project.theme.icon]
+logo = "fontawesome/solid/feather-pointed"
+
+[[project.theme.palette]]
+media = "(prefers-color-scheme)"
+toggle.icon = "lucide/sun-moon"
+toggle.name = "Switch to light mode"
+
+[[project.theme.palette]]
+media = "(prefers-color-scheme: light)"
+scheme = "default"
+toggle.icon = "lucide/sun"
+toggle.name = "Switch to dark mode"
+
+[[project.theme.palette]]
+media = "(prefers-color-scheme: dark)"
+scheme = "slate"
+toggle.icon = "lucide/moon"
+toggle.name = "Switch to system preference"
+
+# -----------------------------------------------------------------------------
+# mkdocstrings plugin configuration
+# -----------------------------------------------------------------------------
+[project.plugins.mkdocstrings.handlers.python]
+paths = ["src"]
+
+[project.plugins.mkdocstrings.handlers.python.options]
+docstring_style = "google"
+heading_level = 3
+show_root_heading = false
+show_signature = true
+show_signature_annotations = true
+separate_signature = true
+members_order = "source"
+inherited_members = false
+show_source = false
+
+# -----------------------------------------------------------------------------
+# Markdown extensions
+# -----------------------------------------------------------------------------
+[project.markdown_extensions.toc]
+toc_depth = 2
+
+[project.markdown_extensions.md_in_html]
+[project.markdown_extensions.pymdownx.superfences]
+[project.markdown_extensions.admonition]

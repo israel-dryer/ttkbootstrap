@@ -1,59 +1,25 @@
-from tkinter import Canvas, Event, IntVar, Misc, StringVar
+from tkinter import Canvas, Event, IntVar, StringVar
 from typing import Any, Optional, Union
 
 from ttkbootstrap.widgets.mixins.configure_mixin import ConfigureDelegationMixin, configure_delegate
+from ttkbootstrap.widgets.types import Master
 
 
 class FloodGauge(ConfigureDelegationMixin, Canvas):
-    """A canvas-based progress widget with support for determinate and indeterminate modes.
+    """A canvas-based progress widget with determinate and indeterminate modes.
 
-    This widget provides an enhanced alternative to ttk.Progressbar with full styling control
-    through ttkbootstrap's color system. It supports both horizontal and vertical orientations,
-    customizable text overlays with format masks, and smooth animations for indeterminate mode.
+    Provides an enhanced alternative to ttk.Progressbar with full styling control,
+    horizontal/vertical orientations, customizable text overlays with format masks,
+    and bounce-style animation for indeterminate mode.
 
-    Features:
-        - Canvas-based rendering for complete style customization
-        - Bounce-style animation for indeterminate progress
-        - Dynamic theme-aware color updates
-        - Variable and textvariable bindings for reactive updates
-        - Customizable text overlay with format masks
-        - Horizontal and vertical orientation support
-
-    Examples:
-        Basic usage with determinate mode::
-
-            gauge = FloodGauge(
-                master=root,
-                bootstyle='success',
-                value=75,
-                mask='{}% Complete'
-            )
-            gauge.pack()
-
-        Indeterminate mode with animation::
-
-            gauge = FloodGauge(
-                master=root,
-                mode='indeterminate',
-                bootstyle='info'
-            )
-            gauge.start()
-
-        Using variable bindings::
-
-            progress_var = tk.IntVar(value=0)
-            gauge = FloodGauge(
-                master=root,
-                variable=progress_var,
-                mask='Processing: {}%'
-            )
-            # Update progress
-            progress_var.set(50)
+    Attributes:
+        variable (IntVar): Tkinter IntVar for value binding.
+        textvariable (StringVar): Tkinter StringVar for text binding.
     """
 
     def __init__(
             self,
-            master: Optional[Misc] = None,
+            master: Master = None,
             value: int = 0,
             maximum: int = 100,
             mode: str = "determinate",
@@ -71,32 +37,33 @@ class FloodGauge(ConfigureDelegationMixin, Canvas):
 
         Args:
             master: Parent widget. If None, uses the default root window.
-            value: Initial progress value (0-maximum). Default is 0.
-            maximum: Maximum value for determinate range. Default is 100.
-            mode: Progress mode - 'determinate' for known progress or 'indeterminate'
-                for unknown duration. Default is 'determinate'.
-            mask: Format string for text overlay with '{}' placeholder for the value.
-                Example: '{}% Complete' or 'Progress: {}/100'. If None, no automatic
-                text formatting is applied. Default is None.
-            text: Static text label shown when no mask is specified. Default is empty string.
-            font: Font specification as tuple (family, size) or string like 'Arial 12 bold'.
-                Default is ('Helvetica', 12).
-            bootstyle: Color theme from ttkbootstrap (e.g., 'primary', 'success', 'info',
-                'warning', 'danger'). Default is 'primary'.
-            orient: Widget orientation - 'horizontal' or 'vertical'. Default is 'horizontal'.
-            length: Size in pixels along the main axis (width if horizontal, height if
-                vertical). Default is 200.
-            thickness: Size in pixels along the minor axis (height if horizontal, width if
-                vertical). Default is 50.
-            increment: Step size for value changes when using step() method or during
-                animations. Default is 1.
-            **kwargs: Additional keyword arguments passed to the Canvas constructor,
-                including 'variable' (tk.IntVar for value binding) and 'textvariable'
-                (tk.StringVar for text binding).
+            value (int): Initial progress value (0-maximum).
+            maximum (int): Maximum value for determinate range.
+            mode (str): Progress mode - ``'determinate'`` for known progress or
+                ``'indeterminate'`` for unknown duration.
+            mask (str): Format string for text overlay with ``'{}'`` placeholder for
+                the value. Examples: ``'{}% Complete'`` or ``'Progress: {}/100'``.
+                If None, no automatic text formatting is applied.
+            text (str): Static text label shown when no mask is specified.
+            font (tuple | str): Font specification as tuple ``(family, size)`` or
+                string like ``'Arial 12 bold'``.
+            bootstyle (str): Color theme from ttkbootstrap (e.g., ``'primary'``,
+                ``'success'``, ``'info'``, ``'warning'``, ``'danger'``).
+            orient (str): Widget orientation - ``'horizontal'`` or ``'vertical'``.
+            length (int): Size in pixels along the main axis (width if horizontal,
+                height if vertical).
+            thickness (int): Size in pixels along the minor axis (height if horizontal,
+                width if vertical).
+            increment (int): Step size for value changes when using ``step()`` method
+                or during animations.
+
+        Other Parameters:
+            variable (IntVar): Tkinter IntVar for value binding.
+            textvariable (StringVar): Tkinter StringVar for text binding.
 
         Note:
             The widget automatically updates colors when the theme changes via the
-            <<ThemeChanged>> event. When using variable or textvariable bindings,
+            ``<<ThemeChanged>>`` event. When using variable or textvariable bindings,
             the widget redraws automatically when the variables change.
         """
 
@@ -354,8 +321,8 @@ class FloodGauge(ConfigureDelegationMixin, Canvas):
         """Increment the progress value by the specified amount.
 
         Args:
-            amount: Amount to increment. Value wraps around after reaching maximum.
-                Default is 1.
+            amount (int): Amount to increment. Value wraps around after reaching
+                maximum.
         """
         self._value = (self._value + amount) % (self._maximum + 1)
         self._variable.set(self._value)
@@ -368,10 +335,10 @@ class FloodGauge(ConfigureDelegationMixin, Canvas):
         auto-increments the value at regular intervals.
 
         Args:
-            step_size: Amount to increment per animation step. Defaults to 8 for
-                indeterminate mode, 1 for determinate mode.
-            interval: Time in milliseconds between animation steps. Defaults to 20ms
-                for indeterminate mode, 50ms for determinate mode.
+            step_size (int): Amount to increment per animation step. Defaults to 8
+                for indeterminate mode, 1 for determinate mode.
+            interval (int): Time in milliseconds between animation steps. Defaults
+                to 20ms for indeterminate mode, 50ms for determinate mode.
         """
         if self._mode == "indeterminate":
             self._increment = step_size if step_size is not None else 8

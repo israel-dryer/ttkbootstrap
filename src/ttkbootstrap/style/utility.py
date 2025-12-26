@@ -7,9 +7,8 @@ from PIL.ImageTk import PhotoImage
 
 from ttkbootstrap.style.types import ColorModel
 from ttkbootstrap.runtime.utility import clamp
+from ttkbootstrap.core.images import Image as ImageService
 
-# Cache for recolored images to avoid expensive pixel-by-pixel reprocessing
-_recolor_cache = {}
 
 ASSETS_DIR = Path(__file__).parent.parent / "assets" / "widgets"
 
@@ -21,12 +20,13 @@ LUM = 100
 def create_transparent_image(width: int, height: int):
     """Create a transparent image."""
     cache_key = f"transparent_{width}x{height}"
-    if cache_key in _recolor_cache:
-        return _recolor_cache[cache_key]
+    cached = ImageService.get_cached(cache_key)
+    if cached is not None:
+        return cached
 
     img = Image.new('RGBA', (width, height), (255, 255, 255, 0))
     pm = PhotoImage(image=img)
-    _recolor_cache[cache_key] = pm
+    ImageService.set_cached(cache_key, pm)
     return pm
 
 
@@ -296,9 +296,9 @@ def recolor_image(
     cache_key = (name, white_color, black_color, magenta_color, transparent_color, scale)
 
     # Check if we've already created this exact image
-    global _recolor_cache
-    if cache_key in _recolor_cache:
-        return _recolor_cache[cache_key]
+    cached = ImageService.get_cached(cache_key)
+    if cached is not None:
+        return cached
 
     img = open_image(name)
     gray = ImageOps.grayscale(img)
@@ -351,7 +351,7 @@ def recolor_image(
     img = PhotoImage(image=result)
 
     # Cache the result for future use
-    _recolor_cache[cache_key] = img
+    ImageService.set_cached(cache_key, img)
     return img
 
 

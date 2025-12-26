@@ -9,6 +9,7 @@ from PIL.Image import Resampling
 from ttkbootstrap.core.exceptions import ConfigurationWarning
 from ttkbootstrap.widgets.primitives.frame import Frame
 from ttkbootstrap.widgets.mixins.configure_mixin import configure_delegate
+from ttkbootstrap.widgets.types import Master
 
 DEFAULT_IMAGE_SCALE = 6
 
@@ -20,14 +21,15 @@ class Meter(Frame):
     prefix/suffix labels, and subtitle. Supports both full circle and semi-circle styles,
     segmented or solid indicators, and interactive mode for user input.
 
-    Events:
-        <<Change>>: Fired whenever the meter value changes (event.data includes
-            {"value": new_value, "prev_value": previous_value}).
+    !!! note "Events"
+
+        ``<<Change>>``: Fired whenever the meter value changes.
+          Provides ``event.data`` with keys: ``value``, ``prev_value``.
     """
 
     def __init__(
             self,
-            master=None,
+            master: Master = None,
             bootstyle: str = 'primary',
 
             # value parameters
@@ -58,7 +60,7 @@ class Meter(Frame):
             show_text: bool = True,
             interactive: bool = False,
             step_size: int | float = 1,
-            **kwargs
+            **kwargs: Any
     ):
         """Initialize a Meter widget.
 
@@ -94,7 +96,7 @@ class Meter(Frame):
             **kwargs: Additional keyword arguments passed to the Frame parent class.
 
         Events:
-            <<Change>>: Emitted when the value changes (see on_changed()).
+            ``<<Change>>``: Emitted when the value changes (see on_changed()).
         """
         legacy = Meter._coerce_legacy_params(kwargs)
         super().__init__(master, **kwargs)

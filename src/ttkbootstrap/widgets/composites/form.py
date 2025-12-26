@@ -24,6 +24,7 @@ from ttkbootstrap.widgets.primitives.selectbox import SelectBox
 from ttkbootstrap.widgets.primitives.spinbox import Spinbox
 from ttkbootstrap.widgets.composites.textentry import TextEntry
 from ttkbootstrap.widgets.mixins.validation_mixin import ValidationMixin
+from ttkbootstrap.widgets.types import Master
 
 if TYPE_CHECKING:
     from ttkbootstrap.dialogs.dialog import DialogButton
@@ -121,8 +122,6 @@ class Form(Frame):
             whenever a field value changes.
         width: Requested width for the form container.
         height: Requested height for the form container.
-        scrollable: If True, wraps the form content in a ScrollView; if False,
-            renders in a simple Frame with no scrollbars.
         bootstyle: Bootstyle forwarded to the underlying Frame.
         buttons: Optional footer buttons. Accepts plain strings, DialogButton
             instances, or dictionaries that map to DialogButton kwargs.
@@ -131,15 +130,15 @@ class Form(Frame):
 
     def __init__(
             self,
-            master=None,
+            master: Master = None,
             *,
             data: dict[str, Any] | None = None,
             items: Sequence[FormItem | Mapping[str, Any]] | None = None,
             col_count: int = 1,
             min_col_width: int = DEFAULT_MIN_COL_WIDTH,
             on_data_changed: Callable[[dict[str, Any]], Any] | None = None,
-        width: int | None = None,
-        height: int | None = None,
+            width: int | None = None,
+            height: int | None = None,
             bootstyle: str | None = None,
             buttons: Sequence[ButtonInput] | None = None,
             **kwargs: Any,

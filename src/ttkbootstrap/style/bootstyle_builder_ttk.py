@@ -93,7 +93,7 @@ class BootstyleBuilderTTk(BootstyleBuilderBase):
         Raises:
             BootstyleBuilderError: If variant or widget_class invalid
 
-        Example:
+        Examples:
             >>> @BootstyleBuilderTTk.register_builder('outline', 'TButton')
             ... def build_button_outline(builder, ttk_style, **options):
             ...     # Builder implementation
@@ -213,7 +213,7 @@ class BootstyleBuilderTTk(BootstyleBuilderBase):
         Returns:
             Default variant name ('default')
 
-        Example:
+        Examples:
             >>> @BootstyleBuilderTTk.register_builder('solid', 'TButton')
             ... @BootstyleBuilderTTk.register_builder('default', 'TButton')
             ... def build_button_solid(builder, ttk_style, **options):
@@ -282,7 +282,7 @@ class BootstyleBuilderTTk(BootstyleBuilderBase):
         Returns:
             True if builder exists, False otherwise
 
-        Example:
+        Examples:
             >>> BootstyleBuilderTTk.has_builder('TButton', 'solid')
             True
             >>> BootstyleBuilderTTk.has_builder('TButton', 'nonexistent')

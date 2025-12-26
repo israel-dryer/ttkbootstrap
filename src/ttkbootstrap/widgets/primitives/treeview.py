@@ -3,7 +3,11 @@ from __future__ import annotations
 from tkinter import ttk
 from typing import Any, Literal, TypedDict
 from typing_extensions import Unpack
-from ttkbootstrap.widgets._internal.wrapper_base import TTKWrapperBase
+
+from ttkbootstrap.core.mixins.ttk_state import TtkStateMixin
+from ttkbootstrap.core.mixins.widget import WidgetCapabilitiesMixin
+from ttkbootstrap.widgets.internal.wrapper_base import TTKWrapperBase
+from ttkbootstrap.widgets.types import Master
 
 
 class TreeViewKwargs(TypedDict, total=False):
@@ -25,25 +29,28 @@ class TreeViewKwargs(TypedDict, total=False):
     style_options: dict[str, Any]
 
 
-class TreeView(TTKWrapperBase, ttk.Treeview):
+class TreeView(TTKWrapperBase, WidgetCapabilitiesMixin, TtkStateMixin, ttk.Treeview):
     """ttkbootstrap wrapper for `ttk.Treeview` with bootstyle support."""
 
     _ttk_base = ttk.Treeview
 
-    def __init__(self, master=None, **kwargs: Unpack[TreeViewKwargs]) -> None:
+    def __init__(self, master: Master = None, **kwargs: Unpack[TreeViewKwargs]) -> None:
         """Create a themed ttkbootstrap Treeview.
 
-        Keyword Args:
-            columns: Sequence of column identifiers.
-            displaycolumns: Subset and order of columns to display.
-            show: Which parts to display (e.g., 'tree', 'headings').
-            height: Number of rows to display.
-            padding: Extra padding around the widget.
-            selectmode: Selection mode.
-            style: Explicit ttk style name (overrides bootstyle).
-            bootstyle: ttkbootstrap style tokens.
-            surface_color: Optional surface token; otherwise inherited.
-            style_options: Optional dict forwarded to the style builder.
+        Args:
+            master: Parent widget. If None, uses the default root window.
+
+        Other Parameters:
+            columns (list): Sequence of column identifiers.
+            displaycolumns (list | str): Subset and order of columns to display.
+            show (str): Which parts to display (e.g., 'tree', 'headings').
+            height (int): Number of rows to display.
+            padding (int | tuple): Extra padding around the widget.
+            selectmode (str): Selection mode ('browse', 'extended', 'none').
+            style (str): Explicit ttk style name (overrides bootstyle).
+            bootstyle (str): ttkbootstrap style tokens.
+            surface_color (str): Optional surface token; otherwise inherited.
+            style_options (dict): Optional dict forwarded to the style builder.
         """
         super().__init__(master, **kwargs)
 

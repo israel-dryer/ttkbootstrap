@@ -1,243 +1,150 @@
 ---
 title: Label
-icon: fontawesome/solid/tag
 ---
 
 # Label
 
-`Label` displays text or images.
+`Label` displays **read-only text or images**.
 
-In ttkbootstrap v2, `Label` is a wrapper around Tkinter's `ttk.Label` that keeps the familiar API but adds a few "app-ready" conveniences:
-
-- **Bootstyle tokens** (`bootstyle="secondary"`, `bootstyle="info"`, etc.)
-- **Theme-aware icons** via `icon=...` (preferred over raw `image=...`)
-- Optional **reactive text binding** with `textsignal=...`
-- **Surface-aware** styling via `surface_color=...` (or inherit from the parent surface)
-- **Localization** support with `localize=...`
-
-> _Image placeholder:_
-> `![Label variants](../_img/widgets/label/overview.png)`
-> Suggested shot: labels with different bootstyles, icons, and text variations.
+It's a fundamental building block used for headings, captions, instructions, and status text throughout an interface.
 
 ---
 
-## Basic usage
+## Quick start
 
 ```python
 import ttkbootstrap as ttk
 
 app = ttk.App()
 
-ttk.Label(app, text="Welcome to ttkbootstrap!").pack(padx=20, pady=20)
+ttk.Label(app, text="Hello world").pack(padx=20, pady=20)
 
 app.mainloop()
 ```
 
 ---
 
-## Common options
+## When to use
 
-### `text` and `textvariable`
+Use Label when:
+
+- displaying static text or images
+
+- providing context or instructions
+
+- showing status information that doesn't require user interaction
+
+### Consider a different control when...
+
+- **User input is required** — use [Entry](../primitives/entry.md) or [TextEntry](../inputs/textentry.md) instead
+
+- **You need a compact status indicator** — use [Badge](badge.md) for high-contrast pill-style labels
+
+- **You need interactive text** — use [Button](../actions/button.md) for clickable elements
+
+---
+
+## Appearance
+
+### Styling with `bootstyle`
+
+Labels participate fully in ttkbootstrap theming:
 
 ```python
-import ttkbootstrap as ttk
-
-app = ttk.App()
-
-ttk.Label(app, text="Status: Ready").pack(pady=4)
-
-status = ttk.StringVar(value="Connected")
-ttk.Label(app, textvariable=status).pack(pady=4)
-
-app.mainloop()
+ttk.Label(app, text="Info", bootstyle="info")
+ttk.Label(app, text="Muted", bootstyle="secondary")
+ttk.Label(app, text="Warning", bootstyle="warning")
 ```
 
-### `anchor` and `justify`
+!!! link "Design System"
+    See [Design System](../../design-system/index.md) for color tokens and theming guidelines.
 
-Control how text is positioned within the label.
+---
+
+## Examples & patterns
+
+### Common options
+
+- `text` — the text content to display
+
+- `image` — an image to display
+
+- `compound` — how to combine text and image (`"top"`, `"bottom"`, `"left"`, `"right"`, `"center"`)
+
+- `anchor` — where to position content within the label
+
+- `justify` — text alignment (`"left"`, `"center"`, `"right"`)
+
+- `wraplength` — maximum line width before wrapping
+
+### Text alignment
 
 ```python
-ttk.Label(app, text="Left aligned", anchor="w", width=20).pack(fill="x", pady=4)
-ttk.Label(app, text="Center aligned", anchor="center", width=20).pack(fill="x", pady=4)
-ttk.Label(app, text="Right aligned", anchor="e", width=20).pack(fill="x", pady=4)
+ttk.Label(app, text="Left aligned", anchor="w").pack(fill="x")
+ttk.Label(app, text="Centered", anchor="center").pack(fill="x")
+ttk.Label(app, text="Right aligned", anchor="e").pack(fill="x")
 ```
 
-For multi-line text, use `justify`:
+### Image with text
 
 ```python
-ttk.Label(
-    app,
-    text="This is a long\nmulti-line label\nwith centered text",
-    justify="center",
-).pack(pady=10)
-```
-
-### `wraplength`
-
-Automatically wrap text to fit within a specific width (in pixels).
-
-```python
-ttk.Label(
-    app,
-    text="This is a very long label that will wrap automatically when it exceeds the specified width.",
-    wraplength=200,
-).pack(padx=20, pady=10)
-```
-
-### `padding`
-
-Add space around the label content.
-
-```python
-ttk.Label(app, text="Padded label", padding=(20, 10)).pack()
-```
-
-### `font`
-
-Specify a custom font.
-
-```python
-ttk.Label(app, text="Large Text", font=("Helvetica", 18, "bold")).pack(pady=10)
+ttk.Label(app, text="Status", image=icon, compound="left").pack()
 ```
 
 ---
 
-## Bootstyle variants
+## Behavior
 
-Use bootstyle color tokens to change the label's text color for semantic meaning.
-
-```python
-import ttkbootstrap as ttk
-
-app = ttk.App()
-
-ttk.Label(app, text="Default label").pack(anchor="w", padx=20, pady=2)
-ttk.Label(app, text="Primary", bootstyle="primary").pack(anchor="w", padx=20, pady=2)
-ttk.Label(app, text="Secondary", bootstyle="secondary").pack(anchor="w", padx=20, pady=2)
-ttk.Label(app, text="Success", bootstyle="success").pack(anchor="w", padx=20, pady=2)
-ttk.Label(app, text="Info", bootstyle="info").pack(anchor="w", padx=20, pady=2)
-ttk.Label(app, text="Warning", bootstyle="warning").pack(anchor="w", padx=20, pady=2)
-ttk.Label(app, text="Danger", bootstyle="danger").pack(anchor="w", padx=20, pady=2)
-
-app.mainloop()
-```
-
-> _Image placeholder:_
-> `![Label bootstyles](../_img/widgets/label/bootstyles.png)`
-> (Show labels in all color variants.)
-
----
-
-## Icons
-
-### Theme-aware icon (recommended)
-
-Use `icon=...` so the icon can respond to the current theme and widget state.
-
-```python
-import ttkbootstrap as ttk
-
-app = ttk.App()
-
-ttk.Label(
-    app,
-    text="Success!",
-    icon="check-circle",  # placeholder: your icon spec / provider name
-    compound="left",
-    bootstyle="success",
-).pack(padx=20, pady=10)
-
-app.mainloop()
-```
-
-### Icon positioning with `compound`
-
-Control where the icon appears relative to text.
-
-```python
-ttk.Label(app, text="Left", icon="star", compound="left").pack(pady=4)
-ttk.Label(app, text="Right", icon="star", compound="right").pack(pady=4)
-ttk.Label(app, text="Top", icon="star", compound="top").pack(pady=4)
-ttk.Label(app, text="Bottom", icon="star", compound="bottom").pack(pady=4)
-```
-
-> _Image placeholder:_
-> `![Label with icon](../_img/widgets/label/icon.png)`
-
-### Icon-only labels
-
-Use `icon_only=True` for compact icon-only labels (like status indicators or badges).
-
-```python
-ttk.Label(
-    app,
-    icon="circle-fill",  # placeholder
-    icon_only=True,
-    bootstyle="success",
-).pack(pady=6)
-```
-
-!!! warning "Using `image=...`"
-    You can still pass a Tk `PhotoImage` via `image=...`, but it won't automatically recolor for theme changes.
-
----
-
-## Reactive text with `textsignal`
-
-If your app uses signals, you can bind the label text to a signal so it updates automatically.
-
-```python
-import ttkbootstrap as ttk
-
-app = ttk.App()
-
-# Example only — use your real signal creation API
-status = ttk.Signal("Ready")  # pseudo-code
-
-label = ttk.Label(app, textsignal=status, bootstyle="info")
-label.pack(padx=20, pady=20)
-
-def start():
-    status.set("Running...")
-
-ttk.Button(app, text="Start", command=start).pack(pady=10)
-
-app.mainloop()
-```
+Label is a static display widget. It does not respond to user interaction by default, but can be updated programmatically.
 
 ---
 
 ## Localization
 
-If you use message catalogs, `localize="auto"` (or `True`) allows the label text to be treated as a localization key.
+Label supports localization through the `localize` parameter:
 
 ```python
-ttk.Label(app, text="label.welcome", localize="auto").pack()
+ttk.Label(app, text="greeting.hello", localize=True)
 ```
 
----
-
-## When should I use Label?
-
-Use `Label` when:
-
-- displaying static or dynamic text
-- showing status messages or indicators
-- creating section headers or field labels
-- displaying icons with or without text
-
-Prefer **TextEntry** when:
-
-- users need to edit the text
-
-Prefer **Button** when:
-
-- the text should trigger an action when clicked
+!!! link "Localization"
+    See [Localization](../../capabilities/localization.md) for translation setup.
 
 ---
 
-## Related widgets
+## Reactivity
 
-- **TextEntry** — editable text input
-- **Tooltip** — contextual help text
-- **LabelFrame** — frame with a labeled border
+Label can be updated dynamically by binding to signals:
+
+```python
+message = ttk.Signal("Initial text")
+label = ttk.Label(app, text=message)
+message.set("Updated text")  # Label updates automatically
+```
+
+!!! link "Signals"
+    See [Signals](../../capabilities/signals/signals.md) for reactive programming patterns.
+
+---
+
+## Additional resources
+
+### Related widgets
+
+- [Button](../actions/button.md) — interactive clickable element
+
+- [Badge](badge.md) — compact status indicator
+
+- [Tooltip](../overlays/tooltip.md) — contextual hover information
+
+### Framework concepts
+
+- [Design System](../../design-system/index.md) — colors, typography, and theming
+
+- [Signals](../../capabilities/signals/signals.md) — reactive data binding
+
+- [Localization](../../capabilities/localization.md) — translation support
+
+### API reference
+
+- [`ttkbootstrap.Label`](../../reference/widgets/Label.md)

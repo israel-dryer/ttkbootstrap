@@ -1,11 +1,12 @@
 from __future__ import annotations
 
 from tkinter import StringVar
-from typing import Any, Literal, TYPE_CHECKING
+from typing import Any, Callable, Literal, TYPE_CHECKING
 
 from typing_extensions import TypedDict, Unpack
 
-from ttkbootstrap import RadioButton, CheckButton
+from ttkbootstrap.widgets.primitives.radiobutton import RadioButton
+from ttkbootstrap.widgets.primitives.checkbutton import CheckButton
 from ttkbootstrap.core.variables import SetVar
 from ttkbootstrap.widgets.mixins.configure_mixin import configure_delegate
 from ttkbootstrap.widgets.primitives import Frame
@@ -37,44 +38,30 @@ class ToggleGroup(Frame):
     The ToggleGroup widget provides a convenient way to create groups of toggle
     buttons with automatic position tracking and styling. It supports both single
     selection (radio button behavior) and multi-selection (checkbox behavior).
-
-    Button positions are automatically tracked and styled with appropriate border
-    images based on their position in the group (first, middle, last).
     """
 
     def __init__(self, master: Any = None, **kwargs: Unpack[ToggleGroupKwargs]):
         """Initialize the ToggleGroup.
 
         Args:
-            master: The parent widget.
-            mode: Selection mode - 'single' for radio button behavior (default),
-                  or 'multi' for checkbox behavior allowing multiple selections.
-            orient: Layout orientation - 'horizontal' (default) or 'vertical'.
-            bootstyle: The color/variant style (e.g., 'primary', 'danger-outline').
-                       Defaults to 'primary'.
-            variable: Optional tk.Variable for controlling the value. For single mode,
-                      use StringVar; for multi mode, use SetVar.
-            signal: Optional Signal instance for reactive programming.
-            value: Initial value - string for single mode, set for multi mode.
-            style_options: Additional style options passed to child buttons.
-            padding: Frame padding. Defaults to 1.
-            **kwargs: Additional Frame configuration options.
+            master: Parent widget. If None, uses the default root window.
 
-        Examples:
-            # Single selection group (radio behavior)
-            group = ToggleGroup(mode='single', bootstyle='primary')
-            group.add("Option A", "a")
-            group.add("Option B", "b")
-
-            # Multi-selection group (checkbox behavior)
-            group = ToggleGroup(mode='multi', orient='vertical')
-            group.add("Feature 1", "f1")
-            group.add("Feature 2", "f2")
-
-            # With signal for reactive updates
-            signal = Signal()
-            group = ToggleGroup(signal=signal)
-            signal.subscribe(lambda v: print(f"Selected: {v}"))
+        Other Parameters:
+            mode (str): Selection mode - 'single' for radio button behavior (default),
+                or 'multi' for checkbox behavior allowing multiple selections.
+            orient (str): Layout orientation - 'horizontal' (default) or 'vertical'.
+            bootstyle (str): The color/variant style (e.g., 'primary', 'danger-outline').
+                Defaults to 'primary'.
+            variable (Variable): Optional tk.Variable for controlling the value. For single mode,
+                use StringVar; for multi mode, use SetVar.
+            signal (Signal): Optional Signal instance for reactive programming.
+            value (str | set): Initial value - string for single mode, set for multi mode.
+            show_border (bool): If True, draws a border around the group.
+            surface_color (str): Optional surface token; otherwise inherited.
+            style_options (dict): Additional style options passed to child buttons.
+            padding (int | tuple): Frame padding. Defaults to 1.
+            width (int): Requested width in pixels.
+            height (int): Requested height in pixels.
         """
         # Extract ToggleGroup-specific options before super().__init__
         self._mode = kwargs.pop('mode', 'single')
@@ -142,7 +129,7 @@ class ToggleGroup(Frame):
         self._signal = value
         self._variable = value.var
 
-    def add(self, text=None, value=None, key=None, **kwargs) -> RadioButton | CheckButton:
+    def add(self, text: str = None, value: Any = None, key: str | None = None, **kwargs: Any) -> RadioButton | CheckButton:
         """Add a toggle button to the group.
 
         Args:
@@ -291,18 +278,18 @@ class ToggleGroup(Frame):
             raise KeyError(f"No button with key '{key}'")
         return self._buttons[key]
 
-    def configure_button(self, key: str, **kwargs):
+    def configure_button(self, key: str, **kwargs: Any):
         """Configure a specific button by its key."""
         button = self.get_button(key)
         button.configure(**kwargs)
 
-    def on_changed(self, func):
-        """Subscribe to value change events. Returns subscription ID for unsubscribing."""
-        return self._signal.subscribe(func)
+    def on_changed(self, callback: Callable) -> Any:
+        """Subscribe to value changes. Callback receives ``new_value: str | set[str]`` directly (str in 'single' mode, set in 'multi' mode)."""
+        return self._signal.subscribe(callback)
 
-    def off_changed(self, bind_id):
-        """Unsubscribe from value change events using the subscription ID."""
-        self._signal.unsubscribe(bind_id)
+    def off_changed(self, subscription_id: Any) -> None:
+        """Unsubscribe from value changes."""
+        self._signal.unsubscribe(subscription_id)
 
     @configure_delegate('bootstyle')
     def _delegate_bootstyle(self, value=None):

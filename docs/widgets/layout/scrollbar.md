@@ -1,186 +1,129 @@
 ---
 title: Scrollbar
-icon: fontawesome/solid/grip-lines-vertical
 ---
 
 # Scrollbar
 
-`Scrollbar` is a themed wrapper around `ttk.Scrollbar` that integrates ttkbootstrap’s styling system. It’s a **primitive UI component** used to scroll other widgets (Text, Canvas, Listbox, TreeView, etc.) and is also used internally by higher-level widgets like `ScrollView` and `ScrolledText`.
+`Scrollbar` is the themed scrollbar primitive used to scroll content such as `Text`, `Canvas`, and ttk widgets that support
+`xview` / `yview`.
+
+It wraps `ttk.Scrollbar` and participates in ttkbootstrap styling.
 
 <!--
-IMAGE: Scrollbar variants
-Suggested: Vertical and horizontal Scrollbar examples, plus a themed bootstyle variant
+IMAGE: Vertical + horizontal scrollbar next to a Text or Canvas
 Theme variants: light / dark
 -->
 
 ---
 
-## Basic usage
+## Quick start
 
-Attach a scrollbar to a scrollable widget by wiring the widget’s `xview`/`yview` and the scrollbar’s `command` together.
-
-### Vertical scrollbar
+### With a Text widget
 
 ```python
+import tkinter as tk
 import ttkbootstrap as ttk
 
 app = ttk.App()
 
-text = ttk.Text(app, height=8, width=40)
+frame = ttk.Frame(app)
+frame.pack(fill="both", expand=True, padx=20, pady=20)
+
+text = tk.Text(frame, wrap="none")
 text.grid(row=0, column=0, sticky="nsew")
 
-vbar = ttk.Scrollbar(app, orient="vertical", command=text.yview)
-vbar.grid(row=0, column=1, sticky="ns")
+ys = ttk.Scrollbar(frame, orient="vertical", command=text.yview)
+ys.grid(row=0, column=1, sticky="ns")
 
-text.configure(yscrollcommand=vbar.set)
+xs = ttk.Scrollbar(frame, orient="horizontal", command=text.xview)
+xs.grid(row=1, column=0, sticky="ew")
 
-app.grid_rowconfigure(0, weight=1)
-app.grid_columnconfigure(0, weight=1)
+text.configure(xscrollcommand=xs.set, yscrollcommand=ys.set)
+
+frame.rowconfigure(0, weight=1)
+frame.columnconfigure(0, weight=1)
 
 app.mainloop()
 ```
 
-### Horizontal scrollbar
+---
+
+## When to use
+
+Use `Scrollbar` when:
+
+- you need explicit scroll control for a widget that supports view commands
+
+- you're wiring scroll behavior manually (Text, Canvas, custom composites)
+
+**Consider a different control when:**
+
+- you want a scrollable container for arbitrary widgets -- use [ScrollView](scrollview.md)
+
+- you need multi-line text with built-in scrolling -- use [ScrolledText](../inputs/scrolledtext.md)
+
+---
+
+## Appearance
+
+### Styling
+
+Use `bootstyle` (or `style=`) to match your theme:
 
 ```python
-import ttkbootstrap as ttk
-
-app = ttk.App()
-
-text = ttk.Text(app, wrap="none", height=8, width=40)
-text.grid(row=0, column=0, sticky="nsew")
-
-hbar = ttk.Scrollbar(app, orient="horizontal", command=text.xview)
-hbar.grid(row=1, column=0, sticky="ew")
-
-text.configure(xscrollcommand=hbar.set)
-
-app.grid_rowconfigure(0, weight=1)
-app.grid_columnconfigure(0, weight=1)
-
-app.mainloop()
+ttk.Scrollbar(app, bootstyle="secondary")
 ```
 
-<!--
-IMAGE: Scrollbar wired to Text
-Suggested: Text widget with visible vertical + horizontal scrollbars
--->
+!!! link "Design System"
+    For theming details and color tokens, see [Design System](../../design-system/index.md).
 
 ---
 
-## What problem it solves
+## Examples & patterns
 
-Many widgets expose `xview`/`yview` scrolling APIs but don’t include scrollbars automatically. `Scrollbar` solves this by:
-
-- Providing a standard scrolling control for any compatible widget
-- Supporting vertical and horizontal orientation
-- Integrating ttkbootstrap `bootstyle` tokens for consistent theme styling
-
-For most use cases, higher-level widgets (`ScrollView`, `ScrolledText`) handle scrollbars automatically. Use `Scrollbar` directly when you’re wiring scrolling manually or building custom composites.
-
----
-
-## Core concepts
-
-### The scroll contract: `command` and `*scrollcommand`
-
-A scrollbar needs two-way wiring:
-
-1. **Scrollbar → Widget**: scrollbar calls the widget’s view method (`xview`/`yview`) via `command`.
-2. **Widget → Scrollbar**: widget reports its viewport using `xscrollcommand`/`yscrollcommand` calling the scrollbar’s `set`.
-
-This is the standard Tk pattern:
-
-```text
-Scrollbar(command=widget.yview)
-Widget(yscrollcommand=scrollbar.set)
-```
-
----
-
-### Orientation
-
-Use `orient="vertical"` or `orient="horizontal"`:
+### `orient`
 
 ```python
 ttk.Scrollbar(app, orient="vertical")
 ttk.Scrollbar(app, orient="horizontal")
 ```
 
----
+### `command`
 
-## Common options & patterns
-
-### Styling with bootstyle
-
-Apply a semantic style token:
+Hook to the target widget's view method (`xview` or `yview`).
 
 ```python
-ttk.Scrollbar(app, bootstyle="primary")
-ttk.Scrollbar(app, bootstyle="secondary")
-```
-
-You can also use more specific style tokens depending on what your theme exposes (for example, square variants).
-
-If you provide an explicit ttk style name via `style=...`, it overrides `bootstyle`.
-
-<!--
-IMAGE: Scrollbar bootstyle variants
-Suggested: Several scrollbars using different bootstyles stacked together
--->
-
----
-
-### Focus behavior
-
-Scrollbars are usually not part of normal keyboard traversal. Keep `takefocus` disabled unless you have a specific accessibility requirement:
-
-```python
-ttk.Scrollbar(app, takefocus=False)
+ttk.Scrollbar(app, orient="vertical", command=widget.yview)
 ```
 
 ---
 
-## Events
+## Behavior
 
-Scrollbars are typically driven through the scroll contract rather than event binding. When needed, you can bind low-level events like:
+- Scrollbars are driven by the target widget's view commands.
 
-- `<ButtonPress-1>` / `<B1-Motion>` (dragging)
-- `<Enter>` / `<Leave>` (hover styling, if desired)
+- The target widget must also set `xscrollcommand` / `yscrollcommand` to update the scrollbar thumb.
 
-Most applications don’t need these bindings directly.
-
----
-
-## UX guidance
-
-- Prefer `ScrollView` for scrolling arbitrary widgets (forms, panels)
-- Prefer `ScrolledText` for scrolling text content
-- Use a direct `Scrollbar` only when you need custom wiring (Canvas, Text, custom widgets)
-
-!!! tip "Keep scrollbars subtle"
-    Most modern UIs benefit from scrollbars that appear on hover or on scroll. Use `ScrollView` / `ScrolledText` if you want those behaviors without manual logic.
+- If you want an out-of-the-box scrollable container, prefer [ScrollView](scrollview.md) or [ScrolledText](../inputs/scrolledtext.md) (for text content).
 
 ---
 
-## When to use / when not to
+## Additional resources
 
-**Use Scrollbar when:**
+### Related widgets
 
-- You are wiring scrolling for `Text`, `Canvas`, `TreeView`, or a custom widget
-- You need manual control over placement, layout, or styling
-- You’re building a composite widget that manages its own scrolling
+- [ScrollView](scrollview.md) -- scroll container for arbitrary widgets
 
-**Avoid Scrollbar when:**
+- [ScrolledText](../inputs/scrolledtext.md) -- scrollable text control
 
-- You want a “scrollable frame” (use `ScrollView`)
-- You want a scrollable text area (use `ScrolledText`)
-- You want auto-hide scrollbar behaviors (use higher-level widgets that implement it)
+- [Canvas](../primitives/canvas.md) / [Text](../primitives/text.md) -- common scroll targets
 
----
+### Framework concepts
 
-## Related widgets
+- [Layout Properties](../../capabilities/layout-props.md)
 
-- **ScrollView** — scroll container for arbitrary widgets
-- **ScrolledText** — scrollable text widget
-- **TreeView / TableView** — data views that often pair with scrollbars
+- [Layout](../../platform/geometry-and-layout.md)
+
+### API reference
+
+- [`ttkbootstrap.Scrollbar`](../../reference/widgets/Scrollbar.md)

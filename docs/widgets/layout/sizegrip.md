@@ -1,159 +1,98 @@
 ---
-title: SizeGrip
-icon: fontawesome/solid/expand
+title: Sizegrip
 ---
 
-# SizeGrip
+# Sizegrip
 
-`SizeGrip` is a themed wrapper around `ttk.Sizegrip` that provides a small “resize handle” typically placed in the bottom-right corner of a window. It gives users an obvious affordance for resizing, especially in traditional desktop layouts.
+`Sizegrip` is a small **resize handle** that indicates a window (or pane) can be resized.
+
+It wraps `ttk.Sizegrip` and is typically placed in the bottom-right corner of a resizable window, status bar, or footer.
 
 <!--
-IMAGE: SizeGrip in a status bar
-Suggested: A window with a bottom status bar, SizeGrip aligned bottom-right
+IMAGE: Sizegrip in a status bar (bottom-right)
 Theme variants: light / dark
 -->
 
 ---
 
-## Basic usage
-
-A common pattern is to place a `SizeGrip` in a bottom “status bar” frame and align it to the right.
+## Quick start
 
 ```python
 import ttkbootstrap as ttk
 
 app = ttk.App()
 
-app.geometry("500x350")
-
-content = ttk.Frame(app, padding=10)
+content = ttk.Frame(app, padding=20)
 content.pack(fill="both", expand=True)
 
-status = ttk.Frame(app, padding=(10, 6))
+status = ttk.Frame(app, padding=(8, 4))
 status.pack(fill="x", side="bottom")
 
-ttk.Label(status, text="Ready").pack(side="left")
-ttk.SizeGrip(status).pack(side="right")
+grip = ttk.Sizegrip(status)
+grip.pack(side="right")
 
 app.mainloop()
 ```
 
-<!--
-IMAGE: Basic SizeGrip example
-Suggested: Status bar with “Ready” text and SizeGrip at the far right
--->
+---
+
+## When to use
+
+Use `Sizegrip` when:
+
+- your UI includes a status bar/footer and you want an explicit resize affordance
+
+- your users expect classic desktop window cues
+
+- you want to provide a visual affordance for resizing
+
+- you want to match platform expectations in desktop apps
+
+**Consider a different control when:**
+
+- your UI already makes resizing obvious (or resizing is disabled)
 
 ---
 
-## What problem it solves
+## Appearance
 
-Some users expect a visible resize handle—especially on classic Windows-style UIs or when window borders are subtle. `SizeGrip` helps by:
+On many platforms, users can resize windows by dragging the window border even without a sizegrip, so this widget is mainly
+a UX hint.
 
-- Making the resize affordance obvious
-- Providing a consistent, theme-aware look via ttkbootstrap `bootstyle`
-- Offering a small, unobtrusive control that fits naturally in status bars
-
----
-
-## Core concepts
-
-### Placement matters
-
-`SizeGrip` is only useful if it is placed where users expect it:
-
-- Bottom-right of the window (most common)
-- Bottom-left in RTL layouts or certain UI conventions
-
-It does not manage layout for you; it’s simply a widget you place like any other.
+!!! link "Design System"
+    For theming details and color tokens, see [Design System](../../design-system/index.md).
 
 ---
 
-### Works best with resizable windows
+## Examples & patterns
 
-If your window is not resizable, a size grip is misleading. Ensure the top-level is resizable:
-
-```python
-app.resizable(True, True)
-```
-
-(Resizability also depends on platform window manager behavior.)
+`Sizegrip` typically doesn't require additional configuration. Layout is controlled by geometry manager options such as
+`side=`, `anchor=`, `padx=`, and `pady=`.
 
 ---
 
-## Common options & patterns
+## Behavior
 
-### Styling with bootstyle
+- The sizegrip is not focusable and is not intended for keyboard interaction.
 
-Apply a semantic style token:
-
-```python
-ttk.SizeGrip(status, bootstyle="secondary")
-```
-
-If you provide an explicit ttk style name via `style=...`, it overrides `bootstyle`.
-
-<!--
-IMAGE: SizeGrip style variants
-Suggested: Same SizeGrip rendered under different bootstyles (if theme supports it)
--->
+- Dragging the grip resizes the toplevel window in standard ttk implementations.
 
 ---
 
-### Embedding in complex footers
+## Additional resources
 
-You can include the size grip alongside other footer widgets (progress, connection status, etc.). Just keep spacing and alignment consistent:
+### Related widgets
 
-```python
-footer = ttk.Frame(app, padding=(10, 6))
-footer.pack(fill="x", side="bottom")
+- [Frame](frame.md) -- common container for status bars/footers
 
-left = ttk.Frame(footer)
-left.pack(side="left")
+- [PanedWindow](panedwindow.md) -- resizable split regions
 
-right = ttk.Frame(footer)
-right.pack(side="right")
+### Framework concepts
 
-ttk.Label(left, text="Connected").pack(side="left")
-ttk.SizeGrip(right).pack(side="right")
-```
+- [Layout Properties](../../capabilities/layout-props.md)
 
----
+- [Layout](../../platform/geometry-and-layout.md)
 
-## Events
+### API reference
 
-`SizeGrip` is typically interacted with via mouse drag; you generally do not bind events to it directly.
-
----
-
-## UX guidance
-
-- Use a size grip only when resizing is expected and helpful
-- Prefer placing it inside a status bar/footer rather than floating in content
-- Avoid it in modern, borderless, or highly stylized UIs where a resize handle may feel out of place
-
-!!! tip "Don’t double up affordances"
-    If your window chrome already clearly communicates resizability, a size grip may be redundant. Use it primarily when you want an explicit, discoverable resize control.
-
----
-
-## When to use / when not to
-
-**Use SizeGrip when:**
-
-- You have a status bar/footer and want a clear resize affordance
-- Your UI targets traditional desktop expectations
-- Window borders are subtle and resizing is easy to miss
-
-**Avoid SizeGrip when:**
-
-- The window is fixed-size
-- The app uses custom borderless windows or custom resizing behaviors
-- The UI already has strong resize affordances
-
----
-
-## Related widgets
-
-- **Frame** — often used for status bars and footers
-- **Separator** — subtle division above a status bar
-- **PanedWindow** — user-resizable layout inside the window
+- [`ttkbootstrap.SizeGrip`](../../reference/widgets/SizeGrip.md)

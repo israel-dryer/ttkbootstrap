@@ -3,7 +3,11 @@ from __future__ import annotations
 from tkinter import ttk
 from typing import Any, TypedDict
 from typing_extensions import Unpack
-from ttkbootstrap.widgets._internal.wrapper_base import TTKWrapperBase
+
+from ttkbootstrap.core.mixins.ttk_state import TtkStateMixin
+from ttkbootstrap.core.mixins.widget import WidgetCapabilitiesMixin
+from ttkbootstrap.widgets.internal.wrapper_base import TTKWrapperBase
+from ttkbootstrap.widgets.types import Master
 
 
 class ScrollbarKwargs(TypedDict, total=False):
@@ -22,22 +26,25 @@ class ScrollbarKwargs(TypedDict, total=False):
     style_options: dict[str, Any]
 
 
-class Scrollbar(TTKWrapperBase, ttk.Scrollbar):
+class Scrollbar(TTKWrapperBase, WidgetCapabilitiesMixin, TtkStateMixin, ttk.Scrollbar):
     """ttkbootstrap wrapper for `ttk.Scrollbar` with bootstyle support."""
 
     _ttk_base = ttk.Scrollbar
 
-    def __init__(self, master=None, **kwargs: Unpack[ScrollbarKwargs]) -> None:
+    def __init__(self, master: Master = None, **kwargs: Unpack[ScrollbarKwargs]) -> None:
         """Create a themed ttkbootstrap Scrollbar.
 
-        Keyword Args:
-            orient: Orientation of the scrollbar.
-            command: Scroll command callback.
-            takefocus: Whether the widget participates in focus traversal.
-            style: Explicit ttk style name (overrides bootstyle).
-            bootstyle: ttkbootstrap style tokens (e.g., 'primary', 'danger-square').
-            surface_color: Optional surface token; otherwise inherited.
-            style_options: Optional dict forwarded to the style builder.
+        Args:
+            master: Parent widget. If None, uses the default root window.
+
+        Other Parameters:
+            orient (str): Orientation of the scrollbar ('horizontal' or 'vertical').
+            command (Callable): Scroll command callback.
+            takefocus (bool): Whether the widget participates in focus traversal.
+            style (str): Explicit ttk style name (overrides bootstyle).
+            bootstyle (str): ttkbootstrap style tokens (e.g., 'primary', 'danger-square').
+            surface_color (str): Optional surface token; otherwise inherited.
+            style_options (dict): Optional dict forwarded to the style builder.
         """
         super().__init__(master, **kwargs)
 

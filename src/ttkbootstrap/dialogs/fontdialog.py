@@ -43,22 +43,11 @@ class FontDialog:
 
     This dialog provides a comprehensive interface for selecting fonts,
     including family, size, weight, slant, and effects (underline, overstrike).
-    The selected font is returned as a tkinter.font.Font object when OK is
+    The selected font is returned as a ``tkinter.font.Font`` object when OK is
     pressed, or None if canceled.
 
-    Example:
-        ```python
-        import ttkbootstrap as ttk
-        from ttkbootstrap.dialogs import FontDialog
-
-        root = ttk.Window()
-        dialog = FontDialog(master=root, title="Select Font")
-        dialog.show()
-
-        if dialog.result:
-            label = ttk.Label(root, text="Sample Text", font=dialog.result)
-            label.pack()
-        ```
+    Attributes:
+        result (font.Font | None): The selected font, or None if canceled.
     """
 
     def __init__(

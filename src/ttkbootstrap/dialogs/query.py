@@ -28,8 +28,10 @@ EntryWidget = TextEntry | NumericEntry | DateEntry
 class QueryDialog:
     """A modal dialog for collecting user input with validation.
 
-    Emits:
-        ``<<DialogResult>>`` with ``event.data = {"result": <value>, "confirmed": True/False}``.
+    !!! note "Events"
+
+        ``<<DialogResult>>``: Fired when dialog closes.
+          Provides ``event.data`` with keys: ``result`` (Any), ``confirmed`` (bool).
     """
 
     def __init__(
