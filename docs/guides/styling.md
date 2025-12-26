@@ -270,13 +270,13 @@ ttkbootstrap uses semantic typography where supported:
 
 ```python
 # Heading style
-ttk.Label(app, text="Settings", font=("Helvetica", 16, "bold"))
+ttk.Label(app, text="Settings", font="heading-xl")
 
 # Body text (default)
 ttk.Label(app, text="Configure your preferences below.")
 
 # Caption/small text
-ttk.Label(app, text="Last updated: Today", font=("Helvetica", 10))
+ttk.Label(app, text="Last updated: Today", font="caption")
 ```
 
 Font choices should come from the design system, not hardcoded values.
