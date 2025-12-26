@@ -46,9 +46,16 @@ Guides show you *how to apply* that knowledge.
 
 How a ttkbootstrap application is organized—windows, layout, state, and lifecycle.
 
-### [Layout](layout.md)
+### Layout
 
-Building layouts with Frame, PackFrame, and GridFrame. When to use each, and how they reduce boilerplate.
+Guides for building predictable, maintainable layouts.
+
+- **[Layout overview](layout.md)**  
+  Building layouts with Frame, PackFrame, and GridFrame. When to use each, and how they reduce boilerplate.
+
+- **[Spacing & Alignment](spacing-and-alignment.md)**  
+  How padding, margins, alignment, and resizing work in Tk—and how ttkbootstrap simplifies them.  
+  Useful when working with legacy layouts or debugging complex geometry.
 
 ### [Reactivity](reactivity.md)
 
