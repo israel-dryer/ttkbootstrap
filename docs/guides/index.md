@@ -42,52 +42,43 @@ Guides show you *how to apply* that knowledge.
 
 ## Available Guides
 
-### [App Structure](app-structure.md)
+### Application
 
-How a ttkbootstrap application is organized—windows, layout, state, and lifecycle.
+- **[App Structure](app-structure.md)** — How a ttkbootstrap application is organized—windows, layout, state, and lifecycle.
+- **[App Settings](app-settings.md)** — Configuring application-wide settings and preferences.
 
 ### Layout
 
-Guides for building predictable, maintainable layouts.
+- **[Layout](layout.md)** — Building layouts with Frame, PackFrame, and GridFrame.
+- **[Spacing & Alignment](spacing-and-alignment.md)** — How padding, margins, alignment, and resizing work in Tk.
+- **[Navigation](navigation.md)** — Patterns for tabs, stacked pages, and sidebar navigation.
 
-- **[Layout overview](layout.md)**  
-  Building layouts with Frame, PackFrame, and GridFrame. When to use each, and how they reduce boilerplate.
+### Data
 
-- **[Spacing & Alignment](spacing-and-alignment.md)**
-  How padding, margins, alignment, and resizing work in Tk—and how ttkbootstrap simplifies them.
-  Useful when working with legacy layouts or debugging complex geometry.
+- **[DataSource](datasource.md)** — Managing data with filtering, sorting, pagination, and CRUD operations.
+- **[Reactivity](reactivity.md)** — Signals, callbacks, and events—what each is for, and how to combine them.
+- **[Tables & Lists](tables-and-lists.md)** — Displaying tabular and list data with ListView and TableView.
 
-### [Navigation](navigation.md)
+### Forms & Input
 
-Patterns for moving between views—tabs, stacked pages, and sidebar navigation.
+- **[Forms](forms.md)** — Building forms with validation and data binding.
+- **[Dialogs](dialogs.md)** — Modal dialogs, message boxes, and user prompts.
 
-### [Reactivity](reactivity.md)
+### Visual Design
 
-Signals, callbacks, and events—what each is for, and how to combine them effectively.
+- **[Typography](typography.md)** — Using font tokens, modifiers, and the Font class.
+- **[Styling](styling.md)** — Working with the design system—semantic colors, variants, and styling.
+- **[Icons](icons.md)** — Using icons effectively—named resources and theme integration.
+- **[Theming](theming.md)** — Theme palettes, switching themes at runtime, and custom themes.
 
-### [Typography](typography.md)
+### UI Patterns
 
-Using font tokens, modifiers, and the Font class for consistent text styling.
+- **[Toolbars](toolbars.md)** — Building toolbars with actions and controls.
 
-### [Styling](styling.md)
+### Internationalization
 
-Working with the design system—semantic colors, variants, and consistent styling across widgets.
-
-### [Icons](icons.md)
-
-Using icons effectively—named resources, theme integration, and common UI patterns.
-
-### [Theming](theming.md)
-
-How theme palettes work, switching themes at runtime, and creating custom themes.
-
-### [Formatting](formatting.md)
-
-Locale-aware number, date, and time formatting—presets, custom patterns, and widget integration.
-
-### [Localization](localization.md)
-
-Making applications language-aware with message catalogs and locale-aware formatting.
+- **[Formatting](formatting.md)** — Locale-aware number, date, and time formatting.
+- **[Localization](localization.md)** — Making applications language-aware with message catalogs.
 
 ---
 
