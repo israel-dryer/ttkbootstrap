@@ -297,7 +297,7 @@ main = ttk.PackFrame(app, direction="vertical", gap=10, padding=20)
 main.pack(fill="both", expand=True)
 
 # Display
-display = ttk.Label(main, font=("Helvetica", 48))
+display = ttk.Label(main, font="display-xl[48]")
 counter.subscribe(lambda v: display.configure(text=str(v)))
 main.add(display)
 

@@ -206,7 +206,7 @@ start = text.index("end-1c linestart")
 text.insert("end", "Bold line\n")
 
 text.tag_add("bold", start, "end-1c")
-text.tag_configure("bold", font=("TkDefaultFont", 10, "bold"))
+text.tag_configure("bold", font="body[bold]")
 ```
 
 #### Link-like text
