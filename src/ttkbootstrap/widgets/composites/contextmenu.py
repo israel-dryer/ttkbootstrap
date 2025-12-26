@@ -115,10 +115,14 @@ class ContextMenu(CustomConfigMixin):
 
         # Track menu items
         self._items = []
+        self._highlighted_index = -1
 
         # Add initial items if provided
         if items:
             self.add_items(items)
+
+        # Setup keyboard bindings
+        self._setup_keyboard_bindings()
 
     def on_item_click(self, callback: Callable) -> None:
         """Set item click callback. Callback receives ``item_info = {'type': str, 'text': str, 'value': Any}``."""
@@ -397,9 +401,78 @@ class ContextMenu(CustomConfigMixin):
         self._toplevel.lift()
         self._toplevel.focus_force()
 
+        # Reset highlight to first actionable item
+        self._update_highlight(0)
+
         # Setup click outside handler if enabled
         if self._hide_on_outside_click:
             self._setup_click_outside_handler()
+
+    def _setup_keyboard_bindings(self) -> None:
+        """Setup keyboard navigation bindings on the toplevel."""
+        self._toplevel.bind('<Escape>', lambda e: self.hide())
+        self._toplevel.bind('<Down>', self._on_arrow_down)
+        self._toplevel.bind('<Up>', self._on_arrow_up)
+        self._toplevel.bind('<Return>', self._on_enter)
+        self._toplevel.bind('<KP_Enter>', self._on_enter)
+
+    def _get_actionable_items(self) -> list:
+        """Return list of items that can be navigated to (excludes separators)."""
+        return [item for item in self._items if not isinstance(item, Separator)]
+
+    def _on_arrow_down(self, event) -> str:
+        """Handle arrow down key."""
+        actionable = self._get_actionable_items()
+        if not actionable:
+            return 'break'
+
+        # Find next actionable item
+        current = self._highlighted_index
+        next_idx = current + 1 if current < len(actionable) - 1 else 0
+        self._update_highlight(next_idx)
+        return 'break'
+
+    def _on_arrow_up(self, event) -> str:
+        """Handle arrow up key."""
+        actionable = self._get_actionable_items()
+        if not actionable:
+            return 'break'
+
+        # Find previous actionable item
+        current = self._highlighted_index
+        prev_idx = current - 1 if current > 0 else len(actionable) - 1
+        self._update_highlight(prev_idx)
+        return 'break'
+
+    def _on_enter(self, event) -> str:
+        """Handle enter key to activate highlighted item."""
+        actionable = self._get_actionable_items()
+        if not actionable or self._highlighted_index < 0:
+            return 'break'
+
+        if 0 <= self._highlighted_index < len(actionable):
+            item = actionable[self._highlighted_index]
+            # Simulate a click by invoking the button
+            item.invoke()
+        return 'break'
+
+    def _update_highlight(self, new_index: int) -> None:
+        """Update the highlighted item."""
+        actionable = self._get_actionable_items()
+        if not actionable:
+            self._highlighted_index = -1
+            return
+
+        # Clamp index
+        new_index = max(0, min(new_index, len(actionable) - 1))
+
+        # Remove highlight from old item
+        if 0 <= self._highlighted_index < len(actionable):
+            actionable[self._highlighted_index].state(['!focus'])
+
+        # Add highlight to new item
+        actionable[new_index].state(['focus'])
+        self._highlighted_index = new_index
 
     def hide(self) -> None:
         """Hide the context menu."""
@@ -407,8 +480,18 @@ class ContextMenu(CustomConfigMixin):
         self._cancel_click_outside_after()
         self._unbind_click_outside_handler()
 
+        # Clear highlight state
+        self._clear_highlight()
+
         if self._toplevel.winfo_exists():
             self._toplevel.withdraw()
+
+    def _clear_highlight(self) -> None:
+        """Clear the highlight from the current item."""
+        actionable = self._get_actionable_items()
+        if 0 <= self._highlighted_index < len(actionable):
+            actionable[self._highlighted_index].state(['!focus'])
+        self._highlighted_index = -1
 
     def destroy(self) -> None:
         """Destroy the context menu and cleanup resources."""
