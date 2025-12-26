@@ -3,16 +3,17 @@ from tkinter import Toplevel
 from typing_extensions import Unpack
 
 from ttkbootstrap.widgets.primitives.button import Button
+from ttkbootstrap.widgets.primitives.frame import Frame
+from ttkbootstrap.widgets.composites.scrollview import ScrollView
 from ttkbootstrap.widgets.composites.field import Field, FieldOptions
 from ttkbootstrap.widgets.mixins import configure_delegate
-from ttkbootstrap.widgets.primitives.treeview import TreeView
 from ttkbootstrap.widgets.types import Master
 
 
 class SelectBox(Field):
     """Dropdown-like field widget built on top of Field.
 
-    Renders a field with a suffix button that opens a popup Treeview of available
+    Renders a field with a suffix button that opens a popup list of available
     items. Selecting an item updates the field value and emits ``<<Change>>``.
 
     !!! note "Events"
@@ -83,13 +84,8 @@ class SelectBox(Field):
         self._last_selected_value = value
         self._popup_open = False
         self._dropdown_button_icon = dropdown_button_icon or 'chevron-down'
-
-        # Configure entry state based on search and custom value settings
-        if allow_custom_values or search_enabled:
-            self.entry_widget.state(['!readonly'])
-        else:
-            self.readonly(True)
-            self.after_idle(self._bind_readonly_selection_on_click)
+        self._popup_frame = None
+        self._item_labels = []
 
         # Add dropdown button if needed
         if allow_custom_values or show_dropdown_button:
@@ -101,6 +97,14 @@ class SelectBox(Field):
                 icon_only=True,
                 command=self._on_dropdown_click
             )
+
+        # Configure entry state based on search and custom value settings
+        if allow_custom_values or search_enabled:
+            self.entry_widget.state(['!readonly'])
+        else:
+            # Set entry to readonly but keep dropdown button enabled
+            self.entry_widget.state(['readonly'])
+            self.after_idle(self._bind_readonly_selection_on_click)
 
     def _on_dropdown_click(self):
         """Handle dropdown button click by focusing entry then showing popup."""
@@ -129,19 +133,18 @@ class SelectBox(Field):
             'first_filtered_item': None,
             'entry_focus_handler': None,
             'key_bindings': [],
-            'filtering_in_progress': False
+            'highlighted_index': max(0, self.selected_index),
         }
 
         # Setup close handler
         def close_popup(event=None):
             self._close_popup(toplevel, popup_state)
 
-        # Create and populate treeview
-        tree = self._create_treeview(toplevel)
-        self._populate_treeview(tree)
+        # Create popup content frame with items
+        self._popup_frame = self._create_popup_frame(toplevel, popup_state)
 
         # Setup event bindings based on mode
-        self._setup_popup_bindings(toplevel, tree, popup_state, close_popup)
+        self._setup_popup_bindings(toplevel, popup_state, close_popup)
 
         # Show popup and set focus
         toplevel.deiconify()
@@ -158,104 +161,208 @@ class SelectBox(Field):
         x = self.winfo_rootx() + 3
         y = self.entry_widget.winfo_rooty() + self.entry_widget.winfo_height() + 8
         width = self.winfo_width() - 6
+        max_height = 200  # Maximum popup height in pixels
 
         toplevel = Toplevel(self)
         toplevel.withdraw()
         toplevel.overrideredirect(True)
         toplevel.minsize(width, 0)
-        toplevel.geometry(f"+{x}+{y}")
+        toplevel.maxsize(width * 2, max_height)
+        toplevel.geometry(f"{width}x{max_height}+{x}+{y}")
 
         return toplevel
 
-    def _create_treeview(self, toplevel):
-        """Create and configure the treeview widget."""
-        tree = TreeView(toplevel, bootstyle=self._bootstyle, show="tree", height=5, columns=['label'])
-        tree.column("#0", width=0, stretch=False)
-        tree.pack(fill="both", expand=1)
-        return tree
+    def _create_popup_frame(self, toplevel, popup_state):
+        """Create popup frame with scrollable item list."""
+        # Outer frame with border and padding
+        outer_frame = Frame(toplevel, padding=3, show_border=True)
+        outer_frame.pack(fill='both', expand=True)
 
-    def _populate_treeview(self, tree):
-        """Populate treeview with items and select current value."""
-        selected = 0
+        # Create scrollview inside the outer frame
+        scrollview = ScrollView(
+            outer_frame,
+            direction='vertical',
+            show_scrollbar='always',
+        )
+        scrollview.pack(fill='both', expand=True)
+
+        # Create inner frame for items
+        inner_frame = Frame(scrollview)
+        scrollview.add(inner_frame)
+
+        # Make inner frame fill the canvas width
+        def on_canvas_configure(event):
+            scrollview.canvas.itemconfig(scrollview._window_id, width=event.width)
+        scrollview.canvas.bind('<Configure>', on_canvas_configure, add='+')
+
+        # Expand scrollregion to include vertical padding so content doesn't clip borders
+        def on_inner_frame_configure(event):
+            bbox = scrollview.canvas.bbox('all')
+            if bbox:
+                x0, y0, x1, y1 = bbox
+                padding_y = 1
+                scrollview.canvas.configure(scrollregion=(x0, y0 - padding_y, x1, y1 + padding_y))
+        inner_frame.bind('<Configure>', on_inner_frame_configure, add='+')
+
+        self._item_labels = []
+        current_value = self.value
+
         for i, item in enumerate(self._items):
-            tree.insert('', 'end', i, text=item, values=(item,))
-            if item == self.value:
-                selected = i
+            btn = Button(
+                inner_frame,
+                text=item,
+                bootstyle='selectbox_item',
+                command=lambda v=item: self._on_item_click(v, toplevel, popup_state)
+            )
+            btn.pack(fill='x')
 
-        tree.selection_set(selected)
-        if not self._search_enabled:
-            tree.focus(selected)
-        tree.see(selected)
+            # Store item value on button for retrieval
+            btn._item_value = item
+            btn._item_index = i
 
-    def _setup_popup_bindings(self, toplevel, tree, popup_state, close_popup):
+            # Apply selected state if this is the current value
+            if item == current_value:
+                btn.state(['selected'])
+
+            self._item_labels.append(btn)
+
+        return scrollview
+
+    def _on_item_click(self, value, toplevel, popup_state):
+        """Handle click on item."""
+        popup_state['item_was_selected'] = True
+        self._set_selected_value(value, toplevel, popup_state)
+
+    def _update_highlight(self, popup_state, new_index):
+        """Update the highlighted item in the popup."""
+        visible_buttons = [btn for btn in self._item_labels if btn.winfo_manager()]
+        if not visible_buttons:
+            return
+
+        # Clamp index to valid range
+        new_index = max(0, min(new_index, len(visible_buttons) - 1))
+        old_index = popup_state['highlighted_index']
+
+        # Remove highlight from old button
+        if 0 <= old_index < len(visible_buttons):
+            visible_buttons[old_index].state(['!selected'])
+
+        # Add highlight to new button
+        visible_buttons[new_index].state(['selected'])
+        popup_state['highlighted_index'] = new_index
+
+        # Scroll to make highlighted item visible
+        btn = visible_buttons[new_index]
+        if self._popup_frame and self._popup_frame.winfo_exists():
+            self._popup_frame.canvas.update_idletasks()
+            # Get button position relative to canvas
+            btn_y = btn.winfo_y()
+            btn_height = btn.winfo_height()
+            canvas_height = self._popup_frame.canvas.winfo_height()
+
+            # Scroll if needed
+            scroll_top = self._popup_frame.canvas.canvasy(0)
+            scroll_bottom = scroll_top + canvas_height
+
+            if btn_y < scroll_top:
+                self._popup_frame.canvas.yview_moveto(btn_y / self._popup_frame.canvas.bbox('all')[3])
+            elif btn_y + btn_height > scroll_bottom:
+                target = (btn_y + btn_height - canvas_height) / self._popup_frame.canvas.bbox('all')[3]
+                self._popup_frame.canvas.yview_moveto(target)
+
+    def _setup_popup_bindings(self, toplevel, popup_state, close_popup):
         """Setup all event bindings for the popup."""
         # Escape always closes
         toplevel.bind("<Escape>", close_popup)
 
-        # Setup mode-specific bindings
+        # Arrow key navigation
+        def on_arrow_down(event):
+            self._update_highlight(popup_state, popup_state['highlighted_index'] + 1)
+            return 'break'
+
+        def on_arrow_up(event):
+            self._update_highlight(popup_state, popup_state['highlighted_index'] - 1)
+            return 'break'
+
+        def on_enter(event):
+            visible_buttons = [btn for btn in self._item_labels if btn.winfo_manager()]
+            idx = popup_state['highlighted_index']
+            if 0 <= idx < len(visible_buttons):
+                popup_state['item_was_selected'] = True
+                self._set_selected_value(visible_buttons[idx]._item_value, toplevel, popup_state)
+            return 'break'
+
+        toplevel.bind("<Down>", on_arrow_down)
+        toplevel.bind("<Up>", on_arrow_up)
+        toplevel.bind("<Return>", on_enter)
+
+        # Also bind to entry widget for search mode
         if self._search_enabled:
-            self._setup_search_bindings(toplevel, tree, popup_state, close_popup)
+            self._setup_search_bindings(toplevel, popup_state, close_popup)
+            entry_down = self.entry_widget.bind('<Down>', on_arrow_down, add='+')
+            entry_up = self.entry_widget.bind('<Up>', on_arrow_up, add='+')
+            entry_enter = self.entry_widget.bind('<Return>', on_enter, add='+')
+            popup_state['key_bindings'].append(('<Down>', entry_down))
+            popup_state['key_bindings'].append(('<Up>', entry_up))
+            popup_state['key_bindings'].append(('<Return>', entry_enter))
         else:
             toplevel.bind("<FocusOut>", close_popup)
 
-        # Setup selection handler
-        self._setup_selection_handler(tree, toplevel, popup_state)
+        # Apply initial highlight
+        self._update_highlight(popup_state, popup_state['highlighted_index'])
 
-    def _setup_search_bindings(self, toplevel, tree, popup_state, close_popup):
+    def _setup_search_bindings(self, toplevel, popup_state, close_popup):
         """Setup search-specific event bindings."""
         # Initialize first filtered item
         if self._items:
             popup_state['first_filtered_item'] = self._items[0]
+        popup_state['last_search_text'] = self.entry_widget.get().lower()
 
         # Filter function
         def filter_items(*args):
-            if popup_state['popup_closed'] or not tree.winfo_exists():
+            if popup_state['popup_closed'] or not self._popup_frame or not self._popup_frame.winfo_exists():
                 return
 
-            popup_state['filtering_in_progress'] = True
             search_text = self.entry_widget.get().lower()
 
-            # Clear and repopulate tree with filtered items
-            for child in tree.get_children():
-                tree.delete(child)
+            # Skip if search text hasn't changed (e.g., arrow key release)
+            if search_text == popup_state['last_search_text']:
+                return
+            popup_state['last_search_text'] = search_text
 
-            first_match = None
-            first_match_text = None
-            for i, item in enumerate(self._items):
-                if search_text in item.lower():
-                    iid = tree.insert('', 'end', i, text=item, values=(item,))
-                    if first_match is None:
-                        first_match = iid
-                        first_match_text = item
+            # Show/hide buttons based on filter
+            first_visible = None
+            for btn in self._item_labels:
+                if search_text in btn._item_value.lower():
+                    btn.pack(fill='x')
+                    if first_visible is None:
+                        first_visible = btn
+                else:
+                    btn.pack_forget()
 
-            popup_state['first_filtered_item'] = first_match_text
+            # Track first filtered item for auto-select
+            popup_state['first_filtered_item'] = first_visible._item_value if first_visible else None
 
-            if first_match:
-                tree.selection_set(first_match)
-                tree.see(first_match)
-
-            popup_state['filtering_in_progress'] = False
+            # Reset highlight to first visible item
+            self._update_highlight(popup_state, 0)
 
         # Bind KeyRelease for filtering
         keyrelease_binding = self.entry_widget.bind('<KeyRelease>', lambda e: filter_items(), add='+')
         popup_state['key_bindings'].append(('<KeyRelease>', keyrelease_binding))
 
-        # Bind Tab/Enter to select when custom values not allowed
-        if not self._allow_custom_values:
-            def on_tab_or_enter(event):
-                if popup_state['popup_closed'] or not tree.winfo_exists():
-                    return  # Allow default behavior
+        # Bind Tab to select highlighted item
+        def on_tab(event):
+            if popup_state['popup_closed']:
+                return
+            visible_buttons = [btn for btn in self._item_labels if btn.winfo_manager()]
+            idx = popup_state['highlighted_index']
+            if 0 <= idx < len(visible_buttons):
+                popup_state['item_was_selected'] = True
+                self._set_selected_value(visible_buttons[idx]._item_value, toplevel, popup_state)
+            return 'break'
 
-                selection = tree.selection()
-                if selection:
-                    popup_state['item_was_selected'] = True
-                    self._get_selected_item(tree, toplevel)
-                return 'break'
-
-            tab_binding = self.entry_widget.bind('<Tab>', on_tab_or_enter)
-            enter_binding = self.entry_widget.bind('<Return>', on_tab_or_enter)
-            popup_state['key_bindings'].append(('<Tab>', tab_binding))
-            popup_state['key_bindings'].append(('<Return>', enter_binding))
+        tab_binding = self.entry_widget.bind('<Tab>', on_tab)
+        popup_state['key_bindings'].append(('<Tab>', tab_binding))
 
         # Setup click-outside detection
         def on_root_click(event):
@@ -269,13 +376,10 @@ class SelectBox(Field):
 
             # Check if click is inside toplevel
             if toplevel.winfo_exists():
-                try:
-                    tx, ty = toplevel.winfo_rootx(), toplevel.winfo_rooty()
-                    tw, th = toplevel.winfo_width(), toplevel.winfo_height()
-                    if tx <= x <= tx + tw and ty <= y <= ty + th:
-                        return
-                except:
-                    pass
+                tx, ty = toplevel.winfo_rootx(), toplevel.winfo_rooty()
+                tw, th = toplevel.winfo_width(), toplevel.winfo_height()
+                if tx <= x <= tx + tw and ty <= y <= ty + th:
+                    return
 
             close_popup()
 
@@ -288,35 +392,6 @@ class SelectBox(Field):
 
         self.after(100, bind_click)
 
-    def _setup_selection_handler(self, tree, toplevel, popup_state):
-        """Setup handler for item selection in treeview."""
-
-        def bind_selection():
-            if not tree.winfo_exists():
-                return
-
-            if self._search_enabled:
-                # Use click handler to avoid selection events from filtering
-                def on_tree_click(e):
-                    item = tree.identify_row(e.y)
-                    if item:
-                        popup_state['item_was_selected'] = True
-                        tree.selection_set(item)
-                        self._get_selected_item(tree, toplevel)
-
-                tree.bind('<Button-1>', on_tree_click)
-            else:
-                # Use TreeviewSelect event
-                def on_select(e):
-                    if popup_state['filtering_in_progress']:
-                        return
-                    popup_state['item_was_selected'] = True
-                    self._get_selected_item(tree, toplevel)
-
-                tree.bind('<<TreeviewSelect>>', on_select)
-
-        self.after_idle(bind_selection)
-
     def _close_popup(self, toplevel, popup_state):
         """Close the popup and cleanup bindings."""
         if popup_state['popup_closed']:
@@ -326,24 +401,21 @@ class SelectBox(Field):
         self._popup_open = False
 
         # Unbind handlers
-        if popup_state['entry_focus_handler'] is not None:
-            try:
-                if self._search_enabled:
-                    root = self.winfo_toplevel()
-                    root.unbind('<Button-1>', popup_state['entry_focus_handler'])
-            except:
-                pass
+        if popup_state['entry_focus_handler'] is not None and self._search_enabled:
+            root = self.winfo_toplevel()
+            root.unbind('<Button-1>', popup_state['entry_focus_handler'])
 
         # Unbind key bindings
         for sequence, funcid in popup_state['key_bindings']:
-            try:
-                self.entry_widget.unbind(sequence, funcid)
-            except:
-                pass
+            self.entry_widget.unbind(sequence, funcid)
 
         # Destroy toplevel
         if toplevel.winfo_exists():
             toplevel.destroy()
+
+        # Clean up popup references
+        self._popup_frame = None
+        self._item_labels = []
 
         # Handle value selection for search mode without custom values
         if self._search_enabled and not self._allow_custom_values:
@@ -352,18 +424,14 @@ class SelectBox(Field):
                     self._last_selected_value = popup_state['first_filtered_item']
                     self.value = popup_state['first_filtered_item']
 
-    def _get_selected_item(self, tree, toplevel):
-        """Handle item selection from the popup Treeview."""
-        selection = tree.selection()
-        if not selection:
+    def _set_selected_value(self, selected_value, toplevel, popup_state):
+        """Set the selected value and close the popup."""
+        if selected_value is None:
             return
 
-        item_id = selection[0]
-        selected_value = tree.item(item_id, "text")
         self._last_selected_value = selected_value
         self.value = selected_value
-        self._popup_open = False
-        toplevel.destroy()
+        self._close_popup(toplevel, popup_state)
 
     @configure_delegate('items')
     def _delegate_items(self, value: list[str] = None):
@@ -407,6 +475,27 @@ class SelectBox(Field):
         else:
             self.value = value
             return None
+
+    @property
+    def selected_index(self):
+        """Get or set the selected index.
+
+        Returns -1 if the current value is not in the items list.
+        Setting to -1 or None clears the selection.
+        """
+        try:
+            return self._items.index(self.value)
+        except (ValueError, TypeError):
+            return -1
+
+    @selected_index.setter
+    def selected_index(self, index):
+        if index is None or index == -1:
+            self.value = ""
+        elif 0 <= index < len(self._items):
+            self.value = self._items[index]
+        else:
+            raise IndexError(f"index {index} out of range for {len(self._items)} items")
 
     @property
     def value(self):

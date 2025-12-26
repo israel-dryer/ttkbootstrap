@@ -4,10 +4,15 @@ title: Combobox
 
 # Combobox
 
+!!! tip "Prefer SelectBox"
+    [SelectBox](/widgets/selection/selectbox.md) provides all the functionality of Combobox plus additional features:
+    keyboard navigation, hover states, search/filtering, form integration (labels, messages, validation), and
+    standardized events. Use Combobox only when you need direct access to the underlying `ttk.Combobox` API.
+
 `Combobox` is a **primitive selection widget** that wraps `ttk.Combobox` with ttkbootstrap styling and reactive text support.
 
-It provides a familiar dropdown list with optional typing. Use `Combobox` when you want low-level ttk behavior with improved
-visuals. Use [SelectBox](/widgets/selection/selectbox.md) when you want a form-ready selection field with labels, messages, validation, and standardized events.
+It provides a familiar dropdown list with optional typing. Use `Combobox` when you need low-level ttk behavior or direct
+access to `ttk.Combobox` methods. Use [SelectBox](/widgets/selection/selectbox.md) for most selection use cases.
 
 ---
 
@@ -34,19 +39,13 @@ app.mainloop()
 
 Use `Combobox` when:
 
-- you want a lightweight dropdown with optional typing
+- you need direct access to `ttk.Combobox` methods (e.g., `current()`, `postcommand`)
 
-- the list of values is relatively small
-
-- you want low-level ttk control over options and events
+- you're integrating with existing code that expects a `ttk.Combobox`
 
 ### Consider a different control when...
 
-- **you want a form-ready field (label/message/validation)** - prefer [SelectBox](/widgets/selection/selectbox.md)
-
-- **you need standardized events (`on_input` / `on_changed`)** - prefer [SelectBox](/widgets/selection/selectbox.md)
-
-- **options are long and filtering/search is useful** - prefer [SelectBox](/widgets/selection/selectbox.md)
+- **for most selection use cases** - prefer [SelectBox](/widgets/selection/selectbox.md), which provides keyboard navigation, hover states, search/filtering, and form integration
 
 - **you want the simplest menu-style single selection picker** - prefer [OptionMenu](/widgets/selection/optionmenu.md)
 

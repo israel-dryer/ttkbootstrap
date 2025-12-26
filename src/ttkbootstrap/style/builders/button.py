@@ -417,3 +417,46 @@ def build_dropdown_item_button_style(b: BootstyleBuilderTTk, ttk_style: str, col
     state_spec = _apply_icon_mapping(b, options, state_spec, default_size)
 
     b.map_style(ttk_style, **state_spec)
+
+
+@BootstyleBuilderTTk.register_builder('selectbox_item', 'TButton')
+def build_selectbox_item_button_style(b: BootstyleBuilderTTk, ttk_style: str, color: str = None, **options):
+    """Style for selectbox dropdown items with selected state support."""
+    accent_token = color or 'primary'
+    surface_token = options.get('surface_color', 'background')
+
+    surface = b.color(surface_token)
+    on_surface = b.on_color(surface)
+    on_disabled = b.disabled('text', surface)
+
+    active = b.elevate(surface, 1)
+    selected = b.color(accent_token)
+    on_selected = b.on_color(selected)
+
+    b.configure_style(
+        ttk_style,
+        background=surface,
+        foreground=on_surface,
+        relief='flat',
+        stipple='gray12',
+        padding=(6, 3),
+        anchor='w',
+        font='body',
+        focuscolor=''
+    )
+
+    state_spec = dict(
+        foreground=[
+            ('disabled', on_disabled),
+            ('selected !disabled', on_selected),
+            ('pressed', on_selected),
+            ('', on_surface)],
+        background=[
+            ('selected !disabled', selected),
+            ('pressed !disabled', selected),
+            ('active !disabled', active),
+            ('', surface)
+        ]
+    )
+
+    b.map_style(ttk_style, **state_spec)
