@@ -14,14 +14,13 @@ nav = [
         { "Overview" = "index.md" },
         { "Installation" = "getting-started/installation.md" },
         { "Quick Start" = "getting-started/quick-start.md" },
-        { "Project Structure" = "getting-started/project-structure.md" },
     ] },
     { "Guides" = [
         { "Overview" = "guides/index.md" },
         { "App Structure" = "guides/app-structure.md" },
         { "App Settings" = "guides/app-settings.md" },
         { "Layout" = "guides/layout.md" },
-        { "Spacing & Alignment" = "guides/spacing-and-alignment.md"},
+        { "Spacing & Alignment" = "guides/spacing-and-alignment.md" },
         { "Reactivity" = "guides/reactivity.md" },
         { "Typography" = "guides/typography.md" },
         { "Styling" = "guides/styling.md" },
@@ -133,18 +132,17 @@ nav = [
             { "Geometry & Layout" = "platform/geometry-and-layout.md" },
             { "Widget Lifecycle" = "platform/widget-lifecycle.md" },
         ] },
-        { "Styling Internals" = [
-            { "ttk Styles & Elements" = "platform/ttk-styles-elements.md" },
-        ] },
-        { "Windows" = [
-            { "Windows" = "platform/windows.md" },
-        ] },
-        { "Rendering" = [
-            { "Images & DPI" = "platform/images-and-dpi.md" },
-        ] },
+        { "Styling Internals" = "platform/ttk-styles-elements.md" },
+        { "Images & DPI" = "platform/images-and-dpi.md" },
+        { "Windows" = "platform/windows.md" },
         { "Operations" = [
-            { "Performance" = "platform/performance.md" },
             { "Debugging" = "platform/debugging.md" },
+            { "Performance" = "platform/performance.md" },
+        ] },
+        { "Tooling" = [
+            { "CLI" = "platform/cli.md" },
+            { "Project Structure" = "platform/project-structure.md" },
+            { "Build & Distribute" = "platform/build-and-ship.md" },
         ] },
     ] },
     { "Capabilities" = [
@@ -175,11 +173,6 @@ nav = [
         { "State & Interaction" = "capabilities/state-and-interaction.md" },
         { "Configuration" = "capabilities/configuration.md" },
         { "Localization" = "capabilities/localization.md" },
-    ] },
-    { "Build" = [
-        { "Overview" = "build/index.md" },
-        { "App Runtime" = "build/app-runtime.md" },
-        { "App Configuration" = "build/app-configuration.md" },
     ] },
     { "API Reference" = [
         { "Overview" = "reference/index.md" },

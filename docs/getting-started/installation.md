@@ -58,15 +58,25 @@ If a window appears, you’re ready.
 
 ---
 
-## Optional: Pillow for broader image support
+## Included image support (Pillow)
 
-ttkbootstrap can use Pillow-backed images for better format coverage and some workflows.
+ttkbootstrap includes Pillow as a dependency to support modern image workflows, including
+theme-aware icons, DPI scaling, caching, and recoloring.
 
-```bash
-python -m pip install pillow
-```
+No additional installation is required.
 
-!!! link "See [Icons & Imagery](../capabilities/icons-and-imagery.md) for theme-aware icons, DPI, and caching behavior."
+!!! link "See [Icons & Imagery](../capabilities/icons-and-imagery.md) for details on image handling and icon behavior."
+
+---
+
+## Optional: Command-line tooling
+
+ttkbootstrap includes an optional CLI that can scaffold projects, add views or dialogs, and help with
+building and distribution.
+
+You do **not** need the CLI to use ttkbootstrap, but it can simplify larger projects.
+
+!!! link "See [Platform → CLI](../platform/cli.md) for available commands."
 
 ---
 
@@ -84,9 +94,7 @@ then Tk is not installed or not visible to your Python interpreter.
 Common fixes:
 
 - **Windows**: reinstall Python using the official installer and ensure Tcl/Tk is selected.
-
-- **macOS**: use the official Python installer (python.org) or a distribution that bundles Tk support.
-
+- **macOS**: use the official Python installer from python.org or a distribution that bundles Tk support.
 - **Linux**: install the Tk package for your distro (see the Linux tip above).
 
 ### Virtual environments
@@ -99,12 +107,8 @@ If Tk works in system Python but not in a venv, ensure:
 
 ## Next steps
 
-- [Quick Start](quick-start.md)
-
-- [Guides](../guides/index.md)
-
-- [Widgets](../widgets/index.md)
-
-- [Platform](../platform/index.md) (Tk/ttk fundamentals and mechanics)
-
-- [Capabilities](../capabilities/index.md) (signals, localization, validation, imagery, etc.)
+- [Quick Start](quick-start.md) — build a minimal app
+- [Guides](../guides/index.md) — recommended patterns and workflows
+- [Widgets](../widgets/index.md) — available UI components
+- [Platform](../platform/index.md) — Tk/ttk foundations (optional)
+- [Capabilities](../capabilities/index.md) — framework features like signals and localization

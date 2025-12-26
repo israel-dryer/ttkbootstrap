@@ -4,105 +4,62 @@ title: Quick Start
 
 # Quick Start
 
-This guide gets you from **zero to a running ttkbootstrap app** in just a few minutes.
+This guide shows a minimal ttkbootstrap application so you can verify your setup
+and get a feel for the API.
 
-The goal is not to explain everything — it’s to help you see how ttkbootstrap
-applications are *structured* and *feel* different from raw tkinter.
+It intentionally keeps things simple and familiar, especially if you already
+know Tkinter.
 
 ---
 
-## Create your first app
-
-A ttkbootstrap application starts with an `App`, not a bare `Tk` instance.
+## Create a simple app
 
 ```python
 import ttkbootstrap as ttk
 
 app = ttk.App(title="Quick Start")
 
-app.mainloop()
-```
+frame = ttk.Frame(app, padding=20)
+frame.pack(fill="both", expand=True)
 
-If you run this, you already have:
-
-- a themed application window
-- automatic light/dark awareness (depending on theme)
-- a framework-managed lifecycle
-
----
-
-## Add content with intent
-
-Instead of placing widgets directly on the root window, you typically use
-**containers** to express layout intent.
-
-Here’s a simple example using a `Frame`:
-
-```python
-import ttkbootstrap as ttk
-
-app = ttk.App(title="Quick Start")
-
-container = ttk.Frame(app, padding=20)
-container.pack(fill="both", expand=True)
-
-ttk.Label(container, text="Welcome to ttkbootstrap").pack(pady=(0, 10))
-ttk.Button(container, text="Continue", bootstyle="primary").pack()
+ttk.Label(frame, text="Hello, ttkbootstrap!").pack(pady=10)
+ttk.Button(frame, text="Close", command=app.destroy).pack()
 
 app.mainloop()
 ```
 
-You now have:
+---
 
-- spacing controlled by the container
-- consistent typography and colors
-- a semantic action button (`primary`)
+## What just happened
+
+- You created an **App**, which replaces `tk.Tk` and applies a theme automatically.
+- You created a **Frame** to group widgets and manage spacing.
+- Widgets were laid out using **pack**, the standard Tk geometry manager.
+- Styling (colors, fonts, spacing defaults) comes from the active ttkbootstrap theme.
+
+Nothing here is ttkbootstrap-specific magic — this example behaves the same way
+across platforms and looks correct in both light and dark themes.
 
 ---
 
-## What just happened?
+## Where to go next
 
-Even in this small example, ttkbootstrap is doing more than tkinter:
+If this feels familiar, that’s intentional.
 
-- **Design system**
-  - semantic colors (`primary`)
-  - consistent spacing and typography
-- **Layout responsibility**
-  - containers manage spacing and resizing
-- **Framework defaults**
-  - sensible padding, focus behavior, and state visuals
+From here you can:
 
-You didn’t have to configure any of that manually.
-
----
-
-## Recommended next steps
-
-This Quick Start shows *what* to do — not *why*.
-
-To keep building with confidence, continue here:
-
-- **[Guides → App Structure](../guides/app-structure.md)**  
-  How applications are organized (windows, layout, state)
-
-- **[Guides → Layout](../guides/layout.md)**  
-  When to use `Frame`, `PackFrame`, and `GridFrame`
-
-- **[Widgets](../widgets/index.md)**  
-  Explore available widgets and controls
-
-If you prefer learning by examples, head straight to the **Guides**.
+- Learn recommended layout patterns in  
+  **[Guides → Layout](../guides/layout.md)**
+- Explore higher-level containers like `PackFrame` and `GridFrame`  
+  **[Widgets → Layout](../widgets/layout/frame.md)**
+- Understand how themes, colors, and variants work  
+  **[Design System → Overview](../design-system/index.md)**
 
 ---
 
-## A note for tkinter users
+## Need more structure?
 
-If you’re coming from tkinter:
+If you prefer a scaffolded project layout, localization setup, or build tooling,
+ttkbootstrap includes a command-line interface.
 
-- You can still use familiar widgets and geometry managers
-- But ttkbootstrap works best when you:
-  - let containers manage layout
-  - rely on semantic styling instead of manual colors
-  - treat the app as a cohesive system, not a script
-
-You don’t have to relearn everything — but you *do* get better defaults.
+See **[Platform → CLI](../platform/cli.md)** for available commands.

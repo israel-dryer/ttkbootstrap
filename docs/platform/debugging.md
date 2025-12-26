@@ -14,11 +14,13 @@ This page focuses on **practical debugging strategies** for ttkbootstrap applica
 Most UI issues are event-loop related.
 
 Symptoms often include:
+
 - UI freezing
 - callbacks firing unexpectedly
 - layout appearing incorrect until resize
 
 Start by asking:
+
 - *What callback is running?*
 - *Is something blocking the event loop?*
 
@@ -31,6 +33,7 @@ Logging entry and exit of callbacks is often revealing.
 Print statements and logging are effective tools.
 
 Common logging targets:
+
 - widget creation and destruction
 - layout changes
 - signal emissions
@@ -45,6 +48,7 @@ Structured logging helps trace complex UI behavior.
 Understanding the widget tree is critical.
 
 Helpful techniques:
+
 - print widget parents and children
 - log `winfo_parent()` and `winfo_children()`
 - temporarily add borders or background colors
@@ -58,6 +62,7 @@ Visualizing structure often reveals layout mistakes.
 Many bugs stem from querying geometry too early.
 
 If values seem wrong:
+
 - ensure the event loop has run
 - defer logic using `after_idle()`
 - avoid size-dependent logic in constructors
@@ -71,6 +76,7 @@ Correct timing resolves many layout issues.
 Styling bugs are often name-resolution problems.
 
 Tips:
+
 - log the resolved style name
 - inspect theme definitions
 - verify state transitions (hover, active, disabled)
@@ -82,11 +88,13 @@ Remember that styles are resolved dynamically.
 ## Image-related issues
 
 Common image bugs include:
+
 - images disappearing
 - incorrect scaling
 - excessive memory usage
 
 Check:
+
 - that image objects are kept alive
 - whether images are cached
 - DPI assumptions
@@ -98,6 +106,7 @@ Image bugs often masquerade as layout problems.
 ## Focus and grab issues
 
 If input behaves strangely:
+
 - log focus changes
 - verify grab status
 - check window ownership
@@ -109,6 +118,7 @@ Focus and grab bugs are subtle but diagnosable.
 ## Isolate problems
 
 When debugging complex issues:
+
 - reduce the UI to a minimal example
 - remove unrelated widgets
 - simplify layout and styles

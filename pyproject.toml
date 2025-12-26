@@ -50,6 +50,9 @@ dependencies = [
     "Babel>=2.12",
     "python-dateutil>=2.8",
     "dateparser>=1.1",
+
+    # TOML parsing for Python < 3.11
+    "tomli>=2.0; python_version < '3.11'",
 ]
 
 [project.optional-dependencies]

@@ -25,6 +25,7 @@ class FontSpec(NamedTuple):
 class FontTokenNames:
     # Base families
     caption = "caption"
+    label = "label"
     body_sm = "body-sm"
     body = "body"
     body_lg = "body-lg"
@@ -43,6 +44,7 @@ class FontTokenNames:
 
 class FontTokens(NamedTuple):
     caption: FontSpec
+    label: FontSpec
     body_sm: FontSpec
     body: FontSpec
     body_lg: FontSpec
@@ -99,6 +101,7 @@ def build_desktop_tokens(
 
     return FontTokens(
         caption=FontSpec(ui, s(-1), "normal"),
+        label=FontSpec(ui, s(-2), "bold"),
         body_sm=FontSpec(ui, s(-1), "normal"),
         body=FontSpec(ui, s(0), "normal"),
         body_lg=FontSpec(ui, s(1), "normal"),

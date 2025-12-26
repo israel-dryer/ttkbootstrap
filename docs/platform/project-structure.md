@@ -134,7 +134,7 @@ import ttkbootstrap as ttk
 status = ttk.Signal("Ready")
 ```
 
-!!! link "See [Guides → Reactivity](../guides/reactivity.md) and [Capabilities → Signals](../capabilities/signals.md)."
+!!! link "See [Guides → Reactivity](../guides/reactivity.md) and [Capabilities → Signals](../capabilities/signals/signals.md)."
 
 ---
 
@@ -262,12 +262,8 @@ Start simple. Add structure when you feel friction.
 
 ## Next steps
 
-- [Quick Start](quick-start.md)
-
-- [Guides → App Structure](../guides/app-structure.md)
-
-- [Guides → Layout](../guides/layout.md)
-
-- [Build → App Runtime](../build/app-runtime.md)
-
-- [Build → App Configuration](../build/app-configuration.md)
+- [Quick Start](../getting-started/quick-start.md) — build your first app
+- [App Structure](../guides/app-structure.md) — windows, layout, and state
+- [Layout](../guides/layout.md) — containers and composition
+- [CLI](cli.md) — scaffolding and build commands
+- [Build & Distribute](build-and-ship.md) — packaging for distribution
