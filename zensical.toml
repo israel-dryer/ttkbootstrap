@@ -106,6 +106,7 @@ nav = [
         { "Overview" = "guides/index.md" },
         { "App Structure" = "guides/app-structure.md" },
         { "Layout" = "guides/layout.md" },
+        { "Spacing & Alignment" = "guides/spacing-and-alignment.md"},
         { "Reactivity" = "guides/reactivity.md" },
         { "Typography" = "guides/typography.md" },
         { "Styling" = "guides/styling.md" },
@@ -329,6 +330,7 @@ nav = [
 # -----------------------------------------------------------------------------
 [project.theme]
 language = "en"
+favicon = "assets/favicon.ico"
 
 features = [
     "navigation.tabs",
@@ -381,6 +383,9 @@ show_source = false
 # -----------------------------------------------------------------------------
 # Markdown extensions
 # -----------------------------------------------------------------------------
+[project.markdown_extensions.toc]
+toc_depth = 2
+
 [project.markdown_extensions.md_in_html]
 [project.markdown_extensions.pymdownx.superfences]
 [project.markdown_extensions.admonition]
