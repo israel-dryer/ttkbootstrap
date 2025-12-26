@@ -47,17 +47,18 @@ PackFrame lets you describe *what you want*:
 Instead of *how* to pack each widget.
 
 ```python
-from ttkbootstrap.widgets import PackFrame
 import ttkbootstrap as ttk
 
 app = ttk.App()
 
-with PackFrame(app, direction="vertical", gap=8, padding=12):
-    ttk.Label(text="Username")
-    ttk.Entry()
-    ttk.Label(text="Password")
-    ttk.Entry()
-    ttk.Button(text="Login", bootstyle="primary")
+form = ttk.PackFrame(app, direction="vertical", gap=8, padding=12)
+form.pack(fill="both", expand=True)
+
+form.add(ttk.Label(form, text="Username"))
+form.add(ttk.Entry(form))
+form.add(ttk.Label(form, text="Password"))
+form.add(ttk.Entry(form, show="*"))
+form.add(ttk.Button(form, text="Login", bootstyle="primary"))
 
 app.mainloop()
 ```
@@ -86,19 +87,20 @@ GridFrame allows you to declare:
 without manually configuring every cell.
 
 ```python
-from ttkbootstrap.widgets import GridFrame
 import ttkbootstrap as ttk
 
 app = ttk.App()
 
-with GridFrame(app, columns=2, gap=(12, 6), padding=12):
-    ttk.Label(text="Name")
-    ttk.Entry()
+grid = ttk.GridFrame(app, columns=["auto", 1], gap=(12, 6), padding=12)
+grid.pack(fill="both", expand=True)
 
-    ttk.Label(text="Email")
-    ttk.Entry()
+ttk.Label(grid, text="Name").grid(row=0, column=0, sticky="e")
+ttk.Entry(grid).grid(row=0, column=1, sticky="ew")
 
-    ttk.Button(text="Save", bootstyle="primary", columnspan=2)
+ttk.Label(grid, text="Email").grid(row=1, column=0, sticky="e")
+ttk.Entry(grid).grid(row=1, column=1, sticky="ew")
+
+ttk.Button(grid, text="Save", bootstyle="primary").grid(row=2, column=0, columnspan=2, sticky="e")
 
 app.mainloop()
 ```
@@ -145,14 +147,20 @@ Use nesting to:
 Prefer **shallow, intentional nesting** over deeply nested widget‑level configuration.
 
 ```python
-with GridFrame(app, columns=2, gap=12):
-    with PackFrame(direction="vertical", gap=6):
-        ttk.Label(text="General")
-        ttk.Checkbutton(text="Enable feature")
+grid = ttk.GridFrame(app, columns=[1, 1], gap=12, padding=12)
+grid.pack(fill="both", expand=True)
 
-    with PackFrame(direction="vertical", gap=6):
-        ttk.Label(text="Advanced")
-        ttk.Checkbutton(text="Verbose logging")
+# Left column
+left = ttk.PackFrame(grid, direction="vertical", gap=6)
+left.grid(row=0, column=0, sticky="nsew")
+left.add(ttk.Label(left, text="General", font=("", 10, "bold")))
+left.add(ttk.CheckButton(left, text="Enable feature"))
+
+# Right column
+right = ttk.PackFrame(grid, direction="vertical", gap=6)
+right.grid(row=0, column=1, sticky="nsew")
+right.add(ttk.Label(right, text="Advanced", font=("", 10, "bold")))
+right.add(ttk.CheckButton(right, text="Verbose logging"))
 ```
 
 ---
