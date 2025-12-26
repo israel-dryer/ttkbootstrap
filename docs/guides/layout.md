@@ -47,17 +47,18 @@ PackFrame lets you describe *what you want*:
 Instead of *how* to pack each widget.
 
 ```python
-from ttkbootstrap.widgets import PackFrame
 import ttkbootstrap as ttk
 
 app = ttk.App()
 
-with PackFrame(app, direction="vertical", gap=8, padding=12):
-    ttk.Label(text="Username")
-    ttk.Entry()
-    ttk.Label(text="Password")
-    ttk.Entry()
-    ttk.Button(text="Login", bootstyle="primary")
+form = ttk.PackFrame(app, direction="vertical", gap=8, padding=12)
+form.pack(fill="both", expand=True)
+
+form.add(ttk.Label(form, text="Username"))
+form.add(ttk.Entry(form))
+form.add(ttk.Label(form, text="Password"))
+form.add(ttk.Entry(form, show="*"))
+form.add(ttk.Button(form, text="Login", bootstyle="primary"))
 
 app.mainloop()
 ```
@@ -81,29 +82,35 @@ GridFrame allows you to declare:
 
 - row and column structure
 - gaps between rows and columns
+- default sticky alignment
 - spanning behavior
+- **auto-placement** — row/column positions are inferred from the column count
 
 without manually configuring every cell.
 
 ```python
-from ttkbootstrap.widgets import GridFrame
 import ttkbootstrap as ttk
 
 app = ttk.App()
 
-with GridFrame(app, columns=2, gap=(12, 6), padding=12):
-    ttk.Label(text="Name")
-    ttk.Entry()
+grid = ttk.GridFrame(app, columns=["auto", 1], gap=(12, 6), padding=12, sticky_items="e")
+grid.pack(fill="both", expand=True)
 
-    ttk.Label(text="Email")
-    ttk.Entry()
-
-    ttk.Button(text="Save", bootstyle="primary", columnspan=2)
+# Auto-placement: wraps to next row after filling columns
+grid.add(ttk.Label(grid, text="Name"))
+grid.add(ttk.Entry(grid))
+grid.add(ttk.Label(grid, text="Email"))
+grid.add(ttk.Entry(grid))
+grid.add(ttk.Button(grid, text="Save", bootstyle="primary"), columnspan=2)
 
 app.mainloop()
 ```
 
 GridFrame is the recommended choice when visual alignment matters.
+
+!!! note "Use add() for GridFrame features"
+    GridFrame's `gap` and `sticky_items` only apply when using `grid.add(widget, ...)`.
+    Direct `.grid()` calls bypass these features.
 
 ---
 
@@ -145,14 +152,20 @@ Use nesting to:
 Prefer **shallow, intentional nesting** over deeply nested widget‑level configuration.
 
 ```python
-with GridFrame(app, columns=2, gap=12):
-    with PackFrame(direction="vertical", gap=6):
-        ttk.Label(text="General")
-        ttk.Checkbutton(text="Enable feature")
+grid = ttk.GridFrame(app, columns=[1, 1], gap=12, padding=12, sticky_items="nsew")
+grid.pack(fill="both", expand=True)
 
-    with PackFrame(direction="vertical", gap=6):
-        ttk.Label(text="Advanced")
-        ttk.Checkbutton(text="Verbose logging")
+# Left column
+left = ttk.PackFrame(grid, direction="vertical", gap=6)
+grid.add(left)
+left.add(ttk.Label(left, text="General", font="label"))
+left.add(ttk.CheckButton(left, text="Enable feature"))
+
+# Right column
+right = ttk.PackFrame(grid, direction="vertical", gap=6)
+grid.add(right)
+right.add(ttk.Label(right, text="Advanced", font="label"))
+right.add(ttk.CheckButton(right, text="Verbose logging"))
 ```
 
 ---

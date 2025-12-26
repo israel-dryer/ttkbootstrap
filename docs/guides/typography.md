@@ -15,6 +15,7 @@ ttkbootstrap defines **semantic font tokens** rather than raw font tuples. Token
 | Token | Purpose |
 |-------|---------|
 | `caption` | Small supporting text |
+| `label` | Bold label text (form labels, field labels) |
 | `body-sm` | Compact body text |
 | `body` | Default body text |
 | `body-lg` | Larger body text |
