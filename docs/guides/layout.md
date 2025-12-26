@@ -91,21 +91,25 @@ import ttkbootstrap as ttk
 
 app = ttk.App()
 
-grid = ttk.GridFrame(app, columns=["auto", 1], gap=(12, 6), padding=12)
+grid = ttk.GridFrame(app, columns=["auto", 1], gap=(12, 6), padding=12, sticky_items="ew")
 grid.pack(fill="both", expand=True)
 
-ttk.Label(grid, text="Name").grid(row=0, column=0, sticky="e")
-ttk.Entry(grid).grid(row=0, column=1, sticky="ew")
+grid.add(ttk.Label(grid, text="Name"), row=0, column=0, sticky="e")
+grid.add(ttk.Entry(grid), row=0, column=1)
 
-ttk.Label(grid, text="Email").grid(row=1, column=0, sticky="e")
-ttk.Entry(grid).grid(row=1, column=1, sticky="ew")
+grid.add(ttk.Label(grid, text="Email"), row=1, column=0, sticky="e")
+grid.add(ttk.Entry(grid), row=1, column=1)
 
-ttk.Button(grid, text="Save", bootstyle="primary").grid(row=2, column=0, columnspan=2, sticky="e")
+grid.add(ttk.Button(grid, text="Save", bootstyle="primary"), row=2, column=0, columnspan=2, sticky="e")
 
 app.mainloop()
 ```
 
 GridFrame is the recommended choice when visual alignment matters.
+
+!!! note "Use add() for GridFrame features"
+    GridFrame's `gap` and `sticky_items` only apply when using `grid.add(widget, ...)`.
+    Direct `.grid()` calls bypass these features.
 
 ---
 
@@ -147,18 +151,18 @@ Use nesting to:
 Prefer **shallow, intentional nesting** over deeply nested widget‑level configuration.
 
 ```python
-grid = ttk.GridFrame(app, columns=[1, 1], gap=12, padding=12)
+grid = ttk.GridFrame(app, columns=[1, 1], gap=12, padding=12, sticky_items="nsew")
 grid.pack(fill="both", expand=True)
 
 # Left column
 left = ttk.PackFrame(grid, direction="vertical", gap=6)
-left.grid(row=0, column=0, sticky="nsew")
+grid.add(left, row=0, column=0)
 left.add(ttk.Label(left, text="General", font=("", 10, "bold")))
 left.add(ttk.CheckButton(left, text="Enable feature"))
 
 # Right column
 right = ttk.PackFrame(grid, direction="vertical", gap=6)
-right.grid(row=0, column=1, sticky="nsew")
+grid.add(right, row=0, column=1)
 right.add(ttk.Label(right, text="Advanced", font=("", 10, "bold")))
 right.add(ttk.CheckButton(right, text="Verbose logging"))
 ```
