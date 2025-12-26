@@ -4,13 +4,14 @@ from typing import Any, Callable, Literal, TYPE_CHECKING
 
 from typing_extensions import TypedDict, Unpack
 
-from ttkbootstrap import Button
+from ttkbootstrap.widgets.primitives.button import Button
 from ttkbootstrap.widgets.mixins.configure_mixin import configure_delegate
 from ttkbootstrap.widgets.primitives import Frame
 from ttkbootstrap.widgets.primitives.checkbutton import CheckButton
 from ttkbootstrap.widgets.primitives.checktoggle import CheckToggle
 from ttkbootstrap.widgets.primitives.radiobutton import RadioButton
 from ttkbootstrap.widgets.primitives.radiotoggle import RadioToggle
+from ttkbootstrap.widgets.types import Master
 
 if TYPE_CHECKING:
     import tkinter as tk
@@ -36,43 +37,25 @@ class ButtonGroup(Frame):
     state tracking. Perfect for toolbars, action button groups, or any scenario
     where you want buttons visually connected but don't need to track which is
     selected.
-
-    Examples:
-        # Toolbar-style button group
-        toolbar = ButtonGroup(root, bootstyle='primary')
-        toolbar.add("Save", command=save_action)
-        toolbar.add("Load", command=load_action)
-        toolbar.add("Delete", command=delete_action)
-
-        # Vertical action buttons
-        actions = ButtonGroup(root, orient='vertical', bootstyle='success-outline')
-        actions.add("Apply", command=apply)
-        actions.add("Cancel", command=cancel)
-
-        # With custom keys
-        group = ButtonGroup(root)
-        group.add("New", key="new_btn", command=new_file)
-        group.configure_widget("new_btn", state='disabled')
-
-        # Mixed widget types
-        from ttkbootstrap import MenuButton
-        group = ButtonGroup(root)
-        group.add("Action 1", command=action1)
-        group.add("Options", widget_type=MenuButton, key="menu")
     """
 
-    def __init__(self, master: Any = None, **kwargs: Unpack[ButtonGroupKwargs]):
+    def __init__(self, master: Master = None, **kwargs: Unpack[ButtonGroupKwargs]):
         """Initialize the ButtonGroup.
 
         Args:
-            master: The parent widget.
-            orient: Layout orientation - 'horizontal' (default) or 'vertical'.
-            bootstyle: The color/variant style (e.g., 'primary', 'success', 'danger').
-                       Defaults to 'primary'.
-            state: Initial state for all buttons - 'normal' (default) or 'disabled'.
-            style_options: Additional style options passed to child widgets.
-            padding: Frame padding. Defaults to 1.
-            **kwargs: Additional Frame configuration options.
+            master: Parent widget. If None, uses the default root window.
+
+        Other Parameters:
+            orient (str): Layout orientation - 'horizontal' (default) or 'vertical'.
+            bootstyle (str): The color/variant style (e.g., 'primary', 'success', 'danger').
+                Defaults to 'primary'.
+            state (str): Initial state for all buttons - 'normal' (default) or 'disabled'.
+            show_border (bool): If True, draws a border around the group.
+            surface_color (str): Optional surface token; otherwise inherited.
+            style_options (dict): Additional style options passed to child widgets.
+            padding (int | tuple): Frame padding. Defaults to 1.
+            width (int): Requested width in pixels.
+            height (int): Requested height in pixels.
         """
         # Extract ButtonGroup-specific options
         self._orientation = kwargs.pop('orient', 'horizontal')
@@ -98,7 +81,7 @@ class ButtonGroup(Frame):
         key: str = None,
         widget_type: type = None,
         command: Callable[[], Any] = None,
-        **kwargs
+        **kwargs: Any
     ) -> 'tk.Widget':
         """Add a widget to the group.
 
@@ -114,17 +97,6 @@ class ButtonGroup(Frame):
 
         Raises:
             ValueError: If a widget with the same key already exists.
-
-        Example:
-            # Add simple button
-            btn = group.add("Click Me", command=on_click)
-
-            # Add with custom key
-            group.add("Save", key="save_btn", command=save)
-
-            # Add MenuButton
-            from ttkbootstrap import MenuButton
-            group.add("Options", widget_type=MenuButton, key="menu")
         """
         # Auto-generate key if not provided
         if key is None:
@@ -253,14 +225,14 @@ class ButtonGroup(Frame):
             raise KeyError(f"No widget with key '{key}'")
         return self._widgets[key]
 
-    def configure_widget(self, key: str, **kwargs):
+    def configure_widget(self, key: str, **kwargs: Any):
         """Configure a specific widget by its key.
 
         Args:
             key: The key of the widget to configure.
             **kwargs: Configuration options to apply to the widget.
 
-        Example:
+        Examples:
             group.configure_widget("save_btn", state='disabled')
         """
         widget = self.get_widget(key)
@@ -283,15 +255,29 @@ class ButtonGroup(Frame):
         return tuple(self._widgets.keys())
 
     def __len__(self) -> int:
-        """Return the number of widgets in the group."""
+        """Return the number of widgets in the group.
+
+        Examples:
+            >>> count = len(button_group)
+        """
         return len(self._widgets)
 
     def __contains__(self, key: str) -> bool:
-        """Check if a widget with the given key exists in the group."""
+        """Check if a widget with the given key exists in the group.
+
+        Examples:
+            >>> if 'save' in button_group:
+            ...     print('Save button exists')
+        """
         return key in self._widgets
 
     def __iter__(self):
-        """Iterate over the widgets in the group."""
+        """Iterate over the widgets in the group.
+
+        Examples:
+            >>> for widget in button_group:
+            ...     widget.configure(state='disabled')
+        """
         return iter(self._widgets.values())
 
     @configure_delegate('bootstyle')

@@ -22,11 +22,11 @@ Filtering Syntax:
         - Logical operators: AND, OR
         - Literals: 'string', "string", 123, 3.14, true, false, null
 
-    Examples:
+    Example:
+        ```python
         set_filter("status = 'active' AND age >= 18")
-        set_filter("name CONTAINS 'smith' OR email ENDSWITH '@gmail.com'")
-        set_filter("category IN ('A', 'B', 'C')")
         set_filter("name LIKE 'John%'")
+        ```
 
 Sorting Syntax:
     Multi-column sorting with ASC/DESC:
@@ -47,7 +47,7 @@ from collections.abc import Sequence
 from typing import Any, Dict, List, Optional, Union, Mapping, Iterable, Tuple
 
 from ttkbootstrap.datasource.base import BaseDataSource
-from ttkbootstrap.datasource.types import Primitive, Record
+from ttkbootstrap.datasource.types import Primitive
 
 
 class MemoryDataSource(BaseDataSource):
@@ -66,36 +66,16 @@ class MemoryDataSource(BaseDataSource):
     Attributes:
         page_size: Current page size setting
 
-    Examples:
-        # Create datasource with data
+    Example:
+        ```python
         ds = MemoryDataSource(page_size=20)
         ds.set_data([
-            {"name": "Alice", "age": 30, "city": "NYC"},
-            {"name": "Bob", "age": 25, "city": "LA"},
-            {"name": "Charlie", "age": 35, "city": "NYC"},
+            {"name": "Alice", "age": 30},
+            {"name": "Bob", "age": 25},
         ])
-
-        # Filter and sort
         ds.set_filter("age >= 30")
-        ds.set_sort("name ASC")
-
-        # Paginate
-        page1 = ds.get_page(0)
-        page2 = ds.next_page()
-
-        # CRUD operations
-        new_id = ds.create_record({"name": "David", "age": 28, "city": "SF"})
-        ds.update_record(new_id, {"age": 29})
-        record = ds.read_record(new_id)
-        ds.delete_record(new_id)
-
-        # Selection
-        ds.select_record(1)
-        ds.select_all(current_page_only=True)
-        selected = ds.get_selected()
-
-        # Export
-        ds.export_to_csv("data.csv", include_all=False)  # Export only selected
+        page = ds.get_page(0)
+        ```
     """
 
     def __init__(self, page_size: int = 10):
@@ -113,7 +93,6 @@ class MemoryDataSource(BaseDataSource):
         self._order_by_sql: str = ""
         self._filter_predicate = None
         self._sort_keys: List[Tuple[str, bool]] = []
-
 
     def _rebuild_id_index(self) -> None:
         """Rebuild the ID-to-position index for fast lookups."""
@@ -142,7 +121,6 @@ class MemoryDataSource(BaseDataSource):
                 r["id"] = max_id
                 used.add(max_id)
         self._rebuild_id_index()
-
 
     @staticmethod
     def _like_to_regex(pattern: str) -> re.Pattern:
@@ -293,7 +271,7 @@ class MemoryDataSource(BaseDataSource):
 
         return rows
 
-    def set_data(self, records: Union[Sequence[Primitive], Sequence[Dict[str, Any]]]):
+    def set_data(self, records: Union[Sequence[Primitive], Sequence[Dict[str, Any]]]) -> "MemoryDataSource":
         """Load records into datasource.
 
         Args:

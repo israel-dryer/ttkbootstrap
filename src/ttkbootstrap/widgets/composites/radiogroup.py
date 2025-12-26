@@ -1,13 +1,15 @@
 from __future__ import annotations
 
 from tkinter import StringVar
-from typing import Any, Literal, TYPE_CHECKING
+from typing import Any, Callable, Literal, TYPE_CHECKING
 
 from typing_extensions import TypedDict, Unpack
 
-from ttkbootstrap import RadioButton, Label
+from ttkbootstrap.widgets.primitives.radiobutton import RadioButton
+from ttkbootstrap.widgets.primitives.label import Label
 from ttkbootstrap.widgets.mixins.configure_mixin import configure_delegate
 from ttkbootstrap.widgets.primitives import Frame
+from ttkbootstrap.widgets.types import Master
 
 if TYPE_CHECKING:
     from ttkbootstrap.core.signals import Signal
@@ -39,52 +41,34 @@ class RadioGroup(Frame):
     buttons with automatic state management. It supports both horizontal and
     vertical orientations, and can display an optional label in various positions.
 
-    Examples:
-        # Simple vertical radio group with label
-        group = RadioGroup(root, text="Choose an option:", orient='vertical')
-        group.add("Option 1", "opt1")
-        group.add("Option 2", "opt2")
-        group.add("Option 3", "opt3")
-        group.pack()
-
-        # Horizontal group with label on left
-        group = RadioGroup(root, text="Pick one:", labelanchor='w', orient='horizontal')
-        group.add("A", "a")
-        group.add("B", "b")
-        group.add("C", "c")
-
-        # With callback
-        def on_change(value):
-            print(f"Selected: {value}")
-
-        sub_id = group.on_changed(on_change)
-        # Later: group.off_changed(sub_id)
-
-        # With external variable
-        var = StringVar(value="opt2")
-        group = RadioGroup(root, variable=var, text="Select:")
-        group.add("First", "opt1")
-        group.add("Second", "opt2")
+    Attributes:
+        variable (Variable): The underlying tk.Variable for the selected value.
+        signal (Signal): Signal for reactive programming and change subscriptions.
     """
 
-    def __init__(self, master: Any = None, **kwargs: Unpack[RadioGroupKwargs]):
+    def __init__(self, master: Master = None, **kwargs: Unpack[RadioGroupKwargs]):
         """Initialize the RadioGroup.
 
         Args:
-            master: The parent widget.
-            orient: Layout orientation - 'horizontal' (default) or 'vertical'.
-            bootstyle: The color/variant style (e.g., 'primary', 'success', 'danger').
-                       Defaults to 'primary'.
-            text: Optional label text to display.
-            labelanchor: Label position - 'n' (top, default), 's' (bottom),
-                        'e' (right), 'w' (left), or combinations like 'nw', 'ne', etc.
-            variable: Optional tk.StringVar for controlling the selected value.
-            signal: Optional Signal instance for reactive programming.
-            value: Initial selected value.
-            state: Initial state for all buttons - 'normal' (default) or 'disabled'.
-            style_options: Additional style options passed to child buttons.
-            padding: Frame padding. Defaults to 1.
-            **kwargs: Additional Frame configuration options.
+            master: Parent widget. If None, uses the default root window.
+
+        Other Parameters:
+            orient (str): Layout orientation - 'horizontal' (default) or 'vertical'.
+            bootstyle (str): The color/variant style (e.g., 'primary', 'success', 'danger').
+                Defaults to 'primary'.
+            text (str): Optional label text to display.
+            labelanchor (str): Label position - 'n' (top, default), 's' (bottom),
+                'e' (right), 'w' (left), or combinations like 'nw', 'ne', etc.
+            variable (Variable): Optional tk.StringVar for controlling the selected value.
+            signal (Signal): Optional Signal instance for reactive programming.
+            value (str): Initial selected value.
+            state (str): Initial state for all buttons - 'normal' (default) or 'disabled'.
+            show_border (bool): If True, draws a border around the group.
+            surface_color (str): Optional surface token; otherwise inherited.
+            style_options (dict): Additional style options passed to child buttons.
+            padding (int | tuple): Frame padding. Defaults to 1.
+            width (int): Requested width in pixels.
+            height (int): Requested height in pixels.
         """
         # Extract RadioGroup-specific options before super().__init__
         self._orientation = kwargs.pop('orient', 'horizontal')
@@ -227,7 +211,7 @@ class RadioGroup(Frame):
         for button in self._buttons.values():
             button.configure(variable=value.var)
 
-    def add(self, text=None, value=None, key=None, **kwargs) -> RadioButton:
+    def add(self, text: str = None, value: Any = None, key: str | None = None, **kwargs: Any) -> RadioButton:
         """Add a radio button to the group.
 
         Args:
@@ -343,7 +327,7 @@ class RadioGroup(Frame):
             raise KeyError(f"No button with key '{key}'")
         return self._buttons[key]
 
-    def configure_button(self, key: str, **kwargs):
+    def configure_button(self, key: str, **kwargs: Any):
         """Configure a specific button by its key.
 
         Args:
@@ -353,31 +337,13 @@ class RadioGroup(Frame):
         button = self.get_button(key)
         button.configure(**kwargs)
 
-    def on_changed(self, func):
-        """Subscribe to value change events.
+    def on_changed(self, callback: Callable) -> Any:
+        """Subscribe to value changes. Callback receives ``new_value: str`` directly."""
+        return self._signal.subscribe(callback)
 
-        Args:
-            func: Callback function that receives the new value.
-
-        Returns:
-            Subscription ID for later unsubscribing.
-
-        Example:
-            def on_select(value):
-                print(f"Selected: {value}")
-
-            sub_id = group.on_changed(on_select)
-            # Later: group.off_changed(sub_id)
-        """
-        return self._signal.subscribe(func)
-
-    def off_changed(self, bind_id):
-        """Unsubscribe from value change events.
-
-        Args:
-            bind_id: The subscription ID returned by on_changed().
-        """
-        self._signal.unsubscribe(bind_id)
+    def off_changed(self, subscription_id: Any) -> None:
+        """Unsubscribe from value changes."""
+        self._signal.unsubscribe(subscription_id)
 
     @configure_delegate('bootstyle')
     def _delegate_bootstyle(self, value=None):

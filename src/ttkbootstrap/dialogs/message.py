@@ -25,11 +25,13 @@ class MessageDialog:
     message window is identified by a unique symbolic name. After the
     message window is popped up, the message box awaits for the user to
     select one of the buttons. Then it returns the symbolic name of the
-    selected button. Use a `Toplevel` widget for more advanced modal
+    selected button. Use a ``Toplevel`` widget for more advanced modal
     dialog designs.
 
-    Emits:
-        ``<<DialogResult>>`` with ``event.data = {"result": <str>, "confirmed": True}``.
+    !!! note "Events"
+
+        ``<<DialogResult>>``: Fired when dialog closes.
+          Provides ``event.data`` with keys: ``result`` (str), ``confirmed`` (bool).
     """
 
     def __init__(

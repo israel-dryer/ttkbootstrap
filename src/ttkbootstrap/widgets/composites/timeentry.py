@@ -13,6 +13,7 @@ from ttkbootstrap.runtime.app import get_app_settings
 from ttkbootstrap.core.localization import IntlFormatter
 from ttkbootstrap.widgets.composites.field import FieldOptions
 from ttkbootstrap.widgets.primitives.selectbox import SelectBox
+from ttkbootstrap.widgets.types import Master
 
 
 class TimeEntry(SelectBox):
@@ -20,79 +21,27 @@ class TimeEntry(SelectBox):
 
     TimeEntry extends SelectBox to provide specialized time input with
     locale-aware formatting and a searchable dropdown of time intervals.
-    The widget supports various time format presets and custom time patterns,
-    and can accept input as time objects or strings.
+    The widget supports various time format presets and custom time patterns.
 
-    Features:
-        - Auto-populates dropdown with time intervals
-        - Searchable time selection (type to filter)
-        - Custom time format support (12-hour, 24-hour, etc.)
-        - Configurable time range (min/max)
-        - Clock icon button
-        - Allows custom time input
-        - Locale-aware time formatting
-        - All SelectBox features (search, validation, etc.)
+    !!! note "Events"
 
-    Time Format Presets:
-        - shortTime: Short time format (e.g., "3:30 PM")
-        - longTime: Long time with seconds (e.g., "3:30:45 PM PST")
-        - mediumTime: Medium time format (e.g., "3:30:45 PM")
-        - Custom: Any ICU date format pattern (e.g., "HH:mm", "h:mm a")
+        - ``<<Change>>``: Fired when time value changes after commit.
+        - ``<<Input>>``: Fired on each keystroke.
+        - ``<<Valid>>``: Fired when validation passes.
+        - ``<<Invalid>>``: Fired when validation fails.
 
-    Events (inherited from Field):
-        <<Change>>: Fired when time value changes after commit
-        <<Input>>: Fired on each keystroke
-        <<Valid>>: Fired when validation passes
-        <<Invalid>>: Fired when validation fails
-
-    Example:
-        ```python
-        import ttkbootstrap as ttk
-        from ttkbootstrap.widgets.composites.timeentry import TimeEntry
-        from datetime import time
-
-        root = ttk.Window()
-
-        # Basic time entry with 30-minute intervals
-        te = TimeEntry(
-            root,
-            label="Appointment Time",
-            interval=30
-        )
-        te.pack(padx=20, pady=10, fill='x')
-
-        # 24-hour format with custom range
-        te2 = TimeEntry(
-            root,
-            label="Business Hours",
-            value_format="HH:mm",
-            interval=15,
-            min_time=time(9, 0),
-            max_time=time(17, 0)
-        )
-        te2.pack(padx=20, pady=10, fill='x')
-
-        # Get the time value
-        def on_submit():
-            print(f"Selected time: {te.value}")
-
-        ttk.Button(root, text="Submit", command=on_submit).pack(pady=10)
-
-        root.mainloop()
-        ```
-
-    Inherited Properties:
-        entry_widget: Access to the underlying TextEntryPart widget
-        label_widget: Access to the label widget
-        message_widget: Access to the message label widget
-        addons: Dictionary of inserted addon widgets
-        variable: Tkinter Variable linked to entry text
-        signal: Signal object for reactive updates
+    Attributes:
+        entry_widget (TextEntryPart): The underlying text entry widget.
+        label_widget (Label): The label widget above the entry.
+        message_widget (Label): The message label widget below the entry.
+        addons (dict[str, Widget]): Dictionary of inserted addon widgets by name.
+        variable (Variable): Tkinter Variable linked to entry text.
+        signal (Signal): Signal object for reactive updates.
     """
 
     def __init__(
             self,
-            master=None,
+            master: Master = None,
             value: Union[datetime.time, str] = None,
             value_format: str = 'shortTime',
             interval: int = 30,
@@ -114,12 +63,8 @@ class TimeEntry(SelectBox):
                 Default is current time.
             value_format: Time format pattern for parsing and displaying times.
                 Default is "shortTime" (e.g., "3:30 PM"). Common formats:
-                - "shortTime": Short time (e.g., "3:30 PM")
-                - "longTime": Long time with seconds (e.g., "3:30:45 PM PST")
-                - "mediumTime": Medium time (e.g., "3:30:45 PM")
-                - "HH:mm": 24-hour format (e.g., "15:30")
-                - "h:mm a": 12-hour format (e.g., "3:30 PM")
-                See class documentation for complete list of format presets.
+                "shortTime" (3:30 PM), "longTime" (3:30:45 PM PST),
+                "mediumTime" (3:30:45 PM), "HH:mm" (15:30), "h:mm a" (3:30 PM).
             interval: Time interval in minutes for dropdown items (e.g., 15, 30, 60).
                 Default is 30 minutes.
             min_time: Minimum time value for the dropdown list. Can be a time object
@@ -131,14 +76,15 @@ class TimeEntry(SelectBox):
             message: Optional message text to display below the entry field.
                 Used for hints or help text. Replaced by validation errors when
                 validation fails.
-            **kwargs: Additional keyword arguments from FieldOptions:
-                locale: Locale identifier for time formatting (e.g., 'en_US')
-                required: If True, field cannot be empty
-                bootstyle: The accent color of the focus ring and active border
-                allow_blank: Allow empty input
-                width: Width in characters
-                textvariable: Tkinter Variable to link with text
-                textsignal: Signal object for reactive updates
+
+        Other Parameters:
+            locale (str): Locale identifier for time formatting (e.g., 'en_US').
+            required (bool): If True, field cannot be empty.
+            bootstyle (str): The accent color of the focus ring and active border.
+            allow_blank (bool): Allow empty input.
+            width (int): Width in characters.
+            textvariable (Variable): Tkinter Variable to link with text.
+            textsignal (Signal): Signal object for reactive updates.
 
         Note:
             The widget uses IntlFormatter for locale-aware time formatting.

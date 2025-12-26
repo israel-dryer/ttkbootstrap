@@ -3,13 +3,7 @@
 This module provides utilities for creating menus with icon support and
 theme-aware color updates.
 
-Classes:
-    MenuManager: Manages menus with icon support and theme-aware color updates
-
-Functions:
-    create_menu: Convenience function to create a menu with icon and theme support
-
-Example:
+Examples:
     ```python
     import ttkbootstrap as ttk
     from ttkbootstrap.menu import create_menu
@@ -55,13 +49,12 @@ class MenuManager:
     icons are automatically updated to match the new theme's foreground color.
 
     The MenuManager tracks all menu items that have icons and listens for
-    <<ThemeChanged>> events on the root window. When a theme change is detected,
+    `<<ThemeChanged>>` events on the root window. When a theme change is detected,
     it recreates and updates all icons to ensure they match the new theme.
 
     Attributes:
         parent: The parent widget (typically a Window or Toplevel).
         style: The Style instance for accessing theme colors.
-        icon_provider: The icon provider function for creating icons.
         menu_items: Dictionary tracking menu items with icons for theme updates.
     """
 
@@ -77,9 +70,9 @@ class MenuManager:
                 widget. This is used to access the style, icon provider, and
                 to bind theme change events.
         """
-        self.parent = parent
+        self.parent: Any = parent
         self.style = get_style()
-        self.menu_items = {}  # Track menu items with icons for updates
+        self.menu_items: dict[str, tuple[tk.Menu, int, str, int]] = {}
 
         # Set up theme change monitoring
         self._setup_theme_monitoring()
@@ -122,7 +115,7 @@ class MenuManager:
             return name, size
         return None, default_size
 
-    def create_menu(self, parent: Any, items: list[dict]):
+    def create_menu(self, parent: Any, items: list[dict]) -> tk.Menu:
         """Create a menu from a list of item dictionaries.
 
         Args:
@@ -277,7 +270,7 @@ def create_menu(parent: Any, items: list[dict]) -> tk.Menu:
             ```python
             import ttkbootstrap as ttk
 
-            app = ttk.Window()
+            app = ttk.App()
 
             menu_items = [
                 {
@@ -366,4 +359,4 @@ def create_menu(parent: Any, items: list[dict]) -> tk.Menu:
     return root._menu_manager.create_menu(parent, items)
 
 
-__all__ = ['MenuManager', 'create_menu']
+__all__ = ['create_menu']

@@ -12,6 +12,7 @@ from typing_extensions import Unpack
 from ttkbootstrap.widgets.primitives.button import Button
 from ttkbootstrap.widgets.composites.field import Field, FieldOptions
 from ttkbootstrap.widgets.mixins import configure_delegate
+from ttkbootstrap.widgets.types import Master
 
 FileDialogType = Literal[
     'openfilename', 'openfile', 'directory', 'openfilenames', 'openfiles',
@@ -39,98 +40,27 @@ class PathEntry(Field):
     widget supports various dialog types including single file selection, multiple
     file selection, directory selection, and save file dialogs.
 
-    Features:
-        - Native file/directory chooser dialog
-        - Multiple dialog types (open, save, directory, multiple files)
-        - Configurable dialog options (file types, initial directory, etc.)
-        - Button with customizable label
-        - Automatic path display in entry field
-        - Support for multiple file selection (displayed as comma-separated)
-        - All Field features (label, validation, messages, etc.)
+    !!! note "Events"
 
-    Events (inherited from Field):
-        <<Change>>: Fired when a path is selected from the dialog
-        <<Input>>: Fired when user manually types in the entry
-        <<Valid>>: Fired when validation passes
-        <<Invalid>>: Fired when validation fails
+        - ``<<Change>>``: Fired when a path is selected from the dialog.
+        - ``<<Input>>``: Fired when user manually types in the entry.
+        - ``<<Valid>>``: Fired when validation passes.
+        - ``<<Invalid>>``: Fired when validation fails.
 
-    Example:
-        ```python
-        import ttkbootstrap as ttk
-        from ttkbootstrap.widgets.composites.pathentry import PathEntry
-
-        root = ttk.Window()
-
-        # Single file selection
-        file_entry = PathEntry(
-            root,
-            label="Select File",
-            dialog="openfilename",
-            dialog_options={
-                'title': 'Choose a file',
-                'filetypes': [('Text files', '*.txt'), ('All files', '*.*')]
-            }
-        )
-        file_entry.pack(padx=20, pady=10, fill='x')
-
-        # Directory selection
-        dir_entry = PathEntry(
-            root,
-            label="Select Directory",
-            dialog="directory",
-            dialog_options={'title': 'Choose a folder'}
-        )
-        dir_entry.pack(padx=20, pady=10, fill='x')
-
-        # Multiple file selection
-        multi_entry = PathEntry(
-            root,
-            label="Select Files",
-            dialog="openfilenames",
-            dialog_options={
-                'title': 'Choose multiple files',
-                'filetypes': [('Images', '*.png *.jpg'), ('All files', '*.*')]
-            }
-        )
-        multi_entry.pack(padx=20, pady=10, fill='x')
-
-        # Save file dialog
-        save_entry = PathEntry(
-            root,
-            label="Save As",
-            value="untitled.txt",
-            dialog="saveasfilename",
-            dialog_options={
-                'defaultextension': '.txt',
-                'filetypes': [('Text files', '*.txt')]
-            }
-        )
-        save_entry.pack(padx=20, pady=10, fill='x')
-
-        # Get selected path
-        def on_select():
-            path = file_entry.value()
-            print(f"Selected: {path}")
-            # Access raw dialog result
-            print(f"Dialog result: {file_entry.dialog_result}")
-
-        ttk.Button(root, text="Get Path", command=on_select).pack(pady=10)
-
-        root.mainloop()
-        ```
-
-    Inherited Properties:
-        entry_widget: Access to the underlying TextEntryPart widget
-        label_widget: Access to the label widget
-        message_widget: Access to the message label widget
-        addons: Dictionary of inserted addon widgets
-        variable: Tkinter Variable linked to entry text
-        signal: Signal object for reactive updates
+    Attributes:
+        entry_widget (TextEntryPart): The underlying text entry widget.
+        label_widget (Label): The label widget above the entry.
+        message_widget (Label): The message label widget below the entry.
+        addons (dict[str, Widget]): Dictionary of inserted addon widgets by name.
+        variable (Variable): Tkinter Variable linked to entry text.
+        signal (Signal): Signal object for reactive updates.
+        dialog_result (Any): The raw result from the last file dialog operation.
+        dialog_button (Button): The button widget that opens the dialog.
     """
 
     def __init__(
             self,
-            master=None,
+            master: Master = None,
             value: str = "No file chosen",
             label: str = "Choose File",
             dialog: FileDialogType = "openfilename",
@@ -161,33 +91,25 @@ class PathEntry(Field):
                 - 'saveasfile': Save file dialog (returns file object)
                 - 'saveasfilename': Save file dialog (returns path string)
             dialog_options: Dictionary of options to pass to the file dialog.
-                Common options include:
-                - title: Dialog window title
-                - initialdir: Initial directory to show
-                - initialfile: Initial filename (for save dialogs)
-                - filetypes: List of (label, pattern) tuples for file filters
-                  Example: [('Text files', '*.txt'), ('All files', '*.*')]
-                - defaultextension: Default file extension (e.g., '.txt')
-                - multiple: Allow multiple selection (for compatible dialog types)
-            **kwargs: Additional keyword arguments from FieldOptions:
-                required: If True, field cannot be empty
-                bootstyle: The accent color of the focus ring and active border
-                allow_blank: Allow empty input
-                cursor: Cursor style when hovering
-                value_format: Format pattern for parsing/formatting
-                exportselection: Export selection to clipboard
-                font: Font for text display
-                foreground: Text color
-                initial_focus: If True, widget receives focus on creation
-                justify: Text alignment
-                show_message: If True, displays message area
-                message: Message text to display below the field
-                padding: Padding around entry widget
-                take_focus: If True, widget accepts Tab focus
-                textvariable: Tkinter Variable to link with text
-                textsignal: Signal object for reactive updates
-                width: Width in characters
-                xscrollcommand: Callback for horizontal scrolling
+                Common options: title, initialdir, initialfile, filetypes,
+                defaultextension, multiple.
+
+        Other Parameters:
+            required (bool): If True, field cannot be empty.
+            bootstyle (str): The accent color of the focus ring and active border.
+            allow_blank (bool): Allow empty input.
+            cursor (str): Cursor style when hovering.
+            font (str): Font for text display.
+            foreground (str): Text color.
+            initial_focus (bool): If True, widget receives focus on creation.
+            justify (str): Text alignment.
+            show_message (bool): If True, displays message area.
+            message (str): Message text to display below the field.
+            padding (str): Padding around entry widget.
+            take_focus (bool): If True, widget accepts Tab focus.
+            textvariable (Variable): Tkinter Variable to link with text.
+            textsignal (Signal): Signal object for reactive updates.
+            width (int): Width in characters.
 
         Note:
             When multiple files are selected (using 'openfilenames' or 'openfiles'),

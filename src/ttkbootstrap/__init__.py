@@ -32,6 +32,7 @@ if TYPE_CHECKING:
     from ttkbootstrap.api.app import App, App as Window, Toplevel, AppSettings, get_app_settings, get_current_app
     from ttkbootstrap.api.style import (
         Bootstyle,
+        Font,
         Style,
         get_style,
         get_style_builder,
@@ -50,7 +51,7 @@ if TYPE_CHECKING:
         ContextMenu,
         ContextMenuItem,
         DateEntry,
-        DatePicker,
+        Calendar,
         DropdownButton,
         Entry,
         Field,
@@ -58,6 +59,7 @@ if TYPE_CHECKING:
         FloodGauge,
         Form,
         Frame,
+        GridFrame,
         Label,
         LabelFrame,
         LabeledScale,
@@ -66,6 +68,7 @@ if TYPE_CHECKING:
         Notebook,
         NumericEntry,
         OptionMenu,
+        PackFrame,
         PageStack,
         PanedWindow,
         PasswordEntry,
@@ -92,7 +95,8 @@ if TYPE_CHECKING:
         TK_WIDGETS,
         TTK_WIDGETS,
     )
-    from ttkbootstrap.api.localization import MessageCatalog, L, LV,IntlFormatter
+    from ttkbootstrap.api.localization import MessageCatalog, L, LV, IntlFormatter
+    from ttkbootstrap.api.utils import Image
     from ttkbootstrap_icons_bs import BootstrapIcon
 
 _DEPRECATED_ALIASES = {
@@ -101,7 +105,8 @@ _DEPRECATED_ALIASES = {
     "Labelframe": "LabelFrame",
     "Panedwindow": "PanedWindow",
     "Treeview": "TreeView",
-    "Tableview": "TableView"
+    "Tableview": "TableView",
+    "DatePicker": "Calendar",
 }
 
 _TK_EXPORTS = [
@@ -128,36 +133,55 @@ _TTK_PRIMITIVES = [
 ]
 
 _MODULE_EXPORTS = {
+    # Application & Windows (includes menu)
     "ttkbootstrap.api.app": [
         "App", "Toplevel", "Window", "AppSettings", "get_app_settings", "get_current_app",
-    ],
-    "ttkbootstrap.api.style": [
-        "BootstrapIcon", "Bootstyle", "Style",
-        "get_style", "get_style_builder", "get_theme",
-        "get_theme_provider", "set_theme", "get_theme_color",
-        "toggle_theme", "get_themes"
-    ],
-    "ttkbootstrap.api.menu": [
         "MenuManager", "create_menu",
     ],
+    # Style & Theming
+    "ttkbootstrap.api.style": [
+        "BootstrapIcon", "Bootstyle", "Font", "Style",
+        "get_style", "get_style_builder", "get_theme",
+        "get_theme_provider", "set_theme", "get_theme_color",
+        "toggle_theme", "get_themes",
+    ],
+    # Widgets
     "ttkbootstrap.api.widgets": [
         *_TTK_PRIMITIVES,
         "Badge",
         "ButtonGroup",
         "CheckToggle",
         "RadioToggle",
-        "ContextMenu", "ContextMenuItem", "DateEntry", "DatePicker",
+        "Calendar", "ContextMenu", "ContextMenuItem", "DateEntry",
         "DropdownButton", "Field", "FieldOptions", "FloodGauge", "Form",
-        "LabeledScale", "Meter", "NumericEntry", "PageStack",
+        "GridFrame", "LabeledScale", "Meter", "NumericEntry", "PackFrame", "PageStack",
         "PasswordEntry", "PathEntry", "RadioGroup", "ScrolledText", "ScrollView", "SpinnerEntry",
         "SelectBox", "TableView", "TextEntry", "TimeEntry", "Toast", "ToggleGroup",
         "ToolTip", "TK_WIDGETS", "TTK_WIDGETS",
     ],
-    "ttkbootstrap.api.localization": [
+    # Dialogs
+    "ttkbootstrap.api.dialogs": [
+        "Dialog", "DialogButton", "FilterDialog", "FormDialog",
+        "MessageDialog", "MessageBox", "QueryDialog", "QueryBox",
+        "DateDialog", "FontDialog",
+        "ColorChooser", "ColorChooserDialog", "ColorDropperDialog",
+    ],
+    # Data Sources
+    "ttkbootstrap.api.data": [
+        "BaseDataSource", "MemoryDataSource", "SqliteDataSource",
+        "FileDataSource", "FileSourceConfig",
+        "DataSourceProtocol", "Record", "Primitive",
+    ],
+    # Internationalization
+    "ttkbootstrap.api.i18n": [
         "MessageCatalog", "L", "LV", "IntlFormatter"
     ],
-    "ttkbootstrap.core.signals": [
-        "Signal",
+    # Utilities
+    "ttkbootstrap.api.utils": [
+        "Image",
+        "Signal", "TraceOperation",
+        "ValidationRule", "ValidationResult",
+        "SetVar",
     ],
 }
 

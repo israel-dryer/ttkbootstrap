@@ -5,8 +5,11 @@ from typing import Any, Callable, Literal, Optional, TYPE_CHECKING, TypedDict
 
 from typing_extensions import Unpack
 
-from ttkbootstrap.widgets._internal.wrapper_base import TTKWrapperBase
+from ttkbootstrap.core.mixins.ttk_state import TtkStateMixin
+from ttkbootstrap.core.mixins.widget import WidgetCapabilitiesMixin
+from ttkbootstrap.widgets.internal.wrapper_base import TTKWrapperBase
 from ttkbootstrap.widgets.mixins import IconMixin, LocalizationMixin, SignalMixin, TextSignalMixin
+from ttkbootstrap.widgets.types import Master
 
 if TYPE_CHECKING:
     from ttkbootstrap.core.signals import Signal
@@ -18,6 +21,7 @@ class RadioButtonKwargs(TypedDict, total=False):
     command: Optional[Callable[[], Any]]
     image: Any
     icon: Any
+    icon_only: bool
     compound: Literal['text', 'image', 'top', 'bottom', 'left', 'right', 'center', 'none'] | str
     variable: Any
     signal: Signal[Any]
@@ -41,36 +45,39 @@ class RadioButtonKwargs(TypedDict, total=False):
     localize: bool | Literal['auto']
 
 
-class RadioButton(LocalizationMixin, SignalMixin, TextSignalMixin, IconMixin, TTKWrapperBase, ttk.Radiobutton):
+class RadioButton(LocalizationMixin, SignalMixin, TextSignalMixin, IconMixin, TTKWrapperBase, WidgetCapabilitiesMixin, TtkStateMixin, ttk.Radiobutton):
     """ttkbootstrap wrapper for `ttk.Radiobutton` with bootstyle and icon support."""
 
     _ttk_base = ttk.Radiobutton
 
-    def __init__(self, master=None, **kwargs: Unpack[RadioButtonKwargs]) -> None:
+    def __init__(self, master: Master = None, **kwargs: Unpack[RadioButtonKwargs]) -> None:
         """Create a themed ttkbootstrap Radiobutton.
 
-        Keyword Args:
-            text: Text to display.
-            textvariable: Tk variable linked to the text.
-            textsignal: Reactive Signal linked to the text (auto-synced with textvariable).
-            command: Callable invoked when the value is selected.
-            image: Image to display.
-            icon: Theme-aware icon spec handled by the style system.
-            icon_only: Removes the additional padding added for label.
-            compound: Placement of the image relative to text.
-            variable: Linked tk variable that receives the selected value.
-            signal: Reactive Signal that receives the selected value (auto-synced with variable).
-            value: The value assigned to `variable` when this radio is selected.
-            padding: Extra space around the content.
-            width: Width of the control in characters.
-            underline: Index of character to underline in `text`.
-            state: Widget state.
-            takefocus: Whether the widget participates in focus traversal.
-            style: Explicit ttk style name (overrides bootstyle).
-            bootstyle: ttkbootstrap style tokens (e.g., 'primary', 'success').
-            surface_color: Optional surface token; otherwise inherited.
-            style_options: Optional dict forwarded to the style builder.
-            localize: Determines the widgets localization mode. 'auto', True, False.
+        Args:
+            master: Parent widget. If None, uses the default root window.
+
+        Other Parameters:
+            text (str): Text to display.
+            textvariable (Variable): Tk variable linked to the text.
+            textsignal (Signal[str]): Reactive Signal linked to the text (auto-synced with textvariable).
+            command (Callable): Callable invoked when the value is selected.
+            image (PhotoImage): Image to display.
+            icon (str | dict): Theme-aware icon spec handled by the style system.
+            icon_only (bool): Removes the additional padding added for label.
+            compound (str): Placement of the image relative to text.
+            variable (Variable): Linked Tk variable that receives the selected value.
+            signal (Signal): Reactive Signal that receives the selected value (auto-synced with variable).
+            value (Any): The value assigned to `variable` when this radio is selected.
+            padding (int | tuple): Extra space around the content.
+            width (int): Width of the control in characters.
+            underline (int): Index of character to underline in `text`.
+            state (str): Widget state.
+            takefocus (bool): Whether the widget participates in focus traversal.
+            style (str): Explicit ttk style name (overrides bootstyle).
+            bootstyle (str): ttkbootstrap style tokens (e.g., 'primary', 'success').
+            surface_color (str): Optional surface token; otherwise inherited.
+            style_options (dict): Optional dict forwarded to the style builder.
+            localize (bool | Literal['auto']): Determines the widget's localization mode.
         """
         kwargs.update(style_options=self._capture_style_options(['icon_only', 'icon'], kwargs))
         super().__init__(master, **kwargs)

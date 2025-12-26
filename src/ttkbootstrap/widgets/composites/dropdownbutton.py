@@ -7,6 +7,7 @@ from typing_extensions import Unpack
 from ttkbootstrap.widgets.composites.contextmenu import ContextMenu, ContextMenuItem
 from ttkbootstrap.widgets.primitives.menubutton import MenuButton
 from ttkbootstrap.widgets.mixins import configure_delegate
+from ttkbootstrap.widgets.types import Master
 
 if TYPE_CHECKING:
     from ttkbootstrap.core.signals import Signal
@@ -42,7 +43,7 @@ class DropdownButton(MenuButton):
 
     def __init__(
             self,
-            master=None,
+            master: Master = None,
             text: Any = None,
             items: list[ContextMenuItem] = None,
             **kwargs: Unpack[DropdownButtonKwargs],
@@ -50,19 +51,30 @@ class DropdownButton(MenuButton):
         """Create a dropdown button backed by a ContextMenu.
 
         Args:
-            master: Parent widget.
-            text: Label text for the button.
-            items: Initial list of ContextMenuItem entries.
-            **kwargs: Menubutton and style options including:
-                command: Callback when the button is activated.
-                image/icon/icon_only/compound: Content display options.
-                padding/width/underline/state/takefocus/style/class_/cursor/default/name: Standard ttk options.
-                textvariable/textsignal: Bindings for the label text.
-                bootstyle/surface_color: Bootstyle settings.
-                style_options: Dict forwarded to the menubutton style builder.
-                popdown_options: Dict forwarded to ContextMenu (e.g., anchor/attach/offset).
-                show_dropdown_button: Show/hide the chevron.
-                dropdown_button_icon: Icon name for the chevron.
+            master: Parent widget. If None, uses the default root window.
+            text (str): Label text for the button.
+            items (list): Initial list of ContextMenuItem entries.
+
+        Other Parameters:
+            command (Callable): Callback when the button is activated.
+            image (PhotoImage): Tk image to display.
+            icon (str | dict): Bootstyle icon spec for the button content.
+            icon_only (bool): Whether to reserve label padding when showing only an icon.
+            compound (str): Placement of image relative to text.
+            padding (int | tuple): Extra padding around the button content.
+            width (int): Width of the button.
+            underline (int): Index of underlined character in text.
+            state (str): Widget state ('normal', 'active', 'disabled', 'readonly').
+            takefocus (bool): Participation in focus traversal.
+            style (str): Explicit ttk style name.
+            textvariable (Variable): Existing Tk variable for the label text.
+            textsignal (Signal[str]): Signal bound to the textvariable.
+            bootstyle (str): Bootstyle string (e.g., 'primary-outline').
+            surface_color (str): Surface token for style.
+            style_options (dict): Dict forwarded to the menubutton style builder.
+            popdown_options (dict): Dict forwarded to ContextMenu (e.g., anchor, attach, offset).
+            show_dropdown_button (bool): Show/hide the chevron.
+            dropdown_button_icon (str | dict): Icon name for the chevron.
         """
         style_options = kwargs.pop('style_options', {})
         style_options.update(
@@ -101,13 +113,13 @@ class DropdownButton(MenuButton):
         self.configure_item = self._context_menu.configure_item
         self.items = self._context_menu.items
 
-    def on_item_click(self, callback: Callable[[Any], Any]):
-        """Bind a callback to menu item selections."""
+    def on_item_click(self, callback: Callable) -> None:
+        """Set item click callback. Callback receives ``item_info = {'type': str, 'text': str, 'value': Any}``."""
         self._item_click_callback = callback
         self._context_menu.on_item_click(callback)
 
-    def off_item_click(self):
-        """Clear any bound item-click callback."""
+    def off_item_click(self) -> None:
+        """Remove the item click callback."""
         self._item_click_callback = None
         self._context_menu.on_item_click(None)
 

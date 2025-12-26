@@ -8,6 +8,7 @@ from tkinter import BooleanVar, IntVar, StringVar, TclError, Toplevel, Widget
 from typing import Any, Callable, Union
 
 from ttkbootstrap.widgets.primitives.button import Button
+from ttkbootstrap.widgets.types import Master
 from ttkbootstrap.widgets.primitives.checkbutton import CheckButton
 from ttkbootstrap.widgets.primitives.frame import Frame
 from ttkbootstrap.widgets.mixins import CustomConfigMixin, configure_delegate
@@ -19,19 +20,19 @@ class ContextMenuItem:
     """Data class for context menu items.
 
     Attributes:
-        type: Type of menu item ('command', 'checkbutton', 'radiobutton', 'separator')
-        kwargs: Additional keyword arguments for the item
+        type (str): Type of menu item ('command', 'checkbutton', 'radiobutton', 'separator').
+        kwargs (dict): Additional keyword arguments for the item.
     """
 
-    def __init__(self, type: str, **kwargs):
+    def __init__(self, type: str, **kwargs) -> None:
         """Initialize a context menu item.
 
         Args:
-            type: Type of menu item
-            **kwargs: Additional arguments passed to the widget
+            type (str): Type of menu item ('command', 'checkbutton', 'radiobutton', 'separator').
+            **kwargs: Additional arguments passed to the widget.
         """
-        self.type = type
-        self.kwargs = kwargs
+        self.type: str = type
+        self.kwargs: dict[str, Any] = kwargs
 
 
 class ContextMenu(CustomConfigMixin):
@@ -40,45 +41,11 @@ class ContextMenu(CustomConfigMixin):
     Displays a popup menu with support for command buttons, checkbuttons,
     radiobuttons, and separators. The menu automatically hides when clicking
     outside or when an item is selected.
-
-    Example:
-        ```python
-        import ttkbootstrap as ttk
-        from ttkbootstrap.widgets.composites.contextmenu import ContextMenu
-
-        root = ttk.Window()
-
-        # Create context menu
-        menu = ContextMenu(
-            master=root,
-            target=root,
-            anchor='nw',      # menu corner to align
-            attach='se',      # target corner to align to
-            offset=(0, 0),    # additional x/y offset
-            hide_on_outside_click=True
-        )
-
-        # Add items
-        menu.add_command(text="Open", icon="folder2-open", command=lambda: print("Open"))
-        menu.add_command(text="Save", icon="floppy", command=lambda: print("Save"))
-        menu.add_separator()
-        menu.add_checkbutton(text="Show Grid", value=True)
-        menu.add_separator()
-        menu.add_command(text="Exit", icon="x-lg", command=root.quit)
-
-        # Show on right-click
-        def show_menu(event):
-            menu.show(position=(event.x_root, event.y_root))
-
-        root.bind('<Button-3>', show_menu)
-
-        root.mainloop()
-        ```
     """
 
     def __init__(
             self,
-            master=None,
+            master: Master = None,
             minwidth: int = 150,
             width: int = None,
             minheight: int = None,
@@ -153,33 +120,24 @@ class ContextMenu(CustomConfigMixin):
         if items:
             self.add_items(items)
 
-    def on_item_click(self, callback: Callable[[dict], Any]) -> None:
-        """Register callback for item clicks.
-
-        The callback receives a dictionary with:
-            - type: Item type ('command', 'checkbutton', 'radiobutton')
-            - text: Item text
-            - value: Item value (for checkbuttons and radiobuttons)
-
-        Args:
-            callback: Function to call when an item is clicked
-        """
+    def on_item_click(self, callback: Callable) -> None:
+        """Set item click callback. Callback receives ``item_info = {'type': str, 'text': str, 'value': Any}``."""
         self._on_item_click_callback = callback
 
-    def off_item_click(self):
-        """Unregister callback for item clicks."""
+    def off_item_click(self) -> None:
+        """Remove the item click callback."""
         self._on_item_click_callback = None
 
-    def add_command(self, text: str = None, icon: str = None, command: Callable = None):
+    def add_command(self, text: str = None, icon: str = None, command: Callable = None) -> Button:
         """Add a command button to the menu.
 
         Args:
-            text: Button text label
-            icon: Optional icon name
-            command: Function to call when clicked
+            text (str): Button text label.
+            icon (str): Optional icon name.
+            command (Callable): Function to call when clicked.
 
         Returns:
-            The created Button widget
+            Button: The created Button widget.
         """
         btn = Button(
             self._frame,
@@ -193,16 +151,16 @@ class ContextMenu(CustomConfigMixin):
         self._items.append(btn)
         return btn
 
-    def add_checkbutton(self, text: str = None, value: bool = False, command: Callable = None):
+    def add_checkbutton(self, text: str = None, value: bool = False, command: Callable = None) -> CheckButton:
         """Add a checkbutton to the menu.
 
         Args:
-            text: Checkbutton text label
-            value: Initial checked state
-            command: Function to call when toggled
+            text (str): Checkbutton text label.
+            value (bool): Initial checked state.
+            command (Callable): Function to call when toggled.
 
         Returns:
-            The created Checkbutton widget
+            CheckButton: The created CheckButton widget.
         """
         var = BooleanVar(value=value)
 
@@ -227,17 +185,17 @@ class ContextMenu(CustomConfigMixin):
             value: Any = None,
             variable: Union[StringVar, IntVar] = None,
             command: Callable = None
-    ):
+    ) -> RadioButton:
         """Add a radiobutton to the menu.
 
         Args:
-            text: Radiobutton text label
-            value: Value to set when selected
-            variable: Tkinter Variable to link with (StringVar or IntVar)
-            command: Function to call when selected
+            text (str): Radiobutton text label.
+            value (Any): Value to set when selected.
+            variable (StringVar | IntVar): Tkinter Variable to link with.
+            command (Callable): Function to call when selected.
 
         Returns:
-            The created Radiobutton widget
+            RadioButton: The created RadioButton widget.
         """
 
         def on_select():
@@ -255,26 +213,26 @@ class ContextMenu(CustomConfigMixin):
         self._items.append(rb)
         return rb
 
-    def add_separator(self):
+    def add_separator(self) -> Separator:
         """Add a horizontal separator to the menu.
 
         Returns:
-            The created Separator widget
+            Separator: The created Separator widget.
         """
         sep = Separator(self._frame, orient='horizontal')
         sep.pack(fill='x', padx=0, pady=3)
         self._items.append(sep)
         return sep
 
-    def add_item(self, type: str, **kwargs):
+    def add_item(self, type: str, **kwargs: Any) -> Widget:
         """Add a menu item based on type.
 
         Args:
-            type: Type of item ('command', 'checkbutton', 'radiobutton', 'separator')
-            **kwargs: Arguments passed to the appropriate add_* method
+            type (str): Type of item ('command', 'checkbutton', 'radiobutton', 'separator').
+            **kwargs: Arguments passed to the appropriate add_* method.
 
         Returns:
-            The created widget
+            Widget: The created widget.
         """
         if type == 'command':
             return self.add_command(**kwargs)
@@ -287,11 +245,11 @@ class ContextMenu(CustomConfigMixin):
         else:
             raise ValueError(f"Unknown item type: {type}")
 
-    def add_items(self, items: list):
+    def add_items(self, items: list) -> None:
         """Add multiple items at once.
 
         Args:
-            items: List of ContextMenuItem objects or dictionaries with 'type' and 'kwargs'
+            items (list): List of ContextMenuItem objects or dictionaries with 'type' and 'kwargs'.
         """
         for item in items:
             if isinstance(item, ContextMenuItem):
@@ -308,8 +266,17 @@ class ContextMenu(CustomConfigMixin):
         self._delegate_items(value)
         return None
 
-    def insert_item(self, index: int, type: str, **kwargs):
-        """Insert a new item at the given index."""
+    def insert_item(self, index: int, type: str, **kwargs: Any) -> Widget:
+        """Insert a new item at the given index.
+
+        Args:
+            index (int): Position to insert the item at.
+            type (str): Type of item ('command', 'checkbutton', 'radiobutton', 'separator').
+            **kwargs: Arguments passed to the appropriate add_* method.
+
+        Returns:
+            Widget: The created widget.
+        """
         before_widget = self._items[index] if 0 <= index < len(self._items) else None
 
         widget = self.add_item(type, **kwargs)
@@ -327,8 +294,12 @@ class ContextMenu(CustomConfigMixin):
         self._items.insert(index, widget)
         return widget
 
-    def remove_item(self, index: int):
-        """Remove and destroy the item at the given index."""
+    def remove_item(self, index: int) -> None:
+        """Remove and destroy the item at the given index.
+
+        Args:
+            index (int): Index of the item to remove.
+        """
         try:
             widget = self._items.pop(index)
         except IndexError as exc:
@@ -340,8 +311,16 @@ class ContextMenu(CustomConfigMixin):
             pass
         return None
 
-    def move_item(self, from_index: int, to_index: int):
-        """Reorder an existing item to a new index."""
+    def move_item(self, from_index: int, to_index: int) -> Widget:
+        """Reorder an existing item to a new index.
+
+        Args:
+            from_index (int): Current index of the item to move.
+            to_index (int): New index for the item.
+
+        Returns:
+            Widget: The moved widget.
+        """
         try:
             widget = self._items.pop(from_index)
         except IndexError as exc:
@@ -368,7 +347,7 @@ class ContextMenu(CustomConfigMixin):
         widget.pack(in_=self._frame, **pack_info)
         return widget
 
-    def configure_item(self, index: int, option: str | None = None, **kwargs):
+    def configure_item(self, index: int, option: str | None = None, **kwargs: Any) -> Any:
         """Configure an individual menu item by index.
 
         Args:
@@ -397,11 +376,11 @@ class ContextMenu(CustomConfigMixin):
         # Setter path
         return widget.configure(**kwargs)
 
-    def show(self, position: tuple[int, int] = None):
+    def show(self, position: tuple[int, int] = None) -> None:
         """Show the context menu.
 
         Args:
-            position: Optional screen coordinate (x, y) to align to. If provided,
+            position (tuple): Optional screen coordinate (x, y) to align to. If provided,
                 the menu's anchor will align to this point. Negative x/y are
                 treated as offsets from the screen's right/bottom.
         """
@@ -422,7 +401,7 @@ class ContextMenu(CustomConfigMixin):
         if self._hide_on_outside_click:
             self._setup_click_outside_handler()
 
-    def hide(self):
+    def hide(self) -> None:
         """Hide the context menu."""
         # Unbind click handler first
         self._cancel_click_outside_after()
@@ -431,7 +410,7 @@ class ContextMenu(CustomConfigMixin):
         if self._toplevel.winfo_exists():
             self._toplevel.withdraw()
 
-    def destroy(self):
+    def destroy(self) -> None:
         """Destroy the context menu and cleanup resources."""
         # Unbind click handler
         self._cancel_click_outside_after()
@@ -441,14 +420,14 @@ class ContextMenu(CustomConfigMixin):
         if self._toplevel.winfo_exists():
             self._toplevel.destroy()
 
-    def _handle_item_click(self, type: str, text: str, command: Callable = None, value: Any = None):
+    def _handle_item_click(self, type: str, text: str, command: Callable = None, value: Any = None) -> None:
         """Handle item click events.
 
         Args:
-            type: Type of item clicked
-            text: Text of the item
-            command: Command to execute
-            value: Value associated with the item
+            type (str): Type of item clicked.
+            text (str): Text of the item.
+            command (Callable): Command to execute.
+            value (Any): Value associated with the item.
         """
         # Prepare event data
         data = {
@@ -521,7 +500,7 @@ class ContextMenu(CustomConfigMixin):
         final_y = int(base_y - menu_dy + self._offset[1])
         return final_x, final_y
 
-    def _setup_click_outside_handler(self):
+    def _setup_click_outside_handler(self) -> None:
         """Setup handler to hide menu when clicking outside."""
 
         def on_click(event):
@@ -573,7 +552,7 @@ class ContextMenu(CustomConfigMixin):
                 return None
         return None
 
-    def _unbind_click_outside_handler(self):
+    def _unbind_click_outside_handler(self) -> None:
         """Remove the click-outside binding if present."""
         if not self._click_handler_id or not self._click_binding_root:
             return
@@ -587,7 +566,7 @@ class ContextMenu(CustomConfigMixin):
             self._click_handler_id = None
             self._click_binding_root = None
 
-    def _cancel_click_outside_after(self):
+    def _cancel_click_outside_after(self) -> None:
         """Cancel any scheduled click-outside binding."""
         if self._click_bind_after_id and self._toplevel.winfo_exists():
             try:

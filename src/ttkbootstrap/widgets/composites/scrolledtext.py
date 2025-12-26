@@ -18,27 +18,9 @@ class ScrolledText(Frame):
     can be used just like a standard Text widget with additional scrolling
     functionality.
 
-    Examples:
-
-        ```python
-        import ttkbootstrap as ttk
-        from ttkbootstrap.constants import *
-        from ttkbootstrap.widgets.composites.scrolledtext import ScrolledText
-
-        app = ttk.Window()
-
-        # Scrolled text with on-scroll scrollbar
-        st = ScrolledText(app, height=10, show_scrollbar='on-scroll')
-        st.pack(fill=BOTH, expand=YES, padx=10, pady=10)
-
-        # Add text
-        st.insert(END, 'Insert your text here.')
-
-        # Configure scrollbar mode
-        st.configure(show_scrollbar='always')
-
-        app.mainloop()
-        ```
+    Attributes:
+        vertical_scrollbar (Scrollbar): The vertical scrollbar widget.
+        horizontal_scrollbar (Scrollbar): The horizontal scrollbar widget.
     """
 
     def __init__(

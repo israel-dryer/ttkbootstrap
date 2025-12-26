@@ -18,58 +18,10 @@ class NumberEntryPart(TextEntryPart):
     stepping functionality. Supports min/max bounds, increment/decrement
     via keyboard and mouse wheel, and optional wrapping.
 
-    Features:
-        - Numeric constraints (min, max)
-        - Keyboard stepping (Up/Down arrows)
-        - Mouse wheel support
-        - Optional value wrapping at boundaries
-        - Locale-aware number formatting
-        - Virtual events for increment/decrement
-
     Events:
-        <<Increment>>: Fired when an increment is requested (before step occurs).
-            Emit this event to programmatically increment the value.
-            Can be intercepted to prevent or customize increment behavior.
-
-        <<Decrement>>: Fired when a decrement is requested (before step occurs).
-            Emit this event to programmatically decrement the value.
-            Can be intercepted to prevent or customize decrement behavior.
-
-        Plus all events from TextEntryPart:
-            <<Input>>, <<Change>>, <Return>
-
-    Example:
-        ```python
-        import ttkbootstrap as ttk
-        from ttkbootstrap.widgets.parts import NumberEntryPart
-
-        root = ttk.Window()
-
-        # Basic numeric entry with bounds
-        entry = NumberEntryPart(
-            root,
-            value=50,
-            min_value=0,
-            max_value=100,
-            increment=5,
-            value_format='#,##0.00'
-        )
-        entry.pack()
-
-        # Percentage entry with wrapping
-        pct_entry = NumberEntryPart(
-            root,
-            value=0.5,
-            min_value=0.0,
-            max_value=1.0,
-            increment=0.1,
-            wrap=True,
-            value_format='percent'
-        )
-        pct_entry.pack()
-
-        root.mainloop()
-        ```
+        - ``<<Increment>>``: Fired when an increment is requested (before step occurs). ``event.data = None``
+        - ``<<Decrement>>``: Fired when a decrement is requested (before step occurs). ``event.data = None``
+        - Plus all events from TextEntryPart: ``<<Input>>``, ``<<Change>>``, ``<Return>``
     """
 
     def __init__(
@@ -338,21 +290,21 @@ class NumberEntryPart(TextEntryPart):
             # Update display if value changed due to bounds
             self._normalize_display_from_value()
 
-    def on_increment(self, callback):
-        """Bind callback to <<Increment>> event."""
+    def on_increment(self, callback) -> str:
+        """Bind to ``<<Increment>>``. Callback receives ``event.data = None``."""
         return self.bind('<<Increment>>', callback, add=True)
 
-    def off_increment(self, funcid: str):
-        """Remove callback from <<Increment>> event."""
-        self.unbind('<<Increment>>', funcid)
+    def off_increment(self, bind_id: str | None = None) -> None:
+        """Unbind from ``<<Increment>>``."""
+        self.unbind('<<Increment>>', bind_id)
 
-    def on_decrement(self, callback):
-        """Bind callback to <<Decrement>> event."""
+    def on_decrement(self, callback) -> str:
+        """Bind to ``<<Decrement>>``. Callback receives ``event.data = None``."""
         return self.bind('<<Decrement>>', callback, add=True)
 
-    def off_decrement(self, funcid: str):
-        """Remove callback from <<Decrement>> event."""
-        self.unbind('<<Decrement>>', funcid)
+    def off_decrement(self, bind_id: str | None = None) -> None:
+        """Unbind from ``<<Decrement>>``."""
+        self.unbind('<<Decrement>>', bind_id)
 
     @configure_delegate('minvalue')
     def _delegate_minvalue(self, value: Union[int, float]):

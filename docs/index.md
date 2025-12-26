@@ -1,87 +1,131 @@
-# ttkbootstrap v2 Documentation
+---
+title: Home
+---
 
-Welcome to the ttkbootstrap v2 documentation.
+# ttkbootstrap
 
-This site helps you design, build, and ship modern desktop applications using Tkinter—without giving up the stability,
-portability, and simplicity that make Tk appealing in the first place.
+**ttkbootstrap** is a **modern, opinionated desktop UI framework for Python**, built on top of Tk.
 
-Rather than focusing only on widgets or styling, the documentation is organized around **how applications are meant to
-be structured**, so you can move from first window to real application with confidence.
+It provides clear conventions for **layout**, **styling**, **state**, and **reactivity**, allowing you to build
+polished, maintainable desktop applications without reinventing common UI patterns.
+
+ttkbootstrap is designed to feel familiar to Tk users—but it goes far beyond theming or widget wrappers.
 
 ---
 
-## Start Here
+## What ttkbootstrap is
 
-Most users follow a simple path through the documentation:
+ttkbootstrap is a **framework**, not just a toolkit.
 
-- **Getting Started**  
-  Install ttkbootstrap, learn the core concepts, and launch your first themed application.
+It provides:
 
-- **Widgets**  
-  Explore inputs, data display, navigation, feedback, and layout widgets—grouped by purpose, not alphabetically.
+- a structured application root (`App`)
+- container-first layout patterns
+- a design system with semantic colors, variants, and typography
+- optional reactivity via signals
+- integrated localization, icons, and styling conventions
 
-- **Design System**  
-  Understand the color tokens, typography roles, layout principles, theming, and localization rules that keep
-  applications consistent.
-
-- **Guides**  
-  Learn application-level patterns such as runtime configuration, signals and events, forms and dialogs, and packaging
-  for distribution.
-
-- **Reference**  
-  Look up APIs, utilities, CLI tools, and migration notes when you need exact details.
-
-- **Showcase**  
-  Browse templates, real projects, and case studies to see how the pieces come together.
+These pieces work together to support **modern application workflows**, not just individual widgets.
 
 ---
 
-## How the Docs Are Organized
+## What ttkbootstrap is not
 
-The documentation mirrors how ttkbootstrap itself is designed:
+ttkbootstrap is **not**:
 
-1. **Concepts before APIs**  
-   You’ll learn *why* patterns exist before seeing how to implement them.
+- a thin skin on top of Tkinter
+- a collection of unrelated helper widgets
+- a low-level “figure it out yourself” UI layer
 
-2. **Purpose-driven navigation**  
-   Widgets and features are grouped by intent—inputs, feedback, layout, navigation—not by module paths.
-
-3. **Design as a system**  
-   Styling, layout, and behavior are treated as coordinated parts of a whole, not isolated configuration options.
-
-This structure is intentional. It’s designed to help you build applications that scale beyond small demos.
+You *can* adopt ttkbootstrap incrementally, but its real value appears when you follow its conventions for
+layout, styling, and state.
 
 ---
 
-## What ttkbootstrap v2 Provides
+## Core ideas
 
-At a high level, ttkbootstrap v2 gives you:
+### Opinionated, but flexible
 
-- A cohesive design system built on semantic colors, typography tokens, and theme-aware variants
-- A rich widget catalog covering common desktop UI patterns
-- Structured helpers for forms, dialogs, navigation, and feedback
-- Reactive signals and event utilities that reduce callback boilerplate
-- Built-in support for localization, theming, and runtime customization
-- Documentation that explains design intent—not just usage syntax
+ttkbootstrap makes intentional choices about how applications are structured.
+These opinions reduce boilerplate and ambiguity while still allowing escape hatches when needed.
 
-All of this is built directly on top of standard Tkinter and `ttk`.
+### Containers express layout intent
 
----
+Layout is driven by **containers**, not scattered geometry calls.
+Spacing, alignment, scrolling, and resizing are handled at the container level.
 
-## Where to Go Next
+### Styling is semantic
 
-If you’re new, start with **Getting Started** and build a small application.
+Widgets are styled using **semantic tokens**—not hardcoded colors or fonts.
+This keeps applications consistent across themes and appearance modes.
 
-If you’re already comfortable with Tkinter, jump directly to **Widgets** or the **Design System** to see what
-ttkbootstrap adds.
+### Reactivity is optional and explicit
 
-If you’re preparing an application for distribution, head to **Guides** for packaging and deployment patterns.
+Signals, callbacks, and events coexist.
+Use simple callbacks when that’s enough; introduce signals when state needs to flow.
 
 ---
 
-## Summary
+## How the documentation is organized
 
-ttkbootstrap v2 is designed to help you build desktop applications that feel intentional, consistent, and
-maintainable—without abandoning the strengths of Tkinter.
+The documentation is structured by **intent**, not by inheritance or module layout.
 
-The documentation is your guide to that structure.
+### Getting Started
+
+Learn how to create your first ttkbootstrap application and understand the core mental model.
+
+→ [Start here if you’re new](getting-started/index.md)
+
+### Guides
+
+Workflow-oriented documentation that shows **how to build real applications**:
+layout patterns, reactivity, styling, localization, and structure.
+
+### Widgets
+
+Practical documentation for each widget:
+when to use it, how it behaves, and how it fits into the framework.
+
+### Design System
+
+Semantic colors, variants, typography, icons, and theming—how visual consistency is achieved.
+
+### Platform
+
+How Tk and ttk work under the hood.
+This section explains behavior, constraints, and mechanics—not usage patterns.
+
+### Capabilities
+
+Framework features such as signals, localization, layout properties, and state handling.
+These pages explain **what a capability is**, not how to apply it in an app.
+
+### API Reference
+
+Complete, auto-generated reference for classes, methods, and functions.
+
+---
+
+## Where to start
+
+If you’re new to ttkbootstrap:
+
+1. Begin with **Getting Started**
+2. Read the **Guides** relevant to your task
+3. Refer to **Widgets** for specifics
+4. Use **Platform** and **Capabilities** when you need deeper understanding
+
+If you already know Tkinter, resist the urge to jump straight to the API—ttkbootstrap rewards learning its
+structure first.
+
+---
+
+## Philosophy
+
+ttkbootstrap exists to make **desktop UI development productive again**.
+
+It embraces the stability of Tk while adding the structure, consistency, and ergonomics expected from
+modern UI frameworks.
+
+If you follow its conventions, you’ll write less code, debug fewer layout issues, and ship more cohesive
+applications.

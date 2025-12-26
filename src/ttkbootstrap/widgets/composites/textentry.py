@@ -3,6 +3,7 @@ from typing import Any
 from typing_extensions import Unpack
 
 from ttkbootstrap.widgets.composites.field import Field, FieldOptions
+from ttkbootstrap.widgets.types import Master
 
 
 class TextEntry(Field):
@@ -13,109 +14,36 @@ class TextEntry(Field):
     text input with deferred parsing, validation support, and visual feedback.
 
     The widget separates user input (display text) from the committed/parsed value,
-    only parsing and formatting when the user commits via <FocusOut> or <Return>.
+    only parsing and formatting when the user commits via ``<FocusOut>`` or ``<Return>``.
 
-    Features:
-        - Optional label with required field indicator (*)
-        - Deferred parsing and formatting on commit
-        - International formatting support (numbers, currency, dates, etc.)
-        - Built-in validation with visual error feedback
-        - Message area for hints or error messages
-        - Add-on widget support (prefix/suffix icons or buttons)
-        - Three-tier event system:
-            - <<Input>>: Fires on every keystroke with raw text
-            - <<Change>>: Fires when committed value changes
-            - <<Valid>>/<<Invalid>>: Fires on validation results
+    !!! note "Events"
 
-    Events:
-        <<Input>>: Triggered on each keystroke
-            event.data = {"text": str}
+        - ``<<Input>>``: Triggered on each keystroke.
+          Provides ``event.data`` with keys: ``text``.
 
-        <<Change>>: Triggered when value changes after commit (FocusOut/Return)
-            event.data = {"value": Any, "prev_value": Any, "text": str}
+        - ``<<Change>>``: Triggered when value changes after commit.
+          Provides ``event.data`` with keys: ``value``, ``prev_value``, ``text``.
 
-        <<Valid>>: Triggered when validation passes
-            event.data = {"value": Any, "is_valid": True, "message": str}
+        - ``<<Valid>>``: Triggered when validation passes.
+          Provides ``event.data`` with keys: ``value``, ``is_valid`` (True), ``message``.
 
-        <<Invalid>>: Triggered when validation fails
-            event.data = {"value": Any, "is_valid": False, "message": str}
+        - ``<<Invalid>>``: Triggered when validation fails.
+          Provides ``event.data`` with keys: ``value``, ``is_valid`` (False), ``message``.
 
-        <<Validate>>: Triggered after any validation
-            event.data = {"value": Any, "is_valid": bool, "message": str}
+        - ``<<Validate>>``: Triggered after any validation.
+          Provides ``event.data`` with keys: ``value``, ``is_valid`` (bool), ``message``.
 
-    Example:
-        ```python
-        import ttkbootstrap as ttk
-        from ttkbootstrap.widgets.composites.textentry import TextEntry
-
-        root = ttk.Window()
-
-        # Simple text entry with label
-        entry1 = TextEntry(
-            root,
-            label="Name",
-            message="Enter your full name",
-            required=True
-        )
-        entry1.pack(padx=20, pady=10, fill='x')
-
-        # Currency entry with formatting
-        entry2 = TextEntry(
-            root,
-            label="Amount",
-            value="1234.56",
-            value_format='$#,##0.00',
-            locale='en_US'
-        )
-        entry2.pack(padx=20, pady=10, fill='x')
-
-        # Password entry
-        entry3 = TextEntry(
-            root,
-            label="Password",
-            show='*',
-            required=True
-        )
-        entry3.pack(padx=20, pady=10, fill='x')
-
-        # Entry with addon button
-        entry4 = TextEntry(root, label="Search")
-        entry4.insert_addon(ttk.Button, 'after', text='Go')
-        entry4.pack(padx=20, pady=10, fill='x')
-
-        # Bind to events
-        def on_changed(event):
-            print(f"Value changed to: {event.data['value']}")
-
-        entry1.on_changed(on_changed)
-
-        root.mainloop()
-        ```
-
-    Validation:
-        ```python
-        # Add validation rules
-        entry = TextEntry(root, label="Email", required=True)
-        entry.add_validation_rule('email', message='Invalid email address')
-
-        # Handle validation events
-        def handle_invalid(event):
-            print(f"Error: {event.data['message']}")
-
-        entry.bind('<<Invalid>>', handle_invalid)
-        ```
-
-    Inherited Properties:
-        entry_widget: Access to the underlying TextEntryPart widget
-        label_widget: Access to the label widget
-        message_widget: Access to the message label widget
-        addons: Dictionary of inserted addon widgets
-        variable: Tkinter Variable linked to entry text
-        signal: Signal object for reactive updates
+    Attributes:
+        entry_widget (TextEntryPart): The underlying text entry widget.
+        label_widget (Label): The label widget above the entry.
+        message_widget (Label): The message label widget below the entry.
+        addons (dict[str, Widget]): Dictionary of inserted addon widgets by name.
+        variable (Variable): Tkinter Variable linked to entry text.
+        signal (Signal): Signal object for reactive updates.
     """
 
     def __init__(
-            self, master=None, value: Any = None, label: str = None, message: str = None,
+            self, master: Master = None, value: Any = None, label: str = None, message: str = None,
             **kwargs: Unpack[FieldOptions]):
         """Initialize a TextEntry widget.
 
@@ -130,28 +58,27 @@ class TextEntry(Field):
                 If required=True, an asterisk (*) is automatically appended.
             message: Optional message text to display below the entry field.
                 This is replaced by validation error messages when validation fails.
-            **kwargs: Additional keyword arguments from FieldOptions:
-                allow_blank: Allow empty input. Default is True.
-                bootstyle: The accent color of the focus ring and active border.
-                cursor: Cursor style when hovering.
-                value_format: ICU format pattern for parsing/formatting.
-                    Examples: '$#,##0.00' (currency), '#,##0.00' (decimal),
-                    'yyyy-MM-dd' (date), '#,##0.00%' (percent)
-                exportselection: Export selection to clipboard.
-                font: Font for text display.
-                foreground: Text color.
-                initial_focus: If True, widget receives focus on creation.
-                justify: Text alignment ('left', 'center', 'right').
-                show_message: If True, displays message area. Default is True.
-                padding: Padding around entry widget.
-                show: Character to mask input (e.g., '*' for passwords).
-                take_focus: If True, widget accepts Tab focus.
-                textvariable: Tkinter Variable to link with text.
-                textsignal: Signal object for reactive updates.
-                width: Width in characters.
-                required: If True, field cannot be empty. Adds 'required'
-                    validation rule and appends '*' to label.
-                xscrollcommand: Callback for horizontal scrolling.
+
+        Other Parameters:
+            allow_blank (bool): Allow empty input. Default is True.
+            bootstyle (str): The accent color of the focus ring and active border.
+            cursor (str): Cursor style when hovering.
+            value_format (str): ICU format pattern for parsing/formatting.
+            exportselection (bool): Export selection to clipboard.
+            font (str): Font for text display.
+            foreground (str): Text color.
+            initial_focus (bool): If True, widget receives focus on creation.
+            justify (str): Text alignment ('left', 'center', 'right').
+            show_message (bool): If True, displays message area. Default is True.
+            padding: Padding around entry widget.
+            show (str): Character to mask input (e.g., '*' for passwords).
+            take_focus (bool): If True, widget accepts Tab focus.
+            textvariable (Variable): Tkinter Variable to link with text.
+            textsignal (Signal): Signal object for reactive updates.
+            width (int): Width in characters.
+            required (bool): If True, field cannot be empty. Adds 'required'
+                validation rule and appends '*' to label.
+            xscrollcommand: Callback for horizontal scrolling.
 
         Note:
             The widget automatically sets up event handlers for focus, validation,

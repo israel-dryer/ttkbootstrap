@@ -5,8 +5,11 @@ from typing import Any, Callable, Literal, Optional, TYPE_CHECKING, TypedDict
 
 from typing_extensions import Unpack
 
-from ttkbootstrap.widgets._internal.wrapper_base import TTKWrapperBase
+from ttkbootstrap.core.mixins.ttk_state import TtkStateMixin
+from ttkbootstrap.core.mixins.widget import WidgetCapabilitiesMixin
+from ttkbootstrap.widgets.internal.wrapper_base import TTKWrapperBase
 from ttkbootstrap.widgets.mixins import IconMixin, LocalizationMixin, SignalMixin, TextSignalMixin
+from ttkbootstrap.widgets.types import Master
 
 if TYPE_CHECKING:
     from ttkbootstrap.core.signals import Signal
@@ -18,6 +21,7 @@ class CheckButtonKwargs(TypedDict, total=False):
     command: Optional[Callable[[], Any]]
     image: Any
     icon: Any
+    icon_only: bool
     compound: Literal['text', 'image', 'top', 'bottom', 'left', 'right', 'center', 'none'] | str
     variable: Any
     signal: Signal[Any]
@@ -43,37 +47,41 @@ class CheckButtonKwargs(TypedDict, total=False):
     localize: bool | Literal['auto']
 
 
-class CheckButton(LocalizationMixin, SignalMixin, TextSignalMixin, IconMixin, TTKWrapperBase, ttk.Checkbutton):
+class CheckButton(LocalizationMixin, SignalMixin, TextSignalMixin, IconMixin, TTKWrapperBase, WidgetCapabilitiesMixin, TtkStateMixin, ttk.Checkbutton):
     """ttkbootstrap wrapper for `ttk.Checkbutton` with bootstyle and icon support."""
 
     _ttk_base = ttk.Checkbutton
 
-    def __init__(self, master=None, **kwargs: Unpack[CheckButtonKwargs]) -> None:
+    def __init__(self, master: Master = None, **kwargs: Unpack[CheckButtonKwargs]) -> None:
         """Create a themed ttkbootstrap Checkbutton.
 
-        Keyword Args:
-            text: Text to display.
-            textvariable: Tk variable linked to the text.
-            textsignal: Reactive Signal linked to the text (auto-synced with textvariable).
-            command: Callable invoked when the value toggles.
-            image: Image to display.
-            icon: Theme-aware icon spec handled by the style system.
-            compound: Placement of the image relative to text.
-            variable: Linked variable controlling the on/off state.
-            localize: Determines the widgets localization mode. 'auto', True, False.
-            signal: Reactive Signal controlling the on/off state (auto-synced with variable).
-            value: Initial state for the widget's associated variable (defaults to None when unset).
-            onvalue: Value set in `variable` when selected.
-            offvalue: Value set in `variable` when deselected.
-            padding: Extra space around the content.
-            width: Width of the control in characters.
-            underline: Index of character to underline in `text`.
-            state: Widget state.
-            takefocus: Whether the widget participates in focus traversal.
-            style: Explicit ttk style name (overrides bootstyle).
-            bootstyle: ttkbootstrap style tokens (e.g., 'primary', 'success').
-            surface_color: Optional surface token; otherwise inherited.
-            style_options: Optional dict forwarded to the style builder.
+        Args:
+            master: Parent widget. If None, uses the default root window.
+
+        Other Parameters:
+            text (str): Text to display.
+            textvariable (Variable): Tk variable linked to the text.
+            textsignal (Signal[str]): Reactive Signal linked to the text (auto-synced with textvariable).
+            command (Callable): Callable invoked when the value toggles.
+            image (PhotoImage): Image to display.
+            icon (str | dict): Theme-aware icon spec handled by the style system.
+            icon_only (bool): If True, removes the additional padding reserved for text.
+            compound (str): Placement of the image relative to text.
+            variable (Variable): Linked variable controlling the on/off state.
+            localize (bool | Literal['auto']): Determines the widget's localization mode.
+            signal (Signal): Reactive Signal controlling the on/off state (auto-synced with variable).
+            value (Any): Initial state for the widget's associated variable (defaults to None when unset).
+            onvalue (Any): Value set in `variable` when selected.
+            offvalue (Any): Value set in `variable` when deselected.
+            padding (int | tuple): Extra space around the content.
+            width (int): Width of the control in characters.
+            underline (int): Index of character to underline in `text`.
+            state (str): Widget state.
+            takefocus (bool): Whether the widget participates in focus traversal.
+            style (str): Explicit ttk style name (overrides bootstyle).
+            bootstyle (str): ttkbootstrap style tokens (e.g., 'primary', 'success').
+            surface_color (str): Optional surface token; otherwise inherited.
+            style_options (dict): Optional dict forwarded to the style builder.
         """
         signal_provided = 'signal' in kwargs
         variable_provided = 'variable' in kwargs

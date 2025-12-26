@@ -5,7 +5,10 @@ from typing import Any, TypedDict
 
 from typing_extensions import Unpack
 
-from ttkbootstrap.widgets._internal.wrapper_base import TTKWrapperBase
+from ttkbootstrap.core.mixins.ttk_state import TtkStateMixin
+from ttkbootstrap.core.mixins.widget import WidgetCapabilitiesMixin
+from ttkbootstrap.widgets.internal.wrapper_base import TTKWrapperBase
+from ttkbootstrap.widgets.types import Master
 from ttkbootstrap.style.style import get_style
 from ttkbootstrap.style.bootstyle_builder_tk import BootstyleBuilderBuilderTk
 from ..mixins import configure_delegate
@@ -31,26 +34,29 @@ class FrameKwargs(TypedDict, total=False):
     style_options: dict[str, Any]
 
 
-class Frame(TTKWrapperBase, ttk.Frame):
+class Frame(TTKWrapperBase, WidgetCapabilitiesMixin, TtkStateMixin, ttk.Frame):
     """ttkbootstrap wrapper for `ttk.Frame` with bootstyle support."""
 
     _ttk_base = ttk.Frame
 
-    def __init__(self, master=None, **kwargs: Unpack[FrameKwargs]) -> None:
+    def __init__(self, master: Master = None, **kwargs: Unpack[FrameKwargs]) -> None:
         """Create a themed ttkbootstrap Frame.
 
-        Keyword Args:
-            padding: Extra padding inside the frame.
-            relief: Border style.
-            borderwidth: Border width.
-            width: Requested width in pixels.
-            height: Requested height in pixels.
-            takefocus: Widget accepts focus during keyboard traversal.
-            style: Explicit ttk style name (overrides bootstyle).
-            bootstyle: ttkbootstrap style tokens (e.g., 'secondary').
-            surface_color: Optional surface token; otherwise inherited.
-            show_border: If true, draws a border around the frame.
-            style_options: Optional dict forwarded to the style builder.
+        Args:
+            master: Parent widget. If None, uses the default root window.
+
+        Other Parameters:
+            padding (int | tuple): Extra padding inside the frame.
+            relief (str): Border style.
+            borderwidth (int): Border width.
+            width (int): Requested width in pixels.
+            height (int): Requested height in pixels.
+            takefocus (bool): Widget accepts focus during keyboard traversal.
+            style (str): Explicit ttk style name (overrides bootstyle).
+            bootstyle (str): ttkbootstrap style tokens (e.g., 'secondary').
+            surface_color (str): Optional surface token; otherwise inherited.
+            show_border (bool): If True, draws a border around the frame.
+            style_options (dict): Optional dict forwarded to the style builder.
         """
         kwargs.update(style_options=self._capture_style_options(['show_border'], kwargs))
         super().__init__(master, **kwargs)

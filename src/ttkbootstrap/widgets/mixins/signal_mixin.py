@@ -5,95 +5,8 @@ exposing both as properties on widgets that support `textvariable` and `variable
 options. The mixins maintain bidirectional synchronization between Variables and
 Signals automatically.
 
-Architecture
-------------
-Two mixins are provided:
-
-1. **TextSignalMixin**: For widgets with `textvariable` support
-   - Entry, Label, Button, Combobox, Spinbox, etc.
-   - Exposes: `.textvariable` and `.textsignal` properties
-
-2. **SignalMixin**: For widgets with `variable` support
-   - Checkbutton, Radiobutton, Scale, Progressbar, etc.
-   - Exposes: `.variable` and `.signal` properties
-
-Both mixins use the `@configure_delegate` pattern to intercept configuration at
-construction time and via `configure()` calls, ensuring Variables and Signals
-remain synchronized regardless of how they're set.
-
-Synchronization Behavior
-------------------------
-The mixins maintain a bidirectional sync:
-
-- Setting a `Signal` extracts its underlying `tk.Variable` and configures the widget
-- Setting a `tk.Variable` wraps it in a `Signal` using `Signal.from_variable()`
-- Changes to either the Signal or Variable are reflected in both
-- Accessing properties lazily creates the pair if not already present
-
-Usage
------
-Basic usage with Entry (TextSignalMixin)::
-
-    from ttkbootstrap import ttk
-    from ttkbootstrap.core.signals import Signal
-
-    # Create entry with signal at construction
-    sig = Signal("initial")
-    entry = ttk.Entry(root, textsignal=sig)
-
-    # Access synced variable
-    print(entry.textvariable.get())  # "initial"
-
-    # Subscribe to changes
-    entry.textsignal.subscribe(lambda v: print(f"Changed to: {v}"))
-
-    # Lazy creation via property
-    entry2 = ttk.Entry(root)
-    entry2.textsignal.set("hello")  # Creates signal on first access
-
-Basic usage with Checkbutton (SignalMixin)::
-
-    from ttkbootstrap import ttk
-    from ttkbootstrap.core.signals import Signal
-
-    # Create checkbutton with signal
-    checked = Signal(False)
-    cb = ttk.Checkbutton(root, text="Agree", signal=checked)
-
-    # Subscribe to state changes
-    checked.subscribe(lambda v: print(f"Checked: {v}"))
-
-    # Access underlying variable
-    print(cb.variable.get())  # False
-
-Setting variables after construction::
-
-    entry = ttk.Entry(root)
-
-    # Set via configure - creates synced signal
-    var = tk.StringVar(value="test")
-    entry.configure(textvariable=var)
-
-    # Signal is automatically created and synced
-    entry.textsignal.subscribe(lambda v: print(v))
-
-Integration with TTKWrapperBase
--------------------------------
-These mixins are designed to be mixed into TTKWrapperBase subclasses:
-
-    class Entry(TextSignalMixin, TTKWrapperBase, ttk.Entry):
-        ...
-
-The `@configure_delegate` decorator ensures the mixins intercept both constructor
-kwargs and runtime `configure()` calls, maintaining sync automatically.
-
-Notes
------
-- Signals are created lazily on first property access if not explicitly set
-- Setting a Signal or Variable via constructor, `configure()`, or properties all work
-- The underlying tk.Variable is always what's actually configured on the ttk widget
-- Changing the Signal updates the Variable (and vice versa) via Signal's trace mechanism
-- Type inference follows Signal's behavior: int→IntVar, str→StringVar, etc.
+These mixins are thin glue layers that delegate to the core signal capability
+module for normalization and binding logic.
 """
 
 from __future__ import annotations
@@ -104,36 +17,15 @@ from typing import Any, TYPE_CHECKING
 if TYPE_CHECKING:
     from ttkbootstrap.core.signals import Signal
 
+from ttkbootstrap.core.capabilities.signals import (
+    is_signal,
+    is_variable,
+    normalize_signal,
+    create_signal,
+    infer_default_value_for_widget,
+    query_binding,
+)
 from ttkbootstrap.widgets.mixins.configure_mixin import configure_delegate
-
-
-def _is_signal(obj: Any) -> bool:
-    """Check if an object is a Signal using duck typing.
-
-    Args:
-        obj: Object to check
-
-    Returns:
-        True if object has Signal-like interface (var, subscribe, get, set)
-    """
-    return (
-        hasattr(obj, 'var')
-        and hasattr(obj, 'subscribe')
-        and hasattr(obj, 'get')
-        and hasattr(obj, 'set')
-    )
-
-
-def _is_variable(obj: Any) -> bool:
-    """Check if an object is a tk.Variable.
-
-    Args:
-        obj: Object to check
-
-    Returns:
-        True if object is a tkinter Variable instance
-    """
-    return isinstance(obj, tk.Variable)
 
 
 class TextSignalMixin:
@@ -143,31 +35,11 @@ class TextSignalMixin:
     this mixin exposes both the underlying tk.Variable and a reactive Signal as properties,
     maintaining bidirectional synchronization between them.
 
-    Properties:
-        textvariable: The underlying tk.Variable (usually StringVar)
-        textsignal: The reactive Signal wrapper with subscribe/map capabilities
+    This mixin delegates normalization and binding logic to the core signals capability.
 
-    Configuration Options:
-        textvariable: Set the tk.Variable (creates synced Signal automatically)
-        textsignal: Set the Signal (extracts and configures underlying Variable)
-
-    Examples:
-        # Set Signal at construction
-        sig = Signal("hello")
-        entry = Entry(root, textsignal=sig)
-        entry.textvariable.get()  # "hello"
-
-        # Set Variable at construction
-        var = tk.StringVar(value="world")
-        label = Label(root, textvariable=var)
-        label.textsignal.subscribe(print)  # Synced Signal created
-
-        # Lazy creation via property
-        button = Button(root, text="Click")
-        button.textsignal.set("Updated")  # Signal/Variable created on access
-
-        # Runtime configuration
-        entry.configure(textsignal=Signal("new"))
+    Attributes:
+        textvariable (Variable): The underlying tk.Variable (usually StringVar).
+        textsignal (Signal): The reactive Signal wrapper with subscribe/map capabilities.
     """
 
     def __init__(self, *args, **kwargs):
@@ -191,39 +63,29 @@ class TextSignalMixin:
         """Handle textvariable and textsignal configuration.
 
         Args:
-            value: Signal, tk.Variable, or None for query
+            value: Signal, tk.Variable, or None for query.
 
         Returns:
-            Current value for query path, None for set path
+            Current value for query path, None for set path.
         """
         # Query path - return stored value
         if value is None:
-            # Return textsignal if it exists
-            if hasattr(self, '_textsignal'):
-                return self._textsignal
-            # Return textvariable if it exists
-            if hasattr(self, '_textvariable'):
-                return self._textvariable
-            # Fallback: query the ttk widget directly
-            try:
-                return self._ttk_base.cget(self, 'textvariable')  # type: ignore[misc]
-            except:
-                return None
+            return query_binding(
+                getattr(self, '_textsignal', None),
+                getattr(self, '_textvariable', None),
+                self._ttk_base,  # type: ignore[misc]
+                self,
+                'textvariable',
+            )
 
-        # Set path - handle Signal or tk.Variable
-        if _is_signal(value):
-            # It's a Signal - extract the variable
-            self._textsignal = value
-            self._textvariable = value.var
-            var_to_set = value.var
-        elif _is_variable(value):
-            # It's a tk.Variable - create Signal from it
-            from ttkbootstrap.core.signals import Signal
-            self._textvariable = value
-            self._textsignal = Signal.from_variable(value)
-            var_to_set = value
+        # Set path - normalize and apply
+        binding = normalize_signal(value, default_value="")
+        if binding is not None:
+            self._textsignal = binding.signal
+            self._textvariable = binding.variable
+            var_to_set = binding.tk_value
         else:
-            # It's a string (Tcl variable name) or other - pass through
+            # String (Tcl variable name) or other - pass through
             var_to_set = value
             if value:
                 self._textvariable = value
@@ -239,34 +101,17 @@ class TextSignalMixin:
         If textvariable exists, wraps it in a Signal.
 
         Returns:
-            The reactive Signal for this widget's text
+            The reactive Signal for this widget's text.
         """
         if not hasattr(self, '_textsignal'):
-            # Check if widget already has a textvariable configured
+            # Create fresh signal
+            binding = create_signal("")
+            self._textsignal = binding.signal
+            self._textvariable = binding.variable
             try:
-                var_name = self._ttk_base.cget(self, 'textvariable')  # type: ignore[misc]
-                if var_name:
-                    # There's a variable but we don't have it wrapped
-                    # Create a new Variable and Signal (safest approach)
-                    from ttkbootstrap.core.signals import Signal
-                    self._textsignal = Signal("")
-                    self._textvariable = self._textsignal.var
-                    self._ttk_base.configure(self, textvariable=self._textvariable)  # type: ignore[misc]
-                else:
-                    # No variable - create fresh signal
-                    from ttkbootstrap.core.signals import Signal
-                    self._textsignal = Signal("")
-                    self._textvariable = self._textsignal.var
-                    self._ttk_base.configure(self, textvariable=self._textvariable)  # type: ignore[misc]
-            except:
-                # Fallback: create fresh signal
-                from ttkbootstrap.core.signals import Signal
-                self._textsignal = Signal("")
-                self._textvariable = self._textsignal.var
-                try:
-                    self._ttk_base.configure(self, textvariable=self._textvariable)  # type: ignore[misc]
-                except:
-                    pass
+                self._ttk_base.configure(self, textvariable=binding.tk_value)  # type: ignore[misc]
+            except Exception:
+                pass
         return self._textsignal
 
     @textsignal.setter
@@ -274,7 +119,7 @@ class TextSignalMixin:
         """Set the textsignal, extracting and configuring its underlying variable.
 
         Args:
-            value: Signal to use for this widget's text
+            value: Signal to use for this widget's text.
         """
         self._delegate_textsignal(value)
 
@@ -286,7 +131,7 @@ class TextSignalMixin:
         via the textsignal property.
 
         Returns:
-            The tk.Variable (usually StringVar) for this widget's text
+            The tk.Variable (usually StringVar) for this widget's text.
         """
         if not hasattr(self, '_textvariable'):
             # Trigger lazy creation via textsignal
@@ -298,7 +143,7 @@ class TextSignalMixin:
         """Set the textvariable, creating a synced Signal automatically.
 
         Args:
-            value: tk.Variable to use for this widget's text
+            value: tk.Variable to use for this widget's text.
         """
         self._delegate_textsignal(value)
 
@@ -310,31 +155,11 @@ class SignalMixin:
     this mixin exposes both the underlying tk.Variable and a reactive Signal as properties,
     maintaining bidirectional synchronization between them.
 
-    Properties:
-        variable: The underlying tk.Variable (IntVar, DoubleVar, BooleanVar, etc.)
-        signal: The reactive Signal wrapper with subscribe/map capabilities
+    This mixin delegates normalization and binding logic to the core signals capability.
 
-    Configuration Options:
-        variable: Set the tk.Variable (creates synced Signal automatically)
-        signal: Set the Signal (extracts and configures underlying Variable)
-
-    Examples:
-        # Set Signal at construction
-        checked = Signal(False)
-        cb = Checkbutton(root, text="Agree", signal=checked)
-        cb.variable.get()  # False
-
-        # Set Variable at construction
-        var = tk.IntVar(value=50)
-        scale = Scale(root, from_=0, to=100, variable=var)
-        scale.signal.subscribe(lambda v: print(f"Value: {v}"))
-
-        # Lazy creation via property
-        radio = Radiobutton(root, text="Option A", value=1)
-        radio.signal.set(1)  # Signal/Variable created on access
-
-        # Runtime configuration
-        cb.configure(signal=Signal(True))
+    Attributes:
+        variable (Variable): The underlying tk.Variable (IntVar, DoubleVar, BooleanVar, etc.).
+        signal (Signal): The reactive Signal wrapper with subscribe/map capabilities.
     """
 
     def __init__(self, *args, **kwargs):
@@ -358,39 +183,29 @@ class SignalMixin:
         """Handle variable and signal configuration.
 
         Args:
-            value: Signal, tk.Variable, or None for query
+            value: Signal, tk.Variable, or None for query.
 
         Returns:
-            Current value for query path, None for set path
+            Current value for query path, None for set path.
         """
         # Query path - return stored value
         if value is None:
-            # Return signal if it exists
-            if hasattr(self, '_signal'):
-                return self._signal
-            # Return variable if it exists
-            if hasattr(self, '_variable'):
-                return self._variable
-            # Fallback: query the ttk widget directly
-            try:
-                return self._ttk_base.cget(self, 'variable')  # type: ignore[misc]
-            except:
-                return None
+            return query_binding(
+                getattr(self, '_signal', None),
+                getattr(self, '_variable', None),
+                self._ttk_base,  # type: ignore[misc]
+                self,
+                'variable',
+            )
 
-        # Set path - handle Signal or tk.Variable
-        if _is_signal(value):
-            # It's a Signal - extract the variable
-            self._signal = value
-            self._variable = value.var
-            var_to_set = value.var
-        elif _is_variable(value):
-            # It's a tk.Variable - create Signal from it
-            from ttkbootstrap.core.signals import Signal
-            self._variable = value
-            self._signal = Signal.from_variable(value)
-            var_to_set = value
+        # Set path - normalize and apply
+        binding = normalize_signal(value)
+        if binding is not None:
+            self._signal = binding.signal
+            self._variable = binding.variable
+            var_to_set = binding.tk_value
         else:
-            # It's a string (Tcl variable name) or other - pass through
+            # String (Tcl variable name) or other - pass through
             var_to_set = value
             if value:
                 self._variable = value
@@ -406,38 +221,18 @@ class SignalMixin:
         (False for Checkbutton, 0 for Scale, etc.). If variable exists, wraps it in a Signal.
 
         Returns:
-            The reactive Signal for this widget's value
+            The reactive Signal for this widget's value.
         """
         if not hasattr(self, '_signal'):
-            # Check if widget already has a variable configured
+            # Infer default value based on widget type
+            default_value = infer_default_value_for_widget(self.winfo_class())
+            binding = create_signal(default_value)
+            self._signal = binding.signal
+            self._variable = binding.variable
             try:
-                var_name = self._ttk_base.cget(self, 'variable')  # type: ignore[misc]
-                if var_name:
-                    # There's a variable but we don't have it wrapped
-                    # Create a new Variable and Signal (safest approach)
-                    from ttkbootstrap.core.signals import Signal
-                    # Infer default value based on widget type
-                    default_value = self._infer_default_value()
-                    self._signal = Signal(default_value)
-                    self._variable = self._signal.var
-                    self._ttk_base.configure(self, variable=self._variable)  # type: ignore[misc]
-                else:
-                    # No variable - create fresh signal
-                    from ttkbootstrap.core.signals import Signal
-                    default_value = self._infer_default_value()
-                    self._signal = Signal(default_value)
-                    self._variable = self._signal.var
-                    self._ttk_base.configure(self, variable=self._variable)  # type: ignore[misc]
-            except:
-                # Fallback: create fresh signal with default value
-                from ttkbootstrap.core.signals import Signal
-                default_value = self._infer_default_value()
-                self._signal = Signal(default_value)
-                self._variable = self._signal.var
-                try:
-                    self._ttk_base.configure(self, variable=self._variable)  # type: ignore[misc]
-                except:
-                    pass
+                self._ttk_base.configure(self, variable=binding.tk_value)  # type: ignore[misc]
+            except Exception:
+                pass
         return self._signal
 
     @signal.setter
@@ -445,7 +240,7 @@ class SignalMixin:
         """Set the signal, extracting and configuring its underlying variable.
 
         Args:
-            value: Signal to use for this widget's value
+            value: Signal to use for this widget's value.
         """
         self._delegate_signal(value)
 
@@ -457,7 +252,7 @@ class SignalMixin:
         via the signal property.
 
         Returns:
-            The tk.Variable (IntVar, BooleanVar, DoubleVar, etc.) for this widget's value
+            The tk.Variable (IntVar, BooleanVar, DoubleVar, etc.) for this widget's value.
         """
         if not hasattr(self, '_variable'):
             # Trigger lazy creation via signal
@@ -469,30 +264,9 @@ class SignalMixin:
         """Set the variable, creating a synced Signal automatically.
 
         Args:
-            value: tk.Variable to use for this widget's value
+            value: tk.Variable to use for this widget's value.
         """
         self._delegate_signal(value)
-
-    def _infer_default_value(self) -> Any:
-        """Infer appropriate default value based on widget type.
-
-        Returns:
-            Default value appropriate for the widget (False for Checkbutton,
-            0 for Scale/Progressbar, "" for others)
-        """
-        widget_class = self.winfo_class()
-
-        # Checkbutton/Radiobutton typically use boolean or int
-        if widget_class in ('TCheckbutton', 'Checkbutton'):
-            return False
-        elif widget_class in ('TRadiobutton', 'Radiobutton'):
-            return 0
-        # Scale/Progressbar use numeric values
-        elif widget_class in ('TScale', 'Scale', 'TProgressbar', 'Progressbar'):
-            return 0.0 if widget_class in ('TScale', 'Scale') else 0
-        # Default to empty string for others
-        else:
-            return ""
 
 
 __all__ = ["TextSignalMixin", "SignalMixin"]
