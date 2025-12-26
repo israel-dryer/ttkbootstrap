@@ -112,7 +112,7 @@ app.mainloop()
 
 - `items=[...]` — a simple list of dicts (or primitives), or
 
-- `datasource=...` — a custom data source implementing the `DataSourceProtocol`
+- `datasource=...` — a [DataSource](../../guides/datasource.md) implementing the `DataSourceProtocol`
 
 #### Required fields
 
@@ -279,7 +279,7 @@ items.set([*items.get(), {"id": 2, "title": "Item 2"}])
 
 - [Signals](../../capabilities/signals/signals.md) — reactive data binding
 
-- [Data Sources](../../reference/data/index.md) — custom data providers
+- [DataSource](../../guides/datasource.md) — data management with filtering, sorting, pagination
 
 ### API reference
 

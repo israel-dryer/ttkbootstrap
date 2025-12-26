@@ -62,42 +62,30 @@ class FileSourceConfig:
     Controls how files are parsed, loaded, and transformed. Provides extensive
     customization for handling various data formats and scenarios.
 
-    File Format Options:
-        file_format: Format type - auto-detected from extension if 'auto'
-        encoding: Character encoding (default: 'utf-8')
-
-    CSV/TSV Options:
-        delimiter: Field separator (None = auto-detect: ',' for CSV, tab for TSV)
-        quotechar: Quote character for fields containing delimiter
-        skip_rows: Number of header rows to skip
-        header_row: Row index containing column names (None = no header)
-        has_header: Whether first row contains column names
-
-    JSON Options:
-        json_lines: True for line-delimited JSON (JSONL/NDJSON format)
-        json_orient: Pandas-like orientation for JSON arrays
-
-    Column Transformations:
-        column_renames: Map {old_name: new_name} for renaming columns
-        column_types: Map {column: type} for type conversions
-        column_transforms: Map {column: func} for custom transformations
-        columns_to_load: List of columns to load (None = all columns)
-        default_values: Map {column: value} for missing/null values
-
-    Row Processing:
-        row_filter: Function(row_dict) -> bool to filter rows during load
-        row_transform: Function(row_dict) -> row_dict for row-level transforms
-
-    Large File Handling:
-        loading_strategy: How to load file ('eager', 'lazy', 'chunked', 'hybrid', 'auto')
-        chunk_size: Rows per chunk for chunked/lazy loading
-        max_memory_rows: Threshold for auto-switching strategies
-
-    Threading & Progress:
-        use_threading: Load file in background thread (non-blocking)
-        progress_callback: Function(current, total) called during load
-        on_complete: Function() called when loading completes
-        on_error: Function(exception) called if loading fails
+    Attributes:
+        file_format: Format type - auto-detected from extension if 'auto'.
+        encoding: Character encoding for reading the file.
+        delimiter: Field separator (None = auto-detect: ',' for CSV, tab for TSV).
+        quotechar: Quote character for fields containing the delimiter.
+        skip_rows: Number of header rows to skip.
+        header_row: Row index containing column names (None = no header).
+        has_header: Whether the first row contains column names.
+        json_lines: True for line-delimited JSON (JSONL/NDJSON format).
+        json_orient: Pandas-like orientation for JSON arrays.
+        column_renames: Map {old_name: new_name} for renaming columns.
+        column_types: Map {column: type} for type conversions.
+        column_transforms: Map {column: func} for custom transformations.
+        columns_to_load: List of columns to load (None = all columns).
+        default_values: Map {column: value} for missing/null values.
+        row_filter: Function(row_dict) -> bool to filter rows during load.
+        row_transform: Function(row_dict) -> row_dict for row-level transforms.
+        loading_strategy: How to load file ('eager', 'lazy', 'chunked', 'hybrid', 'auto').
+        chunk_size: Rows per chunk for chunked/lazy loading.
+        max_memory_rows: Threshold for auto-switching loading strategies.
+        use_threading: Load file in background thread (non-blocking).
+        progress_callback: Function(current, total) called during load.
+        on_complete: Function() called when loading completes.
+        on_error: Function(exception) called if loading fails.
 
     Example:
         ```python
@@ -108,38 +96,25 @@ class FileSourceConfig:
         ```
     """
 
-    # File format and encoding
     file_format: Literal['auto', 'csv', 'tsv', 'json', 'jsonl'] = 'auto'
     encoding: str = 'utf-8'
-
-    # CSV/TSV options
     delimiter: Optional[str] = None
     quotechar: str = '"'
     skip_rows: int = 0
     header_row: Optional[int] = 0
     has_header: bool = True
-
-    # JSON options
     json_lines: bool = False
     json_orient: Literal['records', 'index', 'columns', 'values'] = 'records'
-
-    # Column transformations
     column_renames: Optional[Dict[str, str]] = None
     column_types: Optional[Dict[str, type]] = None
     column_transforms: Optional[Dict[str, Callable[[Any], Any]]] = None
     columns_to_load: Optional[List[str]] = None
     default_values: Optional[Dict[str, Any]] = None
-
-    # Row-level processing
     row_filter: Optional[Callable[[Dict[str, Any]], bool]] = None
     row_transform: Optional[Callable[[Dict[str, Any]], Dict[str, Any]]] = None
-
-    # Large file handling
     loading_strategy: Literal['eager', 'lazy', 'chunked', 'hybrid', 'auto'] = 'auto'
     chunk_size: int = 10000
     max_memory_rows: int = 100000
-
-    # Threading & progress
     use_threading: bool = False
     progress_callback: Optional[Callable[[int, int], None]] = None
     on_complete: Optional[Callable[[], None]] = None
