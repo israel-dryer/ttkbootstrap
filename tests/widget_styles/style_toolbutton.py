@@ -38,17 +38,9 @@ def create_checkbutton_test(bootstyle, name):
     return frame
 
 
-def change_style():
-    if style.theme_use() == 'dark':
-        style.theme_use('light')
-    else:
-        style.theme_use('dark')
-
-
 if __name__ == '__main__':
     # create visual widget style tests
     root = ttk.Window()
-    style = ttk.Style()
 
     test4 = create_checkbutton_test('toolbutton','Toolbutton')
     test4.pack(side='left', fill=BOTH)
@@ -57,7 +49,7 @@ if __name__ == '__main__':
     test6 = create_checkbutton_test('ghost-toolbutton','Ghost Toolbutton')
     test6.pack(side='left', fill=BOTH)
 
-    btn = ttk.Button(text="Change Theme", command=change_style)
+    btn = ttk.Button(text="Change Theme", command=ttk.toggle_theme)
     btn.pack(padx=10, pady=10)
 
     root.mainloop()

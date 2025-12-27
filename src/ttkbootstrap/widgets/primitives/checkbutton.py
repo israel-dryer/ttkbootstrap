@@ -29,6 +29,7 @@ class CheckButtonKwargs(TypedDict, total=False):
     onvalue: Any
     offvalue: Any
     padding: Any
+    anchor: str
     width: int
     underline: int
     state: Literal['normal', 'active', 'disabled', 'readonly'] | str
@@ -74,6 +75,7 @@ class CheckButton(LocalizationMixin, SignalMixin, TextSignalMixin, IconMixin, TT
             onvalue (Any): Value set in `variable` when selected.
             offvalue (Any): Value set in `variable` when deselected.
             padding (int | tuple): Extra space around the content.
+            anchor (str): Determines how the content is aligned in the container. Combination of 'n', 's', 'e', 'w', or 'center' (default).
             width (int): Width of the control in characters.
             underline (int): Index of character to underline in `text`.
             state (str): Widget state.
@@ -86,7 +88,7 @@ class CheckButton(LocalizationMixin, SignalMixin, TextSignalMixin, IconMixin, TT
         signal_provided = 'signal' in kwargs
         variable_provided = 'variable' in kwargs
         initial_value = kwargs.pop('value', None)
-        kwargs.update(style_options=self._capture_style_options(['icon_only', 'icon'], kwargs))
+        kwargs.update(style_options=self._capture_style_options(['icon_only', 'icon', 'anchor'], kwargs))
         super().__init__(master, **kwargs)
         if initial_value is not None and not signal_provided and not variable_provided:
             self.variable.set(initial_value)
