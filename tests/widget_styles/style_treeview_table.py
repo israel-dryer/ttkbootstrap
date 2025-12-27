@@ -53,19 +53,11 @@ def create_treeview_style():
     return container
 
 
-def change_style():
-    if style.theme_use() == DARK:
-        style.theme_use(LIGHT)
-    else:
-        style.theme_use(DARK)
-
-
 if __name__ == '__main__':
     # create visual widget style tests
-    root = ttk.Window()
-    style = ttk.Style()
+    root = ttk.Window(theme="docs-light")
 
-    ttk.Button(text="Change Theme", command=change_style).pack(padx=10, pady=10)
+    ttk.Button(text="Change Theme", command=ttk.toggle_theme).pack(padx=10, pady=10)
 
     create_treeview_style().pack(side='left')
 
