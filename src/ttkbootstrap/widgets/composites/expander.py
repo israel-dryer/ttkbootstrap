@@ -1,5 +1,5 @@
 """Expander widget - a collapsible container with header and content."""
-
+from tkinter import Widget
 from typing import Literal
 
 from ttkbootstrap.widgets.primitives.frame import Frame
@@ -16,7 +16,7 @@ class Expander(Frame):
     anywhere on the header toggles the visibility of the content area.
 
     Events:
-        <<Toggle>>: Fired when expanded/collapsed. event.data = {'expanded': bool}
+        ``<<Toggle>>``: Fired when expanded/collapsed. event.data = {'expanded': bool}
 
     Attributes:
         expanded (bool): Current expansion state.
@@ -37,13 +37,13 @@ class Expander(Frame):
         """Create an Expander widget.
 
         Args:
-            master: Parent widget. If None, uses the default root window.
-            title: Header title text.
-            expanded: Initial expansion state. Default is True (expanded).
-            collapsible: Whether the expander can be toggled. Default is True.
-            icon_expanded: Icon spec for expanded state. Default is chevron-up.
-            icon_collapsed: Icon spec for collapsed state. Default is chevron-down.
-            icon_position: Position of chevron relative to title ('before' or 'after').
+            master (Master): Parent widget. If None, uses the default root window.
+            title (str): Header title text.
+            expanded (bool): Initial expansion state. Default is True (expanded).
+            collapsible (bool): Whether the expander can be toggled. Default is True.
+            icon_expanded (str | dict): Icon spec for expanded state. Default is chevron-up.
+            icon_collapsed (str | dict): Icon spec for collapsed state. Default is chevron-down.
+            icon_position (Literal["before", "after"]): Position of chevron relative to title.
             **kwargs: Additional arguments passed to Frame. If bootstyle is provided,
                 the chevron button will use that style (default: foreground-ghost).
         """
@@ -154,14 +154,14 @@ class Expander(Frame):
         self._toggle_button.configure(icon=self._current_icon)
         self.event_generate('<<Toggle>>', data={'expanded': False})
 
-    def add(self, widget=None):
+    def add(self, widget: Widget=None) -> Widget:
         """Add content widget, or create and return an empty frame.
 
         Args:
-            widget: Optional widget to use as content. If None, creates a Frame.
+            widget (Widget | None): Optional widget to use as content. If None, creates a Frame.
 
         Returns:
-            The content widget (passed or created).
+            Frame: The content widget (passed or created).
 
         Raises:
             ValueError: If content already exists and widget is provided.
@@ -193,22 +193,29 @@ class Expander(Frame):
             self.collapse()
 
     @property
-    def content(self):
+    def content(self) -> Frame:
         """Get the content frame (for direct child parenting)."""
         return self._content_frame
 
-    def on_toggle(self, callback):
-        """Bind callback to toggle events.
+    def on_toggle(self, callback) -> str:
+        """Bind callback to `<<Toggle>>` events.
 
         Args:
-            callback: Function to call when toggled. Receives event with
+            callback (Callable): Function to call when toggled. Receives event with
                 event.data = {'expanded': bool}.
-        """
-        self.bind('<<Toggle>>', callback, add='+')
 
-    def off_toggle(self):
-        """Unbind all toggle callbacks."""
-        self.unbind('<<Toggle>>')
+        Returns:
+            str: Bind ID that can be passed to `off_toggle` to remove this callback.
+        """
+        return self.bind('<<Toggle>>', callback, add='+')
+
+    def off_toggle(self, bind_id: str = None):
+        """Unbind `<<Toggle>>` callback(s).
+
+        Args:
+            bind_id (str | None): Bind ID returned by `on_toggle`. If None, unbinds all.
+        """
+        self.unbind('<<Toggle>>', bind_id)
 
     @configure_delegate('title')
     def _delegate_title(self, value=None):
