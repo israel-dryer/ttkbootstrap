@@ -96,7 +96,7 @@ class PageStackDemo:
         """Create all the demo pages"""
 
         # Home Page
-        home = self.stack.add_page('home', sticky='nsew')
+        home = self.stack.add('home', sticky='nsew')
         home.columnconfigure(0, weight=1)
         home.rowconfigure(1, weight=1)
 
@@ -114,7 +114,7 @@ class PageStackDemo:
                  wraplength=400).pack(pady=5)
 
         # Profile Page
-        profile = self.stack.add_page('profile', sticky='nsew')
+        profile = self.stack.add('profile', sticky='nsew')
         profile.columnconfigure(0, weight=1)
         profile.rowconfigure(1, weight=1)
 
@@ -136,7 +136,7 @@ class PageStackDemo:
         profile.bind('<<PageWillMount>>', self._on_profile_mount)
 
         # Settings Page
-        settings = self.stack.add_page('settings', sticky='nsew')
+        settings = self.stack.add('settings', sticky='nsew')
         settings.columnconfigure(0, weight=1)
         settings.rowconfigure(1, weight=1)
 
@@ -150,9 +150,9 @@ class PageStackDemo:
                                         font=('TkDefaultFont', 12))
         self.settings_label.pack(pady=10)
 
-        ttk.Checkbutton(settings_info, text="Enable notifications").pack(pady=5, anchor='w')
-        ttk.Checkbutton(settings_info, text="Dark mode").pack(pady=5, anchor='w')
-        ttk.Checkbutton(settings_info, text="Auto-save").pack(pady=5, anchor='w')
+        ttk.CheckButton(settings_info, text="Enable notifications").pack(pady=5, anchor='w')
+        ttk.CheckButton(settings_info, text="Dark mode").pack(pady=5, anchor='w')
+        ttk.CheckButton(settings_info, text="Auto-save").pack(pady=5, anchor='w')
 
         ttk.Button(settings_info, text="Save & Return",
                   command=lambda: self.stack.back()).pack(pady=10)
@@ -160,7 +160,7 @@ class PageStackDemo:
         settings.bind('<<PageWillMount>>', self._on_settings_mount)
 
         # Details Page
-        details = self.stack.add_page('details', sticky='nsew')
+        details = self.stack.add('details', sticky='nsew')
         details.columnconfigure(0, weight=1)
         details.rowconfigure(1, weight=1)
 

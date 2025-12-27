@@ -84,6 +84,12 @@ for i in range(30):
     ttk.Label(content, text=f"Item {i+1}").pack(anchor="w", pady=4)
 ```
 
+Frame options (padding, bootstyle, etc.) can be passed directly:
+
+```python
+content = sv.add(padding=10, bootstyle="primary")
+```
+
 Calling `add()` multiple times returns the same frame (idempotent).
 
 ### Custom content widget
