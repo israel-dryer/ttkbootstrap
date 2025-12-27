@@ -26,7 +26,7 @@ Theme variants: light / dark
 
 ## Quick start
 
-Create a notebook and add tab frames:
+Create a notebook and add tabs using `add()`:
 
 ```python
 import ttkbootstrap as ttk
@@ -36,11 +36,12 @@ app = ttk.App()
 nb = ttk.Notebook(app, bootstyle="primary")
 nb.pack(fill="both", expand=True, padx=20, pady=20)
 
-home = nb.add_frame(label="Home", key="home", frame_options=dict(padding=10))
-settings = nb.add_frame(label="Settings", key="settings", frame_options=dict(padding=10))
+# add() creates a Frame and returns it
+home = nb.add(text="Home", key="home")
+settings = nb.add(text="Settings", key="settings")
 
-ttk.Label(home, text="Home content").pack(anchor="w")
-ttk.Label(settings, text="Settings content").pack(anchor="w")
+ttk.Label(home, text="Home content").pack(anchor="w", padx=10, pady=10)
+ttk.Label(settings, text="Settings content").pack(anchor="w", padx=10, pady=10)
 
 app.mainloop()
 ```
@@ -48,19 +49,10 @@ app.mainloop()
 You can also add an existing widget as a tab:
 
 ```python
-import ttkbootstrap as ttk
-
-app = ttk.App()
-
-nb = ttk.Notebook(app)
-nb.pack(fill="both", expand=True)
-
 page = ttk.Frame(nb, padding=10)
 ttk.Label(page, text="I was created outside the notebook").pack(anchor="w")
 
 nb.add(page, key="external", text="External")
-
-app.mainloop()
 ```
 
 ---
@@ -121,18 +113,25 @@ nb.select(settings)      # by widget
 !!! tip "Prefer keys"
     Indices change when tabs are inserted, removed, or reordered. Keys remain stable.
 
-### Creating tabs with `add_frame` and `insert_frame`
+### Creating tabs
 
-`add_frame(...)` creates a new `Frame` tab and returns it:
+Use `add()` without a child to create a Frame automatically:
 
 ```python
-page = nb.add_frame(label="Logs", key="logs", frame_options=dict(padding=10))
+page = nb.add(text="Logs", key="logs")
+ttk.Label(page, text="Log content").pack()
 ```
 
-Use `insert_frame(...)` to insert at a specific position:
+Use `insert()` to add at a specific position:
 
 ```python
-page = nb.insert_frame(0, label="Start", key="start", frame_options=dict(padding=10))
+page = nb.insert(0, text="Start", key="start")
+```
+
+Frame options (padding, bootstyle, etc.) can be passed directly:
+
+```python
+page = nb.add(text="Settings", key="settings", padding=10, bootstyle="primary")
 ```
 
 ### Localized tab labels
