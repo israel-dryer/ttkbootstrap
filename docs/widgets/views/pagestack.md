@@ -29,9 +29,9 @@ app = ttk.App()
 stack = ttk.PageStack(app, padding=10)
 stack.pack(fill="both", expand=True)
 
-page1 = stack.add_page("start", padding=10)
-page2 = stack.add_page("details", padding=10)
-page3 = stack.add_page("confirm", padding=10)
+page1 = stack.add("start", padding=10)
+page2 = stack.add("details", padding=10)
+page3 = stack.add("confirm", padding=10)
 
 ttk.Label(page1, text="Start page").pack()
 ttk.Button(page1, text="Next", command=lambda: stack.navigate("details")).pack()
@@ -86,7 +86,7 @@ PageStack itself is a container without visual styling. Style the individual pag
 Each page is identified by a unique string key:
 
 ```python
-stack.add_page("settings")
+stack.add("settings")
 stack.navigate("settings")
 ```
 
@@ -94,10 +94,16 @@ Keys are stable and preferable to index-based navigation.
 
 ### Adding pages
 
-Create a new page automatically:
+Use `add()` to get a page frame for placing widgets.
 
 ```python
-page = stack.add_page("profile", padding=10)
+page = stack.add("profile", padding=10)
+```
+
+Frame options (padding, bootstyle, etc.) can be passed directly:
+
+```python
+page = stack.add("settings", padding=10, bootstyle="primary")
 ```
 
 Or add an existing widget as a page:
@@ -150,7 +156,7 @@ That data is included in lifecycle event payloads so pages can react to it.
 When adding pages, control how they fill the stack:
 
 ```python
-stack.add_page("full", sticky="nsew")
+stack.add("full", sticky="nsew")
 ```
 
 ### Removing pages
@@ -167,13 +173,13 @@ If the removed page is active, the stack becomes empty until you navigate elsewh
 
 `PageStack` emits a navigation lifecycle you can hook into:
 
-- `<<PageUnmounted>>` - current page is being hidden
+- `<<PageUnmount>>` - current page is being hidden
 
 - `<<PageWillMount>>` - new page will be shown
 
-- `<<PageMounted>>` - new page is now visible
+- `<<PageMount>>` - new page is now visible
 
-- `<<PageChanged>>` - navigation completed
+- `<<PageChange>>` - navigation completed
 
 ```python
 def on_page_changed(event):

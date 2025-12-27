@@ -66,9 +66,8 @@ class PageStack(Frame):
                 or tuple of (left, top, right, bottom)).
 
         Note:
-            Pages must be added using add() or add_page() before navigation
-            can occur. The PageStack starts with an empty history and no
-            current page.
+            Pages must be added using add() before navigation can occur.
+            The PageStack starts with an empty history and no current page.
         """
         super().__init__(master, **kwargs)
         self._pages: dict[str, tkinter.Widget] = {}
@@ -76,48 +75,30 @@ class PageStack(Frame):
         self._history: list[tuple[str, dict]] = []
         self._index: int = -1
 
-    def add(self, key: str, page: tkinter.Widget, sticky: str = '') -> None:
-        """Add an existing widget as a page to the stack.
+    def add(self, key: str, page: tkinter.Widget = None, *, sticky: str = '', **kwargs) -> tkinter.Widget:
+        """Add a page to the stack, optionally creating a Frame.
 
         Args:
-            key: Unique identifier for the page
-            page: The widget to add as a page
-            sticky: Grid sticky parameter for the page layout (e.g., 'nsew')
-
-        Raises:
-            NavigationError: If a page with the given key already exists
-            ValueError: If key is an empty string
-        """
-        if not key:
-            raise ValueError("Page key cannot be an empty string")
-        if key in self._pages:
-            raise NavigationError(f"Page {key} already exists")
-        self._pages[key] = page
-        page.grid(sticky=sticky)
-        page.grid_remove()
-
-    def add_page(self, key: str, **kwargs: Unpack[PageOptions]) -> Frame:
-        """Create and add a new Frame page to the stack.
-
-        Args:
-            key: Unique identifier for the page
-            **kwargs: Frame configuration options including padding, width, height,
-                     style, cursor, show_border, bootstyle, surface_color,
-                     style_options, and sticky
+            key (str): Unique identifier for the page (required for navigation).
+            page (Widget | None): The widget to add. If None, creates a Frame.
+            sticky (str): Grid sticky parameter for the page layout (e.g., 'nsew').
+            **kwargs: When page is None, these are passed to Frame (e.g., padding, bootstyle).
 
         Returns:
-            The newly created Frame widget
+            Widget: The page widget (passed or created Frame).
 
         Raises:
-            NavigationError: If a page with the given key already exists
-            ValueError: If key is an empty string
+            NavigationError: If a page with the given key already exists.
+            ValueError: If key is an empty string.
         """
         if not key:
             raise ValueError("Page key cannot be an empty string")
-        sticky = kwargs.pop('sticky', '')
         if key in self._pages:
             raise NavigationError(f"Page {key} already exists")
-        page = Frame(self, **kwargs)
+
+        if page is None:
+            page = Frame(self, **kwargs)
+
         self._pages[key] = page
         page.grid(sticky=sticky)
         page.grid_remove()

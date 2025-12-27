@@ -476,27 +476,34 @@ class ScrollView(Frame):
 
             self._scrolling_enabled = False
 
-    def add(self, widget: Widget, **kwargs: Any):
-        """Add a widget to the scrollable area.
+    def add(self, widget: Widget = None, *, anchor: str = 'nw', **kwargs: Any) -> Widget:
+        """Add a widget to the scrollable area, or create and return a Frame.
 
         Args:
-            widget: The widget to add (typically a Frame containing content).
-            **kwargs: Additional arguments passed to canvas.create_window().
+            widget (Widget | None): The widget to add. If None, creates a Frame.
+            anchor (str): Anchor position for the widget in the canvas. Default is 'nw'.
+            **kwargs: When widget is None, these are passed to Frame (e.g., padding, bootstyle).
+
+        Returns:
+            Widget: The content widget (passed or created).
 
         Raises:
-            ValueError: If the ScrollView already contains a widget.
+            ValueError: If the ScrollView already contains a widget and a new one is provided.
         """
+        # If content exists and no widget passed, return existing (idempotent)
         if self._child_widget is not None:
-            raise ValueError("ScrollView already contains a widget. Use remove() first.")
+            if widget is not None:
+                raise ValueError("ScrollView already contains a widget. Use remove() first.")
+            return self._child_widget
+
+        # Create frame with kwargs if no widget provided
+        if widget is None:
+            widget = Frame(self.canvas, **kwargs)
 
         self._child_widget = widget
 
-        # Default create_window options
-        window_kwargs = {'anchor': 'nw', 'window': widget}
-        window_kwargs.update(kwargs)
-
         # Create window in canvas
-        self._window_id = self.canvas.create_window(0, 0, **window_kwargs)
+        self._window_id = self.canvas.create_window(0, 0, anchor=anchor, window=widget)
 
         # Keep scrollbars above the canvas/content
         self.vertical_scrollbar.lift()
@@ -518,6 +525,8 @@ class ScrollView(Frame):
         # Initial scroll region update
         self.canvas.update_idletasks()
         self.canvas.configure(scrollregion=self.canvas.bbox('all'))
+
+        return widget
 
     def remove(self) -> Optional[Widget]:
         """Remove the current widget from the scrollable area.

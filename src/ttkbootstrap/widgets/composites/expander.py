@@ -154,14 +154,15 @@ class Expander(Frame):
         self._toggle_button.configure(icon=self._current_icon)
         self.event_generate('<<Toggle>>', data={'expanded': False})
 
-    def add(self, widget: Widget=None) -> Widget:
+    def add(self, widget: Widget = None, **kwargs) -> Widget:
         """Add content widget, or create and return an empty frame.
 
         Args:
             widget (Widget | None): Optional widget to use as content. If None, creates a Frame.
+            **kwargs: When widget is None, these are passed to Frame (e.g., padding, bootstyle).
 
         Returns:
-            Frame: The content widget (passed or created).
+            Widget: The content widget (passed or created).
 
         Raises:
             ValueError: If content already exists and widget is provided.
@@ -173,7 +174,7 @@ class Expander(Frame):
             return self._content_widget
 
         if widget is None:
-            widget = Frame(self._content_frame)
+            widget = Frame(self._content_frame, **kwargs)
 
         self._content_widget = widget
         widget.pack(fill='both', expand=True)
