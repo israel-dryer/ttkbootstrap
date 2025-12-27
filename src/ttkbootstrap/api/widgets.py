@@ -14,6 +14,7 @@ from ttkbootstrap.widgets.composites.contextmenu import ContextMenu, ContextMenu
 from ttkbootstrap.widgets.composites.dateentry import DateEntry
 from ttkbootstrap.widgets.composites.dropdownbutton import DropdownButton
 from ttkbootstrap.widgets.primitives.entry import Entry
+from ttkbootstrap.widgets.composites.expander import Expander
 from ttkbootstrap.widgets.composites.field import Field, FieldOptions
 from ttkbootstrap.widgets.composites.floodgauge import FloodGauge
 from ttkbootstrap.widgets.composites.form import Form
@@ -66,6 +67,7 @@ __all__ = [
     "Calendar",
     "DropdownButton",
     "Entry",
+    "Expander",
     "Field",
     "FieldOptions",
     "FloodGauge",
