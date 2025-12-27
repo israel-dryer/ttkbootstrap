@@ -476,12 +476,13 @@ class ScrollView(Frame):
 
             self._scrolling_enabled = False
 
-    def add(self, widget: Widget = None, **kwargs: Any) -> Widget:
+    def add(self, widget: Widget = None, *, anchor: str = 'nw', **kwargs: Any) -> Widget:
         """Add a widget to the scrollable area, or create and return a Frame.
 
         Args:
             widget (Widget | None): The widget to add. If None, creates a Frame.
-            **kwargs: Additional arguments passed to canvas.create_window().
+            anchor (str): Anchor position for the widget in the canvas. Default is 'nw'.
+            **kwargs: When widget is None, these are passed to Frame (e.g., padding, bootstyle).
 
         Returns:
             Widget: The content widget (passed or created).
@@ -495,18 +496,14 @@ class ScrollView(Frame):
                 raise ValueError("ScrollView already contains a widget. Use remove() first.")
             return self._child_widget
 
-        # Create frame if no widget provided
+        # Create frame with kwargs if no widget provided
         if widget is None:
-            widget = Frame(self.canvas)
+            widget = Frame(self.canvas, **kwargs)
 
         self._child_widget = widget
 
-        # Default create_window options
-        window_kwargs = {'anchor': 'nw', 'window': widget}
-        window_kwargs.update(kwargs)
-
         # Create window in canvas
-        self._window_id = self.canvas.create_window(0, 0, **window_kwargs)
+        self._window_id = self.canvas.create_window(0, 0, anchor=anchor, window=widget)
 
         # Keep scrollbars above the canvas/content
         self.vertical_scrollbar.lift()
