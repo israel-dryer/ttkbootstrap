@@ -1,10 +1,12 @@
 from pathlib import Path
 
 from ttkbootstrap.core.localization import MessageCatalog
+from ttkbootstrap.runtime.app import App
 
 # Initialize Babel/gettext bridge for tests using absolute locales path
 _ROOT = Path(__file__).resolve().parents[2]
-_LOCALES = str(_ROOT / "locales")
+_LOCALES = str(_ROOT / "src/ttkbootstrap/assets/locales")
+app = App()
 MessageCatalog.init(locales_dir=_LOCALES, domain="ttkbootstrap", default_locale="en")
 
 
@@ -25,17 +27,16 @@ def test_msgcat():
     result = MessageCatalog.translate(expect)
     assert result == 'Annuleren'
 
-    MessageCatalog.locale("zh_cn")
-    result = MessageCatalog.translate("Skip Messages")
-    assert result == "跳过信息"
+    MessageCatalog.locale("zh_CN")
+    result = MessageCatalog.translate("OK")
+    assert result == "确定"
 
-    result = MessageCatalog.translate("yes")
-    assert result == "确认"
+    result = MessageCatalog.translate("Yes")
+    assert result == "是"
 
     MessageCatalog.locale("sl")
-    result = MessageCatalog.translate("yes")
-    assert result == "da"
-
+    result = MessageCatalog.translate("Yes")
+    assert result == "Da"
 
 def test_variables():
     """Tests using parameters."""

@@ -49,8 +49,6 @@ def main():
         fmt_label.configure(text=MessageCatalog.translate("test with string: '%s'", entry_var.get()))
         print("Active:", MessageCatalog.locale(), "Cancel:", MessageCatalog.translate("Cancel"))
 
-    # React to locale changes via virtual event emitted by MessageCatalog
-    app.bind("<<LocaleChanged>>", lambda e: apply_language())
     # Menu with a few common actions using localized labels
     menubar = tb.Menu(app)
     app.configure(menu=menubar)
@@ -121,15 +119,11 @@ def main():
     apply_language()
 
     app.geometry("520x320")
+    # React to locale changes via virtual event emitted by MessageCatalog
+    app.bind("<<LocaleChanged>>", lambda e: apply_language())
 
     app.mainloop()
 
 
 if __name__ == "__main__":
     main()
-
-
-
-
-
-
