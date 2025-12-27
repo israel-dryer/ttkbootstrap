@@ -248,102 +248,105 @@ class Notebook(TTKWrapperBase, WidgetCapabilitiesMixin, TtkStateMixin, ttk.Noteb
             self._mark_api_change('api')
             return super().select(self._to_tab_id(tab))
 
-    def add_frame(self, label: str | None = None, key: str | None = None, frame_options: dict | None = None, **kwargs: Unpack[TabOptions]) -> Frame:
-        """Create a new frame and add to Notebook.
-
-        Args:
-            label (str): The text used on the tab label.
-            key (str): A unique human-friendly identifier for referencing the tab.
-            frame_options (dict): Configuration options passed to Frame.
-
-        Other Parameters:
-            state (str): One of 'normal', 'disabled', 'hidden'.
-            sticky (str): How the content is positioned in the pane area.
-            padding (int | tuple): Extra space between notebook and pane.
-            text (str): The text of the tab label.
-            compound (str): Image placement relative to text.
-            image (PhotoImage): The image to display in the tab.
-            underline (int): Index of character to underline in the label.
-
-        Returns:
-            Frame: The newly created frame.
-        """
-        return self.insert_frame('end', label=label, frame_options=frame_options, key=key, **kwargs)
-
-    def insert_frame(
-            self, index: str | int = 'end', label: str | None = None, key: str | None = None, frame_options: dict | None = None, **kwargs: Unpack[TabOptions]) -> Frame:
-        """Create a new frame and insert to Notebook at position ``index``.
-
-        Args:
-            index (str | int): Position to insert the widget. Defaults to 'end'.
-            label (str): The text used on the tab label.
-            key (str): A unique human-friendly identifier for referencing the tab.
-            frame_options (dict): Configuration options passed to Frame.
-
-        Other Parameters:
-            state (str): One of 'normal', 'disabled', 'hidden'.
-            sticky (str): How the content is positioned in the pane area.
-            padding (int | tuple): Extra space between notebook and pane.
-            text (str): The text of the tab label.
-            compound (str): Image placement relative to text.
-            image (PhotoImage): The image to display in the tab.
-            underline (int): Index of character to underline in the label.
-
-        Returns:
-            Frame: The newly created frame.
-        """
-        frame = Frame(self, **(frame_options or {}))
-        self.insert(index, frame, key=key, text=label, **kwargs)
-        return frame
-
-    def add(self, child: tkinter.Widget, *, key: str | None = None, **kwargs) -> None:
-        """Add a new tab to the notebook.
+    def add(
+        self,
+        child: tkinter.Widget = None,
+        *,
+        key: str | None = None,
+        text: str | None = None,
+        state: Literal['normal', 'disabled', 'hidden'] | None = None,
+        sticky: str | None = None,
+        compound: Literal['top', 'left', 'center', 'right', 'bottom', 'none'] | None = None,
+        image: Any = None,
+        underline: int | None = None,
+        fmtargs: tuple[Any, ...] | list[Any] = (),
+        **kwargs
+    ) -> tkinter.Widget:
+        """Add a new tab to the notebook, optionally creating a Frame.
 
         If the widget is currently managed by the notebook but hidden, it is
         restored to its previous position.
 
         Args:
-            child (Widget): The widget to add as a tab.
-            key (str): A unique human-friendly identifier for referencing the tab.
+            child (Widget | None): The widget to add as a tab. If None, creates a Frame.
+            key (str | None): A unique human-friendly identifier for referencing the tab.
+            text (str | None): The text of the tab label.
+            state (str | None): One of 'normal', 'disabled', 'hidden'.
+            sticky (str | None): How the content is positioned in the pane area.
+            compound (str | None): Image placement relative to text.
+            image (PhotoImage | None): The image to display in the tab.
+            underline (int | None): Index of character to underline in the label.
+            fmtargs (tuple | list): Format arguments for localized text.
+            **kwargs: When child is None, these are passed to Frame (e.g., padding, bootstyle).
 
-        Other Parameters:
-            state (str): One of 'normal', 'disabled', 'hidden'.
-            sticky (str): How the content is positioned in the pane area.
-            padding (int | tuple): Extra space between notebook and pane.
-            text (str): The text of the tab label.
-            compound (str): Image placement relative to text.
-            image (PhotoImage): The image to display in the tab.
-            underline (int): Index of character to underline in the label.
+        Returns:
+            Widget: The tab content widget (passed or created Frame).
         """
-        self.insert('end', child, key=key, **kwargs)
+        return self.insert(
+            'end', child, key=key, text=text, state=state, sticky=sticky,
+            compound=compound, image=image, underline=underline, fmtargs=fmtargs, **kwargs
+        )
 
-    def insert(self, index: str | int, child: tkinter.Widget, *, key: str | None = None, **kwargs) -> None:
-        """Insert a widget as a tab at position ``index``.
+    def insert(
+        self,
+        index: str | int,
+        child: tkinter.Widget = None,
+        *,
+        key: str | None = None,
+        text: str | None = None,
+        state: Literal['normal', 'disabled', 'hidden'] | None = None,
+        sticky: str | None = None,
+        compound: Literal['top', 'left', 'center', 'right', 'bottom', 'none'] | None = None,
+        image: Any = None,
+        underline: int | None = None,
+        fmtargs: tuple[Any, ...] | list[Any] = (),
+        **kwargs
+    ) -> tkinter.Widget:
+        """Insert a widget as a tab at position ``index``, optionally creating a Frame.
 
         Args:
             index (str | int): Position to insert the widget. Defaults to 'end'.
-            child (Widget): The widget to insert as a tab.
-            key (str): A unique human-friendly identifier for referencing the tab.
+            child (Widget | None): The widget to insert as a tab. If None, creates a Frame.
+            key (str | None): A unique human-friendly identifier for referencing the tab.
+            text (str | None): The text of the tab label.
+            state (str | None): One of 'normal', 'disabled', 'hidden'.
+            sticky (str | None): How the content is positioned in the pane area.
+            compound (str | None): Image placement relative to text.
+            image (PhotoImage | None): The image to display in the tab.
+            underline (int | None): Index of character to underline in the label.
+            fmtargs (tuple | list): Format arguments for localized text.
+            **kwargs: When child is None, these are passed to Frame (e.g., padding, bootstyle).
 
-        Other Parameters:
-            state (str): One of 'normal', 'disabled', 'hidden'.
-            sticky (str): How the content is positioned in the pane area.
-            padding (int | tuple): Extra space between notebook and pane.
-            text (str): The text of the tab label.
-            compound (str): Image placement relative to text.
-            image (PhotoImage): The image to display in the tab.
-            underline (int): Index of character to underline in the label.
+        Returns:
+            Widget: The tab content widget (passed or created Frame).
         """
+        # Create Frame with kwargs if no child provided
+        if child is None:
+            child = Frame(self, **kwargs)
+
         self._mark_api_change('reorder')
-        fmtargs = tuple(kwargs.pop('fmtargs', ()))
-        text_token = kwargs.get('text')
-        if text_token is not None:
-            kwargs['text'] = MessageCatalog.translate(text_token, *fmtargs)
-        super().insert(index, child, **kwargs)
+
+        # Build tab options dict (only include non-None values)
+        tab_opts = {}
+        if text is not None:
+            tab_opts['text'] = MessageCatalog.translate(text, *fmtargs)
+        if state is not None:
+            tab_opts['state'] = state
+        if sticky is not None:
+            tab_opts['sticky'] = sticky
+        if compound is not None:
+            tab_opts['compound'] = compound
+        if image is not None:
+            tab_opts['image'] = image
+        if underline is not None:
+            tab_opts['underline'] = underline
+
+        super().insert(index, child, **tab_opts)
         tab_key = self._make_key(key)
         self._tk_to_key[str(child)] = tab_key
         self._key_registry[tab_key] = child
-        self._register_tab_token(str(child), text_token, fmtargs)
+        self._register_tab_token(str(child), text, tuple(fmtargs))
+        return child
 
     def remove(self, tab: Tab) -> None:
         """Remove a tab and clean registry"""

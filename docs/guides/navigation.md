@@ -39,9 +39,9 @@ notebook = ttk.Notebook(app, bootstyle="primary", padding=20)
 notebook.pack(fill="both", expand=True, padx=10, pady=10)
 
 # Create tabs
-home = notebook.add_frame(label="Home", key="home")
-settings = notebook.add_frame(label="Settings", key="settings")
-about = notebook.add_frame(label="About", key="about")
+home = notebook.add(text="Home", key="home")
+settings = notebook.add(text="Settings", key="settings")
+about = notebook.add(text="About", key="about")
 
 # Add content to each tab
 ttk.Label(home, text="Welcome to the application").pack(anchor="w")
@@ -79,9 +79,9 @@ stack = ttk.PageStack(app)
 stack.pack(fill="both", expand=True, padx=10, pady=10)
 
 # Create pages
-welcome = stack.add_page("welcome", padding=20)
-details = stack.add_page("details", padding=20)
-confirm = stack.add_page("confirm", padding=20)
+welcome = stack.add("welcome", padding=20)
+details = stack.add("details", padding=20)
+confirm = stack.add("confirm", padding=20)
 
 # Welcome page
 ttk.Label(welcome, text="Welcome! Let's get started.").pack(anchor="w", pady=(0, 10))
@@ -147,10 +147,10 @@ stack = ttk.PageStack(content)
 stack.pack(fill="both", expand=True)
 
 # Create pages
-dashboard = stack.add_page("dashboard", padding=20)
-users = stack.add_page("users", padding=20)
-settings = stack.add_page("settings", padding=20)
-reports = stack.add_page("reports", padding=20)
+dashboard = stack.add("dashboard", padding=20)
+users = stack.add("users", padding=20)
+settings = stack.add("settings", padding=20)
+reports = stack.add("reports", padding=20)
 
 ttk.Label(dashboard, text="Dashboard", font="heading-xl").pack(anchor="w")
 ttk.Label(dashboard, text="Overview of your application").pack(anchor="w", pady=(10, 0))
@@ -209,7 +209,7 @@ stack.pack(fill="both", expand=True)
 
 # Pages
 for key in ["dashboard", "users", "settings"]:
-    page = stack.add_page(key, padding=20)
+    page = stack.add(key, padding=20)
     ttk.Label(page, text=key.title(), font="heading-xl").pack(anchor="w")
 
 # Navigation with active tracking
@@ -273,7 +273,7 @@ stack.pack(fill="both", expand=True)
 
 # Pages
 for key in ["dashboard", "users", "settings"]:
-    page = stack.add_page(key, padding=20)
+    page = stack.add(key, padding=20)
     ttk.Label(page, text=key.title(), font="heading-xl").pack(anchor="w")
 
 # Navigation buttons
@@ -341,20 +341,20 @@ stack = ttk.PageStack(content)
 stack.pack(fill="both", expand=True)
 
 # Dashboard page (simple)
-dashboard = stack.add_page("dashboard", padding=20)
+dashboard = stack.add("dashboard", padding=20)
 ttk.Label(dashboard, text="Dashboard", font="heading-xl").pack(anchor="w")
 
 # Settings page (with tabs)
-settings = stack.add_page("settings", padding=10)
+settings = stack.add("settings", padding=10)
 ttk.Label(settings, text="Settings", font="heading-xl").pack(anchor="w", pady=(0, 10))
 
 settings_tabs = ttk.Notebook(settings, padding=10)
 settings_tabs.pack(fill="both", expand=True)
 
-general = settings_tabs.add_frame(label="General", key="general")
+general = settings_tabs.add(text="General", key="general")
 ttk.Label(general, text="General settings go here").pack(anchor="w")
 
-advanced = settings_tabs.add_frame(label="Advanced", key="advanced")
+advanced = settings_tabs.add(text="Advanced", key="advanced")
 ttk.Label(advanced, text="Advanced options").pack(anchor="w")
 
 # Sidebar buttons

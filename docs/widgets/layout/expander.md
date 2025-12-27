@@ -114,6 +114,12 @@ ttk.Label(content, text="Option 1").pack()
 ttk.Entry(content).pack(fill="x")
 ```
 
+Frame options (padding, bootstyle, etc.) can be passed directly:
+
+```python
+content = exp.add(padding=10, bootstyle="primary")
+```
+
 Calling `add()` multiple times returns the same frame (idempotent).
 
 ### Starting collapsed
