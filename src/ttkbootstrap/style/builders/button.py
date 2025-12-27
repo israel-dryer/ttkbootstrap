@@ -355,7 +355,7 @@ def build_ghost_button_style(b: BootstyleBuilderTTk, ttk_style: str, color: str 
         * anchor
     """
     anchor = options.get('anchor', 'center')
-    accent_token = color or 'primary'
+    accent_token = color or 'foreground'
     surface_token = options.get('surface_color', 'background')
 
     surface = b.color(surface_token)
