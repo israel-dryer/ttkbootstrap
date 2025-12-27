@@ -26,9 +26,10 @@ app = ttk.App()
 sv = ttk.ScrollView(app)
 sv.pack(fill="both", expand=True, padx=20, pady=20)
 
-# Add content to the scrollable interior
+# Get the content frame and add widgets to it
+content = sv.add()
 for i in range(30):
-    ttk.Label(sv, text=f"Row {i+1}").pack(anchor="w", pady=4)
+    ttk.Label(content, text=f"Row {i+1}").pack(anchor="w", pady=4)
 
 app.mainloop()
 ```
@@ -70,26 +71,60 @@ Use `ScrollView` when:
 
 ## Examples & patterns
 
-### Core concept
+### Adding content
 
-A `ScrollView` exposes an interior "content" region (the widget itself acts as the content parent in most APIs).
-You pack/grid your widgets into that region; `ScrollView` manages the viewport and scrollbars around it.
+Use `add()` to get a content frame for placing widgets.
+
+```python
+sv = ttk.ScrollView(app)
+sv.pack(fill="both", expand=True)
+
+content = sv.add()  # Returns a Frame
+for i in range(30):
+    ttk.Label(content, text=f"Item {i+1}").pack(anchor="w", pady=4)
+```
+
+Calling `add()` multiple times returns the same frame (idempotent).
+
+### Custom content widget
+
+You can also pass your own widget to `add()`:
+
+```python
+my_frame = ttk.Frame(sv.canvas, padding=16)
+sv.add(my_frame)
+
+ttk.Label(my_frame, text="Custom frame with padding").pack()
+```
 
 ### Scroll direction
 
-If supported by your implementation, choose vertical, horizontal, or both scrolling depending on content.
-For code-like content (horizontal scrolling), also set `wrap="none"` on text-based widgets inside.
+Choose vertical, horizontal, or both scrolling depending on content.
+
+```python
+ttk.ScrollView(app, direction='vertical')    # default
+ttk.ScrollView(app, direction='horizontal')
+ttk.ScrollView(app, direction='both')
+```
 
 ### Scrollbar visibility
 
-If your implementation supports auto-hide policies (always/never/on-hover/on-scroll), use them to keep UI clean.
+Use auto-hide policies to keep UI clean.
+
+```python
+ttk.ScrollView(app, show_scrollbar='always')    # default
+ttk.ScrollView(app, show_scrollbar='never')     # hidden but scrolling works
+ttk.ScrollView(app, show_scrollbar='on-hover')  # appear on mouse enter
+ttk.ScrollView(app, show_scrollbar='on-scroll') # appear when scrolling
+```
 
 ### Padding
 
-Wrap your content in an inner `Frame` if you want consistent padding without affecting scroll calculations:
+Add padding to your content frame:
 
 ```python
-inner = ttk.Frame(sv, padding=16)
+content = sv.add()
+inner = ttk.Frame(content, padding=16)
 inner.pack(fill="both", expand=True)
 
 for i in range(20):

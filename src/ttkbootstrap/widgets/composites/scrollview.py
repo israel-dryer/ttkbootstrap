@@ -476,18 +476,28 @@ class ScrollView(Frame):
 
             self._scrolling_enabled = False
 
-    def add(self, widget: Widget, **kwargs: Any):
-        """Add a widget to the scrollable area.
+    def add(self, widget: Widget = None, **kwargs: Any) -> Widget:
+        """Add a widget to the scrollable area, or create and return a Frame.
 
         Args:
-            widget: The widget to add (typically a Frame containing content).
+            widget (Widget | None): The widget to add. If None, creates a Frame.
             **kwargs: Additional arguments passed to canvas.create_window().
 
+        Returns:
+            Widget: The content widget (passed or created).
+
         Raises:
-            ValueError: If the ScrollView already contains a widget.
+            ValueError: If the ScrollView already contains a widget and a new one is provided.
         """
+        # If content exists and no widget passed, return existing (idempotent)
         if self._child_widget is not None:
-            raise ValueError("ScrollView already contains a widget. Use remove() first.")
+            if widget is not None:
+                raise ValueError("ScrollView already contains a widget. Use remove() first.")
+            return self._child_widget
+
+        # Create frame if no widget provided
+        if widget is None:
+            widget = Frame(self.canvas)
 
         self._child_widget = widget
 
@@ -518,6 +528,8 @@ class ScrollView(Frame):
         # Initial scroll region update
         self.canvas.update_idletasks()
         self.canvas.configure(scrollregion=self.canvas.bbox('all'))
+
+        return widget
 
     def remove(self) -> Optional[Widget]:
         """Remove the current widget from the scrollable area.
