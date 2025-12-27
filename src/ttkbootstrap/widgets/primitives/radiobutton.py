@@ -27,6 +27,7 @@ class RadioButtonKwargs(TypedDict, total=False):
     signal: Signal[Any]
     value: Any
     padding: Any
+    anchor: str
     width: int
     underline: int
     state: Literal['normal', 'active', 'disabled', 'readonly'] | str
@@ -69,6 +70,7 @@ class RadioButton(LocalizationMixin, SignalMixin, TextSignalMixin, IconMixin, TT
             signal (Signal): Reactive Signal that receives the selected value (auto-synced with variable).
             value (Any): The value assigned to `variable` when this radio is selected.
             padding (int | tuple): Extra space around the content.
+            anchor (str): Determines how the content is aligned in the container. Combination of 'n', 's', 'e', 'w', or 'center' (default).
             width (int): Width of the control in characters.
             underline (int): Index of character to underline in `text`.
             state (str): Widget state.
@@ -79,5 +81,5 @@ class RadioButton(LocalizationMixin, SignalMixin, TextSignalMixin, IconMixin, TT
             style_options (dict): Optional dict forwarded to the style builder.
             localize (bool | Literal['auto']): Determines the widget's localization mode.
         """
-        kwargs.update(style_options=self._capture_style_options(['icon_only', 'icon'], kwargs))
+        kwargs.update(style_options=self._capture_style_options(['icon_only', 'icon', 'anchor'], kwargs))
         super().__init__(master, **kwargs)

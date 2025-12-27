@@ -26,6 +26,7 @@ class CheckToggle(CheckButton):
             onvalue (Any): Value set in `variable` when selected.
             offvalue (Any): Value set in `variable` when deselected.
             padding (int | tuple): Extra space around the content.
+            anchor (str): Determines how the content is aligned in the container. Combination of 'n', 's', 'e', 'w', or 'center' (default).
             width (int): Width of the control in characters.
             underline (int): Index of character to underline in `text`.
             state (str): Widget state ('normal', 'active', 'disabled', 'readonly').

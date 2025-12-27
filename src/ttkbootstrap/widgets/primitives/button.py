@@ -21,6 +21,7 @@ class ButtonKwargs(TypedDict, total=False):
     image: Any
     icon: Any
     icon_only: bool
+    anchor: str
     compound: Literal['text', 'image', 'top', 'bottom', 'left', 'right', 'center', 'none'] | str
     padding: Any
     width: int
@@ -67,6 +68,7 @@ class Button(LocalizationMixin, TextSignalMixin, IconMixin, TTKWrapperBase, Widg
             icon_only (bool): If true, removes the extra padding reserved for the text labels.
             compound (str): Placement of the image relative to text (e.g., 'left').
             padding (int | tuple): Extra space around the button content.
+            anchor (str): Determines how the content is aligned in the container. Combination of 'n', 's', 'e', 'w', or 'center' (default).
             localize (bool | Literal['auto']): Determines the widgets localization mode.
             value_format (str | dict): Format specification for the label value.
             width (int): Width of the button in characters.
@@ -81,5 +83,5 @@ class Button(LocalizationMixin, TextSignalMixin, IconMixin, TTKWrapperBase, Widg
             style_options (dict): Optional dict forwarded to the style builder. Useful
                 for widget-specific options (e.g., {'icon': ...}).
         """
-        kwargs.update(style_options=self._capture_style_options(['icon_only', 'icon'], kwargs))
+        kwargs.update(style_options=self._capture_style_options(['icon_only', 'icon', 'anchor'], kwargs))
         super().__init__(master, **kwargs)

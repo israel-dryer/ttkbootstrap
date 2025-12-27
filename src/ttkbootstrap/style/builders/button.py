@@ -54,8 +54,11 @@ def build_solid_button_style(b: BootstyleBuilderTTk, ttk_style: str, color: str 
     Configure the button style.
 
     Style options include:
+        * icon
         * icon_only
+        * anchor
     """
+    anchor = options.get('anchor', 'center')
     accent_token = color or 'primary'
     surface_token = options.get('surface_color', 'background')
 
@@ -104,7 +107,7 @@ def build_solid_button_style(b: BootstyleBuilderTTk, ttk_style: str, color: str 
         stipple="gray12",
         relief='flat',
         padding=button_padding,
-        anchor="center",
+        anchor=anchor,
         font="body"
     )
 
@@ -122,10 +125,20 @@ def build_solid_button_style(b: BootstyleBuilderTTk, ttk_style: str, color: str 
 
 @BootstyleBuilderTTk.register_builder('outline', 'TButton')
 def build_outline_button_style(b: BootstyleBuilderTTk, ttk_style: str, color: str = None, **options):
+    """
+    Configure the outline button style.
+
+    Style options include:
+        * icon
+        * icon_only
+        * anchor
+    """
+    anchor = options.get('anchor', 'center')
     accent_token = color or 'primary'
     surface_token = options.get('surface_color', 'background')
 
     surface = b.color(surface_token)
+
     foreground_normal = b.color(accent_token)
     foreground_disabled = b.disabled('text', surface)
     foreground_active = b.on_color(foreground_normal)
@@ -165,14 +178,16 @@ def build_outline_button_style(b: BootstyleBuilderTTk, ttk_style: str, color: st
         _button_layout(ttk_style),
     )
 
+    button_padding = _button_padding(b, options)
+
     b.configure_style(
         ttk_style,
         background=surface,
         foreground=foreground_normal,
         relief='flat',
         stipple="gray12",
-        padding=b.scale((8, 0)),
-        anchor="center",
+        padding=button_padding,
+        anchor=anchor,
         font="body"
     )
 
@@ -192,6 +207,15 @@ def build_outline_button_style(b: BootstyleBuilderTTk, ttk_style: str, color: st
 
 @BootstyleBuilderTTk.register_builder('text', 'TButton')
 def build_text_button_style(b: BootstyleBuilderTTk, ttk_style: str, color: str = None, **options):
+    """
+    Configure the text button style.
+
+    Style options include:
+        * icon
+        * icon_only
+        * anchor
+    """
+    anchor = options.get('anchor', 'center')
     accent_token = color or 'foreground'
     surface_token = options.get('surface_color', 'background')
 
@@ -228,11 +252,15 @@ def build_text_button_style(b: BootstyleBuilderTTk, ttk_style: str, color: str =
         relief='flat',
         stipple="gray12",
         padding=button_padding,
-        anchor="center",
+        anchor=anchor,
         font="body"
     )
 
+    from ttkbootstrap.style.typography import Font
+
+
     state_spec = dict(
+        font=[('focus', Font('body[bold]'))],
         foreground=[
             ('disabled', foreground_disabled),
             ('', foreground_normal)
@@ -248,6 +276,15 @@ def build_text_button_style(b: BootstyleBuilderTTk, ttk_style: str, color: str =
 
 @BootstyleBuilderTTk.register_builder('link', 'TButton')
 def build_link_button_style(b: BootstyleBuilderTTk, ttk_style: str, color: str = None, **options):
+    """
+    Configure the link button style.
+
+    Style options include:
+        * icon
+        * icon_only
+        * anchor
+    """
+    anchor = options.get('anchor', 'center')
     accent_token = color or 'primary'
     surface_token = options.get('surface_color', 'background')
 
@@ -284,12 +321,15 @@ def build_link_button_style(b: BootstyleBuilderTTk, ttk_style: str, color: str =
         relief='flat',
         stipple="gray12",
         padding=button_padding,
-        anchor="center",
+        anchor=anchor,
         font="body"
     )
 
     state_spec = dict(
-        font=[("active !disabled", "hyperlink"), ("", "body")],
+        font=[
+            ("active !disabled", "hyperlink"),
+            ("focus !disabled", "hyperlink"),
+            ("", "body")],
         cursor=[('', 'hand2')],
         foreground=[
             ('disabled', foreground_disabled),
@@ -306,7 +346,16 @@ def build_link_button_style(b: BootstyleBuilderTTk, ttk_style: str, color: str =
 
 @BootstyleBuilderTTk.register_builder('ghost', 'TButton')
 def build_ghost_button_style(b: BootstyleBuilderTTk, ttk_style: str, color: str = None, **options):
-    accent_token = color or 'primary'
+    """
+    Configure the ghost button style.
+
+    Style options include:
+        * icon
+        * icon_only
+        * anchor
+    """
+    anchor = options.get('anchor', 'center')
+    accent_token = color or 'foreground'
     surface_token = options.get('surface_color', 'background')
 
     surface = b.color(surface_token)
@@ -319,14 +368,13 @@ def build_ghost_button_style(b: BootstyleBuilderTTk, ttk_style: str, color: str 
     foreground_normal = accent
     foreground_disabled = b.disabled('text', surface)
 
-
     # button element images
     normal_img = recolor_image('button', normal, normal, surface, surface)
     pressed_img = recolor_image('button', pressed, surface, surface, surface)
     hovered_img = recolor_image('button', hovered, surface, surface, surface)
-    focused_img = recolor_image('button', focused, focused, focused_ring, surface)
-    focused_hovered_img = recolor_image('button', hovered, focused, focused_ring, surface)
-    focused_pressed_img = recolor_image('button', pressed, focused, focused_ring, surface)
+    focused_img = recolor_image('button', focused, accent, focused_ring, surface)
+    focused_hovered_img = recolor_image('button', hovered, accent, focused_ring, surface)
+    focused_pressed_img = recolor_image('button', pressed, accent, focused_ring, surface)
     disabled_img = recolor_image('button', surface, surface, surface, surface)
 
     b.create_style_element_image(
@@ -357,7 +405,7 @@ def build_ghost_button_style(b: BootstyleBuilderTTk, ttk_style: str, color: str 
         relief='flat',
         stipple="gray12",
         padding=button_padding,
-        anchor="center",
+        anchor=anchor,
         font="body"
     )
 
@@ -375,6 +423,15 @@ def build_ghost_button_style(b: BootstyleBuilderTTk, ttk_style: str, color: str 
 
 @BootstyleBuilderTTk.register_builder('context_item', 'TButton')
 def build_dropdown_item_button_style(b: BootstyleBuilderTTk, ttk_style: str, color: str = None, **options):
+    """
+    Configure the context menu button style.
+
+    Style options include:
+        * icon
+        * icon_only
+        * anchor
+    """
+    anchor = options.get('anchor', 'w')
     accent_token = color or 'primary'
     surface_token = options.get('surface_color', 'background')
 
@@ -393,7 +450,7 @@ def build_dropdown_item_button_style(b: BootstyleBuilderTTk, ttk_style: str, col
         relief='flat',
         stipple='gray12',
         padding=(6, 3),
-        anchor='w',
+        anchor=anchor,
         font='body',
         focuscolor=''
     )
@@ -421,7 +478,14 @@ def build_dropdown_item_button_style(b: BootstyleBuilderTTk, ttk_style: str, col
 
 @BootstyleBuilderTTk.register_builder('selectbox_item', 'TButton')
 def build_selectbox_item_button_style(b: BootstyleBuilderTTk, ttk_style: str, color: str = None, **options):
-    """Style for selectbox dropdown items with selected state support."""
+    """Configure the style for selectbox dropdown items with selected state support.
+
+    Style options include:
+        * icon
+        * icon_only
+        * anchor
+    """
+    anchor = options.get('anchor', 'w')
     accent_token = color or 'primary'
     surface_token = options.get('surface_color', 'background')
 
@@ -440,7 +504,7 @@ def build_selectbox_item_button_style(b: BootstyleBuilderTTk, ttk_style: str, co
         relief='flat',
         stipple='gray12',
         padding=(6, 3),
-        anchor='w',
+        anchor=anchor,
         font='body',
         focuscolor=''
     )

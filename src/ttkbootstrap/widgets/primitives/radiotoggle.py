@@ -24,6 +24,7 @@ class RadioToggle(RadioButton):
             signal (Signal): Reactive Signal that receives the selected value (auto-synced with variable).
             value (Any): The value assigned to `variable` when this radio is selected.
             padding (int | tuple): Extra space around the content.
+            anchor (str): Determines how the content is aligned in the container. Combination of 'n', 's', 'e', 'w', or 'center' (default).
             width (int): Width of the control in characters.
             underline (int): Index of character to underline in `text`.
             state (str): Widget state ('normal', 'active', 'disabled', 'readonly').
