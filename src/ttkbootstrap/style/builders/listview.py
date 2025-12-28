@@ -5,8 +5,17 @@ from ttkbootstrap.style.element import Element, ElementImage
 from ttkbootstrap.style.utility import recolor_image
 
 
+@BootstyleBuilderTTk.register_builder('list_container', 'TFrame')
+def build_list_container_style(b: BootstyleBuilderTTk, ttk_style: str, color: str = None, **options):
+    """List container frame style - no hover state (only items should have hover)."""
+    surface_token = options.get('surface_color', 'background')
+    background = b.color(surface_token)
+    b.configure_style(ttk_style, background=background, relief='flat')
+
+
 @BootstyleBuilderTTk.register_builder('list', 'TFrame')
 def build_list_frame_style(b: BootstyleBuilderTTk, ttk_style: str, color: str = None, **options):
+    """List internal frame style - has state mapping to sync with parent ListItem."""
     enable_hover_state = options.get('enable_hover_state', True)
     accent_token = color or 'primary'
     surface_token = options.get('surface_color', 'background')
@@ -20,7 +29,7 @@ def build_list_frame_style(b: BootstyleBuilderTTk, ttk_style: str, color: str = 
     background_state_map = [
         ('focus selected hover', selected_active) if enable_hover_state else None,
         ('focus selected', selected_active),
-        ('selected', selected) if enable_hover_state else None,
+        ('selected', selected),
         ('focus pressed', pressed),
         ('pressed', pressed),
         ('focus hover', active) if enable_hover_state else None,
