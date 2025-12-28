@@ -486,7 +486,7 @@ def build_selectbox_item_button_style(b: BootstyleBuilderTTk, ttk_style: str, co
         * anchor
     """
     anchor = options.get('anchor', 'w')
-    accent_token = color or 'foreground'
+    accent_token = color or 'primary'
     surface_token = options.get('surface_color', 'background')
 
     surface = b.color(surface_token)
@@ -494,7 +494,7 @@ def build_selectbox_item_button_style(b: BootstyleBuilderTTk, ttk_style: str, co
     on_disabled = b.disabled('text', surface)
 
     active = b.elevate(surface, 1)
-    selected = b.subtle(accent_token, surface)
+    selected = b.color(accent_token)
     on_selected = b.on_color(selected)
 
     b.configure_style(
