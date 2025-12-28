@@ -52,7 +52,7 @@ def _create_chevron_images(
         active_chevron = BootstrapIcon(icon_name, size=b.scale(18), color=active).image
         state_specs.extend(
             [
-                ('focus !disabled', active_chevron),
+                ('background focus !disabled', active_chevron),
                 ('hover !disabled', active_chevron),
                 ('pressed !disabled', active_chevron),
             ])
@@ -125,9 +125,9 @@ def build_solid_menubutton_style(b: BootstyleBuilderTTk, ttk_style: str, color: 
             padding=b.scale(10)).state_specs(
             [
                 ('disabled', disabled_img),
-                ('focus pressed', focused_pressed_img),
-                ('focus hover', focused_hovered_img),
-                ('focus', focused_img),
+                ('background focus pressed', focused_pressed_img),
+                ('background focus hover', focused_hovered_img),
+                ('background focus', focused_img),
                 ('pressed', pressed_img),
                 ('hover', hovered_img),
             ]))
@@ -195,9 +195,9 @@ def build_outline_menubutton_style(b: BootstyleBuilderTTk, ttk_style: str, color
             padding=b.scale(10)).state_specs(
             [
                 ('disabled', disabled_img),
-                ('focus pressed', focused_pressed_img),
-                ('focus hover', focused_hovered_img),
-                ('focus', focused_img),
+                ('background focus pressed', focused_pressed_img),
+                ('background focus hover', focused_hovered_img),
+                ('background focus', focused_img),
                 ('pressed', pressed_img),
                 ('hover', hovered_img),
             ]))
@@ -219,7 +219,7 @@ def build_outline_menubutton_style(b: BootstyleBuilderTTk, ttk_style: str, color
     state_spec = dict(
         foreground=[
             ('disabled', foreground_disabled),
-            ('focus', foreground_active),
+            ('background focus', foreground_active),
             ('hover', foreground_active),
             ('', foreground_normal)
         ],
@@ -275,7 +275,10 @@ def build_text_menubutton_style(b: BootstyleBuilderTTk, ttk_style: str, color: s
         anchor="center" if icon_only else "w"
     )
 
+    from ttkbootstrap.style.typography import Font
+
     state_spec = dict(
+        font=[('background focus', Font('body[bold]'))],
         foreground=[
             ('disabled', foreground_disabled),
             ('', foreground_normal)
@@ -325,9 +328,9 @@ def build_ghost_menubutton_style(b: BootstyleBuilderTTk, ttk_style: str, color: 
             padding=b.scale(10)).state_specs(
             [
                 ('disabled', disabled_img),
-                ('focus pressed', focused_pressed_img),
-                ('focus hover', focused_hovered_img),
-                ('focus', focused_img),
+                ('background focus pressed', focused_pressed_img),
+                ('background focus hover', focused_hovered_img),
+                ('background focus', focused_img),
                 ('pressed', pressed_img),
                 ('hover', hovered_img),
             ]))
