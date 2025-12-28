@@ -356,7 +356,7 @@ class ListView(Frame):
             enable_deleting: bool = False,
             enable_dragging: bool = False,
             alternating_row_color: str = 'background[+1]',
-            alternating_row_mode: Literal['odd', 'even', 'none'] = 'even',
+            alternating_row_mode: Literal['odd', 'even', 'none'] = 'none',
             show_separator: bool = True,
             show_scrollbar: bool = True,
             enable_focus_state: bool = True,

@@ -23,4 +23,4 @@ print(ttk.get_themes())
 app.update_idletasks()
 app.place_center()
 
-app.run()
+app.mainloop()

@@ -13,14 +13,13 @@ def build_list_frame_style(b: BootstyleBuilderTTk, ttk_style: str, color: str = 
     background = b.color(surface_token)
     active = b.active(background)
     pressed = b.pressed(background)
-    selected = b.color(accent_token)
+    selected = b.subtle(accent_token, background)
     selected_active = b.active(selected)
     b.configure_style(ttk_style, background=background, relief='flat')
 
     background_state_map = [
         ('focus selected hover', selected_active) if enable_hover_state else None,
         ('focus selected', selected_active),
-        ('selected hover', selected_active) if enable_hover_state else None,
         ('selected', selected) if enable_hover_state else None,
         ('focus pressed', pressed),
         ('pressed', pressed),
@@ -56,9 +55,10 @@ def build_list_item_style(
     focus_token = options.get('focus_color', None)
 
     background = b.color(surface_token)
+    indicator = b.color(accent_token)
     active = b.active(background)
     pressed = b.pressed(background)
-    selected = b.color(accent_token)
+    selected = b.subtle(accent_token, background)
     selected_active = b.active(selected)
 
     border_normal = b.border(background) if variant.endswith('separated') else background
@@ -66,23 +66,21 @@ def build_list_item_style(
     if focus_token:
         focus_color = b.color(focus_token)
     else:
-        focus_color = b.elevate(selected, 5)
+        focus_color = indicator
 
     normal_img = recolor_image('list-item-separated', background, border_normal)
     active_img = recolor_image('list-item-separated', active, border_normal)
-    selected_img = recolor_image('list-item-separated', selected, border_normal)
-    selected_active_img = recolor_image('list-item-separated', selected_active, border_normal)
-    pressed_img = recolor_image('list-item-separated', pressed, border_normal)
+    selected_img = recolor_image('list-item-focus', selected, border_normal, indicator)
+    pressed_img = recolor_image('list-item-separated', pressed, border_normal, focus_color)
 
-    focus_img = recolor_image('list-item-focus', active, border_normal, focus_color)
-    focus_pressed_img = recolor_image('list-item-focus', pressed, border_normal, focus_color)
-    focus_active_img = recolor_image('list-item-focus', active, border_normal, focus_color)
-    focus_selected_img = recolor_image('list-item-focus', selected_active, border_normal, focus_color)
+    focus_img = recolor_image('list-item-focus', active, border_normal, active)
+    focus_pressed_img = recolor_image('list-item-focus', pressed, border_normal, pressed)
+    focus_active_img = recolor_image('list-item-focus', active, border_normal, active)
+    focus_selected_img = recolor_image('list-item-focus', selected_active, border_normal, indicator)
 
     image_state_specs = [
         ('focus selected hover', focus_selected_img) if enable_hover_state else None,
         ('focus selected', focus_selected_img),
-        ('selected hover', selected_active_img) if enable_hover_state else None,
         ('selected', selected_img),
         ('focus pressed', focus_pressed_img),
         ('pressed', pressed_img),
@@ -117,7 +115,7 @@ def build_list_item_button_style(b: BootstyleBuilderTTk, ttk_style: str, color: 
     background = b.color(surface_token)
     active = b.active(background)
     pressed = b.pressed(background)
-    selected = b.color(color or 'primary')
+    selected = b.subtle(color or 'primary', background)
     selected_active = b.active(selected)
 
     b.create_style_layout(
@@ -132,7 +130,6 @@ def build_list_item_button_style(b: BootstyleBuilderTTk, ttk_style: str, color: 
     background_state_spec = [
         ('focus selected hover', selected_active) if enable_hover_state else None,
         ('focus selected', selected_active),
-        ('selected hover', selected_active) if enable_hover_state else None,
         ('selected', selected),
         ('focus pressed', pressed),
         ('pressed', pressed),
@@ -174,7 +171,7 @@ def build_list_icon(b: BootstyleBuilderTTk, ttk_style: str, color: str = None, *
     background = b.color(surface_token)
     active = b.active(background)
     pressed = b.pressed(background)
-    selected = b.color(select_background_token)
+    selected = b.subtle(select_background_token, background)
     selected_active = b.active(selected)
     on_background = b.on_color(background)
     on_selected = b.on_color(selected)
@@ -213,7 +210,6 @@ def build_list_icon(b: BootstyleBuilderTTk, ttk_style: str, color: str = None, *
     background_state_spec = [
         ('focus selected hover', selected_active) if enable_hover_state else None,
         ('focus selected', selected_active),
-        ('selected hover', selected_active) if enable_hover_state else None,
         ('selected', selected),
         ('focus pressed', pressed),
         ('pressed', pressed),
@@ -268,7 +264,7 @@ def build_list_item_label(b: BootstyleBuilderTTk, ttk_style: str, color: str = N
     background = b.color(surface_token)
     active = b.active(background)
     pressed = b.pressed(background)
-    selected = b.color(select_background_token)
+    selected = b.subtle(select_background_token, background)
     selected_active = b.active(selected)
     on_selected = b.on_color(selected)
     on_background = b.color(foreground_token) if foreground_token else b.on_color(background)
@@ -276,7 +272,6 @@ def build_list_item_label(b: BootstyleBuilderTTk, ttk_style: str, color: str = N
     background_state_spec = [
         ('focus selected hover', selected_active) if enable_hover_state else None,
         ('focus selected', selected_active),
-        ('selected hover', selected_active) if enable_hover_state else None,
         ('selected', selected),
         ('focus pressed', pressed),
         ('pressed', pressed),

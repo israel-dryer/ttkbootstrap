@@ -60,7 +60,7 @@ def main():
         col1,
         items=simple_data,
         show_separator=True,
-
+        selection_mode='single',
     )
     simple_list.pack(fill='both', expand=True)
 

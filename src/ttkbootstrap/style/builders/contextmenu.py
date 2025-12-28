@@ -16,7 +16,7 @@ def build_context_check_toolbutton_style(b: BootstyleBuilderTTk, ttk_style: str,
     on_disabled = b.disabled('text', surface)
 
     active = b.elevate(surface, 1)
-    pressed = b.color(accent_token)
+    pressed = b.elevate(surface, 2)
     on_pressed = b.on_color(pressed)
 
     b.configure_style(
@@ -67,7 +67,7 @@ def build_context_radio_toolbutton_style(b: BootstyleBuilderTTk, ttk_style: str,
     on_disabled = b.disabled('text', surface)
 
     active = b.elevate(surface, 1)
-    pressed = b.color(accent_token)
+    pressed = b.elevate(surface, 2)
     on_pressed = b.on_color(pressed)
 
     b.configure_style(

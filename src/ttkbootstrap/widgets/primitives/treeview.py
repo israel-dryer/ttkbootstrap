@@ -14,7 +14,7 @@ class TreeViewKwargs(TypedDict, total=False):
     # Standard ttk.Treeview options
     columns: Any
     displaycolumns: Any
-    show: Any
+    show: Literal['tree', 'headings', '']
     height: int
     padding: Any
     selectmode: Literal['browse','extended','none'] | str
@@ -26,6 +26,10 @@ class TreeViewKwargs(TypedDict, total=False):
     # ttkbootstrap-specific extensions
     bootstyle: str
     surface_color: str
+    border_color: str
+    show_border: bool
+    select_background: str
+    header_background: str
     style_options: dict[str, Any]
 
 
@@ -50,8 +54,23 @@ class TreeView(TTKWrapperBase, WidgetCapabilitiesMixin, TtkStateMixin, ttk.Treev
             style (str): Explicit ttk style name (overrides bootstyle).
             bootstyle (str): ttkbootstrap style tokens.
             surface_color (str): Optional surface token; otherwise inherited.
+            border_color (str): The color of the border around the table.
+            show_border (bool): Whether to show a border around the table.
+            open_icon (str | dict): The icon used for open state.
+            close_icon (str | dict): The icon used for close state.
+            select_background (str): A semantic color token used to set selection background color.
+            header_background (str): A semantic color token used to set the header background color.
             style_options (dict): Optional dict forwarded to the style builder.
         """
+        kwargs.update(style_options=self._capture_style_options([
+            'border_color',
+            'show_border',
+            'open_icon',
+            'close_icon',
+            'select_background',
+            'header_background'
+        ],
+            kwargs))
         super().__init__(master, **kwargs)
 
 
