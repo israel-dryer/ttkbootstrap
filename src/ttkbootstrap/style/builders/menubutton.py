@@ -310,9 +310,9 @@ def build_ghost_menubutton_style(b: BootstyleBuilderTTk, ttk_style: str, color: 
     normal_img = recolor_image('button', normal, normal, surface, surface)
     pressed_img = recolor_image('button', pressed, surface, surface, surface)
     hovered_img = recolor_image('button', hovered, surface, surface, surface)
-    focused_img = recolor_image('button', focused, focused, focused_ring, surface)
-    focused_hovered_img = recolor_image('button', hovered, focused, focused_ring, surface)
-    focused_pressed_img = recolor_image('button', pressed, focused, focused_ring, surface)
+    focused_img = recolor_image('button', focused, foreground_normal, focused_ring, surface)
+    focused_hovered_img = recolor_image('button', hovered, foreground_normal, focused_ring, surface)
+    focused_pressed_img = recolor_image('button', pressed, foreground_normal, focused_ring, surface)
     disabled_img = recolor_image('button', surface, surface, surface, surface)
 
     if show_dropdown:
