@@ -16,6 +16,12 @@ Style maps can then use:
 
 This matches the CSS :focus-visible behavior that modern browsers implement.
 
+Programmatic focus:
+    The focus_set() and focus_force() methods accept a `visual_focus` parameter.
+    When True, the focus ring is shown as if the widget was focused via keyboard:
+
+        widget.focus_set(visual_focus=True)  # Shows focus ring
+
 Note:
     The 'background' TTK state is normally used to indicate an inactive
     window. Since this is rarely styled in practice, it's repurposed here
@@ -28,6 +34,56 @@ from typing import Optional
 
 _installed = False
 _root_ref: Optional[tk.Misc] = None
+
+# Store original focus methods
+_original_focus_set = tk.Misc.focus_set
+_original_focus_force = tk.Misc.focus_force
+
+
+def _patched_focus_set(self, *, visual_focus: bool = False) -> None:
+    """Enhanced focus_set that optionally shows visual focus ring.
+
+    Args:
+        visual_focus: If True, show focus as if focused via keyboard. Default is False.
+
+    Examples:
+        ```python
+        # Normal programmatic focus (no ring)
+        entry.focus_set()
+
+        # Focus with visible ring (e.g., after validation error)
+        entry.focus_set(visual_focus=True)
+        ```
+    """
+    _original_focus_set(self)
+    if visual_focus:
+        try:
+            self.state(['background'])
+        except (TclError, AttributeError):
+            pass
+
+
+def _patched_focus_force(self, *, visual_focus: bool = False) -> None:
+    """Enhanced focus_force that optionally shows visual focus ring.
+
+    Args:
+        visual_focus: If True, show focus as if focused via keyboard. Default is False.
+
+    Examples:
+        ```python
+        # Normal forced focus (no ring)
+        entry.focus_force()
+
+        # Forced focus with visible ring
+        entry.focus_force(visual_focus=True)
+        ```
+    """
+    _original_focus_force(self)
+    if visual_focus:
+        try:
+            self.state(['background'])
+        except (TclError, AttributeError):
+            pass
 
 
 def _on_tab_focus(event: tk.Event) -> None:
@@ -91,6 +147,10 @@ def install_visual_focus(root: tk.Misc = None) -> None:
     if _installed:
         return
 
+    # Patch focus_set and focus_force to support visual_focus parameter
+    tk.Misc.focus_set = _patched_focus_set
+    tk.Misc.focus_force = _patched_focus_force
+
     # Bind Tab key globally - works even before any root exists
     # by using bind_class on the base Tk class
     tk.Tk.bind_all = _bind_all_with_focus
@@ -129,6 +189,10 @@ def uninstall_visual_focus() -> None:
 
     if not _installed:
         return
+
+    # Restore original focus methods
+    tk.Misc.focus_set = _original_focus_set
+    tk.Misc.focus_force = _original_focus_force
 
     if _root_ref is not None:
         try:
