@@ -143,7 +143,7 @@ def build_tk_scale(builder: BootstyleBuilderBuilderTk, widget: Any, **options: A
 def build_tk_listbox(builder: BootstyleBuilderBuilderTk, widget: Any, **options: Any) -> None:
     bg = builder.color('background')
     fg = builder.color('foreground')
-    accent = builder.color('primary')
+    accent = builder.subtle('primary', bg)
     on_accent = builder.on_color(accent)
     border = builder.border(bg)
     widget.configure(
@@ -211,13 +211,14 @@ def build_tk_spinbox(builder: BootstyleBuilderBuilderTk, widget: Any, **options:
     bg = builder.color('background')
     fg = builder.color('foreground')
     border = builder.border(bg)
-    accent = builder.color('primary')
+    accent = builder.subtle('primary', bg)
+    insert_background = builder.color('primary')
 
     widget.configure(
         relief='flat',
         foreground=fg,
         background=bg,
-        insertbackground=accent,
+        insertbackground=insert_background,
         insertwidth=1,
         highlightcolor=accent,
         highlightthickness=1,
