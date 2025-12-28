@@ -165,11 +165,11 @@ def _bind_all_with_focus(self, sequence=None, func=None, add=None):
     # Install our bindings on first bind_all call (when root exists)
     if _root_ref is None:
         _root_ref = self
-        # Tab navigation detection
-        self.bind_all('<Tab>', _on_tab_focus, add='+')
-        self.bind_all('<ISO_Left_Tab>', _on_tab_focus, add='+')  # Shift+Tab on Linux
-        # Clear background state on focus out
-        self.bind_all('<FocusOut>', _on_focus_out, add='+')
+        # Bind Tab on root window - the after_idle callback will set state
+        # on whatever widget receives focus (forward or backward)
+        self.bind('<Tab>', _on_tab_focus, '+')
+        # Clear background state on focus out (needs bind_all for all widgets)
+        self.bind_all('<FocusOut>', _on_focus_out, '+')
 
     # Call original bind_all
     return tk.Misc.bind_all(self, sequence, func, add)
@@ -196,8 +196,7 @@ def uninstall_visual_focus() -> None:
 
     if _root_ref is not None:
         try:
-            _root_ref.unbind_all('<Tab>')
-            _root_ref.unbind_all('<ISO_Left_Tab>')
+            _root_ref.unbind('<Tab>')
             _root_ref.unbind_all('<FocusOut>')
         except TclError:
             pass  # Root may have been destroyed
