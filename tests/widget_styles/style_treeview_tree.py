@@ -8,7 +8,7 @@ def create_treeview_style():
     frame = ttk.Frame(root, padding=5)
 
     # Create Treeview
-    tree = ttk.TreeView(root, show="tree")
+    tree = ttk.TreeView(root, show='tree', select_background='primary[subtle]', header_background='primary')
     tree.pack(fill="both", expand=True, padx=10, pady=10)
 
     # Define columns (optional – here we use just the built-in #0 column for labels)
@@ -42,19 +42,11 @@ def create_treeview_style():
     return frame
 
 
-def change_style():
-    if style.theme_use() == DARK:
-        style.theme_use(LIGHT)
-    else:
-        style.theme_use(DARK)
-
-
 if __name__ == '__main__':
     # create visual widget style tests
     root = ttk.Window()
-    style = ttk.Style()
 
-    ttk.Button(text="Change Theme", command=change_style).pack(padx=10, pady=10)
+    ttk.Button(text="Change Theme", command=ttk.toggle_theme).pack(padx=10, pady=10)
 
     create_treeview_style().pack(side='left')
 

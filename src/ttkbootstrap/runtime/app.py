@@ -250,8 +250,8 @@ class AppSettings:
 
     # theme
     theme: str = "light"
-    light_theme: str = "bootstrap-light"
-    dark_theme: str = "bootstrap-dark"
+    light_theme: str = "docs-light"
+    dark_theme: str = "docs-dark"
     available_themes: Sequence[str] = ()
     inherit_surface_color: bool = True
 

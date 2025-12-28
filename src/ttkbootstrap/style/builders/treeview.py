@@ -29,7 +29,6 @@ def build_tree_style(b: BootstyleBuilderTTk, ttk_style: str, color: str = None, 
         * header_background
     """
     surface_token = options.get('surface_color', 'background')
-
     surface = b.color(surface_token)
 
     if options.get('show_border', True):
@@ -44,7 +43,7 @@ def build_tree_style(b: BootstyleBuilderTTk, ttk_style: str, color: str = None, 
         heading_color = b.color(options.get('header_background'))
         heading_hover = b.active(heading_color)
     else:
-        heading_color = b.elevate(surface, 2)
+        heading_color = b.elevate(surface, 3)
         heading_hover = b.active(heading_color)
 
     on_heading = b.on_color(heading_color)
@@ -52,14 +51,8 @@ def build_tree_style(b: BootstyleBuilderTTk, ttk_style: str, color: str = None, 
     on_surface_disabled = b.disabled('text', surface)
     hover = b.active(surface)
 
-    if options.get('select_background'):
-        select_background = b.color(options.get('select_background'))
-    else:
-        if color in TOKENS:
-            select_background = b.color(f"{color}[subtle]")
-        else:
-            select_background = b.color('primary')
-
+    select_background_token = options.get('select_background', 'primary')
+    select_background = b.color(select_background_token)
     select_hover = b.active(select_background)
     on_select = b.on_color(select_background)
 
@@ -78,7 +71,7 @@ def build_tree_style(b: BootstyleBuilderTTk, ttk_style: str, color: str = None, 
     b.create_style_element_image(
         ElementImage(
             f'{ttk_style}.indicator', expand_icon_normal,
-            sticky='w', height=b.scale(14), width=b.scale(icon_size + 4)).state_specs(
+            sticky='w', height=b.scale(14), width=b.scale(icon_size + 12)).state_specs(
             [
                 ('user2', leaf),
                 ('user1 selected', collapse_icon_selected),

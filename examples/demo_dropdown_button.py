@@ -3,9 +3,9 @@ from ttkbootstrap import ContextMenuItem
 
 
 def main():
-    root = ttk.Window(theme="flatly", title="DropdownButton Demo", size=(420, 320))
+    root = ttk.Window(title="DropdownButton Demo", size=(420, 320))
 
-    ttk.Label(root, text="DropdownButton", font=("Segoe UI", 16, "bold")).pack(pady=12)
+    ttk.Label(root, text="DropdownButton", font="heading-md").pack(pady=12)
 
     status = ttk.Label(root, text="Select an item...", anchor="w")
     status.pack(fill="x", padx=16, pady=(0, 12))
@@ -50,6 +50,7 @@ def main():
         bootstyle="ghost",
         icon_only=True,
         icon="three-dots-vertical",
+        show_dropdown_button=False,
         dropdown_button_icon="caret-down-fill",
         popdown_options={"offset": (6, 6)},
     )

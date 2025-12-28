@@ -432,15 +432,15 @@ def build_dropdown_item_button_style(b: BootstyleBuilderTTk, ttk_style: str, col
         * anchor
     """
     anchor = options.get('anchor', 'w')
-    accent_token = color or 'primary'
+    accent_token = color or 'foreground'
     surface_token = options.get('surface_color', 'background')
 
     surface = b.color(surface_token)
     on_surface = b.on_color(surface)
     on_disabled = b.disabled('text', surface)
 
-    active = b.elevate(surface, 1)
-    pressed = b.color(accent_token)
+    active = b.subtle(accent_token, surface)
+    pressed = b.elevate(active, 2)
     on_pressed = b.on_color(pressed)
 
     b.configure_style(
@@ -462,7 +462,7 @@ def build_dropdown_item_button_style(b: BootstyleBuilderTTk, ttk_style: str, col
             ('pressed', on_pressed),
             ('', on_surface)],
         background=[
-            ('focus !disabled', pressed),
+            ('focus !disabled', active),
             ('pressed !disabled', pressed),
             ('active !disabled', active),
             ('', surface)
