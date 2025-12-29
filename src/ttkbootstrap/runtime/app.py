@@ -114,6 +114,7 @@ def apply_class_bindings(window: tkinter.Widget | App) -> None:
         binding = window.bind_class('TCheckbutton', event)
         if binding:
             window.bind_class('Toolbutton', event, binding)
+            window.bind_class('ButtonGroup', event, binding)
 
     for className in ["TEntry", "TSpinbox", "TCombobox", "Text"]:
         window.bind_class(
