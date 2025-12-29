@@ -355,7 +355,7 @@ def main():
         app,
         text="Explore different GroupItem layouts and configurations",
         font=("TkDefaultFont", 11),
-        bootstyle="secondary",
+        color="secondary",
     )
     desc.pack(pady=(0, 10))
 
@@ -386,7 +386,7 @@ def main():
             btn_container,
             text=text,
             command=lambda cmd=command: cmd(app),
-            bootstyle=style,
+            color=style,
             width=28,
         )
         btn.pack(side=LEFT)
@@ -395,7 +395,7 @@ def main():
             btn_container,
             text=f"  —  {tooltip}",
             font=("TkDefaultFont", 9),
-            bootstyle="secondary",
+            color="secondary",
         )
         desc_label.pack(side=LEFT, padx=(10, 0))
 
@@ -407,7 +407,8 @@ def main():
         app,
         text="Exit Demo",
         command=app.destroy,
-        bootstyle="secondary-outline",
+        color="secondary",
+        variant="outline",
         width=20,
     ).pack(pady=(0, 20))
 
