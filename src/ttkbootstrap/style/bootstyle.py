@@ -418,16 +418,22 @@ class Bootstyle:
             inherit_surface_color = kwargs.pop('inherit_surface_color', None)
             surface_color_token = kwargs.pop('surface_color', None)
 
+            # Extract ttk_class for style lookup (doesn't affect widget's actual class_)
+            # This allows custom style builders without affecting bindtags
+            ttk_class = kwargs.pop('ttk_class', None)
+
             func(self, *args, **kwargs)  # the actual widget constructor
 
+            # Use ttk_class for style lookup if provided, otherwise use widget's actual class
             widget_class = self.winfo_class()
+            style_class = ttk_class or widget_class
 
             # Handle bootstyle -> color/variant conversion AFTER widget constructor
-            # so we have the correct widget_class for variant validation
+            # so we have the correct style_class for variant validation
             if bootstyle:
                 _warn_bootstyle_deprecated()
                 bs_color, bs_variant = convert_bootstyle_to_color_variant(
-                    bootstyle, widget_class, warn=False  # Already warned above
+                    bootstyle, style_class, warn=False  # Already warned above
                 )
                 color = bs_color
                 variant = bs_variant
@@ -450,7 +456,8 @@ class Bootstyle:
                 effective_surface_token = 'background'
 
             # container widgets can take their surface color from the color param
-            if color and widget_class in CONTAINER_CLASSES and surface_color_token is None:
+            # Use style_class so custom ttk_class like 'Field' can opt out of this behavior
+            if color and style_class in CONTAINER_CLASSES and surface_color_token is None:
                 effective_surface_token = color
 
             # cache the surface color for child components
@@ -467,23 +474,23 @@ class Bootstyle:
 
             # ==== Create actual ttk style & assign to widget =====
 
-            if (color or variant) and widget_class:
+            if (color or variant) and style_class:
 
                 ttk_style = Bootstyle.create_ttk_style(
-                    widget_class=widget_class,
+                    widget_class=style_class,
                     style_options=style_options,
                     color=color,
                     variant=variant,
                 )
                 self.configure(style=ttk_style)
 
-            elif widget_class and not had_style_kwarg:
+            elif style_class and not had_style_kwarg:
                 from ttkbootstrap.style.bootstyle_builder_ttk import BootstyleBuilderTTk
                 from ttkbootstrap.style.style import get_style
 
-                default_variant = BootstyleBuilderTTk.get_default_variant(widget_class)
+                default_variant = BootstyleBuilderTTk.get_default_variant(style_class)
 
-                if BootstyleBuilderTTk.has_builder(widget_class, default_variant):
+                if BootstyleBuilderTTk.has_builder(style_class, default_variant):
 
                     # Build options first so we can decide if a custom bs[...] prefix is needed
                     custom_prefix = None
@@ -497,25 +504,26 @@ class Bootstyle:
                     ttk_style = generate_ttk_style_name(
                         color=None,
                         variant=default_variant,
-                        widget_class=widget_class,
+                        widget_class=style_class,
                         custom_prefix=custom_prefix,
                     )
 
                     style_instance = get_style()
                     if style_instance is not None:
                         style_instance.create_style(
-                            widget_class=widget_class,
+                            widget_class=style_class,
                             variant=default_variant,
                             ttk_style=ttk_style,
                             options=style_options,
                         )
                         self.configure(style=ttk_style)
                 else:
-                    self.configure(style=widget_class)
+                    self.configure(style=style_class)
 
-            # Store color, variant, and style_options for later retrieval
+            # Store color, variant, ttk_class, and style_options for later retrieval
             setattr(self, '_color', color)
             setattr(self, '_variant', variant)
+            setattr(self, '_ttk_class', ttk_class)
             setattr(self, '_style_options', style_options)
 
         return __init__wrapper
