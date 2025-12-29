@@ -6,11 +6,47 @@ user-friendly bootstyle syntax and TTK style names.
 
 from __future__ import annotations
 
+import warnings
 from typing import Optional
 
 from ttkbootstrap.runtime.app import get_app_settings
 from ttkbootstrap.core.exceptions import BootstyleParsingError
 from ttkbootstrap.style.token_maps import (COLOR_TOKENS, CONTAINER_CLASSES, ORIENT_CLASSES, WIDGET_CLASS_MAP)
+
+
+def _warn_bootstyle_deprecated():
+    """Issue deprecation warning for bootstyle parameter usage."""
+    warnings.warn(
+        "The 'bootstyle' parameter is deprecated. "
+        "Use 'color' and 'variant' parameters instead.",
+        FutureWarning,
+        stacklevel=4
+    )
+
+
+def convert_bootstyle_to_color_variant(
+        bootstyle: str,
+        widget_class: str,
+        warn: bool = True
+) -> tuple[Optional[str], Optional[str]]:
+    """Convert bootstyle string to separate color and variant.
+
+    Args:
+        bootstyle: Bootstyle string (e.g., "success-outline", "primary")
+        widget_class: TTK widget class for variant validation
+        warn: Whether to issue deprecation warning
+
+    Returns:
+        Tuple of (color, variant) where either may be None
+    """
+    if not bootstyle:
+        return None, None
+
+    if warn:
+        _warn_bootstyle_deprecated()
+
+    parsed = parse_bootstyle(bootstyle, widget_class)
+    return parsed.get('color'), parsed.get('variant')
 
 
 def parse_bootstyle_v2(bootstyle: str, widget_class: str) -> dict:
@@ -227,28 +263,53 @@ class Bootstyle:
     def create_ttk_style(
             widget_class: str,
             bootstyle: Optional[str] = None,
-            style_options: Optional[dict] = None) -> str:
+            style_options: Optional[dict] = None,
+            *,
+            color: Optional[str] = None,
+            variant: Optional[str] = None,
+    ) -> str:
         """Create or get TTK style name for a widget.
 
-        Parses bootstyle string, generates TTK style name, and triggers style creation.
+        Parses bootstyle string OR uses color/variant directly to generate
+        TTK style name and trigger style creation.
+
+        Args:
+            widget_class: TTK widget class (e.g., "TButton")
+            bootstyle: DEPRECATED - Use color and variant instead
+            style_options: Custom style options dict
+            color: Color token (e.g., "success", "primary[subtle]")
+            variant: Variant name (e.g., "outline", "solid")
+
+        Returns:
+            Generated TTK style name
         """
         from ttkbootstrap.style.bootstyle_builder_ttk import BootstyleBuilderTTk
 
-        if not bootstyle:
+        # Handle legacy bootstyle parameter
+        if bootstyle:
+            if color is not None or variant is not None:
+                raise ValueError(
+                    "Cannot use 'bootstyle' together with 'color' or 'variant'. "
+                    "Use either bootstyle (deprecated) OR color/variant."
+                )
+            # Parse bootstyle (warning already issued at widget level)
+            parsed = parse_bootstyle(bootstyle, widget_class)
+            color = parsed['color']
+            variant = parsed['variant']
+            widget_class = parsed['widget_class']  # May be cross-widget
+
+        # If no color and no variant, return base widget class
+        if not color and not variant:
             return widget_class
 
         # Initialize style_options to empty dict if None
         if style_options is None:
             style_options = {}
 
-        parsed = parse_bootstyle(bootstyle, widget_class)
-        color = parsed['color']
-        variant = parsed['variant']
-        resolved_widget = parsed['widget_class']
         surface_color = style_options.get("surface_color")
 
         builder_variant = variant if variant is not None else \
-            BootstyleBuilderTTk.get_default_variant(resolved_widget)
+            BootstyleBuilderTTk.get_default_variant(widget_class)
 
         custom_prefix = None
 
@@ -262,7 +323,7 @@ class Bootstyle:
         ttk_style = generate_ttk_style_name(
             color=color,
             variant=variant,
-            widget_class=resolved_widget,
+            widget_class=widget_class,
             custom_prefix=custom_prefix,
             orient=style_options.get('orient'),
         )
@@ -271,7 +332,7 @@ class Bootstyle:
         style = get_style()
 
         style.create_style(
-            widget_class=resolved_widget,
+            widget_class=widget_class,
             variant=builder_variant,
             ttk_style=ttk_style,
             color=color,
@@ -282,13 +343,25 @@ class Bootstyle:
 
     @staticmethod
     def override_ttk_widget_constructor(func):
-        """Override ttk widget __init__ to accept bootstyle parameter."""
+        """Override ttk widget __init__ to accept bootstyle, color, and variant parameters."""
 
         def __init__wrapper(self, *args, **kwargs):
 
-            # extract bootstyle & style arguments
+            # Extract new color/variant parameters
+            color = kwargs.pop("color", None)
+            variant = kwargs.pop("variant", None)
+
+            # Extract legacy bootstyle parameter
             had_style_kwarg = 'style' in kwargs
             bootstyle = kwargs.pop("bootstyle", "")
+
+            # Check for conflicting params (bootstyle with color/variant)
+            if bootstyle and (color is not None or variant is not None):
+                raise ValueError(
+                    "Cannot use 'bootstyle' together with 'color' or 'variant'. "
+                    "Use either bootstyle (deprecated) OR color/variant."
+                )
+
             style_options = kwargs.pop("style_options", {})
             inherit_surface_color = kwargs.pop('inherit_surface_color', None)
             surface_color_token = kwargs.pop('surface_color', None)
@@ -296,7 +369,16 @@ class Bootstyle:
             func(self, *args, **kwargs)  # the actual widget constructor
 
             widget_class = self.winfo_class()
-            style_str = bootstyle
+
+            # Handle bootstyle -> color/variant conversion AFTER widget constructor
+            # so we have the correct widget_class for variant validation
+            if bootstyle:
+                _warn_bootstyle_deprecated()
+                bs_color, bs_variant = convert_bootstyle_to_color_variant(
+                    bootstyle, widget_class, warn=False  # Already warned above
+                )
+                color = bs_color
+                variant = bs_variant
 
             # ===== Surface color inheritance =====
 
@@ -315,11 +397,9 @@ class Bootstyle:
             else:
                 effective_surface_token = 'background'
 
-            # container widgets can take their surface color from the bootstyle
-            if style_str and widget_class in CONTAINER_CLASSES and surface_color_token is None:
-                parsed = parse_bootstyle(style_str, widget_class)
-                if parsed.get('color'):
-                    effective_surface_token = parsed['color']
+            # container widgets can take their surface color from the color param
+            if color and widget_class in CONTAINER_CLASSES and surface_color_token is None:
+                effective_surface_token = color
 
             # cache the surface color for child components
             setattr(self, '_surface_color', effective_surface_token)
@@ -335,12 +415,13 @@ class Bootstyle:
 
             # ==== Create actual ttk style & assign to widget =====
 
-            if style_str and widget_class:
+            if (color or variant) and widget_class:
 
                 ttk_style = Bootstyle.create_ttk_style(
                     widget_class=widget_class,
-                    bootstyle=style_str,
                     style_options=style_options,
+                    color=color,
+                    variant=variant,
                 )
                 self.configure(style=ttk_style)
 
@@ -380,6 +461,9 @@ class Bootstyle:
                 else:
                     self.configure(style=widget_class)
 
+            # Store color, variant, and style_options for later retrieval
+            setattr(self, '_color', color)
+            setattr(self, '_variant', variant)
             setattr(self, '_style_options', style_options)
 
         return __init__wrapper
@@ -441,5 +525,6 @@ __all__ = [
     'extract_color_from_style',
     'extract_variant_from_style',
     'extract_widget_class_from_style',
+    'convert_bootstyle_to_color_variant',
     'Bootstyle',
 ]

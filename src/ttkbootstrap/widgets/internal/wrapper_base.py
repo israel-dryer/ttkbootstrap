@@ -20,6 +20,7 @@ from ttkbootstrap.style.bootstyle import (
     extract_color_from_style,
     extract_variant_from_style,
     parse_bootstyle,
+    convert_bootstyle_to_color_variant,
 )
 from ttkbootstrap.style.token_maps import CONTAINER_CLASSES, ORIENT_CLASSES
 from ttkbootstrap.widgets.mixins.configure_mixin import (
@@ -100,20 +101,18 @@ class TTKWrapperBase(FontMixin, ConfigureDelegationMixin):
 
         style_options = getattr(self, '_style_options', {})
 
-        # Extract current bootstyle tokens from the current style
-        current_style = self._ttk_base.cget(self, "style")  # type: ignore[misc]
-        color = extract_color_from_style(current_style, default=None) if current_style else None
-        variant = extract_variant_from_style(current_style, widget_class) if current_style else None
-        tokens = [t for t in (color, variant) if t]
+        # Use stored color/variant if available
+        color = getattr(self, '_color', None)
+        variant = getattr(self, '_variant', None)
 
-        # If we have style_options but no color/variant tokens, we still need to
-        # create a custom style. Pass widget_class as bootstyle to prevent early return.
-        if tokens:
-            bootstyle = "-".join(tokens)
-        elif style_options:
-            bootstyle = widget_class  # Trigger custom style creation even without color/variant
-        else:
-            bootstyle = None
+        # Fall back to extraction from style if not stored
+        if color is None or variant is None:
+            current_style = self._ttk_base.cget(self, "style")  # type: ignore[misc]
+            if current_style:
+                if color is None:
+                    color = extract_color_from_style(current_style, default=None)
+                if variant is None:
+                    variant = extract_variant_from_style(current_style, widget_class)
 
         # Preserve surface_color and orientation in style_options
         if not style_options:
@@ -130,8 +129,9 @@ class TTKWrapperBase(FontMixin, ConfigureDelegationMixin):
         # Generate NEW style name with NEW hash based on new options
         ttk_style = Bootstyle.create_ttk_style(
             widget_class=widget_class,
-            bootstyle=bootstyle,
             style_options=style_options or None,
+            color=color,
+            variant=variant,
         )
 
         # Apply the new style
@@ -142,19 +142,17 @@ class TTKWrapperBase(FontMixin, ConfigureDelegationMixin):
     def _delegate_bootstyle(self, value: Any = None):
         """Get or set the ttkbootstrap bootstyle for this widget.
 
+        DEPRECATED: Use 'color' and 'variant' parameters instead.
+
         - Query: returns a best-effort "color-variant" string based on the
-          current style (or None if not set).
+          current style (or None if not set). No deprecation warning for reads.
         - Set: generates/apply a ttk style using the style engine; preserves
-          surface color and orientation when applicable.
+          surface color and orientation when applicable. Issues deprecation warning.
         """
-        # Query path
+        # Query path - no deprecation warning for reads
         if value is None:
-            current_style = self._ttk_base.cget(self, "style")  # type: ignore[misc]
-            if not current_style:
-                return None
-            widget_class = self.winfo_class()
-            color = extract_color_from_style(current_style, default=None)
-            variant = extract_variant_from_style(current_style, widget_class)
+            color = self._delegate_color(None)
+            variant = self._delegate_variant(None)
             parts = []
             if color:
                 parts.append(color)
@@ -162,8 +160,24 @@ class TTKWrapperBase(FontMixin, ConfigureDelegationMixin):
                 parts.append(variant)
             return "-".join(parts) if parts else None
 
-        # Set path
+        # Set path - issue deprecation warning
+        import warnings
+        warnings.warn(
+            "Setting 'bootstyle' at runtime is deprecated. "
+            "Use widget.configure(color='...', variant='...') instead.",
+            FutureWarning,
+            stacklevel=3
+        )
+
         widget_class = self.winfo_class()
+        color, variant = convert_bootstyle_to_color_variant(
+            str(value), widget_class, warn=False  # Already warned above
+        )
+
+        # Store both
+        setattr(self, '_color', color)
+        setattr(self, '_variant', variant)
+
         # Use stored style_options if available, otherwise create new dict
         style_options = getattr(self, '_style_options', {}).copy()
 
@@ -178,15 +192,124 @@ class TTKWrapperBase(FontMixin, ConfigureDelegationMixin):
                 pass
 
         if widget_class in CONTAINER_CLASSES:
-            parsed = parse_bootstyle(str(value), widget_class)
-            color = parsed.get("color")
             if color:
                 style_options["surface_color"] = color
                 setattr(self, "_surface_color", color)
 
         ttk_style = Bootstyle.create_ttk_style(
             widget_class=widget_class,
-            bootstyle=str(value),
+            style_options=style_options or None,
+            color=color,
+            variant=variant,
+        )
+        return self._ttk_base.configure(self, style=ttk_style)  # type: ignore[misc]
+
+    @configure_delegate("color")
+    def _delegate_color(self, value: Any = None):
+        """Get or set the color token for this widget.
+
+        - Query: returns the current color token or None
+        - Set: updates the widget style with the new color, preserving variant
+        """
+        # Query path
+        if value is None:
+            # Try stored value first
+            stored = getattr(self, '_color', None)
+            if stored:
+                return stored
+            # Fall back to extracting from current style
+            current_style = self._ttk_base.cget(self, "style")  # type: ignore[misc]
+            if not current_style:
+                return None
+            return extract_color_from_style(current_style, default=None)
+
+        # Set path
+        widget_class = self.winfo_class()
+        current_variant = getattr(self, '_variant', None)
+        if current_variant is None:
+            current_style = self._ttk_base.cget(self, "style")  # type: ignore[misc]
+            if current_style:
+                current_variant = extract_variant_from_style(current_style, widget_class)
+
+        # Store the new color
+        setattr(self, '_color', value)
+
+        # Use stored style_options
+        style_options = getattr(self, '_style_options', {}).copy()
+
+        surface = getattr(self, "_surface_color", None)
+        if surface and surface != "background":
+            style_options["surface_color"] = surface
+
+        if widget_class in ORIENT_CLASSES:
+            try:
+                style_options["orient"] = str(self.cget("orient"))
+            except Exception:
+                pass
+
+        if widget_class in CONTAINER_CLASSES:
+            style_options["surface_color"] = value
+            setattr(self, "_surface_color", value)
+
+        ttk_style = Bootstyle.create_ttk_style(
+            widget_class=widget_class,
+            color=value,
+            variant=current_variant,
+            style_options=style_options or None,
+        )
+        return self._ttk_base.configure(self, style=ttk_style)  # type: ignore[misc]
+
+    @configure_delegate("variant")
+    def _delegate_variant(self, value: Any = None):
+        """Get or set the variant for this widget.
+
+        - Query: returns the current variant name or None
+        - Set: updates the widget style with the new variant, preserving color
+
+        Note: If the variant is not valid for this widget type, a BootstyleBuilderError
+        will be raised.
+        """
+        # Query path
+        if value is None:
+            # Try stored value first
+            stored = getattr(self, '_variant', None)
+            if stored:
+                return stored
+            # Fall back to extracting from current style
+            current_style = self._ttk_base.cget(self, "style")  # type: ignore[misc]
+            if not current_style:
+                return None
+            widget_class = self.winfo_class()
+            return extract_variant_from_style(current_style, widget_class)
+
+        # Set path
+        widget_class = self.winfo_class()
+        current_color = getattr(self, '_color', None)
+        if current_color is None:
+            current_style = self._ttk_base.cget(self, "style")  # type: ignore[misc]
+            if current_style:
+                current_color = extract_color_from_style(current_style, default=None)
+
+        # Store the new variant
+        setattr(self, '_variant', value)
+
+        # Use stored style_options
+        style_options = getattr(self, '_style_options', {}).copy()
+
+        surface = getattr(self, "_surface_color", None)
+        if surface and surface != "background":
+            style_options["surface_color"] = surface
+
+        if widget_class in ORIENT_CLASSES:
+            try:
+                style_options["orient"] = str(self.cget("orient"))
+            except Exception:
+                pass
+
+        ttk_style = Bootstyle.create_ttk_style(
+            widget_class=widget_class,
+            color=current_color,
+            variant=value,
             style_options=style_options or None,
         )
         return self._ttk_base.configure(self, style=ttk_style)  # type: ignore[misc]
