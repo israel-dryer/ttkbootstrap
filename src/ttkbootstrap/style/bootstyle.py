@@ -144,7 +144,7 @@ def extract_orient_from_style(ttk_style: str):
 
 
 def extract_color_from_style(ttk_style: str, default: str = 'primary') -> str:
-    """Extract color token from TTK style name."""
+    """Extract color token from TTK style name, including modifiers like [subtle]."""
     parts = ttk_style.split('.')
 
     # Skip custom prefix if present (e.g., bs[hash] or custom_xyz)
@@ -152,8 +152,16 @@ def extract_color_from_style(ttk_style: str, default: str = 'primary') -> str:
         parts = parts[1:]
 
     for part in parts:
-        if part.lower() in COLOR_TOKENS:
-            return part.lower()
+        part_lower = part.lower()
+        # Check exact match first
+        if part_lower in COLOR_TOKENS:
+            return part_lower
+        # Check if base color (before modifier) is a color token
+        # e.g., 'primary[subtle]' -> 'primary'
+        if '[' in part_lower:
+            base_color = part_lower.split('[')[0]
+            if base_color in COLOR_TOKENS:
+                return part_lower  # Return full token with modifier
 
     return default
 
@@ -178,9 +186,13 @@ def extract_variant_from_style(ttk_style: str, widget_class: str = None) -> Opti
 
     for part in parts:
         part_lower = part.lower()
-        # Skip color tokens
+        # Skip color tokens (including those with modifiers like 'primary[subtle]')
         if part_lower in COLOR_TOKENS:
             continue
+        if '[' in part_lower:
+            base_color = part_lower.split('[')[0]
+            if base_color in COLOR_TOKENS:
+                continue
         # Skip known class parts from widget_class
         if part in class_parts:
             continue
