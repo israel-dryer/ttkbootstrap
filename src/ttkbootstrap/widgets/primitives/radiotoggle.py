@@ -36,4 +36,5 @@ class RadioToggle(RadioButton):
             style_options (dict): Optional dict forwarded to the style builder.
             localize (bool | Literal['auto']): Determines the widget's localization mode.
         """
-        super().__init__(master, class_='Toolbutton', **kwargs)
+        kwargs.setdefault('class_', 'Toolbutton')
+        super().__init__(master, **kwargs)
