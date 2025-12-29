@@ -18,7 +18,7 @@ def create_entry_test():
 
     # color
     for color in ['primary', 'secondary', 'success', 'info', 'warning', 'danger']:
-        entry = ttk.TextEntry(frame, bootstyle=color)
+        entry = ttk.TextEntry(frame, color=color)
         entry.pack(padx=5, pady=5, fill=BOTH)
         entry.insert(END, color)
 
@@ -26,6 +26,7 @@ def create_entry_test():
     entry = ttk.TextEntry(frame)
     entry.insert(END, 'readonly')
     entry.configure(state=READONLY)
+
     entry.pack(padx=5, pady=5, fill=BOTH)
 
     # disabled

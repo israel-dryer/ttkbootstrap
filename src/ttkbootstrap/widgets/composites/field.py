@@ -171,7 +171,10 @@ class Field(EntryMixin, Frame):
         # If caller explicitly provided show_message, honor it; otherwise default to False
         show_message = kwargs.pop('show_message', show_message)
 
-        self._bootstyle = kwargs.pop('bootstyle', 'default')
+        # Extract color/bootstyle - prefer 'color' over 'bootstyle'
+        color = kwargs.pop('color', None)
+        bootstyle = kwargs.pop('bootstyle', None)
+        self._bootstyle = color or bootstyle or 'default'
         self._localize = cast(bool | Literal['auto'], kwargs.pop('localize', 'auto'))
 
         super().__init__(master)
@@ -196,10 +199,11 @@ class Field(EntryMixin, Frame):
             text=f"{label_text}*" if required else label_text,
             font="label[normal]"
         )
-        self._message_lbl = Label(self, localize=self._localize, text=message or '', font="caption", bootstyle="secondary")
+        self._message_lbl = Label(self, localize=self._localize, text=message or '', font="caption", color="secondary")
 
         # field container & field
-        self._field = Frame(self, bootstyle=self._bootstyle, padding=5, class_="TField")
+        field_color = None if self._bootstyle == 'default' else self._bootstyle
+        self._field = Frame(self, color=field_color, padding=5, ttk_class="TField")
 
         if kind == "numeric":
             self._entry = NumberEntryPart(self._field, value=value, **kwargs)
@@ -313,7 +317,8 @@ class Field(EntryMixin, Frame):
             return self._bootstyle
         else:
             self._bootstyle = value
-            self._field['bootstyle'] = self._bootstyle
+            field_color = None if value == 'default' else value
+            self._field['color'] = field_color
         return None
 
     def disable(self):
@@ -378,8 +383,10 @@ class Field(EntryMixin, Frame):
                 Note: bootstyle and takefocus are set automatically but can be
                 overridden.
         """
-        bootstyle = "suffix-field" if position == "after" else "prefix-field"
-        kwargs.update(bootstyle=bootstyle, takefocus=False)
+        variant = "suffix" if position == "after" else "prefix"
+        kwargs.setdefault('ttk_class', 'TField')
+        kwargs.setdefault('variant', variant)
+        kwargs.setdefault('takefocus', False)
 
         if widget in (Button, CheckButton):
             if 'style_options' in kwargs:
@@ -408,13 +415,13 @@ class Field(EntryMixin, Frame):
     def _show_error(self, event: Any) -> None:
         """Display a validation error message below the input field."""
         self._message_lbl['text'] = event.data['message']
-        self._message_lbl['bootstyle'] = "danger"
+        self._message_lbl['color'] = "danger"
         self._message_lbl.pack(side='top', after=self._field, padx=4)
 
     def _clear_error(self, _: Any) -> None:
         """Clear the error message and restore the original message text."""
         self._message_lbl['text'] = self._message_text
-        self._message_lbl['bootstyle'] = "secondary"
+        self._message_lbl['color'] = "secondary"
 
     def _set_addons_state(self, disabled: bool) -> None:
         """Configure addon widgets based on whether the entry is interactive."""
