@@ -392,7 +392,7 @@ class ListView(Frame):
                 set to override the default behavior.
             **kwargs: Additional keyword arguments forwarded to `Frame`.
         """
-        super().__init__(master, bootstyle='list_container', **kwargs)
+        super().__init__(master, bootstyle='container', class_='ListView.TFrame', **kwargs)
 
         # Configuration
         self._selection_mode = selection_mode
@@ -436,7 +436,7 @@ class ListView(Frame):
         self._row_factory = row_factory or self._default_row_factory
 
         # Create container frame for list items
-        self._container = Frame(self, bootstyle='list_container')
+        self._container = Frame(self, bootstyle='container', class_='ListView.TFrame')
         self._container.pack(side='left', fill='both', expand=True)
 
         # Create scrollbar
