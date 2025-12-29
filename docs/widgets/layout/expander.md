@@ -50,7 +50,7 @@ Use `Expander` when:
 
 - content should always be visible -- use [LabelFrame](labelframe.md) or [Frame](frame.md)
 
-- you need multiple exclusive sections (only one open at a time) -- consider building an Accordion from multiple Expanders
+- you need multiple exclusive sections (only one open at a time) -- use [Accordion](accordion.md)
 
 - you need tabbed navigation -- use [Notebook](../views/notebook.md)
 
@@ -138,6 +138,21 @@ Set `collapsible=False` to create a section that cannot be toggled (always visib
 exp = ttk.Expander(app, title="Always Visible", collapsible=False)
 ```
 
+### Highlight mode
+
+Set `highlight=True` to show a visual 'selected' state on the header when expanded. This is useful for accordion-style interfaces where the open section should be visually distinct.
+
+```python
+exp = ttk.Expander(
+    app,
+    title="Highlighted Section",
+    highlight=True,
+    bootstyle="primary-solid"
+)
+```
+
+When `highlight=True`, the header uses the TTK `selected` state, which style builders can target for distinct visual treatment.
+
 ### Programmatic control
 
 ```python
@@ -210,6 +225,8 @@ exp.configure(icon_expanded={'name': 'caret-up', 'size': 14})
 ## Additional resources
 
 ### Related widgets
+
+- [Accordion](accordion.md) -- manages multiple expanders with mutual exclusion
 
 - [LabelFrame](labelframe.md) -- always-visible labeled container
 

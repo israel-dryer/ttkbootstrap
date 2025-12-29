@@ -86,9 +86,9 @@ def build_solid_button_style(b: BootstyleBuilderTTk, ttk_style: str, color: str 
             padding=b.scale(10)).state_specs(
             [
                 ('disabled', disabled_img),
-                ('focus pressed', focused_pressed_img),
-                ('focus hover', focused_hovered_img),
-                ('focus', focused_img),
+                ('background focus pressed', focused_pressed_img),
+                ('background focus hover', focused_hovered_img),
+                ('background focus', focused_img),
                 ('pressed', pressed_img),
                 ('hover', hovered_img),
             ]))
@@ -165,9 +165,9 @@ def build_outline_button_style(b: BootstyleBuilderTTk, ttk_style: str, color: st
             padding=b.scale(10)).state_specs(
             [
                 ('disabled', disabled_img),
-                ('focus pressed', focused_pressed_img),
-                ('focus hover', focused_hovered_img),
-                ('focus', focused_img),
+                ('background focus pressed', focused_pressed_img),
+                ('background focus hover', focused_hovered_img),
+                ('background focus', focused_img),
                 ('pressed', pressed_img),
                 ('hover', hovered_img),
             ])
@@ -194,7 +194,7 @@ def build_outline_button_style(b: BootstyleBuilderTTk, ttk_style: str, color: st
     state_spec = dict(
         foreground=[
             ('disabled', foreground_disabled),
-            ('focus', foreground_active),
+            ('background focus', foreground_active),
             ('hover', foreground_active),
             ('', foreground_normal)
         ], background=[('disabled', surface)]
@@ -260,7 +260,7 @@ def build_text_button_style(b: BootstyleBuilderTTk, ttk_style: str, color: str =
 
 
     state_spec = dict(
-        font=[('focus', Font('body[bold]'))],
+        font=[('background focus', Font('body[bold]'))],
         foreground=[
             ('disabled', foreground_disabled),
             ('', foreground_normal)
@@ -328,7 +328,7 @@ def build_link_button_style(b: BootstyleBuilderTTk, ttk_style: str, color: str =
     state_spec = dict(
         font=[
             ("active !disabled", "hyperlink"),
-            ("focus !disabled", "hyperlink"),
+            ("background focus !disabled", "hyperlink"),
             ("", "body")],
         cursor=[('', 'hand2')],
         foreground=[
@@ -383,9 +383,9 @@ def build_ghost_button_style(b: BootstyleBuilderTTk, ttk_style: str, color: str 
             padding=b.scale(10)).state_specs(
             [
                 ('disabled', disabled_img),
-                ('focus pressed', focused_pressed_img),
-                ('focus hover', focused_hovered_img),
-                ('focus', focused_img),
+                ('background focus pressed', focused_pressed_img),
+                ('background focus hover', focused_hovered_img),
+                ('background focus', focused_img),
                 ('pressed', pressed_img),
                 ('hover', hovered_img),
             ])
