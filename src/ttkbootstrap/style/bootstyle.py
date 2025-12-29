@@ -15,12 +15,34 @@ from ttkbootstrap.style.token_maps import (COLOR_TOKENS, CONTAINER_CLASSES, ORIE
 
 
 def _warn_bootstyle_deprecated():
-    """Issue deprecation warning for bootstyle parameter usage."""
+    """Issue deprecation warning for bootstyle parameter usage.
+
+    Uses dynamic stack level detection to find the user's code,
+    accounting for variable MRO depths across different widget types.
+    """
+    import sys
+    import os
+
+    # Walk up the stack to find the first frame outside ttkbootstrap package
+    frame = sys._getframe(1)
+    level = 2  # Start at 2 (1 for this function, 1 for caller)
+
+    # Get the actual ttkbootstrap package path (src/ttkbootstrap), normalized
+    ttkbootstrap_pkg_path = os.path.normpath(os.path.dirname(os.path.dirname(__file__)))
+
+    while frame.f_back is not None:
+        frame = frame.f_back
+        level += 1  # Increment BEFORE checking, so level points to this frame
+        filepath = os.path.normpath(frame.f_code.co_filename)
+        # Stop when we find code outside ttkbootstrap package
+        if ttkbootstrap_pkg_path not in filepath:
+            break
+
     warnings.warn(
         "The 'bootstyle' parameter is deprecated. "
         "Use 'color' and 'variant' parameters instead.",
         FutureWarning,
-        stacklevel=4
+        stacklevel=level
     )
 
 
