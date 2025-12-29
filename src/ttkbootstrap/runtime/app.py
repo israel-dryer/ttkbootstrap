@@ -105,6 +105,16 @@ def get_default_root(what: Optional[str] = None) -> tkinter.Tk:
 
 def apply_class_bindings(window: tkinter.Widget | App) -> None:
     """Add class level event bindings in application"""
+    # Copy TCheckbutton bindings to Toolbutton class
+    # This is needed because widgets using class_='Toolbutton' have their
+    # bindtags reference 'Toolbutton' instead of 'TCheckbutton', so they
+    # need the same mouse/keyboard bindings copied over.
+    for event in ('<Button-1>', '<ButtonRelease-1>', '<B1-Leave>', '<B1-Enter>',
+                  '<Enter>', '<Leave>', '<Key-space>', '<<Invoke>>'):
+        binding = window.bind_class('TCheckbutton', event)
+        if binding:
+            window.bind_class('Toolbutton', event, binding)
+
     for className in ["TEntry", "TSpinbox", "TCombobox", "Text"]:
         window.bind_class(
             className=className,
