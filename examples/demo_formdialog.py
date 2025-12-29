@@ -328,7 +328,7 @@ def main():
         button_frame,
         text="Simple Form (Auto-Inferred)",
         command=lambda: demo_simple_form(app),
-        bootstyle="primary",
+        color="primary",
         width=30,
     ).pack(pady=8)
 
@@ -336,7 +336,7 @@ def main():
         button_frame,
         text="Explicit Layout (Groups & Tabs)",
         command=lambda: demo_explicit_layout(app),
-        bootstyle="info",
+        color="info",
         width=30,
     ).pack(pady=8)
 
@@ -344,7 +344,7 @@ def main():
         button_frame,
         text="Form with Validation",
         command=lambda: demo_with_validation(app),
-        bootstyle="success",
+        color="success",
         width=30,
     ).pack(pady=8)
 
@@ -352,7 +352,7 @@ def main():
         button_frame,
         text="Registration Form",
         command=lambda: demo_registration_form(app),
-        bootstyle="warning",
+        color="warning",
         width=30,
     ).pack(pady=8)
 
@@ -361,7 +361,8 @@ def main():
         app,
         text="Exit",
         command=app.destroy,
-        bootstyle="secondary-outline",
+        color="secondary",
+        variant="outline",
         width=20,
     ).pack(pady=20)
 
