@@ -235,9 +235,15 @@ def __dir__():
     return sorted(set(__all__ + list(globals().keys())))
 
 
-# Patch Tk widgets for autostyle and install enhanced events on import
+# Patch Tk widgets for autostyle
 from ttkbootstrap.runtime.tk_patch import install_tk_autostyle
+
+# Install enhanced events on import
 from ttkbootstrap.runtime.events import install_enhanced_events
+
+# Install visual focus
+from ttkbootstrap.runtime.visual_focus import install_visual_focus
 
 install_tk_autostyle()
 install_enhanced_events()
+install_visual_focus()

@@ -33,7 +33,7 @@ def build_expander_header_style(b: BootstyleBuilderTTk, ttk_style: str, color: s
                 ('disabled', disabled_img),
                 ('pressed', pressed_img),
                 ('hover', active_img),
-                ('focus', focused_img),
+                ('background focus', focused_img),
             ]
         )
     )
