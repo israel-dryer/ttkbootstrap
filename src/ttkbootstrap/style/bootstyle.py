@@ -120,6 +120,30 @@ def parse_bootstyle_v2(bootstyle: str, widget_class: str) -> dict:
     }
 
 
+def to_pascal_case(s: str) -> str:
+    """Convert dash-separated string to PascalCase.
+
+    Examples:
+        'context-check' -> 'ContextCheck'
+        'outline' -> 'Outline'
+        'solid' -> 'Solid'
+    """
+    return ''.join(part.capitalize() for part in s.split('-'))
+
+
+def from_pascal_case(s: str) -> str:
+    """Convert PascalCase string to dash-separated lowercase.
+
+    Examples:
+        'ContextCheck' -> 'context-check'
+        'Outline' -> 'outline'
+        'Solid' -> 'solid'
+    """
+    import re
+    # Insert dash before uppercase letters (except at start), then lowercase
+    return re.sub(r'(?<!^)(?=[A-Z])', '-', s).lower()
+
+
 def generate_ttk_style_name(
         color: Optional[str],
         variant: Optional[str],
@@ -138,7 +162,7 @@ def generate_ttk_style_name(
     if color:
         parts.append(color)
     if variant:
-        parts.append(variant.capitalize())
+        parts.append(to_pascal_case(variant))
     if orient:
         parts.append(normalize_orientation(orient))
     parts.append(widget_class)
@@ -208,6 +232,9 @@ def extract_variant_from_style(ttk_style: str, widget_class: str = None) -> Opti
     Args:
         ttk_style: The TTK style name to parse.
         widget_class: Optional widget class from winfo_class() to exclude from parsing.
+
+    Returns:
+        Variant name in dash-separated lowercase format (e.g., 'context-check')
     """
     parts = ttk_style.split('.')
 
@@ -235,8 +262,11 @@ def extract_variant_from_style(ttk_style: str, widget_class: str = None) -> Opti
         # Skip standard ttk class names (TLabel, TButton, etc.)
         if part.startswith('T'):
             continue
-        # Found a variant
-        return part_lower
+        # Skip orientation parts
+        if part in ('Horizontal', 'Vertical'):
+            continue
+        # Found a variant - convert from PascalCase to dash-separated
+        return from_pascal_case(part)
 
     return None
 
