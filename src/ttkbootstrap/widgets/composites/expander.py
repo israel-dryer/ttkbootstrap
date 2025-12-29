@@ -73,8 +73,9 @@ class Expander(Frame):
             **kwargs: Additional arguments passed to Frame. If bootstyle is provided,
                 the chevron button will use that style (default: foreground-ghost).
         """
-        bootstyle = kwargs.get('bootstyle', '')
+        self._header_bootstyle = kwargs.pop('bootstyle', '')
         kwargs.setdefault('padding', 3)
+        kwargs.setdefault('takefocus', False)  # Outer container shouldn't take focus
         super().__init__(master, **kwargs)
 
         self._title = title
@@ -98,7 +99,7 @@ class Expander(Frame):
         self._icon_label: Label | None = None
         self._title_label: Label | None = None
 
-        self._build_widget(bootstyle)
+        self._build_widget()
 
         # Set up signal/variable after widget is built
         # Prefer signal if both provided
@@ -153,13 +154,13 @@ class Expander(Frame):
     def _build_widget(self, bootstyle=''):
         """Build the internal widget structure."""
         # Determine styles based on enable_active_state
+        bootstyle = self._header_bootstyle
+
         if self._enable_active_state:
-            # Use CompositeFrame for state coordination
-            header_style = f'{bootstyle}' if bootstyle else 'default'
-            self._header_frame = CompositeFrame(self, class_='Expander.TFrame', bootstyle=header_style, padding=(12, 5, 5, 5))
+            self._header_frame = CompositeFrame(self, class_='Expander.TFrame', bootstyle=bootstyle, padding=8, takefocus=True)
         else:
             # Use regular Frame
-            self._header_frame = Frame(self, padding=(12, 5, 5, 5))
+            self._header_frame = Frame(self, bootstyle=bootstyle, padding=8, takefocus=True)
 
         self._header_frame.pack(fill='x')
 
@@ -171,7 +172,8 @@ class Expander(Frame):
                     icon=self._icon,
                     icon_only=True,
                     class_='Expander.TLabel',
-                    bootstyle=f'{bootstyle}' if bootstyle else 'default',
+                    bootstyle=bootstyle,
+                    takefocus=False,
                 )
                 self._header_frame.register_composite(self._icon_label)
             else:
@@ -179,6 +181,7 @@ class Expander(Frame):
                     self._header_frame,
                     icon=self._icon,
                     icon_only=True,
+                    takefocus=False,
                 )
             self._icon_label.pack(side='left', padx=(0, 8))
 
@@ -189,20 +192,22 @@ class Expander(Frame):
                 text=self._title,
                 anchor='w',
                 class_='Expander.TLabel',
-                bootstyle=f'{bootstyle}' if bootstyle else 'default',
+                bootstyle=bootstyle,
+                takefocus=False,
             )
             self._header_frame.register_composite(self._title_label)
         else:
-            self._title_label = Label(self._header_frame, text=self._title, anchor='w')
+            self._title_label = Label(self._header_frame, text=self._title, anchor='w', takefocus=False)
 
         # Toggle button (chevron) - use bootstyle if provided, else foreground-ghost
-        chevron_style = bootstyle if bootstyle else "default"
+        chevron_style = bootstyle
         self._toggle_button = Label(
             self._header_frame,
             icon=self._current_chevron_icon,
             icon_only=True,
             bootstyle=chevron_style,
             class_='Expander.TLabel',
+            takefocus=False,
         )
 
         # Register toggle button with CompositeFrame if active state enabled
@@ -240,9 +245,6 @@ class Expander(Frame):
         # Keyboard support
         self._header_frame.bind('<Return>', self._on_header_click, add='+')
         self._header_frame.bind('<space>', self._on_header_click, add='+')
-
-        # Make header focusable
-        self._header_frame.configure(takefocus=True)
 
     def _on_header_click(self, event=None):
         """Handle header click - select and optionally toggle."""
