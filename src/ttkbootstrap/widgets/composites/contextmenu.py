@@ -7,6 +7,7 @@ radiobuttons, and separators.
 from tkinter import BooleanVar, IntVar, StringVar, TclError, Toplevel, Widget
 from typing import Any, Callable, Union
 
+from ttkbootstrap.widgets.primitives import RadioToggle, CheckToggle
 from ttkbootstrap.widgets.primitives.button import Button
 from ttkbootstrap.widgets.types import Master
 from ttkbootstrap.widgets.primitives.checkbutton import CheckButton
@@ -98,8 +99,6 @@ class ContextMenu(CustomConfigMixin):
         self._frame = Frame(
             self._toplevel,
             padding=3,
-            show_border=True,
-            bootstyle='default'
         )
         self._frame.pack(fill='both', expand=True)
 
@@ -148,7 +147,7 @@ class ContextMenu(CustomConfigMixin):
             text=text,
             icon=icon,
             compound='left' if icon else 'text',
-            bootstyle='context_item',
+            variant='context-item',
             command=lambda: self._handle_item_click('command', text, command)
         )
         btn.pack(fill='x', padx=0, pady=0)
@@ -171,11 +170,11 @@ class ContextMenu(CustomConfigMixin):
         def on_toggle():
             self._handle_item_click('checkbutton', text, command, var.get())
 
-        cb = CheckButton(
+        cb = CheckToggle(
             self._frame,
             text=text,
             variable=var,
-            bootstyle='context_check-toolbutton',
+            variant='context-check',
             command=on_toggle
         )
         cb.pack(fill='x', padx=0, pady=0)
@@ -205,12 +204,12 @@ class ContextMenu(CustomConfigMixin):
         def on_select():
             self._handle_item_click('radiobutton', text, command, value)
 
-        rb = RadioButton(
+        rb = RadioToggle(
             self._frame,
             text=text,
             value=value,
             variable=variable,
-            bootstyle='context_radio-toolbutton',
+            variant='context-radio',
             command=on_select
         )
         rb.pack(fill='x', padx=0, pady=0)
