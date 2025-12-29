@@ -20,6 +20,8 @@ if TYPE_CHECKING:
 class ButtonGroupKwargs(TypedDict, total=False):
     orient: Literal['horizontal', 'vertical']
     bootstyle: str
+    color: str
+    variant: str
     state: Literal['normal', 'disabled']
     show_border: bool
     surface_color: str
@@ -39,7 +41,17 @@ class ButtonGroup(Frame):
     selected.
     """
 
-    def __init__(self, master: Master = None, **kwargs: Unpack[ButtonGroupKwargs]):
+    def __init__(
+        self,
+        master: Master = None,
+        *,
+        orient: Literal['horizontal', 'vertical'] = 'horizontal',
+        bootstyle: str = '',
+        color: str = None,
+        variant: str = None,
+        state: Literal['normal', 'disabled'] = 'normal',
+        **kwargs: Unpack[ButtonGroupKwargs]
+    ):
         """Initialize the ButtonGroup.
 
         Args:
@@ -47,8 +59,10 @@ class ButtonGroup(Frame):
 
         Other Parameters:
             orient (str): Layout orientation - 'horizontal' (default) or 'vertical'.
-            bootstyle (str): The color/variant style (e.g., 'primary', 'success', 'danger').
+            color (str): The color token (e.g., 'primary', 'success', 'danger').
                 Defaults to 'primary'.
+            variant (str): The style variant (e.g., 'solid', 'outline', 'ghost').
+            bootstyle (str): DEPRECATED. Use color and variant instead.
             state (str): Initial state for all buttons - 'normal' (default) or 'disabled'.
             show_border (bool): If True, draws a border around the group.
             surface_color (str): Optional surface token; otherwise inherited.
@@ -57,10 +71,12 @@ class ButtonGroup(Frame):
             width (int): Requested width in pixels.
             height (int): Requested height in pixels.
         """
-        # Extract ButtonGroup-specific options
-        self._orientation = kwargs.pop('orient', 'horizontal')
-        self._bootstyle = kwargs.pop('bootstyle', 'primary')
-        self._state = kwargs.pop('state', 'normal')
+        # Store ButtonGroup-specific options from explicit parameters
+        # NOTE: _color and _variant are set AFTER super().__init__() because
+        # the bootstyle wrapper in TTKWrapperBase sets them to None/extracted values
+        self._orientation = orient
+        self._bootstyle = bootstyle or 'primary'
+        self._state = state
 
         style_options = kwargs.pop('style_options', {})
 
@@ -73,6 +89,10 @@ class ButtonGroup(Frame):
             kwargs['padding'] = 1
 
         super().__init__(master, style_options=style_options, **kwargs)
+
+        # Set color/variant AFTER super().__init__() to override wrapper's values
+        self._color = color
+        self._variant = variant
 
     def add(
         self,
@@ -114,13 +134,19 @@ class ButtonGroup(Frame):
 
         widget_kwargs = kwargs.copy()
 
-        # Apply buttongroup bootstyle for visual grouping
-        if 'bootstyle' not in widget_kwargs:
-            widget_kwargs['bootstyle'] = f'{self._bootstyle}-buttongroup'
-        else:
-            # User provided custom bootstyle - append buttongroup
-            custom_style = widget_kwargs.pop('bootstyle')
-            widget_kwargs['bootstyle'] = f"{custom_style}-buttongroup"
+        # Apply buttongroup styling using class_='ButtonGroup'
+        widget_kwargs.setdefault('class_', 'ButtonGroup')
+
+        # Apply color/variant for styling
+        if self._color or self._variant:
+            # New API: use color and variant directly
+            if 'color' not in widget_kwargs:
+                widget_kwargs['color'] = self._color
+            if 'variant' not in widget_kwargs:
+                widget_kwargs['variant'] = self._variant
+        elif self._bootstyle and 'bootstyle' not in widget_kwargs:
+            # Legacy: use bootstyle (will trigger deprecation warning)
+            widget_kwargs['bootstyle'] = self._bootstyle
 
         # Apply positioning via style_options
         existing_style_opts = widget_kwargs.get('style_options', {}).copy()
@@ -129,7 +155,7 @@ class ButtonGroup(Frame):
 
         # Set active_state for non-radio/check button types
         _radio_check_types = (CheckButton, CheckToggle, RadioButton, RadioToggle)
-        if isinstance(widget_type, type) and not issubclass(widget_type, _radio_check_types):
+        if not (isinstance(widget_type, type) and issubclass(widget_type, _radio_check_types)):
             existing_style_opts.setdefault('active_state', True)
 
         widget_kwargs['style_options'] = existing_style_opts
@@ -186,8 +212,11 @@ class ButtonGroup(Frame):
                 current_position = widget.configure_style_options('position')
                 if current_position != position:
                     widget.configure_style_options(position=position)
-                    new_bootstyle = f'{base_style}-buttongroup'
-                    widget.configure(bootstyle=new_bootstyle)
+                    # Rebuild style with new position
+                    if self._color or self._variant:
+                        widget.configure(color=self._color, variant=self._variant)
+                    elif base_style:
+                        widget.configure(bootstyle=base_style)
 
     def remove(self, key: str):
         """Remove a widget by its key.
@@ -296,6 +325,34 @@ class ButtonGroup(Frame):
 
         self._update_widget_positions()
 
+    @configure_delegate('color')
+    def _delegate_color(self, value=None):
+        """Get or set the color. Updates all widgets when changed."""
+        if value is None:
+            return self._color
+
+        self._color = value
+        self._reconfigure_all_widgets()
+
+    @configure_delegate('variant')
+    def _delegate_variant(self, value=None):
+        """Get or set the variant. Updates all widgets when changed."""
+        if value is None:
+            return self._variant
+
+        self._variant = value
+        self._reconfigure_all_widgets()
+
+    def _reconfigure_all_widgets(self):
+        """Reconfigure all widgets with current color/variant or bootstyle."""
+        for widget in self._widgets.values():
+            if hasattr(widget, 'configure'):
+                if self._color or self._variant:
+                    widget.configure(color=self._color, variant=self._variant)
+                elif self._bootstyle:
+                    widget.configure(bootstyle=self._bootstyle)
+        self._update_widget_positions()
+
     @configure_delegate('orient')
     def _delegate_orient(self, value=None):
         """Get or set orientation ('horizontal' or 'vertical'). Repacks widgets when changed."""
@@ -312,9 +369,11 @@ class ButtonGroup(Frame):
             widget.pack_forget()
             if hasattr(widget, 'configure_style_options'):
                 widget.configure_style_options(orient=value)
-                # Reconfigure bootstyle to trigger style rebuild with new orientation
-                current_bootstyle = f'{self._bootstyle}-buttongroup'
-                widget.configure(bootstyle=current_bootstyle)
+                # Rebuild style with new orientation
+                if self._color or self._variant:
+                    widget.configure(color=self._color, variant=self._variant)
+                elif self._bootstyle:
+                    widget.configure(bootstyle=self._bootstyle)
 
             if self._orientation == 'horizontal':
                 widget.pack(side='left')
