@@ -84,11 +84,12 @@ def build_solid_toolbutton_style(b: BootstyleBuilderTTk, ttk_style: str, color: 
             f'{ttk_style}.border', normal_img, sticky="nsew", border=b.scale(8), padding=b.scale(8)).state_specs(
             [
                 ('disabled', disabled_img),
-                ('pressed', selected_focus_img),
-                ('focus selected', selected_focus_img),
+                ('background pressed focus selected', selected_focus_img),
+                ('pressed', selected_img),
+                ('background focus selected', selected_focus_img),
                 ('selected', selected_img),
-                ('focus !selected', normal_focus_img),
-                ('active !focus', active_img),
+                ('background focus !selected', normal_focus_img),
+                ('background active !focus', active_img),
                 ('', normal_img)
             ]))
 
@@ -154,10 +155,11 @@ def build_outline_toolbutton_style(b: BootstyleBuilderTTk, ttk_style: str, color
             f'{ttk_style}.border', normal_img, sticky="nsew", border=b.scale(8), padding=b.scale(8)).state_specs(
             [
                 ('disabled', disabled_img),
-                ('pressed', selected_focus_img),
-                ('selected focus', selected_focus_img),
+                ('background pressed selected focus', selected_focus_img),
+                ('pressed', selected_img),
+                ('background selected focus', selected_focus_img),
                 ('selected', selected_img),
-                ('focus !selected', normal_focus_img),
+                ('background focus !selected', normal_focus_img),
                 ('', normal_img)
             ]))
 
@@ -230,11 +232,12 @@ def build_ghost_toolbutton_style(b: BootstyleBuilderTTk, ttk_style: str, color: 
             f'{ttk_style}.border', normal_img, sticky="nsew", border=b.scale(8), padding=b.scale(8)).state_specs(
             [
                 ('disabled', disabled_img),
-                ('pressed', selected_focus_img),
-                ('selected focus', selected_focus_img),
+                ('background pressed selected focus', selected_focus_img),
+                ('pressed', selected_img),
+                ('background selected focus', selected_focus_img),
                 ('selected pressed', selected_pressed_img),
                 ('selected', selected_img),
-                ('focus !selected', normal_focus_img),
+                ('background focus !selected', normal_focus_img),
                 ('', normal_img)
             ]))
 

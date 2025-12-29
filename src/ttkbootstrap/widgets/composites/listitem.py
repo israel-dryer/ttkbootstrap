@@ -93,8 +93,9 @@ class ListItem(CompositeFrame):
         super().__init__(
             master=master,
             select_on_click=False,
-            bootstyle='list_item_separated' if self._show_separator else 'list_item',
+            bootstyle='separated_item' if self._show_separator else 'item',
             takefocus=self._enable_focus_state,
+            class_='ListView.TFrame',
             padding=(8, 4),
             style_options=dict(
                 selection_background=self._selection_background,
@@ -107,6 +108,7 @@ class ListItem(CompositeFrame):
         self._left_frame = Frame(
             self,
             bootstyle='list',
+            class_='ListView.TFrame',
             takefocus=False,
             style_options=dict(selection_background=self._selection_background,
                                enable_hover_state=self._enable_hover_state)
@@ -116,6 +118,7 @@ class ListItem(CompositeFrame):
         self._center_frame = Frame(
             self,
             bootstyle='list',
+            class_='ListView.TFrame',
             takefocus=False,
             style_options=dict(selection_background=self._selection_background,
                                enable_hover_state=self._enable_hover_state)
@@ -125,6 +128,7 @@ class ListItem(CompositeFrame):
         self._right_frame = Frame(
             self,
             bootstyle='list',
+            class_='ListView.TFrame',
             takefocus=False,
             style_options=dict(selection_background=self._selection_background,
                                enable_hover_state=self._enable_hover_state)
@@ -252,7 +256,8 @@ class ListItem(CompositeFrame):
             self._selection_widget = Label(
                 self._left_frame,
                 icon=self._selection_icon,
-                bootstyle='list_icon',
+                bootstyle='icon',
+                class_='ListView.TLabel',
                 icon_only=True,
                 style_options=dict(selection_background=self._selection_background,
                                    enable_hover_state=self._enable_hover_state),
@@ -282,7 +287,8 @@ class ListItem(CompositeFrame):
                 self._icon_widget = Label(
                     self._left_frame,
                     icon=icon,
-                    bootstyle='list_icon',
+                    bootstyle='icon',
+                    class_='ListView.TLabel',
                     takefocus=False,
                     icon_only=True,
                     style_options=dict(selection_background=self._selection_background,
@@ -311,6 +317,7 @@ class ListItem(CompositeFrame):
                     text=text,
                     font='heading-lg',
                     bootstyle='list',
+                    class_='ListView.TLabel',
                     takefocus=False,
                     style_options=dict(selection_background=self._selection_background,
                                        enable_hover_state=self._enable_hover_state),
@@ -337,6 +344,7 @@ class ListItem(CompositeFrame):
                     self._center_frame,
                     text=text,
                     bootstyle='list',
+                    class_='ListView.TLabel',
                     takefocus=False,
                     style_options=dict(selection_background=self._selection_background,
                                        enable_hover_state=self._enable_hover_state),
@@ -365,6 +373,7 @@ class ListItem(CompositeFrame):
                     font='caption',
                     anchor='w',
                     bootstyle='list',
+                    class_='ListView.TLabel',
                     takefocus=False,
                     style_options=dict(selection_background=self._selection_background,
                                        enable_hover_state=self._enable_hover_state),
@@ -391,6 +400,7 @@ class ListItem(CompositeFrame):
                     self._right_frame,
                     text=text,
                     bootstyle='list',
+                    class_='ListView.TLabel',
                     style_options=dict(selection_background=self._selection_background,
                                        enable_hover_state=self._enable_hover_state),
                 )
@@ -416,7 +426,8 @@ class ListItem(CompositeFrame):
                     self._right_frame,
                     icon='chevron-right',
                     icon_only=True,
-                    bootstyle='list_icon',
+                    bootstyle='icon',
+                    class_='ListView.TButton',
                     takefocus=False,
                     style_options=dict(selection_background=self._selection_background,
                                        enable_hover_state=self._enable_hover_state),
@@ -441,7 +452,8 @@ class ListItem(CompositeFrame):
                     self._right_frame,
                     icon='x-lg',
                     icon_only=True,
-                    bootstyle='list_icon',
+                    bootstyle='icon',
+                    class_='ListView.TButton',
                     takefocus=False,
                     command=self.delete,
                     style_options=dict(selection_background=self._selection_background,
@@ -467,7 +479,8 @@ class ListItem(CompositeFrame):
                     self._right_frame,
                     icon='grip-vertical',
                     icon_only=True,
-                    bootstyle='list_icon',
+                    bootstyle='icon',
+                    class_='ListView.TButton',
                     cursor='fleur',
                     takefocus=False,
                     style_options=dict(selection_background=self._selection_background,

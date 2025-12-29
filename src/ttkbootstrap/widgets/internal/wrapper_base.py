@@ -103,7 +103,7 @@ class TTKWrapperBase(FontMixin, ConfigureDelegationMixin):
         # Extract current bootstyle tokens from the current style
         current_style = self._ttk_base.cget(self, "style")  # type: ignore[misc]
         color = extract_color_from_style(current_style, default=None) if current_style else None
-        variant = extract_variant_from_style(current_style) if current_style else None
+        variant = extract_variant_from_style(current_style, widget_class) if current_style else None
         tokens = [t for t in (color, variant) if t]
 
         # If we have style_options but no color/variant tokens, we still need to
@@ -152,8 +152,9 @@ class TTKWrapperBase(FontMixin, ConfigureDelegationMixin):
             current_style = self._ttk_base.cget(self, "style")  # type: ignore[misc]
             if not current_style:
                 return None
+            widget_class = self.winfo_class()
             color = extract_color_from_style(current_style, default=None)
-            variant = extract_variant_from_style(current_style)
+            variant = extract_variant_from_style(current_style, widget_class)
             parts = []
             if color:
                 parts.append(color)

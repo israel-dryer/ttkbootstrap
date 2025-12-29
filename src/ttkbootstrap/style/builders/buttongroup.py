@@ -72,7 +72,7 @@ def build_button_group_style(b: BootstyleBuilderTTk, ttk_style: str, color: str 
     normal_focus_img = recolor_image(image_asset, accent, focus_border, focus_ring, surface)
     active_img = recolor_image(image_asset, active, active, active, surface)
     active_focus_img = recolor_image(image_asset, active, focus_border, focus_ring, surface)
-    pressed_img = recolor_image(image_asset, pressed, focus_border, focus_ring, surface)
+    pressed_img = recolor_image(image_asset, pressed, pressed, pressed, surface)
     selected_img = recolor_image(image_asset, selected, selected, selected, surface)
     selected_focus_img = recolor_image(image_asset, selected, focus_border, focus_ring, surface)
 
@@ -85,9 +85,9 @@ def build_button_group_style(b: BootstyleBuilderTTk, ttk_style: str, color: str 
                 [
                     ('disabled', disabled_img),
                     ('pressed !selected', pressed_img),
-                    ('active focus', active_focus_img),
-                    ('focus selected', selected_focus_img),
-                    ('focus !selected', normal_focus_img),
+                    ('background active focus', active_focus_img),
+                    ('background focus selected', selected_focus_img),
+                    ('background focus !selected', normal_focus_img),
                     ('active', active_img),
                     ('selected', selected_img),
                     ('', normal_img)
@@ -99,8 +99,8 @@ def build_button_group_style(b: BootstyleBuilderTTk, ttk_style: str, color: str 
                 [
                     ('disabled', disabled_img),
                     ('pressed !selected', pressed_img),
-                    ('focus selected', selected_focus_img),
-                    ('focus !selected', normal_focus_img),
+                    ('background focus selected', selected_focus_img),
+                    ('background focus !selected', normal_focus_img),
                     ('selected', selected_img),
                     ('', normal_img)
                 ]))
@@ -176,7 +176,7 @@ def build_outline_button_group_style(b: BootstyleBuilderTTk, ttk_style: str, col
     normal_focus_img = recolor_image(image_asset, surface, focus_border, focus_ring, surface)
     active_img = recolor_image(image_asset, active, active, active, surface)
     active_focus_img = recolor_image(image_asset, active, focus_border, focus_ring, surface)
-    pressed_img = recolor_image(image_asset, pressed, focus_border, focus_ring, surface)
+    pressed_img = recolor_image(image_asset, pressed, pressed, pressed, surface)
     selected_img = recolor_image(image_asset, accent, accent, accent, surface)
     selected_focus_img = recolor_image(image_asset, accent_focus, focus_border, focus_ring, surface)
 
@@ -189,9 +189,9 @@ def build_outline_button_group_style(b: BootstyleBuilderTTk, ttk_style: str, col
                 [
                     ('disabled', disabled_img),
                     ('pressed !selected', pressed_img),
-                    ('active focus', active_focus_img),
-                    ('focus selected', selected_focus_img),
-                    ('focus !selected', normal_focus_img),
+                    ('background active focus', active_focus_img),
+                    ('background focus selected', selected_focus_img),
+                    ('background focus !selected', normal_focus_img),
                     ('active', active_img),
                     ('selected', selected_img),
                     ('', normal_img)
@@ -203,8 +203,8 @@ def build_outline_button_group_style(b: BootstyleBuilderTTk, ttk_style: str, col
                 [
                     ('disabled', disabled_img),
                     ('pressed !selected', pressed_img),
-                    ('focus selected', selected_focus_img),
-                    ('focus !selected', normal_focus_img),
+                    ('background focus selected', selected_focus_img),
+                    ('background focus !selected', normal_focus_img),
                     ('selected', selected_img),
                     ('', normal_img)
                 ]))
@@ -284,9 +284,9 @@ def build_ghost_button_group_style(b: BootstyleBuilderTTk, ttk_style: str, color
 
     normal_img = recolor_image(image_asset, surface, accent, surface, surface)
     normal_focus_img = recolor_image(image_asset, surface, focus_border, focus_ring, surface)
-    active_img = recolor_image(image_asset, active, focus_border, focus_ring, surface)
+    active_img = recolor_image(image_asset, active, active, active, surface)
     active_focus_img = recolor_image(image_asset, active, focus_border, focus_ring, surface)
-    pressed_img = recolor_image(image_asset, pressed, focus_border, focus_ring, surface)
+    pressed_img = recolor_image(image_asset, pressed, pressed, pressed, surface)
     selected_img = recolor_image(image_asset, accent, accent, accent, surface)
     selected_focus_img = recolor_image(image_asset, accent, focus_ring, focus_ring, surface)
 
@@ -299,9 +299,9 @@ def build_ghost_button_group_style(b: BootstyleBuilderTTk, ttk_style: str, color
                 [
                     ('disabled', disabled_img),
                     ('pressed !selected', pressed_img),
-                    ('active focus', active_focus_img),
-                    ('focus selected', selected_focus_img),
-                    ('focus !selected', normal_focus_img),
+                    ('background active focus', active_focus_img),
+                    ('background focus selected', selected_focus_img),
+                    ('background focus !selected', normal_focus_img),
                     ('active', active_img),
                     ('selected', selected_img),
                     ('', normal_img)
@@ -314,8 +314,8 @@ def build_ghost_button_group_style(b: BootstyleBuilderTTk, ttk_style: str, color
                 [
                     ('disabled', disabled_img),
                     ('pressed !selected', pressed_img),
-                    ('focus selected', selected_focus_img),
-                    ('focus !selected', normal_focus_img),
+                    ('background focus selected', selected_focus_img),
+                    ('background focus !selected', normal_focus_img),
                     ('selected', selected_img),
                     ('', normal_img)
                 ]))

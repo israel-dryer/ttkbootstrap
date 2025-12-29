@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from ttkbootstrap.widgets import TK_WIDGETS, TTK_WIDGETS
+from ttkbootstrap.widgets.composites.accordion import Accordion
 from ttkbootstrap.widgets.primitives.badge import Badge
 from ttkbootstrap.widgets.primitives.button import Button
 from ttkbootstrap.widgets.composites.buttongroup import ButtonGroup
@@ -55,6 +56,7 @@ from ttkbootstrap.widgets.composites.tooltip import ToolTip
 from ttkbootstrap.widgets.primitives.treeview import TreeView
 
 __all__ = [
+    "Accordion",
     "Badge",
     "Button",
     "ButtonGroup",

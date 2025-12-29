@@ -79,6 +79,7 @@ nav = [
             { "PackFrame" = "widgets/layout/packframe.md" },
             { "LabelFrame" = "widgets/layout/labelframe.md" },
             { "Expander" = "widgets/layout/expander.md" },
+            { "Accordion" = "widgets/layout/accordion.md" },
             { "PanedWindow" = "widgets/layout/panedwindow.md" },
             { "ScrollView" = "widgets/layout/scrollview.md" },
             { "Scrollbar" = "widgets/layout/scrollbar.md" },
@@ -222,6 +223,7 @@ nav = [
         ] },
         { "Widgets" = [
             { "Overview" = "reference/widgets/index.md" },
+            { "Accordion" = "reference/widgets/Accordion.md" },
             { "Badge" = "reference/widgets/Badge.md" },
             { "Button" = "reference/widgets/Button.md" },
             { "ButtonGroup" = "reference/widgets/ButtonGroup.md" },

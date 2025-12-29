@@ -45,7 +45,7 @@ def build_scale_style(b: BootstyleBuilderTTk, ttk_style: str, color: str = 'prim
                      ).state_specs(
             [
                 ('disabled', handle_disabled_img),
-                ('focus', handle_focus_img),
+                ('background focus', handle_focus_img),
                 ('pressed', handle_pressed_img),
             ]))
 
