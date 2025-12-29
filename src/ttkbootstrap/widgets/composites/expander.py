@@ -208,7 +208,7 @@ class Expander(Frame):
             self._toggle_button.pack_forget()
 
         # Content frame
-        self._content_frame = Frame(self, padding=(8, 8))
+        self._content_frame = Frame(self)
         if self._expanded:
             self._content_frame.pack(fill='both', expand=True)
 
