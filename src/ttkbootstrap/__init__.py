@@ -153,7 +153,7 @@ _MODULE_EXPORTS = {
         "CheckToggle",
         "RadioToggle",
         "Calendar", "ContextMenu", "ContextMenuItem", "DateEntry",
-        "DropdownButton", "Expander", "Field", "FieldOptions", "FloodGauge", "Form",
+        "Accordion", "DropdownButton", "Expander", "Field", "FieldOptions", "FloodGauge", "Form",
         "GridFrame", "LabeledScale", "Meter", "NumericEntry", "PackFrame", "PageStack",
         "PasswordEntry", "PathEntry", "RadioGroup", "ScrolledText", "ScrollView", "SpinnerEntry",
         "SelectBox", "TableView", "TextEntry", "TimeEntry", "Toast", "ToggleGroup",

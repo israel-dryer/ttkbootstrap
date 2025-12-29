@@ -2,17 +2,14 @@
 from __future__ import annotations
 
 from tkinter import Widget, Variable
-from typing import Any, Literal, TYPE_CHECKING
+from typing import Any, Callable, Literal, TYPE_CHECKING
 
 from ttkbootstrap.widgets.primitives.frame import Frame
 from ttkbootstrap.widgets.primitives.label import Label
 from ttkbootstrap.widgets.composites.compositeframe import CompositeFrame
 from ttkbootstrap.widgets.mixins import configure_delegate
 from ttkbootstrap.widgets.types import Master
-from ttkbootstrap.core.capabilities.signals import (
-    normalize_signal,
-    create_signal,
-)
+from ttkbootstrap.core.capabilities.signals import normalize_signal
 
 if TYPE_CHECKING:
     from ttkbootstrap.core.signals import Signal
@@ -21,21 +18,23 @@ if TYPE_CHECKING:
 class Expander(Frame):
     """A collapsible container with a clickable header and expandable content.
 
-    The Expander displays a header with an optional icon, title, and chevron button.
-    Clicking anywhere on the header toggles the visibility of the content area.
+    The Expander displays a header with an optional icon, title, and chevron
+    button. Clicking anywhere on the header toggles the visibility of the
+    content area.
 
-    Expander also supports selection state via `signal`/`variable` and `value`,
-    similar to RadioButton. When clicked, it sets the variable to its value,
-    enabling radio-group-like behavior for navigation.
-
-    Events:
-        ``<<Toggle>>``: Fired when expanded/collapsed. event.data = {'expanded': bool}
-        ``<<Selected>>``: Fired when this expander is selected. event.data = {'value': Any}
+    Expander also supports selection state via ``signal``/``variable`` and
+    ``value``, similar to RadioButton. When clicked, it sets the variable to
+    its value, enabling radio-group-like behavior for navigation.
 
     Attributes:
-        expanded (bool): Current expansion state.
-        content (Frame): The content container frame.
-        is_selected (bool): Whether this expander's value matches the variable.
+        content (Frame): The content container frame (read-only).
+        is_selected (bool): Whether this expander's value matches the variable (read-only).
+
+    Events:
+        ``<<Toggle>>``: Fired when expanded/collapsed.
+            ``event.data = {'expanded': bool}``
+        ``<<Selected>>``: Fired when this expander is selected.
+            ``event.data = {'value': Any}``
     """
 
     def __init__(
@@ -73,7 +72,8 @@ class Expander(Frame):
                 the chevron button will use that style (default: foreground-ghost).
         """
         self._header_bootstyle = kwargs.pop('bootstyle', '')
-        kwargs.setdefault('padding', 3)
+        if 'show_border' in kwargs:
+            kwargs.setdefault('padding', 3)  # need 3 pixels to avoid cutting off corners
         kwargs.setdefault('takefocus', False)  # Outer container shouldn't take focus
         super().__init__(master, **kwargs)
 
@@ -311,19 +311,6 @@ class Expander(Frame):
         return widget
 
     @property
-    def expanded(self) -> bool:
-        """Get current expansion state."""
-        return self._expanded
-
-    @expanded.setter
-    def expanded(self, value: bool):
-        """Set expansion state."""
-        if value:
-            self.expand()
-        else:
-            self.collapse()
-
-    @property
     def content(self) -> Frame:
         """Get the content frame (for direct child parenting)."""
         return self._content_frame
@@ -335,40 +322,15 @@ class Expander(Frame):
             return self._variable.get() == self._value
         return False
 
-    @property
-    def value(self) -> Any:
-        """Get the selection value for this expander."""
-        return self._value
-
-    @property
-    def signal(self) -> 'Signal[Any] | None':
-        """Get the signal for selection state."""
-        return self._signal
-
-    @signal.setter
-    def signal(self, value: 'Signal[Any]'):
-        """Set the signal for selection state."""
-        self._set_signal_or_variable(value)
-
-    @property
-    def variable(self) -> Variable | None:
-        """Get the variable for selection state."""
-        return self._variable
-
-    @variable.setter
-    def variable(self, value: Variable):
-        """Set the variable for selection state."""
-        self._set_signal_or_variable(value)
-
-    def on_toggle(self, callback) -> str:
+    def on_toggle(self, callback: Callable) -> str:
         """Bind callback to ``<<Toggle>>`` events.
 
         Args:
-            callback (Callable): Function to call when toggled. Receives event with
-                event.data = {'expanded': bool}.
+            callback: Function to call when toggled. Receives event with
+                ``event.data = {'expanded': bool}``.
 
         Returns:
-            str: Bind ID that can be passed to ``off_toggle`` to remove this callback.
+            Bind ID that can be passed to ``off_toggle`` to remove this callback.
         """
         return self.bind('<<Toggle>>', callback, add='+')
 
@@ -380,15 +342,15 @@ class Expander(Frame):
         """
         self.unbind('<<Toggle>>', bind_id)
 
-    def on_selected(self, callback) -> str:
+    def on_selected(self, callback: Callable) -> str:
         """Bind callback to ``<<Selected>>`` events.
 
         Args:
-            callback (Callable): Function to call when selected. Receives event with
-                event.data = {'value': Any}.
+            callback: Function to call when selected. Receives event with
+                ``event.data = {'value': Any}``.
 
         Returns:
-            str: Bind ID that can be passed to ``off_selected`` to remove this callback.
+            Bind ID that can be passed to ``off_selected`` to remove this callback.
         """
         return self.bind('<<Selected>>', callback, add='+')
 
@@ -513,4 +475,31 @@ class Expander(Frame):
         self._highlight = value
         # Update the current state based on new highlight value
         self._header_frame.set_selected(value and self._expanded)
+        return None
+
+    @configure_delegate('expanded')
+    def _delegate_expanded(self, value=None):
+        """Get or set the expansion state."""
+        if value is None:
+            return self._expanded
+        if value:
+            self.expand()
+        else:
+            self.collapse()
+        return None
+
+    @configure_delegate('signal')
+    def _delegate_signal(self, value=None):
+        """Get or set the signal for selection state."""
+        if value is None:
+            return self._signal
+        self._set_signal_or_variable(value)
+        return None
+
+    @configure_delegate('variable')
+    def _delegate_variable(self, value=None):
+        """Get or set the variable for selection state."""
+        if value is None:
+            return self._variable
+        self._set_signal_or_variable(value)
         return None

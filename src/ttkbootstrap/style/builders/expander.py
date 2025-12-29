@@ -115,17 +115,20 @@ def build_ghost_expander_header_style(b: BootstyleBuilderTTk, ttk_style: str, co
             ('', surface)
         ],
         darkcolor=[
+            ('selected', selected),
             ('pressed', pressed),
             ('hover', hovered),
             ('', surface)
         ],
         lightcolor=[
+            ('selected', selected),
             ('pressed', pressed),
             ('hover', hovered),
             ('', surface)
         ],
         bordercolor=[
             ('background focus', focused_border),
+            ('selected', selected),
             ('pressed', pressed),
             ('hover', hovered),
             ('', surface)
