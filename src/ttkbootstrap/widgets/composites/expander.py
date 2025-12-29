@@ -45,6 +45,7 @@ class Expander(Frame):
         icon: str | dict = None,
         expanded: bool = True,
         collapsible: bool = True,
+        highlight: bool = False,
         icon_expanded: str | dict = None,
         icon_collapsed: str | dict = None,
         icon_position: Literal["before", "after"] = "after",
@@ -61,6 +62,7 @@ class Expander(Frame):
             icon (str | dict): Icon to display in header (left of title).
             expanded (bool): Initial expansion state. Default is True (expanded).
             collapsible (bool): Whether the expander can be toggled. Default is True.
+            highlight (bool): If True, header shows 'selected' state when expanded.
             icon_expanded (str | dict): Icon spec for expanded state. Default is chevron-up.
             icon_collapsed (str | dict): Icon spec for collapsed state. Default is chevron-down.
             icon_position (Literal["before", "after"]): Position of chevron relative to title.
@@ -79,6 +81,7 @@ class Expander(Frame):
         self._icon = icon
         self._expanded = expanded
         self._collapsible = collapsible
+        self._highlight = highlight
         self._icon_expanded = icon_expanded
         self._icon_collapsed = icon_collapsed
         self._icon_position = icon_position
@@ -209,6 +212,10 @@ class Expander(Frame):
         if self._expanded:
             self._content_frame.pack(fill='both', expand=True)
 
+        # Set initial highlight state
+        if self._highlight and self._expanded:
+            self._header_frame.set_selected(True)
+
         # Bind header events
         self._bind_header_events()
 
@@ -256,6 +263,8 @@ class Expander(Frame):
         self._expanded = True
         self._content_frame.pack(fill='both', expand=True)
         self._toggle_button.configure(icon=self._current_chevron_icon)
+        if self._highlight:
+            self._header_frame.set_selected(True)
         self.event_generate('<<Toggle>>', data={'expanded': True})
 
     def collapse(self):
@@ -266,6 +275,8 @@ class Expander(Frame):
         self._expanded = False
         self._content_frame.pack_forget()
         self._toggle_button.configure(icon=self._current_chevron_icon)
+        if self._highlight:
+            self._header_frame.set_selected(False)
         self.event_generate('<<Toggle>>', data={'expanded': False})
 
     def select(self):
@@ -492,4 +503,14 @@ class Expander(Frame):
                         self._title_label.pack(side='left', fill='x', expand=True, after=self._icon_label)
                     else:
                         self._title_label.pack(side='left', fill='x', expand=True)
+        return None
+
+    @configure_delegate('highlight')
+    def _delegate_highlight(self, value=None):
+        """Get or set highlight mode (shows 'selected' state when expanded)."""
+        if value is None:
+            return self._highlight
+        self._highlight = value
+        # Update the current state based on new highlight value
+        self._header_frame.set_selected(value and self._expanded)
         return None

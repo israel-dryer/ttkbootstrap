@@ -22,17 +22,20 @@ def build_solid_expander_header_style(b: BootstyleBuilderTTk, ttk_style: str, co
             ('', background)
         ],
         darkcolor=[
+            ('selected', selected),
             ('pressed', pressed),
             ('hover', active),
             ('', background)
         ],
         lightcolor=[
+            ('selected', selected),
             ('pressed', pressed),
             ('hover', active),
             ('', background)
         ],
         bordercolor=[
             ('background focus', focus_border),
+            ('selected', selected),
             ('pressed', pressed),
             ('hover', active),
             ('', background)
@@ -98,6 +101,7 @@ def build_ghost_expander_header_style(b: BootstyleBuilderTTk, ttk_style: str, co
     accent = b.color(accent_token)
 
     hovered = pressed = b.subtle(accent_token, surface)
+    selected = b.selected(hovered)
 
     focused_border = b.focus_border(accent) if accent_token != 'foreground' else b.focus_border(b.color('primary'))
 
@@ -105,6 +109,7 @@ def build_ghost_expander_header_style(b: BootstyleBuilderTTk, ttk_style: str, co
     b.map_style(
         ttk_style,
         background=[
+            ('selected', selected),
             ('pressed', pressed),
             ('hover', hovered),
             ('', surface)
@@ -140,6 +145,7 @@ def build_ghost_expander_header_label_style(b: BootstyleBuilderTTk, ttk_style: s
     accent = b.color(accent_token)
 
     hovered = pressed = b.subtle(accent_token, surface)
+    selected = b.selected(hovered)
 
     on_surface = accent
     on_disabled = b.disabled('text', accent)
@@ -158,6 +164,7 @@ def build_ghost_expander_header_label_style(b: BootstyleBuilderTTk, ttk_style: s
     ]
 
     background_state_map = [
+        ('selected', selected),
         ('disabled', surface),
         ('pressed', pressed),
         ('hover', hovered),
