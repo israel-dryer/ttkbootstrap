@@ -158,18 +158,37 @@ def extract_color_from_style(ttk_style: str, default: str = 'primary') -> str:
     return default
 
 
-def extract_variant_from_style(ttk_style: str) -> Optional[str]:
-    """Extract variant name from TTK style name."""
+def extract_variant_from_style(ttk_style: str, widget_class: str = None) -> Optional[str]:
+    """Extract variant name from TTK style name.
+
+    Args:
+        ttk_style: The TTK style name to parse.
+        widget_class: Optional widget class from winfo_class() to exclude from parsing.
+    """
     parts = ttk_style.split('.')
 
     # Skip custom prefix if present (e.g., bs[hash] or custom_xyz)
     if parts and (parts[0].startswith('bs[') or parts[0].startswith('custom_')):
         parts = parts[1:]
 
+    # Build set of class-related parts to skip (e.g., 'Expander', 'TLabel')
+    class_parts = set()
+    if widget_class:
+        class_parts.update(widget_class.split('.'))
+
     for part in parts:
         part_lower = part.lower()
-        if part_lower not in COLOR_TOKENS and not part.startswith('T'):
-            return part_lower
+        # Skip color tokens
+        if part_lower in COLOR_TOKENS:
+            continue
+        # Skip known class parts from widget_class
+        if part in class_parts:
+            continue
+        # Skip standard ttk class names (TLabel, TButton, etc.)
+        if part.startswith('T'):
+            continue
+        # Found a variant
+        return part_lower
 
     return None
 
