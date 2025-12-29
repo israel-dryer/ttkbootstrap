@@ -36,12 +36,4 @@ class RadioToggle(RadioButton):
             style_options (dict): Optional dict forwarded to the style builder.
             localize (bool | Literal['auto']): Determines the widget's localization mode.
         """
-        bootstyle = kwargs.pop('bootstyle', 'Toolbutton')
-
-        # coerce to toolbutton if not already there (in this case, the bootstyle is likely just a color).
-        if 'toolbutton' not in bootstyle:
-            bootstyle = f"{bootstyle}-toolbutton"
-
-        kwargs['bootstyle'] = bootstyle
-
-        super().__init__(master, **kwargs)
+        super().__init__(master, class_='Toolbutton', **kwargs)
