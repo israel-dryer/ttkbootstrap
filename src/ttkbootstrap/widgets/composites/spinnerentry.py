@@ -80,7 +80,8 @@ class SpinnerEntry(Field):
             value_format (str): ICU format pattern for parsing/formatting.
             locale (str): Locale identifier for formatting (e.g., 'en_US').
             required (bool): If True, field cannot be empty.
-            bootstyle (str): The accent color of the focus ring and active border.
+            color (str): Color token for the focus ring and active border.
+            bootstyle (str): DEPRECATED - Use `color` instead.
             allow_blank (bool): If True, empty input is allowed.
             cursor (str): Cursor style when hovering.
             font (str): Font for text display.

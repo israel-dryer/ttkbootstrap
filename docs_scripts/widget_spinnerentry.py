@@ -20,14 +20,14 @@ r3 = ttk.Frame(app, padding=16)
 r3.pack(side='top')
 
 for color in ['primary', 'secondary', 'success']:
-    te = ttk.SpinnerEntry(r3, value=123456, bootstyle=color)
+    te = ttk.SpinnerEntry(r3, value=123456, color=color)
     te.pack(side='left', padx=10)
 
 r5 = ttk.Frame(app, padding=16)
 r5.pack(side='top')
 
 for color in ['info', 'warning', 'danger']:
-    te = ttk.SpinnerEntry(r5, value=123456, bootstyle=color)
+    te = ttk.SpinnerEntry(r5, value=123456, color=color)
     te.pack(side='left', padx=10)
 
 # prefix example
