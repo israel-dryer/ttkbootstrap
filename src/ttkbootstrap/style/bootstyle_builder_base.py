@@ -112,6 +112,7 @@ class BootstyleBuilderBase:
 
         Args:
             token: Color token (e.g., "primary", "primary[100][muted]")
+                   Can also be a hex color string (e.g., "#ff0000")
             surface: Optional surface color for subtle modifier
             role: Role for subtle modifier ("background" or "text")
 
@@ -121,6 +122,10 @@ class BootstyleBuilderBase:
         Raises:
             ValueError: If the color token cannot be resolved to a valid color.
         """
+        # If token is already a hex color, return it directly
+        if token and token.startswith('#'):
+            return token
+
         # Fast path: exact key (e.g., "blue[100]" or "primary")
         direct = self.colors.get(token)
         if direct is not None:
