@@ -210,13 +210,13 @@ class SelectBox(Field):
         # Extract color from bootstyle (e.g., 'danger-outline' -> 'danger')
         bootstyle = self._bootstyle or 'primary'
         color = bootstyle.split('-')[0] if '-' in bootstyle else bootstyle
-        item_bootstyle = f'{color}-selectbox_item'
 
         for i, item in enumerate(self._items):
             btn = Button(
                 inner_frame,
                 text=item,
-                bootstyle=item_bootstyle,
+                color=color,
+                variant='selectbox_item',
                 command=lambda v=item: self._on_item_click(v, toplevel, popup_state)
             )
             btn.pack(fill='x')
