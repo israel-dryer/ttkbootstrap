@@ -32,9 +32,11 @@ class Badge(Label):
             relief (str): Border style.
             state (str): Widget state.
             takefocus (bool): Whether the widget participates in focus traversal.
-            style (str): Explicit ttk style name (overrides bootstyle).
-            bootstyle (str): ttkbootstrap style tokens describing the badge color
-                (defaults to 'badge' and is coerced to include '-badge').
+            style (str): Explicit ttk style name (overrides color/variant).
+            color (str): Color token for styling, e.g. 'primary', 'success', 'danger'.
+            variant (str): Style variant (coerced to 'badge').
+            bootstyle (str): DEPRECATED - Use `color` and `variant` instead.
+                Combined style tokens (defaults to 'badge').
             surface_color (str): Optional surface token; otherwise inherited.
             style_options (dict): Optional dict forwarded to the style builder.
         """
