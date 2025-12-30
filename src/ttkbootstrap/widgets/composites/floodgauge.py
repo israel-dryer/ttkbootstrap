@@ -78,7 +78,7 @@ class FloodGauge(ConfigureDelegationMixin, Canvas):
         self._mode = mode
         self._mask = mask
         self._font = font
-        self._bootstyle = color or bootstyle or "primary"
+        self._color = color or bootstyle or "primary"
         self._orient = orient
         self._length = length
         self._thickness = thickness
@@ -156,15 +156,15 @@ class FloodGauge(ConfigureDelegationMixin, Canvas):
     @configure_delegate('bootstyle')
     def _delegate_bootstyle(self, value=None):
         if value is None:
-            return self._bootstyle
-        self._bootstyle = value
+            return self._color
+        self._color = value
         self._update_theme_colors()  # calls _draw()
 
     @configure_delegate('color')
     def _delegate_color(self, value=None):
         if value is None:
-            return self._bootstyle
-        self._bootstyle = value
+            return self._color
+        self._color = value
         self._update_theme_colors()  # calls _draw()
 
     @configure_delegate('orient')
@@ -250,8 +250,8 @@ class FloodGauge(ConfigureDelegationMixin, Canvas):
         style = get_style()
         b = style.style_builder
         surface = b.color('background')
-        self._bar_color = b.color(self._bootstyle)
-        self._trough_color = b.border(b.subtle(self._bootstyle, surface))
+        self._bar_color = b.color(self._color)
+        self._trough_color = b.border(b.subtle(self._color, surface))
         self._text_color = b.on_color(self._bar_color)
         self._draw()
 

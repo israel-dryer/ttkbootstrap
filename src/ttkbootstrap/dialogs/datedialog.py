@@ -224,7 +224,7 @@ class DateDialog:
         self._master = master
         self._first_weekday = first_weekday
         self._initial_date = initial_date or datetime.today().date()
-        self._bootstyle = color or bootstyle or PRIMARY
+        self._color = color or bootstyle or PRIMARY
         self._disabled_dates = disabled_dates
         self._min_date = min_date
         self._max_date = max_date
@@ -254,7 +254,7 @@ class DateDialog:
             master=container,
             start_date=self._initial_date,
             first_weekday=self._first_weekday,
-            bootstyle=self._bootstyle,
+            color=self._color,
             disabled_dates=self._disabled_dates,
             min_date=self._min_date,
             max_date=self._max_date,

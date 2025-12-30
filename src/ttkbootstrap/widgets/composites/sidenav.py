@@ -49,7 +49,7 @@ class SideNav(Frame):
         icon_only: bool = False,
         signal: 'Signal[str]' = None,
         variable: Variable = None,
-        item_bootstyle: str = 'ghost',
+        item_color: str = 'ghost',
         **kwargs: Any
     ):
         """Initialize a SideNav.
@@ -59,15 +59,15 @@ class SideNav(Frame):
             icon_only (bool): Show only icons, no text. Default False.
             signal (Signal | None): Reactive signal for selection state.
             variable (Variable | None): Tk variable for selection state.
-            item_bootstyle (str): Style for navigation items. Default 'ghost'.
-            **kwargs: Additional arguments passed to Frame (including bootstyle
+            item_color (str): Color for navigation items. Default 'ghost'.
+            **kwargs: Additional arguments passed to Frame (including color
                 for container background).
         """
         kwargs.setdefault('padding', 4)
         super().__init__(master, **kwargs)
 
         self._icon_only = icon_only
-        self._item_bootstyle = item_bootstyle
+        self._item_color = item_color
 
         # Selection state - create signal if neither provided
         if signal is not None:
@@ -131,7 +131,7 @@ class SideNav(Frame):
                 icon_only=True,
                 variable=self._variable,
                 value=key,
-                color=self._item_bootstyle,
+                color=self._item_color,
                 **kwargs
             )
         else:
@@ -142,7 +142,7 @@ class SideNav(Frame):
                 compound='left' if icon else None,
                 variable=self._variable,
                 value=key,
-                color=self._item_bootstyle,
+                color=self._item_color,
                 padding=(12, 8),
                 anchor='w',
                 **kwargs
