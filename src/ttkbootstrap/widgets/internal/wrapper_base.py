@@ -97,7 +97,9 @@ class TTKWrapperBase(FontMixin, ConfigureDelegationMixin):
 
         NOTE: Style options are updated via the `style_options()` method.
         """
-        widget_class = self.winfo_class()
+        # Use stored _ttk_class if available (for custom style class like ButtonGroup)
+        # Otherwise fall back to actual widget class
+        widget_class = getattr(self, '_ttk_class', None) or self.winfo_class()
 
         style_options = getattr(self, '_style_options', {})
 
@@ -169,7 +171,8 @@ class TTKWrapperBase(FontMixin, ConfigureDelegationMixin):
             stacklevel=3
         )
 
-        widget_class = self.winfo_class()
+        # Use stored _ttk_class if available (for custom style class like ButtonGroup)
+        widget_class = getattr(self, '_ttk_class', None) or self.winfo_class()
         color, variant = convert_bootstyle_to_color_variant(
             str(value), widget_class, warn=False  # Already warned above
         )
@@ -223,8 +226,8 @@ class TTKWrapperBase(FontMixin, ConfigureDelegationMixin):
                 return None
             return extract_color_from_style(current_style, default=None)
 
-        # Set path
-        widget_class = self.winfo_class()
+        # Set path - use stored _ttk_class if available
+        widget_class = getattr(self, '_ttk_class', None) or self.winfo_class()
         current_variant = getattr(self, '_variant', None)
         if current_variant is None:
             current_style = self._ttk_base.cget(self, "style")  # type: ignore[misc]
@@ -279,11 +282,11 @@ class TTKWrapperBase(FontMixin, ConfigureDelegationMixin):
             current_style = self._ttk_base.cget(self, "style")  # type: ignore[misc]
             if not current_style:
                 return None
-            widget_class = self.winfo_class()
+            widget_class = getattr(self, '_ttk_class', None) or self.winfo_class()
             return extract_variant_from_style(current_style, widget_class)
 
-        # Set path
-        widget_class = self.winfo_class()
+        # Set path - use stored _ttk_class if available
+        widget_class = getattr(self, '_ttk_class', None) or self.winfo_class()
         current_color = getattr(self, '_color', None)
         if current_color is None:
             current_style = self._ttk_base.cget(self, "style")  # type: ignore[misc]
