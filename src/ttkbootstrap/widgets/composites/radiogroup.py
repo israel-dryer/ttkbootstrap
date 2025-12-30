@@ -54,8 +54,9 @@ class RadioGroup(Frame):
 
         Other Parameters:
             orient (str): Layout orientation - 'horizontal' (default) or 'vertical'.
-            bootstyle (str): The color/variant style (e.g., 'primary', 'success', 'danger').
+            color (str): Color token for styling (e.g., 'primary', 'success', 'danger').
                 Defaults to 'primary'.
+            bootstyle (str): DEPRECATED - Use `color` instead.
             text (str): Optional label text to display.
             labelanchor (str): Label position - 'n' (top, default), 's' (bottom),
                 'e' (right), 'w' (left), or combinations like 'nw', 'ne', etc.
