@@ -539,6 +539,7 @@ class App(BaseWindow, WidgetCapabilitiesMixin, tkinter.Tk):
             n (int): A threshold that keeps the window open if at least n windows is open. This is an archaic c-level
                 detail that should not be adjusted unless you have a specific reason.
         """
+        self.place_window_center()
         self.show()
         super().mainloop(n=n)
 
