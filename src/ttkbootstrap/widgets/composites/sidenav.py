@@ -131,7 +131,7 @@ class SideNav(Frame):
                 icon_only=True,
                 variable=self._variable,
                 value=key,
-                bootstyle=self._item_bootstyle,
+                color=self._item_bootstyle,
                 **kwargs
             )
         else:
@@ -142,7 +142,7 @@ class SideNav(Frame):
                 compound='left' if icon else None,
                 variable=self._variable,
                 value=key,
-                bootstyle=self._item_bootstyle,
+                color=self._item_bootstyle,
                 padding=(12, 8),
                 anchor='w',
                 **kwargs
@@ -173,7 +173,7 @@ class SideNav(Frame):
             self,
             text=text,
             font='label',
-            bootstyle='secondary',
+            color='secondary',
             padding=(8, 12, 8, 4),
             **kwargs
         )

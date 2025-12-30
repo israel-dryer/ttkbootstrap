@@ -49,7 +49,7 @@ class NavigationViewHeader(Frame):
             self,
             text=text,
             font='label',
-            bootstyle='secondary',
+            color='secondary',
             anchor='w',
         )
         self._text_label.pack(fill='x')

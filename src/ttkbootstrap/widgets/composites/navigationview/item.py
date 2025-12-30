@@ -97,7 +97,8 @@ class NavigationViewItem(Frame):
             variable=self._variable,
             value=self._key,
             anchor='w',
-            bootstyle='primary-ghost',
+            color='primary',
+            variant='ghost',
             command=self._on_invoked,
         )
         self._toggle_full.pack(fill='x')
@@ -109,7 +110,8 @@ class NavigationViewItem(Frame):
             icon_only=True,
             variable=self._variable,
             value=self._key,
-            bootstyle='primary-ghost',
+            color='primary',
+            variant='ghost',
             command=self._on_invoked,
         )
         # Don't pack yet - only shown in compact mode
