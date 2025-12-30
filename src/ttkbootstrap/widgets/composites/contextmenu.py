@@ -98,6 +98,7 @@ class ContextMenu(CustomConfigMixin):
         # Create frame with border and padding
         self._frame = Frame(
             self._toplevel,
+            show_border=True,
             padding=3,
         )
         self._frame.pack(fill='both', expand=True)
