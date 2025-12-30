@@ -37,7 +37,9 @@ class NotebookKwargs(TypedDict, total=False):
     name: str
 
     # ttkbootstrap-specific extensions
-    bootstyle: str
+    bootstyle: str  # DEPRECATED: Use color and variant instead
+    color: str
+    variant: str
     surface_color: str
     style_options: dict[str, Any]
 
@@ -84,8 +86,11 @@ class Notebook(TTKWrapperBase, WidgetCapabilitiesMixin, TtkStateMixin, ttk.Noteb
             padding (int | tuple): Extra space around the tab header and pane area.
             height (int): Requested widget height in pixels.
             width (int): Requested widget width in pixels.
-            style (str): Explicit ttk style name that overrides any bootstyle token.
-            bootstyle (str): Bootstyle tokens (e.g., 'primary', 'secondary').
+            style (str): Explicit ttk style name that overrides color/variant.
+            color (str): Color token for styling, e.g. 'primary', 'secondary'.
+            variant (str): Style variant (if applicable).
+            bootstyle (str): DEPRECATED - Use `color` and `variant` instead.
+                Combined style tokens (e.g., 'primary', 'secondary').
             surface_color (str): Optional surface color token; inherits from the current theme if omitted.
             style_options (dict): Additional options forwarded to the style builder.
         """
