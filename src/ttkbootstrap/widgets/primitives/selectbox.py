@@ -62,7 +62,7 @@ class SelectBox(Field):
 
         Other Parameters:
             allow_blank (bool): If True, empty input is allowed.
-            bootstyle (str): The accent color of the focus ring and active border.
+            color (str): Color token for styling the focus ring and active border.
             value_format (str): ICU format pattern for parsing/formatting.
             font (str): Font for text display.
             foreground (str): Text color.
