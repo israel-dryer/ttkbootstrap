@@ -139,20 +139,22 @@ ttk.CheckButton(app, text="Wider", padding=(10, 6), width=18).pack(pady=6)
 ttk.CheckButton(app, text="E_xport", underline=1).pack(pady=6)
 ```
 
-### Events
+### Reacting to changes
 
-`CheckButton` emits selection change events consistent with other selection widgets.
+Use `command` for immediate callbacks, or subscribe to the signal/variable for reactive updates.
 
 ```python
-def on_changed(e):
-    print("value:", cb.value)
+# Using command callback
+def on_toggle():
+    print("toggled!")
 
-cb.on_changed(on_changed)
+cb = ttk.CheckButton(app, text="Option", command=on_toggle)
+
+# Using signal subscription
+enabled = ttk.Signal(False)
+cb = ttk.CheckButton(app, text="Option", signal=enabled)
+enabled.subscribe(lambda v: print(f"Value: {v}"))
 ```
-
-Most commonly used:
-
-- `<<Changed>>` - fired when the committed value changes
 
 ### Validation and constraints
 
