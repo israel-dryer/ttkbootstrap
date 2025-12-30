@@ -71,7 +71,7 @@ class ToggleGroupDemo(ttk.App):
             self,
             mode='multi',
             orient='vertical',
-            bootstyle='danger',
+            color='danger',
             value={'red'}
         )
         vertical_group.add("Red", "red")

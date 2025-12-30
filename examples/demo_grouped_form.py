@@ -75,7 +75,7 @@ def demo_basic_groups(parent):
             title="Profile Updated",
             message="Your profile has been saved successfully",
             duration=3000,
-            bootstyle="success",
+            color="success",
         ).show()
 
 
@@ -156,7 +156,7 @@ def demo_multicolumn_groups(parent):
             title="Employee Record Updated",
             message=f"Record for {dialog.result['first_name']} {dialog.result['last_name']} saved",
             duration=3000,
-            bootstyle="info",
+            color="info",
         ).show()
 
 
@@ -252,7 +252,7 @@ def demo_nested_groups(parent):
             title="Project Settings Saved",
             message=f"Configuration for '{dialog.result['project_name']}' has been saved",
             duration=3000,
-            bootstyle="success",
+            color="success",
         ).show()
 
 
@@ -335,7 +335,7 @@ def demo_mixed_layout(parent):
             title="Order Submitted",
             message=f"Order {dialog.result['order_id']} total: ${total_final:.2f}",
             duration=3000,
-            bootstyle="success",
+            color="success",
         ).show()
 
 

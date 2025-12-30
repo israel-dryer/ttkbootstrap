@@ -40,7 +40,7 @@ def demo_simple_form(parent):
             title="Form Submitted",
             message=f"User {dialog.result['first_name']} {dialog.result['last_name']} updated!",
             duration=3000,
-            bootstyle="success",
+            color="success",
         ).show()
     else:
         print("Simple form cancelled")
@@ -113,7 +113,7 @@ def demo_explicit_layout(parent):
             title="Settings Saved",
             message="Profile settings have been updated",
             duration=3000,
-            bootstyle="info",
+            color="info",
         ).show()
     else:
         print("Explicit layout cancelled")
@@ -132,7 +132,7 @@ def demo_with_validation(parent):
                 title="Validation Error",
                 message="Product name is required!",
                 duration=3000,
-                bootstyle="danger",
+                color="danger",
             ).show()
             return  # Don't set result, keep dialog open
 
@@ -141,7 +141,7 @@ def demo_with_validation(parent):
                 title="Validation Error",
                 message="Price must be greater than 0!",
                 duration=3000,
-                bootstyle="danger",
+                color="danger",
             ).show()
             return
 
@@ -186,7 +186,7 @@ def demo_with_validation(parent):
             title="Product Added",
             message=f"Product '{dialog.result['product_name']}' has been added",
             duration=3000,
-            bootstyle="success",
+            color="success",
         ).show()
     else:
         print("Product add cancelled")
@@ -205,7 +205,7 @@ def demo_registration_form(parent):
                 title="Invalid Email",
                 message="Please enter a valid email address",
                 duration=3000,
-                bootstyle="warning",
+                color="warning",
             ).show()
             return
 
@@ -214,7 +214,7 @@ def demo_registration_form(parent):
                 title="Weak Password",
                 message="Password must be at least 8 characters",
                 duration=3000,
-                bootstyle="warning",
+                color="warning",
             ).show()
             return
 
@@ -223,7 +223,7 @@ def demo_registration_form(parent):
                 title="Password Mismatch",
                 message="Passwords do not match",
                 duration=3000,
-                bootstyle="danger",
+                color="danger",
             ).show()
             return
 
@@ -293,7 +293,7 @@ def demo_registration_form(parent):
             title="Registration Complete",
             message=f"Welcome, {dialog.result['first_name']}!",
             duration=3000,
-            bootstyle="success",
+            color="success",
         ).show()
     else:
         print("Registration cancelled")
