@@ -115,8 +115,7 @@ class Accordion(Frame):
                 icon=icon,
                 expanded=expanded,
                 highlight=True,
-                bootstyle=self._bootstyle or kwargs.pop('bootstyle', ''),
-                color=self._color or kwargs.pop('color', None),
+                color=self._color or self._bootstyle or kwargs.pop('color', kwargs.pop('bootstyle', None)),
                 variant=self._variant or kwargs.pop('variant', None),
                 **kwargs
             )
