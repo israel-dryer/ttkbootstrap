@@ -161,8 +161,8 @@ class Expander(Frame):
 
         # Use CompositeFrame for header to enable hover/pressed/focus states
         self._header_frame = CompositeFrame(
-            self, class_='Expander.TFrame', bootstyle=bootstyle,
-            color=color, variant=variant, padding=8, takefocus=True
+            self, ttk_class='Expander.TFrame',
+            color=color or bootstyle, variant=variant, padding=8, takefocus=True
         )
         self._header_frame.pack(fill='x')
 
@@ -172,9 +172,8 @@ class Expander(Frame):
                 self._header_frame,
                 icon=self._icon,
                 icon_only=True,
-                class_='Expander.TLabel',
-                bootstyle=bootstyle,
-                color=color, variant=variant,
+                ttk_class='Expander.TLabel',
+                color=color or bootstyle, variant=variant,
                 takefocus=False,
             )
             self._header_frame.register_composite(self._icon_label)
@@ -185,9 +184,8 @@ class Expander(Frame):
             self._header_frame,
             text=self._title,
             anchor='w',
-            class_='Expander.TLabel',
-            bootstyle=bootstyle,
-            color=color, variant=variant,
+            ttk_class='Expander.TLabel',
+            color=color or bootstyle, variant=variant,
             takefocus=False,
         )
         self._header_frame.register_composite(self._title_label)
@@ -197,9 +195,8 @@ class Expander(Frame):
             self._header_frame,
             icon=self._current_chevron_icon,
             icon_only=True,
-            bootstyle=bootstyle,
-            color=color, variant=variant,
-            class_='Expander.TLabel',
+            color=color or bootstyle, variant=variant,
+            ttk_class='Expander.TLabel',
             takefocus=False,
         )
         self._header_frame.register_composite(self._toggle_button)
@@ -394,9 +391,8 @@ class Expander(Frame):
                 self._header_frame,
                 icon=value,
                 icon_only=True,
-                class_='Expander.TLabel',
-                bootstyle=self._header_bootstyle,
-                color=self._header_color, variant=self._header_variant,
+                ttk_class='Expander.TLabel',
+                color=self._header_color or self._header_bootstyle, variant=self._header_variant,
                 takefocus=False,
             )
             self._header_frame.register_composite(self._icon_label)
