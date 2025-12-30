@@ -207,9 +207,8 @@ class SelectBox(Field):
         self._item_labels = []
         current_value = self.value
 
-        # Extract color from bootstyle (e.g., 'danger-outline' -> 'danger')
-        bootstyle = self._bootstyle or 'primary'
-        color = bootstyle.split('-')[0] if '-' in bootstyle else bootstyle
+        # Get color from Field's _color attribute, fallback to primary if None
+        color = getattr(self, '_color', None) or 'primary'
 
         for i, item in enumerate(self._items):
             btn = Button(
