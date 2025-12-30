@@ -96,7 +96,8 @@ class PathEntry(Field):
 
         Other Parameters:
             required (bool): If True, field cannot be empty.
-            bootstyle (str): The accent color of the focus ring and active border.
+            color (str): Color token for the focus ring and active border.
+            bootstyle (str): DEPRECATED - Use `color` instead.
             allow_blank (bool): Allow empty input.
             cursor (str): Cursor style when hovering.
             font (str): Font for text display.
