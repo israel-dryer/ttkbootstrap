@@ -26,7 +26,8 @@ class FloodGauge(ConfigureDelegationMixin, Canvas):
             mask: Optional[str] = None,
             text: str = "",
             font: Union[tuple[str, int], str] = ("Helvetica", 12),
-            bootstyle: str = "primary",
+            color: str = None,
+            bootstyle: str = None,
             orient: str = "horizontal",
             length: int = 200,
             thickness: int = 50,
@@ -47,8 +48,9 @@ class FloodGauge(ConfigureDelegationMixin, Canvas):
             text (str): Static text label shown when no mask is specified.
             font (tuple | str): Font specification as tuple ``(family, size)`` or
                 string like ``'Arial 12 bold'``.
-            bootstyle (str): Color theme from ttkbootstrap (e.g., ``'primary'``,
+            color (str): Color token from ttkbootstrap (e.g., ``'primary'``,
                 ``'success'``, ``'info'``, ``'warning'``, ``'danger'``).
+            bootstyle (str): DEPRECATED - Use ``color`` instead.
             orient (str): Widget orientation - ``'horizontal'`` or ``'vertical'``.
             length (int): Size in pixels along the main axis (width if horizontal,
                 height if vertical).
@@ -76,7 +78,7 @@ class FloodGauge(ConfigureDelegationMixin, Canvas):
         self._mode = mode
         self._mask = mask
         self._font = font
-        self._bootstyle = bootstyle
+        self._bootstyle = color or bootstyle or "primary"
         self._orient = orient
         self._length = length
         self._thickness = thickness
@@ -153,6 +155,13 @@ class FloodGauge(ConfigureDelegationMixin, Canvas):
 
     @configure_delegate('bootstyle')
     def _delegate_bootstyle(self, value=None):
+        if value is None:
+            return self._bootstyle
+        self._bootstyle = value
+        self._update_theme_colors()  # calls _draw()
+
+    @configure_delegate('color')
+    def _delegate_color(self, value=None):
         if value is None:
             return self._bootstyle
         self._bootstyle = value
