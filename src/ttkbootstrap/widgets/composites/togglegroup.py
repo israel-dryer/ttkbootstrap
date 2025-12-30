@@ -51,8 +51,10 @@ class ToggleGroup(Frame):
             mode (str): Selection mode - 'single' for radio button behavior (default),
                 or 'multi' for checkbox behavior allowing multiple selections.
             orient (str): Layout orientation - 'horizontal' (default) or 'vertical'.
-            bootstyle (str): The color/variant style (e.g., 'primary', 'danger-outline').
+            color (str): Color token for styling (e.g., 'primary', 'danger').
                 Defaults to 'primary'.
+            variant (str): Style variant (e.g., 'outline', 'ghost').
+            bootstyle (str): DEPRECATED - Use `color` and `variant` instead.
             variable (Variable): Optional tk.Variable for controlling the value. For single mode,
                 use StringVar; for multi mode, use SetVar.
             signal (Signal): Optional Signal instance for reactive programming.
