@@ -38,19 +38,10 @@ def create_entry_test():
     return frame
 
 
-def change_style():
-    if style.theme_use() == 'dark':
-        style.theme_use('light')
-    else:
-        style.theme_use('dark')
-
-
 if __name__ == '__main__':
-    # create visual widget style tests
     root = ttk.Window()
-    style = get_style()
 
-    ttk.Button(text="Change Theme", command=change_style).pack(padx=10, pady=10)
+    ttk.Button(text="Change Theme", command=ttk.toggle_theme).pack(padx=10, pady=10)
 
     test1 = create_entry_test()
     test1.pack(side=LEFT, fill=BOTH)
