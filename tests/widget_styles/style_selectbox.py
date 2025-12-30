@@ -17,21 +17,20 @@ def create_combobox_test(bootstyle, test_name):
     # default
     cbo = ttk.SelectBox(
         master=frame,
-        value='default',
-        items=['default', 'other'],
+        value='primary',
+        items=['other'],
         allow_custom_values=True,
-        show_dropdown_button=True,
-        bootstyle=bootstyle,
+        show_dropdown_button=True
     )
     cbo.pack(padx=5, pady=5, fill=BOTH)
 
     # color
-    for color in ['default', 'primary', 'secondary', 'success', 'info', 'warning', 'danger']:
+    for color in ['primary', 'secondary', 'success', 'info', 'warning', 'danger']:
         cbo = ttk.SelectBox(
             master=frame,
             value=color,
-            items=['default', 'primary', 'secondary', 'success', 'info', 'warning', 'danger'],
-            bootstyle=color,
+            items=['primary', 'secondary', 'success', 'info', 'warning', 'danger'],
+            color=color,
         )
         cbo.pack(padx=5, pady=5, fill=BOTH)
 
@@ -39,8 +38,7 @@ def create_combobox_test(bootstyle, test_name):
     cbo = ttk.SelectBox(
         value='other',
         master=frame,
-        items=[bootstyle, 'other'],
-        bootstyle=bootstyle,
+        items=['other'],
         state='disabled'
     )
     cbo.pack(padx=5, pady=5, fill='both')
