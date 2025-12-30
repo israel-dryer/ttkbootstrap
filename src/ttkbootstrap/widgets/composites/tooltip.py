@@ -35,6 +35,7 @@ class ToolTip:
             text: str = "widget info",
             padding: int = 10,
             justify: Literal["left", "center", "right"] = "left",
+            color: Optional[str] = None,
             bootstyle: Optional[Union[str, tuple[str, ...]]] = None,
             wraplength: Optional[int] = None,
             delay: int = 250,  # milliseconds
@@ -65,9 +66,10 @@ class ToolTip:
                 tooltip border. Defaults to 10.
             justify: Text alignment within the tooltip. Valid options are "left",
                 "center", or "right". Defaults to "left".
-            bootstyle: Bootstrap style(s) to apply to the tooltip frame. Can be a
-                single style string or tuple of styles (e.g., "danger" or
-                (DANGER, INVERSE)). If None, uses default background styling.
+            color: Color token for the tooltip frame (e.g., "danger", "info").
+                If None, uses default elevated background styling.
+            bootstyle: DEPRECATED - Use `color` instead. Bootstrap style(s) to apply
+                to the tooltip frame.
             wraplength: Maximum width in screen units before text wraps to a new line.
                 If None, defaults to a scaled value of 300 based on the widget's display.
             delay: Time in milliseconds to wait before showing the tooltip after mouse
@@ -93,7 +95,7 @@ class ToolTip:
         self._text = text
         self._padding = padding
         self._justify = justify
-        self._bootstyle = bootstyle
+        self._color = color or bootstyle  # Support legacy bootstyle parameter
         self._wraplength = wraplength if wraplength is not None else scale_size(self._widget, 300)
         self._delay = delay
         self._image = image
@@ -167,10 +169,12 @@ class ToolTip:
 
         # Create the tooltip window (position will be set after content is built)
         self._toplevel = Toplevel(**self.toplevel_kwargs)
-        bootstyle = 'background[+1]-tooltip' if self._bootstyle is None else f'{self._bootstyle}-tooltip'
+        # Use color with tooltip variant
+        color = 'background[+1]' if self._color is None else self._color
         frame = ttk.Frame(
             self._toplevel,
-            bootstyle=bootstyle,
+            color=color,
+            variant='tooltip',
             padding=self._padding
         )
         frame.pack(fill=BOTH, expand=YES)
