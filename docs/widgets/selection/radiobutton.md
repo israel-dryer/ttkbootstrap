@@ -80,11 +80,11 @@ RadioButtons support standard ttkbootstrap color tokens.
 
 ```python
 ttk.RadioButton(app)  # primary is default
-ttk.RadioButton(app, bootstyle="secondary")
-ttk.RadioButton(app, bootstyle="success")
-ttk.RadioButton(app, bootstyle="info")
-ttk.RadioButton(app, bootstyle="warning")
-ttk.RadioButton(app, bootstyle="danger")
+ttk.RadioButton(app, color="secondary")
+ttk.RadioButton(app, color="success")
+ttk.RadioButton(app, color="info")
+ttk.RadioButton(app, color="warning")
+ttk.RadioButton(app, color="danger")
 ```
 
 <figure markdown>

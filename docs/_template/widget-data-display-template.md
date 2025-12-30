@@ -20,7 +20,7 @@ If useful, include a short “Use it for…” sentence (file browsers, admin gr
 
 **Design System**
 
-- How styling is controlled (`bootstyle`, row/selection colors, headers)
+- How styling is controlled (`color`, `variant`, row/selection colors, headers)
 
 - Typography defaults and density conventions (row height, padding)
 
@@ -126,7 +126,7 @@ Curated options only (avoid full API dumps), such as:
 
 - scrollbars
 
-- styling tokens (`bootstyle`) and key style options
+- styling tokens (`color`, `variant`) and key style options
 
 Use short examples per topic.
 
@@ -170,7 +170,7 @@ Provide one clear example showing subscribe/unsubscribe patterns (on_* / off_*),
 
 Explain practical styling knobs:
 
-- bootstyle tokens and what they affect (e.g., selection color)
+- color tokens and what they affect (e.g., selection color)
 
 - style options for borders, headers, selection colors, icons
 

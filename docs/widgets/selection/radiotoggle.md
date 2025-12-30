@@ -54,28 +54,16 @@ Use `RadioToggle` when:
 
 - selecting it sets the shared value to its `value`
 
-The difference is purely presentational: `RadioToggle` coerces `bootstyle` to a toolbutton-style badge
-(e.g. `primary-toolbutton`, `success-toolbutton`).
-
-### Variants
-
-#### Bootstyle coercion
-
-`RadioToggle` defaults `bootstyle` to `"Toolbutton"`, and ensures it includes `"-toolbutton"`.
-
-```python
-ttk.RadioToggle(app)
-ttk.RadioToggle(app, bootstyle="success")
-```
+The difference is purely presentational: `RadioToggle` uses the toolbutton-style badge variant.
 
 ### Colors and styling
 
-Use semantic color tokens; they are coerced to the toolbutton variant automatically.
+Use semantic color tokens with the `color` parameter.
 
 ```python
-ttk.RadioToggle(app, bootstyle="primary")
-ttk.RadioToggle(app, bootstyle="secondary")
-ttk.RadioToggle(app, bootstyle="success")
+ttk.RadioToggle(app, color="primary")
+ttk.RadioToggle(app, color="secondary")
+ttk.RadioToggle(app, color="success")
 ```
 
 !!! link "Design System"

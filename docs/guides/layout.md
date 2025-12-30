@@ -58,7 +58,7 @@ form.add(ttk.Label(form, text="Username"))
 form.add(ttk.Entry(form))
 form.add(ttk.Label(form, text="Password"))
 form.add(ttk.Entry(form, show="*"))
-form.add(ttk.Button(form, text="Login", bootstyle="primary"))
+form.add(ttk.Button(form, text="Login", color="primary"))
 
 app.mainloop()
 ```
@@ -101,7 +101,7 @@ grid.add(ttk.Label(grid, text="Name"))
 grid.add(ttk.Entry(grid))
 grid.add(ttk.Label(grid, text="Email"))
 grid.add(ttk.Entry(grid))
-grid.add(ttk.Button(grid, text="Save", bootstyle="primary"), columnspan=2)
+grid.add(ttk.Button(grid, text="Save", color="primary"), columnspan=2)
 
 app.mainloop()
 ```

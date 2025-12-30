@@ -11,7 +11,7 @@ Use it when the primary action is still a button click, but you want a secondary
 
 ## Quick start
 
-Provide menu items as `ContextMenuItem` entries. The button can also have its own `command` for the “main” action.
+Provide menu items as `ContextMenuItem` entries. The button can also have its own `command` for the "main" action.
 
 ```python
 import ttkbootstrap as ttk
@@ -22,7 +22,7 @@ items = [
     ttk.ContextMenuItem(text="Open", command=lambda: print("Open")),
     ttk.ContextMenuItem(text="Rename", command=lambda: print("Rename")),
     ttk.ContextMenuItem(separator=True),
-    ttk.ContextMenuItem(text="Delete", bootstyle="danger", command=lambda: print("Delete")),
+    ttk.ContextMenuItem(text="Delete", color="danger", command=lambda: print("Delete")),
 ]
 
 ttk.DropdownButton(
@@ -48,21 +48,21 @@ Use `DropdownButton` when:
 ### Consider a different control when…
 
 - you want a *single* action → use [Button](button.md)
-- the control is primarily “a menu” (not a button) → use [MenuButton](menubutton.md)
+- the control is primarily "a menu" (not a button) → use [MenuButton](menubutton.md)
 - the menu must be shown on right-click / contextual interaction → use [ContextMenu](contextmenu.md)
 
 ---
 
 ## Appearance
 
-`DropdownButton` supports semantic colors and variants through `bootstyle`.
+`DropdownButton` supports semantic colors and variants through `color` and `variant`.
 
 !!! link "See [Design System → Variants](../../design-system/variants.md) for how variants map consistently across widgets."
 
 ```python
-ttk.DropdownButton(app, text="Primary", bootstyle="primary", items=[]).pack(pady=4)
-ttk.DropdownButton(app, text="Outline", bootstyle="primary-outline", items=[]).pack(pady=4)
-ttk.DropdownButton(app, text="Ghost", bootstyle="primary-ghost", items=[]).pack(pady=4)
+ttk.DropdownButton(app, text="Primary", color="primary", items=[]).pack(pady=4)
+ttk.DropdownButton(app, text="Outline", color="primary", variant="outline", items=[]).pack(pady=4)
+ttk.DropdownButton(app, text="Ghost", color="primary", variant="ghost", items=[]).pack(pady=4)
 ```
 
 ---

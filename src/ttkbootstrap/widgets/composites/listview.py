@@ -392,7 +392,7 @@ class ListView(Frame):
                 set to override the default behavior.
             **kwargs: Additional keyword arguments forwarded to `Frame`.
         """
-        super().__init__(master, bootstyle='container', class_='ListView.TFrame', **kwargs)
+        super().__init__(master, variant='container', ttk_class='ListView.TFrame', **kwargs)
 
         # Configuration
         self._selection_mode = selection_mode
@@ -436,7 +436,7 @@ class ListView(Frame):
         self._row_factory = row_factory or self._default_row_factory
 
         # Create container frame for list items
-        self._container = Frame(self, bootstyle='container', class_='ListView.TFrame')
+        self._container = Frame(self, variant='container', ttk_class='ListView.TFrame')
         self._container.pack(side='left', fill='both', expand=True)
 
         # Create scrollbar
@@ -1115,7 +1115,7 @@ class ListView(Frame):
     def _show_drag_indicator(self) -> None:
         """Create and show the drag drop indicator line."""
         if self._drag_indicator is None:
-            self._drag_indicator = Frame(self._container, bootstyle=self._selection_background)
+            self._drag_indicator = Frame(self._container, color=self._selection_background)
 
     def _update_drag_indicator_position(self, target_index: int) -> None:
         """Update the drag indicator to show drop location."""

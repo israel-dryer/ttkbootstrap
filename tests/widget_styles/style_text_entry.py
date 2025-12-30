@@ -18,7 +18,7 @@ def create_entry_test():
 
     # color
     for color in ['primary', 'secondary', 'success', 'info', 'warning', 'danger']:
-        entry = ttk.TextEntry(frame, bootstyle=color)
+        entry = ttk.TextEntry(frame, color=color)
         entry.pack(padx=5, pady=5, fill=BOTH)
         entry.insert(END, color)
 
@@ -26,6 +26,7 @@ def create_entry_test():
     entry = ttk.TextEntry(frame)
     entry.insert(END, 'readonly')
     entry.configure(state=READONLY)
+
     entry.pack(padx=5, pady=5, fill=BOTH)
 
     # disabled
@@ -37,19 +38,10 @@ def create_entry_test():
     return frame
 
 
-def change_style():
-    if style.theme_use() == 'dark':
-        style.theme_use('light')
-    else:
-        style.theme_use('dark')
-
-
 if __name__ == '__main__':
-    # create visual widget style tests
     root = ttk.Window()
-    style = get_style()
 
-    ttk.Button(text="Change Theme", command=change_style).pack(padx=10, pady=10)
+    ttk.Button(text="Change Theme", command=ttk.toggle_theme).pack(padx=10, pady=10)
 
     test1 = create_entry_test()
     test1.pack(side=LEFT, fill=BOTH)

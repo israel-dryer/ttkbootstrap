@@ -50,13 +50,13 @@ Consider a different control when:
 
 ## Appearance
 
-### `bootstyle`
+### `color`
 
 ```python
 ttk.TimeEntry(app, label="Start time")  # primary (default)
-ttk.TimeEntry(app, label="Start time", bootstyle="secondary")
-ttk.TimeEntry(app, label="Start time", bootstyle="success")
-ttk.TimeEntry(app, label="Start time", bootstyle="warning")
+ttk.TimeEntry(app, label="Start time", color="secondary")
+ttk.TimeEntry(app, label="Start time", color="success")
+ttk.TimeEntry(app, label="Start time", color="warning")
 ```
 
 !!! link "Design System"
@@ -87,14 +87,14 @@ Common field options include:
 
 - `label`, `message`, `required`
 
-- `bootstyle`
+- `color`
 
 - `value` (initial committed value)
 
 - time formatting options (if supported by your implementation)
 
 ```python
-ttk.TimeEntry(app, label="End time", required=True, bootstyle="secondary")
+ttk.TimeEntry(app, label="End time", required=True, color="secondary")
 ```
 
 ### Events

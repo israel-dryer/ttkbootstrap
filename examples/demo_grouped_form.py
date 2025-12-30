@@ -75,7 +75,7 @@ def demo_basic_groups(parent):
             title="Profile Updated",
             message="Your profile has been saved successfully",
             duration=3000,
-            bootstyle="success",
+            color="success",
         ).show()
 
 
@@ -156,7 +156,7 @@ def demo_multicolumn_groups(parent):
             title="Employee Record Updated",
             message=f"Record for {dialog.result['first_name']} {dialog.result['last_name']} saved",
             duration=3000,
-            bootstyle="info",
+            color="info",
         ).show()
 
 
@@ -252,7 +252,7 @@ def demo_nested_groups(parent):
             title="Project Settings Saved",
             message=f"Configuration for '{dialog.result['project_name']}' has been saved",
             duration=3000,
-            bootstyle="success",
+            color="success",
         ).show()
 
 
@@ -335,7 +335,7 @@ def demo_mixed_layout(parent):
             title="Order Submitted",
             message=f"Order {dialog.result['order_id']} total: ${total_final:.2f}",
             duration=3000,
-            bootstyle="success",
+            color="success",
         ).show()
 
 
@@ -355,7 +355,7 @@ def main():
         app,
         text="Explore different GroupItem layouts and configurations",
         font=("TkDefaultFont", 11),
-        bootstyle="secondary",
+        color="secondary",
     )
     desc.pack(pady=(0, 10))
 
@@ -386,7 +386,7 @@ def main():
             btn_container,
             text=text,
             command=lambda cmd=command: cmd(app),
-            bootstyle=style,
+            color=style,
             width=28,
         )
         btn.pack(side=LEFT)
@@ -395,7 +395,7 @@ def main():
             btn_container,
             text=f"  —  {tooltip}",
             font=("TkDefaultFont", 9),
-            bootstyle="secondary",
+            color="secondary",
         )
         desc_label.pack(side=LEFT, padx=(10, 0))
 
@@ -407,7 +407,8 @@ def main():
         app,
         text="Exit Demo",
         command=app.destroy,
-        bootstyle="secondary-outline",
+        color="secondary",
+        variant="outline",
         width=20,
     ).pack(pady=(0, 20))
 

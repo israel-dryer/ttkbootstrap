@@ -16,7 +16,7 @@ def create_menubutton_frame(bootstyle, testname):
 
     btn = ttk.MenuButton(
         master=frame,
-        bootstyle=bootstyle,
+        variant=bootstyle,
         text='default',
     )
     btn.pack(padx=5, pady=5, fill=BOTH)
@@ -25,7 +25,8 @@ def create_menubutton_frame(bootstyle, testname):
         btn = ttk.MenuButton(
             master=frame,
             text=color,
-            bootstyle=f"{color}-{bootstyle}"
+            color=color,
+            variant=bootstyle
         )
         btn.pack(padx=5, pady=5, fill=BOTH)
 
@@ -33,26 +34,18 @@ def create_menubutton_frame(bootstyle, testname):
         master=frame,
         text='disabled',
         state=DISABLED,
-        bootstyle=bootstyle,
+        variant=bootstyle,
     )
     btn.pack(padx=5, pady=5, fill=BOTH)
 
     return frame
 
 
-def change_style():
-    if style.theme_use() == 'dark':
-        style.theme_use('light')
-    else:
-        style.theme_use('dark')
-
-
 if __name__ == '__main__':
     # create visual widget style tests
     root = ttk.Window()
-    style = ttk.Style()
 
-    ttk.Button(text="Change Theme", command=change_style).pack(padx=10, pady=10)
+    ttk.Button(text="Change Theme", command=ttk.toggle_theme).pack(padx=10, pady=10)
 
     create_menubutton_frame("default", 'Solid Menubutton').pack(side=LEFT)
     create_menubutton_frame('outline', 'Outline Menubutton').pack(side=LEFT)

@@ -30,7 +30,7 @@ def main():
         root,
         text="Actions",
         items=items,
-        bootstyle="primary",
+        color="primary",
         icon="bootstrap-fill",
         dropdown_button_icon="chevron-down",
     )
@@ -47,7 +47,7 @@ def main():
             ContextMenuItem(type="separator"),
             ContextMenuItem(type="command", text="Delete", icon="trash"),
         ],
-        bootstyle="ghost",
+        variant="ghost",
         icon_only=True,
         icon="three-dots-vertical",
         show_dropdown_button=False,

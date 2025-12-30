@@ -11,7 +11,7 @@ if __name__ == '__main__':
 
     for i, color in enumerate(['primary', 'secondary', 'success', 'info', 'warning', 'danger']):
         var = ttk.Variable()
-        om = ttk.OptionMenu(root, var, ['primary', 'secondary', 'success', 'info', 'warning', 'danger'], bootstyle=color)
+        om = ttk.OptionMenu(root, var, ['primary', 'secondary', 'success', 'info', 'warning', 'danger'], color=color)
         om.pack(padx=10, pady=10, fill='x')
 
     root.mainloop()

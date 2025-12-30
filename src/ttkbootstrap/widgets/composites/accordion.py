@@ -37,6 +37,8 @@ class Accordion(Frame):
         collapsible: bool = True,
         separators: bool = False,
         bootstyle: str = '',
+        color: str = None,
+        variant: str = None,
         **kwargs
     ):
         """Create an Accordion widget.
@@ -48,7 +50,9 @@ class Accordion(Frame):
             collapsible (bool): If True (default), all sections can be collapsed.
                 If False, at least one section must remain open.
             separators (bool): If True, show separators between expanders.
-            bootstyle (str): Bootstyle for the expanders.
+            bootstyle (str): DEPRECATED - Bootstyle for the expanders.
+            color (str): Color token for the expanders (e.g., 'success', 'primary').
+            variant (str): Variant for the expanders (e.g., 'solid', 'default').
             **kwargs: Additional arguments passed to Frame.
         """
 
@@ -61,6 +65,8 @@ class Accordion(Frame):
         self._collapsible = collapsible
         self._separators = separators
         self._bootstyle = bootstyle
+        self._color = color
+        self._variant = variant
         self._expanders: list[Expander] = []
         self._separator_widgets: list[Separator] = []
         self._updating = False  # Prevent recursive updates
@@ -109,7 +115,8 @@ class Accordion(Frame):
                 icon=icon,
                 expanded=expanded,
                 highlight=True,
-                bootstyle=self._bootstyle or kwargs.pop('bootstyle', ''),
+                color=self._color or self._bootstyle or kwargs.pop('color', kwargs.pop('bootstyle', None)),
+                variant=self._variant or kwargs.pop('variant', None),
                 **kwargs
             )
         else:
@@ -143,13 +150,13 @@ class Accordion(Frame):
                 if not self._multiple:
                     # Collapse all others
                     for exp in self._expanders:
-                        if exp is not expander and exp.expanded:
+                        if exp is not expander and exp['expanded']:
                             exp.collapse()
             else:
                 # Expander was just closed
                 if not self._collapsible:
                     # Check if any are still open
-                    any_open = any(exp.expanded for exp in self._expanders)
+                    any_open = any(exp['expanded'] for exp in self._expanders)
                     if not any_open:
                         # Re-open this one - can't collapse all
                         expander.expand()
@@ -157,7 +164,7 @@ class Accordion(Frame):
 
             # Fire change event
             self.event_generate('<<AccordionChange>>', data={
-                'expanded': [exp for exp in self._expanders if exp.expanded]
+                'expanded': [exp for exp in self._expanders if exp['expanded']]
             })
         finally:
             self._updating = False
@@ -185,8 +192,8 @@ class Accordion(Frame):
             exp = self._expanders[index]
             if not self._collapsible:
                 # Check if this is the only open one
-                open_count = sum(1 for e in self._expanders if e.expanded)
-                if open_count <= 1 and exp.expanded:
+                open_count = sum(1 for e in self._expanders if e['expanded'])
+                if open_count <= 1 and exp['expanded']:
                     return  # Can't collapse the last one
             exp.collapse()
 
@@ -212,7 +219,7 @@ class Accordion(Frame):
     @property
     def expanded(self) -> list[Expander]:
         """Get the list of currently expanded Expanders."""
-        return [exp for exp in self._expanders if exp.expanded]
+        return [exp for exp in self._expanders if exp['expanded']]
 
     @configure_delegate('multiple')
     def _delegate_multiple(self, value=None):

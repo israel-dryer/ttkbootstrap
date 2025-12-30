@@ -32,7 +32,9 @@ class OptionMenuKwargs(TypedDict, total=False):
     name: str
     textvariable: Any
     textsignal: Signal[str]
-    bootstyle: str
+    bootstyle: str  # DEPRECATED: Use color and variant instead
+    color: str
+    variant: str
     surface_color: str
     style_options: dict[str, Any]
     show_dropdown_button: bool
@@ -69,10 +71,13 @@ class OptionMenu(MenuButton):
             underline (int): Index of underlined character in text.
             state (str): Widget state ('normal', 'active', 'disabled', 'readonly').
             takefocus (bool): Participation in focus traversal.
-            style (str): Explicit ttk style name.
+            style (str): Explicit ttk style name (overrides color/variant).
             textvariable (Variable): Existing Tk variable to bind; new StringVar created if omitted.
             textsignal (Signal[str]): Signal bound to the textvariable.
-            bootstyle (str): Bootstyle string (e.g., 'primary-outline').
+            color (str): Color token for styling, e.g. 'primary', 'danger', 'success'.
+            variant (str): Style variant, e.g. 'solid', 'outline'.
+            bootstyle (str): DEPRECATED - Use `color` and `variant` instead.
+                Combined style tokens (e.g., 'primary-outline').
             surface_color (str): Surface token for style.
             style_options (dict): Dict forwarded to the style builder (e.g., icon_only, surface_color).
             show_dropdown_button (bool): Toggle visibility of the dropdown chevron.

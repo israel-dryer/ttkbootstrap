@@ -26,7 +26,7 @@ def create_separator_frame(orient):
         ttk.Label(frame, text=color).pack(fill=X)
         sep = ttk.Separator(
             master=frame,
-            bootstyle=color,
+            color=color,
             orient=orient
         )
         if orient == HORIZONTAL:
@@ -56,6 +56,5 @@ if __name__ == '__main__':
 
     test1 = create_separator_frame(VERTICAL)
     test1.pack(side=LEFT, anchor=N)
-
 
     root.mainloop()

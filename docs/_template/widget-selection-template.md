@@ -177,7 +177,7 @@ Describe common constraints:
 
 ## Colors and styling
 
-If supported, document `bootstyle` usage and variant combinations.
+If supported, document `color` and `variant` usage and variant combinations.
 
 Show a few representative examples rather than an exhaustive list.
 

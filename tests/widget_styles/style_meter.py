@@ -1,17 +1,7 @@
 import ttkbootstrap as ttk
-from ttkbootstrap import get_style
 from ttkbootstrap.constants import *
 
 root = ttk.Window()
-style = get_style()
-
-
-def change_style():
-    if style.theme_use() == 'dark':
-        style.theme_use('light')
-    else:
-        style.theme_use('dark')
-
 
 frame = ttk.Frame(padding=10)
 frame.pack(padx=10, pady=10)
@@ -37,7 +27,7 @@ ttk.Meter(
     maxvalue=2600,
     subtitle='storage used',
     value_suffix='gb',
-    bootstyle='info',
+    color='info',
     segment_width=10,
     interactive=True
 ).pack(side=LEFT, padx=10)
@@ -50,7 +40,7 @@ ttk.Meter(
     value=40,
     subtitle='project capacity',
     value_suffix='%',
-    bootstyle='success',
+    color='success',
     interactive=True
 ).pack(side=LEFT, padx=10)
 
@@ -65,10 +55,10 @@ ttk.Meter(
     value_suffix='°',
     subtitle='heat temperature',
     indicator_width=2,
-    bootstyle='danger',
+    color='danger',
     interactive=True
 ).pack(side='left', padx=10)
 
-ttk.Button(root, text='Change style', command=change_style).pack(padx=10, pady=10)
+ttk.Button(root, text='Change style', command=ttk.toggle_theme).pack(padx=10, pady=10)
 
 root.mainloop()

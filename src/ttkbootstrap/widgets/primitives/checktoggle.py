@@ -31,19 +31,11 @@ class CheckToggle(CheckButton):
             underline (int): Index of character to underline in `text`.
             state (str): Widget state ('normal', 'active', 'disabled', 'readonly').
             takefocus (bool): Whether the widget participates in focus traversal.
-            style (str): Explicit ttk style name (overrides bootstyle).
-            bootstyle (str): ttkbootstrap style tokens describing the toggle color
-                (defaults to 'Toolbutton' and is coerced to include '-toolbutton').
+            color (str): Color token for styling, e.g. 'primary', 'success', 'danger'.
+            variant (str): Style variant (coerced to 'toolbutton').
             surface_color (str): Optional surface token; otherwise inherited.
             style_options (dict): Optional dict forwarded to the style builder.
             localize (bool | Literal['auto']): Determines the widget's localization mode.
         """
-        bootstyle = kwargs.pop('bootstyle', 'Toolbutton')
-
-        # coerce to toolbutton if not already there (in this case, the bootstyle is likely just a color).
-        if 'toolbutton' not in bootstyle:
-            bootstyle = f"{bootstyle}-toolbutton"
-
-        kwargs['bootstyle'] = bootstyle
-
+        kwargs.setdefault('class_', 'Toolbutton')
         super().__init__(master, **kwargs)

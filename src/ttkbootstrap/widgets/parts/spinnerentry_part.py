@@ -99,9 +99,10 @@ class SpinnerEntryPart(ValidationMixin, Spinbox):
             spinbox_kwargs['increment'] = increment
         spinbox_kwargs['wrap'] = wrap
 
-        # Merge with user kwargs and set bootstyle
+        # Merge with user kwargs and set ttk_class/variant for field styling
         spinbox_kwargs.update(kwargs)
-        spinbox_kwargs.update(bootstyle='field-spinner')
+        spinbox_kwargs.setdefault('ttk_class', 'TField')
+        spinbox_kwargs.setdefault('variant', 'spinner')
 
         # Initialize base Spinbox with ValidationMixin
         super().__init__(master, **spinbox_kwargs)

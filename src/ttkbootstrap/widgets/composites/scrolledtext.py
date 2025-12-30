@@ -107,13 +107,13 @@ class ScrolledText(Frame):
             master=self,
             orient='vertical',
             command=self._text.yview,
-            bootstyle=scrollbar_style
+            color=scrollbar_style if scrollbar_style != 'default' else None
         )
         self.horizontal_scrollbar = Scrollbar(
             master=self,
             orient='horizontal',
             command=self._text.xview,
-            bootstyle=scrollbar_style
+            color=scrollbar_style if scrollbar_style != 'default' else None
         )
 
         # Configure text scrolling
@@ -191,10 +191,10 @@ class ScrolledText(Frame):
             return self._scrollbar_style
         else:
             self._scrollbar_style = value
-            # Apply the new bootstyle to both scrollbars
-            if value:
-                self.vertical_scrollbar.configure(bootstyle=value)
-                self.horizontal_scrollbar.configure(bootstyle=value)
+            # Apply the new color to both scrollbars
+            if value and value != 'default':
+                self.vertical_scrollbar.configure(color=value)
+                self.horizontal_scrollbar.configure(color=value)
         return None
 
     def _setup_scroll_tag_bindings(self):

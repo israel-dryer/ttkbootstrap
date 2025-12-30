@@ -15,7 +15,8 @@ def create_progressbar_frame(bootstyle, orient, testname):
         pb = ttk.Progressbar(
             master=frame,
             value=25 + ((i - 1) * 10),
-            bootstyle=f'{color}-{bootstyle}',
+            color=color,
+            variant=bootstyle,
             orient=orient
         )
         if orient == 'h':
@@ -27,19 +28,11 @@ def create_progressbar_frame(bootstyle, orient, testname):
     return frame
 
 
-def change_style():
-    if style.theme_use() == 'dark':
-        style.theme_use('light')
-    else:
-        style.theme_use('dark')
-
-
 if __name__ == '__main__':
     # create visual widget style tests
     root = ttk.Window()
-    style = ttk.Style()
 
-    ttk.Button(text="Change Theme", command=change_style).pack(padx=10, pady=10)
+    ttk.Button(text="Change Theme", command=ttk.toggle_theme).pack(padx=10, pady=10)
 
     test1 = create_progressbar_frame('default', 'horizontal', 'Solid Progressbar')
     test1.pack(side=LEFT)

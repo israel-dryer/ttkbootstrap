@@ -30,7 +30,9 @@ class ProgressbarKwargs(TypedDict, total=False):
     name: str
 
     # ttkbootstrap-specific extensions
-    bootstyle: str
+    bootstyle: str  # DEPRECATED: Use color and variant instead
+    color: str
+    variant: str
     surface_color: str
     style_options: dict[str, Any]
 
@@ -55,8 +57,11 @@ class Progressbar(SignalMixin, TTKWrapperBase, WidgetCapabilitiesMixin, TtkState
             variable (Variable): Tk variable linked to the value.
             signal (Signal): Reactive Signal linked to the value (auto-synced with variable).
             phase (int): Animation phase for indeterminate mode.
-            style (str): Explicit ttk style name (overrides bootstyle).
-            bootstyle (str): ttkbootstrap style tokens (e.g., 'success', 'striped').
+            style (str): Explicit ttk style name (overrides color/variant).
+            color (str): Color token for styling, e.g. 'primary', 'success', 'danger'.
+            variant (str): Style variant, e.g. 'default', 'striped'.
+            bootstyle (str): DEPRECATED - Use `color` and `variant` instead.
+                Combined style tokens (e.g., 'success', 'striped').
             surface_color (str): Optional surface token; otherwise inherited.
             style_options (dict): Optional dict forwarded to the style builder.
         """

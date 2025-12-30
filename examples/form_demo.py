@@ -107,7 +107,7 @@ def main():
         print("Inferred result:", inferred_form.data)
         print("Explicit result:", explicit_form.data)
 
-    ttk.Button(app, text="Print Results", command=show_results, bootstyle="secondary").pack(pady=(0, 15))
+    ttk.Button(app, text="Print Results", command=show_results, color="secondary").pack(pady=(0, 15))
 
     app.mainloop()
 

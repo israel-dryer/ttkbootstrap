@@ -122,7 +122,7 @@ class Form(Frame):
             whenever a field value changes.
         width: Requested width for the form container.
         height: Requested height for the form container.
-        bootstyle: Bootstyle forwarded to the underlying Frame.
+        color: Color token for the form container (e.g., 'primary', 'secondary').
         buttons: Optional footer buttons. Accepts plain strings, DialogButton
             instances, or dictionaries that map to DialogButton kwargs.
         **kwargs: Additional Frame configuration options.
@@ -139,7 +139,7 @@ class Form(Frame):
             on_data_changed: Callable[[dict[str, Any]], Any] | None = None,
             width: int | None = None,
             height: int | None = None,
-            bootstyle: str | None = None,
+            color: str | None = None,
             buttons: Sequence[ButtonInput] | None = None,
             **kwargs: Any,
     ) -> None:
@@ -154,11 +154,14 @@ class Form(Frame):
             on_data_changed: Callback invoked with updated data when a field changes.
             width: Requested form width; if None, size naturally.
             height: Requested form height; if None, size naturally.
-            bootstyle: Bootstyle applied to the form container.
+            color: Color token for the form container.
             buttons: Optional footer buttons (DialogButton, mapping, or string).
             **kwargs: Additional Frame configuration options.
         """
-        super().__init__(master=master, width=width, height=height, bootstyle=bootstyle, **kwargs)
+        # Support legacy bootstyle parameter
+        if 'bootstyle' in kwargs:
+            color = color or kwargs.pop('bootstyle')
+        super().__init__(master=master, width=width, height=height, color=color, **kwargs)
 
         self._data: dict[str, Any] = dict(data) if data else {}
         self.result: Any = None
@@ -449,8 +452,15 @@ class Form(Frame):
     def _build_buttons(self, parent: Frame, buttons: Sequence[ButtonInput]) -> None:
         parsed = self._normalize_buttons(buttons)
         for spec in reversed(parsed):
-            style = spec.bootstyle or self._style_for_role(spec.role)
-            btn = Button(parent, text=spec.text, bootstyle=style)
+            # Support both color and legacy bootstyle from DialogButton
+            btn_color = getattr(spec, 'color', None) or spec.bootstyle
+            btn_variant = getattr(spec, 'variant', None)
+
+            if not btn_color:
+                # Get color and variant from role
+                btn_color, btn_variant = self._style_for_role(spec.role)
+
+            btn = Button(parent, text=spec.text, color=btn_color, variant=btn_variant)
             btn.configure(command=self._make_button_command(spec))
             btn.pack(side='right', padx=(4, 0))
 
@@ -739,18 +749,23 @@ class Form(Frame):
 
         return command
 
-    def _style_for_role(self, role: str) -> str:
+    def _style_for_role(self, role: str) -> tuple[str, str | None]:
+        """Get color and variant for a button role.
+
+        Returns:
+            Tuple of (color, variant) for the role.
+        """
         if role == "primary":
-            return "primary"
+            return ("primary", None)
         if role == "secondary":
-            return "secondary"
+            return ("secondary", None)
         if role == "danger":
-            return "danger"
+            return ("danger", None)
         if role == "cancel":
-            return "secondary-outline"
+            return ("secondary", "outline")
         if role == "help":
-            return "info-link"
-        return "secondary"
+            return ("info", "link")
+        return ("secondary", None)
 
     # --- inference ------------------------------------------------------
     def _infer_items_from_data(self, data: Mapping[str, Any]) -> list[FieldItem]:

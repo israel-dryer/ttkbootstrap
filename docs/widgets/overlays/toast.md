@@ -48,7 +48,7 @@ Use Toast when:
 
 ### Variants
 
-Toast supports different visual intents through the `bootstyle` parameter:
+Toast supports different visual intents through the `color` parameter:
 
 - `info` — general information
 - `success` — positive confirmation
@@ -56,7 +56,7 @@ Toast supports different visual intents through the `bootstyle` parameter:
 - `danger` — error or critical messages
 
 !!! link "Design System"
-    See the [Colors & Styling](../../design-system/colors.md) guide for complete bootstyle options.
+    See the [Colors & Styling](../../design-system/colors.md) guide for complete color options.
 
 ---
 
@@ -70,7 +70,7 @@ Toast supports different visual intents through the `bootstyle` parameter:
 
 - `duration` — auto-hide delay in milliseconds
 
-- `bootstyle` / intent — info, success, warning, danger
+- `color` / intent — info, success, warning, danger
 
 ---
 

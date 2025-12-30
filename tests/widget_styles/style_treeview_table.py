@@ -16,6 +16,7 @@ def create_treeview_style():
         container,
         columns=columns,
         show="headings",
+        select_background='success[subtle]',
         height=8,
     )
     tree.pack(fill="both", expand=True)

@@ -53,10 +53,10 @@ Use `GridFrame` when:
 
 ### Styling
 
-`GridFrame` inherits all styling options from Frame. Use `bootstyle` for semantic tokens.
+`GridFrame` inherits all styling options from Frame. Use `color` for semantic tokens.
 
 ```python
-ttk.GridFrame(app, bootstyle="secondary", padding=20)
+ttk.GridFrame(app, color="secondary", padding=20)
 ```
 
 !!! link "Design System"
@@ -244,7 +244,7 @@ widgets = grid.managed_widgets
 
 - Gap spacing is applied as padding on non-first rows/columns.
 
-- GridFrame extends Frame, so all Frame options (bootstyle, padding, etc.) are available.
+- GridFrame extends Frame, so all Frame options (color, padding, etc.) are available.
 
 ---
 
