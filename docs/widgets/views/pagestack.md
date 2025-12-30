@@ -100,10 +100,10 @@ Use `add()` to get a page frame for placing widgets.
 page = stack.add("profile", padding=10)
 ```
 
-Frame options (padding, bootstyle, etc.) can be passed directly:
+Frame options (padding, color, etc.) can be passed directly:
 
 ```python
-page = stack.add("settings", padding=10, bootstyle="primary")
+page = stack.add("settings", padding=10, color="primary")
 ```
 
 Or add an existing widget as a page:

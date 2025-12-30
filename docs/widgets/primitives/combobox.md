@@ -63,21 +63,21 @@ A Combobox is a hybrid control:
 
 It is best for compact, low-complexity pickers.
 
-### `bootstyle`
+### `color`
 
 Applies ttkbootstrap theme styling.
 
 ```python
-ttk.Combobox(app, values=["A", "B"], bootstyle="primary")
-ttk.Combobox(app, values=["A", "B"], bootstyle="secondary")
+ttk.Combobox(app, values=["A", "B"], color="primary")
+ttk.Combobox(app, values=["A", "B"], color="secondary")
 ```
 
 !!! link "Design System"
-    See the [Design System](../../design-system/index.md) for available bootstyle tokens.
+    See the [Design System](../../design-system/index.md) for available color tokens.
 
 ### Colors and styling
 
-Use `bootstyle` tokens to match the active theme. The entry field and the dropdown list are styled consistently and respond
+Use `color` tokens to match the active theme. The entry field and the dropdown list are styled consistently and respond
 to theme changes.
 
 ---

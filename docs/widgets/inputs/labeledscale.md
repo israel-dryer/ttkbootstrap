@@ -59,12 +59,12 @@ Label position relative to the scale:
 ttk.LabeledScale(app, compound="after")
 ```
 
-### `bootstyle`
+### `color`
 
-Style applied to both the scale and label.
+Color applied to both the scale and label.
 
 ```python
-ttk.LabeledScale(app, bootstyle="success")
+ttk.LabeledScale(app, color="success")
 ```
 
 !!! link "Design System"

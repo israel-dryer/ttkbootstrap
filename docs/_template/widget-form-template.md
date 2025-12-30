@@ -193,7 +193,7 @@ Explain advanced access patterns:
 
 Explain form-level styling options:
 
-- container bootstyle
+- container color/variant
 
 - per-field styling overrides
 

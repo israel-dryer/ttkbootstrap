@@ -30,7 +30,7 @@ Mention whether it is a **container**, **divider**, or **layout primitive**.
 
 - Whether borders/surfaces are theme-driven
 
-- Any `bootstyle` usage and what it affects
+- Any `color` usage and what it affects
 
 **Events & lifecycle** (if applicable)
 
@@ -94,7 +94,7 @@ Document the most commonly used options and layout patterns, such as:
 
 - borders or separators
 
-- styling via `bootstyle`
+- styling via `color`
 
 Show short examples for each.
 

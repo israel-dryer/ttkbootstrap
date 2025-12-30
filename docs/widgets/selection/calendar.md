@@ -21,7 +21,7 @@ from ttkbootstrap.widgets.composites.calendar import Calendar
 
 app = ttk.App()
 
-cal = Calendar(app, start_date=date.today(), bootstyle="primary")
+cal = Calendar(app, start_date=date.today(), color="primary")
 cal.pack(padx=12, pady=12)
 
 def on_select(e):
@@ -91,15 +91,15 @@ app.mainloop()
 
 ### Colors and styling
 
-Use `bootstyle` to set the accent color used for:
+Use `color` to set the accent color used for:
 
 * the selected day (single mode)
 
 * the range endpoints and in-range highlight (range mode)
 
 ```python
-Calendar(app, bootstyle="success")
-Calendar(app, selection_mode="range", bootstyle="warning")
+Calendar(app, color="success")
+Calendar(app, selection_mode="range", color="warning")
 ```
 
 Calendar also uses internal style names for day/range rendering (e.g. `*-calendar_day-toolbutton`, `*-calendar_date-toolbutton`, `*[subtle]-calendar_range-toolbutton`) so it can visually distinguish:
@@ -172,7 +172,7 @@ Display:
 
 Style:
 
-* `bootstyle`: accent color used for selection and highlights (default `"primary"`)
+* `color`: accent color used for selection and highlights (default `"primary"`)
 
 Layout:
 

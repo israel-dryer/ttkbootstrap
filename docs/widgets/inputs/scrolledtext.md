@@ -125,7 +125,7 @@ If you need validation/messages, use field-based controls like **TextEntry** (si
 `ScrolledText` is designed specifically for text content (not arbitrary widgets).
 
 - scrolling and mouse wheel behavior are handled internally for cross-platform consistency
-- the container and scrollbars participate in ttkbootstrap theming via `bootstyle`
+- the container and scrollbars participate in ttkbootstrap theming via `color`
 
 For scrolling arbitrary widgets, use **ScrollView** instead.
 
