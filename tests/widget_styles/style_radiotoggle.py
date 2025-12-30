@@ -12,7 +12,7 @@ def create_radio_toggle_test(bootstyle, name):
     sig = ttk.Signal('primary')
 
     # default style
-    cb = ttk.RadioToggle(frame, text='default', bootstyle=bootstyle)
+    cb = ttk.RadioToggle(frame, text='default', variant=bootstyle)
     cb.pack(padx=5, pady=5, fill=BOTH)
     cb.invoke()
 
@@ -23,7 +23,8 @@ def create_radio_toggle_test(bootstyle, name):
             text=color,
             signal=sig,
             value=color,
-            bootstyle=f"{color}-{bootstyle}",
+            color=color,
+            variant=bootstyle,
             width=15
         )
         cb.pack(padx=5, pady=5, fill=BOTH)
@@ -34,7 +35,7 @@ def create_radio_toggle_test(bootstyle, name):
         master=frame,
         text='disabled',
         value='disabled',
-        bootstyle=bootstyle,
+        variant=bootstyle,
         state=DISABLED
     )
     cb.pack(padx=5, pady=5, fill=BOTH)
