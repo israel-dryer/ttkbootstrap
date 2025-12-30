@@ -10,6 +10,7 @@ from typing import Any, Callable, Iterable, Literal, Mapping, Sequence, TYPE_CHE
 from ttkbootstrap.constants import DEFAULT_MIN_COL_WIDTH
 from ttkbootstrap.widgets.primitives.button import Button
 from ttkbootstrap.widgets.primitives.checkbutton import CheckButton
+from ttkbootstrap.widgets.primitives.switch import Switch
 from ttkbootstrap.widgets.composites.dateentry import DateEntry
 from ttkbootstrap.widgets.composites.field import Field
 from ttkbootstrap.widgets.primitives.frame import Frame
@@ -41,6 +42,7 @@ EditorType = Literal[
     'dateentry',
     'passwordentry',
     'toggle',
+    'switch',
     'checkbutton',
     'scale',
 ]
@@ -378,8 +380,8 @@ class Form(Frame):
             # Filter out validation options for widgets that don't support ValidationMixin
             filtered_options = {k: v for k, v in options.items() if k not in validation_options}
 
-            # Use inline label for checkbutton/toggle, otherwise show a Label widget.
-            if editor in ("checkbutton", "toggle"):
+            # Use inline label for checkbutton/toggle/switch, otherwise show a Label widget.
+            if editor in ("checkbutton", "toggle", "switch"):
                 if not filtered_options.get("text"):
                     filtered_options["text"] = label_text
             elif label_text != "" and editor not in ('selectbox', 'combobox'):
@@ -406,8 +408,8 @@ class Form(Frame):
                 field_widget = Text(container, **filtered_options)
                 if initial_value:
                     field_widget.insert('1.0', str(initial_value))
-            elif editor == 'toggle':
-                field_widget = CheckButton(container, variable=variable, **filtered_options)
+            elif editor in ('toggle', 'switch'):
+                field_widget = Switch(container, variable=variable, **filtered_options)
             elif editor == 'checkbutton':
                 field_widget = CheckButton(container, variable=variable, **filtered_options)
             elif editor == 'scale':

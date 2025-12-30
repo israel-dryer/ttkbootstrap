@@ -54,6 +54,7 @@ from ttkbootstrap.widgets.composites.toast import Toast
 from ttkbootstrap.widgets.composites.togglegroup import ToggleGroup
 from ttkbootstrap.widgets.composites.tooltip import ToolTip
 from ttkbootstrap.widgets.primitives.treeview import TreeView
+from ttkbootstrap.widgets.primitives.switch import Switch
 
 __all__ = [
     "Accordion",
@@ -107,6 +108,7 @@ __all__ = [
     "TimeEntry",
     "Toast",
     "ToggleGroup",
+    "Switch",
     "ToolTip",
     "TreeView",
     "TK_WIDGETS",

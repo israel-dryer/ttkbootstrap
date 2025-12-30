@@ -6,8 +6,7 @@ title: CheckButton
 
 `CheckButton` is a **selection control** that represents an option being **on**, **off**, or **mixed (indeterminate)**.
 
-Use `CheckButton` when users can enable multiple options independently (settings, filters, feature flags). Use the
-toggle variant when the control represents a single on/off feature.
+Use `CheckButton` when users can enable multiple options independently (settings, filters, feature flags).
 
 <figure markdown>
 ![checkbutton](../../assets/dark/widgets-checkbutton-states.png#only-dark)
@@ -49,57 +48,27 @@ Use `CheckButton` when:
 - only one choice is allowed in a group -> use [RadioButton](radiobutton.md)
 - you want a dropdown list -> use [SelectBox](selectbox.md) or [OptionMenu](optionmenu.md)
 - you want a button-like toggle -> use [CheckToggle](checktoggle.md)
+- you want a dedicated on/off switch -> use [Switch](switch.md)
 
 ---
 
 ## Appearance
-
-### Variants
-
-#### CheckButton (default)
-
-Use when multiple independent selections are allowed.
-
-```python
-ttk.CheckButton(app)
-```
 
 <figure markdown>
 ![checkbutton](../../assets/dark/widgets-checkbutton-states.png#only-dark)
 ![checkbutton](../../assets/light/widgets-checkbutton-states.png#only-light)
 </figure>
 
-#### Toggle (switch)
-
-Use when the control represents a single on/off feature.
-
-```python
-ttk.CheckButton(app, variant="toggle")
-```
-
-<figure markdown>
-![toggle](../../assets/dark/widgets-checkbutton-toggle.png#only-dark)
-![toggle](../../assets/light/widgets-checkbutton-toggle.png#only-light)
-</figure>
-
 ### Colors and styling
 
-Use semantic color tokens with `color`, optionally combined with the toggle variant.
+Use semantic color tokens with `color`.
 
 ```python
-# standard checkbutton
 ttk.CheckButton(app)
 ttk.CheckButton(app, color="secondary")
 ttk.CheckButton(app, color="success")
 ttk.CheckButton(app, color="warning")
 ttk.CheckButton(app, color="danger")
-
-# toggle variant
-ttk.CheckButton(app, variant="toggle")
-ttk.CheckButton(app, color="secondary", variant="toggle")
-ttk.CheckButton(app, color="success", variant="toggle")
-ttk.CheckButton(app, color="warning", variant="toggle")
-ttk.CheckButton(app, color="danger", variant="toggle")
 ```
 
 <figure markdown>
@@ -107,7 +76,7 @@ ttk.CheckButton(app, color="danger", variant="toggle")
 ![colors](../../assets/light/widgets-checkbutton-colors.png#only-light)
 </figure>
 
-!!! link "See [Design System → Variants](../../design-system/variants.md) for how color tokens apply consistently across widgets."
+!!! link "See [Design System - Variants](../../design-system/variants.md) for how color tokens apply consistently across widgets."
 
 ---
 
@@ -170,20 +139,22 @@ ttk.CheckButton(app, text="Wider", padding=(10, 6), width=18).pack(pady=6)
 ttk.CheckButton(app, text="E_xport", underline=1).pack(pady=6)
 ```
 
-### Events
+### Reacting to changes
 
-`CheckButton` emits selection change events consistent with other selection widgets.
+Use `command` for immediate callbacks, or subscribe to the signal/variable for reactive updates.
 
 ```python
-def on_changed(e):
-    print("value:", cb.value)
+# Using command callback
+def on_toggle():
+    print("toggled!")
 
-cb.on_changed(on_changed)
+cb = ttk.CheckButton(app, text="Option", command=on_toggle)
+
+# Using signal subscription
+enabled = ttk.Signal(False)
+cb = ttk.CheckButton(app, text="Option", signal=enabled)
+enabled.subscribe(lambda v: print(f"Value: {v}"))
 ```
-
-Most commonly used:
-
-- `<<Changed>>` - fired when the committed value changes
 
 ### Validation and constraints
 
@@ -201,7 +172,6 @@ Use validation when:
 
 - Click toggles between checked/unchecked.
 - Indeterminate behavior depends on your app logic (commonly used for "mixed" parent selections).
-- Use the toggle variant for settings that map to a single feature switch.
 - Keyboard navigation follows standard ttk checkbutton behavior (focus + Space to toggle).
 
 ---
@@ -259,6 +229,7 @@ You can also bind a Tk variable with `variable=...`.
 
 ### Related widgets
 
+- [Switch](switch.md) - dedicated on/off switch control
 - [RadioButton](radiobutton.md) - choose one option from a group
 - [RadioGroup](radiogroup.md) - manage a group of radio options as one control
 - [CheckToggle](checktoggle.md) - button-like toggle presentation

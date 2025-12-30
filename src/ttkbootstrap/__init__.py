@@ -85,6 +85,7 @@ if TYPE_CHECKING:
         SpinnerEntry,
         SizeGrip,
         Spinbox,
+        Switch,
         TableView,
         TextEntry,
         TimeEntry,
@@ -156,7 +157,7 @@ _MODULE_EXPORTS = {
         "Accordion", "DropdownButton", "Expander", "Field", "FieldOptions", "FloodGauge", "Form",
         "GridFrame", "LabeledScale", "Meter", "NumericEntry", "PackFrame", "PageStack",
         "PasswordEntry", "PathEntry", "RadioGroup", "ScrolledText", "ScrollView", "SpinnerEntry",
-        "SelectBox", "TableView", "TextEntry", "TimeEntry", "Toast", "ToggleGroup",
+        "SelectBox", "TableView", "TextEntry", "TimeEntry", "Toast", "ToggleGroup", "Switch",
         "ToolTip", "TK_WIDGETS", "TTK_WIDGETS",
     ],
     # Dialogs
