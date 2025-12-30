@@ -22,6 +22,7 @@ from .scrollbar import Scrollbar
 from .separator import Separator
 from .sizegrip import SizeGrip
 from .spinbox import Spinbox
+from .switch import Switch
 from .treeview import TreeView
 
 __all__ = [
@@ -47,5 +48,6 @@ __all__ = [
     "Separator",
     "SizeGrip",
     "Spinbox",
+    "Switch",
     "TreeView",
 ]
