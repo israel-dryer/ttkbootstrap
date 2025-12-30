@@ -29,7 +29,7 @@ class LabeledScale(Frame):
             variable: tk.Variable = None,
             dtype: type[int] | type[float] = int,
             compound: Literal['before', 'after'] = 'before',
-            bootstyle: str = None,
+            color: str = None,
             **kwargs: Any
 
     ):
@@ -54,9 +54,7 @@ class LabeledScale(Frame):
             compound: Label position relative to the scale. Use 'before' for
                 label above the scale or 'after' for label below the scale.
                 Defaults to 'before'.
-            bootstyle: Style to apply to both the scale and label. Options
-                include primary, secondary, success, info, warning, danger,
-                light, dark. Defaults to None.
+            color: Color token to apply to the scale.
             **kwargs: Additional keyword arguments passed to the Frame constructor.
                 A padding of 2 is forced to provide minimal spacing.
         """
@@ -79,13 +77,13 @@ class LabeledScale(Frame):
         self._last_value = dtype(value)
 
         # layout
-        self.label = Label(self, bootstyle=bootstyle, anchor="center")
+        self.label = Label(self, anchor="center")
         self.scale = Scale(
             self,
             variable=self._variable,
             from_=min_value,
             to=max_value,
-            bootstyle=bootstyle,
+            color=color,
             orient='horizontal',
         )
 
