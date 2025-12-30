@@ -172,16 +172,24 @@ class Field(EntryMixin, Frame):
         # Accept legacy parameter name and prevent it from reaching the Tk widget.
         if 'show_messages' in kwargs:
             show_message = kwargs.pop('show_messages')
-        # If caller explicitly provided show_message, honor it; otherwise default to False
+        # Track if user explicitly provided show_message
+        show_message_explicit = 'show_message' in kwargs
         show_message = kwargs.pop('show_message', show_message)
 
-        # Extract color/bootstyle - prefer 'color' over 'bootstyle'
+        # Auto-enable show_message if message is provided and user didn't explicitly disable it
+        if message and not show_message_explicit:
+            show_message = True
+
+        # Extract color - support legacy 'bootstyle' parameter
         color = kwargs.pop('color', None)
-        bootstyle = kwargs.pop('bootstyle', None)
-        self._bootstyle = color or bootstyle or 'default'
+        bootstyle = kwargs.pop('bootstyle', None)  # Legacy support
         self._localize = cast(bool | Literal['auto'], kwargs.pop('localize', 'auto'))
 
+        # Field itself (outer Frame) doesn't need styling - only pass master
         super().__init__(master)
+
+        # Set color AFTER super().__init__ to avoid being overwritten by wrapper
+        self._color = color or bootstyle
 
         # configuration
         self._message_text = message
@@ -206,8 +214,7 @@ class Field(EntryMixin, Frame):
         self._message_lbl = Label(self, localize=self._localize, text=message or '', font="caption", color="secondary")
 
         # field container & field
-        field_color = None if self._bootstyle == 'default' else self._bootstyle
-        self._field = Frame(self, color=field_color, padding=5, ttk_class="TField")
+        self._field = Frame(self, color=self._color, padding=5, ttk_class="TField")
 
         if kind == "numeric":
             self._entry = NumberEntryPart(self._field, value=value, **kwargs)
@@ -231,10 +238,6 @@ class Field(EntryMixin, Frame):
 
         self._entry.bind('<<Invalid>>', self._show_error, add=True)
         self._entry.bind('<<Valid>>', self._clear_error, add=True)
-
-        # If message text or required validation is present, enable messages unless explicitly disabled
-        if message and 'show_message' not in kwargs:
-            self._show_messages = True
 
         # bind focus styling to the field frame
         self._entry.bind('<FocusIn>', lambda _: self._field.state(['focus']), add=True)
@@ -316,13 +319,22 @@ class Field(EntryMixin, Frame):
         return self._addons
 
     @configure_delegate
-    def _config_bootstyle(self, value=None):
+    def _config_color(self, value=None):
         if value is None:
-            return self._bootstyle
+            return self._color
         else:
-            self._bootstyle = value
-            field_color = None if value == 'default' else value
-            self._field['color'] = field_color
+            self._color = value
+            self._field['color'] = value
+        return None
+
+    @configure_delegate
+    def _config_bootstyle(self, value=None):
+        """DEPRECATED: Use color instead."""
+        if value is None:
+            return self._color
+        else:
+            self._color = value
+            self._field['color'] = value
         return None
 
     def disable(self):
