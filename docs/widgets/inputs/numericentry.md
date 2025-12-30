@@ -61,13 +61,13 @@ Consider a different control when:
 
 ## Appearance
 
-### `bootstyle`
+### `color`
 
 ```python
 ttk.NumericEntry(app, label="Quantity")  # primary (default)
-ttk.NumericEntry(app, label="Quantity", bootstyle="secondary")
-ttk.NumericEntry(app, label="Quantity", bootstyle="success")
-ttk.NumericEntry(app, label="Quantity", bootstyle="warning")
+ttk.NumericEntry(app, label="Quantity", color="secondary")
+ttk.NumericEntry(app, label="Quantity", color="success")
+ttk.NumericEntry(app, label="Quantity", color="warning")
 ```
 
 !!! link "Design System"

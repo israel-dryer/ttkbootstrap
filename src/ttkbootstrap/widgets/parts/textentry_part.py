@@ -53,7 +53,8 @@ class TextEntryPart(ValidationMixin, Entry):
             The widget automatically subscribes to text changes and sets up
             event handlers for ``<FocusIn>``, ``<FocusOut>``, and ``<Return>``.
         """
-        kwargs.update(bootstyle='field-input')
+        kwargs.setdefault('ttk_class', 'TField')
+        kwargs.setdefault('variant', 'input')
         super().__init__(master, **kwargs)
 
         # configuration

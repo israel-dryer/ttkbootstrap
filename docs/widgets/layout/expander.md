@@ -61,10 +61,10 @@ Use `Expander` when:
 ### Styling
 
 The chevron button uses `foreground-ghost` by default for a subtle appearance.
-When `bootstyle` is provided, the chevron inherits that style.
+When `color` is provided, the chevron inherits that style.
 
 ```python
-ttk.Expander(app, title="Primary Section", bootstyle="primary")
+ttk.Expander(app, title="Primary Section", color="primary")
 ```
 
 ### Border
@@ -114,10 +114,10 @@ ttk.Label(content, text="Option 1").pack()
 ttk.Entry(content).pack(fill="x")
 ```
 
-Frame options (padding, bootstyle, etc.) can be passed directly:
+Frame options (padding, color, etc.) can be passed directly:
 
 ```python
-content = exp.add(padding=10, bootstyle="primary")
+content = exp.add(padding=10, color="primary")
 ```
 
 Calling `add()` multiple times returns the same frame (idempotent).
@@ -147,7 +147,8 @@ exp = ttk.Expander(
     app,
     title="Highlighted Section",
     highlight=True,
-    bootstyle="primary-solid"
+    color="primary",
+    variant="solid"
 )
 ```
 

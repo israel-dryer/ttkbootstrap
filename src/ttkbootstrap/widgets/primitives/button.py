@@ -39,7 +39,9 @@ class ButtonKwargs(TypedDict, total=False):
     textsignal: Signal[str]
 
     # ttkbootstrap-specific extensions
-    bootstyle: str
+    bootstyle: str  # DEPRECATED: Use color and variant instead
+    color: str
+    variant: str
     surface_color: str
     style_options: dict[str, Any]
 
@@ -75,9 +77,11 @@ class Button(LocalizationMixin, TextSignalMixin, IconMixin, TTKWrapperBase, Widg
             underline (int): Index of the character to underline in `text`.
             state (str): Widget state (e.g., 'normal', 'disabled').
             takefocus (bool): Whether the widget accepts focus during traversal.
-            style (str): Explicit ttk style name to apply (overrides bootstyle).
-            bootstyle (str): ttkbootstrap style tokens, e.g. 'primary', 'danger-outline'.
-                Prefer this over `style` to participate in theme updates.
+            style (str): Explicit ttk style name to apply (overrides color/variant).
+            color (str): Color token for styling, e.g. 'primary', 'danger', 'success'.
+            variant (str): Style variant, e.g. 'solid', 'outline', 'link', 'text'.
+            bootstyle (str): DEPRECATED - Use `color` and `variant` instead.
+                Combined style tokens, e.g. 'primary', 'danger-outline'.
             surface_color (str): Optional surface token to use for this button; if not
                 provided, the surface color is inherited from the parent.
             style_options (dict): Optional dict forwarded to the style builder. Useful

@@ -42,7 +42,7 @@ sb1 = ttk.SelectBox(
     items=countries,
     search_enabled=True,
     allow_custom_values=True,
-    bootstyle="info"
+    color="info"
 )
 sb1.pack(fill=X, pady=5)
 sb1.entry_widget.bind('<<Changed>>', on_changed)
@@ -58,7 +58,7 @@ sb2 = ttk.SelectBox(
     items=countries,
     search_enabled=True,
     allow_custom_values=False,
-    bootstyle="success"
+    color="success"
 )
 sb2.pack(fill=X, pady=5)
 sb2.entry_widget.bind('<<Changed>>', on_changed)
@@ -74,7 +74,7 @@ sb3 = ttk.SelectBox(
     items=countries,
     search_enabled=False,
     allow_custom_values=False,
-    bootstyle="primary"
+    color="primary"
 )
 sb3.pack(fill=X, pady=5)
 sb3.entry_widget.bind('<<Changed>>', on_changed)
@@ -91,7 +91,7 @@ sb4 = ttk.SelectBox(
     items=colors,
     search_enabled=True,
     allow_custom_values=False,
-    bootstyle="warning"
+    color="warning"
 )
 sb4.pack(fill=X, pady=5)
 sb4.entry_widget.bind('<<Changed>>', on_changed)

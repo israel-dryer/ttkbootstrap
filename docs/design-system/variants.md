@@ -59,7 +59,13 @@ See:
 
 ## Applying variants
 
-Variants are applied using `bootstyle` tokens.
+Variants are applied using the `variant` parameter alongside `color`.
+
+```python
+ttk.Button(app, text="Save", color="primary")  # solid (default)
+ttk.Button(app, text="Cancel", color="secondary", variant="outline")
+ttk.Button(app, text="Learn More", color="info", variant="link")
+```
 
 How to apply them in real layouts is covered in:
 

@@ -53,8 +53,9 @@ class MessageDialog:
         Args:
             message: The message text to display. Supports multiline strings.
             title: The dialog window title.
-            buttons: List of button labels. Can specify bootstyle as "label:bootstyle".
-                If None, defaults to ["Cancel", "OK"].
+            buttons: List of button labels. Can specify color as "label:color".
+                If None, defaults to ["Cancel", "OK"]. Legacy "bootstyle" syntax
+                is still supported (e.g., "OK:primary").
             command: Optional callback function to execute when any button is pressed.
             width: Maximum width in characters for text wrapping.
             master: Parent widget for the dialog.

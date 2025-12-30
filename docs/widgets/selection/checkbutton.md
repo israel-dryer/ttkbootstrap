@@ -74,7 +74,7 @@ ttk.CheckButton(app)
 Use when the control represents a single on/off feature.
 
 ```python
-ttk.CheckButton(app, bootstyle="toggle")
+ttk.CheckButton(app, variant="toggle")
 ```
 
 <figure markdown>
@@ -84,22 +84,22 @@ ttk.CheckButton(app, bootstyle="toggle")
 
 ### Colors and styling
 
-Use semantic color tokens with `bootstyle`, optionally combined with the toggle variant.
+Use semantic color tokens with `color`, optionally combined with the toggle variant.
 
 ```python
 # standard checkbutton
 ttk.CheckButton(app)
-ttk.CheckButton(app, bootstyle="secondary")
-ttk.CheckButton(app, bootstyle="success")
-ttk.CheckButton(app, bootstyle="warning")
-ttk.CheckButton(app, bootstyle="danger")
+ttk.CheckButton(app, color="secondary")
+ttk.CheckButton(app, color="success")
+ttk.CheckButton(app, color="warning")
+ttk.CheckButton(app, color="danger")
 
 # toggle variant
-ttk.CheckButton(app, bootstyle="toggle")
-ttk.CheckButton(app, bootstyle="secondary-toggle")
-ttk.CheckButton(app, bootstyle="success-toggle")
-ttk.CheckButton(app, bootstyle="warning-toggle")
-ttk.CheckButton(app, bootstyle="danger-toggle")
+ttk.CheckButton(app, variant="toggle")
+ttk.CheckButton(app, color="secondary", variant="toggle")
+ttk.CheckButton(app, color="success", variant="toggle")
+ttk.CheckButton(app, color="warning", variant="toggle")
+ttk.CheckButton(app, color="danger", variant="toggle")
 ```
 
 <figure markdown>

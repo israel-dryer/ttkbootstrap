@@ -62,7 +62,7 @@ class SelectBox(Field):
 
         Other Parameters:
             allow_blank (bool): If True, empty input is allowed.
-            bootstyle (str): The accent color of the focus ring and active border.
+            color (str): Color token for styling the focus ring and active border.
             value_format (str): ICU format pattern for parsing/formatting.
             font (str): Font for text display.
             foreground (str): Text color.
@@ -207,16 +207,15 @@ class SelectBox(Field):
         self._item_labels = []
         current_value = self.value
 
-        # Extract color from bootstyle (e.g., 'danger-outline' -> 'danger')
-        bootstyle = self._bootstyle or 'primary'
-        color = bootstyle.split('-')[0] if '-' in bootstyle else bootstyle
-        item_bootstyle = f'{color}-selectbox_item'
+        # Get color from Field's _color attribute, fallback to primary if None
+        color = getattr(self, '_color', None) or 'primary'
 
         for i, item in enumerate(self._items):
             btn = Button(
                 inner_frame,
                 text=item,
-                bootstyle=item_bootstyle,
+                color=color,
+                variant='selectbox_item',
                 command=lambda v=item: self._on_item_click(v, toplevel, popup_state)
             )
             btn.pack(fill='x')

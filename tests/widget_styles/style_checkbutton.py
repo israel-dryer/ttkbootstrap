@@ -11,7 +11,7 @@ def create_checkbutton_test(bootstyle, name):
     ttk.Separator(frame).pack(padx=5, pady=5, fill=X)
 
     # default style
-    cb = ttk.CheckButton(frame, text='default', bootstyle=bootstyle)
+    cb = ttk.CheckButton(frame, text='default', variant=bootstyle)
     cb.pack(padx=5, pady=5, fill=BOTH)
     cb.invoke()
 
@@ -20,7 +20,8 @@ def create_checkbutton_test(bootstyle, name):
         cb = ttk.CheckButton(
             master=frame,
             text=color,
-            bootstyle=f"{color}-{bootstyle}",
+            color=color,
+            variant=bootstyle,
             width=15
         )
         cb.pack(padx=5, pady=5, fill=BOTH)
@@ -30,7 +31,7 @@ def create_checkbutton_test(bootstyle, name):
     cb = ttk.CheckButton(
         master=frame,
         text='disabled',
-        bootstyle=bootstyle,
+        variant=bootstyle,
         state=DISABLED
     )
     cb.pack(padx=5, pady=5, fill=BOTH)

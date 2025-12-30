@@ -48,17 +48,17 @@ Use `Entry` when:
 
 ## Appearance
 
-### `bootstyle` / `style`
+### `color` / `style`
 
-Use semantic tokens via `bootstyle`, or provide a concrete ttk style via `style=`.
+Use semantic tokens via `color`, or provide a concrete ttk style via `style=`.
 
 ```python
-ttk.Entry(app, bootstyle="primary")
-ttk.Entry(app, bootstyle="secondary")
+ttk.Entry(app, color="primary")
+ttk.Entry(app, color="secondary")
 ```
 
 !!! link "Design System"
-    See the [Design System](../../design-system/index.md) for available bootstyle tokens.
+    See the [Design System](../../design-system/index.md) for available color tokens.
 
 ---
 

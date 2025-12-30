@@ -23,16 +23,16 @@ Use semantic tokens:
 
 ```python
 # Do this
-ttk.Button(app, text="Delete", bootstyle="danger")
+ttk.Button(app, text="Delete", color="danger")
 ```
 
 The theme resolves `"danger"` to appropriate colors. Change the theme, and all `"danger"` widgets update.
 
 ---
 
-## Bootstyle Tokens
+## Color Tokens
 
-The `bootstyle` parameter accepts semantic color tokens:
+The `color` parameter accepts semantic color tokens:
 
 | Token | Intent |
 |-------|--------|
@@ -48,19 +48,19 @@ The `bootstyle` parameter accepts semantic color tokens:
 ### Basic Usage
 
 ```python
-ttk.Button(app, text="Save", bootstyle="primary")
-ttk.Button(app, text="Cancel", bootstyle="secondary")
-ttk.Button(app, text="Delete", bootstyle="danger")
+ttk.Button(app, text="Save", color="primary")
+ttk.Button(app, text="Cancel", color="secondary")
+ttk.Button(app, text="Delete", color="danger")
 ```
 
 ### On Any Widget
 
-Most widgets accept `bootstyle`:
+Most widgets accept `color`:
 
 ```python
-ttk.Label(app, text="Success!", bootstyle="success")
-ttk.Progressbar(app, bootstyle="info")
-ttk.Entry(app, bootstyle="warning")
+ttk.Label(app, text="Success!", color="success")
+ttk.Progressbar(app, color="info")
+ttk.Entry(app, color="warning")
 ```
 
 ---
@@ -158,33 +158,34 @@ Modifiers are applied left-to-right as a pipeline:
 
 ## Variants
 
-Some widgets support **variant** modifiers:
+Widgets support **variant** modifiers to control visual emphasis:
 
 | Variant | Effect |
 |---------|--------|
+| `solid` | Filled background (default) |
 | `outline` | Border only, no fill |
+| `ghost` | Minimal chrome, subtle hover |
 | `link` | Text-only, like a hyperlink |
-| `toggle` | Switch-style for checkbuttons |
 
-Combine color and variant:
+Use `color` and `variant` together:
 
 ```python
-ttk.Button(app, text="Learn More", bootstyle="info-link")
-ttk.Button(app, text="Options", bootstyle="secondary-outline")
-ttk.CheckButton(app, text="Enable", bootstyle="success-toggle")
+ttk.Button(app, text="Learn More", color="info", variant="link")
+ttk.Button(app, text="Options", color="secondary", variant="outline")
+ttk.CheckButton(app, text="Enable", color="success", variant="toggle")
 ```
 
 ### Button Variants
 
 ```python
 # Solid (default)
-ttk.Button(app, text="Primary", bootstyle="primary")
+ttk.Button(app, text="Primary", color="primary")
 
 # Outline
-ttk.Button(app, text="Primary", bootstyle="primary-outline")
+ttk.Button(app, text="Primary", color="primary", variant="outline")
 
 # Link
-ttk.Button(app, text="Primary", bootstyle="primary-link")
+ttk.Button(app, text="Primary", color="primary", variant="link")
 ```
 
 ### Toggle Variant
@@ -192,8 +193,8 @@ ttk.Button(app, text="Primary", bootstyle="primary-link")
 For checkbuttons and radiobuttons:
 
 ```python
-ttk.CheckButton(app, text="Dark Mode", bootstyle="toggle")
-ttk.CheckButton(app, text="Notifications", bootstyle="success-toggle")
+ttk.CheckButton(app, text="Dark Mode", variant="toggle")
+ttk.CheckButton(app, text="Notifications", color="success", variant="toggle")
 ```
 
 !!! link "Variants Reference"
@@ -203,7 +204,7 @@ ttk.CheckButton(app, text="Notifications", bootstyle="success-toggle")
 
 ## Themes
 
-Themes define **how tokens become colors**. The same `bootstyle="primary"` resolves to different colors depending on the active theme.
+Themes define **how tokens become colors**. The same `color="primary"` resolves to different colors depending on the active theme.
 
 ```python
 # Set theme at startup
@@ -226,27 +227,27 @@ toggle_theme()  # Toggle between light and dark
 
 ```python
 # Actions
-ttk.Button(form, text="Submit", bootstyle="primary")
-ttk.Button(form, text="Cancel", bootstyle="secondary")
-ttk.Button(form, text="Delete", bootstyle="danger")
+ttk.Button(form, text="Submit", color="primary")
+ttk.Button(form, text="Cancel", color="secondary")
+ttk.Button(form, text="Delete", color="danger")
 
 # Status
-ttk.Label(status_bar, text="Connected", bootstyle="success")
-ttk.Label(status_bar, text="Warning: Low disk", bootstyle="warning")
-ttk.Label(status_bar, text="Error", bootstyle="danger")
+ttk.Label(status_bar, text="Connected", color="success")
+ttk.Label(status_bar, text="Warning: Low disk", color="warning")
+ttk.Label(status_bar, text="Error", color="danger")
 ```
 
 ### Progress Indicators
 
 ```python
 # Normal progress
-ttk.Progressbar(app, value=50, bootstyle="primary")
+ttk.Progressbar(app, value=50, color="primary")
 
 # Success state
-ttk.Progressbar(app, value=100, bootstyle="success")
+ttk.Progressbar(app, value=100, color="success")
 
 # Warning state
-ttk.Progressbar(app, value=90, bootstyle="warning")
+ttk.Progressbar(app, value=90, color="warning")
 ```
 
 ### Form Validation
@@ -256,10 +257,10 @@ ttk.Progressbar(app, value=90, bootstyle="warning")
 entry = ttk.Entry(app)
 
 # Error state
-entry.configure(bootstyle="danger")
+entry.configure(color="danger")
 
 # Success state
-entry.configure(bootstyle="success")
+entry.configure(color="success")
 ```
 
 ---
@@ -291,11 +292,11 @@ Font choices should come from the design system, not hardcoded values.
 Icons reinforce meaning alongside color:
 
 ```python
-ttk.Button(app, text="Save", bootstyle="primary", image=save_icon, compound="left")
-ttk.Button(app, text="Delete", bootstyle="danger", image=trash_icon, compound="left")
+ttk.Button(app, text="Save", color="primary", image=save_icon, compound="left")
+ttk.Button(app, text="Delete", color="danger", image=trash_icon, compound="left")
 ```
 
-Icons and bootstyle work together—use `danger` styling with a warning/delete icon.
+Icons and color work together—use `danger` styling with a warning/delete icon.
 
 !!! link "Icons"
     See [Design System → Icons](../design-system/icons.md) for icon usage.
@@ -361,15 +362,15 @@ grid.add(ttk.OptionMenu(grid, values=["User", "Admin", "Guest"]), sticky="ew")
 toggles = ttk.PackFrame(form, direction="vertical", gap=5)
 toggles.pack(fill="x", pady=(15, 0))
 
-toggles.add(ttk.CheckButton(toggles, text="Email notifications", bootstyle="toggle"))
-toggles.add(ttk.CheckButton(toggles, text="Two-factor auth", bootstyle="success-toggle"))
+toggles.add(ttk.CheckButton(toggles, text="Email notifications", variant="toggle"))
+toggles.add(ttk.CheckButton(toggles, text="Two-factor auth", color="success", variant="toggle"))
 
 # Actions
 actions = ttk.PackFrame(form, direction="horizontal", gap=10)
 actions.pack(anchor="e", pady=(20, 0))
 
-actions.add(ttk.Button(actions, text="Cancel", bootstyle="secondary-outline"))
-actions.add(ttk.Button(actions, text="Save Changes", bootstyle="primary"))
+actions.add(ttk.Button(actions, text="Cancel", color="secondary", variant="outline"))
+actions.add(ttk.Button(actions, text="Save Changes", color="primary"))
 
 app.mainloop()
 ```
@@ -385,37 +386,37 @@ app.mainloop()
 label.configure(foreground="#ff0000")
 
 # Good
-label.configure(bootstyle="danger")
+label.configure(color="danger")
 ```
 
 ### Don't Mix Semantic and Literal
 
 ```python
 # Bad: inconsistent
-ttk.Button(app, text="OK", bootstyle="success")
+ttk.Button(app, text="OK", color="success")
 ttk.Button(app, text="Cancel", background="gray")  # Won't work with ttk
 
 # Good: consistent
-ttk.Button(app, text="OK", bootstyle="success")
-ttk.Button(app, text="Cancel", bootstyle="secondary")
+ttk.Button(app, text="OK", color="success")
+ttk.Button(app, text="Cancel", color="secondary")
 ```
 
 ### Use Appropriate Tokens
 
 ```python
 # Bad: using "danger" for non-destructive action
-ttk.Button(app, text="Next", bootstyle="danger")
+ttk.Button(app, text="Next", color="danger")
 
 # Good: using appropriate token
-ttk.Button(app, text="Next", bootstyle="primary")
+ttk.Button(app, text="Next", color="primary")
 ```
 
 ---
 
 ## Summary
 
-- Use **bootstyle tokens** for semantic coloring
-- Use **variants** (outline, link, toggle) for style modifications
+- Use **color tokens** for semantic coloring
+- Use **variant** (outline, link, ghost) for style modifications
 - Change **themes** to update all widgets at once
 - Maintain **consistency** with reusable spacing constants
 - Let the **design system** handle the details

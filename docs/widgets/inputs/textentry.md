@@ -56,13 +56,13 @@ Consider a different control when:
 
 ## Appearance
 
-### `bootstyle`
+### `color`
 
 ```python
 ttk.TextEntry(app)  # primary (default)
-ttk.TextEntry(app, bootstyle="secondary")
-ttk.TextEntry(app, bootstyle="success")
-ttk.TextEntry(app, bootstyle="warning")
+ttk.TextEntry(app, color="secondary")
+ttk.TextEntry(app, color="success")
+ttk.TextEntry(app, color="warning")
 ```
 
 !!! link "Design System"

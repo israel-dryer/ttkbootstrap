@@ -28,7 +28,7 @@ class PackFrame(Frame):
         expand_items: Default expand behavior for children.
         anchor_items: Default anchor for children.
         propagate: Whether the frame should resize to fit its contents.
-        **kwargs: Additional Frame options (bootstyle, padding, etc.).
+        **kwargs: Additional Frame options (color, variant, padding, etc.).
     """
 
     SIDE_MAP: dict[Direction, Side] = {

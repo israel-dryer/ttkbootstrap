@@ -91,7 +91,7 @@ def main():
         root,
         text="Right-click to open context menu",
         font=("Helvetica", 10),
-        bootstyle="secondary"
+        color="secondary"
     )
     status_label.pack(pady=20)
 
@@ -108,7 +108,7 @@ def main():
         frame2,
         text="Show Dynamic Menu",
         command=lambda: show_dynamic_menu(),
-        bootstyle="info"
+        color="info"
     )
     btn.pack(pady=5)
 

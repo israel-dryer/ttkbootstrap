@@ -33,13 +33,13 @@ def create_with_frame(parent: ttk.Frame) -> ttk.Frame:
     ttk.Label(frame, text="Username:").grid(row=1, column=0, sticky="e", padx=(0, 10))
     username = ttk.Entry(frame)
     username.grid(row=1, column=1, sticky="ew")
-    ttk.Button(frame, text="Check", bootstyle="info-outline").grid(row=1, column=2, sticky="ew", padx=(10, 0))
+    ttk.Button(frame, text="Check", color="info", variant="outline").grid(row=1, column=2, sticky="ew", padx=(10, 0))
 
     # Row 2: Email
     ttk.Label(frame, text="Email:").grid(row=2, column=0, sticky="e", padx=(0, 10))
     email = ttk.Entry(frame)
     email.grid(row=2, column=1, sticky="ew")
-    ttk.Button(frame, text="Verify", bootstyle="info-outline").grid(row=2, column=2, sticky="ew", padx=(10, 0))
+    ttk.Button(frame, text="Verify", color="info", variant="outline").grid(row=2, column=2, sticky="ew", padx=(10, 0))
 
     # Row 3: Password
     ttk.Label(frame, text="Password:").grid(row=3, column=0, sticky="e", padx=(0, 10))
@@ -62,8 +62,8 @@ def create_with_frame(parent: ttk.Frame) -> ttk.Frame:
     # Row 6: Buttons
     buttons_frame = ttk.Frame(frame)
     buttons_frame.grid(row=6, column=0, columnspan=3, sticky="e", pady=(15, 0))
-    ttk.Button(buttons_frame, text="Cancel", bootstyle="secondary").pack(side="left", padx=(0, 10))
-    ttk.Button(buttons_frame, text="Register", bootstyle="primary").pack(side="left")
+    ttk.Button(buttons_frame, text="Cancel", color="secondary").pack(side="left", padx=(0, 10))
+    ttk.Button(buttons_frame, text="Register", color="primary").pack(side="left")
 
     return frame
 
@@ -91,12 +91,12 @@ def create_with_gridframe(parent: ttk.Frame) -> ttk.GridFrame:
     # Row 1: Username
     grid.add(ttk.Label(grid, text="Username:"), row=1, column=0, sticky="e")
     grid.add(ttk.Entry(grid), row=1, column=1)  # Uses default "ew"
-    grid.add(ttk.Button(grid, text="Check", bootstyle="info-outline"), row=1, column=2)
+    grid.add(ttk.Button(grid, text="Check", color="info", variant="outline"), row=1, column=2)
 
     # Row 2: Email
     grid.add(ttk.Label(grid, text="Email:"), row=2, column=0, sticky="e")
     grid.add(ttk.Entry(grid), row=2, column=1)
-    grid.add(ttk.Button(grid, text="Verify", bootstyle="info-outline"), row=2, column=2)
+    grid.add(ttk.Button(grid, text="Verify", color="info", variant="outline"), row=2, column=2)
 
     # Row 3: Password
     grid.add(ttk.Label(grid, text="Password:"), row=3, column=0, sticky="e")
@@ -117,8 +117,8 @@ def create_with_gridframe(parent: ttk.Frame) -> ttk.GridFrame:
     # Row 6: Buttons
     buttons = ttk.Frame(grid)  # Use plain Frame like the other example
     grid.add(buttons, row=6, column=0, columnspan=3, sticky="e", pady=(15, 0))
-    ttk.Button(buttons, text="Cancel", bootstyle="secondary").pack(side="left", padx=(0, 10))
-    ttk.Button(buttons, text="Register", bootstyle="primary").pack(side="left")
+    ttk.Button(buttons, text="Cancel", color="secondary").pack(side="left", padx=(0, 10))
+    ttk.Button(buttons, text="Register", color="primary").pack(side="left")
 
     return grid
 

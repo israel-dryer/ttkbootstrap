@@ -19,7 +19,7 @@ def button_style_frame(bootstyle, widget_name):
     ttk.Button(
         master=frame,
         text='Default',
-        bootstyle=bootstyle,
+        variant=bootstyle,
         compound="left",
         icon="bootstrap",
     ).pack(padx=5, pady=5, fill='both')
@@ -28,7 +28,8 @@ def button_style_frame(bootstyle, widget_name):
         ttk.Button(
             master=frame,
             text=color.title(),
-            bootstyle=f'{color}-{bootstyle}',
+            color=color,
+            variant=bootstyle,
             compound="left",
             cursor="hand2" if bootstyle == "link" else None,
             icon="bootstrap",
@@ -39,7 +40,8 @@ def button_style_frame(bootstyle, widget_name):
         text='disabled',
         state='disabled',
         cursor="hand2" if bootstyle == "link" else None,
-        bootstyle=bootstyle
+        color=color,
+        variant=bootstyle,
     ).pack(padx=5, pady=5, fill='both')
 
     return frame

@@ -61,7 +61,7 @@ The dialog window title.
 
 ### `buttons`
 
-List of button labels. Can specify bootstyle as `"label:bootstyle"`.
+List of button labels. Can specify color as `"label:color"`.
 
 ```python
 dialog = MessageDialog(
@@ -81,7 +81,7 @@ MessageDialog(message="Error!", icon={"name": "x-circle-fill", "size": 48, "colo
 
 ### `default`
 
-The button label to use as default (receives primary bootstyle and focus).
+The button label to use as default (receives primary color and focus).
 
 ### `alert`
 

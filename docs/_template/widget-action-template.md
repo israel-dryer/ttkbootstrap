@@ -18,7 +18,7 @@ Explain how this widget participates in ttkbootstrap’s framework capabilities.
 
 **Design System**
 
-- Which semantic colors / variants apply (`bootstyle`)
+- Which semantic colors / variants apply (`color`, `variant`)
 
 - Typography defaults and any sizing/density conventions
 

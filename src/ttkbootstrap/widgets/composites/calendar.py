@@ -9,7 +9,7 @@ from tkinter import StringVar
 from typing import Any, Callable, Iterable, Literal, Optional
 
 from babel import dates
-from ttkbootstrap.widgets.primitives import Button, CheckButton, Frame, Label, Separator
+from ttkbootstrap.widgets.primitives import Button, CheckToggle, Frame, Label, Separator
 from ttkbootstrap.widgets.types import Master
 from ttkbootstrap.constants import BOTH, CENTER, LEFT, NSEW, PRIMARY, X, Y, YES
 from ttkbootstrap.core.localization import MessageCatalog
@@ -17,7 +17,7 @@ from ttkbootstrap.widgets.mixins import configure_delegate
 
 ttk = SimpleNamespace(
     Button=Button,
-    Checkbutton=CheckButton,
+    CheckToggle=CheckToggle,
     Frame=Frame,
     Label=Label,
     Separator=Separator,
@@ -93,7 +93,8 @@ class Calendar(ttk.Frame):
             show_outside_days: bool | None = None,
             show_week_numbers: bool = False,
             first_weekday: int = 6,
-            bootstyle: str = PRIMARY,
+            color: str = None,
+            bootstyle: str = None,
             padding: int | tuple[int, int] | tuple[int, int, int, int] | str | None = None,
     ) -> None:
         """Initialize a Calendar widget.
@@ -116,7 +117,8 @@ class Calendar(ttk.Frame):
             show_week_numbers (bool): Whether to display ISO week numbers in the
                 leftmost column.
             first_weekday (int): First day of the week. 0=Monday, 6=Sunday.
-            bootstyle (str): The accent color for selected dates and highlights.
+            color (str): Color token for selected dates and highlights (e.g., 'primary', 'success').
+            bootstyle (str): DEPRECATED - Use `color` instead.
             padding (int | tuple | str): Padding around the widget.
         """
         super().__init__(master, padding=padding)
@@ -132,7 +134,7 @@ class Calendar(ttk.Frame):
         self._show_week_numbers = show_week_numbers
 
         self._first_weekday = first_weekday
-        self._bootstyle = bootstyle or PRIMARY
+        self._color = color or bootstyle or PRIMARY
         self._calendar = calendar.Calendar(firstweekday=first_weekday)
 
         initial = self._coerce_date(start_date) or date.today()
@@ -197,7 +199,7 @@ class Calendar(ttk.Frame):
         self._draw_calendar()
 
     def _create_header(self) -> None:
-        self._header_frame = ttk.Frame(self, padding=6)
+        self._header_frame = ttk.Frame(self)
         self._header_frame.pack(fill=X)
 
         for col in range(5):
@@ -207,27 +209,29 @@ class Calendar(ttk.Frame):
             master=self._header_frame,
             icon={"name": "chevron-double-left", "size": 20},
             icon_only=True,
-            bootstyle="secondary-label",
+            color="secondary",
+            variant="ghost",
             command=self._on_prev_year,
         )
-        self._prev_year_btn.grid(row=0, column=0, padx=(0, 2))
+        self._prev_year_btn.grid(row=0, column=0)
         self._prev_year_btn.bind("<Button-3>", self._on_prev_year, "+")
 
         self._prev_month_btn = ttk.Button(
             master=self._header_frame,
             icon={"name": "chevron-left", "size": 20},
-            bootstyle="secondary-label",
+            color="secondary",
+            variant="ghost",
             icon_only=True,
             command=self._on_prev_month,
         )
-        self._prev_month_btn.grid(row=0, column=1, padx=(0, 6))
+        self._prev_month_btn.grid(row=0, column=1)
 
         self._set_title()
         title_label = ttk.Label(
             master=self._header_frame,
             textvariable=self._title_var,
             anchor=CENTER,
-            bootstyle="secondary",
+            color="secondary",
             font="label",
         )
         title_label.grid(row=0, column=2, sticky="ew")
@@ -236,20 +240,22 @@ class Calendar(ttk.Frame):
         self._next_month_btn = ttk.Button(
             master=self._header_frame,
             icon={"name": "chevron-right", "size": 20},
-            bootstyle="secondary-label",
+            color="secondary",
+            variant="ghost",
             icon_only=True,
             command=self._on_next_month,
         )
-        self._next_month_btn.grid(row=0, column=3, padx=(6, 0))
+        self._next_month_btn.grid(row=0, column=3)
 
         self._next_year_btn = ttk.Button(
             master=self._header_frame,
             icon={"name": "chevron-double-right", "size": 20},
             icon_only=True,
-            bootstyle="secondary-label",
+            color="secondary",
+            variant="ghost",
             command=self._on_next_year,
         )
-        self._next_year_btn.grid(row=0, column=4, padx=(2, 0))
+        self._next_year_btn.grid(row=0, column=4)
         self._next_year_btn.bind("<Button-3>", self._on_next_year, "+")
 
         # Preserve column widths so hiding buttons won't shift the title
@@ -309,7 +315,7 @@ class Calendar(ttk.Frame):
             header = view.get("header_frame")
             title_var = view.get("title_var")
             if header is None:
-                header = ttk.Frame(parent, padding=6)
+                header = ttk.Frame(parent)
                 header.pack(fill=X)
                 for col in range(5):
                     header.columnconfigure(col, weight=1 if col == 2 else 0)
@@ -325,27 +331,29 @@ class Calendar(ttk.Frame):
                     master=header,
                     icon={"name": "chevron-double-left", "size": 20},
                     icon_only=True,
-                    bootstyle="secondary-label",
+                    color="secondary",
+                    variant="ghost",
                     command=self._on_prev_year,
                 )
-                prev_year.grid(row=0, column=0, padx=(0, 2))
+                prev_year.grid(row=0, column=0)
                 view["prev_year_btn"] = prev_year
 
                 prev_month = ttk.Button(
                     master=header,
                     icon={"name": "chevron-left", "size": 20},
-                    bootstyle="secondary-label",
+                    color="secondary",
+                    variant="ghost",
                     icon_only=True,
                     command=self._on_prev_month,
                 )
-                prev_month.grid(row=0, column=1, padx=(0, 6))
+                prev_month.grid(row=0, column=1)
                 view["prev_month_btn"] = prev_month
 
                 title_label = ttk.Label(
                     master=header,
                     textvariable=title_var,
                     anchor=CENTER,
-                    bootstyle="secondary",
+                    color="secondary",
                     font="label",
                 )
                 title_label.grid(row=0, column=2, sticky="ew")
@@ -353,21 +361,23 @@ class Calendar(ttk.Frame):
                 next_month = ttk.Button(
                     master=header,
                     icon={"name": "chevron-right", "size": 20},
-                    bootstyle="secondary-label",
+                    color="secondary",
+                    variant="ghost",
                     icon_only=True,
                     command=self._on_next_month,
                 )
-                next_month.grid(row=0, column=3, padx=(6, 0))
+                next_month.grid(row=0, column=3)
                 view["next_month_btn"] = next_month
 
                 next_year = ttk.Button(
                     master=header,
                     icon={"name": "chevron-double-right", "size": 20},
                     icon_only=True,
-                    bootstyle="secondary-label",
+                    color="secondary",
+                    variant="ghost",
                     command=self._on_next_year,
                 )
-                next_year.grid(row=0, column=4, padx=(2, 0))
+                next_year.grid(row=0, column=4)
                 view["next_year_btn"] = next_year
 
                 # Capture sizes and create spacers to hold column widths when buttons are hidden
@@ -406,13 +416,13 @@ class Calendar(ttk.Frame):
 
             def _grid_left():
                 if prev_year:
-                    prev_year.grid(row=0, column=0, padx=(0, 2))
+                    prev_year.grid(row=0, column=0)
                 if prev_month:
-                    prev_month.grid(row=0, column=1, padx=(0, 6))
+                    prev_month.grid(row=0, column=1)
                 if spacer_right_month:
-                    spacer_right_month.grid(row=0, column=3, padx=(6, 0))
+                    spacer_right_month.grid(row=0, column=3)
                 if spacer_right_year:
-                    spacer_right_year.grid(row=0, column=4, padx=(2, 0))
+                    spacer_right_year.grid(row=0, column=4)
                 if next_month:
                     next_month.grid_remove()
                 if next_year:
@@ -424,13 +434,13 @@ class Calendar(ttk.Frame):
 
             def _grid_right():
                 if spacer_left_year:
-                    spacer_left_year.grid(row=0, column=0, padx=(0, 2))
+                    spacer_left_year.grid(row=0, column=0)
                 if spacer_left_month:
-                    spacer_left_month.grid(row=0, column=1, padx=(0, 6))
+                    spacer_left_month.grid(row=0, column=1)
                 if next_month:
-                    next_month.grid(row=0, column=3, padx=(6, 0))
+                    next_month.grid(row=0, column=3)
                 if next_year:
-                    next_year.grid(row=0, column=4, padx=(2, 0))
+                    next_year.grid(row=0, column=4)
                 if prev_year:
                     prev_year.grid_remove()
                 if prev_month:
@@ -470,7 +480,7 @@ class Calendar(ttk.Frame):
                 text=col,
                 anchor=CENTER,
                 padding=5,
-                bootstyle="secondary",
+                color="secondary",
                 font="body[bold]",
             ).pack(side=LEFT, fill=X, expand=YES)
 
@@ -494,10 +504,11 @@ class Calendar(ttk.Frame):
                     col_offset = 1 if self._show_week_numbers else 0
                     grid.columnconfigure(c + col_offset, weight=1)
                     var = tkinter.BooleanVar(value=False)
-                    btn = ttk.Checkbutton(
+                    btn = ttk.CheckToggle(
                         grid,
                         padding=2,
-                        bootstyle=f"{self._bootstyle}-calendar_day-toolbutton",
+                        color=self._color,
+                        variant="calendar-day",
                         variable=var,
                         onvalue=True,
                         offvalue=False,
@@ -554,11 +565,12 @@ class Calendar(ttk.Frame):
             if in_month or self._show_outside_days:
                 row_visible[r] = True
 
-            if not self._show_outside_days and not in_month:
+            # Outside days always use calendar-outside variant
+            if not in_month:
                 btn.configure(
-                    text="",
+                    text=d.day if self._show_outside_days else "",
                     command=lambda d=d: None,
-                    bootstyle="text-toolbutton",
+                    variant="calendar-outside",
                     takefocus=False,
                 )
                 btn.state(["disabled"])
@@ -566,16 +578,17 @@ class Calendar(ttk.Frame):
                 continue
 
             disabled = self._is_disabled(d)
-            style = self._style_for_date(d, in_month, disabled)
+            color, variant = self._style_for_date(d, in_month, disabled)
             is_selected = self._is_selected(d)
             btn.configure(
                 text=d.day,
-                bootstyle=style,
+                color=color,
+                variant=variant,
                 command=(lambda d=d: self._on_date_selected_by_date(d)),
                 takefocus=not disabled,
             )
             var.set(is_selected)
-            if disabled or not in_month:
+            if disabled:
                 btn.state(["disabled"])
             else:
                 btn.state(["!disabled"])
@@ -675,18 +688,19 @@ class Calendar(ttk.Frame):
             return True
         return False
 
-    def _style_for_date(self, d: date, in_month: bool, disabled: bool) -> str:
+    def _style_for_date(self, d: date, in_month: bool, disabled: bool) -> tuple[str | None, str]:
+        """Return (color, variant) tuple for the given date."""
         if disabled or not in_month:
-            return "text-toolbutton"
+            return (None, "ghost")
         if self._selection_mode == "range" and self._range_start:
             end = self._range_end
             start = self._range_start
             if end and start:
                 if start <= d <= end:
                     if start < d < end:
-                        return f"{self._bootstyle}[subtle]-calendar_range-toolbutton"
-                    return f"{self._bootstyle}-calendar_date-toolbutton"
-        return f"{self._bootstyle}-calendar_day-toolbutton"
+                        return (self._color, "calendar-range")
+                    return (self._color, "calendar-date")
+        return (self._color, "calendar-day")
 
     def _is_selected(self, d: date) -> bool:
         if self._selection_mode == "range":

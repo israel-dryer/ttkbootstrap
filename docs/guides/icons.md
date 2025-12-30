@@ -32,11 +32,11 @@ You don't manage image files, recolor assets, or worry about resolution. The fra
 
 ## The mental model
 
-Think of icons as **semantic identifiers**, similar to bootstyle tokens:
+Think of icons as **semantic identifiers**, similar to color tokens:
 
 | Concept | You write | Framework resolves |
 |---------|-----------|-------------------|
-| Color | `bootstyle="danger"` | `#dc3545` (or theme equivalent) |
+| Color | `color="danger"` | `#dc3545` (or theme equivalent) |
 | Icon | `icon="trash"` | Themed, scaled, cached image |
 
 The same icon name works across light and dark themes. The icon adapts automatically—you don't maintain separate assets.
@@ -51,7 +51,7 @@ Icons also participate in **widget state**. When a button is disabled, its icon 
 
 ```python
 ttk.Button(app, text="Save", icon="check")
-ttk.Button(app, text="Delete", icon="trash", bootstyle="danger")
+ttk.Button(app, text="Delete", icon="trash", color="danger")
 ```
 
 The icon appears to the left of the text by default.
@@ -60,7 +60,7 @@ The icon appears to the left of the text by default.
 
 ```python
 ttk.Button(app, icon="plus", icon_only=True)
-ttk.Button(app, icon="x-lg", icon_only=True, bootstyle="secondary")
+ttk.Button(app, icon="x-lg", icon_only=True, color="secondary")
 ```
 
 Use `icon_only=True` when the icon is self-explanatory. The widget adjusts its padding accordingly.
@@ -94,18 +94,18 @@ ttk.Button(toolbar, icon="printer", icon_only=True).pack(side="left")
 Primary actions benefit from both:
 
 ```python
-ttk.Button(app, text="New Project", icon="plus-lg", bootstyle="primary")
+ttk.Button(app, text="New Project", icon="plus-lg", color="primary")
 ttk.Button(app, text="Export", icon="download")
 ```
 
 ### Contextual emphasis
 
-Use bootstyle to reinforce icon meaning:
+Use color to reinforce icon meaning:
 
 ```python
-ttk.Button(app, text="Delete", icon="trash", bootstyle="danger")
-ttk.Button(app, text="Success", icon="check-circle", bootstyle="success")
-ttk.Label(app, text="Connection lost", icon="wifi-off", bootstyle="warning")
+ttk.Button(app, text="Delete", icon="trash", color="danger")
+ttk.Button(app, text="Success", icon="check-circle", color="success")
+ttk.Label(app, text="Connection lost", icon="wifi-off", color="warning")
 ```
 
 ### Menu items
@@ -250,7 +250,7 @@ Avoid Tkinter habits that bypass the icon system:
 | Use file paths for icons | Bypasses theming and caching |
 | Manually recolor images | Framework handles state colors |
 | Maintain light/dark asset sets | Icons adapt automatically |
-| Hardcode icon colors | Use bootstyle or let theme decide |
+| Hardcode icon colors | Use color token or let theme decide |
 | Resize images yourself | DPI scaling is automatic |
 
 The icon system exists to handle these concerns. Use it.
@@ -270,6 +270,6 @@ The icon system exists to handle these concerns. Use it.
 ## Related resources
 
 - [Design System: Icons](../design-system/icons.md) — design philosophy and principles
-- [Styling](styling.md) — bootstyle tokens and semantic colors
+- [Styling](styling.md) — color tokens and semantic colors
 - [Theming](theming.md) — theme configuration and switching
 - [Localization](localization.md) — internationalization patterns

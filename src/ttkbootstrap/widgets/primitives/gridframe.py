@@ -46,7 +46,7 @@ class GridFrame(Frame):
         sticky_items: Default sticky value for children.
         propagate: Whether the frame should resize to fit its contents.
         auto_flow: Auto-placement mode ("row", "column", "row-dense", "column-dense", "none").
-        **kwargs: Additional Frame options (bootstyle, padding, etc.).
+        **kwargs: Additional Frame options (color, variant, padding, etc.).
     """
 
     def __init__(

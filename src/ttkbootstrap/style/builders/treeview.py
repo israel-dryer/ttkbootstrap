@@ -16,7 +16,7 @@ TOKENS = ['primary', 'secondary', 'success', 'info', 'warning', 'danger', 'dark'
 
 @BootstyleBuilderTTk.register_builder('default', 'Treeview')
 @BootstyleBuilderTTk.register_builder('tree', 'Treeview')
-def build_tree_style(b: BootstyleBuilderTTk, ttk_style: str, color: str = None, **options):
+def build_tree_style(b: BootstyleBuilderTTk, ttk_style: str, **options):
     """
     Create treeview style.
 

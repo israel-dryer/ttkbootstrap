@@ -2,7 +2,7 @@ import ttkbootstrap as ttk
 from ttkbootstrap.constants import *
 
 
-def create_combobox_test(bootstyle, test_name):
+def create_combobox_test(test_name):
     frame = ttk.Frame(padding=10)
 
     # title
@@ -17,18 +17,17 @@ def create_combobox_test(bootstyle, test_name):
     # default
     cbo = ttk.Combobox(
         master=frame,
-        values=['default', 'other'],
-        bootstyle=bootstyle
+        values=['default', 'other']
     )
     cbo.pack(padx=5, pady=5, fill=BOTH)
     cbo.current(0)
 
     # color
-    for color in ['default', 'primary', 'secondary', 'success', 'info', 'warning', 'danger']:
+    for color in ['primary', 'secondary', 'success', 'info', 'warning', 'danger']:
         cbo = ttk.Combobox(
             master=frame,
             values=[color, 'other'],
-            bootstyle=color,
+            color=color,
         )
         cbo.pack(padx=5, pady=5, fill=BOTH)
         cbo.current(0)
@@ -36,8 +35,7 @@ def create_combobox_test(bootstyle, test_name):
     # disabled
     cbo = ttk.Combobox(
         master=frame,
-        values=[bootstyle, 'other'],
-        bootstyle=bootstyle,
+        values=['None', 'other'],
         state=DISABLED
     )
     cbo.pack(padx=5, pady=5, fill=BOTH)
@@ -59,7 +57,7 @@ if __name__ == '__main__':
 
     ttk.Button(text="Change Theme", command=change_style).pack(padx=10, pady=10)
 
-    test1 = create_combobox_test(None, 'Combobox')
+    test1 = create_combobox_test('Combobox')
     test1.pack(side=LEFT, fill=BOTH)
 
     root.mainloop()

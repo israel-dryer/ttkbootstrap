@@ -29,7 +29,7 @@ class ScrollView(Frame):
             direction: Literal['horizontal', 'vertical', 'both'] = 'both',
             show_scrollbar: Literal['always', 'never', 'on-hover', 'on-scroll'] = 'always',
             autohide_delay: int = 1000,  # milliseconds for on-scroll mode
-            scrollbar_style: str = 'default',
+            scrollbar_variant: str = 'default',
             **kwargs: Any
     ):
         """Initialize a ScrollView widget.
@@ -46,8 +46,8 @@ class ScrollView(Frame):
                 - 'on-scroll': Scrollbars appear when scrolling, auto-hide after delay
             autohide_delay: Time in milliseconds before auto-hiding scrollbars
                 in 'on-scroll' mode. Default is 1000ms (1 second).
-            scrollbar_style: The bootstyle to apply to scrollbars (e.g., 'primary',
-                'success', 'danger'). If None, uses the default scrollbar style.
+            scrollbar_variant: The variant to apply to scrollbars (e.g., 'default',
+                'round'). If None, uses the default scrollbar variant.
             **kwargs: Additional keyword arguments passed to the Frame parent class.
 
         Note:
@@ -61,7 +61,7 @@ class ScrollView(Frame):
         self._direction = direction
         self._show_scrollbar = show_scrollbar
         self._autohide_delay = autohide_delay
-        self._scrollbar_style = scrollbar_style
+        self._scrollbar_variant = scrollbar_variant
 
         self._child_widget = None
         self._window_id = None
@@ -91,13 +91,13 @@ class ScrollView(Frame):
             master=self,
             orient='vertical',
             command=self.canvas.yview,
-            bootstyle=self._scrollbar_style
+            variant=self._scrollbar_variant
         )
         self.horizontal_scrollbar = Scrollbar(
             master=self,
             orient='horizontal',
             command=self.canvas.xview,
-            bootstyle=self._scrollbar_style
+            variant=self._scrollbar_variant
         )
 
         # Configure canvas scrolling
@@ -184,16 +184,16 @@ class ScrollView(Frame):
             self._autohide_delay = value
         return None
 
-    @configure_delegate('scrollbar_style')
-    def _delegate_scrollbar_style(self, value=None):
+    @configure_delegate('scrollbar_variant')
+    def _delegate_scrollbar_variant(self, value=None):
         if value is None:
-            return self._scrollbar_style
+            return self._scrollbar_variant
         else:
-            self._scrollbar_style = value
-            # Apply the new bootstyle to both scrollbars
+            self._scrollbar_variant = value
+            # Apply the new variant to both scrollbars
             if value:
-                self.vertical_scrollbar.configure(bootstyle=value)
-                self.horizontal_scrollbar.configure(bootstyle=value)
+                self.vertical_scrollbar.configure(variant=value)
+                self.horizontal_scrollbar.configure(variant=value)
         return None
 
     def _setup_scroll_tag_bindings(self):

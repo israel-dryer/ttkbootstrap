@@ -176,7 +176,7 @@ class PageStackDemo:
 
         ttk.Button(details_info, text="Navigate with Replace",
                   command=lambda: self.stack.navigate('home', replace=True),
-                  bootstyle='warning').pack(pady=5)
+                  color='warning').pack(pady=5)
         ttk.Label(details_info, text="(Replace won't add to history)",
                  font=('TkDefaultFont', 8)).pack()
 

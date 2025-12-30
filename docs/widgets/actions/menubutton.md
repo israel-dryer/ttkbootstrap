@@ -50,13 +50,13 @@ Use `MenuButton` when:
 
 ## Appearance
 
-`MenuButton` supports semantic colors and variants through `bootstyle`.
+`MenuButton` supports semantic colors and variants through `color` and `variant`.
 
 !!! link "See [Design System → Variants](../../design-system/variants.md) for how variants map consistently across widgets."
 
 ```python
-ttk.MenuButton(app, text="Menu", bootstyle="primary").pack(pady=4)
-ttk.MenuButton(app, text="Menu", bootstyle="primary-outline").pack(pady=4)
+ttk.MenuButton(app, text="Menu", color="primary").pack(pady=4)
+ttk.MenuButton(app, text="Menu", color="primary", variant="outline").pack(pady=4)
 ```
 
 ---

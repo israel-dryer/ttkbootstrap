@@ -46,7 +46,7 @@ Buttons are styled using **semantic colors** and **variant** tokens. Variants de
 
 ### Colors
 
-The `bootstyle` accepts color tokens that are typically combined with the button variant:
+The `color` parameter accepts semantic color tokens:
 
 <figure markdown>
 ![button colors](../../assets/dark/widgets-button-colors.png#only-dark)
@@ -54,19 +54,19 @@ The `bootstyle` accepts color tokens that are typically combined with the button
 </figure>
 
 ```python
-ttk.Button(app, text="Primary", bootstyle="primary").pack(pady=4)
-ttk.Button(app, text="Outline", bootstyle="primary-outline").pack(pady=4)
-ttk.Button(app, text="Ghost", bootstyle="primary-ghost").pack(pady=4)
-ttk.Button(app, text="Link", bootstyle="primary-link").pack(pady=4)
-ttk.Button(app, text="Text", bootstyle="secondary-text").pack(pady=4)
+ttk.Button(app, text="Primary", color="primary").pack(pady=4)
+ttk.Button(app, text="Outline", color="primary", variant="outline").pack(pady=4)
+ttk.Button(app, text="Ghost", color="primary", variant="ghost").pack(pady=4)
+ttk.Button(app, text="Link", color="primary", variant="link").pack(pady=4)
+ttk.Button(app, text="Text", color="secondary", variant="text").pack(pady=4)
 ```
 
 ### Variants
 
 The supported variants for Button are: **solid** (default), **outline**, **ghost**, **link**, and **text**.
 
-**Solid (default)**  
-Use for the primary, highest-emphasis action on a view (e.g., “Save”, “Submit”, “Continue”).
+**Solid (default)**
+Use for the primary, highest-emphasis action on a view (e.g., "Save", "Submit", "Continue").
 
 <figure markdown>
 ![solid button](../../assets/dark/widgets-button-solid.png#only-dark)
@@ -77,8 +77,8 @@ Use for the primary, highest-emphasis action on a view (e.g., “Save”, “Sub
 ttk.Button(app, text="Solid")
 ```
 
-**Outline**  
-Use for secondary actions that should stay visible but clearly defer to the primary button (e.g., “Cancel”, “Back”).
+**Outline**
+Use for secondary actions that should stay visible but clearly defer to the primary button (e.g., "Cancel", "Back").
 
 <figure markdown>
 ![outline button](../../assets/dark/widgets-button-outline.png#only-dark)
@@ -86,10 +86,10 @@ Use for secondary actions that should stay visible but clearly defer to the prim
 </figure>
 
 ```python
-ttk.Button(app, text="Outline", bootstyle="outline")
+ttk.Button(app, text="Outline", variant="outline")
 ```
 
-**Ghost**  
+**Ghost**
 Use for low-emphasis, contextual actions embedded in panels, lists, or toolbars where the UI should stay visually quiet until hover or press.
 
 <figure markdown>
@@ -98,11 +98,11 @@ Use for low-emphasis, contextual actions embedded in panels, lists, or toolbars 
 </figure>
 
 ```python
-ttk.Button(app, text="Ghost", bootstyle="ghost")
+ttk.Button(app, text="Ghost", variant="ghost")
 ```
 
-**Link**  
-Use for navigation or “take me somewhere” actions that should read like text (e.g., “View details”, “Open settings”).
+**Link**
+Use for navigation or "take me somewhere" actions that should read like text (e.g., "View details", "Open settings").
 
 <figure markdown>
 ![link button](../../assets/dark/widgets-button-link.png#only-dark)
@@ -110,11 +110,11 @@ Use for navigation or “take me somewhere” actions that should read like text
 </figure>
 
 ```python
-ttk.Button(app, text="Link", bootstyle="link")
+ttk.Button(app, text="Link", variant="link")
 ```
 
-**Text**  
-Use for the lowest-emphasis utility actions—especially in dense UIs—where you want minimal chrome but still want button semantics (e.g., “Edit”, “Clear”, “Dismiss”).
+**Text**
+Use for the lowest-emphasis utility actions—especially in dense UIs—where you want minimal chrome but still want button semantics (e.g., "Edit", "Clear", "Dismiss").
 
 <figure markdown>
 ![text button](../../assets/dark/widgets-button-text.png#only-dark)
@@ -122,7 +122,7 @@ Use for the lowest-emphasis utility actions—especially in dense UIs—where yo
 </figure>
 
 ```python
-ttk.Button(app, text="Text", bootstyle="text")
+ttk.Button(app, text="Text", variant="text")
 ```
 
 ---
@@ -159,7 +159,7 @@ ttk.Button(app, icon="gear", icon_only=True).pack(pady=6)
 Disable a button until the user has completed a step.
 
 ```python
-btn = ttk.Button(app, text="Continue", bootstyle="primary", state="disabled")
+btn = ttk.Button(app, text="Continue", color="primary", state="disabled")
 btn.pack()
 
 # later…

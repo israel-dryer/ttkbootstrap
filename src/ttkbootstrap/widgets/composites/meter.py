@@ -30,7 +30,8 @@ class Meter(Frame):
     def __init__(
             self,
             master: Master = None,
-            bootstyle: str = 'primary',
+            color: str = None,
+            bootstyle: str = None,
 
             # value parameters
             value: int | float = 0,
@@ -66,7 +67,8 @@ class Meter(Frame):
 
         Args:
             master: The parent widget.
-            bootstyle: Style name for the meter indicator color (e.g., 'primary', 'success').
+            color: Color token for the meter indicator (e.g., 'primary', 'success').
+            bootstyle: DEPRECATED - Use ``color`` instead.
 
             value: Current meter value.
             minvalue: Minimum value for the meter range.
@@ -121,7 +123,7 @@ class Meter(Frame):
         self._value_font = legacy.get('value_font', value_font or '-size 36 -weight bold')
         self._value_prefix = legacy.get('value_prefix', value_prefix)
         self._value_suffix = legacy.get('value_suffix', value_suffix)
-        self._bootstyle = bootstyle
+        self._color = color or bootstyle or 'primary'
 
         self._subtitle = legacy.get('subtitle', subtitle)
         self._secondary_font = legacy.get('secondary_font', secondary_font or '-size 9')
@@ -251,9 +253,19 @@ class Meter(Frame):
     @configure_delegate('bootstyle')
     def _delegate_bootstyle(self, value=None):
         if value is None:
-            return self._bootstyle
+            return self._color
         else:
-            self._bootstyle = value
+            self._color = value
+            self._resolve_meter_styles()
+            self._draw_meter()
+        return None
+
+    @configure_delegate('color')
+    def _delegate_color(self, value=None):
+        if value is None:
+            return self._color
+        else:
+            self._color = value
             self._resolve_meter_styles()
             self._draw_meter()
         return None
@@ -472,8 +484,8 @@ class Meter(Frame):
         b = style.style_builder
 
         # Resolve colors from tokens
-        bootstyle = self._bootstyle or 'primary'
-        accent = b.color(bootstyle)
+        color = self._color or 'primary'
+        accent = b.color(color)
 
         # Use _surface_token to get the token name, resolve to actual color
         surface_token = getattr(self, '_surface_token', 'background')
@@ -481,7 +493,7 @@ class Meter(Frame):
         trough_color = b.border(surface)
 
         # Get text colors
-        value_text_color = b.color(bootstyle)
+        value_text_color = b.color(color)
         secondary_text_color = b.color(self._secondary_style or 'background[muted]')
 
         self._image_scale = b.scale(DEFAULT_IMAGE_SCALE)

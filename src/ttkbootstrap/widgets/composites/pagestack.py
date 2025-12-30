@@ -16,7 +16,8 @@ class PageOptions(TypedDict, total=False):
     style: str
     cursor: str
     show_border: bool
-    bootstyle: str
+    color: str
+    variant: str
     surface_color: str
     style_options: dict[str, Any]
     sticky: str
@@ -82,7 +83,7 @@ class PageStack(Frame):
             key (str): Unique identifier for the page (required for navigation).
             page (Widget | None): The widget to add. If None, creates a Frame.
             sticky (str): Grid sticky parameter for the page layout (e.g., 'nsew').
-            **kwargs: When page is None, these are passed to Frame (e.g., padding, bootstyle).
+            **kwargs: When page is None, these are passed to Frame (e.g., padding, color, variant).
 
         Returns:
             Widget: The page widget (passed or created Frame).

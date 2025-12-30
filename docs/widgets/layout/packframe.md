@@ -52,10 +52,10 @@ Use `PackFrame` when:
 
 ### Styling
 
-`PackFrame` inherits all styling options from Frame. Use `bootstyle` for semantic tokens.
+`PackFrame` inherits all styling options from Frame. Use `color` for semantic tokens.
 
 ```python
-ttk.PackFrame(app, bootstyle="secondary", padding=20)
+ttk.PackFrame(app, color="secondary", padding=20)
 ```
 
 !!! link "Design System"
@@ -202,7 +202,7 @@ widgets = stack.managed_widgets
 
 - Per-widget options in `add()` or `insert()` override container defaults.
 
-- PackFrame extends Frame, so all Frame options (bootstyle, padding, etc.) are available.
+- PackFrame extends Frame, so all Frame options (color, padding, etc.) are available.
 
 ---
 

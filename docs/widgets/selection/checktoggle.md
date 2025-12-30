@@ -7,8 +7,7 @@ title: CheckToggle
 `CheckToggle` is a **selection control** for turning an option **on/off (or mixed)**, rendered with a
 **Toolbutton-style toggle** appearance.
 
-It behaves like `CheckButton`, but defaults its `bootstyle` to `"Toolbutton"` and coerces styles to include
-the `-toolbutton` variant.
+It behaves like `CheckButton`, but uses the Toolbutton variant style by default.
 
 Use `CheckToggle` when you want checkbox semantics in compact UI areas like toolbars, headers, and mode strips.
 
@@ -109,17 +108,7 @@ app.mainloop()
 
 - `state`, `takefocus`
 
-- `style`, `bootstyle`, `surface_color`, `style_options`
-
-### `bootstyle` coercion
-
-If `bootstyle` does not already include `"toolbutton"`, it is coerced to `"{bootstyle}-toolbutton"`.
-
-```python
-ttk.CheckToggle(app, bootstyle="Toolbutton")         # explicit
-ttk.CheckToggle(app, bootstyle="primary")            # coerced to "primary-toolbutton"
-ttk.CheckToggle(app, bootstyle="success-toolbutton") # already toolbutton
-```
+- `style`, `color`, `variant`, `surface_color`, `style_options`
 
 ---
 
@@ -162,14 +151,14 @@ Use validation when:
 
 ## Colors and styling
 
-Use semantic color tokens; they will be applied as toolbutton variants.
+Use semantic color tokens with the `color` parameter.
 
 ```python
-ttk.CheckToggle(app, bootstyle="primary")
-ttk.CheckToggle(app, bootstyle="secondary")
-ttk.CheckToggle(app, bootstyle="success")
-ttk.CheckToggle(app, bootstyle="warning")
-ttk.CheckToggle(app, bootstyle="danger")
+ttk.CheckToggle(app, color="primary")
+ttk.CheckToggle(app, color="secondary")
+ttk.CheckToggle(app, color="success")
+ttk.CheckToggle(app, color="warning")
+ttk.CheckToggle(app, color="danger")
 ```
 
 ---

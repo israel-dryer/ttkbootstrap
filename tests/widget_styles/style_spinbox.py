@@ -17,7 +17,7 @@ def create_spinbox_test():
 
     # color
     for color in ['primary', 'secondary', 'success', 'info', 'warning', 'danger']:
-        spinbox = ttk.Spinbox(frame, bootstyle=color)
+        spinbox = ttk.Spinbox(frame, color=color)
         spinbox.pack(padx=5, pady=5, fill=BOTH)
         spinbox.insert(END, color)
 
@@ -36,19 +36,11 @@ def create_spinbox_test():
     return frame
 
 
-def change_style():
-    if style.theme_use() == 'dark':
-        style.theme_use("light")
-    else:
-        style.theme_use("dark")
-
-
 if __name__ == '__main__':
     # create visual widget style tests
     root = ttk.Window()
-    style = ttk.Style()
 
-    ttk.Button(text="Change Theme", command=change_style).pack(padx=10, pady=10)
+    ttk.Button(text="Change Theme", command=ttk.toggle_theme).pack(padx=10, pady=10)
 
     test1 = create_spinbox_test()
     test1.pack(side=LEFT, fill=BOTH)

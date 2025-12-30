@@ -19,8 +19,8 @@ class NumberEntryPart(TextEntryPart):
     via keyboard and mouse wheel, and optional wrapping.
 
     Events:
-        - ``<<Increment>>``: Fired when an increment is requested (before step occurs). ``event.data = None``
-        - ``<<Decrement>>``: Fired when a decrement is requested (before step occurs). ``event.data = None``
+        - ``<<Increment>>``: Fired when an increment is requested (before step occurs). ``event.data = {'value': current_value}``
+        - ``<<Decrement>>``: Fired when a decrement is requested (before step occurs). ``event.data = {'value': current_value}``
         - Plus all events from TextEntryPart: ``<<Input>>``, ``<<Change>>``, ``<Return>``
     """
 
@@ -123,14 +123,14 @@ class NumberEntryPart(TextEntryPart):
         """Handle Up arrow key press - emit increment event."""
         if not self._is_interactive():
             return 'break'
-        self.event_generate('<<Increment>>')
+        self.event_generate('<<Increment>>', data={'value': self._value})
         return 'break'  # Prevent default behavior
 
     def _handle_down_key(self, event):
         """Handle Down arrow key press - emit decrement event."""
         if not self._is_interactive():
             return 'break'
-        self.event_generate('<<Decrement>>')
+        self.event_generate('<<Decrement>>', data={'value': self._value})
         return 'break'  # Prevent default behavior
 
     def _handle_mouse_wheel(self, event):
@@ -144,23 +144,23 @@ class NumberEntryPart(TextEntryPart):
 
         if delta != 0:
             if delta > 0:
-                self.event_generate('<<Increment>>')
+                self.event_generate('<<Increment>>', data={'value': self._value})
             else:
-                self.event_generate('<<Decrement>>')
+                self.event_generate('<<Decrement>>', data={'value': self._value})
         return 'break'
 
     def _handle_wheel_up(self, event):
         """Handle mouse wheel up on Linux/X11."""
         if not self._is_interactive():
             return 'break'
-        self.event_generate('<<Increment>>')
+        self.event_generate('<<Increment>>', data={'value': self._value})
         return 'break'
 
     def _handle_wheel_down(self, event):
         """Handle mouse wheel down on Linux/X11."""
         if not self._is_interactive():
             return 'break'
-        self.event_generate('<<Decrement>>')
+        self.event_generate('<<Decrement>>', data={'value': self._value})
         return 'break'
 
     def _handle_increment_event(self, event):
@@ -291,7 +291,7 @@ class NumberEntryPart(TextEntryPart):
             self._normalize_display_from_value()
 
     def on_increment(self, callback) -> str:
-        """Bind to ``<<Increment>>``. Callback receives ``event.data = None``."""
+        """Bind to ``<<Increment>>``. Callback receives ``event.data = {'value': current_value}``."""
         return self.bind('<<Increment>>', callback, add=True)
 
     def off_increment(self, bind_id: str | None = None) -> None:
@@ -299,7 +299,7 @@ class NumberEntryPart(TextEntryPart):
         self.unbind('<<Increment>>', bind_id)
 
     def on_decrement(self, callback) -> str:
-        """Bind to ``<<Decrement>>``. Callback receives ``event.data = None``."""
+        """Bind to ``<<Decrement>>``. Callback receives ``event.data = {'value': current_value}``."""
         return self.bind('<<Decrement>>', callback, add=True)
 
     def off_decrement(self, bind_id: str | None = None) -> None:

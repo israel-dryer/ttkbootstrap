@@ -28,7 +28,9 @@ class FrameKwargs(TypedDict, total=False):
     takefocus: bool
 
     # ttkbootstrap-specific extensions
-    bootstyle: str
+    bootstyle: str  # DEPRECATED: Use color and variant instead
+    color: str
+    variant: str
     surface_color: str
     show_border: bool
     style_options: dict[str, Any]
@@ -52,8 +54,11 @@ class Frame(TTKWrapperBase, WidgetCapabilitiesMixin, TtkStateMixin, ttk.Frame):
             width (int): Requested width in pixels.
             height (int): Requested height in pixels.
             takefocus (bool): Widget accepts focus during keyboard traversal.
-            style (str): Explicit ttk style name (overrides bootstyle).
-            bootstyle (str): ttkbootstrap style tokens (e.g., 'secondary').
+            style (str): Explicit ttk style name (overrides color/variant).
+            color (str): Color token for styling, e.g. 'primary', 'secondary', 'success'.
+            variant (str): Style variant (if applicable).
+            bootstyle (str): DEPRECATED - Use `color` and `variant` instead.
+                Combined style tokens (e.g., 'secondary').
             surface_color (str): Optional surface token; otherwise inherited.
             show_border (bool): If True, draws a border around the frame.
             style_options (dict): Optional dict forwarded to the style builder.

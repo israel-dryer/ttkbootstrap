@@ -72,6 +72,8 @@ class Expander(Frame):
                 the chevron button will use that style (default: foreground-ghost).
         """
         self._header_bootstyle = kwargs.pop('bootstyle', '')
+        self._header_color = kwargs.pop('color', None)
+        self._header_variant = kwargs.pop('variant', None)
         if 'show_border' in kwargs:
             kwargs.setdefault('padding', 3)  # need 3 pixels to avoid cutting off corners
         kwargs.setdefault('takefocus', False)  # Outer container shouldn't take focus
@@ -152,11 +154,15 @@ class Expander(Frame):
 
     def _build_widget(self, bootstyle=''):
         """Build the internal widget structure."""
+        # Use new color/variant if available, fall back to legacy bootstyle
+        color = self._header_color
+        variant = self._header_variant
         bootstyle = self._header_bootstyle
 
         # Use CompositeFrame for header to enable hover/pressed/focus states
         self._header_frame = CompositeFrame(
-            self, class_='Expander.TFrame', bootstyle=bootstyle, padding=8, takefocus=True
+            self, ttk_class='Expander.TFrame',
+            color=color or bootstyle, variant=variant, padding=8, takefocus=True
         )
         self._header_frame.pack(fill='x')
 
@@ -166,8 +172,8 @@ class Expander(Frame):
                 self._header_frame,
                 icon=self._icon,
                 icon_only=True,
-                class_='Expander.TLabel',
-                bootstyle=bootstyle,
+                ttk_class='Expander.TLabel',
+                color=color or bootstyle, variant=variant,
                 takefocus=False,
             )
             self._header_frame.register_composite(self._icon_label)
@@ -178,8 +184,8 @@ class Expander(Frame):
             self._header_frame,
             text=self._title,
             anchor='w',
-            class_='Expander.TLabel',
-            bootstyle=bootstyle,
+            ttk_class='Expander.TLabel',
+            color=color or bootstyle, variant=variant,
             takefocus=False,
         )
         self._header_frame.register_composite(self._title_label)
@@ -189,8 +195,8 @@ class Expander(Frame):
             self._header_frame,
             icon=self._current_chevron_icon,
             icon_only=True,
-            bootstyle=bootstyle,
-            class_='Expander.TLabel',
+            color=color or bootstyle, variant=variant,
+            ttk_class='Expander.TLabel',
             takefocus=False,
         )
         self._header_frame.register_composite(self._toggle_button)
@@ -385,8 +391,8 @@ class Expander(Frame):
                 self._header_frame,
                 icon=value,
                 icon_only=True,
-                class_='Expander.TLabel',
-                bootstyle=self._header_bootstyle,
+                ttk_class='Expander.TLabel',
+                color=self._header_color or self._header_bootstyle, variant=self._header_variant,
                 takefocus=False,
             )
             self._header_frame.register_composite(self._icon_label)

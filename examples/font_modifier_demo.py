@@ -33,7 +33,7 @@ def create_demo_window():
         container,
         text="Font Modifier Syntax Examples",
         font="heading-xl[bold]",
-        bootstyle="primary"
+        color="primary"
     )
     title.pack(pady=(0, 20))
 
@@ -50,7 +50,7 @@ def create_demo_window():
         container,
         text="Syntax: family[size][weight][style]",
         font="code[bold]",
-        bootstyle="info"
+        color="info"
     )
     syntax.pack(pady=(0, 20))
 
@@ -90,7 +90,7 @@ def create_demo_window():
             text=f'font="{font_spec}"',
             font="code",
             width=40,
-            bootstyle="secondary"
+            color="secondary"
         )
         spec_label.pack(side=LEFT, padx=(0, 10))
 
@@ -111,7 +111,7 @@ def create_demo_window():
         container,
         text="Interactive Font Test",
         font="heading-md[bold]",
-        bootstyle="success"
+        color="success"
     )
     interactive_title.pack(pady=(0, 10))
 
@@ -130,7 +130,7 @@ def create_demo_window():
         container,
         text="This is a preview of your font specification",
         font=font_var.get(),
-        bootstyle="info",
+        color="info",
         padding=20
     )
     preview_label.pack(fill=X, pady=10)
@@ -139,15 +139,15 @@ def create_demo_window():
     def update_preview():
         try:
             preview_label.configure(font=font_var.get())
-            status_label.configure(text="✓ Font applied successfully", bootstyle="success")
+            status_label.configure(text="✓ Font applied successfully", color="success")
         except Exception as e:
-            status_label.configure(text=f"✗ Error: {str(e)}", bootstyle="danger")
+            status_label.configure(text=f"✗ Error: {str(e)}", color="danger")
 
     update_btn = ttk.Button(
         input_frame,
         text="Apply Font",
         command=update_preview,
-        bootstyle="success"
+        color="success"
     )
     update_btn.pack(side=LEFT)
 
@@ -172,7 +172,7 @@ Modifiers: underline, overstrike
         text=info_text,
         font="caption",
         justify=LEFT,
-        bootstyle="secondary"
+        color="secondary"
     )
     info_label.pack(fill=X)
 

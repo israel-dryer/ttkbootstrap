@@ -79,7 +79,8 @@ class NumericEntry(Field):
                 Examples: ``'decimal'``, ``'percent'``, ``'currency'``, ``'#,##0.00'``.
             locale (str): Locale identifier for number formatting (e.g., ``'en_US'``).
             required (bool): If True, field cannot be empty.
-            bootstyle (str): The accent color of the focus ring and active border.
+            color (str): Color token for the focus ring and active border.
+            bootstyle (str): DEPRECATED - Use `color` instead.
             allow_blank (bool): If True, empty input is allowed (sets value to None).
             cursor (str): Cursor style when hovering.
             exportselection (bool): Export selection to clipboard.

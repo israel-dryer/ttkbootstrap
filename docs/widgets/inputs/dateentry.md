@@ -58,13 +58,13 @@ Consider a different control when:
 
 ## Appearance
 
-### `bootstyle`
+### `color`
 
 ```python
 ttk.DateEntry(app, label="Due date")  # primary (default)
-ttk.DateEntry(app, label="Due date", bootstyle="secondary")
-ttk.DateEntry(app, label="Due date", bootstyle="success")
-ttk.DateEntry(app, label="Due date", bootstyle="warning")
+ttk.DateEntry(app, label="Due date", color="secondary")
+ttk.DateEntry(app, label="Due date", color="success")
+ttk.DateEntry(app, label="Due date", color="warning")
 ```
 
 !!! link "Design System"

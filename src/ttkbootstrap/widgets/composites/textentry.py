@@ -61,7 +61,8 @@ class TextEntry(Field):
 
         Other Parameters:
             allow_blank (bool): Allow empty input. Default is True.
-            bootstyle (str): The accent color of the focus ring and active border.
+            color (str): Color token for the focus ring and active border.
+            bootstyle (str): DEPRECATED - Use `color` instead.
             cursor (str): Cursor style when hovering.
             value_format (str): ICU format pattern for parsing/formatting.
             exportselection (bool): Export selection to clipboard.

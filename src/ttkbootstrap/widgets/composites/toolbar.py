@@ -47,7 +47,7 @@ class Toolbar(Frame):
         master: Master = None,
         show_window_controls: bool = False,
         draggable: bool = False,
-        button_style: str = 'ghost',
+        button_variant: str = 'ghost',
         padding: int | tuple = 4,
         **kwargs: Any
     ):
@@ -59,7 +59,7 @@ class Toolbar(Frame):
                 Default False.
             draggable (bool): Enable window dragging by clicking and dragging
                 the toolbar. Default False.
-            button_style (str): Default bootstyle for toolbar buttons.
+            button_variant (str): Default variant for toolbar buttons.
                 Default 'ghost'.
             padding (int | tuple): Toolbar padding. Default 4.
             **kwargs: Additional arguments passed to Frame.
@@ -68,7 +68,7 @@ class Toolbar(Frame):
 
         self._show_window_controls = show_window_controls
         self._draggable = draggable
-        self._button_style = button_style
+        self._button_variant = button_variant
 
         # Content container (left side)
         self._content_frame = Frame(self)
@@ -96,7 +96,7 @@ class Toolbar(Frame):
             self._controls_frame,
             icon={'name': 'dash', 'size': 14},
             icon_only=True,
-            bootstyle='ghost',
+            variant='ghost',
             command=self._on_minimize,
         )
         self._minimize_btn.pack(side='left', padx=2)
@@ -106,7 +106,7 @@ class Toolbar(Frame):
             self._controls_frame,
             icon={'name': 'square', 'size': 12},
             icon_only=True,
-            bootstyle='ghost',
+            variant='ghost',
             command=self._on_maximize,
         )
         self._maximize_btn.pack(side='left', padx=2)
@@ -116,7 +116,8 @@ class Toolbar(Frame):
             self._controls_frame,
             icon={'name': 'x-lg', 'size': 14},
             icon_only=True,
-            bootstyle='danger-ghost',
+            color='danger',
+            variant='ghost',
             command=self._on_close,
         )
         self._close_btn.pack(side='left', padx=2)
@@ -180,7 +181,8 @@ class Toolbar(Frame):
         icon: str | dict = None,
         text: str = None,
         command: Callable = None,
-        bootstyle: str = None,
+        color: str = None,
+        variant: str = None,
         **kwargs
     ) -> Button:
         """Add a button to the toolbar.
@@ -190,7 +192,8 @@ class Toolbar(Frame):
             text (str | None): Button text. If None and icon provided,
                 creates icon-only button.
             command (Callable | None): Button click callback.
-            bootstyle (str | None): Button style. Uses toolbar default if None.
+            color (str | None): Button color token.
+            variant (str | None): Button variant. Uses toolbar default if None.
             **kwargs: Additional arguments passed to Button.
 
         Returns:
@@ -202,7 +205,8 @@ class Toolbar(Frame):
             text=text,
             icon_only=(icon is not None and text is None),
             command=command,
-            bootstyle=bootstyle or self._button_style,
+            color=color,
+            variant=variant or self._button_variant,
             **kwargs
         )
         btn.pack(side='left')

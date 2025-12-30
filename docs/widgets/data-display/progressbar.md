@@ -47,14 +47,14 @@ Use Progressbar when:
 
 ## Appearance
 
-### Styling with `bootstyle`
+### Styling with `color`
 
-Use `bootstyle` to indicate intent or severity:
+Use `color` to indicate intent or severity:
 
 ```python
-ttk.Progressbar(app, bootstyle="success")
-ttk.Progressbar(app, bootstyle="warning")
-ttk.Progressbar(app, bootstyle="danger")
+ttk.Progressbar(app, color="success")
+ttk.Progressbar(app, color="warning")
+ttk.Progressbar(app, color="danger")
 ```
 
 !!! link "Design System"

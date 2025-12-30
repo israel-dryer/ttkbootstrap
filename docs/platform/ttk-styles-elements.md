@@ -4,7 +4,7 @@ ttk widgets separate **behavior** from **appearance**.
 This separation is implemented through ttk’s **style and element system**.
 
 Understanding how styles and elements work is essential for understanding how
-ttkbootstrap themes, bootstyles, and variants function.
+ttkbootstrap themes, color tokens, and variants function.
 
 This page explains the ttk styling model at a conceptual level and how
 ttkbootstrap builds on top of it.
@@ -114,14 +114,14 @@ with ttk’s underlying engine.
 
 ---
 
-## Bootstyle as a style abstraction
+## Color and variant as style abstractions
 
-A **bootstyle** is a high-level description of a widget’s visual intent.
+The `color` and `variant` parameters provide a high-level description of a widget's visual intent.
 
 Instead of working directly with style names, users specify:
 
-- semantic color
-- visual variant
+- semantic color (via `color` parameter)
+- visual variant (via `variant` parameter)
 
 ttkbootstrap resolves these into concrete ttk style names and layouts.
 

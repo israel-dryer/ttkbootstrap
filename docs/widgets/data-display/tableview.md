@@ -56,7 +56,7 @@ Use TableView when:
 TableView supports theming through ttkbootstrap:
 
 ```python
-ttk.TableView(app, bootstyle="primary")
+ttk.TableView(app, color="primary")
 ```
 
 !!! link "Design System"
@@ -106,7 +106,7 @@ tv = ttk.TableView(
 
 - `height` — number of visible rows
 
-- `bootstyle` — color theme
+- `color` — color theme
 
 ---
 

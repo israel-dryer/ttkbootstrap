@@ -42,7 +42,7 @@ The same widget code adapts visually without modification.
 
 ## Using colors in widgets
 
-Widgets reference semantic colors using the `bootstyle` option.
+Widgets reference semantic colors using the `color` parameter.
 
 How colors are *applied* to widgets is covered in:
 
