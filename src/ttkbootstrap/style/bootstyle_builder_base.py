@@ -117,6 +117,9 @@ class BootstyleBuilderBase:
 
         Returns:
             The resolved color value as a hex string
+
+        Raises:
+            ValueError: If the color token cannot be resolved to a valid color.
         """
         # Fast path: exact key (e.g., "blue[100]" or "primary")
         direct = self.colors.get(token)
@@ -125,7 +128,14 @@ class BootstyleBuilderBase:
 
         parsed = self._parse_color_token(token)
         if not parsed:
-            return self.colors.get(token)
+            result = self.colors.get(token)
+            if result is None:
+                raise ValueError(
+                    f"Invalid color token: '{token}'. "
+                    f"Valid color tokens include: primary, secondary, success, info, warning, danger, "
+                    f"light, dark, background, foreground, or a hex color like '#ff0000'."
+                )
+            return result
 
         head = parsed["head"]
         modifiers = parsed["modifiers"]
@@ -142,7 +152,14 @@ class BootstyleBuilderBase:
         current_color = self.colors.get(base_key)
         if current_color is None:
             # Unknown base; fall back
-            return self.colors.get(token)
+            result = self.colors.get(token)
+            if result is None:
+                raise ValueError(
+                    f"Invalid color token: '{token}'. "
+                    f"Valid color tokens include: primary, secondary, success, info, warning, danger, "
+                    f"light, dark, background, foreground, or a hex color like '#ff0000'."
+                )
+            return result
 
         # Apply each modifier in order as a pipeline transformation
         for mod_type, mod_value in modifiers:
