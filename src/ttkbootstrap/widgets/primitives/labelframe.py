@@ -27,7 +27,8 @@ class LabelFrameKwargs(TypedDict, total=False):
     name: str
 
     # ttkbootstrap-specific extensions
-    bootstyle: str
+    bootstyle: str  # DEPRECATED: Use color and variant instead
+    color: str
     surface_color: str
     style_options: dict[str, Any]
     localize: bool | Literal['auto']
@@ -52,8 +53,9 @@ class LabelFrame(LocalizationMixin, TTKWrapperBase, WidgetCapabilitiesMixin, Ttk
             borderwidth (int): Border width.
             width (int): Requested width in pixels.
             height (int): Requested height in pixels.
-            style (str): Explicit ttk style name (overrides bootstyle).
-            bootstyle (str): ttkbootstrap style tokens.
+            style (str): Explicit ttk style name (overrides color/variant).
+            color (str): Color token for styling, e.g. 'primary', 'secondary'.
+            bootstyle (str): DEPRECATED - Use `color` instead.
             surface_color (str): Optional surface token; otherwise inherited.
             style_options (dict): Optional dict forwarded to the style builder.
             localize (bool | Literal['auto']): Determines the widget's localization mode.
