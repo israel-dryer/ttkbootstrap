@@ -28,8 +28,8 @@ def build_badge(b: BootstyleBuilderTTk, ttk_style: str, color: str = None, varia
 
     normal_img = recolor_image(f'badge-{variant}', normal)
 
-    border = b.scale(10)
-    padding = b.scale((10, 0))
+    border = b.scale(6)
+    padding = b.scale((6, 0))
 
     # button element
     b.create_style_element_image(
