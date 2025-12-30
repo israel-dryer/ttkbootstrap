@@ -34,7 +34,9 @@ class FieldOptions(TypedDict, total=False):
 
     Attributes:
         allow_blank: If True, empty input is allowed. If False, empty input preserves previous value.
-        bootstyle: The accent color of the focus ring and active border of the input.
+        color: Color token for the focus ring and active border of the input.
+        variant: Style variant (if applicable).
+        bootstyle: DEPRECATED - Use color instead.
         cursor: Cursor to display when hovering over the widget.
         value_format: ICU format pattern for parsing/formatting (e.g., '$#,##0.00' for currency).
         exportselection: If True, selected text is exported to X selection.
@@ -55,7 +57,9 @@ class FieldOptions(TypedDict, total=False):
         localize: Determines the field label localization mode. 'auto', True, False.
     """
     allow_blank: bool
-    bootstyle: str
+    bootstyle: str  # DEPRECATED: Use color instead
+    color: str
+    variant: str
     cursor: str
     value_format: str
     exportselection: bool
