@@ -41,7 +41,9 @@ class DialogButton:
         closes (bool): Whether button closes the dialog when clicked.
         default (bool): Whether this is the default button (focused, triggered by Enter).
         command (Callable[[Dialog], None] | None): Callback called when clicked.
-        bootstyle (str | None): Optional ttkbootstrap style override.
+        color (str | None): Color token for styling (e.g., 'primary', 'danger').
+        variant (str | None): Style variant (e.g., 'outline', 'link').
+        bootstyle (str | None): DEPRECATED - Use color and variant instead.
         icon (str | dict | None): Optional icon specification for the button.
     """
     text: str
@@ -50,7 +52,9 @@ class DialogButton:
     closes: bool = True  # close dialog after click
     default: bool = False  # default button (Enter)
     command: Callable[[Dialog], None] | None = None
-    bootstyle: str | None = None  # override style
+    color: str | None = None  # color token (e.g., 'primary', 'danger')
+    variant: str | None = None  # style variant (e.g., 'outline', 'link')
+    bootstyle: str | None = None  # DEPRECATED: use color/variant instead
     icon: str | dict[str, Any] | None = None  # passed straight to ttk.Button(icon=...)
 
 
@@ -329,7 +333,10 @@ class Dialog:
 
         for spec in reversed(self._buttons):
             # Get color/variant from spec or derive from role
-            if spec.bootstyle:
+            if spec.color or spec.variant:
+                # Use explicitly provided color/variant
+                color, variant = spec.color, spec.variant
+            elif spec.bootstyle:
                 # Legacy: spec has bootstyle - parse it
                 from ttkbootstrap.style.bootstyle import convert_bootstyle_to_color_variant
                 color, variant = convert_bootstyle_to_color_variant(spec.bootstyle, 'TButton', warn=False)
