@@ -24,7 +24,8 @@ class TreeViewKwargs(TypedDict, total=False):
     name: str
 
     # ttkbootstrap-specific extensions
-    bootstyle: str
+    bootstyle: str  # DEPRECATED: Use color and variant instead
+    color: str
     surface_color: str
     border_color: str
     show_border: bool
@@ -51,8 +52,9 @@ class TreeView(TTKWrapperBase, WidgetCapabilitiesMixin, TtkStateMixin, ttk.Treev
             height (int): Number of rows to display.
             padding (int | tuple): Extra padding around the widget.
             selectmode (str): Selection mode ('browse', 'extended', 'none').
-            style (str): Explicit ttk style name (overrides bootstyle).
-            bootstyle (str): ttkbootstrap style tokens.
+            style (str): Explicit ttk style name (overrides color/variant).
+            color (str): Color token for styling, e.g. 'primary', 'secondary'.
+            bootstyle (str): DEPRECATED - Use `color` instead.
             surface_color (str): Optional surface token; otherwise inherited.
             border_color (str): The color of the border around the table.
             show_border (bool): Whether to show a border around the table.
