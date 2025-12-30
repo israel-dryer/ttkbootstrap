@@ -134,8 +134,8 @@ class ButtonGroup(Frame):
 
         widget_kwargs = kwargs.copy()
 
-        # Apply buttongroup styling using class_='ButtonGroup'
-        widget_kwargs.setdefault('class_', 'ButtonGroup')
+        # Apply buttongroup styling using ttk_class='ButtonGroup'
+        widget_kwargs.setdefault('ttk_class', 'ButtonGroup')
 
         # Apply color/variant for styling
         if self._color or self._variant:
@@ -213,10 +213,8 @@ class ButtonGroup(Frame):
                 if current_position != position:
                     widget.configure_style_options(position=position)
                     # Rebuild style with new position
-                    if self._color or self._variant:
-                        widget.configure(color=self._color, variant=self._variant)
-                    elif base_style:
-                        widget.configure(bootstyle=base_style)
+                    if hasattr(widget, 'rebuild_style'):
+                        widget.rebuild_style()
 
     def remove(self, key: str):
         """Remove a widget by its key.
@@ -370,10 +368,8 @@ class ButtonGroup(Frame):
             if hasattr(widget, 'configure_style_options'):
                 widget.configure_style_options(orient=value)
                 # Rebuild style with new orientation
-                if self._color or self._variant:
-                    widget.configure(color=self._color, variant=self._variant)
-                elif self._bootstyle:
-                    widget.configure(bootstyle=self._bootstyle)
+                if hasattr(widget, 'rebuild_style'):
+                    widget.rebuild_style()
 
             if self._orientation == 'horizontal':
                 widget.pack(side='left')
