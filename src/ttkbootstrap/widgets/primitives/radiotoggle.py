@@ -29,12 +29,10 @@ class RadioToggle(RadioButton):
             underline (int): Index of character to underline in `text`.
             state (str): Widget state ('normal', 'active', 'disabled', 'readonly').
             takefocus (bool): Whether the widget participates in focus traversal.
-            style (str): Explicit ttk style name (overrides bootstyle).
-            bootstyle (str): ttkbootstrap style tokens describing the toggle color
-                (defaults to 'Toolbutton' and is coerced to include '-toolbutton').
+            color (str): Color token for styling, e.g. 'primary', 'success', 'danger'.
             surface_color (str): Optional surface token; otherwise inherited.
             style_options (dict): Optional dict forwarded to the style builder.
             localize (bool | Literal['auto']): Determines the widget's localization mode.
         """
-        kwargs.setdefault('class_', 'Toolbutton')
+        kwargs.setdefault('ttk_class', 'Toolbutton')
         super().__init__(master, **kwargs)
