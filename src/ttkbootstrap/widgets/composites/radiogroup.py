@@ -21,7 +21,7 @@ class RadioGroupKwargs(TypedDict, total=False):
     signal: Signal[Any]
     value: str
     orient: Literal['horizontal', 'vertical']
-    bootstyle: str
+    color: str
     text: str
     labelanchor: Literal['n', 's', 'e', 'w', 'ne', 'nw', 'se', 'sw']
     state: Literal['normal', 'disabled']
@@ -72,7 +72,8 @@ class RadioGroup(Frame):
         """
         # Extract RadioGroup-specific options before super().__init__
         self._orientation = kwargs.pop('orient', 'horizontal')
-        self._bootstyle = kwargs.pop('bootstyle', 'primary')
+        # Support both 'color' and legacy 'bootstyle'
+        self._color = kwargs.pop('color', None) or kwargs.pop('bootstyle', 'primary')
         self._labeltext = kwargs.pop('text', None)
         self._labelanchor = kwargs.pop('labelanchor', 'n')
         self._state = kwargs.pop('state', 'normal')
@@ -234,9 +235,9 @@ class RadioGroup(Frame):
             raise ValueError(f"A button with the key '{key}' already exists.")
 
         btn_kwargs = kwargs.copy()
-        # Use regular bootstyle (not buttongroup toggle style)
-        if 'bootstyle' not in btn_kwargs:
-            btn_kwargs['bootstyle'] = self._bootstyle
+        # Use color for button styling
+        if 'color' not in btn_kwargs and 'bootstyle' not in btn_kwargs:
+            btn_kwargs['color'] = self._color
         # Apply current state if not explicitly provided
         if 'state' not in btn_kwargs:
             btn_kwargs['state'] = self._state
@@ -345,16 +346,16 @@ class RadioGroup(Frame):
         """Unsubscribe from value changes."""
         self._signal.unsubscribe(subscription_id)
 
-    @configure_delegate('bootstyle')
-    def _delegate_bootstyle(self, value=None):
-        """Get or set the bootstyle. Updates all buttons when changed."""
+    @configure_delegate('color')
+    def _delegate_color(self, value=None):
+        """Get or set the color. Updates all buttons when changed."""
         if value is None:
-            return self._bootstyle
+            return self._color
 
-        self._bootstyle = value
-        # Update all buttons with new bootstyle
+        self._color = value
+        # Update all buttons with new color
         for button in self._buttons.values():
-            button.configure(bootstyle=value)
+            button.configure(color=value)
 
     @configure_delegate('orient')
     def _delegate_orient(self, value=None):
