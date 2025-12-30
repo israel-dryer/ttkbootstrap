@@ -95,8 +95,8 @@ def build_checkbutton_style(b: BootstyleBuilderTTk, ttk_style: str, color: str =
     b.map_style(ttk_style, background=[], foreground=[('disabled', foreground_disabled), ('', foreground)])
 
 
-@BootstyleBuilderTTk.register_builder('toggle', 'TCheckbutton')
-def build_toggle_style(b: BootstyleBuilderTTk, ttk_style: str, color: str = 'primary', **options):
+@BootstyleBuilderTTk.register_builder('switch', 'TCheckbutton')
+def build_switch_style(b: BootstyleBuilderTTk, ttk_style: str, color: str = 'primary', **options):
     accent_token = color or 'primary'
     surface_token = options.get('surface_color', 'background')
 

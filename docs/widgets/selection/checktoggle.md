@@ -181,12 +181,17 @@ Prefer **CheckButton** when:
 
 - classic checkbox indicators are expected in forms and settings panels
 
+Prefer **Switch** when:
+
+- you want a slider-style on/off toggle for settings
+
 ---
 
 ## Additional resources
 
 ### Related widgets
 
+- [Switch](switch.md) - slider-style on/off toggle for settings
 - [CheckButton](checkbutton.md) - classic checkbox indicator (multi-selection / tri-state)
 - [RadioToggle](radiotoggle.md) - mutually exclusive button-like radios
 - [ButtonGroup](../actions/buttongroup.md) - visually grouped controls for toolbars and headers
