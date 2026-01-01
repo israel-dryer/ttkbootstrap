@@ -63,34 +63,57 @@ raw = path.get()
 path.value = r"C:\data\input.csv"
 ```
 
-Picker selections commit immediately.
+Picker selections commit immediately. The raw dialog result (which may be a tuple for
+multi-file selections) is available via `path.dialog_result`.
 
-### Browse mode: `select`
+### Dialog type: `dialog`
 
 ```python
-ttk.PathEntry(app, select="file")       # choose existing file
-ttk.PathEntry(app, select="directory")  # choose folder
-ttk.PathEntry(app, select="save")       # choose save-as path
+ttk.PathEntry(app, dialog="openfilename")   # choose existing file (default)
+ttk.PathEntry(app, dialog="directory")      # choose folder
+ttk.PathEntry(app, dialog="saveasfilename") # choose save-as path
+ttk.PathEntry(app, dialog="openfilenames")  # choose multiple files
 ```
+
+Available dialog types:
+
+- `openfilename` / `openfile`: Single file selection
+- `openfilenames` / `openfiles`: Multiple file selection
+- `directory`: Directory selection
+- `saveasfilename` / `saveasfile`: Save file dialog
 
 !!! note "Open vs save"
     File selection usually expects an existing path.
     Save selection may allow non-existing files and can prompt for overwrite.
 
-### File type filters: `filetypes`
+### File type filters: `dialog_options`
 
 ```python
 ttk.PathEntry(
     app,
     label="Document",
-    select="file",
-    filetypes=[
-        ("PDF", "*.pdf"),
-        ("Word Document", "*.docx"),
-        ("All files", "*.*"),
-    ],
+    dialog="openfilename",
+    dialog_options={
+        "filetypes": [
+            ("PDF", "*.pdf"),
+            ("Word Document", "*.docx"),
+            ("All files", "*.*"),
+        ],
+        "title": "Select a document",
+    },
 )
 ```
+
+Common `dialog_options` keys: `title`, `initialdir`, `initialfile`, `filetypes`, `defaultextension`.
+
+### Button text: `button_text`
+
+```python
+ttk.PathEntry(app, label="File", button_text="Choose...")
+ttk.PathEntry(app, label="Folder", dialog="directory", button_text="Select Folder")
+```
+
+The button text can be changed at runtime via `configure(button_text=...)`.
 
 ### Add-ons
 
@@ -109,12 +132,20 @@ p.insert_addon(
 PathEntry emits standard field events:
 
 - `<<Input>>` / `on_input` — typing/pasting
-- `<<Changed>>` / `on_changed` — committed value changed (blur/Enter or picker selection)
+- `<<Change>>` / `on_changed` — committed value changed (blur/Enter or picker selection)
 - validation lifecycle events
+
+The `<<Change>>` event provides `event.data` with:
+
+- `value`: The new path value (display string)
+- `prev_value`: The previous path value
+- `text`: Same as value (display string)
+- `dialog_result`: Raw dialog result (may be tuple for multi-select)
 
 ```python
 def handle_changed(event):
-    print("path:", event.data)
+    print("path:", event.data["value"])
+    print("raw result:", event.data["dialog_result"])
 
 path.on_changed(handle_changed)
 ```
@@ -141,8 +172,9 @@ p.add_validation_rule("path_exists", message="Path does not exist")
 ## Behavior
 
 - Users can type/paste paths directly.
-- Clicking the browse button opens a native file/folder chooser (based on `select`).
+- Clicking the browse button opens a native file/folder chooser (based on `dialog`).
 - Picker selection commits the value and closes the dialog.
+- For multi-file selection, paths are joined with ", " for display; raw result is available via `dialog_result`.
 
 ---
 

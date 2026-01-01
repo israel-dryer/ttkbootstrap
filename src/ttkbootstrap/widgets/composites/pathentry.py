@@ -42,14 +42,18 @@ class PathEntry(Field):
 
     !!! note "Events"
 
-        - ``<<Change>>``: Fired when a path is selected from the dialog.
-        - ``<<Input>>``: Fired when user manually types in the entry.
-        - ``<<Valid>>``: Fired when validation passes.
-        - ``<<Invalid>>``: Fired when validation fails.
+        ``<<Change>>``: Fired when a path is selected from the dialog.
+          Provides ``event.data`` with keys: ``value``, ``prev_value``, ``text``, ``dialog_result``.
+
+        ``<<Input>>``: Fired when user manually types in the entry.
+
+        ``<<Valid>>``: Fired when validation passes.
+
+        ``<<Invalid>>``: Fired when validation fails.
 
     Attributes:
         entry_widget (TextEntryPart): The underlying text entry widget.
-        label_widget (Label): The label widget above the entry.
+        label_widget (Label): The label widget above the entry (from FieldOptions).
         message_widget (Label): The message label widget below the entry.
         addons (dict[str, Widget]): Dictionary of inserted addon widgets by name.
         variable (Variable): Tkinter Variable linked to entry text.
@@ -61,10 +65,13 @@ class PathEntry(Field):
     def __init__(
             self,
             master: Master = None,
-            value: str = "No file chosen",
-            label: str = "Choose File",
+            *,
+            value: str | None = None,
             dialog: FileDialogType = "openfilename",
-            dialog_options: dict[str, Any] = None,
+            dialog_options: dict[str, Any] | None = None,
+            button_text: str = "Browse",
+            label: str = None,
+            message: str = None,
             **kwargs: Unpack[FieldOptions]
     ):
         """Initialize a PathEntry widget.
@@ -76,13 +83,11 @@ class PathEntry(Field):
 
         Args:
             master: Parent widget. If None, uses the default root window.
-            value: Initial value to display in the entry field. Default is
-                "No file chosen". This is updated when a path is selected from
-                the dialog.
-            label: Text to display on the dialog button. Default is "Choose File".
-                Can be updated later via configure(label=...).
+            value: Initial path value to display in the entry field. Default is None
+                (empty field). This is updated when a path is selected from the dialog.
             dialog: Type of file dialog to open. Default is "openfilename".
                 Options:
+
                 - 'openfilename': Single file selection (returns path string)
                 - 'openfile': Single file selection (returns file object)
                 - 'directory': Directory selection
@@ -90,14 +95,18 @@ class PathEntry(Field):
                 - 'openfiles': Multiple file selection (returns file objects)
                 - 'saveasfile': Save file dialog (returns file object)
                 - 'saveasfilename': Save file dialog (returns path string)
+
             dialog_options: Dictionary of options to pass to the file dialog.
                 Common options: title, initialdir, initialfile, filetypes,
                 defaultextension, multiple.
+            button_text: Text to display on the browse button. Default is "Browse".
+                Can be changed at runtime via ``configure(button_text=...)``.
+            label (str): Label text to display above the entry field (from FieldOptions).
+            message (str): Message text to display below the field.
 
         Other Parameters:
             required (bool): If True, field cannot be empty.
             color (str): Color token for the focus ring and active border.
-            bootstyle (str): DEPRECATED - Use `color` instead.
             allow_blank (bool): Allow empty input.
             cursor (str): Cursor style when hovering.
             font (str): Font for text display.
@@ -105,7 +114,6 @@ class PathEntry(Field):
             initial_focus (bool): If True, widget receives focus on creation.
             justify (str): Text alignment.
             show_message (bool): If True, displays message area.
-            message (str): Message text to display below the field.
             padding (str): Padding around entry widget.
             takefocus (bool): If True, widget accepts Tab focus.
             textvariable (Variable): Tkinter Variable to link with text.
@@ -115,21 +123,22 @@ class PathEntry(Field):
         Note:
             When multiple files are selected (using 'openfilenames' or 'openfiles'),
             the paths are joined with ", " (comma-space) and displayed in the entry.
-            The raw dialog result (tuple/list) is available via the dialog_result
+            The raw dialog result (tuple/list) is available via the ``dialog_result``
             property.
         """
         self._dialog = dialog
         self._dialog_options = dialog_options
         self._dialog_result = None
-        self._label = label
+        self._button_text = button_text
+        self._prev_value: str | None = value
 
-        super().__init__(master=master, value=value, **kwargs)
+        super().__init__(master=master, label=label, message=message, value=value, **kwargs)
 
         self.insert_addon(
             Button,
             position="before",
             name="dialog-button",
-            text=self._label,
+            text=self._button_text,
             command=self._show_file_chooser
         )
 
@@ -140,26 +149,39 @@ class PathEntry(Field):
 
     @property
     def dialog_result(self):
-        """Get the raw result from the last file dialog operation."""
+        """Get the raw result from the last file dialog operation.
+
+        For single file selection, this returns the path string.
+        For multiple file selection, this returns a tuple/list of paths.
+        """
         return self._dialog_result
+
+    # ------ Configuration Delegates ------
 
     @configure_delegate('dialog')
     def _delegate_dialog(self, value: FileDialogType = None):
-        """Get or set the file dialog type."""
         if value is None:
             return self._dialog
         else:
             self._dialog = value
         return None
 
-    @configure_delegate('label')
-    def _delegate_label(self, value: str = None):
-        """Get or set the dialog button label text."""
+    @configure_delegate('button_text')
+    def _delegate_button_text(self, value: str = None):
         if value is None:
-            return self._label
+            return self._button_text
         else:
-            self._label = value
-            self.dialog_button['text'] = value
+            self._button_text = value
+            if self.dialog_button:
+                self.dialog_button['text'] = value
+        return None
+
+    @configure_delegate('dialog_options')
+    def _delegate_dialog_options(self, value: dict[str, Any] = None):
+        if value is None:
+            return self._dialog_options
+        else:
+            self._dialog_options = value
         return None
 
     def _show_file_chooser(self):
@@ -170,17 +192,32 @@ class PathEntry(Field):
         if dialog_func is None:
             raise ValueError(f"Invalid dialog type `{self._dialog}`")
 
-        result = dialog_func(**self._dialog_options or dict())
+        result = dialog_func(**(self._dialog_options or {}))
         self._dialog_result = result
 
+        # Format display text for multiple selections
         if isinstance(result, (tuple, list)):
-            result = ", ".join(result)
+            display_text = ", ".join(str(p) for p in result)
+        else:
+            display_text = result
 
+        # Only update if a selection was made (result is truthy)
         if result:
-            self.variable.set(result)
-            self.entry_widget.event_generate(
-                '<<Change>>', data={
-                    'value': result, 'prev_value': self.entry_widget._prev_changed_value
-                }, when="tail")
-            self.entry_widget.commit()
+            prev_value = self._prev_value
+            self._prev_value = display_text
+
+            # Set the value through the field's standard mechanism
+            self.value = display_text
+
+            # Emit <<Change>> on PathEntry (the composite) with full event data
+            self.event_generate(
+                '<<Change>>',
+                data={
+                    'value': display_text,
+                    'prev_value': prev_value,
+                    'text': display_text,
+                    'dialog_result': self._dialog_result,
+                },
+                when="tail"
+            )
 
