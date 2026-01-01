@@ -15,7 +15,7 @@ class ListItem(CompositeFrame):
 
     ListItem extends CompositeFrame to provide automatic state synchronization
     across all child widgets. It supports selection modes, focus states, dragging,
-    deletion, and various visual customizations.
+    removal, and various visual customizations.
 
     The widget automatically handles hover, pressed, and focus states across all
     registered child widgets using the Composite state coordinator.
@@ -23,7 +23,7 @@ class ListItem(CompositeFrame):
     !!! note "Events"
         - ``<<ItemClick>>``: Fired when the item is clicked.
         - ``<<ItemSelecting>>``: Fired when the item is being selected/deselected.
-        - ``<<ItemDeleting>>``: Fired when the delete button is clicked.
+        - ``<<ItemRemoving>>``: Fired when the remove button is clicked.
         - ``<<ItemFocus>>``: Fired when the item receives keyboard focus.
         - ``<<ItemDragStart>>``: Fired when a drag operation begins.
         - ``<<ItemDrag>>``: Fired during a drag operation.
@@ -31,7 +31,7 @@ class ListItem(CompositeFrame):
 
     Data fields:
         When update_data() is called, the following fields are recognized:
-        - id: Unique identifier for the item (required for selection/deletion).
+        - id: Unique identifier for the item (required for selection/removal).
         - title: Main heading text displayed at the top.
         - text: Body text displayed below the title.
         - caption: Small caption text displayed at the bottom.
@@ -51,14 +51,14 @@ class ListItem(CompositeFrame):
                 focus_color (str): Color for the focus indicator. Defaults to None.
                 show_separator (bool): Show separator line below the item. Defaults to False.
                 show_chevron (bool): Show chevron indicator on the right. Defaults to False.
-                enable_focus_state (bool): Allow item to receive keyboard focus. Defaults to True.
-                enable_hover_state (bool): Show hover state on mouse over. Defaults to False.
-                enable_dragging (bool): Show drag handle and allow dragging. Defaults to False.
-                enable_deleting (bool): Show delete button. Defaults to False.
-                selection_background (str): Background color when selected. Defaults to 'primary'.
+                focusable (bool): Whether this item can receive keyboard focus. Defaults to True.
+                hoverable (bool): Whether this item shows hover state. Defaults to False.
+                draggable (bool): Whether this item can be dragged. Defaults to False.
+                removable (bool): Whether this item can be removed. Defaults to False.
+                selected_background (str): Background color when selected. Defaults to 'primary'.
                 selection_mode (str): Selection mode ('none', 'single', 'multi'). Defaults to 'none'.
                 show_selection_controls (bool): Show checkbox/radio button. Defaults to False.
-                select_by_click (bool): Whether clicking selects the item. Defaults to True
+                select_on_click (bool): Whether clicking selects the item. Defaults to True
                     when selection_mode is 'single' or 'multi', False otherwise.
                 **kwargs: Additional arguments forwarded to CompositeFrame.
         """
@@ -73,19 +73,19 @@ class ListItem(CompositeFrame):
         self._focus_color = kwargs.pop('focus_color', None)
         self._show_separator = kwargs.pop('show_separator', False)
         self._show_chevron = kwargs.pop('show_chevron', False)
-        self._enable_focus_state = kwargs.pop('enable_focus_state', True)
-        self._enable_hover_state = kwargs.pop('enable_hover_state', False)
-        self._enable_dragging = kwargs.pop('enable_dragging', False)
-        self._enable_deleting = kwargs.pop('enable_deleting', False)
-        self._selection_background = kwargs.pop('selection_background', 'primary')
+        self._focusable = kwargs.pop('focusable', True)
+        self._hoverable = kwargs.pop('hoverable', False)
+        self._draggable = kwargs.pop('draggable', False)
+        self._removable = kwargs.pop('removable', False)
+        self._selected_background = kwargs.pop('selected_background', 'primary')
         self._selection_mode = kwargs.pop('selection_mode', 'none')
         self._show_selection_controls = kwargs.pop('show_selection_controls', False)
 
         # Determine if clicking should trigger selection
         # If selection mode is active (single/multi), enable click selection
-        # If selection mode is 'none', respect the select_by_click parameter
-        select_by_click = kwargs.pop('select_by_click', self._selection_mode != 'none')
-        self._select_by_click = select_by_click
+        # If selection mode is 'none', respect the select_on_click parameter
+        select_on_click = kwargs.pop('select_on_click', self._selection_mode != 'none')
+        self._select_on_click = select_on_click
 
         self._get_selection_icon()
 
@@ -94,13 +94,13 @@ class ListItem(CompositeFrame):
             master=master,
             select_on_click=False,
             variant='separated_item' if self._show_separator else 'item',
-            takefocus=self._enable_focus_state,
+            takefocus=self._focusable,
             ttk_class='ListView.TFrame',
             padding=(8, 4),
             style_options=dict(
-                selection_background=self._selection_background,
+                selected_background=self._selected_background,
                 focus_color=self._focus_color,
-                enable_hover_state=self._enable_hover_state
+                hoverable=self._hoverable
             )
         )
 
@@ -110,8 +110,8 @@ class ListItem(CompositeFrame):
             variant='list',
             ttk_class='ListView.TFrame',
             takefocus=False,
-            style_options=dict(selection_background=self._selection_background,
-                               enable_hover_state=self._enable_hover_state)
+            style_options=dict(selected_background=self._selected_background,
+                               hoverable=self._hoverable)
         )
         self._left_frame.pack(side='left')
 
@@ -120,8 +120,8 @@ class ListItem(CompositeFrame):
             variant='list',
             ttk_class='ListView.TFrame',
             takefocus=False,
-            style_options=dict(selection_background=self._selection_background,
-                               enable_hover_state=self._enable_hover_state)
+            style_options=dict(selected_background=self._selected_background,
+                               hoverable=self._hoverable)
         )
         self._center_frame.pack(side='left', fill='x', expand=True)
 
@@ -130,8 +130,8 @@ class ListItem(CompositeFrame):
             variant='list',
             ttk_class='ListView.TFrame',
             takefocus=False,
-            style_options=dict(selection_background=self._selection_background,
-                               enable_hover_state=self._enable_hover_state)
+            style_options=dict(selected_background=self._selected_background,
+                               hoverable=self._hoverable)
         )
         self._right_frame.pack(side='left')
 
@@ -142,7 +142,7 @@ class ListItem(CompositeFrame):
         self._title_widget = None
         self._text_widget = None
         self._caption_widget = None
-        self._delete_widget = None
+        self._remove_widget = None
         self._badge_widget = None
         self._chevron_widget = None
         self._drag_widget = None
@@ -152,11 +152,11 @@ class ListItem(CompositeFrame):
             self.register_composite(widget)
 
         # Bind to composite invoke for selection and/or focus handling
-        if self._select_by_click or self._enable_focus_state:
+        if self._select_on_click or self._focusable:
             self.on_invoke(self._on_click)
 
         # Focus event handling (notify ListView of focus changes)
-        if self._enable_focus_state:
+        if self._focusable:
             self.bind('<FocusIn>', self._on_focus_in, add='+')
             self.bind('<FocusOut>', self._on_focus_out, add='+')
 
@@ -184,7 +184,7 @@ class ListItem(CompositeFrame):
 
     def _on_click(self, event):
         """Handle click on the list item."""
-        if self._enable_focus_state:
+        if self._focusable:
             self.focus()
         # notify parent list that item has been clicked
         self.master.event_generate('<<ItemClick>>', data=self._data)
@@ -192,7 +192,7 @@ class ListItem(CompositeFrame):
 
     def _on_space(self, event):
         """Handle space key press."""
-        if self._enable_focus_state:
+        if self._focusable:
             self.focus()
         # notify parent list that item has been clicked
         self.master.event_generate('<<ItemClick>>', data=self._data)
@@ -259,8 +259,8 @@ class ListItem(CompositeFrame):
                 variant='icon',
                 ttk_class='ListView.TLabel',
                 icon_only=True,
-                style_options=dict(selection_background=self._selection_background,
-                                   enable_hover_state=self._enable_hover_state),
+                style_options=dict(selected_background=self._selected_background,
+                                   hoverable=self._hoverable),
                 takefocus=False,
             )
             if self._show_selection_controls:
@@ -291,8 +291,8 @@ class ListItem(CompositeFrame):
                     ttk_class='ListView.TLabel',
                     takefocus=False,
                     icon_only=True,
-                    style_options=dict(selection_background=self._selection_background,
-                                       enable_hover_state=self._enable_hover_state),
+                    style_options=dict(selected_background=self._selected_background,
+                                       hoverable=self._hoverable),
                 )
                 self._icon_widget.pack(side='left', padx=5)
                 self.register_composite(self._icon_widget)
@@ -319,8 +319,8 @@ class ListItem(CompositeFrame):
                     variant='list',
                     ttk_class='ListView.TLabel',
                     takefocus=False,
-                    style_options=dict(selection_background=self._selection_background,
-                                       enable_hover_state=self._enable_hover_state),
+                    style_options=dict(selected_background=self._selected_background,
+                                       hoverable=self._hoverable),
                 )
                 self._title_widget.pack(side='top', fill='x', anchor='w', padx=(0, 3))
                 self.register_composite(self._title_widget)
@@ -346,8 +346,8 @@ class ListItem(CompositeFrame):
                     variant='list',
                     ttk_class='ListView.TLabel',
                     takefocus=False,
-                    style_options=dict(selection_background=self._selection_background,
-                                       enable_hover_state=self._enable_hover_state),
+                    style_options=dict(selected_background=self._selected_background,
+                                       hoverable=self._hoverable),
                 )
                 self._text_widget.pack(side='top', fill='x', padx=(0, 3))
                 self.register_composite(self._text_widget)
@@ -375,8 +375,8 @@ class ListItem(CompositeFrame):
                     variant='list',
                     ttk_class='ListView.TLabel',
                     takefocus=False,
-                    style_options=dict(selection_background=self._selection_background,
-                                       enable_hover_state=self._enable_hover_state),
+                    style_options=dict(selected_background=self._selected_background,
+                                       hoverable=self._hoverable),
                 )
                 self._caption_widget.pack(side='top', fill='x', padx=(0, 3))
                 self.register_composite(self._caption_widget)
@@ -401,8 +401,8 @@ class ListItem(CompositeFrame):
                     text=text,
                     variant='list',
                     ttk_class='ListView.TLabel',
-                    style_options=dict(selection_background=self._selection_background,
-                                       enable_hover_state=self._enable_hover_state),
+                    style_options=dict(selected_background=self._selected_background,
+                                       hoverable=self._hoverable),
                 )
                 self._badge_widget.pack(side='right', padx=6)
                 self.register_composite(self._badge_widget)
@@ -429,8 +429,8 @@ class ListItem(CompositeFrame):
                     variant='icon',
                     ttk_class='ListView.TButton',
                     takefocus=False,
-                    style_options=dict(selection_background=self._selection_background,
-                                       enable_hover_state=self._enable_hover_state),
+                    style_options=dict(selected_background=self._selected_background,
+                                       hoverable=self._hoverable),
                 )
                 self._chevron_widget.pack(side='right', padx=6)
                 self.register_composite(self._chevron_widget)
@@ -444,36 +444,36 @@ class ListItem(CompositeFrame):
                 finally:
                     self._chevron_widget = None
 
-    def _update_delete(self):
-        """Update or create delete button widget."""
-        if self._enable_deleting:
-            if not self._delete_widget:
-                self._delete_widget = Button(
+    def _update_remove(self):
+        """Update or create remove button widget."""
+        if self._removable:
+            if not self._remove_widget:
+                self._remove_widget = Button(
                     self._right_frame,
                     icon='x-lg',
                     icon_only=True,
                     variant='icon',
                     ttk_class='ListView.TButton',
                     takefocus=False,
-                    command=self.delete,
-                    style_options=dict(selection_background=self._selection_background,
-                                       enable_hover_state=self._enable_hover_state),
+                    command=self.remove,
+                    style_options=dict(selected_background=self._selected_background,
+                                       hoverable=self._hoverable),
                 )
-                self._delete_widget.pack(side='right', padx=6)
-                self.register_composite(self._delete_widget)
+                self._remove_widget.pack(side='right', padx=6)
+                self.register_composite(self._remove_widget)
         else:
-            if self._delete_widget:
+            if self._remove_widget:
                 try:
-                    self._delete_widget.pack_forget()
-                    self._delete_widget.destroy()
+                    self._remove_widget.pack_forget()
+                    self._remove_widget.destroy()
                 except TclError:
                     pass
                 finally:
-                    self._delete_widget = None
+                    self._remove_widget = None
 
     def _update_drag(self):
         """Update or create drag handle widget."""
-        if self._enable_dragging:
+        if self._draggable:
             if not self._drag_widget:
                 self._drag_widget = Button(
                     self._right_frame,
@@ -483,8 +483,8 @@ class ListItem(CompositeFrame):
                     ttk_class='ListView.TButton',
                     cursor='fleur',
                     takefocus=False,
-                    style_options=dict(selection_background=self._selection_background,
-                                       enable_hover_state=self._enable_hover_state),
+                    style_options=dict(selected_background=self._selected_background,
+                                       hoverable=self._hoverable),
                 )
                 self._drag_widget.pack(side='right', padx=6)
 
@@ -591,24 +591,24 @@ class ListItem(CompositeFrame):
         self._get_selection_icon()
         self._update_selection(False)
 
-    @configure_delegate('selection_background')
-    def _delegate_selection_background(self, value=None):
-        self._selection_background = value
+    @configure_delegate('selected_background')
+    def _delegate_selected_background(self, value=None):
+        self._selected_background = value
 
     @configure_delegate('show_chevron')
     def _delegate_show_chevron(self, value=None):
         self._show_chevron = value
         self._update_chevron()
 
-    @configure_delegate('enable_dragging')
-    def _delegate_enable_dragging(self, value=None):
-        self._enable_dragging = value
+    @configure_delegate('draggable')
+    def _delegate_draggable(self, value=None):
+        self._draggable = value
         self._update_drag()
 
-    @configure_delegate('enable_deleting')
-    def _delegate_enable_deleting(self, value=None):
-        self._enable_deleting = value
-        self._update_delete()
+    @configure_delegate('removable')
+    def _delegate_removable(self, value=None):
+        self._removable = value
+        self._update_remove()
 
     # ---- Public API ----
 
@@ -634,9 +634,9 @@ class ListItem(CompositeFrame):
         self.master.event_generate('<<ItemSelecting>>', data=self._data)
         return True
 
-    def delete(self):
-        """Notify subscribers to handle delete action."""
-        self.master.event_generate('<<ItemDeleting>>', data=self._data)
+    def remove(self):
+        """Notify subscribers to handle remove action."""
+        self.master.event_generate('<<ItemRemoving>>', data=self._data)
 
     def update_data(self, record: dict | None):
         """Update row visuals efficiently when values have changed.
@@ -662,7 +662,7 @@ class ListItem(CompositeFrame):
 
         # handle focus - apply tkinter focus to the widget that should have logical focus
         focused = bool(record.get('focused', False))
-        if self._state.get('focused') != focused and self._enable_focus_state:
+        if self._state.get('focused') != focused and self._focusable:
             if focused:
                 # this record should have focus - give tkinter focus to this widget
                 try:
@@ -695,4 +695,4 @@ class ListItem(CompositeFrame):
 
         self.after_idle(self._update_chevron)
         self.after_idle(self._update_drag)
-        self.after_idle(self._update_delete)
+        self.after_idle(self._update_remove)

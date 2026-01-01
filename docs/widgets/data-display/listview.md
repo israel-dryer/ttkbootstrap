@@ -57,9 +57,9 @@ Use `ListView` when:
 
 Common presentation options:
 
-- `alternating_row_mode="even" | "odd" | "none"`
+- `striped=True` - show alternating row colors
 
-- `alternating_row_color="background[+1]"`
+- `striped_background="background[+1]"` - color for alternating rows
 
 - `show_separator=True`
 
@@ -69,7 +69,7 @@ Common presentation options:
 lv = ListView(
     app,
     items=data,
-    alternating_row_mode="even",
+    striped=True,
     show_separator=True,
     show_scrollbar=False,  # mousewheel only
 )
@@ -146,13 +146,13 @@ Optional selection UI:
 
 - `show_selection_controls=True` shows checkbox/radio affordances
 
-- `select_by_click` controls whether clicking the row selects it
+- `select_on_click` controls whether clicking the row selects it
 
 ```python
-lv = ListView(app, items=data, selection_mode="single", select_by_click=True)
+lv = ListView(app, items=data, selection_mode="single", select_on_click=True)
 ```
 
-### Deleting and dragging
+### Removing and dragging
 
 Enable item actions:
 
@@ -160,7 +160,7 @@ Enable item actions:
 lv = ListView(
     app,
     items=data,
-    enable_deleting=True,
+    enable_removing=True,
     enable_dragging=True,
 )
 ```
@@ -189,7 +189,7 @@ lv = ListView(app, datasource=my_source, row_factory=make_row)
 
 - `show_selection_controls` — show checkbox/radio controls
 
-- `enable_deleting` — allow item deletion
+- `enable_removing` — allow item removal
 
 - `enable_dragging` — allow drag reordering
 
