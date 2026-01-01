@@ -14,7 +14,7 @@ It renders only the visible rows (plus a small overscan), making it suitable for
 
 ```python
 import ttkbootstrap as ttk
-from ttkbootstrap.widgets.primitives.listview import ListView
+from ttkbootstrap.widgets.composites.list import ListView
 
 app = ttk.App()
 
@@ -86,7 +86,7 @@ lv = ListView(
 
 ```python
 import ttkbootstrap as ttk
-from ttkbootstrap.widgets.primitives.listview import ListView
+from ttkbootstrap.widgets.composites.list import ListView
 
 app = ttk.App()
 

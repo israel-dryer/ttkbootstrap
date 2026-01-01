@@ -3,7 +3,7 @@
 from tkinter import TclError
 from typing import Protocol, Any, Callable, Literal, runtime_checkable
 
-from ttkbootstrap.widgets.composites.listitem import ListItem
+from ttkbootstrap.widgets.composites.list.listitem import ListItem
 from ttkbootstrap.widgets.primitives.frame import Frame
 from ttkbootstrap.widgets.primitives.scrollbar import Scrollbar
 from ttkbootstrap.widgets.mixins import configure_delegate

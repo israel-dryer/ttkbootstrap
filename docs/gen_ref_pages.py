@@ -45,6 +45,8 @@ WIDGET_MODULES = {
     "FloodGauge": "ttkbootstrap.widgets.composites.floodgauge.FloodGauge",
     "Form": "ttkbootstrap.widgets.composites.form.Form",
     "LabeledScale": "ttkbootstrap.widgets.composites.labeledscale.LabeledScale",
+    "ListItem": "ttkbootstrap.widgets.composites.list.listitem.ListItem",
+    "ListView": "ttkbootstrap.widgets.composites.list.listview.ListView",
     "Meter": "ttkbootstrap.widgets.composites.meter.Meter",
     "NumericEntry": "ttkbootstrap.widgets.composites.numericentry.NumericEntry",
     "PageStack": "ttkbootstrap.widgets.composites.pagestack.PageStack",

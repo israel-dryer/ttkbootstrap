@@ -10,7 +10,7 @@ This demo showcases various features of the ListItem widget including:
 """
 
 import ttkbootstrap as ttk
-from ttkbootstrap.widgets.composites.listitem import ListItem
+from ttkbootstrap.widgets.composites.list import ListItem
 
 
 def main():
