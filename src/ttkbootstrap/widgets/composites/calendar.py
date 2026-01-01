@@ -81,6 +81,7 @@ class Calendar(ttk.Frame):
             self,
             master: Master = None,
             *,
+            value: date | datetime | str | None = None,
             start_date: date | datetime | str | None = None,
             end_date: date | datetime | str | None = None,
             disabled_dates: Iterable[date | datetime | str] | None = None,
@@ -98,10 +99,11 @@ class Calendar(ttk.Frame):
 
         Args:
             master: Parent widget. If None, uses the default root window.
-            start_date (date | datetime | str): Initial selected date or range start.
-                Accepts date, datetime, or ISO format string.
-            end_date (date | datetime | str): End date for range selection. Only used
-                when ``selection_mode='range'``.
+            value (date | datetime | str): Initial selected date for single selection mode.
+            start_date (date | datetime | str): Range start date. Use ``value`` instead
+                for single selection mode.
+            end_date (date | datetime | str): Range end date. Only used when
+                ``selection_mode='range'``.
             disabled_dates (Iterable): Collection of dates that cannot be selected.
             selection_mode (str): Selection mode - ``'single'`` for single date or
                 ``'range'`` for date range selection.
@@ -143,6 +145,10 @@ class Calendar(ttk.Frame):
         self._color = color or bootstyle or PRIMARY
         self._calendar = calendar.Calendar(firstweekday=first_weekday)
 
+        # Allow 'value' as alias for 'start_date' (reads better in single mode)
+        if start_date is None and value is not None:
+            start_date = value
+
         initial = self._coerce_date(start_date) or date.today()
         self._initial_date = initial
         self._display_date = date(initial.year, initial.month, 1)
@@ -182,7 +188,7 @@ class Calendar(ttk.Frame):
             The selected date, or None if no date is selected.
 
         Example:
-            >>> cal = Calendar(app)
+            >>> cal = Calendar(app, value=date(2025, 1, 15))
             >>> cal.get()
             datetime.date(2025, 1, 15)
         """

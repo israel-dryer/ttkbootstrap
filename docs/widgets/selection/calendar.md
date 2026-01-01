@@ -21,7 +21,7 @@ from ttkbootstrap.widgets.composites.calendar import Calendar
 
 app = ttk.App()
 
-cal = Calendar(app, start_date=date.today(), color="primary")
+cal = Calendar(app, value=date.today(), color="primary")
 cal.pack(padx=12, pady=12)
 
 def on_select(e):
@@ -74,7 +74,7 @@ import ttkbootstrap as ttk
 from ttkbootstrap.widgets.composites.calendar import Calendar
 
 app = ttk.App()
-Calendar(app, selection_mode="single", start_date="2025-12-25").pack(padx=12, pady=12)
+Calendar(app, value="2025-12-25").pack(padx=12, pady=12)
 app.mainloop()
 ```
 
@@ -182,7 +182,9 @@ Selection:
 
 * `selection_mode`: `"single"` (default) or `"range"`
 
-* `start_date`: initial selected date / range start (`date`, `datetime`, or string)
+* `value`: initial selected date for single mode (`date`, `datetime`, or string)
+
+* `start_date`: range start date (`date`, `datetime`, or string); use `value` for single mode
 
 * `end_date`: range end (range mode only)
 
@@ -201,7 +203,7 @@ Display:
 
 * `show_week_numbers`: show ISO week numbers (default `False`)
 
-* `first_weekday`: `0=Monday` … `6=Sunday` (default `6`)
+* `first_weekday`: `0=Monday` … `6=Sunday`, or `None` for locale default (default `None`)
 
 Style:
 
