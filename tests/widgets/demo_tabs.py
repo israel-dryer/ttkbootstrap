@@ -21,9 +21,9 @@ bar_frame = ttk.Frame(variants_frame)
 bar_frame.pack(side='left', padx=(0, 24))
 ttk.Label(bar_frame, text="Bar (default):").pack(anchor='w')
 bar_tabs = Tabs(bar_frame, variant='bar')
-bar_tabs.add_tab(text='Home', value='home', icon='house')
-bar_tabs.add_tab(text='Files', value='files', icon='folder2')
-bar_tabs.add_tab(text='Settings', value='settings', icon='gear')
+bar_tabs.add(text='Home', value='home', icon='house')
+bar_tabs.add(text='Files', value='files', icon='folder2')
+bar_tabs.add(text='Settings', value='settings', icon='gear')
 bar_tabs.pack(anchor='w')
 
 # Pill variant
@@ -31,8 +31,8 @@ pill_frame = ttk.Frame(variants_frame)
 pill_frame.pack(side='left')
 ttk.Label(pill_frame, text="Pill:").pack(anchor='w')
 pill_tabs = Tabs(pill_frame, variant='pill')
-pill_tabs.add_tab(text='Dashboard', value='dashboard')
-pill_tabs.add_tab(text='Projects', value='projects')
+pill_tabs.add(text='Dashboard', value='dashboard')
+pill_tabs.add(text='Projects', value='projects')
 pill_tabs.pack(anchor='w')
 
 # --- Tabs with enable_adding ---
@@ -44,9 +44,9 @@ tab_counter = [0]  # Use list to allow modification in closure
 def on_add_tab(event):
     tab_counter[0] += 1
     value = f'Document {tab_counter[0] + 1}'
-    adding_tabs.add_tab(text=f'Document {tab_counter[0] + 1}', icon='file-text', value=value)
+    adding_tabs.add(text=f'Document {tab_counter[0] + 1}', icon='file-text', value=value)
 
-adding_tabs.add_tab(text='Document 1', value='initial', icon='file-text')
+adding_tabs.add(text='Document 1', value='initial', icon='file-text')
 adding_tabs.on_tab_added(on_add_tab)
 adding_tabs.pack(anchor='w', padx=8, fill='x')
 
@@ -54,9 +54,9 @@ adding_tabs.pack(anchor='w', padx=8, fill='x')
 ttk.Label(app, text="Stretch tabs (tab_width='stretch'):", font='heading').pack(anchor='w', padx=8, pady=(16, 4))
 
 stretch_tabs = Tabs(app, tab_width='stretch')
-stretch_tabs.add_tab(text='First', value='first')
-stretch_tabs.add_tab(text='Second', value='second')
-stretch_tabs.add_tab(text='Third', value='third')
+stretch_tabs.add(text='First', value='first')
+stretch_tabs.add(text='Second', value='second')
+stretch_tabs.add(text='Third', value='third')
 stretch_tabs.pack(anchor='w', padx=8, fill='x')
 
 # =============================================================================
