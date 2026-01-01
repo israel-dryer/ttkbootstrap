@@ -186,11 +186,6 @@ class Calendar(ttk.Frame):
 
         Returns:
             The selected date, or None if no date is selected.
-
-        Example:
-            >>> cal = Calendar(app, value=date(2025, 1, 15))
-            >>> cal.get()
-            datetime.date(2025, 1, 15)
         """
         return self._selected_date
 
@@ -203,11 +198,6 @@ class Calendar(ttk.Frame):
         Args:
             value: The date to select. Accepts date, datetime, ISO string,
                 or None to clear selection.
-
-        Example:
-            >>> cal = Calendar(app)
-            >>> cal.set(date(2025, 6, 15))
-            >>> cal.set("2025-06-15")
         """
         new_date = self._coerce_date(value)
         if new_date is None:
@@ -228,11 +218,6 @@ class Calendar(ttk.Frame):
         """The currently selected date.
 
         This property provides convenient access to ``get()`` and ``set()``.
-
-        Example:
-            >>> cal.value = date(2025, 1, 15)
-            >>> print(cal.value)
-            2025-01-15
         """
         return self.get()
 
@@ -248,11 +233,6 @@ class Calendar(ttk.Frame):
             A tuple of (start, end) dates. If only a start is selected
             (range in progress), end will be None. If no selection,
             both may be None.
-
-        Example:
-            >>> cal = Calendar(app, selection_mode='range')
-            >>> cal.get_range()
-            (datetime.date(2025, 1, 10), datetime.date(2025, 1, 20))
         """
         return (self._range_start, self._range_end)
 
@@ -272,11 +252,6 @@ class Calendar(ttk.Frame):
         Args:
             start: The range start date. Accepts date, datetime, ISO string.
             end: The range end date. If None, sets a range-in-progress.
-
-        Example:
-            >>> cal = Calendar(app, selection_mode='range')
-            >>> cal.set_range(date(2025, 1, 10), date(2025, 1, 20))
-            >>> cal.set_range("2025-01-10", "2025-01-20")
         """
         s, e = self._normalize_range(start, end)
         self._range_start = s
@@ -294,11 +269,6 @@ class Calendar(ttk.Frame):
 
         This property provides convenient access to ``get_range()`` and
         ``set_range()``.
-
-        Example:
-            >>> cal.range = (date(2025, 1, 10), date(2025, 1, 20))
-            >>> print(cal.range)
-            (datetime.date(2025, 1, 10), datetime.date(2025, 1, 20))
         """
         return self.get_range()
 
