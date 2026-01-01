@@ -1,0 +1,875 @@
+# Bulgarian translations for ttkbootstrap
+# Copyright (C) 2024 Israel Dryer
+# This file is distributed under the same license as the ttkbootstrap project.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: ttkbootstrap\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2024-01-01 12:00+0000\n"
+"PO-Revision-Date: 2024-12-12 12:00+0000\n"
+"Last-Translator: \n"
+"Language: bg\n"
+"Language-Team: Bulgarian\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Manual creation\n"
+
+# ============================================================================
+# Common Buttons
+# ============================================================================
+
+msgid "button.ok"
+msgstr "ОК"
+
+msgid "button.cancel"
+msgstr "Отказ"
+
+msgid "button.yes"
+msgstr "Да"
+
+msgid "button.no"
+msgstr "Не"
+
+msgid "button.retry"
+msgstr "Опитай отново"
+
+msgid "button.delete"
+msgstr "Изтрий"
+
+msgid "button.next"
+msgstr "Напред"
+
+msgid "button.previous"
+msgstr "Назад"
+
+msgid "button.prev"
+msgstr "Назад"
+
+msgid "button.open"
+msgstr "Отвори"
+
+msgid "button.close"
+msgstr "Затвори"
+
+msgid "button.add"
+msgstr "Добави"
+
+msgid "button.remove"
+msgstr "Премахни"
+
+msgid "button.submit"
+msgstr "Изпрати"
+
+msgid "button.save"
+msgstr "Запази"
+
+msgid "button.apply"
+msgstr "Приложи"
+
+# ============================================================================
+# Font Dialog
+# ============================================================================
+
+msgid "font.family"
+msgstr "Семейство"
+
+msgid "font.weight"
+msgstr "Тежест"
+
+msgid "font.slant"
+msgstr "Наклон"
+
+msgid "font.effects"
+msgstr "Ефекти"
+
+msgid "font.preview"
+msgstr "Преглед"
+
+msgid "font.size"
+msgstr "Размер"
+
+msgid "font.selector"
+msgstr "Избор на шрифт"
+
+msgid "font.preview_text"
+msgstr "Бързата кафява лисица скача над мързеливото куче."
+
+msgid "font.weight.normal"
+msgstr "Нормален"
+
+msgid "font.weight.bold"
+msgstr "Удебелен"
+
+msgid "font.slant.roman"
+msgstr "Прав"
+
+msgid "font.slant.italic"
+msgstr "Курсив"
+
+msgid "font.effects.underline"
+msgstr "Подчертан"
+
+msgid "font.effects.overstrike"
+msgstr "Зачертан"
+
+# ============================================================================
+# Color Chooser
+# ============================================================================
+
+msgid "color.chooser"
+msgstr "Избор на цвят"
+
+msgid "color.advanced"
+msgstr "Разширени"
+
+msgid "color.themed"
+msgstr "Тематични"
+
+msgid "color.standard"
+msgstr "Стандартни"
+
+msgid "color.current"
+msgstr "Текущ"
+
+msgid "color.new"
+msgstr "Нов"
+
+msgid "color.hue"
+msgstr "Нюанс"
+
+msgid "color.sat"
+msgstr "Наситеност"
+
+msgid "color.lum"
+msgstr "Яркост"
+
+msgid "color.hex"
+msgstr "Hex"
+
+msgid "color.red"
+msgstr "Червено"
+
+msgid "color.green"
+msgstr "Зелено"
+
+msgid "color.blue"
+msgstr "Синьо"
+
+msgid "color.dropper"
+msgstr "пипета за цвят"
+
+# Color value labels (with colon suffix for label display)
+msgid "color.hue:"
+msgstr "Нюанс:"
+
+msgid "color.sat:"
+msgstr "Наситеност:"
+
+msgid "color.lum:"
+msgstr "Яркост:"
+
+msgid "color.hex:"
+msgstr "Hex:"
+
+msgid "color.red:"
+msgstr "Червено:"
+
+msgid "color.green:"
+msgstr "Зелено:"
+
+msgid "color.blue:"
+msgstr "Синьо:"
+
+# ============================================================================
+# Calendar
+# ============================================================================
+
+msgid "day.mo"
+msgstr "Пн"
+
+msgid "day.tu"
+msgstr "Вт"
+
+msgid "day.we"
+msgstr "Ср"
+
+msgid "day.th"
+msgstr "Чт"
+
+msgid "day.fr"
+msgstr "Пт"
+
+msgid "day.sa"
+msgstr "Сб"
+
+msgid "day.su"
+msgstr "Нд"
+
+msgid "month.january"
+msgstr "Януари"
+
+msgid "month.february"
+msgstr "Февруари"
+
+msgid "month.march"
+msgstr "Март"
+
+msgid "month.april"
+msgstr "Април"
+
+msgid "month.may"
+msgstr "Май"
+
+msgid "month.june"
+msgstr "Юни"
+
+msgid "month.july"
+msgstr "Юли"
+
+msgid "month.august"
+msgstr "Август"
+
+msgid "month.september"
+msgstr "Септември"
+
+msgid "month.october"
+msgstr "Октомври"
+
+msgid "month.november"
+msgstr "Ноември"
+
+msgid "month.december"
+msgstr "Декември"
+
+# ============================================================================
+# Validation Messages
+# ============================================================================
+
+msgid "validation.should_be_type"
+msgstr "Трябва да бъде от тип данни"
+
+msgid "validation.invalid_type"
+msgstr "Невалиден тип данни"
+
+msgid "validation.greater_than"
+msgstr "Числото не може да бъде по-голямо от"
+
+msgid "validation.less_than"
+msgstr "Числото не може да бъде по-малко от"
+
+msgid "validation.out_of_range"
+msgstr "Извън диапазона"
+
+msgid "validation.select_item"
+msgstr "Изберете елемент от списъка"
+
+# ============================================================================
+# Table View
+# ============================================================================
+
+msgid "table.search"
+msgstr "Търсене"
+
+msgid "table.page"
+msgstr "Страница"
+
+msgid "table.of"
+msgstr "от"
+
+msgid "table.reset"
+msgstr "Нулирай таблицата"
+
+msgid "table.columns"
+msgstr "Колони"
+
+msgid "table.move"
+msgstr "Премести"
+
+msgid "table.align"
+msgstr "Подравни"
+
+msgid "table.hide_column"
+msgstr "Скрий колона"
+
+msgid "table.delete_column"
+msgstr "Изтрий колона"
+
+msgid "table.show_all"
+msgstr "Покажи всички"
+
+msgid "table.move_left"
+msgstr "Премести наляво"
+
+msgid "table.move_right"
+msgstr "Премести надясно"
+
+msgid "table.move_first"
+msgstr "Премести на първо място"
+
+msgid "table.move_last"
+msgstr "Премести на последно място"
+
+msgid "table.add_record"
+msgstr "Добави запис"
+
+msgid "table.edit"
+msgstr "Редактирай"
+
+msgid "table.delete_row"
+msgstr "Изтрий реда"
+
+msgid "table.group_by_column"
+msgstr "Групирай по тази колона"
+
+msgid "table.ungroup_all"
+msgstr "Премахни всички групирания"
+
+msgid "table.clear_sort"
+msgstr "Премахни сортиране"
+
+msgid "table.align_left"
+msgstr "Подравни вляво"
+
+msgid "table.align_center"
+msgstr "Подравни в центъра"
+
+msgid "table.align_right"
+msgstr "Подравни вдясно"
+
+msgid "table.sort"
+msgstr "Сортирай"
+
+msgid "table.filter"
+msgstr "Филтър"
+
+msgid "table.export"
+msgstr "Експортирай"
+
+msgid "table.delete_selected"
+msgstr "Изтрий избраните редове"
+
+msgid "table.sort_asc"
+msgstr "Сортиране във възходящ ред"
+
+msgid "table.sort_desc"
+msgstr "Сортиране в низходящ ред"
+
+msgid "table.clear_filters"
+msgstr "Премахни филтрите"
+
+msgid "table.filter_by_value"
+msgstr "Филтрирай по стойността на клетката"
+
+msgid "table.hide_select"
+msgstr "Скрий избраните редове"
+
+msgid "table.show_select"
+msgstr "Покажи само избраните редове"
+
+msgid "table.export_all"
+msgstr "Експортирай всички записи"
+
+msgid "table.export_page"
+msgstr "Експортирай текущата страница"
+
+msgid "table.export_selection"
+msgstr "Експортирай текущата селекция"
+
+msgid "table.export_filter"
+msgstr "Експортирай филтрираните записи"
+
+msgid "table.sort_status"
+msgstr "Сортиране: %s"
+
+msgid "table.filter_status"
+msgstr "Филтър: %s"
+
+msgid "table.group_status"
+msgstr "Група: %s"
+
+msgid "table.filter_column"
+msgstr "Филтър: %s"
+
+msgid "table.empty"
+msgstr "(празно)"
+
+msgid "table.search_mode_equals"
+msgstr "Равно на"
+
+msgid "table.search_mode_contains"
+msgstr "Съдържа"
+
+msgid "table.search_mode_starts_with"
+msgstr "Започва с"
+
+msgid "table.search_mode_ends_with"
+msgstr "Завършва с"
+
+msgid "table.search_mode_sql"
+msgstr "SQL"
+
+msgid "table.move_up"
+msgstr "Премести нагоре"
+
+msgid "table.move_down"
+msgstr "Премести надолу"
+
+msgid "table.move_top"
+msgstr "Премести най-горе"
+
+msgid "table.move_bottom"
+msgstr "Премести най-долу"
+
+# ============================================================================
+# Days of Week (abbreviated)
+# ============================================================================
+
+msgid "day.mo"
+msgstr "Пн"
+
+msgid "day.tu"
+msgstr "Вт"
+
+msgid "day.we"
+msgstr "Ср"
+
+msgid "day.th"
+msgstr "Чт"
+
+msgid "day.fr"
+msgstr "Пт"
+
+msgid "day.sa"
+msgstr "Сб"
+
+msgid "day.su"
+msgstr "Нд"
+
+# ============================================================================
+# Common Dialog Messages
+# ============================================================================
+
+msgid "dialog.error"
+msgstr "Грешка"
+
+msgid "dialog.warning"
+msgstr "Предупреждение"
+
+msgid "dialog.info"
+msgstr "Информация"
+
+msgid "dialog.question"
+msgstr "Въпрос"
+
+msgid "dialog.confirm"
+msgstr "Потвърди"
+
+# ============================================================================
+# File Operations
+# ============================================================================
+
+msgid "file.new"
+msgstr "Нов"
+
+msgid "file.open"
+msgstr "Отвори"
+
+msgid "file.save"
+msgstr "Запази"
+
+msgid "file.save_as"
+msgstr "Запази като"
+
+msgid "file.close"
+msgstr "Затвори"
+
+msgid "file.exit"
+msgstr "Изход"
+
+# ============================================================================
+# Edit Operations
+# ============================================================================
+
+msgid "edit.cut"
+msgstr "Изрязване"
+
+msgid "edit.copy"
+msgstr "Копиране"
+
+msgid "edit.paste"
+msgstr "Поставяне"
+
+msgid "edit.undo"
+msgstr "Отмяна"
+
+msgid "edit.redo"
+msgstr "Повтори"
+
+msgid "edit.select_all"
+msgstr "Избиране на всичко"
+
+# ============================================================================
+# Help
+# ============================================================================
+
+msgid "help.about"
+msgstr "За програмата"
+
+msgid "help.help"
+msgstr "Помощ"
+
+msgid "help.documentation"
+msgstr "Документация"
+
+# ============================================================================
+# LEGACY MAPPINGS FOR BACKWARDS COMPATIBILITY
+# English text as msgid -> Bulgarian text as msgstr
+# This allows both semantic keys (button.ok) and legacy text ("OK") to work
+# ============================================================================
+
+# Common buttons (legacy)
+msgid "OK"
+msgstr "ОК"
+
+msgid "Ok"
+msgstr "Ок"
+
+msgid "Cancel"
+msgstr "Отказ"
+
+msgid "Yes"
+msgstr "Да"
+
+msgid "No"
+msgstr "Не"
+
+msgid "Retry"
+msgstr "Опитай отново"
+
+msgid "Delete"
+msgstr "Изтрий"
+
+msgid "Next"
+msgstr "Напред"
+
+msgid "Previous"
+msgstr "Назад"
+
+msgid "Prev"
+msgstr "Назад"
+
+msgid "Open"
+msgstr "Отвори"
+
+msgid "Close"
+msgstr "Затвори"
+
+msgid "Add"
+msgstr "Добави"
+
+msgid "Remove"
+msgstr "Премахни"
+
+msgid "Submit"
+msgstr "Изпрати"
+
+msgid "Save"
+msgstr "Запази"
+
+msgid "Apply"
+msgstr "Приложи"
+
+# Font dialog (legacy)
+msgid "Family"
+msgstr "Семейство"
+
+msgid "Weight"
+msgstr "Тежест"
+
+msgid "Slant"
+msgstr "Наклон"
+
+msgid "Effects"
+msgstr "Ефекти"
+
+msgid "Preview"
+msgstr "Преглед"
+
+msgid "Size"
+msgstr "Размер"
+
+msgid "Font Selector"
+msgstr "Избор на шрифт"
+
+msgid "The quick brown fox jumps over the lazy dog."
+msgstr "Бързата кафява лисица скача над мързеливото куче."
+
+# Color chooser (legacy)
+msgid "Color Chooser"
+msgstr "Избор на цвят"
+
+msgid "Advanced"
+msgstr "Разширени"
+
+msgid "Themed"
+msgstr "Тематични"
+
+msgid "Standard"
+msgstr "Стандартни"
+
+msgid "Current"
+msgstr "Текущ"
+
+msgid "New"
+msgstr "Нов"
+
+msgid "Hue"
+msgstr "Нюанс"
+
+msgid "Sat"
+msgstr "Наситеност"
+
+msgid "Lum"
+msgstr "Яркост"
+
+msgid "Hex"
+msgstr "Hex"
+
+msgid "Red"
+msgstr "Червено"
+
+msgid "Green"
+msgstr "Зелено"
+
+msgid "Blue"
+msgstr "Синьо"
+
+msgid "color dropper"
+msgstr "пипета за цвят"
+
+# Color labels with colons (legacy - for backwards compatibility)
+msgid "Hue:"
+msgstr "Нюанс:"
+
+msgid "Sat:"
+msgstr "Наситеност:"
+
+msgid "Lum:"
+msgstr "Яркост:"
+
+msgid "Hex:"
+msgstr "Hex:"
+
+msgid "Red:"
+msgstr "Червено:"
+
+msgid "Green:"
+msgstr "Зелено:"
+
+msgid "Blue:"
+msgstr "Синьо:"
+
+# Validation (legacy)
+msgid "Should be of data type"
+msgstr "Трябва да бъде от тип данни"
+
+msgid "Invalid data type"
+msgstr "Невалиден тип данни"
+
+msgid "Number cannot be greater than"
+msgstr "Числото не може да бъде по-голямо от"
+
+msgid "Number cannot be less than"
+msgstr "Числото не може да бъде по-малко от"
+
+msgid "Out of range"
+msgstr "Извън диапазона"
+
+msgid "Select an item from the list"
+msgstr "Изберете елемент от списъка"
+
+# Table view (legacy)
+msgid "Search"
+msgstr "Търсене"
+
+msgid "Page"
+msgstr "Страница"
+
+msgid "of"
+msgstr "от"
+
+msgid "Reset table"
+msgstr "Нулирай таблицата"
+
+msgid "Columns"
+msgstr "Колони"
+
+msgid "Move"
+msgstr "Премести"
+
+msgid "Align"
+msgstr "Подравни"
+
+msgid "Hide column"
+msgstr "Скрий колона"
+
+msgid "Delete column"
+msgstr "Изтрий колона"
+
+msgid "Show All"
+msgstr "Покажи всички"
+
+msgid "Move to left"
+msgstr "Премести наляво"
+
+msgid "Move to right"
+msgstr "Премести надясно"
+
+msgid "Move to first"
+msgstr "Премести на първо място"
+
+msgid "Move to last"
+msgstr "Премести на последно място"
+
+msgid "Align left"
+msgstr "Подравни вляво"
+
+msgid "Align center"
+msgstr "Подравни в центъра"
+
+msgid "Align right"
+msgstr "Подравни вдясно"
+
+msgid "Sort"
+msgstr "Сортирай"
+
+msgid "Filter"
+msgstr "Филтър"
+
+msgid "Export"
+msgstr "Експортирай"
+
+msgid "Delete selected rows"
+msgstr "Изтрий избраните редове"
+
+msgid "Sort Ascending"
+msgstr "Сортирай възходящо"
+
+msgid "Sort Descending"
+msgstr "Сортирай низходящо"
+
+msgid "Clear filters"
+msgstr "Премахни филтрите"
+
+msgid "Filter by cell's value"
+msgstr "Филтрирай по стойността на клетката"
+
+msgid "Hide select rows"
+msgstr "Скрий избраните редове"
+
+msgid "Show only select rows"
+msgstr "Покажи само избраните редове"
+
+msgid "Export all records"
+msgstr "Експортирай всички записи"
+
+msgid "Export current page"
+msgstr "Експортирай текущата страница"
+
+msgid "Export current selection"
+msgstr "Експортирай текущата селекция"
+
+msgid "Export records in filter"
+msgstr "Експортирай филтрираните записи"
+
+msgid "Move up"
+msgstr "Премести нагоре"
+
+msgid "Move down"
+msgstr "Премести надолу"
+
+msgid "Move to top"
+msgstr "Премести най-горе"
+
+msgid "Move to bottom"
+msgstr "Премести най-долу"
+
+# Days of week (legacy)
+msgid "Mo"
+msgstr "Пн"
+
+msgid "Tu"
+msgstr "Вт"
+
+msgid "We"
+msgstr "Ср"
+
+msgid "Th"
+msgstr "Чт"
+
+msgid "Fr"
+msgstr "Пт"
+
+msgid "Sa"
+msgstr "Сб"
+
+msgid "Su"
+msgstr "Нд"
+
+# Dialogs (legacy)
+msgid "Error"
+msgstr "Грешка"
+
+msgid "Warning"
+msgstr "Предупреждение"
+
+msgid "Information"
+msgstr "Информация"
+
+msgid "Question"
+msgstr "Въпрос"
+
+msgid "Confirm"
+msgstr "Потвърди"
+
+# File operations (legacy)
+msgid "New"
+msgstr "Нов"
+
+msgid "Save As"
+msgstr "Запази като"
+
+msgid "Exit"
+msgstr "Изход"
+
+# Edit operations (legacy)
+msgid "Cut"
+msgstr "Изрязване"
+
+msgid "Copy"
+msgstr "Копиране"
+
+msgid "Paste"
+msgstr "Поставяне"
+
+msgid "Undo"
+msgstr "Отмяна"
+
+msgid "Redo"
+msgstr "Повтори"
+
+msgid "Select All"
+msgstr "Избери всички"
+
+# Help (legacy)
+msgid "About"
+msgstr "За програмата"
+
+msgid "Help"
+msgstr "Помощ"
+
+msgid "Documentation"
+msgstr "Документация"
