@@ -108,6 +108,8 @@ Widgets are organized by **intent**, not by underlying Tk class:
 
 - **Layout** — structural containers and layout helpers
 
+- **Navigation** — tab bars, side navigation, and navigation controls
+
 - **Views** — navigational and content-switching components
 
 - **Dialogs** — modal and transient interaction flows
