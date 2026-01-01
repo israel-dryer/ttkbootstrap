@@ -76,8 +76,39 @@ class Calendar(ttk.Frame):
     and min/max bounds. Displays one month in single mode or two months
     in range mode.
 
-    !!! note "Events"
-        - ``<<DateSelect>>``: Fired on selection. ``event.data = {'date': date, 'range': tuple[date, date | None]}``
+    ## Value API
+
+    **Single selection (default):**
+
+    - ``get()`` / ``set(value)`` — get or set the selected date
+    - ``.value`` property — convenient access to get/set
+
+    **Range selection** (``selection_mode='range'``):
+
+    - ``get_range()`` / ``set_range(start, end)`` — get or set the date range
+    - ``.range`` property — convenient access to get_range/set_range
+
+    Programmatic updates via ``set()`` and ``set_range()`` do NOT emit
+    ``<<DateSelect>>``. User interactions still emit the event.
+
+    ## Events
+
+    - ``<<DateSelect>>``: Fired on user selection.
+      ``event.data = {'date': date, 'range': tuple[date, date | None]}``
+
+    ## Example
+
+    ```python
+    # Single mode
+    cal = Calendar(app)
+    cal.value = date(2025, 6, 15)
+    print(cal.get())  # datetime.date(2025, 6, 15)
+
+    # Range mode
+    cal = Calendar(app, selection_mode='range')
+    cal.set_range(date(2025, 1, 10), date(2025, 1, 20))
+    start, end = cal.get_range()
+    ```
     """
 
     def __init__(
@@ -167,19 +198,150 @@ class Calendar(ttk.Frame):
         self.bind("<<LocaleChanged>>", lambda *_: self._refresh_calendar(), add="+")
 
     # --- public API --------------------------------------------------
-    @configure_delegate("date")
-    def _delegate_date(self, value: date | datetime | str | None = None) -> Optional[date]:
-        """Get or set the current selected date."""
-        if value is None:
-            return self._selected_date
-        new_date = self._coerce_date(value) or date.today()
+
+    # Value API (v2 standard) -----------------------------------------
+    def get(self) -> date | None:
+        """Return the currently selected date.
+
+        Returns:
+            The selected date, or None if no date is selected.
+
+        Example:
+            >>> cal = Calendar(app)
+            >>> cal.get()
+            datetime.date(2025, 1, 15)
+        """
+        return self._selected_date
+
+    def set(self, value: date | datetime | str | None) -> None:
+        """Set the selected date programmatically.
+
+        This method does NOT emit ``<<DateSelect>>``. Use for programmatic
+        updates when you don't want to trigger event handlers.
+
+        Args:
+            value: The date to select. Accepts date, datetime, ISO string,
+                or None to clear selection.
+
+        Example:
+            >>> cal = Calendar(app)
+            >>> cal.set(date(2025, 6, 15))
+            >>> cal.set("2025-06-15")
+        """
+        new_date = self._coerce_date(value)
+        if new_date is None:
+            return
         self._selected_date = new_date
-        self._range_start = new_date
-        self._range_end = None
+        if self._selection_mode == "single":
+            self._range_start = new_date
+            self._range_end = None
+        else:
+            # In range mode, set() sets the start of a new range
+            self._range_start = new_date
+            self._range_end = None
         self._display_date = date(new_date.year, new_date.month, 1)
         self._refresh_calendar()
+
+    @property
+    def value(self) -> date | None:
+        """The currently selected date.
+
+        This property provides convenient access to ``get()`` and ``set()``.
+
+        Example:
+            >>> cal.value = date(2025, 1, 15)
+            >>> print(cal.value)
+            2025-01-15
+        """
+        return self.get()
+
+    @value.setter
+    def value(self, val: date | datetime | str | None) -> None:
+        self.set(val)
+
+    # Range API -------------------------------------------------------
+    def get_range(self) -> tuple[date | None, date | None]:
+        """Return the selected date range.
+
+        Returns:
+            A tuple of (start, end) dates. If only a start is selected
+            (range in progress), end will be None. If no selection,
+            both may be None.
+
+        Example:
+            >>> cal = Calendar(app, selection_mode='range')
+            >>> cal.get_range()
+            (datetime.date(2025, 1, 10), datetime.date(2025, 1, 20))
+        """
+        return (self._range_start, self._range_end)
+
+    def set_range(
+        self,
+        start: date | datetime | str | None,
+        end: date | datetime | str | None = None,
+    ) -> None:
+        """Set the selected date range programmatically.
+
+        This method does NOT emit ``<<DateSelect>>``. Use for programmatic
+        updates when you don't want to trigger event handlers.
+
+        If both start and end are provided and end < start, they are
+        automatically normalized (swapped) to ensure start <= end.
+
+        Args:
+            start: The range start date. Accepts date, datetime, ISO string.
+            end: The range end date. If None, sets a range-in-progress.
+
+        Example:
+            >>> cal = Calendar(app, selection_mode='range')
+            >>> cal.set_range(date(2025, 1, 10), date(2025, 1, 20))
+            >>> cal.set_range("2025-01-10", "2025-01-20")
+        """
+        s, e = self._normalize_range(start, end)
+        self._range_start = s
+        self._range_end = e
+        # Update selected_date to the end if complete, else start
+        self._selected_date = e if e else (s if s else self._selected_date)
+        # Navigate display to show the range
+        if s:
+            self._display_date = date(s.year, s.month, 1)
+        self._refresh_calendar()
+
+    @property
+    def range(self) -> tuple[date | None, date | None]:
+        """The selected date range as (start, end).
+
+        This property provides convenient access to ``get_range()`` and
+        ``set_range()``.
+
+        Example:
+            >>> cal.range = (date(2025, 1, 10), date(2025, 1, 20))
+            >>> print(cal.range)
+            (datetime.date(2025, 1, 10), datetime.date(2025, 1, 20))
+        """
+        return self.get_range()
+
+    @range.setter
+    def range(self, val: tuple[date | datetime | str | None, date | datetime | str | None]) -> None:
+        if val is None:
+            self.set_range(None, None)
+        elif isinstance(val, (list, tuple)) and len(val) >= 2:
+            self.set_range(val[0], val[1])
+        elif isinstance(val, (list, tuple)) and len(val) == 1:
+            self.set_range(val[0], None)
+        else:
+            self.set_range(val, None)
+
+    # Legacy delegate (for configure() compatibility) -----------------
+    @configure_delegate("date")
+    def _delegate_date(self, value: date | datetime | str | None = None) -> Optional[date]:
+        """Get or set the current selected date via configure()."""
+        if value is None:
+            return self._selected_date
+        self.set(value)
         return None
 
+    # Event binding ---------------------------------------------------
     def on_date_selected(self, callback: Callable) -> str:
         """Bind to ``<<DateSelect>>``. Callback receives ``event.data = {'date': date, 'range': tuple[date, date | None]}``."""
         return self.bind("<<DateSelect>>", callback, add=True)
@@ -746,6 +908,18 @@ class Calendar(ttk.Frame):
             except Exception:
                 return None
         return None
+
+    def _normalize_range(
+        self,
+        start: date | datetime | str | None,
+        end: date | datetime | str | None = None,
+    ) -> tuple[date | None, date | None]:
+        """Normalize a date range, ensuring start <= end if both are present."""
+        s = self._coerce_date(start)
+        e = self._coerce_date(end)
+        if s is not None and e is not None and e < s:
+            s, e = e, s
+        return (s, e)
 
 
 __all__ = ["Calendar"]

@@ -117,7 +117,40 @@ Calendar also uses internal style names for day/range rendering (e.g. `*-calenda
 
 ## Examples and patterns
 
-### How the value works
+### Value API
+
+Calendar provides a standard `get()/set()/.value` API for accessing and modifying the selected date.
+
+**Single mode:**
+
+```python
+# Get the selected date
+selected = cal.get()        # datetime.date or None
+selected = cal.value        # same thing
+
+# Set the selected date programmatically
+cal.set(date(2025, 6, 15))
+cal.set("2025-06-15")       # ISO string also works
+cal.value = date(2025, 6, 15)
+```
+
+**Range mode:**
+
+```python
+# Get the selected range
+start, end = cal.get_range()  # (date|None, date|None)
+start, end = cal.range        # same thing
+
+# Set the range programmatically
+cal.set_range(date(2025, 1, 10), date(2025, 1, 20))
+cal.set_range("2025-01-10", "2025-01-20")  # ISO strings work
+cal.range = (date(2025, 1, 10), date(2025, 1, 20))
+```
+
+!!! note "Programmatic vs User Updates"
+    `set()` and `set_range()` do **not** emit `<<DateSelect>>`. This follows the standard Tk pattern where programmatic updates don't trigger events. User interactions still emit the event.
+
+### How selection works
 
 Calendar maintains:
 
