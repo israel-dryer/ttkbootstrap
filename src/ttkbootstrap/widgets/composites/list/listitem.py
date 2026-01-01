@@ -153,7 +153,7 @@ class ListItem(CompositeFrame):
 
         # Bind to composite invoke for selection and/or focus handling
         if self._select_on_click or self._focusable:
-            self.on_invoke(self._on_click)
+            self.on_invoked(self._on_click)
 
         # Focus event handling (notify ListView of focus changes)
         if self._focusable:

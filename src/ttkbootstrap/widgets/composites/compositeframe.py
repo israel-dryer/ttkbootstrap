@@ -60,7 +60,7 @@ class Composite:
 
         # auto-toggle selection on click if enabled
         if select_on_click:
-            self.on_invoke(lambda e: self.set_selected(not self._selected))
+            self.on_invoked(lambda e: self.set_selected(not self._selected))
 
     @property
     def selected(self):
