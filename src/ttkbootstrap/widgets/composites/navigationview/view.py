@@ -174,8 +174,8 @@ class NavigationView(Frame):
         # Scrollable content area (vertical only, scrollbar on hover)
         self._content_scroll = ScrollView(
             self._pane_frame,
-            direction='vertical',
-            show_scrollbar='on-hover',
+            scroll_direction='vertical',
+            scrollbar_visibility='hover',
         )
         self._content_scroll.pack(fill='both', expand=True)
         self._content_frame = self._content_scroll.add()

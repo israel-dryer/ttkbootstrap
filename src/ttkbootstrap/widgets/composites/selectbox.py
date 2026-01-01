@@ -181,8 +181,8 @@ class SelectBox(Field):
         # Create scrollview inside the outer frame
         scrollview = ScrollView(
             outer_frame,
-            direction='vertical',
-            show_scrollbar='always',
+            scroll_direction='vertical',
+            scrollbar_visibility='always',
         )
         scrollview.pack(fill='both', expand=True)
 

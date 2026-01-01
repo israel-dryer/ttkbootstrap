@@ -63,7 +63,7 @@ Common presentation options:
 
 - `show_separator=True`
 
-- `show_scrollbar=True`
+- `scrollbar_visibility='always'`
 
 ```python
 lv = ListView(
@@ -71,7 +71,7 @@ lv = ListView(
     items=data,
     striped=True,
     show_separator=True,
-    show_scrollbar=False,  # mousewheel only
+    scrollbar_visibility='never',  # mousewheel only
 )
 ```
 

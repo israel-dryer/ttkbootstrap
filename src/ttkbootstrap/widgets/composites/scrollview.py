@@ -26,9 +26,9 @@ class ScrollView(Frame):
     def __init__(
             self,
             master: Master = None,
-            direction: Literal['horizontal', 'vertical', 'both'] = 'both',
-            show_scrollbar: Literal['always', 'never', 'on-hover', 'on-scroll'] = 'always',
-            autohide_delay: int = 1000,  # milliseconds for on-scroll mode
+            scroll_direction: Literal['horizontal', 'vertical', 'both'] = 'both',
+            scrollbar_visibility: Literal['always', 'never', 'hover', 'scroll'] = 'always',
+            autohide_delay: int = 1000,  # milliseconds for scroll mode
             scrollbar_variant: str = 'default',
             **kwargs: Any
     ):
@@ -36,16 +36,16 @@ class ScrollView(Frame):
 
         Args:
             master: The parent widget.
-            direction: Scroll direction - 'horizontal' for horizontal only,
+            scroll_direction: Scroll direction - 'horizontal' for horizontal only,
                 'vertical' for vertical only, or 'both' for bidirectional
                 scrolling. Horizontal scrolling uses Shift+MouseWheel.
-            show_scrollbar: Scrollbar visibility mode:
+            scrollbar_visibility: Scrollbar visibility mode:
                 - 'always': Scrollbars always visible
                 - 'never': Scrollbars hidden (scrolling still works)
-                - 'on-hover': Scrollbars appear when mouse enters the widget
-                - 'on-scroll': Scrollbars appear when scrolling, auto-hide after delay
+                - 'hover': Scrollbars appear when mouse enters the widget
+                - 'scroll': Scrollbars appear when scrolling, auto-hide after delay
             autohide_delay: Time in milliseconds before auto-hiding scrollbars
-                in 'on-scroll' mode. Default is 1000ms (1 second).
+                in 'scroll' mode. Default is 1000ms (1 second).
             scrollbar_variant: The variant to apply to scrollbars (e.g., 'default',
                 'round'). If None, uses the default scrollbar variant.
             **kwargs: Additional keyword arguments passed to the Frame parent class.
@@ -58,8 +58,8 @@ class ScrollView(Frame):
         super().__init__(master, **kwargs)
 
         # configuration
-        self._direction = direction
-        self._show_scrollbar = show_scrollbar
+        self._direction = scroll_direction
+        self._scrollbar_visibility = scrollbar_visibility
         self._autohide_delay = autohide_delay
         self._scrollbar_variant = scrollbar_variant
 
@@ -102,9 +102,9 @@ class ScrollView(Frame):
 
         # Configure canvas scrolling
         scroll_config = {}
-        if direction in ('vertical', 'both'):
+        if scroll_direction in ('vertical', 'both'):
             scroll_config['yscrollcommand'] = self._on_canvas_scroll_y
-        if direction in ('horizontal', 'both'):
+        if scroll_direction in ('horizontal', 'both'):
             scroll_config['xscrollcommand'] = self._on_canvas_scroll_x
 
         self.canvas.configure(**scroll_config)
@@ -112,14 +112,14 @@ class ScrollView(Frame):
         # Layout
         self._layout_widgets()
 
-        # Bind events for autohide/on-hover
+        # Bind events for autohide/hover
         self._bind_container_events()
 
         # Initial scrollbar visibility
         self._update_scrollbar_visibility()
 
-    @configure_delegate('direction')
-    def _delegate_direction(self, value=None):
+    @configure_delegate('scroll_direction')
+    def _delegate_scroll_direction(self, value=None):
         if value is None:
             return self._direction
         else:
@@ -144,16 +144,16 @@ class ScrollView(Frame):
             self._update_scrollbar_visibility()
         return None
 
-    @configure_delegate('show_scrollbar')
-    def _delegate_show_scrollbar(self, value=None):
+    @configure_delegate('scrollbar_visibility')
+    def _delegate_scrollbar_visibility(self, value=None):
         if value is None:
-            return self._show_scrollbar
+            return self._scrollbar_visibility
         else:
-            old_value = self._show_scrollbar
-            self._show_scrollbar = value
+            old_value = self._scrollbar_visibility
+            self._scrollbar_visibility = value
 
-            # Unbind old events if changing from on-hover
-            if old_value == 'on-hover':
+            # Unbind old events if changing from hover
+            if old_value == 'hover':
                 self.unbind('<Enter>')
                 self.unbind('<Leave>')
                 self.canvas.unbind('<Enter>')
@@ -168,10 +168,10 @@ class ScrollView(Frame):
             self._update_scrollbar_visibility()
 
             # Update scrolling enabled state
-            if value in ('always', 'never', 'on-scroll'):
+            if value in ('always', 'never', 'scroll'):
                 if self._child_widget:
                     self.enable_scrolling()
-            elif value == 'on-hover':
+            elif value == 'hover':
                 # Scrolling will be enabled on hover
                 self.disable_scrolling()
         return None
@@ -224,17 +224,17 @@ class ScrollView(Frame):
         self.vertical_scrollbar.lift()
         self.horizontal_scrollbar.lift()
 
-        # Initially hide scrollbars based on show_scrollbar setting
-        if self._show_scrollbar == 'never':
+        # Initially hide scrollbars based on scrollbar_visibility setting
+        if self._scrollbar_visibility == 'never':
             self.vertical_scrollbar.grid_remove()
             self.horizontal_scrollbar.grid_remove()
-        elif self._show_scrollbar in ('on-hover', 'on-scroll'):
+        elif self._scrollbar_visibility in ('hover', 'scroll'):
             self.vertical_scrollbar.grid_remove()
             self.horizontal_scrollbar.grid_remove()
 
     def _bind_container_events(self):
         """Bind events for the container (enter/leave for autohide)."""
-        if self._show_scrollbar == 'on-hover':
+        if self._scrollbar_visibility == 'hover':
             self.bind('<Enter>', self._on_container_enter)
             self.bind('<Leave>', self._on_container_leave)
             self.canvas.bind('<Enter>', self._on_container_enter)
@@ -248,14 +248,14 @@ class ScrollView(Frame):
         """Handle mouse entering the container."""
         self._hovering = True
         self.enable_scrolling()
-        if self._show_scrollbar == 'on-hover':
+        if self._scrollbar_visibility == 'hover':
             self._show_scrollbars()
 
     def _on_container_leave(self, event):
         """Handle mouse leaving the container."""
         self._hovering = False
         self.disable_scrolling()
-        if self._show_scrollbar == 'on-hover':
+        if self._scrollbar_visibility == 'hover':
             self._hide_scrollbars()
 
     def _content_fits(self):
@@ -308,11 +308,11 @@ class ScrollView(Frame):
 
     def _update_scrollbar_visibility(self):
         """Update scrollbar visibility based on current mode."""
-        if self._show_scrollbar == 'always':
+        if self._scrollbar_visibility == 'always':
             self._show_scrollbars()
-        elif self._show_scrollbar == 'never':
+        elif self._scrollbar_visibility == 'never':
             self._hide_scrollbars()
-        elif self._show_scrollbar == 'on-hover':
+        elif self._scrollbar_visibility == 'hover':
             # Show only while hovering and overflowing
             x_fit, y_fit = self._content_fits()
             if self._hovering and self._direction in ('vertical', 'both') and not y_fit:
@@ -324,7 +324,7 @@ class ScrollView(Frame):
                 self.horizontal_scrollbar.grid()
             else:
                 self.horizontal_scrollbar.grid_remove()
-        elif self._show_scrollbar == 'on-scroll':
+        elif self._scrollbar_visibility == 'scroll':
             # Hide if no overflow; otherwise leave current visibility to scroll events
             x_fit, y_fit = self._content_fits()
             if y_fit:
@@ -353,8 +353,8 @@ class ScrollView(Frame):
             except:
                 pass  # If we can't check, allow scrolling
 
-        # Show scrollbar temporarily in on-scroll mode
-        if self._show_scrollbar == 'on-scroll':
+        # Show scrollbar temporarily in scroll mode
+        if self._scrollbar_visibility == 'scroll':
             self._show_scrollbars()
             if self._hide_timer:
                 self.after_cancel(self._hide_timer)
@@ -390,8 +390,8 @@ class ScrollView(Frame):
             except:
                 pass  # If we can't check, allow scrolling
 
-        # Show scrollbar temporarily in on-scroll mode
-        if self._show_scrollbar == 'on-scroll':
+        # Show scrollbar temporarily in scroll mode
+        if self._scrollbar_visibility == 'scroll':
             self._show_scrollbars()
             if self._hide_timer:
                 self.after_cancel(self._hide_timer)
@@ -517,10 +517,10 @@ class ScrollView(Frame):
         widget.bind('<Configure>', self._on_frame_configure)
 
         # Enable scrolling based on mode
-        if self._show_scrollbar in ('always', 'never', 'on-scroll'):
+        if self._scrollbar_visibility in ('always', 'never', 'scroll'):
             # Always enable scrolling for these modes
             self.enable_scrolling()
-        # For 'on-hover' mode, scrolling is enabled on enter
+        # For 'hover' mode, scrolling is enabled on enter
 
         # Initial scroll region update
         self.canvas.update_idletasks()

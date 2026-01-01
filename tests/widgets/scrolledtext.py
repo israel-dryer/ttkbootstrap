@@ -2,7 +2,7 @@
 Demo and test script for the ScrolledText widget.
 
 This script demonstrates various features and configurations of the ScrolledText widget:
-- Different scrollbar visibility modes (always, never, on-hover, on-scroll)
+- Different scrollbar visibility modes (always, never, hover, scroll)
 - Different scroll directions (vertical, horizontal, both)
 - Text insertion and manipulation
 - Custom scrollbar styling
@@ -54,7 +54,7 @@ def demo_always_show():
     st = ScrolledText(
         frame,
         height=15,
-        show_scrollbar='always',
+        scrollbar_visibility='always',
         scrollbar_style='primary'
     )
     st.pack(fill=BOTH, expand=YES, padx=10, pady=5)
@@ -76,7 +76,7 @@ def demo_never_show():
     st = ScrolledText(
         frame,
         height=15,
-        show_scrollbar='never'
+        scrollbar_visibility='never'
     )
     st.pack(fill=BOTH, expand=YES, padx=10, pady=5)
 
@@ -98,7 +98,7 @@ def demo_on_hover():
     st = ScrolledText(
         frame,
         height=15,
-        show_scrollbar='on-hover',
+        scrollbar_visibility='hover',
         scrollbar_style='success'
     )
     st.pack(fill=BOTH, expand=YES, padx=10, pady=5)
@@ -121,7 +121,7 @@ def demo_on_scroll():
     st = ScrolledText(
         frame,
         height=15,
-        show_scrollbar='on-scroll',
+        scrollbar_visibility='scroll',
         scrollbar_style='info',
         autohide_delay=1500
     )
@@ -145,8 +145,8 @@ def demo_horizontal():
     st = ScrolledText(
         frame,
         height=15,
-        direction='both',
-        show_scrollbar='always',
+        scroll_direction='both',
+        scrollbar_visibility='always',
         scrollbar_style='danger'
     )
     st.pack(fill=BOTH, expand=YES, padx=10, pady=5)
@@ -175,7 +175,7 @@ def demo_text_operations():
     st = ScrolledText(
         frame,
         height=15,
-        show_scrollbar='always',
+        scrollbar_visibility='always',
         scrollbar_style='success'
     )
     st.pack(fill=BOTH, expand=YES, padx=10, pady=5)
@@ -243,7 +243,7 @@ def demo_legacy_api():
     st1 = ScrolledText(
         frame,
         height=7,
-        autohide=True,  # Maps to show_scrollbar='on-hover'
+        autohide=True,  # Maps to scrollbar_visibility='hover'
         vbar=True,
         hbar=False
     )
@@ -259,7 +259,7 @@ def demo_legacy_api():
         frame,
         height=7,
         vbar=True,
-        hbar=True  # Maps to direction='both'
+        hbar=True  # Maps to scroll_direction='both'
     )
     st2.pack(fill=BOTH, expand=YES, padx=10, pady=5)
 
@@ -282,7 +282,7 @@ def demo_custom_styling():
     st = ScrolledText(
         frame,
         height=15,
-        show_scrollbar='always',
+        scrollbar_visibility='always',
         scrollbar_style='primary'
     )
     st.pack(fill=BOTH, expand=YES, padx=10, pady=5)
@@ -298,10 +298,10 @@ def demo_custom_styling():
     mode_var = ttk.StringVar(value='always')
 
     def change_mode():
-        st.configure(show_scrollbar=mode_var.get())
+        st.configure(scrollbar_visibility=mode_var.get())
 
     for text, value in [('Always', 'always'), ('Never', 'never'),
-                        ('On Hover', 'on-hover'), ('On Scroll', 'on-scroll')]:
+                        ('Hover', 'hover'), ('Scroll', 'scroll')]:
         ttk.RadioButton(
             config_frame,
             text=text,

@@ -155,7 +155,7 @@ def main():
         list_container,
         items=emails,
         selection_mode='single',
-        show_scrollbar=False,
+        scrollbar_visibility='never',
         alternating_row_mode='none',
     )
     email_list.pack(fill='both', expand=True)

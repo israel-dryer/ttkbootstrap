@@ -221,7 +221,7 @@ class NavigationViewGroup(Frame):
             popup_frame,
             items=items_data,
             selection_mode='single',
-            show_scrollbar=False,
+            scrollbar_visibility='never',
             show_separator=False,
         )
         listview.pack(fill='both', expand=True)

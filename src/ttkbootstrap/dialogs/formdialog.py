@@ -112,7 +112,7 @@ class FormDialog:
         # Use better default scrollview options - auto-hide when content fits
         default_scrollview_options = {
             # Keep the scrollbar visible to avoid width jumps when it appears/disappears
-            'show_scrollbar': 'always',
+            'scrollbar_visibility': 'always',
             'autohide_delay': 1000,
         }
         if scrollview_options:
@@ -220,7 +220,7 @@ class FormDialog:
 
         container = parent
         if self._scrollable:
-            self._scrollview = ScrollView(parent, direction='vertical', **self._scrollview_options)
+            self._scrollview = ScrollView(parent, scroll_direction='vertical', **self._scrollview_options)
             self._scrollview.grid(row=0, column=0, sticky="nsew")
             self._scrollview.enable_scrolling()
             # add a padding frame inside the scrollview so the form has margins

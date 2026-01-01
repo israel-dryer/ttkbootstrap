@@ -25,7 +25,7 @@ import ttkbootstrap as ttk
 
 app = ttk.App()
 
-st = ttk.ScrolledText(app, height=10, show_scrollbar="on-scroll")
+st = ttk.ScrolledText(app, height=10, scrollbar_visibility="scroll")
 st.pack(fill="both", expand=True, padx=20, pady=20)
 
 st.insert("end", "Insert your text here.\n" * 20)
@@ -63,14 +63,14 @@ st.insert("end", "Hello")
 text = st.get("1.0", "end-1c")
 ```
 
-### Scroll direction: `direction`
+### Scroll direction: `scroll_direction`
 
 - `"vertical"` (default)
 - `"horizontal"`
 - `"both"`
 
 ```python
-st = ttk.ScrolledText(app, direction="both")  # wrap defaults to 'none'
+st = ttk.ScrolledText(app, scroll_direction="both")  # wrap defaults to 'none'
 ```
 
 ### Wrapping: `wrap`
@@ -78,23 +78,23 @@ st = ttk.ScrolledText(app, direction="both")  # wrap defaults to 'none'
 When horizontal scrolling is enabled, `wrap` typically should be `"none"`.
 
 ```python
-code = ttk.ScrolledText(app, direction="both", wrap="none")
+code = ttk.ScrolledText(app, scroll_direction="both", wrap="none")
 ```
 
 Horizontal scrolling uses **Shift + Mouse Wheel**.
 
-### Scrollbar visibility: `show_scrollbar`
+### Scrollbar visibility: `scrollbar_visibility`
 
 - `"always"`
 - `"never"`
-- `"on-hover"`
-- `"on-scroll"` (auto-hide after `autohide_delay`)
+- `"hover"`
+- `"scroll"` (auto-hide after `autohide_delay`)
 
 ```python
-st = ttk.ScrolledText(app, show_scrollbar="on-hover")
-st.configure(show_scrollbar="always")
+st = ttk.ScrolledText(app, scrollbar_visibility="hover")
+st.configure(scrollbar_visibility="always")
 
-st = ttk.ScrolledText(app, show_scrollbar="on-scroll", autohide_delay=1200)
+st = ttk.ScrolledText(app, scrollbar_visibility="scroll", autohide_delay=1200)
 ```
 
 ### Access underlying Text: `text`

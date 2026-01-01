@@ -358,7 +358,7 @@ class ListView(Frame):
             striped: bool = False,
             striped_background: str = 'background[+1]',
             show_separator: bool = True,
-            show_scrollbar: bool = True,
+            scrollbar_visibility: Literal['always', 'never'] = 'always',
             enable_focus: bool = True,
             enable_hover: bool = True,
             focus_color: str = None,
@@ -381,8 +381,8 @@ class ListView(Frame):
             striped: Whether to show alternating row colors.
             striped_background: The background color for striped rows.
             show_separator: Show separator line between items.
-            show_scrollbar: Show the vertical scrollbar. When False, scrolling relies
-                on mousewheel only. Defaults to True.
+            scrollbar_visibility: Scrollbar visibility - 'always' to show scrollbar,
+                'never' to hide (mousewheel only). Defaults to 'always'.
             enable_focus: Whether items can receive keyboard focus.
             enable_hover: Whether items show hover state.
             focus_color: Color for the focus indicator.
@@ -401,7 +401,7 @@ class ListView(Frame):
         self._enable_removing = enable_removing
         self._enable_dragging = enable_dragging
         self._show_separator = show_separator
-        self._show_scrollbar = show_scrollbar
+        self._scrollbar_visibility = scrollbar_visibility
         self._select_on_click = select_on_click
         self._enable_focus = enable_focus
         self._enable_hover = enable_hover
@@ -441,7 +441,7 @@ class ListView(Frame):
 
         # Create scrollbar
         self._scrollbar = Scrollbar(self, orient='vertical', command=self._on_scroll)
-        if self._show_scrollbar:
+        if self._scrollbar_visibility == 'always':
             self._scrollbar.pack(side='right', fill='y')
 
         # Create row pool
@@ -484,24 +484,24 @@ class ListView(Frame):
             self._update_rows()
         return None
 
-    @configure_delegate('show_scrollbar')
-    def _delegate_show_scrollbar(self, value=None):
+    @configure_delegate('scrollbar_visibility')
+    def _delegate_scrollbar_visibility(self, value=None):
         """Get or set scrollbar visibility.
 
         Args:
-            value: If provided, sets scrollbar visibility (True/False).
-                If None, returns current visibility state.
+            value: If provided ('always' or 'never'), shows or hides the scrollbar.
+                If None, returns current visibility setting.
 
         Returns:
-            Current show_scrollbar value when called without arguments.
+            Current scrollbar_visibility value when called without arguments.
         """
         if value is None:
-            return self._show_scrollbar
+            return self._scrollbar_visibility
         else:
-            old_value = self._show_scrollbar
-            self._show_scrollbar = bool(value)
-            if old_value != self._show_scrollbar:
-                if self._show_scrollbar:
+            old_value = self._scrollbar_visibility
+            self._scrollbar_visibility = value
+            if old_value != self._scrollbar_visibility:
+                if self._scrollbar_visibility == 'always':
                     self._scrollbar.pack(side='right', fill='y')
                 else:
                     self._scrollbar.pack_forget()
