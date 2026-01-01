@@ -1286,11 +1286,11 @@ class ListView(Frame):
 
     # Event handler API
 
-    def on_selection_change(self, callback: Callable) -> str:
+    def on_selection_changed(self, callback: Callable) -> str:
         """Bind to ``<<SelectionChange>>``. Callback receives ``event.data = None`` (use ``get_selected()`` to get current selection)."""
         return self.bind('<<SelectionChange>>', callback, add='+')
 
-    def off_selection_change(self, bind_id: str | None = None) -> None:
+    def off_selection_changed(self, bind_id: str | None = None) -> None:
         """Unbind from ``<<SelectionChange>>``."""
         self.unbind('<<SelectionChange>>', bind_id)
 

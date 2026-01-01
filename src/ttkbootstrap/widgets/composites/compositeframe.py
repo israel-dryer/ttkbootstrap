@@ -190,11 +190,11 @@ class Composite:
         self._pressed = False
         self._update_states()
 
-    def on_invoke(self, callback) -> str:
+    def on_invoked(self, callback) -> str:
         """Bind to ``<<CompositeInvoke>>``. Callback receives ``event.data = None``. Fired when clicking on non-button registered widgets."""
         return self._event_target.bind('<<CompositeInvoke>>', callback, add='+')
 
-    def off_invoke(self, bind_id: str | None = None) -> None:
+    def off_invoked(self, bind_id: str | None = None) -> None:
         """Unbind from ``<<CompositeInvoke>>``."""
         return self._event_target.unbind('<<CompositeInvoke>>', bind_id)
 
@@ -271,10 +271,10 @@ class CompositeFrame(Frame):
         """bool: Current disabled state (read-only)."""
         return self._composite.disabled
 
-    def on_invoke(self, callback) -> str:
+    def on_invoked(self, callback) -> str:
         """Bind to ``<<CompositeInvoke>>``. Callback receives ``event.data = None``. Fired when clicking on non-button registered widgets."""
-        return self._composite.on_invoke(callback)
+        return self._composite.on_invoked(callback)
 
-    def off_invoke(self, bind_id: str | None = None) -> None:
+    def off_invoked(self, bind_id: str | None = None) -> None:
         """Unbind from ``<<CompositeInvoke>>``."""
-        return self._composite.off_invoke(bind_id)
+        return self._composite.off_invoked(bind_id)

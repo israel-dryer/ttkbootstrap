@@ -303,6 +303,6 @@ class PageStack(Frame):
         """
         return self.bind('<<PageChange>>', callback, add="+")
 
-    def off_page_changed(self, funcid: str) -> None:
+    def off_page_changed(self, bind_id: str | None = None) -> None:
         """Unbind from ``<<PageChange>>``."""
-        self.unbind("<<PageChange>>", funcid)
+        self.unbind("<<PageChange>>", bind_id)

@@ -414,13 +414,13 @@ class Notebook(TTKWrapperBase, WidgetCapabilitiesMixin, TtkStateMixin, ttk.Noteb
         """
         return self.bind("<<NotebookTabActivate>>", callback, add=True)
 
-    def off_tab_activated(self, funcid: str) -> None:
+    def off_tab_activated(self, bind_id: str | None = None) -> None:
         """Remove a ``<<NotebookTabActivate>>`` binding.
 
         Args:
-            funcid (str): The funcid returned by ``on_tab_activated()``.
+            bind_id (str): The bind_id returned by ``on_tab_activated()``.
         """
-        self.unbind("<<NotebookTabActivate>>", funcid)
+        self.unbind("<<NotebookTabActivate>>", bind_id)
 
     def on_tab_deactivated(self, callback: Callable[[Any], Any]) -> str:
         """Bind a callback to the ``<<NotebookTabDeactivate>>`` event.
@@ -436,13 +436,13 @@ class Notebook(TTKWrapperBase, WidgetCapabilitiesMixin, TtkStateMixin, ttk.Noteb
         """
         return self.bind("<<NotebookTabDeactivate>>", callback, add=True)
 
-    def off_tab_deactivated(self, funcid: str) -> None:
+    def off_tab_deactivated(self, bind_id: str | None = None) -> None:
         """Remove a ``<<NotebookTabDeactivate>>`` binding.
 
         Args:
-            funcid (str): The funcid returned by ``on_tab_deactivated()``.
+            bind_id (str): The bind_id returned by ``on_tab_deactivated()``.
         """
-        self.unbind("<<NotebookTabDeactivate>>", funcid)
+        self.unbind("<<NotebookTabDeactivate>>", bind_id)
 
     def on_tab_changed(self, callback: Callable[[Any], Any]) -> str:
         """Bind a callback to the ``<<NotebookTabChange>>`` event.
@@ -495,10 +495,10 @@ class Notebook(TTKWrapperBase, WidgetCapabilitiesMixin, TtkStateMixin, ttk.Noteb
 
         return self.bind("<<NotebookTabChange>>", wrapper, add=True)
 
-    def off_tab_changed(self, funcid: str) -> None:
+    def off_tab_changed(self, bind_id: str | None = None) -> None:
         """Remove a ``<<NotebookTabChange>>`` binding.
 
         Args:
-            funcid (str): The funcid returned by ``on_tab_changed()``.
+            bind_id (str): The bind_id returned by ``on_tab_changed()``.
         """
-        self.unbind("<<NotebookTabChange>>", funcid)
+        self.unbind("<<NotebookTabChange>>", bind_id)

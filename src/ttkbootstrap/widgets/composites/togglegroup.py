@@ -306,9 +306,9 @@ class ToggleGroup(Frame):
         """Subscribe to value changes. Callback receives ``new_value: str | set[str]`` directly (str in 'single' mode, set in 'multi' mode)."""
         return self._signal.subscribe(callback)
 
-    def off_changed(self, subscription_id: Any) -> None:
+    def off_changed(self, bind_id: Any) -> None:
         """Unsubscribe from value changes."""
-        self._signal.unsubscribe(subscription_id)
+        self._signal.unsubscribe(bind_id)
 
     @configure_delegate('color')
     def _delegate_color(self, value=None):

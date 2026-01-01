@@ -280,9 +280,9 @@ class TabView(Frame):
         """
         return self._page_stack.on_page_changed(callback)
 
-    def off_page_changed(self, funcid: str) -> None:
+    def off_page_changed(self, bind_id: str | None = None) -> None:
         """Unbind from ``<<PageChange>>`` event."""
-        self._page_stack.off_page_changed(funcid)
+        self._page_stack.off_page_changed(bind_id)
 
     def on_tab_added(self, callback: Callable) -> str:
         """Bind to ``<<TabAdd>>`` event (when add button is clicked).
@@ -295,6 +295,6 @@ class TabView(Frame):
         """
         return self._tabs.on_tab_added(callback)
 
-    def off_tab_added(self, funcid: str) -> None:
+    def off_tab_added(self, bind_id: str | None = None) -> None:
         """Unbind from ``<<TabAdd>>`` event."""
-        self._tabs.off_tab_added(funcid)
+        self._tabs.off_tab_added(bind_id)

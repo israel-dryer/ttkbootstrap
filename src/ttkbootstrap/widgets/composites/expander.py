@@ -328,7 +328,7 @@ class Expander(Frame):
             return self._variable.get() == self._value
         return False
 
-    def on_toggle(self, callback: Callable) -> str:
+    def on_toggled(self, callback: Callable) -> str:
         """Bind callback to ``<<Toggle>>`` events.
 
         Args:
@@ -336,15 +336,15 @@ class Expander(Frame):
                 ``event.data = {'expanded': bool}``.
 
         Returns:
-            Bind ID that can be passed to ``off_toggle`` to remove this callback.
+            Bind ID that can be passed to ``off_toggled`` to remove this callback.
         """
         return self.bind('<<Toggle>>', callback, add='+')
 
-    def off_toggle(self, bind_id: str = None):
+    def off_toggled(self, bind_id: str | None = None) -> None:
         """Unbind ``<<Toggle>>`` callback(s).
 
         Args:
-            bind_id (str | None): Bind ID returned by ``on_toggle``. If None, unbinds all.
+            bind_id: Bind ID returned by ``on_toggled``. If None, unbinds all.
         """
         self.unbind('<<Toggle>>', bind_id)
 

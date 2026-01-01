@@ -225,9 +225,9 @@ class Tabs(Frame):
         """
         return self.bind('<<TabAdd>>', callback, add='+')
 
-    def off_tab_added(self, funcid: str) -> None:
+    def off_tab_added(self, bind_id: str | None = None) -> None:
         """Unbind from <<TabAdd>> event."""
-        self.unbind('<<TabAdd>>', funcid)
+        self.unbind('<<TabAdd>>', bind_id)
 
     @property
     def managed_widgets(self) -> list[tk.Widget]:
@@ -425,6 +425,6 @@ class Tabs(Frame):
         """
         return self._signal.subscribe(callback)
 
-    def off_tab_changed(self, subscription_id: Any) -> None:
+    def off_tab_changed(self, bind_id: Any) -> None:
         """Unsubscribe from tab selection changes."""
-        self._signal.unsubscribe(subscription_id)
+        self._signal.unsubscribe(bind_id)
