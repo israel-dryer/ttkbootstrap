@@ -157,6 +157,11 @@ class Tabs(Frame):
         if enable_adding:
             self._create_add_button()
 
+        # Tab tracking by key
+        self._tabs: dict[str, TabItem] = {}
+        self._tab_order: list[str] = []
+        self._counter = 0  # For auto-generating keys
+
     def _create_divider(self):
         """Create the divider separator widget."""
         if self._divider is not None:
@@ -237,9 +242,11 @@ class Tabs(Frame):
             return [w for w in widgets if w is not self._add_button]
         return widgets
 
-    def add_tab(
+    def add(
         self,
         text: str = "",
+        *,
+        key: str = None,
         icon: str | dict = None,
         value: Any = None,
         closable: Union[bool, Literal['hover']] = None,
@@ -249,13 +256,12 @@ class Tabs(Frame):
     ) -> TabItem:
         """Add a new tab to the tab bar.
 
-        This is a convenience method that creates a TabItem with the
-        container's default settings and adds it to the tab bar.
-
         Args:
             text: Text to display on the tab.
+            key: Unique identifier for the tab. Auto-generated if not provided.
             icon: Icon to display on the tab.
             value: Value associated with this tab for selection tracking.
+                If None, defaults to the key.
             closable: Close button visibility (True, False, or 'hover').
                 If None, uses the widget's `enable_closing` setting.
             close_command: Callback when close button is clicked.
@@ -264,10 +270,26 @@ class Tabs(Frame):
 
         Returns:
             The created TabItem widget.
+
+        Raises:
+            ValueError: If a tab with the same key already exists.
         """
+        # Auto-generate key if not provided
+        if key is None:
+            key = f"tab_{self._counter}"
+            self._counter += 1
+
+        if key in self._tabs:
+            raise ValueError(f"A tab with the key '{key}' already exists.")
+
+        # Default value to key if not specified
+        if value is None:
+            value = key
+
         # Use widget-level default if not specified
         if closable is None:
             closable = self._enable_closing
+
         # Apply container defaults
         tab_kwargs = {
             'compound': self._compound,
@@ -314,46 +336,80 @@ class Tabs(Frame):
         else:
             self._tab_bar.add(tab, **pack_opts)
 
-        # Auto-select first tab (check for 1 if no add button, 2 if add button exists)
-        tab_count = len(self._tab_bar) - (1 if self._add_button else 0)
-        if tab_count == 1 and value is not None:
+        # Track tab by key
+        self._tabs[key] = tab
+        self._tab_order.append(key)
+
+        # Auto-select first tab
+        if len(self._tabs) == 1:
             self._variable.set(value)
 
         return tab
 
-    def add(self, widget: tk.Widget, **options: Any) -> tk.Widget:
-        """Add a widget (typically TabItem) to the tab bar.
+    def remove(self, key: str) -> None:
+        """Remove a tab by its key.
 
         Args:
-            widget: The widget to add.
-            **options: Pack options. Defaults to fill='x'.
+            key: The key of the tab to remove.
+
+        Raises:
+            KeyError: If no tab with the given key exists.
+        """
+        if key not in self._tabs:
+            raise KeyError(f"No tab with key '{key}'")
+
+        tab = self._tabs.pop(key)
+        self._tab_order.remove(key)
+        self._tab_bar.remove(tab)
+        tab.destroy()
+
+    def item(self, key: str) -> TabItem:
+        """Get a tab by its key.
+
+        Args:
+            key: The key of the tab to retrieve.
 
         Returns:
-            The widget.
+            The TabItem instance.
+
+        Raises:
+            KeyError: If no tab with the given key exists.
         """
-        # Default fill='x' for tabs
-        if 'fill' not in options:
-            options['fill'] = 'x'
+        if key not in self._tabs:
+            raise KeyError(f"No tab with key '{key}'")
+        return self._tabs[key]
 
-        # Apply stretch behavior for horizontal orientation
-        if self._tab_width == 'stretch' and self._orient == 'horizontal':
-            if 'expand' not in options:
-                options['expand'] = True
+    def items(self) -> tuple[TabItem, ...]:
+        """Get all tab widgets in order.
 
-        # Insert before add button if it exists, otherwise append
-        if self._add_button is not None:
-            add_btn_index = self._tab_bar.index_of(self._add_button)
-            return self._tab_bar.insert(add_btn_index, widget, **options)
+        Returns:
+            A tuple of all TabItem instances in the order they were added.
+        """
+        return tuple(self._tabs[key] for key in self._tab_order)
 
-        return self._tab_bar.add(widget, **options)
+    def keys(self) -> tuple[str, ...]:
+        """Get all tab keys in order.
 
-    def remove(self, widget: tk.Widget) -> None:
-        """Remove a widget from the tab bar.
+        Returns:
+            A tuple of all tab keys in the order they were added.
+        """
+        return tuple(self._tab_order)
+
+    def configure_item(self, key: str, option: str = None, **kwargs: Any):
+        """Configure a specific tab by its key.
 
         Args:
-            widget: The widget to remove.
+            key: The key of the tab to configure.
+            option: If provided, return the value of this option.
+            **kwargs: Configuration options to apply to the tab.
+
+        Returns:
+            If option is provided, returns the value of that option.
         """
-        self._tab_bar.remove(widget)
+        tab = self.item(key)
+        if option is not None:
+            return tab.cget(option)
+        tab.configure(**kwargs)
 
     @property
     def orient(self) -> str:

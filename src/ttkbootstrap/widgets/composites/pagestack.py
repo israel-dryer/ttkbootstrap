@@ -259,41 +259,68 @@ class PageStack(Frame):
             return None
         return self._current, (self._history[self._index][1] if self._index >= 0 else {})
 
-    def configure_page(self, key: str, option: Any = None, **kwargs: Any) -> Any:
+    def item(self, key: str) -> tkinter.Widget:
+        """Get a page by its key.
+
+        Args:
+            key: The identifier of the page to retrieve.
+
+        Returns:
+            The page widget.
+
+        Raises:
+            KeyError: If no page with the given key exists.
+            ValueError: If key is an empty string.
+        """
+        if not key:
+            raise ValueError("Page key cannot be an empty string")
+        if key not in self._pages:
+            raise KeyError(f"No page with key '{key}'")
+        return self._pages[key]
+
+    def items(self) -> tuple[tkinter.Widget, ...]:
+        """Get all page widgets in the stack.
+
+        Returns:
+            A tuple of all page widgets managed by this PageStack.
+        """
+        return tuple(self._pages.values())
+
+    def keys(self) -> tuple[str, ...]:
+        """Get all page keys.
+
+        Returns:
+            A tuple of all page keys in the stack.
+        """
+        return tuple(self._pages.keys())
+
+    def configure_item(self, key: str, option: Any = None, **kwargs: Any) -> Any:
         """Query or configure the page configuration.
 
         Args:
-            key: The identifier of the page to configure
+            key: The identifier of the page to configure.
             option: Optional configuration option to query. If 'sticky', returns
                    the grid sticky value. Otherwise queries the widget option.
-            **kwargs: Configuration options to set on the page widget
+            **kwargs: Configuration options to set on the page widget.
 
         Returns:
             If option is provided, returns the value of that option.
             Otherwise returns the result of configure() if kwargs are provided.
 
         Raises:
-            NavigationError: If the page with the given key does not exist
-            ValueError: If key is an empty string
+            KeyError: If no page with the given key exists.
+            ValueError: If key is an empty string.
         """
         if not key:
             raise ValueError("Page key cannot be an empty string")
         if key not in self._pages:
-            raise NavigationError(f"Page {key} does not exist")
+            raise KeyError(f"No page with key '{key}'")
         if option == 'sticky':
             return self._pages[key].grid_info().get('sticky')
         elif option is not None:
             return self._pages[key].cget(option)
         else:
             return self._pages[key].configure(**kwargs)
-
-    def pages(self) -> ValuesView[tkinter.Widget]:
-        """Return all page widgets in the stack.
-
-        Returns:
-            A view of all page widgets managed by this PageStack.
-        """
-        return self._pages.values()
 
     def on_page_changed(self, callback: Callable) -> str:
         """Bind to ``<<PageChange>>``. Callback receives ``event.data`` with navigation info.

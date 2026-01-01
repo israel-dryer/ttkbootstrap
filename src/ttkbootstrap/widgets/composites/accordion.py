@@ -67,14 +67,17 @@ class Accordion(Frame):
         self._bootstyle = bootstyle
         self._color = color
         self._variant = variant
-        self._expanders: list[Expander] = []
+        self._expanders: dict[str, Expander] = {}
+        self._expander_order: list[str] = []
         self._separator_widgets: list[Separator] = []
         self._updating = False  # Prevent recursive updates
+        self._counter = 0  # For auto-generating keys
 
     def add(
         self,
         expander: Expander = None,
         *,
+        key: str = None,
         title: str = "",
         icon: str | dict = None,
         expanded: bool = None,
@@ -84,6 +87,7 @@ class Accordion(Frame):
 
         Args:
             expander (Expander | None): Existing Expander to add. If None, creates one.
+            key (str | None): Unique identifier for the expander. Auto-generated if not provided.
             title (str): Title for the expander header (when creating new).
             icon (str | dict): Icon for the expander header (when creating new).
             expanded (bool | None): Initial expansion state. If None, first expander
@@ -92,7 +96,18 @@ class Accordion(Frame):
 
         Returns:
             Expander: The added or created Expander widget.
+
+        Raises:
+            ValueError: If an expander with the same key already exists.
         """
+        # Auto-generate key if not provided
+        if key is None:
+            key = f"expander_{self._counter}"
+            self._counter += 1
+
+        if key in self._expanders:
+            raise ValueError(f"An expander with the key '{key}' already exists.")
+
         # Add separator before this expander (if not the first)
         if self._separators and len(self._expanders) > 0:
             sep = Separator(self, orient='horizontal')
@@ -129,40 +144,33 @@ class Accordion(Frame):
                     expander.collapse()
 
         expander.pack(fill='x')
-        self._expanders.append(expander)
+        self._expanders[key] = expander
+        self._expander_order.append(key)
 
         # Bind to toggle events
-        expander.on_toggle(lambda e, exp=expander: self._on_expander_toggle(exp, e))
+        expander.on_toggled(lambda e, exp=expander: self._on_expander_toggle(exp, e))
 
         return expander
 
-    def remove(self, expander_or_index: Expander | int) -> None:
+    def remove(self, key: str) -> None:
         """Remove an expander from the accordion.
 
         Args:
-            expander_or_index: The Expander widget or its index to remove.
+            key: The key of the expander to remove.
 
         Raises:
-            ValueError: If the expander is not in the accordion or index is out of range.
+            KeyError: If no expander with the given key exists.
 
         Note:
             The expander widget is destroyed. If collapsible=False and
             removing would leave no expanders, or would remove the only
             open expander, another expander will be expanded automatically.
         """
-        # Resolve to index
-        if isinstance(expander_or_index, int):
-            index = expander_or_index
-            if not (0 <= index < len(self._expanders)):
-                raise ValueError(f"Index {index} out of range")
-            expander = self._expanders[index]
-        else:
-            expander = expander_or_index
-            try:
-                index = self._expanders.index(expander)
-            except ValueError:
-                raise ValueError("Expander is not in this accordion")
+        if key not in self._expanders:
+            raise KeyError(f"No expander with key '{key}'")
 
+        expander = self._expanders[key]
+        index = self._expander_order.index(key)
         was_expanded = expander['expanded']
 
         # Remove associated separator
@@ -180,21 +188,24 @@ class Accordion(Frame):
                 sep = self._separator_widgets.pop(sep_index)
                 sep.destroy()
 
-        # Remove expander from list and destroy
-        self._expanders.pop(index)
+        # Remove expander from dict/list and destroy
+        del self._expanders[key]
+        self._expander_order.remove(key)
         expander.destroy()
 
         # Handle collapsible=False constraint
         if not self._collapsible and was_expanded and self._expanders:
             # The removed expander was open - need to open another
-            any_open = any(exp['expanded'] for exp in self._expanders)
+            expander_list = [self._expanders[k] for k in self._expander_order]
+            any_open = any(exp['expanded'] for exp in expander_list)
             if not any_open:
-                self._expanders[0].expand()
+                expander_list[0].expand()
 
         # Fire change event
         if self._expanders:
+            expander_list = [self._expanders[k] for k in self._expander_order]
             self.event_generate('<<AccordionChange>>', data={
-                'expanded': [exp for exp in self._expanders if exp['expanded']]
+                'expanded': [exp for exp in expander_list if exp['expanded']]
             })
 
     def _on_expander_toggle(self, expander: Expander, event):
@@ -205,19 +216,20 @@ class Accordion(Frame):
         self._updating = True
         try:
             is_expanded = event.data.get('expanded', False)
+            expander_list = [self._expanders[k] for k in self._expander_order]
 
             if is_expanded:
                 # Expander was just opened
                 if not self._multiple:
                     # Collapse all others
-                    for exp in self._expanders:
+                    for exp in expander_list:
                         if exp is not expander and exp['expanded']:
                             exp.collapse()
             else:
                 # Expander was just closed
                 if not self._collapsible:
                     # Check if any are still open
-                    any_open = any(exp['expanded'] for exp in self._expanders)
+                    any_open = any(exp['expanded'] for exp in expander_list)
                     if not any_open:
                         # Re-open this one - can't collapse all
                         expander.expand()
@@ -225,35 +237,84 @@ class Accordion(Frame):
 
             # Fire change event
             self.event_generate('<<AccordionChange>>', data={
-                'expanded': [exp for exp in self._expanders if exp['expanded']]
+                'expanded': [exp for exp in expander_list if exp['expanded']]
             })
         finally:
             self._updating = False
 
-    def expand(self, index: int):
-        """Expand the expander at the given index.
+    def item(self, key: str) -> Expander:
+        """Get an expander by its key.
 
         Args:
-            index (int): Index of the expander to expand.
+            key: The key of the expander to retrieve.
+
+        Returns:
+            The Expander instance.
+
+        Raises:
+            KeyError: If no expander with the given key exists.
         """
-        if 0 <= index < len(self._expanders):
-            self._expanders[index].expand()
+        if key not in self._expanders:
+            raise KeyError(f"No expander with key '{key}'")
+        return self._expanders[key]
 
-    def collapse(self, index: int):
-        """Collapse the expander at the given index.
+    def items(self) -> tuple[Expander, ...]:
+        """Get all expander widgets in order.
+
+        Returns:
+            A tuple of all Expander instances in the order they were added.
+        """
+        return tuple(self._expanders[key] for key in self._expander_order)
+
+    def keys(self) -> tuple[str, ...]:
+        """Get all expander keys in order.
+
+        Returns:
+            A tuple of all expander keys in the order they were added.
+        """
+        return tuple(self._expander_order)
+
+    def configure_item(self, key: str, option: str = None, **kwargs: Any):
+        """Configure a specific expander by its key.
 
         Args:
-            index (int): Index of the expander to collapse.
+            key: The key of the expander to configure.
+            option: If provided, return the value of this option.
+            **kwargs: Configuration options to apply to the expander.
+
+        Returns:
+            If option is provided, returns the value of that option.
+        """
+        expander = self.item(key)
+        if option is not None:
+            return expander.cget(option)
+        expander.configure(**kwargs)
+
+    def expand(self, key: str):
+        """Expand the expander with the given key.
+
+        Args:
+            key (str): Key of the expander to expand.
+        """
+        if key in self._expanders:
+            self._expanders[key].expand()
+
+    def collapse(self, key: str):
+        """Collapse the expander with the given key.
+
+        Args:
+            key (str): Key of the expander to collapse.
 
         Note:
             If collapsible=False and this is the only open expander,
             this call will be ignored.
         """
-        if 0 <= index < len(self._expanders):
-            exp = self._expanders[index]
+        if key in self._expanders:
+            exp = self._expanders[key]
             if not self._collapsible:
                 # Check if this is the only open one
-                open_count = sum(1 for e in self._expanders if e['expanded'])
+                expander_list = [self._expanders[k] for k in self._expander_order]
+                open_count = sum(1 for e in expander_list if e['expanded'])
                 if open_count <= 1 and exp['expanded']:
                     return  # Can't collapse the last one
             exp.collapse()
@@ -262,42 +323,20 @@ class Accordion(Frame):
         """Expand all expanders (only effective when multiple=True)."""
         if not self._multiple:
             return
-        for exp in self._expanders:
+        for exp in self._expanders.values():
             exp.expand()
 
     def collapse_all(self):
         """Collapse all expanders (only effective when collapsible=True)."""
         if not self._collapsible:
             return
-        for exp in self._expanders:
+        for exp in self._expanders.values():
             exp.collapse()
-
-    def index_of(self, expander: Expander) -> int:
-        """Get the index of an expander.
-
-        Args:
-            expander: The Expander widget to find.
-
-        Returns:
-            The index of the expander in the accordion.
-
-        Raises:
-            ValueError: If the expander is not in the accordion.
-        """
-        try:
-            return self._expanders.index(expander)
-        except ValueError:
-            raise ValueError("Expander is not in this accordion")
-
-    @property
-    def expanders(self) -> list[Expander]:
-        """Get the list of managed Expander widgets."""
-        return list(self._expanders)
 
     @property
     def expanded(self) -> list[Expander]:
         """Get the list of currently expanded Expanders."""
-        return [exp for exp in self._expanders if exp['expanded']]
+        return [self._expanders[k] for k in self._expander_order if self._expanders[k]['expanded']]
 
     @configure_delegate('multiple')
     def _delegate_multiple(self, value=None):

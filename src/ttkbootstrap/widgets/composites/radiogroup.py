@@ -309,7 +309,7 @@ class RadioGroup(Frame):
         button = self._buttons.pop(key)
         button.destroy()
 
-    def buttons(self) -> tuple[RadioButton, ...]:
+    def items(self) -> tuple[RadioButton, ...]:
         """Get all button widgets in the group.
 
         Returns:
@@ -317,7 +317,7 @@ class RadioGroup(Frame):
         """
         return tuple(self._buttons.values())
 
-    def get_button(self, key: str) -> RadioButton:
+    def item(self, key: str) -> RadioButton:
         """Get a button by its key.
 
         Args:
@@ -333,14 +333,20 @@ class RadioGroup(Frame):
             raise KeyError(f"No button with key '{key}'")
         return self._buttons[key]
 
-    def configure_button(self, key: str, **kwargs: Any):
+    def configure_item(self, key: str, option: str = None, **kwargs: Any):
         """Configure a specific button by its key.
 
         Args:
             key: The key of the button to configure.
+            option: If provided, return the value of this option.
             **kwargs: Configuration options to apply to the button.
+
+        Returns:
+            If option is provided, returns the value of that option.
         """
-        button = self.get_button(key)
+        button = self.item(key)
+        if option is not None:
+            return button.cget(option)
         button.configure(**kwargs)
 
     def on_changed(self, callback: Callable) -> Any:

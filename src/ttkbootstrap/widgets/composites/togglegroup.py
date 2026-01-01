@@ -287,20 +287,53 @@ class ToggleGroup(Frame):
             button.destroy()
             self._update_button_positions()
 
-    def buttons(self) -> tuple[RadioToggle | CheckToggle, ...]:
-        """Get all button widgets in the group."""
+    def items(self) -> tuple[RadioToggle | CheckToggle, ...]:
+        """Get all button widgets in the group.
+
+        Returns:
+            A tuple of all button instances in the group.
+        """
         return tuple(self._buttons.values())
 
-    def get_button(self, key: str) -> RadioToggle | CheckToggle:
-        """Get a button by its key."""
+    def item(self, key: str) -> RadioToggle | CheckToggle:
+        """Get a button by its key.
+
+        Args:
+            key: The key of the button to retrieve.
+
+        Returns:
+            The button instance.
+
+        Raises:
+            KeyError: If no button with the given key exists.
+        """
         if key not in self._buttons:
             raise KeyError(f"No button with key '{key}'")
         return self._buttons[key]
 
-    def configure_button(self, key: str, **kwargs: Any):
-        """Configure a specific button by its key."""
-        button = self.get_button(key)
+    def configure_item(self, key: str, option: str = None, **kwargs: Any):
+        """Configure a specific button by its key.
+
+        Args:
+            key: The key of the button to configure.
+            option: If provided, return the value of this option.
+            **kwargs: Configuration options to apply to the button.
+
+        Returns:
+            If option is provided, returns the value of that option.
+        """
+        button = self.item(key)
+        if option is not None:
+            return button.cget(option)
         button.configure(**kwargs)
+
+    def keys(self) -> tuple[str, ...]:
+        """Get all button keys.
+
+        Returns:
+            A tuple of all button keys in the group.
+        """
+        return tuple(self._buttons.keys())
 
     def on_changed(self, callback: Callable) -> Any:
         """Subscribe to value changes. Callback receives ``new_value: str | set[str]`` directly (str in 'single' mode, set in 'multi' mode)."""

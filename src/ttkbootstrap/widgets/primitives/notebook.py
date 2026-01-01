@@ -400,6 +400,53 @@ class Notebook(TTKWrapperBase, WidgetCapabilitiesMixin, TtkStateMixin, ttk.Noteb
 
     configure_tab = tab  # alias for tab
 
+    def item(self, key: str) -> tkinter.Widget:
+        """Get a tab's content widget by its key.
+
+        Args:
+            key: The key of the tab to retrieve.
+
+        Returns:
+            The tab's content widget.
+
+        Raises:
+            KeyError: If no tab with the given key exists.
+        """
+        if key not in self._key_registry:
+            raise KeyError(f"No tab with key '{key}'")
+        return self._key_registry[key]
+
+    def items(self) -> tuple[tkinter.Widget, ...]:
+        """Get all tab content widgets in order.
+
+        Returns:
+            A tuple of all tab content widgets in tab order.
+        """
+        tab_ids = super().tabs()
+        return tuple(self.nametowidget(tid) for tid in tab_ids)
+
+    def keys(self) -> tuple[str, ...]:
+        """Get all tab keys in order.
+
+        Returns:
+            A tuple of all tab keys in tab order.
+        """
+        tab_ids = super().tabs()
+        return tuple(self._tk_to_key.get(tid, '') for tid in tab_ids)
+
+    def configure_item(self, key: str, option: str = None, **kwargs: Any) -> Any:
+        """Configure a specific tab by its key.
+
+        Args:
+            key: The key of the tab to configure.
+            option: If provided, return the value of this option.
+            **kwargs: Configuration options to apply to the tab.
+
+        Returns:
+            If option is provided, returns the value of that option.
+        """
+        return self.tab(key, option, **kwargs)
+
     def on_tab_activated(self, callback: Callable[[Any], Any]) -> str:
         """Bind a callback to the ``<<NotebookTabActivate>>`` event.
 

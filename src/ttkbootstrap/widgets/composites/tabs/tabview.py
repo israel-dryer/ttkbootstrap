@@ -230,13 +230,13 @@ class TabView(Frame):
                 self._page_stack.navigate(key, data=data)
 
     @property
-    def tabs(self) -> Tabs:
-        """Get the Tabs widget."""
+    def tabs_widget(self) -> Tabs:
+        """Get the internal Tabs widget."""
         return self._tabs
 
     @property
-    def page_stack(self) -> PageStack:
-        """Get the PageStack widget."""
+    def page_stack_widget(self) -> PageStack:
+        """Get the internal PageStack widget."""
         return self._page_stack
 
     @property
@@ -245,29 +245,83 @@ class TabView(Frame):
         key = self._tab_variable.get()
         return key if key else None
 
-    def page(self, key: str) -> tk.Widget | None:
+    def page(self, key: str) -> tk.Widget:
         """Get a page widget by its key.
 
         Args:
             key: The identifier of the page.
 
         Returns:
-            The page widget, or None if not found.
-        """
-        if key in self._page_stack._pages:
-            return self._page_stack._pages[key]
-        return None
+            The page widget.
 
-    def tab(self, key: str) -> TabItem | None:
+        Raises:
+            KeyError: If no page with the given key exists.
+        """
+        return self._page_stack.item(key)
+
+    def pages(self) -> tuple[tk.Widget, ...]:
+        """Get all page widgets.
+
+        Returns:
+            A tuple of all page widgets.
+        """
+        return self._page_stack.items()
+
+    def page_keys(self) -> tuple[str, ...]:
+        """Get all page keys.
+
+        Returns:
+            A tuple of all page keys.
+        """
+        return self._page_stack.keys()
+
+    def tab(self, key: str) -> TabItem:
         """Get a tab widget by its key.
 
         Args:
             key: The identifier of the tab.
 
         Returns:
-            The TabItem widget, or None if not found.
+            The TabItem widget.
+
+        Raises:
+            KeyError: If no tab with the given key exists.
         """
-        return self._tab_map.get(key)
+        if key not in self._tab_map:
+            raise KeyError(f"No tab with key '{key}'")
+        return self._tab_map[key]
+
+    def tabs(self) -> tuple[TabItem, ...]:
+        """Get all tab widgets.
+
+        Returns:
+            A tuple of all TabItem widgets.
+        """
+        return tuple(self._tab_map.values())
+
+    def tab_keys(self) -> tuple[str, ...]:
+        """Get all tab keys.
+
+        Returns:
+            A tuple of all tab keys.
+        """
+        return tuple(self._tab_map.keys())
+
+    def configure_tab(self, key: str, option: str = None, **kwargs):
+        """Configure a specific tab by its key.
+
+        Args:
+            key: The key of the tab to configure.
+            option: If provided, return the value of this option.
+            **kwargs: Configuration options to apply to the tab.
+
+        Returns:
+            If option is provided, returns the value of that option.
+        """
+        tab = self.tab(key)
+        if option is not None:
+            return tab.cget(option)
+        tab.configure(**kwargs)
 
     def on_page_changed(self, callback: Callable) -> str:
         """Bind to ``<<PageChange>>`` event.

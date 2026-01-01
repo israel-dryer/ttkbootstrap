@@ -231,7 +231,7 @@ class ButtonGroup(Frame):
         widget.destroy()
         self._update_widget_positions()
 
-    def get_widget(self, key: str) -> 'tk.Widget':
+    def item(self, key: str) -> 'tk.Widget':
         """Get a widget by its key.
 
         Args:
@@ -247,20 +247,27 @@ class ButtonGroup(Frame):
             raise KeyError(f"No widget with key '{key}'")
         return self._widgets[key]
 
-    def configure_widget(self, key: str, **kwargs: Any):
+    def configure_item(self, key: str, option: str = None, **kwargs: Any):
         """Configure a specific widget by its key.
 
         Args:
             key: The key of the widget to configure.
+            option: If provided, return the value of this option.
             **kwargs: Configuration options to apply to the widget.
 
+        Returns:
+            If option is provided, returns the value of that option.
+
         Examples:
-            group.configure_widget("save_btn", state='disabled')
+            group.configure_item("save_btn", state='disabled')
+            current_state = group.configure_item("save_btn", 'state')
         """
-        widget = self.get_widget(key)
+        widget = self.item(key)
+        if option is not None:
+            return widget.cget(option)
         widget.configure(**kwargs)
 
-    def widgets(self) -> tuple['tk.Widget', ...]:
+    def items(self) -> tuple['tk.Widget', ...]:
         """Get all widgets in the group.
 
         Returns:

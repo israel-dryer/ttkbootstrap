@@ -502,27 +502,79 @@ class NavigationView(Frame):
 
         return item
 
-    def get_item(self, key: str) -> NavigationViewItem | None:
+    def node(self, key: str) -> NavigationViewItem:
         """Get an item by key.
 
         Args:
             key (str): The item key.
 
         Returns:
-            NavigationViewItem | None: The item, or None if not found.
-        """
-        return self._items.get(key) or self._footer_items.get(key)
+            NavigationViewItem: The item.
 
-    def get_group(self, key: str) -> NavigationViewGroup | None:
+        Raises:
+            KeyError: If no item with the given key exists.
+        """
+        if key in self._items:
+            return self._items[key]
+        if key in self._footer_items:
+            return self._footer_items[key]
+        raise KeyError(f"No item with key '{key}'")
+
+    def nodes(self) -> tuple[NavigationViewItem, ...]:
+        """Get all items (excluding footer items).
+
+        Returns:
+            A tuple of all NavigationViewItem instances.
+        """
+        return tuple(self._items.values())
+
+    def node_keys(self) -> tuple[str, ...]:
+        """Get all item keys (excluding footer items).
+
+        Returns:
+            A tuple of all item keys.
+        """
+        return tuple(self._items.keys())
+
+    def group(self, key: str) -> NavigationViewGroup:
         """Get a group by key.
 
         Args:
             key (str): The group key.
 
         Returns:
-            NavigationViewGroup | None: The group, or None if not found.
+            NavigationViewGroup: The group.
+
+        Raises:
+            KeyError: If no group with the given key exists.
         """
-        return self._groups.get(key)
+        if key not in self._groups:
+            raise KeyError(f"No group with key '{key}'")
+        return self._groups[key]
+
+    def groups(self) -> tuple[NavigationViewGroup, ...]:
+        """Get all groups.
+
+        Returns:
+            A tuple of all NavigationViewGroup instances.
+        """
+        return tuple(self._groups.values())
+
+    def configure_node(self, key: str, option: str = None, **kwargs: Any):
+        """Configure a specific item by its key.
+
+        Args:
+            key: The key of the item to configure.
+            option: If provided, return the value of this option.
+            **kwargs: Configuration options to apply to the item.
+
+        Returns:
+            If option is provided, returns the value of that option.
+        """
+        item = self.node(key)
+        if option is not None:
+            return item.cget(option)
+        item.configure(**kwargs)
 
     def remove_item(self, key: str) -> None:
         """Remove an item by key.
@@ -644,20 +696,21 @@ class NavigationView(Frame):
             return self._selection_var.get() or None
         return None
 
-    @property
-    def items(self) -> list[NavigationViewItem]:
-        """Get all items (excluding footer items)."""
-        return list(self._items.values())
+    def footer_nodes(self) -> tuple[NavigationViewItem, ...]:
+        """Get all footer items in order.
 
-    @property
-    def groups(self) -> list[NavigationViewGroup]:
-        """Get all groups."""
-        return list(self._groups.values())
+        Returns:
+            A tuple of all footer NavigationViewItem instances.
+        """
+        return tuple(self._footer_items[key] for key in self._footer_order)
 
-    @property
-    def footer_items(self) -> list[NavigationViewItem]:
-        """Get all footer items in order."""
-        return [self._footer_items[key] for key in self._footer_order]
+    def footer_node_keys(self) -> tuple[str, ...]:
+        """Get all footer item keys in order.
+
+        Returns:
+            A tuple of all footer item keys.
+        """
+        return tuple(self._footer_order)
 
     @property
     def signal(self) -> 'Signal[str] | None':
