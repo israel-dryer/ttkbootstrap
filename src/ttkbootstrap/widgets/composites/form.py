@@ -111,6 +111,30 @@ ButtonInput = str | Mapping[str, Any] | "DialogButton"
 class Form(Frame):
     """A configurable form that can be generated from data or explicit items.
 
+    Form is a *field manager* that provides a domain-specific API for accessing
+    and manipulating form fields and their values.
+
+    Field Access:
+        - ``field(key)`` — returns the Field widget for a key
+        - ``fields()`` — returns all Field widgets in order
+        - ``keys()`` — returns all field keys in order
+
+    Value Operations:
+        - ``get_field_value(key)`` — get a single field's value
+        - ``set_field_value(key, value)`` — set a single field's value
+        - ``get()`` / ``set(values)`` — get/set all values as a dict
+        - ``value`` property — get/set all values as a dict
+
+    Variable & Signal Access:
+        - ``field_variable(key)`` — get Tk Variable for a field
+        - ``field_signal(key)`` — get Signal for a field's value
+        - ``field_textsignal(key)`` — get Signal for a field's text
+
+    Attributes:
+        data (dict): Current form data (read-only property).
+        value (dict): Alias for form data (get/set property).
+        result (Any): Result value set by button commands.
+
     Args:
         master: Parent widget.
         data: Initial data backing the form. If items are not provided,
@@ -260,17 +284,168 @@ class Form(Frame):
                 pass
         return all_valid
 
-    def get_field_variable(self, key: str) -> Variable | None:
-        """Return the Tk variable associated with a field key, if any."""
+    # --- Field access API (v2) -------------------------------------------
+
+    def field(self, key: str) -> Field:
+        """Return the Field widget for the given key.
+
+        Args:
+            key: The field key.
+
+        Returns:
+            The Field widget instance.
+
+        Raises:
+            KeyError: If no field with the given key exists.
+        """
+        if key not in self._widgets:
+            raise KeyError(f"No field with key '{key}'")
+        return self._widgets[key]
+
+    def fields(self) -> tuple[Field, ...]:
+        """Return all field widgets in insertion order.
+
+        Returns:
+            Tuple of Field widget instances.
+        """
+        return tuple(self._widgets[k] for k in self._items_by_key.keys() if k in self._widgets)
+
+    def keys(self) -> tuple[str, ...]:
+        """Return all field keys in insertion order.
+
+        Returns:
+            Tuple of field key strings.
+        """
+        return tuple(self._items_by_key.keys())
+
+    # --- Value helpers (explicit, no overloading) -------------------------
+
+    def get_field_value(self, key: str) -> Any:
+        """Return the current value of the field.
+
+        Args:
+            key: The field key.
+
+        Returns:
+            The current field value.
+
+        Raises:
+            KeyError: If no field with the given key exists.
+        """
+        if key not in self._widgets:
+            raise KeyError(f"No field with key '{key}'")
+        return self._read_value_from_widget(key)
+
+    def set_field_value(self, key: str, value: Any) -> None:
+        """Set the value of the field.
+
+        Args:
+            key: The field key.
+            value: The new value to set.
+
+        Raises:
+            KeyError: If no field with the given key exists.
+        """
+        if key not in self._items_by_key:
+            raise KeyError(f"No field with key '{key}'")
+        item = self._items_by_key[key]
+        self._apply_value_to_widget(key, item, value)
+        self._data[key] = value
+
+    # --- Variable & signal accessors (v2 short names) ---------------------
+
+    def field_variable(self, key: str) -> Variable | None:
+        """Return the Tk Variable for the field.
+
+        Args:
+            key: The field key.
+
+        Returns:
+            The Tk Variable, or None if not available.
+        """
         return self._variables.get(key)
 
-    def get_field_signal(self, key: str):
-        """Return the Signal associated with a field key, if any."""
+    def field_signal(self, key: str):
+        """Return the Signal for the field value.
+
+        Args:
+            key: The field key.
+
+        Returns:
+            The Signal, or None if not available.
+        """
         return self._signals.get(key)
 
-    def get_field_textsignal(self, key: str):
-        """Return the TextSignal associated with a field key, if any."""
+    def field_textsignal(self, key: str):
+        """Return the Signal for the field text.
+
+        Args:
+            key: The field key.
+
+        Returns:
+            The text Signal, or None if not available.
+        """
         return self._textsignals.get(key)
+
+    # --- Legacy variable/signal accessors (backward compatibility) --------
+
+    def get_field_variable(self, key: str) -> Variable | None:
+        """Return the Tk variable associated with a field key, if any.
+
+        Deprecated:
+            Use ``field_variable(key)`` instead.
+        """
+        return self.field_variable(key)
+
+    def get_field_signal(self, key: str):
+        """Return the Signal associated with a field key, if any.
+
+        Deprecated:
+            Use ``field_signal(key)`` instead.
+        """
+        return self.field_signal(key)
+
+    def get_field_textsignal(self, key: str):
+        """Return the TextSignal associated with a field key, if any.
+
+        Deprecated:
+            Use ``field_textsignal(key)`` instead.
+        """
+        return self.field_textsignal(key)
+
+    # --- Form-level value API (v2 standardization) ------------------------
+
+    def get(self) -> dict[str, Any]:
+        """Return all field values as a dictionary.
+
+        Returns:
+            Dictionary mapping field keys to their current values.
+        """
+        return self.data
+
+    def set(self, values: Mapping[str, Any]) -> None:
+        """Set multiple field values from a dictionary.
+
+        Args:
+            values: Dictionary mapping field keys to values.
+        """
+        self._data = dict(values)
+        self._suspend_sync = True
+        try:
+            for key, item in self._items_by_key.items():
+                value = self._data.get(key)
+                self._apply_value_to_widget(key, item, value)
+        finally:
+            self._suspend_sync = False
+
+    @property
+    def value(self) -> dict[str, Any]:
+        """Get or set all form field values as a dictionary."""
+        return self.get()
+
+    @value.setter
+    def value(self, values: Mapping[str, Any]) -> None:
+        self.set(values)
 
     @configure_delegate('data')
     def _delegate_data(self, value: Mapping[str, Any] = None):
