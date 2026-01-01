@@ -8,7 +8,7 @@ app = ttk.App(title="Accordion Demo", size=(400, 500), theme="dark")
 # Basic accordion (single selection, collapsible)
 Label(app, text="Basic Accordion (single selection)", font='heading').pack(pady=(10, 5))
 
-accordion1 = Accordion(app, separators=True, show_border=True)
+accordion1 = Accordion(app, show_separators=True, show_border=True)
 accordion1.pack(fill='x', padx=10, pady=5)
 
 section1 = accordion1.add(title="Section 1", icon={'name': 'house', 'size': 16})
@@ -23,7 +23,7 @@ Label(section3.content, text="Content for section 3").pack(pady=10)
 # Multiple selection accordion
 Label(app, text="Multiple Selection Accordion", font='heading').pack(pady=(20, 5))
 
-accordion2 = Accordion(app, multiple=True, color="success", variant="solid")
+accordion2 = Accordion(app, allow_multiple=True, color="success", variant="solid")
 accordion2.pack(fill='x', padx=10, pady=5)
 
 s1 = accordion2.add(title="Option A", expanded=True)
@@ -38,7 +38,7 @@ Label(s3.content, text="Option C content").pack(pady=10)
 # Non-collapsible accordion (at least one must be open)
 Label(app, text="Non-collapsible (one must stay open)", font='heading').pack(pady=(20, 5))
 
-accordion3 = Accordion(app, collapsible=False, color="warning", variant="solid")
+accordion3 = Accordion(app, allow_collapse_all=False, color="warning", variant="solid")
 accordion3.pack(fill='x', padx=10, pady=5)
 
 p1 = accordion3.add(title="Panel 1")
