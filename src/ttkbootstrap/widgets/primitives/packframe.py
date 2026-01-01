@@ -4,6 +4,7 @@ import tkinter as tk
 from typing import Literal, Optional, Any
 
 from ttkbootstrap.widgets.primitives.frame import Frame
+from ttkbootstrap.widgets.mixins.configure_mixin import configure_delegate
 from ttkbootstrap.widgets.types import Master
 
 Direction = Literal["vertical", "horizontal", "row", "column", "row-reverse", "column-reverse"]
@@ -18,6 +19,18 @@ class PackFrame(Frame):
     PackFrame extends the ttkbootstrap Frame with automatic pack-based
     layout management, including support for direction, gap spacing,
     and default fill/expand behavior.
+
+    Children packed into this frame automatically receive the frame's
+    default layout options. Simply use the standard `pack()` method
+    on child widgets - no special `add()` method needed.
+
+    Example:
+        ```python
+        frame = PackFrame(direction="vertical", gap=10, fill_items="x")
+        Label(frame, text="First").pack()
+        Label(frame, text="Second").pack()
+        Button(frame, text="Click").pack(expand=True)  # override default
+        ```
 
     Args:
         master: Parent widget. If None, uses the default root window.
@@ -60,21 +73,34 @@ class PackFrame(Frame):
         self._default_expand = expand_items
         self._default_anchor = anchor_items
 
-        # Ordered list of (widget, user_options) tuples
+        # Ordered list of (widget, user_options) tuples for gap tracking
         self._managed: list[tuple[tk.Widget, dict[str, Any]]] = []
 
         if propagate is not None:
             self.pack_propagate(propagate)
 
     @property
-    def side(self) -> Side:
+    def _side(self) -> Side:
         """Get the pack side based on direction."""
         return self.SIDE_MAP.get(self._direction, "top")
 
-    @property
-    def managed_widgets(self) -> list[tk.Widget]:
-        """Return list of managed widgets in order."""
-        return [w for w, _ in self._managed]
+    @configure_delegate('direction')
+    def _delegate_direction(self, value=None) -> Direction:
+        """Get or set the layout direction."""
+        if value is None:
+            return self._direction
+        self._direction = value
+        # Repack all widgets with new direction
+        self._repack_all()
+
+    @configure_delegate('gap')
+    def _delegate_gap(self, value=None) -> int:
+        """Get or set the gap between children."""
+        if value is None:
+            return self._gap
+        self._gap = value
+        # Repack all widgets with new gap
+        self._repack_all()
 
     def _compute_gap(self, index: int) -> dict[str, Any]:
         """Compute padding for gap based on position and direction."""
@@ -93,7 +119,7 @@ class PackFrame(Frame):
 
     def _build_options(self, index: int, user_options: dict[str, Any]) -> dict[str, Any]:
         """Build final pack options by merging defaults with user options."""
-        options: dict[str, Any] = {"in_": self, "side": self.side}
+        options: dict[str, Any] = {"in_": self, "side": self._side}
 
         # Apply gap based on position
         options.update(self._compute_gap(index))
@@ -114,103 +140,81 @@ class PackFrame(Frame):
         """Unpack and repack all widgets to maintain correct order and gaps."""
         # Unpack all
         for widget, _ in self._managed:
-            widget.pack_forget()
+            tk.Pack.forget(widget)
 
         # Repack in order
         for i, (widget, user_options) in enumerate(self._managed):
             options = self._build_options(i, user_options)
-            widget.pack(**options)
+            tk.Pack.configure(widget, **options)
 
-    def _find_index(self, widget: tk.Widget) -> int:
-        """Find index of widget, raise ValueError if not found."""
+    def _find_widget_index(self, widget: tk.Widget) -> int:
+        """Find index of widget in managed list, return -1 if not found."""
         for i, (w, _) in enumerate(self._managed):
             if w is widget:
                 return i
-        raise ValueError(f"Widget {widget} is not managed by this PackFrame")
+        return -1
 
-    def add(self, widget: tk.Widget, **options: Any) -> tk.Widget:
-        """
-        Add a widget to the end of the frame.
-
-        Args:
-            widget: The widget to add (should already have this frame as master)
-            **options: Pack options that override container defaults
-                      (fill, expand, anchor, padx, pady, ipadx, ipady)
-
-        Returns:
-            The widget (for chaining)
-        """
-        index = len(self._managed)
-        pack_options = self._build_options(index, options)
-        widget.pack(**pack_options)
-        self._managed.append((widget, options))
-        return widget
-
-    def insert(self, index: int, widget: tk.Widget, **options: Any) -> tk.Widget:
-        """
-        Insert a widget at a specific index.
-
-        Args:
-            index: Position to insert at (0 = first)
-            widget: The widget to insert
-            **options: Pack options that override container defaults
-
-        Returns:
-            The widget (for chaining)
-        """
-        # Clamp index to valid range
-        index = max(0, min(index, len(self._managed)))
-        self._managed.insert(index, (widget, options))
-        self._repack_all()
-        return widget
-
-    def remove(self, widget: tk.Widget) -> None:
-        """
-        Remove a widget from the frame.
-
-        The widget is unpacked but not destroyed.
-        """
-        index = self._find_index(widget)
-        widget.pack_forget()
-        self._managed.pop(index)
-        # Only repack if we removed something that affects gaps
-        if index < len(self._managed):
-            self._repack_all()
-
-    def move(self, widget: tk.Widget, new_index: int) -> None:
-        """
-        Move a widget to a new position.
-
-        Args:
-            widget: The widget to move
-            new_index: The new position index
-        """
-        old_index = self._find_index(widget)
-        entry = self._managed.pop(old_index)
-        new_index = max(0, min(new_index, len(self._managed)))
-        self._managed.insert(new_index, entry)
-        self._repack_all()
-
-    def update_options(self, widget: tk.Widget, **options: Any) -> None:
-        """
-        Update pack options for a widget.
-
-        Args:
-            widget: The widget to update
-            **options: New pack options (merged with existing)
-        """
-        index = self._find_index(widget)
-        _, current_options = self._managed[index]
-        new_options = {**current_options, **options}
-        self._managed[index] = (widget, new_options)
-        self._repack_all()
-
-    def index_of(self, widget: tk.Widget) -> int:
-        """Get the index of a widget."""
-        return self._find_index(widget)
-
-    def __len__(self) -> int:
+    def _find_insert_index(self, before: tk.Widget = None, after: tk.Widget = None) -> int:
+        """Determine insertion index based on before/after options."""
+        if before is not None:
+            idx = self._find_widget_index(before)
+            if idx >= 0:
+                return idx
+        if after is not None:
+            idx = self._find_widget_index(after)
+            if idx >= 0:
+                return idx + 1
         return len(self._managed)
 
-    def __iter__(self):
-        return iter(self.managed_widgets)
+    # -------------------------------------------------------------------------
+    # Hook methods called by PackMixin
+    # -------------------------------------------------------------------------
+
+    def _on_child_pack(self, widget: tk.Widget, **options: Any) -> None:
+        """Hook called when a child widget calls pack().
+
+        Applies frame defaults, handles gap spacing, and tracks the widget.
+        """
+        # Check if widget is already managed (reconfigure case)
+        existing_idx = self._find_widget_index(widget)
+
+        # Determine insertion position from before/after
+        before = options.pop("before", None)
+        after = options.pop("after", None)
+
+        if existing_idx >= 0:
+            # Widget already managed - update its options
+            self._managed[existing_idx] = (widget, options)
+            self._repack_all()
+        else:
+            # New widget - find insertion point
+            insert_idx = self._find_insert_index(before, after)
+
+            if insert_idx < len(self._managed):
+                # Inserting in the middle - need to repack all
+                self._managed.insert(insert_idx, (widget, options))
+                self._repack_all()
+            else:
+                # Appending at the end - just pack it
+                pack_options = self._build_options(len(self._managed), options)
+                tk.Pack.configure(widget, **pack_options)
+                self._managed.append((widget, options))
+
+    def _on_child_pack_forget(self, widget: tk.Widget) -> None:
+        """Hook called when a child widget calls pack_forget().
+
+        Removes widget from tracking and repacks remaining widgets if needed.
+        """
+        idx = self._find_widget_index(widget)
+        if idx < 0:
+            # Not managed by us, just forget it normally
+            tk.Pack.forget(widget)
+            return
+
+        # Remove from our tracking
+        tk.Pack.forget(widget)
+        self._managed.pop(idx)
+
+        # Only repack if we removed something that affects gaps (not the last item)
+        if idx < len(self._managed):
+            self._repack_all()

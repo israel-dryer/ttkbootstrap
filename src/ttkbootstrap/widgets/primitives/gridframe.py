@@ -4,6 +4,7 @@ import tkinter as tk
 from typing import Literal, Optional, Any, Union
 
 from ttkbootstrap.widgets.primitives.frame import Frame
+from ttkbootstrap.widgets.mixins.configure_mixin import configure_delegate
 from ttkbootstrap.widgets.types import Master
 
 Direction = Literal["vertical", "horizontal", "row", "column", "row-reverse", "column-reverse"]
@@ -36,6 +37,20 @@ class GridFrame(Frame):
     GridFrame extends the ttkbootstrap Frame with automatic grid-based
     layout management, including support for row/column definitions,
     gap spacing, auto-placement, and default sticky behavior.
+
+    Children gridded into this frame automatically receive the frame's
+    default layout options. Simply use the standard `grid()` method
+    on child widgets - no special `add()` method needed.
+
+    Example:
+        ```python
+        frame = GridFrame(columns=3, gap=10, sticky_items="nsew")
+        Label(frame, text="A").grid()  # auto-placed at row=0, col=0
+        Label(frame, text="B").grid()  # auto-placed at row=0, col=1
+        Label(frame, text="C").grid()  # auto-placed at row=0, col=2
+        Label(frame, text="D").grid()  # auto-placed at row=1, col=0
+        Label(frame, text="Wide").grid(columnspan=2)  # spans 2 columns
+        ```
 
     Args:
         master: Parent widget. If None, uses the default root window.
@@ -109,27 +124,33 @@ class GridFrame(Frame):
         return gap
 
     @property
-    def column_gap(self) -> int:
+    def _column_gap(self) -> int:
+        """Get the column gap."""
         return self._gap[0]
 
     @property
-    def row_gap(self) -> int:
+    def _row_gap(self) -> int:
+        """Get the row gap."""
         return self._gap[1]
 
+    @configure_delegate('gap')
+    def _delegate_gap(self, value=None) -> tuple[int, int]:
+        """Get or set the gap between cells."""
+        if value is None:
+            return self._gap
+        self._gap = self._normalize_gap(value)
+        # Regrid all widgets with new gap
+        self._regrid_all()
+
     @property
-    def num_columns(self) -> int:
+    def _num_columns(self) -> int:
         """Number of defined columns, or a large default for auto-placement."""
         return len(self._col_defs) if self._col_defs else 100
 
     @property
-    def num_rows(self) -> int:
+    def _num_rows(self) -> int:
         """Number of defined rows, or a large default for auto-placement."""
         return len(self._row_defs) if self._row_defs else 100
-
-    @property
-    def managed_widgets(self) -> list[tk.Widget]:
-        """Return list of managed widgets in order."""
-        return [w for w, _, _ in self._managed]
 
     def _is_area_free(self, row: int, col: int, rowspan: int, colspan: int) -> bool:
         """Check if a rectangular area is free."""
@@ -156,8 +177,8 @@ class GridFrame(Frame):
         if self._auto_flow == "none":
             return 0, 0
 
-        max_cols = self.num_columns
-        max_rows = self.num_rows
+        max_cols = self._num_columns
+        max_rows = self._num_rows
 
         if "dense" in self._auto_flow:
             # Dense packing: search from (0,0)
@@ -217,8 +238,8 @@ class GridFrame(Frame):
         result: dict[str, Any] = {}
 
         # Handle column gap (padx)
-        if col > 0 and self.column_gap:
-            gap_padx = (self.column_gap, 0)
+        if col > 0 and self._column_gap:
+            gap_padx = (self._column_gap, 0)
             if user_padx is not None:
                 result["padx"] = self._merge_padding(gap_padx, user_padx)
             else:
@@ -227,8 +248,8 @@ class GridFrame(Frame):
             result["padx"] = user_padx
 
         # Handle row gap (pady)
-        if row > 0 and self.row_gap:
-            gap_pady = (self.row_gap, 0)
+        if row > 0 and self._row_gap:
+            gap_pady = (self._row_gap, 0)
             if user_pady is not None:
                 result["pady"] = self._merge_padding(gap_pady, user_pady)
             else:
@@ -292,7 +313,7 @@ class GridFrame(Frame):
         """Remove and re-grid all widgets."""
         # Ungrid all
         for widget, _, _ in self._managed:
-            widget.grid_forget()
+            tk.Grid.forget(widget)
 
         # Clear and rebuild occupied set
         self._occupied.clear()
@@ -317,158 +338,91 @@ class GridFrame(Frame):
 
             self._occupy_area(row, col, rowspan, colspan)
             options = self._build_options(row, col, rowspan, colspan, user_options)
-            widget.grid(**options)
+            tk.Grid.configure(widget, **options)
             new_managed.append((widget, user_options, (row, col, rowspan, colspan)))
 
         self._managed = new_managed
 
-    def _find_index(self, widget: tk.Widget) -> int:
-        """Find index of widget, raise ValueError if not found."""
+    def _find_widget_index(self, widget: tk.Widget) -> int:
+        """Find index of widget in managed list, return -1 if not found."""
         for i, (w, _, _) in enumerate(self._managed):
             if w is widget:
                 return i
-        raise ValueError(f"Widget {widget} is not managed by this GridFrame")
+        return -1
 
-    def add(
-        self,
-        widget: tk.Widget,
-        *,
-        row: Optional[int] = None,
-        column: Optional[int] = None,
-        rowspan: int = 1,
-        columnspan: int = 1,
-        **options: Any,
-    ) -> tk.Widget:
+    # -------------------------------------------------------------------------
+    # Hook methods called by GridMixin
+    # -------------------------------------------------------------------------
+
+    def _on_child_grid(self, widget: tk.Widget, **options: Any) -> None:
+        """Hook called when a child widget calls grid().
+
+        Applies frame defaults, handles gap spacing, auto-placement, and tracks the widget.
         """
-        Add a widget to the grid.
+        # Check if widget is already managed (reconfigure case)
+        existing_idx = self._find_widget_index(widget)
 
-        If row/column are not specified, auto-placement is used.
+        rowspan = int(options.get("rowspan", 1))
+        colspan = int(options.get("columnspan", 1))
 
-        Args:
-            widget: The widget to add
-            row: Row index (auto if None)
-            column: Column index (auto if None)
-            rowspan: Number of rows to span
-            columnspan: Number of columns to span
-            **options: Additional grid options (sticky, padx, pady, ipadx, ipady)
+        # Check if user specified explicit position
+        explicit_row = options.get("row")
+        explicit_col = options.get("column")
 
-        Returns:
-            The widget (for chaining)
-        """
-        user_options: dict[str, Any] = {**options}
-        if row is not None:
-            user_options["row"] = row
-        if column is not None:
-            user_options["column"] = column
-        if rowspan != 1:
-            user_options["rowspan"] = rowspan
-        if columnspan != 1:
-            user_options["columnspan"] = columnspan
-
-        # Determine position
-        if row is not None and column is not None:
-            final_row, final_col = row, column
+        if existing_idx >= 0:
+            # Widget already managed - update its options and regrid all
+            _, _, old_pos = self._managed[existing_idx]
+            self._free_area(*old_pos)
+            self._managed[existing_idx] = (widget, options, (0, 0, 1, 1))  # temp position
+            self._regrid_all()
         else:
-            final_row, final_col = self._find_next_position(rowspan, columnspan)
+            # New widget
+            if explicit_row is not None and explicit_col is not None:
+                row, col = int(explicit_row), int(explicit_col)
+            else:
+                row, col = self._find_next_position(rowspan, colspan)
 
-        # Occupy and grid
-        self._occupy_area(final_row, final_col, rowspan, columnspan)
-        grid_options = self._build_options(final_row, final_col, rowspan, columnspan, user_options)
-        widget.grid(**grid_options)
+            self._occupy_area(row, col, rowspan, colspan)
+            grid_options = self._build_options(row, col, rowspan, colspan, options)
+            tk.Grid.configure(widget, **grid_options)
+            self._managed.append((widget, options, (row, col, rowspan, colspan)))
 
-        self._managed.append((widget, user_options, (final_row, final_col, rowspan, columnspan)))
-        return widget
+    def _on_child_grid_forget(self, widget: tk.Widget) -> None:
+        """Hook called when a child widget calls grid_forget().
 
-    def insert(self, index: int, widget: tk.Widget, **options: Any) -> tk.Widget:
+        Removes widget from tracking and frees its occupied area.
         """
-        Insert a widget at a specific index in the managed list.
+        idx = self._find_widget_index(widget)
+        if idx < 0:
+            # Not managed by us, just forget it normally
+            tk.Grid.forget(widget)
+            return
 
-        The widget will be placed using auto-placement rules relative to
-        its position in the list.
-
-        Args:
-            index: Position in managed list
-            widget: The widget to insert
-            **options: Grid options
-
-        Returns:
-            The widget (for chaining)
-        """
-        index = max(0, min(index, len(self._managed)))
-        # Temporary position, will be recalculated
-        self._managed.insert(index, (widget, options, (0, 0, 1, 1)))
-        self._regrid_all()
-        return widget
-
-    def remove(self, widget: tk.Widget) -> None:
-        """
-        Remove a widget from the grid.
-
-        The widget is ungridded but not destroyed.
-        """
-        index = self._find_index(widget)
-        _, _, (row, col, rowspan, colspan) = self._managed[index]
-
-        widget.grid_forget()
+        _, _, (row, col, rowspan, colspan) = self._managed[idx]
+        tk.Grid.forget(widget)
         self._free_area(row, col, rowspan, colspan)
-        self._managed.pop(index)
+        self._managed.pop(idx)
 
-    def move(self, widget: tk.Widget, new_index: int) -> None:
+    def _on_child_grid_remove(self, widget: tk.Widget) -> None:
+        """Hook called when a child widget calls grid_remove().
+
+        Removes widget from display but keeps its configuration for later restore.
+        Note: We treat this the same as grid_forget for tracking purposes.
         """
-        Move a widget to a new position in the managed list.
+        idx = self._find_widget_index(widget)
+        if idx < 0:
+            # Not managed by us, just remove it normally
+            tk.Grid.remove(widget)
+            return
 
-        This affects auto-placement order.
-        """
-        old_index = self._find_index(widget)
-        entry = self._managed.pop(old_index)
-        new_index = max(0, min(new_index, len(self._managed)))
-        self._managed.insert(new_index, entry)
-        self._regrid_all()
+        _, _, (row, col, rowspan, colspan) = self._managed[idx]
+        tk.Grid.remove(widget)
+        self._free_area(row, col, rowspan, colspan)
+        self._managed.pop(idx)
 
-    def move_to(
-        self,
-        widget: tk.Widget,
-        row: int,
-        column: int,
-        rowspan: Optional[int] = None,
-        columnspan: Optional[int] = None,
-    ) -> None:
-        """
-        Move a widget to a specific grid position.
-
-        Args:
-            widget: The widget to move
-            row: New row
-            column: New column
-            rowspan: New rowspan (keeps current if None)
-            columnspan: New columnspan (keeps current if None)
-        """
-        index = self._find_index(widget)
-        _, user_options, (_, _, old_rowspan, old_colspan) = self._managed[index]
-
-        # Update options with new position
-        new_options = {**user_options, "row": row, "column": column}
-        if rowspan is not None:
-            new_options["rowspan"] = rowspan
-        if columnspan is not None:
-            new_options["columnspan"] = columnspan
-
-        self._managed[index] = (widget, new_options, (0, 0, 1, 1))  # Temp position
-        self._regrid_all()
-
-    def update_options(self, widget: tk.Widget, **options: Any) -> None:
-        """
-        Update grid options for a widget.
-
-        Args:
-            widget: The widget to update
-            **options: New grid options (merged with existing)
-        """
-        index = self._find_index(widget)
-        _, current_options, position = self._managed[index]
-        new_options = {**current_options, **options}
-        self._managed[index] = (widget, new_options, position)
-        self._regrid_all()
+    # -------------------------------------------------------------------------
+    # Public configuration methods
+    # -------------------------------------------------------------------------
 
     def configure_row(
         self,
@@ -499,18 +453,3 @@ class GridFrame(Frame):
         if pad is not None:
             kwargs["pad"] = pad
         self.columnconfigure(index, **kwargs)
-
-    def get_position(self, widget: tk.Widget) -> tuple[int, int, int, int]:
-        """Get the current (row, column, rowspan, colspan) of a widget."""
-        index = self._find_index(widget)
-        return self._managed[index][2]
-
-    def index_of(self, widget: tk.Widget) -> int:
-        """Get the index of a widget in the managed list."""
-        return self._find_index(widget)
-
-    def __len__(self) -> int:
-        return len(self._managed)
-
-    def __iter__(self):
-        return iter(self.managed_widgets)

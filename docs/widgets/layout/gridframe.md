@@ -8,6 +8,8 @@ title: GridFrame
 
 It extends the ttkbootstrap Frame with automatic grid-based layout management, including support for row/column definitions, gap spacing, auto-placement, and default sticky behavior. Use `GridFrame` when you need a CSS Grid-like layout experience without manually managing grid options.
 
+Children simply call the standard `grid()` method and automatically receive the frame's default layout options and auto-placement.
+
 ---
 
 ## Quick start
@@ -21,11 +23,11 @@ app = ttk.App()
 grid = ttk.GridFrame(app, columns=2, rows=2, gap=10, padding=20)
 grid.pack(fill="both", expand=True)
 
-# Widgets are auto-placed in row-major order
-grid.add(ttk.Button(grid, text="Top-Left"))
-grid.add(ttk.Button(grid, text="Top-Right"))
-grid.add(ttk.Button(grid, text="Bottom-Left"))
-grid.add(ttk.Button(grid, text="Bottom-Right"))
+# Widgets are auto-placed in row-major order using standard grid()
+ttk.Button(grid, text="Top-Left").grid()
+ttk.Button(grid, text="Top-Right").grid()
+ttk.Button(grid, text="Bottom-Left").grid()
+ttk.Button(grid, text="Bottom-Right").grid()
 
 app.mainloop()
 ```
@@ -131,65 +133,50 @@ Control whether the frame resizes to fit its contents.
 grid = ttk.GridFrame(app, width=400, height=300, propagate=False)
 ```
 
-### Managing widgets
+### Adding widgets
 
-#### `add(widget, *, row=None, column=None, rowspan=1, columnspan=1, **options)`
-
-Add a widget to the grid. If row/column are not specified, auto-placement is used.
+Children use standard `grid()` to add themselves. The frame automatically applies its defaults and handles auto-placement.
 
 ```python
-grid = ttk.GridFrame(app, columns=3, gap=8)
+grid = ttk.GridFrame(app, columns=3, gap=8, sticky_items="nsew")
 
-# Auto-placed
-grid.add(ttk.Button(grid, text="A"))
-grid.add(ttk.Button(grid, text="B"))
-grid.add(ttk.Button(grid, text="C"))
+# Auto-placed widgets (row-major order by default)
+ttk.Button(grid, text="A").grid()  # row=0, col=0
+ttk.Button(grid, text="B").grid()  # row=0, col=1
+ttk.Button(grid, text="C").grid()  # row=0, col=2
+ttk.Button(grid, text="D").grid()  # row=1, col=0
 
 # Explicit position
-grid.add(ttk.Button(grid, text="Footer"), row=1, column=0, columnspan=3)
+ttk.Button(grid, text="Footer").grid(row=2, column=0, columnspan=3)
 
 # With spanning
-grid.add(ttk.Label(grid, text="Wide"), columnspan=2)
+ttk.Label(grid, text="Wide").grid(columnspan=2)
+
+# Override default sticky
+ttk.Label(grid, text="Centered").grid(sticky="")
 ```
 
-#### `insert(index, widget, **options)`
+### Method chaining
 
-Insert a widget at a specific index in the managed list.
+The `grid()` method returns the widget for chaining:
 
 ```python
-grid.insert(0, ttk.Label(grid, text="Now first"))
+btn = ttk.Button(grid, text="Click").grid()
+btn.configure(command=my_callback)
+
+# Or chain further
+ttk.Entry(grid).grid(columnspan=2).focus()
 ```
 
-#### `remove(widget)`
+### Removing widgets
 
-Remove a widget (ungrids but doesn't destroy).
-
-```python
-grid.remove(btn)
-```
-
-#### `move(widget, new_index)`
-
-Move a widget to a new position in the managed list.
+Use standard `grid_forget()` to remove widgets:
 
 ```python
-grid.move(btn, 0)
-```
+btn = ttk.Button(grid, text="Removable").grid()
 
-#### `move_to(widget, row, column, rowspan=None, columnspan=None)`
-
-Move a widget to a specific grid position.
-
-```python
-grid.move_to(btn, row=0, column=2)
-```
-
-#### `update_options(widget, **options)`
-
-Update grid options for a widget.
-
-```python
-grid.update_options(btn, sticky="nsew", columnspan=2)
+# Later, remove it
+btn.grid_forget()
 ```
 
 ### Configuring rows and columns
@@ -202,41 +189,23 @@ grid.configure_row(0, weight=1, minsize=50)
 grid.configure_column(1, weight=2, minsize=100)
 ```
 
-### Querying widgets
-
-```python
-# Get number of managed widgets
-count = len(grid)
-
-# Iterate over managed widgets
-for widget in grid:
-    print(widget)
-
-# Get position of a widget
-row, col, rowspan, colspan = grid.get_position(btn)
-
-# Get index of a widget
-index = grid.index_of(btn)
-
-# Access managed widgets list
-widgets = grid.managed_widgets
-```
-
 ---
 
 ## Behavior
 
 - Widgets are auto-placed in row-major order by default (configurable via `auto_flow`).
 
-- The `add()` method returns the widget for fluent/chaining patterns.
+- The `grid()` method returns the widget for fluent/chaining patterns.
 
-- Removing or reordering widgets automatically regrids remaining widgets.
+- Removing widgets automatically adjusts auto-placement for remaining widgets.
 
-- Per-widget options in `add()` override container defaults.
+- Per-widget options in `grid()` override container defaults.
 
 - Gap spacing is applied as padding on non-first rows/columns.
 
 - GridFrame extends Frame, so all Frame options (color, padding, etc.) are available.
+
+- Standard tkinter grid options (`row`, `column`, `rowspan`, `columnspan`, `sticky`, etc.) work as expected.
 
 ---
 
