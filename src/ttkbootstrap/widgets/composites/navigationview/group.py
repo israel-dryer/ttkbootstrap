@@ -117,7 +117,7 @@ class NavigationViewGroup(Frame):
         self._content_frame = self._expander.add()
 
         # Bind expander events
-        self._expander.on_toggle(self._on_expander_toggle)
+        self._expander.on_toggled(self._on_expander_toggle)
 
         # Create compact mode button (hidden initially)
         self._compact_button = CompositeFrame(
