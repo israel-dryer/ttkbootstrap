@@ -245,7 +245,7 @@ class Accordion(Frame):
         self._separators = value
         return None
 
-    def on_change(self, callback: Callable) -> str:
+    def on_accordion_changed(self, callback: Callable) -> str:
         """Bind callback to ``<<AccordionChange>>`` events.
 
         Args:
@@ -253,14 +253,14 @@ class Accordion(Frame):
                 Receives event with ``event.data = {'expanded': list[Expander]}``.
 
         Returns:
-            Bind ID that can be passed to ``off_change`` to remove this callback.
+            Bind ID that can be passed to ``off_accordion_changed`` to remove this callback.
         """
         return self.bind('<<AccordionChange>>', callback, add='+')
 
-    def off_change(self, bind_id: str = None):
+    def off_accordion_changed(self, bind_id: str = None):
         """Unbind ``<<AccordionChange>>`` callback(s).
 
         Args:
-            bind_id (str | None): Bind ID returned by ``on_change``. If None, unbinds all.
+            bind_id (str | None): Bind ID returned by ``on_accordion_changed``. If None, unbinds all.
         """
         self.unbind('<<AccordionChange>>', bind_id)

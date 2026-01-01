@@ -160,12 +160,12 @@ if accordion.cget('multiple'):
 ### Responding to changes
 
 ```python
-def on_change(event):
+def on_accordion_changed(event):
     expanded = event.data['expanded']
     titles = [exp.cget('title') for exp in expanded]
     print(f"Open sections: {titles}")
 
-accordion.on_change(on_change)
+accordion.on_accordion_changed(on_accordion_changed)
 ```
 
 ---

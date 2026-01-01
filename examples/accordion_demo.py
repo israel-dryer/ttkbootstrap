@@ -53,6 +53,6 @@ def on_change(event):
     titles = [exp.cget('title') for exp in expanded]
     print(f"Expanded sections: {titles}")
 
-accordion1.on_change(on_change)
+accordion1.on_accordion_changed(on_change)
 
 app.mainloop()

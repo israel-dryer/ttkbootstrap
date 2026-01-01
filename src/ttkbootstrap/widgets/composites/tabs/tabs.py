@@ -25,9 +25,9 @@ class Tabs(Frame):
     orientation, and styling of child TabItems.
 
     Virtual events:
-        <<TabSelect>>: Fired when a tab is selected (bubbled from TabItem).
-        <<TabClose>>: Fired when a tab's close button is clicked (bubbled from TabItem).
-        <<TabAdd>>: Fired when the add button is clicked (if enable_adding=True).
+        - ``<<TabSelect>>``: Fired when a tab is selected (bubbled from TabItem).
+        - ``<<TabClose>>``: Fired when a tab's close button is clicked (bubbled from TabItem).
+        - ``<<TabAdd>>``: Fired when the add button is clicked (if enable_adding=True).
 
     Attributes:
         orient (str): The orientation of the tab bar ('horizontal' or 'vertical').
@@ -75,7 +75,7 @@ class Tabs(Frame):
                 Can be overridden per-tab via `closable` in add_tab().
             enable_adding: If True, shows an "add" button. In horizontal
                 orientation, shows a plus icon on the right. In vertical
-                orientation, shows "New Tab" at the bottom. Fires <<TabAdd>>
+                orientation, shows "New Tab" at the bottom. Fires `<<TabAdd>>`
                 event when clicked.
             variable: Tk variable for tracking selected tab value.
             signal: Reactive Signal for tracking selected tab value.
@@ -214,7 +214,7 @@ class Tabs(Frame):
         self.event_generate('<<TabAdd>>')
 
     def on_tab_added(self, callback: Callable) -> str:
-        """Bind to <<TabAdd>> event.
+        """Bind to ``<<TabAdd>>`` event.
 
         Args:
             callback: Function to call when add button is clicked.
@@ -397,17 +397,17 @@ class Tabs(Frame):
         """Set the selected tab value."""
         self._variable.set(value)
 
-    def on_changed(self, callback: Callable) -> Any:
+    def on_tab_changed(self, callback: Callable) -> Any:
         """Subscribe to tab selection changes.
 
         Args:
             callback: Function called with the new selected value.
 
         Returns:
-            Subscription ID for use with off_changed().
+            Subscription ID for use with off_tab_changed().
         """
         return self._signal.subscribe(callback)
 
-    def off_changed(self, subscription_id: Any) -> None:
+    def off_tab_changed(self, subscription_id: Any) -> None:
         """Unsubscribe from tab selection changes."""
         self._signal.unsubscribe(subscription_id)
