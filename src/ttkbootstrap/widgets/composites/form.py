@@ -21,7 +21,7 @@ from ttkbootstrap.widgets.primitives.notebook import Notebook
 from ttkbootstrap.widgets.composites.numericentry import NumericEntry
 from ttkbootstrap.widgets.composites.passwordentry import PasswordEntry
 from ttkbootstrap.widgets.primitives.scale import Scale
-from ttkbootstrap.widgets.primitives.selectbox import SelectBox
+from ttkbootstrap.widgets.composites.selectbox import SelectBox
 from ttkbootstrap.widgets.primitives.spinbox import Spinbox
 from ttkbootstrap.widgets.composites.textentry import TextEntry
 from ttkbootstrap.widgets.mixins.validation_mixin import ValidationMixin

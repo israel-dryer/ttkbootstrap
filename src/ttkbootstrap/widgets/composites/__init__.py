@@ -7,6 +7,7 @@ from ttkbootstrap.widgets.composites.listitem import ListItem
 from ttkbootstrap.widgets.composites.listview import ListView, MemoryDataSource, DataSourceProtocol
 from ttkbootstrap.widgets.composites.sidenav import SideNav
 from ttkbootstrap.widgets.composites.tabs import Tabs, TabView
+from ttkbootstrap.widgets.composites.selectbox import SelectBox
 from ttkbootstrap.widgets.composites.toolbar import Toolbar
 from ttkbootstrap.widgets.composites.navigationview import (
     NavigationView,
@@ -28,6 +29,7 @@ __all__ = [
     'SideNav',
     'Tabs',
     'TabView',
+    'SelectBox',
     'Toolbar',
     'NavigationView',
     'NavigationViewGroup',
