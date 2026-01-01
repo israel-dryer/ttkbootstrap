@@ -205,12 +205,6 @@ class PackFrame(Frame):
         self._managed[index] = (widget, new_options)
         self._repack_all()
 
-    def clear(self) -> None:
-        """Remove all widgets (unpacks but doesn't destroy them)."""
-        for widget, _ in self._managed:
-            widget.pack_forget()
-        self._managed.clear()
-
     def index_of(self, widget: tk.Widget) -> int:
         """Get the index of a widget."""
         return self._find_index(widget)

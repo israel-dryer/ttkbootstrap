@@ -146,11 +146,11 @@ menu.show((event.x_root, event.y_root))
 
 ### Dynamic menus
 
-Rebuild menu items just before showing to reflect current context.
+Build context-sensitive menus by creating a new menu or conditionally adding items.
 
 ```python
 def on_right_click(event):
-    menu.clear()
+    menu = ttk.ContextMenu(root)
     menu.add_command(text="Open", command=on_open)
     if can_delete():
         menu.add_command(text="Delete", command=on_delete)

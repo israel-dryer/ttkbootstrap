@@ -23,9 +23,9 @@ class SideNav(Frame):
     buttons. Items can display icons, text, or both. Use multiple SideNavs
     side-by-side for multi-level navigation (e.g., icon-only + list view).
 
-    Virtual events:
-        ``<<SelectionChanged>>``: Fired when selected item changes.
-            event.data = {'key': str}
+    !!! note "Events"
+        - ``<<SelectionChanged>>``: Fired when selected item changes.
+          ``event.data = {'key': str}``
 
     Example:
         ```python

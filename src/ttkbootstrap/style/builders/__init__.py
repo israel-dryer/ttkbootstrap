@@ -11,7 +11,7 @@ from __future__ import annotations
 from . import (
     badge, button, checkbutton, combobox, entry, expander, frame, label, labelframe, menubutton, notebook,
     panedwindow, progressbar, radiobutton, scale, scrollbar, separator, sizegrip, spinbox, treeview,
-    toolbutton, tooltip, field, buttongroup, listview, calendar, contextmenu
+    toolbutton, tooltip, field, buttongroup, listview, calendar, contextmenu, tabitem
 )
 
 # Import all builder modules to trigger registration
@@ -43,5 +43,7 @@ __all__ = [
     'buttongroup',
     'listview',
     'calendar',
-    'contextmenu'
+    'contextmenu',
+    'tabs',
+    'tabitem'
 ]

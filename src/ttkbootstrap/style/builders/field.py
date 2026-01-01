@@ -224,7 +224,7 @@ def build_field_addon_style(b: BootstyleBuilderTTk, ttk_style: str, _: str, vari
             [
                 Element("Button.padding", sticky="nsew").children(
                     [
-                        Element("Button.label", sticky="")
+                        Element("Button.label", sticky="nsew")
                     ])
             ]))
 

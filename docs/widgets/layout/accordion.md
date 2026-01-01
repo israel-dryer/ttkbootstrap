@@ -111,6 +111,22 @@ exp = ttk.Expander(accordion, title="Custom Expander")
 accordion.add(exp)
 ```
 
+### Removing sections
+
+Use `remove()` to remove a section by index or reference:
+
+```python
+# Remove by index
+accordion.remove(0)
+
+# Remove by reference
+section = accordion.add(title="Temporary")
+accordion.remove(section)
+
+# Get index of an expander
+index = accordion.index_of(section)
+```
+
 ### Multiple selection mode
 
 By default, only one section can be open at a time. Set `multiple=True` to allow multiple sections to be open simultaneously.
@@ -160,12 +176,12 @@ if accordion.cget('multiple'):
 ### Responding to changes
 
 ```python
-def on_change(event):
+def on_accordion_changed(event):
     expanded = event.data['expanded']
     titles = [exp.cget('title') for exp in expanded]
     print(f"Open sections: {titles}")
 
-accordion.on_change(on_change)
+accordion.on_accordion_changed(on_accordion_changed)
 ```
 
 ---

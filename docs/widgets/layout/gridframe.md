@@ -192,14 +192,6 @@ Update grid options for a widget.
 grid.update_options(btn, sticky="nsew", columnspan=2)
 ```
 
-#### `clear()`
-
-Remove all widgets.
-
-```python
-grid.clear()
-```
-
 ### Configuring rows and columns
 
 ```python

@@ -24,9 +24,9 @@ class NavigationViewItem(Frame):
     Uses RadioToggle internally for consistent styling and built-in
     selection state management.
 
-    Virtual events:
-        ``<<ItemInvoked>>``: Fired when the item is clicked.
-            event.data = {'key': str}
+    !!! note "Events"
+        - ``<<ItemInvoked>>``: Fired when the item is clicked.
+          ``event.data = {'key': str}``
 
     Example:
         ```python
