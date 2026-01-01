@@ -21,14 +21,15 @@ def _context_item_layout(ttk_style: str) -> Element:
 
 @BootstyleBuilderTTk.register_builder('context-check', 'Toolbutton')
 def build_context_check_toolbutton_style(b: BootstyleBuilderTTk, ttk_style: str, color: str = None, **options):
+    accent_token = color or 'foreground'
     surface_token = options.get('surface_color', 'background')
 
     surface = b.color(surface_token)
     on_surface = b.on_color(surface)
     on_disabled = b.disabled('text', surface)
 
-    active = b.elevate(surface, 1)
-    pressed = b.elevate(surface, 2)
+    active = b.subtle(accent_token, surface)
+    pressed = b.elevate(active, 2)
     on_pressed = b.on_color(pressed)
 
     b.create_style_layout(
@@ -52,9 +53,11 @@ def build_context_check_toolbutton_style(b: BootstyleBuilderTTk, ttk_style: str,
     state_spec = dict(
         foreground=[
             ('disabled', on_disabled),
+            ('focus !disabled', on_pressed),
             ('pressed', on_pressed),
             ('', on_surface)],
         background=[
+            ('focus !disabled', active),
             ('pressed !disabled', pressed),
             ('active !disabled', active),
             ('', surface)
@@ -76,14 +79,15 @@ def build_context_check_toolbutton_style(b: BootstyleBuilderTTk, ttk_style: str,
 
 @BootstyleBuilderTTk.register_builder('context-radio', 'Toolbutton')
 def build_context_radio_toolbutton_style(b: BootstyleBuilderTTk, ttk_style: str, color: str = None, **options):
+    accent_token = color or 'foreground'
     surface_token = options.get('surface_color', 'background')
 
     surface = b.color(surface_token)
     on_surface = b.on_color(surface)
     on_disabled = b.disabled('text', surface)
 
-    active = b.elevate(surface, 1)
-    pressed = b.elevate(surface, 2)
+    active = b.subtle(accent_token, surface)
+    pressed = b.elevate(active, 2)
     on_pressed = b.on_color(pressed)
 
     b.create_style_layout(
@@ -107,9 +111,11 @@ def build_context_radio_toolbutton_style(b: BootstyleBuilderTTk, ttk_style: str,
     state_spec = dict(
         foreground=[
             ('disabled', on_disabled),
+            ('focus !disabled', on_pressed),
             ('pressed', on_pressed),
             ('', on_surface)],
         background=[
+            ('focus !disabled', active),
             ('pressed !disabled', pressed),
             ('active !disabled', active),
             ('', surface)

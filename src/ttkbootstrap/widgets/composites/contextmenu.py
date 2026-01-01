@@ -418,8 +418,8 @@ class ContextMenu(CustomConfigMixin):
         self._toplevel.lift()
         self._toplevel.focus_force()
 
-        # Reset highlight to first actionable item
-        self._update_highlight(0)
+        # Start with no item highlighted (keyboard nav will highlight on first arrow key)
+        self._highlighted_index = -1
 
         # Setup click outside handler if enabled
         if self._hide_on_outside_click:
