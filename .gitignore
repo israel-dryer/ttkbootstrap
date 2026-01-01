@@ -25,3 +25,4 @@ tests/themes.json
 publish.bat
 /issues/
 /nul
+/.claude/settings.local.json

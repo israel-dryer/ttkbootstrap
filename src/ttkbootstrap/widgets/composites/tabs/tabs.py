@@ -194,7 +194,7 @@ class Tabs(Frame):
                 variant='ghost',
                 command=self._on_add_click,
             )
-            self._tab_bar.add(self._add_button)
+            self._add_button.pack()
         else:
             # "New Tab" with plus icon
             self._add_button = Button(
@@ -206,12 +206,12 @@ class Tabs(Frame):
                 command=self._on_add_click,
                 anchor='w',
             )
-            self._tab_bar.add(self._add_button, fill='x')
+            self._add_button.pack(fill='x')
 
     def _destroy_add_button(self):
         """Remove the add button widget."""
         if self._add_button is not None:
-            self._tab_bar.remove(self._add_button)
+            self._add_button.pack_forget()
             self._add_button.destroy()
             self._add_button = None
 
@@ -323,10 +323,9 @@ class Tabs(Frame):
 
         # Insert before add button if it exists, otherwise append
         if self._add_button is not None:
-            add_btn_index = self._tab_bar.index_of(self._add_button)
-            self._tab_bar.insert(add_btn_index, tab, **pack_opts)
+            tab.pack(before=self._add_button, **pack_opts)
         else:
-            self._tab_bar.add(tab, **pack_opts)
+            tab.pack(**pack_opts)
 
         # Track tab by key
         self._tabs[key] = tab
@@ -352,7 +351,7 @@ class Tabs(Frame):
 
         tab = self._tabs.pop(key)
         self._tab_order.remove(key)
-        self._tab_bar.remove(tab)
+        tab.pack_forget()
         tab.destroy()
 
     def item(self, key: str) -> TabItem:

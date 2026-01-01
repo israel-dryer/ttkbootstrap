@@ -299,14 +299,14 @@ main.pack(fill="both", expand=True)
 # Display
 display = ttk.Label(main, font="display-xl[48]")
 counter.subscribe(lambda v: display.configure(text=str(v)))
-main.add(display)
+display.pack()
 
 # Controls
 controls = ttk.PackFrame(main, direction="horizontal", gap=10)
-main.add(controls)
+controls.pack()
 
-controls.add(ttk.Button(controls, text="+1", command=increment))
-controls.add(ttk.Button(controls, text="Reset", command=lambda: counter.set(0)))
+ttk.Button(controls, text="+1", command=increment).pack()
+ttk.Button(controls, text="Reset", command=lambda: counter.set(0)).pack()
 
 app.mainloop()
 ```

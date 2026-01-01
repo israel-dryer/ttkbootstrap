@@ -13,8 +13,7 @@ def main():
     pack_frame.pack(fill="x", padx=10, pady=(0, 20))
 
     for i in range(4):
-        btn = ttk.Button(pack_frame, text=f"Button {i + 1}")
-        pack_frame.add(btn)
+        ttk.Button(pack_frame, text=f"Button {i + 1}").pack()
 
     # Simple GridFrame test
     ttk.Label(app, text="GridFrame (2x2):").pack(anchor="w", padx=10, pady=(10, 5))
@@ -24,8 +23,7 @@ def main():
 
     for row in range(2):
         for col in range(2):
-            btn = ttk.Button(grid_frame, text=f"({row}, {col})")
-            grid_frame.add(btn, row=row, column=col)
+            ttk.Button(grid_frame, text=f"({row}, {col})").grid(row=row, column=col)
 
     app.mainloop()
 

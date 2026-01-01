@@ -349,28 +349,28 @@ grid = ttk.GridFrame(form, columns=["auto", 1], gap=(10, 8))
 grid.pack(fill="x")
 
 # Fields
-grid.add(ttk.Label(grid, text="Username:"))
-grid.add(ttk.Entry(grid), sticky="ew")
+ttk.Label(grid, text="Username:").grid()
+ttk.Entry(grid).grid(sticky="ew")
 
-grid.add(ttk.Label(grid, text="Email:"))
-grid.add(ttk.Entry(grid), sticky="ew")
+ttk.Label(grid, text="Email:").grid()
+ttk.Entry(grid).grid(sticky="ew")
 
-grid.add(ttk.Label(grid, text="Role:"))
-grid.add(ttk.OptionMenu(grid, values=["User", "Admin", "Guest"]), sticky="ew")
+ttk.Label(grid, text="Role:").grid()
+ttk.OptionMenu(grid, values=["User", "Admin", "Guest"]).grid(sticky="ew")
 
 # Toggles
 toggles = ttk.PackFrame(form, direction="vertical", gap=5)
 toggles.pack(fill="x", pady=(15, 0))
 
-toggles.add(ttk.CheckButton(toggles, text="Email notifications", variant="toggle"))
-toggles.add(ttk.CheckButton(toggles, text="Two-factor auth", color="success", variant="toggle"))
+ttk.CheckButton(toggles, text="Email notifications", variant="toggle").pack()
+ttk.CheckButton(toggles, text="Two-factor auth", color="success", variant="toggle").pack()
 
 # Actions
 actions = ttk.PackFrame(form, direction="horizontal", gap=10)
 actions.pack(anchor="e", pady=(20, 0))
 
-actions.add(ttk.Button(actions, text="Cancel", color="secondary", variant="outline"))
-actions.add(ttk.Button(actions, text="Save Changes", color="primary"))
+ttk.Button(actions, text="Cancel", color="secondary", variant="outline").pack()
+ttk.Button(actions, text="Save Changes", color="primary").pack()
 
 app.mainloop()
 ```
