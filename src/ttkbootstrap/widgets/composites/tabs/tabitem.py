@@ -122,7 +122,7 @@ class TabItem(CompositeFrame):
             self._set_signal_or_variable(variable)
 
         # Bind click handler
-        self.on_invoke(self._on_tab_click)
+        self.on_invoked(self._on_tab_click)
 
         # Bind destroy handler to clean up variable trace
         self.bind('<Destroy>', self._on_destroy, add='+')
