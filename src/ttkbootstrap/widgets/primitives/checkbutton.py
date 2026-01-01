@@ -97,3 +97,11 @@ class CheckButton(LocalizationMixin, SignalMixin, TextSignalMixin, IconMixin, TT
         super().__init__(master, **kwargs)
         if initial_value is not None and not signal_provided and not variable_provided:
             self.variable.set(initial_value)
+
+    def get(self) -> Any:
+        """Return the current value of the checkbutton's variable."""
+        return self.variable.get()
+
+    def set(self, value: Any) -> None:
+        """Set the value of the checkbutton's variable."""
+        self.variable.set(value)

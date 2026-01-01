@@ -88,3 +88,11 @@ class RadioButton(LocalizationMixin, SignalMixin, TextSignalMixin, IconMixin, TT
         """
         kwargs.update(style_options=self._capture_style_options(['icon_only', 'icon', 'anchor'], kwargs))
         super().__init__(master, **kwargs)
+
+    def get(self) -> Any:
+        """Return the current value of the radiobutton's variable."""
+        return self.variable.get()
+
+    def set(self, value: Any) -> None:
+        """Set the value of the radiobutton's variable."""
+        self.variable.set(value)
