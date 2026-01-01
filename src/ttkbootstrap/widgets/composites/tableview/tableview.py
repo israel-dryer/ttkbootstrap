@@ -737,7 +737,7 @@ class TableView(Frame):
                     value=default_value,
                     width=14,
                     allow_custom_values=False,
-                    search_enabled=False,
+                    enable_search=False,
                 )
                 self._search_mode.pack(side="left", padx=(0, 6))
 

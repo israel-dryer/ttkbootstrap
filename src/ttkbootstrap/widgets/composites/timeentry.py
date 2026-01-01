@@ -114,7 +114,7 @@ class TimeEntry(SelectBox):
             value_format=value_format,
             items=items,
             allow_custom_values=True,
-            search_enabled=True,
+            enable_search=True,
             dropdown_button_icon='clock',
             message=message,
             label=label,
