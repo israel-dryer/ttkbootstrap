@@ -165,7 +165,7 @@ class TabView(Frame):
             close_command = lambda k=key: self.remove(k)
 
         # Add tab
-        tab = self._tabs.add_tab(
+        tab = self._tabs.add(
             text=text,
             icon=icon,
             value=key,
