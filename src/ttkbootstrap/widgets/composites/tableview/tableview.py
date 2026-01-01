@@ -32,21 +32,14 @@ from ttkbootstrap.widgets.primitives.treeview import TreeView
 from ttkbootstrap.core.localization import MessageCatalog
 
 from .types import (
-    EditingOptions,
-    SelectionOptions,
-    ExportingOptions,
-    PagingOptions,
-    RowAlternationOptions,
-    FilteringOptions,
-    SearchOptions,
     parse_selection_mode as _parse_selection_mode,
-    normalize_row_alternation_options as _normalize_row_alternation_options,
-    normalize_selection_options as _normalize_selection_options,
-    normalize_filtering_options as _normalize_filtering_options,
-    normalize_editing_options as _normalize_editing_options,
-    normalize_exporting_options as _normalize_exporting_options,
-    normalize_paging_options as _normalize_paging_options,
-    normalize_searchbar_options as _normalize_searchbar_options,
+    build_editing_options as _build_editing_options,
+    build_selection_options as _build_selection_options,
+    build_filtering_options as _build_filtering_options,
+    build_exporting_options as _build_exporting_options,
+    build_paging_options as _build_paging_options,
+    build_search_options as _build_search_options,
+    build_row_alternation_options as _build_row_alternation_options,
 )
 
 logger = logging.getLogger(__name__)
@@ -80,21 +73,45 @@ class TableView(Frame):
     def __init__(
             self,
             master: Master = None,
+            # Core data
             columns: list[str | dict] | None = None,
             rows: list | None = None,
             datasource: SqliteDataSource | None = None,
-            editing: EditingOptions | dict | None = None,
-            paging: PagingOptions | dict | None = None,
-            exporting: ExportingOptions | dict | None = None,
-            filtering: FilteringOptions | dict | None = None,
-            selection: SelectionOptions | dict | None = None,
-            search: SearchOptions | dict | None = None,
-            sorting: Literal['single', 'multiple', 'none'] = 'single',
-            row_alternation: RowAlternationOptions | dict | None = None,
+            # Selection & sorting
+            selection_mode: Literal['none', 'single', 'multi'] = 'single',
+            allow_select_all: bool = True,
+            sorting_mode: Literal['single', 'none'] = 'single',
+            # Filtering & search
+            enable_filtering: bool = True,
+            enable_header_filtering: bool = True,
+            enable_row_filtering: bool = True,
+            enable_search: bool = True,
+            search_mode: Literal['standard', 'advanced'] = 'standard',
+            search_trigger: Literal['enter', 'input'] = 'enter',
+            # Paging & scrolling
+            paging_mode: Literal['standard', 'virtual'] = 'standard',
+            page_size: int = 25,
+            page_index: int = 0,
+            page_cache_size: int = 3,
+            show_vscrollbar: bool = True,
+            show_hscrollbar: bool = False,
+            # Editing
+            enable_adding: bool = False,
+            enable_editing: bool = False,
+            enable_deleting: bool = False,
+            form_options: dict | None = None,
+            # Exporting
+            enable_exporting: bool = False,
+            allow_export_selection: bool = True,
+            export_scope: Literal['page', 'all'] = 'page',
+            export_formats: tuple[str, ...] | None = None,
+            # Appearance & extras
+            striped: bool = False,
+            striped_background: str = 'background[+1]',
             allow_grouping: bool = False,
             show_table_status: bool = True,
             show_column_chooser: bool = False,
-            context_menus: Literal["none", "headers", "rows", "all"] = "all",
+            context_menus: Literal['none', 'headers', 'rows', 'all'] = 'all',
             column_min_width: int = 40,
             column_auto_width: bool = False,
             **kwargs,
@@ -104,44 +121,110 @@ class TableView(Frame):
 
         Args:
             master: Parent widget.
-            columns: Column definitions (list of strings or dicts with keys like "text", "key", "width", "minwidth").
+
+            **Core data:**
+            columns: Column definitions (list of strings or dicts with keys like
+                "text", "key", "width", "minwidth").
             rows: Initial data to load (list of dicts or row-like sequences).
             datasource: Custom SqliteDataSource; if omitted, an in-memory source is created.
-            editing: EditingOptions or dict to enable adding/updating/deleting and form settings.
-            paging: PagingOptions or dict (mode 'standard'|'virtual', page_size, page_index, cache_size, xscroll, yscroll).
-            exporting: ExportingOptions or dict (enabled, allow_export_selected, export_all_mode 'page'|'all', formats).
-            filtering: FilteringOptions or dict (enabled, header_menu_filtering, row_menu_filtering).
-            selection: SelectionOptions or dict (mode 'single'|'multiple'|'none', allow_select_all).
-            search: SearchOptions or dict (enabled, mode 'standard'|'advanced', event 'input'|'enter'; default 'enter').
-            row_alternation: RowAlternationOptions (enabled flag, color token for striping; disabled when grouped).
-            allow_grouping: Allow grouping rows via header context menu.
-            sorting: Sorting mode ('single', 'multiple', or 'none' to disable sorting).
-            show_table_status: Show filter/sort/group status labels and pager.
-            show_column_chooser: Show column chooser button for toggling column visibility.
-            context_menus: "none" | "headers" | "rows" | "all" to enable region context menus.
-            column_min_width: Global minimum width for columns (overridden by per-column minwidth; default 40).
-            column_auto_width: Automatically size columns to widest visible text on each page.
-            **kwargs: Any: Passed through to Frame.
+
+            **Selection & sorting:**
+            selection_mode: Selection mode ('none', 'single', 'multi'). Defaults to 'single'.
+            allow_select_all: Whether select-all is allowed. Defaults to True.
+            sorting_mode: Sorting mode ('single' or 'none'). Defaults to 'single'.
+
+            **Filtering & search:**
+            enable_filtering: Enable filtering features. Defaults to True.
+            enable_header_filtering: Show filter option in header context menu. Defaults to True.
+            enable_row_filtering: Show filter option in row context menu. Defaults to True.
+            enable_search: Show search bar. Defaults to True.
+            search_mode: Search mode ('standard' or 'advanced'). Defaults to 'standard'.
+            search_trigger: When to trigger search ('enter' or 'input'). Defaults to 'enter'.
+
+            **Paging & scrolling:**
+            paging_mode: Paging mode ('standard' or 'virtual'). Defaults to 'standard'.
+            page_size: Number of rows per page. Defaults to 25.
+            page_index: Initial page index. Defaults to 0.
+            page_cache_size: Number of pages to cache. Defaults to 3.
+            show_vscrollbar: Show vertical scrollbar. Defaults to True.
+            show_hscrollbar: Show horizontal scrollbar. Defaults to False.
+
+            **Editing:**
+            enable_adding: Allow adding new rows. Defaults to False.
+            enable_editing: Allow editing existing rows. Defaults to False.
+            enable_deleting: Allow deleting rows. Defaults to False.
+            form_options: Options dict for the edit form dialog.
+
+            **Exporting:**
+            enable_exporting: Enable export functionality. Defaults to False.
+            allow_export_selection: Allow exporting selected rows. Defaults to True.
+            export_scope: Export scope ('page' or 'all'). Defaults to 'page'.
+            export_formats: Tuple of export formats (e.g., ('csv', 'xlsx')).
+
+            **Appearance & extras:**
+            striped: Show alternating row colors. Defaults to False.
+            striped_background: Background color for striped rows. Defaults to 'background[+1]'.
+            allow_grouping: Allow grouping rows via header context menu. Defaults to False.
+            show_table_status: Show filter/sort/group status labels and pager. Defaults to True.
+            show_column_chooser: Show column chooser button. Defaults to False.
+            context_menus: Context menu visibility ('none', 'headers', 'rows', 'all').
+                Defaults to 'all'.
+            column_min_width: Global minimum width for columns. Defaults to 40.
+            column_auto_width: Automatically size columns to widest visible text.
+                Defaults to False.
+            **kwargs: Additional arguments passed through to Frame.
         """
         super().__init__(master, **kwargs)
 
-        # configuration
-        self._editing = _normalize_editing_options(editing)
-        self._paging = _normalize_paging_options(paging)
-        self._exporting = _normalize_exporting_options(exporting)
-        self._filtering = _normalize_filtering_options(filtering)
-        self._selection = _normalize_selection_options(selection)
-        self._searchbar = _normalize_searchbar_options(search)
+        # Build internal configuration dicts from flattened kwargs
+        self._editing = _build_editing_options(
+            enable_adding=enable_adding,
+            enable_editing=enable_editing,
+            enable_deleting=enable_deleting,
+            form_options=form_options,
+        )
+        self._paging = _build_paging_options(
+            paging_mode=paging_mode,
+            page_size=page_size,
+            page_index=page_index,
+            page_cache_size=page_cache_size,
+            show_vscrollbar=show_vscrollbar,
+            show_hscrollbar=show_hscrollbar,
+        )
+        self._exporting = _build_exporting_options(
+            enable_exporting=enable_exporting,
+            allow_export_selection=allow_export_selection,
+            export_scope=export_scope,
+            export_formats=export_formats,
+        )
+        self._filtering = _build_filtering_options(
+            enable_filtering=enable_filtering,
+            enable_header_filtering=enable_header_filtering,
+            enable_row_filtering=enable_row_filtering,
+        )
+        self._selection = _build_selection_options(
+            selection_mode=selection_mode,
+            allow_select_all=allow_select_all,
+        )
+        self._searchbar = _build_search_options(
+            enable_search=enable_search,
+            search_mode=search_mode,
+            search_trigger=search_trigger,
+        )
+        self._row_alternation = _build_row_alternation_options(
+            striped=striped,
+            striped_background=striped_background,
+        )
+
         self._search_mode_map: dict[str, str] = {}
-        self._sorting = sorting
+        self._sorting = sorting_mode
         self._show_table_status = show_table_status
         self._show_column_chooser = show_column_chooser
-        self._row_alternation = _normalize_row_alternation_options(row_alternation)
         self._allow_grouping = allow_grouping
-        self._context_menus = (context_menus or "all").lower()
+        self._context_menus = (context_menus or 'all').lower()
         self._column_min_width = max(0, column_min_width)
         self._column_auto_width = column_auto_width
-        self._datasource = datasource or SqliteDataSource(":memory:", page_size=self._paging['page_size'])
+        self._datasource = datasource or SqliteDataSource(':memory:', page_size=self._paging['page_size'])
 
         self._page_cache: OrderedDict[int, list[dict]] = OrderedDict()
         self._column_defs = columns or []
@@ -671,11 +754,11 @@ class TableView(Frame):
 
         if self._exporting['enabled']:
             export_items = []
-            if self._exporting['export_all_mode'] == 'all':
+            if self._exporting['export_scope'] == 'all':
                 export_items.append({"type": "command", "text": "table.export_all", "command": self._export_all})
-            if self._exporting["allow_export_selected"]:
+            if self._exporting["allow_export_selection"]:
                 export_items.append({"type": "command", "text": "table.export_selection", "command": self._export_selection})
-            if self._exporting['export_all_mode'] == "page":
+            if self._exporting['export_scope'] == "page":
                 export_items.append({"type": "command", "text": "table.export_page", "command": self._export_page})
             if not export_items:
                 export_items.append({"type": "command", "text": "table.export_all", "command": self._export_all})
