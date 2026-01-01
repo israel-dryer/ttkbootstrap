@@ -144,7 +144,7 @@ def build_switch_style(b: BootstyleBuilderTTk, ttk_style: str, color: str = 'pri
             [
                 Element(f'{ttk_style}.indicator', side="left", sticky=""),
                 Element(f'{ttk_style}.spacer', side="left"),
-                Element('Checkbutton.label', side="left", sticky="")
+                Element('Checkbutton.label', side="left", sticky="nsew")
             ])
     )
 

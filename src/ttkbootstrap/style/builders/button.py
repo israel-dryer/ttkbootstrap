@@ -15,7 +15,7 @@ def _button_layout(ttk_style: str) -> Element:
         [
             Element("Button.padding", sticky="nsew").children(
                 [
-                    Element("Button.label", sticky="")
+                    Element("Button.label", sticky="nsew")
                 ])
         ])
 
