@@ -260,10 +260,10 @@ class RadioGroup(Frame):
         return button
 
     def get(self) -> str:
-        """Get the currently selected value."""
+        """Return the currently selected value."""
         return self.variable.get()
 
-    def set(self, value: str):
+    def set(self, value: str) -> None:
         """Set the selected value.
 
         Args:
@@ -285,6 +285,15 @@ class RadioGroup(Frame):
             )
 
         self.variable.set(value)
+
+    @property
+    def value(self) -> str:
+        """Get or set the selected value."""
+        return self.get()
+
+    @value.setter
+    def value(self, value: str) -> None:
+        self.set(value)
 
     def remove(self, key: str):
         """Remove a button by its key.

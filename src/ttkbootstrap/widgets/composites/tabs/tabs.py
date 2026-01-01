@@ -12,6 +12,7 @@ from ttkbootstrap.widgets.primitives.frame import Frame
 from ttkbootstrap.widgets.primitives.separator import Separator
 from ttkbootstrap.widgets.primitives.button import Button
 from ttkbootstrap.widgets.composites.tabs.tabitem import TabItem
+from ttkbootstrap.widgets.mixins.configure_mixin import configure_delegate
 from ttkbootstrap.widgets.types import Master
 
 if TYPE_CHECKING:
@@ -390,12 +391,28 @@ class Tabs(Frame):
                 self._destroy_divider()
 
     def get(self) -> str:
-        """Get the currently selected tab value."""
+        """Return the currently selected tab value."""
         return self._variable.get()
 
-    def set(self, value: str):
+    def set(self, value: str) -> None:
         """Set the selected tab value."""
         self._variable.set(value)
+
+    @property
+    def value(self) -> str:
+        """Get or set the selected tab value."""
+        return self.get()
+
+    @value.setter
+    def value(self, value: str) -> None:
+        self.set(value)
+
+    @configure_delegate('value')
+    def _delegate_value(self, value=None):
+        """Get or set the value via configure."""
+        if value is None:
+            return self.get()
+        self.set(value)
 
     def on_tab_changed(self, callback: Callable) -> Any:
         """Subscribe to tab selection changes.

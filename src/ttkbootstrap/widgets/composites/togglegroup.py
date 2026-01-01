@@ -234,21 +234,28 @@ class ToggleGroup(Frame):
             button.configure_style_options(position=position)
             button.rebuild_style()
 
-    def _on_multi_toggle(self, value: str):
+    def _on_multi_toggle(self, val: str):
         """Callback to update the SetVar when a CheckToggle is clicked."""
         current_set = self.get()
-        if value in current_set:
-            current_set.remove(value)
+        if val in current_set:
+            current_set.remove(val)
         else:
-            current_set.add(value)
+            current_set.add(val)
         self.set(current_set)
 
     def get(self) -> str | set[str]:
-        """Get the current value (string for single mode, set for multi mode)."""
+        """Return the current value (string for single mode, set for multi mode)."""
         return self.variable.get()
 
-    def set(self, value: str | set[str]):
-        """Set the value (string for single mode, set for multi mode)."""
+    def set(self, value: str | set[str]) -> None:
+        """Set the value (string for single mode, set for multi mode).
+
+        Args:
+            value: The value to set.
+
+        Raises:
+            TypeError: If value type doesn't match the mode.
+        """
         # Validate value type matches mode
         if self._mode == 'single':
             if not isinstance(value, str):
@@ -263,6 +270,15 @@ class ToggleGroup(Frame):
         if self._mode == 'multi':
             for key, button in self._buttons.items():
                 button.variable.set(key in value)
+
+    @property
+    def value(self) -> str | set[str]:
+        """Get or set the value (string for single mode, set for multi mode)."""
+        return self.get()
+
+    @value.setter
+    def value(self, value: str | set[str]) -> None:
+        self.set(value)
 
     def remove(self, key: str):
         """Remove a button by its key."""
@@ -326,3 +342,10 @@ class ToggleGroup(Frame):
 
         # Update button styles with new orientation
         self._update_button_positions()
+
+    @configure_delegate('value')
+    def _delegate_value(self, value=None):
+        """Get or set the value via configure."""
+        if value is None:
+            return self.get()
+        self.set(value)

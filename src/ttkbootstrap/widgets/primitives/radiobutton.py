@@ -9,6 +9,7 @@ from ttkbootstrap.core.mixins.ttk_state import TtkStateMixin
 from ttkbootstrap.core.mixins.widget import WidgetCapabilitiesMixin
 from ttkbootstrap.widgets.internal.wrapper_base import TTKWrapperBase
 from ttkbootstrap.widgets.mixins import IconMixin, LocalizationMixin, SignalMixin, TextSignalMixin
+from ttkbootstrap.widgets.mixins.configure_mixin import configure_delegate
 from ttkbootstrap.widgets.types import Master
 
 if TYPE_CHECKING:
@@ -90,9 +91,25 @@ class RadioButton(LocalizationMixin, SignalMixin, TextSignalMixin, IconMixin, TT
         super().__init__(master, **kwargs)
 
     def get(self) -> Any:
-        """Return the current value of the radiobutton's variable."""
+        """Return the current selected value."""
         return self.variable.get()
 
     def set(self, value: Any) -> None:
-        """Set the value of the radiobutton's variable."""
+        """Set the selected value."""
         self.variable.set(value)
+
+    @property
+    def value(self) -> Any:
+        """Get or set the radiobutton's selected value."""
+        return self.get()
+
+    @value.setter
+    def value(self, value: Any) -> None:
+        self.set(value)
+
+    @configure_delegate('value')
+    def _delegate_value(self, value=None):
+        """Get or set the value via configure."""
+        if value is None:
+            return self.get()
+        self.set(value)
