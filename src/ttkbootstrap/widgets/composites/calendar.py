@@ -8,7 +8,7 @@ from types import SimpleNamespace
 from tkinter import StringVar
 from typing import Any, Callable, Iterable, Literal, Optional
 
-from babel import dates
+from babel import dates, Locale
 from ttkbootstrap.widgets.primitives import Button, CheckToggle, Frame, Label, Separator
 from ttkbootstrap.widgets.types import Master
 from ttkbootstrap.constants import BOTH, CENTER, LEFT, NSEW, PRIMARY, X, Y, YES
@@ -75,40 +75,6 @@ class Calendar(ttk.Frame):
     Supports single or range selection modes with optional disabled dates
     and min/max bounds. Displays one month in single mode or two months
     in range mode.
-
-    ## Value API
-
-    **Single selection (default):**
-
-    - ``get()`` / ``set(value)`` — get or set the selected date
-    - ``.value`` property — convenient access to get/set
-
-    **Range selection** (``selection_mode='range'``):
-
-    - ``get_range()`` / ``set_range(start, end)`` — get or set the date range
-    - ``.range`` property — convenient access to get_range/set_range
-
-    Programmatic updates via ``set()`` and ``set_range()`` do NOT emit
-    ``<<DateSelect>>``. User interactions still emit the event.
-
-    ## Events
-
-    - ``<<DateSelect>>``: Fired on user selection.
-      ``event.data = {'date': date, 'range': tuple[date, date | None]}``
-
-    ## Example
-
-    ```python
-    # Single mode
-    cal = Calendar(app)
-    cal.value = date(2025, 6, 15)
-    print(cal.get())  # datetime.date(2025, 6, 15)
-
-    # Range mode
-    cal = Calendar(app, selection_mode='range')
-    cal.set_range(date(2025, 1, 10), date(2025, 1, 20))
-    start, end = cal.get_range()
-    ```
     """
 
     def __init__(
@@ -123,7 +89,7 @@ class Calendar(ttk.Frame):
             min_date: date | datetime | str | None = None,
             show_outside_days: bool | None = None,
             show_week_numbers: bool = False,
-            first_weekday: int = 6,
+            first_weekday: int | None = None,
             color: str = None,
             bootstyle: str = None,
             padding: int | tuple[int, int] | tuple[int, int, int, int] | str | None = None,
@@ -147,7 +113,8 @@ class Calendar(ttk.Frame):
                 Defaults to True for single mode, False for range mode.
             show_week_numbers (bool): Whether to display ISO week numbers in the
                 leftmost column.
-            first_weekday (int): First day of the week. 0=Monday, 6=Sunday.
+            first_weekday (int | None): First day of the week. 0=Monday, 6=Sunday.
+                If None, uses the locale default.
             color (str): Color token for selected dates and highlights (e.g., 'primary', 'success').
             bootstyle (str): DEPRECATED - Use `color` instead.
             padding (int | tuple | str): Padding around the widget.
@@ -164,6 +131,14 @@ class Calendar(ttk.Frame):
             self._show_outside_days = bool(show_outside_days)
         self._show_week_numbers = show_week_numbers
 
+        # Resolve first_weekday: None -> locale default via Babel
+        if first_weekday is None:
+            try:
+                locale_code = MessageCatalog.locale().replace("-", "_")
+                loc = Locale.parse(locale_code)
+                first_weekday = loc.first_week_day
+            except Exception:
+                first_weekday = 0  # fallback to Monday (ISO standard)
         self._first_weekday = first_weekday
         self._color = color or bootstyle or PRIMARY
         self._calendar = calendar.Calendar(firstweekday=first_weekday)
