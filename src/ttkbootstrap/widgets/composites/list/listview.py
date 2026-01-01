@@ -461,6 +461,12 @@ class ListView(Frame):
         self._container.bind('<<ItemDrag>>', self._on_item_dragging, add='+')
         self._container.bind('<<ItemDragEnd>>', self._on_item_drag_end, add='+')
 
+        # Bind keyboard navigation
+        self.bind('<Down>', self._on_arrow_down, add='+')
+        self.bind('<Up>', self._on_arrow_up, add='+')
+        self._container.bind('<Down>', self._on_arrow_down, add='+')
+        self._container.bind('<Up>', self._on_arrow_up, add='+')
+
         # Initial update
         self.after(10, self._remeasure_and_relayout)
 
@@ -588,6 +594,9 @@ class ListView(Frame):
             row = self._row_factory(self._container, **row_kwargs)
             row.pack(fill='x')
             self._rows.append(row)
+
+            # Bind keyboard navigation to each row and its children
+            self._bind_arrow_keys_recursive(row)
 
             # Apply surface color once based on widget position
             widget_index = len(self._rows) - 1
@@ -775,6 +784,21 @@ class ListView(Frame):
         except Exception:
             pass
 
+    def _bind_arrow_keys_recursive(self, widget):
+        """Recursively bind arrow key events to a widget and all its children.
+
+        Args:
+            widget: The widget to bind arrow key events to.
+        """
+        widget.bind('<Down>', self._on_arrow_down, add='+')
+        widget.bind('<Up>', self._on_arrow_up, add='+')
+
+        try:
+            for child in widget.winfo_children():
+                self._bind_arrow_keys_recursive(child)
+        except Exception:
+            pass
+
     def _on_mousewheel(self, event):
         """Handle mouse wheel scrolling.
 
@@ -887,6 +911,103 @@ class ListView(Frame):
         if record_id is not None and record_id != '__empty__':
             self._focused_record_id = record_id
             self._update_rows()
+
+    def _get_focused_index(self) -> int:
+        """Get the data index of the currently focused item.
+
+        Returns:
+            The index of the focused item, or -1 if none is focused.
+        """
+        if self._focused_record_id is None:
+            return -1
+
+        # Search visible rows for the focused record
+        for i, row in enumerate(self._rows):
+            if hasattr(row, '_data') and row._data.get('id') == self._focused_record_id:
+                return self._start_index + i
+
+        return -1
+
+    def _focus_item_at_index(self, index: int) -> None:
+        """Focus the item at the given data index.
+
+        Args:
+            index: The data index of the item to focus.
+        """
+        total = self._datasource.total_count()
+        if total == 0 or index < 0 or index >= total:
+            return
+
+        # Scroll if needed to make the item visible
+        if index < self._start_index:
+            self._start_index = index
+            self._clamp_indices()
+            self._update_rows()
+        elif index >= self._start_index + len(self._rows):
+            self._start_index = index - len(self._rows) + 1
+            self._clamp_indices()
+            self._update_rows()
+
+        # Get the record at the index
+        page_data = self._datasource.get_page_from_index(index, 1)
+        if page_data:
+            record_id = page_data[0].get('id')
+            if record_id is not None:
+                self._focused_record_id = record_id
+                self._update_rows()
+
+                # Focus the visible row widget
+                visual_index = index - self._start_index
+                if 0 <= visual_index < len(self._rows):
+                    self._rows[visual_index].focus_set()
+
+    def _on_arrow_down(self, event) -> str:
+        """Handle arrow down key for keyboard navigation.
+
+        Args:
+            event: Tkinter key event.
+
+        Returns:
+            'break' to prevent default handling.
+        """
+        total = self._datasource.total_count()
+        if total == 0:
+            return 'break'
+
+        current_index = self._get_focused_index()
+        if current_index < 0:
+            # No item focused, focus the first visible item
+            next_index = self._start_index
+        else:
+            # Move to next item
+            next_index = min(current_index + 1, total - 1)
+
+        self._focus_item_at_index(next_index)
+        return 'break'
+
+    def _on_arrow_up(self, event) -> str:
+        """Handle arrow up key for keyboard navigation.
+
+        Args:
+            event: Tkinter key event.
+
+        Returns:
+            'break' to prevent default handling.
+        """
+        total = self._datasource.total_count()
+        if total == 0:
+            return 'break'
+
+        current_index = self._get_focused_index()
+        if current_index < 0:
+            # No item focused, focus the last visible item
+            next_index = min(self._start_index + len(self._rows) - 1, total - 1)
+        else:
+            # Move to previous item
+            next_index = max(current_index - 1, 0)
+
+        self._focus_item_at_index(next_index)
+        return 'break'
 
     def _on_item_click(self, event: Any):
         """Handle item click event from `ListItem`.
