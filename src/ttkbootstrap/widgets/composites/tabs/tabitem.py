@@ -25,8 +25,8 @@ class TabItem(CompositeFrame):
     via signal/variable and optional close functionality.
 
     Virtual events:
-        <<TabSelect>>: Fired when the tab is clicked (for selection).
-        <<TabClose>>: Fired when the close button is clicked.
+        - ``<<TabSelect>>``: Fired when the tab is clicked (for selection).
+        - ``<<TabClose>>``: Fired when the close button is clicked.
 
     Attributes:
         selected (bool): Current selection state (read-only).
