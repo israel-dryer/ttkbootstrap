@@ -25,7 +25,7 @@ from ttkbootstrap.widgets.primitives.entry import Entry
 from ttkbootstrap.widgets.primitives.frame import Frame
 from ttkbootstrap.widgets.primitives.label import Label
 from ttkbootstrap.widgets.primitives.scrollbar import Scrollbar
-from ttkbootstrap.widgets.primitives.selectbox import SelectBox
+from ttkbootstrap.widgets.composites.selectbox import SelectBox
 from ttkbootstrap.widgets.primitives.separator import Separator
 from ttkbootstrap.widgets.composites.textentry import TextEntry
 from ttkbootstrap.widgets.primitives.treeview import TreeView
