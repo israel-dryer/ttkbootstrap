@@ -29,7 +29,6 @@ class ButtonKwargs(TypedDict, total=False):
     state: Literal['normal', 'active', 'disabled', 'readonly'] | str
     takefocus: Any
     localize: bool | Literal['auto']
-    value_format: dict | str
     style: str
     class_: str
     cursor: str
@@ -72,7 +71,6 @@ class Button(LocalizationMixin, TextSignalMixin, IconMixin, TTKWrapperBase, Widg
             padding (int | tuple): Extra space around the button content.
             anchor (str): Determines how the content is aligned in the container. Combination of 'n', 's', 'e', 'w', or 'center' (default).
             localize (bool | Literal['auto']): Determines the widgets localization mode.
-            value_format (str | dict): Format specification for the label value.
             width (int): Width of the button in characters.
             underline (int): Index of the character to underline in `text`.
             state (str): Widget state (e.g., 'normal', 'disabled').

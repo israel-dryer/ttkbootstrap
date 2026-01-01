@@ -15,17 +15,17 @@ class EditingOptions(TypedDict, total=False):
 
 
 class SelectionOptions(TypedDict, total=False):
-    """Control selection mode (single/multiple/none) and select-all allowance."""
-    mode: Literal['single', 'multiple', 'none']
-    allow_select_all: bool  # not yet supported
+    """Control selection mode (single/multi/none) and select-all allowance."""
+    mode: Literal['single', 'multi', 'none']
+    allow_select_all: bool
 
 
 class ExportingOptions(TypedDict, total=False):
     """Configure export availability and formats."""
     enabled: bool
-    allow_export_selected: bool
-    export_all_mode: Literal['page', 'all']
-    formats: list[Literal['csv', 'xlsx']]
+    allow_export_selection: bool
+    export_scope: Literal['page', 'all']
+    formats: tuple[str, ...]
 
 
 class PagingOptions(TypedDict, total=False):
@@ -64,113 +64,106 @@ def parse_selection_mode(mode: str):
     """Convert TableView selection mode to Treeview selectmode."""
     if mode == 'single':
         return 'browse'
-    elif mode == 'multiple':
+    elif mode == 'multi':
         return 'extended'
     else:
         return 'none'
 
 
-def normalize_row_alternation_options(options: RowAlternationOptions | None) -> RowAlternationOptions:
-    """Normalize row alternation options with defaults."""
-    if options is None:
-        return dict(enabled=False, color='background[+1]')
-    options.setdefault('enabled', False)
-    options.setdefault('color', 'background[+1]')
-    return options
+# ------ Build internal dicts from flattened kwargs --------
+
+def build_editing_options(
+    enable_adding: bool = False,
+    enable_editing: bool = False,
+    enable_deleting: bool = False,
+    form_options: dict | None = None,
+) -> EditingOptions:
+    """Build editing options dict from flattened kwargs."""
+    return dict(
+        adding=enable_adding,
+        updating=enable_editing,
+        deleting=enable_deleting,
+        form=form_options or {}
+    )
 
 
-def normalize_selection_options(options: SelectionOptions | None) -> SelectionOptions:
-    """Normalize selection options with defaults."""
-    if options is None:
-        return dict(
-            mode="single",
-            allow_select_all=False,
-        )
-    options.setdefault('mode', 'single')
-    options.setdefault('allow_select_all', False)
-    return options
+def build_selection_options(
+    selection_mode: Literal['none', 'single', 'multi'] = 'single',
+    allow_select_all: bool = True,
+) -> SelectionOptions:
+    """Build selection options dict from flattened kwargs."""
+    return dict(
+        mode=selection_mode,
+        allow_select_all=allow_select_all,
+    )
 
 
-def normalize_filtering_options(options: FilteringOptions | None) -> FilteringOptions:
-    """Normalize filtering options with defaults."""
-    if options is None:
-        return dict(
-            enabled=True,
-            header_menu_filtering=True,
-            row_menu_filtering=True,
-        )
-    options.setdefault('enabled', True)
-    options.setdefault('header_menu_filtering', True)
-    options.setdefault('row_menu_filtering', True)
-    return options
+def build_filtering_options(
+    enable_filtering: bool = True,
+    enable_header_filtering: bool = True,
+    enable_row_filtering: bool = True,
+) -> FilteringOptions:
+    """Build filtering options dict from flattened kwargs."""
+    return dict(
+        enabled=enable_filtering,
+        header_menu_filtering=enable_header_filtering,
+        row_menu_filtering=enable_row_filtering,
+    )
 
 
-def normalize_editing_options(options: EditingOptions | None) -> EditingOptions:
-    """Normalize editing options with defaults."""
-    if options is None:
-        return dict(
-            adding=False,
-            updating=False,
-            deleting=False,
-            form={}
-        )
-    options.setdefault('adding', False)
-    options.setdefault('updating', False)
-    options.setdefault('deleting', False)
-    options.setdefault('form', {})
-    return options
+def build_exporting_options(
+    enable_exporting: bool = False,
+    allow_export_selection: bool = True,
+    export_scope: Literal['page', 'all'] = 'page',
+    export_formats: tuple[str, ...] | None = None,
+) -> ExportingOptions:
+    """Build exporting options dict from flattened kwargs."""
+    return dict(
+        enabled=enable_exporting,
+        allow_export_selection=allow_export_selection,
+        export_scope=export_scope,
+        formats=export_formats or ('csv',)
+    )
 
 
-def normalize_exporting_options(options: ExportingOptions | None) -> ExportingOptions:
-    """Normalize exporting options with defaults."""
-    if options is None:
-        return dict(
-            enabled=False,
-            allow_export_selected=False,
-            export_all_mode='page',
-            formats=['csv']
-        )
-    options.setdefault('enabled', False)
-    options.setdefault('allow_export_selected', False)
-    options.setdefault('export_all_mode', 'page')
-    options.setdefault('formats', ['csv'])
-    return options
+def build_paging_options(
+    paging_mode: Literal['standard', 'virtual'] = 'standard',
+    page_size: int = 25,
+    page_index: int = 0,
+    page_cache_size: int = 3,
+    show_vscrollbar: bool = True,
+    show_hscrollbar: bool = False,
+) -> PagingOptions:
+    """Build paging options dict from flattened kwargs."""
+    return dict(
+        mode=paging_mode,
+        page_size=page_size,
+        page_index=page_index,
+        cache_size=page_cache_size,
+        xscroll=show_hscrollbar,
+        yscroll=show_vscrollbar,
+    )
 
 
-def normalize_paging_options(options: PagingOptions | None) -> PagingOptions:
-    """Normalize paging options with defaults."""
-    if options is None:
-        return dict(
-            mode='standard',
-            page_size=250,
-            page_index=0,
-            cache_size=5,
-            xscroll=True,
-            yscroll=True,
-        )
-    options.setdefault('mode', 'standard')
-    options.setdefault('page_size', 250)
-    options.setdefault('page_index', 0)
-    options.setdefault('cache_size', 5)
-    options.setdefault('xscroll', True)
-    options.setdefault('yscroll', True)
-    return options
+def build_search_options(
+    enable_search: bool = True,
+    search_mode: Literal['standard', 'advanced'] = 'standard',
+    search_trigger: Literal['enter', 'input'] = 'enter',
+) -> SearchOptions:
+    """Build search options dict from flattened kwargs."""
+    return dict(
+        enabled=enable_search,
+        mode=search_mode,
+        event=search_trigger,
+    )
 
 
-def normalize_searchbar_options(options: SearchOptions | None) -> SearchOptions:
-    """Normalize searchbar options with defaults."""
-    if options is None:
-        return dict(
-            enabled=True,
-            mode='standard',
-            event='enter'
-        )
-    options.setdefault('enabled', True)
-    options.setdefault('mode', 'standard')
-    options.setdefault('event', 'enter')
-    # Normalize event to allowed values
-    trig = str(options.get('event', 'enter')).lower()
-    if trig not in ('input', 'enter'):
-        trig = 'enter'
-    options['event'] = trig
-    return options
+def build_row_alternation_options(
+    striped: bool = False,
+    striped_background: str = 'background[+1]',
+) -> RowAlternationOptions:
+    """Build row alternation options dict from flattened kwargs."""
+    return dict(
+        enabled=striped,
+        color=striped_background,
+    )

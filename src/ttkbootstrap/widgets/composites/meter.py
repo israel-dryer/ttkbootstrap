@@ -21,6 +21,12 @@ class Meter(Frame):
     prefix/suffix labels, and subtitle. Supports both full circle and semi-circle styles,
     segmented or solid indicators, and interactive mode for user input.
 
+    The meter value can be accessed and modified using:
+
+    - ``get()`` / ``set(value)`` - Standard value-widget API methods
+    - ``.value`` property - Direct property access
+    - ``configure(value=x)`` - Via the configure interface
+
     !!! note "Events"
 
         ``<<Change>>``: Fired whenever the meter value changes.
@@ -232,33 +238,31 @@ class Meter(Frame):
         self._subtitle = value
         self._subtitle_var.set(value)
 
+    # ------ Value API Methods ------
+
+    def get(self):
+        """Return the current meter value.
+
+        This is part of the standard value-widget API. It is equivalent
+        to accessing the ``.value`` property.
+
+        Returns:
+            The current meter value (int or float depending on dtype).
+        """
+        return self.value
+
+    def set(self, value):
+        """Set the meter value.
+
+        This is part of the standard value-widget API. It is equivalent
+        to setting the ``.value`` property.
+
+        Args:
+            value: The new meter value.
+        """
+        self.value = value
+
     # ------ Configuration Delegates ------
-
-    @configure_delegate('value')
-    def _delegate_value(self, value=None):
-        if value is not None:
-            return self.value
-        else:
-            self.value = value
-            return None
-
-    @configure_delegate('subtitle')
-    def _delegate_subtitle(self, value=None):
-        if value is not None:
-            return self.subtitle
-        else:
-            self.subtitle = value
-            return None
-
-    @configure_delegate('bootstyle')
-    def _delegate_bootstyle(self, value=None):
-        if value is None:
-            return self._color
-        else:
-            self._color = value
-            self._resolve_meter_styles()
-            self._draw_meter()
-        return None
 
     @configure_delegate('color')
     def _delegate_color(self, value=None):

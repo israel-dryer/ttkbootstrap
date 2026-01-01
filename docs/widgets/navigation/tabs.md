@@ -29,9 +29,9 @@ app = ttk.App()
 tabs = ttk.Tabs(app)
 tabs.pack(fill="x", padx=10, pady=10)
 
-tabs.add_tab(text="Home", value="home", icon="house")
-tabs.add_tab(text="Files", value="files", icon="folder2")
-tabs.add_tab(text="Settings", value="settings", icon="gear")
+tabs.add(text="Home", icon="house")
+tabs.add(text="Files", icon="folder2")
+tabs.add(text="Settings", icon="gear")
 
 def on_tab_changed(value):
     print(f"Selected: {value}")
@@ -116,13 +116,24 @@ tabs = ttk.Tabs(app, tab_width="stretch")
 
 ### Adding tabs
 
-Use `add_tab()` to create tabs with the container's default settings:
+Use `add()` to create tabs:
 
 ```python
-tabs.add_tab(text="Documents", value="docs", icon="file-text")
+tabs.add(text="Documents", icon="file-text")
+tabs.add(text="Settings", icon="gear")
 ```
 
-Each tab needs a unique `value` for selection tracking.
+For advanced use cases like programmatic lookups or removal, supply an explicit `key`:
+
+```python
+tabs.add(key="docs", text="Documents", icon="file-text")
+tabs.add(key="settings", text="Settings", icon="gear")
+
+# Later: lookup, configure, or remove by key
+tabs.item("docs").configure(text="My Documents")
+tabs.configure_item("settings", state="disabled")
+tabs.remove("docs")
+```
 
 ### Selection state
 
@@ -166,7 +177,7 @@ Handle close events:
 def on_close():
     print("Tab closed")
 
-tabs.add_tab(text="Document", value="doc1", close_command=on_close)
+tabs.add(text="Document", close_command=on_close)
 ```
 
 ### Add button
@@ -177,7 +188,7 @@ Show an "add" button for dynamic tab creation:
 tabs = ttk.Tabs(app, enable_adding=True)
 
 def on_add(event):
-    tabs.add_tab(text="New Tab", value=f"tab_{id}")
+    tabs.add(text="New Tab")
 
 tabs.on_tab_added(on_add)
 ```

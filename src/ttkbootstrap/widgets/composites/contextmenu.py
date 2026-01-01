@@ -298,6 +298,23 @@ class ContextMenu(CustomConfigMixin):
         self._items.insert(index, widget)
         return widget
 
+    def item(self, index: int) -> Widget:
+        """Get a menu item by its index.
+
+        Args:
+            index: The index of the item to retrieve.
+
+        Returns:
+            The menu item widget.
+
+        Raises:
+            IndexError: If the index is out of range.
+        """
+        try:
+            return self._items[index]
+        except IndexError as exc:
+            raise IndexError(f"ContextMenu item index {index} out of range") from exc
+
     def remove_item(self, index: int) -> None:
         """Remove and destroy the item at the given index.
 

@@ -3,7 +3,7 @@
 from tkinter import TclError
 from typing import Protocol, Any, Callable, Literal, runtime_checkable
 
-from ttkbootstrap.widgets.composites.listitem import ListItem
+from ttkbootstrap.widgets.composites.list.listitem import ListItem
 from ttkbootstrap.widgets.primitives.frame import Frame
 from ttkbootstrap.widgets.primitives.scrollbar import Scrollbar
 from ttkbootstrap.widgets.mixins import configure_delegate
@@ -353,17 +353,17 @@ class ListView(Frame):
             selection_mode: Literal['none', 'single', 'multi'] = 'none',
             show_selection_controls: bool = False,
             show_chevron: bool = False,
-            enable_deleting: bool = False,
+            enable_removing: bool = False,
             enable_dragging: bool = False,
-            alternating_row_color: str = 'background[+1]',
-            alternating_row_mode: Literal['odd', 'even', 'none'] = 'none',
+            striped: bool = False,
+            striped_background: str = 'background[+1]',
             show_separator: bool = True,
-            show_scrollbar: bool = True,
-            enable_focus_state: bool = True,
-            enable_hover_state: bool = True,
+            scrollbar_visibility: Literal['always', 'never'] = 'always',
+            enable_focus: bool = True,
+            enable_hover: bool = True,
             focus_color: str = None,
-            selection_background: str = 'primary',
-            select_by_click: bool = None,
+            selected_background: str = 'primary',
+            select_on_click: bool = None,
             **kwargs
     ):
         """Initialize a ListView widget.
@@ -376,18 +376,18 @@ class ListView(Frame):
             selection_mode: Selection mode (`none`, `single`, `multi`).
             show_selection_controls: Show checkboxes/radio buttons for selection.
             show_chevron: Show chevron indicators on items.
-            enable_deleting: Show delete button on items; and allow deleting items.
-            enable_dragging: Show drag handle on items; allow row dragging.
-            alternating_row_mode: Whether and when to show alternating row colors.
-            alternating_row_color: The alternating row color.
+            enable_removing: Allow items to be removed; shows remove button on items.
+            enable_dragging: Allow row dragging; shows drag handle on items.
+            striped: Whether to show alternating row colors.
+            striped_background: The background color for striped rows.
             show_separator: Show separator line between items.
-            show_scrollbar: Show the vertical scrollbar. When False, scrolling relies
-                on mousewheel only. Defaults to True.
-            enable_focus_state: Allow items to receive focus.
-            enable_hover_state: Show active state on hover.
+            scrollbar_visibility: Scrollbar visibility - 'always' to show scrollbar,
+                'never' to hide (mousewheel only). Defaults to 'always'.
+            enable_focus: Whether items can receive keyboard focus.
+            enable_hover: Whether items show hover state.
             focus_color: Color for the focus indicator.
-            selection_background: Background color for selected items.
-            select_by_click: Whether clicking an item selects it. Defaults to True when
+            selected_background: Background color for selected items.
+            select_on_click: Whether clicking an item selects it. Defaults to True when
                 selection_mode is 'single' or 'multi', False otherwise. Can be explicitly
                 set to override the default behavior.
             **kwargs: Additional keyword arguments forwarded to `Frame`.
@@ -398,17 +398,17 @@ class ListView(Frame):
         self._selection_mode = selection_mode
         self._show_selection_controls = show_selection_controls
         self._show_chevron = show_chevron
-        self._enable_deleting = enable_deleting
+        self._enable_removing = enable_removing
         self._enable_dragging = enable_dragging
         self._show_separator = show_separator
-        self._show_scrollbar = show_scrollbar
-        self._select_by_click = select_by_click
-        self._enable_focus_state = enable_focus_state
-        self._enable_hover_state = enable_hover_state
-        self._alternating_row_mode = alternating_row_mode
-        self._alternating_row_color = alternating_row_color
+        self._scrollbar_visibility = scrollbar_visibility
+        self._select_on_click = select_on_click
+        self._enable_focus = enable_focus
+        self._enable_hover = enable_hover
+        self._striped = striped
+        self._striped_background = striped_background
         self._focus_color = focus_color
-        self._selection_background = selection_background
+        self._selected_background = selected_background
 
 
         # Data source
@@ -441,7 +441,7 @@ class ListView(Frame):
 
         # Create scrollbar
         self._scrollbar = Scrollbar(self, orient='vertical', command=self._on_scroll)
-        if self._show_scrollbar:
+        if self._scrollbar_visibility == 'always':
             self._scrollbar.pack(side='right', fill='y')
 
         # Create row pool
@@ -454,7 +454,7 @@ class ListView(Frame):
 
         # Bind ListItem events
         self._container.bind('<<ItemSelecting>>', self._on_item_selecting, add='+')
-        self._container.bind('<<ItemDeleting>>', self._on_item_deleting, add='+')
+        self._container.bind('<<ItemRemoving>>', self._on_item_removing, add='+')
         self._container.bind('<<ItemFocus>>', self._on_item_focused, add='+')
         self._container.bind('<<ItemClick>>', self._on_item_click, add='+')
         self._container.bind('<<ItemDragStart>>', self._on_item_drag_start, add='+')
@@ -484,64 +484,64 @@ class ListView(Frame):
             self._update_rows()
         return None
 
-    @configure_delegate('show_scrollbar')
-    def _delegate_show_scrollbar(self, value=None):
+    @configure_delegate('scrollbar_visibility')
+    def _delegate_scrollbar_visibility(self, value=None):
         """Get or set scrollbar visibility.
 
         Args:
-            value: If provided, sets scrollbar visibility (True/False).
-                If None, returns current visibility state.
+            value: If provided ('always' or 'never'), shows or hides the scrollbar.
+                If None, returns current visibility setting.
 
         Returns:
-            Current show_scrollbar value when called without arguments.
+            Current scrollbar_visibility value when called without arguments.
         """
         if value is None:
-            return self._show_scrollbar
+            return self._scrollbar_visibility
         else:
-            old_value = self._show_scrollbar
-            self._show_scrollbar = bool(value)
-            if old_value != self._show_scrollbar:
-                if self._show_scrollbar:
+            old_value = self._scrollbar_visibility
+            self._scrollbar_visibility = value
+            if old_value != self._scrollbar_visibility:
+                if self._scrollbar_visibility == 'always':
                     self._scrollbar.pack(side='right', fill='y')
                 else:
                     self._scrollbar.pack_forget()
         return None
 
-    @configure_delegate('alternating_row_mode')
-    def _delegate_alternating_row_mode(self, value=None):
-        """Get or set alternating row mode.
+    @configure_delegate('striped')
+    def _delegate_striped(self, value=None):
+        """Get or set striped mode.
 
         Args:
-            value: If provided, sets mode to 'odd', 'even', or 'none'.
+            value: If provided, enables or disables striped rows.
                 If None, returns the current mode.
 
         Returns:
-            Current alternating_row_mode when called without arguments.
+            Current striped value when called without arguments.
         """
         if value is None:
-            return self._alternating_row_mode
+            return self._striped
         else:
-            self._alternating_row_mode = value
+            self._striped = bool(value)
             # Reapply surface colors to all rows
             for i, row in enumerate(self._rows):
                 self._apply_widget_surface(row, i)
         return None
 
-    @configure_delegate('alternating_row_color')
-    def _delegate_alternating_row_color(self, value=None):
-        """Get or set alternating row color.
+    @configure_delegate('striped_background')
+    def _delegate_striped_background(self, value=None):
+        """Get or set striped row background color.
 
         Args:
-            value: If provided, sets the alternating row color.
+            value: If provided, sets the striped row background color.
                 If None, returns the current color.
 
         Returns:
-            Current alternating_row_color when called without arguments.
+            Current striped_background when called without arguments.
         """
         if value is None:
-            return self._alternating_row_color
+            return self._striped_background
         else:
-            self._alternating_row_color = value
+            self._striped_background = value
             # Reapply surface colors to all rows
             for i, row in enumerate(self._rows):
                 self._apply_widget_surface(row, i)
@@ -567,23 +567,23 @@ class ListView(Frame):
             needed: Desired number of row widgets.
         """
         while len(self._rows) < needed:
-            # Build kwargs for row factory
+            # Build kwargs for row factory (using item-level names)
             row_kwargs = dict(
                 selection_mode=self._selection_mode,
                 show_selection_controls=self._show_selection_controls,
                 show_chevron=self._show_chevron,
-                enable_deleting=self._enable_deleting,
-                enable_dragging=self._enable_dragging,
+                removable=self._enable_removing,
+                draggable=self._enable_dragging,
                 show_separator=self._show_separator,
-                enable_focus_state=self._enable_focus_state,
-                enable_hover_state=self._enable_hover_state,
+                focusable=self._enable_focus,
+                hoverable=self._enable_hover,
                 focus_color=self._focus_color,
-                selection_background=self._selection_background
+                selected_background=self._selected_background
             )
 
-            # Only pass select_by_click if explicitly set
-            if self._select_by_click is not None:
-                row_kwargs['select_by_click'] = self._select_by_click
+            # Only pass select_on_click if explicitly set
+            if self._select_on_click is not None:
+                row_kwargs['select_on_click'] = self._select_on_click
 
             row = self._row_factory(self._container, **row_kwargs)
             row.pack(fill='x')
@@ -862,11 +862,11 @@ class ListView(Frame):
             self._update_rows()
             self.event_generate('<<SelectionChange>>')
 
-    def _on_item_deleting(self, event: Any):
-        """Handle item delete event from `ListItem`.
+    def _on_item_removing(self, event: Any):
+        """Handle item remove event from `ListItem`.
 
         Args:
-            event: Event with `data` for the item being deleted.
+            event: Event with `data` for the item being removed.
         """
         record_id = event.data.get('id')
         if record_id is not None and record_id != '__empty__':
@@ -923,12 +923,12 @@ class ListView(Frame):
             widget_index: The position of this widget in the row pool (0-based).
         """
         base_surface = getattr(self, "_surface_color", "background")
-        if self._alternating_row_mode == 'none':
+        if not self._striped:
             surface = base_surface
         else:
-            is_even = (widget_index % 2) == 0
-            match = is_even if self._alternating_row_mode == 'even' else not is_even
-            surface = self._alternating_row_color if match else base_surface
+            # Apply striped background to odd rows
+            is_odd = (widget_index % 2) == 1
+            surface = self._striped_background if is_odd else base_surface
 
         if hasattr(row, "set_surface_color"):
             row.set_surface_color(surface)
@@ -1115,7 +1115,7 @@ class ListView(Frame):
     def _show_drag_indicator(self) -> None:
         """Create and show the drag drop indicator line."""
         if self._drag_indicator is None:
-            self._drag_indicator = Frame(self._container, color=self._selection_background)
+            self._drag_indicator = Frame(self._container, color=self._selected_background)
 
     def _update_drag_indicator_position(self, target_index: int) -> None:
         """Update the drag indicator to show drop location."""
@@ -1286,11 +1286,11 @@ class ListView(Frame):
 
     # Event handler API
 
-    def on_selection_change(self, callback: Callable) -> str:
+    def on_selection_changed(self, callback: Callable) -> str:
         """Bind to ``<<SelectionChange>>``. Callback receives ``event.data = None`` (use ``get_selected()`` to get current selection)."""
         return self.bind('<<SelectionChange>>', callback, add='+')
 
-    def off_selection_change(self, bind_id: str | None = None) -> None:
+    def off_selection_changed(self, bind_id: str | None = None) -> None:
         """Unbind from ``<<SelectionChange>>``."""
         self.unbind('<<SelectionChange>>', bind_id)
 

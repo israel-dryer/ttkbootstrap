@@ -9,7 +9,7 @@ from ttkbootstrap.widgets.primitives.frame import Frame
 from ttkbootstrap.widgets.primitives.label import Label
 from ttkbootstrap.widgets.composites.expander import Expander
 from ttkbootstrap.widgets.composites.compositeframe import CompositeFrame
-from ttkbootstrap.widgets.composites.listview import ListView
+from ttkbootstrap.widgets.composites.list import ListView
 from ttkbootstrap.widgets.mixins import configure_delegate
 from ttkbootstrap.widgets.types import Master
 
@@ -221,7 +221,7 @@ class NavigationViewGroup(Frame):
             popup_frame,
             items=items_data,
             selection_mode='single',
-            show_scrollbar=False,
+            scrollbar_visibility='never',
             show_separator=False,
         )
         listview.pack(fill='both', expand=True)

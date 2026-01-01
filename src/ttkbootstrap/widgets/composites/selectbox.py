@@ -40,7 +40,7 @@ class SelectBox(Field):
             allow_custom_values: bool = False,
             show_dropdown_button: bool = True,
             dropdown_button_icon: str = None,
-            search_enabled: bool = False,
+            enable_search: bool = False,
             **kwargs: Unpack[FieldOptions]
     ):
         """Create a SelectBox widget.
@@ -56,7 +56,7 @@ class SelectBox(Field):
             show_dropdown_button (bool): If True (default), the dropdown button is shown. This option is
                 ignored if custom values are allowed.
             dropdown_button_icon (str): The icon to display on the dropdown button.
-            search_enabled (bool): If True, allows typing in the entry to filter the popup list.
+            enable_search (bool): If True, allows typing in the entry to filter the popup list.
                 When combined with allow_custom_values=False, the first filtered item is selected
                 when the popup closes. With allow_custom_values=True, any typed value is kept.
 
@@ -79,7 +79,7 @@ class SelectBox(Field):
         super().__init__(master, value=value, label=label, message=message, **kwargs)
 
         self._allow_custom_values = allow_custom_values
-        self._search_enabled = search_enabled
+        self._search_enabled = enable_search
         self._items = items or []
         self._last_selected_value = value
         self._popup_open = False
@@ -99,7 +99,7 @@ class SelectBox(Field):
             )
 
         # Configure entry state based on search and custom value settings
-        if allow_custom_values or search_enabled:
+        if allow_custom_values or enable_search:
             self.entry_widget.state(['!readonly'])
         else:
             # Set entry to readonly but keep dropdown button enabled
@@ -181,8 +181,8 @@ class SelectBox(Field):
         # Create scrollview inside the outer frame
         scrollview = ScrollView(
             outer_frame,
-            direction='vertical',
-            show_scrollbar='always',
+            scroll_direction='vertical',
+            scrollbar_visibility='always',
         )
         scrollview.pack(fill='both', expand=True)
 
@@ -459,8 +459,8 @@ class SelectBox(Field):
                 self.readonly(True)
         return None
 
-    @configure_delegate('search_enabled')
-    def _delegate_search_enabled(self, value: bool = None):
+    @configure_delegate('enable_search')
+    def _delegate_enable_search(self, value: bool = None):
         """Get or set whether search filtering is enabled."""
         if value is None:
             return self._search_enabled

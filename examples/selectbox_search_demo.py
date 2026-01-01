@@ -40,7 +40,7 @@ sb1 = ttk.SelectBox(
     frame1,
     value="Brazil",
     items=countries,
-    search_enabled=True,
+    enable_search=True,
     allow_custom_values=True,
     color="info"
 )
@@ -56,7 +56,7 @@ sb2 = ttk.SelectBox(
     frame2,
     value="Canada",
     items=countries,
-    search_enabled=True,
+    enable_search=True,
     allow_custom_values=False,
     color="success"
 )
@@ -72,7 +72,7 @@ sb3 = ttk.SelectBox(
     frame3,
     value="Japan",
     items=countries,
-    search_enabled=False,
+    enable_search=False,
     allow_custom_values=False,
     color="primary"
 )
@@ -89,7 +89,7 @@ sb4 = ttk.SelectBox(
     frame4,
     value="Blue",
     items=colors,
-    search_enabled=True,
+    enable_search=True,
     allow_custom_values=False,
     color="warning"
 )
@@ -99,7 +99,7 @@ sb4.entry_widget.bind('<<Changed>>', on_changed)
 # Instructions
 instructions = ttk.LabelFrame(root, text="Instructions", padding=10)
 instructions.pack(fill=X, padx=20, pady=10)
-ttk.Label(instructions, text="• With search_enabled=True, type in the field to filter the dropdown list").pack(anchor=W)
+ttk.Label(instructions, text="• With enable_search=True, type in the field to filter the dropdown list").pack(anchor=W)
 ttk.Label(instructions, text="• With allow_custom_values=True, any typed value is kept").pack(anchor=W)
 ttk.Label(instructions, text="• With allow_custom_values=False, first filtered item is selected when popup closes").pack(anchor=W)
 

@@ -48,10 +48,10 @@ grid = ttk.TableView(
     app,
     columns=columns,
     rows=rows,
-    search={"event": "enter"},
+    search_trigger="enter",
     column_auto_width=True,
-    row_alternation={"enabled": True},
-    editing={"updating": True}
+    striped=True,
+    enable_editing=True,
 )
 grid.pack(fill="both", expand=True, padx=5, pady=5)
 

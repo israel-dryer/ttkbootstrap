@@ -260,10 +260,10 @@ class RadioGroup(Frame):
         return button
 
     def get(self) -> str:
-        """Get the currently selected value."""
+        """Return the currently selected value."""
         return self.variable.get()
 
-    def set(self, value: str):
+    def set(self, value: str) -> None:
         """Set the selected value.
 
         Args:
@@ -286,6 +286,15 @@ class RadioGroup(Frame):
 
         self.variable.set(value)
 
+    @property
+    def value(self) -> str:
+        """Get or set the selected value."""
+        return self.get()
+
+    @value.setter
+    def value(self, value: str) -> None:
+        self.set(value)
+
     def remove(self, key: str):
         """Remove a button by its key.
 
@@ -300,7 +309,7 @@ class RadioGroup(Frame):
         button = self._buttons.pop(key)
         button.destroy()
 
-    def buttons(self) -> tuple[RadioButton, ...]:
+    def items(self) -> tuple[RadioButton, ...]:
         """Get all button widgets in the group.
 
         Returns:
@@ -308,7 +317,7 @@ class RadioGroup(Frame):
         """
         return tuple(self._buttons.values())
 
-    def get_button(self, key: str) -> RadioButton:
+    def item(self, key: str) -> RadioButton:
         """Get a button by its key.
 
         Args:
@@ -324,23 +333,29 @@ class RadioGroup(Frame):
             raise KeyError(f"No button with key '{key}'")
         return self._buttons[key]
 
-    def configure_button(self, key: str, **kwargs: Any):
+    def configure_item(self, key: str, option: str = None, **kwargs: Any):
         """Configure a specific button by its key.
 
         Args:
             key: The key of the button to configure.
+            option: If provided, return the value of this option.
             **kwargs: Configuration options to apply to the button.
+
+        Returns:
+            If option is provided, returns the value of that option.
         """
-        button = self.get_button(key)
+        button = self.item(key)
+        if option is not None:
+            return button.cget(option)
         button.configure(**kwargs)
 
     def on_changed(self, callback: Callable) -> Any:
         """Subscribe to value changes. Callback receives ``new_value: str`` directly."""
         return self._signal.subscribe(callback)
 
-    def off_changed(self, subscription_id: Any) -> None:
+    def off_changed(self, bind_id: Any) -> None:
         """Unsubscribe from value changes."""
-        self._signal.unsubscribe(subscription_id)
+        self._signal.unsubscribe(bind_id)
 
     @configure_delegate('color')
     def _delegate_color(self, value=None):

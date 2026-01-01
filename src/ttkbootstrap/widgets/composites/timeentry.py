@@ -12,7 +12,7 @@ from typing_extensions import Unpack
 from ttkbootstrap.runtime.app import get_app_settings
 from ttkbootstrap.core.localization import IntlFormatter
 from ttkbootstrap.widgets.composites.field import FieldOptions
-from ttkbootstrap.widgets.primitives.selectbox import SelectBox
+from ttkbootstrap.widgets.composites.selectbox import SelectBox
 from ttkbootstrap.widgets.types import Master
 
 
@@ -114,7 +114,7 @@ class TimeEntry(SelectBox):
             value_format=value_format,
             items=items,
             allow_custom_values=True,
-            search_enabled=True,
+            enable_search=True,
             dropdown_button_icon='clock',
             message=message,
             label=label,

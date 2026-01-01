@@ -12,6 +12,7 @@ from ttkbootstrap.widgets.primitives.frame import Frame
 from ttkbootstrap.widgets.primitives.separator import Separator
 from ttkbootstrap.widgets.primitives.button import Button
 from ttkbootstrap.widgets.composites.tabs.tabitem import TabItem
+from ttkbootstrap.widgets.mixins.configure_mixin import configure_delegate
 from ttkbootstrap.widgets.types import Master
 
 if TYPE_CHECKING:
@@ -156,6 +157,11 @@ class Tabs(Frame):
         if enable_adding:
             self._create_add_button()
 
+        # Tab tracking by key
+        self._tabs: dict[str, TabItem] = {}
+        self._tab_order: list[str] = []
+        self._counter = 0  # For auto-generating keys
+
     def _create_divider(self):
         """Create the divider separator widget."""
         if self._divider is not None:
@@ -224,21 +230,15 @@ class Tabs(Frame):
         """
         return self.bind('<<TabAdd>>', callback, add='+')
 
-    def off_tab_added(self, funcid: str) -> None:
+    def off_tab_added(self, bind_id: str | None = None) -> None:
         """Unbind from <<TabAdd>> event."""
-        self.unbind('<<TabAdd>>', funcid)
+        self.unbind('<<TabAdd>>', bind_id)
 
-    @property
-    def managed_widgets(self) -> list[tk.Widget]:
-        """Return list of managed tab widgets in order (excludes add button)."""
-        widgets = self._tab_bar.managed_widgets
-        if self._add_button is not None and self._add_button in widgets:
-            return [w for w in widgets if w is not self._add_button]
-        return widgets
-
-    def add_tab(
+    def add(
         self,
         text: str = "",
+        *,
+        key: str = None,
         icon: str | dict = None,
         value: Any = None,
         closable: Union[bool, Literal['hover']] = None,
@@ -248,13 +248,12 @@ class Tabs(Frame):
     ) -> TabItem:
         """Add a new tab to the tab bar.
 
-        This is a convenience method that creates a TabItem with the
-        container's default settings and adds it to the tab bar.
-
         Args:
             text: Text to display on the tab.
+            key: Unique identifier for the tab. Auto-generated if not provided.
             icon: Icon to display on the tab.
             value: Value associated with this tab for selection tracking.
+                If None, defaults to the key.
             closable: Close button visibility (True, False, or 'hover').
                 If None, uses the widget's `enable_closing` setting.
             close_command: Callback when close button is clicked.
@@ -263,10 +262,26 @@ class Tabs(Frame):
 
         Returns:
             The created TabItem widget.
+
+        Raises:
+            ValueError: If a tab with the same key already exists.
         """
+        # Auto-generate key if not provided
+        if key is None:
+            key = f"tab_{self._counter}"
+            self._counter += 1
+
+        if key in self._tabs:
+            raise ValueError(f"A tab with the key '{key}' already exists.")
+
+        # Default value to key if not specified
+        if value is None:
+            value = key
+
         # Use widget-level default if not specified
         if closable is None:
             closable = self._enable_closing
+
         # Apply container defaults
         tab_kwargs = {
             'compound': self._compound,
@@ -313,56 +328,94 @@ class Tabs(Frame):
         else:
             self._tab_bar.add(tab, **pack_opts)
 
-        # Auto-select first tab (check for 1 if no add button, 2 if add button exists)
-        tab_count = len(self._tab_bar) - (1 if self._add_button else 0)
-        if tab_count == 1 and value is not None:
+        # Track tab by key
+        self._tabs[key] = tab
+        self._tab_order.append(key)
+
+        # Auto-select first tab
+        if len(self._tabs) == 1:
             self._variable.set(value)
 
         return tab
 
-    def add(self, widget: tk.Widget, **options: Any) -> tk.Widget:
-        """Add a widget (typically TabItem) to the tab bar.
+    def remove(self, key: str) -> None:
+        """Remove a tab by its key.
 
         Args:
-            widget: The widget to add.
-            **options: Pack options. Defaults to fill='x'.
+            key: The key of the tab to remove.
+
+        Raises:
+            KeyError: If no tab with the given key exists.
+        """
+        if key not in self._tabs:
+            raise KeyError(f"No tab with key '{key}'")
+
+        tab = self._tabs.pop(key)
+        self._tab_order.remove(key)
+        self._tab_bar.remove(tab)
+        tab.destroy()
+
+    def item(self, key: str) -> TabItem:
+        """Get a tab by its key.
+
+        Args:
+            key: The key of the tab to retrieve.
 
         Returns:
-            The widget.
+            The TabItem instance.
+
+        Raises:
+            KeyError: If no tab with the given key exists.
         """
-        # Default fill='x' for tabs
-        if 'fill' not in options:
-            options['fill'] = 'x'
+        if key not in self._tabs:
+            raise KeyError(f"No tab with key '{key}'")
+        return self._tabs[key]
 
-        # Apply stretch behavior for horizontal orientation
-        if self._tab_width == 'stretch' and self._orient == 'horizontal':
-            if 'expand' not in options:
-                options['expand'] = True
+    def items(self) -> tuple[TabItem, ...]:
+        """Get all tab widgets in order.
 
-        # Insert before add button if it exists, otherwise append
-        if self._add_button is not None:
-            add_btn_index = self._tab_bar.index_of(self._add_button)
-            return self._tab_bar.insert(add_btn_index, widget, **options)
+        Returns:
+            A tuple of all TabItem instances in the order they were added.
+        """
+        return tuple(self._tabs[key] for key in self._tab_order)
 
-        return self._tab_bar.add(widget, **options)
+    def keys(self) -> tuple[str, ...]:
+        """Get all tab keys in order.
 
-    def remove(self, widget: tk.Widget) -> None:
-        """Remove a widget from the tab bar.
+        Returns:
+            A tuple of all tab keys in the order they were added.
+        """
+        return tuple(self._tab_order)
+
+    def configure_item(self, key: str, option: str = None, **kwargs: Any):
+        """Configure a specific tab by its key.
 
         Args:
-            widget: The widget to remove.
+            key: The key of the tab to configure.
+            option: If provided, return the value of this option.
+            **kwargs: Configuration options to apply to the tab.
+
+        Returns:
+            If option is provided, returns the value of that option.
         """
-        self._tab_bar.remove(widget)
+        tab = self.item(key)
+        if option is not None:
+            return tab.cget(option)
+        tab.configure(**kwargs)
 
-    @property
-    def orient(self) -> str:
-        """Get the orientation of the tab bar."""
-        return self._orient
+    @configure_delegate('orient')
+    def _delegate_orient(self, value=None):
+        """Get orientation (read-only after creation)."""
+        if value is None:
+            return self._orient
+        raise ValueError("orient cannot be changed after creation")
 
-    @property
-    def variant(self) -> str:
-        """Get the visual variant of the tab bar."""
-        return self._variant
+    @configure_delegate('variant')
+    def _delegate_variant(self, value=None):
+        """Get variant (read-only after creation)."""
+        if value is None:
+            return self._variant
+        raise ValueError("variant cannot be changed after creation")
 
     @property
     def variable(self) -> tk.Variable:
@@ -374,14 +427,11 @@ class Tabs(Frame):
         """Get the Signal for tab selection."""
         return self._signal
 
-    @property
-    def show_divider(self) -> bool:
-        """Get whether the divider is shown."""
-        return self._show_divider
-
-    @show_divider.setter
-    def show_divider(self, value: bool):
-        """Set whether the divider is shown."""
+    @configure_delegate('show_divider')
+    def _delegate_show_divider(self, value=None):
+        """Get or set whether the divider is shown."""
+        if value is None:
+            return self._show_divider
         if value != self._show_divider:
             self._show_divider = value
             if value:
@@ -390,12 +440,28 @@ class Tabs(Frame):
                 self._destroy_divider()
 
     def get(self) -> str:
-        """Get the currently selected tab value."""
+        """Return the currently selected tab value."""
         return self._variable.get()
 
-    def set(self, value: str):
+    def set(self, value: str) -> None:
         """Set the selected tab value."""
         self._variable.set(value)
+
+    @property
+    def value(self) -> str:
+        """Get or set the selected tab value."""
+        return self.get()
+
+    @value.setter
+    def value(self, value: str) -> None:
+        self.set(value)
+
+    @configure_delegate('value')
+    def _delegate_value(self, value=None):
+        """Get or set the value via configure."""
+        if value is None:
+            return self.get()
+        self.set(value)
 
     def on_tab_changed(self, callback: Callable) -> Any:
         """Subscribe to tab selection changes.
@@ -408,6 +474,6 @@ class Tabs(Frame):
         """
         return self._signal.subscribe(callback)
 
-    def off_tab_changed(self, subscription_id: Any) -> None:
+    def off_tab_changed(self, bind_id: Any) -> None:
         """Unsubscribe from tab selection changes."""
-        self._signal.unsubscribe(subscription_id)
+        self._signal.unsubscribe(bind_id)

@@ -128,25 +128,25 @@ class ValidationMixin(Widget):
         """Register callback for invalid validation."""
         self._on_invalid_command = func
 
-    def off_invalid(self, funcid: str):
+    def off_invalid(self, bind_id: str | None = None):
         """Remove the callback for the <<Invalid>> event"""
-        self.unbind('<<Invalid>>', funcid)
+        self.unbind('<<Invalid>>', bind_id)
 
     def on_valid(self, func: Callable[[dict[str, Any]], None]) -> None:
         """Register callback for valid validation."""
         self._on_valid_command = func
 
-    def off_valid(self, funcid: str):
+    def off_valid(self, bind_id: str | None = None):
         """Remove the callback for the <<Valid>> event"""
-        self.unbind('<<Valid>>', funcid)
+        self.unbind('<<Valid>>', bind_id)
 
     def on_validated(self, func: Callable[[dict[str, Any]], None]) -> None:
         """Register callback for any validation (valid or invalid)."""
         self._on_validated_command = func
 
-    def off_validated(self, funcid: str):
+    def off_validated(self, bind_id: str | None = None):
         """Remove the callback for validated event"""
-        self.unbind('<<Validate>>', funcid)
+        self.unbind('<<Validate>>', bind_id)
 
     # ---------------- Internals ----------------
 

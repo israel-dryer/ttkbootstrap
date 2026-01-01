@@ -75,6 +75,25 @@ fg = ttk.FloodGauge(app, value=80, maximum=100)
 fg.pack()
 ```
 
+### Programmatic control
+
+```python
+fg = ttk.FloodGauge(app, value=50)
+fg.pack()
+
+# Get/set methods
+current = fg.get()      # Returns 50
+fg.set(75)              # Sets value to 75
+
+# Property access
+print(fg.value)         # Returns 75
+fg.value = 90           # Sets value to 90
+
+# Configure-style access
+fg.configure(value=100)
+print(fg.cget('value')) # Returns 100
+```
+
 ### Common options
 
 - `value` — current fill level

@@ -108,9 +108,9 @@ ttk.Label(my_frame, text="Custom frame with padding").pack()
 Choose vertical, horizontal, or both scrolling depending on content.
 
 ```python
-ttk.ScrollView(app, direction='vertical')    # default
-ttk.ScrollView(app, direction='horizontal')
-ttk.ScrollView(app, direction='both')
+ttk.ScrollView(app, scroll_direction='vertical')    # default
+ttk.ScrollView(app, scroll_direction='horizontal')
+ttk.ScrollView(app, scroll_direction='both')
 ```
 
 ### Scrollbar visibility
@@ -118,10 +118,10 @@ ttk.ScrollView(app, direction='both')
 Use auto-hide policies to keep UI clean.
 
 ```python
-ttk.ScrollView(app, show_scrollbar='always')    # default
-ttk.ScrollView(app, show_scrollbar='never')     # hidden but scrolling works
-ttk.ScrollView(app, show_scrollbar='on-hover')  # appear on mouse enter
-ttk.ScrollView(app, show_scrollbar='on-scroll') # appear when scrolling
+ttk.ScrollView(app, scrollbar_visibility='always')    # default
+ttk.ScrollView(app, scrollbar_visibility='never')     # hidden but scrolling works
+ttk.ScrollView(app, scrollbar_visibility='hover')     # appear on mouse enter
+ttk.ScrollView(app, scrollbar_visibility='scroll')    # appear when scrolling
 ```
 
 ### Padding

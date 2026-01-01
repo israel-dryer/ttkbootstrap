@@ -73,7 +73,7 @@ class TextEntry(Field):
             show_message (bool): If True, displays message area. Default is True.
             padding: Padding around entry widget.
             show (str): Character to mask input (e.g., '*' for passwords).
-            take_focus (bool): If True, widget accepts Tab focus.
+            takefocus (bool): If True, widget accepts Tab focus.
             textvariable (Variable): Tkinter Variable to link with text.
             textsignal (Signal): Signal object for reactive updates.
             width (int): Width in characters.

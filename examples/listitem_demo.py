@@ -5,12 +5,12 @@ This demo showcases various features of the ListItem widget including:
 - Basic text display (title, text, caption)
 - Selection modes (single, multi, none)
 - Chevron indicators
-- Delete functionality
+- Remove functionality
 - Drag and drop handles
 """
 
 import ttkbootstrap as ttk
-from ttkbootstrap.widgets.composites.listitem import ListItem
+from ttkbootstrap.widgets.composites.list import ListItem
 
 
 def main():
@@ -33,11 +33,11 @@ def main():
     # Basic Items Section
     ttk.Label(container, text="Basic Items", font=('Helvetica', 12, 'bold')).pack(pady=(5, 5), anchor='w')
 
-    item1 = ListItem(container, enable_focus_state=True)
+    item1 = ListItem(container, focusable=True)
     item1.update_data({'title': 'Simple Item', 'item_index': 0})
     item1.pack(fill='x', pady=2)
 
-    item2 = ListItem(container, enable_focus_state=True)
+    item2 = ListItem(container, focusable=True)
     item2.update_data({
         'title': 'Item with Description',
         'text': 'This item has both a title and descriptive text',
@@ -45,7 +45,7 @@ def main():
     })
     item2.pack(fill='x', pady=2)
 
-    item3 = ListItem(container, enable_focus_state=True)
+    item3 = ListItem(container, focusable=True)
     item3.update_data({
         'title': 'Complete Item',
         'text': 'This item has a title, text, and caption',
@@ -54,7 +54,7 @@ def main():
     })
     item3.pack(fill='x', pady=2)
 
-    item4 = ListItem(container, enable_focus_state=True)
+    item4 = ListItem(container, focusable=True)
     item4.update_data({
         'icon': {'name': 'star-fill'},
         'title': 'Item with Icon',
@@ -72,7 +72,7 @@ def main():
             container,
             selection_mode='single',
             show_selection_controls=True,
-            enable_focus_state=True
+            focusable=True
         )
         item.update_data({
             'title': f'Single Select {i+1}',
@@ -88,7 +88,7 @@ def main():
             container,
             selection_mode='multi',
             show_selection_controls=True,
-            enable_focus_state=True
+            focusable=True
         )
         item.update_data({
             'title': f'Multi Select {i+1}',
@@ -100,7 +100,7 @@ def main():
     # Features Section
     ttk.Label(container, text="Features", font=('Helvetica', 12, 'bold')).pack(pady=(15, 5), anchor='w')
 
-    chevron_item = ListItem(container, show_chevron=True, enable_focus_state=True)
+    chevron_item = ListItem(container, show_chevron=True, focusable=True)
     chevron_item.update_data({
         'title': 'Chevron Item',
         'text': 'Has a chevron indicator on the right',
@@ -108,20 +108,20 @@ def main():
     })
     chevron_item.pack(fill='x', pady=2)
 
-    def on_delete(event):
-        print(f"Delete clicked for: {delete_item.data['title']}")
-        delete_item.pack_forget()
+    def on_remove(event):
+        print(f"Remove clicked for: {remove_item.data['title']}")
+        remove_item.pack_forget()
 
-    delete_item = ListItem(container, enable_deleting=True, enable_focus_state=True)
-    delete_item.update_data({
-        'title': 'Deletable Item',
-        'text': 'Click the X to delete',
+    remove_item = ListItem(container, removable=True, focusable=True)
+    remove_item.update_data({
+        'title': 'Removable Item',
+        'text': 'Click the X to remove',
         'item_index': 1
     })
-    delete_item.pack(fill='x', pady=2)
-    delete_item.bind('<<ItemDeleting>>', on_delete)
+    remove_item.pack(fill='x', pady=2)
+    remove_item.bind('<<ItemRemoving>>', on_remove)
 
-    drag_item = ListItem(container, enable_dragging=True, enable_focus_state=True)
+    drag_item = ListItem(container, draggable=True, focusable=True)
     drag_item.update_data({
         'title': 'Draggable Item',
         'text': 'Use the grip handle to drag',
@@ -129,7 +129,7 @@ def main():
     })
     drag_item.pack(fill='x', pady=2)
 
-    separator_item = ListItem(container, show_separator=True, enable_focus_state=True)
+    separator_item = ListItem(container, show_separator=True, focusable=True)
     separator_item.update_data({
         'title': 'Item with Separator',
         'text': 'Has a separator line below',

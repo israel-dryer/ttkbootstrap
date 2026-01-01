@@ -2,7 +2,7 @@
 Demo and test script for the ScrollView widget.
 
 This script demonstrates various features and configurations of the ScrollView widget:
-- Different scrollbar visibility modes (always, never, on-hover, on-scroll)
+- Different scrollbar visibility modes (always, never, hover, scroll)
 - Different scroll directions (vertical, horizontal, both)
 - Dynamic content updates
 - Mouse wheel scrolling on all child widgets
@@ -54,7 +54,7 @@ def demo_always_show():
     frame = ttk.Frame(notebook)
     notebook.add(frame, text="Always Show")
 
-    scroll = ttk.ScrollView(frame, direction='both', show_scrollbar='always', scrollbar_style='rounded')
+    scroll = ttk.ScrollView(frame, scroll_direction='both', scrollbar_visibility='always', scrollbar_style='rounded')
     scroll.pack(fill=BOTH, expand=True, padx=5, pady=5)
 
     content = ttk.Frame(scroll.canvas)
@@ -74,7 +74,7 @@ def demo_never_show():
         bootstyle='warning'
     ).pack(pady=5)
 
-    scroll = ttk.ScrollView(frame, direction='both', show_scrollbar='never')
+    scroll = ttk.ScrollView(frame, scroll_direction='both', scrollbar_visibility='never')
     scroll.pack(fill=BOTH, expand=True, padx=5, pady=5)
 
     content = ttk.Frame(scroll.canvas)
@@ -94,7 +94,7 @@ def demo_on_hover():
         bootstyle='info'
     ).pack(pady=5)
 
-    scroll = ttk.ScrollView(frame, direction='both', show_scrollbar='on-hover')
+    scroll = ttk.ScrollView(frame, scroll_direction='both', scrollbar_visibility='hover')
     scroll.pack(fill=BOTH, expand=True, padx=5, pady=5)
 
     content = ttk.Frame(scroll.canvas)
@@ -116,8 +116,8 @@ def demo_on_scroll():
 
     scroll = ttk.ScrollView(
         frame,
-        direction='both',
-        show_scrollbar='on-scroll',
+        scroll_direction='both',
+        scrollbar_visibility='scroll',
         autohide_delay=1500
     )
     scroll.pack(fill=BOTH, expand=True, padx=5, pady=5)
@@ -133,7 +133,7 @@ def demo_vertical_only():
     frame = ttk.Frame(notebook)
     notebook.add(frame, text="Vertical Only")
 
-    scroll = ttk.ScrollView(frame, direction='vertical', show_scrollbar='always')
+    scroll = ttk.ScrollView(frame, scroll_direction='vertical', scrollbar_visibility='always')
     scroll.pack(fill=BOTH, expand=True, padx=5, pady=5)
 
     content = ttk.Frame(scroll.canvas)
@@ -153,7 +153,7 @@ def demo_horizontal_only():
         bootstyle='info'
     ).pack(pady=5)
 
-    scroll = ttk.ScrollView(frame, direction='horizontal', show_scrollbar='always')
+    scroll = ttk.ScrollView(frame, scroll_direction='horizontal', scrollbar_visibility='always')
     scroll.pack(fill=BOTH, expand=True, padx=5, pady=5)
 
     content = ttk.Frame(scroll.canvas)
@@ -173,7 +173,7 @@ def demo_dynamic_content():
 
     ttk.Label(control_frame, text="Add widgets dynamically:").pack(side=LEFT, padx=5)
 
-    scroll = ttk.ScrollView(frame, direction='both', show_scrollbar='always')
+    scroll = ttk.ScrollView(frame, scroll_direction='both', scrollbar_visibility='always')
     scroll.pack(fill=BOTH, expand=True, padx=5, pady=5)
 
     content = ttk.Frame(scroll.canvas)
@@ -228,13 +228,13 @@ def demo_dynamic_content():
     mode_var = ttk.StringVar(value='always')
 
     def change_mode():
-        scroll.configure(show_scrollbar=mode_var.get())
+        scroll.configure(scrollbar_visibility=mode_var.get())
 
     modes = [
         ('Always', 'always'),
         ('Never', 'never'),
-        ('On Hover', 'on-hover'),
-        ('On Scroll', 'on-scroll')
+        ('Hover', 'hover'),
+        ('Scroll', 'scroll')
     ]
 
     for text, value in modes:
@@ -252,7 +252,7 @@ def demo_nested_frames():
     frame = ttk.Frame(notebook)
     notebook.add(frame, text="Nested Widgets")
 
-    scroll = ttk.ScrollView(frame, direction='both', show_scrollbar='always')
+    scroll = ttk.ScrollView(frame, scroll_direction='both', scrollbar_visibility='always')
     scroll.pack(fill=BOTH, expand=True, padx=5, pady=5)
 
     content = ttk.Frame(scroll.canvas)

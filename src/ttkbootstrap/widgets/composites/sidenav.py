@@ -193,27 +193,68 @@ class SideNav(Frame):
         sep.pack(fill='x', pady=8)
         return sep
 
-    def get_item(self, key: str) -> RadioToggle | None:
+    def item(self, key: str) -> RadioToggle:
         """Get an item by key.
 
         Args:
             key (str): The item key.
 
         Returns:
-            RadioToggle | None: The item, or None if not found.
-        """
-        return self._items.get(key)
+            RadioToggle: The item.
 
-    def remove_item(self, key: str) -> None:
+        Raises:
+            KeyError: If no item with the given key exists.
+        """
+        if key not in self._items:
+            raise KeyError(f"No item with key '{key}'")
+        return self._items[key]
+
+    def items(self) -> tuple[RadioToggle, ...]:
+        """Get all items in order.
+
+        Returns:
+            A tuple of all RadioToggle items in the order they were added.
+        """
+        return tuple(self._items[key] for key in self._item_order)
+
+    def keys(self) -> tuple[str, ...]:
+        """Get all item keys in order.
+
+        Returns:
+            A tuple of all item keys in the order they were added.
+        """
+        return tuple(self._item_order)
+
+    def configure_item(self, key: str, option: str = None, **kwargs: Any):
+        """Configure a specific item by its key.
+
+        Args:
+            key: The key of the item to configure.
+            option: If provided, return the value of this option.
+            **kwargs: Configuration options to apply to the item.
+
+        Returns:
+            If option is provided, returns the value of that option.
+        """
+        item = self.item(key)
+        if option is not None:
+            return item.cget(option)
+        item.configure(**kwargs)
+
+    def remove(self, key: str) -> None:
         """Remove an item by key.
 
         Args:
             key (str): The item key to remove.
+
+        Raises:
+            KeyError: If no item with the given key exists.
         """
-        if key in self._items:
-            item = self._items.pop(key)
-            self._item_order.remove(key)
-            item.destroy()
+        if key not in self._items:
+            raise KeyError(f"No item with key '{key}'")
+        item = self._items.pop(key)
+        self._item_order.remove(key)
+        item.destroy()
 
     def select(self, key: str) -> None:
         """Select an item by key.
@@ -233,11 +274,6 @@ class SideNav(Frame):
             value = self._variable.get()
             return value if value else None
         return None
-
-    @property
-    def items(self) -> list[RadioToggle]:
-        """Get all items in order."""
-        return [self._items[key] for key in self._item_order]
 
     @property
     def signal(self) -> 'Signal[str] | None':

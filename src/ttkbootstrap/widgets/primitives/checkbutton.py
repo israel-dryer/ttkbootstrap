@@ -9,6 +9,7 @@ from ttkbootstrap.core.mixins.ttk_state import TtkStateMixin
 from ttkbootstrap.core.mixins.widget import WidgetCapabilitiesMixin
 from ttkbootstrap.widgets.internal.wrapper_base import TTKWrapperBase
 from ttkbootstrap.widgets.mixins import IconMixin, LocalizationMixin, SignalMixin, TextSignalMixin
+from ttkbootstrap.widgets.mixins.configure_mixin import configure_delegate
 from ttkbootstrap.widgets.types import Master
 
 if TYPE_CHECKING:
@@ -97,3 +98,27 @@ class CheckButton(LocalizationMixin, SignalMixin, TextSignalMixin, IconMixin, TT
         super().__init__(master, **kwargs)
         if initial_value is not None and not signal_provided and not variable_provided:
             self.variable.set(initial_value)
+
+    def get(self) -> Any:
+        """Return the current value of the checkbutton."""
+        return self.variable.get()
+
+    def set(self, value: Any) -> None:
+        """Set the value of the checkbutton."""
+        self.variable.set(value)
+
+    @property
+    def value(self) -> Any:
+        """Get or set the checkbutton's value."""
+        return self.get()
+
+    @value.setter
+    def value(self, value: Any) -> None:
+        self.set(value)
+
+    @configure_delegate('value')
+    def _delegate_value(self, value=None):
+        """Get or set the value via configure."""
+        if value is None:
+            return self.get()
+        self.set(value)

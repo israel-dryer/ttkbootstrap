@@ -68,10 +68,9 @@ class Expander(Frame):
             signal (Signal): Reactive Signal for selection state (preferred over variable).
             variable (Variable): Tk variable for selection state (synced with signal).
             value (Any): Value to set on signal/variable when selected.
-            **kwargs: Additional arguments passed to Frame. If bootstyle is provided,
-                the chevron button will use that style (default: foreground-ghost).
+            **kwargs: Additional arguments passed to Frame. Use `color` and `variant`
+                for styling the header and chevron.
         """
-        self._header_bootstyle = kwargs.pop('bootstyle', '')
         self._header_color = kwargs.pop('color', None)
         self._header_variant = kwargs.pop('variant', None)
         if 'show_border' in kwargs:
@@ -152,17 +151,15 @@ class Expander(Frame):
         else:
             return self._icon_collapsed or {'name': 'chevron-down', 'size': 16}
 
-    def _build_widget(self, bootstyle=''):
+    def _build_widget(self):
         """Build the internal widget structure."""
-        # Use new color/variant if available, fall back to legacy bootstyle
         color = self._header_color
         variant = self._header_variant
-        bootstyle = self._header_bootstyle
 
         # Use CompositeFrame for header to enable hover/pressed/focus states
         self._header_frame = CompositeFrame(
             self, ttk_class='Expander.TFrame',
-            color=color or bootstyle, variant=variant, padding=8, takefocus=True
+            color=color, variant=variant, padding=8, takefocus=True
         )
         self._header_frame.pack(fill='x')
 
@@ -173,7 +170,7 @@ class Expander(Frame):
                 icon=self._icon,
                 icon_only=True,
                 ttk_class='Expander.TLabel',
-                color=color or bootstyle, variant=variant,
+                color=color, variant=variant,
                 takefocus=False,
             )
             self._header_frame.register_composite(self._icon_label)
@@ -185,7 +182,7 @@ class Expander(Frame):
             text=self._title,
             anchor='w',
             ttk_class='Expander.TLabel',
-            color=color or bootstyle, variant=variant,
+            color=color, variant=variant,
             takefocus=False,
         )
         self._header_frame.register_composite(self._title_label)
@@ -195,7 +192,7 @@ class Expander(Frame):
             self._header_frame,
             icon=self._current_chevron_icon,
             icon_only=True,
-            color=color or bootstyle, variant=variant,
+            color=color, variant=variant,
             ttk_class='Expander.TLabel',
             takefocus=False,
         )
@@ -295,7 +292,7 @@ class Expander(Frame):
 
         Args:
             widget (Widget | None): Optional widget to use as content. If None, creates a Frame.
-            **kwargs: When widget is None, these are passed to Frame (e.g., padding, bootstyle).
+            **kwargs: When widget is None, these are passed to Frame (e.g., padding).
 
         Returns:
             Widget: The content widget (passed or created).
@@ -328,7 +325,7 @@ class Expander(Frame):
             return self._variable.get() == self._value
         return False
 
-    def on_toggle(self, callback: Callable) -> str:
+    def on_toggled(self, callback: Callable) -> str:
         """Bind callback to ``<<Toggle>>`` events.
 
         Args:
@@ -336,15 +333,15 @@ class Expander(Frame):
                 ``event.data = {'expanded': bool}``.
 
         Returns:
-            Bind ID that can be passed to ``off_toggle`` to remove this callback.
+            Bind ID that can be passed to ``off_toggled`` to remove this callback.
         """
         return self.bind('<<Toggle>>', callback, add='+')
 
-    def off_toggle(self, bind_id: str = None):
+    def off_toggled(self, bind_id: str | None = None) -> None:
         """Unbind ``<<Toggle>>`` callback(s).
 
         Args:
-            bind_id (str | None): Bind ID returned by ``on_toggle``. If None, unbinds all.
+            bind_id: Bind ID returned by ``on_toggled``. If None, unbinds all.
         """
         self.unbind('<<Toggle>>', bind_id)
 
@@ -392,7 +389,7 @@ class Expander(Frame):
                 icon=value,
                 icon_only=True,
                 ttk_class='Expander.TLabel',
-                color=self._header_color or self._header_bootstyle, variant=self._header_variant,
+                color=self._header_color, variant=self._header_variant,
                 takefocus=False,
             )
             self._header_frame.register_composite(self._icon_label)
