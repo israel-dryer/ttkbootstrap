@@ -37,24 +37,24 @@ class FilterDialogContent(ttk.Frame):
     def __init__(
             self,
             master: Master = None,
-            allow_search: bool = False,
-            allow_select_all: bool = False,
+            enable_search: bool = False,
+            enable_select_all: bool = False,
             items: list[str | dict[str, Any]] = None
     ):
         """Initialize the FilterDialogContent frame.
 
         Args:
             master: Parent widget. If None, uses the default root window.
-            allow_search: If True, includes a search box to filter items by text.
-            allow_select_all: If True, includes a "Select All" checkbox.
+            enable_search: If True, includes a search box to filter items by text.
+            enable_select_all: If True, includes a "Select All" checkbox.
             items: List of items to display. Can be strings or dicts with keys:
                 - text (str): Display text (required for dict items)
                 - value (Any): Value to return when selected (defaults to text)
                 - selected (bool): Initial selection state (defaults to False)
         """
         super().__init__(master)
-        self._allow_search = allow_search
-        self._allow_select_all = allow_select_all
+        self._enable_search = enable_search
+        self._enable_select_all = enable_select_all
         self._selected_items = []
         self._items = self._normalize_items(items)
         self._filter: str | None = None
@@ -97,14 +97,14 @@ class FilterDialogContent(ttk.Frame):
     def _build_content(self):
         """Build and layout all UI components."""
         # Search box
-        if self._allow_search:
+        if self._enable_search:
             search_entry = ttk.TextEntry(self)
             search_entry.insert_addon(ttk.Label, 'before', icon='search')
             search_entry.pack(fill='x')
             search_entry.on_input(self._on_search_input)
 
         # Select all checkbox
-        if self._allow_select_all:
+        if self._enable_select_all:
             self._select_all_cb = ttk.Checkbutton(self, text='edit.select_all')
             self._select_all_cb.invoke()
             self._select_all_cb.invoke()
@@ -179,7 +179,7 @@ class FilterDialog(ttk.Frame):
 
     !!! note "Events"
 
-        ``<<SelectionChanged>>``: Triggered when OK is clicked and selections are confirmed.
+        ``<<SelectionChange>>``: Triggered when OK is clicked and selections are confirmed.
           Provides ``event.data`` with key: ``selected`` (list[Any]).
 
     Attributes:
@@ -192,8 +192,8 @@ class FilterDialog(ttk.Frame):
             master: Master = None,
             title: str = "Filter",
             items: list[str | dict[str, Any]] = None,
-            allow_search: bool = False,
-            allow_select_all: bool = False,
+            enable_search: bool = False,
+            enable_select_all: bool = False,
             frameless: bool = False
     ):
         """Initialize the FilterDialog.
@@ -205,8 +205,8 @@ class FilterDialog(ttk.Frame):
                 - text (str): Display text (required for dict items)
                 - value (Any): Value to return when selected (defaults to text)
                 - selected (bool): Initial selection state (defaults to False)
-            allow_search: If True, includes a search box to filter items by text.
-            allow_select_all: If True, includes a "Select All" checkbox.
+            enable_search: If True, includes a search box to filter items by text.
+            enable_select_all: If True, includes a "Select All" checkbox.
             frameless: If True, removes window decorations and displays with a
                 border frame. Enables dismiss-on-outside-click behavior.
         """
@@ -214,8 +214,8 @@ class FilterDialog(ttk.Frame):
         self._master = master if master else self.master
         self._title = title
         self._items = items or []
-        self._allow_search = allow_search
-        self._allow_select_all = allow_select_all
+        self._enable_search = enable_search
+        self._enable_select_all = enable_select_all
         self._frameless = frameless
         self._content: FilterDialogContent | None = None
         self._dialog: Dialog | None = None
@@ -225,8 +225,8 @@ class FilterDialog(ttk.Frame):
         """Build the dialog content with FilterDialogContent."""
         self._content = FilterDialogContent(
             master=parent,
-            allow_search=self._allow_search,
-            allow_select_all=self._allow_select_all,
+            enable_search=self._enable_search,
+            enable_select_all=self._enable_select_all,
             items=self._items
         )
         padding = 0 if self._frameless else 10
@@ -242,23 +242,23 @@ class FilterDialog(ttk.Frame):
             self.result = self._content.get_selected_items()
             # Generate selection changed event on confirmation
             if self.result is not None:
-                self.event_generate('<<SelectionChanged>>', data={"selected": self.result.copy()})
+                self.event_generate('<<SelectionChange>>', data={"selected": self.result.copy()})
 
     def on_selection_changed(self, callback: Callable) -> str:
-        """Bind to ``<<SelectionChanged>>``. Callback receives ``event.data = {"selected": list[Any]}``.
+        """Bind to ``<<SelectionChange>>``. Callback receives ``event.data = {"selected": list[Any]}``.
 
         Returns:
             Binding identifier for use with off_selection_changed().
         """
-        return self.bind('<<SelectionChanged>>', callback, add=True)
+        return self.bind('<<SelectionChange>>', callback, add=True)
 
-    def off_selection_changed(self, funcid: str = None):
-        """Unbind callback from <<SelectionChanged>> event.
+    def off_selection_changed(self, bind_id: str = None):
+        """Unbind callback from <<SelectionChange>> event.
 
         Args:
-            funcid: Binding identifier from on_selection_changed().
+            bind_id: Binding identifier from on_selection_changed().
         """
-        self.unbind('<<SelectionChanged>>', funcid)
+        self.unbind('<<SelectionChange>>', bind_id)
 
     def _on_click(self, event):
         """Check if click is outside dialog and dismiss if so."""
@@ -323,7 +323,7 @@ class FilterDialog(ttk.Frame):
                 - 'horizontal': Only flip left/right
 
         Returns:
-            List of selected item values, or None if cancelled.
+            List of selected item values, or None if canceled.
         """
         self._dialog: Dialog = Dialog(
             master=self._master,
