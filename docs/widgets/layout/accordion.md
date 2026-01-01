@@ -80,10 +80,10 @@ ttk.Accordion(app, show_border=True)
 
 ### Separators
 
-Use `separators=True` to add horizontal separators between sections.
+Use `show_separators=True` to add horizontal separators between sections.
 
 ```python
-ttk.Accordion(app, separators=True)
+ttk.Accordion(app, show_separators=True)
 ```
 
 ---
@@ -113,34 +113,34 @@ accordion.add(exp)
 
 ### Removing sections
 
-Use `remove()` to remove a section by index or reference:
+Use `remove()` to remove a section by its key:
 
 ```python
-# Remove by index
-accordion.remove(0)
+# Add with explicit key
+section = accordion.add(key="temp", title="Temporary")
 
-# Remove by reference
-section = accordion.add(title="Temporary")
-accordion.remove(section)
+# Remove by key
+accordion.remove("temp")
 
-# Get index of an expander
-index = accordion.index_of(section)
+# Get all keys
+for key in accordion.keys():
+    print(key)
 ```
 
 ### Multiple selection mode
 
-By default, only one section can be open at a time. Set `multiple=True` to allow multiple sections to be open simultaneously.
+By default, only one section can be open at a time. Set `allow_multiple=True` to allow multiple sections to be open simultaneously.
 
 ```python
-accordion = ttk.Accordion(app, multiple=True)
+accordion = ttk.Accordion(app, allow_multiple=True)
 ```
 
 ### Non-collapsible mode
 
-Set `collapsible=False` to require at least one section to remain open. The first section is automatically expanded.
+Set `allow_collapse_all=False` to require at least one section to remain open. The first section is automatically expanded.
 
 ```python
-accordion = ttk.Accordion(app, collapsible=False)
+accordion = ttk.Accordion(app, allow_collapse_all=False)
 ```
 
 ### Starting with a section expanded
@@ -153,15 +153,15 @@ section2 = accordion.add(title="Second")  # collapsed by default
 ### Programmatic control
 
 ```python
-accordion.expand(0)   # Expand first section
-accordion.collapse(1) # Collapse second section
+accordion.expand("section1")   # Expand by key
+accordion.collapse("section2") # Collapse by key
 
-# With multiple=True only:
+# With allow_multiple=True only:
 accordion.expand_all()
 accordion.collapse_all()
 
 # Access expanders
-for exp in accordion.expanders:
+for exp in accordion.items():
     print(exp.cget('title'))
 
 # Get currently expanded sections
@@ -169,7 +169,7 @@ for exp in accordion.expanded:
     print(f"Open: {exp.cget('title')}")
 
 # Query configuration
-if accordion.cget('multiple'):
+if accordion.cget('allow_multiple'):
     print("Multiple selection enabled")
 ```
 
@@ -188,9 +188,9 @@ accordion.on_accordion_changed(on_accordion_changed)
 
 ## Behavior
 
-- When `multiple=False` (default), opening one section closes all others.
+- When `allow_multiple=False` (default), opening one section closes all others.
 
-- When `collapsible=False`, attempting to close the last open section is prevented.
+- When `allow_collapse_all=False`, attempting to close the last open section is prevented.
 
 - The `<<AccordionChange>>` event fires with `event.data = {'expanded': list[Expander]}`.
 
@@ -206,11 +206,11 @@ accordion.on_accordion_changed(on_accordion_changed)
 
 | Option | Type | Default | Description |
 |--------|------|---------|-------------|
-| `multiple` | bool | `False` | Allow multiple sections open at once |
-| `collapsible` | bool | `True` | Allow all sections to be closed |
-| `separators` | bool | `False` | Show separators between sections |
-| `color` | str | `''` | Color applied to all expanders |
-| `variant` | str | `''` | Variant applied to all expanders |
+| `allow_multiple` | bool | `False` | Allow multiple sections open at once |
+| `allow_collapse_all` | bool | `True` | Allow all sections to be closed |
+| `show_separators` | bool | `False` | Show separators between sections |
+| `color` | str | `None` | Color applied to all expanders |
+| `variant` | str | `None` | Variant applied to all expanders |
 
 ---
 
