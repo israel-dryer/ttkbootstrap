@@ -25,8 +25,8 @@ def show_filter():
             "Black",
             "White"
         ],
-        allow_search=True,
-        allow_select_all=True
+        enable_search=True,
+        enable_select_all=True
     )
     result = dialog.show()
     print(f"Selected items: {result}")
@@ -51,8 +51,8 @@ def show_filter_frameless():
             "Black",
             "White"
         ],
-        allow_search=True,
-        allow_select_all=True,
+        enable_search=True,
+        enable_select_all=True,
         frameless=True
     )
     result = dialog.show()
