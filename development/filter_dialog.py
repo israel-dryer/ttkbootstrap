@@ -73,8 +73,8 @@ class FilterDialogContent(ttk.Frame):
         # Create scrollable container for checkboxes
         scroll_view = ScrollView(
             self,
-            direction='vertical',
-            show_scrollbar='always'
+            scroll_direction='vertical',
+            scrollbar_visibility='always'
         )
         # Set a specific height instead of expand to leave room for footer
         scroll_view.pack(fill='both', expand=False, pady=(8, 0))

@@ -278,7 +278,7 @@ class DateDialog:
         if isinstance(payload, dict):
             selected = payload.get("date") or payload.get("result")
 
-        selected = selected or getattr(self._picker, "date", None)
+        selected = selected or self._picker.get()
         if selected is None:
             return
 

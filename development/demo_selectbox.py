@@ -17,7 +17,7 @@ sb1.pack(padx=10, pady=10)
 sb1.on_changed(lambda x: print("Standard:", x))
 
 # Searchable selectbox
-sb2 = SelectBox(app, "JavaScript", label="With search", items=languages, search_enabled=True)
+sb2 = SelectBox(app, "JavaScript", label="With search", items=languages, enable_search=True)
 sb2.pack(padx=10, pady=10)
 sb2.on_changed(lambda x: print("Search:", x))
 

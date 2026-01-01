@@ -349,7 +349,7 @@ Some widgets emit virtual events for semantic actions:
 def on_selection_changed(event):
     print("Selection changed")
 
-listview.bind("<<SelectionChanged>>", on_selection_changed)
+listview.bind("<<SelectionChange>>", on_selection_changed)
 ```
 
 #### Convenience Methods

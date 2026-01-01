@@ -16,7 +16,7 @@ def build_list_container_style(b: BootstyleBuilderTTk, ttk_style: str, color: st
 @BootstyleBuilderTTk.register_builder('list', 'ListView.TFrame')
 def build_list_frame_style(b: BootstyleBuilderTTk, ttk_style: str, color: str = None, **options):
     """List internal frame style - has state mapping to sync with parent ListItem."""
-    enable_hover_state = options.get('enable_hover_state', True)
+    hoverable = options.get('hoverable', True)
     accent_token = color or 'primary'
     surface_token = options.get('surface_color', 'background')
     background = b.color(surface_token)
@@ -28,7 +28,7 @@ def build_list_frame_style(b: BootstyleBuilderTTk, ttk_style: str, color: str = 
     background_state_map = [
         ('selected', selected),
         ('focus pressed', pressed),
-        ('hover', active) if enable_hover_state else None,
+        ('hover', active) if hoverable else None,
         ('focus', active),
         ('', background)
     ]
@@ -53,7 +53,7 @@ def build_list_item_style(
         variant: str = 'item',
         **options
 ):
-    enable_hover_state = options.get('enable_hover_state', True)
+    hoverable = options.get('hoverable', True)
     surface_token = options.get('surface_color', 'background')
     accent_token = color or 'primary'
 
@@ -74,7 +74,7 @@ def build_list_item_style(
     image_state_specs = [
         ('selected', selected_img),
         ('focus pressed', focus_pressed_img),
-        ('hover', active_img) if enable_hover_state else None,
+        ('hover', active_img) if hoverable else None,
         ('focus', focus_img),
         ('', normal_img),
     ]
@@ -98,7 +98,7 @@ def build_list_item_style(
 
 @BootstyleBuilderTTk.register_builder('list', 'ListView.TButton')
 def build_list_item_button_style(b: BootstyleBuilderTTk, ttk_style: str, color: str = None, **options):
-    enable_hover_state = options.get('enable_hover_state', True)
+    hoverable = options.get('hoverable', True)
     surface_token = options.get('surface_color', 'background')
 
     background = b.color(surface_token)
@@ -118,7 +118,7 @@ def build_list_item_button_style(b: BootstyleBuilderTTk, ttk_style: str, color: 
     background_state_spec = [
         ('selected', selected),
         ('focus pressed', pressed),
-        ('hover', active) if enable_hover_state else None,
+        ('hover', active) if hoverable else None,
         ('focus', active)
     ]
 
@@ -148,9 +148,9 @@ def build_list_item_default_label(b: BootstyleBuilderTTk, ttk_style: str, color:
 @BootstyleBuilderTTk.register_builder('icon', 'ListView.TButton')
 @BootstyleBuilderTTk.register_builder('icon', 'ListView.TLabel')
 def build_list_icon(b: BootstyleBuilderTTk, ttk_style: str, color: str = None, **options):
-    enable_hover_state = options.get('enable_hover_state', True)
+    hoverable = options.get('hoverable', True)
     surface_token = options.get('surface_color', 'background')
-    select_background_token = options.get('selection_background', 'primary')
+    select_background_token = options.get('selected_background', 'primary')
 
     background = b.color(surface_token)
     active = b.elevate(background, 1)
@@ -191,7 +191,7 @@ def build_list_icon(b: BootstyleBuilderTTk, ttk_style: str, color: str = None, *
     background_state_spec = [
         ('selected', selected),
         ('focus pressed', pressed),
-        ('hover', active) if enable_hover_state else None,
+        ('hover', active) if hoverable else None,
         ('focus', active)
     ]
 
@@ -229,13 +229,13 @@ def build_list_item_label(b: BootstyleBuilderTTk, ttk_style: str, color: str = N
 
     Style Options
     * surface_color
-    * selection_background
-    * enable_hover_state
+    * selected_background
+    * hoverable
     * foreground
     """
-    enable_hover_state = options.get('enable_hover_state', True)
+    hoverable = options.get('hoverable', True)
     surface_token = options.get('surface_color', 'background')
-    select_background_token = options.get('selection_background', 'primary')
+    select_background_token = options.get('selected_background', 'primary')
     foreground_token = options.get('foreground', None)
 
     background = b.color(surface_token)
@@ -248,7 +248,7 @@ def build_list_item_label(b: BootstyleBuilderTTk, ttk_style: str, color: str = N
     background_state_spec = [
         ('selected', selected),
         ('focus pressed', pressed),
-        ('hover', active) if enable_hover_state else None,
+        ('hover', active) if hoverable else None,
         ('focus', active)
     ]
 

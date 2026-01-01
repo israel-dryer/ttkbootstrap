@@ -121,7 +121,7 @@ sb.selected_index = 2       # select third item
 print(sb.selected_index)    # returns -1 if value not in items
 ```
 
-#### `search_enabled`
+#### `enable_search`
 
 Enable typing to filter the popup list.
 
@@ -130,7 +130,7 @@ sb = ttk.SelectBox(
     app,
     label="Assignee",
     items=["Alice", "Bob", "Charlie", "Diana"],
-    search_enabled=True,
+    enable_search=True,
 )
 ```
 
@@ -211,7 +211,7 @@ The popup opens when:
 
 ### Search and filtering
 
-When `search_enabled=True`:
+When `enable_search=True`:
 
 - typing filters the popup list
 

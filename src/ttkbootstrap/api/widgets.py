@@ -42,7 +42,7 @@ from ttkbootstrap.widgets.primitives.scale import Scale
 from ttkbootstrap.widgets.primitives.scrollbar import Scrollbar
 from ttkbootstrap.widgets.composites.scrolledtext import ScrolledText
 from ttkbootstrap.widgets.composites.scrollview import ScrollView
-from ttkbootstrap.widgets.primitives.selectbox import SelectBox
+from ttkbootstrap.widgets.composites.selectbox import SelectBox
 from ttkbootstrap.widgets.primitives.separator import Separator
 from ttkbootstrap.widgets.primitives.sizegrip import SizeGrip
 from ttkbootstrap.widgets.primitives.spinbox import Spinbox

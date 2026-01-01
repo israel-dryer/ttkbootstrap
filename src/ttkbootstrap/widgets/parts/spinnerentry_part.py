@@ -228,9 +228,9 @@ class SpinnerEntryPart(ValidationMixin, Spinbox):
         """
         return self.bind('<<Input>>', callback, add=True)
 
-    def off_input(self, funcid: str = None):
+    def off_input(self, bind_id: str | None = None):
         """Remove callback from <<Input>> event."""
-        self.unbind('<<Input>>', funcid)
+        self.unbind('<<Input>>', bind_id)
 
     def on_enter(self, callback: Callable[[Any], Any]) -> str:
         """Bind callback to <Return> event.
@@ -248,9 +248,9 @@ class SpinnerEntryPart(ValidationMixin, Spinbox):
 
         return self.bind('<Return>', enrich_callback, add=True)
 
-    def off_enter(self, funcid: str):
+    def off_enter(self, bind_id: str | None = None):
         """Remove callback from <Return> event."""
-        self.unbind('<Return>', funcid)
+        self.unbind('<Return>', bind_id)
 
     def on_changed(self, callback: Callable[[Any], Any]) -> str:
         """Bind callback to <<Change>> event (fires when value changes on commit).
@@ -263,9 +263,9 @@ class SpinnerEntryPart(ValidationMixin, Spinbox):
         """
         return self.bind("<<Change>>", callback)
 
-    def off_changed(self, funcid: str):
+    def off_changed(self, bind_id: str | None = None):
         """Remove callback from <<Change>> event."""
-        self.unbind('<<Change>>', funcid)
+        self.unbind('<<Change>>', bind_id)
 
     def value(self, value=None):
         """Get or set the parsed/committed value.

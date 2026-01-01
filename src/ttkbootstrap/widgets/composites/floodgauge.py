@@ -27,7 +27,6 @@ class FloodGauge(ConfigureDelegationMixin, Canvas):
             text: str = "",
             font: Union[tuple[str, int], str] = ("Helvetica", 12),
             color: str = None,
-            bootstyle: str = None,
             orient: str = "horizontal",
             length: int = 200,
             thickness: int = 50,
@@ -50,7 +49,6 @@ class FloodGauge(ConfigureDelegationMixin, Canvas):
                 string like ``'Arial 12 bold'``.
             color (str): Color token from ttkbootstrap (e.g., ``'primary'``,
                 ``'success'``, ``'info'``, ``'warning'``, ``'danger'``).
-            bootstyle (str): DEPRECATED - Use ``color`` instead.
             orient (str): Widget orientation - ``'horizontal'`` or ``'vertical'``.
             length (int): Size in pixels along the main axis (width if horizontal,
                 height if vertical).
@@ -68,6 +66,9 @@ class FloodGauge(ConfigureDelegationMixin, Canvas):
             ``<<ThemeChanged>>`` event. When using variable or textvariable bindings,
             the widget redraws automatically when the variables change.
         """
+
+        # Handle deprecated bootstyle parameter
+        bootstyle = kwargs.pop("bootstyle", None)
 
         self._variable = kwargs.pop("variable", IntVar(value=value))
         self._value = self._variable.get()
@@ -216,6 +217,27 @@ class FloodGauge(ConfigureDelegationMixin, Canvas):
             return self._value
         # Variable trace triggers redraw
         self._variable.set(value)
+
+    def get(self) -> int:
+        """Return the current progress value."""
+        return self._value
+
+    def set(self, value: int) -> None:
+        """Set the progress value.
+
+        Args:
+            value: The new progress value.
+        """
+        self._variable.set(value)
+
+    @property
+    def value(self) -> int:
+        """Get or set the progress value."""
+        return self.get()
+
+    @value.setter
+    def value(self, value: int) -> None:
+        self.set(value)
 
     @configure_delegate('text')
     def _delegate_text(self, value=None):

@@ -230,6 +230,13 @@ class DateEntry(Field):
         if isinstance(selected, date):
             self.value = selected
 
+        # Return focus to the entry after dialog closes
+        # Note: focus_force() is needed on Windows after override-redirect dialogs
+        try:
+            self._entry.focus_force()
+        except Exception:
+            pass
+
     def _picker_position(self):
         """Choose a dialog position beneath the entry mirroring SelectBox spacing."""
         try:

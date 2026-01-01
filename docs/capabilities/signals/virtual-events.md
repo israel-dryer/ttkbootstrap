@@ -19,9 +19,9 @@ input sequence.
 Virtual event names are written in double angle brackets:
 
 ```
-<<SelectionChanged>>
-<<ValueCommitted>>
-<<PageShown>>
+<<SelectionChange>>
+<<ValueCommit>>
+<<PageShow>>
 ```
 
 Virtual events describe *what happened*, not *how it happened*.

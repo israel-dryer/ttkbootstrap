@@ -19,8 +19,8 @@ app = ttk.App()
 
 tv = ttk.TableView(
     app,
-    coldata=["Name", "Status"],
-    rowdata=[("Item A", "Ready"), ("Item B", "Pending")],
+    columns=["Name", "Status"],
+    rows=[("Item A", "Ready"), ("Item B", "Pending")],
 )
 tv.pack(fill="both", expand=True)
 
@@ -51,6 +51,20 @@ Use TableView when:
 
 ## Appearance
 
+### Striped rows
+
+Enable alternating row colors for better readability:
+
+```python
+tv = ttk.TableView(
+    app,
+    columns=columns,
+    rows=data,
+    striped=True,
+    striped_background="background[+1]",  # custom alternating color
+)
+```
+
 ### Styling
 
 TableView supports theming through ttkbootstrap:
@@ -79,34 +93,164 @@ ttk.TableView(app, color="primary")
 ```python
 tv = ttk.TableView(
     app,
-    coldata=[
-        {"text": "Name", "width": 150},
-        {"text": "Status", "width": 100},
-        {"text": "Date", "width": 120},
+    columns=[
+        {"text": "Name", "key": "name", "width": 150},
+        {"text": "Status", "key": "status", "width": 100},
+        {"text": "Date", "key": "date", "width": 120},
     ],
-    rowdata=data,
+    rows=data,
 )
 ```
 
-### Features
+### Selection
 
-- Sorting — click column headers to sort
+Control selection behavior with `selection_mode`:
 
-- Row selection — single or multi-select
+- `"none"` — no selection allowed
 
-- Scrollbars — automatic scrolling for large datasets
+- `"single"` — one row at a time (default)
 
-- Optional headers and footers
+- `"multi"` — multiple rows can be selected
+
+```python
+tv = ttk.TableView(
+    app,
+    columns=columns,
+    rows=data,
+    selection_mode="multi",
+    allow_select_all=True,
+)
+```
+
+### Editing
+
+Enable inline editing, adding, and deleting:
+
+```python
+tv = ttk.TableView(
+    app,
+    columns=columns,
+    rows=data,
+    enable_adding=True,
+    enable_editing=True,
+    enable_deleting=True,
+)
+```
+
+### Filtering & search
+
+Enable filtering and search capabilities:
+
+```python
+tv = ttk.TableView(
+    app,
+    columns=columns,
+    rows=data,
+    enable_filtering=True,
+    enable_header_filtering=True,
+    enable_search=True,
+    search_mode="standard",
+    search_trigger="enter",  # or "input" for live search
+)
+```
+
+### Paging
+
+Configure pagination for large datasets:
+
+```python
+tv = ttk.TableView(
+    app,
+    columns=columns,
+    rows=data,
+    paging_mode="standard",  # or "virtual" for virtual scrolling
+    page_size=25,
+    show_vscrollbar=True,
+)
+```
+
+### Exporting
+
+Enable data export functionality:
+
+```python
+tv = ttk.TableView(
+    app,
+    columns=columns,
+    rows=data,
+    enable_exporting=True,
+    export_scope="all",  # or "page"
+    export_formats=("csv", "json"),
+)
+```
 
 ### Common options
 
-- `coldata` — column definitions (list of strings or dicts)
+**Core data:**
 
-- `rowdata` — list of row tuples or lists
+- `columns` — column definitions (list of strings or dicts)
 
-- `height` — number of visible rows
+- `rows` — list of row data
 
-- `color` — color theme
+- `datasource` — optional custom data source
+
+**Selection & sorting:**
+
+- `selection_mode` — `"none"`, `"single"`, or `"multi"`
+
+- `allow_select_all` — allow selecting all rows
+
+- `sorting_mode` — `"single"` or `"none"`
+
+**Filtering & search:**
+
+- `enable_filtering` — enable filtering
+
+- `enable_header_filtering` — filter controls in headers
+
+- `enable_row_filtering` — per-row filtering
+
+- `enable_search` — enable search box
+
+- `search_mode` — `"standard"` or `"advanced"`
+
+- `search_trigger` — `"enter"` or `"input"`
+
+**Paging & scrolling:**
+
+- `paging_mode` — `"standard"` or `"virtual"`
+
+- `page_size` — rows per page
+
+- `show_vscrollbar` — vertical scrollbar
+
+- `show_hscrollbar` — horizontal scrollbar
+
+**Editing:**
+
+- `enable_adding` — allow adding rows
+
+- `enable_editing` — allow inline editing
+
+- `enable_deleting` — allow row deletion
+
+**Exporting:**
+
+- `enable_exporting` — enable export menu
+
+- `export_scope` — `"page"` or `"all"`
+
+- `export_formats` — tuple of format strings
+
+**Appearance:**
+
+- `striped` — alternating row colors
+
+- `striped_background` — color for alternating rows
+
+- `show_table_status` — show status bar
+
+- `column_auto_width` — auto-size columns
 
 ---
 
@@ -114,20 +258,32 @@ tv = ttk.TableView(
 
 ### Events
 
-TableView emits events for selection, activation, and edits (if enabled):
+TableView emits events for selection, activation, and edits:
 
-- `<<TreeviewSelect>>` — selection changed
+- `<<RowClick>>` — row clicked
 
-- `<<TreeviewOpen>>` — row expanded (if hierarchical)
+- `<<SelectionChange>>` — selection changed
 
-- `<<TreeviewClose>>` — row collapsed
+- `<<RowEdit>>` — row edited
 
-### Selection
+- `<<RowDelete>>` — row deleted
+
+Preferred handlers:
 
 ```python
-tv.view.selection()  # Get selected items
-tv.view.selection_set(item_id)  # Select an item
+tv.on_row_click(lambda e: print("clicked:", e.data))
+tv.on_selection_change(lambda e: print("selected:", tv.get_selected()))
 ```
+
+### Public API
+
+Common methods:
+
+- `get_selected()` — get selected row data
+
+- `reload()` — refresh table data
+
+- `get_datasource()` — access underlying data source
 
 ---
 
@@ -137,7 +293,7 @@ TableView can be updated dynamically:
 
 ```python
 # Refresh data
-tv.build_table_data(coldata=new_columns, rowdata=new_rows)
+tv.reload()
 ```
 
 !!! link "Signals"

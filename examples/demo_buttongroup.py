@@ -183,13 +183,13 @@ class ButtonGroupDemo(ttk.App):
         ttk.Button(
             control_frame,
             text="Disable Action 2",
-            command=lambda: keyed_group.configure_widget("action2", state='disabled')
+            command=lambda: keyed_group.configure_item("action2", state='disabled')
         ).pack(side='left', padx=5)
 
         ttk.Button(
             control_frame,
             text="Enable Action 2",
-            command=lambda: keyed_group.configure_widget("action2", state='normal')
+            command=lambda: keyed_group.configure_item("action2", state='normal')
         ).pack(side='left', padx=5)
 
         # --- 7. Dynamic Configuration ---

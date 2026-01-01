@@ -181,25 +181,37 @@ Tabs separate major sections (profile/settings/permissions):
 
 #### Reading data
 
-`form.data` (or an equivalent accessor) returns a dict-like mapping:
+Use `get()`, the `value` property, or the `data` property to get all field values:
 
 ```python
+# All equivalent
+data = form.get()
+data = form.value
 data = form.data
+
 print(data["name"])
+```
+
+Get a single field's value:
+
+```python
+email = form.get_field_value("email")
 ```
 
 #### Setting data
 
-Set values in bulk (if supported):
+Set all values at once:
 
 ```python
-form.set_data({"name": "Alice", "age": 34})
+form.set({"name": "Alice", "age": 34})
+# Or use the property
+form.value = {"name": "Alice", "age": 34}
 ```
 
-Or per field:
+Set a single field's value:
 
 ```python
-form.set_value("status", "Done")
+form.set_field_value("status", "Done")
 ```
 
 ### Validation
@@ -249,17 +261,21 @@ If your `Form` supports built-in footer buttons, use them for consistent layouts
 
 ### Accessing fields and widgets
 
-Most form builders provide a way to access the generated field widgets:
+Access a field widget by key:
 
 ```python
-field = form.field("email")
-field.focus()
+email_field = form.field("email")  # Returns the Field widget
+email_field.focus_set()
 ```
 
-Or the underlying editor:
+Get all field widgets or keys:
 
 ```python
-editor = form.editor("email")
+for field in form.fields():
+    print(field.value)
+
+for key in form.keys():
+    print(key, form.get_field_value(key))
 ```
 
 Use this to:
@@ -269,6 +285,24 @@ Use this to:
 - dynamically enable/disable fields
 
 - update items for select fields
+
+### Variable and signal access
+
+Access Tk Variables and Signals for reactive binding:
+
+```python
+# Get the Tk Variable for a field
+var = form.field_variable("name")
+var.trace_add("write", lambda *_: print("name changed"))
+
+# Get the Signal for a field's value
+signal = form.field_signal("age")
+if signal:
+    signal.subscribe(lambda v: print(f"age is now {v}"))
+
+# Get the text Signal for a field
+text_signal = form.field_textsignal("email")
+```
 
 ---
 

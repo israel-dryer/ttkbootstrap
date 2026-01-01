@@ -154,7 +154,7 @@ descendants by injecting a custom bindtag.
 Key behaviors:
 
 - Scroll direction: `vertical`, `horizontal`, or `both`
-- Scrollbar visibility: `always`, `never`, `on-hover`, or `on-scroll`
+- Scrollbar visibility: `always`, `never`, `hover`, or `scroll`
 - Scrollbars only show when content overflows the viewport
 - Mouse wheel works on all descendants (including dynamically added widgets)
 - Shift+MouseWheel scrolls horizontally on platforms that support it

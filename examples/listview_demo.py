@@ -5,7 +5,7 @@ This demo showcases the ListView widget's features including:
 - Virtual scrolling for efficient rendering of large datasets
 - Multiple selection modes (single, multi, none)
 - Selection controls (checkboxes/radio buttons)
-- Delete functionality
+- Remove functionality
 - Focus states
 - Interactive features (chevron, drag handles)
 """
@@ -81,7 +81,7 @@ def main():
         items=multi_data,
         selection_mode='multi',
         show_selection_controls=True,
-        enable_focus_state=True,
+        focusable=True,
         show_separator=True,
         show_chevron=True
     )
@@ -121,7 +121,7 @@ def main():
     col3.pack(side='left', fill='both', expand=True)
 
     ttk.Label(col3, text="Feature-rich ListView", font=('Helvetica', 12, 'bold')).pack(anchor='w', pady=(0, 5))
-    ttk.Label(col3, text="With delete & single-select", font=('Helvetica', 9)).pack(anchor='w', pady=(0, 10))
+    ttk.Label(col3, text="With remove & single-select", font=('Helvetica', 9)).pack(anchor='w', pady=(0, 10))
 
     feature_data = create_sample_data(300)
     feature_list = ListView(
@@ -129,10 +129,10 @@ def main():
         items=feature_data,
         selection_mode='single',
         show_selection_controls=True,
-        enable_focus_state=True,
+        focusable=True,
         show_separator=True,
         enable_dragging=True,
-        enable_deleting=True,
+        enable_removing=True,
         show_chevron=True
     )
     feature_list.pack(fill='both', expand=True)
@@ -199,7 +199,7 @@ def main():
         "• Use mouse wheel or scrollbar to navigate",
         "• Tab key navigates between focusable items",
         "• Click selection controls or items to select",
-        "• Delete button removes items from the list"
+        "• Remove button removes items from the list"
     ]
 
     for instruction in instructions:

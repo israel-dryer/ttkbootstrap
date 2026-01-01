@@ -140,15 +140,22 @@ class OptionMenu(MenuButton):
             return
         self._context_menu.show()
 
-    @property
-    def value(self):
+    def get(self) -> str:
         """Return the current value."""
         return self._textvariable.get()
 
-    @value.setter
-    def value(self, value):
+    def set(self, value: Any) -> None:
         """Set the current value (coerced to string)."""
         self._textvariable.set(str(value))
+
+    @property
+    def value(self) -> str:
+        """Get or set the current value."""
+        return self.get()
+
+    @value.setter
+    def value(self, value: Any) -> None:
+        self.set(value)
 
     def on_changed(self, callback: Callable) -> str:
         """Bind to ``<<Change>>``. Callback receives ``event.data = {'value': Any}``."""

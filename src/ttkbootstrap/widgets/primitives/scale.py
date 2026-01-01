@@ -7,6 +7,7 @@ from typing_extensions import Unpack
 from ttkbootstrap.core.mixins.ttk_state import TtkStateMixin
 from ttkbootstrap.core.mixins.widget import WidgetCapabilitiesMixin
 from ttkbootstrap.widgets.internal.wrapper_base import TTKWrapperBase
+from ttkbootstrap.widgets.mixins.configure_mixin import configure_delegate
 from ttkbootstrap.widgets.types import Master
 from ..mixins import SignalMixin
 
@@ -64,5 +65,21 @@ class Scale(SignalMixin, TTKWrapperBase, WidgetCapabilitiesMixin, TtkStateMixin,
             style_options (dict): Optional dict forwarded to the style builder.
         """
         super().__init__(master, **kwargs)
+
+    @property
+    def value(self) -> float:
+        """Get or set the scale's current value."""
+        return self.get()
+
+    @value.setter
+    def value(self, value: float) -> None:
+        self.set(value)
+
+    @configure_delegate('value')
+    def _delegate_value(self, value=None):
+        """Get or set the value via configure."""
+        if value is None:
+            return self.get()
+        self.set(value)
 
 

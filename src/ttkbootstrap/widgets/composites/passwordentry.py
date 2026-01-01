@@ -6,6 +6,7 @@ and an optional visibility toggle button.
 
 from ttkbootstrap.widgets.primitives.button import Button
 from ttkbootstrap.widgets.composites.field import Field, FieldOptions
+from ttkbootstrap.widgets.mixins.configure_mixin import configure_delegate
 from ttkbootstrap.widgets.types import Master
 from typing_extensions import Unpack
 
@@ -41,7 +42,7 @@ class PasswordEntry(Field):
             value: str = None,
             label: str = None,
             message: str = None,
-            show_visible_toggle: bool = True,
+            show_visibility_toggle: bool = True,
             **kwargs: Unpack[FieldOptions]):
         """Initialize a PasswordEntry widget.
 
@@ -58,8 +59,9 @@ class PasswordEntry(Field):
             message: Optional message text to display below the entry field.
                 Used for hints or help text. Replaced by validation errors when
                 validation fails.
-            show_visible_toggle: If True, displays the visibility toggle button
+            show_visibility_toggle: If True, displays the visibility toggle button
                 (eye icon) that reveals the password while pressed. Default is True.
+                Can be changed at runtime via ``configure(show_visibility_toggle=...)``.
 
         Other Parameters:
             show (str): Character to mask password input. Default is '•'.
@@ -74,7 +76,7 @@ class PasswordEntry(Field):
             justify (str): Text alignment.
             show_message (bool): If True, displays message area.
             padding (str): Padding around entry widget.
-            take_focus (bool): If True, widget accepts Tab focus.
+            takefocus (bool): If True, widget accepts Tab focus.
             textvariable (Variable): Tkinter Variable to link with text.
             textsignal (Signal): Signal object for reactive updates.
             width (int): Width in characters.
@@ -90,8 +92,8 @@ class PasswordEntry(Field):
         super().__init__(master, value=value, label=label, message=message, **kwargs)
 
         # configuration
-        self._show_visible_toggle = show_visible_toggle
-        self._show_visible_pack = {}
+        self._show_visibility_toggle = show_visibility_toggle
+        self._show_visibility_pack = {}
 
         self.insert_addon(
             Button,
@@ -104,6 +106,10 @@ class PasswordEntry(Field):
         addon = self.addons['visibility']
         addon.bind('<ButtonPress>', self._show_password, add=True)
         addon.bind('<ButtonRelease>', self._hide_password, add=True)
+
+        # Apply initial visibility setting
+        if not show_visibility_toggle:
+            self._apply_visibility_toggle(False)
 
     @property
     def _visibility_toggle(self):
@@ -118,11 +124,26 @@ class PasswordEntry(Field):
         """Hide the password by restoring character masking."""
         self.entry_widget['show'] = self._show_indicator
 
-    def show_visible_toggle(self, value: bool):
-        """Show or hide the visibility toggle button."""
-        if value and not self._visibility_toggle.winfo_ismapped():
-            self._visibility_toggle.pack(**self._show_visible_pack)
+    # ------ Configuration Delegates ------
+
+    @configure_delegate('show_visibility_toggle')
+    def _delegate_show_visibility_toggle(self, value=None):
+        if value is None:
+            return self._show_visibility_toggle
         else:
-            self._show_visible_pack = self._visibility_toggle.pack_info()
+            self._apply_visibility_toggle(value)
+        return None
+
+    def _apply_visibility_toggle(self, value: bool):
+        """Show or hide the visibility toggle button.
+
+        Args:
+            value: If True, show the toggle button. If False, hide it.
+        """
+        self._show_visibility_toggle = value
+        if value and not self._visibility_toggle.winfo_ismapped():
+            self._visibility_toggle.pack(**self._show_visibility_pack)
+        elif not value and self._visibility_toggle.winfo_ismapped():
+            self._show_visibility_pack = self._visibility_toggle.pack_info()
             self._visibility_toggle.pack_forget()
 

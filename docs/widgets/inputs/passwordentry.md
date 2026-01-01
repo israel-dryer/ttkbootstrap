@@ -89,10 +89,10 @@ The reveal toggle changes only the display, never the underlying value.
 ttk.PasswordEntry(app, label="Password", required=True, message="Minimum 8 characters")
 ```
 
-#### Reveal toggle: `show_visible_toggle`
+#### Reveal toggle: `show_visibility_toggle`
 
 ```python
-pwd = ttk.PasswordEntry(app, label="Password", show_visible_toggle=False)
+pwd = ttk.PasswordEntry(app, label="Password", show_visibility_toggle=False)
 ```
 
 #### Add-ons

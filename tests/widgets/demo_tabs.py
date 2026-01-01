@@ -130,7 +130,7 @@ vert_tabview.pack(anchor='w', padx=8, fill='x')
 def measure_tab_height():
     app.update_idletasks()
     # Get first tab from bar_tabs
-    tabs = bar_tabs.managed_widgets
+    tabs = bar_tabs.items()
     if tabs:
         tab = tabs[0]
         print(f"TabItem dimensions:")
