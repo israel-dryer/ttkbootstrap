@@ -81,7 +81,7 @@ def main():
         items=multi_data,
         selection_mode='multi',
         show_selection_controls=True,
-        focusable=True,
+        enable_focus=True,
         show_separator=True,
         show_chevron=True
     )
@@ -104,7 +104,8 @@ def main():
         multi_controls,
         text="Select All",
         command=lambda: (multi_list.select_all(), update_multi_selection()),
-        bootstyle='secondary-outline',
+        color='secondary',
+        variant='outline',
         width=12
     ).pack(side='right', padx=(5, 0))
 
@@ -112,7 +113,8 @@ def main():
         multi_controls,
         text="Clear",
         command=lambda: (multi_list.clear_selection(), update_multi_selection()),
-        bootstyle='secondary-outline',
+        color='secondary',
+        variant='outline',
         width=12
     ).pack(side='right')
 
@@ -129,7 +131,7 @@ def main():
         items=feature_data,
         selection_mode='single',
         show_selection_controls=True,
-        focusable=True,
+        enable_focus=True,
         show_separator=True,
         enable_dragging=True,
         enable_removing=True,
@@ -162,7 +164,8 @@ def main():
             }),
             update_feature_count()
         ),
-        bootstyle='success-outline',
+        color='success',
+        variant='outline',
         width=12
     ).pack(side='right', padx=(5, 0))
 
@@ -170,7 +173,8 @@ def main():
         feature_controls,
         text="Scroll Top",
         command=feature_list.scroll_to_top,
-        bootstyle='secondary-outline',
+        color='secondary',
+        variant='outline',
         width=12
     ).pack(side='right', padx=(5, 0))
 
@@ -178,7 +182,8 @@ def main():
         feature_controls,
         text="Scroll Bottom",
         command=feature_list.scroll_to_bottom,
-        bootstyle='secondary-outline',
+        color='secondary',
+        variant='outline',
         width=12
     ).pack(side='right')
 
@@ -211,8 +216,8 @@ def main():
     feature_list.on_item_click(lambda x: print(f"[Click] {x.data['title']} - selected: {x.data['selected']}"))
 
     # Demonstrate selection events (fires after selection state changes)
-    multi_list.on_selection_change(lambda x: print(f"[Selection Changed] Multi-list now has {len(multi_list.get_selected())} selected"))
-    feature_list.on_selection_change(lambda x: print(f"[Selection Changed] Feature-list now has {len(feature_list.get_selected())} selected"))
+    multi_list.on_selection_changed(lambda x: print(f"[Selection Changed] Multi-list now has {len(multi_list.get_selected())} selected"))
+    feature_list.on_selection_changed(lambda x: print(f"[Selection Changed] Feature-list now has {len(feature_list.get_selected())} selected"))
 
     root.mainloop()
 
