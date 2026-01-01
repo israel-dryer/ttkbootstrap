@@ -20,7 +20,7 @@ class TabView(Frame):
     to a page in the page stack. Selecting a tab navigates to the associated
     page.
 
-    Virtual events:
+    !!! note "Events"
         - ``<<TabSelect>>``: Fired when a tab is selected.
         - ``<<TabClose>>``: Fired when a tab's close button is clicked.
         - ``<<TabAdd>>``: Fired when the add button is clicked (if enable_adding=True).

@@ -165,14 +165,6 @@ Update pack options for a widget.
 stack.update_options(btn, fill="x", expand=True)
 ```
 
-#### `clear()`
-
-Remove all widgets.
-
-```python
-stack.clear()
-```
-
 ### Querying widgets
 
 ```python

@@ -30,11 +30,11 @@ class Expander(Frame):
         content (Frame): The content container frame (read-only).
         is_selected (bool): Whether this expander's value matches the variable (read-only).
 
-    Events:
-        ``<<Toggle>>``: Fired when expanded/collapsed.
-            ``event.data = {'expanded': bool}``
-        ``<<Selected>>``: Fired when this expander is selected.
-            ``event.data = {'value': Any}``
+    !!! note "Events"
+        - ``<<Toggle>>``: Fired when expanded/collapsed.
+          ``event.data = {'expanded': bool}``
+        - ``<<Selected>>``: Fired when this expander is selected.
+          ``event.data = {'value': Any}``
     """
 
     def __init__(

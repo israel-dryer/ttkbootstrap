@@ -300,11 +300,6 @@ class RadioGroup(Frame):
         button = self._buttons.pop(key)
         button.destroy()
 
-    def clear(self):
-        """Remove all buttons from the group."""
-        for key in list(self._buttons.keys()):
-            self.remove(key)
-
     def buttons(self) -> tuple[RadioButton, ...]:
         """Get all button widgets in the group.
 

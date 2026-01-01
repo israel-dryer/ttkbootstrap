@@ -24,7 +24,7 @@ class Tabs(Frame):
     Tabs provides a tab bar with optional divider. It manages the layout,
     orientation, and styling of child TabItems.
 
-    Virtual events:
+    !!! note "Events"
         - ``<<TabSelect>>``: Fired when a tab is selected (bubbled from TabItem).
         - ``<<TabClose>>``: Fired when a tab's close button is clicked (bubbled from TabItem).
         - ``<<TabAdd>>``: Fired when the add button is clicked (if enable_adding=True).

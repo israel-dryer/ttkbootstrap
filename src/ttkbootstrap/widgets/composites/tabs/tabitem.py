@@ -24,7 +24,7 @@ class TabItem(CompositeFrame):
     hover/pressed/focus states across all child widgets. It supports selection
     via signal/variable and optional close functionality.
 
-    Virtual events:
+    !!! note "Events"
         - ``<<TabSelect>>``: Fired when the tab is clicked (for selection).
         - ``<<TabClose>>``: Fired when the close button is clicked.
 

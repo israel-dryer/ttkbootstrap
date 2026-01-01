@@ -259,12 +259,6 @@ class ButtonGroupDemo(ttk.App):
             command=self.remove_last_button
         ).pack(side='left', padx=5)
 
-        ttk.Button(
-            add_remove_frame,
-            text="Clear All",
-            command=lambda: self.dynamic_add_group.clear()
-        ).pack(side='left', padx=5)
-
         # --- 9. Information Display ---
         ttk.Label(self, text="Widget Info", font="-weight bold").pack(pady=(10, 5))
 
