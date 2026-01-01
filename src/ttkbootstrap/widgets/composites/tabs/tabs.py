@@ -234,14 +234,6 @@ class Tabs(Frame):
         """Unbind from <<TabAdd>> event."""
         self.unbind('<<TabAdd>>', bind_id)
 
-    @property
-    def managed_widgets(self) -> list[tk.Widget]:
-        """Return list of managed tab widgets in order (excludes add button)."""
-        widgets = self._tab_bar.managed_widgets
-        if self._add_button is not None and self._add_button in widgets:
-            return [w for w in widgets if w is not self._add_button]
-        return widgets
-
     def add(
         self,
         text: str = "",
@@ -411,15 +403,19 @@ class Tabs(Frame):
             return tab.cget(option)
         tab.configure(**kwargs)
 
-    @property
-    def orient(self) -> str:
-        """Get the orientation of the tab bar."""
-        return self._orient
+    @configure_delegate('orient')
+    def _delegate_orient(self, value=None):
+        """Get orientation (read-only after creation)."""
+        if value is None:
+            return self._orient
+        raise ValueError("orient cannot be changed after creation")
 
-    @property
-    def variant(self) -> str:
-        """Get the visual variant of the tab bar."""
-        return self._variant
+    @configure_delegate('variant')
+    def _delegate_variant(self, value=None):
+        """Get variant (read-only after creation)."""
+        if value is None:
+            return self._variant
+        raise ValueError("variant cannot be changed after creation")
 
     @property
     def variable(self) -> tk.Variable:
@@ -431,14 +427,11 @@ class Tabs(Frame):
         """Get the Signal for tab selection."""
         return self._signal
 
-    @property
-    def show_divider(self) -> bool:
-        """Get whether the divider is shown."""
-        return self._show_divider
-
-    @show_divider.setter
-    def show_divider(self, value: bool):
-        """Set whether the divider is shown."""
+    @configure_delegate('show_divider')
+    def _delegate_show_divider(self, value=None):
+        """Get or set whether the divider is shown."""
+        if value is None:
+            return self._show_divider
         if value != self._show_divider:
             self._show_divider = value
             if value:

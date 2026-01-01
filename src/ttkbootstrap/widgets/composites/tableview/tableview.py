@@ -121,47 +121,33 @@ class TableView(Frame):
 
         Args:
             master: Parent widget.
-
-            **Core data:**
             columns: Column definitions (list of strings or dicts with keys like
                 "text", "key", "width", "minwidth").
             rows: Initial data to load (list of dicts or row-like sequences).
             datasource: Custom SqliteDataSource; if omitted, an in-memory source is created.
-
-            **Selection & sorting:**
             selection_mode: Selection mode ('none', 'single', 'multi'). Defaults to 'single'.
             allow_select_all: Whether select-all is allowed. Defaults to True.
             sorting_mode: Sorting mode ('single' or 'none'). Defaults to 'single'.
-
-            **Filtering & search:**
             enable_filtering: Enable filtering features. Defaults to True.
             enable_header_filtering: Show filter option in header context menu. Defaults to True.
             enable_row_filtering: Show filter option in row context menu. Defaults to True.
             enable_search: Show search bar. Defaults to True.
             search_mode: Search mode ('standard' or 'advanced'). Defaults to 'standard'.
             search_trigger: When to trigger search ('enter' or 'input'). Defaults to 'enter'.
-
-            **Paging & scrolling:**
             paging_mode: Paging mode ('standard' or 'virtual'). Defaults to 'standard'.
             page_size: Number of rows per page. Defaults to 25.
             page_index: Initial page index. Defaults to 0.
             page_cache_size: Number of pages to cache. Defaults to 3.
             show_vscrollbar: Show vertical scrollbar. Defaults to True.
             show_hscrollbar: Show horizontal scrollbar. Defaults to False.
-
-            **Editing:**
             enable_adding: Allow adding new rows. Defaults to False.
             enable_editing: Allow editing existing rows. Defaults to False.
             enable_deleting: Allow deleting rows. Defaults to False.
             form_options: Options dict for the edit form dialog.
-
-            **Exporting:**
             enable_exporting: Enable export functionality. Defaults to False.
             allow_export_selection: Allow exporting selected rows. Defaults to True.
             export_scope: Export scope ('page' or 'all'). Defaults to 'page'.
             export_formats: Tuple of export formats (e.g., ('csv', 'xlsx')).
-
-            **Appearance & extras:**
             striped: Show alternating row colors. Defaults to False.
             striped_background: Background color for striped rows. Defaults to 'background[+1]'.
             allow_grouping: Allow grouping rows via header context menu. Defaults to False.
