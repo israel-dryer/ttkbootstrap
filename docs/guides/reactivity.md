@@ -496,17 +496,17 @@ password = ttk.Signal("")
 form = ttk.PackFrame(app, direction="vertical", gap=10, padding=20)
 form.pack(fill="both", expand=True)
 
-form.add(ttk.Label(form, text="Username:"))
-form.add(ttk.TextEntry(form, signal=username))
+ttk.Label(form, text="Username:").pack()
+ttk.TextEntry(form, signal=username).pack()
 
-form.add(ttk.Label(form, text="Password:"))
-form.add(ttk.PasswordEntry(form, signal=password))
+ttk.Label(form, text="Password:").pack()
+ttk.PasswordEntry(form, signal=password).pack()
 
 # Submit reads current signal values
 def on_submit():
     print(f"Login: {username.get()} / {password.get()}")
 
-form.add(ttk.Button(form, text="Login", command=on_submit))
+ttk.Button(form, text="Login", command=on_submit).pack()
 
 app.mainloop()
 ```
@@ -526,11 +526,11 @@ main.pack(fill="both", expand=True)
 
 # Editor
 editor = ttk.ScrolledText(main, width=40, height=10)
-main.add(editor, fill="both", expand=True)
+editor.pack(fill="both", expand=True)
 
 # Preview updates reactively
 preview = ttk.Label(main, wraplength=200)
-main.add(preview)
+preview.pack()
 
 # Connect editor changes to preview
 def sync_to_preview(event=None):

@@ -1,12 +1,15 @@
 from __future__ import annotations
 
-from typing import Any, Literal
+from typing import Any, Literal, TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from typing_extensions import Self
 
 
 class PackMixin:
     """Pack geometry manager helpers (pack).
 
-    Tk’s `pack` geometry manager places widgets relative to the sides of a container.
+    Tk's `pack` geometry manager places widgets relative to the sides of a container.
 
     In ttkbootstrap v2 you may prefer higher-level layout containers (e.g. `PackFrame`)
     for most UI layout. This mixin documents the underlying Tkinter `pack_*` API
@@ -16,13 +19,15 @@ class PackMixin:
         - `pack()` attaches a widget to a parent container that is using pack.
         - `pack_propagate(False)` prevents a container from resizing to fit its children.
         - `fill`, `expand`, and `side` control how a widget consumes available space.
+        - If the parent has a `_on_child_pack` hook (e.g. PackFrame), layout defaults
+          are applied automatically.
     """
 
     # -------------------------------------------------------------------------
     # Core widget methods
     # -------------------------------------------------------------------------
 
-    def pack(self, cnf: dict[str, Any] | None = None, **kw: Any) -> None:
+    def pack(self, cnf: dict[str, Any] | None = None, **kw: Any) -> Self:
         """Position this widget using the pack geometry manager.
 
         Args:
@@ -35,29 +40,47 @@ class PackMixin:
                 - padx, pady: External padding around the widget.
                 - ipadx, ipady: Internal padding inside the widget.
                 - before, after: Pack relative to another widget.
-        """
-        if cnf is None:
-            return super().pack(**kw)  # type: ignore[misc]
-        return super().pack(cnf, **kw)  # type: ignore[misc]
 
-    def pack_configure(self, cnf: dict[str, Any] | None = None, **kw: Any) -> None:
+        Returns:
+            Self for method chaining.
+        """
+        options = cnf or {}
+        options.update(kw)
+
+        parent = self.master  # type: ignore[attr-defined]
+        if hasattr(parent, '_on_child_pack'):
+            parent._on_child_pack(self, **options)
+        else:
+            super().pack(**options)  # type: ignore[misc]
+        return self  # type: ignore[return-value]
+
+    def pack_configure(self, cnf: dict[str, Any] | None = None, **kw: Any) -> Self:
         """Alias for `pack()`.
 
         Args:
             cnf: Optional dict of pack options.
             **kw: Pack options (see `pack`).
-        """
-        if cnf is None:
-            return super().pack_configure(**kw)  # type: ignore[misc]
-        return super().pack_configure(cnf, **kw)  # type: ignore[misc]
 
-    def pack_forget(self) -> None:
+        Returns:
+            Self for method chaining.
+        """
+        return self.pack(cnf, **kw)
+
+    def pack_forget(self) -> Self:
         """Unmap this widget and forget its pack configuration.
 
         The widget is removed from the layout, and its previous pack options
         are discarded.
+
+        Returns:
+            Self for method chaining.
         """
-        return super().pack_forget()  # type: ignore[misc]
+        parent = self.master  # type: ignore[attr-defined]
+        if hasattr(parent, '_on_child_pack_forget'):
+            parent._on_child_pack_forget(self)
+        else:
+            super().pack_forget()  # type: ignore[misc]
+        return self  # type: ignore[return-value]
 
     def pack_info(self) -> dict[str, Any]:
         """Return this widget's current pack configuration.

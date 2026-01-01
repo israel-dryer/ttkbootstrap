@@ -8,6 +8,8 @@ title: PackFrame
 
 It extends the ttkbootstrap Frame with automatic pack-based layout management, including support for direction, gap spacing, and default fill/expand behavior. Use `PackFrame` when you want a flex-like layout experience without manually managing pack options.
 
+Children simply call the standard `pack()` method and automatically receive the frame's default layout options.
+
 ---
 
 ## Quick start
@@ -21,10 +23,10 @@ app = ttk.App()
 stack = ttk.PackFrame(app, direction="vertical", gap=10, padding=20)
 stack.pack(fill="both", expand=True)
 
-# Add widgets using the add() method
-stack.add(ttk.Button(stack, text="First"))
-stack.add(ttk.Button(stack, text="Second"))
-stack.add(ttk.Button(stack, text="Third"))
+# Add widgets using standard pack()
+ttk.Button(stack, text="First").pack()
+ttk.Button(stack, text="Second").pack()
+ttk.Button(stack, text="Third").pack()
 
 app.mainloop()
 ```
@@ -38,7 +40,7 @@ Use `PackFrame` when:
 - you want a simple vertical or horizontal stack of widgets
 - you need consistent gap spacing between children
 - you want to set default fill/expand behavior for all children
-- you need to dynamically add, remove, or reorder widgets
+- you want standard `pack()` calls to work with managed defaults
 
 **Consider a different control when:**
 
@@ -117,69 +119,57 @@ Control whether the frame resizes to fit its contents.
 stack = ttk.PackFrame(app, width=300, height=400, propagate=False)
 ```
 
-### Managing widgets
+### Adding widgets
 
-#### `add(widget, **options)`
-
-Add a widget to the end of the frame. Returns the widget for chaining.
+Children use standard `pack()` to add themselves. The frame automatically applies its defaults.
 
 ```python
-stack = ttk.PackFrame(app, direction="vertical", gap=8)
+stack = ttk.PackFrame(app, direction="vertical", gap=8, fill_items="x")
 
-btn = ttk.Button(stack, text="Click me")
-stack.add(btn)
+# These all use the frame's defaults (fill="x", gap spacing)
+ttk.Button(stack, text="Button 1").pack()
+ttk.Button(stack, text="Button 2").pack()
+ttk.Button(stack, text="Button 3").pack()
 
-# With per-widget options that override defaults
-stack.add(ttk.Label(stack, text="Full width"), fill="x")
+# Override defaults for specific widgets
+ttk.Label(stack, text="Centered").pack(fill="none", anchor="center")
 ```
 
-#### `insert(index, widget, **options)`
+### Method chaining
 
-Insert a widget at a specific position.
+The `pack()` method returns the widget for chaining:
 
 ```python
-stack.insert(0, ttk.Label(stack, text="Now first"))
+btn = ttk.Button(stack, text="Click").pack()
+btn.configure(command=my_callback)
+
+# Or chain further
+ttk.Entry(stack).pack().focus()
 ```
 
-#### `remove(widget)`
+### Insertion order
 
-Remove a widget (unpacks but doesn't destroy).
+Use `before` and `after` to control widget placement:
 
 ```python
-stack.remove(btn)
+stack = ttk.PackFrame(app, direction="vertical", gap=10)
+
+first = ttk.Label(stack, text="First").pack()
+last = ttk.Label(stack, text="Last").pack()
+
+# Insert between existing widgets
+ttk.Label(stack, text="Middle").pack(after=first)
 ```
 
-#### `move(widget, new_index)`
+### Removing widgets
 
-Move a widget to a new position.
-
-```python
-stack.move(btn, 0)  # Move to first position
-```
-
-#### `update_options(widget, **options)`
-
-Update pack options for a widget.
+Use standard `pack_forget()` to remove widgets:
 
 ```python
-stack.update_options(btn, fill="x", expand=True)
-```
+btn = ttk.Button(stack, text="Removable").pack()
 
-### Querying widgets
-
-```python
-# Get number of managed widgets
-count = len(stack)
-
-# Iterate over managed widgets
-for widget in stack:
-    print(widget)
-
-# Get index of a widget
-index = stack.index_of(btn)
-
-# Access managed widgets list
-widgets = stack.managed_widgets
+# Later, remove it
+btn.pack_forget()
 ```
 
 ---
@@ -188,13 +178,15 @@ widgets = stack.managed_widgets
 
 - Widgets are managed in order; gaps are applied automatically between consecutive widgets.
 
-- The `add()` method returns the widget for fluent/chaining patterns.
+- The `pack()` method returns the widget for fluent/chaining patterns.
 
-- Removing or reordering widgets automatically repacks remaining widgets.
+- Removing widgets automatically adjusts gap spacing for remaining widgets.
 
-- Per-widget options in `add()` or `insert()` override container defaults.
+- Per-widget options in `pack()` override container defaults.
 
 - PackFrame extends Frame, so all Frame options (color, padding, etc.) are available.
+
+- Standard tkinter pack options (`before`, `after`, `fill`, `expand`, `anchor`, etc.) work as expected.
 
 ---
 

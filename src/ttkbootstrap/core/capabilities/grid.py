@@ -1,12 +1,15 @@
 from __future__ import annotations
 
-from typing import Any
+from typing import Any, TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from typing_extensions import Self
 
 
 class GridMixin:
     """Grid geometry manager helpers (grid).
 
-    Tk’s `grid` geometry manager arranges widgets in a table of rows and columns.
+    Tk's `grid` geometry manager arranges widgets in a table of rows and columns.
 
     In ttkbootstrap v2 you may prefer higher-level layout containers (e.g. `GridFrame`)
     for most UI layout. This mixin documents the underlying Tkinter `grid_*` API
@@ -16,13 +19,15 @@ class GridMixin:
         - `grid()` attaches a widget to a parent container that is using grid.
         - `rowconfigure()` / `columnconfigure()` set sizing behavior (weight/minsize/pad).
         - `grid_propagate(False)` prevents a container from resizing to fit its children.
+        - If the parent has a `_on_child_grid` hook (e.g. GridFrame), layout defaults
+          are applied automatically.
     """
 
     # -------------------------------------------------------------------------
     # Core widget methods
     # -------------------------------------------------------------------------
 
-    def grid(self, cnf: dict[str, Any] | None = None, **kw: Any) -> None:
+    def grid(self, cnf: dict[str, Any] | None = None, **kw: Any) -> Self:
         """Position this widget using the grid geometry manager.
 
         Args:
@@ -33,36 +38,62 @@ class GridMixin:
                 - sticky: How the widget expands within its cell (e.g. "nsew").
                 - padx, pady: External padding around the widget.
                 - ipadx, ipady: Internal padding inside the widget.
-        """
-        if cnf is None:
-            return super().grid(**kw)  # type: ignore[misc]
-        return super().grid(cnf, **kw)  # type: ignore[misc]
 
-    def grid_configure(self, cnf: dict[str, Any] | None = None, **kw: Any) -> None:
+        Returns:
+            Self for method chaining.
+        """
+        options = cnf or {}
+        options.update(kw)
+
+        parent = self.master  # type: ignore[attr-defined]
+        if hasattr(parent, '_on_child_grid'):
+            parent._on_child_grid(self, **options)
+        else:
+            super().grid(**options)  # type: ignore[misc]
+        return self  # type: ignore[return-value]
+
+    def grid_configure(self, cnf: dict[str, Any] | None = None, **kw: Any) -> Self:
         """Alias for `grid()`.
 
         Args:
             cnf: Optional dict of grid options.
             **kw: Grid options (see `grid`).
-        """
-        if cnf is None:
-            return super().grid_configure(**kw)  # type: ignore[misc]
-        return super().grid_configure(cnf, **kw)  # type: ignore[misc]
 
-    def grid_forget(self) -> None:
+        Returns:
+            Self for method chaining.
+        """
+        return self.grid(cnf, **kw)
+
+    def grid_forget(self) -> Self:
         """Unmap this widget and forget its grid configuration.
 
         The widget is removed from the layout, and its previous grid options
         are discarded.
-        """
-        return super().grid_forget()  # type: ignore[misc]
 
-    def grid_remove(self) -> None:
+        Returns:
+            Self for method chaining.
+        """
+        parent = self.master  # type: ignore[attr-defined]
+        if hasattr(parent, '_on_child_grid_forget'):
+            parent._on_child_grid_forget(self)
+        else:
+            super().grid_forget()  # type: ignore[misc]
+        return self  # type: ignore[return-value]
+
+    def grid_remove(self) -> Self:
         """Unmap this widget but remember its grid configuration.
 
         Use `grid()` with no args to restore it to its previous grid location.
+
+        Returns:
+            Self for method chaining.
         """
-        return super().grid_remove()  # type: ignore[misc]
+        parent = self.master  # type: ignore[attr-defined]
+        if hasattr(parent, '_on_child_grid_remove'):
+            parent._on_child_grid_remove(self)
+        else:
+            super().grid_remove()  # type: ignore[misc]
+        return self  # type: ignore[return-value]
 
     def grid_info(self) -> dict[str, Any]:
         """Return this widget's current grid configuration.

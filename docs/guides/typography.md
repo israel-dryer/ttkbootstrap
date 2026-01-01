@@ -334,11 +334,11 @@ value_font = Font("body")
 
 grid = ttk.GridFrame(app, columns=2, gap=10, padding=20)
 
-grid.add(ttk.Label(grid, text="Name:", font=label_font))
-grid.add(ttk.Label(grid, text="Alice", font=value_font))
+ttk.Label(grid, text="Name:", font=label_font).grid()
+ttk.Label(grid, text="Alice", font=value_font).grid()
 
-grid.add(ttk.Label(grid, text="Email:", font=label_font))
-grid.add(ttk.Label(grid, text="alice@example.com", font=value_font))
+ttk.Label(grid, text="Email:", font=label_font).grid()
+ttk.Label(grid, text="alice@example.com", font=value_font).grid()
 ```
 
 ### Code Display

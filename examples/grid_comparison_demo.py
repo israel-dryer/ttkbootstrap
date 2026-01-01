@@ -82,41 +82,40 @@ def create_with_gridframe(parent: ttk.Frame) -> ttk.GridFrame:
         sticky_items="ew",  # Default sticky for all children
     )
 
-    # Header - use add() with overrides
-    grid.add(
-        ttk.Label(grid, text="User Registration", font=("", 14, "bold")),
+    # Header - use grid() with overrides
+    ttk.Label(grid, text="User Registration", font=("", 14, "bold")).grid(
         row=0, column=0, columnspan=3, sticky="w", pady=(0, 10)
     )
 
     # Row 1: Username
-    grid.add(ttk.Label(grid, text="Username:"), row=1, column=0, sticky="e")
-    grid.add(ttk.Entry(grid), row=1, column=1)  # Uses default "ew"
-    grid.add(ttk.Button(grid, text="Check", color="info", variant="outline"), row=1, column=2)
+    ttk.Label(grid, text="Username:").grid(row=1, column=0, sticky="e")
+    ttk.Entry(grid).grid(row=1, column=1)  # Uses default "ew"
+    ttk.Button(grid, text="Check", color="info", variant="outline").grid(row=1, column=2)
 
     # Row 2: Email
-    grid.add(ttk.Label(grid, text="Email:"), row=2, column=0, sticky="e")
-    grid.add(ttk.Entry(grid), row=2, column=1)
-    grid.add(ttk.Button(grid, text="Verify", color="info", variant="outline"), row=2, column=2)
+    ttk.Label(grid, text="Email:").grid(row=2, column=0, sticky="e")
+    ttk.Entry(grid).grid(row=2, column=1)
+    ttk.Button(grid, text="Verify", color="info", variant="outline").grid(row=2, column=2)
 
     # Row 3: Password
-    grid.add(ttk.Label(grid, text="Password:"), row=3, column=0, sticky="e")
-    grid.add(ttk.Entry(grid, show="*"), row=3, column=1, columnspan=2)
+    ttk.Label(grid, text="Password:").grid(row=3, column=0, sticky="e")
+    ttk.Entry(grid, show="*").grid(row=3, column=1, columnspan=2)
 
     # Row 4: Confirm Password
-    grid.add(ttk.Label(grid, text="Confirm:"), row=4, column=0, sticky="e")
-    grid.add(ttk.Entry(grid, show="*"), row=4, column=1, columnspan=2)
+    ttk.Label(grid, text="Confirm:").grid(row=4, column=0, sticky="e")
+    ttk.Entry(grid, show="*").grid(row=4, column=1, columnspan=2)
 
     # Row 5: Options
-    grid.add(ttk.Label(grid, text="Options:"), row=5, column=0, sticky="ne", pady=(5, 0))
+    ttk.Label(grid, text="Options:").grid(row=5, column=0, sticky="ne", pady=(5, 0))
 
     options = ttk.Frame(grid)  # Use plain Frame like the other example
-    grid.add(options, row=5, column=1, columnspan=2, sticky="w")
+    options.grid(row=5, column=1, columnspan=2, sticky="w")
     ttk.CheckButton(options, text="Subscribe to newsletter").pack(anchor="w")
     ttk.CheckButton(options, text="Accept terms and conditions").pack(anchor="w")
 
     # Row 6: Buttons
     buttons = ttk.Frame(grid)  # Use plain Frame like the other example
-    grid.add(buttons, row=6, column=0, columnspan=3, sticky="e", pady=(15, 0))
+    buttons.grid(row=6, column=0, columnspan=3, sticky="e", pady=(15, 0))
     ttk.Button(buttons, text="Cancel", color="secondary").pack(side="left", padx=(0, 10))
     ttk.Button(buttons, text="Register", color="primary").pack(side="left")
 
@@ -149,7 +148,7 @@ def main():
 
     info2 = ttk.Label(
         gridframe_tab,
-        text="Using GridFrame with add(), column weights are declared upfront with columns=[...],\n"
+        text="Using GridFrame with grid(), column weights are declared upfront with columns=[...],\n"
              "gap=(10, 6) provides spacing, and sticky_items='ew' sets default alignment.",
         foreground="gray",
     )
@@ -168,7 +167,7 @@ def main():
             "Frame + .grid(): columnconfigure(0, weight=0, minsize=100) × 3 columns\n"
             "                 rowconfigure(i, weight=0, pad=6) × 7 rows\n"
             "                 padx=(0, 10) + sticky='ew' on each widget\n\n"
-            "GridFrame.add(): columns=['100px', 1, '80px'], gap=(10, 6), sticky_items='ew'\n"
+            "GridFrame:       columns=['100px', 1, '80px'], gap=(10, 6), sticky_items='ew'\n"
             "                 Minsizes, weights, spacing, and sticky declared once."
         ),
         font=("Consolas", 9),

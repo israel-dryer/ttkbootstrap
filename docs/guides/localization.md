@@ -249,14 +249,14 @@ form = ttk.GridFrame(app, columns=["auto", 1], gap=10, padding=20)
 form.pack(fill="both", expand=True)
 
 # Labels use message keys
-form.add(ttk.Label(form, text="form.username"))
-form.add(ttk.Entry(form), sticky="ew")
+ttk.Label(form, text="form.username").grid()
+ttk.Entry(form).grid(sticky="ew")
 
-form.add(ttk.Label(form, text="form.password"))
-form.add(ttk.Entry(form, show="*"), sticky="ew")
+ttk.Label(form, text="form.password").grid()
+ttk.Entry(form, show="*").grid(sticky="ew")
 
 # Button uses message key
-form.add(ttk.Button(form, text="actions.login"), column=1, sticky="e")
+ttk.Button(form, text="actions.login").grid(column=1, sticky="e")
 
 app.mainloop()
 ```

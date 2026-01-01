@@ -13,12 +13,12 @@ it encourages expressing **layout intent** using purpose‑built containers.
 
 ## Recommended approach
 
-For most applications, you should start with ttkbootstrap’s layout containers:
+For most applications, you should start with ttkbootstrap's layout containers:
 
 - **PackFrame** — for linear layouts (vertical or horizontal)
 - **GridFrame** — for structured, row/column layouts
 
-These containers are built on Tk’s geometry managers, but remove much of the repetitive and error‑prone configuration
+These containers are built on Tk's geometry managers, but remove much of the repetitive and error‑prone configuration
 required when using `pack()` or `grid()` directly.
 
 They are not required — but they are strongly recommended.
@@ -54,11 +54,11 @@ app = ttk.App()
 form = ttk.PackFrame(app, direction="vertical", gap=8, padding=12)
 form.pack(fill="both", expand=True)
 
-form.add(ttk.Label(form, text="Username"))
-form.add(ttk.Entry(form))
-form.add(ttk.Label(form, text="Password"))
-form.add(ttk.Entry(form, show="*"))
-form.add(ttk.Button(form, text="Login", color="primary"))
+ttk.Label(form, text="Username").pack()
+ttk.Entry(form).pack()
+ttk.Label(form, text="Password").pack()
+ttk.Entry(form, show="*").pack()
+ttk.Button(form, text="Login", color="primary").pack()
 
 app.mainloop()
 ```
@@ -97,20 +97,16 @@ grid = ttk.GridFrame(app, columns=["auto", 1], gap=(12, 6), padding=12, sticky_i
 grid.pack(fill="both", expand=True)
 
 # Auto-placement: wraps to next row after filling columns
-grid.add(ttk.Label(grid, text="Name"))
-grid.add(ttk.Entry(grid))
-grid.add(ttk.Label(grid, text="Email"))
-grid.add(ttk.Entry(grid))
-grid.add(ttk.Button(grid, text="Save", color="primary"), columnspan=2)
+ttk.Label(grid, text="Name").grid()
+ttk.Entry(grid).grid()
+ttk.Label(grid, text="Email").grid()
+ttk.Entry(grid).grid()
+ttk.Button(grid, text="Save", color="primary").grid(columnspan=2)
 
 app.mainloop()
 ```
 
 GridFrame is the recommended choice when visual alignment matters.
-
-!!! note "Use add() for GridFrame features"
-    GridFrame's `gap` and `sticky_items` only apply when using `grid.add(widget, ...)`.
-    Direct `.grid()` calls bypass these features.
 
 ---
 
@@ -157,15 +153,32 @@ grid.pack(fill="both", expand=True)
 
 # Left column
 left = ttk.PackFrame(grid, direction="vertical", gap=6)
-grid.add(left)
-left.add(ttk.Label(left, text="General", font="label"))
-left.add(ttk.CheckButton(left, text="Enable feature"))
+left.grid()
+ttk.Label(left, text="General", font="label").pack()
+ttk.CheckButton(left, text="Enable feature").pack()
 
 # Right column
 right = ttk.PackFrame(grid, direction="vertical", gap=6)
-grid.add(right)
-right.add(ttk.Label(right, text="Advanced", font="label"))
-right.add(ttk.CheckButton(right, text="Verbose logging"))
+right.grid()
+ttk.Label(right, text="Advanced", font="label").pack()
+ttk.CheckButton(right, text="Verbose logging").pack()
+```
+
+---
+
+## Method chaining
+
+Both `pack()` and `grid()` return the widget for method chaining:
+
+```python
+form = ttk.PackFrame(app, direction="vertical", gap=8)
+form.pack(fill="both", expand=True)
+
+# Create and pack in one line, store reference
+entry = ttk.Entry(form).pack()
+
+# Chain further calls
+ttk.Button(form, text="Submit").pack().configure(command=submit)
 ```
 
 ---
@@ -186,7 +199,7 @@ Widgets placed inside scroll containers should not manage scrolling themselves.
 
 ## What layout containers do *not* hide
 
-PackFrame and GridFrame do **not** replace Tk’s geometry system.
+PackFrame and GridFrame do **not** replace Tk's geometry system.
 
 They:
 
@@ -217,5 +230,5 @@ Most layout issues disappear when containers are used intentionally.
   behave under the hood when using raw `pack` and `grid`.
 - [ScrollView](../widgets/layout/scrollview.md) - how scrolling is handled as a container responsibility.
 
-If you’re new to ttkbootstrap layout, start with **PackFrame** or **GridFrame**, then return to Spacing & Alignment
+If you're new to ttkbootstrap layout, start with **PackFrame** or **GridFrame**, then return to Spacing & Alignment
 only when you need finer control.
