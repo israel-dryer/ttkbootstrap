@@ -231,11 +231,6 @@ class ButtonGroup(Frame):
         widget.destroy()
         self._update_widget_positions()
 
-    def clear(self):
-        """Remove all widgets from the group."""
-        for key in list(self._widgets.keys()):
-            self.remove(key)
-
     def get_widget(self, key: str) -> 'tk.Widget':
         """Get a widget by its key.
 

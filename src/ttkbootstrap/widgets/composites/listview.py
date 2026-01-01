@@ -332,7 +332,7 @@ class ListView(Frame):
     The widget works with either a simple list/dict data or a custom DataSource
     implementation for more complex scenarios (database, API, etc.).
 
-    Events:
+    !!! note "Events"
         - ``<<SelectionChange>>``: Fired when selection state changes. ``event.data = None`` (use ``get_selected()`` to get current selection)
         - ``<<ItemDelete>>``: Fired when an item is deleted. ``event.data = {'record': dict}``
         - ``<<ItemDeleteFail>>``: Fired when item deletion fails. ``event.data = {'record': dict, 'error': str}``

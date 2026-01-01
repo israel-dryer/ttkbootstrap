@@ -25,9 +25,9 @@ class Accordion(Frame):
         expanders (list[Expander]): List of managed Expander widgets.
         expanded (list[Expander]): Currently expanded Expander(s).
 
-    Events:
-        ``<<AccordionChange>>``: Fired when the expanded section(s) change.
-            ``event.data = {'expanded': list[Expander]}``
+    !!! note "Events"
+        - ``<<AccordionChange>>``: Fired when the expanded section(s) change.
+          ``event.data = {'expanded': list[Expander]}``
     """
 
     def __init__(
@@ -136,6 +136,67 @@ class Accordion(Frame):
 
         return expander
 
+    def remove(self, expander_or_index: Expander | int) -> None:
+        """Remove an expander from the accordion.
+
+        Args:
+            expander_or_index: The Expander widget or its index to remove.
+
+        Raises:
+            ValueError: If the expander is not in the accordion or index is out of range.
+
+        Note:
+            The expander widget is destroyed. If collapsible=False and
+            removing would leave no expanders, or would remove the only
+            open expander, another expander will be expanded automatically.
+        """
+        # Resolve to index
+        if isinstance(expander_or_index, int):
+            index = expander_or_index
+            if not (0 <= index < len(self._expanders)):
+                raise ValueError(f"Index {index} out of range")
+            expander = self._expanders[index]
+        else:
+            expander = expander_or_index
+            try:
+                index = self._expanders.index(expander)
+            except ValueError:
+                raise ValueError("Expander is not in this accordion")
+
+        was_expanded = expander['expanded']
+
+        # Remove associated separator
+        if self._separators and self._separator_widgets:
+            if index > 0:
+                # Remove the separator before this expander
+                sep_index = index - 1
+            elif len(self._expanders) > 1:
+                # Removing first expander - remove the separator after it
+                sep_index = 0
+            else:
+                sep_index = None
+
+            if sep_index is not None and sep_index < len(self._separator_widgets):
+                sep = self._separator_widgets.pop(sep_index)
+                sep.destroy()
+
+        # Remove expander from list and destroy
+        self._expanders.pop(index)
+        expander.destroy()
+
+        # Handle collapsible=False constraint
+        if not self._collapsible and was_expanded and self._expanders:
+            # The removed expander was open - need to open another
+            any_open = any(exp['expanded'] for exp in self._expanders)
+            if not any_open:
+                self._expanders[0].expand()
+
+        # Fire change event
+        if self._expanders:
+            self.event_generate('<<AccordionChange>>', data={
+                'expanded': [exp for exp in self._expanders if exp['expanded']]
+            })
+
     def _on_expander_toggle(self, expander: Expander, event):
         """Handle expander toggle events."""
         if self._updating:
@@ -211,6 +272,23 @@ class Accordion(Frame):
         for exp in self._expanders:
             exp.collapse()
 
+    def index_of(self, expander: Expander) -> int:
+        """Get the index of an expander.
+
+        Args:
+            expander: The Expander widget to find.
+
+        Returns:
+            The index of the expander in the accordion.
+
+        Raises:
+            ValueError: If the expander is not in the accordion.
+        """
+        try:
+            return self._expanders.index(expander)
+        except ValueError:
+            raise ValueError("Expander is not in this accordion")
+
     @property
     def expanders(self) -> list[Expander]:
         """Get the list of managed Expander widgets."""
@@ -245,7 +323,7 @@ class Accordion(Frame):
         self._separators = value
         return None
 
-    def on_change(self, callback: Callable) -> str:
+    def on_accordion_changed(self, callback: Callable) -> str:
         """Bind callback to ``<<AccordionChange>>`` events.
 
         Args:
@@ -253,14 +331,14 @@ class Accordion(Frame):
                 Receives event with ``event.data = {'expanded': list[Expander]}``.
 
         Returns:
-            Bind ID that can be passed to ``off_change`` to remove this callback.
+            Bind ID that can be passed to ``off_accordion_changed`` to remove this callback.
         """
         return self.bind('<<AccordionChange>>', callback, add='+')
 
-    def off_change(self, bind_id: str = None):
+    def off_accordion_changed(self, bind_id: str = None):
         """Unbind ``<<AccordionChange>>`` callback(s).
 
         Args:
-            bind_id (str | None): Bind ID returned by ``on_change``. If None, unbinds all.
+            bind_id (str | None): Bind ID returned by ``on_accordion_changed``. If None, unbinds all.
         """
         self.unbind('<<AccordionChange>>', bind_id)

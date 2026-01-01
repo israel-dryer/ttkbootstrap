@@ -65,13 +65,6 @@ class TestToggleGroup(unittest.TestCase):
         with self.assertRaises(KeyError):
             group.get_button('a')
 
-    def test_clear_buttons(self):
-        group = ToggleGroup(self.root)
-        group.add(text='A', value='a')
-        group.add(text='B', value='b')
-        group.clear()
-        self.assertEqual(len(group.buttons()), 0)
-
     # 3. Value Handling Tests
     def test_get_set_single_mode(self):
         group = ToggleGroup(self.root, mode='single')

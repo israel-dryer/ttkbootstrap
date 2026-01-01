@@ -52,7 +52,7 @@ class OptionMenu(MenuButton):
     ):
         """Create an OptionMenu backed by a ContextMenu.
 
-        Events:
+        !!! note "Events"
             - ``<<Change>>``: Fired when the selected value changes. ``event.data = {'value': Any}``
 
         Args:

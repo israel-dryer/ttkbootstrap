@@ -13,7 +13,7 @@ from ttkbootstrap.style.utility import create_transparent_image, recolor_image
 
 def _menubutton_layout(ttk_style: str, show_dropdown: bool = True) -> Element:
     """Create the layout for a menubutton."""
-    children = [Element("Menubutton.label", sticky="", side="left")]
+    children = [Element("Menubutton.label", sticky="nsew", side="left")]
 
     if show_dropdown:
         children.extend(

@@ -500,15 +500,6 @@ class GridFrame(Frame):
             kwargs["pad"] = pad
         self.columnconfigure(index, **kwargs)
 
-    def clear(self) -> None:
-        """Remove all widgets (ungrids but doesn't destroy them)."""
-        for widget, _, _ in self._managed:
-            widget.grid_forget()
-        self._managed.clear()
-        self._occupied.clear()
-        self._next_row = 0
-        self._next_col = 0
-
     def get_position(self, widget: tk.Widget) -> tuple[int, int, int, int]:
         """Get the current (row, column, rowspan, colspan) of a widget."""
         index = self._find_index(widget)

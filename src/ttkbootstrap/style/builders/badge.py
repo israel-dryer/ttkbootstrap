@@ -42,7 +42,7 @@ def build_badge(b: BootstyleBuilderTTk, ttk_style: str, color: str = None, varia
             [
                 Element("Label.padding", sticky="nsew").children(
                     [
-                        Element("Label.label", sticky="")
+                        Element("Label.label", sticky="nsew")
                     ])
             ]))
 

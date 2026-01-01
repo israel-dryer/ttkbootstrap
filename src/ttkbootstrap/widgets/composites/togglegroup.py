@@ -271,11 +271,6 @@ class ToggleGroup(Frame):
             button.destroy()
             self._update_button_positions()
 
-    def clear(self):
-        """Remove all buttons from the group."""
-        for key in list(self._buttons.keys()):
-            self.remove(key)
-
     def buttons(self) -> tuple[RadioToggle | CheckToggle, ...]:
         """Get all button widgets in the group."""
         return tuple(self._buttons.values())

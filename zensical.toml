@@ -87,9 +87,13 @@ nav = [
             { "Separator" = "widgets/layout/separator.md" },
             { "SizeGrip" = "widgets/layout/sizegrip.md" },
         ] },
+        { "Navigation" = [
+            { "Tabs" = "widgets/navigation/tabs.md" },
+        ] },
         { "Views" = [
-            { "Notebook" = "widgets/views/notebook.md" },
+            { "TabView" = "widgets/views/tabview.md" },
             { "PageStack" = "widgets/views/pagestack.md" },
+            { "Notebook" = "widgets/views/notebook.md" },
         ] },
         { "Forms" = [
             { "Form" = "widgets/forms/form.md" },
@@ -272,6 +276,8 @@ nav = [
             { "SpinnerEntry" = "reference/widgets/SpinnerEntry.md" },
             { "Switch" = "reference/widgets/Switch.md" },
             { "TableView" = "reference/widgets/TableView.md" },
+            { "Tabs" = "reference/widgets/Tabs.md" },
+            { "TabView" = "reference/widgets/TabView.md" },
             { "TextEntry" = "reference/widgets/TextEntry.md" },
             { "TimeEntry" = "reference/widgets/TimeEntry.md" },
             { "Toast" = "reference/widgets/Toast.md" },

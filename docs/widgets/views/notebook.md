@@ -4,6 +4,12 @@ title: Notebook
 
 # Notebook
 
+!!! note "Consider TabView"
+    `Notebook` is included as a wrapper around the native `ttk.Notebook` widget.
+    For new projects, consider using [TabView](tabview.md) instead, which offers
+    a more modern appearance, closable tabs, dynamic tab creation, and better
+    integration with ttkbootstrap's design system.
+
 `Notebook` is a **tabbed view container** that shows one page at a time and lets users switch views by clicking tabs.
 
 ttkbootstrap's `Notebook` extends `ttk.Notebook` with:

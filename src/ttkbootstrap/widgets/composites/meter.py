@@ -97,8 +97,8 @@ class Meter(Frame):
             step_size: Increment step when in interactive mode.
             **kwargs: Additional keyword arguments passed to the Frame parent class.
 
-        Events:
-            ``<<Change>>``: Emitted when the value changes (see on_changed()).
+        !!! note "Events"
+            - ``<<Change>>``: Emitted when the value changes (see on_changed()).
         """
         legacy = Meter._coerce_legacy_params(kwargs)
         super().__init__(master, **kwargs)

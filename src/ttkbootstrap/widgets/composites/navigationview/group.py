@@ -28,12 +28,11 @@ class NavigationViewGroup(Frame):
 
     The group shows as selected if any of its child items are currently selected.
 
-    Virtual events:
-        ``<<GroupExpanding>>``: Fired before the group expands.
-            event.data = {'key': str}
-
-        ``<<GroupCollapsed>>``: Fired after the group collapses.
-            event.data = {'key': str}
+    !!! note "Events"
+        - ``<<GroupExpanding>>``: Fired before the group expands.
+          ``event.data = {'key': str}``
+        - ``<<GroupCollapsed>>``: Fired after the group collapses.
+          ``event.data = {'key': str}``
 
     Example:
         ```python

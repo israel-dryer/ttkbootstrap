@@ -76,7 +76,7 @@ class Calendar(ttk.Frame):
     and min/max bounds. Displays one month in single mode or two months
     in range mode.
 
-    Events:
+    !!! note "Events"
         - ``<<DateSelect>>``: Fired on selection. ``event.data = {'date': date, 'range': tuple[date, date | None]}``
     """
 

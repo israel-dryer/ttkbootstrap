@@ -110,7 +110,7 @@ def build_list_item_button_style(b: BootstyleBuilderTTk, ttk_style: str, color: 
         ttk_style,
         Element('Label.border', sticky='nsew').children([
             Element('Label.padding', sticky='nsew').children([
-                Element('Label.label', sticky='')
+                Element('Label.label', sticky='nsew')
             ])
         ])
     )
@@ -165,7 +165,7 @@ def build_list_icon(b: BootstyleBuilderTTk, ttk_style: str, color: str = None, *
         ttk_style,
         Element('Label.border', sticky='nsew').children([
             Element('Label.padding', sticky='nsew').children([
-                Element('Label.label', sticky='')
+                Element('Label.label', sticky='nsew')
             ])
         ])
     )

@@ -37,17 +37,14 @@ class NavigationView(Frame):
     The pane manages a shared selection variable/signal that all items use
     for radio-group behavior.
 
-    Virtual events:
-        ``<<PaneToggled>>``: Fired when pane is opened/closed.
-            event.data = {'is_open': bool}
-
-        ``<<DisplayModeChanged>>``: Fired when display mode changes.
-            event.data = {'mode': str}
-
-        ``<<SelectionChanged>>``: Fired when selected item changes.
-            event.data = {'key': str}
-
-        ``<<BackRequested>>``: Fired when back button is clicked.
+    !!! note "Events"
+        - ``<<PaneToggled>>``: Fired when pane is opened/closed.
+          ``event.data = {'is_open': bool}``
+        - ``<<DisplayModeChanged>>``: Fired when display mode changes.
+          ``event.data = {'mode': str}``
+        - ``<<SelectionChanged>>``: Fired when selected item changes.
+          ``event.data = {'key': str}``
+        - ``<<BackRequested>>``: Fired when back button is clicked.
 
     Example:
         ```python
