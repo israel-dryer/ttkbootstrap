@@ -107,7 +107,7 @@ class PathEntry(Field):
             show_message (bool): If True, displays message area.
             message (str): Message text to display below the field.
             padding (str): Padding around entry widget.
-            take_focus (bool): If True, widget accepts Tab focus.
+            takefocus (bool): If True, widget accepts Tab focus.
             textvariable (Variable): Tkinter Variable to link with text.
             textsignal (Signal): Signal object for reactive updates.
             width (int): Width in characters.

@@ -74,7 +74,7 @@ class PasswordEntry(Field):
             justify (str): Text alignment.
             show_message (bool): If True, displays message area.
             padding (str): Padding around entry widget.
-            take_focus (bool): If True, widget accepts Tab focus.
+            takefocus (bool): If True, widget accepts Tab focus.
             textvariable (Variable): Tkinter Variable to link with text.
             textsignal (Signal): Signal object for reactive updates.
             width (int): Width in characters.
