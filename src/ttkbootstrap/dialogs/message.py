@@ -206,20 +206,24 @@ class Messagebox:
             parent: Optional[tkinter.Misc] = None,
             alert: bool = False,
             **kwargs: Any,
-    ) -> None:
+    ) -> Optional[str]:
         """Display a modal dialog box with an OK button and an INFO icon."""
+        position = kwargs.pop("position", None)
+        buttons = kwargs.pop("buttons", ["OK:primary"])
+        icon = kwargs.pop("icon", Icon.info)
+        localize = kwargs.pop("localize", True)
         dialog = MessageDialog(
             message=message,
             title=title,
             alert=alert,
             parent=parent,
-            buttons=["OK:primary"],
-            icon=Icon.info,
-            localize=True,
+            buttons=buttons,
+            icon=icon,
+            localize=localize,
             **kwargs,
         )
-        position = kwargs.pop("position", None)
         dialog.show(position)
+        return dialog.result
 
     @staticmethod
     def show_warning(
@@ -228,20 +232,24 @@ class Messagebox:
             parent: Optional[tkinter.Misc] = None,
             alert: bool = True,
             **kwargs: Any,
-    ) -> None:
+    ) -> Optional[str]:
         """Display a modal dialog box with an OK button and a warning icon."""
+        position = kwargs.pop("position", None)
+        buttons = kwargs.pop("buttons", ["OK:primary"])
+        icon = kwargs.pop("icon", Icon.warning)
+        localize = kwargs.pop("localize", True)
         dialog = MessageDialog(
             message=message,
             title=title,
             parent=parent,
-            buttons=["OK:primary"],
-            icon=Icon.warning,
+            buttons=buttons,
+            icon=icon,
             alert=alert,
-            localize=True,
+            localize=localize,
             **kwargs,
         )
-        position = kwargs.pop("position", None)
         dialog.show(position)
+        return dialog.result
 
     @staticmethod
     def show_error(
@@ -250,20 +258,24 @@ class Messagebox:
             parent: Optional[tkinter.Misc] = None,
             alert: bool = True,
             **kwargs: Any,
-    ) -> None:
+    ) -> Optional[str]:
         """Display a modal dialog box with an OK button and an error icon."""
+        position = kwargs.pop("position", None)
+        buttons = kwargs.pop("buttons", ["OK:primary"])
+        icon = kwargs.pop("icon", Icon.error)
+        localize = kwargs.pop("localize", True)
         dialog = MessageDialog(
             message=message,
             title=title,
             parent=parent,
-            buttons=["OK:primary"],
-            icon=Icon.error,
+            buttons=buttons,
+            icon=icon,
             alert=alert,
-            localize=True,
+            localize=localize,
             **kwargs,
         )
-        position = kwargs.pop("position", None)
         dialog.show(position)
+        return dialog.result
 
     @staticmethod
     def show_question(
@@ -272,20 +284,24 @@ class Messagebox:
             parent: Optional[tkinter.Misc] = None,
             alert: bool = False,
             **kwargs: Any,
-    ) -> None:
+    ) -> Optional[str]:
         """Display a modal dialog box with an OK button and a question icon."""
+        position = kwargs.pop("position", None)
+        buttons = kwargs.pop("buttons", ["OK:primary"])
+        icon = kwargs.pop("icon", Icon.question)
+        localize = kwargs.pop("localize", True)
         dialog = MessageDialog(
             message=message,
             title=title,
             parent=parent,
-            buttons=["OK:primary"],
-            icon=Icon.question,
+            buttons=buttons,
+            icon=icon,
             alert=alert,
-            localize=True,
+            localize=localize,
             **kwargs,
         )
-        position = kwargs.pop("position", None)
         dialog.show(position)
+        return dialog.result
 
     @staticmethod
     def ok(
@@ -294,18 +310,21 @@ class Messagebox:
             parent: Optional[tkinter.Misc] = None,
             alert: bool = False,
             **kwargs: Any,
-    ) -> None:
+    ) -> Optional[str]:
+        position = kwargs.pop("position", None)
+        buttons = kwargs.pop("buttons", ["OK:primary"])
+        localize = kwargs.pop("localize", True)
         dialog = MessageDialog(
             title=title,
             message=message,
             parent=parent,
             alert=alert,
-            buttons=["OK:primary"],
-            localize=True,
+            buttons=buttons,
+            localize=localize,
             **kwargs,
         )
-        position = kwargs.pop("position", None)
         dialog.show(position)
+        return dialog.result
 
     @staticmethod
     def okcancel(
@@ -315,15 +334,16 @@ class Messagebox:
             parent: Optional[tkinter.Misc] = None,
             **kwargs: Any,
     ) -> Optional[str]:
+        position = kwargs.pop("position", None)
+        localize = kwargs.pop("localize", True)
         dialog = MessageDialog(
             title=title,
             message=message,
             parent=parent,
             alert=alert,
-            localize=True,
+            localize=localize,
             **kwargs,
         )
-        position = kwargs.pop("position", None)
         dialog.show(position)
         return dialog.result
 
@@ -335,16 +355,18 @@ class Messagebox:
             parent: Optional[tkinter.Misc] = None,
             **kwargs: Any,
     ) -> Optional[str]:
+        position = kwargs.pop("position", None)
+        buttons = kwargs.pop("buttons", ["No", "Yes"])
+        localize = kwargs.pop("localize", True)
         dialog = MessageDialog(
             title=title,
             message=message,
             parent=parent,
-            buttons=["No", "Yes"],
+            buttons=buttons,
             alert=alert,
-            localize=True,
+            localize=localize,
             **kwargs,
         )
-        position = kwargs.pop("position", None)
         dialog.show(position)
         return dialog.result
 
@@ -356,16 +378,18 @@ class Messagebox:
             parent: Optional[tkinter.Misc] = None,
             **kwargs: Any,
     ) -> Optional[str]:
+        position = kwargs.pop("position", None)
+        buttons = kwargs.pop("buttons", ["Cancel", "No", "Yes"])
+        localize = kwargs.pop("localize", True)
         dialog = MessageDialog(
             title=title,
             message=message,
             parent=parent,
             alert=alert,
-            buttons=["Cancel", "No", "Yes"],
-            localize=True,
+            buttons=buttons,
+            localize=localize,
             **kwargs,
         )
-        position = kwargs.pop("position", None)
         dialog.show(position)
         return dialog.result
 
@@ -377,15 +401,17 @@ class Messagebox:
             parent: Optional[tkinter.Misc] = None,
             **kwargs: Any,
     ) -> Optional[str]:
+        position = kwargs.pop("position", None)
+        buttons = kwargs.pop("buttons", ["Cancel", "Retry"])
+        localize = kwargs.pop("localize", True)
         dialog = MessageDialog(
             title=title,
             message=message,
             parent=parent,
             alert=alert,
-            buttons=["Cancel", "Retry"],
-            localize=True,
+            buttons=buttons,
+            localize=localize,
             **kwargs,
         )
-        position = kwargs.pop("position", None)
         dialog.show(position)
         return dialog.result

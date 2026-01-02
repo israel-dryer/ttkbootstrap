@@ -281,13 +281,14 @@ class Querybox:
     ) -> Optional[int]:
         initialvalue = initialvalue or ""
         position = kwargs.pop("position", None)
+        datatype = kwargs.pop("datatype", int)
         dialog = QueryDialog(
             prompt,
             title,
             initialvalue,
             minvalue,
             maxvalue,
-            datatype=int,
+            datatype=datatype,
             parent=parent,
             **kwargs,
         )
@@ -306,13 +307,14 @@ class Querybox:
     ) -> Optional[float]:
         initialvalue = initialvalue or ""
         position = kwargs.pop("position", None)
+        datatype = kwargs.pop("datatype", float)
         dialog = QueryDialog(
             prompt,
             title,
             initialvalue,
             minvalue,
             maxvalue,
-            datatype=float,
+            datatype=datatype,
             parent=parent,
             **kwargs,
         )
