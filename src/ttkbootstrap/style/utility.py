@@ -29,39 +29,41 @@ def create_box_image(width: int, height: int, color: str):
     return pm
 
 
-def create_rounded_border_image(
-        radius: int,
-        stroke_width: int,
-        fill: str,  # hex like "#202020"
-        stroke: str,  # hex like "#3a3a3a"
-        padding: int = 2,  # extra pixels to avoid clipping
+def create_rounded_border_image(*,
+        size=200,
+        radius=4,
+        thickness=2,
+        fill='#ffffff',
+        stroke='#000000'
 ):
-    cache_key = f"{radius}{stroke_width}{fill}{stroke}{padding}"
+    cache_key = f"{size}{radius}{thickness}{fill}{stroke}"
     cached = ImageService.get_cached(cache_key)
     if cached is not None:
         return cached
 
-    r = max(0, int(radius))
-    w = max(0, int(stroke_width))
-    size = 2 * (r + w) + padding * 2 + 2
+    scale = 2  # light supersample for corner smoothing
+    s = size * scale
+    r = radius * scale
+    t = thickness * scale
+    half_t = t / 2  # stroke is centered, so inset by half
 
-    img = Image.new("RGBA", (size, size), (0, 0, 0, 0))
+    img = Image.new("RGBA", (s, s), (0, 0, 0, 0))
     d = ImageDraw.Draw(img)
 
-    outer = (padding, padding, size - padding - 1, size - padding - 1)
-    d.rounded_rectangle(outer, radius=r + w, fill=stroke)
+    # Draw rounded rect with fill and outline stroke
+    # Inset by half stroke width so the stroke stays within image bounds
+    d.rounded_rectangle(
+        (half_t, half_t, s - 1 - half_t, s - 1 - half_t),
+        radius=r,
+        fill=fill,
+        outline=stroke,
+        width=t,
+    )
 
-    if w > 0:
-        inner = (
-            padding + w,
-            padding + w,
-            size - padding - w - 1,
-            size - padding - w - 1,
-        )
-        d.rounded_rectangle(inner, radius=max(0, r), fill=fill)
-    else:
-        # no stroke, just fill
-        d.rounded_rectangle(outer, radius=r, fill=fill)
+    # Resize with LANCZOS for smooth corners, then sharpen to restore edge crispness
+    from PIL import ImageFilter
+    img = img.resize((size, size), Image.Resampling.LANCZOS)
+    img = img.filter(ImageFilter.UnsharpMask(radius=0.5, percent=150, threshold=0))
 
     pm = PhotoImage(image=img)
     ImageService.set_cached(cache_key, pm)
