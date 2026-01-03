@@ -7,26 +7,26 @@ from ttkbootstrap.style.bootstyle_builder_tk import BootstyleBuilderBuilderTk
 
 @BootstyleBuilderBuilderTk.register_builder('Tk')
 def build_tk_root(builder: BootstyleBuilderBuilderTk, widget: Any, **options: Any) -> None:
-    bg = builder.color(options.get('surface', 'background'))
+    bg = builder.color(options.get('surface', 'content'))
     widget.configure(background=bg)
     widget.option_add('*Text*Font', 'TkDefaultFont')
 
 
 @BootstyleBuilderBuilderTk.register_builder('Toplevel')
 def build_tk_toplevel(builder: BootstyleBuilderBuilderTk, widget: Any, **options: Any) -> None:
-    bg = builder.color(options.get('surface', 'background'))
+    bg = builder.color(options.get('surface', 'content'))
     widget.configure(background=bg)
 
 
 @BootstyleBuilderBuilderTk.register_builder('Frame')
 def build_tk_frame(builder: BootstyleBuilderBuilderTk, widget: Any, **options: Any) -> None:
-    bg = builder.color(options.get('surface', 'background'))
+    bg = builder.color(options.get('surface', 'content'))
     widget.configure(background=bg)
 
 
 @BootstyleBuilderBuilderTk.register_builder('Label')
 def build_tk_label(builder: BootstyleBuilderBuilderTk, widget: Any, **options: Any) -> None:
-    bg = builder.color(options.get('surface', 'background'))
+    bg = builder.color(options.get('surface', 'content'))
     fg = builder.on_color(bg)
     widget.configure(background=bg, foreground=fg)
 
@@ -88,13 +88,13 @@ def build_tk_text(builder: BootstyleBuilderBuilderTk, widget: Any, **options: An
 
 @BootstyleBuilderBuilderTk.register_builder('Canvas')
 def build_tk_canvas(builder: BootstyleBuilderBuilderTk, widget: Any, **options: Any) -> None:
-    bg = builder.color(options.get('surface', 'background'))
+    bg = builder.color(options.get('surface', 'content'))
     widget.configure(background=bg, highlightthickness=0)
 
 
 @BootstyleBuilderBuilderTk.register_builder('Checkbutton')
 def build_tk_checkbutton(builder: BootstyleBuilderBuilderTk, widget: Any, **options: Any) -> None:
-    bg = builder.color(options.get('surface', 'background'))
+    bg = builder.color(options.get('surface', 'content'))
     fg = builder.colors.get('foreground')
     accent = builder.color('primary')
     widget.configure(
@@ -109,7 +109,7 @@ def build_tk_checkbutton(builder: BootstyleBuilderBuilderTk, widget: Any, **opti
 @BootstyleBuilderBuilderTk.register_builder('Radiobutton')
 def build_tk_radiobutton(builder: BootstyleBuilderBuilderTk, widget: Any, **options: Any) -> None:
     accent = builder.color('primary')
-    bg = builder.color(options.get('surface', 'background'))
+    bg = builder.color(options.get('surface', 'content'))
     fg = builder.colors.get('foreground')
     widget.configure(
         background=bg,
@@ -194,7 +194,7 @@ def build_tk_menubutton(builder: BootstyleBuilderBuilderTk, widget: Any, **optio
 
 @BootstyleBuilderBuilderTk.register_builder('Labelframe')
 def build_tk_labelframe(builder: BootstyleBuilderBuilderTk, widget: Any, **options: Any) -> None:
-    bg = builder.color(options.get('surface', 'background'))
+    bg = builder.color(options.get('surface', 'content'))
     fg = builder.on_color(bg)
     border = builder.border(bg)
     widget.configure(

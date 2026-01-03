@@ -444,16 +444,16 @@ class Bootstyle:
                 inherit_surface = get_app_settings().inherit_surface_color
 
             if hasattr(self, 'master') and self.master is not None:
-                parent_surface_token = getattr(self.master, '_surface', 'background')
+                parent_surface_token = getattr(self.master, '_surface', 'content')
             else:
-                parent_surface_token = 'background'
+                parent_surface_token = 'content'
 
             if surface_token:
                 effective_surface_token = surface_token
             elif inherit_surface:
                 effective_surface_token = parent_surface_token
             else:
-                effective_surface_token = 'background'
+                effective_surface_token = 'content'
 
             # container widgets can take their surface color from the accent param
             # Use style_class so custom ttk_class like 'Field' can opt out of this behavior
@@ -462,7 +462,7 @@ class Bootstyle:
 
             # cache the surface color for child components
             setattr(self, '_surface', effective_surface_token)
-            if effective_surface_token != 'background' and effective_surface_token is not None:
+            if effective_surface_token != 'content' and effective_surface_token is not None:
                 style_options.setdefault('surface', effective_surface_token)
 
             # ==== Orientation =====
@@ -546,14 +546,14 @@ class Bootstyle:
             # ===== Surface color inheritance =====
 
             if hasattr(self, 'master') and self.master is not None:
-                parent_surface_token = getattr(self.master, '_surface', 'background')
+                parent_surface_token = getattr(self.master, '_surface', 'content')
             else:
-                parent_surface_token = 'background'
+                parent_surface_token = 'content'
 
             if inherit_surface:
                 surface_token = parent_surface_token
             else:
-                surface_token = surface_token or 'background'
+                surface_token = surface_token or 'content'
 
             setattr(self, '_surface', surface_token)
 
@@ -569,7 +569,7 @@ class Bootstyle:
                 theme_provider=style.theme_provider if style else None,
                 style_instance=style
             )
-            surface = getattr(self, '_surface', 'background')
+            surface = getattr(self, '_surface', 'content')
             builder_tk.call_builder(self, surface=surface)
 
             style.register_tk_widget(self)

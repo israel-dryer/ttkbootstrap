@@ -55,7 +55,7 @@ def build_solid_toolbutton_style(b: BootstyleBuilderTTk, ttk_style: str, accent:
     """
     anchor = options.get('anchor', 'center')
     accent_token = accent or 'primary'
-    surface_token = options.get('surface', 'background')
+    surface_token = options.get('surface', 'content')
 
     surface = b.color(surface_token)
 
@@ -132,7 +132,7 @@ def build_outline_toolbutton_style(b: BootstyleBuilderTTk, ttk_style: str, accen
     """
     anchor = options.get('anchor', 'center')
     accent_token = accent or 'primary'
-    surface_token = options.get('surface', 'background')
+    surface_token = options.get('surface', 'content')
 
     surface = b.color(surface_token)
     accent_color = b.color(accent_token)
@@ -205,7 +205,7 @@ def build_ghost_toolbutton_style(b: BootstyleBuilderTTk, ttk_style: str, accent:
     """
     anchor = options.get('anchor', 'center')
     accent_token = accent or 'foreground'
-    surface_token = options.get('surface', 'background')
+    surface_token = options.get('surface', 'content')
 
     surface = b.color(surface_token)
     on_surface = b.on_color(surface)

@@ -89,33 +89,47 @@ Colors support **chained bracket modifiers** for dynamic adjustments:
 "background[+1][subtle]" # Elevated background, then subtle
 ```
 
-### Elevation
+### Tone Adjustments
 
-Elevation modifiers adjust lightness relative to the base color:
+Tone modifiers (`+N` / `-N`) adjust lightness relative to the base color:
 
 ```python
-# Common patterns
-"background[+1]"  # Raised surface (cards, dialogs)
-"background[+2]"  # Higher elevation (tooltips, menus)
-"background[-1]"  # Recessed area (wells, insets)
+# Lighten/darken any color
+"primary[+1]"     # Lighter primary
+"primary[-1]"     # Darker primary
+"gray[+2]"        # Much lighter gray
 ```
+
+!!! tip "Prefer Surface Tokens"
+    For container backgrounds, use semantic surface tokens like `content[1]` or `chrome`
+    instead of `background[+1]`. Surface tokens are theme-defined and more predictable.
+    See [Surface Tokens](#surface-tokens) below.
 
 ### Shades
 
-Shade modifiers select from the color's palette:
+Shade modifiers select from the color's palette using 50-step increments (50–950):
 
 ```python
-# Primary color shades
-"primary[50]"   # Lightest
+# Primary color shades (50-step increments)
+"primary[50]"   # Lightest tint
 "primary[100]"
+"primary[150]"
 "primary[200]"
+"primary[250]"
 "primary[300]"
+"primary[350]"
 "primary[400]"
+"primary[450]"
 "primary[500]"  # Base color
+"primary[550]"
 "primary[600]"
+"primary[650]"
 "primary[700]"
+"primary[750]"
 "primary[800]"
-"primary[900]"  # Darkest
+"primary[850]"
+"primary[900]"
+"primary[950]"  # Darkest shade
 ```
 
 ### Subtle and Muted
@@ -153,6 +167,55 @@ Modifiers are applied left-to-right as a pipeline:
 # 2. Elevate by +1
 # 3. Apply subtle treatment
 ```
+
+---
+
+## Surface Tokens
+
+Surface tokens provide **semantic backgrounds** for containers. Instead of calculating
+elevation with `background[+1]`, use theme-defined surface ramps:
+
+### Content Surfaces
+
+For main content areas (pages, cards, panels):
+
+```python
+ttk.Frame(app, surface="content")      # Base content (same as background)
+ttk.Frame(app, surface="content[1]")   # Raised content (cards, panels)
+ttk.Frame(app, surface="content[2]")   # Higher elevation
+```
+
+### Chrome Surfaces
+
+For UI chrome (sidebars, toolbars, navigation):
+
+```python
+ttk.Frame(app, surface="chrome")       # Sidebar/navigation background
+ttk.Frame(app, surface="chrome[1]")    # Toolbar background
+```
+
+### Overlay Surfaces
+
+For floating elements (menus, dialogs, tooltips):
+
+```python
+ttk.Frame(app, surface="overlay")      # Menus, dropdowns
+ttk.Frame(app, surface="overlay[2]")   # Dialogs
+ttk.Frame(app, surface="overlay[3]")   # Tooltips, toasts
+```
+
+### Titlebar
+
+For window title bars:
+
+```python
+ttk.Frame(app, surface="titlebar")
+```
+
+!!! note "Why Surface Tokens?"
+    Surface tokens are **deterministic per theme**—they don't rely on computed
+    `+1/-1` math. Each theme defines exactly what `content[1]` means, ensuring
+    consistent visual hierarchy across light and dark modes.
 
 ---
 

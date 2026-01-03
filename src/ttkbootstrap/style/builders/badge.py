@@ -20,7 +20,7 @@ def build_pill_badge_style(b: BootstyleBuilderTTk, ttk_style: str, accent: str =
 
 
 def build_badge(b: BootstyleBuilderTTk, ttk_style: str, accent: str = None, variant: str = 'default', **options):
-    surface_token = options.get('surface', 'background')
+    surface_token = options.get('surface', 'content')
 
     surface = b.color(surface_token)
     normal = b.color(accent or 'primary')

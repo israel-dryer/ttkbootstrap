@@ -22,7 +22,7 @@ def _context_item_layout(ttk_style: str) -> Element:
 @BootstyleBuilderTTk.register_builder('context-check', 'Toolbutton')
 def build_context_check_toolbutton_style(b: BootstyleBuilderTTk, ttk_style: str, accent: str = None, **options):
     accent_token = accent or 'foreground'
-    surface_token = options.get('surface', 'background')
+    surface_token = options.get('surface', 'content')
 
     surface = b.color(surface_token)
     on_surface = b.on_color(surface)
@@ -80,7 +80,7 @@ def build_context_check_toolbutton_style(b: BootstyleBuilderTTk, ttk_style: str,
 @BootstyleBuilderTTk.register_builder('context-radio', 'Toolbutton')
 def build_context_radio_toolbutton_style(b: BootstyleBuilderTTk, ttk_style: str, accent: str = None, **options):
     accent_token = accent or 'foreground'
-    surface_token = options.get('surface', 'background')
+    surface_token = options.get('surface', 'content')
 
     surface = b.color(surface_token)
     on_surface = b.on_color(surface)
@@ -147,7 +147,7 @@ def build_context_item_button_style(b: BootstyleBuilderTTk, ttk_style: str, acce
     """
     anchor = options.get('anchor', 'w')
     accent_token = accent or 'foreground'
-    surface_token = options.get('surface', 'background')
+    surface_token = options.get('surface', 'content')
 
     surface = b.color(surface_token)
     on_surface = b.on_color(surface)

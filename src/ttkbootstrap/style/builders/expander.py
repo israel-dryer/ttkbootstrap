@@ -95,7 +95,7 @@ def build_solid_expander_header_label_style(b: BootstyleBuilderTTk, ttk_style: s
 @BootstyleBuilderTTk.register_builder('default', 'Expander.TFrame')
 def build_ghost_expander_header_style(b: BootstyleBuilderTTk, ttk_style: str, accent: str = None, **options):
     accent_token = accent or 'foreground'
-    surface_token = options.get('surface', 'background')
+    surface_token = options.get('surface', 'content')
 
     surface = b.color(surface_token)
     accent_color = b.color(accent_token)
@@ -142,7 +142,7 @@ def build_ghost_expander_header_label_style(b: BootstyleBuilderTTk, ttk_style: s
     Expander header label style with state-aware foreground.
     """
     accent_token = accent or 'foreground'
-    surface_token = options.get('surface', 'background')
+    surface_token = options.get('surface', 'content')
 
     surface = b.color(surface_token)
     accent_color = b.color(accent_token)

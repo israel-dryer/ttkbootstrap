@@ -120,7 +120,7 @@ class TTKWrapperBase(FontMixin, ConfigureDelegationMixin):
         if not style_options:
             style_options = {}
         surface = getattr(self, "_surface", None)
-        if surface and surface != "background":
+        if surface and surface != "content":
             style_options["surface"] = surface
         if widget_class in ORIENT_CLASSES:
             try:
@@ -185,7 +185,7 @@ class TTKWrapperBase(FontMixin, ConfigureDelegationMixin):
         style_options = getattr(self, '_style_options', {}).copy()
 
         surface = getattr(self, "_surface", None)
-        if surface and surface != "background":
+        if surface and surface != "content":
             style_options["surface"] = surface
 
         if widget_class in ORIENT_CLASSES:
@@ -241,7 +241,7 @@ class TTKWrapperBase(FontMixin, ConfigureDelegationMixin):
         style_options = getattr(self, '_style_options', {}).copy()
 
         surface = getattr(self, "_surface", None)
-        if surface and surface != "background":
+        if surface and surface != "content":
             style_options["surface"] = surface
 
         if widget_class in ORIENT_CLASSES:
@@ -300,7 +300,7 @@ class TTKWrapperBase(FontMixin, ConfigureDelegationMixin):
         style_options = getattr(self, '_style_options', {}).copy()
 
         surface = getattr(self, "_surface", None)
-        if surface and surface != "background":
+        if surface and surface != "content":
             style_options["surface"] = surface
 
         if widget_class in ORIENT_CLASSES:
@@ -325,7 +325,7 @@ class TTKWrapperBase(FontMixin, ConfigureDelegationMixin):
             setattr(self, "_style_options", options)
             if "surface" in kwargs:
                 surface = kwargs.get("surface")
-                setattr(self, "_surface", surface or "background")
+                setattr(self, "_surface", surface or "content")
             return None
         else:
             return options.get(value, None)

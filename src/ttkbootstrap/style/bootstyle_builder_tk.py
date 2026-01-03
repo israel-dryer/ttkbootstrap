@@ -24,7 +24,7 @@ class BootstyleBuilderBuilderTk(BootstyleBuilderBase):
     Usage:
         >>> @BootstyleBuilderBuilderTk.register_builder('Button')
         ... def build_tk_button(builder, widget, **opts):
-        ...     bg = builder.color(opts.get('surface', 'background'))
+        ...     bg = builder.color(opts.get('surface', 'content'))
         ...     widget.configure(background=bg, foreground=builder.colors.get('foreground'))
     """
 

@@ -60,7 +60,7 @@ def build_solid_button_style(b: BootstyleBuilderTTk, ttk_style: str, accent: str
     """
     anchor = options.get('anchor', 'center')
     accent_token = accent or 'primary'
-    surface_token = options.get('surface', 'background')
+    surface_token = options.get('surface', 'content')
 
     surface = b.color(surface_token)
     normal = b.color(accent_token)
@@ -135,7 +135,7 @@ def build_outline_button_style(b: BootstyleBuilderTTk, ttk_style: str, accent: s
     """
     anchor = options.get('anchor', 'center')
     accent_token = accent or 'primary'
-    surface_token = options.get('surface', 'background')
+    surface_token = options.get('surface', 'content')
 
     surface = b.color(surface_token)
 
@@ -217,7 +217,7 @@ def build_text_button_style(b: BootstyleBuilderTTk, ttk_style: str, accent: str 
     """
     anchor = options.get('anchor', 'center')
     accent_token = accent or 'foreground'
-    surface_token = options.get('surface', 'background')
+    surface_token = options.get('surface', 'content')
 
     surface = b.color(surface_token)
     foreground_normal = b.color(accent_token)
@@ -286,7 +286,7 @@ def build_link_button_style(b: BootstyleBuilderTTk, ttk_style: str, accent: str 
     """
     anchor = options.get('anchor', 'center')
     accent_token = accent or 'primary'
-    surface_token = options.get('surface', 'background')
+    surface_token = options.get('surface', 'content')
 
     surface = b.color(surface_token)
     foreground_normal = b.color(accent_token)
@@ -356,7 +356,7 @@ def build_ghost_button_style(b: BootstyleBuilderTTk, ttk_style: str, accent: str
     """
     anchor = options.get('anchor', 'center')
     accent_token = accent or 'foreground'
-    surface_token = options.get('surface', 'background')
+    surface_token = options.get('surface', 'content')
 
     surface = b.color(surface_token)
 
@@ -432,7 +432,7 @@ def build_selectbox_item_button_style(b: BootstyleBuilderTTk, ttk_style: str, ac
     """
     anchor = options.get('anchor', 'w')
     accent_token = accent or 'primary'
-    surface_token = options.get('surface', 'background')
+    surface_token = options.get('surface', 'content')
 
     surface = b.color(surface_token)
     on_surface = b.on_color(surface)

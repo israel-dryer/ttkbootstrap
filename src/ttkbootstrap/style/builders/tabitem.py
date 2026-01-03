@@ -28,7 +28,7 @@ def _apply_icon_mapping(b: BootstyleBuilderTTk, options: dict, state_spec: dict,
 def build_tabitem_pill_frame(b: BootstyleBuilderTTk, ttk_style: str, accent: str = None, **options):
     """TabItem frame style for pill variant."""
     accent_token = accent or 'primary'
-    surface_token = options.get('surface', 'background')
+    surface_token = options.get('surface', 'content')
 
     surface = b.color(surface_token)
     accent_color = b.color(accent_token)
@@ -65,7 +65,7 @@ def build_tabitem_bar_frame(b: BootstyleBuilderTTk, ttk_style: str, accent: str 
     """TabItem frame style for bar/underline variant."""
     orient = options.get('orient', 'horizontal')
     accent_token = accent or 'primary'
-    surface_token = options.get('surface', 'background')
+    surface_token = options.get('surface', 'content')
     surface = b.color(surface_token)
     accent_color = b.color(accent_token)
     accent_subtle = b.subtle(accent_token, surface)
@@ -101,7 +101,7 @@ def build_tabitem_bar_frame(b: BootstyleBuilderTTk, ttk_style: str, accent: str 
 @BootstyleBuilderTTk.register_builder('notebook', 'TabItem.TLabel')
 def build_tabitem_notebook_label(b: BootstyleBuilderTTk, ttk_style: str, accent: str = None, **options):
     """TabItem label style for notebook variant."""
-    surface_token = options.get('surface', 'background')
+    surface_token = options.get('surface', 'content')
     surface = b.color(surface_token)
 
     # notebook colors - inactive is elevation 1 of surface, active is surface
@@ -187,7 +187,7 @@ def build_tabitem_pill_label(b: BootstyleBuilderTTk, ttk_style: str, accent: str
 def build_tabitem_bar_label(b: BootstyleBuilderTTk, ttk_style: str, accent: str = None, **options):
     """TabItem label style for bar/underline variant."""
     accent_token = accent or 'primary'
-    surface_token = options.get('surface', 'background')
+    surface_token = options.get('surface', 'content')
     surface = b.color(surface_token)
     accent_subtle = b.subtle(accent_token, surface)
     on_surface = b.on_color(surface)
@@ -297,7 +297,7 @@ def build_tabitem_pill_button(b: BootstyleBuilderTTk, ttk_style: str, accent: st
 def build_tabitem_bar_button(b: BootstyleBuilderTTk, ttk_style: str, accent: str = None, **options):
     """TabItem close button style for bar variant - matches frame background."""
     accent_token = accent or 'primary'
-    surface_token = options.get('surface', 'background')
+    surface_token = options.get('surface', 'content')
     closable = options.get('closable')
 
     surface = b.color(surface_token)
@@ -353,7 +353,7 @@ def build_tabitem_bar_button(b: BootstyleBuilderTTk, ttk_style: str, accent: str
 @BootstyleBuilderTTk.register_builder('icon', 'TabItem.TButton')
 def build_tabitem_icon_button(b: BootstyleBuilderTTk, ttk_style: str, accent: str = None, **options):
     """TabItem close button style - generic icon only button (fallback)."""
-    surface_token = options.get('surface', 'background')
+    surface_token = options.get('surface', 'content')
 
     background = b.color(surface_token)
     active = b.elevate(background, 1)

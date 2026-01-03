@@ -17,7 +17,7 @@ def build_scrollbar_style(b: BootstyleBuilderTTk, ttk_style: str, accent: str = 
 
 
 def build_horizontal_scrollbar(b: BootstyleBuilderTTk, ttk_style: str, accent: str = None, **options):
-    surface_token = options.get('surface', 'background')
+    surface_token = options.get('surface', 'content')
     surface = b.color(surface_token)
     border_color = b.border(surface)
 
@@ -96,7 +96,7 @@ def build_horizontal_scrollbar(b: BootstyleBuilderTTk, ttk_style: str, accent: s
 
 
 def build_vertical_scrollbar(b: BootstyleBuilderTTk, ttk_style: str, accent: str = None, **options):
-    surface_token = options.get('surface', 'background')
+    surface_token = options.get('surface', 'content')
     surface = b.color(surface_token)
     border_color = b.border(surface)
 
@@ -192,7 +192,7 @@ def build_rounded_scrollbar_style(b: BootstyleBuilderTTk, ttk_style: str, accent
 
 
 def _build_rounded_vertical_scrollbar(b: BootstyleBuilderTTk, ttk_style: str, accent: str = None, **options):
-    surface_token = options.get('surface', 'background')
+    surface_token = options.get('surface', 'content')
     surface = b.color(surface_token)
     border_color = b.border(surface)
 
@@ -275,7 +275,7 @@ def _build_rounded_vertical_scrollbar(b: BootstyleBuilderTTk, ttk_style: str, ac
 
 
 def _build_rounded_horizontal_scrollbar(b: BootstyleBuilderTTk, ttk_style: str, accent: str = None, **options):
-    surface_token = options.get('surface', 'background')
+    surface_token = options.get('surface', 'content')
     surface = b.color(surface_token)
     border_color = b.border(surface)
 
