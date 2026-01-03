@@ -270,11 +270,12 @@ class BootstyleBuilderBase:
 
         return ring
 
-    def border(self, color: str) -> str:
-        if self.provider.mode == "dark":
-            return lighten_color(color, 0.20)
-        else:
-            return darken_color(color, 0.20)
+    def border(self, color: str, strength: float = 0.84) -> str:
+        """Derive a stroke color for a given surface by blending toward the surface's
+        computed on-color (text/icon color).
+        """
+        fg = self.on_color(color)
+        return mix_colors(color, fg, strength)
 
     def on_color(self, color: str) -> str:
         """Return a readable foreground color for the given background.
