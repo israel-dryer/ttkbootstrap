@@ -219,6 +219,98 @@ ttk.Frame(app, surface="titlebar")
 
 ---
 
+## Stroke Tokens
+
+Stroke tokens provide **semantic border colors** for frames and containers. Instead of
+hardcoding border colors, use stroke tokens that automatically adapt to the theme:
+
+### Stroke Strength Levels
+
+| Token | Strength | Thickness | Use Case |
+|-------|----------|-----------|----------|
+| `stroke[1]` | Subtle | 1px | Default borders, subtle outlines |
+| `stroke[2]` / `stroke` | Medium | 1px | Standard borders, form fields |
+| `stroke[3]` | Strong | 2px | Emphasis, focus states |
+
+### Basic Usage
+
+```python
+# Subtle border (default when show_border=True)
+ttk.Frame(app, show_border=True)
+
+# Medium contrast border
+ttk.Frame(app, stroke="stroke")
+
+# Strong border with thicker line
+ttk.Frame(app, stroke="stroke[3]")
+```
+
+### Frame Border Options
+
+The `Frame` widget supports two ways to add borders:
+
+```python
+# Simple border toggle (uses stroke[1] automatically)
+ttk.Frame(app, show_border=True)
+
+# Explicit stroke token for more control
+ttk.Frame(app, stroke="stroke[2]")
+ttk.Frame(app, stroke="stroke[3]")  # Stronger, thicker border
+```
+
+### How Stroke Tokens Work
+
+Stroke colors are **derived from the theme's background and foreground**:
+
+- In light mode: background mixed toward foreground (dark strokes)
+- In dark mode: background mixed toward foreground (light strokes)
+
+The three levels use different mix ratios to produce perceptibly different contrast:
+
+```text
+stroke[1] → 88-90% background retention (subtle)
+stroke[2] → 78-82% background retention (default)
+stroke[3] → 65-70% background retention (strong)
+```
+
+### Using Stroke Tokens with Separator
+
+Stroke tokens can be used as color values for other widgets:
+
+```python
+# Subtle separator
+ttk.Separator(app, accent="stroke[1]")
+
+# Standard separator
+ttk.Separator(app, accent="stroke")
+
+# Strong separator
+ttk.Separator(app, accent="stroke[3]")
+```
+
+### Visual Hierarchy Example
+
+```python
+# Card with subtle border
+card = ttk.Frame(app, surface="content[1]", show_border=True, padding=20)
+card.pack(padx=20, pady=20)
+
+# Section with medium border
+section = ttk.Frame(card, stroke="stroke", padding=15)
+section.pack(fill="x", pady=10)
+
+# Highlighted area with strong border
+highlight = ttk.Frame(card, stroke="stroke[3]", padding=15)
+highlight.pack(fill="x", pady=10)
+```
+
+!!! tip "Stroke vs Accent"
+    Use **stroke tokens** for neutral, structural borders that should blend with the UI.
+    Use **accent tokens** (like `accent="primary"`) for borders that convey meaning or
+    draw attention to interactive elements.
+
+---
+
 ## Variants
 
 Widgets support **variant** modifiers to control visual emphasis:
@@ -479,6 +571,8 @@ ttk.Button(app, text="Next", accent="primary")
 ## Summary
 
 - Use **accent tokens** for semantic coloring
+- Use **surface tokens** for container backgrounds
+- Use **stroke tokens** for semantic borders
 - Use **variant** (outline, link, ghost) for style modifications
 - Change **themes** to update all widgets at once
 - Maintain **consistency** with reusable spacing constants

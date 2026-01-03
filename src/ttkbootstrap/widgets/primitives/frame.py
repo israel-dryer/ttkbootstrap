@@ -17,23 +17,22 @@ from ..mixins import configure_delegate
 class FrameKwargs(TypedDict, total=False):
     # Standard ttk.Frame options
     padding: Any
-    relief: Any
-    borderwidth: Any
     width: int
     height: int
     style: str
-    class_: str
     cursor: str
     name: str
     takefocus: bool
+    class_: str
 
     # ttkbootstrap-specific extensions
-    bootstyle: str  # DEPRECATED: Use accent and variant instead
     accent: str
     variant: str
     surface: str
+    stroke: str
     show_border: bool
     style_options: dict[str, Any]
+    bootstyle: str  # DEPRECATED: Use accent and variant instead
 
 
 class Frame(TTKWrapperBase, WidgetCapabilitiesMixin, TtkStateMixin, ttk.Frame):
@@ -60,10 +59,13 @@ class Frame(TTKWrapperBase, WidgetCapabilitiesMixin, TtkStateMixin, ttk.Frame):
             bootstyle (str): DEPRECATED - Use `accent` and `variant` instead.
                 Combined style tokens (e.g., 'secondary').
             surface (str): Optional surface token; otherwise inherited.
-            show_border (bool): If True, draws a border around the frame.
+            show_border (bool): Draw a border around the frame.
+            stroke (str | None): Border strength token ("stroke[1]", "stroke", "stroke[3]").
+                If None, uses "stroke[1]" when show_border=True.
+                Stroke colors are automatically derived from the frame's surface.
             style_options (dict): Optional dict forwarded to the style builder.
         """
-        kwargs.update(style_options=self._capture_style_options(['show_border'], kwargs))
+        kwargs.update(style_options=self._capture_style_options(['show_border', 'stroke'], kwargs))
         super().__init__(master, **kwargs)
 
     def configure_style_options(self, value=None, **kwargs):
