@@ -585,7 +585,7 @@ class Calendar(ttk.Frame):
                 child.destroy()
 
         if self._show_week_numbers:
-            ttk.Label(weekdays_frame, text="#", anchor=CENTER, padding=5, surface_color="background[+1]").pack(
+            ttk.Label(weekdays_frame, text="#", anchor=CENTER, padding=5, surface="background[+1]").pack(
                 side=LEFT, fill=X, expand=YES)
         for col in self._header_columns():
             ttk.Label(
@@ -608,7 +608,7 @@ class Calendar(ttk.Frame):
             week_labels: list[ttk.Label] = []
             for r in range(6):
                 if self._show_week_numbers:
-                    wl = ttk.Label(grid, anchor=CENTER, padding=5, surface_color="background[+1]")
+                    wl = ttk.Label(grid, anchor=CENTER, padding=5, surface="background[+1]")
                     wl.grid(row=r, column=0, sticky=NSEW)
                     week_labels.append(wl)
                 row_cells: list[ttk.Checkbutton] = []

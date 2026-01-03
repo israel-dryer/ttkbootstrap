@@ -13,7 +13,7 @@ from ttkbootstrap.style.utility import recolor_image
 @BootstyleBuilderTTk.register_builder('default', 'TSeparator')
 def build_separator_style(b: BootstyleBuilderTTk, ttk_style: str, accent: str = None, **options):
     accent_token = accent or 'border'
-    surface_token = options.get('surface_color', 'background')
+    surface_token = options.get('surface', 'background')
     orient = options.get('orient', 'horizontal')
 
     surface = b.color(surface_token)

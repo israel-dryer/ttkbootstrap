@@ -25,7 +25,7 @@ class ToggleGroupKwargs(TypedDict, total=False):
     accent: str
     variant: Literal['outline', 'ghost'] | None
     show_border: bool
-    surface_color: str
+    surface: str
     style_options: dict[str, Any]
     # Frame options
     padding: Any
@@ -60,7 +60,7 @@ class ToggleGroup(Frame):
             signal (Signal): Optional Signal instance for reactive programming.
             value (str | set): Initial value - string for single mode, set for multi mode.
             show_border (bool): If True, draws a border around the group.
-            surface_color (str): Optional surface token; otherwise inherited.
+            surface (str): Optional surface token; otherwise inherited.
             style_options (dict): Additional style options passed to child buttons.
             padding (int | tuple): Frame padding. Defaults to 1.
             width (int): Requested width in pixels.

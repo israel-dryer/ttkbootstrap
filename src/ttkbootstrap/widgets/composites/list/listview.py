@@ -1043,7 +1043,7 @@ class ListView(Frame):
             row: The ListItem widget to color.
             widget_index: The position of this widget in the row pool (0-based).
         """
-        base_surface = getattr(self, "_surface_color", "background")
+        base_surface = getattr(self, "_surface", "background")
         if not self._striped:
             surface = base_surface
         else:
@@ -1051,8 +1051,8 @@ class ListView(Frame):
             is_odd = (widget_index % 2) == 1
             surface = self._striped_background if is_odd else base_surface
 
-        if hasattr(row, "set_surface_color"):
-            row.set_surface_color(surface)
+        if hasattr(row, "set_surface"):
+            row.set_surface(surface)
 
     def _on_item_drag_start(self, event: Any):
         """Handle item drag start event from `ListItem`.

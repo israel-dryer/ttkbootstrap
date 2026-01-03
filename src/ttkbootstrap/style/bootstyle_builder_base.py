@@ -198,7 +198,7 @@ class BootstyleBuilderBase:
         if base_color is None:
             base_color = self.colors.get(token) or self.colors.get('foreground')
 
-        surface_color = surface or self.colors.get('background')
+        surface_val = surface or self.colors.get('background')
 
         if role == "text":
             if self.provider.mode == "light":
@@ -207,9 +207,9 @@ class BootstyleBuilderBase:
                 return lighten_color(base_color, 0.25)
         else:  # background
             if self.provider.mode == "light":
-                return mix_colors(base_color, surface_color, 0.08)
+                return mix_colors(base_color, surface_val, 0.08)
             else:
-                return mix_colors(base_color, surface_color, 0.10)
+                return mix_colors(base_color, surface_val, 0.10)
 
     def active(self, color: str) -> str:
         return self._state_color(color, "active")

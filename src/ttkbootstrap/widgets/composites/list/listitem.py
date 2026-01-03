@@ -505,7 +505,7 @@ class ListItem(CompositeFrame):
                     self._drag_widget = None
                     self._drag_state = None
 
-    def set_surface_color(self, surface: str) -> None:
+    def set_surface(self, surface: str) -> None:
         """Set the surface color for the row and its container frames.
 
         This method is used by ListView to apply alternating row colors efficiently.
@@ -515,14 +515,14 @@ class ListItem(CompositeFrame):
         Args:
             surface: Surface color name or value (e.g., 'background', 'background[+1]').
         """
-        previous = getattr(self, "_surface_color", "background")
-        self.configure_style_options(surface_color=surface)
+        previous = getattr(self, "_surface", "background")
+        self.configure_style_options(surface=surface)
         if previous != surface:
             self.rebuild_style()
 
         for frame in (self._left_frame, self._center_frame, self._right_frame):
             try:
-                frame.configure_style_options(surface_color=surface)
+                frame.configure_style_options(surface=surface)
                 frame.rebuild_style()
             except Exception:
                 continue

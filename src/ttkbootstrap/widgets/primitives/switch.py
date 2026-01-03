@@ -32,7 +32,7 @@ class Switch(CheckButton):
             state (str): Widget state ('normal', 'active', 'disabled', 'readonly').
             takefocus (bool): Whether the widget participates in focus traversal.
             accent (str): Accent token for styling, e.g. 'primary', 'success', 'danger'.
-            surface_color (str): Optional surface token; otherwise inherited.
+            surface (str): Optional surface token; otherwise inherited.
             style_options (dict): Optional dict forwarded to the style builder.
             localize (bool | Literal['auto']): Determines the widget's localization mode.
         """

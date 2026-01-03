@@ -160,7 +160,7 @@ class Meter(Frame):
             width=self._size,
             height=self._size,
             highlightthickness=0,
-            background=self._surface_color
+            background=self._surface
         )
 
         # Canvas text items (will be created/updated in _draw_meter)
@@ -502,7 +502,7 @@ class Meter(Frame):
 
         self._image_scale = b.scale(DEFAULT_IMAGE_SCALE)
         self._accent_color = accent_color
-        self._surface_color = surface  # Store resolved color
+        self._surface = surface  # Store resolved color
         self._trough_color = trough_color
         self._value_text_color = value_text_color
         self._secondary_text_color = secondary_text_color
@@ -812,7 +812,7 @@ class Meter(Frame):
 
     def _handle_theme_changed(self, *_):
         self._resolve_meter_styles()
-        self._canvas.configure(background=self._surface_color)
+        self._canvas.configure(background=self._surface)
         self._draw_base_meter_images()
         self._draw_meter()
 

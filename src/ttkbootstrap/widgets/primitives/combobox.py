@@ -38,7 +38,7 @@ class ComboboxKwargs(TypedDict, total=False):
     # ttkbootstrap-specific extensions
     bootstyle: str  # DEPRECATED: Use accent and variant instead
     accent: str
-    surface_color: str
+    surface: str
     style_options: dict[str, Any]
 
 
@@ -71,7 +71,7 @@ class Combobox(TextSignalMixin, TTKWrapperBase, WidgetCapabilitiesMixin, TtkStat
             accent (str): Accent token for styling, e.g. 'primary', 'danger', 'success'.
             bootstyle (str): DEPRECATED - Use `accent` and `variant` instead.
                 Combined style tokens (e.g., 'primary').
-            surface_color (str): Optional surface token; otherwise inherited.
+            surface (str): Optional surface token; otherwise inherited.
             style_options (dict): Optional dict forwarded to the style builder.
         """
         super().__init__(master, **kwargs)

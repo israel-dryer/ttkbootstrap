@@ -15,7 +15,7 @@ def build_calendar_day_toolbutton_style(b: BootstyleBuilderTTk, ttk_style: str, 
         * icon_only
     """
     accent_token = accent or 'primary'
-    surface_token = options.get('surface_color', 'background')
+    surface_token = options.get('surface', 'background')
 
     surface = b.color(surface_token)
     on_surface = b.on_color(surface)
@@ -97,7 +97,7 @@ def build_calendar_range_toolbutton_style(b: BootstyleBuilderTTk, ttk_style: str
         * icon_only
     """
     accent_token = accent or 'primary'
-    surface_token = options.get('surface_color', 'background')
+    surface_token = options.get('surface', 'background')
 
     surface = b.color(surface_token)
     on_surface = b.on_color(surface)
@@ -170,7 +170,7 @@ def build_calendar_outside_style(b: BootstyleBuilderTTk, ttk_style: str, accent:
 
     Uses surface background and muted text to blend in with the calendar.
     """
-    surface_token = options.get('surface_color', 'background')
+    surface_token = options.get('surface', 'background')
     surface = b.color(surface_token)
     on_disabled = b.disabled('text', surface)
 
@@ -200,7 +200,7 @@ def build_calendar_date_toolbutton_style(b: BootstyleBuilderTTk, ttk_style: str,
         * icon_only
     """
     accent_token = accent or 'primary'
-    surface_token = options.get('surface_color', 'background')
+    surface_token = options.get('surface', 'background')
 
     surface = b.color(surface_token)
     on_surface = b.on_color(surface)

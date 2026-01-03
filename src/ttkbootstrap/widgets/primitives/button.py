@@ -41,7 +41,7 @@ class ButtonKwargs(TypedDict, total=False):
     bootstyle: str  # DEPRECATED: Use accent and variant instead
     accent: str
     variant: str
-    surface_color: str
+    surface: str
     style_options: dict[str, Any]
 
 
@@ -80,7 +80,7 @@ class Button(LocalizationMixin, TextSignalMixin, IconMixin, TTKWrapperBase, Widg
             variant (str): Style variant, e.g. 'solid', 'outline', 'link', 'text'.
             bootstyle (str): DEPRECATED - Use `accent` and `variant` instead.
                 Combined style tokens, e.g. 'primary', 'danger-outline'.
-            surface_color (str): Optional surface token to use for this button; if not
+            surface (str): Optional surface token to use for this button; if not
                 provided, the surface color is inherited from the parent.
             style_options (dict): Optional dict forwarded to the style builder. Useful
                 for widget-specific options (e.g., {'icon': ...}).

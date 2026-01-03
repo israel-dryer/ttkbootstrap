@@ -47,7 +47,7 @@ class LabelKwargs(TypedDict, total=False):
     bootstyle: str  # DEPRECATED: Use accent and variant instead
     accent: str
     variant: str
-    surface_color: str
+    surface: str
     style_options: dict[str, Any]
 
 
@@ -88,7 +88,7 @@ class Label(LocalizationMixin, TextSignalMixin, IconMixin, TTKWrapperBase, Widge
             variant (str): Style variant, e.g. 'default', 'inverse'.
             bootstyle (str): DEPRECATED - Use `accent` and `variant` instead.
                 Combined style tokens (e.g., 'secondary', 'info').
-            surface_color (str): Optional surface token; otherwise inherited.
+            surface (str): Optional surface token; otherwise inherited.
             style_options (dict): Optional dict forwarded to the style builder.
         """
         kwargs.update(style_options=self._capture_style_options(['icon_only', 'icon'], kwargs))

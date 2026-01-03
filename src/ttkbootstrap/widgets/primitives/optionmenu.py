@@ -35,7 +35,7 @@ class OptionMenuKwargs(TypedDict, total=False):
     bootstyle: str  # DEPRECATED: Use accent and variant instead
     accent: str
     variant: str
-    surface_color: str
+    surface: str
     style_options: dict[str, Any]
     show_dropdown_button: bool
     dropdown_button_icon: str | dict
@@ -78,8 +78,8 @@ class OptionMenu(MenuButton):
             variant (str): Style variant, e.g. 'solid', 'outline'.
             bootstyle (str): DEPRECATED - Use `accent` and `variant` instead.
                 Combined style tokens (e.g., 'primary-outline').
-            surface_color (str): Surface token for style.
-            style_options (dict): Dict forwarded to the style builder (e.g., icon_only, surface_color).
+            surface (str): Surface token for style.
+            style_options (dict): Dict forwarded to the style builder (e.g., icon_only, surface).
             show_dropdown_button (bool): Toggle visibility of the dropdown chevron.
             dropdown_button_icon (str | dict): Icon name for the chevron; defaults to 'caret-down-fill'.
         """

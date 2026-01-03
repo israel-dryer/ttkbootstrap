@@ -38,7 +38,7 @@ class MenuButtonKwargs(TypedDict, total=False):
     bootstyle: str  # DEPRECATED: Use accent and variant instead
     accent: str
     variant: str
-    surface_color: str
+    surface: str
     style_options: dict[str, Any]
     localize: bool | Literal['auto']
 
@@ -72,7 +72,7 @@ class MenuButton(LocalizationMixin, TextSignalMixin, IconMixin, TTKWrapperBase, 
             variant (str): Style variant, e.g. 'solid', 'outline', 'ghost'.
             bootstyle (str): DEPRECATED - Use `accent` and `variant` instead.
                 Combined style tokens (e.g., 'primary', 'ghost').
-            surface_color (str): Optional surface token; otherwise inherited.
+            surface (str): Optional surface token; otherwise inherited.
             style_options (dict): Optional dict forwarded to the style builder.
             localize (bool | Literal['auto']): Determines the widget's localization mode.
         """

@@ -20,7 +20,7 @@ class SizeGripKwargs(TypedDict, total=False):
     # ttkbootstrap-specific extensions
     bootstyle: str  # DEPRECATED: Use accent and variant instead
     accent: str
-    surface_color: str
+    surface: str
     style_options: dict[str, Any]
 
 
@@ -39,7 +39,7 @@ class SizeGrip(TTKWrapperBase, WidgetCapabilitiesMixin, TtkStateMixin, ttk.Sizeg
             style (str): Explicit ttk style name (overrides accent/variant).
             accent (str): Accent token for styling.
             bootstyle (str): DEPRECATED - Use `accent` instead.
-            surface_color (str): Optional surface token; otherwise inherited.
+            surface (str): Optional surface token; otherwise inherited.
             style_options (dict): Optional dict forwarded to the style builder.
         """
         super().__init__(master, **kwargs)

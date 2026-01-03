@@ -15,7 +15,7 @@ from ttkbootstrap.style.utility import recolor_image
 
 @BootstyleBuilderTTk.register_builder('default', 'TField')
 def build_field_style(b: BootstyleBuilderTTk, ttk_style: str, accent: str = None, **options):
-    surface_token = options.get('surface_color', 'background')
+    surface_token = options.get('surface', 'background')
 
     surface = b.color(surface_token)
     accent_color = b.color(accent or 'primary')
@@ -49,7 +49,7 @@ def build_field_style(b: BootstyleBuilderTTk, ttk_style: str, accent: str = None
 
 @BootstyleBuilderTTk.register_builder('input', 'TField')
 def build_field_input_style(b: BootstyleBuilderTTk, ttk_style: str, accent: str = None, **options):
-    surface_token = options.get('surface_color', 'background')
+    surface_token = options.get('surface', 'background')
     surface = b.color(surface_token)
     disabled_bg = b.disabled('background')
     disabled_fg = b.disabled('text')
@@ -96,7 +96,7 @@ def build_field_input_style(b: BootstyleBuilderTTk, ttk_style: str, accent: str 
 
 @BootstyleBuilderTTk.register_builder('spinner', 'TField')
 def build_spinner_input_style(b: BootstyleBuilderTTk, ttk_style: str, accent: str = None, **options):
-    surface_token = options.get('surface_color', 'background')
+    surface_token = options.get('surface', 'background')
 
     surface = b.color(surface_token)
     disabled_bg = b.disabled('background')
@@ -186,7 +186,7 @@ def build_field_suffix_style(b: BootstyleBuilderTTk, ttk_style: str, accent: str
 
 
 def build_field_addon_style(b: BootstyleBuilderTTk, ttk_style: str, _: str, variant: str, **options):
-    surface_token = options.get('surface_color', 'background')
+    surface_token = options.get('surface', 'background')
     use_active_states = options.get('use_active_states', False)
     surface = b.color(surface_token)
 

@@ -22,7 +22,7 @@ def build_striped_progressbar_style(b: BootstyleBuilderTTk, ttk_style: str, acce
 
 def build_progressbar_style(b: BootstyleBuilderTTk, ttk_style: str, accent: str, variant: str, **options):
     orient = options.get("orient")
-    surface_token = options.get("surface_color", "background")
+    surface_token = options.get("surface", "background")
 
     # style colors
     background = b.color(surface_token)

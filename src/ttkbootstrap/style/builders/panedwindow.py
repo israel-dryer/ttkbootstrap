@@ -11,7 +11,7 @@ from ttkbootstrap.style.bootstyle_builder_ttk import BootstyleBuilderTTk
 @BootstyleBuilderTTk.register_builder('default', 'TPanedwindow')
 def build_paned_window_style(b: BootstyleBuilderTTk, ttk_style: str, accent: str = None, **options):
     accent_token = accent or 'border'
-    surface_token = options.get('surface_color', 'background')
+    surface_token = options.get('surface', 'background')
     sash_thickness = options.get('sash_thickness', b.scale(6))
 
     surface = b.color(surface_token)

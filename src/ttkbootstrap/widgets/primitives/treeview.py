@@ -24,7 +24,7 @@ class TreeViewKwargs(TypedDict, total=False):
     name: str
 
     # ttkbootstrap-specific extensions
-    surface_color: str
+    surface: str
     border_color: str
     show_border: bool
     select_background: str
@@ -51,7 +51,7 @@ class TreeView(TTKWrapperBase, WidgetCapabilitiesMixin, TtkStateMixin, ttk.Treev
             padding (int | tuple): Extra padding around the widget.
             selectmode (str): Selection mode ('browse', 'extended', 'none').
             style (str): Explicit ttk style name.
-            surface_color (str): Optional surface token; otherwise inherited.
+            surface (str): Optional surface token; otherwise inherited.
             border_color (str): The color of the border around the table.
             show_border (bool): Whether to show a border around the table.
             open_icon (str | dict): The icon used for open state.

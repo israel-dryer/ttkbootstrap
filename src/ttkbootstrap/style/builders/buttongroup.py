@@ -48,7 +48,7 @@ def build_button_group_style(b: BootstyleBuilderTTk, ttk_style: str, accent: str
         * active_state
     """
     accent_token = accent or 'primary'
-    surface_token = options.get('surface_color', 'background')
+    surface_token = options.get('surface', 'background')
     orient = options.get('orient', 'horizontal')
     position = options.get('position', 'before')
     image_asset = f'button-group-{orient}-{position}'
@@ -150,7 +150,7 @@ def build_outline_button_group_style(b: BootstyleBuilderTTk, ttk_style: str, acc
         * active_state
     """
     accent_token = accent or 'primary'
-    surface_token = options.get('surface_color', 'background')
+    surface_token = options.get('surface', 'background')
     orient = options.get('orient', 'horizontal')
     position = options.get('position', 'before')
     image_asset = f'button-group-{orient}-{position}'
@@ -264,7 +264,7 @@ def build_ghost_button_group_style(b: BootstyleBuilderTTk, ttk_style: str, accen
         * active_state
     """
     accent_token = accent or 'primary'
-    surface_token = options.get('surface_color', 'background')
+    surface_token = options.get('surface', 'background')
     orient = options.get('orient', 'horizontal')
     position = options.get('position', 'before')
     image_asset = f'button-group-{orient}-{position}'

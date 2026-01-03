@@ -40,7 +40,7 @@ class NotebookKwargs(TypedDict, total=False):
     bootstyle: str  # DEPRECATED: Use accent and variant instead
     accent: str
     variant: str
-    surface_color: str
+    surface: str
     style_options: dict[str, Any]
 
 
@@ -91,7 +91,7 @@ class Notebook(TTKWrapperBase, WidgetCapabilitiesMixin, TtkStateMixin, ttk.Noteb
             variant (str): Style variant (if applicable).
             bootstyle (str): DEPRECATED - Use `accent` and `variant` instead.
                 Combined style tokens (e.g., 'primary', 'secondary').
-            surface_color (str): Optional surface color token; inherits from the current theme if omitted.
+            surface (str): Optional surface color token; inherits from the current theme if omitted.
             style_options (dict): Additional options forwarded to the style builder.
         """
         super().__init__(master, **kwargs)

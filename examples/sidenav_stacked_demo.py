@@ -26,7 +26,7 @@ def main():
         icon_only=True,
         variable=primary_var,
         accent='primary', variant='ghost',
-        surface_color='background[+1]',
+        surface='background[+1]',
         padding=8,
     )
     primary_nav.pack(side='left', fill='y')

@@ -13,7 +13,7 @@ from ttkbootstrap.style.utility import recolor_image
 
 @BootstyleBuilderTTk.register_builder('default', 'TSpinbox')
 def build_spinbox_style(b: BootstyleBuilderTTk, ttk_style: str, accent: str = None, **options):
-    surface_token = options.get('surface_color', 'background')
+    surface_token = options.get('surface', 'background')
 
     surface = b.color(surface_token)
     accent_color = b.color(accent or 'primary')

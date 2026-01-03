@@ -358,14 +358,14 @@ class Bootstyle:
         if style_options is None:
             style_options = {}
 
-        surface_color = style_options.get("surface_color")
+        surface = style_options.get("surface")
 
         builder_variant = variant if variant is not None else \
             BootstyleBuilderTTk.get_default_variant(widget_class)
 
         custom_prefix = None
 
-        if style_options.keys() or surface_color != 'background':
+        if style_options.keys() or surface != 'background':
             import hashlib
             import json
             options_str = json.dumps(style_options, sort_keys=True)
@@ -415,8 +415,8 @@ class Bootstyle:
                 )
 
             style_options = kwargs.pop("style_options", {})
-            inherit_surface_color = kwargs.pop('inherit_surface_color', None)
-            surface_color_token = kwargs.pop('surface_color', None)
+            inherit_surface = kwargs.pop('inherit_surface', None)
+            surface_token = kwargs.pop('surface', None)
 
             # Extract ttk_class for style lookup (doesn't affect widget's actual class_)
             # This allows custom style builders without affecting bindtags
@@ -440,30 +440,30 @@ class Bootstyle:
 
             # ===== Surface color inheritance =====
 
-            if inherit_surface_color is None:
-                inherit_surface_color = get_app_settings().inherit_surface_color
+            if inherit_surface is None:
+                inherit_surface = get_app_settings().inherit_surface_color
 
             if hasattr(self, 'master') and self.master is not None:
-                parent_surface_token = getattr(self.master, '_surface_color', 'background')
+                parent_surface_token = getattr(self.master, '_surface', 'background')
             else:
                 parent_surface_token = 'background'
 
-            if surface_color_token:
-                effective_surface_token = surface_color_token
-            elif inherit_surface_color:
+            if surface_token:
+                effective_surface_token = surface_token
+            elif inherit_surface:
                 effective_surface_token = parent_surface_token
             else:
                 effective_surface_token = 'background'
 
             # container widgets can take their surface color from the accent param
             # Use style_class so custom ttk_class like 'Field' can opt out of this behavior
-            if accent and style_class in CONTAINER_CLASSES and surface_color_token is None:
+            if accent and style_class in CONTAINER_CLASSES and surface_token is None:
                 effective_surface_token = accent
 
             # cache the surface color for child components
-            setattr(self, '_surface_color', effective_surface_token)
+            setattr(self, '_surface', effective_surface_token)
             if effective_surface_token != 'background' and effective_surface_token is not None:
-                style_options.setdefault('surface_color', effective_surface_token)
+                style_options.setdefault('surface', effective_surface_token)
 
             # ==== Orientation =====
 
@@ -536,26 +536,26 @@ class Bootstyle:
 
             # capture bootstrap arguments
             auto_style = kwargs.pop("autostyle", True)
-            inherit_surface_color = kwargs.pop('inherit_surface_color', None)
-            if inherit_surface_color is None:
-                inherit_surface_color = get_app_settings().inherit_surface_color
-            surface_token = kwargs.pop('surface_color', None)
+            inherit_surface = kwargs.pop('inherit_surface', None)
+            if inherit_surface is None:
+                inherit_surface = get_app_settings().inherit_surface_color
+            surface_token = kwargs.pop('surface', None)
 
             func(self, *args, **kwargs)  # the actual constructor
 
             # ===== Surface color inheritance =====
 
             if hasattr(self, 'master') and self.master is not None:
-                parent_surface_token = getattr(self.master, '_surface_color', 'background')
+                parent_surface_token = getattr(self.master, '_surface', 'background')
             else:
                 parent_surface_token = 'background'
 
-            if inherit_surface_color:
+            if inherit_surface:
                 surface_token = parent_surface_token
             else:
                 surface_token = surface_token or 'background'
 
-            setattr(self, '_surface_color', surface_token)
+            setattr(self, '_surface', surface_token)
 
             if not auto_style:
                 return
@@ -569,8 +569,8 @@ class Bootstyle:
                 theme_provider=style.theme_provider if style else None,
                 style_instance=style
             )
-            surface = getattr(self, '_surface_color', 'background')
-            builder_tk.call_builder(self, surface_color=surface)
+            surface = getattr(self, '_surface', 'background')
+            builder_tk.call_builder(self, surface=surface)
 
             style.register_tk_widget(self)
 

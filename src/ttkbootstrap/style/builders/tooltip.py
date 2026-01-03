@@ -6,7 +6,7 @@ from ttkbootstrap.style.element import Element
 
 @BootstyleBuilderTTk.register_builder('tooltip', 'TFrame')
 def build_tooltip_frame(b: BootstyleBuilderTTk, ttk_style: str, accent: str = None, **options):
-    surface_token = options.get('surface_color') or accent or "background"
+    surface_token = options.get('surface') or accent or "background"
     if accent:
         background = b.color(accent)
     else:

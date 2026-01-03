@@ -10,6 +10,6 @@ from ttkbootstrap.style.bootstyle_builder_ttk import BootstyleBuilderTTk
 
 @BootstyleBuilderTTk.register_builder('default', 'TSizegrip')
 def build_sizegrip_style(b: BootstyleBuilderTTk, ttk_style: str, accent: str = None, **options):
-    surface_token = options.get('surface_color', 'background')
+    surface_token = options.get('surface', 'background')
     surface = b.color(surface_token)
     b.configure_style(ttk_style, background=surface)

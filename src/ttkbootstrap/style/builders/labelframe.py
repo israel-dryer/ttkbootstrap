@@ -3,7 +3,7 @@
 This module contains style builders for ttk.Labelframe widget and variants.
 
 The Labelframe color is different than the normal frame in that the background color of the
-labelframe is inherited only unless overridden explicitly by the surface_color option. The
+labelframe is inherited only unless overridden explicitly by the surface option. The
 bootstyle color is only relevant for the border color of the labelframe.
 """
 
@@ -16,7 +16,7 @@ from ttkbootstrap.style.utility import recolor_image
 
 @BootstyleBuilderTTk.register_builder('default', 'TLabelframe')
 def build_labelframe_style(b: BootstyleBuilderTTk, ttk_style: str, accent: str = None, **options):
-    surface_token = options.get('surface_color') or 'background'
+    surface_token = options.get('surface') or 'background'
     show_border = options.get('show_border', True)
     surface = b.color(surface_token)
 

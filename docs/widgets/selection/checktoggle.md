@@ -108,7 +108,7 @@ app.mainloop()
 
 - `state`, `takefocus`
 
-- `style`, `accent`, `variant`, `surface_color`, `style_options`
+- `style`, `accent`, `variant`, `surface`, `style_options`
 
 ---
 

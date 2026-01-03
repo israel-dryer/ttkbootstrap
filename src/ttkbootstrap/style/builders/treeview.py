@@ -28,7 +28,7 @@ def build_tree_style(b: BootstyleBuilderTTk, ttk_style: str, **options):
         * select_background
         * header_background
     """
-    surface_token = options.get('surface_color', 'background')
+    surface_token = options.get('surface', 'background')
     surface = b.color(surface_token)
 
     if options.get('show_border', True):

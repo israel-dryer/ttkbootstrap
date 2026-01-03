@@ -116,12 +116,12 @@ class TTKWrapperBase(FontMixin, ConfigureDelegationMixin):
                 if variant is None:
                     variant = extract_variant_from_style(current_style, widget_class)
 
-        # Preserve surface_color and orientation in style_options
+        # Preserve surface and orientation in style_options
         if not style_options:
             style_options = {}
-        surface = getattr(self, "_surface_color", None)
+        surface = getattr(self, "_surface", None)
         if surface and surface != "background":
-            style_options["surface_color"] = surface
+            style_options["surface"] = surface
         if widget_class in ORIENT_CLASSES:
             try:
                 style_options["orient"] = str(self.cget("orient"))
@@ -184,9 +184,9 @@ class TTKWrapperBase(FontMixin, ConfigureDelegationMixin):
         # Use stored style_options if available, otherwise create new dict
         style_options = getattr(self, '_style_options', {}).copy()
 
-        surface = getattr(self, "_surface_color", None)
+        surface = getattr(self, "_surface", None)
         if surface and surface != "background":
-            style_options["surface_color"] = surface
+            style_options["surface"] = surface
 
         if widget_class in ORIENT_CLASSES:
             try:
@@ -196,8 +196,8 @@ class TTKWrapperBase(FontMixin, ConfigureDelegationMixin):
 
         if widget_class in CONTAINER_CLASSES:
             if accent:
-                style_options["surface_color"] = accent
-                setattr(self, "_surface_color", accent)
+                style_options["surface"] = accent
+                setattr(self, "_surface", accent)
 
         ttk_style = Bootstyle.create_ttk_style(
             widget_class=widget_class,
@@ -240,9 +240,9 @@ class TTKWrapperBase(FontMixin, ConfigureDelegationMixin):
         # Use stored style_options
         style_options = getattr(self, '_style_options', {}).copy()
 
-        surface = getattr(self, "_surface_color", None)
+        surface = getattr(self, "_surface", None)
         if surface and surface != "background":
-            style_options["surface_color"] = surface
+            style_options["surface"] = surface
 
         if widget_class in ORIENT_CLASSES:
             try:
@@ -251,8 +251,8 @@ class TTKWrapperBase(FontMixin, ConfigureDelegationMixin):
                 pass
 
         if widget_class in CONTAINER_CLASSES:
-            style_options["surface_color"] = value
-            setattr(self, "_surface_color", value)
+            style_options["surface"] = value
+            setattr(self, "_surface", value)
 
         ttk_style = Bootstyle.create_ttk_style(
             widget_class=widget_class,
@@ -299,9 +299,9 @@ class TTKWrapperBase(FontMixin, ConfigureDelegationMixin):
         # Use stored style_options
         style_options = getattr(self, '_style_options', {}).copy()
 
-        surface = getattr(self, "_surface_color", None)
+        surface = getattr(self, "_surface", None)
         if surface and surface != "background":
-            style_options["surface_color"] = surface
+            style_options["surface"] = surface
 
         if widget_class in ORIENT_CLASSES:
             try:
@@ -323,9 +323,9 @@ class TTKWrapperBase(FontMixin, ConfigureDelegationMixin):
         if value is None:
             options.update(**kwargs)
             setattr(self, "_style_options", options)
-            if "surface_color" in kwargs:
-                surface_color = kwargs.get("surface_color")
-                setattr(self, "_surface_color", surface_color or "background")
+            if "surface" in kwargs:
+                surface = kwargs.get("surface")
+                setattr(self, "_surface", surface or "background")
             return None
         else:
             return options.get(value, None)

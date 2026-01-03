@@ -34,7 +34,7 @@ class ScaleKwargs(TypedDict, total=False):
     # ttkbootstrap-specific extensions
     bootstyle: str  # DEPRECATED: Use accent and variant instead
     accent: str
-    surface_color: str
+    surface: str
     style_options: dict[str, Any]
 
 
@@ -61,7 +61,7 @@ class Scale(SignalMixin, TTKWrapperBase, WidgetCapabilitiesMixin, TtkStateMixin,
             takefocus (bool): Whether the widget participates in focus traversal.
             accent (str): Accent token for styling, e.g. 'primary', 'success', 'danger'.
             bootstyle (str): DEPRECATED - Use `accent` instead.
-            surface_color (str): Optional surface token; otherwise inherited.
+            surface (str): Optional surface token; otherwise inherited.
             style_options (dict): Optional dict forwarded to the style builder.
         """
         super().__init__(master, **kwargs)

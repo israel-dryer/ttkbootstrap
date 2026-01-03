@@ -46,7 +46,7 @@ def _notebook_layout(ttk_style: str) -> Element:
 @BootstyleBuilderTTk.register_builder('default', 'TNotebook')
 @BootstyleBuilderTTk.register_builder('tab', 'TNotebook')
 def build_tabs_notebook(b: BootstyleBuilderTTk, ttk_style: str, accent: str = None, **options):
-    surface_token = options.get('surface_color') or "background"
+    surface_token = options.get('surface') or "background"
     surface = b.color(surface_token)
     border_color = b.border(surface)
     show_border = options.get('show_border', True)
@@ -135,7 +135,7 @@ def build_tabs_notebook(b: BootstyleBuilderTTk, ttk_style: str, accent: str = No
 
 @BootstyleBuilderTTk.register_builder('pill', 'TNotebook')
 def build_pill_notebook(b: BootstyleBuilderTTk, ttk_style: str, accent: str = None, **options):
-    surface_token = options.get('surface_color') or "background"
+    surface_token = options.get('surface') or "background"
     surface = b.color(surface_token)
 
     # notebook pill colors
@@ -220,7 +220,7 @@ def build_pill_notebook(b: BootstyleBuilderTTk, ttk_style: str, accent: str = No
 
 @BootstyleBuilderTTk.register_builder('underline', 'TNotebook')
 def build_underline_notebook(b: BootstyleBuilderTTk, ttk_style: str, accent: str = None, **options):
-    surface_token = options.get('surface_color') or "background"
+    surface_token = options.get('surface') or "background"
     surface = b.color(surface_token)
     border_color = b.border(surface)
     show_border = options.get('show_border', True)

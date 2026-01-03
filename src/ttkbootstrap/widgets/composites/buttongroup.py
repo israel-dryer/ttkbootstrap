@@ -24,7 +24,7 @@ class ButtonGroupKwargs(TypedDict, total=False):
     variant: str
     state: Literal['normal', 'disabled']
     show_border: bool
-    surface_color: str
+    surface: str
     style_options: dict[str, Any]
     # Frame options
     padding: Any
@@ -65,7 +65,7 @@ class ButtonGroup(Frame):
             bootstyle (str): DEPRECATED. Use accent and variant instead.
             state (str): Initial state for all buttons - 'normal' (default) or 'disabled'.
             show_border (bool): If True, draws a border around the group.
-            surface_color (str): Optional surface token; otherwise inherited.
+            surface (str): Optional surface token; otherwise inherited.
             style_options (dict): Additional style options passed to child widgets.
             padding (int | tuple): Frame padding. Defaults to 1.
             width (int): Requested width in pixels.

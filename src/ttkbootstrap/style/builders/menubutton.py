@@ -92,7 +92,7 @@ def build_solid_menubutton_style(b: BootstyleBuilderTTk, ttk_style: str, accent:
         * icon: Optional icon specification for the button content
     """
     accent_token = accent or 'primary'
-    surface_token = options.get('surface_color', 'background')
+    surface_token = options.get('surface', 'background')
     show_dropdown = options.get('show_dropdown_button', True)
     dropdown_icon = options.get('dropdown_button_icon', 'caret-down-fill')
     icon_only = options.get('icon_only', False)
@@ -159,7 +159,7 @@ def build_solid_menubutton_style(b: BootstyleBuilderTTk, ttk_style: str, accent:
 def build_outline_menubutton_style(b: BootstyleBuilderTTk, ttk_style: str, accent: str = None, **options):
     """Configure the outline menubutton style."""
     accent_token = accent or 'primary'
-    surface_token = options.get('surface_color', 'background')
+    surface_token = options.get('surface', 'background')
     show_dropdown = options.get('show_dropdown_button', True)
     dropdown_icon = options.get('dropdown_button_icon', 'caret-down-fill')
     icon_only = options.get('icon_only', False)
@@ -234,7 +234,7 @@ def build_outline_menubutton_style(b: BootstyleBuilderTTk, ttk_style: str, accen
 def build_text_menubutton_style(b: BootstyleBuilderTTk, ttk_style: str, accent: str = None, **options):
     """Configure the text menubutton style."""
     accent_token = accent or 'foreground'
-    surface_token = options.get('surface_color', 'background')
+    surface_token = options.get('surface', 'background')
     show_dropdown = options.get('show_dropdown_button', True)
     dropdown_icon = options.get('dropdown_button_icon', 'caret-down-fill')
     icon_only = options.get('icon_only', False)
@@ -294,7 +294,7 @@ def build_text_menubutton_style(b: BootstyleBuilderTTk, ttk_style: str, accent: 
 def build_ghost_menubutton_style(b: BootstyleBuilderTTk, ttk_style: str, accent: str = None, **options):
     """Configure the ghost menubutton style."""
     accent_token = accent or 'foreground'
-    surface_token = options.get('surface_color', 'background')
+    surface_token = options.get('surface', 'background')
     show_dropdown = options.get('show_dropdown_button', True)
     dropdown_icon = options.get('dropdown_button_icon', 'caret-down-fill')
     icon_only = options.get('icon_only', False)

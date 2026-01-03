@@ -273,8 +273,8 @@ class Style(ttkStyle):
 
         for widget in list(self._tk_widgets):
             try:
-                surface = getattr(widget, '_surface_color', 'background')
-                builder_tk.call_builder(widget, surface_color=surface)
+                surface = getattr(widget, '_surface', 'background')
+                builder_tk.call_builder(widget, surface=surface)
             except Exception:
                 # ignore incompatible or unmapped widgets
                 pass

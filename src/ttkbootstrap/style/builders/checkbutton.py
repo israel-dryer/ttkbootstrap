@@ -13,7 +13,7 @@ from ttkbootstrap.style.utility import create_transparent_image, recolor_image
 @BootstyleBuilderTTk.register_builder('default', 'TCheckbutton')
 def build_checkbutton_style(b: BootstyleBuilderTTk, ttk_style: str, accent: str = 'primary', **options):
     accent_token = accent or 'primary'
-    surface_token = options.get('surface_color', 'background')
+    surface_token = options.get('surface', 'background')
 
     background = b.color(surface_token)
     background_hover = b.active(background)
@@ -98,7 +98,7 @@ def build_checkbutton_style(b: BootstyleBuilderTTk, ttk_style: str, accent: str 
 @BootstyleBuilderTTk.register_builder('switch', 'TCheckbutton')
 def build_switch_style(b: BootstyleBuilderTTk, ttk_style: str, accent: str = 'primary', **options):
     accent_token = accent or 'primary'
-    surface_token = options.get('surface_color', 'background')
+    surface_token = options.get('surface', 'background')
 
     background = b.color(surface_token)
     foreground = b.on_color(background)

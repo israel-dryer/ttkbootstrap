@@ -37,7 +37,7 @@ class Badge(Label):
             variant (str): Shape of badge. 'pill' or 'square' (default).
             bootstyle (str): DEPRECATED - Use `accent` and `variant` instead.
                 Combined style tokens (defaults to 'badge').
-            surface_color (str): Optional surface token; otherwise inherited.
+            surface (str): Optional surface token; otherwise inherited.
             style_options (dict): Optional dict forwarded to the style builder.
         """
         kwargs.setdefault('ttk_class', 'TBadge')

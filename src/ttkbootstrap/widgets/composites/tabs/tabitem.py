@@ -90,7 +90,7 @@ class TabItem(CompositeFrame):
 
         # Extract accent for styling
         accent = kwargs.pop('accent', None)
-        surface_color = kwargs.pop('surface_color', None)
+        surface = kwargs.pop('surface', None)
         self._accent = accent  # Store for later use
 
         # Extract width for label (frame width doesn't work well with propagation)
@@ -113,7 +113,7 @@ class TabItem(CompositeFrame):
         self._label: Label | None = None
         self._close_button: Button | None = None
 
-        self._build_widget(accent, surface_color)
+        self._build_widget(accent, surface)
 
         # Set up signal/variable after widget is built
         if signal is not None:
@@ -142,11 +142,11 @@ class TabItem(CompositeFrame):
         """Get the ttk class name for the given variant."""
         return 'TabItem.TFrame'
 
-    def _build_widget(self, accent: str = None, surface_color: str = None):
+    def _build_widget(self, accent: str = None, surface: str = None):
         """Build the internal widget structure."""
         style_opts = {}
-        if surface_color:
-            style_opts['surface_color'] = surface_color
+        if surface:
+            style_opts['surface'] = surface
 
         # Pass width to label if specified
         label_opts = {}
