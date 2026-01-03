@@ -58,7 +58,7 @@ ttk.Label(form, text="Username").pack()
 ttk.Entry(form).pack()
 ttk.Label(form, text="Password").pack()
 ttk.Entry(form, show="*").pack()
-ttk.Button(form, text="Login", color="primary").pack()
+ttk.Button(form, text="Login", accent="primary").pack()
 
 app.mainloop()
 ```
@@ -101,7 +101,7 @@ ttk.Label(grid, text="Name").grid()
 ttk.Entry(grid).grid()
 ttk.Label(grid, text="Email").grid()
 ttk.Entry(grid).grid()
-ttk.Button(grid, text="Save", color="primary").grid(columnspan=2)
+ttk.Button(grid, text="Save", accent="primary").grid(columnspan=2)
 
 app.mainloop()
 ```

@@ -34,9 +34,9 @@ class FieldOptions(TypedDict, total=False):
 
     Attributes:
         allow_blank: If True, empty input is allowed. If False, empty input preserves previous value.
-        color: Color token for the focus ring and active border of the input.
+        accent: Accent token for the focus ring and active border of the input.
         variant: Style variant (if applicable).
-        bootstyle: DEPRECATED - Use color instead.
+        bootstyle: DEPRECATED - Use accent instead.
         cursor: Cursor to display when hovering over the widget.
         value_format: ICU format pattern for parsing/formatting (e.g., '$#,##0.00' for currency).
         exportselection: If True, selected text is exported to X selection.
@@ -57,8 +57,8 @@ class FieldOptions(TypedDict, total=False):
         localize: Determines the field label localization mode. 'auto', True, False.
     """
     allow_blank: bool
-    bootstyle: str  # DEPRECATED: Use color instead
-    color: str
+    bootstyle: str  # DEPRECATED: Use accent instead
+    accent: str
     variant: str
     cursor: str
     value_format: str
@@ -180,16 +180,16 @@ class Field(EntryMixin, Frame):
         if message and not show_message_explicit:
             show_message = True
 
-        # Extract color - support legacy 'bootstyle' parameter
-        color = kwargs.pop('color', None)
+        # Extract accent - support legacy 'bootstyle' parameter
+        accent = kwargs.pop('accent', None)
         bootstyle = kwargs.pop('bootstyle', None)  # Legacy support
         self._localize = cast(bool | Literal['auto'], kwargs.pop('localize', 'auto'))
 
         # Field itself (outer Frame) doesn't need styling - only pass master
         super().__init__(master)
 
-        # Set color AFTER super().__init__ to avoid being overwritten by wrapper
-        self._color = color or bootstyle
+        # Set accent AFTER super().__init__ to avoid being overwritten by wrapper
+        self._accent = accent or bootstyle
 
         # configuration
         self._message_text = message
@@ -211,10 +211,10 @@ class Field(EntryMixin, Frame):
             text=f"{label_text}*" if required else label_text,
             font="label[normal]"
         )
-        self._message_lbl = Label(self, localize=self._localize, text=message or '', font="caption", color="secondary")
+        self._message_lbl = Label(self, localize=self._localize, text=message or '', font="caption", accent="secondary")
 
         # field container & field
-        self._field = Frame(self, color=self._color, padding=5, ttk_class="TField")
+        self._field = Frame(self, accent=self._accent, padding=5, ttk_class="TField")
 
         if kind == "numeric":
             self._entry = NumberEntryPart(self._field, value=value, **kwargs)
@@ -319,22 +319,22 @@ class Field(EntryMixin, Frame):
         return self._addons
 
     @configure_delegate
-    def _config_color(self, value=None):
+    def _config_accent(self, value=None):
         if value is None:
-            return self._color
+            return self._accent
         else:
-            self._color = value
-            self._field['color'] = value
+            self._accent = value
+            self._field['accent'] = value
         return None
 
     @configure_delegate
     def _config_bootstyle(self, value=None):
-        """DEPRECATED: Use color instead."""
+        """DEPRECATED: Use accent instead."""
         if value is None:
-            return self._color
+            return self._accent
         else:
-            self._color = value
-            self._field['color'] = value
+            self._accent = value
+            self._field['accent'] = value
         return None
 
     def disable(self):
@@ -431,13 +431,13 @@ class Field(EntryMixin, Frame):
     def _show_error(self, event: Any) -> None:
         """Display a validation error message below the input field."""
         self._message_lbl['text'] = event.data['message']
-        self._message_lbl['color'] = "danger"
+        self._message_lbl['accent'] = "danger"
         self._message_lbl.pack(side='top', after=self._field, padx=4)
 
     def _clear_error(self, _: Any) -> None:
         """Clear the error message and restore the original message text."""
         self._message_lbl['text'] = self._message_text
-        self._message_lbl['color'] = "secondary"
+        self._message_lbl['accent'] = "secondary"
 
     def _set_addons_state(self, disabled: bool) -> None:
         """Configure addon widgets based on whether the entry is interactive."""

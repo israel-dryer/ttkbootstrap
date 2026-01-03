@@ -47,14 +47,14 @@ Use FloodGauge when:
 
 ## Appearance
 
-### Styling with `color`
+### Styling with `accent`
 
 Flood gauges often change color as thresholds are crossed:
 
 ```python
-ttk.FloodGauge(app, color="warning")
-ttk.FloodGauge(app, color="danger")
-ttk.FloodGauge(app, color="success")
+ttk.FloodGauge(app, accent="warning")
+ttk.FloodGauge(app, accent="danger")
+ttk.FloodGauge(app, accent="success")
 ```
 
 !!! link "Design System"

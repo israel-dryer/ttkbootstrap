@@ -70,7 +70,7 @@ tv = ttk.TableView(
 TableView supports theming through ttkbootstrap:
 
 ```python
-ttk.TableView(app, color="primary")
+ttk.TableView(app, accent="primary")
 ```
 
 !!! link "Design System"

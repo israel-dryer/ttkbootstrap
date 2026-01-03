@@ -68,10 +68,10 @@ class Expander(Frame):
             signal (Signal): Reactive Signal for selection state (preferred over variable).
             variable (Variable): Tk variable for selection state (synced with signal).
             value (Any): Value to set on signal/variable when selected.
-            **kwargs: Additional arguments passed to Frame. Use `color` and `variant`
+            **kwargs: Additional arguments passed to Frame. Use `accent` and `variant`
                 for styling the header and chevron.
         """
-        self._header_color = kwargs.pop('color', None)
+        self._header_accent = kwargs.pop('accent', None)
         self._header_variant = kwargs.pop('variant', None)
         if 'show_border' in kwargs:
             kwargs.setdefault('padding', 3)  # need 3 pixels to avoid cutting off corners
@@ -153,13 +153,13 @@ class Expander(Frame):
 
     def _build_widget(self):
         """Build the internal widget structure."""
-        color = self._header_color
+        accent = self._header_accent
         variant = self._header_variant
 
         # Use CompositeFrame for header to enable hover/pressed/focus states
         self._header_frame = CompositeFrame(
             self, ttk_class='Expander.TFrame',
-            color=color, variant=variant, padding=8, takefocus=True
+            accent=accent, variant=variant, padding=8, takefocus=True
         )
         self._header_frame.pack(fill='x')
 
@@ -170,7 +170,7 @@ class Expander(Frame):
                 icon=self._icon,
                 icon_only=True,
                 ttk_class='Expander.TLabel',
-                color=color, variant=variant,
+                accent=accent, variant=variant,
                 takefocus=False,
             )
             self._header_frame.register_composite(self._icon_label)
@@ -182,7 +182,7 @@ class Expander(Frame):
             text=self._title,
             anchor='w',
             ttk_class='Expander.TLabel',
-            color=color, variant=variant,
+            accent=accent, variant=variant,
             takefocus=False,
         )
         self._header_frame.register_composite(self._title_label)
@@ -192,7 +192,7 @@ class Expander(Frame):
             self._header_frame,
             icon=self._current_chevron_icon,
             icon_only=True,
-            color=color, variant=variant,
+            accent=accent, variant=variant,
             ttk_class='Expander.TLabel',
             takefocus=False,
         )
@@ -389,7 +389,7 @@ class Expander(Frame):
                 icon=value,
                 icon_only=True,
                 ttk_class='Expander.TLabel',
-                color=self._header_color, variant=self._header_variant,
+                accent=self._header_accent, variant=self._header_variant,
                 takefocus=False,
             )
             self._header_frame.register_composite(self._icon_label)

@@ -66,12 +66,12 @@ For more "modern card" layouts where the label is separate, you may prefer:
 !!! link "Design System"
     For theming details and color tokens, see [Design System](../../design-system/index.md).
 
-### `color` / `style`
+### `accent` / `style`
 
 Apply semantic styling (or a specific style name).
 
 ```python
-ttk.LabelFrame(app, text="Group", color="secondary")
+ttk.LabelFrame(app, text="Group", accent="secondary")
 ttk.LabelFrame(app, text="Group", style="Card.TLabelframe")
 ```
 

@@ -590,7 +590,7 @@ class ColorChooserDialog:
 
         ok = ttk.Button(
             frame,
-            color=PRIMARY,
+            accent=PRIMARY,
             text='button.ok',
             command=self._on_ok,
         )
@@ -598,7 +598,7 @@ class ColorChooserDialog:
 
         cancel = ttk.Button(
             frame,
-            color=SECONDARY,
+            accent=SECONDARY,
             text='button.cancel',
             command=self._on_cancel,
         )

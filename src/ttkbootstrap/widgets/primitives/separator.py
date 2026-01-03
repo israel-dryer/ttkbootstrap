@@ -19,9 +19,9 @@ class SeparatorKwargs(TypedDict, total=False):
     name: str
 
     # ttkbootstrap-specific extensions
-    bootstyle: str  # DEPRECATED: Use color and variant instead
-    color: str
-    surface_color: str
+    bootstyle: str  # DEPRECATED: Use accent and variant instead
+    accent: str
+    surface: str
     style_options: dict[str, Any]
 
 
@@ -38,11 +38,11 @@ class Separator(TTKWrapperBase, WidgetCapabilitiesMixin, TtkStateMixin, ttk.Sepa
 
         Other Parameters:
             orient (str): Orientation of the separator ('horizontal' or 'vertical').
-            style (str): Explicit ttk style name (overrides color/variant).
-            color (str): Color token for styling, e.g. 'primary', 'secondary'.
-            bootstyle (str): DEPRECATED - Use `color` and `variant` instead.
+            style (str): Explicit ttk style name (overrides accent/variant).
+            accent (str): Accent token for styling, e.g. 'primary', 'secondary'.
+            bootstyle (str): DEPRECATED - Use `accent` and `variant` instead.
                 Combined style tokens.
-            surface_color (str): Optional surface token; otherwise inherited.
+            surface (str): Optional surface token; otherwise inherited.
             style_options (dict): Optional dict forwarded to the style builder.
         """
         super().__init__(master, **kwargs)

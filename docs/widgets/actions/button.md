@@ -44,9 +44,9 @@ Buttons are styled using **semantic colors** and **variant** tokens. Variants de
 
 !!! link "See [Design System → Variants](../../design-system/variants.md) for how variants map consistently across widgets."
 
-### Colors
+### Accents
 
-The `color` parameter accepts semantic color tokens:
+The `accent` parameter accepts semantic color tokens:
 
 <figure markdown>
 ![button colors](../../assets/dark/widgets-button-colors.png#only-dark)
@@ -54,11 +54,11 @@ The `color` parameter accepts semantic color tokens:
 </figure>
 
 ```python
-ttk.Button(app, text="Primary", color="primary").pack(pady=4)
-ttk.Button(app, text="Outline", color="primary", variant="outline").pack(pady=4)
-ttk.Button(app, text="Ghost", color="primary", variant="ghost").pack(pady=4)
-ttk.Button(app, text="Link", color="primary", variant="link").pack(pady=4)
-ttk.Button(app, text="Text", color="secondary", variant="text").pack(pady=4)
+ttk.Button(app, text="Primary", accent="primary").pack(pady=4)
+ttk.Button(app, text="Outline", accent="primary", variant="outline").pack(pady=4)
+ttk.Button(app, text="Ghost", accent="primary", variant="ghost").pack(pady=4)
+ttk.Button(app, text="Link", accent="primary", variant="link").pack(pady=4)
+ttk.Button(app, text="Text", accent="secondary", variant="text").pack(pady=4)
 ```
 
 ### Variants
@@ -159,7 +159,7 @@ ttk.Button(app, icon="gear", icon_only=True).pack(pady=6)
 Disable a button until the user has completed a step.
 
 ```python
-btn = ttk.Button(app, text="Continue", color="primary", state="disabled")
+btn = ttk.Button(app, text="Continue", accent="primary", state="disabled")
 btn.pack()
 
 # later…

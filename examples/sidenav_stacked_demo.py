@@ -25,8 +25,8 @@ def main():
         root,
         icon_only=True,
         variable=primary_var,
-        color='primary', variant='ghost',
-        surface_color='background[+1]',
+        accent='primary', variant='ghost',
+        surface='background[+1]',
         padding=8,
     )
     primary_nav.pack(side='left', fill='y')
@@ -46,7 +46,7 @@ def main():
     secondary_navs = {}
 
     # Mail secondary nav
-    mail_nav = SideNav(secondary_container, color='primary', variant='ghost', padding=8)
+    mail_nav = SideNav(secondary_container, accent='primary', variant='ghost', padding=8)
     mail_nav.add_header('Mail')
     mail_nav.add_item('inbox', text='Inbox', icon='inbox')
     mail_nav.add_item('sent', text='Sent', icon='send')
@@ -57,7 +57,7 @@ def main():
     secondary_navs['mail'] = mail_nav
 
     # Calendar secondary nav
-    calendar_nav = SideNav(secondary_container, color='primary', variant='ghost', padding=8)
+    calendar_nav = SideNav(secondary_container, accent='primary', variant='ghost', padding=8)
     calendar_nav.add_header('Calendar')
     calendar_nav.add_item('today', text='Today', icon='calendar-day')
     calendar_nav.add_item('week', text='Week', icon='calendar-week')
@@ -67,7 +67,7 @@ def main():
     secondary_navs['calendar'] = calendar_nav
 
     # Contacts secondary nav
-    contacts_nav = SideNav(secondary_container, color='primary', variant='ghost', padding=8)
+    contacts_nav = SideNav(secondary_container, accent='primary', variant='ghost', padding=8)
     contacts_nav.add_header('Contacts')
     contacts_nav.add_item('all', text='All Contacts', icon='people')
     contacts_nav.add_item('favorites', text='Favorites', icon='star')
@@ -75,7 +75,7 @@ def main():
     secondary_navs['contacts'] = contacts_nav
 
     # Settings secondary nav
-    settings_nav = SideNav(secondary_container, color='primary', variant='ghost', padding=8)
+    settings_nav = SideNav(secondary_container, accent='primary', variant='ghost', padding=8)
     settings_nav.add_header('Settings')
     settings_nav.add_item('account', text='Account', icon='person')
     settings_nav.add_item('appearance', text='Appearance', icon='palette')

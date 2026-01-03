@@ -23,7 +23,7 @@ import ttkbootstrap as ttk
 
 app = ttk.App()
 
-accordion = ttk.Accordion(app, color="primary", variant="solid")
+accordion = ttk.Accordion(app, accent="primary", variant="solid")
 accordion.pack(fill="x", padx=10, pady=10)
 
 section1 = accordion.add(title="General Settings")
@@ -64,10 +64,10 @@ Use `Accordion` when:
 
 ### Styling
 
-Pass `color` and `variant` to apply a consistent style to all managed expanders.
+Pass `accent` and `variant` to apply a consistent style to all managed expanders.
 
 ```python
-ttk.Accordion(app, color="success", variant="solid")
+ttk.Accordion(app, accent="success", variant="solid")
 ```
 
 ### Border
@@ -209,7 +209,7 @@ accordion.on_accordion_changed(on_accordion_changed)
 | `allow_multiple` | bool | `False` | Allow multiple sections open at once |
 | `allow_collapse_all` | bool | `True` | Allow all sections to be closed |
 | `show_separators` | bool | `False` | Show separators between sections |
-| `color` | str | `None` | Color applied to all expanders |
+| `accent` | str | `None` | Accent applied to all expanders |
 | `variant` | str | `None` | Variant applied to all expanders |
 
 ---

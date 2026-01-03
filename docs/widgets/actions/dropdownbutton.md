@@ -22,7 +22,7 @@ items = [
     ttk.ContextMenuItem(text="Open", command=lambda: print("Open")),
     ttk.ContextMenuItem(text="Rename", command=lambda: print("Rename")),
     ttk.ContextMenuItem(separator=True),
-    ttk.ContextMenuItem(text="Delete", color="danger", command=lambda: print("Delete")),
+    ttk.ContextMenuItem(text="Delete", accent="danger", command=lambda: print("Delete")),
 ]
 
 ttk.DropdownButton(
@@ -55,14 +55,14 @@ Use `DropdownButton` when:
 
 ## Appearance
 
-`DropdownButton` supports semantic colors and variants through `color` and `variant`.
+`DropdownButton` supports semantic colors and variants through `accent` and `variant`.
 
 !!! link "See [Design System → Variants](../../design-system/variants.md) for how variants map consistently across widgets."
 
 ```python
-ttk.DropdownButton(app, text="Primary", color="primary", items=[]).pack(pady=4)
-ttk.DropdownButton(app, text="Outline", color="primary", variant="outline", items=[]).pack(pady=4)
-ttk.DropdownButton(app, text="Ghost", color="primary", variant="ghost", items=[]).pack(pady=4)
+ttk.DropdownButton(app, text="Primary", accent="primary", items=[]).pack(pady=4)
+ttk.DropdownButton(app, text="Outline", accent="primary", variant="outline", items=[]).pack(pady=4)
+ttk.DropdownButton(app, text="Ghost", accent="primary", variant="ghost", items=[]).pack(pady=4)
 ```
 
 ---

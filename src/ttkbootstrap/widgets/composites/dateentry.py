@@ -193,7 +193,7 @@ class DateEntry(Field):
             title=self._picker_title,
             first_weekday=self._picker_first_weekday,
             initial_date=current_value,
-            color=self._color,
+            accent=self._accent,
             hide_window_chrome=True,
             close_on_click_outside=False,  # Disabled to avoid interference with button clicks
         )

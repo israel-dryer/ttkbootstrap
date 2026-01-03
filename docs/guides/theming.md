@@ -19,7 +19,7 @@ import ttkbootstrap as ttk
 app = ttk.App(theme="ocean-light")
 
 # Same code, different colors per theme
-ttk.Button(app, text="Submit", color="primary")
+ttk.Button(app, text="Submit", accent="primary")
 ```
 
 ---
@@ -393,11 +393,11 @@ If you create `my-theme-light`, also create `my-theme-dark`. Users expect dark m
 
 ### 2. Use Semantic Tokens
 
-Don't hardcode colors. Use `color="primary"` so themes work correctly:
+Don't hardcode colors. Use `accent="primary"` so themes work correctly:
 
 ```python
 # Good
-ttk.Button(app, text="Submit", color="primary")
+ttk.Button(app, text="Submit", accent="primary")
 
 # Bad - ignores theming
 ttk.Button(app, text="Submit", background="#0066cc")
@@ -436,7 +436,7 @@ app = ttk.App(theme=initial_theme)
 - Each shade generates a **9-step spectrum** automatically
 - Use `set_theme()` and `toggle_theme()` for runtime switching
 - Create custom themes as **JSON files** with paired light/dark variants
-- Always use **semantic tokens** (`color` and `variant`) instead of hardcoded colors
+- Always use **semantic tokens** (`accent` and `variant`) instead of hardcoded colors
 
 !!! link "Styling Guide"
     See [Styling](styling.md) for using color and variant tokens in widgets.

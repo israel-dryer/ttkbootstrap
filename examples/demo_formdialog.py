@@ -40,7 +40,7 @@ def demo_simple_form(parent):
             title="Form Submitted",
             message=f"User {dialog.result['first_name']} {dialog.result['last_name']} updated!",
             duration=3000,
-            color="success",
+            accent="success",
         ).show()
     else:
         print("Simple form cancelled")
@@ -113,7 +113,7 @@ def demo_explicit_layout(parent):
             title="Settings Saved",
             message="Profile settings have been updated",
             duration=3000,
-            color="info",
+            accent="info",
         ).show()
     else:
         print("Explicit layout cancelled")
@@ -132,7 +132,7 @@ def demo_with_validation(parent):
                 title="Validation Error",
                 message="Product name is required!",
                 duration=3000,
-                color="danger",
+                accent="danger",
             ).show()
             return  # Don't set result, keep dialog open
 
@@ -141,7 +141,7 @@ def demo_with_validation(parent):
                 title="Validation Error",
                 message="Price must be greater than 0!",
                 duration=3000,
-                color="danger",
+                accent="danger",
             ).show()
             return
 
@@ -186,7 +186,7 @@ def demo_with_validation(parent):
             title="Product Added",
             message=f"Product '{dialog.result['product_name']}' has been added",
             duration=3000,
-            color="success",
+            accent="success",
         ).show()
     else:
         print("Product add cancelled")
@@ -205,7 +205,7 @@ def demo_registration_form(parent):
                 title="Invalid Email",
                 message="Please enter a valid email address",
                 duration=3000,
-                color="warning",
+                accent="warning",
             ).show()
             return
 
@@ -214,7 +214,7 @@ def demo_registration_form(parent):
                 title="Weak Password",
                 message="Password must be at least 8 characters",
                 duration=3000,
-                color="warning",
+                accent="warning",
             ).show()
             return
 
@@ -223,7 +223,7 @@ def demo_registration_form(parent):
                 title="Password Mismatch",
                 message="Passwords do not match",
                 duration=3000,
-                color="danger",
+                accent="danger",
             ).show()
             return
 
@@ -293,7 +293,7 @@ def demo_registration_form(parent):
             title="Registration Complete",
             message=f"Welcome, {dialog.result['first_name']}!",
             duration=3000,
-            color="success",
+            accent="success",
         ).show()
     else:
         print("Registration cancelled")
@@ -328,7 +328,7 @@ def main():
         button_frame,
         text="Simple Form (Auto-Inferred)",
         command=lambda: demo_simple_form(app),
-        color="primary",
+        accent="primary",
         width=30,
     ).pack(pady=8)
 
@@ -336,7 +336,7 @@ def main():
         button_frame,
         text="Explicit Layout (Groups & Tabs)",
         command=lambda: demo_explicit_layout(app),
-        color="info",
+        accent="info",
         width=30,
     ).pack(pady=8)
 
@@ -344,7 +344,7 @@ def main():
         button_frame,
         text="Form with Validation",
         command=lambda: demo_with_validation(app),
-        color="success",
+        accent="success",
         width=30,
     ).pack(pady=8)
 
@@ -352,7 +352,7 @@ def main():
         button_frame,
         text="Registration Form",
         command=lambda: demo_registration_form(app),
-        color="warning",
+        accent="warning",
         width=30,
     ).pack(pady=8)
 
@@ -361,7 +361,7 @@ def main():
         app,
         text="Exit",
         command=app.destroy,
-        color="secondary",
+        accent="secondary",
         variant="outline",
         width=20,
     ).pack(pady=20)

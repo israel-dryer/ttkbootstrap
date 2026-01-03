@@ -6,7 +6,7 @@ app = ttk.App()
 
 de = DateEntry()
 de.pack(padx=20, pady=20)
-de = DateEntry(color='info')
+de = DateEntry(accent='info')
 de.pack(padx=20, pady=20)
 
 

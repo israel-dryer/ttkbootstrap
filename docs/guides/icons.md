@@ -36,7 +36,7 @@ Think of icons as **semantic identifiers**, similar to color tokens:
 
 | Concept | You write | Framework resolves |
 |---------|-----------|-------------------|
-| Color | `color="danger"` | `#dc3545` (or theme equivalent) |
+| Color | `accent="danger"` | `#dc3545` (or theme equivalent) |
 | Icon | `icon="trash"` | Themed, scaled, cached image |
 
 The same icon name works across light and dark themes. The icon adapts automatically—you don't maintain separate assets.
@@ -51,7 +51,7 @@ Icons also participate in **widget state**. When a button is disabled, its icon 
 
 ```python
 ttk.Button(app, text="Save", icon="check")
-ttk.Button(app, text="Delete", icon="trash", color="danger")
+ttk.Button(app, text="Delete", icon="trash", accent="danger")
 ```
 
 The icon appears to the left of the text by default.
@@ -60,7 +60,7 @@ The icon appears to the left of the text by default.
 
 ```python
 ttk.Button(app, icon="plus", icon_only=True)
-ttk.Button(app, icon="x-lg", icon_only=True, color="secondary")
+ttk.Button(app, icon="x-lg", icon_only=True, accent="secondary")
 ```
 
 Use `icon_only=True` when the icon is self-explanatory. The widget adjusts its padding accordingly.
@@ -94,7 +94,7 @@ ttk.Button(toolbar, icon="printer", icon_only=True).pack(side="left")
 Primary actions benefit from both:
 
 ```python
-ttk.Button(app, text="New Project", icon="plus-lg", color="primary")
+ttk.Button(app, text="New Project", icon="plus-lg", accent="primary")
 ttk.Button(app, text="Export", icon="download")
 ```
 
@@ -103,9 +103,9 @@ ttk.Button(app, text="Export", icon="download")
 Use color to reinforce icon meaning:
 
 ```python
-ttk.Button(app, text="Delete", icon="trash", color="danger")
-ttk.Button(app, text="Success", icon="check-circle", color="success")
-ttk.Label(app, text="Connection lost", icon="wifi-off", color="warning")
+ttk.Button(app, text="Delete", icon="trash", accent="danger")
+ttk.Button(app, text="Success", icon="check-circle", accent="success")
+ttk.Label(app, text="Connection lost", icon="wifi-off", accent="warning")
 ```
 
 ### Menu items

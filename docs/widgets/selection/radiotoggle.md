@@ -58,12 +58,12 @@ The difference is purely presentational: `RadioToggle` uses the toolbutton-style
 
 ### Colors and styling
 
-Use semantic color tokens with the `color` parameter.
+Use semantic color tokens with the `accent` parameter.
 
 ```python
-ttk.RadioToggle(app, color="primary")
-ttk.RadioToggle(app, color="secondary")
-ttk.RadioToggle(app, color="success")
+ttk.RadioToggle(app, accent="primary")
+ttk.RadioToggle(app, accent="secondary")
+ttk.RadioToggle(app, accent="success")
 ```
 
 !!! link "Design System"

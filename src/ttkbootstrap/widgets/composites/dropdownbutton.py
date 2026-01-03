@@ -31,10 +31,10 @@ class DropdownButtonKwargs(TypedDict, total=False):
     name: str
     textvariable: Any
     textsignal: Signal[str]
-    bootstyle: str  # DEPRECATED: Use color and variant instead
-    color: str
+    bootstyle: str  # DEPRECATED: Use accent and variant instead
+    accent: str
     variant: str
-    surface_color: str
+    surface: str
     style_options: dict[str, Any]
     popdown_options: dict[str, Any]
     show_dropdown_button: bool
@@ -71,10 +71,10 @@ class DropdownButton(MenuButton):
             style (str): Explicit ttk style name.
             textvariable (Variable): Existing Tk variable for the label text.
             textsignal (Signal[str]): Signal bound to the textvariable.
-            color (str): Color token for styling (e.g., 'primary', 'danger').
+            accent (str): Accent token for styling (e.g., 'primary', 'danger').
             variant (str): Style variant (e.g., 'outline', 'ghost').
-            bootstyle (str): DEPRECATED - Use `color` and `variant` instead.
-            surface_color (str): Surface token for style.
+            bootstyle (str): DEPRECATED - Use `accent` and `variant` instead.
+            surface (str): Surface token for style.
             style_options (dict): Dict forwarded to the menubutton style builder.
             popdown_options (dict): Dict forwarded to ContextMenu (e.g., anchor, attach, offset).
             show_dropdown_button (bool): Show/hide the chevron.

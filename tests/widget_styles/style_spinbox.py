@@ -17,7 +17,7 @@ def create_spinbox_test():
 
     # color
     for color in ['primary', 'secondary', 'success', 'info', 'warning', 'danger']:
-        spinbox = ttk.Spinbox(frame, color=color)
+        spinbox = ttk.Spinbox(frame, accent=color)
         spinbox.pack(padx=5, pady=5, fill=BOTH)
         spinbox.insert(END, color)
 

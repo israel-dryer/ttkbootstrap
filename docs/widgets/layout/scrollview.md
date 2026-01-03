@@ -87,7 +87,7 @@ for i in range(30):
 Frame options (padding, color, etc.) can be passed directly:
 
 ```python
-content = sv.add(padding=10, color="primary")
+content = sv.add(padding=10, accent="primary")
 ```
 
 Calling `add()` multiple times returns the same frame (idempotent).

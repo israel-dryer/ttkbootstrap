@@ -191,7 +191,7 @@ class DateDialog:
             title: str = " ",
             initial_date: Optional[date] = None,
             first_weekday: int = 6,
-            color: str = None,
+            accent: str = None,
             bootstyle: str = None,
             disabled_dates: Optional[Iterable[date | datetime | str]] = None,
             min_date: Optional[date | datetime | str] = None,
@@ -208,8 +208,8 @@ class DateDialog:
             title: Dialog window title text.
             initial_date: Initial date shown; defaults to ``date.today()``.
             first_weekday: First weekday index (0=Monday, 6=Sunday).
-            color: Calendar color token (e.g., ``primary``, ``secondary``).
-            bootstyle: DEPRECATED - Use ``color`` instead.
+            accent: Calendar accent token (e.g., ``primary``, ``secondary``).
+            bootstyle: DEPRECATED - Use ``accent`` instead.
             disabled_dates: Iterable of dates to disable selection.
             min_date: Lower bound for selectable dates.
             max_date: Upper bound for selectable dates.
@@ -224,7 +224,7 @@ class DateDialog:
         self._master = master
         self._first_weekday = first_weekday
         self._initial_date = initial_date or datetime.today().date()
-        self._color = color or bootstyle or PRIMARY
+        self._accent = accent or bootstyle or PRIMARY
         self._disabled_dates = disabled_dates
         self._min_date = min_date
         self._max_date = max_date
@@ -254,7 +254,7 @@ class DateDialog:
             master=container,
             start_date=self._initial_date,
             first_weekday=self._first_weekday,
-            color=self._color,
+            accent=self._accent,
             disabled_dates=self._disabled_dates,
             min_date=self._min_date,
             max_date=self._max_date,

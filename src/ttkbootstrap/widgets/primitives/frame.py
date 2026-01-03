@@ -28,10 +28,10 @@ class FrameKwargs(TypedDict, total=False):
     takefocus: bool
 
     # ttkbootstrap-specific extensions
-    bootstyle: str  # DEPRECATED: Use color and variant instead
-    color: str
+    bootstyle: str  # DEPRECATED: Use accent and variant instead
+    accent: str
     variant: str
-    surface_color: str
+    surface: str
     show_border: bool
     style_options: dict[str, Any]
 
@@ -54,12 +54,12 @@ class Frame(TTKWrapperBase, WidgetCapabilitiesMixin, TtkStateMixin, ttk.Frame):
             width (int): Requested width in pixels.
             height (int): Requested height in pixels.
             takefocus (bool): Widget accepts focus during keyboard traversal.
-            style (str): Explicit ttk style name (overrides color/variant).
-            color (str): Color token for styling, e.g. 'primary', 'secondary', 'success'.
+            style (str): Explicit ttk style name (overrides accent/variant).
+            accent (str): Accent token for styling, e.g. 'primary', 'secondary', 'success'.
             variant (str): Style variant (if applicable).
-            bootstyle (str): DEPRECATED - Use `color` and `variant` instead.
+            bootstyle (str): DEPRECATED - Use `accent` and `variant` instead.
                 Combined style tokens (e.g., 'secondary').
-            surface_color (str): Optional surface token; otherwise inherited.
+            surface (str): Optional surface token; otherwise inherited.
             show_border (bool): If True, draws a border around the frame.
             style_options (dict): Optional dict forwarded to the style builder.
         """
@@ -68,10 +68,10 @@ class Frame(TTKWrapperBase, WidgetCapabilitiesMixin, TtkStateMixin, ttk.Frame):
 
     def configure_style_options(self, value=None, **kwargs):
         """Set style options and refresh descendant surfaces if needed."""
-        old_surface = getattr(self, "_surface_color", "background")
+        old_surface = getattr(self, "_surface", "background")
         result = super().configure_style_options(value, **kwargs)
-        if value is None and "surface_color" in kwargs:
-            new_surface = getattr(self, "_surface_color", "background")
+        if value is None and "surface" in kwargs:
+            new_surface = getattr(self, "_surface", "background")
             if old_surface != new_surface:
                 self.rebuild_style()
                 self._refresh_descendant_surfaces(old_surface, new_surface)
@@ -79,9 +79,9 @@ class Frame(TTKWrapperBase, WidgetCapabilitiesMixin, TtkStateMixin, ttk.Frame):
 
     @configure_delegate("bootstyle")
     def _delegate_bootstyle(self, value: Any = None):
-        old_surface = getattr(self, "_surface_color", "background")
+        old_surface = getattr(self, "_surface", "background")
         result = super()._delegate_bootstyle(value)
-        new_surface = getattr(self, "_surface_color", "background")
+        new_surface = getattr(self, "_surface", "background")
         if value is not None and old_surface != new_surface:
             self._refresh_descendant_surfaces(old_surface, new_surface)
         return result
@@ -98,13 +98,13 @@ class Frame(TTKWrapperBase, WidgetCapabilitiesMixin, TtkStateMixin, ttk.Frame):
 
         for child in self._iter_descendants():
             try:
-                child_surface = getattr(child, "_surface_color", None)
+                child_surface = getattr(child, "_surface", None)
             except Exception:
                 child_surface = None
 
             explicit_surface = None
             try:
-                explicit_surface = getattr(child, "_style_options", {}).get("surface_color")
+                explicit_surface = getattr(child, "_style_options", {}).get("surface")
             except Exception:
                 explicit_surface = None
 
@@ -115,7 +115,7 @@ class Frame(TTKWrapperBase, WidgetCapabilitiesMixin, TtkStateMixin, ttk.Frame):
                 continue
 
             try:
-                setattr(child, "_surface_color", new_surface)
+                setattr(child, "_surface", new_surface)
             except Exception:
                 continue
 
@@ -126,7 +126,7 @@ class Frame(TTKWrapperBase, WidgetCapabilitiesMixin, TtkStateMixin, ttk.Frame):
                     pass
             else:
                 try:
-                    builder_tk.call_builder(child, surface_color=new_surface)
+                    builder_tk.call_builder(child, surface=new_surface)
                 except Exception:
                     pass
 

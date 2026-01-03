@@ -148,7 +148,7 @@ class Form(Frame):
             whenever a field value changes.
         width: Requested width for the form container.
         height: Requested height for the form container.
-        color: Color token for the form container (e.g., 'primary', 'secondary').
+        accent: Accent token for the form container (e.g., 'primary', 'secondary').
         buttons: Optional footer buttons. Accepts plain strings, DialogButton
             instances, or dictionaries that map to DialogButton kwargs.
         **kwargs: Additional Frame configuration options.
@@ -165,7 +165,7 @@ class Form(Frame):
             on_data_changed: Callable[[dict[str, Any]], Any] | None = None,
             width: int | None = None,
             height: int | None = None,
-            color: str | None = None,
+            accent: str | None = None,
             buttons: Sequence[ButtonInput] | None = None,
             **kwargs: Any,
     ) -> None:
@@ -180,14 +180,14 @@ class Form(Frame):
             on_data_changed: Callback invoked with updated data when a field changes.
             width: Requested form width; if None, size naturally.
             height: Requested form height; if None, size naturally.
-            color: Color token for the form container.
+            accent: Accent token for the form container.
             buttons: Optional footer buttons (DialogButton, mapping, or string).
             **kwargs: Additional Frame configuration options.
         """
         # Support legacy bootstyle parameter
         if 'bootstyle' in kwargs:
-            color = color or kwargs.pop('bootstyle')
-        super().__init__(master=master, width=width, height=height, color=color, **kwargs)
+            accent = accent or kwargs.pop('bootstyle')
+        super().__init__(master=master, width=width, height=height, accent=accent, **kwargs)
 
         self._data: dict[str, Any] = dict(data) if data else {}
         self.result: Any = None
@@ -637,7 +637,7 @@ class Form(Frame):
                 # Get color and variant from role
                 btn_color, btn_variant = self._style_for_role(spec.role)
 
-            btn = Button(parent, text=spec.text, color=btn_color, variant=btn_variant)
+            btn = Button(parent, text=spec.text, accent=btn_color, variant=btn_variant)
             btn.configure(command=self._make_button_command(spec))
             btn.pack(side='right', padx=(4, 0))
 

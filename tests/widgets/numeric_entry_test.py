@@ -5,7 +5,7 @@ from ttkbootstrap import NumericEntry
 app = ttk.Window()
 
 
-ne = NumericEntry(app, color='danger')
+ne = NumericEntry(app, accent='danger')
 ne.pack(padx=20, pady=20)
 
 

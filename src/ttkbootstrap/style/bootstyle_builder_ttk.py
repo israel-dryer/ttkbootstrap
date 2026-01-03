@@ -122,14 +122,14 @@ class BootstyleBuilderTTk(BootstyleBuilderBase):
 
     def call_builder(
             self, widget_class: str, variant: str, ttk_style: str,
-            color: Optional[str] = None, **options):
+            accent: Optional[str] = None, **options):
         """Call a registered builder for a specific widget variant.
 
         Args:
             widget_class: TTK widget class (e.g., 'TButton')
             variant: Variant name (e.g., 'outline')
             ttk_style: Full TTK style name
-            color: Optional color token (passed directly to builder)
+            accent: Optional accent token (passed directly to builder)
             **options: Custom style options
 
         Raises:
@@ -155,9 +155,9 @@ class BootstyleBuilderTTk(BootstyleBuilderBase):
                     f"Available variants: {available}"
                 )
 
-            # Pass parsed color directly to builder
+            # Pass parsed accent directly to builder
             # No need to pass variant - the builder itself is variant-specific
-            builder_func(self, ttk_style, color=color, **options)
+            builder_func(self, ttk_style, accent=accent, **options)
 
     @classmethod
     def get_widget_class(cls, widget_name: str) -> str:
@@ -299,7 +299,7 @@ class BootstyleBuilderTTk(BootstyleBuilderBase):
         bootstyle variants are created.
 
         It iterates through all registered widget classes and calls
-        their 'default' builder (if registered) with no color specified,
+        their 'default' builder (if registered) with no accent specified,
         which creates the base widget style.
         """
         BootstyleBuilderTTk._ensure_builders_loaded()
@@ -312,18 +312,18 @@ class BootstyleBuilderTTk(BootstyleBuilderBase):
                 try:
                     # Generate the proper style name (e.g., 'Default.TFrame')
                     ttk_style = generate_ttk_style_name(
-                        color=None,
+                        accent=None,
                         variant=DEFAULT_VARIANT,
                         widget_class=widget_class
                     )
 
                     # Call the default builder with the generated style name
-                    # and no color (None), which creates the default style
+                    # and no accent (None), which creates the default style
                     self.call_builder(
                         widget_class=widget_class,
                         variant=DEFAULT_VARIANT,
                         ttk_style=ttk_style,
-                        color=None
+                        accent=None
                     )
                 except Exception:
                     # Silently ignore errors to avoid breaking theme initialization

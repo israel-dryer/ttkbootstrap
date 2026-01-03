@@ -66,8 +66,8 @@ class PasswordEntry(Field):
         Other Parameters:
             show (str): Character to mask password input. Default is '•'.
             required (bool): If True, field cannot be empty.
-            color (str): Color token for the focus ring and active border.
-            bootstyle (str): DEPRECATED - Use `color` instead.
+            accent (str): Accent token for the focus ring and active border.
+            bootstyle (str): DEPRECATED - Use `accent` instead.
             allow_blank (bool): Allow empty input.
             cursor (str): Cursor style when hovering.
             font (str): Font for text display.

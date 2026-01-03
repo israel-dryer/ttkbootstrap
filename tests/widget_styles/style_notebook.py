@@ -19,7 +19,7 @@ def create_notebook_frame(bootstyle, test_name):
 
     # other colors
     for color in colors:
-        nb = ttk.Notebook(frame, color=color, variant=bootstyle, height=50, width=100)
+        nb = ttk.Notebook(frame, accent=color, variant=bootstyle, height=50, width=100)
         nb.pack(padx=5, pady=5, fill=BOTH)
         for i, _ in enumerate(colors):
             nb.add(ttk.Frame(nb), text=f'Tab {i + 1}')

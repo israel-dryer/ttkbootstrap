@@ -48,14 +48,14 @@ Use `Switch` when:
 
 ### Colors and styling
 
-Use semantic color tokens with the `color` parameter.
+Use semantic color tokens with the `accent` parameter.
 
 ```python
-ttk.Switch(app, text="Primary", color="primary")
-ttk.Switch(app, text="Secondary", color="secondary")
-ttk.Switch(app, text="Success", color="success")
-ttk.Switch(app, text="Warning", color="warning")
-ttk.Switch(app, text="Danger", color="danger")
+ttk.Switch(app, text="Primary", accent="primary")
+ttk.Switch(app, text="Secondary", accent="secondary")
+ttk.Switch(app, text="Success", accent="success")
+ttk.Switch(app, text="Warning", accent="warning")
+ttk.Switch(app, text="Danger", accent="danger")
 ```
 
 !!! link "See [Design System - Variants](../../design-system/variants.md) for how color tokens apply consistently across widgets."

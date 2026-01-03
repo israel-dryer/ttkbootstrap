@@ -62,9 +62,9 @@ def demo_okcancel():
         master=app
     )
     if result == "OK":
-        result_label.config(text=f"User confirmed: {result}", bootstyle="success")
+        result_label.config(text=f"User confirmed: {result}", accent="success")
     else:
-        result_label.config(text=f"User cancelled: {result}", bootstyle="secondary")
+        result_label.config(text=f"User cancelled: {result}", accent="secondary")
 
 
 def demo_yesno():
@@ -75,9 +75,9 @@ def demo_yesno():
         master=app
     )
     if result == "Yes":
-        result_label.config(text=f"User selected: {result}", bootstyle="success")
+        result_label.config(text=f"User selected: {result}", accent="success")
     else:
-        result_label.config(text=f"User selected: {result}", bootstyle="danger")
+        result_label.config(text=f"User selected: {result}", accent="danger")
 
 
 def demo_yesnocancel():
@@ -98,9 +98,9 @@ def demo_retrycancel():
         master=app
     )
     if result == "Retry":
-        result_label.config(text=f"User selected: {result}", bootstyle="info")
+        result_label.config(text=f"User selected: {result}", accent="info")
     else:
-        result_label.config(text=f"User cancelled: {result}", bootstyle="secondary")
+        result_label.config(text=f"User cancelled: {result}", accent="secondary")
 
 
 def demo_custom_icon_string():
@@ -184,7 +184,7 @@ app = ttk.App(
 )
 
 # Header
-header = ttk.Frame(app, bootstyle="primary")
+header = ttk.Frame(app, accent="primary")
 header.pack(fill='x', pady=(0, 20))
 title_label = ttk.Label(
     header,
@@ -225,7 +225,7 @@ for label, command, style in standard_demos:
     btn = ttk.Button(
         standard_frame,
         text=label,
-        bootstyle=style,
+        accent=style,
         command=command,
         width=25
     )
@@ -247,7 +247,7 @@ for label, command, style in button_demos:
     btn = ttk.Button(
         buttons_frame,
         text=label,
-        bootstyle=style,
+        accent=style,
         command=command,
         width=25
     )
@@ -269,7 +269,7 @@ for label, command, style in custom_demos:
     btn = ttk.Button(
         custom_frame,
         text=label,
-        bootstyle=style,
+        accent=style,
         command=command,
         width=25
     )
@@ -283,7 +283,7 @@ result_label = ttk.Label(
     result_frame,
     text="No dialog shown yet",
     font='TkDefaultFont 10',
-    bootstyle="secondary"
+    accent="secondary"
 )
 result_label.pack()
 
@@ -292,7 +292,7 @@ footer = ttk.Label(
     app,
     text="Press ESC in any dialog to cancel • Icons provided by icon provider",
     font='TkDefaultFont 9 italic',
-    bootstyle="secondary"
+    accent="secondary"
 )
 footer.pack(pady=10)
 

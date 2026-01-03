@@ -67,7 +67,7 @@ class Style(ttkStyle):
 
         # Style registries
         self._style_registry: Set[str] = set()
-        self._style_colors: Dict[str, Optional[str]] = {}
+        self._style_accents: Dict[str, Optional[str]] = {}
         self._style_options: Dict[str, dict] = {}
 
         # Current theme tracking
@@ -164,7 +164,7 @@ class Style(ttkStyle):
             widget_class: str,
             variant: str,
             ttk_style: str,
-            color: Optional[str] = None,
+            accent: Optional[str] = None,
             options: Optional[dict] = None) -> None:
         """Create a new style if it doesn't exist in current theme.
 
@@ -172,24 +172,24 @@ class Style(ttkStyle):
             widget_class: TTK widget class (e.g., "TButton")
             variant: Variant name (e.g., "outline")
             ttk_style: Full TTK style name (e.g., "success.Outline.TButton")
-            color: Optional color token (e.g., "success", "blue[100]")
+            accent: Optional accent token (e.g., "success", "blue[100]")
             options: Optional custom style options
         """
         # Check if already exists in this theme
         if self.style_exists(ttk_style):
             return  # Already created for this theme
 
-        # Call builder with widget class, variant, and parsed color
+        # Call builder with widget class, variant, and parsed accent
         self._style_builder.call_builder(
             widget_class=widget_class,
             variant=variant,
             ttk_style=ttk_style,
-            color=color,
+            accent=accent,
             **(options or {})
         )
 
-        # Store the color so we can rebuild with the same color
-        self._style_colors[ttk_style] = color
+        # Store the accent so we can rebuild with the same accent
+        self._style_accents[ttk_style] = accent
 
         # Register it
         self.register_style(ttk_style, options)
@@ -242,9 +242,9 @@ class Style(ttkStyle):
         custom options.
         """
         for style in self._style_registry:
-            # Get stored options and color
+            # Get stored options and accent
             options = self._style_options.get(style, {})
-            color = self._style_colors.get(style)
+            accent = self._style_accents.get(style)
 
             # Parse style name to get widget class and variant
             parsed = self._parse_style_name(style)
@@ -258,7 +258,7 @@ class Style(ttkStyle):
                 widget_class=widget_class,
                 variant=variant,
                 ttk_style=style,
-                color=color,  # Pass the stored color
+                accent=accent,  # Pass the stored accent
                 **options
             )
 
@@ -273,8 +273,8 @@ class Style(ttkStyle):
 
         for widget in list(self._tk_widgets):
             try:
-                surface = getattr(widget, '_surface_color', 'background')
-                builder_tk.call_builder(widget, surface_color=surface)
+                surface = getattr(widget, '_surface', 'background')
+                builder_tk.call_builder(widget, surface=surface)
             except Exception:
                 # ignore incompatible or unmapped widgets
                 pass
@@ -316,7 +316,7 @@ class Style(ttkStyle):
         builder_variants = set(v.lower() for v in BootstyleBuilderTTk.get_registered_builders(widget_class))
 
         variant = None
-        color = None
+        accent = None
         for part in parts:
             # Skip the widget class itself (e.g., 'TCheckbutton')
             if part == widget_class:
@@ -326,9 +326,9 @@ class Style(ttkStyle):
             if token in builder_variants and variant is None:
                 variant = token
                 continue
-            # First non-variant token becomes color
-            if color is None:
-                color = part
+            # First non-variant token becomes accent
+            if accent is None:
+                accent = part
 
         if variant is None:
             variant = BootstyleBuilderTTk.get_default_variant(widget_class)

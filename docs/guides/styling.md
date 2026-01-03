@@ -23,16 +23,16 @@ Use semantic tokens:
 
 ```python
 # Do this
-ttk.Button(app, text="Delete", color="danger")
+ttk.Button(app, text="Delete", accent="danger")
 ```
 
 The theme resolves `"danger"` to appropriate colors. Change the theme, and all `"danger"` widgets update.
 
 ---
 
-## Color Tokens
+## Accent Tokens
 
-The `color` parameter accepts semantic color tokens:
+The `accent` parameter accepts semantic color tokens:
 
 | Token | Intent |
 |-------|--------|
@@ -48,19 +48,19 @@ The `color` parameter accepts semantic color tokens:
 ### Basic Usage
 
 ```python
-ttk.Button(app, text="Save", color="primary")
-ttk.Button(app, text="Cancel", color="secondary")
-ttk.Button(app, text="Delete", color="danger")
+ttk.Button(app, text="Save", accent="primary")
+ttk.Button(app, text="Cancel", accent="secondary")
+ttk.Button(app, text="Delete", accent="danger")
 ```
 
 ### On Any Widget
 
-Most widgets accept `color`:
+Most widgets accept `accent`:
 
 ```python
-ttk.Label(app, text="Success!", color="success")
-ttk.Progressbar(app, color="info")
-ttk.Entry(app, color="warning")
+ttk.Label(app, text="Success!", accent="success")
+ttk.Progressbar(app, accent="info")
+ttk.Entry(app, accent="warning")
 ```
 
 ---
@@ -89,33 +89,47 @@ Colors support **chained bracket modifiers** for dynamic adjustments:
 "background[+1][subtle]" # Elevated background, then subtle
 ```
 
-### Elevation
+### Tone Adjustments
 
-Elevation modifiers adjust lightness relative to the base color:
+Tone modifiers (`+N` / `-N`) adjust lightness relative to the base color:
 
 ```python
-# Common patterns
-"background[+1]"  # Raised surface (cards, dialogs)
-"background[+2]"  # Higher elevation (tooltips, menus)
-"background[-1]"  # Recessed area (wells, insets)
+# Lighten/darken any color
+"primary[+1]"     # Lighter primary
+"primary[-1]"     # Darker primary
+"gray[+2]"        # Much lighter gray
 ```
+
+!!! tip "Prefer Surface Tokens"
+    For container backgrounds, use semantic surface tokens like `content[1]` or `chrome`
+    instead of `background[+1]`. Surface tokens are theme-defined and more predictable.
+    See [Surface Tokens](#surface-tokens) below.
 
 ### Shades
 
-Shade modifiers select from the color's palette:
+Shade modifiers select from the color's palette using 50-step increments (50–950):
 
 ```python
-# Primary color shades
-"primary[50]"   # Lightest
+# Primary color shades (50-step increments)
+"primary[50]"   # Lightest tint
 "primary[100]"
+"primary[150]"
 "primary[200]"
+"primary[250]"
 "primary[300]"
+"primary[350]"
 "primary[400]"
+"primary[450]"
 "primary[500]"  # Base color
+"primary[550]"
 "primary[600]"
+"primary[650]"
 "primary[700]"
+"primary[750]"
 "primary[800]"
-"primary[900]"  # Darkest
+"primary[850]"
+"primary[900]"
+"primary[950]"  # Darkest shade
 ```
 
 ### Subtle and Muted
@@ -156,6 +170,55 @@ Modifiers are applied left-to-right as a pipeline:
 
 ---
 
+## Surface Tokens
+
+Surface tokens provide **semantic backgrounds** for containers. Instead of calculating
+elevation with `background[+1]`, use theme-defined surface ramps:
+
+### Content Surfaces
+
+For main content areas (pages, cards, panels):
+
+```python
+ttk.Frame(app, surface="content")      # Base content (same as background)
+ttk.Frame(app, surface="content[1]")   # Raised content (cards, panels)
+ttk.Frame(app, surface="content[2]")   # Higher elevation
+```
+
+### Chrome Surfaces
+
+For UI chrome (sidebars, toolbars, navigation):
+
+```python
+ttk.Frame(app, surface="chrome")       # Sidebar/navigation background
+ttk.Frame(app, surface="chrome[1]")    # Toolbar background
+```
+
+### Overlay Surfaces
+
+For floating elements (menus, dialogs, tooltips):
+
+```python
+ttk.Frame(app, surface="overlay")      # Menus, dropdowns
+ttk.Frame(app, surface="overlay[2]")   # Dialogs
+ttk.Frame(app, surface="overlay[3]")   # Tooltips, toasts
+```
+
+### Titlebar
+
+For window title bars:
+
+```python
+ttk.Frame(app, surface="titlebar")
+```
+
+!!! note "Why Surface Tokens?"
+    Surface tokens are **deterministic per theme**—they don't rely on computed
+    `+1/-1` math. Each theme defines exactly what `content[1]` means, ensuring
+    consistent visual hierarchy across light and dark modes.
+
+---
+
 ## Variants
 
 Widgets support **variant** modifiers to control visual emphasis:
@@ -167,25 +230,25 @@ Widgets support **variant** modifiers to control visual emphasis:
 | `ghost` | Minimal chrome, subtle hover |
 | `link` | Text-only, like a hyperlink |
 
-Use `color` and `variant` together:
+Use `accent` and `variant` together:
 
 ```python
-ttk.Button(app, text="Learn More", color="info", variant="link")
-ttk.Button(app, text="Options", color="secondary", variant="outline")
-ttk.CheckButton(app, text="Enable", color="success", variant="toggle")
+ttk.Button(app, text="Learn More", accent="info", variant="link")
+ttk.Button(app, text="Options", accent="secondary", variant="outline")
+ttk.CheckButton(app, text="Enable", accent="success", variant="toggle")
 ```
 
 ### Button Variants
 
 ```python
 # Solid (default)
-ttk.Button(app, text="Primary", color="primary")
+ttk.Button(app, text="Primary", accent="primary")
 
 # Outline
-ttk.Button(app, text="Primary", color="primary", variant="outline")
+ttk.Button(app, text="Primary", accent="primary", variant="outline")
 
 # Link
-ttk.Button(app, text="Primary", color="primary", variant="link")
+ttk.Button(app, text="Primary", accent="primary", variant="link")
 ```
 
 ### Toggle Variant
@@ -194,7 +257,7 @@ For checkbuttons and radiobuttons:
 
 ```python
 ttk.CheckButton(app, text="Dark Mode", variant="toggle")
-ttk.CheckButton(app, text="Notifications", color="success", variant="toggle")
+ttk.CheckButton(app, text="Notifications", accent="success", variant="toggle")
 ```
 
 !!! link "Variants Reference"
@@ -204,7 +267,7 @@ ttk.CheckButton(app, text="Notifications", color="success", variant="toggle")
 
 ## Themes
 
-Themes define **how tokens become colors**. The same `color="primary"` resolves to different colors depending on the active theme.
+Themes define **how tokens become colors**. The same `accent="primary"` resolves to different colors depending on the active theme.
 
 ```python
 # Set theme at startup
@@ -223,31 +286,31 @@ toggle_theme()  # Toggle between light and dark
 
 ## Consistent Patterns
 
-### Color Coding by Intent
+### Accent Coding by Intent
 
 ```python
 # Actions
-ttk.Button(form, text="Submit", color="primary")
-ttk.Button(form, text="Cancel", color="secondary")
-ttk.Button(form, text="Delete", color="danger")
+ttk.Button(form, text="Submit", accent="primary")
+ttk.Button(form, text="Cancel", accent="secondary")
+ttk.Button(form, text="Delete", accent="danger")
 
 # Status
-ttk.Label(status_bar, text="Connected", color="success")
-ttk.Label(status_bar, text="Warning: Low disk", color="warning")
-ttk.Label(status_bar, text="Error", color="danger")
+ttk.Label(status_bar, text="Connected", accent="success")
+ttk.Label(status_bar, text="Warning: Low disk", accent="warning")
+ttk.Label(status_bar, text="Error", accent="danger")
 ```
 
 ### Progress Indicators
 
 ```python
 # Normal progress
-ttk.Progressbar(app, value=50, color="primary")
+ttk.Progressbar(app, value=50, accent="primary")
 
 # Success state
-ttk.Progressbar(app, value=100, color="success")
+ttk.Progressbar(app, value=100, accent="success")
 
 # Warning state
-ttk.Progressbar(app, value=90, color="warning")
+ttk.Progressbar(app, value=90, accent="warning")
 ```
 
 ### Form Validation
@@ -257,10 +320,10 @@ ttk.Progressbar(app, value=90, color="warning")
 entry = ttk.Entry(app)
 
 # Error state
-entry.configure(color="danger")
+entry.configure(accent="danger")
 
 # Success state
-entry.configure(color="success")
+entry.configure(accent="success")
 ```
 
 ---
@@ -292,8 +355,8 @@ Font choices should come from the design system, not hardcoded values.
 Icons reinforce meaning alongside color:
 
 ```python
-ttk.Button(app, text="Save", color="primary", image=save_icon, compound="left")
-ttk.Button(app, text="Delete", color="danger", image=trash_icon, compound="left")
+ttk.Button(app, text="Save", accent="primary", image=save_icon, compound="left")
+ttk.Button(app, text="Delete", accent="danger", image=trash_icon, compound="left")
 ```
 
 Icons and color work together—use `danger` styling with a warning/delete icon.
@@ -363,14 +426,14 @@ toggles = ttk.PackFrame(form, direction="vertical", gap=5)
 toggles.pack(fill="x", pady=(15, 0))
 
 ttk.CheckButton(toggles, text="Email notifications", variant="toggle").pack()
-ttk.CheckButton(toggles, text="Two-factor auth", color="success", variant="toggle").pack()
+ttk.CheckButton(toggles, text="Two-factor auth", accent="success", variant="toggle").pack()
 
 # Actions
 actions = ttk.PackFrame(form, direction="horizontal", gap=10)
 actions.pack(anchor="e", pady=(20, 0))
 
-ttk.Button(actions, text="Cancel", color="secondary", variant="outline").pack()
-ttk.Button(actions, text="Save Changes", color="primary").pack()
+ttk.Button(actions, text="Cancel", accent="secondary", variant="outline").pack()
+ttk.Button(actions, text="Save Changes", accent="primary").pack()
 
 app.mainloop()
 ```
@@ -386,36 +449,36 @@ app.mainloop()
 label.configure(foreground="#ff0000")
 
 # Good
-label.configure(color="danger")
+label.configure(accent="danger")
 ```
 
 ### Don't Mix Semantic and Literal
 
 ```python
 # Bad: inconsistent
-ttk.Button(app, text="OK", color="success")
+ttk.Button(app, text="OK", accent="success")
 ttk.Button(app, text="Cancel", background="gray")  # Won't work with ttk
 
 # Good: consistent
-ttk.Button(app, text="OK", color="success")
-ttk.Button(app, text="Cancel", color="secondary")
+ttk.Button(app, text="OK", accent="success")
+ttk.Button(app, text="Cancel", accent="secondary")
 ```
 
 ### Use Appropriate Tokens
 
 ```python
 # Bad: using "danger" for non-destructive action
-ttk.Button(app, text="Next", color="danger")
+ttk.Button(app, text="Next", accent="danger")
 
 # Good: using appropriate token
-ttk.Button(app, text="Next", color="primary")
+ttk.Button(app, text="Next", accent="primary")
 ```
 
 ---
 
 ## Summary
 
-- Use **color tokens** for semantic coloring
+- Use **accent tokens** for semantic coloring
 - Use **variant** (outline, link, ghost) for style modifications
 - Change **themes** to update all widgets at once
 - Maintain **consistency** with reusable spacing constants

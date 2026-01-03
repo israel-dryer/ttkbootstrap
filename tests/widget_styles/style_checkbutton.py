@@ -20,7 +20,7 @@ def create_checkbutton_test(bootstyle, name):
         cb = ttk.CheckButton(
             master=frame,
             text=color,
-            color=color,
+            accent=color,
             variant=bootstyle,
             width=15
         )

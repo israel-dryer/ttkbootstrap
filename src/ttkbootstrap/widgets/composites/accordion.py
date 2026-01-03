@@ -37,7 +37,7 @@ class Accordion(Frame):
         allow_multiple: bool = False,
         allow_collapse_all: bool = True,
         show_separators: bool = False,
-        color: str = None,
+        accent: str = None,
         variant: str = None,
         **kwargs
     ):
@@ -50,7 +50,7 @@ class Accordion(Frame):
             allow_collapse_all (bool): If True (default), all sections can be collapsed.
                 If False, at least one section must remain open.
             show_separators (bool): If True, show separators between expanders.
-            color (str): Color token for the expanders (e.g., 'success', 'primary').
+            accent (str): Accent token for the expanders (e.g., 'success', 'primary').
             variant (str): Variant for the expanders (e.g., 'solid', 'default').
             **kwargs: Additional arguments passed to Frame.
         """
@@ -63,7 +63,7 @@ class Accordion(Frame):
         self._allow_multiple = allow_multiple
         self._allow_collapse_all = allow_collapse_all
         self._show_separators = show_separators
-        self._color = color
+        self._accent = accent
         self._variant = variant
         self._expanders: dict[str, Expander] = {}
         self._expander_order: list[str] = []
@@ -122,8 +122,8 @@ class Accordion(Frame):
                 else:
                     expanded = False
 
-            # Get color/variant from kwargs or use accordion defaults
-            color = self._color or kwargs.pop('color', None)
+            # Get accent/variant from kwargs or use accordion defaults
+            accent = self._accent or kwargs.pop('accent', None)
             variant = self._variant or kwargs.pop('variant', None)
 
             expander = Expander(
@@ -132,7 +132,7 @@ class Accordion(Frame):
                 icon=icon,
                 expanded=expanded,
                 highlight=True,
-                color=color,
+                accent=accent,
                 variant=variant,
                 **kwargs
             )

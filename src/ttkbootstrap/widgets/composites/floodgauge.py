@@ -26,7 +26,7 @@ class FloodGauge(ConfigureDelegationMixin, Canvas):
             mask: Optional[str] = None,
             text: str = "",
             font: Union[tuple[str, int], str] = ("Helvetica", 12),
-            color: str = None,
+            accent: str = None,
             orient: str = "horizontal",
             length: int = 200,
             thickness: int = 50,
@@ -47,7 +47,7 @@ class FloodGauge(ConfigureDelegationMixin, Canvas):
             text (str): Static text label shown when no mask is specified.
             font (tuple | str): Font specification as tuple ``(family, size)`` or
                 string like ``'Arial 12 bold'``.
-            color (str): Color token from ttkbootstrap (e.g., ``'primary'``,
+            accent (str): Accent token from ttkbootstrap (e.g., ``'primary'``,
                 ``'success'``, ``'info'``, ``'warning'``, ``'danger'``).
             orient (str): Widget orientation - ``'horizontal'`` or ``'vertical'``.
             length (int): Size in pixels along the main axis (width if horizontal,
@@ -79,7 +79,7 @@ class FloodGauge(ConfigureDelegationMixin, Canvas):
         self._mode = mode
         self._mask = mask
         self._font = font
-        self._color = color or bootstyle or "primary"
+        self._accent = accent or bootstyle or "primary"
         self._orient = orient
         self._length = length
         self._thickness = thickness
@@ -157,15 +157,15 @@ class FloodGauge(ConfigureDelegationMixin, Canvas):
     @configure_delegate('bootstyle')
     def _delegate_bootstyle(self, value=None):
         if value is None:
-            return self._color
-        self._color = value
+            return self._accent
+        self._accent = value
         self._update_theme_colors()  # calls _draw()
 
-    @configure_delegate('color')
-    def _delegate_color(self, value=None):
+    @configure_delegate('accent')
+    def _delegate_accent(self, value=None):
         if value is None:
-            return self._color
-        self._color = value
+            return self._accent
+        self._accent = value
         self._update_theme_colors()  # calls _draw()
 
     @configure_delegate('orient')
@@ -272,8 +272,8 @@ class FloodGauge(ConfigureDelegationMixin, Canvas):
         style = get_style()
         b = style.style_builder
         surface = b.color('background')
-        self._bar_color = b.color(self._color)
-        self._trough_color = b.border(b.subtle(self._color, surface))
+        self._bar_color = b.color(self._accent)
+        self._trough_color = b.border(b.subtle(self._accent, surface))
         self._text_color = b.on_color(self._bar_color)
         self._draw()
 

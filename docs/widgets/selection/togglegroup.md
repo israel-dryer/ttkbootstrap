@@ -142,12 +142,12 @@ Selection mode: `"single"` (default) or `"multi"`.
 
 Layout orientation: `"horizontal"` (default) or `"vertical"`.
 
-### `color`
+### `accent`
 
 Applies to all child buttons (defaults to `"primary"`).
 
 ```python
-group = ttk.ToggleGroup(app, color="secondary")
+group = ttk.ToggleGroup(app, accent="secondary")
 ```
 
 ### `add(text, value, key=None, **kwargs)`
@@ -190,12 +190,12 @@ Callbacks receive the new value directly (string in single mode, set in multi mo
 
 ## Colors and styling
 
-`ToggleGroup` forwards `color` to its child buttons with buttongroup styling.
+`ToggleGroup` forwards `accent` to its child buttons with buttongroup styling.
 
 ```python
-ttk.ToggleGroup(app, color="primary")
-ttk.ToggleGroup(app, color="secondary")
-ttk.ToggleGroup(app, color="success")
+ttk.ToggleGroup(app, accent="primary")
+ttk.ToggleGroup(app, accent="secondary")
+ttk.ToggleGroup(app, accent="success")
 ```
 
 ---

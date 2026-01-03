@@ -65,7 +65,7 @@ def show_filter_frameless():
 ttk.Label(app, text="FilterDialog Demo", font=("", 16, "bold")).pack(pady=20)
 ttk.Button(app, text="Show Filter Dialog", command=show_filter).pack(pady=10)
 ttk.Button(app, text="Show Filter Dialog (Frameless)", command=show_filter_frameless).pack(pady=10)
-result_label = ttk.Label(app, text="No items selected", color="secondary")
+result_label = ttk.Label(app, text="No items selected", accent="secondary")
 result_label.pack(pady=10)
 
 app.mainloop()

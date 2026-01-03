@@ -44,7 +44,7 @@ def _apply_icon_mapping(
 
 
 @BootstyleBuilderTTk.register_builder('default', 'Toolbutton')
-def build_solid_toolbutton_style(b: BootstyleBuilderTTk, ttk_style: str, color: str = None, **options):
+def build_solid_toolbutton_style(b: BootstyleBuilderTTk, ttk_style: str, accent: str = None, **options):
     """
     Configure the button style.
 
@@ -54,25 +54,25 @@ def build_solid_toolbutton_style(b: BootstyleBuilderTTk, ttk_style: str, color: 
         * icon_only
     """
     anchor = options.get('anchor', 'center')
-    accent_token = color or 'primary'
-    surface_token = options.get('surface_color', 'background')
+    accent_token = accent or 'primary'
+    surface_token = options.get('surface', 'content')
 
     surface = b.color(surface_token)
 
-    accent = b.color(accent_token)
+    accent_color = b.color(accent_token)
 
-    active = b.active(accent)
-    accent_focus = b.focus(accent)
-    on_accent = b.on_color(accent)
+    active = b.active(accent_color)
+    accent_focus = b.focus(accent_color)
+    on_accent = b.on_color(accent_color)
 
-    selected = b.selected(accent)
+    selected = b.selected(accent_color)
 
     focus_ring = b.focus_ring(accent_focus, surface)
     disabled = b.disabled()
     on_disabled = b.disabled('text', disabled)
 
-    normal_img = recolor_image('button', accent, accent, surface, surface)
-    normal_focus_img = recolor_image('button', accent, accent, focus_ring, surface)
+    normal_img = recolor_image('button', accent_color, accent_color, surface, surface)
+    normal_focus_img = recolor_image('button', accent_color, accent_color, focus_ring, surface)
     active_img = recolor_image('button', active, active, surface, surface)
     selected_img = recolor_image('button', selected, selected, surface, surface)
     selected_focus_img = recolor_image('button', selected, selected, focus_ring, surface)
@@ -121,7 +121,7 @@ def build_solid_toolbutton_style(b: BootstyleBuilderTTk, ttk_style: str, color: 
 
 
 @BootstyleBuilderTTk.register_builder('outline', 'Toolbutton')
-def build_outline_toolbutton_style(b: BootstyleBuilderTTk, ttk_style: str, color: str = None, **options):
+def build_outline_toolbutton_style(b: BootstyleBuilderTTk, ttk_style: str, accent: str = None, **options):
     """
     Configure the button style.
 
@@ -131,22 +131,22 @@ def build_outline_toolbutton_style(b: BootstyleBuilderTTk, ttk_style: str, color
         * icon_only
     """
     anchor = options.get('anchor', 'center')
-    accent_token = color or 'primary'
-    surface_token = options.get('surface_color', 'background')
+    accent_token = accent or 'primary'
+    surface_token = options.get('surface', 'content')
 
     surface = b.color(surface_token)
-    accent = b.color(accent_token)
-    accent_focus = b.focus(accent)
-    on_accent = b.on_color(accent)
+    accent_color = b.color(accent_token)
+    accent_focus = b.focus(accent_color)
+    on_accent = b.on_color(accent_color)
 
     focus_ring = b.focus_ring(accent_focus, surface)
     disabled = b.disabled()
     on_disabled = b.disabled('text', disabled)
 
-    normal_img = recolor_image('button', surface, accent, surface, surface)
+    normal_img = recolor_image('button', surface, accent_color, surface, surface)
     normal_focus_img = recolor_image('button', surface, accent_focus, focus_ring, surface)
-    selected_img = recolor_image('button', accent, accent, surface, surface)
-    selected_focus_img = recolor_image('button', accent, accent_focus, focus_ring, surface)
+    selected_img = recolor_image('button', accent_color, accent_color, surface, surface)
+    selected_focus_img = recolor_image('button', accent_color, accent_focus, focus_ring, surface)
 
     disabled_img = recolor_image('button', disabled, disabled, surface, surface)
 
@@ -173,7 +173,7 @@ def build_outline_toolbutton_style(b: BootstyleBuilderTTk, ttk_style: str, color
     b.configure_style(
         ttk_style,
         background=surface,
-        foreground=accent,
+        foreground=accent_color,
         stipple="gray12",
         relief='flat',
         padding=button_padding,
@@ -183,7 +183,7 @@ def build_outline_toolbutton_style(b: BootstyleBuilderTTk, ttk_style: str, color
 
     state_spec = dict(
         foreground=[('disabled', on_disabled), ('selected !disabled', on_accent), ('pressed !disabled', on_accent),
-                    ('', accent)],
+                    ('', accent_color)],
     )
 
     icon_only = options.get('icon_only', False)
@@ -194,7 +194,7 @@ def build_outline_toolbutton_style(b: BootstyleBuilderTTk, ttk_style: str, color
 
 
 @BootstyleBuilderTTk.register_builder('ghost', 'Toolbutton')
-def build_ghost_toolbutton_style(b: BootstyleBuilderTTk, ttk_style: str, color: str = None, **options):
+def build_ghost_toolbutton_style(b: BootstyleBuilderTTk, ttk_style: str, accent: str = None, **options):
     """
     Configure the button style.
 
@@ -204,14 +204,14 @@ def build_ghost_toolbutton_style(b: BootstyleBuilderTTk, ttk_style: str, color: 
         * icon_only
     """
     anchor = options.get('anchor', 'center')
-    accent_token = color or 'foreground'
-    surface_token = options.get('surface_color', 'background')
+    accent_token = accent or 'foreground'
+    surface_token = options.get('surface', 'content')
 
     surface = b.color(surface_token)
     on_surface = b.on_color(surface)
 
     active = b.subtle(accent_token, surface)
-    accent = b.color(accent_token)
+    accent_color = b.color(accent_token)
     accent_pressed = b.pressed(active)
     accent_focus = b.focus(active)
 
@@ -220,10 +220,10 @@ def build_ghost_toolbutton_style(b: BootstyleBuilderTTk, ttk_style: str, color: 
     on_disabled = b.disabled('text', disabled)
 
     normal_img = recolor_image('button', surface, surface, surface, surface)
-    normal_focus_img = recolor_image('button', surface, accent, focus_ring, surface)
+    normal_focus_img = recolor_image('button', surface, accent_color, focus_ring, surface)
     selected_img = recolor_image('button', active, active, surface, surface)
     selected_pressed_img = recolor_image('button', accent_pressed, accent_pressed, surface, surface)
-    selected_focus_img = recolor_image('button', accent_focus, accent, focus_ring, surface)
+    selected_focus_img = recolor_image('button', accent_focus, accent_color, focus_ring, surface)
 
     disabled_img = recolor_image('button', disabled, disabled, surface, surface)
 
@@ -262,8 +262,8 @@ def build_ghost_toolbutton_style(b: BootstyleBuilderTTk, ttk_style: str, color: 
     state_spec = dict(
         foreground=[
             ('disabled', on_disabled),
-            ('selected', accent),
-            ('pressed', accent),
+            ('selected', accent_color),
+            ('pressed', accent_color),
             ('', on_surface)],
     )
 

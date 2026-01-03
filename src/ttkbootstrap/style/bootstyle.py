@@ -40,18 +40,18 @@ def _warn_bootstyle_deprecated():
 
     warnings.warn(
         "The 'bootstyle' parameter is deprecated. "
-        "Use 'color' and 'variant' parameters instead.",
+        "Use 'accent' and 'variant' parameters instead.",
         FutureWarning,
         stacklevel=level
     )
 
 
-def convert_bootstyle_to_color_variant(
+def convert_bootstyle_to_accent_variant(
         bootstyle: str,
         widget_class: str,
         warn: bool = True
 ) -> tuple[Optional[str], Optional[str]]:
-    """Convert bootstyle string to separate color and variant.
+    """Convert bootstyle string to separate accent and variant.
 
     Args:
         bootstyle: Bootstyle string (e.g., "success-outline", "primary")
@@ -59,7 +59,7 @@ def convert_bootstyle_to_color_variant(
         warn: Whether to issue deprecation warning
 
     Returns:
-        Tuple of (color, variant) where either may be None
+        Tuple of (accent, variant) where either may be None
     """
     if not bootstyle:
         return None, None
@@ -68,13 +68,13 @@ def convert_bootstyle_to_color_variant(
         _warn_bootstyle_deprecated()
 
     parsed = parse_bootstyle(bootstyle, widget_class)
-    return parsed.get('color'), parsed.get('variant')
+    return parsed.get('accent'), parsed.get('variant')
 
 
 def parse_bootstyle_v2(bootstyle: str, widget_class: str) -> dict:
     """Parse bootstyle string using V2 syntax (dash-separated).
 
-    Syntax: `color-variant-widget` where all parts are optional.
+    Syntax: `accent-variant-widget` where all parts are optional.
     Checks actual theme colors and registered variants. Unknown parts are
     treated as custom colors.
 
@@ -83,11 +83,11 @@ def parse_bootstyle_v2(bootstyle: str, widget_class: str) -> dict:
         widget_class: TTK widget class name (e.g., "TButton")
 
     Returns:
-        Dict with: color, variant, widget_class, cross_widget
+        Dict with: accent, variant, widget_class, cross_widget
     """
     if not bootstyle:
         return {
-            'color': None,
+            'accent': None,
             'variant': "default",
             'widget_class': widget_class,
             'cross_widget': False,
@@ -102,7 +102,7 @@ def parse_bootstyle_v2(bootstyle: str, widget_class: str) -> dict:
         raise BootstyleParsingError(f'bootstyle must be a string. Received the value: {bootstyle}')
     parts = bootstyle.lower().split('-')
 
-    color = None
+    accent = None
     variant = None
     resolved_widget = widget_class
     cross_widget = False
@@ -115,13 +115,13 @@ def parse_bootstyle_v2(bootstyle: str, widget_class: str) -> dict:
             if resolved_widget != widget_class:
                 cross_widget = True
 
-    # Second pass: resolve color/variant/orientation
+    # Second pass: resolve accent/variant/orientation
     for part in parts:
         if part in WIDGET_CLASS_MAP:
             # already handled in first pass
             continue
         if part in theme_colors or part in COLOR_TOKENS or '[' in part:
-            color = part
+            accent = part
             continue
         if part in ("horizontal", "vertical"):
             orient = part
@@ -130,11 +130,11 @@ def parse_bootstyle_v2(bootstyle: str, widget_class: str) -> dict:
             variant = part
             continue
         # If we reach here, it's unrecognized
-        message = f"Unrecognized variant or color token: '{part}'"
+        message = f"Unrecognized variant or accent token: '{part}'"
         raise BootstyleParsingError(message)
 
     return {
-        'color': color,
+        'accent': accent,
         'variant': variant,
         'widget_class': resolved_widget,
         'cross_widget': cross_widget,
@@ -167,7 +167,7 @@ def from_pascal_case(s: str) -> str:
 
 
 def generate_ttk_style_name(
-        color: Optional[str],
+        accent: Optional[str],
         variant: Optional[str],
         widget_class: str,
         custom_prefix: Optional[str] = None,
@@ -175,14 +175,14 @@ def generate_ttk_style_name(
 ) -> str:
     """Generate TTK style name from parsed components.
 
-    Returns style name in format: [custom_prefix].[color].[Variant].[Orient].[Widget]
+    Returns style name in format: [custom_prefix].[accent].[Variant].[Orient].[Widget]
     """
     parts = []
 
     if custom_prefix:
         parts.append(custom_prefix)
-    if color:
-        parts.append(color)
+    if accent:
+        parts.append(accent)
     if variant:
         parts.append(to_pascal_case(variant))
     if orient:
@@ -225,8 +225,8 @@ def extract_orient_from_style(ttk_style: str):
         return None
 
 
-def extract_color_from_style(ttk_style: str, default: str = 'primary') -> str:
-    """Extract color token from TTK style name, including modifiers like [subtle]."""
+def extract_accent_from_style(ttk_style: str, default: str = 'primary') -> str:
+    """Extract accent token from TTK style name, including modifiers like [subtle]."""
     parts = ttk_style.split('.')
 
     # Skip custom prefix if present (e.g., bs[hash] or custom_xyz)
@@ -238,11 +238,11 @@ def extract_color_from_style(ttk_style: str, default: str = 'primary') -> str:
         # Check exact match first
         if part_lower in COLOR_TOKENS:
             return part_lower
-        # Check if base color (before modifier) is a color token
+        # Check if base accent (before modifier) is an accent token
         # e.g., 'primary[subtle]' -> 'primary'
         if '[' in part_lower:
-            base_color = part_lower.split('[')[0]
-            if base_color in COLOR_TOKENS:
+            base_accent = part_lower.split('[')[0]
+            if base_accent in COLOR_TOKENS:
                 return part_lower  # Return full token with modifier
 
     return default
@@ -317,19 +317,19 @@ class Bootstyle:
             bootstyle: Optional[str] = None,
             style_options: Optional[dict] = None,
             *,
-            color: Optional[str] = None,
+            accent: Optional[str] = None,
             variant: Optional[str] = None,
     ) -> str:
         """Create or get TTK style name for a widget.
 
-        Parses bootstyle string OR uses color/variant directly to generate
+        Parses bootstyle string OR uses accent/variant directly to generate
         TTK style name and trigger style creation.
 
         Args:
             widget_class: TTK widget class (e.g., "TButton")
-            bootstyle: DEPRECATED - Use color and variant instead
+            bootstyle: DEPRECATED - Use accent and variant instead
             style_options: Custom style options dict
-            color: Color token (e.g., "success", "primary[subtle]")
+            accent: Accent token (e.g., "success", "primary[subtle]")
             variant: Variant name (e.g., "outline", "solid")
 
         Returns:
@@ -339,33 +339,33 @@ class Bootstyle:
 
         # Handle legacy bootstyle parameter
         if bootstyle:
-            if color is not None or variant is not None:
+            if accent is not None or variant is not None:
                 raise ValueError(
-                    "Cannot use 'bootstyle' together with 'color' or 'variant'. "
-                    "Use either bootstyle (deprecated) OR color/variant."
+                    "Cannot use 'bootstyle' together with 'accent' or 'variant'. "
+                    "Use either bootstyle (deprecated) OR accent/variant."
                 )
             # Parse bootstyle (warning already issued at widget level)
             parsed = parse_bootstyle(bootstyle, widget_class)
-            color = parsed['color']
+            accent = parsed['accent']
             variant = parsed['variant']
             widget_class = parsed['widget_class']  # May be cross-widget
 
-        # If no color and no variant, return base widget class
-        if not color and not variant:
+        # If no accent and no variant, return base widget class
+        if not accent and not variant:
             return widget_class
 
         # Initialize style_options to empty dict if None
         if style_options is None:
             style_options = {}
 
-        surface_color = style_options.get("surface_color")
+        surface = style_options.get("surface")
 
         builder_variant = variant if variant is not None else \
             BootstyleBuilderTTk.get_default_variant(widget_class)
 
         custom_prefix = None
 
-        if style_options.keys() or surface_color != 'background':
+        if style_options.keys() or surface != 'background':
             import hashlib
             import json
             options_str = json.dumps(style_options, sort_keys=True)
@@ -373,7 +373,7 @@ class Bootstyle:
             custom_prefix = f"bs[{options_hash}]"
 
         ttk_style = generate_ttk_style_name(
-            color=color,
+            accent=accent,
             variant=variant,
             widget_class=widget_class,
             custom_prefix=custom_prefix,
@@ -387,7 +387,7 @@ class Bootstyle:
             widget_class=widget_class,
             variant=builder_variant,
             ttk_style=ttk_style,
-            color=color,
+            accent=accent,
             options=style_options
         )
 
@@ -395,28 +395,28 @@ class Bootstyle:
 
     @staticmethod
     def override_ttk_widget_constructor(func):
-        """Override ttk widget __init__ to accept bootstyle, color, and variant parameters."""
+        """Override ttk widget __init__ to accept bootstyle, accent, and variant parameters."""
 
         def __init__wrapper(self, *args, **kwargs):
 
-            # Extract new color/variant parameters
-            color = kwargs.pop("color", None)
+            # Extract new accent/variant parameters
+            accent = kwargs.pop("accent", None)
             variant = kwargs.pop("variant", None)
 
             # Extract legacy bootstyle parameter
             had_style_kwarg = 'style' in kwargs
             bootstyle = kwargs.pop("bootstyle", "")
 
-            # Check for conflicting params (bootstyle with color/variant)
-            if bootstyle and (color is not None or variant is not None):
+            # Check for conflicting params (bootstyle with accent/variant)
+            if bootstyle and (accent is not None or variant is not None):
                 raise ValueError(
-                    "Cannot use 'bootstyle' together with 'color' or 'variant'. "
-                    "Use either bootstyle (deprecated) OR color/variant."
+                    "Cannot use 'bootstyle' together with 'accent' or 'variant'. "
+                    "Use either bootstyle (deprecated) OR accent/variant."
                 )
 
             style_options = kwargs.pop("style_options", {})
-            inherit_surface_color = kwargs.pop('inherit_surface_color', None)
-            surface_color_token = kwargs.pop('surface_color', None)
+            inherit_surface = kwargs.pop('inherit_surface', None)
+            surface_token = kwargs.pop('surface', None)
 
             # Extract ttk_class for style lookup (doesn't affect widget's actual class_)
             # This allows custom style builders without affecting bindtags
@@ -428,42 +428,42 @@ class Bootstyle:
             widget_class = self.winfo_class()
             style_class = ttk_class or widget_class
 
-            # Handle bootstyle -> color/variant conversion AFTER widget constructor
+            # Handle bootstyle -> accent/variant conversion AFTER widget constructor
             # so we have the correct style_class for variant validation
             if bootstyle:
                 _warn_bootstyle_deprecated()
-                bs_color, bs_variant = convert_bootstyle_to_color_variant(
+                bs_accent, bs_variant = convert_bootstyle_to_accent_variant(
                     bootstyle, style_class, warn=False  # Already warned above
                 )
-                color = bs_color
+                accent = bs_accent
                 variant = bs_variant
 
             # ===== Surface color inheritance =====
 
-            if inherit_surface_color is None:
-                inherit_surface_color = get_app_settings().inherit_surface_color
+            if inherit_surface is None:
+                inherit_surface = get_app_settings().inherit_surface_color
 
             if hasattr(self, 'master') and self.master is not None:
-                parent_surface_token = getattr(self.master, '_surface_color', 'background')
+                parent_surface_token = getattr(self.master, '_surface', 'content')
             else:
-                parent_surface_token = 'background'
+                parent_surface_token = 'content'
 
-            if surface_color_token:
-                effective_surface_token = surface_color_token
-            elif inherit_surface_color:
+            if surface_token:
+                effective_surface_token = surface_token
+            elif inherit_surface:
                 effective_surface_token = parent_surface_token
             else:
-                effective_surface_token = 'background'
+                effective_surface_token = 'content'
 
-            # container widgets can take their surface color from the color param
+            # container widgets can take their surface color from the accent param
             # Use style_class so custom ttk_class like 'Field' can opt out of this behavior
-            if color and style_class in CONTAINER_CLASSES and surface_color_token is None:
-                effective_surface_token = color
+            if accent and style_class in CONTAINER_CLASSES and surface_token is None:
+                effective_surface_token = accent
 
             # cache the surface color for child components
-            setattr(self, '_surface_color', effective_surface_token)
-            if effective_surface_token != 'background' and effective_surface_token is not None:
-                style_options.setdefault('surface_color', effective_surface_token)
+            setattr(self, '_surface', effective_surface_token)
+            if effective_surface_token != 'content' and effective_surface_token is not None:
+                style_options.setdefault('surface', effective_surface_token)
 
             # ==== Orientation =====
 
@@ -474,12 +474,12 @@ class Bootstyle:
 
             # ==== Create actual ttk style & assign to widget =====
 
-            if (color or variant) and style_class:
+            if (accent or variant) and style_class:
 
                 ttk_style = Bootstyle.create_ttk_style(
                     widget_class=style_class,
                     style_options=style_options,
-                    color=color,
+                    accent=accent,
                     variant=variant,
                 )
                 self.configure(style=ttk_style)
@@ -502,7 +502,7 @@ class Bootstyle:
                         custom_prefix = f"bs[{options_hash}]"
 
                     ttk_style = generate_ttk_style_name(
-                        color=None,
+                        accent=None,
                         variant=default_variant,
                         widget_class=style_class,
                         custom_prefix=custom_prefix,
@@ -520,8 +520,8 @@ class Bootstyle:
                 else:
                     self.configure(style=style_class)
 
-            # Store color, variant, ttk_class, and style_options for later retrieval
-            setattr(self, '_color', color)
+            # Store accent, variant, ttk_class, and style_options for later retrieval
+            setattr(self, '_accent', accent)
             setattr(self, '_variant', variant)
             setattr(self, '_ttk_class', ttk_class)
             setattr(self, '_style_options', style_options)
@@ -536,26 +536,26 @@ class Bootstyle:
 
             # capture bootstrap arguments
             auto_style = kwargs.pop("autostyle", True)
-            inherit_surface_color = kwargs.pop('inherit_surface_color', None)
-            if inherit_surface_color is None:
-                inherit_surface_color = get_app_settings().inherit_surface_color
-            surface_token = kwargs.pop('surface_color', None)
+            inherit_surface = kwargs.pop('inherit_surface', None)
+            if inherit_surface is None:
+                inherit_surface = get_app_settings().inherit_surface_color
+            surface_token = kwargs.pop('surface', None)
 
             func(self, *args, **kwargs)  # the actual constructor
 
             # ===== Surface color inheritance =====
 
             if hasattr(self, 'master') and self.master is not None:
-                parent_surface_token = getattr(self.master, '_surface_color', 'background')
+                parent_surface_token = getattr(self.master, '_surface', 'content')
             else:
-                parent_surface_token = 'background'
+                parent_surface_token = 'content'
 
-            if inherit_surface_color:
+            if inherit_surface:
                 surface_token = parent_surface_token
             else:
-                surface_token = surface_token or 'background'
+                surface_token = surface_token or 'content'
 
-            setattr(self, '_surface_color', surface_token)
+            setattr(self, '_surface', surface_token)
 
             if not auto_style:
                 return
@@ -569,8 +569,8 @@ class Bootstyle:
                 theme_provider=style.theme_provider if style else None,
                 style_instance=style
             )
-            surface = getattr(self, '_surface_color', 'background')
-            builder_tk.call_builder(self, surface_color=surface)
+            surface = getattr(self, '_surface', 'content')
+            builder_tk.call_builder(self, surface=surface)
 
             style.register_tk_widget(self)
 
@@ -582,9 +582,9 @@ __all__ = [
     'parse_bootstyle_v2',
     'parse_bootstyle_legacy',
     'generate_ttk_style_name',
-    'extract_color_from_style',
+    'extract_accent_from_style',
     'extract_variant_from_style',
     'extract_widget_class_from_style',
-    'convert_bootstyle_to_color_variant',
+    'convert_bootstyle_to_accent_variant',
     'Bootstyle',
 ]

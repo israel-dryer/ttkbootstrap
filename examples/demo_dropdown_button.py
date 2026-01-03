@@ -30,7 +30,7 @@ def main():
         root,
         text="Actions",
         items=items,
-        color="primary",
+        accent="primary",
         icon="bootstrap-fill",
         dropdown_button_icon="chevron-down",
     )

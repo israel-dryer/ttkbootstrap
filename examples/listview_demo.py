@@ -104,7 +104,7 @@ def main():
         multi_controls,
         text="Select All",
         command=lambda: (multi_list.select_all(), update_multi_selection()),
-        color='secondary',
+        accent='secondary',
         variant='outline',
         width=12
     ).pack(side='right', padx=(5, 0))
@@ -113,7 +113,7 @@ def main():
         multi_controls,
         text="Clear",
         command=lambda: (multi_list.clear_selection(), update_multi_selection()),
-        color='secondary',
+        accent='secondary',
         variant='outline',
         width=12
     ).pack(side='right')
@@ -164,7 +164,7 @@ def main():
             }),
             update_feature_count()
         ),
-        color='success',
+        accent='success',
         variant='outline',
         width=12
     ).pack(side='right', padx=(5, 0))
@@ -173,7 +173,7 @@ def main():
         feature_controls,
         text="Scroll Top",
         command=feature_list.scroll_to_top,
-        color='secondary',
+        accent='secondary',
         variant='outline',
         width=12
     ).pack(side='right', padx=(5, 0))
@@ -182,7 +182,7 @@ def main():
         feature_controls,
         text="Scroll Bottom",
         command=feature_list.scroll_to_bottom,
-        color='secondary',
+        accent='secondary',
         variant='outline',
         width=12
     ).pack(side='right')

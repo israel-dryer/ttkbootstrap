@@ -19,4 +19,4 @@ ttk.Button(app, text="Readonly Text Entry", command=te.readonly).pack(padx=16, p
 te['show'] = '*'
 
 
-app.run()
+app.mainloop()

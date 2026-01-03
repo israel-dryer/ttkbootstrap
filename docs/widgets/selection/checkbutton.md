@@ -61,14 +61,14 @@ Use `CheckButton` when:
 
 ### Colors and styling
 
-Use semantic color tokens with `color`.
+Use semantic color tokens with `accent`.
 
 ```python
 ttk.CheckButton(app)
-ttk.CheckButton(app, color="secondary")
-ttk.CheckButton(app, color="success")
-ttk.CheckButton(app, color="warning")
-ttk.CheckButton(app, color="danger")
+ttk.CheckButton(app, accent="secondary")
+ttk.CheckButton(app, accent="success")
+ttk.CheckButton(app, accent="warning")
+ttk.CheckButton(app, accent="danger")
 ```
 
 <figure markdown>

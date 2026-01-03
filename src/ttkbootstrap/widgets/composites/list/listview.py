@@ -1043,7 +1043,7 @@ class ListView(Frame):
             row: The ListItem widget to color.
             widget_index: The position of this widget in the row pool (0-based).
         """
-        base_surface = getattr(self, "_surface_color", "background")
+        base_surface = getattr(self, "_surface", "background")
         if not self._striped:
             surface = base_surface
         else:
@@ -1051,8 +1051,8 @@ class ListView(Frame):
             is_odd = (widget_index % 2) == 1
             surface = self._striped_background if is_odd else base_surface
 
-        if hasattr(row, "set_surface_color"):
-            row.set_surface_color(surface)
+        if hasattr(row, "set_surface"):
+            row.set_surface(surface)
 
     def _on_item_drag_start(self, event: Any):
         """Handle item drag start event from `ListItem`.
@@ -1236,7 +1236,7 @@ class ListView(Frame):
     def _show_drag_indicator(self) -> None:
         """Create and show the drag drop indicator line."""
         if self._drag_indicator is None:
-            self._drag_indicator = Frame(self._container, color=self._selected_background)
+            self._drag_indicator = Frame(self._container, accent=self._selected_background)
 
     def _update_drag_indicator_position(self, target_index: int) -> None:
         """Update the drag indicator to show drop location."""

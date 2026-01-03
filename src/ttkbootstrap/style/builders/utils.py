@@ -1,7 +1,7 @@
 """Utility functions for style builders.
 
 This module provides common utilities used across builder functions,
-including color extraction, variant parsing, and style name manipulation.
+including accent extraction, variant parsing, and style name manipulation.
 """
 
 from __future__ import annotations
@@ -15,22 +15,22 @@ COLORS = {
 }
 
 
-def extract_color_from_style(ttk_style: str, default: str = 'primary') -> str:
-    """Extract color token from TTK style name.
+def extract_accent_from_style(ttk_style: str, default: str = 'primary') -> str:
+    """Extract accent token from TTK style name.
 
     Args:
         ttk_style: Full TTK style name (e.g., "custom_abc.success.Outline.TButton")
-        default: Default color if none found
+        default: Default accent if none found
 
     Returns:
-        Color token name (e.g., "success")
+        Accent token name (e.g., "success")
 
     Examples:
-        >>> extract_color_from_style("success.Outline.TButton")
+        >>> extract_accent_from_style("success.Outline.TButton")
         'success'
-        >>> extract_color_from_style("custom_abc.danger.TLabel")
+        >>> extract_accent_from_style("custom_abc.danger.TLabel")
         'danger'
-        >>> extract_color_from_style("TButton")
+        >>> extract_accent_from_style("TButton")
         'primary'
     """
     # Remove custom prefix if present
@@ -38,7 +38,7 @@ def extract_color_from_style(ttk_style: str, default: str = 'primary') -> str:
     if parts and parts[0].startswith('custom_'):
         parts = parts[1:]
 
-    # Find color in parts
+    # Find accent in parts
     for part in parts:
         if part.lower() in COLORS:
             return part.lower()
@@ -67,7 +67,7 @@ def extract_variant_from_style(ttk_style: str) -> Optional[str]:
     if parts and parts[0].startswith('custom_'):
         parts = parts[1:]
 
-    # Find variant (not color, not widget class)
+    # Find variant (not accent, not widget class)
     for part in parts:
         part_lower = part.lower()
         if part_lower not in COLORS and not part.startswith('T'):
@@ -111,16 +111,16 @@ def parse_style_components(ttk_style: str) -> dict:
         Dictionary with parsed components:
         {
             'custom_prefix': 'custom_abc123' or None,
-            'color': 'success' or default,
+            'accent': 'success' or default,
             'variant': 'outline' or None,
             'widget_class': 'TButton'
         }
 
     Examples:
         >>> parse_style_components("custom_abc.success.Outline.TButton")
-        {'custom_prefix': 'custom_abc', 'color': 'success', 'variant': 'outline', 'widget_class': 'TButton'}
+        {'custom_prefix': 'custom_abc', 'accent': 'success', 'variant': 'outline', 'widget_class': 'TButton'}
         >>> parse_style_components("danger.TLabel")
-        {'custom_prefix': None, 'color': 'danger', 'variant': None, 'widget_class': 'TLabel'}
+        {'custom_prefix': None, 'accent': 'danger', 'variant': None, 'widget_class': 'TLabel'}
     """
     parts = ttk_style.split('.')
 
@@ -131,7 +131,7 @@ def parse_style_components(ttk_style: str) -> dict:
 
     return {
         'custom_prefix': custom_prefix,
-        'color': extract_color_from_style(ttk_style),
+        'accent': extract_accent_from_style(ttk_style),
         'variant': extract_variant_from_style(ttk_style),
         'widget_class': extract_widget_class_from_style(ttk_style),
     }

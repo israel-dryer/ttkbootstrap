@@ -22,8 +22,8 @@ class ToastConfig(TypedDict, total=False):
     duration: Optional[int]
     buttons: Optional[Sequence[dict[str, Any]]]
     show_close_button: bool
-    color: Optional[str]
-    bootstyle: Optional[str]  # DEPRECATED: Use color instead
+    accent: Optional[str]
+    bootstyle: Optional[str]  # DEPRECATED: Use accent instead
     position: Optional[str]
     alert: bool
     on_dismissed: Optional[Callable[[Any], Any]]
@@ -47,7 +47,7 @@ class Toast:
             duration: Optional[int] = None,
             buttons: Optional[Sequence[dict[str, Any]]] = None,
             show_close_button: bool = True,
-            color: Optional[str] = None,
+            accent: Optional[str] = None,
             bootstyle: Optional[str] = None,
             position: Optional[str] = None,
             alert: bool = False,
@@ -72,9 +72,9 @@ class Toast:
                 button options (text, bootstyle, command, etc.). Button commands will trigger
                 the on_dismissed callback before closing the toast.
             show_close_button (bool): Whether to show the close button in the header. Default is True.
-            color (str): Color token for the toast container (e.g., "primary", "success",
+            accent (str): Accent token for the toast container (e.g., "primary", "success",
                 "danger"). If None, uses the default background color.
-            bootstyle (str): DEPRECATED - Use `color` instead.
+            bootstyle (str): DEPRECATED - Use `accent` instead.
             position (str): Tkinter geometry string for toast position (e.g., "-25-75" for bottom-right).
                 If None, uses platform-specific defaults.
             alert (bool): If True, plays a system bell sound when the toast is shown.
@@ -83,7 +83,7 @@ class Toast:
                 button or auto-dismiss.
         """
         self._config_keys = {'title', 'icon', 'message', 'memo', 'duration', 'buttons', 'show_close_button',
-                             'color', 'bootstyle', 'position', 'alert', 'on_dismissed'}
+                             'accent', 'bootstyle', 'position', 'alert', 'on_dismissed'}
 
         # initialized configuration
         self._title = title
@@ -93,7 +93,7 @@ class Toast:
         self._duration = duration
         self._buttons = buttons
         self._show_close_button = show_close_button
-        self._color = color or bootstyle  # Support legacy bootstyle parameter
+        self._accent = accent or bootstyle  # Support legacy bootstyle parameter
         self._bootstyle = bootstyle  # Keep for backwards compatibility
         self._position = position
         self._alert = alert
@@ -189,7 +189,7 @@ class Toast:
         self._duration = None
         self._buttons = None
         self._show_close_button = True
-        self._color = None
+        self._accent = None
         self._bootstyle = None
         self._position = None
         self._alert = False
@@ -214,7 +214,7 @@ class Toast:
         has_title = self._title is not None
         has_title_and_message = has_title and self._message is not None
         resolved_title_font = "label" if has_title else "body"
-        muted_foreground = "background[muted]" if self._color is None else f"{self._color}[muted]"
+        muted_foreground = "background[muted]" if self._accent is None else f"{self._accent}[muted]"
 
         # ------ Toplevel setup ------
 
@@ -227,7 +227,7 @@ class Toast:
 
         # ------ Toast Layout ------
 
-        container = ttk.Frame(top, padding=4, color=self._color)
+        container = ttk.Frame(top, padding=4, accent=self._accent)
         container.pack(fill='both', expand=True)
 
         header = ttk.Frame(container, padding=(8, 0, 0, 0))
@@ -251,7 +251,7 @@ class Toast:
             ttk.Button(
                 header,
                 icon="x-lg",
-                color=muted_foreground,
+                accent=muted_foreground,
                 variant="text",
                 style_options={"icon_only": True},
                 command=self.hide
@@ -263,7 +263,7 @@ class Toast:
                 header,
                 text=self._memo,
                 font="caption",
-                color=muted_foreground,
+                accent=muted_foreground,
             ).pack(side='right', pady=8, padx=(0, 0 if self._show_close_button else 12))
 
         # message

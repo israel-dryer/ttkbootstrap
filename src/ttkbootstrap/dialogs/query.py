@@ -333,7 +333,7 @@ class QueryBox:
             title: str = " ",
             first_weekday: int = 6,
             value: Optional[date] = None,
-            color: str = None,
+            accent: str = None,
             bootstyle: str = None,
             hide_window_chrome: bool = False,
             on_result: Optional[Callable[[Any], None]] = None,
@@ -346,8 +346,8 @@ class QueryBox:
             title: The dialog window title.
             first_weekday: First day of the week (0=Monday, 6=Sunday).
             value: Initial date to display.
-            color: Color token for the calendar (e.g., 'primary', 'success').
-            bootstyle: DEPRECATED - Use `color` instead.
+            accent: Accent token for the calendar (e.g., 'primary', 'success').
+            bootstyle: DEPRECATED - Use `accent` instead.
             hide_window_chrome: If True, shows the dialog with override-redirect
                 to hide window decorations.
             on_result: Optional callback receiving the dialog result payload.
@@ -362,7 +362,7 @@ class QueryBox:
             title=title,
             first_weekday=first_weekday,
             initial_date=value,
-            color=color or bootstyle or "primary",
+            accent=accent or bootstyle or "primary",
             hide_window_chrome=hide_window_chrome,
         )
         if on_result:

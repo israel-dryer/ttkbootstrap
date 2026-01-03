@@ -11,24 +11,24 @@ from ttkbootstrap.style.utility import recolor_image
 
 
 @BootstyleBuilderTTk.register_builder('default', 'TProgressbar')
-def build_default_progressbar_style(b: BootstyleBuilderTTk, ttk_style: str, color: str = 'primary', **options):
-    build_progressbar_style(b, ttk_style, color, 'default', **options)
+def build_default_progressbar_style(b: BootstyleBuilderTTk, ttk_style: str, accent: str = 'primary', **options):
+    build_progressbar_style(b, ttk_style, accent, 'default', **options)
 
 
 @BootstyleBuilderTTk.register_builder('striped', 'TProgressbar')
-def build_striped_progressbar_style(b: BootstyleBuilderTTk, ttk_style: str, color: str = 'primary', **options):
-    build_progressbar_style(b, ttk_style, color, 'striped', **options)
+def build_striped_progressbar_style(b: BootstyleBuilderTTk, ttk_style: str, accent: str = 'primary', **options):
+    build_progressbar_style(b, ttk_style, accent, 'striped', **options)
 
 
-def build_progressbar_style(b: BootstyleBuilderTTk, ttk_style: str, color: str, variant: str, **options):
+def build_progressbar_style(b: BootstyleBuilderTTk, ttk_style: str, accent: str, variant: str, **options):
     orient = options.get("orient")
-    surface_token = options.get("surface_color", "background")
+    surface_token = options.get("surface", "content")
 
     # style colors
     background = b.color(surface_token)
     trough_color = b.border(background)
     trough_disabled = b.disabled("background")
-    bar_color = b.color(color or "primary")
+    bar_color = b.color(accent or "primary")
     bar_disabled = b.disabled("text")
 
     sticky = "ew" if orient == "horizontal" else "ns"

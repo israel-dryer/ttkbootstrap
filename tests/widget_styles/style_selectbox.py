@@ -30,7 +30,7 @@ def create_combobox_test(bootstyle, test_name):
             master=frame,
             value=color,
             items=['primary', 'secondary', 'success', 'info', 'warning', 'danger'],
-            color=color,
+            accent=color,
         )
         cbo.pack(padx=5, pady=5, fill=BOTH)
 

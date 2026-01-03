@@ -116,7 +116,7 @@ class Toolbar(Frame):
             self._controls_frame,
             icon={'name': 'x-lg', 'size': 14},
             icon_only=True,
-            color='danger',
+            accent='danger',
             variant='ghost',
             command=self._on_close,
         )
@@ -181,7 +181,7 @@ class Toolbar(Frame):
         icon: str | dict = None,
         text: str = None,
         command: Callable = None,
-        color: str = None,
+        accent: str = None,
         variant: str = None,
         **kwargs
     ) -> Button:
@@ -192,7 +192,7 @@ class Toolbar(Frame):
             text (str | None): Button text. If None and icon provided,
                 creates icon-only button.
             command (Callable | None): Button click callback.
-            color (str | None): Button color token.
+            accent (str | None): Button accent token.
             variant (str | None): Button variant. Uses toolbar default if None.
             **kwargs: Additional arguments passed to Button.
 
@@ -205,7 +205,7 @@ class Toolbar(Frame):
             text=text,
             icon_only=(icon is not None and text is None),
             command=command,
-            color=color,
+            accent=accent,
             variant=variant or self._button_variant,
             **kwargs
         )

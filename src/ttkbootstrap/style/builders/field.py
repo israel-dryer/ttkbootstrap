@@ -14,16 +14,16 @@ from ttkbootstrap.style.utility import recolor_image
 
 
 @BootstyleBuilderTTk.register_builder('default', 'TField')
-def build_field_style(b: BootstyleBuilderTTk, ttk_style: str, color: str = None, **options):
-    surface_token = options.get('surface_color', 'background')
+def build_field_style(b: BootstyleBuilderTTk, ttk_style: str, accent: str = None, **options):
+    surface_token = options.get('surface', 'content')
 
     surface = b.color(surface_token)
-    accent = b.color(color or 'primary')
+    accent_color = b.color(accent or 'primary')
     normal = surface
     border = b.border(surface)
     disabled = b.disabled('text')
-    focused_border = b.focus_border(accent)
-    focused_ring = b.focus_ring(accent, surface)
+    focused_border = b.focus_border(accent_color)
+    focused_ring = b.focus_ring(accent_color, surface)
 
     # input element images
     normal_img = recolor_image(f'input', normal, border, surface)
@@ -48,8 +48,8 @@ def build_field_style(b: BootstyleBuilderTTk, ttk_style: str, color: str = None,
 
 
 @BootstyleBuilderTTk.register_builder('input', 'TField')
-def build_field_input_style(b: BootstyleBuilderTTk, ttk_style: str, color: str = None, **options):
-    surface_token = options.get('surface_color', 'background')
+def build_field_input_style(b: BootstyleBuilderTTk, ttk_style: str, accent: str = None, **options):
+    surface_token = options.get('surface', 'content')
     surface = b.color(surface_token)
     disabled_bg = b.disabled('background')
     disabled_fg = b.disabled('text')
@@ -95,8 +95,8 @@ def build_field_input_style(b: BootstyleBuilderTTk, ttk_style: str, color: str =
     )
 
 @BootstyleBuilderTTk.register_builder('spinner', 'TField')
-def build_spinner_input_style(b: BootstyleBuilderTTk, ttk_style: str, color: str = None, **options):
-    surface_token = options.get('surface_color', 'background')
+def build_spinner_input_style(b: BootstyleBuilderTTk, ttk_style: str, accent: str = None, **options):
+    surface_token = options.get('surface', 'content')
 
     surface = b.color(surface_token)
     disabled_bg = b.disabled('background')
@@ -176,17 +176,17 @@ def build_spinner_input_style(b: BootstyleBuilderTTk, ttk_style: str, color: str
 
 
 @BootstyleBuilderTTk.register_builder('prefix', 'TField')
-def build_field_prefix_style(b: BootstyleBuilderTTk, ttk_style: str, color: str = None, **options):
-    build_field_addon_style(b, ttk_style, color, 'prefix', **options)
+def build_field_prefix_style(b: BootstyleBuilderTTk, ttk_style: str, accent: str = None, **options):
+    build_field_addon_style(b, ttk_style, accent, 'prefix', **options)
 
 
 @BootstyleBuilderTTk.register_builder('suffix', 'TField')
-def build_field_suffix_style(b: BootstyleBuilderTTk, ttk_style: str, color: str = None, **options):
-    build_field_addon_style(b, ttk_style, color, 'suffix', **options)
+def build_field_suffix_style(b: BootstyleBuilderTTk, ttk_style: str, accent: str = None, **options):
+    build_field_addon_style(b, ttk_style, accent, 'suffix', **options)
 
 
 def build_field_addon_style(b: BootstyleBuilderTTk, ttk_style: str, _: str, variant: str, **options):
-    surface_token = options.get('surface_color', 'background')
+    surface_token = options.get('surface', 'content')
     use_active_states = options.get('use_active_states', False)
     surface = b.color(surface_token)
 

@@ -37,10 +37,10 @@ class EntryKwargs(TypedDict, total=False):
     name: str
 
     # ttkbootstrap-specific extensions
-    bootstyle: str  # DEPRECATED: Use color and variant instead
-    color: str
+    bootstyle: str  # DEPRECATED: Use accent and variant instead
+    accent: str
     variant: str
-    surface_color: str
+    surface: str
     style_options: dict[str, Any]
 
 
@@ -71,12 +71,12 @@ class Entry(TextSignalMixin, TTKWrapperBase, WidgetCapabilitiesMixin, TtkStateMi
             background (str): Background color.
             state (str): Widget state.
             takefocus (bool): Whether the widget participates in focus traversal.
-            style (str): Explicit ttk style name (overrides color/variant).
-            color (str): Color token for styling, e.g. 'primary', 'danger', 'success'.
+            style (str): Explicit ttk style name (overrides accent/variant).
+            accent (str): Accent token for styling, e.g. 'primary', 'danger', 'success'.
             variant (str): Style variant, e.g. 'default'.
-            bootstyle (str): DEPRECATED - Use `color` and `variant` instead.
+            bootstyle (str): DEPRECATED - Use `accent` and `variant` instead.
                 Combined style tokens (e.g., 'primary').
-            surface_color (str): Optional surface token; otherwise inherited.
+            surface (str): Optional surface token; otherwise inherited.
             style_options (dict): Optional dict forwarded to the style builder.
         """
         super().__init__(master, **kwargs)

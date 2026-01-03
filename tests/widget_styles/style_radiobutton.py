@@ -20,7 +20,7 @@ def create_radiobutton_test(bootstyle, testname):
 
     # color styles
     for i, color in enumerate(['primary', 'secondary', 'success', 'info', 'warning', 'danger']):
-        cb = ttk.RadioButton(frame, text=color, color=color, variant=bootstyle)
+        cb = ttk.RadioButton(frame, text=color, accent=color, variant=bootstyle)
         cb.configure(variable=var, value=i + 1)
         cb.pack(padx=5, pady=5, fill=BOTH)
         cb.invoke()

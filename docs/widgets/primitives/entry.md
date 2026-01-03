@@ -48,13 +48,13 @@ Use `Entry` when:
 
 ## Appearance
 
-### `color` / `style`
+### `accent` / `style`
 
-Use semantic tokens via `color`, or provide a concrete ttk style via `style=`.
+Use semantic tokens via `accent`, or provide a concrete ttk style via `style=`.
 
 ```python
-ttk.Entry(app, color="primary")
-ttk.Entry(app, color="secondary")
+ttk.Entry(app, accent="primary")
+ttk.Entry(app, accent="secondary")
 ```
 
 !!! link "Design System"

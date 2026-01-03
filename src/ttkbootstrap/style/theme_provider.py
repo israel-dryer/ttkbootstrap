@@ -11,8 +11,31 @@ from ttkbootstrap.style.utility import shade_color, tint_color
 _registered_themes = {}
 _current_theme = None
 
-TINT_WEIGHTS = (0.80, 0.60, 0.40, 0.25)
-SHADE_WEIGHTS = (0.25, 0.4, 0.6, 0.85)
+# Weights for generating color spectrum tints (toward white) and shades (toward black)
+# Each weight represents how much of the original color to retain when mixing
+# Full 50-step increments from 50-450 (tints) and 550-950 (shades)
+TINT_WEIGHTS = {
+    50: 0.90,
+    100: 0.80,
+    150: 0.70,
+    200: 0.60,
+    250: 0.50,
+    300: 0.40,
+    350: 0.325,
+    400: 0.25,
+    450: 0.125,
+}
+SHADE_WEIGHTS = {
+    550: 0.125,
+    600: 0.25,
+    650: 0.325,
+    700: 0.40,
+    750: 0.50,
+    800: 0.60,
+    850: 0.725,
+    900: 0.85,
+    950: 0.95,
+}
 
 
 def register_user_theme(name, path):
@@ -125,11 +148,34 @@ def load_package_theme(filename: str, package="ttkbootstrap.assets.themes"):
 
 
 def color_spectrum(token, value):
-    spectrum_names = [f'{token}[{x}]' for x in [100, 200, 300, 400, 500, 600, 700, 800, 900]]
-    tints = [tint_color(value, w) for w in TINT_WEIGHTS]
-    shades = [shade_color(value, w) for w in SHADE_WEIGHTS]
-    spectrum_colors = [*tints, value, *shades]
-    return {name: color for name, color in zip(spectrum_names, spectrum_colors)}
+    """Generate a color spectrum with 50-step increments from 50-950.
+
+    Creates tints (lighter) and shades (darker) of the base color:
+    - 50-450: Tints toward white (50 is lightest)
+    - 500: Base color
+    - 550-950: Shades toward black (950 is darkest)
+
+    Args:
+        token: The color token name (e.g., 'gray', 'blue')
+        value: The base hex color value
+
+    Returns:
+        Dict mapping spectrum names to hex colors
+    """
+    result = {}
+
+    # Generate tints (50-450)
+    for stop, weight in TINT_WEIGHTS.items():
+        result[f'{token}[{stop}]'] = tint_color(value, weight)
+
+    # Base color (500)
+    result[f'{token}[500]'] = value
+
+    # Generate shades (550-950)
+    for stop, weight in SHADE_WEIGHTS.items():
+        result[f'{token}[{stop}]'] = shade_color(value, weight)
+
+    return result
 
 
 class ThemeProvider:
@@ -254,8 +300,59 @@ class ThemeProvider:
                 continue
             colors[token] = colors[value]
 
+        # Surface tokens - semantic ramps for container backgrounds
+        self._build_surface_tokens(colors)
+
         self._colors.clear()
         self._colors.update(**colors)
+
+    def _build_surface_tokens(self, colors: dict):
+        """Build semantic surface tokens for container backgrounds.
+
+        Surface tokens provide deterministic, theme-defined backgrounds
+        that don't rely on "background +1 math" for elevation.
+
+        Token families:
+        - content: Main content areas (pages, cards, panels)
+        - chrome: UI chrome (sidebars, toolbars, navigation)
+        - overlay: Floating elements (menus, dialogs, tooltips)
+        - titlebar: Window title bars
+        """
+        is_dark = self.mode == 'dark'
+
+        if is_dark:
+            colors['content[0]'] = colors['background']
+            colors['content[1]'] = colors['gray[850]']
+            colors['content[2]'] = colors['gray[800]']
+
+            colors['chrome[0]'] = colors['gray[900]']
+            colors['chrome[1]'] = colors['gray[850]']
+
+            colors['titlebar[0]'] = colors['gray[900]']
+
+            colors['overlay[0]'] = colors['gray[800]']
+            colors['overlay[1]'] = colors['gray[750]']
+            colors['overlay[2]'] = colors['gray[700]']
+            colors['overlay[3]'] = colors['gray[650]']
+        else:
+            colors['content[0]'] = colors['background']
+            colors['content[1]'] = colors['gray[50]']
+            colors['content[2]'] = colors['gray[150]']
+
+            colors['chrome[0]'] = colors['gray[50]']
+            colors['chrome[1]'] = colors['gray[100]']
+
+            colors['titlebar[0]'] = colors['gray[50]']
+
+            colors['overlay[0]'] = colors['white']
+            colors['overlay[1]'] = colors['gray[50]']
+            colors['overlay[2]'] = colors['gray[50]']
+            colors['overlay[3]'] = colors['gray[100]']
+
+        colors['content'] = colors['content[0]']
+        colors['chrome'] = colors['chrome[0]']
+        colors['overlay'] = colors['overlay[0]']
+        colors['titlebar'] = colors['titlebar[0]']
 
     @property
     def name(self):

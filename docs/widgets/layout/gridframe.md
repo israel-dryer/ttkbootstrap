@@ -55,10 +55,10 @@ Use `GridFrame` when:
 
 ### Styling
 
-`GridFrame` inherits all styling options from Frame. Use `color` for semantic tokens.
+`GridFrame` inherits all styling options from Frame. Use `accent` for semantic tokens.
 
 ```python
-ttk.GridFrame(app, color="secondary", padding=20)
+ttk.GridFrame(app, accent="secondary", padding=20)
 ```
 
 !!! link "Design System"

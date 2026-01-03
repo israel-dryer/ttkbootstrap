@@ -53,7 +53,7 @@ Use TreeView when:
 TreeView supports theming through ttkbootstrap:
 
 ```python
-ttk.Treeview(app, color="primary")
+ttk.Treeview(app, accent="primary")
 ```
 
 !!! link "Design System"

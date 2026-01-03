@@ -18,7 +18,7 @@ import ttkbootstrap as ttk
 app = ttk.App()
 
 ttk.Badge(app, text="New").pack(padx=20, pady=10)
-ttk.Badge(app, text="3", color="primary").pack(padx=20, pady=10)
+ttk.Badge(app, text="3", accent="primary").pack(padx=20, pady=10)
 
 app.mainloop()
 ```
@@ -47,15 +47,15 @@ Use `Badge` when:
 
 ## Appearance
 
-### Styling with `color`
+### Styling with `accent`
 
 `Badge` defaults to `variant="badge"` and uses the badge styling automatically.
 
 ```python
 ttk.Badge(app, text="Beta")                    # default badge styling
-ttk.Badge(app, text="Beta", color="primary")   # primary colored badge
-ttk.Badge(app, text="Beta", color="success")   # success colored badge
-ttk.Badge(app, text="Beta", color="danger")    # danger colored badge
+ttk.Badge(app, text="Beta", accent="primary")   # primary colored badge
+ttk.Badge(app, text="Beta", accent="success")   # success colored badge
+ttk.Badge(app, text="Beta", accent="danger")    # danger colored badge
 ```
 
 !!! link "Design System"
@@ -71,7 +71,7 @@ Because `Badge` subclasses `Label`, you can use icons the same way:
 
 ```python
 ttk.Badge(app, text="Verified", icon="check").pack(pady=6)
-ttk.Badge(app, icon="bell", icon_only=True, color="info").pack(pady=6)
+ttk.Badge(app, icon="bell", icon_only=True, accent="info").pack(pady=6)
 ```
 
 ### Common options

@@ -49,7 +49,7 @@ ttk.Button(
     text="Message Only",
     command=lambda: toast.show(
         message="You have new messages",
-        color="danger")
+        accent="danger")
 ).pack(side='right', padx=20, pady=20)
 
 ttk.Button(
@@ -82,7 +82,7 @@ ttk.Button(
         title="ttkbootstrap",
         icon='bootstrap-fill',
         message="Hello world! This is a toast message",
-        color="primary",
+        accent="primary",
         position="-100+100",
         memo='Just now')
 ).pack(side='right', padx=20, pady=20)
