@@ -2,19 +2,72 @@ from colorsys import hls_to_rgb, rgb_to_hls
 from pathlib import Path
 from typing import Tuple, cast
 
-from PIL import Image, ImageColor, ImageOps
+from PIL import Image, ImageColor, ImageOps, ImageDraw
 from PIL.ImageTk import PhotoImage
 
-from ttkbootstrap.style.types import ColorModel
-from ttkbootstrap.runtime.utility import clamp
 from ttkbootstrap.core.images import Image as ImageService
-
+from ttkbootstrap.runtime.utility import clamp
+from ttkbootstrap.style.types import ColorModel
 
 ASSETS_DIR = Path(__file__).parent.parent / "assets" / "widgets"
 
 HUE = 360
 SAT = 100
 LUM = 100
+
+
+def create_box_image(width: int, height: int, color: str):
+    cache_key = f"{width}{height}{color}"
+    cached = ImageService.get_cached(cache_key)
+    if cached is not None:
+        return cached
+
+    img = Image.new("RGBA", (width, height), color)
+    pm = PhotoImage(image=img)
+
+    ImageService.set_cached(cache_key, pm)
+    return pm
+
+
+def create_rounded_border_image(*,
+        size=200,
+        radius=4,
+        thickness=2,
+        fill='#ffffff',
+        stroke='#000000'
+):
+    cache_key = f"{size}{radius}{thickness}{fill}{stroke}"
+    cached = ImageService.get_cached(cache_key)
+    if cached is not None:
+        return cached
+
+    scale = 2  # light supersample for corner smoothing
+    s = size * scale
+    r = radius * scale
+    t = thickness * scale
+    half_t = t / 2  # stroke is centered, so inset by half
+
+    img = Image.new("RGBA", (s, s), (0, 0, 0, 0))
+    d = ImageDraw.Draw(img)
+
+    # Draw rounded rect with fill and outline stroke
+    # Inset by half stroke width so the stroke stays within image bounds
+    d.rounded_rectangle(
+        (half_t, half_t, s - 1 - half_t, s - 1 - half_t),
+        radius=r,
+        fill=fill,
+        outline=stroke,
+        width=t,
+    )
+
+    # Resize with LANCZOS for smooth corners, then sharpen to restore edge crispness
+    from PIL import ImageFilter
+    img = img.resize((size, size), Image.Resampling.LANCZOS)
+    img = img.filter(ImageFilter.UnsharpMask(radius=0.5, percent=150, threshold=0))
+
+    pm = PhotoImage(image=img)
+    ImageService.set_cached(cache_key, pm)
+    return pm
 
 
 def create_transparent_image(width: int, height: int):
