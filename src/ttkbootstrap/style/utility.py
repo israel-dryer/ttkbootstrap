@@ -42,22 +42,29 @@ def create_rounded_border_image(*,
         return cached
 
     scale = 2  # light supersample for corner smoothing
+
     s = size * scale
     r = radius * scale
     t = thickness * scale
-    half_t = t / 2  # stroke is centered, so inset by half
 
     img = Image.new("RGBA", (s, s), (0, 0, 0, 0))
     d = ImageDraw.Draw(img)
 
-    # Draw rounded rect with fill and outline stroke
-    # Inset by half stroke width so the stroke stays within image bounds
+    # Two-rectangle approach for precise bounds control:
+    # 1. Outer rounded rect (stroke color) - fills to edges
+    # 2. Inner rounded rect (fill color) - inset by stroke thickness
+    outer_radius = r + t
     d.rounded_rectangle(
-        (half_t, half_t, s - 1 - half_t, s - 1 - half_t),
+        (0, 0, s - 1, s - 1),
+        radius=outer_radius,
+        fill=stroke,
+    )
+
+    # Inner rect inset by stroke thickness
+    d.rounded_rectangle(
+        (t, t, s - 1 - t, s - 1 - t),
         radius=r,
         fill=fill,
-        outline=stroke,
-        width=t,
     )
 
     # Resize with LANCZOS for smooth corners, then sharpen to restore edge crispness
