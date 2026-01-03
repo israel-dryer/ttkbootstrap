@@ -42,6 +42,8 @@ class ContextMenu(CustomConfigMixin):
     Displays a popup menu with support for command buttons, checkbuttons,
     radiobuttons, and separators. The menu automatically hides when clicking
     outside or when an item is selected.
+
+    Items can be accessed by key (str) or index (int) for backward compatibility.
     """
 
     def __init__(
@@ -114,8 +116,10 @@ class ContextMenu(CustomConfigMixin):
         if minwidth or minheight:
             self._toplevel.minsize(minwidth or 0, minheight or 0)
 
-        # Track menu items
-        self._items = []
+        # Track menu items by key with insertion order
+        self._items: dict[str, Widget] = {}
+        self._item_order: list[str] = []
+        self._counter = 0  # For auto-generating keys
         self._highlighted_index = -1
 
         # Add initial items if provided
@@ -125,6 +129,58 @@ class ContextMenu(CustomConfigMixin):
         # Setup keyboard bindings
         self._setup_keyboard_bindings()
 
+    def _generate_key(self) -> str:
+        """Generate an auto key for an item."""
+        key = f"item_{self._counter}"
+        self._counter += 1
+        return key
+
+    def _resolve_key(self, key_or_index: str | int) -> str:
+        """Resolve a key or index to a key.
+
+        Args:
+            key_or_index: Either a string key or integer index.
+
+        Returns:
+            The string key.
+
+        Raises:
+            KeyError: If key not found.
+            IndexError: If index out of range.
+        """
+        if isinstance(key_or_index, int):
+            try:
+                return self._item_order[key_or_index]
+            except IndexError as exc:
+                raise IndexError(f"ContextMenu item index {key_or_index} out of range") from exc
+        else:
+            if key_or_index not in self._items:
+                raise KeyError(f"No item with key '{key_or_index}'")
+            return key_or_index
+
+    def _register_item(self, key: str | None, widget: Widget) -> str:
+        """Register an item with optional key, auto-generating if needed.
+
+        Args:
+            key: Optional key. Auto-generated if None.
+            widget: The widget to register.
+
+        Returns:
+            The key used (either provided or auto-generated).
+
+        Raises:
+            ValueError: If key already exists.
+        """
+        if key is None:
+            key = self._generate_key()
+
+        if key in self._items:
+            raise ValueError(f"Item with key '{key}' already exists")
+
+        self._items[key] = widget
+        self._item_order.append(key)
+        return key
+
     def on_item_click(self, callback: Callable) -> None:
         """Set item click callback. Callback receives ``item_info = {'type': str, 'text': str, 'value': Any}``."""
         self._on_item_click_callback = callback
@@ -133,13 +189,23 @@ class ContextMenu(CustomConfigMixin):
         """Remove the item click callback."""
         self._on_item_click_callback = None
 
-    def add_command(self, text: str = None, icon: str = None, command: Callable = None) -> Button:
+    def add_command(
+            self,
+            text: str = None,
+            icon: str = None,
+            command: Callable = None,
+            disabled: bool = False,
+            key: str = None
+    ) -> Button:
         """Add a command button to the menu.
 
         Args:
             text (str): Button text label.
-            icon (str): Optional icon name.
+            icon (str): Optional icon name. Uses 'empty' placeholder if None
+                to maintain text alignment with items that have icons.
             command (Callable): Function to call when clicked.
+            disabled (bool): If True, the item is disabled and cannot be clicked.
+            key (str): Optional unique identifier. Auto-generated if not provided.
 
         Returns:
             Button: The created Button widget.
@@ -147,22 +213,31 @@ class ContextMenu(CustomConfigMixin):
         btn = Button(
             self._frame,
             text=text,
-            icon=icon,
-            compound='left' if icon else 'text',
+            icon=icon or 'empty',  # Use 'empty' placeholder for alignment
+            compound='left',
             variant='context-item',
             command=lambda: self._handle_item_click('command', text, command)
         )
+        if disabled:
+            btn.state(['disabled'])
         btn.pack(fill='x', padx=0, pady=0)
-        self._items.append(btn)
+        self._register_item(key, btn)
         return btn
 
-    def add_checkbutton(self, text: str = None, value: bool = False, command: Callable = None) -> CheckButton:
+    def add_checkbutton(
+            self,
+            text: str = None,
+            value: bool = False,
+            command: Callable = None,
+            key: str = None
+    ) -> CheckButton:
         """Add a checkbutton to the menu.
 
         Args:
             text (str): Checkbutton text label.
             value (bool): Initial checked state.
             command (Callable): Function to call when toggled.
+            key (str): Optional unique identifier. Auto-generated if not provided.
 
         Returns:
             CheckButton: The created CheckButton widget.
@@ -181,7 +256,7 @@ class ContextMenu(CustomConfigMixin):
         )
         cb.pack(fill='x', padx=0, pady=0)
         cb._variable = var  # Store reference to prevent garbage collection
-        self._items.append(cb)
+        self._register_item(key, cb)
         return cb
 
     def add_radiobutton(
@@ -189,7 +264,8 @@ class ContextMenu(CustomConfigMixin):
             text: str = None,
             value: Any = None,
             variable: Union[StringVar, IntVar] = None,
-            command: Callable = None
+            command: Callable = None,
+            key: str = None
     ) -> RadioButton:
         """Add a radiobutton to the menu.
 
@@ -198,6 +274,7 @@ class ContextMenu(CustomConfigMixin):
             value (Any): Value to set when selected.
             variable (StringVar | IntVar): Tkinter Variable to link with.
             command (Callable): Function to call when selected.
+            key (str): Optional unique identifier. Auto-generated if not provided.
 
         Returns:
             RadioButton: The created RadioButton widget.
@@ -215,18 +292,21 @@ class ContextMenu(CustomConfigMixin):
             command=on_select
         )
         rb.pack(fill='x', padx=0, pady=0)
-        self._items.append(rb)
+        self._register_item(key, rb)
         return rb
 
-    def add_separator(self) -> Separator:
+    def add_separator(self, key: str = None) -> Separator:
         """Add a horizontal separator to the menu.
+
+        Args:
+            key (str): Optional unique identifier. Auto-generated if not provided.
 
         Returns:
             Separator: The created Separator widget.
         """
         sep = Separator(self._frame, orient='horizontal')
         sep.pack(fill='x', padx=0, pady=3)
-        self._items.append(sep)
+        self._register_item(key, sep)
         return sep
 
     def add_item(self, type: str, **kwargs: Any) -> Widget:
@@ -246,7 +326,7 @@ class ContextMenu(CustomConfigMixin):
         elif type == 'radiobutton':
             return self.add_radiobutton(**kwargs)
         elif type == 'separator':
-            return self.add_separator()
+            return self.add_separator(**kwargs)
         else:
             raise ValueError(f"Unknown item type: {type}")
 
@@ -271,6 +351,14 @@ class ContextMenu(CustomConfigMixin):
         self._delegate_items(value)
         return None
 
+    def keys(self) -> tuple[str, ...]:
+        """Get all item keys in order.
+
+        Returns:
+            A tuple of all item keys in the order they were added.
+        """
+        return tuple(self._item_order)
+
     def insert_item(self, index: int, type: str, **kwargs: Any) -> Widget:
         """Insert a new item at the given index.
 
@@ -282,12 +370,16 @@ class ContextMenu(CustomConfigMixin):
         Returns:
             Widget: The created widget.
         """
-        before_widget = self._items[index] if 0 <= index < len(self._items) else None
+        before_key = self._item_order[index] if 0 <= index < len(self._item_order) else None
+        before_widget = self._items[before_key] if before_key else None
 
         widget = self.add_item(type, **kwargs)
 
         if before_widget is None:
             return widget
+
+        # Get the key of the just-added widget (last in order)
+        new_key = self._item_order.pop()
 
         pack_info = widget.pack_info()
         widget.pack_forget()
@@ -295,37 +387,35 @@ class ContextMenu(CustomConfigMixin):
         pack_info['before'] = before_widget
         widget.pack(**pack_info)
 
-        self._items.pop()
-        self._items.insert(index, widget)
+        # Insert key at correct position
+        self._item_order.insert(index, new_key)
         return widget
 
-    def item(self, index: int) -> Widget:
-        """Get a menu item by its index.
+    def item(self, key_or_index: str | int) -> Widget:
+        """Get a menu item by key or index.
 
         Args:
-            index: The index of the item to retrieve.
+            key_or_index: The key (str) or index (int) of the item to retrieve.
 
         Returns:
             The menu item widget.
 
         Raises:
+            KeyError: If no item with the given key exists.
             IndexError: If the index is out of range.
         """
-        try:
-            return self._items[index]
-        except IndexError as exc:
-            raise IndexError(f"ContextMenu item index {index} out of range") from exc
+        key = self._resolve_key(key_or_index)
+        return self._items[key]
 
-    def remove_item(self, index: int) -> None:
-        """Remove and destroy the item at the given index.
+    def remove_item(self, key_or_index: str | int) -> None:
+        """Remove and destroy the item by key or index.
 
         Args:
-            index (int): Index of the item to remove.
+            key_or_index: Key (str) or index (int) of the item to remove.
         """
-        try:
-            widget = self._items.pop(index)
-        except IndexError as exc:
-            raise IndexError(f"ContextMenu item index {index} out of range") from exc
+        key = self._resolve_key(key_or_index)
+        widget = self._items.pop(key)
+        self._item_order.remove(key)
 
         try:
             widget.destroy()
@@ -333,20 +423,21 @@ class ContextMenu(CustomConfigMixin):
             pass
         return None
 
-    def move_item(self, from_index: int, to_index: int) -> Widget:
+    def move_item(self, from_key_or_index: str | int, to_index: int) -> Widget:
         """Reorder an existing item to a new index.
 
         Args:
-            from_index (int): Current index of the item to move.
+            from_key_or_index: Key (str) or index (int) of the item to move.
             to_index (int): New index for the item.
 
         Returns:
             Widget: The moved widget.
         """
-        try:
-            widget = self._items.pop(from_index)
-        except IndexError as exc:
-            raise IndexError(f"ContextMenu item index {from_index} out of range") from exc
+        key = self._resolve_key(from_key_or_index)
+        widget = self._items[key]
+
+        # Remove from current position in order
+        self._item_order.remove(key)
 
         pack_info = widget.pack_info()
         widget.pack_forget()
@@ -354,11 +445,13 @@ class ContextMenu(CustomConfigMixin):
         # Clamp destination to valid bounds
         if to_index < 0:
             to_index = 0
-        if to_index > len(self._items):
-            to_index = len(self._items)
+        if to_index > len(self._item_order):
+            to_index = len(self._item_order)
 
-        self._items.insert(to_index, widget)
-        before_widget = self._items[to_index + 1] if to_index + 1 < len(self._items) else None
+        # Insert at new position
+        self._item_order.insert(to_index, key)
+        before_key = self._item_order[to_index + 1] if to_index + 1 < len(self._item_order) else None
+        before_widget = self._items[before_key] if before_key else None
 
         pack_info.pop('in', None)
         pack_info.pop('in_', None)
@@ -369,11 +462,11 @@ class ContextMenu(CustomConfigMixin):
         widget.pack(in_=self._frame, **pack_info)
         return widget
 
-    def configure_item(self, index: int, option: str | None = None, **kwargs: Any) -> Any:
-        """Configure an individual menu item by index.
+    def configure_item(self, key_or_index: str | int, option: str | None = None, **kwargs: Any) -> Any:
+        """Configure an individual menu item by key or index.
 
         Args:
-            index: Zero-based index of the item in insertion order.
+            key_or_index: Key (str) or index (int) of the item to configure.
             option: Optional option name to query (getter path).
             **kwargs: Option values to set (setter path).
 
@@ -382,10 +475,8 @@ class ContextMenu(CustomConfigMixin):
             - When called with option only: a 5-tuple matching tkinter's configure.
             - When called with kwargs: the result of the underlying widget's configure.
         """
-        try:
-            widget = self._items[index]
-        except IndexError as exc:
-            raise IndexError(f"ContextMenu item index {index} out of range") from exc
+        key = self._resolve_key(key_or_index)
+        widget = self._items[key]
 
         # Getter: all options
         if option is None and not kwargs:
@@ -436,7 +527,7 @@ class ContextMenu(CustomConfigMixin):
 
     def _get_actionable_items(self) -> list:
         """Return list of items that can be navigated to (excludes separators)."""
-        return [item for item in self._items if not isinstance(item, Separator)]
+        return [self._items[key] for key in self._item_order if not isinstance(self._items[key], Separator)]
 
     def _on_arrow_down(self, event) -> str:
         """Handle arrow down key."""
@@ -758,15 +849,17 @@ class ContextMenu(CustomConfigMixin):
     def _delegate_items(self, value: list[ContextMenuItem] | None):
         """Get or replace the menu items."""
         if value is None:
-            return self._items
+            # Return items in order
+            return [self._items[key] for key in self._item_order]
 
         # Destroy existing widgets before replacing
-        for widget in self._items:
+        for widget in self._items.values():
             try:
                 widget.destroy()
             except TclError:
                 pass
-        self._items = []
+        self._items = {}
+        self._item_order = []
+        self._counter = 0
         self.add_items(value)
         return None
-
