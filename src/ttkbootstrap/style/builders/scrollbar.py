@@ -9,20 +9,20 @@ from ttkbootstrap.style.utility import recolor_image
 
 
 @BootstyleBuilderTTk.register_builder('square', 'TScrollbar')
-def build_scrollbar_style(b: BootstyleBuilderTTk, ttk_style: str, color: str = None, **options):
+def build_scrollbar_style(b: BootstyleBuilderTTk, ttk_style: str, accent: str = None, **options):
     if options.get('orient', 'vertical') == 'vertical':
-        build_vertical_scrollbar(b, ttk_style, color, **options)
+        build_vertical_scrollbar(b, ttk_style, accent, **options)
     else:
-        build_horizontal_scrollbar(b, ttk_style, color, **options)
+        build_horizontal_scrollbar(b, ttk_style, accent, **options)
 
 
-def build_horizontal_scrollbar(b: BootstyleBuilderTTk, ttk_style: str, color: str = None, **options):
+def build_horizontal_scrollbar(b: BootstyleBuilderTTk, ttk_style: str, accent: str = None, **options):
     surface_token = options.get('surface_color', 'background')
     surface = b.color(surface_token)
     border_color = b.border(surface)
 
-    if color is not None:
-        thumb_normal = b.color(color)
+    if accent is not None:
+        thumb_normal = b.color(accent)
     else:
         thumb_normal = border_color
 
@@ -95,13 +95,13 @@ def build_horizontal_scrollbar(b: BootstyleBuilderTTk, ttk_style: str, color: st
     )
 
 
-def build_vertical_scrollbar(b: BootstyleBuilderTTk, ttk_style: str, color: str = None, **options):
+def build_vertical_scrollbar(b: BootstyleBuilderTTk, ttk_style: str, accent: str = None, **options):
     surface_token = options.get('surface_color', 'background')
     surface = b.color(surface_token)
     border_color = b.border(surface)
 
-    if color is not None:
-        thumb_normal = b.color(color)
+    if accent is not None:
+        thumb_normal = b.color(accent)
     else:
         thumb_normal = border_color
 
@@ -177,7 +177,7 @@ def build_vertical_scrollbar(b: BootstyleBuilderTTk, ttk_style: str, color: str 
 @BootstyleBuilderTTk.register_builder('default', 'TScrollbar')
 @BootstyleBuilderTTk.register_builder('round', 'TScrollbar')
 @BootstyleBuilderTTk.register_builder('rounded', 'TScrollbar')
-def build_rounded_scrollbar_style(b: BootstyleBuilderTTk, ttk_style: str, color: str = None, **options):
+def build_rounded_scrollbar_style(b: BootstyleBuilderTTk, ttk_style: str, accent: str = None, **options):
     """
     Builds the 'rounded' scrollbar style
 
@@ -186,18 +186,18 @@ def build_rounded_scrollbar_style(b: BootstyleBuilderTTk, ttk_style: str, color:
 
     """
     if options.get('orient', 'vertical') == 'vertical':
-        _build_rounded_vertical_scrollbar(b, ttk_style, color, **options)
+        _build_rounded_vertical_scrollbar(b, ttk_style, accent, **options)
     else:
-        _build_rounded_horizontal_scrollbar(b, ttk_style, color, **options)
+        _build_rounded_horizontal_scrollbar(b, ttk_style, accent, **options)
 
 
-def _build_rounded_vertical_scrollbar(b: BootstyleBuilderTTk, ttk_style: str, color: str = None, **options):
+def _build_rounded_vertical_scrollbar(b: BootstyleBuilderTTk, ttk_style: str, accent: str = None, **options):
     surface_token = options.get('surface_color', 'background')
     surface = b.color(surface_token)
     border_color = b.border(surface)
 
-    if color is not None:
-        thumb_normal = b.color(color)
+    if accent is not None:
+        thumb_normal = b.color(accent)
     else:
         thumb_normal = border_color
 
@@ -274,13 +274,13 @@ def _build_rounded_vertical_scrollbar(b: BootstyleBuilderTTk, ttk_style: str, co
     )
 
 
-def _build_rounded_horizontal_scrollbar(b: BootstyleBuilderTTk, ttk_style: str, color: str = None, **options):
+def _build_rounded_horizontal_scrollbar(b: BootstyleBuilderTTk, ttk_style: str, accent: str = None, **options):
     surface_token = options.get('surface_color', 'background')
     surface = b.color(surface_token)
     border_color = b.border(surface)
 
-    if color is not None:
-        thumb_normal = b.color(color)
+    if accent is not None:
+        thumb_normal = b.color(accent)
     else:
         thumb_normal = border_color
 

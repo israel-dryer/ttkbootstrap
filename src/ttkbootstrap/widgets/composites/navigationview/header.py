@@ -44,12 +44,12 @@ class NavigationViewHeader(Frame):
 
         super().__init__(master, **kwargs)
 
-        # Create header label with 'label' font (smaller, bold) and secondary color
+        # Create header label with 'label' font (smaller, bold) and secondary accent
         self._text_label = Label(
             self,
             text=text,
             font='label',
-            color='secondary',
+            accent='secondary',
             anchor='w',
         )
         self._text_label.pack(fill='x')

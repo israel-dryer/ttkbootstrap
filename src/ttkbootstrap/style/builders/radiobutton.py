@@ -11,8 +11,8 @@ from ttkbootstrap.style.utility import create_transparent_image, recolor_image
 
 
 @BootstyleBuilderTTk.register_builder('default', 'TRadiobutton')
-def build_radiobutton_style(b: BootstyleBuilderTTk, ttk_style: str, color: str = 'primary', **options):
-    accent_token = color or 'primary'
+def build_radiobutton_style(b: BootstyleBuilderTTk, ttk_style: str, accent: str = 'primary', **options):
+    accent_token = accent or 'primary'
     surface_token = options.get('surface_color', 'background')
 
     background = b.color(surface_token)

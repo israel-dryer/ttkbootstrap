@@ -68,10 +68,10 @@ Use `Scrollbar` when:
 
 ### Styling
 
-Use `color` (or `style=`) to match your theme:
+Use `accent` (or `style=`) to match your theme:
 
 ```python
-ttk.Scrollbar(app, color="secondary")
+ttk.Scrollbar(app, accent="secondary")
 ```
 
 !!! link "Design System"

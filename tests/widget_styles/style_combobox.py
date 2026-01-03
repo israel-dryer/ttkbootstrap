@@ -27,7 +27,7 @@ def create_combobox_test(test_name):
         cbo = ttk.Combobox(
             master=frame,
             values=[color, 'other'],
-            color=color,
+            accent=color,
         )
         cbo.pack(padx=5, pady=5, fill=BOTH)
         cbo.current(0)

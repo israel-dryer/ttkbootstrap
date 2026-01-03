@@ -23,7 +23,7 @@ def create_radio_toggle_test(bootstyle, name):
             text=color,
             signal=sig,
             value=color,
-            color=color,
+            accent=color,
             variant=bootstyle,
             width=15
         )

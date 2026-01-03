@@ -7,25 +7,25 @@ from ttkbootstrap.style.utility import recolor_image
 
 
 @BootstyleBuilderTTk.register_builder('calendar-day', 'Toolbutton')
-def build_calendar_day_toolbutton_style(b: BootstyleBuilderTTk, ttk_style: str, color: str = None, **options):
+def build_calendar_day_toolbutton_style(b: BootstyleBuilderTTk, ttk_style: str, accent: str = None, **options):
     """
     Configure the button style.
 
     Style options include:
         * icon_only
     """
-    accent_token = color or 'primary'
+    accent_token = accent or 'primary'
     surface_token = options.get('surface_color', 'background')
 
     surface = b.color(surface_token)
     on_surface = b.on_color(surface)
-    accent = b.color(accent_token)
+    accent_color = b.color(accent_token)
 
-    active = b.active(accent)
-    accent_focus = b.focus(accent)
-    on_accent = b.on_color(accent)
+    active = b.active(accent_color)
+    accent_focus = b.focus(accent_color)
+    on_accent = b.on_color(accent_color)
 
-    selected = b.selected(accent)
+    selected = b.selected(accent_color)
 
 
     focus_ring = b.focus_ring(accent_focus, surface)
@@ -89,24 +89,24 @@ def build_calendar_day_toolbutton_style(b: BootstyleBuilderTTk, ttk_style: str, 
 
 
 @BootstyleBuilderTTk.register_builder('calendar-range', 'Toolbutton')
-def build_calendar_range_toolbutton_style(b: BootstyleBuilderTTk, ttk_style: str, color: str = None, **options):
+def build_calendar_range_toolbutton_style(b: BootstyleBuilderTTk, ttk_style: str, accent: str = None, **options):
     """
     Configure the button style.
 
     Style options include:
         * icon_only
     """
-    accent_token = color or 'primary'
+    accent_token = accent or 'primary'
     surface_token = options.get('surface_color', 'background')
 
     surface = b.color(surface_token)
     on_surface = b.on_color(surface)
 
-    accent = b.subtle(accent_token, surface)
+    accent_color = b.subtle(accent_token, surface)
 
     surface_active = b.active(surface)
-    accent_focus = b.focus(accent)
-    on_accent = b.on_color(accent)
+    accent_focus = b.focus(accent_color)
+    on_accent = b.on_color(accent_color)
 
     focus_ring = b.focus_ring(accent_focus, surface)
     disabled = b.disabled()
@@ -115,8 +115,8 @@ def build_calendar_range_toolbutton_style(b: BootstyleBuilderTTk, ttk_style: str
     normal_img = recolor_image('button', surface, surface, surface, surface)
     normal_focus_img = recolor_image('button', surface, surface, focus_ring, surface)
     active_img = recolor_image('button', surface_active, surface_active, surface, surface)
-    selected_img = recolor_image('button', accent, accent, accent, accent)
-    selected_focus_img = recolor_image('button', accent_focus, accent_focus, focus_ring, accent)
+    selected_img = recolor_image('button', accent_color, accent_color, accent_color, accent_color)
+    selected_focus_img = recolor_image('button', accent_focus, accent_focus, focus_ring, accent_color)
 
     disabled_img = recolor_image('button', disabled, disabled, surface, surface)
 
@@ -164,7 +164,7 @@ def build_calendar_range_toolbutton_style(b: BootstyleBuilderTTk, ttk_style: str
 
 
 @BootstyleBuilderTTk.register_builder('calendar-outside', 'Toolbutton')
-def build_calendar_outside_style(b: BootstyleBuilderTTk, ttk_style: str, color: str = None, **options):
+def build_calendar_outside_style(b: BootstyleBuilderTTk, ttk_style: str, accent: str = None, **options):
     """
     Configure style for outside/disabled calendar days.
 
@@ -192,26 +192,26 @@ def build_calendar_outside_style(b: BootstyleBuilderTTk, ttk_style: str, color: 
 
 
 @BootstyleBuilderTTk.register_builder('calendar-date', 'Toolbutton')
-def build_calendar_date_toolbutton_style(b: BootstyleBuilderTTk, ttk_style: str, color: str = None, **options):
+def build_calendar_date_toolbutton_style(b: BootstyleBuilderTTk, ttk_style: str, accent: str = None, **options):
     """
     Configure the button style.
 
     Style options include:
         * icon_only
     """
-    accent_token = color or 'primary'
+    accent_token = accent or 'primary'
     surface_token = options.get('surface_color', 'background')
 
     surface = b.color(surface_token)
     on_surface = b.on_color(surface)
 
-    accent = b.color(accent_token)
+    accent_color = b.color(accent_token)
     accent_subtle = b.subtle(accent_token, surface)
-    accent_selected = b.selected(accent)
+    accent_selected = b.selected(accent_color)
 
     surface_active = b.active(surface)
-    accent_focus = b.focus(accent)
-    on_accent = b.on_color(accent)
+    accent_focus = b.focus(accent_color)
+    on_accent = b.on_color(accent_color)
 
     focus_ring = b.focus_ring(accent_focus, surface)
     disabled = b.disabled()

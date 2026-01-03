@@ -9,17 +9,17 @@ from ttkbootstrap.style.bootstyle_builder_ttk import BootstyleBuilderTTk
 
 
 @BootstyleBuilderTTk.register_builder('default', 'TPanedwindow')
-def build_paned_window_style(b: BootstyleBuilderTTk, ttk_style: str, color: str = None, **options):
-    accent_token = color or 'border'
+def build_paned_window_style(b: BootstyleBuilderTTk, ttk_style: str, accent: str = None, **options):
+    accent_token = accent or 'border'
     surface_token = options.get('surface_color', 'background')
     sash_thickness = options.get('sash_thickness', b.scale(6))
 
     surface = b.color(surface_token)
     if accent_token == 'border':
-        accent = b.border(surface)
+        accent_color = b.border(surface)
     else:
-        accent = b.color(accent_token)
+        accent_color = b.color(accent_token)
 
     # Sash thickness is a global adjustment that affects all paned windows
     b.configure_style("Sash", sashthickness=sash_thickness, gripcount=0)
-    b.configure_style(ttk_style, background=accent)
+    b.configure_style(ttk_style, background=accent_color)

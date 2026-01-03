@@ -1236,7 +1236,7 @@ class ListView(Frame):
     def _show_drag_indicator(self) -> None:
         """Create and show the drag drop indicator line."""
         if self._drag_indicator is None:
-            self._drag_indicator = Frame(self._container, color=self._selected_background)
+            self._drag_indicator = Frame(self._container, accent=self._selected_background)
 
     def _update_drag_indicator_position(self, target_index: int) -> None:
         """Update the drag indicator to show drop location."""

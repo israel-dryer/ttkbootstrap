@@ -17,10 +17,10 @@ from typing import Any
 
 from ttkbootstrap.style.bootstyle import (
     Bootstyle,
-    extract_color_from_style,
+    extract_accent_from_style,
     extract_variant_from_style,
     parse_bootstyle,
-    convert_bootstyle_to_color_variant,
+    convert_bootstyle_to_accent_variant,
 )
 from ttkbootstrap.style.token_maps import CONTAINER_CLASSES, ORIENT_CLASSES
 from ttkbootstrap.widgets.mixins.configure_mixin import (
@@ -103,16 +103,16 @@ class TTKWrapperBase(FontMixin, ConfigureDelegationMixin):
 
         style_options = getattr(self, '_style_options', {})
 
-        # Use stored color/variant if available
-        color = getattr(self, '_color', None)
+        # Use stored accent/variant if available
+        accent = getattr(self, '_accent', None)
         variant = getattr(self, '_variant', None)
 
         # Fall back to extraction from style if not stored
-        if color is None or variant is None:
+        if accent is None or variant is None:
             current_style = self._ttk_base.cget(self, "style")  # type: ignore[misc]
             if current_style:
-                if color is None:
-                    color = extract_color_from_style(current_style, default=None)
+                if accent is None:
+                    accent = extract_accent_from_style(current_style, default=None)
                 if variant is None:
                     variant = extract_variant_from_style(current_style, widget_class)
 
@@ -132,7 +132,7 @@ class TTKWrapperBase(FontMixin, ConfigureDelegationMixin):
         ttk_style = Bootstyle.create_ttk_style(
             widget_class=widget_class,
             style_options=style_options or None,
-            color=color,
+            accent=accent,
             variant=variant,
         )
 
@@ -144,20 +144,20 @@ class TTKWrapperBase(FontMixin, ConfigureDelegationMixin):
     def _delegate_bootstyle(self, value: Any = None):
         """Get or set the ttkbootstrap bootstyle for this widget.
 
-        DEPRECATED: Use 'color' and 'variant' parameters instead.
+        DEPRECATED: Use 'accent' and 'variant' parameters instead.
 
-        - Query: returns a best-effort "color-variant" string based on the
+        - Query: returns a best-effort "accent-variant" string based on the
           current style (or None if not set). No deprecation warning for reads.
         - Set: generates/apply a ttk style using the style engine; preserves
           surface color and orientation when applicable. Issues deprecation warning.
         """
         # Query path - no deprecation warning for reads
         if value is None:
-            color = self._delegate_color(None)
+            accent = self._delegate_accent(None)
             variant = self._delegate_variant(None)
             parts = []
-            if color:
-                parts.append(color)
+            if accent:
+                parts.append(accent)
             if variant:
                 parts.append(variant)
             return "-".join(parts) if parts else None
@@ -166,19 +166,19 @@ class TTKWrapperBase(FontMixin, ConfigureDelegationMixin):
         import warnings
         warnings.warn(
             "Setting 'bootstyle' at runtime is deprecated. "
-            "Use widget.configure(color='...', variant='...') instead.",
+            "Use widget.configure(accent='...', variant='...') instead.",
             FutureWarning,
             stacklevel=3
         )
 
         # Use stored _ttk_class if available (for custom style class like ButtonGroup)
         widget_class = getattr(self, '_ttk_class', None) or self.winfo_class()
-        color, variant = convert_bootstyle_to_color_variant(
+        accent, variant = convert_bootstyle_to_accent_variant(
             str(value), widget_class, warn=False  # Already warned above
         )
 
         # Store both
-        setattr(self, '_color', color)
+        setattr(self, '_accent', accent)
         setattr(self, '_variant', variant)
 
         # Use stored style_options if available, otherwise create new dict
@@ -195,36 +195,36 @@ class TTKWrapperBase(FontMixin, ConfigureDelegationMixin):
                 pass
 
         if widget_class in CONTAINER_CLASSES:
-            if color:
-                style_options["surface_color"] = color
-                setattr(self, "_surface_color", color)
+            if accent:
+                style_options["surface_color"] = accent
+                setattr(self, "_surface_color", accent)
 
         ttk_style = Bootstyle.create_ttk_style(
             widget_class=widget_class,
             style_options=style_options or None,
-            color=color,
+            accent=accent,
             variant=variant,
         )
         return self._ttk_base.configure(self, style=ttk_style)  # type: ignore[misc]
 
-    @configure_delegate("color")
-    def _delegate_color(self, value: Any = None):
-        """Get or set the color token for this widget.
+    @configure_delegate("accent")
+    def _delegate_accent(self, value: Any = None):
+        """Get or set the accent token for this widget.
 
-        - Query: returns the current color token or None
-        - Set: updates the widget style with the new color, preserving variant
+        - Query: returns the current accent token or None
+        - Set: updates the widget style with the new accent, preserving variant
         """
         # Query path
         if value is None:
             # Try stored value first
-            stored = getattr(self, '_color', None)
+            stored = getattr(self, '_accent', None)
             if stored:
                 return stored
             # Fall back to extracting from current style
             current_style = self._ttk_base.cget(self, "style")  # type: ignore[misc]
             if not current_style:
                 return None
-            return extract_color_from_style(current_style, default=None)
+            return extract_accent_from_style(current_style, default=None)
 
         # Set path - use stored _ttk_class if available
         widget_class = getattr(self, '_ttk_class', None) or self.winfo_class()
@@ -234,8 +234,8 @@ class TTKWrapperBase(FontMixin, ConfigureDelegationMixin):
             if current_style:
                 current_variant = extract_variant_from_style(current_style, widget_class)
 
-        # Store the new color
-        setattr(self, '_color', value)
+        # Store the new accent
+        setattr(self, '_accent', value)
 
         # Use stored style_options
         style_options = getattr(self, '_style_options', {}).copy()
@@ -256,7 +256,7 @@ class TTKWrapperBase(FontMixin, ConfigureDelegationMixin):
 
         ttk_style = Bootstyle.create_ttk_style(
             widget_class=widget_class,
-            color=value,
+            accent=value,
             variant=current_variant,
             style_options=style_options or None,
         )
@@ -267,7 +267,7 @@ class TTKWrapperBase(FontMixin, ConfigureDelegationMixin):
         """Get or set the variant for this widget.
 
         - Query: returns the current variant name or None
-        - Set: updates the widget style with the new variant, preserving color
+        - Set: updates the widget style with the new variant, preserving accent
 
         Note: If the variant is not valid for this widget type, a BootstyleBuilderError
         will be raised.
@@ -287,11 +287,11 @@ class TTKWrapperBase(FontMixin, ConfigureDelegationMixin):
 
         # Set path - use stored _ttk_class if available
         widget_class = getattr(self, '_ttk_class', None) or self.winfo_class()
-        current_color = getattr(self, '_color', None)
-        if current_color is None:
+        current_accent = getattr(self, '_accent', None)
+        if current_accent is None:
             current_style = self._ttk_base.cget(self, "style")  # type: ignore[misc]
             if current_style:
-                current_color = extract_color_from_style(current_style, default=None)
+                current_accent = extract_accent_from_style(current_style, default=None)
 
         # Store the new variant
         setattr(self, '_variant', value)
@@ -311,7 +311,7 @@ class TTKWrapperBase(FontMixin, ConfigureDelegationMixin):
 
         ttk_style = Bootstyle.create_ttk_style(
             widget_class=widget_class,
-            color=current_color,
+            accent=current_accent,
             variant=value,
             style_options=style_options or None,
         )

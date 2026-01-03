@@ -61,7 +61,7 @@ def main():
     toolbar.add_button(icon={'name': 'bell', 'size': 16}, command=lambda: print("Notifications"))
 
     # Content container on the right (routed page content)
-    content_container = ttk.Frame(main_container, color='background[+1]')
+    content_container = ttk.Frame(main_container, accent='background[+1]')
     content_container.pack(side='right', fill='both', expand=True)
 
     # Create all pages

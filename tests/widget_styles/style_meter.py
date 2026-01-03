@@ -27,7 +27,7 @@ ttk.Meter(
     maxvalue=2600,
     subtitle='storage used',
     value_suffix='gb',
-    color='info',
+    accent='info',
     segment_width=10,
     interactive=True
 ).pack(side=LEFT, padx=10)
@@ -40,7 +40,7 @@ ttk.Meter(
     value=40,
     subtitle='project capacity',
     value_suffix='%',
-    color='success',
+    accent='success',
     interactive=True
 ).pack(side=LEFT, padx=10)
 
@@ -55,7 +55,7 @@ ttk.Meter(
     value_suffix='°',
     subtitle='heat temperature',
     indicator_width=2,
-    color='danger',
+    accent='danger',
     interactive=True
 ).pack(side='left', padx=10)
 

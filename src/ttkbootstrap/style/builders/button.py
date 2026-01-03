@@ -49,7 +49,7 @@ def _apply_icon_mapping(
 
 @BootstyleBuilderTTk.register_builder('solid', 'TButton')
 @BootstyleBuilderTTk.register_builder('default', 'TButton')
-def build_solid_button_style(b: BootstyleBuilderTTk, ttk_style: str, color: str = None, **options):
+def build_solid_button_style(b: BootstyleBuilderTTk, ttk_style: str, accent: str = None, **options):
     """
     Configure the button style.
 
@@ -59,7 +59,7 @@ def build_solid_button_style(b: BootstyleBuilderTTk, ttk_style: str, color: str 
         * anchor
     """
     anchor = options.get('anchor', 'center')
-    accent_token = color or 'primary'
+    accent_token = accent or 'primary'
     surface_token = options.get('surface_color', 'background')
 
     surface = b.color(surface_token)
@@ -124,7 +124,7 @@ def build_solid_button_style(b: BootstyleBuilderTTk, ttk_style: str, color: str 
 
 
 @BootstyleBuilderTTk.register_builder('outline', 'TButton')
-def build_outline_button_style(b: BootstyleBuilderTTk, ttk_style: str, color: str = None, **options):
+def build_outline_button_style(b: BootstyleBuilderTTk, ttk_style: str, accent: str = None, **options):
     """
     Configure the outline button style.
 
@@ -134,7 +134,7 @@ def build_outline_button_style(b: BootstyleBuilderTTk, ttk_style: str, color: st
         * anchor
     """
     anchor = options.get('anchor', 'center')
-    accent_token = color or 'primary'
+    accent_token = accent or 'primary'
     surface_token = options.get('surface_color', 'background')
 
     surface = b.color(surface_token)
@@ -206,7 +206,7 @@ def build_outline_button_style(b: BootstyleBuilderTTk, ttk_style: str, color: st
 
 
 @BootstyleBuilderTTk.register_builder('text', 'TButton')
-def build_text_button_style(b: BootstyleBuilderTTk, ttk_style: str, color: str = None, **options):
+def build_text_button_style(b: BootstyleBuilderTTk, ttk_style: str, accent: str = None, **options):
     """
     Configure the text button style.
 
@@ -216,7 +216,7 @@ def build_text_button_style(b: BootstyleBuilderTTk, ttk_style: str, color: str =
         * anchor
     """
     anchor = options.get('anchor', 'center')
-    accent_token = color or 'foreground'
+    accent_token = accent or 'foreground'
     surface_token = options.get('surface_color', 'background')
 
     surface = b.color(surface_token)
@@ -275,7 +275,7 @@ def build_text_button_style(b: BootstyleBuilderTTk, ttk_style: str, color: str =
 
 
 @BootstyleBuilderTTk.register_builder('link', 'TButton')
-def build_link_button_style(b: BootstyleBuilderTTk, ttk_style: str, color: str = None, **options):
+def build_link_button_style(b: BootstyleBuilderTTk, ttk_style: str, accent: str = None, **options):
     """
     Configure the link button style.
 
@@ -285,7 +285,7 @@ def build_link_button_style(b: BootstyleBuilderTTk, ttk_style: str, color: str =
         * anchor
     """
     anchor = options.get('anchor', 'center')
-    accent_token = color or 'primary'
+    accent_token = accent or 'primary'
     surface_token = options.get('surface_color', 'background')
 
     surface = b.color(surface_token)
@@ -345,7 +345,7 @@ def build_link_button_style(b: BootstyleBuilderTTk, ttk_style: str, color: str =
 
 
 @BootstyleBuilderTTk.register_builder('ghost', 'TButton')
-def build_ghost_button_style(b: BootstyleBuilderTTk, ttk_style: str, color: str = None, **options):
+def build_ghost_button_style(b: BootstyleBuilderTTk, ttk_style: str, accent: str = None, **options):
     """
     Configure the ghost button style.
 
@@ -355,26 +355,26 @@ def build_ghost_button_style(b: BootstyleBuilderTTk, ttk_style: str, color: str 
         * anchor
     """
     anchor = options.get('anchor', 'center')
-    accent_token = color or 'foreground'
+    accent_token = accent or 'foreground'
     surface_token = options.get('surface_color', 'background')
 
     surface = b.color(surface_token)
 
-    accent = b.color(accent_token)
+    accent_color = b.color(accent_token)
     normal = surface
     hovered = focused = pressed = b.subtle(accent_token, surface)
-    focused_ring = b.focus_ring(accent, surface)
+    focused_ring = b.focus_ring(accent_color, surface)
 
-    foreground_normal = accent
+    foreground_normal = accent_color
     foreground_disabled = b.disabled('text', surface)
 
     # button element images
     normal_img = recolor_image('button', normal, normal, surface, surface)
     pressed_img = recolor_image('button', pressed, surface, surface, surface)
     hovered_img = recolor_image('button', hovered, surface, surface, surface)
-    focused_img = recolor_image('button', focused, accent, focused_ring, surface)
-    focused_hovered_img = recolor_image('button', hovered, accent, focused_ring, surface)
-    focused_pressed_img = recolor_image('button', pressed, accent, focused_ring, surface)
+    focused_img = recolor_image('button', focused, accent_color, focused_ring, surface)
+    focused_hovered_img = recolor_image('button', hovered, accent_color, focused_ring, surface)
+    focused_pressed_img = recolor_image('button', pressed, accent_color, focused_ring, surface)
     disabled_img = recolor_image('button', surface, surface, surface, surface)
 
     b.create_style_element_image(
@@ -422,7 +422,7 @@ def build_ghost_button_style(b: BootstyleBuilderTTk, ttk_style: str, color: str 
 
 
 @BootstyleBuilderTTk.register_builder('selectbox_item', 'TButton')
-def build_selectbox_item_button_style(b: BootstyleBuilderTTk, ttk_style: str, color: str = None, **options):
+def build_selectbox_item_button_style(b: BootstyleBuilderTTk, ttk_style: str, accent: str = None, **options):
     """Configure the style for selectbox dropdown items with selected state support.
 
     Style options include:
@@ -431,7 +431,7 @@ def build_selectbox_item_button_style(b: BootstyleBuilderTTk, ttk_style: str, co
         * anchor
     """
     anchor = options.get('anchor', 'w')
-    accent_token = color or 'primary'
+    accent_token = accent or 'primary'
     surface_token = options.get('surface_color', 'background')
 
     surface = b.color(surface_token)

@@ -47,14 +47,14 @@ Use Meter when:
 
 ## Appearance
 
-### Styling with `color`
+### Styling with `accent`
 
 Meters are highly visual and often color-coded:
 
 ```python
-ttk.Meter(app, color="success")
-ttk.Meter(app, color="danger")
-ttk.Meter(app, color="info")
+ttk.Meter(app, accent="success")
+ttk.Meter(app, accent="danger")
+ttk.Meter(app, accent="info")
 ```
 
 !!! link "Design System"

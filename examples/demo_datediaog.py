@@ -43,7 +43,7 @@ def demo_datedialog():
         root,
         text="Select Date",
         command=show_date_dialog,
-        color="primary",
+        accent="primary",
     )
     button.pack(pady=10)
 
@@ -58,7 +58,7 @@ def demo_datedialog():
         ),
         padding=20,
         justify="left",
-        color="secondary",
+        accent="secondary",
     )
     info_label.pack(pady=10, padx=20, fill="x")
 

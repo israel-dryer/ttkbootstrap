@@ -71,12 +71,12 @@ If your theme supports bordered/card styles, prefer named styles like `Card.TFra
 !!! link "Design System"
     For theming details and color tokens, see [Design System](../../design-system/index.md).
 
-### `color` / `style`
+### `accent` / `style`
 
-Use `color` for semantic tokens, or `style=` for a concrete ttk style name.
+Use `accent` for semantic tokens, or `style=` for a concrete ttk style name.
 
 ```python
-ttk.Frame(app, color="secondary")
+ttk.Frame(app, accent="secondary")
 ttk.Frame(app, style="Card.TFrame")
 ```
 

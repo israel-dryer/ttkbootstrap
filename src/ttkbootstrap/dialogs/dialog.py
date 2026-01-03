@@ -41,9 +41,9 @@ class DialogButton:
         closes (bool): Whether button closes the dialog when clicked.
         default (bool): Whether this is the default button (focused, triggered by Enter).
         command (Callable[[Dialog], None] | None): Callback called when clicked.
-        color (str | None): Color token for styling (e.g., 'primary', 'danger').
+        accent (str | None): Accent token for styling (e.g., 'primary', 'danger').
         variant (str | None): Style variant (e.g., 'outline', 'link').
-        bootstyle (str | None): DEPRECATED - Use color and variant instead.
+        bootstyle (str | None): DEPRECATED - Use accent and variant instead.
         icon (str | dict | None): Optional icon specification for the button.
     """
     text: str
@@ -52,9 +52,9 @@ class DialogButton:
     closes: bool = True  # close dialog after click
     default: bool = False  # default button (Enter)
     command: Callable[[Dialog], None] | None = None
-    color: str | None = None  # color token (e.g., 'primary', 'danger')
+    accent: str | None = None  # accent token (e.g., 'primary', 'danger')
     variant: str | None = None  # style variant (e.g., 'outline', 'link')
-    bootstyle: str | None = None  # DEPRECATED: use color/variant instead
+    bootstyle: str | None = None  # DEPRECATED: use accent/variant instead
     icon: str | dict[str, Any] | None = None  # passed straight to ttk.Button(icon=...)
 
 
@@ -332,16 +332,16 @@ class Dialog:
         cancel_button: ttk.Button | None = None
 
         for spec in reversed(self._buttons):
-            # Get color/variant from spec or derive from role
-            if spec.color or spec.variant:
-                # Use explicitly provided color/variant
-                color, variant = spec.color, spec.variant
+            # Get accent/variant from spec or derive from role
+            if spec.accent or spec.variant:
+                # Use explicitly provided accent/variant
+                accent, variant = spec.accent, spec.variant
             elif spec.bootstyle:
                 # Legacy: spec has bootstyle - parse it
-                from ttkbootstrap.style.bootstyle import convert_bootstyle_to_color_variant
-                color, variant = convert_bootstyle_to_color_variant(spec.bootstyle, 'TButton', warn=False)
+                from ttkbootstrap.style.bootstyle import convert_bootstyle_to_accent_variant
+                accent, variant = convert_bootstyle_to_accent_variant(spec.bootstyle, 'TButton', warn=False)
             else:
-                color, variant = self._style_for_role(spec.role)
+                accent, variant = self._style_for_role(spec.role)
 
             def make_command(s: DialogButton):
                 def cmd():
@@ -357,7 +357,7 @@ class Dialog:
             btn = ttk.Button(
                 parent,
                 text=spec.text,
-                color=color,
+                accent=accent,
                 variant=variant,
                 command=make_command(spec),
                 icon=spec.icon,
@@ -467,7 +467,7 @@ class Dialog:
     # --------------------------------------------------------------- Helpers
 
     def _style_for_role(self, role: ButtonRole) -> tuple[str | None, str | None]:
-        """Return (color, variant) tuple for a button role."""
+        """Return (accent, variant) tuple for a button role."""
         if role == "primary":
             return ("primary", None)
         if role == "secondary":

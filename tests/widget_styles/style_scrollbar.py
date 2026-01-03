@@ -22,7 +22,7 @@ def create_scrollbar_frame(orient, bootstyle=''):
     # colored
     for _, color in enumerate(['primary', 'secondary', 'success', 'info', 'warning', 'danger']):
         ttk.Label(frame, text=color).pack(fill=X)
-        sb = ttk.Scrollbar(frame, color=color, variant=bootstyle, orient=orient)
+        sb = ttk.Scrollbar(frame, accent=color, variant=bootstyle, orient=orient)
         sb.set(0.1, 0.3)
         if orient == HORIZONTAL:
             sb.pack(padx=5, pady=5, fill=X, expand=YES)

@@ -15,7 +15,7 @@ from ttkbootstrap.style.utility import recolor_image
 
 
 @BootstyleBuilderTTk.register_builder('default', 'TLabelframe')
-def build_labelframe_style(b: BootstyleBuilderTTk, ttk_style: str, color: str = None, **options):
+def build_labelframe_style(b: BootstyleBuilderTTk, ttk_style: str, accent: str = None, **options):
     surface_token = options.get('surface_color') or 'background'
     show_border = options.get('show_border', True)
     surface = b.color(surface_token)

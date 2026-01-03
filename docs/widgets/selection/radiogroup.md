@@ -74,7 +74,7 @@ ttk.RadioGroup(app, text="Pick one", labelanchor="w", orient="horizontal")
 
 ### Colors and styling
 
-`RadioGroup` forwards `color` to its child radio buttons.
+`RadioGroup` forwards `accent` to its child radio buttons.
 
 For more control, pass per-button options via `add(..., **kwargs)` or `style_options`.
 
@@ -102,12 +102,12 @@ print(group.get())
 
 ### Common options
 
-#### `color`
+#### `accent`
 
 Applies to the child `RadioButton` widgets (defaults to `"primary"`).
 
 ```python
-group = ttk.RadioGroup(app, color="success")
+group = ttk.RadioGroup(app, accent="success")
 ```
 
 #### `state`
@@ -157,7 +157,7 @@ Validation is most useful when selection is required before submission.
 
 - In vertical orientation, buttons are stacked top-to-bottom.
 
-- Changing `orient`, `color`, `state`, `text`, `labelanchor`, or `value` via `configure(...)`
+- Changing `orient`, `accent`, `state`, `text`, `labelanchor`, or `value` via `configure(...)`
   updates the group and its children.
 
 ---

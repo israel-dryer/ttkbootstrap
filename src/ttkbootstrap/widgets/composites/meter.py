@@ -36,7 +36,7 @@ class Meter(Frame):
     def __init__(
             self,
             master: Master = None,
-            color: str = None,
+            accent: str = None,
             bootstyle: str = None,
 
             # value parameters
@@ -73,8 +73,8 @@ class Meter(Frame):
 
         Args:
             master: The parent widget.
-            color: Color token for the meter indicator (e.g., 'primary', 'success').
-            bootstyle: DEPRECATED - Use ``color`` instead.
+            accent: Accent token for the meter indicator (e.g., 'primary', 'success').
+            bootstyle: DEPRECATED - Use ``accent`` instead.
 
             value: Current meter value.
             minvalue: Minimum value for the meter range.
@@ -129,7 +129,7 @@ class Meter(Frame):
         self._value_font = legacy.get('value_font', value_font or '-size 36 -weight bold')
         self._value_prefix = legacy.get('value_prefix', value_prefix)
         self._value_suffix = legacy.get('value_suffix', value_suffix)
-        self._color = color or bootstyle or 'primary'
+        self._accent = accent or bootstyle or 'primary'
 
         self._subtitle = legacy.get('subtitle', subtitle)
         self._secondary_font = legacy.get('secondary_font', secondary_font or '-size 9')
@@ -264,12 +264,12 @@ class Meter(Frame):
 
     # ------ Configuration Delegates ------
 
-    @configure_delegate('color')
-    def _delegate_color(self, value=None):
+    @configure_delegate('accent')
+    def _delegate_accent(self, value=None):
         if value is None:
-            return self._color
+            return self._accent
         else:
-            self._color = value
+            self._accent = value
             self._resolve_meter_styles()
             self._draw_meter()
         return None
@@ -488,8 +488,8 @@ class Meter(Frame):
         b = style.style_builder
 
         # Resolve colors from tokens
-        color = self._color or 'primary'
-        accent = b.color(color)
+        accent_token = self._accent or 'primary'
+        accent_color = b.color(accent_token)
 
         # Use _surface_token to get the token name, resolve to actual color
         surface_token = getattr(self, '_surface_token', 'background')
@@ -497,11 +497,11 @@ class Meter(Frame):
         trough_color = b.border(surface)
 
         # Get text colors
-        value_text_color = b.color(color)
+        value_text_color = b.color(accent_token)
         secondary_text_color = b.color(self._secondary_style or 'background[muted]')
 
         self._image_scale = b.scale(DEFAULT_IMAGE_SCALE)
-        self._accent_color = accent
+        self._accent_color = accent_color
         self._surface_color = surface  # Store resolved color
         self._trough_color = trough_color
         self._value_text_color = value_text_color

@@ -20,7 +20,7 @@ def create_checkbutton_test(name):
         cb = ttk.Switch(
             master=frame,
             text=color,
-            color=color,
+            accent=color,
             width=15
         )
         cb.pack(padx=5, pady=5, fill=BOTH)

@@ -34,8 +34,8 @@ class SpinboxKwargs(TypedDict, total=False):
     name: str
 
     # ttkbootstrap-specific extensions
-    bootstyle: str  # DEPRECATED: Use color and variant instead
-    color: str
+    bootstyle: str  # DEPRECATED: Use accent and variant instead
+    accent: str
     surface_color: str
     style_options: dict[str, Any]
 
@@ -64,9 +64,9 @@ class Spinbox(TextSignalMixin, TTKWrapperBase, WidgetCapabilitiesMixin, TtkState
             width (int): Widget width in characters.
             state (str): Widget state.
             takefocus (bool): Whether the widget participates in focus traversal.
-            style (str): Explicit ttk style name (overrides color/variant).
-            color (str): Color token for styling, e.g. 'primary', 'danger', 'success'.
-            bootstyle (str): DEPRECATED - Use `color`instead.
+            style (str): Explicit ttk style name (overrides accent/variant).
+            accent (str): Accent token for styling, e.g. 'primary', 'danger', 'success'.
+            bootstyle (str): DEPRECATED - Use `accent` instead.
             surface_color (str): Optional surface token; otherwise inherited.
             style_options (dict): Optional dict forwarded to the style builder.
         """

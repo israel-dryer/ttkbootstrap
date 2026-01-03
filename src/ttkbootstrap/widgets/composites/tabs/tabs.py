@@ -49,7 +49,7 @@ class Tabs(Frame):
         enable_adding: bool = False,
         variable: Variable = None,
         signal: 'Signal[Any]' = None,
-        color: str = None,
+        accent: str = None,
         **kwargs
     ):
         """Create a Tabs widget.
@@ -80,7 +80,7 @@ class Tabs(Frame):
                 event when clicked.
             variable: Tk variable for tracking selected tab value.
             signal: Reactive Signal for tracking selected tab value.
-            color: Color token for styling tabs.
+            accent: Accent token for styling tabs.
             **kwargs: Additional arguments passed to Frame.
         """
         super().__init__(master=master, **kwargs)
@@ -92,7 +92,7 @@ class Tabs(Frame):
         self._tab_padding = tab_padding
         self._enable_closing = enable_closing
         self._enable_adding = enable_adding
-        self._color = color
+        self._accent = accent
 
         # Handle variable/signal setup
         if signal is not None:
@@ -295,9 +295,9 @@ class Tabs(Frame):
         if self._tab_width is not None and self._tab_width != 'stretch':
             tab_kwargs['width'] = self._tab_width
 
-        # Apply color if specified
-        if self._color is not None:
-            tab_kwargs['color'] = self._color
+        # Apply accent if specified
+        if self._accent is not None:
+            tab_kwargs['accent'] = self._accent
 
         # Pass signal to TabItem for selection sync
         tab_kwargs['signal'] = self._signal

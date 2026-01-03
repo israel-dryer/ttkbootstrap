@@ -39,9 +39,9 @@ class PagingOptions(TypedDict, total=False):
 
 
 class RowAlternationOptions(TypedDict, total=False):
-    """Alternating row striping (enabled flag and color token)."""
+    """Alternating row striping (enabled flag and accent token)."""
     enabled: bool
-    color: str
+    accent: str
 
 
 class FilteringOptions(TypedDict, total=False):
@@ -165,5 +165,5 @@ def build_row_alternation_options(
     """Build row alternation options dict from flattened kwargs."""
     return dict(
         enabled=striped,
-        color=striped_background,
+        accent=striped_background,
     )

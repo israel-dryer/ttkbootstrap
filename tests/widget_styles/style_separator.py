@@ -26,7 +26,7 @@ def create_separator_frame(orient):
         ttk.Label(frame, text=color).pack(fill=X)
         sep = ttk.Separator(
             master=frame,
-            color=color,
+            accent=color,
             orient=orient
         )
         if orient == HORIZONTAL:

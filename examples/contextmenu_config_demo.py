@@ -11,7 +11,7 @@ def main():
     status = ttk.Label(app, text="Right-click inside the box to open the menu.", anchor=W)
     status.pack(fill=X, padx=10, pady=(10, 0))
 
-    target = ttk.Frame(app, color='primary[muted]', padding=30)
+    target = ttk.Frame(app, accent='primary[muted]', padding=30)
     target.pack(fill=BOTH, expand=YES, padx=10, pady=10)
     ttk.Label(target, text="Right-click here").pack()
 

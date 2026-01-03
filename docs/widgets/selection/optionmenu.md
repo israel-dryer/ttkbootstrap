@@ -53,7 +53,7 @@ app.mainloop()
 ## Variants
 
 `OptionMenu` does not have behavioral variants. Its primary variations are visual, controlled by
-`color` and `variant` (see **Colors and styling**).
+`accent` and `variant` (see **Colors and styling**).
 
 ---
 
@@ -191,12 +191,12 @@ Validation is typically unnecessary, but may be useful when:
 
 ## Colors and styling
 
-`OptionMenu` supports the same `color` and `variant` options as `MenuButton`.
+`OptionMenu` supports the same `accent` and `variant` options as `MenuButton`.
 
 ```python
-ttk.OptionMenu(app, value="A", options=["A", "B"], color="primary")
-ttk.OptionMenu(app, value="A", options=["A", "B"], color="primary", variant="outline")
-ttk.OptionMenu(app, value="A", options=["A", "B"], color="primary", variant="ghost")
+ttk.OptionMenu(app, value="A", options=["A", "B"], accent="primary")
+ttk.OptionMenu(app, value="A", options=["A", "B"], accent="primary", variant="outline")
+ttk.OptionMenu(app, value="A", options=["A", "B"], accent="primary", variant="ghost")
 ttk.OptionMenu(app, value="A", options=["A", "B"], variant="text")
 ```
 

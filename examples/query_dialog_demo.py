@@ -13,9 +13,9 @@ def demo_get_string():
         master=root
     )
     if result:
-        result_label.config(text=f"Name entered: {result}", color="info")
+        result_label.config(text=f"Name entered: {result}", accent="info")
     else:
-        result_label.config(text="String input cancelled", color="secondary")
+        result_label.config(text="String input cancelled", accent="secondary")
 
 
 def demo_get_string_multiline():
@@ -27,9 +27,9 @@ def demo_get_string_multiline():
         master=root
     )
     if result:
-        result_label.config(text=f"Email entered: {result}", color="success")
+        result_label.config(text=f"Email entered: {result}", accent="success")
     else:
-        result_label.config(text="Email input cancelled", color="secondary")
+        result_label.config(text="Email input cancelled", accent="secondary")
 
 
 def demo_get_item():
@@ -43,9 +43,9 @@ def demo_get_item():
         master=root
     )
     if result:
-        result_label.config(text=f"Selected language: {result}", color="success")
+        result_label.config(text=f"Selected language: {result}", accent="success")
     else:
-        result_label.config(text="Language selection cancelled", color="secondary")
+        result_label.config(text="Language selection cancelled", accent="secondary")
 
 
 def demo_get_item_filtered():
@@ -63,9 +63,9 @@ def demo_get_item_filtered():
         master=root
     )
     if result:
-        result_label.config(text=f"Selected country: {result}", color="info")
+        result_label.config(text=f"Selected country: {result}", accent="info")
     else:
-        result_label.config(text="Country selection cancelled", color="secondary")
+        result_label.config(text="Country selection cancelled", accent="secondary")
 
 
 def demo_get_integer():
@@ -79,9 +79,9 @@ def demo_get_integer():
         master=root
     )
     if result is not None:
-        result_label.config(text=f"Age entered: {result}", color="success")
+        result_label.config(text=f"Age entered: {result}", accent="success")
     else:
-        result_label.config(text="Age input cancelled", color="secondary")
+        result_label.config(text="Age input cancelled", accent="secondary")
 
 
 def demo_get_integer_range():
@@ -95,9 +95,9 @@ def demo_get_integer_range():
         master=root
     )
     if result is not None:
-        result_label.config(text=f"Number entered: {result} (valid range: 1-100)", color="info")
+        result_label.config(text=f"Number entered: {result} (valid range: 1-100)", accent="info")
     else:
-        result_label.config(text="Range input cancelled", color="secondary")
+        result_label.config(text="Range input cancelled", accent="secondary")
 
 
 def demo_get_float():
@@ -111,9 +111,9 @@ def demo_get_float():
         master=root
     )
     if result is not None:
-        result_label.config(text=f"Price entered: ${result:.2f}", color="success")
+        result_label.config(text=f"Price entered: ${result:.2f}", accent="success")
     else:
-        result_label.config(text="Price input cancelled", color="secondary")
+        result_label.config(text="Price input cancelled", accent="secondary")
 
 
 def demo_get_float_percentage():
@@ -127,9 +127,9 @@ def demo_get_float_percentage():
         master=root
     )
     if result is not None:
-        result_label.config(text=f"Discount: {result}%", color="warning")
+        result_label.config(text=f"Discount: {result}%", accent="warning")
     else:
-        result_label.config(text="Discount input cancelled", color="secondary")
+        result_label.config(text="Discount input cancelled", accent="secondary")
 
 
 def demo_get_color():
@@ -143,11 +143,11 @@ def demo_get_color():
         # result is a Color object, need to get hex value
         result_label.config(
             text=f"Color selected: {result.hex}",
-            color="primary",
+            accent="primary",
             background=result.hex
         )
     else:
-        result_label.config(text="Color selection cancelled", color="secondary", background="")
+        result_label.config(text="Color selection cancelled", accent="secondary", background="")
 
 
 def demo_get_date():
@@ -157,9 +157,9 @@ def demo_get_date():
         master=root
     )
     if result:
-        result_label.config(text=f"Date selected: {result.strftime('%Y-%m-%d')}", color="info")
+        result_label.config(text=f"Date selected: {result.strftime('%Y-%m-%d')}", accent="info")
     else:
-        result_label.config(text="Date selection cancelled", color="secondary")
+        result_label.config(text="Date selection cancelled", accent="secondary")
 
 
 def demo_get_font():
@@ -168,11 +168,11 @@ def demo_get_font():
     if result:
         result_label.config(
             text=f"Font selected: {result.actual()['family']} {result.actual()['size']}pt",
-            color="success",
+            accent="success",
             font=result
         )
     else:
-        result_label.config(text="Font selection cancelled", color="secondary")
+        result_label.config(text="Font selection cancelled", accent="secondary")
 
 
 def demo_positioned_dialog():
@@ -196,7 +196,7 @@ root.title("Query Dialog Demo")
 root.geometry("700x700")
 
 # Header
-header = ttk.Frame(root, color="primary")
+header = ttk.Frame(root, accent="primary")
 header.pack(fill='x', pady=(0, 20))
 title_label = ttk.Label(
     header,
@@ -235,7 +235,7 @@ for label, command, style in string_demos:
     btn = ttk.Button(
         string_frame,
         text=label,
-        color=style,
+        accent=style,
         command=command,
         width=25
     )
@@ -254,7 +254,7 @@ for label, command, style in item_demos:
     btn = ttk.Button(
         item_frame,
         text=label,
-        color=style,
+        accent=style,
         command=command,
         width=25
     )
@@ -275,7 +275,7 @@ for label, command, style in numeric_demos:
     btn = ttk.Button(
         numeric_frame,
         text=label,
-        color=style,
+        accent=style,
         command=command,
         width=25
     )
@@ -295,7 +295,7 @@ for label, command, style in picker_demos:
     btn = ttk.Button(
         picker_frame,
         text=label,
-        color=style,
+        accent=style,
         command=command,
         width=25
     )
@@ -313,7 +313,7 @@ for label, command, style in advanced_demos:
     btn = ttk.Button(
         advanced_frame,
         text=label,
-        color=style,
+        accent=style,
         command=command,
         width=25
     )
@@ -327,7 +327,7 @@ result_label = ttk.Label(
     result_frame,
     text="No dialog shown yet",
     font='TkDefaultFont 10',
-    color="secondary"
+    accent="secondary"
 )
 result_label.pack()
 
@@ -339,7 +339,7 @@ footer1 = ttk.Label(
     footer_frame,
     text="Press ESC to cancel • Press ENTER to submit",
     font='TkDefaultFont 9 italic',
-    color="secondary"
+    accent="secondary"
 )
 footer1.pack()
 
@@ -347,7 +347,7 @@ footer2 = ttk.Label(
     footer_frame,
     text="Validation errors will show inline dialogs",
     font='TkDefaultFont 8 italic',
-    color="secondary"
+    accent="secondary"
 )
 footer2.pack()
 

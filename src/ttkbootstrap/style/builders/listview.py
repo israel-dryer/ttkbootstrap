@@ -6,7 +6,7 @@ from ttkbootstrap.style.utility import recolor_image
 
 
 @BootstyleBuilderTTk.register_builder('container', 'ListView.TFrame')
-def build_list_container_style(b: BootstyleBuilderTTk, ttk_style: str, color: str = None, **options):
+def build_list_container_style(b: BootstyleBuilderTTk, ttk_style: str, accent: str = None, **options):
     """List container frame style - no hover state (only items should have hover)."""
     surface_token = options.get('surface_color', 'background')
     background = b.color(surface_token)
@@ -14,10 +14,10 @@ def build_list_container_style(b: BootstyleBuilderTTk, ttk_style: str, color: st
 
 
 @BootstyleBuilderTTk.register_builder('list', 'ListView.TFrame')
-def build_list_frame_style(b: BootstyleBuilderTTk, ttk_style: str, color: str = None, **options):
+def build_list_frame_style(b: BootstyleBuilderTTk, ttk_style: str, accent: str = None, **options):
     """List internal frame style - has state mapping to sync with parent ListItem."""
     hoverable = options.get('hoverable', True)
-    accent_token = color or 'primary'
+    accent_token = accent or 'primary'
     surface_token = options.get('surface_color', 'background')
     background = b.color(surface_token)
     active = b.elevate(background, 1)
@@ -37,25 +37,25 @@ def build_list_frame_style(b: BootstyleBuilderTTk, ttk_style: str, color: str = 
 
 
 @BootstyleBuilderTTk.register_builder('item', 'ListView.TFrame')
-def build_list_item_default_style(b: BootstyleBuilderTTk, ttk_style: str, color: str = None, **options):
-    build_list_item_style(b, ttk_style, color, 'list-item', **options)
+def build_list_item_default_style(b: BootstyleBuilderTTk, ttk_style: str, accent: str = None, **options):
+    build_list_item_style(b, ttk_style, accent, 'list-item', **options)
 
 
 @BootstyleBuilderTTk.register_builder('separated_item', 'ListView.TFrame')
-def build_list_item_separated_style(b: BootstyleBuilderTTk, ttk_style: str, color: str = None, **options):
-    build_list_item_style(b, ttk_style, color, 'list-item-separated', **options)
+def build_list_item_separated_style(b: BootstyleBuilderTTk, ttk_style: str, accent: str = None, **options):
+    build_list_item_style(b, ttk_style, accent, 'list-item-separated', **options)
 
 
 def build_list_item_style(
         b: BootstyleBuilderTTk,
         ttk_style: str,
-        color: str = None,
+        accent: str = None,
         variant: str = 'item',
         **options
 ):
     hoverable = options.get('hoverable', True)
     surface_token = options.get('surface_color', 'background')
-    accent_token = color or 'primary'
+    accent_token = accent or 'primary'
 
     background = b.color(surface_token)
     indicator = b.color(accent_token)
@@ -97,14 +97,14 @@ def build_list_item_style(
 
 
 @BootstyleBuilderTTk.register_builder('list', 'ListView.TButton')
-def build_list_item_button_style(b: BootstyleBuilderTTk, ttk_style: str, color: str = None, **options):
+def build_list_item_button_style(b: BootstyleBuilderTTk, ttk_style: str, accent: str = None, **options):
     hoverable = options.get('hoverable', True)
     surface_token = options.get('surface_color', 'background')
 
     background = b.color(surface_token)
     active = b.elevate(background, 1)
     pressed = b.pressed(background)
-    selected = b.subtle(color or 'primary', background)
+    selected = b.subtle(accent or 'primary', background)
 
     b.create_style_layout(
         ttk_style,
@@ -131,23 +131,23 @@ def build_list_item_button_style(b: BootstyleBuilderTTk, ttk_style: str, color: 
 
 
 @BootstyleBuilderTTk.register_builder('radio', 'ListView.TLabel')
-def build_list_item_radio_label(b: BootstyleBuilderTTk, ttk_style: str, color: str = None, **options):
-    build_list_item_label(b, ttk_style, color, 'list-radio', **options)
+def build_list_item_radio_label(b: BootstyleBuilderTTk, ttk_style: str, accent: str = None, **options):
+    build_list_item_label(b, ttk_style, accent, 'list-radio', **options)
 
 
 @BootstyleBuilderTTk.register_builder('check', 'ListView.TLabel')
-def build_list_item_check_label(b: BootstyleBuilderTTk, ttk_style: str, color: str = None, **options):
-    build_list_item_label(b, ttk_style, color, 'list-checkbox', **options)
+def build_list_item_check_label(b: BootstyleBuilderTTk, ttk_style: str, accent: str = None, **options):
+    build_list_item_label(b, ttk_style, accent, 'list-checkbox', **options)
 
 
 @BootstyleBuilderTTk.register_builder('list', 'ListView.TLabel')
-def build_list_item_default_label(b: BootstyleBuilderTTk, ttk_style: str, color: str = None, **options):
-    build_list_item_label(b, ttk_style, color, 'list', **options)
+def build_list_item_default_label(b: BootstyleBuilderTTk, ttk_style: str, accent: str = None, **options):
+    build_list_item_label(b, ttk_style, accent, 'list', **options)
 
 
 @BootstyleBuilderTTk.register_builder('icon', 'ListView.TButton')
 @BootstyleBuilderTTk.register_builder('icon', 'ListView.TLabel')
-def build_list_icon(b: BootstyleBuilderTTk, ttk_style: str, color: str = None, **options):
+def build_list_icon(b: BootstyleBuilderTTk, ttk_style: str, accent: str = None, **options):
     hoverable = options.get('hoverable', True)
     surface_token = options.get('surface_color', 'background')
     select_background_token = options.get('selected_background', 'primary')
@@ -224,7 +224,7 @@ def _apply_icon_mapping(b: BootstyleBuilderTTk, options: dict, state_spec: dict,
     return state_spec
 
 
-def build_list_item_label(b: BootstyleBuilderTTk, ttk_style: str, color: str = None, variant: str = None, **options):
+def build_list_item_label(b: BootstyleBuilderTTk, ttk_style: str, accent: str = None, variant: str = None, **options):
     """
 
     Style Options

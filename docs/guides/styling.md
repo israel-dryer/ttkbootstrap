@@ -23,16 +23,16 @@ Use semantic tokens:
 
 ```python
 # Do this
-ttk.Button(app, text="Delete", color="danger")
+ttk.Button(app, text="Delete", accent="danger")
 ```
 
 The theme resolves `"danger"` to appropriate colors. Change the theme, and all `"danger"` widgets update.
 
 ---
 
-## Color Tokens
+## Accent Tokens
 
-The `color` parameter accepts semantic color tokens:
+The `accent` parameter accepts semantic color tokens:
 
 | Token | Intent |
 |-------|--------|
@@ -48,19 +48,19 @@ The `color` parameter accepts semantic color tokens:
 ### Basic Usage
 
 ```python
-ttk.Button(app, text="Save", color="primary")
-ttk.Button(app, text="Cancel", color="secondary")
-ttk.Button(app, text="Delete", color="danger")
+ttk.Button(app, text="Save", accent="primary")
+ttk.Button(app, text="Cancel", accent="secondary")
+ttk.Button(app, text="Delete", accent="danger")
 ```
 
 ### On Any Widget
 
-Most widgets accept `color`:
+Most widgets accept `accent`:
 
 ```python
-ttk.Label(app, text="Success!", color="success")
-ttk.Progressbar(app, color="info")
-ttk.Entry(app, color="warning")
+ttk.Label(app, text="Success!", accent="success")
+ttk.Progressbar(app, accent="info")
+ttk.Entry(app, accent="warning")
 ```
 
 ---
@@ -167,25 +167,25 @@ Widgets support **variant** modifiers to control visual emphasis:
 | `ghost` | Minimal chrome, subtle hover |
 | `link` | Text-only, like a hyperlink |
 
-Use `color` and `variant` together:
+Use `accent` and `variant` together:
 
 ```python
-ttk.Button(app, text="Learn More", color="info", variant="link")
-ttk.Button(app, text="Options", color="secondary", variant="outline")
-ttk.CheckButton(app, text="Enable", color="success", variant="toggle")
+ttk.Button(app, text="Learn More", accent="info", variant="link")
+ttk.Button(app, text="Options", accent="secondary", variant="outline")
+ttk.CheckButton(app, text="Enable", accent="success", variant="toggle")
 ```
 
 ### Button Variants
 
 ```python
 # Solid (default)
-ttk.Button(app, text="Primary", color="primary")
+ttk.Button(app, text="Primary", accent="primary")
 
 # Outline
-ttk.Button(app, text="Primary", color="primary", variant="outline")
+ttk.Button(app, text="Primary", accent="primary", variant="outline")
 
 # Link
-ttk.Button(app, text="Primary", color="primary", variant="link")
+ttk.Button(app, text="Primary", accent="primary", variant="link")
 ```
 
 ### Toggle Variant
@@ -194,7 +194,7 @@ For checkbuttons and radiobuttons:
 
 ```python
 ttk.CheckButton(app, text="Dark Mode", variant="toggle")
-ttk.CheckButton(app, text="Notifications", color="success", variant="toggle")
+ttk.CheckButton(app, text="Notifications", accent="success", variant="toggle")
 ```
 
 !!! link "Variants Reference"
@@ -204,7 +204,7 @@ ttk.CheckButton(app, text="Notifications", color="success", variant="toggle")
 
 ## Themes
 
-Themes define **how tokens become colors**. The same `color="primary"` resolves to different colors depending on the active theme.
+Themes define **how tokens become colors**. The same `accent="primary"` resolves to different colors depending on the active theme.
 
 ```python
 # Set theme at startup
@@ -223,31 +223,31 @@ toggle_theme()  # Toggle between light and dark
 
 ## Consistent Patterns
 
-### Color Coding by Intent
+### Accent Coding by Intent
 
 ```python
 # Actions
-ttk.Button(form, text="Submit", color="primary")
-ttk.Button(form, text="Cancel", color="secondary")
-ttk.Button(form, text="Delete", color="danger")
+ttk.Button(form, text="Submit", accent="primary")
+ttk.Button(form, text="Cancel", accent="secondary")
+ttk.Button(form, text="Delete", accent="danger")
 
 # Status
-ttk.Label(status_bar, text="Connected", color="success")
-ttk.Label(status_bar, text="Warning: Low disk", color="warning")
-ttk.Label(status_bar, text="Error", color="danger")
+ttk.Label(status_bar, text="Connected", accent="success")
+ttk.Label(status_bar, text="Warning: Low disk", accent="warning")
+ttk.Label(status_bar, text="Error", accent="danger")
 ```
 
 ### Progress Indicators
 
 ```python
 # Normal progress
-ttk.Progressbar(app, value=50, color="primary")
+ttk.Progressbar(app, value=50, accent="primary")
 
 # Success state
-ttk.Progressbar(app, value=100, color="success")
+ttk.Progressbar(app, value=100, accent="success")
 
 # Warning state
-ttk.Progressbar(app, value=90, color="warning")
+ttk.Progressbar(app, value=90, accent="warning")
 ```
 
 ### Form Validation
@@ -257,10 +257,10 @@ ttk.Progressbar(app, value=90, color="warning")
 entry = ttk.Entry(app)
 
 # Error state
-entry.configure(color="danger")
+entry.configure(accent="danger")
 
 # Success state
-entry.configure(color="success")
+entry.configure(accent="success")
 ```
 
 ---
@@ -292,8 +292,8 @@ Font choices should come from the design system, not hardcoded values.
 Icons reinforce meaning alongside color:
 
 ```python
-ttk.Button(app, text="Save", color="primary", image=save_icon, compound="left")
-ttk.Button(app, text="Delete", color="danger", image=trash_icon, compound="left")
+ttk.Button(app, text="Save", accent="primary", image=save_icon, compound="left")
+ttk.Button(app, text="Delete", accent="danger", image=trash_icon, compound="left")
 ```
 
 Icons and color work together—use `danger` styling with a warning/delete icon.
@@ -363,14 +363,14 @@ toggles = ttk.PackFrame(form, direction="vertical", gap=5)
 toggles.pack(fill="x", pady=(15, 0))
 
 ttk.CheckButton(toggles, text="Email notifications", variant="toggle").pack()
-ttk.CheckButton(toggles, text="Two-factor auth", color="success", variant="toggle").pack()
+ttk.CheckButton(toggles, text="Two-factor auth", accent="success", variant="toggle").pack()
 
 # Actions
 actions = ttk.PackFrame(form, direction="horizontal", gap=10)
 actions.pack(anchor="e", pady=(20, 0))
 
-ttk.Button(actions, text="Cancel", color="secondary", variant="outline").pack()
-ttk.Button(actions, text="Save Changes", color="primary").pack()
+ttk.Button(actions, text="Cancel", accent="secondary", variant="outline").pack()
+ttk.Button(actions, text="Save Changes", accent="primary").pack()
 
 app.mainloop()
 ```
@@ -386,36 +386,36 @@ app.mainloop()
 label.configure(foreground="#ff0000")
 
 # Good
-label.configure(color="danger")
+label.configure(accent="danger")
 ```
 
 ### Don't Mix Semantic and Literal
 
 ```python
 # Bad: inconsistent
-ttk.Button(app, text="OK", color="success")
+ttk.Button(app, text="OK", accent="success")
 ttk.Button(app, text="Cancel", background="gray")  # Won't work with ttk
 
 # Good: consistent
-ttk.Button(app, text="OK", color="success")
-ttk.Button(app, text="Cancel", color="secondary")
+ttk.Button(app, text="OK", accent="success")
+ttk.Button(app, text="Cancel", accent="secondary")
 ```
 
 ### Use Appropriate Tokens
 
 ```python
 # Bad: using "danger" for non-destructive action
-ttk.Button(app, text="Next", color="danger")
+ttk.Button(app, text="Next", accent="danger")
 
 # Good: using appropriate token
-ttk.Button(app, text="Next", color="primary")
+ttk.Button(app, text="Next", accent="primary")
 ```
 
 ---
 
 ## Summary
 
-- Use **color tokens** for semantic coloring
+- Use **accent tokens** for semantic coloring
 - Use **variant** (outline, link, ghost) for style modifications
 - Change **themes** to update all widgets at once
 - Maintain **consistency** with reusable spacing constants

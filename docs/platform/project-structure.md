@@ -151,7 +151,7 @@ class MainWindow(ttk.Frame):
         super().__init__(master, padding=20)
 
         ttk.Label(self, text="Welcome").pack(anchor="w")
-        ttk.Button(self, text="Continue", color="primary").pack(pady=(12, 0))
+        ttk.Button(self, text="Continue", accent="primary").pack(pady=(12, 0))
 ```
 
 !!! link "See [Guides → Layout](../guides/layout.md) for recommended containers and structure."

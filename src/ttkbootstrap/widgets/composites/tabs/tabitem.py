@@ -78,7 +78,7 @@ class TabItem(CompositeFrame):
         self._close_command = close_command
         self._variant = variant
         self._orient = orient
-        self._color = None  # Will be set from kwargs
+        self._accent = None  # Will be set from kwargs
 
         # Selection state - signal/variable syncing
         self._signal: Signal[Any] | None = None
@@ -88,10 +88,10 @@ class TabItem(CompositeFrame):
         # Determine ttk_class based on variant
         ttk_class = self._get_ttk_class(variant)
 
-        # Extract color for styling
-        color = kwargs.pop('color', None)
+        # Extract accent for styling
+        accent = kwargs.pop('accent', None)
         surface_color = kwargs.pop('surface_color', None)
-        self._color = color  # Store for later use
+        self._accent = accent  # Store for later use
 
         # Extract width for label (frame width doesn't work well with propagation)
         self._width = kwargs.pop('width', None)
@@ -102,7 +102,7 @@ class TabItem(CompositeFrame):
         super().__init__(
             master=master,
             ttk_class=ttk_class,
-            color=color,
+            accent=accent,
             variant=variant,
             takefocus=False,
             style_options={"orient": orient},
@@ -113,7 +113,7 @@ class TabItem(CompositeFrame):
         self._label: Label | None = None
         self._close_button: Button | None = None
 
-        self._build_widget(color, surface_color)
+        self._build_widget(accent, surface_color)
 
         # Set up signal/variable after widget is built
         if signal is not None:
@@ -142,7 +142,7 @@ class TabItem(CompositeFrame):
         """Get the ttk class name for the given variant."""
         return 'TabItem.TFrame'
 
-    def _build_widget(self, color: str = None, surface_color: str = None):
+    def _build_widget(self, accent: str = None, surface_color: str = None):
         """Build the internal widget structure."""
         style_opts = {}
         if surface_color:
@@ -160,7 +160,7 @@ class TabItem(CompositeFrame):
             icon=self._icon,
             compound=self._compound,
             ttk_class='TabItem.TLabel',
-            color=color,
+            accent=accent,
             variant=self._variant,
             takefocus=False,
             anchor=self._anchor,
@@ -172,9 +172,9 @@ class TabItem(CompositeFrame):
 
         # Close button (optional - show when closable is True or 'hover')
         if self._closable:
-            self._create_close_button(color, style_opts)
+            self._create_close_button(accent, style_opts)
 
-    def _create_close_button(self, color: str = None, style_opts: dict = None):
+    def _create_close_button(self, accent: str = None, style_opts: dict = None):
         """Create the close button widget."""
         style_opts = style_opts or {}
         # Pass closable mode to style builder via style_options
@@ -186,7 +186,7 @@ class TabItem(CompositeFrame):
             icon={'name': 'x-lg', 'size': 14},
             icon_only=True,
             ttk_class='TabItem.TButton',
-            color=color,
+            accent=accent,
             variant=self._variant,  # Use same variant as the tab for matching background
             takefocus=False,
             command=self._on_close_click,
@@ -348,7 +348,7 @@ class TabItem(CompositeFrame):
         if value != self._closable:
             self._closable = value
             if value and self._close_button is None:
-                self._create_close_button(self._color)
+                self._create_close_button(self._accent)
             elif not value and self._close_button is not None:
                 self._close_button.place_forget()
                 self._close_button.destroy()

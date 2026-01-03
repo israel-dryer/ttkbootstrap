@@ -4,7 +4,7 @@ app = ttk.Window()
 
 colors = ['default', 'primary', 'secondary', 'success', 'info', 'warning', 'danger']
 
-nb = ttk.Notebook(app, bootstyle='underline')
+nb = ttk.Notebook(app)
 nb.pack(padx=20, pady=20)
 
 for c in colors:

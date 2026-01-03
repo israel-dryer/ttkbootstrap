@@ -39,7 +39,7 @@ class TabView(Frame):
         tab_anchor: str = None,
         enable_closing: Union[bool, Literal['hover']] = False,
         enable_adding: bool = False,
-        color: str = None,
+        accent: str = None,
         **kwargs
     ):
         """Create a TabView widget.
@@ -59,14 +59,14 @@ class TabView(Frame):
                 True=always visible, False=hidden, 'hover'=visible on hover.
                 Can be overridden per-tab via `closable` in add().
             enable_adding: If True, shows an "add" button that fires `<<TabAdd>>`.
-            color: Color token for styling.
+            accent: Accent token for styling.
             **kwargs: Additional arguments passed to Frame.
         """
         super().__init__(master, **kwargs)
 
         self._orient = orient
         self._variant = variant
-        self._color = color
+        self._accent = accent
 
         # Create internal variable for tab selection
         self._tab_variable = tk.StringVar()
@@ -84,7 +84,7 @@ class TabView(Frame):
             enable_closing=enable_closing,
             enable_adding=enable_adding,
             variable=self._tab_variable,
-            color=color,
+            accent=accent,
         )
 
         # Create page stack

@@ -21,7 +21,7 @@ def main():
     main_frame.pack(fill='both', expand=True)
 
     # --- Basic Expander ---
-    basic = Expander(main_frame, icon="bootstrap", color='primary', variant='solid', title="Basic Expander", highlight=True, show_border=True)
+    basic = Expander(main_frame, icon="bootstrap", accent='primary', variant='solid', title="Basic Expander", highlight=True, show_border=True)
     basic.pack(fill='x', pady=5)
 
     basic_content = basic.add()

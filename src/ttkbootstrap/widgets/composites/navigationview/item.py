@@ -97,7 +97,7 @@ class NavigationViewItem(Frame):
             variable=self._variable,
             value=self._key,
             anchor='w',
-            color='primary',
+            accent='primary',
             variant='ghost',
             command=self._on_invoked,
         )
@@ -110,7 +110,7 @@ class NavigationViewItem(Frame):
             icon_only=True,
             variable=self._variable,
             value=self._key,
-            color='primary',
+            accent='primary',
             variant='ghost',
             command=self._on_invoked,
         )

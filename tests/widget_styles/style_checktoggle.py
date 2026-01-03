@@ -19,7 +19,7 @@ def create_check_toggle_test(bootstyle, name):
         cb = ttk.CheckToggle(
             master=frame,
             text=color,
-            color=color,
+            accent=color,
             variant=bootstyle,
             width=15
         )

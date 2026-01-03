@@ -11,18 +11,18 @@ from ttkbootstrap.style.utility import recolor_image
 
 
 @BootstyleBuilderTTk.register_builder('default', 'TSeparator')
-def build_separator_style(b: BootstyleBuilderTTk, ttk_style: str, color: str = None, **options):
-    accent_token = color or 'border'
+def build_separator_style(b: BootstyleBuilderTTk, ttk_style: str, accent: str = None, **options):
+    accent_token = accent or 'border'
     surface_token = options.get('surface_color', 'background')
     orient = options.get('orient', 'horizontal')
 
     surface = b.color(surface_token)
     if accent_token == 'border':
-        accent = b.border(surface)
+        accent_color = b.border(surface)
     else:
-        accent = b.color(accent_token)
+        accent_color = b.color(accent_token)
 
-    img = recolor_image(f"separator-{orient}", accent)
+    img = recolor_image(f"separator-{orient}", accent_color)
     sticky = "ew" if orient == "horizontal" else "ns"
 
     b.create_style_element_image(ElementImage(f"{ttk_style}.Separator", img, border=0, sticky=sticky))

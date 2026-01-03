@@ -201,7 +201,7 @@ class NavigationViewGroup(Frame):
         popup_frame.pack(fill='both', expand=True)
 
         # Add header
-        header = Label(popup_frame, text=self._text, font='label', color='secondary')
+        header = Label(popup_frame, text=self._text, font='label', accent='secondary')
         header.pack(fill='x', padx=8, pady=(4, 8))
 
         # Build items data for ListView

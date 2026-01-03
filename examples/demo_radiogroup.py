@@ -40,7 +40,7 @@ class RadioGroupDemo(ttk.App):
             text="Color:",
             labelanchor='w',
             value='blue',
-            color='info'
+            accent='info'
         )
         left_group.add("Red", "red")
         left_group.add("Green", "green")
@@ -53,7 +53,7 @@ class RadioGroupDemo(ttk.App):
             text="Theme:",
             labelanchor='e',
             value='dark',
-            color='secondary'
+            accent='secondary'
         )
         right_group.add("Light", "light")
         right_group.add("Dark", "dark")
@@ -68,7 +68,7 @@ class RadioGroupDemo(ttk.App):
             labelanchor='s',
             orient='vertical',
             value='medium',
-            color='warning'
+            accent='warning'
         )
         priority_group.add("Low Priority", "low")
         priority_group.add("Medium Priority", "medium")
@@ -87,7 +87,7 @@ class RadioGroupDemo(ttk.App):
             style_frame,
             text="Primary:",
             labelanchor='w',
-            color='primary',
+            accent='primary',
             value='opt2'
         )
         primary_group.add("Opt 1", "opt1")
@@ -100,7 +100,7 @@ class RadioGroupDemo(ttk.App):
             style_frame,
             text="Success:",
             labelanchor='w',
-            color='success',
+            accent='success',
             value='yes'
         )
         success_group.add("Yes", "yes")
@@ -112,7 +112,7 @@ class RadioGroupDemo(ttk.App):
             style_frame,
             text="Danger:",
             labelanchor='w',
-            color='danger',
+            accent='danger',
             value='b'
         )
         danger_group.add("A", "a")
@@ -134,7 +134,7 @@ class RadioGroupDemo(ttk.App):
             labelanchor='n',
             orient='horizontal',
             value='daily',
-            color='info'
+            accent='info'
         )
         preference_group.add("Immediate", "immediate")
         preference_group.add("Daily Digest", "daily")
@@ -179,7 +179,7 @@ class RadioGroupDemo(ttk.App):
         ttk.Button(
             button_frame,
             text="Change to Success Style",
-            command=lambda: config_group.configure(color='success')
+            command=lambda: config_group.configure(accent='success')
         ).pack(side='left', padx=5)
 
         ttk.Button(

@@ -10,20 +10,20 @@ from ttkbootstrap.style.utility import recolor_image
 
 @BootstyleBuilderTTk.register_builder('square', 'TBadge')
 @BootstyleBuilderTTk.register_builder('default', 'TBadge')
-def build_default_badge_style(b: BootstyleBuilderTTk, ttk_style: str, color: str = None, **options):
-    build_badge(b, ttk_style, color, 'default', **options)
+def build_default_badge_style(b: BootstyleBuilderTTk, ttk_style: str, accent: str = None, **options):
+    build_badge(b, ttk_style, accent, 'default', **options)
 
 
 @BootstyleBuilderTTk.register_builder('pill', 'TBadge')
-def build_pill_badge_style(b: BootstyleBuilderTTk, ttk_style: str, color: str = None, **options):
-    build_badge(b, ttk_style, color, 'pill', **options)
+def build_pill_badge_style(b: BootstyleBuilderTTk, ttk_style: str, accent: str = None, **options):
+    build_badge(b, ttk_style, accent, 'pill', **options)
 
 
-def build_badge(b: BootstyleBuilderTTk, ttk_style: str, color: str = None, variant: str = 'default', **options):
+def build_badge(b: BootstyleBuilderTTk, ttk_style: str, accent: str = None, variant: str = 'default', **options):
     surface_token = options.get('surface_color', 'background')
 
     surface = b.color(surface_token)
-    normal = b.color(color or 'primary')
+    normal = b.color(accent or 'primary')
     foreground = b.on_color(normal)
 
     normal_img = recolor_image(f'badge-{variant}', normal)

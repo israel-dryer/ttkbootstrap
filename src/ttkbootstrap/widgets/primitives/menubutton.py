@@ -35,8 +35,8 @@ class MenuButtonKwargs(TypedDict, total=False):
     textsignal: Signal[Any]
 
     # ttkbootstrap-specific extensions
-    bootstyle: str  # DEPRECATED: Use color and variant instead
-    color: str
+    bootstyle: str  # DEPRECATED: Use accent and variant instead
+    accent: str
     variant: str
     surface_color: str
     style_options: dict[str, Any]
@@ -67,10 +67,10 @@ class MenuButton(LocalizationMixin, TextSignalMixin, IconMixin, TTKWrapperBase, 
             takefocus (bool): Whether the widget participates in focus traversal.
             textvariable (Variable): Tk variable linked to the text.
             textsignal (Signal): Reactive Signal linked to the text (auto-synced with textvariable).
-            style (str): Explicit ttk style name (overrides color/variant).
-            color (str): Color token for styling, e.g. 'primary', 'danger', 'success'.
+            style (str): Explicit ttk style name (overrides accent/variant).
+            accent (str): Accent token for styling, e.g. 'primary', 'danger', 'success'.
             variant (str): Style variant, e.g. 'solid', 'outline', 'ghost'.
-            bootstyle (str): DEPRECATED - Use `color` and `variant` instead.
+            bootstyle (str): DEPRECATED - Use `accent` and `variant` instead.
                 Combined style tokens (e.g., 'primary', 'ghost').
             surface_color (str): Optional surface token; otherwise inherited.
             style_options (dict): Optional dict forwarded to the style builder.

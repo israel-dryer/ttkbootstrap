@@ -56,13 +56,13 @@ Consider a different control when:
 
 ## Appearance
 
-### `color`
+### `accent`
 
 ```python
 ttk.TextEntry(app)  # primary (default)
-ttk.TextEntry(app, color="secondary")
-ttk.TextEntry(app, color="success")
-ttk.TextEntry(app, color="warning")
+ttk.TextEntry(app, accent="secondary")
+ttk.TextEntry(app, accent="success")
+ttk.TextEntry(app, accent="warning")
 ```
 
 !!! link "Design System"

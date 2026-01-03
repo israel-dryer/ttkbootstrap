@@ -108,7 +108,7 @@ app.mainloop()
 
 - `state`, `takefocus`
 
-- `style`, `color`, `variant`, `surface_color`, `style_options`
+- `style`, `accent`, `variant`, `surface_color`, `style_options`
 
 ---
 
@@ -151,14 +151,14 @@ Use validation when:
 
 ## Colors and styling
 
-Use semantic color tokens with the `color` parameter.
+Use semantic color tokens with the `accent` parameter.
 
 ```python
-ttk.CheckToggle(app, color="primary")
-ttk.CheckToggle(app, color="secondary")
-ttk.CheckToggle(app, color="success")
-ttk.CheckToggle(app, color="warning")
-ttk.CheckToggle(app, color="danger")
+ttk.CheckToggle(app, accent="primary")
+ttk.CheckToggle(app, accent="secondary")
+ttk.CheckToggle(app, accent="success")
+ttk.CheckToggle(app, accent="warning")
+ttk.CheckToggle(app, accent="danger")
 ```
 
 ---

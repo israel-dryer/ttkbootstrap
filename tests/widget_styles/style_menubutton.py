@@ -25,7 +25,7 @@ def create_menubutton_frame(bootstyle, testname):
         btn = ttk.MenuButton(
             master=frame,
             text=color,
-            color=color,
+            accent=color,
             variant=bootstyle
         )
         btn.pack(padx=5, pady=5, fill=BOTH)

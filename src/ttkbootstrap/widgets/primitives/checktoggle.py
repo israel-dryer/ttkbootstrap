@@ -31,7 +31,7 @@ class CheckToggle(CheckButton):
             underline (int): Index of character to underline in `text`.
             state (str): Widget state ('normal', 'active', 'disabled', 'readonly').
             takefocus (bool): Whether the widget participates in focus traversal.
-            color (str): Color token for styling, e.g. 'primary', 'success', 'danger'.
+            accent (str): Accent token for styling, e.g. 'primary', 'success', 'danger'.
             variant (str): Style variant (coerced to 'toolbutton').
             surface_color (str): Optional surface token; otherwise inherited.
             style_options (dict): Optional dict forwarded to the style builder.
