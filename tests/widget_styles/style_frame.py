@@ -12,7 +12,7 @@ def create_frame_test():
 
     # color
     for color in ['primary', 'secondary', 'success', 'info', 'warning', 'danger']:
-        frm = ttk.Frame(frame, color=color, width=150, height=100)
+        frm = ttk.Frame(frame, accent=color, width=150, height=100)
         frm.pack(padx=5, pady=5)
         frm.pack_propagate(False)
         ttk.Label(master=frm, text=color).pack(fill=BOTH)

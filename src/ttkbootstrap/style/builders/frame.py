@@ -6,8 +6,8 @@ from ttkbootstrap.style.utility import recolor_image
 
 
 @BootstyleBuilderTTk.register_builder('default', 'TFrame')
-def build_frame(b: BootstyleBuilderTTk, ttk_style: str, color: str = None, **options):
-    surface_token = options.get('surface_color') or 'background'
+def build_frame(b: BootstyleBuilderTTk, ttk_style: str, accent: str = None, **options):
+    surface_token = options.get('surface') or 'background'
     show_border = options.get('show_border', False)
     surface = b.color(surface_token)
     border = b.border(surface)

@@ -62,7 +62,7 @@ class SelectBox(Field):
 
         Other Parameters:
             allow_blank (bool): If True, empty input is allowed.
-            color (str): Color token for styling the focus ring and active border.
+            accent (str): Accent token for styling the focus ring and active border.
             value_format (str): ICU format pattern for parsing/formatting.
             font (str): Font for text display.
             foreground (str): Text color.
@@ -207,14 +207,14 @@ class SelectBox(Field):
         self._item_labels = []
         current_value = self.value
 
-        # Get color from Field's _color attribute, fallback to primary if None
-        color = getattr(self, '_color', None) or 'primary'
+        # Get accent from Field's _accent attribute, fallback to primary if None
+        accent = getattr(self, '_accent', None) or 'primary'
 
         for i, item in enumerate(self._items):
             btn = Button(
                 inner_frame,
                 text=item,
-                color=color,
+                accent=accent,
                 variant='selectbox_item',
                 command=lambda v=item: self._on_item_click(v, toplevel, popup_state)
             )

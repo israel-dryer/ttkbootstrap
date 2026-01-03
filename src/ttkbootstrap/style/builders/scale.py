@@ -11,9 +11,9 @@ from ttkbootstrap.style.utility import recolor_image
 
 
 @BootstyleBuilderTTk.register_builder('default', 'TScale')
-def build_scale_style(b: BootstyleBuilderTTk, ttk_style: str, color: str = 'primary', **options):
-    accent_token = color or 'primary'
-    surface_token = options.get('surface_color', 'background')
+def build_scale_style(b: BootstyleBuilderTTk, ttk_style: str, accent: str = 'primary', **options):
+    accent_token = accent or 'primary'
+    surface_token = options.get('surface', 'content')
     orient = options.get('orient', 'vertical').title()
 
     background = b.color(surface_token)

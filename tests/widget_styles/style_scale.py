@@ -27,7 +27,7 @@ def create_scale_frame(orient):
         pb = ttk.Scale(
             master=frame,
             value=0.2,
-            color=color,
+            accent=color,
             orient=orient
         )
         if orient == HORIZONTAL:

@@ -34,7 +34,7 @@ class ToggleGroupDemo(ttk.App):
             self,
             mode='multi',
             signal=filter_signal,
-            color='success'
+            accent='success'
         )
         multi_group.add(text="In Stock", value="in_stock")
         multi_group.add(text="On Sale", value="on_sale")
@@ -59,7 +59,7 @@ class ToggleGroupDemo(ttk.App):
         outline_group.pack(side='left', padx=10)
 
         # Ghost style
-        ghost_group = ttk.ToggleGroup(style_frame, variant='ghost', color='success', value='y')
+        ghost_group = ttk.ToggleGroup(style_frame, variant='ghost', accent='success', value='y')
         ghost_group.add("X", "x")
         ghost_group.add("Y", "y")
         ghost_group.pack(side='left', padx=10)
@@ -71,7 +71,7 @@ class ToggleGroupDemo(ttk.App):
             self,
             mode='multi',
             orient='vertical',
-            color='danger',
+            accent='danger',
             value={'red'}
         )
         vertical_group.add("Red", "red")

@@ -16,9 +16,9 @@ class PageOptions(TypedDict, total=False):
     style: str
     cursor: str
     show_border: bool
-    color: str
+    accent: str
     variant: str
-    surface_color: str
+    surface: str
     style_options: dict[str, Any]
     sticky: str
 

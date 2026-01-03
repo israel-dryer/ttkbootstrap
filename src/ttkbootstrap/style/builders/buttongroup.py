@@ -37,7 +37,7 @@ def _apply_icon_mapping(
 
 
 @BootstyleBuilderTTk.register_builder('default', 'ButtonGroup')
-def build_button_group_style(b: BootstyleBuilderTTk, ttk_style: str, color: str = None, **options):
+def build_button_group_style(b: BootstyleBuilderTTk, ttk_style: str, accent: str = None, **options):
     """
     Configure the button style.
 
@@ -47,8 +47,8 @@ def build_button_group_style(b: BootstyleBuilderTTk, ttk_style: str, color: str 
         * orientation
         * active_state
     """
-    accent_token = color or 'primary'
-    surface_token = options.get('surface_color', 'background')
+    accent_token = accent or 'primary'
+    surface_token = options.get('surface', 'content')
     orient = options.get('orient', 'horizontal')
     position = options.get('position', 'before')
     image_asset = f'button-group-{orient}-{position}'
@@ -56,20 +56,20 @@ def build_button_group_style(b: BootstyleBuilderTTk, ttk_style: str, color: str 
 
     surface = b.color(surface_token)
 
-    accent = b.color(accent_token)
-    selected = b.selected(accent)
-    active = b.active(accent)
-    pressed = b.pressed(accent)
-    focus_ring = b.focus_inner(accent)
-    focus_border = b.focus_border(accent)
+    accent_color = b.color(accent_token)
+    selected = b.selected(accent_color)
+    active = b.active(accent_color)
+    pressed = b.pressed(accent_color)
+    focus_ring = b.focus_inner(accent_color)
+    focus_border = b.focus_border(accent_color)
     on_selected = b.on_color(selected)
-    on_accent = b.on_color(accent)
+    on_accent = b.on_color(accent_color)
 
     disabled = b.disabled()
     on_disabled = b.disabled('text', disabled)
 
-    normal_img = recolor_image(image_asset, accent, accent, accent, surface)
-    normal_focus_img = recolor_image(image_asset, accent, focus_border, focus_ring, surface)
+    normal_img = recolor_image(image_asset, accent_color, accent_color, accent_color, surface)
+    normal_focus_img = recolor_image(image_asset, accent_color, focus_border, focus_ring, surface)
     active_img = recolor_image(image_asset, active, active, active, surface)
     active_focus_img = recolor_image(image_asset, active, focus_border, focus_ring, surface)
     pressed_img = recolor_image(image_asset, pressed, pressed, pressed, surface)
@@ -139,7 +139,7 @@ def build_button_group_style(b: BootstyleBuilderTTk, ttk_style: str, color: str 
 
 
 @BootstyleBuilderTTk.register_builder('outline', 'ButtonGroup')
-def build_outline_button_group_style(b: BootstyleBuilderTTk, ttk_style: str, color: str = None, **options):
+def build_outline_button_group_style(b: BootstyleBuilderTTk, ttk_style: str, accent: str = None, **options):
     """
     Configure the button style.
 
@@ -149,8 +149,8 @@ def build_outline_button_group_style(b: BootstyleBuilderTTk, ttk_style: str, col
         * orientation
         * active_state
     """
-    accent_token = color or 'primary'
-    surface_token = options.get('surface_color', 'background')
+    accent_token = accent or 'primary'
+    surface_token = options.get('surface', 'content')
     orient = options.get('orient', 'horizontal')
     position = options.get('position', 'before')
     image_asset = f'button-group-{orient}-{position}'
@@ -158,26 +158,26 @@ def build_outline_button_group_style(b: BootstyleBuilderTTk, ttk_style: str, col
 
     surface = b.color(surface_token)
 
-    accent = b.color(accent_token)
-    active = b.active(accent)
-    pressed = b.pressed(accent)
-    focus_ring = b.focus_inner(accent)
-    focus_border = b.focus_border(accent)
+    accent_color = b.color(accent_token)
+    active = b.active(accent_color)
+    pressed = b.pressed(accent_color)
+    focus_ring = b.focus_inner(accent_color)
+    focus_border = b.focus_border(accent_color)
 
-    on_selected = b.on_color(accent)
+    on_selected = b.on_color(accent_color)
 
-    accent_focus = b.elevate(accent, 2)
-    on_accent = b.on_color(accent)
+    accent_focus = b.elevate(accent_color, 2)
+    on_accent = b.on_color(accent_color)
 
     disabled = b.disabled()
     on_disabled = b.disabled('text', disabled)
 
-    normal_img = recolor_image(image_asset, surface, accent, surface, surface)
+    normal_img = recolor_image(image_asset, surface, accent_color, surface, surface)
     normal_focus_img = recolor_image(image_asset, surface, focus_border, focus_ring, surface)
     active_img = recolor_image(image_asset, active, active, active, surface)
     active_focus_img = recolor_image(image_asset, active, focus_border, focus_ring, surface)
     pressed_img = recolor_image(image_asset, pressed, pressed, pressed, surface)
-    selected_img = recolor_image(image_asset, accent, accent, accent, surface)
+    selected_img = recolor_image(image_asset, accent_color, accent_color, accent_color, surface)
     selected_focus_img = recolor_image(image_asset, accent_focus, focus_border, focus_ring, surface)
 
     disabled_img = recolor_image(image_asset, disabled, disabled, surface, disabled)
@@ -219,7 +219,7 @@ def build_outline_button_group_style(b: BootstyleBuilderTTk, ttk_style: str, col
     b.configure_style(
         ttk_style,
         background=surface,
-        foreground=accent,
+        foreground=accent_color,
         stipple="gray12",
         relief='flat',
         padding=button_padding,
@@ -234,7 +234,7 @@ def build_outline_button_group_style(b: BootstyleBuilderTTk, ttk_style: str, col
                 ('active', on_accent),
                 ('pressed', on_accent),
                 ('selected', on_selected),
-                ('', accent)],
+                ('', accent_color)],
         )
     else:
         state_spec = dict(
@@ -242,7 +242,7 @@ def build_outline_button_group_style(b: BootstyleBuilderTTk, ttk_style: str, col
                 ('disabled', on_disabled),
                 ('pressed', on_accent),
                 ('selected', on_selected),
-                ('', accent)],
+                ('', accent_color)],
         )
 
     icon_only = options.get('icon_only', False)
@@ -253,7 +253,7 @@ def build_outline_button_group_style(b: BootstyleBuilderTTk, ttk_style: str, col
 
 
 @BootstyleBuilderTTk.register_builder('ghost', 'ButtonGroup')
-def build_ghost_button_group_style(b: BootstyleBuilderTTk, ttk_style: str, color: str = None, **options):
+def build_ghost_button_group_style(b: BootstyleBuilderTTk, ttk_style: str, accent: str = None, **options):
     """
     Configure the button style.
 
@@ -263,32 +263,32 @@ def build_ghost_button_group_style(b: BootstyleBuilderTTk, ttk_style: str, color
         * orientation
         * active_state
     """
-    accent_token = color or 'primary'
-    surface_token = options.get('surface_color', 'background')
+    accent_token = accent or 'primary'
+    surface_token = options.get('surface', 'content')
     orient = options.get('orient', 'horizontal')
     position = options.get('position', 'before')
     image_asset = f'button-group-{orient}-{position}'
     active_state = options.get('active_state', False)
 
     surface = b.color(surface_token)
-    accent = b.subtle(accent_token, surface)
-    active = accent
-    pressed = b.active(accent)
-    focus_border = b.focus_border(accent)
-    focus_ring = b.focus_inner(accent)
+    accent_color = b.subtle(accent_token, surface)
+    active = accent_color
+    pressed = b.active(accent_color)
+    focus_border = b.focus_border(accent_color)
+    focus_ring = b.focus_inner(accent_color)
 
-    on_accent = b.on_color(accent)
+    on_accent = b.on_color(accent_color)
 
     disabled = b.disabled()
     on_disabled = b.disabled('text', disabled)
 
-    normal_img = recolor_image(image_asset, surface, accent, surface, surface)
+    normal_img = recolor_image(image_asset, surface, accent_color, surface, surface)
     normal_focus_img = recolor_image(image_asset, surface, focus_border, focus_ring, surface)
     active_img = recolor_image(image_asset, active, active, active, surface)
     active_focus_img = recolor_image(image_asset, active, focus_border, focus_ring, surface)
     pressed_img = recolor_image(image_asset, pressed, pressed, pressed, surface)
-    selected_img = recolor_image(image_asset, accent, accent, accent, surface)
-    selected_focus_img = recolor_image(image_asset, accent, focus_ring, focus_ring, surface)
+    selected_img = recolor_image(image_asset, accent_color, accent_color, accent_color, surface)
+    selected_focus_img = recolor_image(image_asset, accent_color, focus_ring, focus_ring, surface)
 
     disabled_img = recolor_image(image_asset, disabled, disabled, surface, disabled)
 

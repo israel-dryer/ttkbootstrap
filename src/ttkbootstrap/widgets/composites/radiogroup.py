@@ -21,12 +21,12 @@ class RadioGroupKwargs(TypedDict, total=False):
     signal: Signal[Any]
     value: str
     orient: Literal['horizontal', 'vertical']
-    color: str
+    accent: str
     text: str
     labelanchor: Literal['n', 's', 'e', 'w', 'ne', 'nw', 'se', 'sw']
     state: Literal['normal', 'disabled']
     show_border: bool
-    surface_color: str
+    surface: str
     style_options: dict[str, Any]
     # Frame options
     padding: Any
@@ -54,9 +54,9 @@ class RadioGroup(Frame):
 
         Other Parameters:
             orient (str): Layout orientation - 'horizontal' (default) or 'vertical'.
-            color (str): Color token for styling (e.g., 'primary', 'success', 'danger').
+            accent (str): Accent token for styling (e.g., 'primary', 'success', 'danger').
                 Defaults to 'primary'.
-            bootstyle (str): DEPRECATED - Use `color` instead.
+            bootstyle (str): DEPRECATED - Use `accent` instead.
             text (str): Optional label text to display.
             labelanchor (str): Label position - 'n' (top, default), 's' (bottom),
                 'e' (right), 'w' (left), or combinations like 'nw', 'ne', etc.
@@ -65,7 +65,7 @@ class RadioGroup(Frame):
             value (str): Initial selected value.
             state (str): Initial state for all buttons - 'normal' (default) or 'disabled'.
             show_border (bool): If True, draws a border around the group.
-            surface_color (str): Optional surface token; otherwise inherited.
+            surface (str): Optional surface token; otherwise inherited.
             style_options (dict): Additional style options passed to child buttons.
             padding (int | tuple): Frame padding. Defaults to 1.
             width (int): Requested width in pixels.
@@ -73,8 +73,8 @@ class RadioGroup(Frame):
         """
         # Extract RadioGroup-specific options before super().__init__
         self._orientation = kwargs.pop('orient', 'horizontal')
-        # Support both 'color' and legacy 'bootstyle'
-        self._color = kwargs.pop('color', None) or kwargs.pop('bootstyle', 'primary')
+        # Support both 'accent' and legacy 'bootstyle'
+        self._accent = kwargs.pop('accent', None) or kwargs.pop('bootstyle', 'primary')
         self._labeltext = kwargs.pop('text', None)
         self._labelanchor = kwargs.pop('labelanchor', 'n')
         self._state = kwargs.pop('state', 'normal')
@@ -236,9 +236,9 @@ class RadioGroup(Frame):
             raise ValueError(f"A button with the key '{key}' already exists.")
 
         btn_kwargs = kwargs.copy()
-        # Use color for button styling
-        if 'color' not in btn_kwargs and 'bootstyle' not in btn_kwargs:
-            btn_kwargs['color'] = self._color
+        # Use accent for button styling
+        if 'accent' not in btn_kwargs and 'bootstyle' not in btn_kwargs:
+            btn_kwargs['accent'] = self._accent
         # Apply current state if not explicitly provided
         if 'state' not in btn_kwargs:
             btn_kwargs['state'] = self._state
@@ -357,16 +357,16 @@ class RadioGroup(Frame):
         """Unsubscribe from value changes."""
         self._signal.unsubscribe(bind_id)
 
-    @configure_delegate('color')
-    def _delegate_color(self, value=None):
-        """Get or set the color. Updates all buttons when changed."""
+    @configure_delegate('accent')
+    def _delegate_accent(self, value=None):
+        """Get or set the accent. Updates all buttons when changed."""
         if value is None:
-            return self._color
+            return self._accent
 
-        self._color = value
-        # Update all buttons with new color
+        self._accent = value
+        # Update all buttons with new accent
         for button in self._buttons.values():
-            button.configure(color=value)
+            button.configure(accent=value)
 
     @configure_delegate('orient')
     def _delegate_orient(self, value=None):

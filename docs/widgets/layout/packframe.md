@@ -54,10 +54,10 @@ Use `PackFrame` when:
 
 ### Styling
 
-`PackFrame` inherits all styling options from Frame. Use `color` for semantic tokens.
+`PackFrame` inherits all styling options from Frame. Use `accent` for semantic tokens.
 
 ```python
-ttk.PackFrame(app, color="secondary", padding=20)
+ttk.PackFrame(app, accent="secondary", padding=20)
 ```
 
 !!! link "Design System"

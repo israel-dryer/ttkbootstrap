@@ -16,7 +16,7 @@ def create_label_style(test_name):
 
     # colored
     for color in ['primary', 'secondary', 'success', 'info', 'warning', 'danger']:
-        lbl = ttk.Label(frame, text=color, color=color)
+        lbl = ttk.Label(frame, text=color, accent=color)
         lbl.pack(padx=5, pady=5, fill=X)
 
     return frame

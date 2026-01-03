@@ -54,7 +54,7 @@ Use Tooltip when:
 
 ### Variants
 
-Tooltips can be styled using the `color` parameter (if supported).
+Tooltips can be styled using the `accent` parameter (if supported).
 
 !!! link "Design System"
     See the [Colors & Styling](../../design-system/colors.md) guide for complete color options.
@@ -71,7 +71,7 @@ Tooltips can be styled using the `color` parameter (if supported).
 
 - `wraplength` — max line width for text wrapping
 
-- `color` — visual style (if supported)
+- `accent` — visual style (if supported)
 
 ---
 

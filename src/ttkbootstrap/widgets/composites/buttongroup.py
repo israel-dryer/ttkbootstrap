@@ -20,11 +20,11 @@ if TYPE_CHECKING:
 class ButtonGroupKwargs(TypedDict, total=False):
     orient: Literal['horizontal', 'vertical']
     bootstyle: str
-    color: str
+    accent: str
     variant: str
     state: Literal['normal', 'disabled']
     show_border: bool
-    surface_color: str
+    surface: str
     style_options: dict[str, Any]
     # Frame options
     padding: Any
@@ -47,7 +47,7 @@ class ButtonGroup(Frame):
         *,
         orient: Literal['horizontal', 'vertical'] = 'horizontal',
         bootstyle: str = '',
-        color: str = None,
+        accent: str = None,
         variant: str = None,
         state: Literal['normal', 'disabled'] = 'normal',
         **kwargs: Unpack[ButtonGroupKwargs]
@@ -59,13 +59,13 @@ class ButtonGroup(Frame):
 
         Other Parameters:
             orient (str): Layout orientation - 'horizontal' (default) or 'vertical'.
-            color (str): The color token (e.g., 'primary', 'success', 'danger').
+            accent (str): The accent token (e.g., 'primary', 'success', 'danger').
                 Defaults to 'primary'.
             variant (str): The style variant (e.g., 'solid', 'outline', 'ghost').
-            bootstyle (str): DEPRECATED. Use color and variant instead.
+            bootstyle (str): DEPRECATED. Use accent and variant instead.
             state (str): Initial state for all buttons - 'normal' (default) or 'disabled'.
             show_border (bool): If True, draws a border around the group.
-            surface_color (str): Optional surface token; otherwise inherited.
+            surface (str): Optional surface token; otherwise inherited.
             style_options (dict): Additional style options passed to child widgets.
             padding (int | tuple): Frame padding. Defaults to 1.
             width (int): Requested width in pixels.
@@ -90,8 +90,8 @@ class ButtonGroup(Frame):
 
         super().__init__(master, style_options=style_options, **kwargs)
 
-        # Set color/variant AFTER super().__init__() to override wrapper's values
-        self._color = color
+        # Set accent/variant AFTER super().__init__() to override wrapper's values
+        self._accent = accent
         self._variant = variant
 
     def add(
@@ -137,11 +137,11 @@ class ButtonGroup(Frame):
         # Apply buttongroup styling using ttk_class='ButtonGroup'
         widget_kwargs.setdefault('ttk_class', 'ButtonGroup')
 
-        # Apply color/variant for styling
-        if self._color or self._variant:
-            # New API: use color and variant directly
-            if 'color' not in widget_kwargs:
-                widget_kwargs['color'] = self._color
+        # Apply accent/variant for styling
+        if self._accent or self._variant:
+            # New API: use accent and variant directly
+            if 'accent' not in widget_kwargs:
+                widget_kwargs['accent'] = self._accent
             if 'variant' not in widget_kwargs:
                 widget_kwargs['variant'] = self._variant
         elif self._bootstyle and 'bootstyle' not in widget_kwargs:
@@ -325,13 +325,13 @@ class ButtonGroup(Frame):
 
         self._update_widget_positions()
 
-    @configure_delegate('color')
-    def _delegate_color(self, value=None):
-        """Get or set the color. Updates all widgets when changed."""
+    @configure_delegate('accent')
+    def _delegate_accent(self, value=None):
+        """Get or set the accent. Updates all widgets when changed."""
         if value is None:
-            return self._color
+            return self._accent
 
-        self._color = value
+        self._accent = value
         self._reconfigure_all_widgets()
 
     @configure_delegate('variant')
@@ -344,11 +344,11 @@ class ButtonGroup(Frame):
         self._reconfigure_all_widgets()
 
     def _reconfigure_all_widgets(self):
-        """Reconfigure all widgets with current color/variant or bootstyle."""
+        """Reconfigure all widgets with current accent/variant or bootstyle."""
         for widget in self._widgets.values():
             if hasattr(widget, 'configure'):
-                if self._color or self._variant:
-                    widget.configure(color=self._color, variant=self._variant)
+                if self._accent or self._variant:
+                    widget.configure(accent=self._accent, variant=self._variant)
                 elif self._bootstyle:
                     widget.configure(bootstyle=self._bootstyle)
         self._update_widget_positions()

@@ -48,7 +48,7 @@ Use Toast when:
 
 ### Variants
 
-Toast supports different visual intents through the `color` parameter:
+Toast supports different visual intents through the `accent` parameter:
 
 - `info` — general information
 - `success` — positive confirmation
@@ -70,7 +70,7 @@ Toast supports different visual intents through the `color` parameter:
 
 - `duration` — auto-hide delay in milliseconds
 
-- `color` / intent — info, success, warning, danger
+- `accent` / intent — info, success, warning, danger
 
 ---
 

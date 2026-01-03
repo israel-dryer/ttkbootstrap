@@ -16,7 +16,7 @@ def create_label_style(bootstyle, test_name):
 
     # colored
     for color in ['primary', 'secondary', 'success', 'info', 'warning', 'danger']:
-        lbl = ttk.Badge(frame, text=color, color=color)
+        lbl = ttk.Badge(frame, text=color, accent=color)
         lbl.pack(padx=5, pady=5, fill=BOTH)
 
     return frame

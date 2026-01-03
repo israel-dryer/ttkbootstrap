@@ -647,7 +647,7 @@ class TableView(Frame):
 
     def _resolve_alternating_row_color(self):
         style = get_style()
-        color_token = self._row_alternation.get('color', 'background[+1]')
+        color_token = self._row_alternation.get('accent', 'background[+1]')
 
         try:
             background = style.style_builder.color(color_token)
@@ -732,7 +732,7 @@ class TableView(Frame):
                 bar,
                 icon="layout-three-columns",
                 icon_only=True,
-                color="foreground",
+                accent="foreground",
                 variant="ghost",
                 command=self._show_column_chooser_dialog,
             )
@@ -752,7 +752,7 @@ class TableView(Frame):
                 bar,
                 icon="download",
                 icon_only=True,
-                color="foreground",
+                accent="foreground",
                 variant="ghost",
                 compound="image",
                 items=export_items,
@@ -764,7 +764,7 @@ class TableView(Frame):
                 bar,
                 icon="plus-lg",
                 text="table.add_record",
-                color="foreground",
+                accent="foreground",
                 variant="ghost",
                 command=self._open_new_record,
             ).pack(side="right", padx=(0, 4))
@@ -840,9 +840,9 @@ class TableView(Frame):
         bar.pack(fill="x", pady=(4, 0))
         status_frame = Frame(bar)
         status_frame.pack(side="left", fill="x", expand=True)
-        self._filter_label = Label(status_frame, text="", anchor="w", color="secondary")
+        self._filter_label = Label(status_frame, text="", anchor="w", accent="secondary")
         self._filter_label.pack(side="left", padx=(0, 4))
-        self._sort_label = Label(status_frame, text="", anchor="w", color="secondary")
+        self._sort_label = Label(status_frame, text="", anchor="w", accent="secondary")
         self._sort_label.pack(side="left", padx=(8, 4))
 
         if not self._show_table_status:
@@ -862,13 +862,13 @@ class TableView(Frame):
 
         btn_frame = Frame(bar)
         btn_frame.pack(side="right")
-        Button(btn_frame, icon="chevron-double-left", color="foreground", variant="ghost", icon_only=True, command=self._first_page).pack(
+        Button(btn_frame, icon="chevron-double-left", accent="foreground", variant="ghost", icon_only=True, command=self._first_page).pack(
             side="left")
-        Button(btn_frame, icon="chevron-left", icon_only=True, color="foreground", variant="ghost", command=self._prev_page).pack(
+        Button(btn_frame, icon="chevron-left", icon_only=True, accent="foreground", variant="ghost", command=self._prev_page).pack(
             side="left")
-        Button(btn_frame, icon="chevron-right", icon_only=True, color="foreground", variant="ghost", command=self._next_page).pack(
+        Button(btn_frame, icon="chevron-right", icon_only=True, accent="foreground", variant="ghost", command=self._next_page).pack(
             side="left")
-        Button(btn_frame, icon="chevron-double-right", icon_only=True, color="foreground", variant="ghost", command=self._last_page).pack(
+        Button(btn_frame, icon="chevron-double-right", icon_only=True, accent="foreground", variant="ghost", command=self._last_page).pack(
             side="left")
 
     # ------------------------------------------------------------------ Helpers

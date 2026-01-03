@@ -49,13 +49,13 @@ Consider a different control when:
 
 ## Appearance
 
-### `color`
+### `accent`
 
 ```python
 ttk.PasswordEntry(app, label="Password")  # primary (default)
-ttk.PasswordEntry(app, label="Password", color="secondary")
-ttk.PasswordEntry(app, label="Password", color="success")
-ttk.PasswordEntry(app, label="Password", color="warning")
+ttk.PasswordEntry(app, label="Password", accent="secondary")
+ttk.PasswordEntry(app, label="Password", accent="success")
+ttk.PasswordEntry(app, label="Password", accent="warning")
 ```
 
 !!! link "Design System"
@@ -83,7 +83,7 @@ The reveal toggle changes only the display, never the underlying value.
 
 ### Common options
 
-#### `required`, `message`, `color`
+#### `required`, `message`, `accent`
 
 ```python
 ttk.PasswordEntry(app, label="Password", required=True, message="Minimum 8 characters")

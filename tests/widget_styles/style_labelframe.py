@@ -24,7 +24,7 @@ def create_labelframe_style():
         lbl = ttk.LabelFrame(
             master=frame,
             text=color,
-            color=color,
+            accent=color,
             width=150,
             height=75
         )

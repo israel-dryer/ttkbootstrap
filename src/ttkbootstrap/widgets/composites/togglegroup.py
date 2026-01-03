@@ -22,10 +22,10 @@ class ToggleGroupKwargs(TypedDict, total=False):
     signal: Signal[Any]
     value: str | set[str]
     orient: Literal['horizontal', 'vertical']
-    color: str
+    accent: str
     variant: Literal['outline', 'ghost'] | None
     show_border: bool
-    surface_color: str
+    surface: str
     style_options: dict[str, Any]
     # Frame options
     padding: Any
@@ -51,16 +51,16 @@ class ToggleGroup(Frame):
             mode (str): Selection mode - 'single' for radio button behavior (default),
                 or 'multi' for checkbox behavior allowing multiple selections.
             orient (str): Layout orientation - 'horizontal' (default) or 'vertical'.
-            color (str): Color token for styling (e.g., 'primary', 'danger').
+            accent (str): Accent token for styling (e.g., 'primary', 'danger').
                 Defaults to 'primary'.
             variant (str): Style variant (e.g., 'outline', 'ghost').
-            bootstyle (str): DEPRECATED - Use `color` and `variant` instead.
+            bootstyle (str): DEPRECATED - Use `accent` and `variant` instead.
             variable (Variable): Optional tk.Variable for controlling the value. For single mode,
                 use StringVar; for multi mode, use SetVar.
             signal (Signal): Optional Signal instance for reactive programming.
             value (str | set): Initial value - string for single mode, set for multi mode.
             show_border (bool): If True, draws a border around the group.
-            surface_color (str): Optional surface token; otherwise inherited.
+            surface (str): Optional surface token; otherwise inherited.
             style_options (dict): Additional style options passed to child buttons.
             padding (int | tuple): Frame padding. Defaults to 1.
             width (int): Requested width in pixels.
@@ -69,8 +69,8 @@ class ToggleGroup(Frame):
         # Extract ToggleGroup-specific options before super().__init__
         self._mode = kwargs.pop('mode', 'single')
         self._orientation = kwargs.pop('orient', 'horizontal')
-        # Support both 'color' and legacy 'bootstyle'
-        color = kwargs.pop('color', None) or kwargs.pop('bootstyle', 'primary')
+        # Support both 'accent' and legacy 'bootstyle'
+        accent = kwargs.pop('accent', None) or kwargs.pop('bootstyle', 'primary')
         variant = kwargs.pop('variant', None)  # None (default), 'outline', or 'ghost'
 
         # Handle signal/variable/value similar to CheckToggle pattern
@@ -88,8 +88,8 @@ class ToggleGroup(Frame):
         # Call super().__init__() - just Frame now
         super().__init__(master, style_options=style_options, padding=1, **kwargs)
 
-        # Restore color/variant (super().__init__ overwrites them with None)
-        self._color = color
+        # Restore accent/variant (super().__init__ overwrites them with None)
+        self._accent = accent
         self._variant = variant
 
         # Handle variable/signal setup manually
@@ -159,9 +159,9 @@ class ToggleGroup(Frame):
 
         btn_kwargs = kwargs.copy()
         # Set the ButtonGroup ttk_class - position will be updated by _update_button_positions
-        # Use color (or legacy bootstyle) for styling
-        custom_color = btn_kwargs.pop('color', None) or btn_kwargs.pop('bootstyle', self._color)
-        btn_kwargs['color'] = custom_color
+        # Use accent (or legacy bootstyle) for styling
+        custom_accent = btn_kwargs.pop('accent', None) or btn_kwargs.pop('bootstyle', self._accent)
+        btn_kwargs['accent'] = custom_accent
         btn_kwargs['ttk_class'] = 'ButtonGroup'
         # variant can be None (default), 'outline', or 'ghost' - use group's variant if not specified
         if 'variant' not in btn_kwargs:
@@ -343,14 +343,14 @@ class ToggleGroup(Frame):
         """Unsubscribe from value changes."""
         self._signal.unsubscribe(bind_id)
 
-    @configure_delegate('color')
-    def _delegate_color(self, value=None):
-        """Get or set the color. Updates all buttons when changed."""
+    @configure_delegate('accent')
+    def _delegate_accent(self, value=None):
+        """Get or set the accent. Updates all buttons when changed."""
         if value is None:
-            return self._color
+            return self._accent
 
-        self._color = value
-        # Update all buttons with new color
+        self._accent = value
+        # Update all buttons with new accent
         self._update_button_positions()
 
     @configure_delegate('orient')

@@ -22,10 +22,10 @@ class PanedWindowKwargs(TypedDict, total=False):
     name: str
 
     # ttkbootstrap-specific extensions
-    bootstyle: str  # DEPRECATED: Use color and variant instead
-    color: str
+    bootstyle: str  # DEPRECATED: Use accent and variant instead
+    accent: str
     variant: str
-    surface_color: str
+    surface: str
     style_options: dict[str, Any]
 
 
@@ -45,12 +45,12 @@ class PanedWindow(TTKWrapperBase, WidgetCapabilitiesMixin, TtkStateMixin, ttk.Pa
             padding (int | tuple): Extra internal padding.
             width (int): Requested width in pixels.
             height (int): Requested height in pixels.
-            style (str): Explicit ttk style name (overrides color/variant).
-            color (str): Color token for styling, e.g. 'primary', 'secondary'.
+            style (str): Explicit ttk style name (overrides accent/variant).
+            accent (str): Accent token for styling, e.g. 'primary', 'secondary'.
             variant (str): Style variant (if applicable).
-            bootstyle (str): DEPRECATED - Use `color` and `variant` instead.
+            bootstyle (str): DEPRECATED - Use `accent` and `variant` instead.
                 Combined style tokens.
-            surface_color (str): Optional surface token; otherwise inherited.
+            surface (str): Optional surface token; otherwise inherited.
             style_options (dict): Optional dict forwarded to the style builder.
         """
         super().__init__(master, **kwargs)

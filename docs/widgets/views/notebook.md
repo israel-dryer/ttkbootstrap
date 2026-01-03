@@ -39,7 +39,7 @@ import ttkbootstrap as ttk
 
 app = ttk.App()
 
-nb = ttk.Notebook(app, color="primary")
+nb = ttk.Notebook(app, accent="primary")
 nb.pack(fill="both", expand=True, padx=20, pady=20)
 
 # add() creates a Frame and returns it
@@ -87,10 +87,10 @@ Consider a different control when:
 
 ### Styling
 
-Apply a color to change the tab accent color:
+Apply an accent to change the tab accent color:
 
 ```python
-nb = ttk.Notebook(app, color="primary")
+nb = ttk.Notebook(app, accent="primary")
 ```
 
 !!! link "Design System"
@@ -137,7 +137,7 @@ page = nb.insert(0, text="Start", key="start")
 Frame options (padding, color, etc.) can be passed directly:
 
 ```python
-page = nb.add(text="Settings", key="settings", padding=10, color="primary")
+page = nb.add(text="Settings", key="settings", padding=10, accent="primary")
 ```
 
 ### Localized tab labels

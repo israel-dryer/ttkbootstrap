@@ -116,11 +116,11 @@ with ttk’s underlying engine.
 
 ## Color and variant as style abstractions
 
-The `color` and `variant` parameters provide a high-level description of a widget's visual intent.
+The `accent` and `variant` parameters provide a high-level description of a widget's visual intent.
 
 Instead of working directly with style names, users specify:
 
-- semantic color (via `color` parameter)
+- semantic color (via `accent` parameter)
 - visual variant (via `variant` parameter)
 
 ttkbootstrap resolves these into concrete ttk style names and layouts.

@@ -15,7 +15,7 @@ def create_progressbar_frame(bootstyle, orient, testname):
         pb = ttk.Progressbar(
             master=frame,
             value=25 + ((i - 1) * 10),
-            color=color,
+            accent=color,
             variant=bootstyle,
             orient=orient
         )

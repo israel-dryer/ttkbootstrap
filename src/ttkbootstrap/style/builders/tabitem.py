@@ -25,17 +25,17 @@ def _apply_icon_mapping(b: BootstyleBuilderTTk, options: dict, state_spec: dict,
 
 
 @BootstyleBuilderTTk.register_builder('pill', 'TabItem.TFrame')
-def build_tabitem_pill_frame(b: BootstyleBuilderTTk, ttk_style: str, color: str = None, **options):
+def build_tabitem_pill_frame(b: BootstyleBuilderTTk, ttk_style: str, accent: str = None, **options):
     """TabItem frame style for pill variant."""
-    accent_token = color or 'primary'
-    surface_token = options.get('surface_color', 'background')
+    accent_token = accent or 'primary'
+    surface_token = options.get('surface', 'content')
 
     surface = b.color(surface_token)
-    accent = b.color(accent_token)
-    active = b.active(accent)
-    selected = b.selected(accent)
+    accent_color = b.color(accent_token)
+    active = b.active(accent_color)
+    selected = b.selected(accent_color)
 
-    normal_img = recolor_image('button', accent, accent, surface, surface)
+    normal_img = recolor_image('button', accent_color, accent_color, surface, surface)
     active_img = recolor_image('button', active, active, surface, surface)
     selected_img = recolor_image('button', selected, selected, surface, surface)
 
@@ -61,19 +61,19 @@ def build_tabitem_pill_frame(b: BootstyleBuilderTTk, ttk_style: str, color: str 
 
 
 @BootstyleBuilderTTk.register_builder('bar', 'TabItem.TFrame')
-def build_tabitem_bar_frame(b: BootstyleBuilderTTk, ttk_style: str, color: str = None, **options):
+def build_tabitem_bar_frame(b: BootstyleBuilderTTk, ttk_style: str, accent: str = None, **options):
     """TabItem frame style for bar/underline variant."""
     orient = options.get('orient', 'horizontal')
-    accent_token = color or 'primary'
-    surface_token = options.get('surface_color', 'background')
+    accent_token = accent or 'primary'
+    surface_token = options.get('surface', 'content')
     surface = b.color(surface_token)
-    accent = b.color(accent_token)
+    accent_color = b.color(accent_token)
     accent_subtle = b.subtle(accent_token, surface)
 
     normal_img = recolor_image(f'tabs-bar-{orient}', surface, surface, surface, surface)
     active_img = recolor_image(f'tabs-bar-{orient}', accent_subtle, accent_subtle, accent_subtle, accent_subtle)
-    selected_img = recolor_image(f'tabs-bar-{orient}', surface, surface, accent, surface)
-    selected_hover_img = recolor_image(f'tabs-bar-{orient}', accent_subtle, accent_subtle, accent, accent_subtle)
+    selected_img = recolor_image(f'tabs-bar-{orient}', surface, surface, accent_color, surface)
+    selected_hover_img = recolor_image(f'tabs-bar-{orient}', accent_subtle, accent_subtle, accent_color, accent_subtle)
 
     b.create_style_element_image(
         ElementImage(
@@ -99,15 +99,15 @@ def build_tabitem_bar_frame(b: BootstyleBuilderTTk, ttk_style: str, color: str =
 # --- TabItem.TLabel builders ---
 
 @BootstyleBuilderTTk.register_builder('notebook', 'TabItem.TLabel')
-def build_tabitem_notebook_label(b: BootstyleBuilderTTk, ttk_style: str, color: str = None, **options):
+def build_tabitem_notebook_label(b: BootstyleBuilderTTk, ttk_style: str, accent: str = None, **options):
     """TabItem label style for notebook variant."""
-    surface_token = options.get('surface_color', 'background')
+    surface_token = options.get('surface', 'content')
     surface = b.color(surface_token)
 
     # notebook colors - inactive is elevation 1 of surface, active is surface
     # foreground is accent color if provided, else 'foreground'
     active_tab_color = surface
-    active_tab_foreground = b.color(color) if color else b.on_color(surface)
+    active_tab_foreground = b.color(accent) if accent else b.on_color(surface)
 
     inactive_tab_color = b.elevate(surface, 1)
     inactive_tab_foreground = b.on_color(inactive_tab_color)
@@ -142,22 +142,22 @@ def build_tabitem_notebook_label(b: BootstyleBuilderTTk, ttk_style: str, color: 
 
 
 @BootstyleBuilderTTk.register_builder('pill', 'TabItem.TLabel')
-def build_tabitem_pill_label(b: BootstyleBuilderTTk, ttk_style: str, color: str = None, **options):
+def build_tabitem_pill_label(b: BootstyleBuilderTTk, ttk_style: str, accent: str = None, **options):
     """TabItem label style for pill variant - matches pill color."""
-    accent_token = color or 'primary'
+    accent_token = accent or 'primary'
 
-    accent = b.color(accent_token)
-    active = b.active(accent)
-    selected = b.selected(accent)
-    on_accent = b.on_color(accent)
+    accent_color = b.color(accent_token)
+    active = b.active(accent_color)
+    selected = b.selected(accent_color)
+    on_accent = b.on_color(accent_color)
     on_active = b.on_color(active)
     on_selected = b.on_color(selected)
-    on_disabled = b.disabled('text', accent)
+    on_disabled = b.disabled('text', accent_color)
 
     # Match the pill's visual color (accent) for each state
     b.configure_style(
         ttk_style,
-        background=accent,
+        background=accent_color,
         foreground=on_accent,
         relief='flat',
         padding=0,
@@ -176,7 +176,7 @@ def build_tabitem_pill_label(b: BootstyleBuilderTTk, ttk_style: str, color: str 
             ('pressed', selected),
             ('selected', selected),
             ('hover', active),
-            ('', accent)
+            ('', accent_color)
         ]
     )
     state_spec = _apply_icon_mapping(b, options, state_spec, b.scale(18))
@@ -184,10 +184,10 @@ def build_tabitem_pill_label(b: BootstyleBuilderTTk, ttk_style: str, color: str 
 
 
 @BootstyleBuilderTTk.register_builder('bar', 'TabItem.TLabel')
-def build_tabitem_bar_label(b: BootstyleBuilderTTk, ttk_style: str, color: str = None, **options):
+def build_tabitem_bar_label(b: BootstyleBuilderTTk, ttk_style: str, accent: str = None, **options):
     """TabItem label style for bar/underline variant."""
-    accent_token = color or 'primary'
-    surface_token = options.get('surface_color', 'background')
+    accent_token = accent or 'primary'
+    surface_token = options.get('surface', 'content')
     surface = b.color(surface_token)
     accent_subtle = b.subtle(accent_token, surface)
     on_surface = b.on_color(surface)
@@ -230,25 +230,25 @@ def _build_tabitem_button_layout(b: BootstyleBuilderTTk, ttk_style: str):
 
 
 @BootstyleBuilderTTk.register_builder('pill', 'TabItem.TButton')
-def build_tabitem_pill_button(b: BootstyleBuilderTTk, ttk_style: str, color: str = None, **options):
+def build_tabitem_pill_button(b: BootstyleBuilderTTk, ttk_style: str, accent: str = None, **options):
     """TabItem close button style for pill variant - matches pill color."""
-    accent_token = color or 'primary'
+    accent_token = accent or 'primary'
     closable = options.get('closable')
 
-    accent = b.color(accent_token)
-    active = b.active(accent)
-    selected = b.selected(accent)
-    on_accent = b.on_color(accent)
+    accent_color = b.color(accent_token)
+    active = b.active(accent_color)
+    selected = b.selected(accent_color)
+    on_accent = b.on_color(accent_color)
     on_active = b.on_color(active)
     on_selected = b.on_color(selected)
-    on_disabled = b.disabled('text', accent)
+    on_disabled = b.disabled('text', accent_color)
 
     _build_tabitem_button_layout(b, ttk_style)
 
     # Match the pill's visual color (accent) for each state
     b.configure_style(
         ttk_style,
-        background=accent,
+        background=accent_color,
         foreground=on_accent,
         padding=0,
         relief='flat',
@@ -259,17 +259,17 @@ def build_tabitem_pill_button(b: BootstyleBuilderTTk, ttk_style: str, color: str
     if closable == 'hover':
         state_spec = dict(
             foreground=[
-                ('disabled', accent),
+                ('disabled', accent_color),
                 ('hover', on_active),
                 ('selected hover', on_selected),
                 ('selected', selected),
-                ('', accent)
+                ('', accent_color)
             ],
             background=[
                 ('pressed', selected),
                 ('selected', selected),
                 ('hover', active),
-                ('', accent)
+                ('', accent_color)
             ]
         )
     else:
@@ -285,7 +285,7 @@ def build_tabitem_pill_button(b: BootstyleBuilderTTk, ttk_style: str, color: str
                 ('pressed', selected),
                 ('selected', selected),
                 ('hover', active),
-                ('', accent)
+                ('', accent_color)
             ]
         )
 
@@ -294,10 +294,10 @@ def build_tabitem_pill_button(b: BootstyleBuilderTTk, ttk_style: str, color: str
 
 
 @BootstyleBuilderTTk.register_builder('bar', 'TabItem.TButton')
-def build_tabitem_bar_button(b: BootstyleBuilderTTk, ttk_style: str, color: str = None, **options):
+def build_tabitem_bar_button(b: BootstyleBuilderTTk, ttk_style: str, accent: str = None, **options):
     """TabItem close button style for bar variant - matches frame background."""
-    accent_token = color or 'primary'
-    surface_token = options.get('surface_color', 'background')
+    accent_token = accent or 'primary'
+    surface_token = options.get('surface', 'content')
     closable = options.get('closable')
 
     surface = b.color(surface_token)
@@ -351,9 +351,9 @@ def build_tabitem_bar_button(b: BootstyleBuilderTTk, ttk_style: str, color: str 
 
 
 @BootstyleBuilderTTk.register_builder('icon', 'TabItem.TButton')
-def build_tabitem_icon_button(b: BootstyleBuilderTTk, ttk_style: str, color: str = None, **options):
+def build_tabitem_icon_button(b: BootstyleBuilderTTk, ttk_style: str, accent: str = None, **options):
     """TabItem close button style - generic icon only button (fallback)."""
-    surface_token = options.get('surface_color', 'background')
+    surface_token = options.get('surface', 'content')
 
     background = b.color(surface_token)
     active = b.elevate(background, 1)

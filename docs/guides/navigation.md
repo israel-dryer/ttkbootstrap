@@ -35,7 +35,7 @@ import ttkbootstrap as ttk
 
 app = ttk.App()
 
-notebook = ttk.Notebook(app, color="primary", padding=20)
+notebook = ttk.Notebook(app, accent="primary", padding=20)
 notebook.pack(fill="both", expand=True, padx=10, pady=10)
 
 # Create tabs
@@ -222,9 +222,9 @@ def navigate_to(page_key):
 def update_active_state(active_key):
     for key, btn in nav_buttons.items():
         if key == active_key:
-            btn.configure(color="primary")
+            btn.configure(accent="primary")
         else:
-            btn.configure(color="secondary", variant="outline")
+            btn.configure(accent="secondary", variant="outline")
 
 nav_items = [
     ("Dashboard", "dashboard"),
@@ -237,7 +237,7 @@ for label, page_key in nav_items:
         sidebar,
         text=label,
         width=20,
-        color="secondary", variant="outline",
+        accent="secondary", variant="outline",
         command=lambda k=page_key: navigate_to(k),
     )
     btn.pack(fill="x", pady=2)
@@ -290,7 +290,7 @@ for label, page_key in nav_items:
         sidebar,
         text=label,
         width=20,
-        color="secondary", variant="outline",
+        accent="secondary", variant="outline",
         command=lambda k=page_key: stack.navigate(k),
     )
     btn.pack(fill="x", pady=2)
@@ -301,9 +301,9 @@ def on_page_changed(event):
     current = event.data.get("page")
     for key, btn in nav_buttons.items():
         if key == current:
-            btn.configure(color="primary")
+            btn.configure(accent="primary")
         else:
-            btn.configure(color="secondary", variant="outline")
+            btn.configure(accent="secondary", variant="outline")
 
 stack.on_page_changed(on_page_changed)
 
@@ -365,7 +365,7 @@ for label, key in [("Dashboard", "dashboard"), ("Settings", "settings")]:
         sidebar,
         text=label,
         width=18,
-        color="secondary", variant="outline",
+        accent="secondary", variant="outline",
         command=lambda k=key: stack.navigate(k),
     )
     btn.pack(fill="x", pady=2)
@@ -374,7 +374,7 @@ for label, key in [("Dashboard", "dashboard"), ("Settings", "settings")]:
 def on_page_changed(event):
     current = event.data.get("page")
     for key, btn in nav_buttons.items():
-        btn.configure(color="primary" if key == current else "secondary", variant=None if key == current else "outline")
+        btn.configure(accent="primary" if key == current else "secondary", variant=None if key == current else "outline")
 
 stack.on_page_changed(on_page_changed)
 stack.navigate("dashboard")

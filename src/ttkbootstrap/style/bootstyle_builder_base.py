@@ -198,7 +198,7 @@ class BootstyleBuilderBase:
         if base_color is None:
             base_color = self.colors.get(token) or self.colors.get('foreground')
 
-        surface_color = surface or self.colors.get('background')
+        surface_val = surface or self.colors.get('background')
 
         if role == "text":
             if self.provider.mode == "light":
@@ -207,9 +207,9 @@ class BootstyleBuilderBase:
                 return lighten_color(base_color, 0.25)
         else:  # background
             if self.provider.mode == "light":
-                return mix_colors(base_color, surface_color, 0.08)
+                return mix_colors(base_color, surface_val, 0.08)
             else:
-                return mix_colors(base_color, surface_color, 0.10)
+                return mix_colors(base_color, surface_val, 0.10)
 
     def active(self, color: str) -> str:
         return self._state_color(color, "active")
@@ -270,11 +270,12 @@ class BootstyleBuilderBase:
 
         return ring
 
-    def border(self, color: str) -> str:
-        if self.provider.mode == "dark":
-            return lighten_color(color, 0.20)
-        else:
-            return darken_color(color, 0.20)
+    def border(self, color: str, strength: float = 0.84) -> str:
+        """Derive a stroke color for a given surface by blending toward the surface's
+        computed on-color (text/icon color).
+        """
+        fg = self.on_color(color)
+        return mix_colors(color, fg, strength)
 
     def on_color(self, color: str) -> str:
         """Return a readable foreground color for the given background.

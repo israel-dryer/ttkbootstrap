@@ -11,18 +11,18 @@ from ttkbootstrap.style.utility import recolor_image
 
 
 @BootstyleBuilderTTk.register_builder('default', 'TEntry')
-def build_entry_style(b: BootstyleBuilderTTk, ttk_style: str, color: str = None, **options):
-    surface_token = options.get('surface_color', 'background')
+def build_entry_style(b: BootstyleBuilderTTk, ttk_style: str, accent: str = None, **options):
+    surface_token = options.get('surface', 'content')
 
     surface = b.color(surface_token)
-    accent = b.color(color or 'primary')
+    accent_color = b.color(accent or 'primary')
     foreground = b.on_color(surface)
 
     normal = surface
     border = b.border(surface)
     disabled = b.disabled()
-    focused_border = b.focus_border(accent)
-    focused_ring = b.focus_ring(accent, surface)
+    focused_border = b.focus_border(accent_color)
+    focused_ring = b.focus_ring(accent_color, surface)
 
     select_background = b.color('primary')
     select_foreground = b.on_color(select_background)

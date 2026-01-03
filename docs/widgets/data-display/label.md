@@ -46,14 +46,14 @@ Use Label when:
 
 ## Appearance
 
-### Styling with `color`
+### Styling with `accent`
 
 Labels participate fully in ttkbootstrap theming:
 
 ```python
-ttk.Label(app, text="Info", color="info")
-ttk.Label(app, text="Muted", color="secondary")
-ttk.Label(app, text="Warning", color="warning")
+ttk.Label(app, text="Info", accent="info")
+ttk.Label(app, text="Muted", accent="secondary")
+ttk.Label(app, text="Warning", accent="warning")
 ```
 
 !!! link "Design System"

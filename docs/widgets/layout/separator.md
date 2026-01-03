@@ -71,12 +71,12 @@ Separators are best used sparingly to:
 !!! link "Design System"
     For theming details and color tokens, see [Design System](../../design-system/index.md).
 
-### `color` / `style`
+### `accent` / `style`
 
-If your theme exposes separator variants, apply them via `color` or `style`.
+If your theme exposes separator variants, apply them via `accent` or `style`.
 
 ```python
-ttk.Separator(app, color="secondary")
+ttk.Separator(app, accent="secondary")
 ```
 
 ---

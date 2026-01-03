@@ -32,10 +32,10 @@ class OptionMenuKwargs(TypedDict, total=False):
     name: str
     textvariable: Any
     textsignal: Signal[str]
-    bootstyle: str  # DEPRECATED: Use color and variant instead
-    color: str
+    bootstyle: str  # DEPRECATED: Use accent and variant instead
+    accent: str
     variant: str
-    surface_color: str
+    surface: str
     style_options: dict[str, Any]
     show_dropdown_button: bool
     dropdown_button_icon: str | dict
@@ -71,15 +71,15 @@ class OptionMenu(MenuButton):
             underline (int): Index of underlined character in text.
             state (str): Widget state ('normal', 'active', 'disabled', 'readonly').
             takefocus (bool): Participation in focus traversal.
-            style (str): Explicit ttk style name (overrides color/variant).
+            style (str): Explicit ttk style name (overrides accent/variant).
             textvariable (Variable): Existing Tk variable to bind; new StringVar created if omitted.
             textsignal (Signal[str]): Signal bound to the textvariable.
-            color (str): Color token for styling, e.g. 'primary', 'danger', 'success'.
+            accent (str): Accent token for styling, e.g. 'primary', 'danger', 'success'.
             variant (str): Style variant, e.g. 'solid', 'outline'.
-            bootstyle (str): DEPRECATED - Use `color` and `variant` instead.
+            bootstyle (str): DEPRECATED - Use `accent` and `variant` instead.
                 Combined style tokens (e.g., 'primary-outline').
-            surface_color (str): Surface token for style.
-            style_options (dict): Dict forwarded to the style builder (e.g., icon_only, surface_color).
+            surface (str): Surface token for style.
+            style_options (dict): Dict forwarded to the style builder (e.g., icon_only, surface).
             show_dropdown_button (bool): Toggle visibility of the dropdown chevron.
             dropdown_button_icon (str | dict): Icon name for the chevron; defaults to 'caret-down-fill'.
         """

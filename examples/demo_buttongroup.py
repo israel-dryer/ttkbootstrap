@@ -13,7 +13,7 @@ class ButtonGroupDemo(ttk.App):
         # --- 1. Basic Horizontal ButtonGroup ---
         ttk.Label(self, text="Basic Horizontal ButtonGroup", font="-weight bold").pack(pady=(10, 5))
 
-        file_ops = ttk.ButtonGroup(self, color='primary')
+        file_ops = ttk.ButtonGroup(self, accent='primary')
         file_ops.add("New", command=lambda: self.show_action("New"))
         file_ops.add("Open", command=lambda: self.show_action("Open"))
         file_ops.add("Save", command=lambda: self.show_action("Save"))
@@ -23,7 +23,7 @@ class ButtonGroupDemo(ttk.App):
         # --- 2. Vertical ButtonGroup ---
         ttk.Label(self, text="Vertical ButtonGroup", font="-weight bold").pack(pady=(10, 5))
 
-        edit_ops = ttk.ButtonGroup(self, orient='vertical', color='success')
+        edit_ops = ttk.ButtonGroup(self, orient='vertical', accent='success')
         edit_ops.add("Cut", command=lambda: self.show_action("Cut"))
         edit_ops.add("Copy", command=lambda: self.show_action("Copy"))
         edit_ops.add("Paste", command=lambda: self.show_action("Paste"))
@@ -37,21 +37,21 @@ class ButtonGroupDemo(ttk.App):
         style_frame.pack(pady=5)
 
         # Primary
-        primary = ttk.ButtonGroup(style_frame, color='primary')
+        primary = ttk.ButtonGroup(style_frame, accent='primary')
         primary.add("Btn 1")
         primary.add("Btn 2")
         primary.add("Btn 3")
         primary.pack(side='left', padx=5)
 
         # Info
-        info = ttk.ButtonGroup(style_frame, color='info', variant='outline')
+        info = ttk.ButtonGroup(style_frame, accent='info', variant='outline')
         info.add("Btn 1")
         info.add("Btn 2")
         info.add("Btn 3")
         info.pack(side='left', padx=5)
 
         # Danger
-        danger = ttk.ButtonGroup(style_frame, color='danger', variant='ghost')
+        danger = ttk.ButtonGroup(style_frame, accent='danger', variant='ghost')
         danger.add("Btn 1")
         danger.add("Btn 2")
         danger.add("Btn 3")
@@ -60,7 +60,7 @@ class ButtonGroupDemo(ttk.App):
         # --- 4. CheckToggle Group (Multi-Select) ---
         ttk.Label(self, text="CheckToggle Group (Multi-Select)", font="-weight bold").pack(pady=(10, 5))
 
-        format_group = ttk.ButtonGroup(self, color='primary')
+        format_group = ttk.ButtonGroup(self, accent='primary')
         self.bold_var = ttk.BooleanVar(value=True)
         self.italic_var = ttk.BooleanVar(value=False)
         self.underline_var = ttk.BooleanVar(value=False)
@@ -79,7 +79,7 @@ class ButtonGroupDemo(ttk.App):
         # --- 5. RadioToggle Group (Single-Select) ---
         ttk.Label(self, text="RadioToggle Group (Single-Select)", font="-weight bold").pack(pady=(10, 5))
 
-        align_group = ttk.ButtonGroup(self, color='info', variant='outline')
+        align_group = ttk.ButtonGroup(self, accent='info', variant='outline')
         self.align_var = ttk.StringVar(value='left')
 
         align_group.add("Left", widget_type=ttk.RadioToggle, variable=self.align_var, value='left',
@@ -96,7 +96,7 @@ class ButtonGroupDemo(ttk.App):
         # --- 6. Mixed Widget Types (with DropdownButton) ---
         ttk.Label(self, text="Mixed Widget Types - Toolbar Example", font="-weight bold").pack(pady=(10, 5))
 
-        toolbar = ttk.ButtonGroup(self, color='secondary')
+        toolbar = ttk.ButtonGroup(self, accent='secondary')
         toolbar.add("New", command=lambda: self.show_action("New File"))
         toolbar.add("Open", command=lambda: self.show_action("Open File"))
         toolbar.add("Save", command=lambda: self.show_action("Save File"))
@@ -128,7 +128,7 @@ class ButtonGroupDemo(ttk.App):
         split_button_frame.pack(pady=5)
 
         # Split button for "Save" action
-        save_split = ttk.ButtonGroup(split_button_frame, color='primary')
+        save_split = ttk.ButtonGroup(split_button_frame, accent='primary')
         save_split.add("Save", command=lambda: self.show_action("Save (default action)"))
 
         # Add icon-only dropdown for save options
@@ -152,7 +152,7 @@ class ButtonGroupDemo(ttk.App):
         save_split.pack(side='left', padx=5)
 
         # Split button for "Run" action with success style
-        run_split = ttk.ButtonGroup(split_button_frame, color='success')
+        run_split = ttk.ButtonGroup(split_button_frame, accent='success')
         run_split.add("Run", command=lambda: self.show_action("Run (default)"))
 
         run_dropdown = run_split.add(
@@ -170,7 +170,7 @@ class ButtonGroupDemo(ttk.App):
         # --- 6. With Custom Keys ---
         ttk.Label(self, text="With Custom Keys (Disable/Enable Example)", font="-weight bold").pack(pady=(10, 5))
 
-        keyed_group = ttk.ButtonGroup(self, color='secondary')
+        keyed_group = ttk.ButtonGroup(self, accent='secondary')
         keyed_group.add("Action 1", key="action1", command=lambda: self.show_action("Action 1"))
         keyed_group.add("Action 2", key="action2", command=lambda: self.show_action("Action 2"))
         keyed_group.add("Action 3", key="action3", command=lambda: self.show_action("Action 3"))
@@ -195,7 +195,7 @@ class ButtonGroupDemo(ttk.App):
         # --- 7. Dynamic Configuration ---
         ttk.Label(self, text="Dynamic Configuration", font="-weight bold").pack(pady=(10, 5))
 
-        dynamic_group = ttk.ButtonGroup(self, color='warning')
+        dynamic_group = ttk.ButtonGroup(self, accent='warning')
         dynamic_group.add("Option A")
         dynamic_group.add("Option B")
         dynamic_group.add("Option C")
@@ -219,7 +219,7 @@ class ButtonGroupDemo(ttk.App):
         ttk.Button(
             config_frame,
             text="Change to Success Style",
-            command=lambda: dynamic_group.configure(color='success')
+            command=lambda: dynamic_group.configure(accent='success')
         ).pack(side='left', padx=5)
 
         ttk.Button(
@@ -237,7 +237,7 @@ class ButtonGroupDemo(ttk.App):
         # --- 8. Add/Remove Widgets Dynamically ---
         ttk.Label(self, text="Dynamic Add/Remove", font="-weight bold").pack(pady=(10, 5))
 
-        self.dynamic_add_group = ttk.ButtonGroup(self, color='dark')
+        self.dynamic_add_group = ttk.ButtonGroup(self, accent='dark')
         self.dynamic_add_group.add("Button 1", key="btn1")
         self.dynamic_add_group.add("Button 2", key="btn2")
         self.dynamic_add_group.pack(pady=5)
@@ -262,7 +262,7 @@ class ButtonGroupDemo(ttk.App):
         # --- 9. Information Display ---
         ttk.Label(self, text="Widget Info", font="-weight bold").pack(pady=(10, 5))
 
-        info_group = ttk.ButtonGroup(self, color='info')
+        info_group = ttk.ButtonGroup(self, accent='info')
         info_group.add("Alpha", key="a")
         info_group.add("Beta", key="b")
         info_group.add("Gamma", key="c")

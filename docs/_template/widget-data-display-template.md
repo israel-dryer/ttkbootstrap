@@ -20,7 +20,7 @@ If useful, include a short “Use it for…” sentence (file browsers, admin gr
 
 **Design System**
 
-- How styling is controlled (`color`, `variant`, row/selection colors, headers)
+- How styling is controlled (`accent`, `variant`, row/selection colors, headers)
 
 - Typography defaults and density conventions (row height, padding)
 
@@ -126,7 +126,7 @@ Curated options only (avoid full API dumps), such as:
 
 - scrollbars
 
-- styling tokens (`color`, `variant`) and key style options
+- styling tokens (`accent`, `variant`) and key style options
 
 Use short examples per topic.
 

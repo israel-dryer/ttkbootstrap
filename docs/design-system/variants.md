@@ -59,12 +59,12 @@ See:
 
 ## Applying variants
 
-Variants are applied using the `variant` parameter alongside `color`.
+Variants are applied using the `variant` parameter alongside `accent`.
 
 ```python
-ttk.Button(app, text="Save", color="primary")  # solid (default)
-ttk.Button(app, text="Cancel", color="secondary", variant="outline")
-ttk.Button(app, text="Learn More", color="info", variant="link")
+ttk.Button(app, text="Save", accent="primary")  # solid (default)
+ttk.Button(app, text="Cancel", accent="secondary", variant="outline")
+ttk.Button(app, text="Learn More", accent="info", variant="link")
 ```
 
 How to apply them in real layouts is covered in:

@@ -29,7 +29,7 @@ class LabeledScale(Frame):
             variable: tk.Variable = None,
             dtype: type[int] | type[float] = int,
             compound: Literal['before', 'after'] = 'before',
-            color: str = None,
+            accent: str = None,
             **kwargs: Any
 
     ):
@@ -54,7 +54,7 @@ class LabeledScale(Frame):
             compound: Label position relative to the scale. Use 'before' for
                 label above the scale or 'after' for label below the scale.
                 Defaults to 'before'.
-            color: Color token to apply to the scale.
+            accent: Accent token to apply to the scale.
             **kwargs: Additional keyword arguments passed to the Frame constructor.
                 A padding of 2 is forced to provide minimal spacing.
         """
@@ -83,7 +83,7 @@ class LabeledScale(Frame):
             variable=self._variable,
             from_=min_value,
             to=max_value,
-            color=color,
+            accent=accent,
             orient='horizontal',
         )
 

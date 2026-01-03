@@ -4,8 +4,8 @@ from ttkbootstrap.style.bootstyle_builder_ttk import BootstyleBuilderTTk
 
 
 @BootstyleBuilderTTk.register_builder('solid', 'Expander.TFrame')
-def build_solid_expander_header_style(b: BootstyleBuilderTTk, ttk_style: str, color: str = None, **options):
-    background = b.color(color or 'primary')
+def build_solid_expander_header_style(b: BootstyleBuilderTTk, ttk_style: str, accent: str = None, **options):
+    background = b.color(accent or 'primary')
     active = b.active(background)
     pressed = b.pressed(background)
     focus_border = b.focus_border(active)
@@ -44,11 +44,11 @@ def build_solid_expander_header_style(b: BootstyleBuilderTTk, ttk_style: str, co
 
 
 @BootstyleBuilderTTk.register_builder('solid', 'Expander.TLabel')
-def build_solid_expander_header_label_style(b: BootstyleBuilderTTk, ttk_style: str, color: str = None, **options):
+def build_solid_expander_header_label_style(b: BootstyleBuilderTTk, ttk_style: str, accent: str = None, **options):
     """
     Expander header label style with state-aware foreground.
     """
-    background = b.color(color or 'primary')
+    background = b.color(accent or 'primary')
     active = b.active(background)
     pressed = b.pressed(background)
     selected = b.selected(active)
@@ -93,17 +93,17 @@ def build_solid_expander_header_label_style(b: BootstyleBuilderTTk, ttk_style: s
 
 
 @BootstyleBuilderTTk.register_builder('default', 'Expander.TFrame')
-def build_ghost_expander_header_style(b: BootstyleBuilderTTk, ttk_style: str, color: str = None, **options):
-    accent_token = color or 'foreground'
-    surface_token = options.get('surface_color', 'background')
+def build_ghost_expander_header_style(b: BootstyleBuilderTTk, ttk_style: str, accent: str = None, **options):
+    accent_token = accent or 'foreground'
+    surface_token = options.get('surface', 'content')
 
     surface = b.color(surface_token)
-    accent = b.color(accent_token)
+    accent_color = b.color(accent_token)
 
     hovered = pressed = b.subtle(accent_token, surface)
     selected = b.selected(hovered)
 
-    focused_border = b.focus_border(accent) if accent_token != 'foreground' else b.focus_border(b.color('primary'))
+    focused_border = b.focus_border(accent_color) if accent_token != 'foreground' else b.focus_border(b.color('primary'))
 
     b.configure_style(ttk_style, background=surface, borderwidth=1, relief='raised')
     b.map_style(
@@ -137,21 +137,21 @@ def build_ghost_expander_header_style(b: BootstyleBuilderTTk, ttk_style: str, co
 
 
 @BootstyleBuilderTTk.register_builder('default', 'Expander.TLabel')
-def build_ghost_expander_header_label_style(b: BootstyleBuilderTTk, ttk_style: str, color: str = None, **options):
+def build_ghost_expander_header_label_style(b: BootstyleBuilderTTk, ttk_style: str, accent: str = None, **options):
     """
     Expander header label style with state-aware foreground.
     """
-    accent_token = color or 'foreground'
-    surface_token = options.get('surface_color', 'background')
+    accent_token = accent or 'foreground'
+    surface_token = options.get('surface', 'content')
 
     surface = b.color(surface_token)
-    accent = b.color(accent_token)
+    accent_color = b.color(accent_token)
 
     hovered = pressed = b.subtle(accent_token, surface)
     selected = b.selected(hovered)
 
-    on_surface = accent
-    on_disabled = b.disabled('text', accent)
+    on_surface = accent_color
+    on_disabled = b.disabled('text', accent_color)
 
     b.configure_style(
         ttk_style,

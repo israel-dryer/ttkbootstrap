@@ -72,10 +72,10 @@ See **Allowing custom values** in the Behavior section below.
 
 `SelectBox` typically follows field styling (surface, border, focus), plus a suffix button.
 
-Apply `color` at the field level as needed:
+Apply `accent` at the field level as needed:
 
 ```python
-ttk.SelectBox(app, label="Status", items=["New", "Done"], color="secondary")
+ttk.SelectBox(app, label="Status", items=["New", "Done"], accent="secondary")
 ```
 
 !!! link "Design System"

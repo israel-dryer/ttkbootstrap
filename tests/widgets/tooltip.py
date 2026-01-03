@@ -16,8 +16,8 @@ ttk.ToolTip(
     b2,
     anchor_point="ne",
     window_point="nw",
-    text="This is a styled tooltip with less padding. You can change this style by using the `color` parameter with label style keywords.",
-    color="danger",
+    text="This is a styled tooltip with less padding. You can change this style by using the `accent` parameter with label style keywords.",
+    accent="danger",
 )
 
 app.mainloop()

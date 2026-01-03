@@ -5,7 +5,7 @@ app = ttk.App(theme="dark")
 colors = ['primary', 'secondary', 'success', 'info', 'warning', 'danger']
 
 for color in colors:
-    b = ttk.Button(app, text=color.title(), color=color, variant="outline", width=25, icon="bootstrap-fill", compound="left")
+    b = ttk.Button(app, text=color.title(), accent=color, variant="outline", width=25, icon="bootstrap-fill", compound="left")
     b.pack(padx=20, pady=20)
 
 from tkinter import font

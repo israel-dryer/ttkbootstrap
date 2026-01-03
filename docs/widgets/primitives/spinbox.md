@@ -62,12 +62,12 @@ Use `Spinbox` when:
 
 ## Appearance
 
-### `color`
+### `accent`
 
 Applies ttkbootstrap theme styling.
 
 ```python
-ttk.Spinbox(app, from_=0, to=10, color="primary")
+ttk.Spinbox(app, from_=0, to=10, accent="primary")
 ```
 
 !!! link "Design System"
