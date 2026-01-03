@@ -2,19 +2,70 @@ from colorsys import hls_to_rgb, rgb_to_hls
 from pathlib import Path
 from typing import Tuple, cast
 
-from PIL import Image, ImageColor, ImageOps
+from PIL import Image, ImageColor, ImageOps, ImageDraw
 from PIL.ImageTk import PhotoImage
 
-from ttkbootstrap.style.types import ColorModel
-from ttkbootstrap.runtime.utility import clamp
 from ttkbootstrap.core.images import Image as ImageService
-
+from ttkbootstrap.runtime.utility import clamp
+from ttkbootstrap.style.types import ColorModel
 
 ASSETS_DIR = Path(__file__).parent.parent / "assets" / "widgets"
 
 HUE = 360
 SAT = 100
 LUM = 100
+
+
+def create_box_image(width: int, height: int, color: str):
+    cache_key = f"{width}{height}{color}"
+    cached = ImageService.get_cached(cache_key)
+    if cached is not None:
+        return cached
+
+    img = Image.new("RGBA", (width, height), color)
+    pm = PhotoImage(image=img)
+
+    ImageService.set_cached(cache_key, pm)
+    return pm
+
+
+def create_rounded_border_image(
+        radius: int,
+        stroke_width: int,
+        fill: str,  # hex like "#202020"
+        stroke: str,  # hex like "#3a3a3a"
+        padding: int = 2,  # extra pixels to avoid clipping
+):
+    cache_key = f"{radius}{stroke_width}{fill}{stroke}{padding}"
+    cached = ImageService.get_cached(cache_key)
+    if cached is not None:
+        return cached
+
+    r = max(0, int(radius))
+    w = max(0, int(stroke_width))
+    size = 2 * (r + w) + padding * 2 + 2
+
+    img = Image.new("RGBA", (size, size), (0, 0, 0, 0))
+    d = ImageDraw.Draw(img)
+
+    outer = (padding, padding, size - padding - 1, size - padding - 1)
+    d.rounded_rectangle(outer, radius=r + w, fill=stroke)
+
+    if w > 0:
+        inner = (
+            padding + w,
+            padding + w,
+            size - padding - w - 1,
+            size - padding - w - 1,
+        )
+        d.rounded_rectangle(inner, radius=max(0, r), fill=fill)
+    else:
+        # no stroke, just fill
+        d.rounded_rectangle(outer, radius=r, fill=fill)
+
+    pm = PhotoImage(image=img)
+    ImageService.set_cached(cache_key, pm)
+    return pm
 
 
 def create_transparent_image(width: int, height: int):

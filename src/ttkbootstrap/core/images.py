@@ -275,14 +275,3 @@ class Image:
         pil = PILImage.new("RGBA", (width, height), (255, 255, 255, 0))
         photo = PILPhotoImage(image=pil)
         return cls.set_cached(cache_key, photo)
-
-    @classmethod
-    def box(cls, width: int, height: int, fill: str) -> PILPhotoImage:
-        cache_key = f"{width}{height}{fill}"
-        cached = cls.get_cached(cache_key)
-        if cached is not None:
-            return cached
-
-        pil = PILImage.new("RGBA", (width, height), fill)
-        photo = PILPhotoImage(image=pil)
-        return cls.set_cached(cache_key, photo)
