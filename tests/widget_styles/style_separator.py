@@ -27,7 +27,8 @@ def create_separator_frame(orient):
         sep = ttk.Separator(
             master=frame,
             accent=color,
-            orient=orient
+            orient=orient,
+            thickness=4,
         )
         if orient == HORIZONTAL:
             sep.pack(padx=5, pady=5, fill=BOTH)
