@@ -22,6 +22,7 @@ class SeparatorKwargs(TypedDict, total=False):
     bootstyle: str  # DEPRECATED: Use accent and variant instead
     accent: str
     surface: str
+    thickness: int
     style_options: dict[str, Any]
 
 
@@ -43,8 +44,10 @@ class Separator(TTKWrapperBase, WidgetCapabilitiesMixin, TtkStateMixin, ttk.Sepa
             bootstyle (str): DEPRECATED - Use `accent` and `variant` instead.
                 Combined style tokens.
             surface (str): Optional surface token; otherwise inherited.
+            thickness (int): Thickness of the separator.
             style_options (dict): Optional dict forwarded to the style builder.
         """
+        kwargs.update(style_options=self._capture_style_options(['thickness'], kwargs))
         super().__init__(master, **kwargs)
 
 
