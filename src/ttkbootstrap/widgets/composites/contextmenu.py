@@ -99,7 +99,8 @@ class ContextMenu(CustomConfigMixin):
         self._frame = Frame(
             self._toplevel,
             show_border=True,
-            padding=3,
+            padding=4,
+            surface='overlay'
         )
         self._frame.pack(fill='both', expand=True)
 
