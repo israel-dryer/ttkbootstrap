@@ -40,7 +40,7 @@ class Separator(TTKWrapperBase, WidgetCapabilitiesMixin, TtkStateMixin, ttk.Sepa
         Other Parameters:
             orient (str): Orientation of the separator ('horizontal' or 'vertical').
             style (str): Explicit ttk style name (overrides accent/variant).
-            accent (str): Accent token for styling, e.g. 'primary', 'secondary'.
+            accent (str): Accent token for styling, e.g. 'primary', 'secondary' otherwise derived from inherited surface.
             bootstyle (str): DEPRECATED - Use `accent` and `variant` instead.
                 Combined style tokens.
             surface (str): Optional surface token; otherwise inherited.
