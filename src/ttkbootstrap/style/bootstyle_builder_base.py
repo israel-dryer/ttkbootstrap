@@ -573,6 +573,13 @@ class BootstyleBuilderBase:
             if key in cache:
                 return cache[key]
 
+            # Special case: 'empty' creates a transparent placeholder image
+            if name == 'empty':
+                from ttkbootstrap.style.utility import create_transparent_image
+                img = create_transparent_image(size, size)
+                cache[key] = img
+                return img
+
             # Call the provider directly; it returns an icon object with `.image`
             try:
                 icon_obj = BootstrapIcon(name=name, size=size, color=color)  # type: ignore[misc]
