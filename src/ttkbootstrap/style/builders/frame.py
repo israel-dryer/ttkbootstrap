@@ -7,7 +7,7 @@ from ttkbootstrap.style.utility import create_rounded_border_image
 
 @BootstyleBuilderTTk.register_builder('default', 'TFrame')
 def build_frame(b: BootstyleBuilderTTk, ttk_style: str, accent: str = None, **options):
-    surface_token = options.get('surface') or 'background'
+    surface_token = options.get('surface') or 'content'
     surface = b.color(surface_token)
 
     # border options
@@ -17,6 +17,8 @@ def build_frame(b: BootstyleBuilderTTk, ttk_style: str, accent: str = None, **op
 
     # Border reconciliation: determine if border is enabled and resolve stroke token
     border_enabled = show_border or (stroke is not None)
+
+    background = b.color('content') if border_enabled else surface
 
     if stroke is not None:
         stroke_token = stroke
@@ -57,4 +59,4 @@ def build_frame(b: BootstyleBuilderTTk, ttk_style: str, accent: str = None, **op
         )
         b.create_style_layout(ttk_style, Element(f'{ttk_style}.border', sticky="nsew"))
 
-    b.configure_style(ttk_style, background=surface)
+    b.configure_style(ttk_style, background=background)
