@@ -5,10 +5,7 @@ This module contains style builders for ttk.Separator widgets and variants.
 
 from __future__ import annotations
 
-
-
 from ttkbootstrap.style.bootstyle_builder_ttk import BootstyleBuilderTTk
-from ttkbootstrap.core.images import Image
 from ttkbootstrap.style.element import ElementImage, Element
 from ttkbootstrap.style.utility import create_box_image
 
