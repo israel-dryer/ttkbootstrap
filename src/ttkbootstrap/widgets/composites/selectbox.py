@@ -158,9 +158,9 @@ class SelectBox(Field):
 
     def _create_popup_toplevel(self):
         """Create and position the popup toplevel window."""
-        x = self.winfo_rootx() + 3
-        y = self.entry_widget.winfo_rooty() + self.entry_widget.winfo_height() + 8
-        width = self.winfo_width() - 6
+        x = self.winfo_rootx() + (1 if self._search_enabled else 3)
+        y = self.entry_widget.winfo_rooty() + self.entry_widget.winfo_height() + (8 if self._search_enabled else 5)
+        width = self.winfo_width() - (2 if self._search_enabled else 6)
         max_height = 200  # Maximum popup height in pixels
 
         toplevel = Toplevel(self)
@@ -175,7 +175,7 @@ class SelectBox(Field):
     def _create_popup_frame(self, toplevel, popup_state):
         """Create popup frame with scrollable item list."""
         # Outer frame with border and padding
-        outer_frame = Frame(toplevel, padding=3, show_border=True)
+        outer_frame = Frame(toplevel, padding=3, show_border=True, surface='background[+1]')
         outer_frame.pack(fill='both', expand=True)
 
         # Create scrollview inside the outer frame

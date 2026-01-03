@@ -21,15 +21,14 @@ def _context_item_layout(ttk_style: str) -> Element:
 
 @BootstyleBuilderTTk.register_builder('context-check', 'Toolbutton')
 def build_context_check_toolbutton_style(b: BootstyleBuilderTTk, ttk_style: str, accent: str = None, **options):
-    accent_token = accent or 'foreground'
     surface_token = options.get('surface', 'content')
 
     surface = b.color(surface_token)
     on_surface = b.on_color(surface)
     on_disabled = b.disabled('text', surface)
 
-    active = b.subtle(accent_token, surface)
-    pressed = b.elevate(active, 2)
+    active = b.active(surface)
+    pressed = b.pressed(surface)
     on_pressed = b.on_color(pressed)
 
     b.create_style_layout(
@@ -45,7 +44,7 @@ def build_context_check_toolbutton_style(b: BootstyleBuilderTTk, ttk_style: str,
         stipple='gray12',
         padding=(6, 3),
         anchor='w',
-        font='body',
+        font='caption',
         compound='left',
         focuscolor=''
     )
@@ -64,9 +63,9 @@ def build_context_check_toolbutton_style(b: BootstyleBuilderTTk, ttk_style: str,
         ]
     )
 
-    icon_empty = create_transparent_image(20, 20)
-    icon_pressed = BootstrapIcon('check', 20, on_pressed)
-    icon_normal = BootstrapIcon('check', 20, on_surface)
+    icon_empty = create_transparent_image(16, 16)
+    icon_pressed = BootstrapIcon('check', 16, on_pressed)
+    icon_normal = BootstrapIcon('check', 16, on_surface)
 
     state_spec['image'] = [
         ('selected pressed', icon_pressed),
@@ -79,15 +78,14 @@ def build_context_check_toolbutton_style(b: BootstyleBuilderTTk, ttk_style: str,
 
 @BootstyleBuilderTTk.register_builder('context-radio', 'Toolbutton')
 def build_context_radio_toolbutton_style(b: BootstyleBuilderTTk, ttk_style: str, accent: str = None, **options):
-    accent_token = accent or 'foreground'
     surface_token = options.get('surface', 'content')
 
     surface = b.color(surface_token)
     on_surface = b.on_color(surface)
     on_disabled = b.disabled('text', surface)
 
-    active = b.subtle(accent_token, surface)
-    pressed = b.elevate(active, 2)
+    active = b.active(surface)
+    pressed = b.pressed(surface)
     on_pressed = b.on_color(pressed)
 
     b.create_style_layout(
@@ -103,7 +101,7 @@ def build_context_radio_toolbutton_style(b: BootstyleBuilderTTk, ttk_style: str,
         stipple='gray12',
         padding=(6, 3),
         anchor='w',
-        font='body',
+        font='caption',
         compound='left',
         focuscolor=''
     )
@@ -122,9 +120,9 @@ def build_context_radio_toolbutton_style(b: BootstyleBuilderTTk, ttk_style: str,
         ]
     )
 
-    icon_empty = create_transparent_image(20, 20)
-    icon_pressed = BootstrapIcon('check', 20, on_pressed)
-    icon_normal = BootstrapIcon('check', 20, on_surface)
+    icon_empty = create_transparent_image(16, 16)
+    icon_pressed = BootstrapIcon('check', 16, on_pressed)
+    icon_normal = BootstrapIcon('check', 16, on_surface)
 
     state_spec['image'] = [
         ('selected pressed', icon_pressed),
@@ -146,15 +144,14 @@ def build_context_item_button_style(b: BootstyleBuilderTTk, ttk_style: str, acce
         * anchor
     """
     anchor = options.get('anchor', 'w')
-    accent_token = accent or 'foreground'
     surface_token = options.get('surface', 'content')
 
     surface = b.color(surface_token)
     on_surface = b.on_color(surface)
     on_disabled = b.disabled('text', surface)
 
-    active = b.subtle(accent_token, surface)
-    pressed = b.elevate(active, 2)
+    active = b.active(surface)
+    pressed = b.pressed(surface)
     on_pressed = b.on_color(pressed)
 
     b.configure_style(
@@ -165,7 +162,7 @@ def build_context_item_button_style(b: BootstyleBuilderTTk, ttk_style: str, acce
         stipple='gray12',
         padding=(6, 3),
         anchor=anchor,
-        font='body',
+        font='caption',
         focuscolor=''
     )
 
@@ -184,7 +181,7 @@ def build_context_item_button_style(b: BootstyleBuilderTTk, ttk_style: str, acce
     )
 
     icon_only = options.get('icon_only', False)
-    default_size = 24 if icon_only else 20
+    default_size = 20 if icon_only else 16
     state_spec = _apply_icon_mapping(b, options, state_spec, default_size)
 
     b.map_style(ttk_style, **state_spec)

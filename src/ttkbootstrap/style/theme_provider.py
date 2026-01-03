@@ -330,10 +330,10 @@ class ThemeProvider:
 
             colors['titlebar[0]'] = colors['gray[900]']
 
-            colors['overlay[0]'] = colors['gray[800]']
-            colors['overlay[1]'] = colors['gray[750]']
-            colors['overlay[2]'] = colors['gray[700]']
-            colors['overlay[3]'] = colors['gray[650]']
+            colors['overlay[0]'] = colors['gray[850]']
+            colors['overlay[1]'] = colors['gray[800]']
+            colors['overlay[2]'] = colors['gray[750]']
+            colors['overlay[3]'] = colors['gray[700]']
         else:
             colors['content[0]'] = colors['background']
             colors['content[1]'] = colors['gray[50]']
