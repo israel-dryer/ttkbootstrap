@@ -24,6 +24,7 @@ from ttkbootstrap.widgets.primitives.gridframe import GridFrame
 from ttkbootstrap.widgets.primitives.label import Label
 from ttkbootstrap.widgets.primitives.labelframe import LabelFrame
 from ttkbootstrap.widgets.composites.labeledscale import LabeledScale
+from ttkbootstrap.widgets.composites.menubar import MenuBar
 from ttkbootstrap.widgets.primitives.menubutton import MenuButton
 from ttkbootstrap.widgets.composites.meter import Meter
 from ttkbootstrap.widgets.primitives.notebook import Notebook
@@ -80,6 +81,7 @@ __all__ = [
     "Label",
     "LabelFrame",
     "LabeledScale",
+    "MenuBar",
     "MenuButton",
     "Meter",
     "Notebook",

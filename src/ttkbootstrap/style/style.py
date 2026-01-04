@@ -69,6 +69,7 @@ class Style(ttkStyle):
         self._style_registry: Set[str] = set()
         self._style_accents: Dict[str, Optional[str]] = {}
         self._style_options: Dict[str, dict] = {}
+        self._style_widget_classes: Dict[str, str] = {}
 
         # Current theme tracking
         self._current_theme: Optional[str] = theme
@@ -188,8 +189,9 @@ class Style(ttkStyle):
             **(options or {})
         )
 
-        # Store the accent so we can rebuild with the same accent
+        # Store the accent and widget_class so we can rebuild with the same values
         self._style_accents[ttk_style] = accent
+        self._style_widget_classes[ttk_style] = widget_class
 
         # Register it
         self.register_style(ttk_style, options)
@@ -246,13 +248,23 @@ class Style(ttkStyle):
             options = self._style_options.get(style, {})
             accent = self._style_accents.get(style)
 
-            # Parse style name to get widget class and variant
-            parsed = self._parse_style_name(style)
-            if not parsed:
-                continue
+            # Use stored widget_class if available (preserves composite classes like 'Menubar.TField')
+            # Fall back to parsing from style name for backwards compatibility
+            widget_class = self._style_widget_classes.get(style)
+            if not widget_class:
+                parsed = self._parse_style_name(style)
+                if not parsed:
+                    continue
+                widget_class = parsed['widget_class']
+                variant = parsed['variant']
+            else:
+                # Still need to determine variant from style name or use default
+                parsed = self._parse_style_name(style)
+                variant = parsed['variant'] if parsed else None
 
-            widget_class = parsed['widget_class']
-            variant = parsed['variant']
+            if variant is None:
+                from ttkbootstrap.style.bootstyle_builder_ttk import BootstyleBuilderTTk
+                variant = BootstyleBuilderTTk.get_default_variant(widget_class)
 
             self._style_builder.call_builder(
                 widget_class=widget_class,

@@ -1,6 +1,6 @@
 """Public application and window API surface.
 
-Application, window management, and menu functionality.
+Application, window management, menu, and shortcuts functionality.
 """
 
 from __future__ import annotations
@@ -8,6 +8,7 @@ from __future__ import annotations
 from ttkbootstrap.runtime.app import App, AppSettings, Window, get_app_settings, get_current_app
 from ttkbootstrap.runtime.toplevel import Toplevel
 from ttkbootstrap.runtime.menu import MenuManager, create_menu
+from ttkbootstrap.runtime.shortcuts import Shortcuts, Shortcut, get_shortcuts
 
 __all__ = [
     # Application
@@ -20,4 +21,8 @@ __all__ = [
     # Menu
     "MenuManager",
     "create_menu",
+    # Shortcuts
+    "Shortcuts",
+    "Shortcut",
+    "get_shortcuts",
 ]

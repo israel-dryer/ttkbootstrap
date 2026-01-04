@@ -341,7 +341,7 @@ def recolor_image(
         black_color: Replace black with this color (hex string)
         magenta_color: Replace magenta (#ff00ff) with this color, if provided
         scale: Optional scaling factor for output image. If None, uses automatic
-            scaling based on DPI (recommended). Source images are 2x resolution.
+            scaling based on DPI (recommended). Source images are at SOURCE_RESOLUTION.
         transparent_color: Fill fully transparent areas with this color
 
     Returns:
@@ -350,7 +350,8 @@ def recolor_image(
     # Use automatic scaling if not specified
     if scale is None:
         from ttkbootstrap.runtime.utility import _ScalingState
-        scale = _ScalingState.get_image_scale(source_resolution=2.25)
+        from ttkbootstrap.style.bootstyle_builder_base import SOURCE_RESOLUTION
+        scale = _ScalingState.get_image_scale(source_resolution=SOURCE_RESOLUTION)
 
     # Create cache key from all parameters
     cache_key = (name, white_color, black_color, magenta_color, transparent_color, scale)
