@@ -7,14 +7,47 @@ radiobuttons, and separators.
 from tkinter import BooleanVar, IntVar, StringVar, TclError, Toplevel, Widget
 from typing import Any, Callable, Union
 
-from ttkbootstrap.widgets.primitives import RadioToggle, CheckToggle
+from ttkbootstrap.widgets.primitives import RadioToggle, CheckToggle, Frame, Label, Separator
 from ttkbootstrap.widgets.primitives.button import Button
 from ttkbootstrap.widgets.types import Master
 from ttkbootstrap.widgets.primitives.checkbutton import CheckButton
-from ttkbootstrap.widgets.primitives.frame import Frame
+from ttkbootstrap.widgets.composites.compositeframe import CompositeFrame
 from ttkbootstrap.widgets.mixins import CustomConfigMixin, configure_delegate
 from ttkbootstrap.widgets.primitives.radiobutton import RadioButton
-from ttkbootstrap.widgets.primitives.separator import Separator
+
+
+class _CommandItemFrame(CompositeFrame):
+    """Container frame for command items that delegates to the inner button.
+
+    Uses CompositeFrame for automatic state propagation across children.
+    """
+
+    def __init__(self, master, **kwargs):
+        self._button: Button | None = None  # Must be set before super().__init__
+        super().__init__(master, **kwargs)
+
+    def invoke(self):
+        """Delegate invoke to the button."""
+        if self._button:
+            return self._button.invoke()
+
+    def state(self, statespec=None):
+        """Get or set state, propagating to button when setting."""
+        if statespec is None:
+            # Getter: return button state if available
+            if self._button:
+                return self._button.state()
+            return super().state()
+        else:
+            # Setter: set state on self (for Composite propagation)
+            # Button and label get state from Composite directly since they're registered
+            return super().state(statespec)
+
+    def configure(self, cnf=None, **kwargs):
+        """Delegate configure to the button for common options."""
+        if self._button:
+            return self._button.configure(cnf, **kwargs)
+        return super().configure(cnf, **kwargs)
 
 
 class ContextMenuItem:
@@ -195,6 +228,7 @@ class ContextMenu(CustomConfigMixin):
             icon: str = None,
             command: Callable = None,
             disabled: bool = False,
+            shortcut: str = None,
             key: str = None
     ) -> Button:
         """Add a command button to the menu.
@@ -205,24 +239,62 @@ class ContextMenu(CustomConfigMixin):
                 to maintain text alignment with items that have icons.
             command (Callable): Function to call when clicked.
             disabled (bool): If True, the item is disabled and cannot be clicked.
+            shortcut (str): Optional keyboard shortcut label (e.g., "Ctrl+S").
+                Displayed on the right side with muted foreground.
             key (str): Optional unique identifier. Auto-generated if not provided.
 
         Returns:
             Button: The created Button widget.
         """
-        btn = Button(
-            self._frame,
-            text=text,
-            icon=icon or 'empty',  # Use 'empty' placeholder for alignment
-            compound='left',
-            variant='context-item',
-            command=lambda: self._handle_item_click('command', text, command)
-        )
-        if disabled:
-            btn.state(['disabled'])
-        btn.pack(fill='x', padx=0, pady=0)
-        self._register_item(key, btn)
-        return btn
+        if shortcut:
+            # Use CompositeFrame container for items with shortcuts
+            # This handles state propagation (hover, pressed, focus) across children
+            container = _CommandItemFrame(self._frame, variant='context-frame')
+            container.pack(fill='x', padx=0, pady=0)
+
+            btn = Button(
+                container,
+                text=text,
+                icon=icon or 'empty',
+                compound='left',
+                variant='context-item',
+                command=lambda: self._handle_item_click('command', text, command)
+            )
+            btn.pack(side='left', fill='x', expand=True)
+
+            shortcut_label = Label(
+                container,
+                text=shortcut,
+                variant='context-label',
+                padding=(0, 0, 4, 0)
+            )
+            shortcut_label.pack(side='right')
+
+            # Register children with CompositeFrame for state propagation
+            container.register_composite(btn)
+            container.register_composite(shortcut_label)
+
+            container._button = btn
+            if disabled:
+                container.set_disabled(True)
+
+            self._register_item(key, container)
+            return btn
+        else:
+            # Simple button without shortcut
+            btn = Button(
+                self._frame,
+                text=text,
+                icon=icon or 'empty',
+                compound='left',
+                variant='context-item',
+                command=lambda: self._handle_item_click('command', text, command)
+            )
+            if disabled:
+                btn.state(['disabled'])
+            btn.pack(fill='x', padx=0, pady=0)
+            self._register_item(key, btn)
+            return btn
 
     def add_checkbutton(
             self,
