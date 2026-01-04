@@ -12,6 +12,10 @@ from ttkbootstrap.style.utility import best_foreground, color_to_hsl, darken_col
     relative_luminance
 from ttkbootstrap.runtime.utility import scale_size
 
+# Source images are created at this resolution multiplier (e.g., 2x)
+# This allows measurements from source images to be used directly in code
+SOURCE_RESOLUTION = 2.0
+
 
 class IconSpec(TypedDict, total=False):
     name: str
@@ -459,6 +463,33 @@ class BootstyleBuilderBase:
 
     @staticmethod
     def scale(value: Union[int, List, Tuple]):
+        return scale_size(value)
+
+    @staticmethod
+    def scale_from_source(value: Union[int, float, List, Tuple]):
+        """Scale a value measured in source image pixels.
+
+        Source images are created at SOURCE_RESOLUTION (2x). This method
+        converts source pixel measurements to 1x values, then applies DPI scaling.
+
+        Use this when you measure border, padding, or other values directly
+        from your source image assets.
+
+        Args:
+            value: Pixel measurement from source image (int, float, or sequence)
+
+        Returns:
+            DPI-scaled value appropriate for the current display
+
+        Example:
+            # If your source image has 10px corners:
+            border=b.scale_from_source(10)  # Correctly scales for all DPIs
+        """
+        if isinstance(value, (int, float)):
+            return scale_size(int(value / SOURCE_RESOLUTION + 0.5))
+        elif isinstance(value, (tuple, list)):
+            scaled = [int(v / SOURCE_RESOLUTION + 0.5) for v in value]
+            return scale_size(scaled)
         return scale_size(value)
 
     # ----- Icon Utilities -----
