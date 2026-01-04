@@ -25,9 +25,9 @@ def build_menubar_item(b: BootstyleBuilderTTk, ttk_style: str, color: str = None
     foreground_normal = b.on_color(surface)
     foreground_disabled = b.disabled('text', surface)
 
-    normal_img = recolor_image('badge-default', surface)
-    pressed_img = recolor_image('badge-default', pressed)
-    active_img = recolor_image('badge-default', active)
+    normal_img = recolor_image('badge-default', surface, surface, surface, surface)
+    pressed_img = recolor_image('badge-default', pressed, pressed, pressed, pressed)
+    active_img = recolor_image('badge-default', active, active, active, active)
 
     border = b.scale(6)
     padding = b.scale((H_PAD, V_PAD))
