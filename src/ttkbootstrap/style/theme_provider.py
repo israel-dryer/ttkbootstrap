@@ -344,50 +344,15 @@ class ThemeProvider:
 
             colors['titlebar[0]'] = colors['gray[50]']
 
-            colors['overlay[0]'] = colors['white']
-            colors['overlay[1]'] = colors['gray[50]']
-            colors['overlay[2]'] = colors['gray[50]']
-            colors['overlay[3]'] = colors['gray[100]']
+            colors['overlay[0]'] = colors['gray[50]']
+            colors['overlay[1]'] = colors['gray[150]']
+            colors['overlay[2]'] = colors['gray[200]']
+            colors['overlay[3]'] = colors['gray[250]']
 
         colors['content'] = colors['content[0]']
         colors['chrome'] = colors['chrome[0]']
         colors['overlay'] = colors['overlay[0]']
         colors['titlebar'] = colors['titlebar[0]']
-
-        # Stroke tokens - semantic border colors derived from surface
-        self._build_stroke_tokens(colors)
-
-    def _build_stroke_tokens(self, colors: dict):
-        """Build semantic stroke tokens for borders.
-
-        Stroke tokens provide consistent border colors derived from the
-        background/foreground relationship. They are surface-aware and
-        produce perceptibly different strengths.
-
-        Token family:
-        - stroke[1]: Subtle border (high background retention)
-        - stroke[2]: Default border (medium contrast)
-        - stroke[3]: Strong border (higher contrast)
-        - stroke: Alias for stroke[2]
-        """
-        from ttkbootstrap.style.utility import mix_colors
-
-        bg = colors['background']
-        fg = colors['foreground']
-
-        # Mix background toward foreground at different strengths
-        # Higher values = more background retained = subtler stroke
-        if self.mode == 'dark':
-            colors['stroke[1]'] = mix_colors(bg, fg, 0.88)  # subtle
-            colors['stroke[2]'] = mix_colors(bg, fg, 0.78)  # default
-            colors['stroke[3]'] = mix_colors(bg, fg, 0.65)  # strong
-        else:
-            colors['stroke[1]'] = mix_colors(bg, fg, 0.90)  # subtle
-            colors['stroke[2]'] = mix_colors(bg, fg, 0.82)  # default
-            colors['stroke[3]'] = mix_colors(bg, fg, 0.70)  # strong
-
-        # Alias: stroke -> stroke[2]
-        colors['stroke'] = colors['stroke[2]']
 
     @property
     def name(self):
