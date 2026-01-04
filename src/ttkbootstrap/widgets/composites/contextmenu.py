@@ -7,6 +7,7 @@ radiobuttons, and separators.
 from tkinter import BooleanVar, IntVar, StringVar, TclError, Toplevel, Widget
 from typing import Any, Callable, Union
 
+from ttkbootstrap.runtime.shortcuts import get_shortcuts
 from ttkbootstrap.widgets.primitives import RadioToggle, CheckToggle, Frame, Label, Separator
 from ttkbootstrap.widgets.primitives.button import Button
 from ttkbootstrap.widgets.types import Master
@@ -239,14 +240,25 @@ class ContextMenu(CustomConfigMixin):
                 to maintain text alignment with items that have icons.
             command (Callable): Function to call when clicked.
             disabled (bool): If True, the item is disabled and cannot be clicked.
-            shortcut (str): Optional keyboard shortcut label (e.g., "Ctrl+S").
-                Displayed on the right side with muted foreground.
+            shortcut (str): Optional keyboard shortcut. Can be either:
+                - A key registered with the Shortcuts service (e.g., "save")
+                - A literal display string (e.g., "Ctrl+S")
+                If a registered key is provided, the platform-appropriate
+                display string is shown automatically.
             key (str): Optional unique identifier. Auto-generated if not provided.
 
         Returns:
             Button: The created Button widget.
         """
+        # Resolve shortcut display text from the Shortcuts service
+        shortcut_display = None
         if shortcut:
+            # Try to look up as a registered shortcut key first
+            shortcuts = get_shortcuts()
+            display = shortcuts.display(shortcut)
+            shortcut_display = display if display else shortcut
+
+        if shortcut_display:
             # Use CompositeFrame container for items with shortcuts
             # This handles state propagation (hover, pressed, focus) across children
             container = _CommandItemFrame(self._frame, variant='context-frame')
@@ -264,7 +276,7 @@ class ContextMenu(CustomConfigMixin):
 
             shortcut_label = Label(
                 container,
-                text=shortcut,
+                text=shortcut_display,
                 variant='context-label',
                 padding=(0, 0, 4, 0)
             )
