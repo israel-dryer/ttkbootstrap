@@ -38,34 +38,3 @@ def build_frame(b: BootstyleBuilderTTk, ttk_style: str, accent: str = None, **op
         b.create_style_layout(ttk_style, Element(f'{ttk_style}.border', sticky="nsew"))
 
     b.configure_style(ttk_style, background=surface)
-
-    # surface_token = options.get('surface') or 'content'
-    # surface = b.color(surface_token)
-    #
-    # show_border = options.get('show_border', False)
-    # border_radius = options.get('border_radius', 4)
-    #
-    # background = b.color('content') if show_border else surface
-    #
-    # if show_border:
-    #     border_color = b.border(surface)
-    #
-    #     border_img = create_rounded_border_image(
-    #         size=100,
-    #         radius=border_radius,
-    #         fill=surface,
-    #         stroke=border_color,
-    #         thickness=1
-    #     )
-    #
-    #     b.create_style_element_image(
-    #         ElementImage(
-    #             f'{ttk_style}.border',
-    #             border_img,
-    #             border=int(border_radius * 4),
-    #             padding=int(border_radius * 4),
-    #             sticky="nsew")
-    #     )
-    #     b.create_style_layout(ttk_style, Element(f'{ttk_style}.border', sticky="nsew"))
-    #
-    # b.configure_style(ttk_style, background=background)
