@@ -29,7 +29,7 @@ from ttkbootstrap_icons_bs import BootstrapIcon  # noqa: E402
 
 if TYPE_CHECKING:
     from ttkbootstrap.api.menu import MenuManager, create_menu
-    from ttkbootstrap.api.app import App, App as Window, Toplevel, AppSettings, get_app_settings, get_current_app
+    from ttkbootstrap.api.app import App, App as Window, Toplevel, AppSettings, get_app_settings, get_current_app, Shortcuts, Shortcut, get_shortcuts
     from ttkbootstrap.api.style import (
         Bootstyle,
         Font,
@@ -63,6 +63,7 @@ if TYPE_CHECKING:
         Label,
         LabelFrame,
         LabeledScale,
+        MenuBar,
         MenuButton,
         Meter,
         Notebook,
@@ -134,10 +135,11 @@ _TTK_PRIMITIVES = [
 ]
 
 _MODULE_EXPORTS = {
-    # Application & Windows (includes menu)
+    # Application & Windows (includes menu and shortcuts)
     "ttkbootstrap.api.app": [
         "App", "Toplevel", "Window", "AppSettings", "get_app_settings", "get_current_app",
         "MenuManager", "create_menu",
+        "Shortcuts", "Shortcut", "get_shortcuts",
     ],
     # Style & Theming
     "ttkbootstrap.api.style": [
@@ -155,7 +157,7 @@ _MODULE_EXPORTS = {
         "RadioToggle",
         "Calendar", "ContextMenu", "ContextMenuItem", "DateEntry",
         "Accordion", "DropdownButton", "Expander", "Field", "FieldOptions", "FloodGauge", "Form",
-        "GridFrame", "LabeledScale", "Meter", "NumericEntry", "PackFrame", "PageStack",
+        "GridFrame", "LabeledScale", "MenuBar", "Meter", "NumericEntry", "PackFrame", "PageStack",
         "PasswordEntry", "PathEntry", "RadioGroup", "ScrolledText", "ScrollView", "SpinnerEntry",
         "SelectBox", "TableView", "TextEntry", "TimeEntry", "Toast", "ToggleGroup", "Switch",
         "ToolTip", "TK_WIDGETS", "TTK_WIDGETS",

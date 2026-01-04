@@ -133,6 +133,80 @@ def build_context_radio_toolbutton_style(b: BootstyleBuilderTTk, ttk_style: str,
     b.map_style(ttk_style, **state_spec)
 
 
+@BootstyleBuilderTTk.register_builder('context-frame', 'TFrame')
+def build_context_frame_style(b: BootstyleBuilderTTk, ttk_style: str, accent: str = None, **options):
+    """
+    Configure the context menu frame style for composite items.
+
+    Provides hover/active background states matching context-item.
+    """
+    surface_token = options.get('surface', 'content')
+
+    surface = b.color(surface_token)
+    active = b.active(surface)
+    pressed = b.pressed(surface)
+
+    b.configure_style(
+        ttk_style,
+        background=surface,
+        relief='flat',
+    )
+
+    b.map_style(
+        ttk_style,
+        background=[
+            ('focus !disabled', active),
+            ('pressed !disabled', pressed),
+            ('hover !disabled', active),
+            ('', surface)
+        ]
+    )
+
+
+@BootstyleBuilderTTk.register_builder('context-label', 'TLabel')
+def build_context_label_style(b: BootstyleBuilderTTk, ttk_style: str, accent: str = None, **options):
+    """
+    Configure the context menu label style for shortcut text.
+
+    Uses muted foreground color and matches context-item state behavior.
+    """
+    surface_token = options.get('surface', 'content')
+
+    surface = b.color(surface_token)
+    muted = b.color('secondary')
+    on_disabled = b.disabled('text', surface)
+
+    active = b.active(surface)
+    pressed = b.pressed(surface)
+    on_pressed = b.on_color(pressed)
+
+    b.configure_style(
+        ttk_style,
+        background=surface,
+        foreground=muted,
+        relief='flat',
+        anchor='e',
+        font='caption',
+    )
+
+    b.map_style(
+        ttk_style,
+        foreground=[
+            ('disabled', on_disabled),
+            ('focus !disabled', muted),
+            ('pressed', muted),
+            ('hover !disabled', muted),
+            ('', muted)
+        ],
+        background=[
+            ('focus !disabled', active),
+            ('pressed !disabled', pressed),
+            ('hover !disabled', active),
+            ('', surface)
+        ]
+    )
+
+
 @BootstyleBuilderTTk.register_builder('context-item', 'TButton')
 def build_context_item_button_style(b: BootstyleBuilderTTk, ttk_style: str, accent: str = None, **options):
     """
@@ -171,10 +245,12 @@ def build_context_item_button_style(b: BootstyleBuilderTTk, ttk_style: str, acce
             ('disabled', on_disabled),
             ('focus !disabled', on_pressed),
             ('pressed', on_pressed),
+            ('hover !disabled', on_pressed),
             ('', on_surface)],
         background=[
             ('focus !disabled', active),
             ('pressed !disabled', pressed),
+            ('hover !disabled', active),
             ('active !disabled', active),
             ('', surface)
         ]

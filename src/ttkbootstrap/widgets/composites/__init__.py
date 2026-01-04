@@ -4,6 +4,7 @@ from ttkbootstrap.widgets.composites.accordion import Accordion
 from ttkbootstrap.widgets.composites.compositeframe import Composite, CompositeFrame
 from ttkbootstrap.widgets.composites.expander import Expander
 from ttkbootstrap.widgets.composites.list import ListItem, ListView, MemoryDataSource, DataSourceProtocol
+from ttkbootstrap.widgets.composites.menubar import MenuBar
 from ttkbootstrap.widgets.composites.sidenav import SideNav
 from ttkbootstrap.widgets.composites.tabs import Tabs, TabView
 from ttkbootstrap.widgets.composites.selectbox import SelectBox
@@ -25,6 +26,7 @@ __all__ = [
     'ListView',
     'MemoryDataSource',
     'DataSourceProtocol',
+    'MenuBar',
     'SideNav',
     'Tabs',
     'TabView',

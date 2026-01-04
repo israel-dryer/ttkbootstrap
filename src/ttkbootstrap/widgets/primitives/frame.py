@@ -29,7 +29,6 @@ class FrameKwargs(TypedDict, total=False):
     accent: str
     variant: str
     surface: str
-    stroke: str
     show_border: bool
     style_options: dict[str, Any]
     bootstyle: str  # DEPRECATED: Use accent and variant instead
@@ -60,12 +59,9 @@ class Frame(TTKWrapperBase, WidgetCapabilitiesMixin, TtkStateMixin, ttk.Frame):
                 Combined style tokens (e.g., 'secondary').
             surface (str): Optional surface token; otherwise inherited.
             show_border (bool): Draw a border around the frame.
-            stroke (str | None): Border strength token ("stroke[1]", "stroke", "stroke[3]").
-                If None, uses "stroke[1]" when show_border=True.
-                Stroke colors are automatically derived from the frame's surface.
             style_options (dict): Optional dict forwarded to the style builder.
         """
-        kwargs.update(style_options=self._capture_style_options(['show_border', 'stroke'], kwargs))
+        kwargs.update(style_options=self._capture_style_options(['show_border'], kwargs))
         super().__init__(master, **kwargs)
 
     def configure_style_options(self, value=None, **kwargs):
