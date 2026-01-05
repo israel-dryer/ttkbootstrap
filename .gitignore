@@ -26,3 +26,6 @@ publish.bat
 /issues/
 /nul
 /.claude/settings.local.json
+/node_modules/
+/package-lock.json
+/package.json
