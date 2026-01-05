@@ -138,7 +138,9 @@ class BaseWindow:
             self.transient(transient)
 
         if overrideredirect:
-            self.overrideredirect(1)
+            # Skip overrideredirect on macOS - causes click handling issues and crashes
+            if self.winsys != 'aqua':
+                self.overrideredirect(1)
 
         # Alpha transparency (platform-aware)
         self._setup_alpha(alpha)
@@ -419,6 +421,10 @@ class BaseWindow:
         When enabled, the window manager typically does not decorate or manage
         the window (no title bar/borders). Useful for popups/menus; use with care.
 
+        Note:
+            On macOS (Aqua), overrideredirect is disabled due to Tk/Cocoa issues
+            with click handling and event processing that can cause crashes.
+
         Args:
             boolean: True to enable override-redirect, False to disable. If None,
                 return the current value.
@@ -426,6 +432,9 @@ class BaseWindow:
         Returns:
             The current override-redirect value when queried, or None when set.
         """
+        # Skip overrideredirect on macOS - causes click handling issues and crashes
+        if boolean and hasattr(self, 'winsys') and self.winsys == 'aqua':
+            return None
         return super().overrideredirect(boolean)
 
     # -------------------------------------------------------------------------

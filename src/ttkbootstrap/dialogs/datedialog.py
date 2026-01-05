@@ -35,6 +35,8 @@ class _ChromeDialog(Dialog):
     def _create_toplevel(self):
         super()._create_toplevel()
         if self._hide_window_chrome and self._toplevel:
+            # Note: overrideredirect is automatically disabled on macOS
+            # in BaseWindow.overrideredirect() due to Tk/Cocoa issues
             try:
                 self._toplevel.overrideredirect(True)
             except Exception:
@@ -285,7 +287,12 @@ class DateDialog:
         self._dialog.result = selected
         self._emit_result(selected, confirmed=True)
         if self._dialog.toplevel:
-            self._dialog.toplevel.after_idle(self._dialog.toplevel.destroy)
+            top = self._dialog.toplevel
+            try:
+                top.grab_release()
+            except Exception:
+                pass
+            top.destroy()
 
     def show(
             self,
