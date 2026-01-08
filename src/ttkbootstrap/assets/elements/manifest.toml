@@ -1,0 +1,587 @@
+version = 1
+default_dpi = 2.0
+
+[paths]
+base = "assets/widgets"
+
+# Badge
+
+[images.badge_round]
+file = "badge-round.png"
+width = 32
+height = 32
+border = 6 
+padding = 0
+
+
+[images.badge_pill]
+file = "badge-pill.png"
+width = 80 
+height = 32 
+border = [14, 4]
+padding = 0
+
+[images.badge_square]
+file = "badge-square.png"
+width = 80
+height = 32
+border = 4
+padding = 0
+
+# Button
+
+[images.button_lg]
+file = "button-lg.png"
+width = 104
+height = 104
+border = 16
+padding = 0
+
+[images.button_md]
+file = "button-md.png"
+width = 88
+height = 88
+border = 16
+padding = 0
+
+[images.button_sm]
+file = "button-sm.png"
+width = 72
+height = 72
+border = 16
+padding = 0
+
+[images.button_xs]
+file = "button-xs.png"
+width = 60
+height = 60
+border = 14
+padding = 0
+
+# Button Group
+
+## Button Group - Lg
+
+[images.button_group_vertical_after_lg]
+file = "button-group-vertical-after-lg.png"
+width = 88
+height = 88
+border = [10, 8, 10, 10]
+padding = 0
+
+[images.button_group_vertical_center_lg]
+file = "button-group-vertical-center-lg.png"
+width = 88
+height = 88
+border = [10, 8, 10, 10]
+padding = 0
+
+[images.button_group_vertical_before_lg]
+file = "button-group-vertical-before-lg.png"
+width = 88
+height = 88
+border = 10
+padding = 0
+
+[images.button_group_horizontal_after_lg]
+file = "button-group-horizontal-after-lg.png"
+width = 88
+height = 88
+border = [8, 10, 10, 10]
+padding = 0
+
+[images.button_group_horizontal_center_lg]
+file = "button-group-horizontal-center-lg.png"
+width = 88
+height = 88
+border = [8, 10, 10, 10]
+padding = 0
+
+[images.button_group_horizontal_before_lg]
+file = "button-group-horizontal-before-lg.png"
+width = 88
+height = 88
+border = 10
+padding = 0
+
+## Button Group - Md
+
+[images.button_group_vertical_after_md]
+file = "button-group-vertical-after-md.png"
+width = 72
+height = 72
+border = [10, 8, 10, 10]
+padding = 0
+
+[images.button_group_vertical_center_md]
+file = "button-group-vertical-center-md.png"
+width = 72
+height = 72
+border = [10, 8, 10, 10]
+padding = 0
+
+[images.button_group_vertical_before_md]
+file = "button-group-vertical-before-md.png"
+width = 72
+height = 72
+border = 10
+padding = 0
+
+[images.button_group_horizontal_after_md]
+file = "button-group-horizontal-after-md.png"
+width = 72
+height = 72
+border = [8, 10, 10, 10]
+padding = 0
+
+[images.button_group_horizontal_center_md]
+file = "button-group-horizontal-center-md.png"
+width = 72
+height = 72
+border = [8, 10, 10, 10]
+padding = 0
+
+[images.button_group_horizontal_before_md]
+file = "button-group-horizontal-before-md.png"
+width = 72
+height = 72
+border = 10
+padding = 0
+
+## Button Group - Sm
+
+[images.button_group_vertical_after_sm]
+file = "button-group-vertical-after-sm.png"
+width = 56
+height = 56
+border = [10, 8, 10, 10]
+padding = 0
+
+[images.button_group_vertical_center_sm]
+file = "button-group-vertical-center-sm.png"
+width = 56
+height = 56
+border = [10, 8, 10, 10]
+padding = 0
+
+[images.button_group_vertical_before_sm]
+file = "button-group-vertical-before-sm.png"
+width = 56
+height = 56
+border = 10
+padding = 0
+
+[images.button_group_horizontal_after_sm]
+file = "button-group-horizontal-after-sm.png"
+width = 56
+height = 56
+border = [8, 10, 10, 10]
+padding = 0
+
+[images.button_group_horizontal_center_sm]
+file = "button-group-horizontal-center-sm.png"
+width = 56
+height = 56
+border = [8, 10, 10, 10]
+padding = 0
+
+[images.button_group_horizontal_before_sm]
+file = "button-group-horizontal-before-sm.png"
+width = 56
+height = 56
+border = 10
+padding = 0
+
+## Button Group - Xs
+
+[images.button_group_vertical_after_xs]
+file = "button-group-vertical-after-xs.png"
+width = 48
+height = 48
+border = 8
+padding = 0
+
+[images.button_group_vertical_center_xs]
+file = "button-group-vertical-center-xs.png"
+width = 48
+height = 48
+border = 8
+padding = 0
+
+[images.button_group_vertical_before_xs]
+file = "button-group-vertical-before-xs.png"
+width = 48
+height = 48
+border = 8
+padding = 0
+
+[images.button_group_horizontal_after_xs]
+file = "button-group-horizontal-after-xs.png"
+width = 48
+height = 48
+border = 8
+padding = 0
+
+[images.button_group_horizontal_center_xs]
+file = "button-group-horizontal-center-xs.png"
+width = 48
+height = 48
+border = 8
+padding = 0
+
+[images.button_group_horizontal_before_xs]
+file = "button-group-horizontal-before-xs.png"
+width = 48
+height = 48
+border = 8
+padding = 0
+
+# Checkbox
+
+[images.checkbox_checked]
+file = "checkbox-checked.png"
+width = 48
+height = 48
+border = 0
+padding = 0
+
+[images.checkbox_unchecked]
+file = "checkbox-unchecked.png"
+width = 48
+height = 48
+border = 0
+padding = 0
+
+[images.checkbox_indeterminate]
+file = "checkbox-indeterminate.png"
+width = 48
+height = 48
+border = 0
+padding = 0
+
+
+# Radio Button
+
+[images.radio_selected]
+file = "radio-selected.png"
+width = 48
+height = 48
+border = 0
+padding = 0
+
+[images.radio_unselected]
+file = "radio-unselected.png"
+width = 48
+height = 48
+border = 0
+padding = 0
+
+
+# Switch
+
+[images.switch_on]
+file = "switch-on.png"
+width = 80
+height = 48
+border = 0
+padding = 0
+
+[images.switch_off]
+file = "switch-off.png"
+width = 80
+height = 48
+border = 0
+padding = 0
+
+
+# Scale (slider)
+
+# Radio Button
+
+[images.slider_handle_focus]
+file = "slider-handle-focus.png"
+width = 48
+height = 48
+border = 0
+padding = 0
+
+[images.slider_handle]
+file = "slider-handler.png"
+width = 48
+height = 48
+border = 0
+padding = 0
+
+[images.slider_track_horizontal]
+file = "slider-track-horizontal.png"
+width = 328
+height = 8
+border = [12, 0]
+padding = 0
+
+[images.slider_track_vertical]
+file = "slider-track-vertical.png"
+width = 8
+height = 328
+border = [0, 12]
+padding = 0
+
+# Progress Bar
+
+[images.progress_bar_horizontal_default]
+file = "progress-bar-horizontal-default.png"
+width = 256
+height = 32
+border = 0
+padding = 0
+
+[images.progress_bar_vertical_default]
+file = "progress-bar-vertical-default.png"
+width = 32
+height = 256
+border = 0
+padding = 0
+
+[images.progress_bar_horizontal_striped]
+file = "progress-bar-horizontal-striped.png"
+width = 256
+height = 32
+border = 0
+padding = 0
+
+[images.progress_bar_vertical_striped]
+file = "progress-bar-vertical-striped.png"
+width = 32
+height = 256
+border = 0
+padding = 0
+
+[images.progress_bar_horizontal_trough]
+file = "progress-bar-horizontal-trough.png"
+width = 800
+height = 32
+border = 0
+padding = 0
+
+[images.progress_bar_vertical_trough]
+file = "progress-bar-vertical-trough.png"
+width = 32
+height = 800
+border = 0
+padding = 0
+
+
+# Separator
+
+[images.separator_horizontal]
+file = "separator-horizontal.png"
+width = 100
+height = 2
+border = 0
+padding = 0
+
+[images.separator_vertical]
+file = "separator-vertical.png"
+width = 2
+height = 100
+border = 0
+padding = 0
+
+
+# Tabs
+
+[images.tabs_bar_horizontal]
+file = "tabs-bar-horizontal.png"
+width = 84
+height = 52
+border = 8
+padding = 0
+
+[images.tabs_bar_vertical]
+file = "tabs-bar-vertical.png"
+width = 52
+height = 84
+border = 8
+padding = 0
+
+[images.tabs_pill]
+file = "tabs-pill.png"
+width = 84
+height = 52
+border = 8
+padding = 0
+
+
+# Notebook
+
+[images.notebook_client_border]
+file = "notebook-client-border.png"
+width = 200
+height = 200
+border = 2
+padding = 0
+
+[images.notebook_pill]
+file = "notebook-pill.png"
+width = 84
+height = 52
+border = 8
+padding = 0
+
+[images.notebook_tab_active]
+file = "notebook-tab-active.png"
+width = 104
+height = 56
+border = [14, 5, 14, 2]
+padding = 0
+
+[images.notebook_tab_normal]
+file = "notebook-tab-normal.png"
+width = 104
+height = 56
+border = [14, 5, 14, 2]
+padding = 0
+
+[images.notebook_tab_bar]
+file = "notebook-tab-bar.png"
+width = 104
+height = 56
+border = [12, 6]
+padding = 0
+
+
+# List Item
+
+[images.list_item_separated]
+file = "list-item-separated.png"
+width = 200
+height = 200
+border = 2
+padding = [8, 4, 4, 2]
+
+[images.list_item]
+file = "list-item.png"
+width = 56
+height = 56
+border = [8, 4, 4, 4]
+padding = 0
+
+# Menu
+
+[images.menu_item]
+file = "menu-item.png"
+width = 56
+height = 56
+border = 2
+padding = 0
+
+# Input
+
+[images.field]
+file = "field.png"
+width = 72
+height = 72
+border = 4
+padding = 0
+
+## Input (large)
+
+[images.input_lg]
+file = "input_lg.png"
+width = 104
+height = 104
+border = 16
+padding = 0
+
+[images.input_after_lg]
+file = "input-after_lg.png"
+width = 88
+height = 88
+border = 4
+padding = 0
+
+[images.input_before_lg]
+file = "input-before_lg.png"
+width = 88
+height = 88
+border = 4
+padding = 0
+
+## Input (medium)
+
+[images.input_md]
+file = "input_md.png"
+width = 88
+height = 88
+border = 16
+padding = 0
+
+[images.input_after_md]
+file = "input-after_md.png"
+width = 72
+height = 72
+border = 4
+padding = 0
+
+[images.input_before_md]
+file = "input-before_md.png"
+width = 72
+height = 72
+border = 4
+padding = 0
+
+## Input (small)
+
+[images.input_sm]
+file = "input_sm.png"
+width = 72
+height = 72
+border = 16
+padding = 0
+
+[images.input_after_sm]
+file = "input-after_sm.png"
+width = 56
+height = 56
+border = 4
+padding = 0
+
+[images.input_before_sm]
+file = "input-before_sm.png"
+width = 56
+height = 56
+border = 4
+padding = 0
+
+## Input (extra small)
+
+[images.input_xs]
+file = "input_xs.png"
+width = 60
+height = 60
+border = 10
+padding = 0
+
+[images.input_after_xs]
+file = "input-after_xs.png"
+width = 48
+height = 48
+border = 4
+padding = 0
+
+[images.input_before_xs]
+file = "input-before_xs.png"
+width = 48
+height = 48
+border = 4
+padding = 0
+
+
+# border
+
+[images.border]
+file = "border.png"
+width = 200
+height = 200
+border = 8
+padding = 0
