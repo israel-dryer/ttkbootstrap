@@ -145,6 +145,22 @@ def parse_style_components(ttk_style: str) -> dict:
 # Button utilities
 # These utilities are used by button style builders and can be reused by other widgets.
 
+# Valid button densities: 'default' (normal) and 'compact' (smaller/tighter)
+BUTTON_DENSITIES = {'default', 'compact'}
+
+
+def normalize_button_density(density: str) -> str:
+    """Normalize button density to valid values ('default' or 'compact').
+
+    Args:
+        density: The requested button density.
+
+    Returns:
+        'compact' for compact buttons, 'default' for all other densities.
+    """
+    return 'compact' if density == 'compact' else 'default'
+
+
 def button_layout(ttk_style: str) -> Element:
     """Create the standard button element layout.
 
@@ -163,51 +179,51 @@ def button_layout(ttk_style: str) -> Element:
         ])
 
 
-def icon_size(icon_only: bool, size: str) -> int:
-    """Determine icon size based on button size and icon_only flag.
+def icon_size(icon_only: bool, density: str) -> int:
+    """Determine icon size based on button density and icon_only flag.
 
     Args:
         icon_only: Whether the button displays only an icon (no text).
-        size: The button size ('xs', 'md', etc.).
+        density: The button density ('default' or 'compact').
 
     Returns:
         The icon size in pixels.
     """
-    if size == 'xs':
+    if density == 'compact':
         if icon_only:
-            return 16
+            return 18
         return 17
     elif icon_only:
-        return 20
+        return 22
     return 18
 
 
-def button_font(size: str) -> str:
-    """Get the font token for a button based on its size.
+def button_font(density: str) -> str:
+    """Get the font token for a button based on its density.
 
     Args:
-        size: The button size ('xs', 'md', etc.).
+        density: The button density ('default' or 'compact').
 
     Returns:
         The font token name.
     """
-    return 'caption' if size == 'xs' else 'body'
+    return 'caption' if density == 'compact' else 'body'
 
 
-def button_padding(b: BootstyleBuilderTTk, icon_only: bool, size: Any) -> int | tuple[int, ...]:
+def button_padding(b: BootstyleBuilderTTk, icon_only: bool, density: Any) -> int | tuple[int, ...]:
     """Calculate button padding based on options.
 
     Args:
         b: The bootstyle builder instance.
         icon_only: Whether the button displays only an icon.
-        size: The button size.
+        density: The button density ('default' or 'compact').
 
     Returns:
         Padding value (0 for icon_only, scaled tuple otherwise).
     """
     if icon_only:
         return 0
-    if size == 'xs':
+    if density == 'compact':
         return b.scale((6, 0))
     return b.scale((8, 0))
 

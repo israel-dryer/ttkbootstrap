@@ -30,29 +30,15 @@ padding = 0
 
 # Button
 
-[images.button_lg]
-file = "button-lg.png"
-width = 104
-height = 104
-border = 16
-padding = 0
-
-[images.button_md]
-file = "button-md.png"
+[images.button_default]
+file = "button-default.png"
 width = 88
 height = 88
 border = 16
 padding = 0
 
-[images.button_sm]
-file = "button-sm.png"
-width = 72
-height = 72
-border = 16
-padding = 0
-
-[images.button_xs]
-file = "button-xs.png"
+[images.button_compact]
+file = "button-compact.png"
 width = 60
 height = 60
 border = 14

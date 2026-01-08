@@ -40,7 +40,7 @@ class ButtonKwargs(TypedDict, total=False):
     # ttkbootstrap-specific extensions
     bootstyle: str  # DEPRECATED: Use accent and variant instead
     accent: str
-    size: Literal['lg', 'md', 'sm', 'xs']
+    density: Literal['default', 'compact']
     variant: str
     surface: str
     style_options: dict[str, Any]
@@ -79,7 +79,7 @@ class Button(LocalizationMixin, TextSignalMixin, IconMixin, TTKWrapperBase, Widg
             style (str): Explicit ttk style name to apply (overrides accent/variant).
             accent (str): Accent token for styling, e.g. 'primary', 'danger', 'success'.
             variant (str): Style variant, e.g. 'solid', 'outline', 'link', 'text'.
-            size (str): The size of the button, e.g. 'lg', 'md', 'sm', 'xs'.
+            density (str): The vertical and horizontal compactness of widget content, e.g. 'default', 'compact'.
             bootstyle (str): DEPRECATED - Use `accent` and `variant` instead.
                 Combined style tokens, e.g. 'primary', 'danger-outline'.
             surface (str): Optional surface token to use for this button; if not
@@ -87,5 +87,5 @@ class Button(LocalizationMixin, TextSignalMixin, IconMixin, TTKWrapperBase, Widg
             style_options (dict): Optional dict forwarded to the style builder. Useful
                 for widget-specific options (e.g., {'icon': ...}).
         """
-        kwargs.update(style_options=self._capture_style_options(['icon_only', 'icon', 'anchor', 'size'], kwargs))
+        kwargs.update(style_options=self._capture_style_options(['icon_only', 'icon', 'anchor', 'density'], kwargs))
         super().__init__(master, **kwargs)

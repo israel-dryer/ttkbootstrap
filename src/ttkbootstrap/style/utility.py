@@ -67,7 +67,7 @@ def _get_element_info(key: str) -> dict | None:
     """Get element info from manifest by key.
 
     Args:
-        key: The element key (e.g., 'button_lg', 'checkbox_checked')
+        key: The element key (e.g., 'button_md', 'checkbox_checked')
 
     Returns:
         Dict with file, width, height, border, padding or None if not found.
@@ -542,7 +542,7 @@ def recolor_element_image(
     so scaling accounts for this to produce correctly sized output.
 
     Args:
-        key: Element key from manifest (e.g., 'button_lg', 'checkbox_checked')
+        key: Element key from manifest (e.g., 'button_md', 'checkbox_checked')
         white_color: Replace white/light areas with this color (hex string)
         black_color: Replace black/dark areas with this color (hex string)
         magenta_color: Replace magenta (#ff00ff) with this color, if provided
@@ -557,7 +557,7 @@ def recolor_element_image(
         ValueError: If the key is not found in the manifest.
 
     Example:
-        >>> result = recolor_element_image('button_lg', '#3b82f6', '#1e40af')
+        >>> result = recolor_element_image('button_md', '#3b82f6', '#1e40af')
         >>> element = ElementImage(
         ...     'MyButton.border',
         ...     result.image,

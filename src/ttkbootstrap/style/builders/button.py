@@ -6,45 +6,16 @@ This module contains style builders for ttk.Button widgets and variants.
 from __future__ import annotations
 
 from ttkbootstrap.style.bootstyle_builder_ttk import BootstyleBuilderTTk
-from ttkbootstrap.style.element import Element, ElementImage
-from ttkbootstrap.style.utility import recolor_image
-
-
-def _button_layout(ttk_style: str) -> Element:
-    return Element(f"{ttk_style}.Button.border", sticky="nsew").children(
-        [
-            Element("Button.padding", sticky="nsew").children(
-                [
-                    Element("Button.label", sticky="nsew")
-                ])
-        ])
-
-
-def _button_padding(b: BootstyleBuilderTTk, options: dict) -> int | tuple[int, int]:
-    return 0 if options.get('icon_only', False) else b.scale((8, 0))
-
-
-def _apply_icon_mapping(
-        b: BootstyleBuilderTTk,
-        options: dict,
-        state_spec: dict,
-        default_size: int | None = None
-) -> dict:
-    icon = options.get('icon')
-    if icon is None:
-        return state_spec
-
-    if default_size is None:
-        icon = b.normalize_icon_spec(icon)
-    else:
-        icon = b.normalize_icon_spec(icon, default_size)
-
-    state_spec['image'] = b.map_stateful_icons(icon, state_spec['foreground'])
-    # Set compound to 'left' so text is visible alongside the icon
-    icon_only = options.get('icon_only', False)
-    if not icon_only:
-        state_spec['compound'] = 'left'
-    return state_spec
+from ttkbootstrap.style.element import ElementImage
+from ttkbootstrap.style.utility import recolor_image, recolor_element_image
+from ttkbootstrap.style.builders.utils import (
+    apply_icon_mapping,
+    button_font,
+    button_layout,
+    button_padding,
+    icon_size,
+    normalize_button_density,
+)
 
 
 @BootstyleBuilderTTk.register_builder('solid', 'TButton')
@@ -61,6 +32,7 @@ def build_solid_button_style(b: BootstyleBuilderTTk, ttk_style: str, accent: str
     anchor = options.get('anchor', 'center')
     accent_token = accent or 'primary'
     surface_token = options.get('surface', 'content')
+    density = options.get('density', 'default')
 
     surface = b.color(surface_token)
     normal = b.color(accent_token)
@@ -72,33 +44,38 @@ def build_solid_button_style(b: BootstyleBuilderTTk, ttk_style: str, accent: str
     focused_ring = b.focus_ring(normal, surface)
     foreground_disabled = b.disabled('text', disabled)
 
-    normal_img = recolor_image('button', normal, normal, surface)
-    pressed_img = recolor_image('button', pressed, pressed, surface)
-    hovered_img = recolor_image('button', hovered, hovered, surface)
-    focused_img = recolor_image('button', focused, focused_border, focused_ring)
-    focused_hovered_img = recolor_image('button', hovered, focused_border, focused_ring)
-    focused_pressed_img = recolor_image('button', pressed, focused_border, focused_ring)
-    disabled_img = recolor_image('button', disabled, disabled, surface, surface)
+    icon_only = options.get('icon_only', False)
+    image_key = f'button_{normalize_button_density(density)}'
+
+    normal_img = recolor_element_image(image_key, normal, normal, surface)
+    pressed_img = recolor_element_image(image_key, pressed, pressed, surface)
+    hovered_img = recolor_element_image(image_key, hovered, hovered, surface)
+    focused_img = recolor_element_image(image_key, focused, focused_border, focused_ring)
+    focused_hovered_img = recolor_element_image(image_key, hovered, focused_border, focused_ring)
+    focused_pressed_img = recolor_element_image(image_key, pressed, focused_border, focused_ring)
+    disabled_img = recolor_element_image(image_key, disabled, disabled, surface, surface)
+
 
     b.create_style_element_image(
         ElementImage(
-            f'{ttk_style}.Button.border', normal_img, sticky="nsew", border=b.scale(10),
-            padding=b.scale(10)).state_specs(
+            f'{ttk_style}.Button.border',
+            normal_img.image,
+            sticky="nsew",
+            border=normal_img.meta.border
+        ).state_specs(
             [
-                ('disabled', disabled_img),
-                ('background focus pressed', focused_pressed_img),
-                ('background focus hover', focused_hovered_img),
-                ('background focus', focused_img),
-                ('pressed', pressed_img),
-                ('hover', hovered_img),
+                ('disabled', disabled_img.image),
+                ('background focus pressed', focused_pressed_img.image),
+                ('background focus hover', focused_hovered_img.image),
+                ('background focus', focused_img.image),
+                ('pressed', pressed_img.image),
+                ('hover', hovered_img.image),
             ]))
 
     b.create_style_layout(
         ttk_style,
-        _button_layout(ttk_style),
+        button_layout(ttk_style),
     )
-
-    button_padding = _button_padding(b, options)
 
     b.configure_style(
         ttk_style,
@@ -106,19 +83,16 @@ def build_solid_button_style(b: BootstyleBuilderTTk, ttk_style: str, accent: str
         foreground=foreground,
         stipple="gray12",
         relief='flat',
-        padding=button_padding,
+        padding=button_padding(b, icon_only, density),
         anchor=anchor,
-        font="body"
+        font=button_font(density)
     )
 
     state_spec = dict(
         foreground=[('disabled', foreground_disabled), ('', foreground)],
         background=[('disabled', disabled)]
     )
-
-    icon_only = options.get('icon_only', False)
-    default_size = b.scale(24) if icon_only else b.scale(20)
-    state_spec = _apply_icon_mapping(b, options, state_spec, default_size)
+    state_spec = apply_icon_mapping(b, options, state_spec, icon_size(icon_only, density))
 
     b.map_style(ttk_style, **state_spec)
 
@@ -136,6 +110,9 @@ def build_outline_button_style(b: BootstyleBuilderTTk, ttk_style: str, accent: s
     anchor = options.get('anchor', 'center')
     accent_token = accent or 'primary'
     surface_token = options.get('surface', 'content')
+    density = options.get('density', 'default')
+    icon_only = options.get('icon_only', False)
+    image_key = f'button_{normalize_button_density(density)}'
 
     surface = b.color(surface_token)
 
@@ -150,35 +127,40 @@ def build_outline_button_style(b: BootstyleBuilderTTk, ttk_style: str, accent: s
     focused_border = b.focus_border(foreground_normal)
     focused_ring = b.focus_ring(foreground_normal, surface)
 
+
+
     # button element images
-    normal_img = recolor_image('button', normal, foreground_normal, surface)
-    pressed_img = recolor_image('button', pressed, pressed, surface)
-    hovered_img = recolor_image('button', hovered, hovered, surface)
-    focused_img = recolor_image('button', focused, focused_border, focused_ring)
-    focused_hovered_img = recolor_image('button', hovered, focused_border, focused_ring)
-    focused_pressed_img = recolor_image('button', pressed, focused_border, focused_ring)
-    disabled_img = recolor_image('button', surface, disabled, surface, surface)
+    normal_img = recolor_element_image(image_key, normal, foreground_normal, surface)
+    pressed_img = recolor_element_image(image_key, pressed, pressed, surface)
+    hovered_img = recolor_element_image(image_key, hovered, hovered, surface)
+    focused_img = recolor_element_image(image_key, focused, focused_border, focused_ring)
+    focused_hovered_img = recolor_element_image(image_key, hovered, focused_border, focused_ring)
+    focused_pressed_img = recolor_element_image(image_key, pressed, focused_border, focused_ring)
+    disabled_img = recolor_element_image(image_key, surface, disabled, surface, surface)
 
     b.create_style_element_image(
         ElementImage(
-            f'{ttk_style}.Button.border', normal_img, sticky="nsew", border=b.scale(10),
-            padding=b.scale(10)).state_specs(
+            f'{ttk_style}.Button.border',
+            normal_img.image,
+            sticky="nsew",
+            border=normal_img.meta.border
+        ).state_specs(
             [
-                ('disabled', disabled_img),
-                ('background focus pressed', focused_pressed_img),
-                ('background focus hover', focused_hovered_img),
-                ('background focus', focused_img),
-                ('pressed', pressed_img),
-                ('hover', hovered_img),
+                ('disabled', disabled_img.image),
+                ('background focus pressed', focused_pressed_img.image),
+                ('background focus hover', focused_hovered_img.image),
+                ('background focus', focused_img.image),
+                ('pressed', pressed_img.image),
+                ('hover', hovered_img.image),
             ])
     )
 
     b.create_style_layout(
         ttk_style,
-        _button_layout(ttk_style),
+        button_layout(ttk_style),
     )
 
-    button_padding = _button_padding(b, options)
+    padding = button_padding(b, icon_only, density)
 
     b.configure_style(
         ttk_style,
@@ -186,9 +168,9 @@ def build_outline_button_style(b: BootstyleBuilderTTk, ttk_style: str, accent: s
         foreground=foreground_normal,
         relief='flat',
         stipple="gray12",
-        padding=button_padding,
         anchor=anchor,
-        font="body"
+        padding=padding,
+        font=button_font(density)
     )
 
     state_spec = dict(
@@ -200,7 +182,7 @@ def build_outline_button_style(b: BootstyleBuilderTTk, ttk_style: str, accent: s
         ], background=[('disabled', surface)]
     )
 
-    state_spec = _apply_icon_mapping(b, options, state_spec)
+    state_spec = apply_icon_mapping(b, options, state_spec, icon_size(icon_only, density))
 
     b.map_style(ttk_style, **state_spec)
 
@@ -218,32 +200,34 @@ def build_text_button_style(b: BootstyleBuilderTTk, ttk_style: str, accent: str 
     anchor = options.get('anchor', 'center')
     accent_token = accent or 'foreground'
     surface_token = options.get('surface', 'content')
+    density = options.get('density', 'default')
+    icon_only = options.get('icon_only', False)
+    image_key = f'button_{normalize_button_density(density)}'
 
     surface = b.color(surface_token)
     foreground_normal = b.color(accent_token)
     foreground_disabled = b.disabled('text', surface)
 
     # button element images
-    normal_img = recolor_image('button', surface, surface, surface, surface)
-    focused_img = recolor_image('button', surface, surface, surface, surface)
-    disabled_img = recolor_image('button', surface, surface, surface, surface)
+    normal_img = recolor_element_image(image_key, surface, surface, surface, surface)
+    focused_img = recolor_element_image(image_key, surface, surface, surface, surface)
+    disabled_img = recolor_element_image(image_key, surface, surface, surface, surface)
 
     b.create_style_element_image(
         ElementImage(
-            f'{ttk_style}.Button.border', normal_img, sticky="nsew", border=b.scale(10),
-            padding=b.scale(10)).state_specs(
+            f'{ttk_style}.Button.border', normal_img.image, sticky="nsew", border=normal_img.meta.border).state_specs(
             [
-                ('disabled', disabled_img),
-                ('focus', focused_img),
+                ('disabled', disabled_img.image),
+                ('focus', focused_img.image),
             ])
     )
 
     b.create_style_layout(
         ttk_style,
-        _button_layout(ttk_style),
+        button_layout(ttk_style),
     )
 
-    button_padding = _button_padding(b, options)
+    padding = button_padding(b, icon_only, density)
 
     b.configure_style(
         ttk_style,
@@ -251,13 +235,12 @@ def build_text_button_style(b: BootstyleBuilderTTk, ttk_style: str, accent: str 
         foreground=foreground_normal,
         relief='flat',
         stipple="gray12",
-        padding=button_padding,
+        padding=padding,
         anchor=anchor,
-        font="body"
+        font=button_font(density)
     )
 
     from ttkbootstrap.style.typography import Font
-
 
     state_spec = dict(
         font=[('background focus', Font('body[bold]'))],
@@ -267,9 +250,7 @@ def build_text_button_style(b: BootstyleBuilderTTk, ttk_style: str, accent: str 
         ], background=[('disabled', surface)]
     )
 
-    icon_only = options.get('icon_only', False)
-    default_size = 24 if icon_only else 20
-    state_spec = _apply_icon_mapping(b, options, state_spec, default_size)
+    state_spec = apply_icon_mapping(b, options, state_spec, icon_size(icon_only, density))
 
     b.map_style(ttk_style, **state_spec)
 
@@ -287,6 +268,8 @@ def build_link_button_style(b: BootstyleBuilderTTk, ttk_style: str, accent: str 
     anchor = options.get('anchor', 'center')
     accent_token = accent or 'primary'
     surface_token = options.get('surface', 'content')
+    density = options.get('density', 'default')
+    icon_only = options.get('icon_only', False)
 
     surface = b.color(surface_token)
     foreground_normal = b.color(accent_token)
@@ -309,10 +292,10 @@ def build_link_button_style(b: BootstyleBuilderTTk, ttk_style: str, accent: str 
 
     b.create_style_layout(
         ttk_style,
-        _button_layout(ttk_style),
+        button_layout(ttk_style),
     )
 
-    button_padding = _button_padding(b, options)
+    padding = button_padding(b, icon_only, density)
 
     b.configure_style(
         ttk_style,
@@ -320,7 +303,7 @@ def build_link_button_style(b: BootstyleBuilderTTk, ttk_style: str, accent: str 
         foreground=foreground_normal,
         relief='flat',
         stipple="gray12",
-        padding=button_padding,
+        padding=padding,
         anchor=anchor,
         font="body"
     )
@@ -337,9 +320,7 @@ def build_link_button_style(b: BootstyleBuilderTTk, ttk_style: str, accent: str 
         ], background=[('disabled', surface)]
     )
 
-    icon_only = options.get('icon_only', False)
-    default_size = 24 if icon_only else 20
-    state_spec = _apply_icon_mapping(b, options, state_spec, default_size)
+    state_spec = apply_icon_mapping(b, options, state_spec, icon_size(icon_only, density))
 
     b.map_style(ttk_style, **state_spec)
 
@@ -357,6 +338,8 @@ def build_ghost_button_style(b: BootstyleBuilderTTk, ttk_style: str, accent: str
     anchor = options.get('anchor', 'center')
     accent_token = accent or 'foreground'
     surface_token = options.get('surface', 'content')
+    density = options.get('density', 'default')
+    icon_only = options.get('icon_only', False)
 
     surface = b.color(surface_token)
 
@@ -393,10 +376,10 @@ def build_ghost_button_style(b: BootstyleBuilderTTk, ttk_style: str, accent: str
 
     b.create_style_layout(
         ttk_style,
-        _button_layout(ttk_style),
+        button_layout(ttk_style),
     )
 
-    button_padding = _button_padding(b, options)
+    padding = button_padding(b, icon_only, density)
 
     b.configure_style(
         ttk_style,
@@ -404,7 +387,7 @@ def build_ghost_button_style(b: BootstyleBuilderTTk, ttk_style: str, accent: str
         foreground=foreground_normal,
         relief='flat',
         stipple="gray12",
-        padding=button_padding,
+        padding=padding,
         anchor=anchor,
         font="body"
     )
@@ -414,9 +397,7 @@ def build_ghost_button_style(b: BootstyleBuilderTTk, ttk_style: str, accent: str
         background=[('disabled', surface)]
     )
 
-    icon_only = options.get('icon_only', False)
-    default_size = 24 if icon_only else 20
-    state_spec = _apply_icon_mapping(b, options, state_spec, default_size)
+    state_spec = apply_icon_mapping(b, options, state_spec, icon_size(icon_only, density))
 
     b.map_style(ttk_style, **state_spec)
 

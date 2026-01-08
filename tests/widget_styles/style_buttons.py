@@ -16,7 +16,7 @@ def button_style_frame(bootstyle, widget_name):
 
     ttk.Separator(frame).pack(padx=5, pady=5, fill='x')
 
-    ttk.Button(
+    b = ttk.Button(
         master=frame,
         text='Default',
         variant=bootstyle,
