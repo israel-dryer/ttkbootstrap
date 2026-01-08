@@ -1,6 +1,7 @@
 from colorsys import hls_to_rgb, rgb_to_hls
+from dataclasses import dataclass
 from pathlib import Path
-from typing import Tuple, cast
+from typing import Tuple, Union, cast
 
 from PIL import Image, ImageColor, ImageOps, ImageDraw
 from PIL.ImageTk import PhotoImage
@@ -10,6 +11,70 @@ from ttkbootstrap.runtime.utility import clamp
 from ttkbootstrap.style.types import ColorModel
 
 ASSETS_DIR = Path(__file__).parent.parent / "assets" / "widgets"
+ELEMENTS_DIR = Path(__file__).parent.parent / "assets" / "elements"
+
+
+@dataclass
+class ElementMeta:
+    """Scaled metadata for an element image.
+
+    All values are scaled for the current display DPI.
+    """
+    width: int
+    height: int
+    border: Union[int, Tuple[int, ...]]
+    padding: Union[int, Tuple[int, ...]]
+
+    def border_spec(self) -> Union[int, Tuple[int, ...]]:
+        """Return border in a format suitable for ttk element_create."""
+        return self.border
+
+    def padding_spec(self) -> Union[int, Tuple[int, ...]]:
+        """Return padding in a format suitable for ttk element_create."""
+        return self.padding
+
+
+@dataclass
+class ElementImageResult:
+    """Result of recolor_element_image containing the image and its metadata."""
+    image: PhotoImage
+    meta: ElementMeta
+
+
+# Cached manifest data
+_manifest_cache: dict | None = None
+
+
+def _load_manifest() -> dict:
+    """Load and cache the element manifest."""
+    global _manifest_cache
+    if _manifest_cache is not None:
+        return _manifest_cache
+
+    try:
+        import tomllib
+    except ImportError:
+        import tomli as tomllib  # type: ignore[import-not-found]
+
+    manifest_path = ELEMENTS_DIR / "manifest.toml"
+    with open(manifest_path, "rb") as f:
+        _manifest_cache = tomllib.load(f)
+
+    return _manifest_cache
+
+
+def _get_element_info(key: str) -> dict | None:
+    """Get element info from manifest by key.
+
+    Args:
+        key: The element key (e.g., 'button_lg', 'checkbox_checked')
+
+    Returns:
+        Dict with file, width, height, border, padding or None if not found.
+    """
+    manifest = _load_manifest()
+    images = manifest.get("images", {})
+    return images.get(key)
 
 HUE = 360
 SAT = 100
@@ -403,9 +468,10 @@ def recolor_image(
                 dst_pixels[x, y] = (r, g, b, a)
 
     if scale != 1.0:
+        # Use rounding (+ 0.5) to ensure consistent sizing with metadata calculations
         new_size = (
-            max(1, int(result.width * scale)),
-            max(1, int(result.height * scale))
+            max(1, int(result.width * scale + 0.5)),
+            max(1, int(result.height * scale + 0.5))
         )
         result = result.resize(new_size, Image.Resampling.LANCZOS)
 
@@ -414,6 +480,192 @@ def recolor_image(
     # Cache the result for future use
     ImageService.set_cached(cache_key, img)
     return img
+
+
+def _open_element_image(filename: str) -> Image.Image:
+    """Load an element image from the elements directory.
+
+    Args:
+        filename: The filename (e.g., "button-lg.png")
+
+    Returns:
+        A Pillow RGBA Image object.
+    """
+    path = ELEMENTS_DIR / filename
+    return Image.open(path).convert("RGBA")
+
+
+def _scale_border_or_padding(
+    value: int | list | tuple,
+    scale: float
+) -> int | tuple[int, ...]:
+    """Scale border or padding values.
+
+    Args:
+        value: Integer or sequence of integers from manifest
+        scale: Scale factor to apply
+
+    Returns:
+        Scaled value(s) as int or tuple
+    """
+    if isinstance(value, int):
+        return max(1, int(value * scale + 0.5)) if value > 0 else 0
+    elif isinstance(value, (list, tuple)):
+        scaled = tuple(
+            max(1, int(v * scale + 0.5)) if v > 0 else 0
+            for v in value
+        )
+        return scaled
+    return value
+
+
+def recolor_element_image(
+    key: str,
+    white_color: str,
+    black_color: str = "#ffffff",
+    magenta_color: str | None = None,
+    transparent_color: str | None = None,
+) -> ElementImageResult:
+    """Recolor an element image from the manifest and return scaled image with metadata.
+
+    This function fetches an image by key from the elements manifest, applies
+    luminance-based recoloring, and returns both the scaled image and scaled
+    metadata (border, padding, dimensions) for use with ttk element_create.
+
+    The scaling is cross-platform aware, handling the differences between
+    logical and physical pixels on macOS, Windows, and Linux:
+    - Windows: Uses system DPI scaling (96 DPI baseline, scales to 120, 144, etc.)
+    - macOS: Retina displays use 2x physical pixels per logical pixel
+    - Linux: Uses X11/Wayland DPI settings via winfo_fpixels
+
+    Source images are created at 2x resolution (default_dpi=2.0 in manifest),
+    so scaling accounts for this to produce correctly sized output.
+
+    Args:
+        key: Element key from manifest (e.g., 'button_lg', 'checkbox_checked')
+        white_color: Replace white/light areas with this color (hex string)
+        black_color: Replace black/dark areas with this color (hex string)
+        magenta_color: Replace magenta (#ff00ff) with this color, if provided
+        transparent_color: Fill fully transparent areas with this color
+
+    Returns:
+        ElementImageResult containing:
+            - image: The recolored and scaled PhotoImage
+            - meta: ElementMeta with scaled width, height, border, and padding
+
+    Raises:
+        ValueError: If the key is not found in the manifest.
+
+    Example:
+        >>> result = recolor_element_image('button_lg', '#3b82f6', '#1e40af')
+        >>> element = ElementImage(
+        ...     'MyButton.border',
+        ...     result.image,
+        ...     border=result.meta.border,
+        ...     padding=result.meta.padding
+        ... )
+    """
+    # Get element info from manifest
+    info = _get_element_info(key)
+    if info is None:
+        raise ValueError(
+            f"Element key '{key}' not found in manifest. "
+            f"Check that the key exists in assets/elements/manifest.toml"
+        )
+
+    # Get source resolution from manifest
+    manifest = _load_manifest()
+    source_resolution = manifest.get("default_dpi", 2.0)
+
+    # Calculate cross-platform scale factor
+    from ttkbootstrap.runtime.utility import _ScalingState
+    scale = _ScalingState.get_image_scale(source_resolution=source_resolution)
+
+    # Create cache key from all parameters
+    cache_key = (
+        "element", key, white_color, black_color,
+        magenta_color, transparent_color, scale
+    )
+
+    # Check if we've already created this exact result
+    cached = ImageService.get_cached(cache_key)
+    if cached is not None:
+        # Cached value is a tuple of (PhotoImage, ElementMeta)
+        return ElementImageResult(image=cached[0], meta=cached[1])
+
+    # Load and process the image
+    filename = info.get("file", f"{key.replace('_', '-')}.png")
+    img = _open_element_image(filename)
+    gray = ImageOps.grayscale(img)
+
+    fg_rgb = color_to_rgb(white_color)
+    bg_rgb = color_to_rgb(black_color)
+    mag_rgb = color_to_rgb(magenta_color) if magenta_color else None
+    trans_rgb = color_to_rgb(transparent_color) if transparent_color else None
+
+    result = Image.new("RGBA", img.size)
+    src_pixels = img.load()
+    dst_pixels = result.load()
+
+    # Apply luminance-based recoloring (same algorithm as recolor_image)
+    for y in range(img.height):
+        for x in range(img.width):
+            r_src, g_src, b_src, a = src_pixels[x, y]
+
+            if a == 0:
+                if trans_rgb:
+                    dst_pixels[x, y] = (*trans_rgb, 255)
+                else:
+                    dst_pixels[x, y] = (0, 0, 0, 0)
+                continue
+
+            alpha_frac = a / 255.0
+
+            if mag_rgb and (r_src, g_src, b_src) == (255, 0, 255):
+                r, g, b = mag_rgb
+            else:
+                lum = gray.getpixel((x, y)) / 255.0
+                r = round(bg_rgb[0] + (fg_rgb[0] - bg_rgb[0]) * lum)
+                g = round(bg_rgb[1] + (fg_rgb[1] - bg_rgb[1]) * lum)
+                b = round(bg_rgb[2] + (fg_rgb[2] - bg_rgb[2]) * lum)
+
+            if trans_rgb:
+                r_final = round(trans_rgb[0] * (1 - alpha_frac) + r * alpha_frac)
+                g_final = round(trans_rgb[1] * (1 - alpha_frac) + g * alpha_frac)
+                b_final = round(trans_rgb[2] * (1 - alpha_frac) + b * alpha_frac)
+                dst_pixels[x, y] = (r_final, g_final, b_final, 255)
+            else:
+                dst_pixels[x, y] = (r, g, b, a)
+
+    # Scale the image
+    # Use rounding (+ 0.5) to ensure image size matches metadata dimensions exactly.
+    # This prevents centering issues caused by mismatched image/border calculations.
+    if scale != 1.0:
+        new_size = (
+            max(1, int(result.width * scale + 0.5)),
+            max(1, int(result.height * scale + 0.5))
+        )
+        result = result.resize(new_size, Image.Resampling.LANCZOS)
+
+    photo_image = PhotoImage(image=result)
+
+    # Scale the metadata
+    source_width = info.get("width", img.width)
+    source_height = info.get("height", img.height)
+    source_border = info.get("border", 0)
+    source_padding = info.get("padding", 0)
+
+    meta = ElementMeta(
+        width=max(1, int(source_width * scale + 0.5)),
+        height=max(1, int(source_height * scale + 0.5)),
+        border=_scale_border_or_padding(source_border, scale),
+        padding=_scale_border_or_padding(source_padding, scale),
+    )
+
+    # Cache the result as a tuple
+    ImageService.set_cached(cache_key, (photo_image, meta))
+
+    return ElementImageResult(image=photo_image, meta=meta)
 
 
 def should_darken(bg_hex: str) -> bool:

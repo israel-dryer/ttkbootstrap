@@ -6,7 +6,12 @@ including accent extraction, variant parsing, and style name manipulation.
 
 from __future__ import annotations
 
-from typing import Optional
+from typing import TYPE_CHECKING, Any, Optional
+
+from ttkbootstrap.style.element import Element
+
+if TYPE_CHECKING:
+    from ttkbootstrap.style.bootstyle_builder_ttk import BootstyleBuilderTTk
 
 # Standard ttkbootstrap color tokens
 COLORS = {
@@ -135,3 +140,107 @@ def parse_style_components(ttk_style: str) -> dict:
         'variant': extract_variant_from_style(ttk_style),
         'widget_class': extract_widget_class_from_style(ttk_style),
     }
+
+
+# Button utilities
+# These utilities are used by button style builders and can be reused by other widgets.
+
+def button_layout(ttk_style: str) -> Element:
+    """Create the standard button element layout.
+
+    Args:
+        ttk_style: The TTK style name prefix for the button.
+
+    Returns:
+        Element tree representing the button layout.
+    """
+    return Element(f"{ttk_style}.Button.border", sticky="nsew").children(
+        [
+            Element("Button.padding", sticky="nsew").children(
+                [
+                    Element("Button.label", sticky="nsew")
+                ])
+        ])
+
+
+def icon_size(icon_only: bool, size: str) -> int:
+    """Determine icon size based on button size and icon_only flag.
+
+    Args:
+        icon_only: Whether the button displays only an icon (no text).
+        size: The button size ('xs', 'md', etc.).
+
+    Returns:
+        The icon size in pixels.
+    """
+    if size == 'xs':
+        if icon_only:
+            return 16
+        return 17
+    elif icon_only:
+        return 20
+    return 18
+
+
+def button_font(size: str) -> str:
+    """Get the font token for a button based on its size.
+
+    Args:
+        size: The button size ('xs', 'md', etc.).
+
+    Returns:
+        The font token name.
+    """
+    return 'caption' if size == 'xs' else 'body'
+
+
+def button_padding(b: BootstyleBuilderTTk, icon_only: bool, size: Any) -> int | tuple[int, ...]:
+    """Calculate button padding based on options.
+
+    Args:
+        b: The bootstyle builder instance.
+        icon_only: Whether the button displays only an icon.
+        size: The button size.
+
+    Returns:
+        Padding value (0 for icon_only, scaled tuple otherwise).
+    """
+    if icon_only:
+        return 0
+    if size == 'xs':
+        return b.scale((6, 0))
+    return b.scale((8, 0))
+
+
+def apply_icon_mapping(
+        b: BootstyleBuilderTTk,
+        options: dict,
+        state_spec: dict,
+        default_size: int | None = None
+) -> dict:
+    """Apply icon mapping to a state specification dictionary.
+
+    Args:
+        b: The bootstyle builder instance.
+        options: Style options dictionary containing 'icon' and 'icon_only' keys.
+        state_spec: The state specification dictionary to update.
+        default_size: Default icon size, or None to use normalize_icon_spec defaults.
+
+    Returns:
+        Updated state_spec with icon mappings applied.
+    """
+    icon = options.get('icon')
+    if icon is None:
+        return state_spec
+
+    if default_size is None:
+        icon = b.normalize_icon_spec(icon)
+    else:
+        icon = b.normalize_icon_spec(icon, default_size)
+
+    state_spec['image'] = b.map_stateful_icons(icon, state_spec['foreground'])
+    # Set compound to 'left' so text is visible alongside the icon
+    icon_only = options.get('icon_only', False)
+    if not icon_only:
+        state_spec['compound'] = 'left'
+    return state_spec
