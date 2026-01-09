@@ -46,177 +46,89 @@ padding = 0
 
 # Button Group
 
-## Button Group - Lg
+## Button Group - Default
 
-[images.button_group_vertical_after_lg]
-file = "button-group-vertical-after-lg.png"
-width = 88
-height = 88
-border = [10, 8, 10, 10]
-padding = 0
-
-[images.button_group_vertical_center_lg]
-file = "button-group-vertical-center-lg.png"
-width = 88
-height = 88
-border = [10, 8, 10, 10]
-padding = 0
-
-[images.button_group_vertical_before_lg]
-file = "button-group-vertical-before-lg.png"
-width = 88
-height = 88
-border = 10
-padding = 0
-
-[images.button_group_horizontal_after_lg]
-file = "button-group-horizontal-after-lg.png"
-width = 88
-height = 88
-border = [8, 10, 10, 10]
-padding = 0
-
-[images.button_group_horizontal_center_lg]
-file = "button-group-horizontal-center-lg.png"
-width = 88
-height = 88
-border = [8, 10, 10, 10]
-padding = 0
-
-[images.button_group_horizontal_before_lg]
-file = "button-group-horizontal-before-lg.png"
-width = 88
-height = 88
-border = 10
-padding = 0
-
-## Button Group - Md
-
-[images.button_group_vertical_after_md]
-file = "button-group-vertical-after-md.png"
+[images.button_group_vertical_after_default]
+file = "button-group-vertical-after-default.png"
 width = 72
 height = 72
 border = [10, 8, 10, 10]
 padding = 0
 
-[images.button_group_vertical_center_md]
-file = "button-group-vertical-center-md.png"
+[images.button_group_vertical_center_default]
+file = "button-group-vertical-center-default.png"
 width = 72
 height = 72
 border = [10, 8, 10, 10]
 padding = 0
 
-[images.button_group_vertical_before_md]
-file = "button-group-vertical-before-md.png"
+[images.button_group_vertical_before_default]
+file = "button-group-vertical-before-default.png"
 width = 72
 height = 72
 border = 10
 padding = 0
 
-[images.button_group_horizontal_after_md]
-file = "button-group-horizontal-after-md.png"
+[images.button_group_horizontal_after_default]
+file = "button-group-horizontal-after-default.png"
 width = 72
 height = 72
 border = [8, 10, 10, 10]
 padding = 0
 
-[images.button_group_horizontal_center_md]
-file = "button-group-horizontal-center-md.png"
+[images.button_group_horizontal_center_default]
+file = "button-group-horizontal-center-default.png"
 width = 72
 height = 72
 border = [8, 10, 10, 10]
 padding = 0
 
-[images.button_group_horizontal_before_md]
-file = "button-group-horizontal-before-md.png"
+[images.button_group_horizontal_before_default]
+file = "button-group-horizontal-before-default.png"
 width = 72
 height = 72
 border = 10
 padding = 0
 
-## Button Group - Sm
+## Button Group - Compact
 
-[images.button_group_vertical_after_sm]
-file = "button-group-vertical-after-sm.png"
-width = 56
-height = 56
-border = [10, 8, 10, 10]
-padding = 0
-
-[images.button_group_vertical_center_sm]
-file = "button-group-vertical-center-sm.png"
-width = 56
-height = 56
-border = [10, 8, 10, 10]
-padding = 0
-
-[images.button_group_vertical_before_sm]
-file = "button-group-vertical-before-sm.png"
-width = 56
-height = 56
-border = 10
-padding = 0
-
-[images.button_group_horizontal_after_sm]
-file = "button-group-horizontal-after-sm.png"
-width = 56
-height = 56
-border = [8, 10, 10, 10]
-padding = 0
-
-[images.button_group_horizontal_center_sm]
-file = "button-group-horizontal-center-sm.png"
-width = 56
-height = 56
-border = [8, 10, 10, 10]
-padding = 0
-
-[images.button_group_horizontal_before_sm]
-file = "button-group-horizontal-before-sm.png"
-width = 56
-height = 56
-border = 10
-padding = 0
-
-## Button Group - Xs
-
-[images.button_group_vertical_after_xs]
-file = "button-group-vertical-after-xs.png"
+[images.button_group_vertical_after_compact]
+file = "button-group-vertical-after-compact.png"
 width = 48
 height = 48
 border = 8
 padding = 0
 
-[images.button_group_vertical_center_xs]
-file = "button-group-vertical-center-xs.png"
+[images.button_group_vertical_center_compact]
+file = "button-group-vertical-center-compact.png"
 width = 48
 height = 48
 border = 8
 padding = 0
 
-[images.button_group_vertical_before_xs]
-file = "button-group-vertical-before-xs.png"
+[images.button_group_vertical_before_compact]
+file = "button-group-vertical-before-compact.png"
 width = 48
 height = 48
 border = 8
 padding = 0
 
-[images.button_group_horizontal_after_xs]
-file = "button-group-horizontal-after-xs.png"
+[images.button_group_horizontal_after_compact]
+file = "button-group-horizontal-after-compact.png"
 width = 48
 height = 48
 border = 8
 padding = 0
 
-[images.button_group_horizontal_center_xs]
-file = "button-group-horizontal-center-xs.png"
+[images.button_group_horizontal_center_compact]
+file = "button-group-horizontal-center-compact.png"
 width = 48
 height = 48
 border = 8
 padding = 0
 
-[images.button_group_horizontal_before_xs]
-file = "button-group-horizontal-before-xs.png"
+[images.button_group_horizontal_before_compact]
+file = "button-group-horizontal-before-compact.png"
 width = 48
 height = 48
 border = 8
@@ -470,93 +382,47 @@ height = 72
 border = 4
 padding = 0
 
-## Input (large)
+## Input (default)
 
-[images.input_lg]
-file = "input_lg.png"
-width = 104
-height = 104
-border = 16
-padding = 0
-
-[images.input_after_lg]
-file = "input-after_lg.png"
-width = 88
-height = 88
-border = 4
-padding = 0
-
-[images.input_before_lg]
-file = "input-before_lg.png"
-width = 88
-height = 88
-border = 4
-padding = 0
-
-## Input (medium)
-
-[images.input_md]
-file = "input_md.png"
+[images.input_default]
+file = "input-default.png"
 width = 88
 height = 88
 border = 16
 padding = 0
 
-[images.input_after_md]
-file = "input-after_md.png"
+[images.input_after_default]
+file = "input-after-default.png"
 width = 72
 height = 72
 border = 4
 padding = 0
 
-[images.input_before_md]
-file = "input-before_md.png"
+[images.input_before_default]
+file = "input-before-default.png"
 width = 72
 height = 72
 border = 4
 padding = 0
 
-## Input (small)
+## Input (compact)
 
-[images.input_sm]
-file = "input_sm.png"
-width = 72
-height = 72
-border = 16
-padding = 0
-
-[images.input_after_sm]
-file = "input-after_sm.png"
-width = 56
-height = 56
-border = 4
-padding = 0
-
-[images.input_before_sm]
-file = "input-before_sm.png"
-width = 56
-height = 56
-border = 4
-padding = 0
-
-## Input (extra small)
-
-[images.input_xs]
-file = "input_xs.png"
+[images.input_compact]
+file = "input-compact.png"
 width = 60
 height = 60
 border = 10
 padding = 0
 
-[images.input_after_xs]
-file = "input-after_xs.png"
+[images.input_after_compact]
+file = "input-after-compact.png"
 width = 48
 height = 48
 border = 4
 padding = 0
 
-[images.input_before_xs]
-file = "input-before_xs.png"
+[images.input_before_compact]
+file = "input-before-compact.png"
 width = 48
 height = 48
 border = 4
