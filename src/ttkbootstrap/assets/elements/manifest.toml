@@ -2,30 +2,22 @@ version = 1
 default_dpi = 2.0
 
 [paths]
-base = "assets/widgets"
+base = "assets/elements"
 
 # Badge
 
-[images.badge_round]
-file = "badge-round.png"
-width = 32
-height = 32
-border = 6 
-padding = 0
-
-
 [images.badge_pill]
 file = "badge-pill.png"
-width = 80 
+width = 32
 height = 32 
-border = [14, 4]
+border = 15
 padding = 0
 
 [images.badge_square]
 file = "badge-square.png"
-width = 80
+width = 32
 height = 32
-border = 4
+border = 11
 padding = 0
 
 # Button
