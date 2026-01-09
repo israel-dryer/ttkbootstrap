@@ -1,8 +1,7 @@
 from __future__ import annotations
 
 from tkinter import ttk
-from typing import Any, Callable, Literal, Optional, TypedDict, TYPE_CHECKING
-from typing_extensions import Unpack
+from typing import Any, Callable, Literal, Optional, TypedDict, Unpack, TYPE_CHECKING
 
 from ttkbootstrap.core.mixins.ttk_state import TtkStateMixin
 from ttkbootstrap.core.mixins.widget import WidgetCapabilitiesMixin
@@ -65,8 +64,7 @@ class Button(LocalizationMixin, TextSignalMixin, IconMixin, TTKWrapperBase, Widg
             textsignal (Signal[str]): Reactive Signal linked to the button text (auto-synced with textvariable).
             command (Callable): Callable invoked when the button is pressed.
             image (PhotoImage): Image to display on the button.
-            icon (str | dict): Optional icon spec integrated via the style system. Preferred
-                over `image` for theme-aware iconography when supported.
+            icon (str | dict): Optional icon spec integrated via the style system.
             icon_only (bool): If true, removes the extra padding reserved for the text labels.
             compound (str): Placement of the image relative to text (e.g., 'left').
             padding (int | tuple): Extra space around the button content.
@@ -78,14 +76,12 @@ class Button(LocalizationMixin, TextSignalMixin, IconMixin, TTKWrapperBase, Widg
             takefocus (bool): Whether the widget accepts focus during traversal.
             style (str): Explicit ttk style name to apply (overrides accent/variant).
             accent (str): Accent token for styling, e.g. 'primary', 'danger', 'success'.
-            variant (str): Style variant, e.g. 'solid', 'outline', 'link', 'text'.
+            variant (str): Style variant, e.g. 'solid', 'outline', 'link', 'text'. Defaults to 'solid'.
             density (str): The vertical and horizontal compactness of widget content, e.g. 'default', 'compact'.
             bootstyle (str): DEPRECATED - Use `accent` and `variant` instead.
-                Combined style tokens, e.g. 'primary', 'danger-outline'.
-            surface (str): Optional surface token to use for this button; if not
-                provided, the surface color is inherited from the parent.
-            style_options (dict): Optional dict forwarded to the style builder. Useful
-                for widget-specific options (e.g., {'icon': ...}).
+            surface (str): Optional surface token to use for this button; if not provided, surface color is inherited from the parent.
+            style_options (dict): Optional dict forwarded to the style builder.
         """
+        kwargs.setdefault('variant', 'solid')
         kwargs.update(style_options=self._capture_style_options(['icon_only', 'icon', 'anchor', 'density'], kwargs))
         super().__init__(master, **kwargs)
