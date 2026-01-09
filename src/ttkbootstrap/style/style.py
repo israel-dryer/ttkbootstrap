@@ -68,6 +68,7 @@ class Style(ttkStyle):
         # Style registries
         self._style_registry: Set[str] = set()
         self._style_accents: Dict[str, Optional[str]] = {}
+        self._style_variants: Dict[str, str] = {}
         self._style_options: Dict[str, dict] = {}
         self._style_widget_classes: Dict[str, str] = {}
 
@@ -156,9 +157,9 @@ class Style(ttkStyle):
         # Add to global registry
         self._style_registry.add(ttk_style)
 
-        # Store custom options if provided
+        # Store a copy of custom options if provided (to prevent mutation issues)
         if options:
-            self._style_options[ttk_style] = options
+            self._style_options[ttk_style] = options.copy()
 
     def create_style(
             self,
@@ -189,8 +190,9 @@ class Style(ttkStyle):
             **(options or {})
         )
 
-        # Store the accent and widget_class so we can rebuild with the same values
+        # Store the accent, variant, and widget_class so we can rebuild with the same values
         self._style_accents[ttk_style] = accent
+        self._style_variants[ttk_style] = variant
         self._style_widget_classes[ttk_style] = widget_class
 
         # Register it
@@ -244,9 +246,10 @@ class Style(ttkStyle):
         custom options.
         """
         for style in self._style_registry:
-            # Get stored options and accent
+            # Get stored options, accent, and variant
             options = self._style_options.get(style, {})
             accent = self._style_accents.get(style)
+            variant = self._style_variants.get(style)
 
             # Use stored widget_class if available (preserves composite classes like 'Menubar.TField')
             # Fall back to parsing from style name for backwards compatibility
@@ -256,11 +259,9 @@ class Style(ttkStyle):
                 if not parsed:
                     continue
                 widget_class = parsed['widget_class']
-                variant = parsed['variant']
-            else:
-                # Still need to determine variant from style name or use default
-                parsed = self._parse_style_name(style)
-                variant = parsed['variant'] if parsed else None
+                # Only use parsed variant if we don't have a stored one
+                if variant is None:
+                    variant = parsed['variant']
 
             if variant is None:
                 from ttkbootstrap.style.bootstyle_builder_ttk import BootstyleBuilderTTk
@@ -270,7 +271,7 @@ class Style(ttkStyle):
                 widget_class=widget_class,
                 variant=variant,
                 ttk_style=style,
-                accent=accent,  # Pass the stored accent
+                accent=accent,
                 **options
             )
 
