@@ -425,3 +425,20 @@ width = 88
 height = 88
 border = 8
 padding = 0
+
+
+# scrollbar
+
+[images.scrollbar_horizontal]
+file = "scrollbar-horizontal.png"
+width = 60
+height = 20
+border = [12, 2]
+padding = 0
+
+[images.scrollbar_vertical]
+file = "scrollbar-vertical.png"
+width = 20
+height = 60
+border = [2, 12]
+padding = 0

@@ -5,7 +5,7 @@ This module contains style builders for ttk.Scrollbar widget variants.
 from ttkbootstrap_icons_bs import BootstrapIcon
 from ttkbootstrap.style.bootstyle_builder_ttk import BootstyleBuilderTTk
 from ttkbootstrap.style.element import Element, ElementImage
-from ttkbootstrap.style.utility import recolor_image
+from ttkbootstrap.style.utility import recolor_element_image
 
 
 @BootstyleBuilderTTk.register_builder('square', 'TScrollbar')
@@ -205,18 +205,19 @@ def _build_rounded_vertical_scrollbar(b: BootstyleBuilderTTk, ttk_style: str, ac
     thumb_pressed = b.pressed(thumb_normal)
 
     # thumb element
-    thumb_normal_img = recolor_image('scrollbar-vertical-rounded', thumb_normal, thumb_active, surface, surface)
-    thumb_active_img = recolor_image('scrollbar-vertical-rounded', thumb_active, thumb_active, surface, surface)
-    thumb_pressed_img = recolor_image('scrollbar-vertical-rounded', thumb_pressed, thumb_pressed, surface, surface)
+    thumb_normal_img = recolor_element_image('scrollbar_vertical', thumb_normal, thumb_active, surface, surface)
+    thumb_active_img = recolor_element_image('scrollbar_vertical', thumb_active, thumb_active, surface, surface)
+    thumb_pressed_img = recolor_element_image('scrollbar_vertical', thumb_pressed, thumb_pressed, surface, surface)
 
     b.create_style_element_image(
         ElementImage(
-            f'{ttk_style}.thumb', thumb_normal_img,
-            padding=b.scale(3), border=b.scale(6), width=b.scale(10), height=b.scale(30)).state_specs(
+            f'{ttk_style}.thumb', thumb_normal_img.image,
+            padding=thumb_normal_img.meta.border, border=thumb_normal_img.meta.border,
+            width=thumb_normal_img.meta.width, height=thumb_normal_img.meta.height).state_specs(
             [
-                ('pressed', thumb_pressed_img),
-                ('active', thumb_active_img),
-                ('', thumb_normal_img),
+                ('pressed', thumb_pressed_img.image),
+                ('active', thumb_active_img.image),
+                ('', thumb_normal_img.image),
             ]),
     )
 
@@ -288,18 +289,19 @@ def _build_rounded_horizontal_scrollbar(b: BootstyleBuilderTTk, ttk_style: str, 
     thumb_pressed = b.pressed(thumb_normal)
 
     # thumb element
-    thumb_normal_img = recolor_image('scrollbar-horizontal-rounded', thumb_normal, thumb_active, surface, surface)
-    thumb_active_img = recolor_image('scrollbar-horizontal-rounded', thumb_active, thumb_active, surface, surface)
-    thumb_pressed_img = recolor_image('scrollbar-horizontal-rounded', thumb_pressed, thumb_pressed, surface, surface)
+    thumb_normal_img = recolor_element_image('scrollbar_horizontal', thumb_normal, thumb_active, surface, surface)
+    thumb_active_img = recolor_element_image('scrollbar_horizontal', thumb_active, thumb_active, surface, surface)
+    thumb_pressed_img = recolor_element_image('scrollbar_horizontal', thumb_pressed, thumb_pressed, surface, surface)
 
     b.create_style_element_image(
         ElementImage(
-            f'{ttk_style}.thumb', thumb_normal_img,
-            padding=b.scale(3), border=b.scale(6), width=b.scale(30), height=b.scale(10)).state_specs(
+            f'{ttk_style}.thumb', thumb_normal_img.image,
+            padding=thumb_normal_img.meta.border, border=thumb_normal_img.meta.border,
+            width=thumb_normal_img.meta.width, height=thumb_normal_img.meta.height).state_specs(
             [
-                ('pressed', thumb_pressed_img),
-                ('active', thumb_active_img),
-                ('', thumb_normal_img),
+                ('pressed', thumb_pressed_img.image),
+                ('active', thumb_active_img.image),
+                ('', thumb_normal_img.image),
             ]),
     )
 
