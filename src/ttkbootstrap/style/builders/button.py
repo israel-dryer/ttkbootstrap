@@ -335,7 +335,7 @@ def build_ghost_button_style(b: BootstyleBuilderTTk, ttk_style: str, accent: str
         * anchor
     """
     anchor = options.get('anchor', 'center')
-    accent_token = accent or 'foreground'
+    accent_token = accent or 'secondary'
     surface_token = options.get('surface', 'content')
     density = options.get('density', 'default')
     icon_only = options.get('icon_only', False)
