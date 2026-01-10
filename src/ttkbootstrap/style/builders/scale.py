@@ -7,7 +7,7 @@ from __future__ import annotations
 
 from ttkbootstrap.style.bootstyle_builder_ttk import BootstyleBuilderTTk
 from ttkbootstrap.style.element import Element, ElementImage
-from ttkbootstrap.style.utility import recolor_image
+from ttkbootstrap.style.utility import recolor_element_image
 
 
 @BootstyleBuilderTTk.register_builder('default', 'TScale')
@@ -26,33 +26,34 @@ def build_scale_style(b: BootstyleBuilderTTk, ttk_style: str, accent: str = 'pri
     track_disabled = b.disabled("background")
 
     # style images
-    handle_normal_img = recolor_image("slider-handle", background, handle_normal)
-    handle_pressed_img = recolor_image("slider-handle-focus", background, handle_normal)
-    handle_focus_img = recolor_image("slider-handle-focus", background, handle_pressed)
-    handle_disabled_img = recolor_image("slider-handle", handle_disabled, handle_disabled)
+    handle_normal_img = recolor_element_image("slider_handle", background, handle_normal)
+    handle_pressed_img = recolor_element_image("slider_handle_focus", background, handle_normal)
+    handle_focus_img = recolor_element_image("slider_handle_focus", background, handle_pressed)
+    handle_disabled_img = recolor_element_image("slider_handle", handle_disabled, handle_disabled)
 
-    track_normal_img = recolor_image(f"slider-track-{orient}", track_color)
-    track_disabled_img = recolor_image(f"slider-track-{orient}", track_disabled)
+    track_normal_img = recolor_element_image(f"slider_track_{orient.lower()}", track_color)
+    track_disabled_img = recolor_element_image(f"slider_track_{orient.lower()}", track_disabled)
     sticky = "ew" if orient == "Horizontal" else "ns"
     side = "left" if orient == "Horizontal" else "top"
-    padding = b.scale((8, 0, -8, 0)) if orient == "Horizontal" else b.scale((0, 8, 0, -8))
 
     b.create_style_element_image(
-        ElementImage(f"{ttk_style}.{orient}.Scale.slider", handle_normal_img,
-                     width=b.scale(24),
-                     height=b.scale(24),
+        ElementImage(f"{ttk_style}.{orient}.Scale.slider", handle_normal_img.image,
+                     width=handle_normal_img.meta.height,
+                     height=handle_normal_img.meta.width,
                      sticky=''
                      ).state_specs(
             [
-                ('disabled', handle_disabled_img),
-                ('background focus', handle_focus_img),
-                ('pressed', handle_pressed_img),
+                ('disabled', handle_disabled_img.image),
+                ('background focus', handle_focus_img.image),
+                ('pressed', handle_pressed_img.image),
             ]))
 
     b.create_style_element_image(
-        ElementImage(f"{ttk_style}.{orient}.Scale.trough", track_normal_img, padding=padding, border=b.scale(6)).state_specs(
+        ElementImage(f"{ttk_style}.{orient}.Scale.trough", track_normal_img.image,
+                     padding=track_normal_img.meta.padding,
+                     border=track_normal_img.meta.border).state_specs(
             [
-                ('disabled', track_disabled_img)
+                ('disabled', track_disabled_img.image)
             ]))
 
     b.create_style_layout(
