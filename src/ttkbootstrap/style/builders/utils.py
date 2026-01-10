@@ -179,6 +179,24 @@ def button_layout(ttk_style: str) -> Element:
         ])
 
 
+def toolbutton_layout(ttk_style: str) -> Element:
+    """Create the standard toolbutton element layout.
+
+    Args:
+        ttk_style: The TTK style name prefix for the toolbutton.
+
+    Returns:
+        Element tree representing the toolbutton layout.
+    """
+    return Element(f"{ttk_style}.border", sticky="nsew").children(
+        [
+            Element("Toolbutton.padding", sticky="nsew").children(
+                [
+                    Element("Toolbutton.label", sticky="nsew")
+                ])
+        ])
+
+
 def icon_size(icon_only: bool, density: str) -> int:
     """Determine icon size based on button density and icon_only flag.
 
