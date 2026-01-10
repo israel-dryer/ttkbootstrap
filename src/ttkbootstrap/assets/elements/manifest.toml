@@ -425,7 +425,7 @@ padding = 0
 
 [images.border]
 file = "border.png"
-width = 200
-height = 200
+width = 88
+height = 88
 border = 8
 padding = 0
