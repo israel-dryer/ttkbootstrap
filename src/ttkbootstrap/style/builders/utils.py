@@ -191,10 +191,10 @@ def icon_size(icon_only: bool, density: str) -> int:
     """
     if density == 'compact':
         if icon_only:
-            return 18
+            return 19
         return 17
     elif icon_only:
-        return 22
+        return 24
     return 18
 
 
