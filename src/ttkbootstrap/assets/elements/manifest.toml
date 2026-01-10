@@ -196,7 +196,7 @@ border = 0
 padding = 0
 
 [images.slider_handle]
-file = "slider-handler.png"
+file = "slider-handle.png"
 width = 48
 height = 48
 border = 0
@@ -206,14 +206,14 @@ padding = 0
 file = "slider-track-horizontal.png"
 width = 328
 height = 8
-border = [12, 0]
+border = [8, 0]
 padding = 0
 
 [images.slider_track_vertical]
 file = "slider-track-vertical.png"
 width = 8
 height = 328
-border = [0, 12]
+border = [0, 8]
 padding = 0
 
 # Progress Bar
