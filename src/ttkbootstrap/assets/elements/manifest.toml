@@ -260,24 +260,6 @@ height = 800
 border = 0
 padding = 0
 
-
-# Separator
-
-[images.separator_horizontal]
-file = "separator-horizontal.png"
-width = 100
-height = 2
-border = 0
-padding = 0
-
-[images.separator_vertical]
-file = "separator-vertical.png"
-width = 2
-height = 100
-border = 0
-padding = 0
-
-
 # Tabs
 
 [images.tabs_bar_horizontal]
@@ -312,7 +294,7 @@ border = 2
 padding = 0
 
 [images.notebook_pill]
-file = "notebook-pill.png"
+file = "notebook-tab-pill.png"
 width = 84
 height = 52
 border = 8
@@ -320,23 +302,23 @@ padding = 0
 
 [images.notebook_tab_active]
 file = "notebook-tab-active.png"
-width = 104
-height = 56
-border = [14, 5, 14, 2]
+width = 60
+height = 60
+border = 8
 padding = 0
 
 [images.notebook_tab_normal]
 file = "notebook-tab-normal.png"
-width = 104
-height = 56
-border = [14, 5, 14, 2]
+width = 60
+height = 60
+border = 8
 padding = 0
 
 [images.notebook_tab_bar]
 file = "notebook-tab-bar.png"
 width = 104
 height = 56
-border = [12, 6]
+border = [16, 6]
 padding = 0
 
 

@@ -9,13 +9,13 @@ from __future__ import annotations
 
 from ttkbootstrap.style.bootstyle_builder_ttk import BootstyleBuilderTTk
 from ttkbootstrap.style.element import Element, ElementImage
-from ttkbootstrap.style.utility import recolor_image
+from ttkbootstrap.style.utility import recolor_element_image
 
 
-def _client_border_image(surface: str, accent: str, show_border: bool) -> object:
+def _client_border_image(surface: str, accent: str, show_border: bool):
     border_accent = accent if show_border else surface
-    return recolor_image(
-        "notebook-client-border",
+    return recolor_element_image(
+        "notebook_client_border",
         surface,
         border_accent,
         surface,
@@ -23,9 +23,9 @@ def _client_border_image(surface: str, accent: str, show_border: bool) -> object
     )
 
 
-def _border_image(surface: str, accent: str, border: str, show_border: bool) -> object:
+def _border_image(surface: str, accent: str, border: str, show_border: bool):
     border_accent = border if show_border else surface
-    return recolor_image(
+    return recolor_element_image(
         "border",
         accent,
         border_accent,
@@ -66,15 +66,15 @@ def build_tabs_notebook(b: BootstyleBuilderTTk, ttk_style: str, accent: str = No
 
     b.create_style_element_image(
         ElementImage(
-            f'{ttk_style}.Notebook.client', client_border_img,
-            border=b.scale(6)
+            f'{ttk_style}.Notebook.client', client_border_img.image,
+            border=client_border_img.meta.border
         )
     )
 
     tab_border_img = _border_image(surface, tab_accent_color, border_color, show_border)
 
     b.create_style_element_image(
-        ElementImage(f"{ttk_style}.Notebook.border", tab_border_img, border=b.scale(6))
+        ElementImage(f"{ttk_style}.Notebook.border", tab_border_img.image, border=tab_border_img.meta.border)
     )
 
     b.create_style_layout(
@@ -82,21 +82,22 @@ def build_tabs_notebook(b: BootstyleBuilderTTk, ttk_style: str, accent: str = No
         _notebook_layout(ttk_style),
     )
 
-    tab_active_img = recolor_image(
-        'notebook-tab-border', tab_active_color, tab_active_border)
-    tab_normal_img = recolor_image(
-        'notebook-tab-normal', tab_accent_color, tab_accent_color, tab_active_border, tab_accent_color)
-    tab_hover_img = recolor_image(
-        'notebook-tab-normal', tab_accent_hover, tab_accent_hover, tab_active_border, tab_accent_color)
+    tab_active_img = recolor_element_image(
+        'notebook_tab_active', tab_active_color, tab_active_border)
+    tab_normal_img = recolor_element_image(
+        'notebook_tab_normal', tab_accent_color, tab_accent_color, tab_active_border, tab_accent_color)
+    tab_hover_img = recolor_element_image(
+        'notebook_tab_normal', tab_accent_hover, tab_accent_hover, tab_active_border, tab_accent_color)
 
     b.create_style_element_image(
         ElementImage(
-            f'{ttk_style}.Notebook.tab', tab_normal_img,
-            sticky='nsew', padding=b.scale(8), border=b.scale(8), height=b.scale(24)).state_specs(
+            f'{ttk_style}.Notebook.tab', tab_normal_img.image,
+            sticky='nsew', padding=tab_normal_img.meta.border, border=tab_normal_img.meta.border,
+            height=b.scale(24)).state_specs(
             [
-                ('selected', tab_active_img),
-                ('active', tab_hover_img),
-                ('', tab_normal_img),
+                ('selected', tab_active_img.image),
+                ('active', tab_hover_img.image),
+                ('', tab_normal_img.image),
             ])
     )
 
@@ -153,15 +154,15 @@ def build_pill_notebook(b: BootstyleBuilderTTk, ttk_style: str, accent: str = No
 
     notebook_border_img = _border_image(surface, surface, notebook_border, show_border)
     b.create_style_element_image(
-        ElementImage(f'{ttk_style}.Notebook.border', notebook_border_img, border=b.scale(6))
+        ElementImage(f'{ttk_style}.Notebook.border', notebook_border_img.image, border=notebook_border_img.meta.border)
     )
 
     # notebook border assets, style and layout
     client_border_img = _client_border_image(surface, surface, False)
     b.create_style_element_image(
         ElementImage(
-            f'{ttk_style}.Notebook.client', client_border_img,
-            border=b.scale(6)
+            f'{ttk_style}.Notebook.client', client_border_img.image,
+            border=client_border_img.meta.border
         )
     )
 
@@ -171,20 +172,22 @@ def build_pill_notebook(b: BootstyleBuilderTTk, ttk_style: str, accent: str = No
     )
 
     # notebook tab assets & style
-    pill_active_img = recolor_image(
-        'notebook-pill-active', pill_active_color, pill_active_border_color, surface, surface)
-    pill_normal_img = recolor_image('notebook-pill-inactive', pill_normal_color, pill_normal_color, surface, surface)
-    pill_normal_hover_img = recolor_image(
-        'notebook-pill-inactive', pill_normal_hover, pill_normal_hover, surface, surface)
+    pill_active_img = recolor_element_image(
+        'notebook_pill', pill_active_color, pill_active_border_color, surface, surface)
+    pill_normal_img = recolor_element_image(
+        'notebook_pill', pill_normal_color, pill_normal_color, surface, surface)
+    pill_normal_hover_img = recolor_element_image(
+        'notebook_pill', pill_normal_hover, pill_normal_hover, surface, surface)
 
     b.create_style_element_image(
         ElementImage(
-            f'{ttk_style}.Notebook.tab', pill_normal_img,
-            sticky='nsew', padding=b.scale(8), border=b.scale(8), height=b.scale(24)).state_specs(
+            f'{ttk_style}.Notebook.tab', pill_normal_img.image,
+            sticky='nsew', padding=pill_normal_img.meta.border, border=pill_normal_img.meta.border,
+            height=b.scale(24)).state_specs(
             [
-                ('selected', pill_active_img),
-                ('active !selected', pill_normal_hover_img),
-                ('', pill_normal_img),
+                ('selected', pill_active_img.image),
+                ('active !selected', pill_normal_hover_img.image),
+                ('', pill_normal_img.image),
             ])
     )
 
@@ -218,8 +221,8 @@ def build_pill_notebook(b: BootstyleBuilderTTk, ttk_style: str, accent: str = No
     b.configure_style(ttk_style, padding=b.scale(3), tabmargins=b.scale((6, 6, 0, 0)))
 
 
-@BootstyleBuilderTTk.register_builder('underline', 'TNotebook')
-def build_underline_notebook(b: BootstyleBuilderTTk, ttk_style: str, accent: str = None, **options):
+@BootstyleBuilderTTk.register_builder('bar', 'TNotebook')
+def build_bar_notebook(b: BootstyleBuilderTTk, ttk_style: str, accent: str = None, **options):
     surface_token = options.get('surface') or "background"
     surface = b.color(surface_token)
     border_color = b.border(surface)
@@ -236,8 +239,8 @@ def build_underline_notebook(b: BootstyleBuilderTTk, ttk_style: str, accent: str
     b.create_style_element_image(
         ElementImage(
             f"{ttk_style}.Notebook.client",
-            client_border_img,
-            border=b.scale(6),
+            client_border_img.image,
+            border=client_border_img.meta.border,
         )
     )
 
@@ -246,8 +249,8 @@ def build_underline_notebook(b: BootstyleBuilderTTk, ttk_style: str, accent: str
     b.create_style_element_image(
         ElementImage(
             f"{ttk_style}.Notebook.border",
-            tab_border_img,
-            border=b.scale(6)
+            tab_border_img.image,
+            border=tab_border_img.meta.border
         )
     )
 
@@ -256,21 +259,21 @@ def build_underline_notebook(b: BootstyleBuilderTTk, ttk_style: str, accent: str
         _notebook_layout(ttk_style),
     )
 
-    active_img = recolor_image("notebook-underline", surface, surface, accent_color, surface)
-    active_hover_img = recolor_image("notebook-underline", hover, surface, accent_color, surface)
-    normal_img = recolor_image("notebook-underline", surface, surface, surface, surface)
-    hover_img = recolor_image("notebook-underline", hover, surface, hover, surface)
+    active_img = recolor_element_image("notebook_tab_bar", surface, surface, accent_color, surface)
+    active_hover_img = recolor_element_image("notebook_tab_bar", hover, surface, accent_color, surface)
+    normal_img = recolor_element_image("notebook_tab_bar", surface, surface, surface, surface)
+    hover_img = recolor_element_image("notebook_tab_bar", hover, surface, hover, surface)
 
     b.create_style_element_image(
         ElementImage(
-            f"{ttk_style}.Notebook.tab", normal_img, sticky="nsew",
-            padding=b.scale(8), border=b.scale(8), height=b.scale(24)
+            f"{ttk_style}.Notebook.tab", normal_img.image, sticky="nsew",
+            padding=normal_img.meta.border, border=normal_img.meta.border, height=b.scale(24)
         ).state_specs(
             [
-                ("selected !disabled", active_img),
-                ("active selected !disabled", active_hover_img),
-                ("active !selected !disabled", hover_img),
-                ("", normal_img),
+                ("selected !disabled", active_img.image),
+                ("active selected !disabled", active_hover_img.image),
+                ("active !selected !disabled", hover_img.image),
+                ("", normal_img.image),
             ]
         )
     )

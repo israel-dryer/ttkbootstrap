@@ -32,8 +32,8 @@ if __name__ == '__main__':
 
     ttk.Button(text="Change Theme", command=ttk.toggle_theme).pack(padx=10, pady=10)
 
-    create_notebook_frame('default', 'Default Notebook').pack(side=LEFT)
-    create_notebook_frame('pill', 'Pill Notebook').pack(side=LEFT)
-    create_notebook_frame('underline', 'Underline Notebook').pack(side=LEFT)
+    create_notebook_frame('default', 'Tabs').pack(side=LEFT)
+    create_notebook_frame('pill', 'Pills').pack(side=LEFT)
+    create_notebook_frame('bar', 'Bars').pack(side=LEFT)
 
     root.mainloop()
