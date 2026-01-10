@@ -222,7 +222,7 @@ def button_padding(b: BootstyleBuilderTTk, icon_only: bool, density: Any) -> int
         Padding value (0 for icon_only, scaled tuple otherwise).
     """
     if icon_only:
-        return 0
+        return 1, 0, 0, 2  # offset for default y-bias applied when accompanied by text.
     if density == 'compact':
         return b.scale((6, 0))
     return b.scale((8, 0))
