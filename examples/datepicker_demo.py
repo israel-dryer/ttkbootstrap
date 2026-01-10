@@ -10,7 +10,7 @@ from ttkbootstrap import Calendar
 def main():
     app = ttk.Window(title="Calendar Demo", theme="light")
 
-    picker = Calendar(app, start_date=date.today(), selection_mode="range")
+    picker = Calendar(app, start_date=date.today())#, selection_mode="range")
     picker.pack(fill=BOTH, expand=True)
 
     picker.on_date_selected(print)
