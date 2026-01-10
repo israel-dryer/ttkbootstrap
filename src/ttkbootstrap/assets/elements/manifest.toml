@@ -219,46 +219,60 @@ padding = 0
 # Progress Bar
 
 [images.progress_bar_horizontal_default]
-file = "progress-bar-horizontal-default.png"
-width = 256
-height = 32
+file = "progress-bar-solid.png"
+width = 20
+height = 20
 border = 0
 padding = 0
 
 [images.progress_bar_vertical_default]
-file = "progress-bar-vertical-default.png"
-width = 32
-height = 256
+file = "progress-bar-solid.png"
+width = 20
+height = 20
+border = 0
+padding = 0
+
+[images.progress_bar_horizontal_thin]
+file = "progress-bar-thin.png"
+width = 12
+height = 12
+border = 0
+padding = 0
+
+[images.progress_bar_vertical_thin]
+file = "progress-bar-thin.png"
+width = 12
+height = 12
 border = 0
 padding = 0
 
 [images.progress_bar_horizontal_striped]
 file = "progress-bar-horizontal-striped.png"
 width = 256
-height = 32
-border = 0
+height = 20
+border = 1
 padding = 0
 
 [images.progress_bar_vertical_striped]
 file = "progress-bar-vertical-striped.png"
-width = 32
+width = 20
 height = 256
-border = 0
-padding = 0
+border = 1
+padding = 1
 
 [images.progress_bar_horizontal_trough]
-file = "progress-bar-horizontal-trough.png"
-width = 800
-height = 32
-border = 0
-padding = 0
+file = "progress-bar-solid.png"
+width = 20
+height = 20
+border = 1
+padding = 1
 
 [images.progress_bar_vertical_trough]
-file = "progress-bar-vertical-trough.png"
-width = 32
-height = 800
-border = 0
-padding = 0
+file = "progress-bar-solid.png"
+width = 20
+height = 20
+border = 1
+padding = 1
 
 # Tabs
 
