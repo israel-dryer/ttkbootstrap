@@ -4,14 +4,30 @@ This module contains style builders for ttk.Treeview widget and variants.
 
 TODO there is a strange bug that causes the treeview to request more size when the custom border element is used.
 """
+import tkinter as tk
 from tkinter import font
 
 from ttkbootstrap_icons_bs import BootstrapIcon
 from ttkbootstrap.style.bootstyle_builder_ttk import BootstyleBuilderTTk
 from ttkbootstrap.style.element import Element, ElementImage
-from ttkbootstrap.style.utility import create_transparent_image, recolor_image
+from ttkbootstrap.style.utility import create_transparent_image, recolor_element_image
 
-TOKENS = ['primary', 'secondary', 'success', 'info', 'warning', 'danger', 'dark', 'light']
+
+def _tk_version_at_least(major: int, minor: int, patch: int) -> bool:
+    """Check if the current Tk version is at least the specified version.
+
+    This is used to work around a regression in Tk 8.6.13+ where user1/user2
+    states don't work properly with custom image elements for treeview indicators.
+    See: https://core.tcl-lang.org/tk/timeline?r=rfe-d632d28ba4
+    """
+    try:
+        version_str = tk._default_root.tk.call('info', 'patchlevel')
+        parts = version_str.split('.')
+        current = (int(parts[0]), int(parts[1]), int(parts[2]))
+        return current >= (major, minor, patch)
+    except Exception:
+        # If we can't determine version, assume newer Tk (safer fallback)
+        return True
 
 
 @BootstyleBuilderTTk.register_builder('default', 'Treeview')
@@ -59,44 +75,84 @@ def build_tree_style(b: BootstyleBuilderTTk, ttk_style: str, **options):
     f = font.nametofont('TkDefaultFont')
     row_height = int(f.metrics()['linespace'] * 1.75)
 
-    open_icon = options.get('open_icon', 'chevron-right')  # 'plus-square', plus-lg
-    closed_icon = options.get('close_icon', 'chevron-down')  # 'dash-square', dash-lg
-    icon_size = b.scale(16)
-    expand_icon_normal = BootstrapIcon(open_icon, icon_size, on_surface).image
-    expand_icon_selected = BootstrapIcon(open_icon, icon_size, on_select).image
-    collapse_icon_normal = BootstrapIcon(closed_icon, icon_size, on_surface).image
-    collapse_icon_selected = BootstrapIcon(closed_icon, icon_size, on_select).image
-    leaf = create_transparent_image(icon_size, icon_size)
+    # Tk 8.6.13+ has a regression where user1/user2 states don't work with
+    # custom image elements for treeview indicators. Use native indicator on
+    # newer Tk versions until TIP #719 lands with proper open/leaf states.
+    # See: https://core.tcl-lang.org/tk/timeline?r=rfe-d632d28ba4
+    use_native_indicator = _tk_version_at_least(8, 6, 13)
+
+    if use_native_indicator:
+        # Use native Treeitem.indicator with custom foreground colors
+        # The native indicator uses triangles that rotate based on open/closed state
+        b.create_style_layout(
+            f'{ttk_style}.Item',
+            Element('Treeitem.padding').children(
+                [
+                    Element('Treeitem.indicator', side='left', sticky=''),
+                    Element('Treeitem.image', side='left', sticky=''),
+                    Element('Treeitem.text', side='left', sticky='w')
+                ])
+        )
+
+        b.configure_style(
+            f'{ttk_style}.Item',
+            padding=b.scale((6, 0)),
+            foreground=on_surface,
+            indicatorsize=b.scale(12),
+            indicatormargins=b.scale((2, 2, 4, 2))
+        )
+        b.map_style(
+            f'{ttk_style}.Item',
+            foreground=[
+                ('selected', on_select),
+                ('', on_surface)
+            ]
+        )
+    else:
+        # Use custom image indicator with user1/user2 states (works on Tk < 8.6.13)
+        open_icon = options.get('open_icon', 'chevron-right')  # 'plus-square', plus-lg
+        closed_icon = options.get('close_icon', 'chevron-down')  # 'dash-square', dash-lg
+        icon_size = b.scale(16)
+
+        expand_icon_normal = BootstrapIcon(open_icon, icon_size, on_surface).image
+        expand_icon_selected = BootstrapIcon(open_icon, icon_size, on_select).image
+        collapse_icon_normal = BootstrapIcon(closed_icon, icon_size, on_surface).image
+        collapse_icon_selected = BootstrapIcon(closed_icon, icon_size, on_select).image
+        leaf = create_transparent_image(icon_size, icon_size)
+
+        b.create_style_element_image(
+            ElementImage(
+                f'{ttk_style}.indicator', expand_icon_normal,
+                sticky='w', height=b.scale(14), width=b.scale(icon_size + 12)).state_specs(
+                [
+                    ('user2', leaf),
+                    ('user1 selected', collapse_icon_selected),
+                    ('user1', collapse_icon_normal),
+                    ('!user1 selected', expand_icon_selected),
+                ])
+        )
+
+        b.create_style_layout(
+            f'{ttk_style}.Item',
+            Element('Treeitem.padding').children(
+                [
+                    Element(f'{ttk_style}.indicator', side='left', sticky=''),
+                    Element('Treeitem.image', side='left', sticky=''),
+                    Element('Treeitem.text', side='left', sticky='w')
+                ])
+        )
+
+        b.configure_style(f'{ttk_style}.Item', padding=b.scale((6, 0)))
+
+    # customize the tree field
+    border_img = recolor_element_image('border', surface, border_color, surface, surface)
 
     b.create_style_element_image(
         ElementImage(
-            f'{ttk_style}.indicator', expand_icon_normal,
-            sticky='w', height=b.scale(14), width=b.scale(icon_size + 12)).state_specs(
-            [
-                ('user2', leaf),
-                ('user1 selected', collapse_icon_selected),
-                ('user1', collapse_icon_normal),
-                ('!user1 selected', expand_icon_selected),
-            ])
-    )
-
-    b.create_style_layout(
-        f'{ttk_style}.Item',
-        Element('Treeitem.padding').children(
-            [
-                Element(f'{ttk_style}.indicator', side='left', sticky=''),
-                Element('Treeitem.image', side='left', sticky=''),
-                Element('Treeitem.text', side='left', sticky='w')
-            ])
-    )
-
-    b.configure_style(f'{ttk_style}.Item', padding=b.scale((6, 0)))
-
-    # customize the tree field
-    border_img = recolor_image('border', surface, border_color, surface, surface)
-
-    b.create_style_element_image(
-        ElementImage(f'{ttk_style}.field', border_img, border=b.scale(6), padding=b.scale(6), width=0, height=0, sticky='nsew')
+            f'{ttk_style}.field', border_img.image, sticky='nsew',
+            border=border_img.meta.border, padding=border_img.meta.border,
+            width=0, height=0
+        )
     )
 
     b.create_style_layout(
