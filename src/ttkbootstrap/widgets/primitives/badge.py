@@ -1,4 +1,4 @@
-from typing import Unpack
+from typing_extensions import Unpack
 from ttkbootstrap.widgets.primitives.label import Label, LabelKwargs
 from ttkbootstrap.widgets.types import Master
 

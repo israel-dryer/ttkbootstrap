@@ -1,7 +1,8 @@
 from __future__ import annotations
 
 from tkinter import ttk
-from typing import Any, Callable, Literal, Optional, TypedDict, Unpack, TYPE_CHECKING
+from typing import Any, Callable, Literal, Optional, TypedDict, TYPE_CHECKING
+from typing_extensions import Unpack
 
 from ttkbootstrap.core.mixins.ttk_state import TtkStateMixin
 from ttkbootstrap.core.mixins.widget import WidgetCapabilitiesMixin

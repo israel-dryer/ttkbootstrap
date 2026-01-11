@@ -1,6 +1,7 @@
 from __future__ import annotations
 
-from typing import Any, Callable, Literal, TypedDict, Unpack, TYPE_CHECKING
+from typing import Any, Callable, Literal, TypedDict, TYPE_CHECKING
+from typing_extensions import Unpack
 
 from ttkbootstrap.widgets.primitives.button import Button
 from ttkbootstrap.widgets.mixins.configure_mixin import configure_delegate
