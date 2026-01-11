@@ -12,8 +12,8 @@ from ttkbootstrap_icons.providers import BaseFontProvider
 from ttkbootstrap_icons.icon import Icon
 
 # Custom y_bias for better vertical alignment in compound buttons.
-# Default Bootstrap provider uses 0.02; we use 0.08 to shift icons down to match text.
-_ICON_Y_BIAS = 0.08
+# Default Bootstrap provider uses 0.02.
+_ICON_Y_BIAS = 0.02
 _icon_provider_initialized = False
 
 

@@ -207,13 +207,17 @@ def icon_size(icon_only: bool, density: str) -> int:
     Returns:
         The icon size in pixels.
     """
-    if density == 'compact':
-        if icon_only:
-            return 19
-        return 17
-    elif icon_only:
-        return 24
-    return 18
+    from tkinter import font
+
+    if icon_only:
+        return 23 if density != 'compact' else 19
+
+    # Get icon size from font ascent for proper alignment with text
+    # Different buffers compensate for y_bias effect per density
+    font_name = 'caption' if density == 'compact' else 'body'
+    f = font.nametofont(font_name)
+    buffer = 4 if density == 'compact' else 3
+    return f.metrics()['ascent'] + buffer
 
 
 def button_font(density: str) -> str:
@@ -240,9 +244,9 @@ def button_padding(b: BootstyleBuilderTTk, icon_only: bool, density: Any) -> int
         Padding value (0 for icon_only, scaled tuple otherwise).
     """
     if icon_only:
-        return 1, 0, 0, 2  # offset for default y-bias applied when accompanied by text.
+        return 0  # offset for default y-bias applied when accompanied by text.
     if density == 'compact':
-        return b.scale((6, 0))
+        return b.scale((6, 3))
     return b.scale((8, 0))
 
 
