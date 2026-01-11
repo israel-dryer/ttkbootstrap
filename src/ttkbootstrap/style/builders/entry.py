@@ -7,12 +7,19 @@ from __future__ import annotations
 
 from ttkbootstrap.style.bootstyle_builder_ttk import BootstyleBuilderTTk
 from ttkbootstrap.style.element import Element, ElementImage
-from ttkbootstrap.style.utility import recolor_image
+from ttkbootstrap.style.utility import recolor_element_image
+from ttkbootstrap.style.builders.utils import (
+    normalize_button_density,
+    entry_font,
+    entry_padding,
+    entry_image_key,
+)
 
 
 @BootstyleBuilderTTk.register_builder('default', 'TEntry')
 def build_entry_style(b: BootstyleBuilderTTk, ttk_style: str, accent: str = None, **options):
     surface_token = options.get('surface', 'content')
+    density = normalize_button_density(options.get('density', 'default'))
 
     surface = b.color(surface_token)
     accent_color = b.color(accent or 'primary')
@@ -28,17 +35,18 @@ def build_entry_style(b: BootstyleBuilderTTk, ttk_style: str, accent: str = None
     select_foreground = b.on_color(select_background)
     disabled_foreground = b.disabled('text')
 
-    # input elements
-    normal_img = recolor_image('input', normal, border, surface)
-    focused_img = recolor_image('input', normal, focused_border, focused_ring)
-    disabled_img = recolor_image('input', disabled, border, surface)
+    # input elements - use density-aware images from manifest
+    img_key = entry_image_key('input', density)
+    normal_img = recolor_element_image(img_key, normal, border, surface)
+    focused_img = recolor_element_image(img_key, normal, focused_border, focused_ring)
+    disabled_img = recolor_element_image(img_key, disabled, border, surface)
 
     b.create_style_element_image(
-        ElementImage(f'{ttk_style}.field', normal_img, sticky='nsew', border=b.scale(8)).state_specs(
+        ElementImage(f'{ttk_style}.field', normal_img.image, sticky='nsew', border=normal_img.meta.border).state_specs(
             [
-                ('disabled', disabled_img),
-                ('readonly', disabled_img),
-                ('focus', focused_img)
+                ('disabled', disabled_img.image),
+                ('readonly', disabled_img.image),
+                ('focus', focused_img.image)
             ]
         )
     )
@@ -58,12 +66,11 @@ def build_entry_style(b: BootstyleBuilderTTk, ttk_style: str, accent: str = None
         ttk_style,
         foreground=foreground,
         background=surface,
-        padding=b.scale((6, 0)),
+        padding=entry_padding(b, density),
         selectforeground=select_foreground,
         selectbackground=select_background,
         insertcolor=foreground,
-        selectborderwidth=0,
-        font="body"
+        selectborderwidth=0
     )
 
     b.map_style(

@@ -9,7 +9,7 @@ from ttkbootstrap.core.mixins.ttk_state import TtkStateMixin
 from ttkbootstrap.core.mixins.widget import WidgetCapabilitiesMixin
 from ttkbootstrap.widgets.internal.wrapper_base import TTKWrapperBase
 from ttkbootstrap.widgets.types import Master
-from ..mixins import TextSignalMixin
+from ..mixins import TextSignalMixin, configure_delegate
 
 if TYPE_CHECKING:
     from ttkbootstrap.core.signals import Signal
@@ -38,6 +38,7 @@ class ComboboxKwargs(TypedDict, total=False):
     # ttkbootstrap-specific extensions
     bootstyle: str  # DEPRECATED: Use accent and variant instead
     accent: str
+    density: Literal['default', 'compact']
     surface: str
     style_options: dict[str, Any]
 
@@ -69,73 +70,91 @@ class Combobox(TextSignalMixin, TTKWrapperBase, WidgetCapabilitiesMixin, TtkStat
             background (str): Background color for the entry field.
             style (str): Explicit ttk style name (overrides accent/variant).
             accent (str): Accent token for styling, e.g. 'primary', 'danger', 'success'.
+            density (str): The vertical and horizontal compactness, e.g. 'default', 'compact'.
             bootstyle (str): DEPRECATED - Use `accent` and `variant` instead.
                 Combined style tokens (e.g., 'primary').
             surface (str): Optional surface token; otherwise inherited.
             style_options (dict): Optional dict forwarded to the style builder.
         """
+        # Store density for popdown positioning
+        if kwargs.get('density') == 'compact':
+            kwargs['font'] = 'caption'
+        kwargs.update(style_options=self._capture_style_options(['density'], kwargs))
         super().__init__(master, **kwargs)
 
         # Store original postcommand if provided
         self._original_postcommand = kwargs.get('postcommand')
 
-        # Set up our postcommand to style popdown on first open
-        self._popdown_styled = False
+        # Set up popdown position adjustment
+        self._popdown_bound = False
         self._setup_postcommand()
 
-        # Subscribe to theme changes to re-apply popdown styling
-        root = self.nametowidget('.')
-        root.bind('<<ThemeChanged>>', lambda _: self._on_theme_changed(), add='+')
+    @configure_delegate('density')
+    def _delegate_density(self, value=None):
+        if value is None:
+            return self.configure_style_options(value)
+        else:
+            if value == 'compact':
+                self.configure(font='caption')
+            else:
+                self.configure(font='body')
+            return self.configure_style_options(density=value)
 
     def _setup_postcommand(self) -> None:
-        """Set up postcommand to style popdown when first opened."""
+        """Set up postcommand to bind popdown position adjustment."""
 
         def on_popdown():
-            # Apply popdown styling if not done yet
-            if not self._popdown_styled:
-                self._apply_popdown_style()
-                self._popdown_styled = True
+            # Bind position adjustment on first open
+            if not self._popdown_bound:
+                self._bind_popdown_position()
+                self._popdown_bound = True
 
             # Call original postcommand if it exists
             if self._original_postcommand:
                 if callable(self._original_postcommand):
                     self._original_postcommand()
                 else:
-                    # It might be a string command
                     self.tk.eval(str(self._original_postcommand))
 
-        # Configure the postcommand
         self.configure(postcommand=on_popdown)
 
-    def _on_theme_changed(self) -> None:
-        """Handle theme change event."""
-        # Reset styled flag so popdown gets restyled on next open
-        self._popdown_styled = False
-
-        # If popdown has been opened before, restyle it immediately
+    def _bind_popdown_position(self) -> None:
+        """Bind position adjustment to popdown Map event and configure font."""
         try:
-            # Try to get the popdown window - if it exists, style it now
             popdown = self.tk.eval(f"ttk::combobox::PopdownWindow {self}")
-            if popdown:
-                self._apply_popdown_style()
-        except Exception:
-            # Popdown doesn't exist yet, will be styled on next open
-            pass
+            if not popdown:
+                return
 
-    def _apply_popdown_style(self) -> None:
-        """Apply theme-appropriate styling to the popdown listbox."""
-        from ttkbootstrap.style.bootstyle_builder_mixed import BootstyleBuilderMixed
-        from ttkbootstrap.style.style import get_style
+            listbox = f"{popdown}.f.l"
 
-        try:
-            style = get_style()
-            builder = BootstyleBuilderMixed(
-                theme_provider=style.theme_provider,
-                style_instance=style
-            )
-            # Apply immediately - popdown should exist now
-            builder.update_combobox_popdown_style(self)
-            self._popdown_styled = True
+            # Configure listbox font based on density
+            density = self.configure_style_options('density') or 'default'
+            try:
+                from ttkbootstrap.style.typography import get_font
+                font_token = 'caption' if density == 'compact' else 'body'
+                font = get_font(font_token)
+                self.tk.call(listbox, "configure", "-font", str(font))
+            except Exception:
+                pass  # Font config failed, continue with offset
+
+            # Offset to align popdown with entry border (accounts for focus ring)
+            offset = 1 if density == 'compact' else 2
+
+            def adjust_position(event=None):
+                def do_adjust():
+                    try:
+                        geom = str(self.tk.call("wm", "geometry", popdown))
+                        size_part, pos_part = geom.split('+', 1)
+                        width, height = size_part.split('x')
+                        x, y = pos_part.split('+')
+                        new_x = int(x) + offset
+                        self.tk.call("wm", "geometry", popdown,
+                                     f"{width}x{height}+{new_x}+{y}")
+                    except Exception:
+                        pass
+                self.after(1, do_adjust)
+
+            self.tk.call("bind", popdown, "<Map>", self.register(adjust_position))
         except Exception:
             pass
 

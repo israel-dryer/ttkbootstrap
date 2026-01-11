@@ -282,3 +282,74 @@ def apply_icon_mapping(
     if not icon_only:
         state_spec['compound'] = 'left'
     return state_spec
+
+
+# Entry/Field utilities
+# These utilities are used by entry-type style builders (Entry, Combobox, Spinbox, Field).
+
+def entry_font(density: str) -> str:
+    """Get the font for an entry widget based on its density.
+
+    Args:
+        density: The entry density ('default' or 'compact').
+
+    Returns:
+        The Tk font name.
+    """
+    from ttkbootstrap.style.typography import get_font
+    font_token = 'caption' if density == 'compact' else 'body'
+    return str(get_font(font_token))
+
+
+def entry_padding(b: BootstyleBuilderTTk, density: str) -> tuple:
+    """Get entry padding based on density.
+
+    Args:
+        b: The bootstyle builder instance.
+        density: The entry density ('default' or 'compact').
+
+    Returns:
+        Scaled padding tuple (horizontal, vertical).
+    """
+    if density == 'compact':
+        return b.scale((4, 0))
+    return b.scale((6, 0))
+
+
+def entry_height(b: BootstyleBuilderTTk, density: str) -> int:
+    """Get entry element height based on density.
+
+    Args:
+        b: The bootstyle builder instance.
+        density: The entry density ('default' or 'compact').
+
+    Returns:
+        Scaled height in pixels.
+    """
+    return b.scale(25) if density == 'compact' else b.scale(31)
+
+
+def entry_icon_size(b: BootstyleBuilderTTk, density: str) -> int:
+    """Get icon size for entry widgets (chevrons, spinner arrows).
+
+    Args:
+        b: The bootstyle builder instance.
+        density: The entry density ('default' or 'compact').
+
+    Returns:
+        Scaled icon size in pixels.
+    """
+    return b.scale(12) if density == 'compact' else b.scale(14)
+
+
+def entry_image_key(base: str, density: str) -> str:
+    """Get density-aware manifest key for entry elements.
+
+    Args:
+        base: Base key name (e.g., 'input', 'input_before', 'input_after').
+        density: The entry density ('default' or 'compact').
+
+    Returns:
+        Full manifest key with density suffix (e.g., 'input_default', 'input_compact').
+    """
+    return f'{base}_{density}'

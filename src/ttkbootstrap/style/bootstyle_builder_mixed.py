@@ -44,18 +44,18 @@ class BootstyleBuilderMixed(BootstyleBuilderBase):
         be configured manually via Tcl/Tk calls.
 
         This method configures:
-        - The popdown listbox window (colors, borders, selection)
+        - The popdown listbox window (colors, borders, selection, width)
         - The scrollbar within the popdown
 
         Args:
             widget: ttk.Combobox widget to update
         """
-        # Determine border color based on theme mode
+        # Determine colors for the popdown listbox
         surface = self.color('background')
         on_surface = self.on_color(surface)
         select = self.color('primary')
         on_select = self.on_color(select)
-        border = self.color('border')
+        border = self.border(surface)
 
         # Build Tk configuration settings for the listbox
         tk_settings = []

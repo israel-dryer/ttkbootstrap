@@ -8,12 +8,20 @@ from __future__ import annotations
 from ttkbootstrap_icons_bs import BootstrapIcon
 from ttkbootstrap.style.bootstyle_builder_ttk import BootstyleBuilderTTk
 from ttkbootstrap.style.element import Element, ElementImage
-from ttkbootstrap.style.utility import recolor_image
+from ttkbootstrap.style.utility import recolor_element_image
+from ttkbootstrap.style.builders.utils import (
+    normalize_button_density,
+    entry_font,
+    entry_padding,
+    entry_icon_size,
+    entry_image_key,
+)
 
 
 @BootstyleBuilderTTk.register_builder('default', 'TSpinbox')
 def build_spinbox_style(b: BootstyleBuilderTTk, ttk_style: str, accent: str = None, **options):
     surface_token = options.get('surface', 'content')
+    density = normalize_button_density(options.get('density', 'default'))
 
     surface = b.color(surface_token)
     accent_color = b.color(accent or 'primary')
@@ -29,53 +37,61 @@ def build_spinbox_style(b: BootstyleBuilderTTk, ttk_style: str, accent: str = No
     select_foreground = b.on_color(select_background)
     disabled_foreground = b.disabled('text')
 
-    # input elements
-    normal_img = recolor_image('input', normal, border, surface)
-    focused_img = recolor_image('input', normal, focused_border, focused_ring)
-    disabled_img = recolor_image('input', disabled, border, surface)
+    # input elements - use density-aware images from manifest
+    img_key = entry_image_key('input', density)
+    normal_img = recolor_element_image(img_key, normal, border, surface)
+    focused_img = recolor_element_image(img_key, normal, focused_border, focused_ring)
+    disabled_img = recolor_element_image(img_key, disabled, border, surface)
 
     b.create_style_element_image(
-        ElementImage(f'{ttk_style}.field', normal_img, sticky='nsew', border=b.scale(8)).state_specs(
+        ElementImage(f'{ttk_style}.field', normal_img.image, sticky='nsew', border=normal_img.meta.border).state_specs(
             [
-                ('disabled', disabled_img),
-                ('readonly', disabled_img),
-                ('focus', focused_img)
+                ('disabled', disabled_img.image),
+                ('readonly', disabled_img.image),
+                ('focus', focused_img.image)
             ]
         )
     )
 
-    # add chevron image
-    icon_size = b.scale(14)
+    # add arrow images - use density-aware icon size (same as combobox)
+    icon_size = entry_icon_size(b, density)
     arrow_up_normal_img = BootstrapIcon('caret-up-fill', color=foreground, size=icon_size).image
     arrow_up_disabled_img = BootstrapIcon('caret-up-fill', color=disabled_foreground, size=icon_size).image
     arrow_down_normal_img = BootstrapIcon('caret-down-fill', color=foreground, size=icon_size).image
     arrow_down_disabled_img = BootstrapIcon('caret-down-fill', color=disabled_foreground, size=icon_size).image
 
+    # Constrain arrow height for compact to fit within smaller widget
+    arrow_height = b.scale(9) if density == 'compact' else None
+
+    uparrow_element = ElementImage(f'{ttk_style}.uparrow', arrow_up_normal_img, sticky='', width=b.scale(16))
+    if arrow_height:
+        uparrow_element = ElementImage(f'{ttk_style}.uparrow', arrow_up_normal_img, sticky='', width=b.scale(16), height=arrow_height)
     b.create_style_element_image(
-        ElementImage(f'{ttk_style}.uparrow', arrow_up_normal_img, sticky='nsew', width=b.scale(16)).state_specs(
-            [
-                ('disabled', arrow_up_disabled_img),
-                ('', arrow_up_normal_img),
-            ])
+        uparrow_element.state_specs([
+            ('disabled', arrow_up_disabled_img),
+            ('', arrow_up_normal_img),
+        ])
     )
 
+    downarrow_element = ElementImage(f'{ttk_style}.downarrow', arrow_down_normal_img, sticky='', width=b.scale(16))
+    if arrow_height:
+        downarrow_element = ElementImage(f'{ttk_style}.downarrow', arrow_down_normal_img, sticky='', width=b.scale(16), height=arrow_height)
     b.create_style_element_image(
-        ElementImage(f'{ttk_style}.downarrow', arrow_down_normal_img, sticky='nsew', width=b.scale(16)).state_specs(
-            [
-                ('disabled', arrow_down_disabled_img),
-                ('', arrow_down_normal_img),
-            ])
+        downarrow_element.state_specs([
+            ('disabled', arrow_down_disabled_img),
+            ('', arrow_down_normal_img),
+        ])
     )
 
-    # layout
+    # layout - arrows stacked vertically, centered
     b.create_style_layout(
         ttk_style,
-        Element(f'{ttk_style}.field', sticky="ew", side="top").children(
+        Element(f'{ttk_style}.field', sticky="ew").children(
             [
                 Element('null', side='right', sticky='').children(
                     [
-                        Element(f'{ttk_style}.uparrow', side='top', sticky='e'),
-                        Element(f'{ttk_style}.downarrow', side='bottom', sticky='e'),
+                        Element(f'{ttk_style}.uparrow', side='top', sticky=''),
+                        Element(f'{ttk_style}.downarrow', side='top', sticky=''),
                     ]),
                 Element('Spinbox.padding', sticky='nsew').children(
                     [
@@ -88,12 +104,12 @@ def build_spinbox_style(b: BootstyleBuilderTTk, ttk_style: str, accent: str = No
         ttk_style,
         foreground=foreground,
         background=surface,
-        padding=b.scale((8, 0)),
+        padding=entry_padding(b, density),
         selectforeground=select_foreground,
         selectbackground=select_background,
         insertcolor=foreground,
         selectborderwidth=0,
-        font="body"
+        font=entry_font(density)
     )
 
     b.map_style(

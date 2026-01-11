@@ -10,12 +10,21 @@ from ttkbootstrap_icons_bs import BootstrapIcon
 
 from ttkbootstrap.style.bootstyle_builder_ttk import BootstyleBuilderTTk
 from ttkbootstrap.style.element import Element, ElementImage
-from ttkbootstrap.style.utility import recolor_image
+from ttkbootstrap.style.utility import recolor_element_image
+from ttkbootstrap.style.builders.utils import (
+    normalize_button_density,
+    entry_font,
+    entry_padding,
+    entry_height,
+    entry_icon_size,
+    entry_image_key,
+)
 
 
 @BootstyleBuilderTTk.register_builder('default', 'TField')
 def build_field_style(b: BootstyleBuilderTTk, ttk_style: str, accent: str = None, **options):
     surface_token = options.get('surface', 'content')
+    density = normalize_button_density(options.get('density', 'default'))
 
     surface = b.color(surface_token)
     accent_color = b.color(accent or 'primary')
@@ -25,17 +34,18 @@ def build_field_style(b: BootstyleBuilderTTk, ttk_style: str, accent: str = None
     focused_border = b.focus_border(accent_color)
     focused_ring = b.focus_ring(accent_color, surface)
 
-    # input element images
-    normal_img = recolor_image(f'input', normal, border, surface)
-    focused_img = recolor_image(f'input', normal, focused_border, focused_ring)
-    disabled_img = recolor_image(f'input', normal, disabled, surface, surface)
+    # input element images - use density-aware images from manifest
+    img_key = entry_image_key('input', density)
+    normal_img = recolor_element_image(img_key, normal, border, surface)
+    focused_img = recolor_element_image(img_key, normal, focused_border, focused_ring)
+    disabled_img = recolor_element_image(img_key, normal, disabled, surface, surface)
 
     # input element
     b.create_style_element_image(
-        ElementImage(f'{ttk_style}.border', normal_img, sticky="nsew", border=b.scale(8)).state_specs(
+        ElementImage(f'{ttk_style}.border', normal_img.image, sticky="nsew", border=normal_img.meta.border).state_specs(
             [
-                ('disabled', disabled_img),
-                ('focus', focused_img),
+                ('disabled', disabled_img.image),
+                ('focus', focused_img.image),
             ]
         )
     )
@@ -50,13 +60,18 @@ def build_field_style(b: BootstyleBuilderTTk, ttk_style: str, accent: str = None
 @BootstyleBuilderTTk.register_builder('input', 'TField')
 def build_field_input_style(b: BootstyleBuilderTTk, ttk_style: str, accent: str = None, **options):
     surface_token = options.get('surface', 'content')
+    density = normalize_button_density(options.get('density', 'default'))
+
     surface = b.color(surface_token)
     disabled_bg = b.disabled('background')
     disabled_fg = b.disabled('text')
     foreground = b.on_color(surface)
 
-    normal_img = recolor_image('field', surface)
-    b.create_style_element_image(ElementImage(f'{ttk_style}.field', normal_img, sticky="nsew", height=b.scale(31)))
+    # Inner field is a white fill that gets recolored; height controls density
+    field_img = recolor_element_image('field', surface)
+    height = entry_height(b, density)
+
+    b.create_style_element_image(ElementImage(f'{ttk_style}.field', field_img.image, sticky="nsew", height=height))
     b.create_style_layout(
         ttk_style, Element(f'{ttk_style}.field').children(
             [
@@ -77,7 +92,8 @@ def build_field_input_style(b: BootstyleBuilderTTk, ttk_style: str, accent: str 
         darkcolor=surface,
         lightcolor=surface,
         insertcolor=foreground,
-        padding=(7, 0),
+        padding=entry_padding(b, density),
+        font=entry_font(density),
         selectforeground=b.on_color(b.color('primary')),
         selectbackground=b.color('primary')
     )
@@ -94,20 +110,25 @@ def build_field_input_style(b: BootstyleBuilderTTk, ttk_style: str, accent: str 
         foreground=[('disabled !readonly', disabled_fg), ('', foreground)],
     )
 
+
 @BootstyleBuilderTTk.register_builder('spinner', 'TField')
 def build_spinner_input_style(b: BootstyleBuilderTTk, ttk_style: str, accent: str = None, **options):
     surface_token = options.get('surface', 'content')
+    density = normalize_button_density(options.get('density', 'default'))
 
     surface = b.color(surface_token)
     disabled_bg = b.disabled('background')
     disabled_fg = b.disabled('text')
     foreground = b.on_color(surface)
 
-    normal_img = recolor_image('field', surface)
-    b.create_style_element_image(ElementImage(f'{ttk_style}.field', normal_img, sticky="nsew", height=b.scale(31)))
+    # Inner field is a white fill that gets recolored; height controls density
+    field_img = recolor_element_image('field', surface)
+    height = entry_height(b, density)
 
-    # add chevron image
-    icon_size = b.scale(14)
+    b.create_style_element_image(ElementImage(f'{ttk_style}.field', field_img.image, sticky="nsew", height=height))
+
+    # add arrow images - use density-aware icon size
+    icon_size = entry_icon_size(b, density)
     arrow_up_normal_img = BootstrapIcon('caret-up-fill', color=foreground, size=icon_size).image
     arrow_up_disabled_img = BootstrapIcon('caret-up-fill', color=disabled_fg, size=icon_size).image
     arrow_down_normal_img = BootstrapIcon('caret-down-fill', color=foreground, size=icon_size).image
@@ -128,7 +149,6 @@ def build_spinner_input_style(b: BootstyleBuilderTTk, ttk_style: str, accent: st
                 ('', arrow_down_normal_img),
             ])
     )
-
 
     b.create_style_layout(
         ttk_style,
@@ -157,7 +177,8 @@ def build_spinner_input_style(b: BootstyleBuilderTTk, ttk_style: str, accent: st
         darkcolor=surface,
         lightcolor=surface,
         insertcolor=foreground,
-        padding=(7, 0),
+        padding=entry_padding(b, density),
+        font=entry_font(density),
         selectforeground=b.on_color(b.color('primary')),
         selectbackground=b.color('primary')
     )
@@ -177,16 +198,26 @@ def build_spinner_input_style(b: BootstyleBuilderTTk, ttk_style: str, accent: st
 
 @BootstyleBuilderTTk.register_builder('prefix', 'TField')
 def build_field_prefix_style(b: BootstyleBuilderTTk, ttk_style: str, accent: str = None, **options):
-    build_field_addon_style(b, ttk_style, accent, 'prefix', **options)
+    build_field_addon_style(b, ttk_style, accent, 'before', **options)
 
 
 @BootstyleBuilderTTk.register_builder('suffix', 'TField')
 def build_field_suffix_style(b: BootstyleBuilderTTk, ttk_style: str, accent: str = None, **options):
-    build_field_addon_style(b, ttk_style, accent, 'suffix', **options)
+    build_field_addon_style(b, ttk_style, accent, 'after', **options)
 
 
 def build_field_addon_style(b: BootstyleBuilderTTk, ttk_style: str, _: str, variant: str, **options):
+    """Build prefix/suffix addon styles for entry fields.
+
+    Args:
+        b: The bootstyle builder instance.
+        ttk_style: The TTK style name.
+        _: Unused accent parameter.
+        variant: 'before' for prefix, 'after' for suffix.
+        **options: Style options including 'density', 'surface', 'use_active_states', 'icon'.
+    """
     surface_token = options.get('surface', 'content')
+    density = normalize_button_density(options.get('density', 'default'))
     use_active_states = options.get('use_active_states', False)
     surface = b.color(surface_token)
 
@@ -201,22 +232,23 @@ def build_field_addon_style(b: BootstyleBuilderTTk, ttk_style: str, _: str, vari
     foreground_disabled = b.disabled('text')
     normal = b.disabled(surface=surface)
 
-    # button element images
-    normal_img = recolor_image(f'input-{variant}', normal, border)
+    # addon element images - use density-aware images from manifest
+    # variant is 'before' or 'after', maps to input_before_* or input_after_*
+    img_key = entry_image_key(f'input_{variant}', density)
+    normal_img = recolor_element_image(img_key, normal, border)
 
     if use_active_states:
-        active_img = recolor_image(f'input-{variant}', surface_active, border)
-        pressed_img = recolor_image(f'input-{variant}', surface_pressed, border)
+        active_img = recolor_element_image(img_key, surface_active, border)
+        pressed_img = recolor_element_image(img_key, surface_pressed, border)
     else:
         active_img = pressed_img = normal_img
 
-    # button element
+    # addon element
     b.create_style_element_image(
-
-        ElementImage(f'{ttk_style}.border', normal_img, height=b.scale(31), border=b.scale(8)).state_specs([
-            ('pressed', pressed_img),
-            ('active', active_img),
-            ('', normal_img)
+        ElementImage(f'{ttk_style}.border', normal_img.image, border=normal_img.meta.border).state_specs([
+            ('pressed', pressed_img.image),
+            ('active', active_img.image),
+            ('', normal_img.image)
         ]))
 
     b.create_style_layout(
@@ -250,7 +282,9 @@ def build_field_addon_style(b: BootstyleBuilderTTk, ttk_style: str, _: str, vari
 
     if icon is not None:
         icon = b.normalize_icon_spec(icon)
-        icon['size'] = b.scale(17)
+        # Use density-aware icon size for addon icons
+        addon_icon_size = b.scale(15) if density == 'compact' else b.scale(17)
+        icon['size'] = addon_icon_size
         state_spec['image'] = b.map_stateful_icons(icon, state_spec['foreground'])
 
     b.map_style(ttk_style, **state_spec)
