@@ -14,6 +14,12 @@ def create_check_toggle_test(bootstyle, name):
     cb.pack(padx=5, pady=5, fill=BOTH)
     cb.invoke()
 
+    # default style
+    cb = ttk.CheckToggle(frame, text='Compact', icon='gear-fill', variant=bootstyle, density='compact')
+    cb.pack(padx=5, pady=5, fill=BOTH)
+    cb.invoke()
+
+
     # color styles
     for color in ['primary', 'secondary', 'success', 'info', 'warning', 'danger']:
         cb = ttk.CheckToggle(
