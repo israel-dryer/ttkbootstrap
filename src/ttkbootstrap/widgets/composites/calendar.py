@@ -640,7 +640,8 @@ class Calendar(ttk.Frame):
                     var = tkinter.BooleanVar(value=False)
                     btn = ttk.CheckToggle(
                         grid,
-                        padding=(2, 0, 2, 1),
+                        width=2,
+                        padding=self._square_button_padding(),
                         accent=self._accent,
                         variant="calendar-day",
                         variable=var,
@@ -854,6 +855,21 @@ class Calendar(ttk.Frame):
 
     def _set_title(self) -> None:
         self._title_var.set(_format_month_year(self._display_date))
+
+    def _square_button_padding(self) -> tuple[int, int, int, int]:
+        """Calculate padding for square calendar day buttons based on caption font metrics."""
+        from tkinter import font
+        f = font.nametofont('caption')
+        linespace = f.metrics()['linespace']
+        text_width = f.measure('00')
+        # For square buttons with centered text: width = height
+        # width = text_width + 2*h_pad, height = linespace + v_pad
+        # Use symmetric h_pad and add v_pad to balance
+        diff = linespace - text_width  # 15 - 12 = 3
+        h_pad = (diff + 1) // 2  # round up: 2
+        v_pad = 2 * h_pad - diff  # balance: 2*2 - 3 = 1
+        # Return (left, top, right, bottom)
+        return (h_pad, 0, h_pad, v_pad)
 
     @staticmethod
     def _add_months(d: date, n: int) -> date:
