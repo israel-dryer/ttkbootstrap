@@ -4,20 +4,8 @@ DARK = 'dark'
 LIGHT = 'light'
 
 
-def create_treeview_style():
-    frame = ttk.Frame(root, padding=5)
-
-    # Create Treeview
-    tree = ttk.TreeView(root, show='tree', select_background='primary[subtle]', header_background='primary')
-    tree.pack(fill="both", expand=True, padx=10, pady=10)
-
-    # Define columns (optional – here we use just the built-in #0 column for labels)
-    # If you want extra data columns, you can uncomment this part:
-    # tree["columns"] = ("size", "modified")
-    # tree.heading("#0", text="Name", anchor="w")
-    # tree.heading("size", text="Size", anchor="w")
-    # tree.heading("modified", text="Modified", anchor="w")
-
+def populate_tree(tree):
+    """Add sample items to a treeview."""
     # Add parents
     parent1 = tree.insert("", "end", text="Parent 1", open=True)
     parent2 = tree.insert("", "end", text="Parent 2", open=False)
@@ -39,15 +27,49 @@ def create_treeview_style():
     # Add children to Parent 3
     tree.insert(parent3, "end", text="Child 3.1")
 
-    return frame
+
+def create_treeview_demo(root):
+    """Create side-by-side comparison of default and compact density."""
+    container = ttk.Frame(root, padding=10)
+
+    # Left side - Default density
+    left_frame = ttk.Frame(container)
+    left_frame.pack(side='left', fill='both', expand=True, padx=(0, 5))
+
+    ttk.Label(left_frame, text="Default Density", font="-weight bold").pack(anchor='w', pady=(0, 5))
+
+    tree_default = ttk.TreeView(
+        left_frame,
+        show='tree',
+        density='default',
+        select_background='primary[subtle]'
+    )
+    tree_default.pack(fill="both", expand=True)
+    populate_tree(tree_default)
+
+    # Right side - Compact density
+    right_frame = ttk.Frame(container)
+    right_frame.pack(side='right', fill='both', expand=True, padx=(5, 0))
+
+    ttk.Label(right_frame, text="Compact Density", font="-weight bold").pack(anchor='w', pady=(0, 5))
+
+    tree_compact = ttk.TreeView(
+        right_frame,
+        show='tree',
+        density='compact',
+        select_background='primary[subtle]'
+    )
+    tree_compact.pack(fill="both", expand=True)
+    populate_tree(tree_compact)
+
+    return container
 
 
 if __name__ == '__main__':
-    # create visual widget style tests
-    root = ttk.Window()
+    root = ttk.Window(title="Treeview Density Demo", size=(800, 500))
 
     ttk.Button(text="Change Theme", command=ttk.toggle_theme).pack(padx=10, pady=10)
 
-    create_treeview_style().pack(side='left')
+    create_treeview_demo(root).pack(fill='both', expand=True)
 
     root.mainloop()

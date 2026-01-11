@@ -100,7 +100,7 @@ def build_desktop_tokens(
         return base + delta
 
     return FontTokens(
-        caption=FontSpec(ui, s(-1), "normal"),
+        caption=FontSpec(ui, s(-2), "normal"),
         label=FontSpec(ui, s(-2), "bold"),
         body_sm=FontSpec(ui, s(-1), "normal"),
         body=FontSpec(ui, s(0), "normal"),

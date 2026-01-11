@@ -25,6 +25,7 @@ class TreeViewKwargs(TypedDict, total=False):
 
     # ttkbootstrap-specific extensions
     surface: str
+    density: Literal['default', 'compact']
     border_color: str
     show_border: bool
     select_background: str
@@ -52,6 +53,7 @@ class TreeView(TTKWrapperBase, WidgetCapabilitiesMixin, TtkStateMixin, ttk.Treev
             selectmode (str): Selection mode ('browse', 'extended', 'none').
             style (str): Explicit ttk style name.
             surface (str): Optional surface token; otherwise inherited.
+            density (str): The compactness of widget content ('default' or 'compact').
             border_color (str): The color of the border around the table.
             show_border (bool): Whether to show a border around the table.
             open_icon (str | dict): The icon used for open state.
@@ -61,6 +63,7 @@ class TreeView(TTKWrapperBase, WidgetCapabilitiesMixin, TtkStateMixin, ttk.Treev
             style_options (dict): Optional dict forwarded to the style builder.
         """
         kwargs.update(style_options=self._capture_style_options([
+            'density',
             'border_color',
             'show_border',
             'open_icon',
