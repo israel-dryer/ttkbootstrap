@@ -399,7 +399,7 @@ padding = 0
 file = "input-compact.png"
 width = 60
 height = 60
-border = 10
+border = 14
 padding = 0
 
 [images.input_after_compact]
