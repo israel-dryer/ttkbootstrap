@@ -3,6 +3,11 @@ from __future__ import annotations
 from ttkbootstrap.style.bootstyle_builder_ttk import BootstyleBuilderTTk
 from ttkbootstrap.style.element import Element, ElementImage
 from ttkbootstrap.style.utility import recolor_image
+from ttkbootstrap.style.builders.utils import (
+    normalize_button_density,
+    button_font,
+    apply_icon_mapping,
+)
 
 
 @BootstyleBuilderTTk.register_builder('container', 'ListView.TFrame')
@@ -62,7 +67,7 @@ def build_list_item_style(
     active = b.elevate(background, 1)
     pressed = b.pressed(background)
     selected = b.subtle(accent_token, background)
-    border_normal = b.border(background) if variant.startswith('separated') else background
+    border_normal = b.border(background) if 'separated' in variant else background
 
     normal_img = recolor_image('list-item-separated', background, border_normal)
     active_img = recolor_image('list-item-separated', active, border_normal)
@@ -100,6 +105,7 @@ def build_list_item_style(
 def build_list_item_button_style(b: BootstyleBuilderTTk, ttk_style: str, accent: str = None, **options):
     hoverable = options.get('hoverable', True)
     surface_token = options.get('surface', 'content')
+    density = normalize_button_density(options.get('density', 'default'))
 
     background = b.color(surface_token)
     active = b.elevate(background, 1)
@@ -122,7 +128,7 @@ def build_list_item_button_style(b: BootstyleBuilderTTk, ttk_style: str, accent:
         ('focus', active)
     ]
 
-    b.configure_style(ttk_style, background=background, padding=0, relief='flat', stipple='gray12', font='body')
+    b.configure_style(ttk_style, background=background, padding=0, relief='flat', stipple='gray12', font=button_font(density))
     b.map_style(
         ttk_style,
         foreground=[],
@@ -145,12 +151,26 @@ def build_list_item_default_label(b: BootstyleBuilderTTk, ttk_style: str, accent
     build_list_item_label(b, ttk_style, accent, 'list', **options)
 
 
+def _list_icon_size(b: BootstyleBuilderTTk, density: str) -> int:
+    """Get icon size for list items based on density.
+
+    Args:
+        b: The bootstyle builder instance.
+        density: The density ('default' or 'compact').
+
+    Returns:
+        Scaled icon size in pixels.
+    """
+    return b.scale(16) if density == 'compact' else b.scale(18)
+
+
 @BootstyleBuilderTTk.register_builder('icon', 'ListView.TButton')
 @BootstyleBuilderTTk.register_builder('icon', 'ListView.TLabel')
 def build_list_icon(b: BootstyleBuilderTTk, ttk_style: str, accent: str = None, **options):
     hoverable = options.get('hoverable', True)
     surface_token = options.get('surface', 'content')
     select_background_token = options.get('selected_background', 'primary')
+    density = normalize_button_density(options.get('density', 'default'))
 
     background = b.color(surface_token)
     active = b.elevate(background, 1)
@@ -178,7 +198,7 @@ def build_list_icon(b: BootstyleBuilderTTk, ttk_style: str, accent: str = None, 
         padding=0,
         relief='flat',
         stipple='gray12',
-        font='body',
+        font=button_font(density),
     )
 
     foreground_state_spec = [
@@ -201,27 +221,10 @@ def build_list_icon(b: BootstyleBuilderTTk, ttk_style: str, accent: str = None, 
         background=[x for x in background_state_spec if x is not None]
     )
 
-    # Apply icon mapping if icon is provided
-    state_spec = _apply_icon_mapping(b, options, state_spec, 18)
+    # Apply icon mapping if icon is provided - use density-aware icon size
+    icon_size = _list_icon_size(b, density)
+    state_spec = apply_icon_mapping(b, options, state_spec, icon_size)
     b.map_style(ttk_style, **state_spec)
-
-
-def _apply_icon_mapping(b: BootstyleBuilderTTk, options: dict, state_spec: dict, default_size: int | None):
-    icon = options.get('icon')
-    if icon is None:
-        return state_spec
-
-    if default_size is None:
-        icon = b.normalize_icon_spec(icon)
-    else:
-        icon = b.normalize_icon_spec(icon, default_size)
-
-    state_spec['image'] = b.map_stateful_icons(icon, state_spec['foreground'])
-    # Set compound to 'left' so text is visible alongside the icon
-    icon_only = options.get('icon_only', False)
-    if not icon_only:
-        state_spec['compound'] = 'left'
-    return state_spec
 
 
 def build_list_item_label(b: BootstyleBuilderTTk, ttk_style: str, accent: str = None, variant: str = None, **options):
