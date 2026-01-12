@@ -246,7 +246,8 @@ def button_padding(b: BootstyleBuilderTTk, icon_only: bool, density: Any) -> int
     if icon_only:
         return b.scale(2) if density == 'compact' else 0
     if density == 'compact':
-        return b.scale((6, 3))
+        # (left, top, right, bottom) - extra top padding to center text
+        return b.scale((6, 5, 6, 3))
     return b.scale((8, 0))
 
 
@@ -364,3 +365,40 @@ def entry_image_key(base: str, density: str) -> str:
         Full manifest key with density suffix (e.g., 'input_default', 'input_compact').
     """
     return f'{base}_{density}'
+
+
+def spinner_arrow_height(b: BootstyleBuilderTTk, density: str) -> int:
+    """Get height for spinner arrow elements based on density.
+
+    Args:
+        b: The bootstyle builder instance.
+        density: The entry density ('default' or 'compact').
+
+    Returns:
+        Scaled arrow height in pixels.
+    """
+    return b.scale(10) if density == 'compact' else b.scale(13)
+
+
+def spinner_arrow_width(b: BootstyleBuilderTTk) -> int:
+    """Get width for spinner arrow elements.
+
+    Args:
+        b: The bootstyle builder instance.
+
+    Returns:
+        Scaled arrow width in pixels.
+    """
+    return b.scale(16)
+
+
+def chevron_width(b: BootstyleBuilderTTk) -> int:
+    """Get width for combobox chevron element.
+
+    Args:
+        b: The bootstyle builder instance.
+
+    Returns:
+        Scaled chevron width in pixels.
+    """
+    return b.scale(16)

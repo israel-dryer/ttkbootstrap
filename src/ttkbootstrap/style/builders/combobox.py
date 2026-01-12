@@ -15,6 +15,7 @@ from ttkbootstrap.style.builders.utils import (
     entry_padding,
     entry_icon_size,
     entry_image_key,
+    chevron_width,
 )
 
 
@@ -60,7 +61,7 @@ def build_combobox_style(b: BootstyleBuilderTTk, ttk_style: str, accent: str = N
 
     b.create_style_element_image(
         ElementImage(
-            f'{ttk_style}.chevron', chevron_normal_img, sticky='', border=1, width=b.scale(16)).state_specs(
+            f'{ttk_style}.chevron', chevron_normal_img, sticky='', border=1, width=chevron_width(b)).state_specs(
             [
                 ('disabled', chevron_disabled_img),
                 ('', chevron_normal_img),

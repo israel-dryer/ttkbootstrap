@@ -18,6 +18,8 @@ from ttkbootstrap.style.builders.utils import (
     field_height,
     entry_icon_size,
     entry_image_key,
+    spinner_arrow_height,
+    spinner_arrow_width,
 )
 
 
@@ -134,18 +136,19 @@ def build_spinner_input_style(b: BootstyleBuilderTTk, ttk_style: str, accent: st
     arrow_down_normal_img = BootstrapIcon('caret-down-fill', color=foreground, size=icon_size).image
     arrow_down_disabled_img = BootstrapIcon('caret-down-fill', color=disabled_fg, size=icon_size).image
 
-    # Arrow element images - use smaller height for compact
-    arrow_height = b.scale(10) if density == 'compact' else b.scale(13)
+    # Arrow element images
+    arrow_height = spinner_arrow_height(b, density)
+    arrow_width = spinner_arrow_width(b)
 
     b.create_style_element_image(
-        ElementImage(f'{ttk_style}.uparrow', arrow_up_normal_img, sticky='', width=b.scale(16), height=arrow_height).state_specs([
+        ElementImage(f'{ttk_style}.uparrow', arrow_up_normal_img, sticky='', width=arrow_width, height=arrow_height).state_specs([
             ('disabled', arrow_up_disabled_img),
             ('', arrow_up_normal_img),
         ])
     )
 
     b.create_style_element_image(
-        ElementImage(f'{ttk_style}.downarrow', arrow_down_normal_img, sticky='', width=b.scale(16), height=arrow_height).state_specs([
+        ElementImage(f'{ttk_style}.downarrow', arrow_down_normal_img, sticky='', width=arrow_width, height=arrow_height).state_specs([
             ('disabled', arrow_down_disabled_img),
             ('', arrow_down_normal_img),
         ])
