@@ -1,11 +1,13 @@
-"""Demo showcasing Entry, Combobox, and Spinbox with density options."""
+"""Demo showcasing Entry, Combobox, Spinbox, and Field widgets with density options."""
 
 from ttkbootstrap import Window
 import ttkbootstrap as ttk
+from ttkbootstrap.widgets.composites.textentry import TextEntry
+from ttkbootstrap.widgets.composites.spinnerentry import SpinnerEntry
 
 
 def main():
-    root = Window(title="Entry Density Demo", size=(500, 400))
+    root = Window(title="Entry Density Demo", size=(600, 600))
 
     # Header
     ttk.Label(
@@ -62,41 +64,66 @@ def main():
     s2 = ttk.Spinbox(container, from_=0, to=100, density="compact")
     s2.grid(row=3, column=2, padx=5, pady=5, sticky="ew")
 
-    # Disabled state section
+    # Field widgets section
     ttk.Separator(container).grid(row=4, column=0, columnspan=3, sticky="ew", pady=15)
 
-    ttk.Label(container, text="Disabled State", font="body[bold]").grid(
+    ttk.Label(container, text="Field Widgets", font="body[bold]").grid(
         row=5, column=0, columnspan=3, pady=(0, 10)
     )
 
+    # TextEntry row
+    ttk.Label(container, text="TextEntry").grid(row=6, column=0, sticky="w", pady=5)
+
+    te1 = TextEntry(container, label="Name", value="Default")
+    te1.grid(row=6, column=1, padx=5, pady=5, sticky="ew")
+
+    te2 = TextEntry(container, label="Name", value="Compact")
+    te2.grid(row=6, column=2, padx=5, pady=5, sticky="ew")
+
+    # SpinnerEntry row
+    ttk.Label(container, text="SpinnerEntry").grid(row=7, column=0, sticky="w", pady=5)
+
+    se1 = SpinnerEntry(container, label="Amount", value=50)
+    se1.grid(row=7, column=1, padx=5, pady=5, sticky="ew")
+
+    se2 = SpinnerEntry(container, label="Amount", value=50)
+    se2.grid(row=7, column=2, padx=5, pady=5, sticky="ew")
+
+    # Disabled state section
+    ttk.Separator(container).grid(row=8, column=0, columnspan=3, sticky="ew", pady=15)
+
+    ttk.Label(container, text="Disabled State", font="body[bold]").grid(
+        row=9, column=0, columnspan=3, pady=(0, 10)
+    )
+
     # Disabled Entry row
-    ttk.Label(container, text="Entry").grid(row=6, column=0, sticky="w", pady=5)
+    ttk.Label(container, text="Entry").grid(row=10, column=0, sticky="w", pady=5)
 
     e3 = ttk.Entry(container, state="disabled")
-    e3.grid(row=6, column=1, padx=5, pady=5, sticky="ew")
+    e3.grid(row=10, column=1, padx=5, pady=5, sticky="ew")
 
     e4 = ttk.Entry(container, density="compact", state="disabled")
-    e4.grid(row=6, column=2, padx=5, pady=5, sticky="ew")
+    e4.grid(row=10, column=2, padx=5, pady=5, sticky="ew")
 
     # Disabled Combobox row
-    ttk.Label(container, text="Combobox").grid(row=7, column=0, sticky="w", pady=5)
+    ttk.Label(container, text="Combobox").grid(row=11, column=0, sticky="w", pady=5)
 
     c3 = ttk.Combobox(container, values=options, state="disabled")
-    c3.grid(row=7, column=1, padx=5, pady=5, sticky="ew")
+    c3.grid(row=11, column=1, padx=5, pady=5, sticky="ew")
     c3.set("Disabled")
 
     c4 = ttk.Combobox(container, values=options, density="compact", state="disabled")
-    c4.grid(row=7, column=2, padx=5, pady=5, sticky="ew")
+    c4.grid(row=11, column=2, padx=5, pady=5, sticky="ew")
     c4.set("Disabled")
 
     # Disabled Spinbox row
-    ttk.Label(container, text="Spinbox").grid(row=8, column=0, sticky="w", pady=5)
+    ttk.Label(container, text="Spinbox").grid(row=12, column=0, sticky="w", pady=5)
 
     s3 = ttk.Spinbox(container, from_=0, to=100, state="disabled")
-    s3.grid(row=8, column=1, padx=5, pady=5, sticky="ew")
+    s3.grid(row=12, column=1, padx=5, pady=5, sticky="ew")
 
     s4 = ttk.Spinbox(container, from_=0, to=100, density="compact", state="disabled")
-    s4.grid(row=8, column=2, padx=5, pady=5, sticky="ew")
+    s4.grid(row=12, column=2, padx=5, pady=5, sticky="ew")
 
 
 

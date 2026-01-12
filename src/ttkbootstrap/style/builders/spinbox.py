@@ -60,33 +60,27 @@ def build_spinbox_style(b: BootstyleBuilderTTk, ttk_style: str, accent: str = No
     arrow_down_normal_img = BootstrapIcon('caret-down-fill', color=foreground, size=icon_size).image
     arrow_down_disabled_img = BootstrapIcon('caret-down-fill', color=disabled_foreground, size=icon_size).image
 
-    # Constrain arrow height for compact to fit within smaller widget
-    arrow_height = b.scale(9) if density == 'compact' else None
+    # Arrow element images - use smaller height for compact
+    arrow_height = b.scale(10) if density == 'compact' else b.scale(13)
 
-    uparrow_element = ElementImage(f'{ttk_style}.uparrow', arrow_up_normal_img, sticky='', width=b.scale(16))
-    if arrow_height:
-        uparrow_element = ElementImage(f'{ttk_style}.uparrow', arrow_up_normal_img, sticky='', width=b.scale(16), height=arrow_height)
     b.create_style_element_image(
-        uparrow_element.state_specs([
+        ElementImage(f'{ttk_style}.uparrow', arrow_up_normal_img, sticky='', width=b.scale(16), height=arrow_height).state_specs([
             ('disabled', arrow_up_disabled_img),
             ('', arrow_up_normal_img),
         ])
     )
 
-    downarrow_element = ElementImage(f'{ttk_style}.downarrow', arrow_down_normal_img, sticky='', width=b.scale(16))
-    if arrow_height:
-        downarrow_element = ElementImage(f'{ttk_style}.downarrow', arrow_down_normal_img, sticky='', width=b.scale(16), height=arrow_height)
     b.create_style_element_image(
-        downarrow_element.state_specs([
+        ElementImage(f'{ttk_style}.downarrow', arrow_down_normal_img, sticky='', width=b.scale(16), height=arrow_height).state_specs([
             ('disabled', arrow_down_disabled_img),
             ('', arrow_down_normal_img),
         ])
     )
 
-    # layout - arrows stacked vertically, centered
+    # layout - arrows stacked vertically
     b.create_style_layout(
         ttk_style,
-        Element(f'{ttk_style}.field', sticky="ew").children(
+        Element(f'{ttk_style}.field', sticky="nsew").children(
             [
                 Element('null', side='right', sticky='').children(
                     [

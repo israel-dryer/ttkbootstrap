@@ -15,7 +15,7 @@ from ttkbootstrap.style.builders.utils import (
     normalize_button_density,
     entry_font,
     entry_padding,
-    entry_height,
+    field_height,
     entry_icon_size,
     entry_image_key,
 )
@@ -52,7 +52,7 @@ def build_field_style(b: BootstyleBuilderTTk, ttk_style: str, accent: str = None
     b.create_style_layout(
         ttk_style, Element(f'{ttk_style}.border', sticky="nsew").children(
             [
-                Element(f'{ttk_style}.padding', sticky="")
+                Element(f'{ttk_style}.padding', sticky="nsew")
             ]))
     b.configure_style(ttk_style, background=surface)
 
@@ -69,7 +69,7 @@ def build_field_input_style(b: BootstyleBuilderTTk, ttk_style: str, accent: str 
 
     # Inner field is a white fill that gets recolored; height controls density
     field_img = recolor_element_image('field', surface)
-    height = entry_height(b, density)
+    height = field_height(b, density)
 
     b.create_style_element_image(ElementImage(f'{ttk_style}.field', field_img.image, sticky="nsew", height=height))
     b.create_style_layout(
@@ -123,7 +123,7 @@ def build_spinner_input_style(b: BootstyleBuilderTTk, ttk_style: str, accent: st
 
     # Inner field is a white fill that gets recolored; height controls density
     field_img = recolor_element_image('field', surface)
-    height = entry_height(b, density)
+    height = field_height(b, density)
 
     b.create_style_element_image(ElementImage(f'{ttk_style}.field', field_img.image, sticky="nsew", height=height))
 
@@ -134,30 +134,32 @@ def build_spinner_input_style(b: BootstyleBuilderTTk, ttk_style: str, accent: st
     arrow_down_normal_img = BootstrapIcon('caret-down-fill', color=foreground, size=icon_size).image
     arrow_down_disabled_img = BootstrapIcon('caret-down-fill', color=disabled_fg, size=icon_size).image
 
+    # Arrow element images - use smaller height for compact
+    arrow_height = b.scale(10) if density == 'compact' else b.scale(13)
+
     b.create_style_element_image(
-        ElementImage(f'{ttk_style}.uparrow', arrow_up_normal_img, sticky='nsew', width=b.scale(16)).state_specs(
-            [
-                ('disabled', arrow_up_disabled_img),
-                ('', arrow_up_normal_img),
-            ])
+        ElementImage(f'{ttk_style}.uparrow', arrow_up_normal_img, sticky='', width=b.scale(16), height=arrow_height).state_specs([
+            ('disabled', arrow_up_disabled_img),
+            ('', arrow_up_normal_img),
+        ])
     )
 
     b.create_style_element_image(
-        ElementImage(f'{ttk_style}.downarrow', arrow_down_normal_img, sticky='nsew', width=b.scale(16)).state_specs(
-            [
-                ('disabled', arrow_down_disabled_img),
-                ('', arrow_down_normal_img),
-            ])
+        ElementImage(f'{ttk_style}.downarrow', arrow_down_normal_img, sticky='', width=b.scale(16), height=arrow_height).state_specs([
+            ('disabled', arrow_down_disabled_img),
+            ('', arrow_down_normal_img),
+        ])
     )
 
+    # layout - arrows stacked vertically
     b.create_style_layout(
         ttk_style,
-        Element(f'{ttk_style}.field', sticky="ew", side="top").children(
+        Element(f'{ttk_style}.field', sticky="nsew").children(
             [
                 Element('null', side='right', sticky='').children(
                     [
-                        Element(f'{ttk_style}.uparrow', side='top', sticky='e'),
-                        Element(f'{ttk_style}.downarrow', side='bottom', sticky='e'),
+                        Element(f'{ttk_style}.uparrow', side='top', sticky=''),
+                        Element(f'{ttk_style}.downarrow', side='top', sticky=''),
                     ]),
                 Element('Spinbox.padding', sticky='nsew').children(
                     [
@@ -165,6 +167,10 @@ def build_spinner_input_style(b: BootstyleBuilderTTk, ttk_style: str, accent: st
                     ])
             ]),
     )
+
+    # Add extra right padding for spinner arrows
+    base_padding = entry_padding(b, density)
+    spinner_padding = (base_padding[0], base_padding[1], base_padding[0] + b.scale(3), base_padding[1])
 
     b.configure_style(
         ttk_style,
@@ -177,7 +183,7 @@ def build_spinner_input_style(b: BootstyleBuilderTTk, ttk_style: str, accent: st
         darkcolor=surface,
         lightcolor=surface,
         insertcolor=foreground,
-        padding=entry_padding(b, density),
+        padding=spinner_padding,
         font=entry_font(density),
         selectforeground=b.on_color(b.color('primary')),
         selectbackground=b.color('primary')
@@ -243,9 +249,10 @@ def build_field_addon_style(b: BootstyleBuilderTTk, ttk_style: str, _: str, vari
     else:
         active_img = pressed_img = normal_img
 
-    # addon element
+    # addon element - set explicit height to match field height
+    height = field_height(b, density)
     b.create_style_element_image(
-        ElementImage(f'{ttk_style}.border', normal_img.image, border=normal_img.meta.border).state_specs([
+        ElementImage(f'{ttk_style}.border', normal_img.image, border=normal_img.meta.border, height=height).state_specs([
             ('pressed', pressed_img.image),
             ('active', active_img.image),
             ('', normal_img.image)
@@ -260,13 +267,20 @@ def build_field_addon_style(b: BootstyleBuilderTTk, ttk_style: str, _: str, vari
                     ])
             ]))
 
+    # Add horizontal padding - less for icon-only buttons
+    icon_only = options.get('icon_only', False)
+    if icon_only:
+        addon_padding = b.scale((5, 0)) if density == 'compact' else b.scale((4, 0))
+    else:
+        addon_padding = b.scale((8, 0))
     b.configure_style(
         ttk_style,
         background=surface,
         foreground=foreground,
         relief='flat',
         stipple="gray12",
-        padding=0
+        padding=addon_padding,
+        anchor='center',
     )
 
     # map icon if available
@@ -283,7 +297,7 @@ def build_field_addon_style(b: BootstyleBuilderTTk, ttk_style: str, _: str, vari
     if icon is not None:
         icon = b.normalize_icon_spec(icon)
         # Use density-aware icon size for addon icons
-        addon_icon_size = b.scale(15) if density == 'compact' else b.scale(17)
+        addon_icon_size = b.scale(16) if density == 'compact' else b.scale(17)
         icon['size'] = addon_icon_size
         state_spec['image'] = b.map_stateful_icons(icon, state_spec['foreground'])
 

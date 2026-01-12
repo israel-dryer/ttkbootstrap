@@ -210,7 +210,7 @@ def icon_size(icon_only: bool, density: str) -> int:
     from tkinter import font
 
     if icon_only:
-        return 23 if density != 'compact' else 19
+        return 23 if density != 'compact' else 18
 
     # Get icon size from font ascent for proper alignment with text
     # Different buffers compensate for y_bias effect per density
@@ -244,7 +244,7 @@ def button_padding(b: BootstyleBuilderTTk, icon_only: bool, density: Any) -> int
         Padding value (0 for icon_only, scaled tuple otherwise).
     """
     if icon_only:
-        return 0  # offset for default y-bias applied when accompanied by text.
+        return b.scale(2) if density == 'compact' else 0
     if density == 'compact':
         return b.scale((6, 3))
     return b.scale((8, 0))
@@ -312,9 +312,20 @@ def entry_padding(b: BootstyleBuilderTTk, density: str) -> tuple:
         Scaled padding tuple (horizontal, vertical).
     """
     if density == 'compact':
-        return b.scale((4, 0))
+        return b.scale((6, 0))
     return b.scale((6, 0))
 
+def field_height(b: BootstyleBuilderTTk, density: str) -> int:
+    """Get entry element height based on density.
+
+    Args:
+        b: The bootstyle builder instance.
+        density: The entry density ('default' or 'compact').
+
+    Returns:
+        Scaled height in pixels.
+    """
+    return b.scale(26) if density == 'compact' else b.scale(33)
 
 def entry_height(b: BootstyleBuilderTTk, density: str) -> int:
     """Get entry element height based on density.
