@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from ttkbootstrap.style.bootstyle_builder_ttk import BootstyleBuilderTTk
 from ttkbootstrap.style.element import Element, ElementImage
-from ttkbootstrap.style.utility import recolor_image
+from ttkbootstrap.style.utility import recolor_element_image
 from ttkbootstrap.style.builders.utils import (
     normalize_button_density,
     button_font,
@@ -67,25 +67,29 @@ def build_list_item_style(
     active = b.elevate(background, 1)
     pressed = b.pressed(background)
     selected = b.subtle(accent_token, background)
-    border_normal = b.border(background) if 'separated' in variant else background
 
-    normal_img = recolor_image('list-item-separated', background, border_normal)
-    active_img = recolor_image('list-item-separated', active, border_normal)
-    selected_img = recolor_image('list-item-focus', selected, border_normal, indicator)
+    # Use separated image for separated variant, otherwise use standard list_item
+    is_separated = 'separated' in variant
+    image_key = 'list_item_separated' if is_separated else 'list_item'
+    border_normal = b.border(background) if is_separated else background
 
-    focus_img = recolor_image('list-item-focus', active, border_normal, active)
-    focus_pressed_img = recolor_image('list-item-focus', pressed, border_normal, pressed)
+    normal_img = recolor_element_image(image_key, background, border_normal, background)
+    active_img = recolor_element_image(image_key, active, border_normal, active)
+    selected_img = recolor_element_image(image_key, selected, border_normal, indicator)
+
+    focus_img = recolor_element_image(image_key, active, border_normal, indicator)
+    focus_pressed_img = recolor_element_image(image_key, pressed, border_normal, indicator)
 
     image_state_specs = [
-        ('selected', selected_img),
-        ('focus pressed', focus_pressed_img),
-        ('hover', active_img) if hoverable else None,
-        ('focus', focus_img),
-        ('', normal_img),
+        ('selected', selected_img.image),
+        ('focus pressed', focus_pressed_img.image),
+        ('hover', active_img.image) if hoverable else None,
+        ('focus', focus_img.image),
+        ('', normal_img.image),
     ]
 
     b.create_style_element_image(
-        ElementImage(f'{ttk_style}.border', normal_img, sticky='nsew', border=b.scale(8)).state_specs(
+        ElementImage(f'{ttk_style}.border', normal_img.image, sticky='nsew', border=normal_img.meta.border).state_specs(
             [x for x in image_state_specs if x is not None]
         )
     )

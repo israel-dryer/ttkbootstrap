@@ -340,17 +340,19 @@ padding = 0
 
 [images.list_item_separated]
 file = "list-item-separated.png"
-width = 200
-height = 200
-border = 2
-padding = [8, 4, 4, 2]
+width = 56
+height = 56
+border = [8, 2, 2, 2]
+padding = 0
+resample = "nearest"
 
 [images.list_item]
 file = "list-item.png"
 width = 56
 height = 56
-border = [8, 4, 4, 4]
+border = [8, 2, 2, 2]
 padding = 0
+resample = "nearest"
 
 # Menu
 

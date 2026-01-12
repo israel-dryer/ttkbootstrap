@@ -645,7 +645,13 @@ def recolor_element_image(
             max(1, int(result.width * scale + 0.5)),
             max(1, int(result.height * scale + 0.5))
         )
-        result = result.resize(new_size, Image.Resampling.LANCZOS)
+        # Use NEAREST for sharp-edge assets (avoids antialiasing at color boundaries)
+        # Use LANCZOS for smooth assets (rounded corners, gradients)
+        resample_mode = info.get("resample", "lanczos").lower()
+        if resample_mode == "nearest":
+            result = result.resize(new_size, Image.Resampling.NEAREST)
+        else:
+            result = result.resize(new_size, Image.Resampling.LANCZOS)
 
     photo_image = PhotoImage(image=result)
 
