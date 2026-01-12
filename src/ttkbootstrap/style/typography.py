@@ -31,6 +31,7 @@ class FontTokenNames:
     body_lg = "body-lg"
     body_xl = "body-xl"
 
+    heading_sm = "heading-sm"
     heading_md = "heading-md"
     heading_lg = "heading-lg"
     heading_xl = "heading-xl"
@@ -50,6 +51,7 @@ class FontTokens(NamedTuple):
     body_lg: FontSpec
     body_xl: FontSpec
 
+    heading_sm: FontSpec
     heading_md: FontSpec
     heading_lg: FontSpec
     heading_xl: FontSpec
@@ -107,9 +109,10 @@ def build_desktop_tokens(
         body_lg=FontSpec(ui, s(1), "normal"),
         body_xl=FontSpec(ui, s(2), "normal"),
 
-        heading_md=FontSpec(ui, s(1), "bold"),
-        heading_lg=FontSpec(ui, s(2), "bold"),
-        heading_xl=FontSpec(ui, s(3), "bold"),
+        heading_sm=FontSpec(ui, s(-1), "bold"),
+        heading_md=FontSpec(ui, s(0), "bold"),
+        heading_lg=FontSpec(ui, s(1), "bold"),
+        heading_xl=FontSpec(ui, s(2), "bold"),
 
         display_lg=FontSpec(ui, s(4), "bold"),
         display_xl=FontSpec(ui, s(5), "bold"),
