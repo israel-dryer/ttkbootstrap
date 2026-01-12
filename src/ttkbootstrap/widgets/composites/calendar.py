@@ -868,8 +868,8 @@ class Calendar(ttk.Frame):
         diff = linespace - text_width  # 15 - 12 = 3
         h_pad = (diff + 1) // 2  # round up: 2
         v_pad = 2 * h_pad - diff  # balance: 2*2 - 3 = 1
-        # Return (left, top, right, bottom)
-        return (h_pad, 0, h_pad, v_pad)
+        # Return (left, top, right, bottom) - add top padding to nudge text down
+        return (h_pad, 2, h_pad, v_pad)
 
     @staticmethod
     def _add_months(d: date, n: int) -> date:
