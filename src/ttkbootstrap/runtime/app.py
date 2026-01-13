@@ -19,6 +19,9 @@ from ttkbootstrap.runtime.utility import enable_high_dpi_awareness
 
 _current_app: App | None = None
 
+# Sentinel for "use settings default"
+_USE_SETTINGS = object()
+
 
 def set_current_app(app: App) -> None:
     """Set the process-wide current App instance.
@@ -235,6 +238,9 @@ class AppSettings:
             locale if not specified (e.g., ',' for en_US).
         localize_mode: Controls localization behavior. 'auto' enables
             localization based on locale, True always enables, False disables.
+        window_style: Windows-only pywinstyles effect for all windows.
+            Options include 'mica', 'acrylic', 'aero', 'transparent', 'win7'.
+            Defaults to 'mica'. Set to None to disable.
 
     Examples:
         ```python
@@ -277,6 +283,9 @@ class AppSettings:
     # localization behavior
     localize_mode: LocalizeMode = "auto"
 
+    # platform-specific
+    window_style: str | None = 'mica'
+
     def __post_init__(self):
         """Populate localization defaults when not explicitly configured."""
         _apply_localization_defaults(self)
@@ -301,6 +310,9 @@ class AppSettingsKwargs(TypedDict, total=False):
     time_format: str
     number_decimal: str
     number_thousands: str
+
+    # platform-specific
+    window_style: str | None
 
 
 DEFAULT_LOCALE = "en_US"
@@ -410,6 +422,7 @@ class App(BaseWindow, WidgetCapabilitiesMixin, tkinter.Tk):
             alpha: float = 1.0,
             transient: object | None = None,
             override_redirect: bool = False,
+            window_style: str | None | object = _USE_SETTINGS,
             **kwargs: Unpack[TkKwargs],
     ) -> None:
         """Initializes the application window.
@@ -516,6 +529,8 @@ class App(BaseWindow, WidgetCapabilitiesMixin, tkinter.Tk):
         self._setup_icon(icon, default_icon_enabled=True)
 
         # Setup window using BaseWindow
+        # Use window_style from parameter if explicitly provided, otherwise use settings
+        _window_style = self.settings.window_style if window_style is _USE_SETTINGS else window_style
         self._setup_window(
             title=self.settings.app_name,
             size=self._size,
@@ -526,6 +541,7 @@ class App(BaseWindow, WidgetCapabilitiesMixin, tkinter.Tk):
             transient=self._transient,
             overrideredirect=self._override_redirect,
             alpha=self._alpha,
+            window_style=_window_style,
         )
 
         # Apply ttkbootstrap-specific bindings

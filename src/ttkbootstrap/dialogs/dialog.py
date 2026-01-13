@@ -130,6 +130,9 @@ class Dialog:
         frameless: If True, removes window decorations (title bar, borders) and adds
             a solid border frame around the dialog content. Useful for dropdown-style
             menus or popover UIs. Defaults to False.
+        window_style: Windows-only pywinstyles effect. Options include
+            'mica', 'acrylic', 'aero', 'transparent', 'win7', etc.
+            If None (default), uses AppSettings.window_style.
     """
 
     def __init__(
@@ -146,6 +149,7 @@ class Dialog:
             alert: bool = False,
             mode: DialogMode = "modal",
             frameless: bool = False,
+            window_style: str | None = None,
     ):
         import tkinter
         self._master = master if master else tkinter._default_root
@@ -160,6 +164,7 @@ class Dialog:
         self._alert = alert
         self._mode = mode
         self._frameless = frameless
+        self._window_style = window_style
 
         self._toplevel: Toplevel | None = None
         self._content: ttk.Frame | None = None
@@ -216,7 +221,7 @@ class Dialog:
             modal = (self._mode == "modal")
 
         self.result = None
-        self._create_toplevel()
+        self._create_toplevel(modal=modal)
         self._build_footer()
         self._build_content()
         self._position_dialog(
@@ -235,7 +240,6 @@ class Dialog:
             self._toplevel.bind("<FocusOut>", self._on_focus_out, add="+")
 
         if modal:
-            self._toplevel.transient(self._master)
             if self._mode == "modal":
                 self._toplevel.grab_set()
             self._master.wait_window(self._toplevel)
@@ -268,8 +272,14 @@ class Dialog:
                     ) from exc
         return normalized
 
-    def _create_toplevel(self):
-        self._toplevel = Toplevel(self._master)
+    def _create_toplevel(self, modal: bool = True):
+        # Pass transient to Toplevel so it's set before window_style is applied
+        # (required for mica effect to work on Windows)
+        self._toplevel = Toplevel(
+            master=self._master,
+            window_style=self._window_style,
+            transient=self._master if modal else None
+        )
         self._toplevel.title(self._title)
         self._toplevel.protocol("WM_DELETE_WINDOW", self._on_close_request)
 
@@ -430,10 +440,11 @@ class Dialog:
                 ensure_visible=True
             )
 
-        try:
-            self._toplevel.deiconify()
-        except Exception:
-            pass
+        # Apply window style while still withdrawn, right before showing
+        self._toplevel.update_idletasks()
+        self._toplevel._apply_window_style()
+        self._toplevel.update()
+        self._toplevel.deiconify()
 
         # Second centering pass for default positioning (handles dynamic sizing)
         if position is None and anchor_to is None:

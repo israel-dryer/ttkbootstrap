@@ -41,6 +41,7 @@ class Toplevel(BaseWindow, WidgetCapabilitiesMixin, tkinter.Toplevel):
             topmost: bool = False,
             toolwindow: bool = False,
             alpha: float = 1.0,
+            window_style: Optional[str] = None,
             **kwargs: Any,
     ) -> None:
         """Initialize a top-level window.
@@ -59,6 +60,9 @@ class Toplevel(BaseWindow, WidgetCapabilitiesMixin, tkinter.Toplevel):
             topmost: If True, keep this window above others (`-topmost`).
             toolwindow: On Windows, request a toolwindow style (`-toolwindow`).
             alpha: On Windows, the window alpha transparency (0.0–1.0) via `-alpha`.
+            window_style: Windows-only pywinstyles effect. Options include
+                'mica', 'acrylic', 'aero', 'transparent', 'win7', etc.
+                Defaults to 'mica'. Set to None to disable.
             **kwargs: Other keyword arguments passed to `tkinter.Toplevel`.
         """
         # Extract iconify kwarg if present
@@ -84,6 +88,7 @@ class Toplevel(BaseWindow, WidgetCapabilitiesMixin, tkinter.Toplevel):
             transient=transient,
             overrideredirect=overrideredirect,
             alpha=alpha,
+            window_style=window_style,
         )
 
         # Handle iconify

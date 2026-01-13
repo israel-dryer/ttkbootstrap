@@ -19,6 +19,7 @@ from ttkbootstrap.style.builders.utils import (
 
 
 @BootstyleBuilderTTk.register_builder('solid', 'TButton')
+@BootstyleBuilderTTk.register_builder('default', 'TButton')
 def build_solid_button_style(b: BootstyleBuilderTTk, ttk_style: str, accent: str = None, **options):
     """
     Configure the button style.

@@ -72,6 +72,7 @@ class BaseWindow:
             transient: Optional[tkinter.Misc] = None,
             overrideredirect: bool = False,
             alpha: float = 1.0,
+            window_style: Optional[str] = None,
     ) -> None:
         """Configure common window properties.
 
@@ -90,11 +91,25 @@ class BaseWindow:
             transient: Optional master window for transient behavior.
             overrideredirect: If True, removes window decorations.
             alpha: Transparency level (0.0 to 1.0). Platform-aware.
+            window_style: Windows-only pywinstyles effect. Options include
+                'mica', 'acrylic', 'aero', 'transparent', 'win7', etc.
+                If None, uses AppSettings.window_style (defaults to 'mica').
 
         Note:
             The window must already be initialized (tkinter.Tk.__init__ or
             tkinter.Toplevel.__init__ called) before calling this method.
         """
+        # Get window_style from AppSettings if not explicitly provided
+        if window_style is None:
+            try:
+                from ttkbootstrap.runtime.app import get_app_settings
+                window_style = get_app_settings().window_style
+            except (ImportError, RuntimeError):
+                # No app registered yet, use default
+                window_style = 'mica'
+
+        # Store window style for later application
+        self._window_style = window_style
         # Hide window until we finish applying geometry/resizing to avoid flicker
         self.withdraw()
 
@@ -152,6 +167,26 @@ class BaseWindow:
             x, y = WindowPositioning.center_on_screen(self)
             x, y = WindowPositioning.ensure_on_screen(self, x, y)
             self.geometry(f'+{x}+{y}')
+
+    def _apply_window_style(self) -> None:
+        """Apply pywinstyles effect on Windows.
+
+        Uses the window_style set during initialization. Only applies on Windows
+        and only if the style hasn't already been applied.
+        """
+        if getattr(self, '_window_style_applied', False):
+            return
+        window_style = getattr(self, '_window_style', 'mica')
+        if window_style is None:
+            return
+        if not hasattr(self, 'winsys') or self.winsys != 'win32':
+            return
+        try:
+            import pywinstyles
+            pywinstyles.apply_style(self, window_style)
+            self._window_style_applied = True
+        except Exception:
+            pass
 
     def _setup_alpha(self, alpha: float) -> None:
         """Configure window alpha transparency in a platform-aware manner.
@@ -246,9 +281,11 @@ class BaseWindow:
         This forces a geometry/layout pass before mapping the window, which is
         useful if you have performed setup that affects sizing.
         """
+        # Apply Windows window style while still withdrawn to prevent flash
         self.update_idletasks()
-        self.deiconify()
+        self._apply_window_style()
         self.update()
+        self.deiconify()
 
     def title(self, value: str | None = None) -> str:
         """Get or set the window title.

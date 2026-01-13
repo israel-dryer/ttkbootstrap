@@ -48,8 +48,7 @@ def demo_fontdialog():
     button = ttk.Button(
         root,
         text="Select Font",
-        command=show_font_dialog,
-        bootstyle="primary",
+        command=show_font_dialog
     )
     button.pack(pady=10)
 

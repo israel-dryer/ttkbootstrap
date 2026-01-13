@@ -105,7 +105,8 @@ class _ChromeDialog(Dialog):
             self._bind_outside_click()
 
         if modal:
-            self._toplevel.transient(self._master)
+            # transient() is already called in Dialog._create_toplevel()
+            # Don't call it again here as it breaks mica effect on Windows
             if self._mode == "modal":
                 self._toplevel.grab_set()
             self._master.wait_window(self._toplevel)

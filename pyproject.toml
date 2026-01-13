@@ -53,6 +53,9 @@ dependencies = [
 
     # TOML parsing for Python < 3.11
     "tomli>=2.0; python_version < '3.11'",
+
+    # Windows-specific: modern window effects (mica, acrylic, etc.)
+    "pywinstyles>=1.8; sys_platform == 'win32'",
 ]
 
 [project.optional-dependencies]
