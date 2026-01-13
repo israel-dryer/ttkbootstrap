@@ -75,8 +75,7 @@ def main():
     ttk.Button(
         root,
         text="Show Values",
-        command=show_values,
-        bootstyle="info"
+        command=show_values
     ).pack(pady=20)
 
     root.mainloop()
