@@ -15,6 +15,12 @@ from __future__ import annotations
 import tkinter
 from typing import Literal, Optional, Tuple, Union
 
+try:
+    from screeninfo import get_monitors
+    HAS_SCREENINFO = True
+except ImportError:
+    HAS_SCREENINFO = False
+
 # Type definitions for anchor points (using tkinter convention)
 AnchorPoint = Literal['n', 's', 'e', 'w', 'ne', 'nw', 'se', 'sw', 'center']
 AutoFlip = Union[bool, Literal['vertical', 'horizontal']]
@@ -47,6 +53,37 @@ class WindowPositioning:
     """
 
     @staticmethod
+    def _get_monitor_at_point(x: int, y: int) -> Optional[Tuple[int, int, int, int]]:
+        """Find the monitor containing the given point.
+
+        Args:
+            x: X coordinate in screen space.
+            y: Y coordinate in screen space.
+
+        Returns:
+            Tuple of (monitor_x, monitor_y, monitor_width, monitor_height) if
+            screeninfo is available and a monitor contains the point.
+            Returns None if screeninfo is not installed or point is not on any monitor.
+        """
+        if not HAS_SCREENINFO:
+            return None
+
+        try:
+            monitors = get_monitors()
+            for monitor in monitors:
+                if (monitor.x <= x < monitor.x + monitor.width and
+                        monitor.y <= y < monitor.y + monitor.height):
+                    return (monitor.x, monitor.y, monitor.width, monitor.height)
+            # Point not on any monitor, return the first monitor as fallback
+            if monitors:
+                m = monitors[0]
+                return (m.x, m.y, m.width, m.height)
+        except Exception:
+            # If screeninfo fails for any reason, fall back to None
+            pass
+        return None
+
+    @staticmethod
     def center_on_screen(window: tkinter.Misc) -> tuple[int, int]:
         """Calculate coordinates to center window on screen.
 
@@ -76,11 +113,24 @@ class WindowPositioning:
 
         w_width = max(window.winfo_reqwidth(), window.winfo_width())
         w_height = max(window.winfo_reqheight(), window.winfo_height())
-        s_width = window.winfo_screenwidth()
-        s_height = window.winfo_screenheight()
 
-        x = (s_width - w_width) // 2
-        y = (s_height - w_height) // 2
+        # Try to center on the monitor containing the mouse cursor
+        cursor_x = window.winfo_pointerx()
+        cursor_y = window.winfo_pointery()
+        monitor = WindowPositioning._get_monitor_at_point(cursor_x, cursor_y)
+
+        if monitor:
+            # Center on the specific monitor
+            mon_x, mon_y, mon_width, mon_height = monitor
+            x = mon_x + (mon_width - w_width) // 2
+            y = mon_y + (mon_height - w_height) // 2
+        else:
+            # Fall back to total screen dimensions (original behavior)
+            s_width = window.winfo_screenwidth()
+            s_height = window.winfo_screenheight()
+            x = (s_width - w_width) // 2
+            y = (s_height - w_height) // 2
+
         return x, y
 
     @staticmethod
@@ -320,6 +370,9 @@ import ttkbootstrap.runtime.toplevel            >>> parent = tkinter.Tk()
     ) -> Tuple[int, int]:
         """Calculate screen coordinates for an anchor point on the screen.
 
+        For multi-monitor setups, this returns coordinates on the monitor
+        containing the mouse cursor.
+
         Args:
             window: Window (used to get screen dimensions).
             anchor: Which point on the screen to return coordinates for.
@@ -329,34 +382,40 @@ import ttkbootstrap.runtime.toplevel            >>> parent = tkinter.Tk()
         """
         window.update_idletasks()
 
-        # Get screen dimensions
-        screen_width = window.winfo_screenwidth()
-        screen_height = window.winfo_screenheight()
+        # Try to use the monitor containing the mouse cursor
+        cursor_x = window.winfo_pointerx()
+        cursor_y = window.winfo_pointery()
+        monitor = WindowPositioning._get_monitor_at_point(cursor_x, cursor_y)
 
-        # Screen position is always (0, 0) at top-left
-        x, y = 0, 0
-
-        # Calculate anchor position on screen
-        if anchor == 'nw':
-            return 0, 0
-        elif anchor == 'n':
-            return screen_width // 2, 0
-        elif anchor == 'ne':
-            return screen_width, 0
-        elif anchor == 'w':
-            return 0, screen_height // 2
-        elif anchor == 'center':
-            return screen_width // 2, screen_height // 2
-        elif anchor == 'e':
-            return screen_width, screen_height // 2
-        elif anchor == 'sw':
-            return 0, screen_height
-        elif anchor == 's':
-            return screen_width // 2, screen_height
-        elif anchor == 'se':
-            return screen_width, screen_height
+        if monitor:
+            screen_x, screen_y, screen_width, screen_height = monitor
         else:
-            return screen_width // 2, screen_height // 2
+            # Fall back to total screen dimensions
+            screen_x, screen_y = 0, 0
+            screen_width = window.winfo_screenwidth()
+            screen_height = window.winfo_screenheight()
+
+        # Calculate anchor position on screen/monitor
+        if anchor == 'nw':
+            return screen_x, screen_y
+        elif anchor == 'n':
+            return screen_x + screen_width // 2, screen_y
+        elif anchor == 'ne':
+            return screen_x + screen_width, screen_y
+        elif anchor == 'w':
+            return screen_x, screen_y + screen_height // 2
+        elif anchor == 'center':
+            return screen_x + screen_width // 2, screen_y + screen_height // 2
+        elif anchor == 'e':
+            return screen_x + screen_width, screen_y + screen_height // 2
+        elif anchor == 'sw':
+            return screen_x, screen_y + screen_height
+        elif anchor == 's':
+            return screen_x + screen_width // 2, screen_y + screen_height
+        elif anchor == 'se':
+            return screen_x + screen_width, screen_y + screen_height
+        else:
+            return screen_x + screen_width // 2, screen_y + screen_height // 2
 
     @staticmethod
     def _get_cursor_anchor_coordinates(
@@ -431,6 +490,9 @@ import ttkbootstrap.runtime.toplevel            >>> parent = tkinter.Tk()
     ) -> Tuple[bool, bool]:
         """Check if a window positioned at (x, y) would be off-screen.
 
+        For multi-monitor setups, checks against the monitor containing the
+        proposed position.
+
         Args:
             window: Window to check.
             x: Proposed x coordinate.
@@ -445,20 +507,27 @@ import ttkbootstrap.runtime.toplevel            >>> parent = tkinter.Tk()
         w_width = max(window.winfo_reqwidth(), window.winfo_width())
         w_height = max(window.winfo_reqheight(), window.winfo_height())
 
-        # Get screen boundaries
-        screen_width = window.winfo_screenwidth()
-        screen_height = window.winfo_screenheight()
+        # Try to get the monitor at the proposed position
+        monitor = WindowPositioning._get_monitor_at_point(x, y)
 
-        # Check vertical (top/bottom off-screen)
+        if monitor:
+            screen_x, screen_y, screen_width, screen_height = monitor
+        else:
+            # Fall back to total screen dimensions
+            screen_x, screen_y = 0, 0
+            screen_width = window.winfo_screenwidth()
+            screen_height = window.winfo_screenheight()
+
+        # Check vertical (top/bottom off-screen relative to monitor)
         vertical_offscreen = (
-            y < padding or  # Too far up
-            y + w_height + padding > screen_height  # Too far down
+            y < screen_y + padding or  # Too far up
+            y + w_height + padding > screen_y + screen_height  # Too far down
         )
 
-        # Check horizontal (left/right off-screen)
+        # Check horizontal (left/right off-screen relative to monitor)
         horizontal_offscreen = (
-            x < padding or  # Too far left
-            x + w_width + padding > screen_width  # Too far right
+            x < screen_x + padding or  # Too far left
+            x + w_width + padding > screen_x + screen_width  # Too far right
         )
 
         return vertical_offscreen, horizontal_offscreen
@@ -827,16 +896,21 @@ import ttkbootstrap.runtime.toplevel            >>> parent = tkinter.Tk()
         w_width = max(window.winfo_reqwidth(), window.winfo_width())
         w_height = max(window.winfo_reqheight(), window.winfo_height())
 
-        # Get screen boundaries
-        screen_height = window.winfo_screenheight()
+        # Get screen/monitor boundaries for the trigger widget's location
+        monitor = WindowPositioning._get_monitor_at_point(trigger_x, trigger_y)
+        if monitor:
+            screen_y, screen_height = monitor[1], monitor[3]
+        else:
+            screen_y = 0
+            screen_height = window.winfo_screenheight()
 
         # Determine vertical position
         show_below = prefer_below
 
         if auto_flip:
-            # Check if there's room below
-            space_below = screen_height - (trigger_y + trigger_height)
-            space_above = trigger_y
+            # Check if there's room below (relative to monitor)
+            space_below = (screen_y + screen_height) - (trigger_y + trigger_height)
+            space_above = trigger_y - screen_y
 
             if prefer_below and space_below < w_height and space_above > space_below:
                 show_below = False
@@ -909,8 +983,16 @@ class WindowSizing:
         """
         window.update_idletasks()
 
-        screen_width = window.winfo_screenwidth()
-        screen_height = window.winfo_screenheight()
+        # Try to use the monitor containing the mouse cursor
+        cursor_x = window.winfo_pointerx()
+        cursor_y = window.winfo_pointery()
+        monitor = WindowPositioning._get_monitor_at_point(cursor_x, cursor_y)
+
+        if monitor:
+            screen_width, screen_height = monitor[2], monitor[3]
+        else:
+            screen_width = window.winfo_screenwidth()
+            screen_height = window.winfo_screenheight()
 
         width = int(screen_width * width_ratio)
         height = int(screen_height * height_ratio)

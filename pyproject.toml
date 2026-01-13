@@ -56,6 +56,9 @@ dependencies = [
 
     # Windows-specific: modern window effects (mica, acrylic, etc.)
     "pywinstyles>=1.8; sys_platform == 'win32'",
+
+    # Multi-monitor support for proper window centering
+    "screeninfo>=0.8",
 ]
 
 [project.optional-dependencies]
