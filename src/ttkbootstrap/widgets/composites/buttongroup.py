@@ -1,8 +1,7 @@
 from __future__ import annotations
 
-from typing import Any, Callable, Literal, TYPE_CHECKING
-
-from typing_extensions import TypedDict, Unpack
+from typing import Any, Callable, Literal, TypedDict, TYPE_CHECKING
+from typing_extensions import Unpack
 
 from ttkbootstrap.widgets.primitives.button import Button
 from ttkbootstrap.widgets.mixins.configure_mixin import configure_delegate
@@ -19,12 +18,11 @@ if TYPE_CHECKING:
 
 class ButtonGroupKwargs(TypedDict, total=False):
     orient: Literal['horizontal', 'vertical']
-    bootstyle: str
     accent: str
     variant: str
     state: Literal['normal', 'disabled']
-    show_border: bool
     surface: str
+    density: Literal['default', 'compact']
     style_options: dict[str, Any]
     # Frame options
     padding: Any
@@ -46,9 +44,9 @@ class ButtonGroup(Frame):
         master: Master = None,
         *,
         orient: Literal['horizontal', 'vertical'] = 'horizontal',
-        bootstyle: str = '',
         accent: str = None,
-        variant: str = None,
+        variant: str = 'solid',
+        density: Literal['default', 'compact'] = 'default',
         state: Literal['normal', 'disabled'] = 'normal',
         **kwargs: Unpack[ButtonGroupKwargs]
     ):
@@ -60,25 +58,23 @@ class ButtonGroup(Frame):
         Other Parameters:
             orient (str): Layout orientation - 'horizontal' (default) or 'vertical'.
             accent (str): The accent token (e.g., 'primary', 'success', 'danger').
-                Defaults to 'primary'.
-            variant (str): The style variant (e.g., 'solid', 'outline', 'ghost').
-            bootstyle (str): DEPRECATED. Use accent and variant instead.
+            variant (str): The style variant (e.g., 'solid', 'outline', 'ghost'). Defaults to 'solid',
             state (str): Initial state for all buttons - 'normal' (default) or 'disabled'.
-            show_border (bool): If True, draws a border around the group.
             surface (str): Optional surface token; otherwise inherited.
-            style_options (dict): Additional style options passed to child widgets.
+            density (str): The vertical and horizontal compactness of widget content, e.g. 'default', 'compact'.
             padding (int | tuple): Frame padding. Defaults to 1.
             width (int): Requested width in pixels.
             height (int): Requested height in pixels.
+            style_options (dict): Additional style options passed to child widgets.
         """
         # Store ButtonGroup-specific options from explicit parameters
         # NOTE: _color and _variant are set AFTER super().__init__() because
         # the bootstyle wrapper in TTKWrapperBase sets them to None/extracted values
         self._orientation = orient
-        self._bootstyle = bootstyle or 'primary'
         self._state = state
 
         style_options = kwargs.pop('style_options', {})
+        kwargs.pop('show_border', None) # not allowed
 
         # Initialize internal state
         self._widgets: dict[str, tk.Widget] = {}
@@ -93,6 +89,7 @@ class ButtonGroup(Frame):
         # Set accent/variant AFTER super().__init__() to override wrapper's values
         self._accent = accent
         self._variant = variant
+        self._density = density
 
     def add(
         self,
@@ -144,13 +141,14 @@ class ButtonGroup(Frame):
                 widget_kwargs['accent'] = self._accent
             if 'variant' not in widget_kwargs:
                 widget_kwargs['variant'] = self._variant
-        elif self._bootstyle and 'bootstyle' not in widget_kwargs:
-            # Legacy: use bootstyle (will trigger deprecation warning)
-            widget_kwargs['bootstyle'] = self._bootstyle
+            
+            # force uniform density
+            widget_kwargs['density'] = self._density
 
         # Apply positioning via style_options
         existing_style_opts = widget_kwargs.get('style_options', {}).copy()
         existing_style_opts['orient'] = self._orientation
+        existing_style_opts['density'] = self._density
         existing_style_opts.setdefault('position', 'before')
 
         # Set active_state for non-radio/check button types
@@ -194,8 +192,6 @@ class ButtonGroup(Frame):
 
         if num_widgets == 0:
             return
-
-        base_style = self._bootstyle
 
         for idx, widget in enumerate(widget_list):
             if num_widgets == 1:
@@ -309,22 +305,6 @@ class ButtonGroup(Frame):
         """
         return iter(self._widgets.values())
 
-    @configure_delegate('bootstyle')
-    def _delegate_bootstyle(self, value=None):
-        """Get or set the bootstyle. Updates all widgets when changed."""
-        if value is None:
-            return self._bootstyle
-
-        self._bootstyle = value
-
-        # Reconfigure all widgets with the new bootstyle
-        for widget in self._widgets.values():
-            if hasattr(widget, 'configure'):
-                new_bootstyle = f'{self._bootstyle}-buttongroup'
-                widget.configure(bootstyle=new_bootstyle)
-
-        self._update_widget_positions()
-
     @configure_delegate('accent')
     def _delegate_accent(self, value=None):
         """Get or set the accent. Updates all widgets when changed."""
@@ -333,6 +313,15 @@ class ButtonGroup(Frame):
 
         self._accent = value
         self._reconfigure_all_widgets()
+
+    @configure_delegate('density')
+    def _delegate_density(self, value=None):
+        """Get or set the density. Updates all widgets when changed."""
+        if value is None:
+            return self._density
+
+        self._density = value
+        self._reconfigure_all_widgets()        
 
     @configure_delegate('variant')
     def _delegate_variant(self, value=None):
@@ -344,13 +333,16 @@ class ButtonGroup(Frame):
         self._reconfigure_all_widgets()
 
     def _reconfigure_all_widgets(self):
-        """Reconfigure all widgets with current accent/variant or bootstyle."""
+        """Reconfigure all widgets with current accent/variant/density"""
         for widget in self._widgets.values():
+            # Update density in style_options
+            if hasattr(widget, 'configure_style_options'):
+                widget.configure_style_options(density=self._density)
             if hasattr(widget, 'configure'):
                 if self._accent or self._variant:
                     widget.configure(accent=self._accent, variant=self._variant)
-                elif self._bootstyle:
-                    widget.configure(bootstyle=self._bootstyle)
+                if hasattr(widget, 'rebuild_style'):
+                    widget.rebuild_style()
         self._update_widget_positions()
 
     @configure_delegate('orient')

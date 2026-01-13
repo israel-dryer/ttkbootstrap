@@ -1,3 +1,5 @@
+from typing import Literal
+
 from ttkbootstrap.widgets.primitives.checkbutton import CheckButton
 from ttkbootstrap.widgets.types import Master
 
@@ -27,6 +29,7 @@ class CheckToggle(CheckButton):
             offvalue (Any): Value set in `variable` when deselected.
             padding (int | tuple): Extra space around the content.
             anchor (str): Determines how the content is aligned in the container. Combination of 'n', 's', 'e', 'w', or 'center' (default).
+            density (str): The vertical and horizontal compactness of widget content, e.g. 'default', 'compact'.
             width (int): Width of the control in characters.
             underline (int): Index of character to underline in `text`.
             state (str): Widget state ('normal', 'active', 'disabled', 'readonly').
@@ -37,5 +40,14 @@ class CheckToggle(CheckButton):
             style_options (dict): Optional dict forwarded to the style builder.
             localize (bool | Literal['auto']): Determines the widget's localization mode.
         """
+        self._capture_density_option(kwargs)
         kwargs.setdefault('class_', 'Toolbutton')
         super().__init__(master, **kwargs)
+
+    @staticmethod
+    def _capture_density_option(kwargs: dict) -> None:
+        """Capture density from kwargs into style_options."""
+        density: Literal['default', 'compact'] | None = kwargs.pop('density', None)
+        if density is not None:
+            style_options = kwargs.setdefault('style_options', {})
+            style_options['density'] = density

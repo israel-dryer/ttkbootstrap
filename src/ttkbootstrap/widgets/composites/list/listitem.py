@@ -60,6 +60,7 @@ class ListItem(CompositeFrame):
                 show_selection_controls (bool): Show checkbox/radio button. Defaults to False.
                 select_on_click (bool): Whether clicking selects the item. Defaults to True
                     when selection_mode is 'single' or 'multi', False otherwise.
+                density (str): Visual density ('default' or 'compact'). Defaults to 'default'.
                 **kwargs: Additional arguments forwarded to CompositeFrame.
         """
         # state tracking
@@ -80,6 +81,7 @@ class ListItem(CompositeFrame):
         self._selected_background = kwargs.pop('selected_background', 'primary')
         self._selection_mode = kwargs.pop('selection_mode', 'none')
         self._show_selection_controls = kwargs.pop('show_selection_controls', False)
+        self._density = kwargs.pop('density', 'default')
 
         # Determine if clicking should trigger selection
         # If selection mode is active (single/multi), enable click selection
@@ -89,6 +91,9 @@ class ListItem(CompositeFrame):
 
         self._get_selection_icon()
 
+        # Adjust padding based on density
+        item_padding = (6, 3) if self._density == 'compact' else (8, 4)
+
         # Initialize CompositeFrame with selection disabled (we handle it ourselves)
         super().__init__(
             master=master,
@@ -96,11 +101,12 @@ class ListItem(CompositeFrame):
             variant='separated_item' if self._show_separator else 'item',
             takefocus=self._focusable,
             ttk_class='ListView.TFrame',
-            padding=(8, 4),
+            padding=item_padding,
             style_options=dict(
                 selected_background=self._selected_background,
                 focus_color=self._focus_color,
-                hoverable=self._hoverable
+                hoverable=self._hoverable,
+                density=self._density
             )
         )
 
@@ -111,7 +117,8 @@ class ListItem(CompositeFrame):
             ttk_class='ListView.TFrame',
             takefocus=False,
             style_options=dict(selected_background=self._selected_background,
-                               hoverable=self._hoverable)
+                               hoverable=self._hoverable,
+                               density=self._density)
         )
         self._left_frame.pack(side='left')
 
@@ -121,7 +128,8 @@ class ListItem(CompositeFrame):
             ttk_class='ListView.TFrame',
             takefocus=False,
             style_options=dict(selected_background=self._selected_background,
-                               hoverable=self._hoverable)
+                               hoverable=self._hoverable,
+                               density=self._density)
         )
         self._center_frame.pack(side='left', fill='x', expand=True)
 
@@ -131,7 +139,8 @@ class ListItem(CompositeFrame):
             ttk_class='ListView.TFrame',
             takefocus=False,
             style_options=dict(selected_background=self._selected_background,
-                               hoverable=self._hoverable)
+                               hoverable=self._hoverable,
+                               density=self._density)
         )
         self._right_frame.pack(side='left')
 
@@ -260,7 +269,8 @@ class ListItem(CompositeFrame):
                 ttk_class='ListView.TLabel',
                 icon_only=True,
                 style_options=dict(selected_background=self._selected_background,
-                                   hoverable=self._hoverable),
+                                   hoverable=self._hoverable,
+                                   density=self._density),
                 takefocus=False,
             )
             if self._show_selection_controls:
@@ -292,7 +302,8 @@ class ListItem(CompositeFrame):
                     takefocus=False,
                     icon_only=True,
                     style_options=dict(selected_background=self._selected_background,
-                                       hoverable=self._hoverable),
+                                       hoverable=self._hoverable,
+                                       density=self._density),
                 )
                 self._icon_widget.pack(side='left', padx=5)
                 self.register_composite(self._icon_widget)
@@ -310,17 +321,20 @@ class ListItem(CompositeFrame):
 
     def _update_title(self, text=None):
         """Update title widget."""
+        # Use heading-sm font for compact, heading-lg for default
+        title_font = 'heading-sm' if self._density == 'compact' else 'heading-lg'
         if text is not None:
             if not self._title_widget:
                 self._title_widget = Label(
                     self._center_frame,
                     text=text,
-                    font='heading-lg',
+                    font=title_font,
                     variant='list',
                     ttk_class='ListView.TLabel',
                     takefocus=False,
                     style_options=dict(selected_background=self._selected_background,
-                                       hoverable=self._hoverable),
+                                       hoverable=self._hoverable,
+                                       density=self._density),
                 )
                 self._title_widget.pack(side='top', fill='x', anchor='w', padx=(0, 3))
                 self.register_composite(self._title_widget)
@@ -338,16 +352,20 @@ class ListItem(CompositeFrame):
 
     def _update_text(self, text=None):
         """Update text widget."""
+        # Use caption font for compact density
+        text_font = 'caption' if self._density == 'compact' else 'body'
         if text is not None:
             if not self._text_widget:
                 self._text_widget = Label(
                     self._center_frame,
                     text=text,
+                    font=text_font,
                     variant='list',
                     ttk_class='ListView.TLabel',
                     takefocus=False,
                     style_options=dict(selected_background=self._selected_background,
-                                       hoverable=self._hoverable),
+                                       hoverable=self._hoverable,
+                                       density=self._density),
                 )
                 self._text_widget.pack(side='top', fill='x', padx=(0, 3))
                 self.register_composite(self._text_widget)
@@ -364,7 +382,19 @@ class ListItem(CompositeFrame):
                     self._text_widget = None
 
     def _update_caption(self, text=None):
-        """Update caption widget."""
+        """Update caption widget. Caption is only visible in default density."""
+        # Caption is hidden in compact mode
+        if self._density == 'compact':
+            if self._caption_widget:
+                try:
+                    self._caption_widget.pack_forget()
+                    self._caption_widget.destroy()
+                except TclError:
+                    pass
+                finally:
+                    self._caption_widget = None
+            return
+
         if text is not None:
             if not self._caption_widget:
                 self._caption_widget = Label(
@@ -376,7 +406,8 @@ class ListItem(CompositeFrame):
                     ttk_class='ListView.TLabel',
                     takefocus=False,
                     style_options=dict(selected_background=self._selected_background,
-                                       hoverable=self._hoverable),
+                                       hoverable=self._hoverable,
+                                       density=self._density),
                 )
                 self._caption_widget.pack(side='top', fill='x', padx=(0, 3))
                 self.register_composite(self._caption_widget)
@@ -402,7 +433,8 @@ class ListItem(CompositeFrame):
                     variant='list',
                     ttk_class='ListView.TLabel',
                     style_options=dict(selected_background=self._selected_background,
-                                       hoverable=self._hoverable),
+                                       hoverable=self._hoverable,
+                                       density=self._density),
                 )
                 self._badge_widget.pack(side='right', padx=6)
                 self.register_composite(self._badge_widget)
@@ -430,7 +462,8 @@ class ListItem(CompositeFrame):
                     ttk_class='ListView.TButton',
                     takefocus=False,
                     style_options=dict(selected_background=self._selected_background,
-                                       hoverable=self._hoverable),
+                                       hoverable=self._hoverable,
+                                       density=self._density),
                 )
                 self._chevron_widget.pack(side='right', padx=6)
                 self.register_composite(self._chevron_widget)
@@ -457,7 +490,8 @@ class ListItem(CompositeFrame):
                     takefocus=False,
                     command=self.remove,
                     style_options=dict(selected_background=self._selected_background,
-                                       hoverable=self._hoverable),
+                                       hoverable=self._hoverable,
+                                       density=self._density),
                 )
                 self._remove_widget.pack(side='right', padx=6)
                 self.register_composite(self._remove_widget)
@@ -484,7 +518,8 @@ class ListItem(CompositeFrame):
                     cursor='fleur',
                     takefocus=False,
                     style_options=dict(selected_background=self._selected_background,
-                                       hoverable=self._hoverable),
+                                       hoverable=self._hoverable,
+                                       density=self._density),
                 )
                 self._drag_widget.pack(side='right', padx=6)
 

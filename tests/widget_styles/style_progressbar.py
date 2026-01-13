@@ -40,10 +40,16 @@ if __name__ == '__main__':
     test2 = create_progressbar_frame('striped', 'horizontal', 'Striped Progressbar')
     test2.pack(side=LEFT)
 
+    test2 = create_progressbar_frame('thin', 'horizontal', 'Thin Progressbar')
+    test2.pack(side=LEFT)
+
     test3 = create_progressbar_frame('default', 'vertical', 'Solid Progressbar')
     test3.pack(side=LEFT)
 
     test4 = create_progressbar_frame('striped', 'vertical', 'Striped Progressbar')
+    test4.pack(side=LEFT)
+
+    test4 = create_progressbar_frame('thin', 'vertical', 'Thin Progressbar')
     test4.pack(side=LEFT)
 
     root.mainloop()

@@ -7,7 +7,7 @@ from __future__ import annotations
 
 from ttkbootstrap.style.bootstyle_builder_ttk import BootstyleBuilderTTk
 from ttkbootstrap.style.element import Element, ElementImage
-from ttkbootstrap.style.utility import create_transparent_image, recolor_image
+from ttkbootstrap.style.utility import create_transparent_image, recolor_element_image
 
 
 @BootstyleBuilderTTk.register_builder('default', 'TRadiobutton')
@@ -26,32 +26,32 @@ def build_radiobutton_style(b: BootstyleBuilderTTk, ttk_style: str, accent: str 
     focus = hovered
     focus_ring = b.focus_ring(normal, background)
 
-    normal_checked_img = recolor_image('radio-selected', background, normal, background)
-    normal_unchecked_img = recolor_image('radio-unselected', background, border, background)
+    normal_checked_img = recolor_element_image('radio_selected', background, normal, background)
+    normal_unchecked_img = recolor_element_image('radio_unselected', background, border, background)
 
-    focus_checked_img = recolor_image('radio-selected', background, focus, focus_ring)
-    focus_unchecked_img = recolor_image('radio-unselected', background_hover, focus, focus_ring)
+    focus_checked_img = recolor_element_image('radio_selected', background, focus, focus_ring)
+    focus_unchecked_img = recolor_element_image('radio_unselected', background_hover, focus, focus_ring)
 
-    disabled_checked_img = recolor_image('radio-selected', background, foreground_disabled, background)
-    disabled_unchecked_img = recolor_image('radio-unselected', background, foreground_disabled, background)
+    disabled_checked_img = recolor_element_image('radio_selected', background, foreground_disabled, background)
+    disabled_unchecked_img = recolor_element_image('radio_unselected', background, foreground_disabled, background)
 
     spacer_img = create_transparent_image(6, 1)
     b.create_style_element_image(ElementImage(f'{ttk_style}.spacer', spacer_img, sticky="ew"))
 
     b.create_style_element_image(
-        ElementImage(f'{ttk_style}.indicator', normal_unchecked_img, sticky="ns", padding=b.scale(4)).state_specs(
+        ElementImage(f'{ttk_style}.indicator', normal_unchecked_img.image, sticky="ns", padding=b.scale(4)).state_specs(
             [
                 # Disabled states
-                ('disabled selected', disabled_checked_img),
-                ('disabled !selected !alternate', disabled_unchecked_img),
+                ('disabled selected', disabled_checked_img.image),
+                ('disabled !selected !alternate', disabled_unchecked_img.image),
 
                 # Focused states
-                ('focus selected', focus_checked_img),
-                ('focus !selected !alternate', focus_unchecked_img),
+                ('focus selected', focus_checked_img.image),
+                ('focus !selected !alternate', focus_unchecked_img.image),
 
                 # Normal base states
-                ('selected', normal_checked_img),
-                ('!selected !alternate', normal_unchecked_img),
+                ('selected', normal_checked_img.image),
+                ('!selected !alternate', normal_unchecked_img.image),
             ]
         ))
 

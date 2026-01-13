@@ -7,7 +7,7 @@ from __future__ import annotations
 
 from ttkbootstrap.style.bootstyle_builder_ttk import BootstyleBuilderTTk
 from ttkbootstrap.style.element import Element, ElementImage
-from ttkbootstrap.style.utility import recolor_image
+from ttkbootstrap.style.utility import recolor_element_image
 
 V_PAD = 6
 H_PAD = 8
@@ -25,22 +25,21 @@ def build_menubar_item(b: BootstyleBuilderTTk, ttk_style: str, color: str = None
     foreground_normal = b.on_color(surface)
     foreground_disabled = b.disabled('text', surface)
 
-    normal_img = recolor_image('badge-default', surface, surface, surface, surface)
-    pressed_img = recolor_image('badge-default', pressed, pressed, pressed, pressed)
-    active_img = recolor_image('badge-default', active, active, active, active)
+    normal_img = recolor_element_image('button_compact', surface, surface, surface)
+    pressed_img = recolor_element_image('button_compact', pressed, pressed, surface)
+    active_img = recolor_element_image('button_compact', active, active, surface)
 
-    border = b.scale(6)
     padding = b.scale((H_PAD, V_PAD))
 
     # button element
     b.create_style_element_image(
-        ElementImage(f'{ttk_style}.Button.border', normal_img, sticky="nsew", border=border,
-                     padding=padding).state_specs([
-            ('background focus pressed', pressed_img),
-            ('background focus hover', active_img),
-            ('background focus', pressed_img),
-            ('pressed', pressed_img),
-            ('hover', active_img)
+        ElementImage(f'{ttk_style}.Button.border', normal_img.image, sticky="nsew",
+                     border=normal_img.meta.border, padding=padding).state_specs([
+            ('background focus pressed', pressed_img.image),
+            ('background focus hover', active_img.image),
+            ('background focus', pressed_img.image),
+            ('pressed', pressed_img.image),
+            ('hover', active_img.image)
         ]))
 
     b.create_style_layout(

@@ -60,7 +60,7 @@ class Progressbar(SignalMixin, TTKWrapperBase, WidgetCapabilitiesMixin, TtkState
             phase (int): Animation phase for indeterminate mode.
             style (str): Explicit ttk style name (overrides accent/variant).
             accent (str): Accent token for styling, e.g. 'primary', 'success', 'danger'.
-            variant (str): Style variant, e.g. 'default', 'striped'.
+            variant (str): Style variant, e.g. 'default', 'striped', 'thin'.
             bootstyle (str): DEPRECATED - Use `accent` and `variant` instead.
                 Combined style tokens (e.g., 'success', 'striped').
             surface (str): Optional surface token; otherwise inherited.

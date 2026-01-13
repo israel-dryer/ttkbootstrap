@@ -7,7 +7,7 @@ from __future__ import annotations
 
 from ttkbootstrap.style.bootstyle_builder_ttk import BootstyleBuilderTTk
 from ttkbootstrap.style.element import Element, ElementImage
-from ttkbootstrap.style.utility import recolor_image
+from ttkbootstrap.style.utility import recolor_element_image
 
 
 def _apply_icon_mapping(b: BootstyleBuilderTTk, options: dict, state_spec: dict, default_size: int):
@@ -35,18 +35,19 @@ def build_tabitem_pill_frame(b: BootstyleBuilderTTk, ttk_style: str, accent: str
     active = b.active(accent_color)
     selected = b.selected(accent_color)
 
-    normal_img = recolor_image('button', accent_color, accent_color, surface, surface)
-    active_img = recolor_image('button', active, active, surface, surface)
-    selected_img = recolor_image('button', selected, selected, surface, surface)
+    normal_img = recolor_element_image('tabs_pill', accent_color, accent_color, surface)
+    active_img = recolor_element_image('tabs_pill', active, active, surface)
+    selected_img = recolor_element_image('tabs_pill', selected, selected, surface)
 
     b.create_style_element_image(
         ElementImage(
-            f'{ttk_style}.border', normal_img, sticky='nsew', border=b.scale(8), padding=b.scale(8)
+            f'{ttk_style}.border', normal_img.image, sticky='nsew',
+            border=normal_img.meta.border, padding=b.scale(8)
         ).state_specs([
-            ('pressed', selected_img),
-            ('selected', selected_img),
-            ('hover', active_img),
-            ('', normal_img)
+            ('pressed', selected_img.image),
+            ('selected', selected_img.image),
+            ('hover', active_img.image),
+            ('', normal_img.image)
         ])
     )
 
@@ -70,19 +71,21 @@ def build_tabitem_bar_frame(b: BootstyleBuilderTTk, ttk_style: str, accent: str 
     accent_color = b.color(accent_token)
     accent_subtle = b.subtle(accent_token, surface)
 
-    normal_img = recolor_image(f'tabs-bar-{orient}', surface, surface, surface, surface)
-    active_img = recolor_image(f'tabs-bar-{orient}', accent_subtle, accent_subtle, accent_subtle, accent_subtle)
-    selected_img = recolor_image(f'tabs-bar-{orient}', surface, surface, accent_color, surface)
-    selected_hover_img = recolor_image(f'tabs-bar-{orient}', accent_subtle, accent_subtle, accent_color, accent_subtle)
+    image_key = f'tabs_bar_{orient}'
+    normal_img = recolor_element_image(image_key, surface, surface, surface)
+    active_img = recolor_element_image(image_key, accent_subtle, accent_subtle, accent_subtle)
+    selected_img = recolor_element_image(image_key, surface, surface, accent_color)
+    selected_hover_img = recolor_element_image(image_key, accent_subtle, accent_subtle, accent_color)
 
     b.create_style_element_image(
         ElementImage(
-            f'{ttk_style}.border', normal_img, sticky='nsew', border=b.scale((16, 6) if orient == 'horizontal' else (6, 12)), padding=b.scale(8)
+            f'{ttk_style}.border', normal_img.image, sticky='nsew',
+            border=normal_img.meta.border, padding=b.scale(8)
         ).state_specs([
-            ('selected hover', selected_hover_img),
-            ('selected', selected_img),
-            ('hover', active_img),
-            ('', normal_img),
+            ('selected hover', selected_hover_img.image),
+            ('selected', selected_img.image),
+            ('hover', active_img.image),
+            ('', normal_img.image),
         ])
     )
 

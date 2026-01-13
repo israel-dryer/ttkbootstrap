@@ -48,7 +48,7 @@ Label(content5, text="Watch the console for toggle events.").pack()
 def on_toggle(event):
     print(f"Toggled! Expanded: {event.data['expanded']}")
 
-exp5.on_toggle(on_toggle)
+exp5.on_toggled(on_toggle)
 
 # Control buttons
 control_frame = ttk.Frame(app)

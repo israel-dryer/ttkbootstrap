@@ -33,6 +33,7 @@ class DropdownButtonKwargs(TypedDict, total=False):
     textsignal: Signal[str]
     bootstyle: str  # DEPRECATED: Use accent and variant instead
     accent: str
+    density: Literal['default', 'compact']
     variant: str
     surface: str
     style_options: dict[str, Any]
@@ -64,6 +65,7 @@ class DropdownButton(MenuButton):
             icon_only (bool): Whether to reserve label padding when showing only an icon.
             compound (str): Placement of image relative to text.
             padding (int | tuple): Extra padding around the button content.
+            density (str): The vertical and horizontal compactness of widget content, e.g. 'default', 'compact'.
             width (int): Width of the button.
             underline (int): Index of underlined character in text.
             state (str): Widget state ('normal', 'active', 'disabled', 'readonly').
@@ -83,7 +85,7 @@ class DropdownButton(MenuButton):
         style_options = kwargs.pop('style_options', {})
         style_options.update(
             self._capture_style_options(
-                options=['icon', 'icon_only', 'show_dropdown_button', 'dropdown_button_icon'],
+                options=['icon', 'icon_only', 'density', 'show_dropdown_button', 'dropdown_button_icon'],
                 source=kwargs
             )
         )

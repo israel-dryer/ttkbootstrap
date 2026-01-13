@@ -10,7 +10,7 @@ from __future__ import annotations
 
 from . import (
     badge, button, checkbutton, combobox, entry, expander, frame, label, labelframe, menubutton, notebook,
-    panedwindow, progressbar, radiobutton, scale, scrollbar, separator, sizegrip, spinbox, treeview,
+    panedwindow, progressbar, radiobutton, scale, scrollbar, separator, sizegrip, spinbox, switch, treeview,
     toolbutton, tooltip, field, buttongroup, listview, calendar, contextmenu, tabitem, menubar
 )
 
@@ -24,6 +24,7 @@ __all__ = [
     'label',
     'radiobutton',
     'checkbutton',
+    'switch',
     'progressbar',
     'scale',
     'scrollbar',

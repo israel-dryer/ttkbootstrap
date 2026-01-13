@@ -16,7 +16,7 @@ def button_style_frame(bootstyle, widget_name):
 
     ttk.Separator(frame).pack(padx=5, pady=5, fill='x')
 
-    ttk.Button(
+    b = ttk.Button(
         master=frame,
         text='Default',
         variant=bootstyle,
@@ -51,14 +51,16 @@ if __name__ == '__main__':
     # create visual widget style tests
     root = ttk.App(theme="dark")
 
-    button_style_frame('default', 'Solid Button').pack(side='left')
+    button_style_frame('solid', 'Solid Button').pack(side='left')
     button_style_frame('outline', 'Outline Button').pack(side='left')
     button_style_frame('ghost', 'Ghost Button').pack(side='left')
     button_style_frame('text', 'Text Button').pack(side='left')
     button_style_frame('link', 'Link Button').pack(side='left')
-    ttk.Button(
+
+    theme_btn = ttk.Button(
         root, cursor="hand2", icon="sun", command=lambda: ttk.set_theme('light'),
         style_options={"icon_only": True}).pack(padx=10, pady=10)
+
     ttk.Button(
         root, cursor="hand2", icon="moon", command=lambda: ttk.set_theme('dark'),
         style_options={"icon_only": True}).pack(padx=10, pady=10)

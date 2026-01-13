@@ -3,7 +3,7 @@ from __future__ import annotations
 from ttkbootstrap_icons_bs import BootstrapIcon
 
 from ttkbootstrap.style.bootstyle_builder_ttk import BootstyleBuilderTTk
-from ttkbootstrap.style.builders.button import _apply_icon_mapping
+from ttkbootstrap.style.builders.utils import apply_icon_mapping
 from ttkbootstrap.style.element import Element
 from ttkbootstrap.style.utility import create_transparent_image
 
@@ -258,6 +258,6 @@ def build_context_item_button_style(b: BootstyleBuilderTTk, ttk_style: str, acce
 
     icon_only = options.get('icon_only', False)
     default_size = 20 if icon_only else 16
-    state_spec = _apply_icon_mapping(b, options, state_spec, default_size)
+    state_spec = apply_icon_mapping(b, options, state_spec, default_size)
 
     b.map_style(ttk_style, **state_spec)

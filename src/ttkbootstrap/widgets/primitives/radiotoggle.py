@@ -1,3 +1,5 @@
+from typing import Literal
+
 from ttkbootstrap.widgets.primitives.radiobutton import RadioButton
 from ttkbootstrap.widgets.types import Master
 
@@ -25,6 +27,7 @@ class RadioToggle(RadioButton):
             value (Any): The value assigned to `variable` when this radio is selected.
             padding (int | tuple): Extra space around the content.
             anchor (str): Determines how the content is aligned in the container. Combination of 'n', 's', 'e', 'w', or 'center' (default).
+            density (str): The vertical and horizontal compactness of widget content, e.g. 'default', 'compact'.
             width (int): Width of the control in characters.
             underline (int): Index of character to underline in `text`.
             state (str): Widget state ('normal', 'active', 'disabled', 'readonly').
@@ -34,5 +37,14 @@ class RadioToggle(RadioButton):
             style_options (dict): Optional dict forwarded to the style builder.
             localize (bool | Literal['auto']): Determines the widget's localization mode.
         """
+        self._capture_density_option(kwargs)
         kwargs.setdefault('ttk_class', 'Toolbutton')
         super().__init__(master, **kwargs)
+
+    @staticmethod
+    def _capture_density_option(kwargs: dict) -> None:
+        """Capture density from kwargs into style_options."""
+        density: Literal['default', 'compact'] | None = kwargs.pop('density', None)
+        if density is not None:
+            style_options = kwargs.setdefault('style_options', {})
+            style_options['density'] = density

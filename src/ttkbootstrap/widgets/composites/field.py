@@ -35,6 +35,7 @@ class FieldOptions(TypedDict, total=False):
     Attributes:
         allow_blank: If True, empty input is allowed. If False, empty input preserves previous value.
         accent: Accent token for the focus ring and active border of the input.
+        density: Widget density. 'default' for normal size, 'compact' for smaller size.
         variant: Style variant (if applicable).
         bootstyle: DEPRECATED - Use accent instead.
         cursor: Cursor to display when hovering over the widget.
@@ -59,6 +60,7 @@ class FieldOptions(TypedDict, total=False):
     allow_blank: bool
     bootstyle: str  # DEPRECATED: Use accent instead
     accent: str
+    density: Literal['default', 'compact']
     variant: str
     cursor: str
     value_format: str
@@ -183,6 +185,7 @@ class Field(EntryMixin, Frame):
         # Extract accent - support legacy 'bootstyle' parameter
         accent = kwargs.pop('accent', None)
         bootstyle = kwargs.pop('bootstyle', None)  # Legacy support
+        self._density = kwargs.pop('density', 'default')
         self._localize = cast(bool | Literal['auto'], kwargs.pop('localize', 'auto'))
 
         # Field itself (outer Frame) doesn't need styling - only pass master
@@ -213,22 +216,23 @@ class Field(EntryMixin, Frame):
         )
         self._message_lbl = Label(self, localize=self._localize, text=message or '', font="caption", accent="secondary")
 
-        # field container & field
-        self._field = Frame(self, accent=self._accent, padding=5, ttk_class="TField")
+        # field container & field - pass density for styling via style_options
+        field_padding = 4 if self._density == 'compact' else 6
+        self._field = Frame(self, accent=self._accent, padding=field_padding, ttk_class="TField", style_options={'density': self._density})
 
         if kind == "numeric":
-            self._entry = NumberEntryPart(self._field, value=value, **kwargs)
+            self._entry = NumberEntryPart(self._field, value=value, density=self._density, **kwargs)
         elif kind == "spinbox":
-            self._entry = SpinnerEntryPart(self._field, value=value, **kwargs)
+            self._entry = SpinnerEntryPart(self._field, value=value, density=self._density, **kwargs)
         else:
-            self._entry = TextEntryPart(self._field, value=value, **kwargs)
+            self._entry = TextEntryPart(self._field, value=value, density=self._density, **kwargs)
 
         # attach widgets
         if label:
             self._label_lbl.pack(side='top', fill='x', padx=(4, 0))
 
         self._field.pack(side='top', fill='x', expand=True)
-        self._entry.pack(side='left', fill='x', expand=True, padx=0, pady=0)
+        self._entry.pack(side='left', fill='x', expand=True, padx=(0, 6) if kind == "spinbox" else 0, pady=0)
 
         self._entry.bind('<<StateChanged>>', self._sync_addon_state, add=True)
         self._sync_addon_state()
@@ -403,12 +407,14 @@ class Field(EntryMixin, Frame):
         kwargs.setdefault('ttk_class', 'TField')
         kwargs.setdefault('variant', variant)
         kwargs.setdefault('takefocus', False)
+        kwargs.setdefault('density', self._density)
 
         if widget in (Button, CheckButton):
+            icon_only = kwargs.get('icon_only', False)
             if 'style_options' in kwargs:
-                kwargs['style_options'].update(use_active_states=True)
+                kwargs['style_options'].update(use_active_states=True, density=self._density, icon_only=icon_only)
             else:
-                kwargs['style_options'] = dict(use_active_states=True)
+                kwargs['style_options'] = dict(use_active_states=True, density=self._density, icon_only=icon_only)
         instance = widget(master=self._field, **kwargs)
         key = name or str(instance)
         self._addons[key] = instance

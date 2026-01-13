@@ -364,6 +364,7 @@ class ListView(Frame):
             focus_color: str = None,
             selected_background: str = 'primary',
             select_on_click: bool = None,
+            density: Literal['default', 'compact'] = 'default',
             **kwargs
     ):
         """Initialize a ListView widget.
@@ -390,6 +391,7 @@ class ListView(Frame):
             select_on_click: Whether clicking an item selects it. Defaults to True when
                 selection_mode is 'single' or 'multi', False otherwise. Can be explicitly
                 set to override the default behavior.
+            density: Visual density ('default' or 'compact'). Defaults to 'default'.
             **kwargs: Additional keyword arguments forwarded to `Frame`.
         """
         super().__init__(master, variant='container', ttk_class='ListView.TFrame', **kwargs)
@@ -409,6 +411,7 @@ class ListView(Frame):
         self._striped_background = striped_background
         self._focus_color = focus_color
         self._selected_background = selected_background
+        self._density = density
 
 
         # Data source
@@ -584,7 +587,8 @@ class ListView(Frame):
                 focusable=self._enable_focus,
                 hoverable=self._enable_hover,
                 focus_color=self._focus_color,
-                selected_background=self._selected_background
+                selected_background=self._selected_background,
+                density=self._density
             )
 
             # Only pass select_on_click if explicitly set

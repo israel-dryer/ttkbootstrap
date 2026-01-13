@@ -8,7 +8,8 @@ from types import SimpleNamespace
 from tkinter import StringVar
 from typing import Any, Callable, Iterable, Literal, Optional
 
-from babel import dates, Locale
+from babel import dates
+from babel.core import Locale
 from ttkbootstrap.widgets.primitives import Button, CheckToggle, Frame, Label, Separator
 from ttkbootstrap.widgets.types import Master
 from ttkbootstrap.constants import BOTH, CENTER, LEFT, NSEW, PRIMARY, X, Y, YES
@@ -67,6 +68,18 @@ def _format_month_year(month_date: date) -> str:
     except Exception:
         month_name = _localized_month_name(month_date.month)
         return f"{month_name} {month_date.year}"
+
+
+def _longest_month_title_length() -> int:
+    """Calculate the character length of the longest month/year title for the current locale."""
+    max_length = 0
+    # Use a 4-digit year for measurement (e.g., 2024)
+    sample_year = 2024
+    for month in range(1, 13):
+        title = _format_month_year(date(sample_year, month, 1))
+        if len(title) > max_length:
+            max_length = len(title)
+    return max_length
 
 
 class Calendar(ttk.Frame):
@@ -320,10 +333,10 @@ class Calendar(ttk.Frame):
 
         self._prev_year_btn = ttk.Button(
             master=self._header_frame,
-            icon={"name": "chevron-double-left", "size": 20},
+            icon='chevron-double-left',
             icon_only=True,
-            accent="secondary",
             variant="ghost",
+            density='compact',
             command=self._on_prev_year,
         )
         self._prev_year_btn.grid(row=0, column=0)
@@ -331,8 +344,8 @@ class Calendar(ttk.Frame):
 
         self._prev_month_btn = ttk.Button(
             master=self._header_frame,
-            icon={"name": "chevron-left", "size": 20},
-            accent="secondary",
+            icon='chevron-left',
+            density='compact',
             variant="ghost",
             icon_only=True,
             command=self._on_prev_month,
@@ -340,21 +353,23 @@ class Calendar(ttk.Frame):
         self._prev_month_btn.grid(row=0, column=1)
 
         self._set_title()
+        title_width = _longest_month_title_length()
         title_label = ttk.Label(
             master=self._header_frame,
             textvariable=self._title_var,
             anchor=CENTER,
             accent="secondary",
-            font="label",
+            font='caption[bold]',
+            width=title_width,
         )
         title_label.grid(row=0, column=2, sticky="ew")
         title_label.bind("<Button-1>", self._on_reset_date)
 
         self._next_month_btn = ttk.Button(
             master=self._header_frame,
-            icon={"name": "chevron-right", "size": 20},
-            accent="secondary",
+            icon='chevron-right',
             variant="ghost",
+            density='compact',
             icon_only=True,
             command=self._on_next_month,
         )
@@ -362,10 +377,10 @@ class Calendar(ttk.Frame):
 
         self._next_year_btn = ttk.Button(
             master=self._header_frame,
-            icon={"name": "chevron-double-right", "size": 20},
+            icon='chevron-double-right',
             icon_only=True,
-            accent="secondary",
             variant="ghost",
+            density='compact',
             command=self._on_next_year,
         )
         self._next_year_btn.grid(row=0, column=4)
@@ -442,10 +457,11 @@ class Calendar(ttk.Frame):
 
                 prev_year = ttk.Button(
                     master=header,
-                    icon={"name": "chevron-double-left", "size": 20},
+                    icon='chevron-double-left',
                     icon_only=True,
                     accent="secondary",
                     variant="ghost",
+                    density='compact',
                     command=self._on_prev_year,
                 )
                 prev_year.grid(row=0, column=0)
@@ -453,29 +469,33 @@ class Calendar(ttk.Frame):
 
                 prev_month = ttk.Button(
                     master=header,
-                    icon={"name": "chevron-left", "size": 20},
+                    icon='chevron-left',
                     accent="secondary",
                     variant="ghost",
+                    density='compact',
                     icon_only=True,
                     command=self._on_prev_month,
                 )
                 prev_month.grid(row=0, column=1)
                 view["prev_month_btn"] = prev_month
 
+                title_width = _longest_month_title_length()
                 title_label = ttk.Label(
                     master=header,
                     textvariable=title_var,
                     anchor=CENTER,
                     accent="secondary",
-                    font="label",
+                    font='caption[bold]',
+                    width=title_width,
                 )
                 title_label.grid(row=0, column=2, sticky="ew")
 
                 next_month = ttk.Button(
                     master=header,
-                    icon={"name": "chevron-right", "size": 20},
+                    icon='chevron-right',
                     accent="secondary",
                     variant="ghost",
+                    density='compact',
                     icon_only=True,
                     command=self._on_next_month,
                 )
@@ -484,10 +504,11 @@ class Calendar(ttk.Frame):
 
                 next_year = ttk.Button(
                     master=header,
-                    icon={"name": "chevron-double-right", "size": 20},
+                    icon='chevron-double-right',
                     icon_only=True,
                     accent="secondary",
                     variant="ghost",
+                    density='compact',
                     command=self._on_next_year,
                 )
                 next_year.grid(row=0, column=4)
@@ -594,7 +615,7 @@ class Calendar(ttk.Frame):
                 anchor=CENTER,
                 padding=5,
                 accent="secondary",
-                font="body[bold]",
+                font='caption[bold]',
             ).pack(side=LEFT, fill=X, expand=YES)
 
         # Grid reused
@@ -619,7 +640,8 @@ class Calendar(ttk.Frame):
                     var = tkinter.BooleanVar(value=False)
                     btn = ttk.CheckToggle(
                         grid,
-                        padding=2,
+                        width=2,
+                        padding=self._square_button_padding(),
                         accent=self._accent,
                         variant="calendar-day",
                         variable=var,
@@ -833,6 +855,21 @@ class Calendar(ttk.Frame):
 
     def _set_title(self) -> None:
         self._title_var.set(_format_month_year(self._display_date))
+
+    def _square_button_padding(self) -> tuple[int, int, int, int]:
+        """Calculate padding for square calendar day buttons based on caption font metrics."""
+        from tkinter import font
+        f = font.nametofont('caption')
+        linespace = f.metrics()['linespace']
+        text_width = f.measure('00')
+        # For square buttons with centered text: width = height
+        # width = text_width + 2*h_pad, height = linespace + v_pad
+        # Use symmetric h_pad and add v_pad to balance
+        diff = linespace - text_width  # 15 - 12 = 3
+        h_pad = (diff + 1) // 2  # round up: 2
+        v_pad = 2 * h_pad - diff  # balance: 2*2 - 3 = 1
+        # Return (left, top, right, bottom) - add top padding to nudge text down
+        return (h_pad, 2, h_pad, v_pad)
 
     @staticmethod
     def _add_months(d: date, n: int) -> date:

@@ -1,5 +1,4 @@
 from typing_extensions import Unpack
-
 from ttkbootstrap.widgets.primitives.label import Label, LabelKwargs
 from ttkbootstrap.widgets.types import Master
 
@@ -35,10 +34,11 @@ class Badge(Label):
             style (str): Explicit ttk style name (overrides accent/variant).
             accent (str): Accent token for styling, e.g. 'primary', 'success', 'danger'.
             variant (str): Shape of badge. 'pill' or 'square' (default).
-            bootstyle (str): DEPRECATED - Use `accent` and `variant` instead.
-                Combined style tokens (defaults to 'badge').
             surface (str): Optional surface token; otherwise inherited.
             style_options (dict): Optional dict forwarded to the style builder.
         """
         kwargs.setdefault('ttk_class', 'TBadge')
+        kwargs.setdefault('anchor', 'center')
+        kwargs.setdefault('font', '-size 8')
+        kwargs.setdefault('variant', 'square')
         super().__init__(master=master, **kwargs)

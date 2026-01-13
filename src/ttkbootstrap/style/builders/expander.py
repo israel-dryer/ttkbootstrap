@@ -1,6 +1,7 @@
 """Style builders for the Expander widget."""
 
 from ttkbootstrap.style.bootstyle_builder_ttk import BootstyleBuilderTTk
+from ttkbootstrap.style.builders.utils import apply_icon_mapping
 
 
 @BootstyleBuilderTTk.register_builder('solid', 'Expander.TFrame')
@@ -45,9 +46,7 @@ def build_solid_expander_header_style(b: BootstyleBuilderTTk, ttk_style: str, ac
 
 @BootstyleBuilderTTk.register_builder('solid', 'Expander.TLabel')
 def build_solid_expander_header_label_style(b: BootstyleBuilderTTk, ttk_style: str, accent: str = None, **options):
-    """
-    Expander header label style with state-aware foreground.
-    """
+    """Expander header label style with state-aware foreground."""
     background = b.color(accent or 'primary')
     active = b.active(background)
     pressed = b.pressed(background)
@@ -80,16 +79,10 @@ def build_solid_expander_header_label_style(b: BootstyleBuilderTTk, ttk_style: s
         ('', background)
     ]
 
-    # map icon if available
-    icon = options.get('icon')
+    state_spec = dict(foreground=foreground_state_map, background=background_state_map)
+    state_spec = apply_icon_mapping(b, options, state_spec)
 
-    image_state_map = []
-
-    if icon is not None:
-        icon = b.normalize_icon_spec(icon)
-        image_state_map = b.map_stateful_icons(icon, foreground_state_map)
-
-    b.map_style(ttk_style, foreground=foreground_state_map, background=background_state_map, image=image_state_map)
+    b.map_style(ttk_style, **state_spec)
 
 
 @BootstyleBuilderTTk.register_builder('default', 'Expander.TFrame')
@@ -138,9 +131,7 @@ def build_ghost_expander_header_style(b: BootstyleBuilderTTk, ttk_style: str, ac
 
 @BootstyleBuilderTTk.register_builder('default', 'Expander.TLabel')
 def build_ghost_expander_header_label_style(b: BootstyleBuilderTTk, ttk_style: str, accent: str = None, **options):
-    """
-    Expander header label style with state-aware foreground.
-    """
+    """Expander header label style with state-aware foreground."""
     accent_token = accent or 'foreground'
     surface_token = options.get('surface', 'content')
 
@@ -174,13 +165,7 @@ def build_ghost_expander_header_label_style(b: BootstyleBuilderTTk, ttk_style: s
         ('', surface)
     ]
 
-    # map icon if available
-    icon = options.get('icon')
+    state_spec = dict(foreground=foreground_state_map, background=background_state_map)
+    state_spec = apply_icon_mapping(b, options, state_spec)
 
-    image_state_map = []
-
-    if icon is not None:
-        icon = b.normalize_icon_spec(icon)
-        image_state_map = b.map_stateful_icons(icon, foreground_state_map)
-
-    b.map_style(ttk_style, foreground=foreground_state_map, background=background_state_map, image=image_state_map)
+    b.map_style(ttk_style, **state_spec)

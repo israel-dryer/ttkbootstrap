@@ -2,7 +2,12 @@ from __future__ import annotations
 
 from ttkbootstrap.style.bootstyle_builder_ttk import BootstyleBuilderTTk
 from ttkbootstrap.style.element import Element, ElementImage
-from ttkbootstrap.style.utility import recolor_image
+from ttkbootstrap.style.utility import recolor_element_image
+from ttkbootstrap.style.builders.utils import (
+    normalize_button_density,
+    button_font,
+    apply_icon_mapping,
+)
 
 
 @BootstyleBuilderTTk.register_builder('container', 'ListView.TFrame')
@@ -62,25 +67,29 @@ def build_list_item_style(
     active = b.elevate(background, 1)
     pressed = b.pressed(background)
     selected = b.subtle(accent_token, background)
-    border_normal = b.border(background) if variant.startswith('separated') else background
 
-    normal_img = recolor_image('list-item-separated', background, border_normal)
-    active_img = recolor_image('list-item-separated', active, border_normal)
-    selected_img = recolor_image('list-item-focus', selected, border_normal, indicator)
+    # Use separated image for separated variant, otherwise use standard list_item
+    is_separated = 'separated' in variant
+    image_key = 'list_item_separated' if is_separated else 'list_item'
+    border_normal = b.border(background) if is_separated else background
 
-    focus_img = recolor_image('list-item-focus', active, border_normal, active)
-    focus_pressed_img = recolor_image('list-item-focus', pressed, border_normal, pressed)
+    normal_img = recolor_element_image(image_key, background, border_normal, background)
+    active_img = recolor_element_image(image_key, active, border_normal, active)
+    selected_img = recolor_element_image(image_key, selected, border_normal, indicator)
+
+    focus_img = recolor_element_image(image_key, active, border_normal, indicator)
+    focus_pressed_img = recolor_element_image(image_key, pressed, border_normal, indicator)
 
     image_state_specs = [
-        ('selected', selected_img),
-        ('focus pressed', focus_pressed_img),
-        ('hover', active_img) if hoverable else None,
-        ('focus', focus_img),
-        ('', normal_img),
+        ('selected', selected_img.image),
+        ('focus pressed', focus_pressed_img.image),
+        ('hover', active_img.image) if hoverable else None,
+        ('focus', focus_img.image),
+        ('', normal_img.image),
     ]
 
     b.create_style_element_image(
-        ElementImage(f'{ttk_style}.border', normal_img, sticky='nsew', border=b.scale(8)).state_specs(
+        ElementImage(f'{ttk_style}.border', normal_img.image, sticky='nsew', border=normal_img.meta.border).state_specs(
             [x for x in image_state_specs if x is not None]
         )
     )
@@ -100,6 +109,7 @@ def build_list_item_style(
 def build_list_item_button_style(b: BootstyleBuilderTTk, ttk_style: str, accent: str = None, **options):
     hoverable = options.get('hoverable', True)
     surface_token = options.get('surface', 'content')
+    density = normalize_button_density(options.get('density', 'default'))
 
     background = b.color(surface_token)
     active = b.elevate(background, 1)
@@ -122,7 +132,7 @@ def build_list_item_button_style(b: BootstyleBuilderTTk, ttk_style: str, accent:
         ('focus', active)
     ]
 
-    b.configure_style(ttk_style, background=background, padding=0, relief='flat', stipple='gray12', font='body')
+    b.configure_style(ttk_style, background=background, padding=0, relief='flat', stipple='gray12', font=button_font(density))
     b.map_style(
         ttk_style,
         foreground=[],
@@ -145,12 +155,26 @@ def build_list_item_default_label(b: BootstyleBuilderTTk, ttk_style: str, accent
     build_list_item_label(b, ttk_style, accent, 'list', **options)
 
 
+def _list_icon_size(b: BootstyleBuilderTTk, density: str) -> int:
+    """Get icon size for list items based on density.
+
+    Args:
+        b: The bootstyle builder instance.
+        density: The density ('default' or 'compact').
+
+    Returns:
+        Scaled icon size in pixels.
+    """
+    return b.scale(16) if density == 'compact' else b.scale(18)
+
+
 @BootstyleBuilderTTk.register_builder('icon', 'ListView.TButton')
 @BootstyleBuilderTTk.register_builder('icon', 'ListView.TLabel')
 def build_list_icon(b: BootstyleBuilderTTk, ttk_style: str, accent: str = None, **options):
     hoverable = options.get('hoverable', True)
     surface_token = options.get('surface', 'content')
     select_background_token = options.get('selected_background', 'primary')
+    density = normalize_button_density(options.get('density', 'default'))
 
     background = b.color(surface_token)
     active = b.elevate(background, 1)
@@ -178,7 +202,7 @@ def build_list_icon(b: BootstyleBuilderTTk, ttk_style: str, accent: str = None, 
         padding=0,
         relief='flat',
         stipple='gray12',
-        font='body',
+        font=button_font(density),
     )
 
     foreground_state_spec = [
@@ -201,27 +225,10 @@ def build_list_icon(b: BootstyleBuilderTTk, ttk_style: str, accent: str = None, 
         background=[x for x in background_state_spec if x is not None]
     )
 
-    # Apply icon mapping if icon is provided
-    state_spec = _apply_icon_mapping(b, options, state_spec, 18)
+    # Apply icon mapping if icon is provided - use density-aware icon size
+    icon_size = _list_icon_size(b, density)
+    state_spec = apply_icon_mapping(b, options, state_spec, icon_size)
     b.map_style(ttk_style, **state_spec)
-
-
-def _apply_icon_mapping(b: BootstyleBuilderTTk, options: dict, state_spec: dict, default_size: int | None):
-    icon = options.get('icon')
-    if icon is None:
-        return state_spec
-
-    if default_size is None:
-        icon = b.normalize_icon_spec(icon)
-    else:
-        icon = b.normalize_icon_spec(icon, default_size)
-
-    state_spec['image'] = b.map_stateful_icons(icon, state_spec['foreground'])
-    # Set compound to 'left' so text is visible alongside the icon
-    icon_only = options.get('icon_only', False)
-    if not icon_only:
-        state_spec['compound'] = 'left'
-    return state_spec
 
 
 def build_list_item_label(b: BootstyleBuilderTTk, ttk_style: str, accent: str = None, variant: str = None, **options):

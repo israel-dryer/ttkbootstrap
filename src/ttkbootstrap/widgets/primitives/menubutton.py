@@ -37,6 +37,7 @@ class MenuButtonKwargs(TypedDict, total=False):
     # ttkbootstrap-specific extensions
     bootstyle: str  # DEPRECATED: Use accent and variant instead
     accent: str
+    density: Literal['default', 'compact']
     variant: str
     surface: str
     style_options: dict[str, Any]
@@ -63,6 +64,7 @@ class MenuButton(LocalizationMixin, TextSignalMixin, IconMixin, TTKWrapperBase, 
             direction (str): Direction for the menu to appear.
             menu (Menu): Associated tk.Menu instance.
             padding (int | tuple): Extra space around the content.
+            density (str): The vertical and horizontal compactness of widget content, e.g. 'default', 'compact'.
             state (str): Widget state.
             takefocus (bool): Whether the widget participates in focus traversal.
             textvariable (Variable): Tk variable linked to the text.
@@ -76,7 +78,7 @@ class MenuButton(LocalizationMixin, TextSignalMixin, IconMixin, TTKWrapperBase, 
             style_options (dict): Optional dict forwarded to the style builder.
             localize (bool | Literal['auto']): Determines the widget's localization mode.
         """
-        kwargs.update(style_options=self._capture_style_options(['icon_only', 'icon'], kwargs))
+        kwargs.update(style_options=self._capture_style_options(['icon_only', 'icon', 'density'], kwargs))
         super().__init__(master, **kwargs)
 
         # Ensure the menubutton receives focus when clicked so focus styling is visible.

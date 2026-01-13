@@ -3,17 +3,16 @@ from ttkbootstrap.constants import *
 
 
 def create_frame_test():
-    frame = ttk.Frame(padding=10)
+    frame = ttk.PackFrame(gap=4, padding=4)
 
     # title
     title = ttk.Label(frame, text='Frame', anchor=CENTER)
     title.pack(padx=5, pady=2, fill=BOTH)
-    ttk.Separator(frame).pack(padx=5, pady=5, fill=X)
+    ttk.Separator(frame).pack(fill=X)
 
     # color
     for color in ['primary', 'secondary', 'success', 'info', 'warning', 'danger']:
-        frm = ttk.Frame(frame, accent=color, width=150, height=100)
-        frm.pack(padx=5, pady=5)
+        frm = ttk.Frame(frame, accent=color, width=150, height=100, padding=2).pack()
         frm.pack_propagate(False)
         ttk.Label(master=frm, text=color).pack(fill=BOTH)
 
