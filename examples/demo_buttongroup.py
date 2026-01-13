@@ -13,7 +13,7 @@ class ButtonGroupDemo(ttk.App):
         # --- 1. Basic Horizontal ButtonGroup ---
         ttk.Label(self, text="Basic Horizontal ButtonGroup", font="-weight bold").pack(pady=(10, 5))
 
-        file_ops = ttk.ButtonGroup(self, accent='primary')
+        file_ops = ttk.ButtonGroup(self, accent='primary', density='compact')
         file_ops.add("New", command=lambda: self.show_action("New"))
         file_ops.add("Open", command=lambda: self.show_action("Open"))
         file_ops.add("Save", command=lambda: self.show_action("Save"))
@@ -128,7 +128,7 @@ class ButtonGroupDemo(ttk.App):
         split_button_frame.pack(pady=5)
 
         # Split button for "Save" action
-        save_split = ttk.ButtonGroup(split_button_frame, accent='primary')
+        save_split = ttk.ButtonGroup(split_button_frame, accent='primary', density='compact')
         save_split.add("Save", command=lambda: self.show_action("Save (default action)"))
 
         # Add icon-only dropdown for save options
@@ -136,7 +136,7 @@ class ButtonGroupDemo(ttk.App):
             widget_type=ttk.DropdownButton,
             key="save_options",
             icon="caret-down-fill",
-            padding=0,
+            icon_only=True,
             compound="center"
         )
 
@@ -159,9 +159,9 @@ class ButtonGroupDemo(ttk.App):
             widget_type=ttk.DropdownButton,
             key="run_options",
             icon="caret-down-fill",
+            icon_only=True,
             popdown_options={"anchor": "ne", "attach": "se", "offset": (0, 2)},
             items=[ContextMenuItem('command', text='Run'), ContextMenuItem('command', text='Run with Debugger'), ContextMenuItem('command', text='Run Tests')],
-            padding=0,
             compound="center"
         )
 

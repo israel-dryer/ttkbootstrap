@@ -11,7 +11,7 @@ from __future__ import annotations
 
 from ttkbootstrap.style.bootstyle_builder_ttk import BootstyleBuilderTTk
 from ttkbootstrap.style.element import Element, ElementImage
-from ttkbootstrap.style.utility import recolor_image
+from ttkbootstrap.style.utility import recolor_element_image
 
 
 @BootstyleBuilderTTk.register_builder('default', 'TLabelframe')
@@ -25,15 +25,15 @@ def build_labelframe_style(b: BootstyleBuilderTTk, ttk_style: str, accent: str =
 
     # border assets and styles
     if show_border:
-        border_img = recolor_image('border', surface, border, surface, surface)
+        border_img = recolor_element_image('border', surface, border, surface)
     else:
-        border_img = recolor_image('border', surface, surface, surface, surface)
+        border_img = recolor_element_image('border', surface, surface, surface)
 
     b.create_style_element_image(
         ElementImage(
             f'{ttk_style}.border',
-            border_img,
-            border=b.scale(6),
+            border_img.image,
+            border=border_img.meta.border,
             sticky="nsew")
     )
     b.create_style_layout(ttk_style, Element(f'{ttk_style}.border', sticky="nsew"))

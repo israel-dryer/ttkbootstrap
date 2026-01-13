@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from ttkbootstrap.style.bootstyle_builder_ttk import BootstyleBuilderTTk
-from ttkbootstrap.style.builders.utils import button_padding, apply_icon_mapping, icon_size
+from ttkbootstrap.style.builders.utils import button_padding, apply_icon_mapping, icon_size, button_font
 from ttkbootstrap.style.element import Element, ElementImage
 from ttkbootstrap.style.utility import recolor_element_image
 
@@ -19,6 +19,7 @@ def _toolbutton_layout(ttk_style: str) -> Element:
 
 
 @BootstyleBuilderTTk.register_builder('solid', 'ButtonGroup')
+@BootstyleBuilderTTk.register_builder('default', 'ButtonGroup')
 def build_button_group_style(b: BootstyleBuilderTTk, ttk_style: str, accent: str = None, **options):
     """
     Configure the button style.
@@ -103,7 +104,7 @@ def build_button_group_style(b: BootstyleBuilderTTk, ttk_style: str, accent: str
         relief='flat',
         padding=button_padding(b, icon_only, density),
         anchor="center",
-        font="body"
+        font=button_font(density)
     )
 
     state_spec = dict(
@@ -204,7 +205,7 @@ def build_outline_button_group_style(b: BootstyleBuilderTTk, ttk_style: str, acc
         relief='flat',
         padding=button_padding(b, icon_only, density),
         anchor="center",
-        font="body"
+        font=button_font(density)
     )
 
     if active_state:
@@ -327,7 +328,7 @@ def build_ghost_button_group_style(b: BootstyleBuilderTTk, ttk_style: str, accen
         relief='flat',
         padding=button_padding(b, icon_only, density),
         anchor="center",
-        font="body"
+        font=button_font(density)
     )
 
     state_spec = dict(

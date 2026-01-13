@@ -244,7 +244,7 @@ def button_padding(b: BootstyleBuilderTTk, icon_only: bool, density: Any) -> int
         Padding value (0 for icon_only, scaled tuple otherwise).
     """
     if icon_only:
-        return b.scale(2) if density == 'compact' else 0
+        return b.scale((2, 3, 2, 3)) if density == 'compact' else 0
     if density == 'compact':
         # (left, top, right, bottom) - extra top padding to center text
         return b.scale((6, 5, 6, 3))
