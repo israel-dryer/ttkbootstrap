@@ -26,15 +26,6 @@ bar_tabs.add(text='Files', value='files', icon='folder2')
 bar_tabs.add(text='Settings', value='settings', icon='gear')
 bar_tabs.pack(anchor='w')
 
-# Pill variant
-pill_frame = ttk.Frame(variants_frame)
-pill_frame.pack(side='left')
-ttk.Label(pill_frame, text="Pill:").pack(anchor='w')
-pill_tabs = Tabs(pill_frame, variant='pill')
-pill_tabs.add(text='Dashboard', value='dashboard')
-pill_tabs.add(text='Projects', value='projects')
-pill_tabs.pack(anchor='w')
-
 # --- Tabs with enable_adding ---
 ttk.Label(app, text="Tabs with enable_adding:", font='heading').pack(anchor='w', padx=8, pady=(16, 4))
 
