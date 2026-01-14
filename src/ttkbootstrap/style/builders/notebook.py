@@ -116,7 +116,7 @@ def build_tabs_notebook(b: BootstyleBuilderTTk, ttk_style: str, accent: str = No
 
     b.configure_style(
         f"{ttk_style}.Tab",
-        font="label",
+        font="body",
         foreground=tab_accent_foreground,
         padding=b.scale((14, 0)))
 
@@ -205,7 +205,7 @@ def build_pill_notebook(b: BootstyleBuilderTTk, ttk_style: str, accent: str = No
     b.configure_style(
         f"{ttk_style}.Tab",
         foreground=pill_normal_foreground,
-        font="label",
+        font="body",
         padding=b.scale((14, 0)))
 
     b.map_style(
@@ -294,7 +294,7 @@ def build_bar_notebook(b: BootstyleBuilderTTk, ttk_style: str, accent: str = Non
     b.configure_style(
         f"{ttk_style}.Tab",
         foreground=foreground,
-        font="label",
+        font="body",
         focuscolor="",
         padding=b.scale((14, 0)),
     )
