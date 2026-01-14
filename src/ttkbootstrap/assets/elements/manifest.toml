@@ -280,21 +280,21 @@ padding = 1
 file = "tabs-bar-horizontal.png"
 width = 84
 height = 52
-border = 8
+border = [31, 8]
 padding = 0
 
 [images.tabs_bar_vertical]
 file = "tabs-bar-vertical.png"
 width = 52
 height = 84
-border = 8
+border = [8, 18]
 padding = 0
 
 [images.tabs_pill]
 file = "tabs-pill.png"
 width = 84
 height = 52
-border = 8
+border = 16
 padding = 0
 
 
