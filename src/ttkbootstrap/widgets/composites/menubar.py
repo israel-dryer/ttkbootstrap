@@ -121,7 +121,7 @@ class MenuBar(GridFrame):
             columns=[0, 1, 0, 1, 0],
             auto_flow="none",
             sticky_items="ns",
-            padding=4,
+            padding=(4, 0),
             **kwargs,
         )
 
@@ -144,7 +144,7 @@ class MenuBar(GridFrame):
         self._after.grid(row=0, column=self._COL_AFTER, sticky="nse")
 
         # Default popdown options for all menus
-        self._popdown_options = {"offset": (0, 4)}
+        self._popdown_options = {"offset": (3, 0)}
         if popdown_options:
             self._popdown_options.update(popdown_options)
 

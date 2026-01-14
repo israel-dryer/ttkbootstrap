@@ -49,7 +49,7 @@ def build_menubar_item(b: BootstyleBuilderTTk, ttk_style: str, color: str = None
             ])
         ]))
 
-    b.configure_style(ttk_style, font="caption", background=surface, foreground=foreground_normal)
+    b.configure_style(ttk_style, font="caption", background=surface, foreground=foreground_normal, padding=(4, 2))
 
     state_spec = dict(
         foreground=[
