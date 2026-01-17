@@ -162,7 +162,7 @@ class NavigationViewGroup(Frame):
             icon=self._icon,
             icon_only=True,
             accent='primary',
-            variant='ghost',
+            variant='navigation',
             command=self._on_compact_click,
         )
         # Don't pack yet - only shown in compact mode

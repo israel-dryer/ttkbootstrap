@@ -107,7 +107,7 @@ class NavigationViewItem(Frame):
             value=self._key,
             anchor='w',
             accent='primary',
-            variant='ghost',
+            variant='navigation',
             command=self._on_invoked,
             padding=(8 + indent_padding, 0, 8, 0),
         )
@@ -121,7 +121,7 @@ class NavigationViewItem(Frame):
             variable=self._variable,
             value=self._key,
             accent='primary',
-            variant='ghost',
+            variant='navigation',
             command=self._on_invoked,
         )
         # Don't pack yet - only shown in compact mode

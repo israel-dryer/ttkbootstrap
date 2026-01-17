@@ -444,3 +444,21 @@ width = 20
 height = 60
 border = [2, 12]
 padding = 0
+
+
+# Navigation Button
+# Left border must fully contain the indicator bar to prevent stretching
+
+[images.nav_button_default]
+file = "nav-button-default.png"
+width = 88
+height = 88
+border = [12, 16, 16, 16]
+padding = 0
+
+[images.nav_button_compact]
+file = "nav-button-compact.png"
+width = 60
+height = 60
+border = [10, 14, 14, 14]
+padding = 0

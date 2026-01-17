@@ -32,7 +32,7 @@ def create_page(parent, title, description):
 
 
 def main():
-    root = ttk.App(theme="amber-dark", title="NavigationView Demo", size=(1000, 650))
+    root = ttk.App(theme="forest-light", title="NavigationView Demo", size=(1000, 650))
 
     # --- Toolbar at the top (spans full width) ---
     # toolbar = Toolbar(root, padding=(5, 0))
